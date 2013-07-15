@@ -9,7 +9,7 @@ public:
     Xiaoguo():PhaseChangeSkill("xiaoguo"){
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
@@ -71,7 +71,7 @@ public:
     ShushenViewAsSkill():ZeroCardViewAsSkill("shushen"){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
@@ -252,11 +252,11 @@ public:
     MingshiViewAsSkill():ZeroCardViewAsSkill("mingshi"){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@mingshi";
     }
 
@@ -310,7 +310,7 @@ public:
     LirangViewAsSkill():ZeroCardViewAsSkill("lirang"){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
@@ -373,7 +373,7 @@ XiongyiCard::XiongyiCard(){
     will_throw = false;
 }
 
-bool XiongyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool XiongyiCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *Self) const{
     int x = Self->aliveCount();
     x = qMax(2, x%2+x/2);
     return targets.length() < x-1;
@@ -502,7 +502,7 @@ ShuangrenCard::ShuangrenCard(){
     mute = true;
 }
 
-bool ShuangrenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool ShuangrenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
     if(!targets.isEmpty())
         return false;
     return !to_select->isKongcheng();
@@ -531,7 +531,7 @@ public:
     ShuangrenViewAsSkill():OneCardViewAsSkill("shuangren"){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 
@@ -576,7 +576,7 @@ public:
         events << Dying;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
         if(!player->askForSkillInvoke(objectName()))
             return false;
         ServerPlayer *target = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName());

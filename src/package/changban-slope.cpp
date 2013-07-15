@@ -15,7 +15,7 @@ public:
         return target->hasSkill(objectName());
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{
         if(ServerInfo.GameMode != "05_2v3")
             return false;
 
@@ -60,7 +60,7 @@ CBLongNuCard::CBLongNuCard(){
     target_fixed = true;
 }
 
-void CBLongNuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+void CBLongNuCard::use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &) const{
     QList<int> angers = source->getPile("Angers");
 
     room->fillAG(angers, source);
@@ -99,7 +99,7 @@ public:
     }
 
 protected:
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         bool has_sameColor = false;
         QList<int> angers = Self->getPile("Angers"), temp;
 
@@ -119,7 +119,7 @@ protected:
         return has_sameColor;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &) const{
         return false;
     }
 };
@@ -209,7 +209,7 @@ protected:
         return has_redAnger && player->isWounded();
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         bool has_redAnger = false;
         QList<int> angers = Self->getPile("Angers");
 
@@ -439,7 +439,7 @@ public:
     }
 
 protected:
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         bool has_redAnger = false;
         QList<int> angers = Self->getPile("Angers");
 
@@ -454,7 +454,7 @@ protected:
         return has_redAnger;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &) const{
         return false;
     }
 };
@@ -463,7 +463,7 @@ CBShiShenCard::CBShiShenCard(){
 
 }
 
-bool CBShiShenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool CBShiShenCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const{
     return targets.isEmpty();
 }
 
@@ -507,7 +507,7 @@ public:
     }
 
 protected:
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         bool has_sameColor = false;
         QList<int> angers = Self->getPile("Angers"), temp;
 
@@ -526,7 +526,7 @@ protected:
         return has_sameColor;
     }
 
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+    virtual bool isEnabledAtResponse(const Player *, const QString &) const{
         return false;
     }
 };

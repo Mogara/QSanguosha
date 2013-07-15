@@ -1313,7 +1313,7 @@ int ReincarnationRule::getPriority() const{
     return -1;
 }
 
-bool ReincarnationRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+bool ReincarnationRule::trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{
     switch(event){
     case GameStart:{
         int count = Sanguosha->getPlayerCount(room->getMode());

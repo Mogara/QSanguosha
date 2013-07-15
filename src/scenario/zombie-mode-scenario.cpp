@@ -301,7 +301,7 @@ public:
 
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return true;
     }
 
@@ -324,7 +324,7 @@ public:
         events << PhaseEnd << PhaseChange;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{
         if(!player->isLord() || player->getGeneral2Name() == "zombie")
             return false;
 

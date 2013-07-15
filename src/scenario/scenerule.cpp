@@ -74,7 +74,7 @@ class Scene27Card : public SkillCard {
     Q_OBJECT
 
 public:
-    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const {
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const {
         if(!targets.isEmpty())
             return false;
         if(to_select->isAllNude())

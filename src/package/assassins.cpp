@@ -46,7 +46,7 @@ public:
         view_as_skill = new FengyinViewAsSkill;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual bool triggerable(const ServerPlayer *) const{
         return true;
     }
 
@@ -199,7 +199,7 @@ public:
         events << PhaseChange << CardLost << CardLostDone << CardGot << CardGotDone;
     }
 
-    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &) const{
         if(event == PhaseChange){
             if(player->getPhase() != Player::Discard || !player->askForSkillInvoke(objectName()))
                 return false;
@@ -312,7 +312,7 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *, QVariant &) const{
         ServerPlayer *splayer = room->findPlayerBySkillName(objectName());
         if(!splayer)
             return false;
@@ -423,7 +423,7 @@ public:
     JisuViewAsSkill():ZeroCardViewAsSkill("jisu"){
     }
 
-    virtual bool isEnabledAtPlay(const Player *player) const{
+    virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
 

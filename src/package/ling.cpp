@@ -139,7 +139,7 @@ public:
     Tannang():DistanceSkill("tannang"){
     }
 
-    virtual int getCorrect(const Player *from, const Player *to) const{
+    virtual int getCorrect(const Player *from, const Player *) const{
         if(from->hasSkill(objectName()))
             return -from->getLostHp();
         else
