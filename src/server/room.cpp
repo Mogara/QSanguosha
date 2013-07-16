@@ -1747,7 +1747,7 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign){
     const int max_available = (total-existed.size()) / to_assign.length();
     const int choice_count = qMin(max_choice, max_available);
 
-    QStringList choices = Sanguosha->getRandomGenerals(total-existed.size(), existed);
+    QStringList choices = Sanguosha->getRandomGenerals(to_assign.length() * choice_count, existed);
 
     if(Config.EnableHegemony)
     {

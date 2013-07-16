@@ -79,3 +79,7 @@ QVariant GeneralModel::headerData(int section, Qt::Orientation orientation, int 
     return QVariant();
 }
 
+void GeneralModel::sort(int , Qt::SortOrder )
+{
+}
+
