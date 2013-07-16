@@ -357,11 +357,7 @@ CONFIG(crypto){
         }
 }
 
-!exists($$PWD/sanguosha.qm){
-    system("lrelease sanguosha.ts")
-}
-
-!exists($$PWD/font.ttf){
-    system("7z x $$PWD/font/font.7z")
-    !win32:system("mv $$PWD/font/FONT.TTF $$PWD/font/font.ttf")
+unix {
+    # auto generate Qt translation message file and decompress font file under UNIX Operating system
+    system("$$PWD/postqmake.sh $$QMAKE_QMAKE")
 }
