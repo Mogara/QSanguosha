@@ -336,11 +336,12 @@ class MiniScenariosAdder{
 public:
     MiniScenariosAdder(){
         const int n = Config.S_MINI_MAX_COUNT;
+        ScenarioHash &hash = ScenarioAdder::scenarios();
 
         int i;
         for(i=1; i<=n; i++){
             QString name = QString("%1").arg(i, 2, 10, QChar('0'));
-            ScenarioAdder::scenarios()[QString("MiniScene_%1").arg(name)] = new LoadedScenario(name);
+            hash["MiniScene_" + name] = new LoadedScenario(name);
         }
     }
 };
