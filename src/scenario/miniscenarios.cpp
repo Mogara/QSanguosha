@@ -1,4 +1,5 @@
 #include "miniscenarios.h"
+#include "settings.h"
 
 #include <QMessageBox>
 #include <QFile>
@@ -331,9 +332,24 @@ MiniScene::MiniScene(const QString &name)
     rule = new MiniSceneRule(this);
 }
 
+class MiniScenariosAdder{
+public:
+    MiniScenariosAdder(){
+        const int n = Config.S_MINI_MAX_COUNT;
+
+        int i;
+        for(i=1; i<=n; i++){
+            QString name = QString("%1").arg(i, 2, 10, QChar('0'));
+            ScenarioAdder::scenarios()[QString("MiniScene_%1").arg(name)] = new LoadedScenario(name);
+        }
+    }
+};
+
+static MiniScenariosAdder GlobalMiniScenariosAdder;
+
 void MiniScene::setupCustom(QString name) const
 {
-    if(name == NULL)
+    if(name.isEmpty())
         name = "custom_scenario";
 
     MiniSceneRule* arule = qobject_cast<MiniSceneRule*>(this->getRule());
@@ -342,58 +358,5 @@ void MiniScene::setupCustom(QString name) const
     name.append(".txt");
     arule->loadSetting(name);
 }
-
-#define ADD_CUSTOM_SCENARIO(name) static ScenarioAdder MiniScene##name##ScenarioAdder(QString("MiniScene_") + #name, new LoadedScenario(#name));
-
-ADD_CUSTOM_SCENARIO(01)
-ADD_CUSTOM_SCENARIO(02)
-ADD_CUSTOM_SCENARIO(03)
-ADD_CUSTOM_SCENARIO(04)
-ADD_CUSTOM_SCENARIO(05)
-ADD_CUSTOM_SCENARIO(06)
-ADD_CUSTOM_SCENARIO(07)
-ADD_CUSTOM_SCENARIO(08)
-ADD_CUSTOM_SCENARIO(09)
-ADD_CUSTOM_SCENARIO(10)
-ADD_CUSTOM_SCENARIO(11)
-ADD_CUSTOM_SCENARIO(12)
-ADD_CUSTOM_SCENARIO(13)
-ADD_CUSTOM_SCENARIO(14)
-ADD_CUSTOM_SCENARIO(15)
-ADD_CUSTOM_SCENARIO(16)
-ADD_CUSTOM_SCENARIO(17)
-ADD_CUSTOM_SCENARIO(18)
-ADD_CUSTOM_SCENARIO(19)
-ADD_CUSTOM_SCENARIO(20)
-ADD_CUSTOM_SCENARIO(21)
-ADD_CUSTOM_SCENARIO(22)
-ADD_CUSTOM_SCENARIO(23)
-ADD_CUSTOM_SCENARIO(24)
-ADD_CUSTOM_SCENARIO(25)
-ADD_CUSTOM_SCENARIO(26)
-ADD_CUSTOM_SCENARIO(27)
-ADD_CUSTOM_SCENARIO(28)
-ADD_CUSTOM_SCENARIO(29)
-ADD_CUSTOM_SCENARIO(30)
-ADD_CUSTOM_SCENARIO(31)
-ADD_CUSTOM_SCENARIO(32)
-ADD_CUSTOM_SCENARIO(33)
-ADD_CUSTOM_SCENARIO(34)
-ADD_CUSTOM_SCENARIO(35)
-ADD_CUSTOM_SCENARIO(36)
-ADD_CUSTOM_SCENARIO(37)
-ADD_CUSTOM_SCENARIO(38)
-ADD_CUSTOM_SCENARIO(39)
-ADD_CUSTOM_SCENARIO(40)
-ADD_CUSTOM_SCENARIO(41)
-ADD_CUSTOM_SCENARIO(42)
-ADD_CUSTOM_SCENARIO(43)
-ADD_CUSTOM_SCENARIO(44)
-ADD_CUSTOM_SCENARIO(45)
-ADD_CUSTOM_SCENARIO(46)
-ADD_CUSTOM_SCENARIO(47)
-ADD_CUSTOM_SCENARIO(48)
-ADD_CUSTOM_SCENARIO(49)
-ADD_CUSTOM_SCENARIO(50)
 
 ADD_SCENARIO(Custom)
