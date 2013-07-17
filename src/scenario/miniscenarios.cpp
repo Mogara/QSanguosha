@@ -307,20 +307,26 @@ void MiniSceneRule::loadSetting(QString path)
         QTextStream stream(&file);
         while(!stream.atEnd()){
             QString aline = stream.readLine();
-            if(aline.isEmpty()) continue;
+            if(aline.isEmpty())
+                continue;
 
-            if(aline.startsWith("setPile"))
+            if(aline.startsWith("setPile:"))
                 setPile(aline.split(":").at(1));
             else if(aline.startsWith("extraOptions")){
                 aline.remove("extraOptions:");
-                QStringList options = aline.split(" ");
+                QStringList options = aline.split(QChar(' '), QString::SkipEmptyParts);
                 foreach(QString option, options){
-                    if(options.isEmpty()) continue;
-                    QString key = option.split(":").first(), value = option.split(":").last();
-                    ex_options[key] = QVariant::fromValue(value);
+                    if(option.isEmpty())
+                        continue;
+
+                    QStringList texts = option.split(QChar(':'), QString::SkipEmptyParts);
+                    if(texts.length() == 2){
+                        setOptions(texts);
+                    }else{
+                        qWarning("Parsing error for line %s", qPrintable(aline));
+                    }
                 }
-            }
-            else
+            }else
                 addNPC(aline);
         }
         file.close();
