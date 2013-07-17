@@ -355,9 +355,7 @@ void MiniScene::setupCustom(QString name) const
 
     MiniSceneRule* arule = qobject_cast<MiniSceneRule*>(this->getRule());
     arule->id = name;
-    name.prepend("etc/customScenes/");
-    name.append(".txt");
-    arule->loadSetting(name);
+    arule->loadSetting(QString("etc/customScenes/%1.txt").arg(name));
 }
 
 ADD_SCENARIO(Custom)
