@@ -98,7 +98,7 @@ public:
         ServerPlayer *from = damage.from;
         Room *room = huaxiong->getRoom();
 
-        if(from && from->isAlive() && damage.card->isKindOf("Slash") && damage.card->isRed()){
+        if(from && from->isAlive() && damage.card && damage.card->isKindOf("Slash") && damage.card->isRed()){
             room->playSkillEffect(objectName());
             LogMessage log;
             log.from = huaxiong;
