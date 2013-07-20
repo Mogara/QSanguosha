@@ -63,7 +63,8 @@ public:
 	QString getPackage() const;
 	QString getSkillDescription() const;
 
-	void lastWord() const;
+	void playWinWord() const;
+	void playLastWord() const;
 };
 
 class Player: public QObject
@@ -717,7 +718,7 @@ public:
 
 	int getCardCount() const;
 	const Card *getCard(int index) const;
-	const Card *getCard(const QString &name) const;
+	const Card *getCard(const char *name) const;
 	QList<Card*> getCards() const;
 
 	QStringList getLords() const;
