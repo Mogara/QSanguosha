@@ -40,6 +40,7 @@ return {
 	["no"] = "否",
 	["male"] = "男性",
 	["female"] = "女性",
+	["neuter"] = "中性",
 
 	["attack_card"] = "进攻牌",
 	["defense_card"] = "防御牌",
