@@ -2330,24 +2330,44 @@
         <translation>请选择要加密的文件</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="1349"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1342"/>
+        <source>Encryption</source>
+        <translation>加密</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="1342"/>
+        <source>Encrypt %1 files done!</source>
+        <translation>完成加密 %1 个文件!</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="1347"/>
         <source>Please select files to decrypt</source>
         <translation>请选择要解密的文件</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="1349"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1347"/>
         <source>Encrypted files (*.dat)</source>
         <translation>已加密的文件 (*.dat)</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="1353"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1355"/>
         <source>Original suffix</source>
         <translation>原文件后缀名</translation>
     </message>
     <message>
-        <location filename="src/dialog/mainwindow.cpp" line="1354"/>
+        <location filename="src/dialog/mainwindow.cpp" line="1356"/>
         <source>Please input the decrypted files&apos; suffix</source>
         <translation>请输入解密后文件的后缀</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="1374"/>
+        <source>Decryption</source>
+        <translation>解密</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/mainwindow.cpp" line="1374"/>
+        <source>Decrypt %1 files done!</source>
+        <translation>完成解密 %1 个文件!</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="707"/>

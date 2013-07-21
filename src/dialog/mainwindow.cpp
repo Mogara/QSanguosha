@@ -1338,16 +1338,18 @@ void MainWindow::on_actionEncrypt_files_triggered()
     }
 
     //Crypto::restoreKey();
+
+    QMessageBox::information(this, tr("Encryption"), tr("Encrypt %1 files done!").arg(filenames.length()));
 }
 
 void MainWindow::on_actionDecrypt_files_triggered()
 {
-    QString key = getKeyFromUser();
-    if(key.isNull())
-        return;
-
     QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Please select files to decrypt"), QString(), tr("Encrypted files (*.dat)"));
     if(filenames.isEmpty())
+        return;
+
+    QString key = getKeyFromUser();
+    if(key.isNull())
         return;
 
     QString suffix = QInputDialog::getText(this, tr("Original suffix"),
@@ -1368,4 +1370,6 @@ void MainWindow::on_actionDecrypt_files_triggered()
     }
 
     Crypto::restoreKey();
+
+    QMessageBox::information(this, tr("Decryption"), tr("Decrypt %1 files done!").arg(filenames.length()));
 }
