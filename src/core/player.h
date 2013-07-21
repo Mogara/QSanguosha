@@ -210,6 +210,9 @@ public:
     bool isLocked(const Card *card) const;
     bool hasCardLock(const QString &card_str) const;
 
+    // same as hasCardLock, to avoid some misused lua code
+    bool isLocked(const QString &str) const;
+
     StatisticsStruct *getStatistics() const;
     void setStatistics(StatisticsStruct *statistics);
 

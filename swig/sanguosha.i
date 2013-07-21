@@ -218,6 +218,7 @@ public:
 	void setCardLocked(const char *name);
 	bool isLocked(const Card *card) const;
 	bool hasCardLock(const char *card_str) const;
+	bool isLocked(const char *str) const;
 
 	bool isCaoCao() const;
 	void copyFrom(Player* p);

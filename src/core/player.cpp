@@ -846,6 +846,11 @@ bool Player::hasCardLock(const QString &card_str) const{
     return lock_card.contains(card_str);
 }
 
+bool Player::isLocked(const QString &str) const
+{
+    return hasCardLock(str);
+}
+
 StatisticsStruct *Player::getStatistics() const{
     return player_statistics;
 }
