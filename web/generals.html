@@ -327,6 +327,8 @@
 
       $("#selectedPackage").text($("#packages > button.btn-primary").text());
       $("#generalCount").text(generals.length);
+
+      return generals;
     }
 
     function createButtons(nodeID, names, values){
@@ -391,7 +393,17 @@
         var searchbox = document.getElementById("searchbox");
         searchbox.returnPressed.connect(searchbox, displayGeneralFromSearchBox);
 
-        doSearch();
+        var list = doSearch();
+        for (var i = 0; i < list.length; i++) {
+          if(list[i] == "caocao"){
+            displayGeneral(list[i]);
+            return;
+          }
+        }
+
+        if(list.length > 0){
+          displayGeneral(list[0]);
+        }
       }
     );
 
