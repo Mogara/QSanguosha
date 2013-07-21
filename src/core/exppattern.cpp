@@ -19,6 +19,9 @@ bool ExpPattern::match(const Player *player, const Card *card) const{
 // the number uses '~' to make a scale for valid expressions
 bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) const
 {
+    if(card == NULL)
+        return false;
+
     QStringList factors = exp.split('|');
 
     bool checkpoint = false;
