@@ -22,6 +22,8 @@ public:
     }
 };
 
+Q_GLOBAL_STATIC(GeneralModel, GlobalGeneralModel)
+
 class GeneralPluginFactory: public QWebPluginFactory{
 public:
     GeneralPluginFactory(){
@@ -36,17 +38,7 @@ public:
         if(mimeType == "application/x-searchbox"){
             QLineEdit *edit = new QLineEdit;
 
-            GeneralList list = Sanguosha->findChildren<const General *>();
-            QMutableListIterator<const General *> itor(list);
-            while(itor.hasNext()){
-                itor.next();
-
-                if(itor.value()->isTotallyHidden())
-                    itor.remove();
-            }
-
-            GeneralModel *model = new GeneralModel(list);
-            QCompleter *completer = new QCompleter(model);
+            QCompleter *completer = new QCompleter(GlobalGeneralModel());
             completer->popup()->setIconSize(General::TinyIconSize);
             completer->setCaseSensitivity(Qt::CaseInsensitive);
 
@@ -145,6 +137,12 @@ QStringList GeneralOverview::getGenerals(const QVariantMap &options) const
 QObject *GeneralOverview::getGeneral(const QString &name) const
 {
     const QObject *g = Sanguosha->getGeneral(name);
+    if(g == NULL){
+        const QObject *s = Sanguosha->getSkill(name);
+        if(s)
+            g = qobject_cast<const General *>(s->parent());
+    }
+
     return const_cast<QObject *>(g);
 }
 

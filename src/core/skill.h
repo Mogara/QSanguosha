@@ -59,6 +59,8 @@ private:
     QStringList sources;
 };
 
+typedef QList<const Skill *> SkillList;
+
 class ViewAsSkill:public Skill{
     Q_OBJECT
 
