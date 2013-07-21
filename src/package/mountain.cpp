@@ -9,8 +9,6 @@
 #include "client.h"
 #include "ai.h"
 
-#include <QCommandLinkButton>
-
 QiaobianCard::QiaobianCard(){
     mute = true;
 }

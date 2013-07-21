@@ -17,7 +17,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>31</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGame">
@@ -418,19 +418,6 @@
   <action name="actionChange_general">
    <property name="text">
     <string>Change general ...</string>
-   </property>
-  </action>
-  <action name="actionCrypto_audio">
-   <property name="text">
-    <string>Crypto audio ...</string>
-   </property>
-  </action>
-  <action name="actionDecrypto_audio">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Decrypto audio ...</string>
    </property>
   </action>
   <action name="actionCheck_resource">

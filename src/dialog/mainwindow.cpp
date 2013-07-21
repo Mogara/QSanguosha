@@ -333,7 +333,6 @@ void MainWindow::enterRoom(){
         ui->menuCheat->setEnabled(true);
 
         connect(ui->actionGet_card, SIGNAL(triggered()), ui->actionCard_Overview, SLOT(trigger()));
-        connect(ui->actionChange_general, SIGNAL(triggered()), ui->actionGeneral_Overview, SLOT(trigger()));
         connect(ui->actionDeath_note, SIGNAL(triggered()), room_scene, SLOT(makeKilling()));
         connect(ui->actionDamage_maker, SIGNAL(triggered()), room_scene, SLOT(makeDamage()));
         connect(ui->actionRevive_wand, SIGNAL(triggered()), room_scene, SLOT(makeReviving()));
@@ -343,6 +342,7 @@ void MainWindow::enterRoom(){
     else{
         ui->menuCheat->setEnabled(false);
         ui->actionGet_card->disconnect();
+        ui->actionChange_general->disconnect();
         ui->actionDeath_note->disconnect();
         ui->actionDamage_maker->disconnect();
         ui->actionRevive_wand->disconnect();
@@ -385,6 +385,7 @@ void MainWindow::on_actionReturn_main_triggered(){
 
     ui->menuCheat->setEnabled(false);
     ui->actionGet_card->disconnect();
+    ui->actionChange_general->disconnect();
     ui->actionDeath_note->disconnect();
     ui->actionDamage_maker->disconnect();
     ui->actionRevive_wand->disconnect();
@@ -1371,4 +1372,12 @@ void MainWindow::on_actionDecrypt_files_triggered()
     Crypto::restoreKey();
 
     QMessageBox::information(this, tr("Decryption"), tr("Decrypt %1 files done!").arg(filenames.length()));
+}
+
+void MainWindow::on_actionChange_general_triggered()
+{
+    FreeChooseDialog *dialog = new FreeChooseDialog(this);
+    connect(dialog, SIGNAL(general_chosen(QString)), ClientInstance, SLOT(changeGeneral(QString)));
+
+    dialog->exec();
 }

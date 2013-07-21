@@ -143,6 +143,7 @@ private slots:
     void changeBackground();
     void on_actionEncrypt_files_triggered();
     void on_actionDecrypt_files_triggered();
+    void on_actionChange_general_triggered();
 };
 
 #endif // MAINWINDOW_H
