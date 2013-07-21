@@ -22,8 +22,6 @@ public:
     }
 };
 
-Q_GLOBAL_STATIC(GeneralModel, GlobalGeneralModel)
-
 class GeneralPluginFactory: public QWebPluginFactory{
 public:
     GeneralPluginFactory(){
@@ -38,7 +36,7 @@ public:
         if(mimeType == "application/x-searchbox"){
             QLineEdit *edit = new QLineEdit;
 
-            QCompleter *completer = new QCompleter(GlobalGeneralModel());
+            QCompleter *completer = new QCompleter(new GeneralModel);
             completer->popup()->setIconSize(General::TinyIconSize);
             completer->setCaseSensitivity(Qt::CaseInsensitive);
 
@@ -51,6 +49,7 @@ public:
 };
 
 GeneralOverview::GeneralOverview()
+    :defaultGeneral("caocao")
 {
     setPage(new GeneralWebPage);
 
@@ -64,6 +63,23 @@ GeneralOverview::GeneralOverview()
     settings()->setAttribute(QWebSettings::PluginsEnabled, true);
 
     resize(900, 600);
+}
+
+Q_GLOBAL_STATIC(GeneralOverview, GlobalGeneralOverview)
+
+void GeneralOverview::displayAllGenerals()
+{
+    GeneralOverview *instance = ::GlobalGeneralOverview();
+    instance->show();
+}
+
+void GeneralOverview::displayGeneral(const QString &generalName)
+{    
+    GeneralOverview *instance = ::GlobalGeneralOverview();
+    instance->defaultGeneral = generalName;
+    instance->show();
+
+    instance->page()->mainFrame()->evaluateJavaScript("displayDefaultGeneral()");
 }
 
 QString GeneralOverview::translate(const QString &key){
@@ -184,6 +200,11 @@ QVariantList GeneralOverview::getLines(const QString &generalName) const
 void GeneralOverview::play(const QString &path) const
 {
     Audio::play(path);
+}
+
+QString GeneralOverview::getDefaultGeneral() const
+{
+    return defaultGeneral;
 }
 
 void GeneralOverview::addSelfToFrame()

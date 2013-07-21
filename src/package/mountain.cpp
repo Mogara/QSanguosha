@@ -1127,20 +1127,79 @@ public:
     }
 };
 
+#include <QVBoxLayout>
+#include <QListView>
+#include <QAbstractItemModel>
+#include <QLabel>
+
+class HuashenListModel: public QAbstractListModel{
+public:
+    HuashenListModel(){
+
+    }
+
+    virtual int rowCount(const QModelIndex &parent) const{
+        if(parent.isValid())
+            return 0;
+        else
+            return Self->tag["Huashens"].toList().length();
+    }
+
+    virtual QVariant data(const QModelIndex &index, int role) const{
+        QVariantList list = Self->tag["Huashens"].toList();
+
+        int i = index.row();
+        if(i < 0 || i >= list.length())
+            return QVariant();
+
+        QString name = list[i].toString();
+        const General *g = Sanguosha->getGeneral(name);
+        if(g == NULL)
+            return QVariant();
+
+        switch(role){
+        case Qt::DecorationRole: return QIcon(g->getPixmapPath("tiny"));
+        case Qt::DisplayRole: return Sanguosha->translate(g->objectName());
+        case Qt::ToolTipRole: return g->getSkillDescription();
+        case Qt::UserRole: return g->objectName();
+        }
+
+        return QVariant();
+    }
+
+    void resetHuashen(){
+        beginResetModel();
+        endResetModel();
+    }
+};
+
+Q_GLOBAL_STATIC(HuashenListModel, GlobalHuashenListModel)
+
 HuashenDialog::HuashenDialog()
 {
     setWindowTitle(Sanguosha->translate("huashen"));
+
+    QListView *view = new QListView;
+    view->setIconSize(General::TinyIconSize);
+    view->setModel(::GlobalHuashenListModel());
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
+
+    layout->addWidget(new QLabel(tr("Double click the general name to see detailed information")));
+    layout->addWidget(view);
+
+    connect(view, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(seeDetail(QModelIndex)));
+}
+
+void HuashenDialog::seeDetail(const QModelIndex &index)
+{
+    GeneralOverview::displayGeneral(index.data(Qt::UserRole).toString());
 }
 
 void HuashenDialog::popup(){
-    QVariantList huashen_list = Self->tag["Huashens"].toList();
-    GeneralList huashens;
-    foreach(QVariant huashen, huashen_list)
-        huashens << Sanguosha->getGeneral(huashen.toString());
-
-    // @TODO: needs new way to select general
-    //fillGenerals(huashens);
-
+    HuashenListModel *model = ::GlobalHuashenListModel();
+    model->resetHuashen();
     show();
 }
 

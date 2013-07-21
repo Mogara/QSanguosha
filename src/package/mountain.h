@@ -64,6 +64,7 @@ public:
     HuashenDialog();
 
 public slots:
+    void seeDetail(const QModelIndex &index);
     void popup();
 };
 

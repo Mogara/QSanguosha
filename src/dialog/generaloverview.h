@@ -10,7 +10,10 @@ class GeneralOverview : public QWebView {
     Q_OBJECT
 
 public:
-    GeneralOverview();
+    GeneralOverview(); // you should never use its constructor, as it should be singleton
+
+    static void displayAllGenerals();
+    static void displayGeneral(const QString &generalName);
 
 public slots:
     QString translate(const QString &key);
@@ -20,9 +23,13 @@ public slots:
     QObject *getGeneral(const QString &name) const;
     QVariantList getLines(const QString &generalName) const;
     void play(const QString &path) const;
+    QString getDefaultGeneral() const;
 
 private slots:
     void addSelfToFrame();
+
+private:
+    QString defaultGeneral;
 };
 
 #endif // GENERALOVERVIEW_H

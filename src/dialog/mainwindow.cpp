@@ -406,8 +406,7 @@ void MainWindow::startGameInAnotherInstance(){
 
 void MainWindow::on_actionGeneral_Overview_triggered()
 {
-    GeneralOverview *overview = new GeneralOverview;
-    overview->show();
+    GeneralOverview::displayAllGenerals();
 }
 
 void MainWindow::on_actionCard_Overview_triggered()
@@ -1158,7 +1157,7 @@ void MainWindow::on_actionCheck_resource_triggered()
 
     fillTable(table);
 
-    dialog->exec();
+    dialog->show();
 }
 
 #include "recorder.h"
