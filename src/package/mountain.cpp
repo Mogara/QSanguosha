@@ -1134,11 +1134,12 @@ HuashenDialog::HuashenDialog()
 
 void HuashenDialog::popup(){
     QVariantList huashen_list = Self->tag["Huashens"].toList();
-    QList<const General *> huashens;
+    GeneralList huashens;
     foreach(QVariant huashen, huashen_list)
         huashens << Sanguosha->getGeneral(huashen.toString());
 
-    fillGenerals(huashens);
+    // @TODO: needs new way to select general
+    //fillGenerals(huashens);
 
     show();
 }

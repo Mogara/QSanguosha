@@ -1,39 +1,28 @@
 #ifndef GENERALOVERVIEW_H
 #define GENERALOVERVIEW_H
 
+#include <QWebView>
+#include <QVariantList>
+
 class General;
-class Skill;
-class QCommandLinkButton;
 
-#include <QDialog>
-#include <QTableWidgetItem>
-#include <QButtonGroup>
-#include <QVBoxLayout>
-
-namespace Ui {
-    class GeneralOverview;
-}
-
-class GeneralOverview : public QDialog {
+class GeneralOverview : public QWebView {
     Q_OBJECT
+
 public:
-    GeneralOverview(QWidget *parent = 0);
-    ~GeneralOverview();
-    void fillGenerals(const QList<const General *> &generals);
+    GeneralOverview();
 
-private:
-    Ui::GeneralOverview *ui;
-    QVBoxLayout *button_layout;
-
-    void resetButtons();
-    void addLines(const Skill *skill);
-    void addCopyAction(QCommandLinkButton *button);
+public slots:
+    QString translate(const QString &key);
+    QStringList getKingdoms() const;
+    QStringList getPackages() const;
+    QStringList getGenerals(const QVariantMap &options) const;
+    QObject *getGeneral(const QString &name) const;
+    QVariantList getLines(const QString &generalName) const;
+    void play(const QString &path) const;
 
 private slots:
-    void playEffect();
-    void copyLines();
-    void on_tableView_doubleClicked(const QModelIndex &index);
-    void on_tableView_clicked(const QModelIndex &index);
+    void addSelfToFrame();
 };
 
 #endif // GENERALOVERVIEW_H

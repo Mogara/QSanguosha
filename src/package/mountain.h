@@ -3,7 +3,6 @@
 
 #include "package.h"
 #include "card.h"
-#include "generaloverview.h"
 
 class QiaobianCard: public SkillCard{
     Q_OBJECT
@@ -56,7 +55,9 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
-class HuashenDialog: public GeneralOverview{
+#include <QDialog>
+
+class HuashenDialog: public QDialog{
     Q_OBJECT
 
 public:

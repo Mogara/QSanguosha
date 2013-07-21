@@ -28,6 +28,7 @@ public:
     void addTranslationEntry(const char *key, const char *value);
     QString translate(const QString &to_translate) const;
     QString translate(const QString &to_translate, const QString &defaultValue) const;
+
     lua_State *getLuaState() const;
 
     void addPackage(Package *package);

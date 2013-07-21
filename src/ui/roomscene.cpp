@@ -2554,9 +2554,9 @@ void RoomScene::onGameOver(){
         foreach(const Player *player, ClientInstance->getPlayers()){
             if(!player->isLord() && !player->isCaoCao())
                 continue;
-            if(player->property("win").toBool() && !player->getGeneral()->getWinword().startsWith("`")){
+            if(player->property("win").toBool() && !player->getGeneral()->getWinWord().isEmpty()){
                 Audio::stop();
-                player->getGeneral()->winWord();
+                player->getGeneral()->playWinWord();
                 mute = true;
                 break;
             }
@@ -2985,7 +2985,7 @@ void RoomScene::killPlayer(const QString &who){
     }
 
     if(Config.EnableLastWord && !Self->hasFlag("marshalling"))
-        general->lastWord();
+        general->playLastWord();
 }
 
 void RoomScene::revivePlayer(const QString &who){

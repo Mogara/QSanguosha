@@ -39,7 +39,6 @@ public:
     enum Gender {Male, Female, Neuter};
     Gender getGender() const;
     void setGender(Gender gender);
-    QString getGenderString() const;
 
     void addSkill(Skill* skill);
     void addSkill(const QString &skill_name);
@@ -51,13 +50,9 @@ public:
     void addRelateSkill(const QString &skill_name);
     QStringList getRelatedSkillNames() const;
 
-    QString getPixmapPath(const QString &category) const;
-    QString getPackage() const;
-    QString getSkillDescription() const;
     QString getLastEffectPath() const;
     QString getWinEffectPath() const;
-    QString getLastword() const;
-    QString getWinword() const;
+
     bool isCaoCao() const;
     bool isZhugeliang() const;
     bool nameContains(const QString &name) const;
@@ -67,8 +62,15 @@ public:
     static QSize TinyIconSize;
 
 public slots:
-    void lastWord() const;
-    void winWord() const;
+    QString getSkillDescription() const;
+    QString getPixmapPath(const QString &category) const;
+    QString getPackage() const;
+    QString getGenderString() const;
+    QString getLastWord() const;
+    QString getWinWord() const;
+
+    void playLastWord() const;
+    void playWinWord() const;
 
 private:
     QString kingdom;

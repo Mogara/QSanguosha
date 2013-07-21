@@ -29,7 +29,7 @@ public:
         GeneralPack,
         CardPack,
         MixedPack,
-        SpecialPack,
+        SpecialPack
     };
 
     Package(const QString &name){
