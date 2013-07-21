@@ -154,7 +154,7 @@ QString EventTriplet::toString() const{
 }
 
 RoomThread::RoomThread(Room *room)
-    :QThread(room), room(room)
+    :QThread(NULL), room(room)
 {
 }
 
