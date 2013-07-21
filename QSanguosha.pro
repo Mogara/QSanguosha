@@ -280,7 +280,6 @@ FORMS += \
 	src/dialog/cardoverview.ui \
 	src/dialog/configdialog.ui \
 	src/dialog/connectiondialog.ui \
-	src/dialog/generaloverview.ui \
 	src/dialog/mainwindow.ui 
 
 INCLUDEPATH += include
