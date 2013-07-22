@@ -499,15 +499,122 @@ public:
     }
 };
 
+class Fentian: public PhaseChangeSkill{
+public:
+    Fentian():PhaseChangeSkill("fentian"){
+        frequency = Compulsory;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *hanba) const{
+        Room *room = hanba->getRoom();
+        if(hanba->getPhase() != Player::Finish || hanba->getHandcardNum() >= hanba->getHp())
+            return false;
+
+        QList<ServerPlayer *> victims;
+        foreach(ServerPlayer *p, room->getOtherPlayers(hanba)){
+            if(hanba->inMyAttackRange(p))
+                victims << p;
+        }
+        if(victims.isEmpty())
+            return false;
+        ServerPlayer *target = room->askForPlayerChosen(hanba, victims, objectName());
+        int card_id = room->askForCardChosen(hanba, target, "he", objectName());
+        hanba->addToPile("phone", card_id);
+        return false;
+    }
+};
+
+class FentianSlash: public SlashSkill{
+public:
+    FentianSlash():SlashSkill("#fentian-slash"){
+    }
+
+    virtual int getSlashRange(const Player *from, const Player *, const Card *) const{
+        if(from->hasSkill("fentian") && !from->getPile("phone").isEmpty())
+            return from->getPile("phone").length();
+        else
+            return 0;
+    }
+};
+
+class Zhiri: public PhaseChangeSkill{
+public:
+    Zhiri():PhaseChangeSkill("zhiri"){
+        frequency = Wake;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target)
+                && target->getPhase() == Player::Start
+                && target->getMark("zhiri") == 0
+                && target->getPile("phone").length() >= 3;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *hanba) const{
+        Room *room = hanba->getRoom();
+
+        room->setPlayerMark(hanba, "zhiri", 1);
+        room->loseMaxHp(hanba);
+
+        LogMessage log;
+        log.type = "#ZhiriWake";
+        log.from = hanba;
+        log.arg = QString::number(hanba->getPile("phone").length());
+        log.arg2 = objectName();
+        room->sendLog(log);
+
+        room->playLightbox(hanba, objectName(), "4000", 4000);
+
+        room->acquireSkill(hanba, "xintan");
+
+        return false;
+    }
+};
+
+XintanCard::XintanCard(){
+}
+
+bool XintanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty();
+}
+
+void XintanCard::use(Room *room, ServerPlayer *player, const QList<ServerPlayer *> &tar) const{
+    if(player->getPile("phone").length() < 2)
+        return;
+    room->throwCard(player->getPile("phone").first(), player);
+    room->throwCard(player->getPile("phone").first(), player);
+    room->loseHp(tar.first());
+}
+
+class Xintan:public ZeroCardViewAsSkill{
+public:
+    Xintan():ZeroCardViewAsSkill("Xintan"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("XintanCard") && player->getPile("phone").length() > 1;
+    }
+
+    virtual const Card *viewAs() const{
+        return new XintanCard;
+    }
+};
+
 OlympicsPackage::OlympicsPackage():Package("olympics"){
     General *yeshiwen = new General(this, "yeshiwen", "wu", 3, false);
     yeshiwen->addSkill(new Jisu);
     yeshiwen->addSkill(new Shuiyong);
+    addMetaObject<JisuCard>();
 
     General *sunyang = new General(this, "sunyang", "wu");
     sunyang->addSkill(new Shuijian);
 
-    addMetaObject<JisuCard>();
+    General *hanba = new General(this, "hanba", "qun", 4, false);
+    hanba->addSkill(new Fentian);
+    hanba->addSkill(new Zhiri);
+    hanba->addRelateSkill("xintan");
+    skills << new FentianSlash << new Xintan;
+    addMetaObject<XintanCard>();
 }
 
 ADD_PACKAGE(Assassins)

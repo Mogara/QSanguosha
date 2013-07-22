@@ -60,4 +60,14 @@ public:
     virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
 };
 
+class XintanCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE XintanCard();
+
+    virtual void use(Room *room, ServerPlayer *source, const QList<ServerPlayer *> &targets) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+};
+
 #endif // ASSASSINSPACKAGE_H

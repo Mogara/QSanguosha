@@ -1,4 +1,5 @@
 #include "new_standard.h"
+#include "standard-skillcards.h"
 #include "client.h"
 #include "carditem.h"
 #include "engine.h"
@@ -307,7 +308,6 @@ public:
     }
 };
 
-#include "standard-skillcards.h"
 class NewLijian: public OneCardViewAsSkill{
 public:
     NewLijian():OneCardViewAsSkill("new_lijian"){
@@ -330,6 +330,67 @@ public:
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
         return 0;
+    }
+};
+
+class NewJushou: public PhaseChangeSkill{
+public:
+    NewJushou():PhaseChangeSkill("new_jushou"){
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if(target->getPhase() == Player::Finish){
+            Room *room = target->getRoom();
+            if(room->askForSkillInvoke(target, objectName())){
+                target->drawCards(1);
+                target->turnOver();
+                room->playSkillEffect(objectName());
+            }
+        }
+        return false;
+    }
+};
+
+class Jiewei: public TriggerSkill{
+public:
+    Jiewei():TriggerSkill("jiewei"){
+        events << TurnedOver << CardUsed;
+    }
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        if(event == CardUsed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if(player->hasFlag("JieweiFlag"))
+                player->tag["JieWeiCard"] = use.card->getType();
+            return false;
+        }
+        if(player->askForSkillInvoke(objectName())){
+            player->drawCards(1);
+            player->setFlags("JieweiFlag");
+            if(room->askForUseCard(player, "TrickCard,EquipCard", "@jiewei")){
+                QString leibie = player->tag["JieWeiCard"].toString();
+
+                QList<ServerPlayer *> victims;
+                foreach(ServerPlayer *p, room->getAllPlayers()){
+                    if(p->getCards("ej").isEmpty())
+                        continue;
+                    foreach(const Card *card, p->getCards("ej")){
+                        if(card->getType() == leibie){
+                            victims << p;
+                            break;
+                        }
+                    }
+                }
+                if(!victims.isEmpty() && player->askForSkillInvoke(objectName())){
+                    ServerPlayer *target = room->askForPlayerChosen(player, victims, objectName());
+                    int card_id = room->askForCardChosen(player, target, "ej", objectName());
+                    if(Sanguosha->getCard(card_id)->getType() == leibie)
+                        room->throwCard(card_id, target, player);
+                }
+            }
+            player->setFlags("-JieweiFlag");
+        }
+        return false;
     }
 };
 
@@ -364,6 +425,10 @@ NewStandardPackage::NewStandardPackage()
     General *new_diaochan = new General(this, "new_diaochan", "qun", 3, false, true);
     new_diaochan->addSkill(new NewLijian);
     new_diaochan->addSkill("biyue");
+
+    General *new_caoren = new General(this, "new_caoren", "wei");
+    new_caoren->addSkill(new NewJushou);
+    new_caoren->addSkill(new Jiewei);
 }
 
 ADD_PACKAGE(NewStandard)

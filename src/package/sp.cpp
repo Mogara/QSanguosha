@@ -1539,7 +1539,7 @@ ZhoufuCard::ZhoufuCard(){
 }
 
 bool ZhoufuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select != Self;
+    return targets.isEmpty() && to_select != Self && to_select->getPile("conjur").isEmpty();
 }
 
 void ZhoufuCard::use(Room *, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
@@ -1595,21 +1595,20 @@ public:
             log.type = "#Zhoufu";
             log.from = player;
             log.to << zhangbao;
-            log.arg << objectName();
+            log.arg = objectName();
             room->sendLog(log);
-            if(zhangbao->hasSkill("yingbing") && zhangbao->askForSkillInvoke("yingbing"))
-                zhangbao->drawCards(2);
 
             JudgeStar judge = data.value<JudgeStar>();
             judge->card = Sanguosha->getCard(card_id);
             room->moveCardTo(judge->card, NULL, Player::Special);
 
-            LogMessage log;
             log.type = "$InitialJudge";
             log.from = player;
             log.card_str = judge->card->getEffectIdString();
             room->sendLog(log);
 
+            if(zhangbao->hasSkill("yingbing") && zhangbao->askForSkillInvoke("yingbing"))
+                zhangbao->drawCards(2);
             room->sendJudgeResult(judge);
 
             int delay = Config.AIDelay;
