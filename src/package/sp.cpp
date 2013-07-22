@@ -1533,6 +1533,96 @@ public:
     }
 };
 
+ZhoufuCard::ZhoufuCard(){
+    once = true;
+    will_throw = false;
+}
+
+bool ZhoufuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && to_select != Self;
+}
+
+void ZhoufuCard::use(Room *, ServerPlayer *source, const QList<ServerPlayer *> &targets) const{
+    ServerPlayer *target = targets.value(0, source);
+    target->addToPile("conjur", subcards.first());
+}
+
+class ZhoufuViewAsSkill: public OneCardViewAsSkill{
+public:
+    ZhoufuViewAsSkill():OneCardViewAsSkill("zhoufu"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return ! player->hasUsed("ZhoufuCard");
+    }
+
+    virtual bool viewFilter(const CardItem *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(CardItem *card_item) const{
+        ZhoufuCard *card = new ZhoufuCard;
+        card->addSubcard(card_item->getFilteredCard());
+        return card;
+    }
+};
+
+class Zhoufu: public TriggerSkill{
+public:
+    Zhoufu():TriggerSkill("zhoufu"){
+        events << StartJudge << PhaseChange;
+        view_as_skill = new ZhoufuViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return !target->getPile("conjur").isEmpty();
+    }
+
+    virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *zhangbao = room->findPlayerBySkillName(objectName());
+        if(!zhangbao || player->getPile("conjur").isEmpty())
+            return false;
+        if(event == PhaseChange){
+            if(player->getPhase() == Player::NotActive){
+                foreach(int card_id, player->getPile("conjur"))
+                    room->obtainCard(player, card_id);
+            }
+        }
+        else{
+            int card_id = player->getPile("conjur").first();
+
+            LogMessage log;
+            log.type = "#Zhoufu";
+            log.from = player;
+            log.to << zhangbao;
+            log.arg << objectName();
+            room->sendLog(log);
+            if(zhangbao->hasSkill("yingbing") && zhangbao->askForSkillInvoke("yingbing"))
+                zhangbao->drawCards(2);
+
+            JudgeStar judge = data.value<JudgeStar>();
+            judge->card = Sanguosha->getCard(card_id);
+            room->moveCardTo(judge->card, NULL, Player::Special);
+
+            LogMessage log;
+            log.type = "$InitialJudge";
+            log.from = player;
+            log.card_str = judge->card->getEffectIdString();
+            room->sendLog(log);
+
+            room->sendJudgeResult(judge);
+
+            int delay = Config.AIDelay;
+            if(judge->time_consuming)
+                delay /= 4;
+            room->getThread()->delay(delay);
+
+            return true;
+        }
+        return false;
+    }
+};
+
 SPCardPackage::SPCardPackage()
     :Package("sp_cards")
 {
@@ -1658,6 +1748,11 @@ SPPackage::SPPackage()
     hejin->addSkill(new Mouzhu);
     hejin->addSkill(new Yanhuo);
     addMetaObject<MouzhuCard>();
+
+    General *zhangbao = new General(this, "zhangbao", "qun", 3);
+    zhangbao->addSkill(new Zhoufu);
+    zhangbao->addSkill(new Skill("yingbing"));
+    addMetaObject<ZhoufuCard>();
 /*
     General *tai_diaochan = new General(this, "tai_diaochan", "qun", 3, false, true);
     tai_diaochan->addSkill("lijian");
