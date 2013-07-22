@@ -381,6 +381,10 @@
       this.clear();
     }
 
+    function displayDefaultGeneral(){
+      displayGeneral(sgs.getDefaultGeneral());
+    }
+
     $(document).ready(
       function(){
         sgs.setWindowTitle(document.title);
@@ -397,8 +401,9 @@
         searchbox.returnPressed.connect(searchbox, displayGeneralFromSearchBox);
 
         var list = doSearch();
+        var defaultGeneral = sgs.getDefaultGeneral();
         for (var i = 0; i < list.length; i++) {
-          if(list[i] == "caocao"){
+          if(list[i] == defaultGeneral){
             displayGeneral(list[i]);
             return;
           }
