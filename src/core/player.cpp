@@ -497,7 +497,11 @@ int Player::getMaxCards() const{
         if(total % 2 != 0)
             rule = 1;
     }
-    extra += Sanguosha->correctMaxCards(this);
+    int skill_max = Sanguosha->correctMaxCards(this);
+    if(skill_max < 0)
+        return - skill_max;
+    else
+        extra += skill_max;
 
     return (qMax(hp,0) + rule + extra);
 }

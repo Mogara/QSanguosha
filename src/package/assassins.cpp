@@ -588,7 +588,7 @@ void XintanCard::use(Room *room, ServerPlayer *player, const QList<ServerPlayer 
 
 class Xintan:public ZeroCardViewAsSkill{
 public:
-    Xintan():ZeroCardViewAsSkill("Xintan"){
+    Xintan():ZeroCardViewAsSkill("xintan"){
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
