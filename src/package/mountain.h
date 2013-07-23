@@ -56,6 +56,7 @@ public:
 };
 
 #include <QDialog>
+#include <QModelIndex>
 
 class HuashenDialog: public QDialog{
     Q_OBJECT
