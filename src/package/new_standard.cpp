@@ -394,6 +394,57 @@ public:
     }
 };
 
+class NewBuqu: public TriggerSkill{
+public:
+    NewBuqu():TriggerSkill("new_buqu"){
+        events << Dying;
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &) const{
+        LogMessage log;
+        log.from = player;
+        log.arg = objectName();
+        log.type = "#TriggerSkill";
+        room->sendLog(log);
+
+        int vul = room->drawCard();
+        const Card *new_card = Sanguosha->getCard(vul);
+        QList<int> vuls = player->getPile("vulnus");
+        player->addToPile("vulnus", vul);
+        bool xiangtong = false;
+        foreach(int v, vuls){
+            const Card *card = Sanguosha->getCard(v);
+            if(card->getNumber() == new_card->getNumber()){
+                xiangtong = true;
+                break;
+            }
+        }
+        if(xiangtong)
+            room->throwCard(vul, player);
+        else{
+            RecoverStruct r;
+            r.recover = player->getLostHp() - player->getMaxHp() + 1;
+            room->recover(player, r, true);
+            room->setPlayerProperty(player, "hp", 1);
+        }
+
+        return false;
+    }
+};
+
+class NewBuqux: public MaxCardsSkill{
+public:
+    NewBuqux():MaxCardsSkill("#new_buqux"){
+    }
+
+    virtual int getExtra(const Player *target) const{
+        if(target->hasSkill("new_buqu") && !target->getPile("vulnus").isEmpty())
+            return - target->getPile("vulnus").count();
+        else
+            return 0;
+    }
+};
 NewStandardPackage::NewStandardPackage()
     :Package("new_standard")
 {
@@ -429,6 +480,10 @@ NewStandardPackage::NewStandardPackage()
     General *new_caoren = new General(this, "new_caoren", "wei");
     new_caoren->addSkill(new NewJushou);
     new_caoren->addSkill(new Jiewei);
+
+    General *new_zhoutai = new General(this, "new_zhoutai", "wu");
+    new_zhoutai->addSkill(new NewBuqu);
+    skills << new NewBuqux;
 }
 
 ADD_PACKAGE(NewStandard)

@@ -797,7 +797,11 @@ int Engine::correctMaxCards(const Player *target) const{
     int extra = 0;
 
     foreach(const MaxCardsSkill *skill, maxcards_skills){
-        extra += skill->getExtra(target);
+        int max = skill->getExtra(target);
+        if(max < 0)
+            return max;
+        else
+            extra += max;
     }
 
     return extra;
