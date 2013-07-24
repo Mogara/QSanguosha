@@ -34,6 +34,8 @@ GeneralOverview::GeneralOverview()
     showGeneral("caocao");
 
     resize(900, 600);
+
+    setWindowTitle(tr("General Overview"));
 }
 
 Q_GLOBAL_STATIC(GeneralOverview, GlobalGeneralOverview)
