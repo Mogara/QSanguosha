@@ -250,6 +250,21 @@ bool General::nameContains(const QString &name) const
     return objectName().contains(name);
 }
 
+QString General::getDesigner() const
+{
+    return Sanguosha->translate("designer:" + objectName(), "");
+}
+
+QString General::getIllustrator() const
+{
+    return Sanguosha->translate("illustrator:" + objectName(), "");
+}
+
+QString General::getCV() const
+{
+    return Sanguosha->translate("cv:" + objectName(), "");
+}
+
 QSize General::BigIconSize(94, 96);
 QSize General::SmallIconSize(122, 50);
 QSize General::TinyIconSize(42, 36);

@@ -1179,6 +1179,7 @@ HuashenDialog::HuashenDialog()
 
     QListView *view = new QListView;
     view->setIconSize(General::TinyIconSize);
+    view->setViewMode(QListView::IconMode);
     view->setModel(::GlobalHuashenListModel());
 
     QVBoxLayout *layout = new QVBoxLayout;
@@ -1192,7 +1193,7 @@ HuashenDialog::HuashenDialog()
 
 void HuashenDialog::seeDetail(const QModelIndex &index)
 {
-    GeneralOverview::displayGeneral(index.data(Qt::UserRole).toString());
+    GeneralOverview::display(index.data(Qt::UserRole).toString());
 }
 
 void HuashenDialog::popup(){

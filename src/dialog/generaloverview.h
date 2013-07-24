@@ -1,35 +1,70 @@
 #ifndef GENERALOVERVIEW_H
 #define GENERALOVERVIEW_H
 
-#include <QWebView>
-#include <QVariantList>
+#include "generalmodel.h"
+
+#include <QWidget>
+#include <QDialog>
+#include <QModelIndex>
 
 class General;
+class QAbstractButton;
+class QHBoxLayout;
+class QGridLayout;
+class QLabel;
+class QListView;
+class QLineEdit;
+class QTextEdit;
+class QLayout;
 
-class GeneralOverview : public QWebView {
+class PackageSelector: public QDialog{
+    Q_OBJECT
+
+public:
+    PackageSelector(QWidget *parent);
+
+private slots:
+    void onButtonClicked(QAbstractButton *button);
+
+signals:
+    void packageSelected(const QString &packageName);
+};
+
+class GeneralOverview : public QWidget {
     Q_OBJECT
 
 public:
     GeneralOverview(); // you should never use its constructor, as it should be singleton
 
-    static void displayAllGenerals();
-    static void displayGeneral(const QString &generalName);
-
-public slots:
-    QString translate(const QString &key);
-    QStringList getKingdoms() const;
-    QStringList getPackages() const;
-    QStringList getGenerals(const QVariantMap &options) const;
-    QObject *getGeneral(const QString &name) const;
-    QVariantList getLines(const QString &generalName) const;
-    void play(const QString &path) const;
-    QString getDefaultGeneral() const;
-
-private slots:
-    void addSelfToFrame();
+    static void display(const QString &name = QString());
 
 private:
-    QString defaultGeneral;
+    void showGeneral(const QString &name);
+    QHBoxLayout *addButtonsFromStringList(const QStringList &list, const char *slot);
+    QLayout *createLeft();
+    QLayout *createMiddle();
+    QLayout *createRight();
+
+    GeneralListModel::SearchOptions options;
+    QLabel *generalLabel;
+    QListView *generalView;
+    QLabel *generalImage;
+    QLineEdit *generalName, *generalGender, *generalKingdom, *generalMaxHp, *generalStatus;
+    QLineEdit *generalDesigner, *generalIllustrator, *generalCV;
+    QTextEdit *generalSkill;
+    QLabel *effectLabel;
+
+private slots:
+    void doSearch();
+    void selectPackage();
+
+    void onSearchBoxDone();
+    void onGeneralButtonClicked();
+    void onKingdomChanged(QAbstractButton *button);
+    void onGenderChanged(QAbstractButton *button);
+    void onPackageSelected(const QString &packageName);
+    void onGeneralViewClicked(const QModelIndex &index);
+    void onEffectLabelClicked(const QString &link);
 };
 
 #endif // GENERALOVERVIEW_H

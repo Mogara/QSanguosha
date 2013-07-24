@@ -407,7 +407,7 @@ void MainWindow::startGameInAnotherInstance(){
 
 void MainWindow::on_actionGeneral_Overview_triggered()
 {
-    GeneralOverview::displayAllGenerals();
+    GeneralOverview::display();
 }
 
 void MainWindow::on_actionCard_Overview_triggered()

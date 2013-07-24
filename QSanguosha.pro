@@ -329,7 +329,7 @@ CONFIG(joystick){
 
 CONFIG(chatvoice):win32{
     greaterThan(QT_MAJOR_VERSION, 4){
-        QT += qaxcontainer
+        QT += axcontainer
     }else{
         CONFIG += qaxcontainer
     }
@@ -358,5 +358,5 @@ CONFIG(crypto){
 
 unix {
     # auto generate Qt translation message file and decompress font file under UNIX Operating system
-    system("$$PWD/postqmake.sh $$QMAKE_QMAKE")
+    system("$$PWD/tools/postqmake.sh $$QMAKE_QMAKE")
 }

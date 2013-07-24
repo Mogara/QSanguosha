@@ -22,6 +22,9 @@ class General : public QObject
     Q_PROPERTY(Gender gender READ getGender CONSTANT)
     Q_PROPERTY(bool lord READ isLord CONSTANT)
     Q_PROPERTY(bool hidden READ isHidden CONSTANT)
+    Q_PROPERTY(QString designer READ getDesigner CONSTANT)
+    Q_PROPERTY(QString illustrator READ getIllustrator CONSTANT)
+    Q_PROPERTY(QString cv READ getCV CONSTANT)
 
 public:
     explicit General(Package *package, const QString &name, const QString &kingdom, int max_hp = 4, bool male = true, bool hidden = false, bool never_shown = false);
@@ -56,6 +59,10 @@ public:
     bool isCaoCao() const;
     bool isZhugeliang() const;
     bool nameContains(const QString &name) const;
+
+    QString getDesigner() const;
+    QString getIllustrator() const;
+    QString getCV() const;
 
     static QSize BigIconSize;
     static QSize SmallIconSize;

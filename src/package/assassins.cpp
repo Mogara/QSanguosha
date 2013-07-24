@@ -574,7 +574,7 @@ public:
 XintanCard::XintanCard(){
 }
 
-bool XintanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool XintanCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const{
     return targets.isEmpty();
 }
 
