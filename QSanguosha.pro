@@ -6,7 +6,7 @@
 cache()
 
 TARGET = QSanguosha
-QT += network sql webkitwidgets
+QT += network sql
 TEMPLATE = app
 win32 : RC_FILE = resource/icon.rc
 macx : ICON = resource/icon/sgs.icns

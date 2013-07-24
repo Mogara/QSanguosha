@@ -35,7 +35,14 @@ QVariant GeneralCompleterModel::data(const QModelIndex &index, int role) const
         case Qt::EditRole: return g->objectName();
         case Qt::DisplayRole: return QString("%1 (%2)").arg(Sanguosha->translate(g->objectName())).arg(g->objectName());
         case Qt::BackgroundRole: if(g->isHidden()) return QBrush(Qt::gray);
-        case Qt::DecorationRole: return QIcon(g->getPixmapPath("tiny"));
+        case Qt::DecorationRole: {
+            QString path(g->getPixmapPath("tiny"));
+            if(QFile::exists(path)){
+                return QIcon(path);
+            }else{
+                return QIcon("image/system/tiny_unknown.png");
+            }
+        }
         }
     }else if(obj->inherits("Skill")){
         const Skill *s = qobject_cast<const Skill *>(obj);
