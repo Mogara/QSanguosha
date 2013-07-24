@@ -148,7 +148,7 @@ QVariant GeneralListModel::data(const QModelIndex &index, int role) const
 
 QModelIndex GeneralListModel::index(int row, int column, const QModelIndex &parent) const
 {
-    if(parent.isValid())
+    if(parent.isValid() || column || row < 0 || row >= list.length())
         return QModelIndex();
     else
         return createIndex(row, column, (void *)(list[row]));
