@@ -168,6 +168,7 @@ QLayout *GeneralOverview::createLeft()
         QCompleter *completer = new QCompleter(model);
         completer->popup()->setIconSize(General::TinyIconSize);
         completer->setCaseSensitivity(Qt::CaseInsensitive);
+        completer->setModelSorting(QCompleter::CaseSensitivelySortedModel); // as our completer model is sorted, use this will improve performance
 
         box->setCompleter(completer);
 

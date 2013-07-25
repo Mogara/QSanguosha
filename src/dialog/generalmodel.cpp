@@ -5,6 +5,10 @@
 
 #include <QFile>
 
+static bool CompareByObjectName(const QObject *obj1, const QObject *obj2){
+    return obj1->objectName() < obj2->objectName();
+}
+
 GeneralCompleterModel::GeneralCompleterModel()
 {
     foreach(const General *g, Sanguosha->findChildren<const General *>()){
@@ -17,6 +21,8 @@ GeneralCompleterModel::GeneralCompleterModel()
         foreach(const Skill *s, g->getVisibleSkills())
             list << s;
     }
+
+    qSort(list.begin(), list.end(), CompareByObjectName);
 }
 
 int GeneralCompleterModel::rowCount(const QModelIndex &parent) const
@@ -77,10 +83,6 @@ QModelIndex GeneralCompleterModel::index(int row, int column, const QModelIndex 
         return createIndex(row, column, const_cast<QObject *>(list[row]));
 }
 
-static bool CompareByName(const General *g1, const General *g2){
-    return g1->objectName() < g2->objectName();
-}
-
 void GeneralListModel::doSearch(const QMap<QString, QString> &options)
 {
     beginResetModel();
@@ -109,7 +111,7 @@ void GeneralListModel::doSearch(const QMap<QString, QString> &options)
         list << g;
     }
 
-    qSort(list.begin(), list.end(), CompareByName);
+    qSort(list.begin(), list.end(), CompareByObjectName);
 
     this->list = list;
 
