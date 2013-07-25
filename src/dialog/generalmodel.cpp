@@ -91,7 +91,8 @@ void GeneralListModel::doSearch(const QMap<QString, QString> &options)
     QString package = options["package"];
     QString gender = options["gender"];
 
-    GeneralList list;
+    list.clear();
+
     QHashIterator<QString, const General *> itor(Sanguosha->getGenerals());
     while(itor.hasNext()){
         const General *g = itor.next().value();
@@ -112,8 +113,6 @@ void GeneralListModel::doSearch(const QMap<QString, QString> &options)
     }
 
     qSort(list.begin(), list.end(), CompareByObjectName);
-
-    this->list = list;
 
     endResetModel();
 }
