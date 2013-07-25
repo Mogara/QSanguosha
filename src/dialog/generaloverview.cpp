@@ -206,8 +206,10 @@ QLayout *GeneralOverview::createMiddle()
 
     generalImage = new QLabel;
     generalImage->setMinimumSize(QSize(200, 290));
+    generalImage->setFrameShape(QFrame::Box);
 
     generalSkill = new QTextEdit;
+    generalSkill->setReadOnly(true);
     generalSkill->setMaximumWidth(200);
 
     vlayout->addWidget(generalImage);
