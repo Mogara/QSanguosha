@@ -19,6 +19,7 @@
 #include <QListView>
 #include <QTextEdit>
 #include <QGroupBox>
+#include <QMenu>
 
 GeneralOverview::GeneralOverview()
 {
@@ -190,10 +191,30 @@ QLayout *GeneralOverview::createLeft()
     }
 
     {
-        QPushButton *button = new QPushButton(tr("All"));
+        QPushButton *button = new QPushButton;
         button->setObjectName("packageName");
 
-        connect(button, SIGNAL(clicked()), this, SLOT(selectPackage()));
+        QMenu *menu = new QMenu;
+
+        QActionGroup *group = new QActionGroup(this);
+
+        QAction *allAction = menu->addAction(tr("All"));
+        allAction->setActionGroup(group);
+
+        button->setText(allAction->text());
+
+        foreach(const Package *p, Sanguosha->findChildren<const Package *>()){
+            if(p->getType() == Package::GeneralPack || p->getType() == Package::MixedPack){
+                QAction *action = menu->addAction(Sanguosha->translate(p->objectName()));
+                action->setObjectName(p->objectName());
+                action->setCheckable(true);
+                action->setActionGroup(group);
+            }
+        }
+
+        connect(group, SIGNAL(triggered(QAction*)), this, SLOT(onPackageActionTriggered(QAction*)));
+
+        button->setMenu(menu);
         searchLayout->addRow(tr("Package"), button);
     }
 
@@ -267,17 +288,6 @@ void GeneralOverview::doSearch()
     generalLabel->setText(tr("Generals\n(%1)").arg(model->rowCount(QModelIndex())));
 }
 
-void GeneralOverview::selectPackage()
-{
-    PackageSelector *selector = new PackageSelector(this);
-
-    selector->setAttribute(Qt::WA_DeleteOnClose, true);
-
-    connect(selector, SIGNAL(packageSelected(QString)), this, SLOT(onPackageSelected(QString)));
-
-    selector->exec();
-}
-
 void GeneralOverview::onSearchBoxDone()
 {
     QLineEdit *box = qobject_cast<QLineEdit *>(sender());
@@ -287,10 +297,11 @@ void GeneralOverview::onSearchBoxDone()
     }
 }
 
-void GeneralOverview::onPackageSelected(const QString &packageName)
+void GeneralOverview::onPackageActionTriggered(QAction *action)
 {
-    options["package"] = packageName;
-    findChild<QPushButton *>("packageName")->setText(Sanguosha->translate(packageName));
+    findChild<QPushButton *>("packageName")->setText(action->text());
+
+    options["package"] = action->objectName();
     doSearch();
 }
 
@@ -312,44 +323,5 @@ void GeneralOverview::onRadioButtonClicked(QAbstractButton *button)
 void GeneralOverview::onEffectLabelClicked(const QString &link)
 {
     Audio::play(link);
-}
-
-PackageSelector::PackageSelector(QWidget *parent)
-    :QDialog(parent)
-{
-    QGridLayout *gridLayout = new QGridLayout;
-    const int columnCount = 5;
-
-    QButtonGroup *group = new QButtonGroup(this);
-    group->setExclusive(true);
-
-    QRadioButton *allButton = new QRadioButton(tr("All"));
-    group->addButton(allButton);
-    gridLayout->addWidget(allButton, 0, 0);
-
-    QList<const Package *> packages = Sanguosha->findChildren<const Package *>();
-
-    foreach(const Package *p, packages){
-        if(p->getType() == Package::GeneralPack || p->getType() == Package::MixedPack){
-            QRadioButton *button = new QRadioButton(Sanguosha->translate(p->objectName()));
-            button->setObjectName(p->objectName());
-
-            group->addButton(button);
-
-            int i = gridLayout->count();
-
-            gridLayout->addWidget(button, i / columnCount, i % columnCount);
-        }
-    }
-
-    connect(group, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(onButtonClicked(QAbstractButton*)));
-
-    setLayout(gridLayout);
-}
-
-void PackageSelector::onButtonClicked(QAbstractButton *button)
-{
-    emit packageSelected(button->objectName());
-    accept();
 }
 

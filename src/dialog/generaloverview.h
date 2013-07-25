@@ -17,19 +17,6 @@ class QLineEdit;
 class QTextEdit;
 class QLayout;
 
-class PackageSelector: public QDialog{
-    Q_OBJECT
-
-public:
-    PackageSelector(QWidget *parent);
-
-private slots:
-    void onButtonClicked(QAbstractButton *button);
-
-signals:
-    void packageSelected(const QString &packageName);
-};
-
 class GeneralOverview : public QWidget {
     Q_OBJECT
 
@@ -55,8 +42,7 @@ private:
 
 private slots:
     void doSearch();
-    void selectPackage();
-    void onPackageSelected(const QString &packageName);
+    void onPackageActionTriggered(QAction *action);
     void onSearchBoxDone();
     void onGeneralViewClicked(const QModelIndex &index);
     void onRadioButtonClicked(QAbstractButton *button);
