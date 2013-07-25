@@ -81,9 +81,13 @@ static bool CompareByName(const General *g1, const General *g2){
     return g1->objectName() < g2->objectName();
 }
 
-void GeneralListModel::doSearch(const GeneralListModel::SearchOptions &options)
+void GeneralListModel::doSearch(const QMap<QString, QString> &options)
 {
     beginResetModel();
+
+    QString kingdom = options["kingdom"];
+    QString package = options["package"];
+    QString gender = options["gender"];
 
     GeneralList list;
     QHashIterator<QString, const General *> itor(Sanguosha->getGenerals());
@@ -93,13 +97,13 @@ void GeneralListModel::doSearch(const GeneralListModel::SearchOptions &options)
         if(g->isTotallyHidden())
             continue;
 
-        if(!options.kingdom.isEmpty() && g->getKingdom() != options.kingdom)
+        if(!kingdom.isEmpty() && g->getKingdom() != kingdom)
             continue;
 
-        if(!options.package.isEmpty() && g->getPackage() != options.package)
+        if(!package.isEmpty() && g->getPackage() != package)
             continue;
 
-        if(!options.gender.isEmpty() && g->getGenderString() != options.gender)
+        if(!gender.isEmpty() && g->getGenderString() != gender)
             continue;
 
         list << g;

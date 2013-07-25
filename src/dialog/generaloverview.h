@@ -40,12 +40,12 @@ public:
 
 private:
     void showGeneral(const QString &name);
-    QHBoxLayout *addButtonsFromStringList(const QStringList &list, const char *slot);
+    QHBoxLayout *addButtonsFromStringList(const QStringList &list, const char *configName);
     QLayout *createLeft();
     QLayout *createMiddle();
     QLayout *createRight();
 
-    GeneralListModel::SearchOptions options;
+    QMap<QString, QString> options;
     QLabel *generalLabel;
     QListView *generalView;
     QLabel *generalImage;
@@ -56,13 +56,10 @@ private:
 private slots:
     void doSearch();
     void selectPackage();
-
-    void onSearchBoxDone();
-    void onGeneralButtonClicked();
-    void onKingdomChanged(QAbstractButton *button);
-    void onGenderChanged(QAbstractButton *button);
     void onPackageSelected(const QString &packageName);
+    void onSearchBoxDone();
     void onGeneralViewClicked(const QModelIndex &index);
+    void onRadioButtonClicked(QAbstractButton *button);
     void onEffectLabelClicked(const QString &link);
 };
 

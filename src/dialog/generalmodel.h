@@ -4,6 +4,7 @@
 #include "general.h"
 
 #include <QAbstractListModel>
+#include <QMap>
 
 class GeneralCompleterModel : public QAbstractListModel{
     Q_OBJECT
@@ -23,19 +24,13 @@ class GeneralListModel: public QAbstractListModel{
     Q_OBJECT
 
 public:
-    struct SearchOptions{
-        QString kingdom;
-        QString gender;
-        QString package;
-    };
-
     GeneralListModel();
 
     virtual int rowCount(const QModelIndex &parent) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
     virtual QModelIndex index(int row, int column, const QModelIndex &parent) const;
 
-    void doSearch(const SearchOptions &options);
+    void doSearch(const QMap<QString, QString> &options);
 
 private:
     GeneralList list;

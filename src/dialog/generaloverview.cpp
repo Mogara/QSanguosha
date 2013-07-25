@@ -73,6 +73,7 @@ void GeneralOverview::showGeneral(const QString &name)
     infoRows.add(tr("Name"), g->objectName(), true)
             .add(tr("Gender"), g->getGenderString(), true)
             .add(tr("Kingdom"), g->getKingdom(), true)
+            .add(tr("Package"), g->getPackage(), true)
             .add(tr("Max HP"), QString::number(g->getMaxHp()))
             .add(tr("Status"), g->isLord() ? tr("Lord") : tr("Non lord"))
             .add(tr("Designer"), g->getDesigner())
@@ -119,10 +120,12 @@ void GeneralOverview::showGeneral(const QString &name)
     effectLabel->setText(lines.join("<br/>"));
 }
 
-QHBoxLayout *GeneralOverview::addButtonsFromStringList(const QStringList &list, const char *slot)
+QHBoxLayout *GeneralOverview::addButtonsFromStringList(const QStringList &list, const char *configName)
 {
     QHBoxLayout *hlayout = new QHBoxLayout;
     QButtonGroup *group = new QButtonGroup;
+
+    group->setObjectName(configName);
 
     foreach(QString elem, list){
         QRadioButton *button = new QRadioButton;
@@ -140,10 +143,11 @@ QHBoxLayout *GeneralOverview::addButtonsFromStringList(const QStringList &list, 
         group->addButton(button);
     }
 
+    hlayout->addStretch();
+
     group->buttons().first()->setChecked(true);
 
-
-    connect(group, SIGNAL(buttonClicked(QAbstractButton*)), this, slot);
+    connect(group, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(onRadioButtonClicked(QAbstractButton*)));
 
     return hlayout;
 }
@@ -175,15 +179,13 @@ QLayout *GeneralOverview::createLeft()
     {
         QStringList genders;
         genders << "all" << "male" << "female" << "neuter";
-        QHBoxLayout *hlayout = addButtonsFromStringList(genders, SLOT(onGenderChanged(QAbstractButton *)));
-        searchLayout->addRow(tr("Gender"), hlayout);
+        searchLayout->addRow(tr("Gender"), addButtonsFromStringList(genders, "gender"));
     }
 
     {
         QStringList kingdoms;
         kingdoms << "all" << Sanguosha->getKingdoms();
-        QHBoxLayout *hlayout = addButtonsFromStringList(kingdoms, SLOT(onKingdomChanged(QAbstractButton *)));
-        searchLayout->addRow(tr("Kingdom"), hlayout);
+        searchLayout->addRow(tr("Kingdom"), addButtonsFromStringList(kingdoms, "kingdom"));
     }
 
     {
@@ -284,26 +286,9 @@ void GeneralOverview::onSearchBoxDone()
     }
 }
 
-void GeneralOverview::onGeneralButtonClicked()
-{
-    showGeneral(sender()->objectName());
-}
-
-void GeneralOverview::onKingdomChanged(QAbstractButton *button)
-{
-    options.kingdom = button->objectName();
-    doSearch();
-}
-
-void GeneralOverview::onGenderChanged(QAbstractButton *button)
-{
-    options.gender = button->objectName();
-    doSearch();
-}
-
 void GeneralOverview::onPackageSelected(const QString &packageName)
 {
-    options.package = packageName;
+    options["package"] = packageName;
     findChild<QPushButton *>("packageName")->setText(Sanguosha->translate(packageName));
     doSearch();
 }
@@ -312,6 +297,15 @@ void GeneralOverview::onGeneralViewClicked(const QModelIndex &index)
 {
     const General *g = static_cast<const General *>(index.internalPointer());
     showGeneral(g->objectName());
+}
+
+void GeneralOverview::onRadioButtonClicked(QAbstractButton *button)
+{
+    QButtonGroup *g = button->group();
+    if(g){
+        options[g->objectName()] = button->objectName();
+        doSearch();
+    }
 }
 
 void GeneralOverview::onEffectLabelClicked(const QString &link)
