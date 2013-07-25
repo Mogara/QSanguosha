@@ -128,18 +128,14 @@ QHBoxLayout *GeneralOverview::addButtonsFromStringList(const QStringList &list, 
 
     group->setObjectName(configName);
 
+    // add special item: all
+    QRadioButton *allButton = new QRadioButton(tr("All"));
+    hlayout->addWidget(allButton);
+    group->addButton(allButton);
+
     foreach(QString elem, list){
-        QRadioButton *button = new QRadioButton;
-        QString elemText;
-        if(elem == "all")
-            elemText = tr("All");
-        else{
-            elemText = Sanguosha->translate(elem);
-            button->setObjectName(elem);
-        }
-
-        button->setText(elemText);
-
+        QRadioButton *button = new QRadioButton(Sanguosha->translate(elem));
+        button->setObjectName(elem);
         hlayout->addWidget(button);
         group->addButton(button);
     }
@@ -180,14 +176,16 @@ QLayout *GeneralOverview::createLeft()
 
     {
         QStringList genders;
-        genders << "all" << "male" << "female" << "neuter";
+        genders << "male" << "female" << "neuter";
         searchLayout->addRow(tr("Gender"), addButtonsFromStringList(genders, "gender"));
     }
 
     {
-        QStringList kingdoms;
-        kingdoms << "all" << Sanguosha->getKingdoms();
-        searchLayout->addRow(tr("Kingdom"), addButtonsFromStringList(kingdoms, "kingdom"));
+        searchLayout->addRow(tr("Kingdom"), addButtonsFromStringList(Sanguosha->getKingdoms(), "kingdom"));
+    }
+
+    {
+        searchLayout->addRow(tr("Status"), addButtonsFromStringList(QStringList() << "lord" << "nonlord", "status"));
     }
 
     {

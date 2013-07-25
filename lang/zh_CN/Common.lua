@@ -18,6 +18,7 @@ return {
 	["loyalist"] = "忠臣",
 	["rebel"] = "反贼",
 	["renegade"] = "内奸",
+	["nonlord"] = "非主公",
 	["spade_char"] = "♠",
 	["club_char"] = "♣",
 	["heart_char"] = "♥",

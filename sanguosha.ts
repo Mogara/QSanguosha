@@ -1705,7 +1705,7 @@
 <context>
     <name>GeneralCompleterModel</name>
     <message>
-        <location filename="src/dialog/generalmodel.cpp" line="54"/>
+        <location filename="src/dialog/generalmodel.cpp" line="60"/>
         <source>%1 has skill %2 (%3)</source>
         <translation>%1 拥有技能 %2 (%3)</translation>
     </message>
@@ -1713,105 +1713,107 @@
 <context>
     <name>GeneralOverview</name>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="156"/>
+        <location filename="src/dialog/generaloverview.cpp" line="172"/>
         <source>Search</source>
         <translation>搜索</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="165"/>
-        <location filename="src/dialog/generaloverview.cpp" line="236"/>
+        <location filename="src/dialog/generaloverview.cpp" line="75"/>
+        <location filename="src/dialog/generaloverview.cpp" line="180"/>
         <source>Gender</source>
         <translation>性别</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="172"/>
-        <location filename="src/dialog/generaloverview.cpp" line="237"/>
+        <location filename="src/dialog/generaloverview.cpp" line="76"/>
+        <location filename="src/dialog/generaloverview.cpp" line="184"/>
         <source>Kingdom</source>
         <translation>势力</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="117"/>
-        <location filename="src/dialog/generaloverview.cpp" line="176"/>
+        <location filename="src/dialog/generaloverview.cpp" line="132"/>
+        <location filename="src/dialog/generaloverview.cpp" line="199"/>
         <source>All</source>
         <translation>全部</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="38"/>
+        <location filename="src/dialog/generaloverview.cpp" line="40"/>
         <source>General Overview</source>
         <translation>武将一览</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="63"/>
+        <location filename="src/dialog/generaloverview.cpp" line="79"/>
         <source>Lord</source>
         <translation>主公</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="63"/>
+        <location filename="src/dialog/generaloverview.cpp" line="79"/>
         <source>Non lord</source>
         <translation>非主公</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="76"/>
+        <location filename="src/dialog/generaloverview.cpp" line="92"/>
         <source>[%1]: (no effect)</source>
         <translation>[%1]: (无音效)</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="99"/>
+        <location filename="src/dialog/generaloverview.cpp" line="115"/>
         <source>[Win]: &lt;a href=&apos;%1&apos;&gt;%2&lt;/a&gt;</source>
         <translation>[胜利]:&lt;a href=&apos;%1&apos;&gt;%2&lt;/a&gt; </translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="103"/>
+        <location filename="src/dialog/generaloverview.cpp" line="119"/>
         <source>[Death]: &lt;a href=&apos;%1&apos;&gt;%2&lt;/a&gt;</source>
         <translation>[阵亡]: &lt;a href=&apos;%1&apos;&gt;%2&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="180"/>
+        <location filename="src/dialog/generaloverview.cpp" line="77"/>
+        <location filename="src/dialog/generaloverview.cpp" line="216"/>
         <source>Package</source>
         <translation>包</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="235"/>
+        <location filename="src/dialog/generaloverview.cpp" line="74"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="238"/>
+        <location filename="src/dialog/generaloverview.cpp" line="78"/>
         <source>Max HP</source>
         <translation>体力上限</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="240"/>
+        <location filename="src/dialog/generaloverview.cpp" line="79"/>
+        <location filename="src/dialog/generaloverview.cpp" line="188"/>
         <source>Status</source>
         <translation>身份</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="241"/>
+        <location filename="src/dialog/generaloverview.cpp" line="80"/>
         <source>Designer</source>
         <translation>设计者</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="242"/>
+        <location filename="src/dialog/generaloverview.cpp" line="81"/>
         <source>Illustrator</source>
         <translation>插画</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="243"/>
+        <location filename="src/dialog/generaloverview.cpp" line="82"/>
         <source>CV</source>
         <translation>配音</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="245"/>
+        <location filename="src/dialog/generaloverview.cpp" line="260"/>
         <source>Information</source>
         <translation>信息</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="252"/>
+        <location filename="src/dialog/generaloverview.cpp" line="265"/>
         <source>Effects</source>
         <translation>配音</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="273"/>
+        <location filename="src/dialog/generaloverview.cpp" line="286"/>
         <source>Generals
 (%1)</source>
         <translation>武将
@@ -2774,14 +2776,6 @@
         <translation>连接失败, 错误代码 = %1
 原因:
  %2</translation>
-    </message>
-</context>
-<context>
-    <name>PackageSelector</name>
-    <message>
-        <location filename="src/dialog/generaloverview.cpp" line="340"/>
-        <source>All</source>
-        <translation>全部</translation>
     </message>
 </context>
 <context>

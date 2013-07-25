@@ -90,6 +90,7 @@ void GeneralListModel::doSearch(const QMap<QString, QString> &options)
     QString kingdom = options["kingdom"];
     QString package = options["package"];
     QString gender = options["gender"];
+    QString status = options["status"];
 
     list.clear();
 
@@ -108,6 +109,14 @@ void GeneralListModel::doSearch(const QMap<QString, QString> &options)
 
         if(!gender.isEmpty() && g->getGenderString() != gender)
             continue;
+
+        if(!status.isEmpty()){
+            if(status == "lord" && !g->isLord())
+                continue;
+
+            if(status == "nonlord" && g->isLord())
+                continue;
+        }
 
         list << g;
     }
