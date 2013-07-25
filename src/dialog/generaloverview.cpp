@@ -27,6 +27,7 @@ GeneralOverview::GeneralOverview()
     layout->addLayout(createLeft());
     layout->addLayout(createMiddle());
     layout->addLayout(createRight());
+    layout->addStretch();
 
     setLayout(layout);
 
@@ -49,6 +50,17 @@ void GeneralOverview::display(const QString &name)
         instance->showGeneral(name);
 }
 
+class InfoRows: public QStringList{
+public:
+    InfoRows &add(const QString &key, const QString &value, bool shouldTranslate = false){
+        (*this) << QString("<tr> <th> %1 </th> <td> %2 </td> </tr>")
+                .arg(key)
+                .arg(shouldTranslate ? Sanguosha->translate(value) : value);
+
+        return (*this);
+    }
+};
+
 void GeneralOverview::showGeneral(const QString &name)
 {
     const General *g = Sanguosha->getGeneral(name);
@@ -56,16 +68,18 @@ void GeneralOverview::showGeneral(const QString &name)
         return;
 
     generalImage->setPixmap(QPixmap(g->getPixmapPath("card")));
-    generalName->setText(Sanguosha->translate(g->objectName()));
-    generalGender->setText(Sanguosha->translate(g->getGenderString()));
-    generalKingdom->setText(Sanguosha->translate(g->getKingdom()));
-    generalMaxHp->setText(QString::number(g->getMaxHp()));
-    generalStatus->setText(g->isLord() ? tr("Lord") : tr("Non lord"));
 
-    generalDesigner->setText(g->getDesigner());
-    generalIllustrator->setText(g->getIllustrator());
-    generalCV->setText(g->getCV());
+    InfoRows infoRows;
+    infoRows.add(tr("Name"), g->objectName(), true)
+            .add(tr("Gender"), g->getGenderString(), true)
+            .add(tr("Kingdom"), g->getKingdom(), true)
+            .add(tr("Max HP"), QString::number(g->getMaxHp()))
+            .add(tr("Status"), g->isLord() ? tr("Lord") : tr("Non lord"))
+            .add(tr("Designer"), g->getDesigner())
+            .add(tr("Illustrator"), g->getIllustrator())
+            .add(tr("CV"), g->getCV());
 
+    generalInfo->setText(QString("<table>%1</table>").arg(infoRows.join("")));
     generalSkill->setText(g->getSkillDescription());
 
     QStringList lines;
@@ -221,34 +235,9 @@ QLayout *GeneralOverview::createMiddle()
 
 QLayout *GeneralOverview::createRight()
 {
-    generalName = new QLineEdit;
-    generalGender = new QLineEdit;
-    generalKingdom = new QLineEdit;
-    generalMaxHp = new QLineEdit;
-
-    generalStatus = new QLineEdit;
-    generalDesigner = new QLineEdit;
-    generalIllustrator = new QLineEdit;
-    generalCV = new QLineEdit;
-
-    QFormLayout *infoLayout1 = new QFormLayout;
-    QFormLayout *infoLayout2 = new QFormLayout;
-
-    infoLayout1->addRow(tr("Name"), generalName);
-    infoLayout1->addRow(tr("Gender"), generalGender);
-    infoLayout1->addRow(tr("Kingdom"), generalKingdom);
-    infoLayout1->addRow(tr("Max HP"), generalMaxHp);
-
-    infoLayout2->addRow(tr("Status"), generalStatus);
-    infoLayout2->addRow(tr("Designer"), generalDesigner);
-    infoLayout2->addRow(tr("Illustrator"), generalIllustrator);
-    infoLayout2->addRow(tr("CV"), generalCV);
-
     QGroupBox *infoBox = new QGroupBox(tr("Information"));
-    QHBoxLayout *infoLayout = new QHBoxLayout;
-    infoLayout->addLayout(infoLayout1);
-    infoLayout->addLayout(infoLayout2);
-
+    QVBoxLayout *infoLayout = new QVBoxLayout;
+    infoLayout->addWidget(generalInfo = new QLabel);
     infoBox->setLayout(infoLayout);
 
     QGroupBox *effectBox = new QGroupBox(tr("Effects"));

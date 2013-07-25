@@ -49,8 +49,7 @@ private:
     QLabel *generalLabel;
     QListView *generalView;
     QLabel *generalImage;
-    QLineEdit *generalName, *generalGender, *generalKingdom, *generalMaxHp, *generalStatus;
-    QLineEdit *generalDesigner, *generalIllustrator, *generalCV;
+    QLabel *generalInfo;
     QTextEdit *generalSkill;
     QLabel *effectLabel;
 
