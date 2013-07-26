@@ -91,6 +91,7 @@ void GeneralListModel::doSearch(const QMap<QString, QString> &options)
     QString package = options["package"];
     QString gender = options["gender"];
     QString status = options["status"];
+    int maxhp = options["maxhp"].toInt();
 
     list.clear();
 
@@ -117,6 +118,9 @@ void GeneralListModel::doSearch(const QMap<QString, QString> &options)
             if(status == "nonlord" && g->isLord())
                 continue;
         }
+
+        if(maxhp && g->getMaxHp() != maxhp)
+            continue;
 
         list << g;
     }

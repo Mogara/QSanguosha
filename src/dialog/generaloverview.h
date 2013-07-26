@@ -44,6 +44,7 @@ private slots:
     void doSearch();
     void onPackageActionTriggered(QAction *action);
     void onSearchBoxDone();
+    void onMaxHpIndexChanged(int index);
     void onGeneralViewClicked(const QModelIndex &index);
     void onRadioButtonClicked(QAbstractButton *button);
     void onEffectLabelClicked(const QString &link);

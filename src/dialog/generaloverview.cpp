@@ -189,6 +189,21 @@ QLayout *GeneralOverview::createLeft()
     }
 
     {
+        QComboBox *box = new QComboBox;
+        box->addItem(tr("All"));
+        for(int i=1; i<=8; i++){
+            box->addItem(QString::number(i), i);
+        }
+
+        QHBoxLayout *hlayout = new QHBoxLayout;
+        hlayout->addWidget(box);
+        hlayout->addStretch();
+        searchLayout->addRow(tr("Max HP"), hlayout);
+
+        connect(box, SIGNAL(currentIndexChanged(int)), this, SLOT(onMaxHpIndexChanged(int)));
+    }
+
+    {
         QPushButton *button = new QPushButton;
         button->setObjectName("packageName");
 
@@ -220,6 +235,8 @@ QLayout *GeneralOverview::createLeft()
         hlayout->addStretch();
         searchLayout->addRow(tr("Package"), hlayout);
     }
+
+
 
     {
         generalLabel = new QLabel;
@@ -298,6 +315,18 @@ void GeneralOverview::onSearchBoxDone()
         showGeneral(box->text());
         box->clear();
     }
+}
+
+void GeneralOverview::onMaxHpIndexChanged(int index)
+{
+    QComboBox *box = qobject_cast<QComboBox *>(sender());
+    QVariant data = box->itemData(index);
+    if(data.isValid())
+        options["maxhp"] = data.toString();
+    else
+        options.remove("maxhp");
+
+    doSearch();
 }
 
 void GeneralOverview::onPackageActionTriggered(QAction *action)
