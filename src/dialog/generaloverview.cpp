@@ -198,6 +198,7 @@ QLayout *GeneralOverview::createLeft()
 
         QAction *allAction = menu->addAction(tr("All"));
         allAction->setActionGroup(group);
+        allAction->setCheckable(true);
 
         button->setText(allAction->text());
 
@@ -213,7 +214,11 @@ QLayout *GeneralOverview::createLeft()
         connect(group, SIGNAL(triggered(QAction*)), this, SLOT(onPackageActionTriggered(QAction*)));
 
         button->setMenu(menu);
-        searchLayout->addRow(tr("Package"), button);
+
+        QHBoxLayout *hlayout = new QHBoxLayout;
+        hlayout->addWidget(button);
+        hlayout->addStretch();
+        searchLayout->addRow(tr("Package"), hlayout);
     }
 
     {
