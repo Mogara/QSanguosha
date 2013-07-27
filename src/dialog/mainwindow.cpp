@@ -77,10 +77,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 
-#ifndef QT_DEBUG
-    ui->actionDecrypt_files->setVisible(false);
-#endif
-
     StartScene *start_scene = new StartScene;
 
     QList<QAction*> actions;
