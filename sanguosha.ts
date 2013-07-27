@@ -1080,72 +1080,72 @@
         <translation>加密 ...</translation>
     </message>
     <message>
-        <location filename="src/dialog/cryptodialog.cpp" line="23"/>
+        <location filename="src/dialog/cryptodialog.cpp" line="25"/>
         <source>Decryption ...</source>
         <translation>解密 ...</translation>
     </message>
     <message>
-        <location filename="src/dialog/cryptodialog.cpp" line="25"/>
+        <location filename="src/dialog/cryptodialog.cpp" line="28"/>
         <source>Remove old files</source>
         <translation>删除处理前的文件</translation>
     </message>
     <message>
-        <location filename="src/dialog/cryptodialog.cpp" line="50"/>
+        <location filename="src/dialog/cryptodialog.cpp" line="60"/>
         <source>Key request</source>
         <translation>密钥</translation>
     </message>
     <message>
-        <location filename="src/dialog/cryptodialog.cpp" line="51"/>
+        <location filename="src/dialog/cryptodialog.cpp" line="61"/>
         <source>Please supply the key, length &gt;= %1 (extra characters will be ignored)</source>
         <translation>请输入密钥，长度应该不短于 %1(多余的字符将会被忽略)</translation>
     </message>
     <message>
-        <location filename="src/dialog/cryptodialog.cpp" line="57"/>
+        <location filename="src/dialog/cryptodialog.cpp" line="67"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/dialog/cryptodialog.cpp" line="57"/>
+        <location filename="src/dialog/cryptodialog.cpp" line="67"/>
         <source>Your input key is too short</source>
         <translation>你输入的密钥过短</translation>
     </message>
     <message>
-        <location filename="src/dialog/cryptodialog.cpp" line="65"/>
+        <location filename="src/dialog/cryptodialog.cpp" line="75"/>
         <source>Please select files to encrypt</source>
         <translation>请选择要加密的文件</translation>
     </message>
     <message>
-        <location filename="src/dialog/cryptodialog.cpp" line="89"/>
+        <location filename="src/dialog/cryptodialog.cpp" line="101"/>
         <source>Please select files to decrypt</source>
         <translation>请选择要解密的文件</translation>
     </message>
     <message>
-        <location filename="src/dialog/cryptodialog.cpp" line="89"/>
+        <location filename="src/dialog/cryptodialog.cpp" line="101"/>
         <source>Encrypted files (*.dat)</source>
         <translation>已加密的文件 (*.dat)</translation>
     </message>
     <message>
-        <location filename="src/dialog/cryptodialog.cpp" line="99"/>
+        <location filename="src/dialog/cryptodialog.cpp" line="109"/>
         <source>Original suffix</source>
         <translation>原文件后缀名</translation>
     </message>
     <message>
-        <location filename="src/dialog/cryptodialog.cpp" line="100"/>
+        <location filename="src/dialog/cryptodialog.cpp" line="110"/>
         <source>Please input the decrypted files&apos; suffix</source>
         <translation>请输入解密后文件的后缀</translation>
     </message>
     <message>
-        <location filename="src/dialog/cryptodialog.cpp" line="136"/>
+        <location filename="src/dialog/cryptodialog.cpp" line="151"/>
         <source>File %1 was processed</source>
         <translation>文件 %1 已经被处理</translation>
     </message>
     <message>
-        <location filename="src/dialog/cryptodialog.cpp" line="153"/>
+        <location filename="src/dialog/cryptodialog.cpp" line="168"/>
         <source>Decrypt %1 files done!</source>
         <translation>完成解密 %1 个文件!</translation>
     </message>
     <message>
-        <location filename="src/dialog/cryptodialog.cpp" line="155"/>
+        <location filename="src/dialog/cryptodialog.cpp" line="170"/>
         <source>Encrypt %1 files done!</source>
         <translation>完成加密 %1 个文件!</translation>
     </message>
@@ -1791,26 +1791,26 @@
 <context>
     <name>GeneralOverview</name>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="182"/>
+        <location filename="src/dialog/generaloverview.cpp" line="186"/>
         <source>Search</source>
         <translation>搜索</translation>
     </message>
     <message>
         <location filename="src/dialog/generaloverview.cpp" line="83"/>
-        <location filename="src/dialog/generaloverview.cpp" line="190"/>
+        <location filename="src/dialog/generaloverview.cpp" line="194"/>
         <source>Gender</source>
         <translation>性别</translation>
     </message>
     <message>
         <location filename="src/dialog/generaloverview.cpp" line="84"/>
-        <location filename="src/dialog/generaloverview.cpp" line="194"/>
+        <location filename="src/dialog/generaloverview.cpp" line="198"/>
         <source>Kingdom</source>
         <translation>势力</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="142"/>
-        <location filename="src/dialog/generaloverview.cpp" line="203"/>
-        <location filename="src/dialog/generaloverview.cpp" line="224"/>
+        <location filename="src/dialog/generaloverview.cpp" line="146"/>
+        <location filename="src/dialog/generaloverview.cpp" line="207"/>
+        <location filename="src/dialog/generaloverview.cpp" line="228"/>
         <source>All</source>
         <translation>全部</translation>
     </message>
@@ -1831,7 +1831,7 @@
     </message>
     <message>
         <location filename="src/dialog/generaloverview.cpp" line="85"/>
-        <location filename="src/dialog/generaloverview.cpp" line="246"/>
+        <location filename="src/dialog/generaloverview.cpp" line="250"/>
         <source>Package</source>
         <translation>包</translation>
     </message>
@@ -1842,13 +1842,13 @@
     </message>
     <message>
         <location filename="src/dialog/generaloverview.cpp" line="86"/>
-        <location filename="src/dialog/generaloverview.cpp" line="211"/>
+        <location filename="src/dialog/generaloverview.cpp" line="215"/>
         <source>Max HP</source>
         <translation>体力上限</translation>
     </message>
     <message>
         <location filename="src/dialog/generaloverview.cpp" line="87"/>
-        <location filename="src/dialog/generaloverview.cpp" line="198"/>
+        <location filename="src/dialog/generaloverview.cpp" line="202"/>
         <source>Status</source>
         <translation>身份</translation>
     </message>
@@ -1883,17 +1883,22 @@
         <translation>阵亡</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="290"/>
+        <location filename="src/dialog/generaloverview.cpp" line="132"/>
+        <source>Export all audio files</source>
+        <translation>导出所有音频文件</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/generaloverview.cpp" line="294"/>
         <source>Information</source>
         <translation>信息</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="295"/>
+        <location filename="src/dialog/generaloverview.cpp" line="299"/>
         <source>Effects</source>
         <translation>配音</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="316"/>
+        <location filename="src/dialog/generaloverview.cpp" line="320"/>
         <source>Generals
 (%1)</source>
         <translation>武将

@@ -128,6 +128,10 @@ void GeneralOverview::showGeneral(const QString &name)
     if(!lastWord.isEmpty())
         lines.add(tr("Death"), InfoRows::createLink(g->getLastEffectPath(), lastWord));
 
+#ifdef QT_DEBUG
+    lines.add("", InfoRows::createLink("export", tr("Export all audio files")));
+#endif
+
     effectLabel->setText(lines.toTableString());
 }
 
@@ -360,8 +364,50 @@ void GeneralOverview::onRadioButtonClicked(QAbstractButton *button)
     }
 }
 
+#include <QFileDialog>
+
+#include "crypto.h"
+
 void GeneralOverview::onEffectLabelClicked(const QString &link)
 {
+#ifdef QT_DEBUG
+
+    if(link.startsWith("export")){
+        QString dirname = QFileDialog::getExistingDirectory(this);
+        QLabel *label = qobject_cast<QLabel *>(sender());
+        QString str = label->text();
+        QRegExp rx("href='([^']+)'");
+
+        int pos = 0;
+        QStringList filenames;
+        while ((pos = rx.indexIn(str, pos)) != -1) {
+            pos += rx.matchedLength();
+            filenames << rx.capturedTexts()[1];
+        }
+
+        filenames.removeLast();
+
+        QDir destDir(dirname);
+        foreach(QString filename, filenames){
+            QString path = QFileInfo(filename).dir().path();
+            destDir.mkpath(path);
+
+            QString newName = QString("%1/%2").arg(dirname).arg(filename);
+            QFile::copy(filename, newName);
+
+            if(newName.endsWith("dat")){
+                QString oggName = newName;
+                oggName.replace(QRegExp("dat$"), "ogg");
+                Crypto::decryptFile(newName, oggName);
+                QFile::remove(newName);
+            }
+        }
+
+        return;
+    }
+
+#endif
+
     Audio::play(link);
 }
 
