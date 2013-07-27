@@ -60,6 +60,14 @@ public:
 
         return (*this);
     }
+
+    QString toTableString() const{
+        return QString("<table>%1</table>").arg(join(""));
+    }
+
+    static QString createLink(const QString &href, const QString &name){
+        return QString("<a href='%1'> %2 <a>").arg(href).arg(name);
+    }
 };
 
 void GeneralOverview::showGeneral(const QString &name)
@@ -81,15 +89,15 @@ void GeneralOverview::showGeneral(const QString &name)
             .add(tr("Illustrator"), g->getIllustrator())
             .add(tr("CV"), g->getCV());
 
-    generalInfo->setText(QString("<table>%1</table>").arg(infoRows.join("")));
+    generalInfo->setText(infoRows.toTableString());
     generalSkill->setText(g->getSkillDescription());
 
-    QStringList lines;
+    InfoRows lines;
     foreach(const Skill *skill, g->getVisibleSkillList()){
         QStringList sources = skill->getSources();
 
         if(sources.isEmpty()){
-            lines << tr("[%1]: (no effect)").arg(Sanguosha->translate(skill->objectName()));
+            lines.add(Sanguosha->translate(skill->objectName()), tr("No effect"));
             continue;
         }
 
@@ -106,19 +114,21 @@ void GeneralOverview::showGeneral(const QString &name)
             QString word = Sanguosha->translate("$" + info.baseName());
             QString path = sources.at(i);
 
-            lines << QString("[%1]: <a href='%2'>%3</a>").arg(name).arg(path).arg(word);
+            lines.add(name, InfoRows::createLink(path, word));
         }
     }
 
+    lines << "<hr/>";
+
     QString winWord = g->getWinWord();
     if(!winWord.isEmpty())
-        lines << tr("[Win]: <a href='%1'>%2</a>").arg(g->getWinEffectPath()).arg(winWord);
+        lines.add(tr("Win"), InfoRows::createLink(g->getWinEffectPath(), winWord));
 
     QString lastWord = g->getLastWord();
     if(!lastWord.isEmpty())
-        lines << tr("[Death]: <a href='%1'>%2</a>").arg(g->getLastEffectPath()).arg(lastWord);
+        lines.add(tr("Death"), InfoRows::createLink(g->getLastEffectPath(), lastWord));
 
-    effectLabel->setText(lines.join("<br/>"));
+    effectLabel->setText(lines.toTableString());
 }
 
 QHBoxLayout *GeneralOverview::addButtonsFromStringList(const QStringList &list, const char *configName)
@@ -235,8 +245,6 @@ QLayout *GeneralOverview::createLeft()
         hlayout->addStretch();
         searchLayout->addRow(tr("Package"), hlayout);
     }
-
-
 
     {
         generalLabel = new QLabel;
