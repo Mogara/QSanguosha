@@ -106,8 +106,6 @@ void CryptoDialog::decrypt()
     QString key = getKeyFromUser();
     if(key.isNull())
         return;
-#endif
-
     QString suffix = QInputDialog::getText(this, tr("Original suffix"),
                                            tr("Please input the decrypted files' suffix"),
                                            QLineEdit::Normal, "ogg");
@@ -115,6 +113,9 @@ void CryptoDialog::decrypt()
         suffix = "ogg";
 
     DecryptionSuffix = suffix;
+#endif
+
+    DecryptionSuffix = "ogg";
 
 #ifndef QT_DEBUG
     Crypto::backupKey();
