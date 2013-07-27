@@ -11,6 +11,7 @@
 #include "halldialog.h"
 #include "pixmapanimation.h"
 #include "crypto.h"
+#include "cryptodialog.h"
 
 #include <cmath>
 #include <QGraphicsView>
@@ -1300,84 +1301,16 @@ void MainWindow::on_actionAbout_libtomcrypt_triggered()
     window->appear();
 }
 
-QString MainWindow::getKeyFromUser(){
-    size_t keySize = Crypto::getKeySize();
-    QString key = QInputDialog::getText(this,
-                                        tr("Key request"),
-                                        tr("Please supply the key, length >= %1 (extra characters will be ignored)").arg(keySize));
-
-    if(key.isEmpty())
-        return QString();
-
-    if(key.length() < (int)keySize){
-        QMessageBox::warning(this, tr("Warning"), tr("Your input key is too short"));
-        return QString();
-    }else
-        return key;
-}
-
-void MainWindow::on_actionEncrypt_files_triggered()
-{
-    //QString key = getKeyFromUser();
-    //if(key.isNull())
-    //    return;
-
-    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Please select files to encrypt"));
-    if(filenames.isEmpty())
-        return;
-
-    //Crypto::backupKey();
-
-    //Crypto::setKey(key.toLatin1());
-
-    foreach(QString filename, filenames){
-        QFileInfo info(filename);
-        QString to = info.dir().filePath(info.baseName() + ".dat");
-
-        Crypto::encryptFile(filename, to);
-    }
-
-    //Crypto::restoreKey();
-
-    QMessageBox::information(this, tr("Encryption"), tr("Encrypt %1 files done!").arg(filenames.length()));
-}
-
-void MainWindow::on_actionDecrypt_files_triggered()
-{
-    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Please select files to decrypt"), QString(), tr("Encrypted files (*.dat)"));
-    if(filenames.isEmpty())
-        return;
-
-    QString key = getKeyFromUser();
-    if(key.isNull())
-        return;
-
-    QString suffix = QInputDialog::getText(this, tr("Original suffix"),
-                                           tr("Please input the decrypted files' suffix"),
-                                           QLineEdit::Normal, "ogg");
-    if(suffix.isEmpty())
-        suffix = "ogg";
-
-    Crypto::backupKey();
-
-    Crypto::setKey(key.toLatin1());
-
-    foreach(QString filename, filenames){
-        QFileInfo info(filename);
-        QString to = info.dir().filePath(QString("%1.%2").arg(info.baseName()).arg(suffix));
-
-        Crypto::decryptFile(filename, to);
-    }
-
-    Crypto::restoreKey();
-
-    QMessageBox::information(this, tr("Decryption"), tr("Decrypt %1 files done!").arg(filenames.length()));
-}
-
 void MainWindow::on_actionChange_general_triggered()
 {
     FreeChooseDialog *dialog = new FreeChooseDialog(this);
     connect(dialog, SIGNAL(general_chosen(QString)), ClientInstance, SLOT(changeGeneral(QString)));
 
     dialog->exec();
+}
+
+void MainWindow::on_actionFile_encryption_decryption_triggered()
+{
+    CryptoDialog *dialog = new CryptoDialog(this);
+     dialog->show();
 }

@@ -5,6 +5,11 @@
 
 class Crypto{
 public:
+    typedef enum{
+        Encryption,
+        Decryption
+    }Method;
+
     static int getKeySize();
     static void setKey(const char *key);
 

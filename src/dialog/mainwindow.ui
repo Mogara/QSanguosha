@@ -44,11 +44,10 @@
     <addaction name="actionView_ban_list"/>
     <addaction name="actionRole_assign_table"/>
     <addaction name="separator"/>
+    <addaction name="actionFile_encryption_decryption"/>
     <addaction name="actionBroadcast"/>
     <addaction name="actionAI_Melee"/>
     <addaction name="actionReplay_file_convert"/>
-    <addaction name="actionEncrypt_files"/>
-    <addaction name="actionDecrypt_files"/>
     <addaction name="actionCheck_resource"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
@@ -497,14 +496,9 @@
     <string>About libtomcrypt</string>
    </property>
   </action>
-  <action name="actionEncrypt_files">
+  <action name="actionFile_encryption_decryption">
    <property name="text">
-    <string>Encrypt files ...</string>
-   </property>
-  </action>
-  <action name="actionDecrypt_files">
-   <property name="text">
-    <string>Decrypt files ...</string>
+    <string>File encryption/decryption ...</string>
    </property>
   </action>
  </widget>

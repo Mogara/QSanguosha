@@ -340,8 +340,11 @@ CONFIG(chatvoice):win32{
 CONFIG(crypto){
         INCLUDEPATH += include/tomcrypt
         DEFINES += USE_CRYPTO
-        HEADERS += src/core/crypto.h
-        SOURCES += src/core/crypto.cpp
+        HEADERS += src/core/crypto.h \
+                src/dialog/cryptodialog.h
+
+        SOURCES += src/core/crypto.cpp \
+                src/dialog/cryptodialog.cpp
 
         unix{
             macx{
