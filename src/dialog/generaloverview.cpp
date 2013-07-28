@@ -66,7 +66,7 @@ public:
     }
 
     static QString createLink(const QString &href, const QString &name){
-        return QString("<a href='%1'> %2 <a>").arg(href).arg(name);
+        return QString("<a href='%1'> %2 </a>").arg(href).arg(name);
     }
 };
 
