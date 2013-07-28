@@ -2764,10 +2764,15 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
     damage_point->setValue(1);
 
     QPushButton *ok_button = new QPushButton(tr("OK"));
+    QPushButton *cancel_button = new QPushButton(tr("Cancel"));
+
     connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(cancel_button,SIGNAL(clicked()), this, SLOT(reject()));
+
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
     hlayout->addWidget(ok_button);
+    hlayout->addWidget(cancel_button);
 
     QFormLayout *layout = new QFormLayout;
 
