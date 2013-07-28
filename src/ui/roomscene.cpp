@@ -1080,6 +1080,11 @@ void RoomScene::putToDiscard(CardItem *item)
 }
 
 void RoomScene::viewDiscards(){
+    if(!game_started){
+        QMessageBox::warning(main_window, tr("Warning"), tr("Game is not started, this function is not enabled"));
+        return;
+    }
+
     if(ClientInstance->discarded_list.isEmpty()){
         QMessageBox::information(NULL, tr("No discarded cards"), tr("There are no discarded cards yet"));
         return;
@@ -2776,7 +2781,6 @@ void RoomScene::FillPlayerNames(QComboBox *combobox, bool add_none){
 
     foreach(const ClientPlayer *player, ClientInstance->getPlayers()){
         QString general_name = Sanguosha->translate(player->getGeneralName());
-        if(!player->getGeneral()) continue;
         combobox->addItem(QIcon(player->getGeneral()->getPixmapPath("tiny")),
                           QString("%1 [%2]").arg(general_name).arg(player->screenName()),
                           player->objectName());
@@ -3069,8 +3073,12 @@ void RoomScene::detachSkill(const QString &skill_name){
 }
 
 void RoomScene::viewDistance(){
-    DistanceViewDialog *dialog = new DistanceViewDialog(main_window);
-    dialog->show();
+    if(game_started){
+        DistanceViewDialog *dialog = new DistanceViewDialog(main_window);
+        dialog->show();
+    }else{
+        QMessageBox::warning(main_window, tr("Warning"), tr("View distance is available during game process"));
+    }
 }
 
 void RoomScene::speak(){
