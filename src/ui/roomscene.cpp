@@ -12,6 +12,7 @@
 #include "indicatoritem.h"
 #include "pixmapanimation.h"
 #include "audio.h"
+#include "dialogutil.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -2676,16 +2677,8 @@ ScriptExecutor::ScriptExecutor(QWidget *parent)
     QTextEdit *box = new QTextEdit;
     box->setObjectName("scriptBox");
     vlayout->addWidget(box);
+    vlayout->addLayout(CreateOKCancelLayout(this));
 
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addStretch();
-
-    QPushButton *ok_button = new QPushButton(tr("OK"));
-    hlayout->addWidget(ok_button);
-
-    vlayout->addLayout(hlayout);
-
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
     connect(this, SIGNAL(accepted()), this, SLOT(doScript()));
 
     setLayout(vlayout);
@@ -2715,17 +2708,11 @@ DeathNoteDialog::DeathNoteDialog(QWidget *parent)
     victim = new QComboBox;
     RoomScene::FillPlayerNames(victim, false);
 
-    QPushButton *ok_button = new QPushButton(tr("OK"));
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
-
     QFormLayout *layout = new QFormLayout;
     layout->addRow(tr("Killer"), killer);
     layout->addRow(tr("Victim"), victim);
 
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addStretch();
-    hlayout->addWidget(ok_button);
-    layout->addRow(hlayout);
+    layout->addRow(CreateOKCancelLayout(this));
 
     setLayout(layout);
 }
@@ -2763,24 +2750,13 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
     damage_point->setRange(0, 1000);
     damage_point->setValue(1);
 
-    QPushButton *ok_button = new QPushButton(tr("OK"));
-    QPushButton *cancel_button = new QPushButton(tr("Cancel"));
-
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(cancel_button,SIGNAL(clicked()), this, SLOT(reject()));
-
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addStretch();
-    hlayout->addWidget(ok_button);
-    hlayout->addWidget(cancel_button);
-
     QFormLayout *layout = new QFormLayout;
 
     layout->addRow(tr("Damage source"), damage_source);
     layout->addRow(tr("Damage target"), damage_target);
     layout->addRow(tr("Damage nature"), damage_nature);
     layout->addRow(tr("Damage point"), damage_point);
-    layout->addRow(hlayout);
+    layout->addRow(CreateOKCancelLayout(this));
 
     setLayout(layout);
 

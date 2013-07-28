@@ -151,7 +151,8 @@ SOURCES += \
 	src/lua/lauxlib.c \
 	src/lua/lapi.c \
 	swig/sanguosha_wrap.cxx \ 
-    src/dialog/generalmodel.cpp
+    src/dialog/generalmodel.cpp \
+    src/dialog/dialogutil.cpp
 
 HEADERS += \
 	src/client/aux-skills.h \
@@ -274,7 +275,8 @@ HEADERS += \
 	src/lua/lcode.h \
 	src/lua/lauxlib.h \
 	src/lua/lapi.h \ 
-    src/dialog/generalmodel.h
+    src/dialog/generalmodel.h \
+    src/dialog/dialogutil.h
 
 FORMS += \
 	src/dialog/cardoverview.ui \

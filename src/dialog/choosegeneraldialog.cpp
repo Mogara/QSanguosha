@@ -247,6 +247,8 @@ void ChooseGeneralDialog::timerEvent(QTimerEvent *event){
 
 // -------------------------------------
 
+#include "dialogutil.h"
+
 FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
     :QDialog(parent), pair_choose(pair_choose)
 {
@@ -276,20 +278,11 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
         }
     }
 
-    QPushButton *ok_button = new QPushButton(tr("OK"));
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(chooseGeneral()));
-
-    QPushButton *cancel_button = new QPushButton(tr("Cancel"));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
-
-    QHBoxLayout *button_layout = new QHBoxLayout;
-    button_layout->addStretch();
-    button_layout->addWidget(ok_button);
-    button_layout->addWidget(cancel_button);
-
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(tab_widget);
-    layout->addLayout(button_layout);
+    layout->addLayout(CreateOKCancelLayout(this));
+
+    connect(this, SIGNAL(accepted()), this, SLOT(chooseGeneral()));
 
     setLayout(layout);
 
@@ -320,8 +313,6 @@ void FreeChooseDialog::chooseGeneral(){
             emit general_chosen(button->objectName());
         }
     }
-
-    accept();
 }
 
 QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals){
