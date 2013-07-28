@@ -2760,7 +2760,7 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
     damage_nature->addItem(tr("Reset Max HP"), "E");
 
     damage_point = new QSpinBox;
-    damage_point->setRange(1, 1000);
+    damage_point->setRange(0, 1000);
     damage_point->setValue(1);
 
     QPushButton *ok_button = new QPushButton(tr("OK"));
