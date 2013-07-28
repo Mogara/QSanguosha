@@ -61,7 +61,7 @@ void FangzhuCard::onEffect(const CardEffectStruct &effect) const{
     int index;
     if(effect.to->faceUp()){
         QString to_exile = effect.to->getGeneralName();
-        bool is_brother = to_exile == "caozhi" || to_exile == "caochong";
+        bool is_brother = to_exile == "caozhi" || to_exile == "caochong" || to_exile == "caozhang";
         index = is_brother ? 3 : 1;
     }else
         index = 2;
