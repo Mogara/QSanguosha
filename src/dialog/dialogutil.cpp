@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QDialog>
+#include <QGroupBox>
 
 QHBoxLayout *CreateOKCancelLayout(QDialog *dialog){
     QPushButton *ok_button = new QPushButton(QObject::tr("OK"));
@@ -24,4 +25,15 @@ QHBoxLayout *CreateOKCancelLayout(QDialog *dialog){
 #endif
 
     return hlayout;
+}
+
+QGroupBox *CreateGroupBoxWithWidget(QWidget *widget){
+    QVBoxLayout *vbox = new QVBoxLayout;
+
+    QGroupBox *box = new QGroupBox;
+    box->setLayout(vbox);
+    vbox->addWidget(widget);
+    vbox->addStretch();
+
+    return box;
 }

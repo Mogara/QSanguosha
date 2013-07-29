@@ -265,6 +265,16 @@ QString General::getCV() const
     return Sanguosha->translate("cv:" + objectName(), "");
 }
 
+QString General::getTinyIconPath() const
+{
+    QString path(getPixmapPath("tiny"));
+    if(QFile::exists(path)){
+        return path;
+    }else{
+        return "image/system/tiny_unknown.png";
+    }
+}
+
 QSize General::BigIconSize(94, 96);
 QSize General::SmallIconSize(122, 50);
 QSize General::TinyIconSize(42, 36);

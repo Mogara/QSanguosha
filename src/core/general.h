@@ -64,6 +64,8 @@ public:
     QString getIllustrator() const;
     QString getCV() const;
 
+    QString getTinyIconPath() const;
+
     static QSize BigIconSize;
     static QSize SmallIconSize;
     static QSize TinyIconSize;

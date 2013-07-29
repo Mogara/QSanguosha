@@ -152,7 +152,9 @@ SOURCES += \
 	src/lua/lapi.c \
 	swig/sanguosha_wrap.cxx \ 
     src/dialog/generalmodel.cpp \
-    src/dialog/dialogutil.cpp
+    src/dialog/dialogutil.cpp \
+    src/dialog/damagemakerdialog.cpp \
+    src/client/clientplayerlistmodel.cpp
 
 HEADERS += \
 	src/client/aux-skills.h \
@@ -276,7 +278,9 @@ HEADERS += \
 	src/lua/lauxlib.h \
 	src/lua/lapi.h \ 
     src/dialog/generalmodel.h \
-    src/dialog/dialogutil.h
+    src/dialog/dialogutil.h \
+    src/dialog/damagemakerdialog.h \
+    src/client/clientplayerlistmodel.h
 
 FORMS += \
 	src/dialog/cardoverview.ui \

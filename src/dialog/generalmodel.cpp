@@ -41,14 +41,7 @@ QVariant GeneralCompleterModel::data(const QModelIndex &index, int role) const
         case Qt::EditRole: return g->objectName();
         case Qt::DisplayRole: return QString("%1 (%2)").arg(Sanguosha->translate(g->objectName())).arg(g->objectName());
         case Qt::BackgroundRole: if(g->isHidden()) return QBrush(Qt::gray);
-        case Qt::DecorationRole: {
-            QString path(g->getPixmapPath("tiny"));
-            if(QFile::exists(path)){
-                return QIcon(path);
-            }else{
-                return QIcon("image/system/tiny_unknown.png");
-            }
-        }
+        case Qt::DecorationRole: return QIcon(g->getTinyIconPath());
         }
     }else if(obj->inherits("Skill")){
         const Skill *s = qobject_cast<const Skill *>(obj);
@@ -144,14 +137,7 @@ QVariant GeneralListModel::data(const QModelIndex &index, int role) const
     const General *g = list[index.row()];
     switch(role){
     case Qt::DisplayRole: return Sanguosha->translate(g->objectName());
-    case Qt::DecorationRole: {
-        QString path(g->getPixmapPath("tiny"));
-        if(QFile::exists(path)){
-            return QIcon(path);
-        }else{
-            return QIcon("image/system/tiny_unknown.png");
-        }
-    }
+    case Qt::DecorationRole: return QIcon(g->getTinyIconPath());
     case Qt::ForegroundRole: {
         if(g->isLord())
             return QBrush(Qt::red);

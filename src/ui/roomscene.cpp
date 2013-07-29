@@ -13,6 +13,7 @@
 #include "pixmapanimation.h"
 #include "audio.h"
 #include "dialogutil.h"
+#include "damagemakerdialog.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -2731,48 +2732,6 @@ void DeathNoteDialog::accept(){
                             );
 }
 
-DamageMakerDialog::DamageMakerDialog(QWidget *parent)
-    :QDialog(parent)
-{
-    setWindowTitle(tr("Damage maker"));
-
-    damage_source = new QComboBox;
-    RoomScene::FillPlayerNames(damage_source, true);
-
-    damage_target = new QComboBox;
-    RoomScene::FillPlayerNames(damage_target, false);
-
-    damage_nature = new QComboBox;
-    damage_nature->addItem(tr("Normal"), "N");
-    damage_nature->addItem(tr("Thunder"), "T");
-    damage_nature->addItem(tr("Fire"), "F");
-    damage_nature->addItem(tr("Recover HP"), "R");
-    damage_nature->addItem(tr("Lose HP"), "L");
-    damage_nature->addItem(tr("Lose Max HP"), "M");
-    damage_nature->addItem(tr("Reset Max HP"), "E");
-
-    damage_point = new QSpinBox;
-    damage_point->setRange(0, 1000);
-    damage_point->setValue(1);
-
-    QFormLayout *layout = new QFormLayout;
-
-    layout->addRow(tr("Damage source"), damage_source);
-    layout->addRow(tr("Damage target"), damage_target);
-    layout->addRow(tr("Damage nature"), damage_nature);
-    layout->addRow(tr("Damage point"), damage_point);
-    layout->addRow(CreateOKCancelLayout(this));
-
-    setLayout(layout);
-
-    connect(damage_nature, SIGNAL(currentIndexChanged(int)), this, SLOT(disableSource()));
-}
-
-void DamageMakerDialog::disableSource(){
-    QString nature = damage_nature->itemData(damage_nature->currentIndex()).toString();
-    damage_source->setEnabled(nature != "L" && nature != "M" && nature != "E");
-}
-
 void RoomScene::FillPlayerNames(QComboBox *combobox, bool add_none){
     if(add_none)
         combobox->addItem(tr("None"), ".");
@@ -2785,16 +2744,6 @@ void RoomScene::FillPlayerNames(QComboBox *combobox, bool add_none){
                           QString("%1 [%2]").arg(general_name).arg(player->screenName()),
                           player->objectName());
     }
-}
-
-void DamageMakerDialog::accept(){
-    QDialog::accept();
-
-    ClientInstance->request(QString("useCard :%1->%2:%3%4")
-                            .arg(damage_source->itemData(damage_source->currentIndex()).toString())
-                            .arg(damage_target->itemData(damage_target->currentIndex()).toString())
-                            .arg(damage_nature->itemData(damage_nature->currentIndex()).toString())
-                            .arg(damage_point->value()));
 }
 
 void RoomScene::makeDamage(){

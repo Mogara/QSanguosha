@@ -57,27 +57,6 @@ private:
     QComboBox *killer, *victim;
 };
 
-class DamageMakerDialog: public QDialog{
-    Q_OBJECT
-
-public:
-    DamageMakerDialog(QWidget *parent);
-
-protected:
-    virtual void accept();
-
-private:
-    QComboBox *damage_source;
-    QComboBox *damage_target;
-    QComboBox *damage_nature;
-    QSpinBox *damage_point;
-
-    void fillCombobox(QComboBox *combobox);
-
-private slots:
-    void disableSource();
-};
-
 class KOFOrderBox: public QGraphicsPixmapItem{
 public:
     KOFOrderBox(bool self, QGraphicsScene *scene);
