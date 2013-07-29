@@ -17,9 +17,9 @@
 #include <QRegExpValidator>
 #include <QLabel>
 #include <QListView>
-#include <QTextEdit>
 #include <QGroupBox>
 #include <QMenu>
+#include <QTextBrowser>
 
 GeneralOverview::GeneralOverview()
 {
@@ -132,7 +132,7 @@ void GeneralOverview::showGeneral(const QString &name)
     lines.add("", InfoRows::createLink("export", tr("Export all audio files")));
 #endif
 
-    effectLabel->setText(lines.toTableString());
+    effectBrowser->setText(lines.toTableString());
 }
 
 QHBoxLayout *GeneralOverview::addButtonsFromStringList(const QStringList &list, const char *configName)
@@ -278,7 +278,7 @@ QLayout *GeneralOverview::createMiddle()
     generalImage->setMinimumSize(QSize(200, 290));
     generalImage->setFrameShape(QFrame::Box);
 
-    generalSkill = new QTextEdit;
+    generalSkill = new QTextBrowser;
     generalSkill->setReadOnly(true);
     generalSkill->setMaximumWidth(200);
 
@@ -298,11 +298,11 @@ QLayout *GeneralOverview::createRight()
 
     QGroupBox *effectBox = new QGroupBox(tr("Effects"));
     QVBoxLayout *effectLayout = new QVBoxLayout;
-    effectLabel = new QLabel;
-    effectLayout->addWidget(effectLabel);
-    effectLayout->addStretch();
+    effectBrowser = new QTextBrowser;
+    effectBrowser->setOpenLinks(false);
+    effectLayout->addWidget(effectBrowser);
 
-    connect(effectLabel, SIGNAL(linkActivated(QString)), this, SLOT(onEffectLabelClicked(QString)));
+    connect(effectBrowser, SIGNAL(anchorClicked(QUrl)), this, SLOT(onEffectLabelClicked(QUrl)));
     effectBox->setLayout(effectLayout);
 
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -368,8 +368,9 @@ void GeneralOverview::onRadioButtonClicked(QAbstractButton *button)
 
 #include "crypto.h"
 
-void GeneralOverview::onEffectLabelClicked(const QString &link)
+void GeneralOverview::onEffectLabelClicked(const QUrl &url)
 {
+    QString link = url.toString();
 #ifdef QT_DEBUG
 
     if(link.startsWith("export")){

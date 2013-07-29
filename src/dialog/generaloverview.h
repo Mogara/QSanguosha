@@ -14,8 +14,8 @@ class QGridLayout;
 class QLabel;
 class QListView;
 class QLineEdit;
-class QTextEdit;
 class QLayout;
+class QTextBrowser;
 
 class GeneralOverview : public QWidget {
     Q_OBJECT
@@ -37,8 +37,8 @@ private:
     QListView *generalView;
     QLabel *generalImage;
     QLabel *generalInfo;
-    QTextEdit *generalSkill;
-    QLabel *effectLabel;
+    QTextBrowser *generalSkill;
+    QTextBrowser *effectBrowser;
 
 private slots:
     void doSearch();
@@ -47,7 +47,7 @@ private slots:
     void onMaxHpIndexChanged(int index);
     void onGeneralViewClicked(const QModelIndex &index);
     void onRadioButtonClicked(QAbstractButton *button);
-    void onEffectLabelClicked(const QString &link);
+    void onEffectLabelClicked(const QUrl &url);
 };
 
 #endif // GENERALOVERVIEW_H
