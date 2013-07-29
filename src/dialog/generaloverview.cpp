@@ -375,6 +375,9 @@ void GeneralOverview::onEffectLabelClicked(const QUrl &url)
 
     if(link.startsWith("export")){
         QString dirname = QFileDialog::getExistingDirectory(this);
+        if(dirname.isEmpty())
+            return;
+
         QLabel *label = qobject_cast<QLabel *>(sender());
         QString str = label->text();
         QRegExp rx("href='([^']+)'");
