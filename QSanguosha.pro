@@ -2,8 +2,10 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 
-# it is said that call this function will improve qmake's performance
-cache()
+greaterThan(QT_MAJOR_VERSION, 4){
+    cache()
+     QT += widgets
+}
 
 TARGET = QSanguosha
 QT += network sql
@@ -11,10 +13,6 @@ TEMPLATE = app
 win32 : RC_FILE = resource/icon.rc
 macx : ICON = resource/icon/sgs.icns
 CONFIG += warn_on audio crypto
-
-greaterThan(QT_MAJOR_VERSION, 4){
-     QT += widgets
-}
 
 # If you want to enable joystick support, please uncomment the following line:
 # CONFIG += joystick

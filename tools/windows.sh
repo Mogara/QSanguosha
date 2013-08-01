@@ -29,9 +29,10 @@ echo "Using Qt's drectory: $qtdir"
 mkdir -p $RELEASE
 
 mkdir -p $RELEASE/imageformats
-cp $qtdir/../plugins/imageformats/qjpeg.dll $RELEASE/imageformats
 
 if [ "$qtversion" == '5' ]; then
+    cp $qtdir/../plugins/imageformats/qjpeg.dll $RELEASE/imageformats
+
     mkdir -p $RELEASE/platforms
     cp $qtdir/../plugins/platforms/qwindows.dll $RELEASE/platforms
     cp $qtdir/../plugins/platforms/qminimal.dll $RELEASE/platforms
@@ -50,6 +51,8 @@ if [ "$qtversion" == '5' ]; then
         Qt5Widgets
 EOF)
 else
+    cp $qtdir/../plugins/imageformats/qjpeg4.dll $RELEASE/imageformats
+
     dlls=$(cat <<EOF
         libgcc_s_dw2-1
         mingwm10
