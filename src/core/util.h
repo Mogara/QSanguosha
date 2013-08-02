@@ -23,4 +23,19 @@ void DoLuaScripts(lua_State *L, const QStringList &scripts);
 
 QVariant GetValueFromLuaState(lua_State *L, const char *table_name, const char *key);
 
+class InfoRows: public QStringList{
+public:
+    InfoRows &add(const QString &key, const QString &value, bool shouldTranslate = false);
+
+    QString toTableString() const{
+        return QString("<table>%1</table>").arg(join(""));
+    }
+};
+
+QString CreateLinkString(const QString &href, const QString &name);
+QString CreateImgString(const QString &link);
+
+QPixmap *GetMagatama(int index);
+QPixmap *GetSmallMagatama(int index);
+
 #endif // UTIL_H

@@ -137,6 +137,18 @@ QString ClientPlayer::getGameMode() const{
     return ServerInfo.GameMode;
 }
 
+QString ClientPlayer::getDisplayName() const
+{
+    if(getGeneral() == NULL)
+        return QString();
+
+    QString name = Sanguosha->translate(getGeneralName());
+    if(getGeneral2())
+        name.append("+" + Sanguosha->translate(getGeneral2Name()));
+
+    return name;
+}
+
 void ClientPlayer::setFlags(const QString &flag){
     Player::setFlags(flag);
 

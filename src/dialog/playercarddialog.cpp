@@ -7,53 +7,7 @@
 #include <QGroupBox>
 #include <QLabel>
 #include <QHBoxLayout>
-
-MagatamaWidget::MagatamaWidget(int hp, Qt::Orientation orientation)
-{
-    QBoxLayout *layout = NULL;
-    if(orientation == Qt::Vertical)
-        layout = new QVBoxLayout;
-    else
-        layout = new QHBoxLayout;
-
-    QPixmap pixmap = *GetMagatama(qMin(5, hp));
-    if(!pixmap.isNull()){
-        int i;
-        for(i=0; i<hp; i++){
-            QLabel *label = new QLabel;
-            label->setPixmap(pixmap);
-
-            layout->addWidget(label);
-        }
-    }
-
-    setLayout(layout);
-}
-
-QPixmap *MagatamaWidget::GetMagatama(int index){
-    if(index < 0)
-        return new QPixmap();
-
-    static QPixmap magatamas[6];
-    if(magatamas[0].isNull()){
-        int i;
-        for(i=0; i<=5; i++)
-            magatamas[i].load(QString("image/system/magatamas/%1.png").arg(i));
-    }
-
-    return &magatamas[index];
-}
-
-QPixmap *MagatamaWidget::GetSmallMagatama(int index){
-    static QPixmap magatamas[6];
-    if(magatamas[0].isNull()){
-        int i;
-        for(i=0; i<=5; i++)
-            magatamas[i].load(QString("image/system/magatamas/small-%1.png").arg(i));
-    }
-
-    return &magatamas[index];
-}
+#include <QTextDocument>
 
 PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &flags)
     :player(player)
@@ -83,14 +37,22 @@ PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &fl
 
 QWidget *PlayerCardDialog::createAvatar(){
     const General *general = player->getAvatarGeneral();
-    QGroupBox *box = new QGroupBox(player->screenName());
+    QGroupBox *box = new QGroupBox(tr("Player info"));
 
-    QLabel *avatar = new QLabel(box);
-    avatar->setPixmap(QPixmap(general->getPixmapPath("big")));
+    InfoRows infoRows;
+    infoRows.add(tr("Avatar"), CreateImgString(general->getPixmapPath("big")))
+            .add(tr("Name"), player->screenName())
+            .add(tr("Gender"), player->getGenderString(), true)
+            .add(tr("General"), player->getDisplayName())
+            .add(tr("Kingdom"), player->getKingdom(), true)
+            .add(tr("HP"), QString("%1/%2").arg(player->getHp()).arg(player->getMaxHP()));
 
+    if(!player->getMarkDoc()->isEmpty())
+        infoRows.add(tr("Marks"), player->getMarkDoc()->toHtml());
+
+    QLabel *info = new QLabel(infoRows.toTableString());
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(avatar);
-    layout->addWidget(new MagatamaWidget(player->getHp(), Qt::Horizontal));
+    layout->addWidget(info);
 
     box->setLayout(layout);
 

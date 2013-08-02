@@ -1,5 +1,6 @@
 #include "util.h"
 #include "lua.hpp"
+#include "engine.h"
 
 #include <QVariant>
 #include <QStringList>
@@ -70,4 +71,48 @@ void DoLuaScripts(lua_State *L, const QStringList &scripts){
     foreach(QString script, scripts){
         DoLuaScript(L, script.toLocal8Bit());
     }
+}
+
+InfoRows &InfoRows::add(const QString &key, const QString &value, bool shouldTranslate){
+    (*this) << QString("<tr> <th> %1 </th> <td> %2 </td> </tr>")
+            .arg(key)
+            .arg(shouldTranslate ? Sanguosha->translate(value) : value);
+
+    return (*this);
+}
+
+QString CreateLinkString(const QString &href, const QString &name){
+    return QString("<a href='%1'> %2 </a>").arg(href).arg(name);
+}
+
+
+QString CreateImgString(const QString &link)
+{
+    return QString("<img src='%1' />").arg(link);
+}
+
+QPixmap *GetMagatama(int index)
+{
+    if(index < 0)
+        return new QPixmap();
+
+    static QPixmap magatamas[6];
+    if(magatamas[0].isNull()){
+        int i;
+        for(i=0; i<=5; i++)
+            magatamas[i].load(QString("image/system/magatamas/%1.png").arg(i));
+    }
+
+    return &magatamas[index];
+}
+
+QPixmap *GetSmallMagatama(int index){
+    static QPixmap magatamas[6];
+    if(magatamas[0].isNull()){
+        int i;
+        for(i=0; i<=5; i++)
+            magatamas[i].load(QString("image/system/magatamas/small-%1.png").arg(i));
+    }
+
+    return &magatamas[index];
 }

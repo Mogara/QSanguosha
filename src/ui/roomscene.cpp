@@ -2824,10 +2824,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         const ClientPlayer *player = players.at(i);
 
         QTableWidgetItem *item = new QTableWidgetItem;
-        QString name = !player->getGeneral2() ?
-                       Sanguosha->translate(player->getGeneralName()) :
-                       Sanguosha->translate(player->getGeneralName()) + "+" + Sanguosha->translate(player->getGeneral2Name());
-        item->setText(name);
+        item->setText(player->getDisplayName());
         table->setItem(i, 0, item);
 
         item = new QTableWidgetItem;
@@ -3457,7 +3454,7 @@ void RoomScene::animateHpChange(const QString &, const QStringList &args)
         for(int i=0;i<delta;i++)
         {
             Pixmap *aniMaga = new Pixmap;
-            QPixmap *qpixmap = max_hp > 6 ? MagatamaWidget::GetSmallMagatama(index) : MagatamaWidget::GetMagatama(index);
+            QPixmap *qpixmap = max_hp > 6 ? GetSmallMagatama(index) : GetMagatama(index);
             aniMaga->setPixmap(*qpixmap);
             addItem(aniMaga);
             aniMaga->show();

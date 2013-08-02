@@ -447,17 +447,20 @@ QProgressBar *Dashboard::addProgressBar(){
     return progress_bar;
 }
 
+
+
+
 void Dashboard::drawHp(QPainter *painter) const{
     int hp = qMax(0, Self->getHp());
     int max_hp = Self->getMaxHP();
     QPixmap *magatama, *zero_magatama;
     int index = Self->isWounded() ? qMin(hp, 5) : 5;
     if(max_hp > 6){
-        magatama = MagatamaWidget::GetSmallMagatama(index);
-        zero_magatama = MagatamaWidget::GetSmallMagatama(0);
+        magatama = GetSmallMagatama(index);
+        zero_magatama = GetSmallMagatama(0);
     }else{
-        magatama = MagatamaWidget::GetMagatama(index);
-        zero_magatama = MagatamaWidget::GetMagatama(0);
+        magatama = GetMagatama(index);
+        zero_magatama = GetMagatama(0);
     }
 
     qreal total_width = magatama->width() * max_hp;

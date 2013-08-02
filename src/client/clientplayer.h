@@ -22,6 +22,7 @@ public:
     QString getDeathPixmapPath() const;
     void setHandcardNum(int n);
     virtual QString getGameMode() const;
+    QString getDisplayName() const;
 
     virtual void setFlags(const QString &flag);
     virtual int aliveCount() const;

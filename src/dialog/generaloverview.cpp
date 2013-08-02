@@ -51,25 +51,6 @@ void GeneralOverview::display(const QString &name)
         instance->showGeneral(name);
 }
 
-class InfoRows: public QStringList{
-public:
-    InfoRows &add(const QString &key, const QString &value, bool shouldTranslate = false){
-        (*this) << QString("<tr> <th> %1 </th> <td> %2 </td> </tr>")
-                .arg(key)
-                .arg(shouldTranslate ? Sanguosha->translate(value) : value);
-
-        return (*this);
-    }
-
-    QString toTableString() const{
-        return QString("<table>%1</table>").arg(join(""));
-    }
-
-    static QString createLink(const QString &href, const QString &name){
-        return QString("<a href='%1'> %2 </a>").arg(href).arg(name);
-    }
-};
-
 void GeneralOverview::showGeneral(const QString &name)
 {
     const General *g = Sanguosha->getGeneral(name);
@@ -114,7 +95,7 @@ void GeneralOverview::showGeneral(const QString &name)
             QString word = Sanguosha->translate("$" + info.baseName());
             QString path = sources.at(i);
 
-            lines.add(name, InfoRows::createLink(path, word));
+            lines.add(name, CreateLinkString(path, word));
         }
     }
 
@@ -122,14 +103,14 @@ void GeneralOverview::showGeneral(const QString &name)
 
     QString winWord = g->getWinWord();
     if(!winWord.isEmpty())
-        lines.add(tr("Win"), InfoRows::createLink(g->getWinEffectPath(), winWord));
+        lines.add(tr("Win"), CreateLinkString(g->getWinEffectPath(), winWord));
 
     QString lastWord = g->getLastWord();
     if(!lastWord.isEmpty())
-        lines.add(tr("Death"), InfoRows::createLink(g->getLastEffectPath(), lastWord));
+        lines.add(tr("Death"), CreateLinkString(g->getLastEffectPath(), lastWord));
 
 #ifdef QT_DEBUG
-    lines.add("", InfoRows::createLink("export", tr("Export all audio files")));
+    lines.add("", CreateLinkString("export", tr("Export all audio files")));
 #endif
 
     effectBrowser->setText(lines.toTableString());
