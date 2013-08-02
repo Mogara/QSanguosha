@@ -29,12 +29,18 @@ public:
     const QPixmap &getNumberPixmap() const;
     const QPixmap &getIconPixmap() const;
     void setFrame(const QString &frame);
-    void showAvatar(const General *general);
     void hideFrame();
     void setAutoBack(bool auto_back);
     void changeGeneral(const QString &general_name);
     void writeCardDesc(QString card_owner);
     void deleteCardDesc();
+
+    enum CornerType{
+        TopRight,
+        BottomRight
+    };
+
+    void showAvatar(const General *general, CornerType type = BottomRight);
 
     void select();
     void unselect();
@@ -67,6 +73,8 @@ private:
     QPointF home_pos;
     QGraphicsPixmapItem *frame, *avatar;
     bool auto_back, frozen;
+    QString desc;
+
 signals:
     void toggle_discards();
     void clicked();

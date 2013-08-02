@@ -3101,8 +3101,8 @@ void RoomScene::showJudgeResult(const QString &who, const QString &result, const
     if(special_card){
         const ClientPlayer *player = ClientInstance->getPlayer(who);
 
-        special_card->showAvatar(player->getGeneral());
-        QString desc = tr("%1's %2 judge").arg(Sanguosha->translate(player->getGeneralName())).arg(Sanguosha->translate(reason));
+        special_card->showAvatar(player->getGeneral(), CardItem::TopRight);
+        QString desc = QString("%1\n[%2]").arg(Sanguosha->translate(player->getGeneralName()).arg(Sanguosha->translate(reason));
         special_card->writeCardDesc(desc);
 
         special_card->setFrame(result);

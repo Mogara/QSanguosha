@@ -160,14 +160,20 @@ void CardItem::setFrame(const QString &result){
     }
 }
 
-void CardItem::showAvatar(const General *general){
+void CardItem::showAvatar(const General *general, CornerType type){
     if(general){
         if(avatar == NULL){
             avatar = new QGraphicsPixmapItem(this);
-            avatar->setPos(44, 87);
         }
 
         avatar->setPixmap(QPixmap(general->getPixmapPath("tiny")));
+
+        qreal x = pixmap.width() - avatar->boundingRect().width();
+        qreal y = 0;
+        if(type == BottomRight)
+            y = pixmap.height() - avatar->boundingRect().height();
+        avatar->setPos(x, y);
+
         avatar->show();
     }else{
         if(avatar)
@@ -302,34 +308,44 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         painter->drawPixmap(0, 14, cardsuit_pixmap);
         painter->drawPixmap(0, 2, number_pixmap);
         if(owner_pixmap)painter->drawPixmap(0,0,*owner_pixmap);
+
+#ifdef Q_OS_WIN
+         static QFont card_desc_font("SimSun", 9);
+#else
+        static QFont card_desc_font(Config.TinyFont.family(), 15);
+#endif
+         if(!desc.isEmpty()){
+             QFontMetrics metrics(card_desc_font);
+             QPainterPath path;
+
+             static const int bottomOffset = 10;
+
+             QStringList lines = desc.split(QChar('\n'));
+             for(int i=0; i<lines.length(); i++){
+                 QString line = lines[i];
+                 qreal x = (pixmap.width() - metrics.width(line)) / 2;
+                 qreal y = pixmap.height() - bottomOffset - metrics.height() * (lines.length() - i);
+
+                 path.addText(x, y, card_desc_font, line);
+             }
+
+             painter->setFont(card_desc_font);
+             painter->setPen(Qt::black);
+             painter->drawPath(path);
+             painter->fillPath(path, Qt::yellow);
+         }
     }
 }
-
 
 void CardItem::writeCardDesc(QString card_owner)
 {
      if(card){
-         int x, y;
-         x=(93-card_owner.toLocal8Bit().length()*6)/2;
-         y=115;
-         owner_pixmap = new QPixmap(pixmap.size());
-         owner_pixmap->fill(QColor(0,0,0,0));
-         QPainter painter(owner_pixmap);
-         static QFont card_desc_font("SimSun", 9, QFont::Normal);
-         painter.setFont(card_desc_font);
-         painter.setPen(Qt::black);
-
-         painter.drawText(x, y-1, card_owner);
-         painter.drawText(x, y+1, card_owner);
-         painter.drawText(x-1, y, card_owner);
-         painter.drawText(x+1, y, card_owner);
-
-         painter.setPen(Qt::yellow);
-         painter.drawText(x, y, card_owner);
+         desc = card_owner;
      }
 }
 
 void CardItem::deleteCardDesc(){
+    desc.clear();
     delete owner_pixmap;
     owner_pixmap = NULL;
 }
