@@ -3,6 +3,7 @@
 #include "engine.h"
 #include "client.h"
 #include "settings.h"
+#include "generalsearchbox.h"
 
 #include <QSignalMapper>
 #include <QLineEdit>
@@ -272,6 +273,7 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
 
         if(!generals.isEmpty()){
             QWidget *tab = createTab(generals);
+            tab->setObjectName(kingdom);
             tab_widget->addTab(tab,
                                QIcon(QString("image/kingdom/icon/%1.png").arg(kingdom)),
                                Sanguosha->translate(kingdom));
@@ -279,6 +281,10 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
     }
 
     QVBoxLayout *layout = new QVBoxLayout;
+
+    GeneralSearchBox *searchBox = new GeneralSearchBox;
+    connect(searchBox, SIGNAL(generalInput(QString)), this, SLOT(onGeneralInput(QString)));
+    layout->addWidget(searchBox);
     layout->addWidget(tab_widget);
     layout->addLayout(CreateOKCancelLayout(this));
 
@@ -375,6 +381,29 @@ void FreeChooseDialog::uncheckExtraButton(QAbstractButton *click_button){
             first = button;
         else{
             first->setChecked(false);
+            break;
+        }
+    }
+}
+
+void FreeChooseDialog::onGeneralInput(const QString &name)
+{
+    const General *g = Sanguosha->getGeneral(name);
+    QString kingdom = g->getKingdom();
+
+    QTabWidget *tabWidget = findChild<QTabWidget *>();
+
+    for(int i=0; i<tabWidget->count(); i++){
+        QWidget *widget = tabWidget->widget(i);
+        if(widget && widget->objectName() == kingdom){
+            tabWidget->setCurrentIndex(i);
+            break;
+        }
+    }
+
+    foreach(QAbstractButton *button, group->buttons()){
+        if(button->objectName() == name){
+            button->click();
             break;
         }
     }

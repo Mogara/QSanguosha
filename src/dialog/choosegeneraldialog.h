@@ -57,6 +57,7 @@ private:
 private slots:
     void chooseGeneral();
     void uncheckExtraButton(QAbstractButton *button);
+    void onGeneralInput(const QString &name);
 
 signals:
     void general_chosen(const QString &name);

@@ -25,6 +25,13 @@ GeneralCompleterModel::GeneralCompleterModel()
     qSort(list.begin(), list.end(), CompareByObjectName);
 }
 
+Q_GLOBAL_STATIC(GeneralCompleterModel, GlobalGeneralCompleterModel)
+
+GeneralCompleterModel *GeneralCompleterModel::getInstance()
+{
+    return GlobalGeneralCompleterModel();
+}
+
 int GeneralCompleterModel::rowCount(const QModelIndex &parent) const
 {
     return parent.isValid() ? 0 : list.length();

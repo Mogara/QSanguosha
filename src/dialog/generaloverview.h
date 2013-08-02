@@ -26,7 +26,6 @@ public:
     static void display(const QString &name = QString());
 
 private:
-    void showGeneral(const QString &name);
     QHBoxLayout *addButtonsFromStringList(const QStringList &list, const char *configName);
     QLayout *createLeft();
     QLayout *createMiddle();
@@ -41,9 +40,10 @@ private:
     QTextBrowser *effectBrowser;
 
 private slots:
+    void showGeneral(const QString &name);
+
     void doSearch();
     void onPackageActionTriggered(QAction *action);
-    void onSearchBoxDone();
     void onMaxHpIndexChanged(int index);
     void onGeneralViewClicked(const QModelIndex &index);
     void onRadioButtonClicked(QAbstractButton *button);

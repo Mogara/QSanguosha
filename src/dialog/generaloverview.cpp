@@ -2,10 +2,11 @@
 #include "engine.h"
 #include "generalmodel.h"
 #include "audio.h"
+#include "dialogutil.h"
+#include "generalsearchbox.h"
 
 #include <QFileInfo>
 #include <QLineEdit>
-#include <QCompleter>
 #include <QComboBox>
 #include <QHBoxLayout>
 #include <QFormLayout>
@@ -13,8 +14,6 @@
 #include <QRadioButton>
 #include <QGridLayout>
 #include <QPushButton>
-#include <QAbstractItemView>
-#include <QRegExpValidator>
 #include <QLabel>
 #include <QListView>
 #include <QGroupBox>
@@ -149,24 +148,10 @@ QLayout *GeneralOverview::createLeft()
     QFormLayout *searchLayout = new QFormLayout;
 
     {
-        // search box
-        QLineEdit *box = new QLineEdit;
+        GeneralSearchBox *searchBox = new GeneralSearchBox;
+        searchLayout->addRow(tr("Search"), searchBox);
 
-        box->setMinimumWidth(300);
-
-        box->setValidator(new QRegExpValidator(QRegExp("[0-9a-z_]+"), box));
-
-        GeneralCompleterModel *model = new GeneralCompleterModel;
-        QCompleter *completer = new QCompleter(model);
-        completer->popup()->setIconSize(General::TinyIconSize);
-        completer->setCaseSensitivity(Qt::CaseInsensitive);
-        completer->setModelSorting(QCompleter::CaseSensitivelySortedModel); // as our completer model is sorted, use this will improve performance
-
-        box->setCompleter(completer);
-
-        searchLayout->addRow(tr("Search"), box);
-
-        connect(box, SIGNAL(returnPressed()), this, SLOT(onSearchBoxDone()));
+        connect(searchBox, SIGNAL(generalInput(QString)), this, SLOT(showGeneral(QString)));
     }
 
     {
@@ -299,15 +284,6 @@ void GeneralOverview::doSearch()
     model->doSearch(options);
 
     generalLabel->setText(tr("Generals\n(%1)").arg(model->rowCount(QModelIndex())));
-}
-
-void GeneralOverview::onSearchBoxDone()
-{
-    QLineEdit *box = qobject_cast<QLineEdit *>(sender());
-    if(box){
-        showGeneral(box->text());
-        box->clear();
-    }
 }
 
 void GeneralOverview::onMaxHpIndexChanged(int index)

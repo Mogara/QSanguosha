@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QDialog>
 #include <QGroupBox>
+#include <QLineEdit>
 
 QHBoxLayout *CreateOKCancelLayout(QDialog *dialog){
     QPushButton *ok_button = new QPushButton(QObject::tr("OK"));
