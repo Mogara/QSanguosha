@@ -836,7 +836,7 @@ void Client::askForCardChosen(const QString &ask_str){
     PlayerCardDialog *dialog = new PlayerCardDialog(player, flags);
     dialog->setWindowTitle(Sanguosha->translate(reason));
 
-    connect(dialog, SIGNAL(card_id_chosen(int)), this, SLOT(chooseCard(int)));
+    connect(dialog, SIGNAL(idSelected(int)), this, SLOT(chooseCard(int)));
     connect(dialog, SIGNAL(rejected()), this, SLOT(chooseCard()));
 
     ask_dialog = dialog;

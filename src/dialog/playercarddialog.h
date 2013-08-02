@@ -19,13 +19,8 @@ private:
     QWidget *createJudgingArea();
 
     const ClientPlayer *player;
-    QMap<QObject *, int> mapper;
-
-private slots:
-    void emitId();
-
 signals:
-    void card_id_chosen(int card_id);
+    void idSelected(int card_id);
 };
 
 #endif // PLAYERCARDDIALOG_H

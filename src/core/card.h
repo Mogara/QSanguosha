@@ -164,6 +164,8 @@ private:
     mutable QStringList flags;
 };
 
+typedef QList<const Card *> CardList;
+
 class SkillCard: public Card{
     Q_OBJECT
 

@@ -152,7 +152,8 @@ SOURCES += \
     src/dialog/generalmodel.cpp \
     src/dialog/dialogutil.cpp \
     src/dialog/damagemakerdialog.cpp \
-    src/client/clientplayerlistmodel.cpp
+    src/client/clientplayerlistmodel.cpp \
+    src/dialog/cardbutton.cpp
 
 HEADERS += \
 	src/client/aux-skills.h \
@@ -278,7 +279,8 @@ HEADERS += \
     src/dialog/generalmodel.h \
     src/dialog/dialogutil.h \
     src/dialog/damagemakerdialog.h \
-    src/client/clientplayerlistmodel.h
+    src/client/clientplayerlistmodel.h \
+    src/dialog/cardbutton.h
 
 FORMS += \
 	src/dialog/cardoverview.ui \

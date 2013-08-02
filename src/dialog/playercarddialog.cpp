@@ -1,6 +1,7 @@
 #include "playercarddialog.h"
 #include "standard.h"
 #include "engine.h"
+#include "cardbutton.h"
 
 #include <QCommandLinkButton>
 #include <QVBoxLayout>
@@ -60,120 +61,57 @@ QWidget *PlayerCardDialog::createAvatar(){
 }
 
 QWidget *PlayerCardDialog::createHandcardButton(){
-    if(!player->isKongcheng() && ((Self->hasSkill("dongcha") && player->hasFlag("dongchaee")) || Self == player)){
-        QGroupBox *area = new QGroupBox(tr("Handcard area"));
-        QVBoxLayout *layout =  new QVBoxLayout;
+    QGroupBox *area = new QGroupBox(tr("Handcard area"));
+    QVBoxLayout *layout =  new QVBoxLayout;
+    area->setLayout(layout);
+
+    if(player->isKongcheng()){
+        CommandLinkButton *button = new CommandLinkButton(tr("This guy does not have any hand cards"));
+        button->setEnabled(false);
+        layout->addWidget(button);
+    }else if((Self->hasSkill("dongcha") && player->hasFlag("dongchaee")) || Self == player){
         QList<const Card *> cards = player->getCards();
         foreach(const Card *card, cards){
-            QCommandLinkButton *button = new QCommandLinkButton(card->getFullName());
-            button->setIcon(card->getSuitIcon());
-
-            mapper.insert(button, card->getId());
-            connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
+            CardButton *button = new CardButton(card);
             layout->addWidget(button);
+            connect(button, SIGNAL(idSelected(int)), this, SIGNAL(idSelected(int)));
         }
-
-        area->setLayout(layout);
-        return area;
-    }
-
-    QCommandLinkButton *button = new QCommandLinkButton(tr("Handcard"));
-    button->setObjectName("handcard_button");
-    int num = player->getHandcardNum();
-    if(num == 0){
-        button->setDescription(tr("This guy has no any hand cards"));
-        button->setEnabled(false);
     }else{
-        button->setDescription(tr("This guy has %1 hand card(s)").arg(num));
-
-        mapper.insert(button, -1);
-        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
+        CardButton *button = new CardButton(NULL);
+        button->setText(tr("Handcard (%1)").arg(player->getHandcardNum()));
+        connect(button, SIGNAL(idSelected(int)), this, SIGNAL(idSelected(int)));
+        layout->addWidget(button);
     }
 
-    return button;
+    return area;
+}
+
+static QGroupBox *CreateButtonArea(PlayerCardDialog *dialog, const CardList &list, const QString &title, const QString &noCardText){
+    QGroupBox *area = new QGroupBox(title);
+    QVBoxLayout *layout = new QVBoxLayout;
+    area->setLayout(layout);
+
+    if(list.isEmpty()){
+        CommandLinkButton *button = new CommandLinkButton;
+        button->setText(noCardText);
+        button->setEnabled(false);
+        layout->addWidget(button);
+    }else{
+        foreach(const Card *card, list){
+            CardButton *button = new CardButton(card);
+            layout->addWidget(button);
+
+            QObject::connect(button, SIGNAL(idSelected(int)), dialog, SIGNAL(idSelected(int)));
+        }
+    }
+
+    return area;
 }
 
 QWidget *PlayerCardDialog::createEquipArea(){
-    QGroupBox *area = new QGroupBox(tr("Equip area"));
-    QVBoxLayout *layout = new QVBoxLayout;
-
-    const Weapon *weapon = player->getWeapon();
-    if(weapon){
-        QCommandLinkButton *button = new QCommandLinkButton(weapon->getFullName());
-        button->setIcon(weapon->getSuitIcon());
-
-        mapper.insert(button, weapon->getId());
-        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
-        layout->addWidget(button);
-    }
-
-    const Armor *armor = player->getArmor();
-    if(armor){
-        QCommandLinkButton *button = new QCommandLinkButton(armor->getFullName());
-        button->setIcon(armor->getSuitIcon());
-
-        mapper.insert(button, armor->getId());
-        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
-        layout->addWidget(button);
-    }
-
-    const Horse *horse = player->getDefensiveHorse();
-    if(horse){
-        QCommandLinkButton *button = new QCommandLinkButton(horse->getFullName() + tr("(+1 horse)"));
-        button->setIcon(horse->getSuitIcon());
-
-        mapper.insert(button, horse->getId());
-        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
-        layout->addWidget(button);
-    }
-
-    horse = player->getOffensiveHorse();
-    if(horse){
-        QCommandLinkButton *button = new QCommandLinkButton(horse->getFullName() + tr("(-1 horse)"));
-        button->setIcon(horse->getSuitIcon());
-
-        mapper.insert(button, horse->getId());
-        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
-        layout->addWidget(button);
-    }
-
-    if(layout->count() == 0){
-        QCommandLinkButton *no_equip = new QCommandLinkButton(tr("No equip"));
-        no_equip->setEnabled(false);
-        no_equip->setObjectName("noequip_button");
-        return no_equip;
-    }else{
-        area->setLayout(layout);
-        return area;
-    }
+    return CreateButtonArea(this, player->getEquips(), tr("Equip area"), tr("No equip"));
 }
 
 QWidget *PlayerCardDialog::createJudgingArea(){
-    QGroupBox *area = new QGroupBox(tr("Judging Area"));
-    QVBoxLayout *layout = new QVBoxLayout;
-    QList<const Card *> cards = player->getJudgingArea();
-    foreach(const Card *card, cards){
-        QCommandLinkButton *button = new QCommandLinkButton(card->getFullName());
-        button->setIcon(card->getSuitIcon());
-        layout->addWidget(button);
-
-        mapper.insert(button, card->getId());
-        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
-    }
-
-    if(layout->count() == 0){
-        QCommandLinkButton *button = new QCommandLinkButton(tr("No judging cards"));
-        button->setEnabled(false);
-        button->setObjectName("nojuding_button");
-        return button;
-    }else{
-        area->setLayout(layout);
-        return area;
-    }
-}
-
-void PlayerCardDialog::emitId(){
-    int id = mapper.value(sender(), -2);
-    if(id != -2)
-        emit card_id_chosen(id);
+    return CreateButtonArea(this, player->getJudgingArea(), tr("Judging area"), tr("No judging cards"));
 }
