@@ -6,6 +6,7 @@
 #include "engine.h"
 #include "ai.h"
 #include "general.h"
+#include "cardbutton.h"
 
 // skill cards
 
@@ -866,7 +867,7 @@ QGroupBox *GuhuoDialog::createRight(){
 }
 
 QAbstractButton *GuhuoDialog::createButton(const Card *card){
-    QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(card->objectName()));
+    CommandLinkButton *button = new CommandLinkButton(Sanguosha->translate(card->objectName()));
     button->setObjectName(card->objectName());
     button->setToolTip(card->getDescription());
 
