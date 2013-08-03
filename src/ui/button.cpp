@@ -71,16 +71,23 @@ QRectF Button::boundingRect() const{
     return QRectF(QPointF(), size);
 }
 
+static QColor ReverseColor(const QColor &color){
+    int r = 0xFF - color.red();
+    int g = 0xFF - color.green();
+    int b = 0xFF - color.blue();
+    return QColor::fromRgb(r, g, b);
+}
+
 void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){
     QRectF rect = boundingRect();
 
     QColor textColor, edgeColor, boxColor;
+    textColor = edgeColor = Qt::white;
+    boxColor = Qt::black;
+
     if(hasFocus()){
-        textColor = edgeColor = Qt::black;
-        boxColor = Qt::white;
-    }else{
-        textColor = edgeColor = Qt::white;
-        boxColor = Qt::black;
+        textColor = ReverseColor(textColor);
+        boxColor = ReverseColor(boxColor);
     }
 
     boxColor.setAlphaF(0.8);
@@ -92,6 +99,8 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
     painter->setPen(pen);
     painter->drawRect(rect);
 
+    pen.setColor(textColor);
+    painter->setPen(pen);
     painter->setFont(font);
     painter->drawText(rect, Qt::AlignCenter, label);
 }
