@@ -1,6 +1,8 @@
 #ifndef CARDBUTTON_H
 #define CARDBUTTON_H
 
+#include <QtGlobal>
+
 #ifdef Q_OS_WIN
 #define CommandLinkButton QCommandLinkButton
 #include <QCommandLinkButton>
