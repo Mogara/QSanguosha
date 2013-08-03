@@ -34,7 +34,6 @@ CardItem::CardItem(const Card *card)
     frame->hide();
 
     avatar = NULL;
-    owner_pixmap = NULL;
 }
 
 CardItem::CardItem(const QString &general_name)
@@ -168,10 +167,11 @@ void CardItem::showAvatar(const General *general, CornerType type){
 
         avatar->setPixmap(QPixmap(general->getPixmapPath("tiny")));
 
-        qreal x = pixmap.width() - avatar->boundingRect().width();
-        qreal y = 0;
+        static qreal edgeWidth = 5;
+        qreal x = pixmap.width() - avatar->boundingRect().width() - edgeWidth;
+        qreal y = edgeWidth;
         if(type == BottomRight)
-            y = pixmap.height() - avatar->boundingRect().height();
+            y = pixmap.height() - avatar->boundingRect().height() - edgeWidth;
         avatar->setPos(x, y);
 
         avatar->show();
@@ -307,7 +307,6 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     if(card){
         painter->drawPixmap(0, 14, cardsuit_pixmap);
         painter->drawPixmap(0, 2, number_pixmap);
-        if(owner_pixmap)painter->drawPixmap(0,0,*owner_pixmap);
 
 #ifdef Q_OS_WIN
          static QFont card_desc_font("SimSun", 9);
@@ -324,7 +323,7 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
              for(int i=0; i<lines.length(); i++){
                  QString line = lines[i];
                  qreal x = (pixmap.width() - metrics.width(line)) / 2;
-                 qreal y = pixmap.height() - bottomOffset - metrics.height() * (lines.length() - i);
+                 qreal y = pixmap.height() - bottomOffset - metrics.height() * (lines.length() - i - 1);
 
                  path.addText(x, y, card_desc_font, line);
              }
@@ -346,6 +345,4 @@ void CardItem::writeCardDesc(QString card_owner)
 
 void CardItem::deleteCardDesc(){
     desc.clear();
-    delete owner_pixmap;
-    owner_pixmap = NULL;
 }
