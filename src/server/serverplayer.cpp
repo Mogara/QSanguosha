@@ -309,7 +309,7 @@ void ServerPlayer::castMessage(const QString &message){
         socket->send(message);
 
 #ifndef QT_NO_DEBUG
-        qDebug("%s: %s", qPrintable(objectName()), qPrintable(message));
+        //qDebug("%s: %s", qPrintable(objectName()), qPrintable(message));
 #endif
     }
 }

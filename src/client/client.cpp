@@ -6,6 +6,7 @@
 #include "choosegeneraldialog.h"
 #include "nativesocket.h"
 #include "recorder.h"
+#include "cardbutton.h"
 
 #include <QApplication>
 #include <QCryptographicHash>
@@ -743,11 +744,10 @@ void Client::askForChoice(const QString &ask_str){
     layout->addWidget(new QLabel(tr("Please choose:")));
 
     foreach(QString option, options){
-        QCommandLinkButton *button = new QCommandLinkButton;
+        CommandLinkButton *button = new CommandLinkButton;
         QString text = QString("%1:%2").arg(skill_name).arg(option);
-        QString translated = Sanguosha->translate(text);
-        if(text == translated)
-            translated = Sanguosha->translate(option);
+        QString translated = Sanguosha->translate(text, option);
+
 
         button->setObjectName(option);
         button->setText(translated);

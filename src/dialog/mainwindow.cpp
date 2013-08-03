@@ -438,14 +438,18 @@ void MainWindow::on_actionAbout_triggered()
     // Cao Cao's signature
     QString signature = tr("\"A Short Song\" by Cao Cao");
     content.append(QString("<p align='right'><i>%1</i></p>").arg(signature));
-
-    QString email = "moligaloo@gmail.com";
     content.append(tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
-                      "totally written in C++ Qt GUI framework <br />"
-                      "My Email: <a href='mailto:%1' style = \"color:#0072c1; \">%1</a> <br/>"
-                      "My QQ: 365840793 <br/>"
-                      "My Weibo: http://weibo.com/moligaloo <br/>"
-                      ).arg(email));
+                   "totally written in C++ Qt GUI framework"));
+
+    InfoRows rows;
+
+    const QString email = "moligaloo@gmail.com";
+    const QString weibo = "weibo.com/moligaloo";
+
+    rows.add(tr("Email"), CreateLinkString("mailto:" + email, email))
+            .add(tr("QQ"), "365840793")
+            .add(tr("Weibo"), CreateLinkString(weibo, weibo));
+
 
     QString config;
 
@@ -455,28 +459,26 @@ void MainWindow::on_actionAbout_triggered()
     config = "debug";
 #endif
 
-    content.append(tr("Current version: %1 %2 (%3)<br/>")
-                   .arg(Sanguosha->getVersion())
-                   .arg(config)
-                   .arg(Sanguosha->getVersionName()));
+    const QString source = "http://github.com/Moligaloo/QSanguosha";
+    const QString forum_url = "http://qsanguosha.org";
 
-    const char *date = __DATE__;
-    const char *time = __TIME__;
-    content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
 
-    QString project_url = "http://github.com/Moligaloo/QSanguosha";
-    content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
+    rows.add(tr("Current version"), QString("%1 %2 (%3)").arg(Sanguosha->getVersion()).arg(config).arg(Sanguosha->getVersionName()))
+            .add(tr("Compilation time"), QString("%1 %2").arg(__DATE__).arg(__TIME__))
+            .add(tr("Source code"), CreateLinkString(source, source))
+            .add(tr("Forum"), CreateLinkString(forum_url, forum_url));
 
-    QString forum_url = "http://qsanguosha.org";
-    content.append(tr("Forum: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(forum_url));
+    content.append(rows.toTableString());
 
     Window *window = new Window(tr("About QSanguosha"), QSize(420, 450));
     scene->addItem(window);
     window->setZValue(9.0);
 
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->shift();
+
+    window->setContent(content);
+    window->addCloseButton();
+    window->moveToCenter();
+
 
     window->appear();
 }
@@ -605,9 +607,9 @@ void MainWindow::on_actionRole_assign_table_triggered()
     Window *window = new Window(tr("Role assign table"), QSize(280, 400));
     scene->addItem(window);
 
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->shift();
+    window->setContent(content);
+    window->addCloseButton();
+    window->moveToCenter();
 
     window->appear();
 }
@@ -1249,9 +1251,9 @@ void MainWindow::on_actionAbout_fmod_triggered()
     Window *window = new Window(tr("About fmod"), QSize(500, 259));
     scene->addItem(window);
 
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->shift();
+    window->setContent(content);
+    window->addCloseButton();
+    window->moveToCenter();
 
     window->appear();
 }
@@ -1272,9 +1274,9 @@ void MainWindow::on_actionAbout_Lua_triggered()
     Window *window = new Window(tr("About Lua"), QSize(500, 500));
     scene->addItem(window);
 
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->shift();
+    window->setContent(content);
+    window->addCloseButton();
+    window->moveToCenter();
 
     window->appear();
 }
@@ -1294,9 +1296,9 @@ void MainWindow::on_actionAbout_libtomcrypt_triggered()
     Window *window = new Window(tr("About Libtomcrypt"), QSize(500, 300));
     scene->addItem(window);
 
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->shift();
+    window->setContent(content);
+    window->addCloseButton();
+    window->moveToCenter();
 
     window->appear();
 }

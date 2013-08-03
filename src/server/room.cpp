@@ -1608,7 +1608,7 @@ void Room::processRequest(const QString &request){
 
         #ifndef QT_NO_DEBUG
         // output client command only in debug version
-        emit room_message(player->reportHeader() + request);
+        //emit room_message(player->reportHeader() + request);
         #endif
 
     }else
