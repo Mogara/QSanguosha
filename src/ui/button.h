@@ -24,18 +24,11 @@ protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
-    virtual void timerEvent(QTimerEvent *);
-
 private:
     QString label;
     QSizeF size;
     bool mute;
     QFont font;
-    QImage *outimg;
-    QPixmap *title;
-    QGraphicsPixmapItem *title_item;
-    int glow;
-    int timer_id;
 
     void init();
 
