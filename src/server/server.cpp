@@ -180,7 +180,7 @@ QWidget *ServerDialog::createAdvancedTab(){
     maxchoice_spinbox->setValue(Config.value("MaxChoice", 5).toInt());
 
     forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
-    forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
+    forbid_same_ip_checkbox->setChecked(Config.value("ForbidSIMC").toBool());
 
     disable_chat_checkbox = new QCheckBox(tr("Disable chat"));
     disable_chat_checkbox->setChecked(Config.DisableChat);
@@ -1022,7 +1022,6 @@ bool ServerDialog::config(){
     Config.OperationNoLimit = nolimit_checkbox->isChecked();
     Config.ContestMode = contest_mode_checkbox->isChecked();
     Config.RandomSeat = random_seat_checkbox->isChecked();
-    Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.DisableChat = disable_chat_checkbox->isChecked();
     Config.Enable2ndGeneral = second_general_checkbox->isChecked();
     Config.NoLordSkill = nolordskill_checkbox->isChecked();
@@ -1064,7 +1063,7 @@ bool ServerDialog::config(){
     Config.setValue("RandomSeat", Config.RandomSeat);
     Config.setValue("SwapCount", swap_spinbox->value());
     Config.setValue("MaxChoice", maxchoice_spinbox->value());
-    Config.setValue("ForbidSIMC", Config.ForbidSIMC);
+    Config.setValue("ForbidSIMC", forbid_same_ip_checkbox->isChecked());
     Config.setValue("DisableChat", Config.DisableChat);
     Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
     Config.setValue("NoLordSkill", Config.NoLordSkill);
@@ -1174,7 +1173,7 @@ Room *Server::createNewRoom(){
 }
 
 void Server::processNewConnection(ClientSocket *socket){
-    if(Config.ForbidSIMC){
+    if(Config.value("ForbidSIMC", false).toBool()){
         QString addr = socket->peerAddress();
         if(addresses.contains(addr)){
             socket->disconnectFromHost();
@@ -1251,7 +1250,7 @@ void Server::processRequest(char *request){
 void Server::cleanup(){
     const ClientSocket *socket = qobject_cast<const ClientSocket *>(sender());
 
-    if(Config.ForbidSIMC)
+    if(Config.value("ForbidSIMC", false).toBool())
         addresses.remove(socket->peerAddress());
 }
 

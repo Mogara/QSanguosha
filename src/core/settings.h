@@ -32,7 +32,6 @@ public:
     bool Pause;
     bool ContestMode;
     bool RandomSeat;
-    bool ForbidSIMC;
     bool DisableChat;
     bool Enable2ndGeneral;
     bool NoLordSkill;
