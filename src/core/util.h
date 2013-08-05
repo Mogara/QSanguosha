@@ -6,6 +6,7 @@ class QVariant;
 
 #include <QList>
 #include <QStringList>
+#include <QPixmap>
 
 template<typename T>
 void qShuffle(QList<T> &list){
