@@ -262,11 +262,15 @@ void Photo::showCard(int card_id){
     const Card *card = Sanguosha->getCard(card_id);
 
     CardItem *card_item = new CardItem(card);
-    scene()->addItem(card_item);
 
-    QPointF card_pos(pos() + QPointF(0, 20));
-    card_item->setPos(card_pos);
-    card_item->setHomePos(card_pos);
+    card_item->setParentItem(this);
+
+    QRectF photoRect = boundingRect();
+    QRectF cardRect = card_item->boundingRect();
+    qreal dx = (photoRect.width() - cardRect.width())/2;
+    qreal dy = (photoRect.height() - cardRect.height())/2;
+
+    card_item->moveBy(dx, dy);
     card_item->setEnabled(false);
 
     QTimer::singleShot(2000, card_item, SLOT(deleteLater()));
