@@ -2514,19 +2514,26 @@ void Room::startGame(){
 
     GameRule *game_rule;
     if(mode == "04_1v3")
-        game_rule = new HulaoPassMode(this);
+        game_rule = new HulaoPassMode;
     else if(mode == "05_2v3")
-        game_rule = new ChangbanSlopeMode(this);
+        game_rule = new ChangbanSlopeMode;
     else if(Config.EnableScene)	//changjing
-        game_rule = new SceneRule(this);	//changjing
+        game_rule = new SceneRule;	//changjing
     else
-        game_rule = new GameRule(this);
+        game_rule = new GameRule;
+
+    connect(this, SIGNAL(destroyed()), game_rule, SLOT(deleteLater()));
 
     thread->constructTriggerTable(game_rule);
-    if(Config.EnableReincarnation)
-        thread->addTriggerSkill(new ReincarnationRule(this));
-    if(Config.EnableBasara)
-        thread->addTriggerSkill(new BasaraMode(this));
+    if(Config.EnableReincarnation){
+        ReincarnationRule *rule = new ReincarnationRule;
+        thread->addTriggerSkill(rule);
+        connect(this, SIGNAL(destroyed()), rule, SLOT(deleteLater()));
+    }if(Config.EnableBasara){
+        BasaraMode *basaraMode = new BasaraMode;
+        thread->addTriggerSkill(basaraMode);
+        connect(this, SIGNAL(destroyed()), basaraMode, SLOT(deleteLater()));
+    }
 
     if(scenario){
         const ScenarioRule *rule = scenario->getRule();

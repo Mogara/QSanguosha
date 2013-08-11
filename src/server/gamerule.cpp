@@ -7,11 +7,9 @@
 
 #include <QTime>
 
-GameRule::GameRule(QObject *parent)
+GameRule::GameRule()
     :TriggerSkill("game_rule")
 {
-    setParent(parent);
-
     events << GameStart << TurnStart << PhaseChange << CardUsed << CardFinished
             << CardEffected << HpRecover << HpLost << AskForPeachesDone
             << AskForPeaches << PreDeath << Death << Dying << GameOverJudge << RewardAndPunish
@@ -782,8 +780,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
     return winner;
 }
 
-HulaoPassMode::HulaoPassMode(QObject *parent)
-    :GameRule(parent)
+HulaoPassMode::HulaoPassMode()
 {
     setObjectName("hulaopass_mode");
 
@@ -911,8 +908,7 @@ bool HulaoPassMode::trigger(TriggerEvent event,Room *room, ServerPlayer *player,
     return GameRule::trigger(event, room, player, data);
 }
 
-BasaraMode::BasaraMode(QObject *parent)
-    :GameRule(parent)
+BasaraMode::BasaraMode()
 {
     setObjectName("basara_mode");
 
@@ -1131,11 +1127,9 @@ bool BasaraMode::trigger(TriggerEvent event,Room *room, ServerPlayer *player, QV
     return false;
 }
 
-ChangbanSlopeMode::ChangbanSlopeMode(QObject *parent)
-    :GameRule(parent)
+ChangbanSlopeMode::ChangbanSlopeMode()
 {
     setObjectName("changbanslope_mode");
-
     events << HpChanged ;
 }
 
@@ -1303,8 +1297,7 @@ void ChangbanSlopeMode::changeGeneral(ServerPlayer *player) const{
     player->drawCards(4);
 }
 
-ReincarnationRule::ReincarnationRule(QObject *parent)
-    :GameRule(parent)
+ReincarnationRule::ReincarnationRule()
 {
     setObjectName("reincarnation_rule");
 }

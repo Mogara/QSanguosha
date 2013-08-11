@@ -6,7 +6,7 @@
 class Scene26Effect;
 class SceneRule : public GameRule {
 public:
-	SceneRule(QObject *parent);
+    SceneRule();
 
         virtual bool trigger(TriggerEvent event, Room* room, ServerPlayer *player, QVariant &data) const;
 };

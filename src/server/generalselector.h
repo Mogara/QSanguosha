@@ -12,6 +12,8 @@ class GeneralSelector: public QObject{
     Q_OBJECT
 
 public:
+    GeneralSelector();
+
     static GeneralSelector *GetInstance();
     QString selectFirst(ServerPlayer *player, const QStringList &candidates);
     QString selectSecond(ServerPlayer *player, const QStringList &candidates);
@@ -22,7 +24,6 @@ public:
     int get1v1ArrangeValue(const QString &name);
 
 private:
-    GeneralSelector();
     void loadFirstGeneralTable();
     void loadFirstGeneralTable(const QString &role);
     void loadSecondGeneralTable();

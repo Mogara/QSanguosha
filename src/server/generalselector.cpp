@@ -5,15 +5,10 @@
 #include <QFile>
 #include <QTextStream>
 
-static GeneralSelector *Selector;
+Q_GLOBAL_STATIC(GeneralSelector, GlobalGeneralSelector)
 
 GeneralSelector *GeneralSelector::GetInstance(){
-    if(Selector == NULL){
-        Selector = new GeneralSelector;
-        Selector->setParent(Sanguosha);
-    }
-
-    return Selector;
+    return GlobalGeneralSelector();
 }
 
 GeneralSelector::GeneralSelector()
@@ -133,7 +128,8 @@ QStringList GeneralSelector::arrange3v3(ServerPlayer *player){
 }
 
 static bool CompareFunction(const QString &first, const QString &second){
-    return Selector->get1v1ArrangeValue(first) < Selector->get1v1ArrangeValue(second);
+    GeneralSelector *selector = GlobalGeneralSelector();
+    return selector->get1v1ArrangeValue(first) < selector->get1v1ArrangeValue(second);
 }
 
 int GeneralSelector::get1v1ArrangeValue(const QString &name){
