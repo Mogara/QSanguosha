@@ -718,14 +718,18 @@ void MainWindow::on_actionBroadcast_triggered()
 
 void MainWindow::on_actionAcknowledgement_triggered()
 {
-    QDialog *dialog = new QDialog(this);
-    dialog->setWindowTitle(tr("Acknowledgement"));
-    QVBoxLayout *layout = new QVBoxLayout;
-    QLabel *label = new QLabel;
-    label->setPixmap(QPixmap("image/system/thanks.png"));
-    layout->addWidget(label);
-    dialog->setLayout(layout);
-    dialog->exec();
+    lua_State *L = Sanguosha->getLuaState();
+    int width = GetValueFromLuaState(L, "acknowledgement", "width").toInt();
+    int height = GetValueFromLuaState(L, "acknowledgement", "height").toInt();
+    QString content = GetValueFromLuaState(L, "acknowledgement", "content").toString();
+
+    Window *window = new Window(tr("Acknowledgement"), QSizeF(width, height));
+    scene->addItem(window);
+    window->moveToCenter();
+    window->setContent(content);
+    window->addCloseButton();
+
+    window->appear();
 }
 
 void MainWindow::on_actionScript_editor_triggered()

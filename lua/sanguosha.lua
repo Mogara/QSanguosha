@@ -3,14 +3,17 @@
 package.path = package.path .. ";./lua/lib/?.lua"
 package.cpath = package.cpath .. ";./lua/clib/?.dll"
 
-dofile "lua/sgs_ex.lua"
-dofile "lua/compatibility.lua"
+require 'lua.sgs_ex'
+require 'lua.compatibility'
+require 'lua.Acknowledgement'
 
 function load_translation(file)
 	local t = dofile(file)
 	if type(t) ~= "table" then
 	    error(("file %s is should return a table!"):format(file))
 	end
+
+	acknowledgement.addToCVSet(t)
 	
 	sgs.LoadTranslationTable(t)
 end
@@ -48,4 +51,6 @@ if not done_loading then
 	load_translations()
 	done_loading = sgs.QVariant(true)
 	sgs.Sanguosha:setProperty("DoneLoading", done_loading)
+
+	acknowledgement.createContent()
 end
