@@ -118,6 +118,9 @@ public:
     void changeTextEditBackground();
     void adjustItems(QMatrix transform = QMatrix());
     void showIndicator(const QString &from, const QString &to);
+    Dashboard *getDashboard() const{
+        return dashboard;
+    }
 
     static void FillPlayerNames(QComboBox *combobox, bool add_none);
 

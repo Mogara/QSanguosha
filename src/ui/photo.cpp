@@ -594,6 +594,8 @@ void Photo::updatePile(const QString &pile_name){
     }
 }
 
+#include "roomscene.h"
+
 void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
     Pixmap::paint(painter, option, widget);
 
@@ -673,6 +675,12 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         painter->drawPixmap(this->boundingRect().width() - 22, 5, chain);
 
     back_icon->setVisible(! player->faceUp());
+
+    if(RoomSceneInstance->getDashboard()->getSelected()){
+        if(!(flags() & ItemIsSelectable)){
+            painter->fillRect(boundingRect(), QColor(0x00, 0x00, 0x00, 100));
+        }
+    }
 }
 
 void Photo::drawEquip(QPainter *painter, CardItem *equip, int order){

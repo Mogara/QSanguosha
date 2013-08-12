@@ -1631,6 +1631,7 @@ void RoomScene::enableTargets(const Card *card){
     // unset avatar and all photo
     foreach(QGraphicsItem *item, item2player.keys()){
         item->setSelected(false);
+        item->update();
     }
 
     if(card == NULL){
@@ -1661,25 +1662,24 @@ void RoomScene::enableTargets(const Card *card){
 }
 
 void RoomScene::updateTargetsEnablity(const Card *card){
-    if(card == NULL){
-        qWarning("card is NULL at function %s", __func__);
-        return;
-    }
-
     QMapIterator<QGraphicsItem *, const ClientPlayer *> itor(item2player);
     while(itor.hasNext()){
         itor.next();
 
         QGraphicsItem *item = itor.key();
 
-        if(item->isSelected())
-            continue;
+        if(card){
+            if(item->isSelected())
+                continue;
 
-        const ClientPlayer *player = itor.value();
-        bool selectable = !Sanguosha->isProhibited(Self, player, card)
-                && card->targetFilter(selected_targets, player, Self);
+            const ClientPlayer *player = itor.value();
+            bool selectable = !Sanguosha->isProhibited(Self, player, card)
+                    && card->targetFilter(selected_targets, player, Self);
 
-        item->setFlag(QGraphicsItem::ItemIsSelectable, selectable);
+            item->setFlag(QGraphicsItem::ItemIsSelectable, selectable);
+        }else{
+            item->setFlag(QGraphicsItem::ItemIsSelectable, false);
+        }
     }
 }
 
