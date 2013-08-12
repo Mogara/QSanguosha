@@ -144,8 +144,6 @@ public slots:
     void makeReviving();
     void doScript();
 
-    EffectAnimation * getEA() const{return animations;}
-
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
