@@ -40,7 +40,9 @@
 #include <QFormLayout>
 #include <QStatusBar>
 #include <QMovie>
-#include <QtCore>
+#include <QGraphicsDropShadowEffect>
+#include <qmath.h>
+
 
 #ifdef CHAT_VOICE
 #include <QAxObject>
@@ -452,7 +454,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     createStateItem();
 
-    animations = new EffectAnimation();
     drawPile = NULL;
     view_transform = QMatrix();
 }
@@ -756,12 +757,9 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer*> &seats){
     if(item2player.isEmpty()){
         item2player.insert(avatar, Self);
         connect(avatar, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
-        connect(avatar, SIGNAL(selected_changed()), this, SLOT(onSelectChange()));
         foreach(Photo *photo, photos){
             item2player.insert(photo, photo->getPlayer());
             connect(photo, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
-            connect(photo, SIGNAL(selected_changed()), this, SLOT(onSelectChange()));
-            connect(photo, SIGNAL(enable_changed()), this, SLOT(onEnabledChange()));
         }
     }
 }
@@ -1637,10 +1635,6 @@ void RoomScene::enableTargets(const Card *card){
 
     if(card == NULL){
         foreach(QGraphicsItem *item, item2player.keys()){
-            //if(!inactive)
-                animations->effectOut(item);
-                //item->setOpacity(0.7);
-
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
             item->setEnabled(true);
         }
@@ -1651,8 +1645,6 @@ void RoomScene::enableTargets(const Card *card){
 
     if(card->targetFixed() || ClientInstance->noTargetResponsing()){
         foreach(QGraphicsItem *item, item2player.keys()){
-            //item->setOpacity(1.0);
-            animations->effectOut(item);
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
 
@@ -1669,31 +1661,25 @@ void RoomScene::enableTargets(const Card *card){
 }
 
 void RoomScene::updateTargetsEnablity(const Card *card){
+    if(card == NULL){
+        qWarning("card is NULL at function %s", __func__);
+        return;
+    }
+
     QMapIterator<QGraphicsItem *, const ClientPlayer *> itor(item2player);
     while(itor.hasNext()){
         itor.next();
 
         QGraphicsItem *item = itor.key();
-        const ClientPlayer *player = itor.value();
 
         if(item->isSelected())
             continue;
 
-        bool enabled;
-        if(card)enabled= !Sanguosha->isProhibited(Self, player, card)
-                       && card->targetFilter(selected_targets, player, Self);
-        else enabled = true;
+        const ClientPlayer *player = itor.value();
+        bool selectable = !Sanguosha->isProhibited(Self, player, card)
+                && card->targetFilter(selected_targets, player, Self);
 
-        //item->setOpacity(enabled ? 1.0 : 0.7);
-        if(enabled)animations->effectOut(item);
-        else
-        {
-            if(item->graphicsEffect() &&
-                    item->graphicsEffect()->inherits("SentbackEffect"));
-            else animations->sendBack(item);
-        }
-
-        if(card)item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
+        item->setFlag(QGraphicsItem::ItemIsSelectable, selectable);
     }
 }
 
@@ -1811,24 +1797,6 @@ void RoomScene::useSelectedCard(){
     if(skill)
         dashboard->stopPending();
 }
-
-void RoomScene::onSelectChange()
-{
-    /*
-    QGraphicsItem * photo = qobject_cast<QGraphicsItem*>(sender());
-    if(!photo)return;
-    if(photo->isSelected())animations->emphasize(photo);
-    else animations->effectOut(photo);
-    */
-}
-void RoomScene::onEnabledChange()
-{
-    QGraphicsItem * photo = qobject_cast<QGraphicsItem*>(sender());
-    if(!photo)return;
-    if(photo->isEnabled())animations->effectOut(photo);
-    else animations->sendBack(photo);
-}
-
 
 void RoomScene::useCard(const Card *card){
     if(card->targetFixed() || card->targetsFeasible(selected_targets, Self))
@@ -4039,7 +4007,7 @@ void RoomScene::adjustPrompt()
     int height = ClientInstance->getPromptDoc()->size().height();
 
     QFont ft=text_item->font();
-    int fz = ft.pixelSize() * qSqrt(fitSize*1.0/height);
+    int fz = ft.pixelSize() * sqrt(fitSize*1.0/height);
     if(fz > 21)fz = 21;
 
     ft.setPixelSize(fz);

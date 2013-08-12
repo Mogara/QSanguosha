@@ -270,7 +270,6 @@ void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
     }else{
         emit released();
     }
-    emit leave_hover();
 }
 
 void CardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
@@ -289,16 +288,6 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event){
         emit double_clicked();
     }
     else emit toggle_discards();
-}
-
-void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *)
-{
-    emit enter_hover();
-}
-
-void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
-{
-    emit leave_hover();
 }
 
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){

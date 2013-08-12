@@ -112,7 +112,6 @@ SOURCES += \
 	src/ui/pixmapanimation.cpp \
 	src/ui/rolecombobox.cpp \
 	src/ui/roomscene.cpp \
-	src/ui/sprite.cpp \
 	src/ui/startscene.cpp \
 	src/ui/window.cpp \
 	src/util/detector.cpp \
@@ -246,7 +245,6 @@ HEADERS += \
 	src/ui/pixmapanimation.h \
 	src/ui/rolecombobox.h \
 	src/ui/roomscene.h \
-	src/ui/sprite.h \
 	src/ui/startscene.h \
 	src/ui/window.h \
 	src/util/detector.h \

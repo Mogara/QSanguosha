@@ -31,8 +31,6 @@ Dashboard::Dashboard(QGraphicsItem *button_widget)
     setMiddleWidth(middle_width);
 
     sort_type = 0;
-
-    animations = new EffectAnimation();
 }
 
 void Dashboard::createLeft(){
@@ -184,8 +182,6 @@ void Dashboard::addCardItem(CardItem *card_item){
 
     connect(card_item, SIGNAL(clicked()), this, SLOT(onCardItemClicked()));
     connect(card_item, SIGNAL(thrown()), this, SLOT(onCardItemThrown()));
-    connect(card_item, SIGNAL(enter_hover()), this, SLOT(onCardItemHover()));
-    connect(card_item, SIGNAL(leave_hover()), this, SLOT(onCardItemLeaveHover()));
 
     sortCards(sort_type);
 
@@ -925,22 +921,6 @@ void Dashboard::onCardItemThrown(){
             selected = card_item;
         emit card_to_use();
     }
-}
-
-void Dashboard::onCardItemHover()
-{
-    QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
-    if(!card_item)return;
-
-    animations->emphasize(card_item);
-}
-
-void Dashboard::onCardItemLeaveHover()
-{
-    QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
-    if(!card_item)return;
-
-    animations->effectOut(card_item);
 }
 
 void Dashboard::onMarkChanged(){

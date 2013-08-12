@@ -7,7 +7,6 @@
 #include "client.h"
 #include "aux-skills.h"
 #include "clientlogbox.h"
-#include "sprite.h"
 #include "chatwidget.h"
 
 class Window;
@@ -257,7 +256,6 @@ private:
     void doIndicate(const QString &name, const QStringList &args);
 
     void animateHpChange(const QString &name, const QStringList &args);
-    EffectAnimation *animations;
     Pixmap *drawPile;
 
     //re-layout attempts
@@ -312,10 +310,6 @@ private slots:
 
     void appendChatEdit(QString txt);
     void appendChatBox(QString txt);
-
-    //animations
-    void onSelectChange();
-    void onEnabledChange();
 
 #ifdef JOYSTICK_SUPPORT
     void onJoyButtonClicked(int bit);

@@ -101,7 +101,6 @@ QVariant Pixmap::itemChange(GraphicsItemChange change, const QVariant &value){
                 setOpacity(0.7);
             }
         }
-        else emit enable_changed();
     }
 
     return QGraphicsObject::itemChange(change, value);
