@@ -5,7 +5,7 @@ package.cpath = package.cpath .. ";./lua/clib/?.dll"
 
 require 'lua.sgs_ex'
 require 'lua.compatibility'
-require 'lua.Acknowledgement'
+require 'lua.acknowledgement'
 
 function load_translation(file)
 	local t = dofile(file)
