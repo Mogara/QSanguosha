@@ -259,7 +259,6 @@ private:
     void doIndicate(const QString &name, const QStringList &args);
 
     void animateHpChange(const QString &name, const QStringList &args);
-    void animatePopup(const QString &name, const QStringList &args);
     EffectAnimation *animations;
     Pixmap *drawPile;
 

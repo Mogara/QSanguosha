@@ -3516,35 +3516,6 @@ void RoomScene::animateHpChange(const QString &, const QStringList &args)
     }
 }
 
-void RoomScene::animatePopup(const QString &name, const QStringList &args)
-{
-    QPointF pos = getAnimationObject(args.at(0))->scenePos();
-
-    QPixmap *item = new QPixmap(QString("image/system/animation/%1.png").arg(name));
-    pos.rx()+=item->width()/2;
-    pos.ry()+=item->height()/2;
-
-    Sprite *sprite = new Sprite();
-    sprite->setParent(this);
-    sprite->setPixmapAtMid(*item);
-    Sprite *glare = new Sprite();
-    glare->setPixmapAtMid(*item);
-
-    sprite->setResetTime(200);
-    sprite->addKeyFrame(0,"opacity",0);
-    sprite->addKeyFrame(400,"opacity",1);
-    sprite->addKeyFrame(600,"opacity",1);
-    //sprite->addKeyFrame(1000,"opacity",0);
-    sprite->addKeyFrame(0,"scale",0.2,QEasingCurve::OutQuad);
-    sprite->addKeyFrame(400,"scale",1);
-    sprite->addKeyFrame(600,"scale",1.2);
-
-    sprite->start();
-
-    addItem(sprite);
-    sprite->setPos(pos);
-}
-
 void RoomScene::doAppearingAnimation(const QString &name, const QStringList &args){
 
     if(name == "analeptic"
@@ -3659,7 +3630,6 @@ void RoomScene::doAnimation(const QString &name, const QStringList &args){
     static QMap<QString, AnimationFunc> map;
     if(map.isEmpty()){
         map["peach"] = &RoomScene::doAppearingAnimation;
-        map["jink"] = &RoomScene::animatePopup;
         map["nullification"] = &RoomScene::doMovingAnimation;
 
         map["analeptic"] = &RoomScene::doAppearingAnimation;
