@@ -6,7 +6,14 @@ config = {
 	version = "20130712",
 	version_name = "鬼隐版 Stage 7",
 	mod_name = "official",
-	kingdoms = { "wei", "shu", "wu", "qun", "god"},
+	kingdoms = { 
+		"wei", 
+		"shu",
+		"wu",
+		"qun",
+		"god"
+	},
+	
 	package_names = {
 		"StandardCard",
 		"StandardExCard",
@@ -113,11 +120,13 @@ config = {
 	-- 感谢一路走来，为太阳神三国杀付出和支持过的朋友们！
 	},
 
-	color_wei = "#547998",
-	color_shu = "#D0796C",
-	color_wu = "#4DB873",
-	color_qun = "#8A807A",
-	color_god = "#96943D",
+	kingdom_colors ={
+		wei = "#547998",
+		shu = "#D0796C",
+		wu = "#4DB873",
+		qun = "#8A807A",
+		god = "#96943D",
+	},	
 
 	mini_max = 50 -- 此处以Config.S_MINI_MAX_COUNT为准
 }
