@@ -22,6 +22,12 @@ CONFIG += warn_on audio crypto
 # CONFIG += chatvoice
 # Also, this function can only enabled under Windows system as it make use of Microsoft TTS
 
+# make build directory cleaner
+UI_DIR = $$PWD/build/ui
+MOC_DIR = $$PWD/build/moc
+OBJECTS_DIR = $$PWD/build/obj
+
+
 SOURCES += \
 	src/main.cpp \
 	src/client/aux-skills.cpp \
