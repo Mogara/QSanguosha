@@ -825,20 +825,18 @@ void RoomScene::drawNCards(ClientPlayer *player, int n){
             );
 }
 
+static bool ItemShouldBeToggledSelection(QGraphicsItem *item){
+    return item->isUnderMouse() && item->isEnabled() && item->flags() & QGraphicsItem::ItemIsSelectable;
+}
+
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event){
-    foreach(Photo *photo, photos){
-        if(photo->isUnderMouse() && photo->isEnabled() && photo->flags() & QGraphicsItem::ItemIsSelectable){
-            photo->setSelected(!photo->isSelected());
-            return;
-        }
+    QList<QGraphicsItem *> items = item2player.keys();
+    QList<QGraphicsItem *>::Iterator itor = std::find_if(items.begin(), items.end(), ItemShouldBeToggledSelection);
+    if(itor != items.end()){
+        (*itor)->setSelected(!(*itor)->isSelected());
+    }else{
+        QGraphicsScene::mousePressEvent(event);
     }
-
-    if(avatar->isUnderMouse() && avatar->isEnabled() && avatar->flags() & QGraphicsItem::ItemIsSelectable){
-        avatar->setSelected(!avatar->isSelected());
-        return;
-    }
-
-    QGraphicsScene::mousePressEvent(event);
 }
 
 void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
