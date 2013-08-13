@@ -1930,7 +1930,7 @@ void RoomScene::selectTarget(int order, bool multiple){
         to_select = photos.at(order - 1);
 
     if(!multiple)
-        unselectAllTargets(to_select);
+        unselectAllTargetsExcept(to_select);
 
     if(to_select)
         to_select->setSelected(! to_select->isSelected());
@@ -1969,13 +1969,19 @@ void RoomScene::selectNextTarget(bool multiple){
     }
 }
 
-void RoomScene::unselectAllTargets(const QGraphicsItem *except){
-    if(avatar != except)
-        avatar->setSelected(false);
+static void UnselectItem(QGraphicsItem *item){
+    item->setSelected(false);
+}
 
-    foreach(Photo *photo, photos){
-        if(photo != except)
-            photo->setSelected(false);
+void RoomScene::unselectAllTargets(){
+    QList<QGraphicsItem *> items = item2player.keys();
+    std::for_each(items.begin(), items.end(), UnselectItem);
+}
+
+void RoomScene::unselectAllTargetsExcept(const QGraphicsItem *except){
+    foreach(QGraphicsItem *item, item2player.keys()){
+        if(item != except)
+            item->setSelected(false);
     }
 }
 

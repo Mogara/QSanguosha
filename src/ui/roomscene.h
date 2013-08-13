@@ -228,7 +228,8 @@ private:
 
     void selectTarget(int order, bool multiple);
     void selectNextTarget(bool multiple);
-    void unselectAllTargets(const QGraphicsItem *except = NULL);
+    void unselectAllTargets();
+    void unselectAllTargetsExcept(const QGraphicsItem *except);
     void updateTargetsEnablity(const Card *card = NULL);
 
     void callViewAsSkill();
