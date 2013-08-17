@@ -10,5 +10,17 @@
 {
 "roomLayoutConfigFile": "skins/compactSkin.layout.json",
 "roomImageConfigFile": "skins/compactSkin.image.json"
+},
+"fulldefault":
+{
+"roomLayoutConfigFile": "skins/fulldefaultSkin.layout.json",
+"roomImageConfigFile": "skins/fulldefaultSkin.image.json",
+"roomAudioConfigFile": "skins/defaultSkin.audio.json",
+"roomAnimationConfigFile": "skins/defaultSkin.animation.json"
+},
+"fullcompact":
+{
+"roomLayoutConfigFile": "skins/fullcompactSkin.layout.json",
+"roomImageConfigFile": "skins/fullcompactSkin.image.json"
 }
 }

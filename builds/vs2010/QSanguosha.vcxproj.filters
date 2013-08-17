@@ -474,6 +474,15 @@
     <ClCompile Include="Release\moc_special1v1-package.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\package\tigerfly.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_tigerfly.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_tigerfly.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -753,6 +762,9 @@
       <Filter>package</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\package\special1v1-package.h">
+      <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\tigerfly.h">
       <Filter>package</Filter>
     </CustomBuild>
   </ItemGroup>

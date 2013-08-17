@@ -1,8 +1,4 @@
 {
-	/*"systemAudioEffect-male-@recast": "audio/card/male/@recast.ogg",
-	"systemAudioEffect-female-@recast": "audio/card/female/@recast.ogg",
-	"systemAudioEffect-male-@recast": "audio/card/male/@recast.ogg"*/
-	"dummy": "hi!",
 	//skill effect
 	"playerAudioEffect-male-huashen": ["audio/skill/huashen1.ogg", "audio/skill/huashen2.ogg"],
 	"playerAudioEffect-female-huashen": ["audio/skill/huashen3.ogg", "audio/skill/huashen4.ogg"],
@@ -12,8 +8,7 @@
 	"playerAudioEffect-common-weapon": "audio/card/common/weapon.ogg",
 	"playerAudioEffect-common-armor": "audio/card/common/armor.ogg",
 	"playerAudioEffect-common-horse": "audio/card/common/horse.ogg",
-	"playerAudioEffect-common-monkey": "audio/card/common/monkey.ogg",
-	
+
 	"playerAudioEffect-male-default": "audio/card/male/%1.ogg",
 	"playerAudioEffect-female-default": "audio/card/female/%1.ogg"
 }

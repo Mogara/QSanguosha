@@ -39,7 +39,9 @@ config = {
 		"NostalGeneral",
 		"Yitian",
 		"Wisdom",
-		"Test"
+		"Test",
+		
+		"TigerFly"
 	},
 
 	hulao_packages = {

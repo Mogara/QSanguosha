@@ -9,12 +9,12 @@
     "cardNumberArea": [0, 2, 27, 28],
     "cardFootnoteArea": [0, 70, 93, 50],
     "cardAvatarArea": [46, 83, 40, 40],
-    "cardFootnoteFont": ["simsun", [12, 12, 3], 0, [255, 255, 255, 255], 1, 10, [0, 0], [20, 20, 20, 255]],
+    "cardFootnoteFont": ["SimSun", [12, 12, 3], 0, [255, 255, 255, 255], 1, 10, [0, 0], [20, 20, 20, 255]],
     "chooseGeneralBoxSwitchIconSizeThreshold": 12,
     "chooseGeneralBoxSwitchIconEachRow": 6,
     "chooseGeneralBoxSwitchIconEachRowForTooManyGenerals": 7,
     "chooseGeneralBoxNoIconThreshold": 21, 
-    "chooseGeneralBoxSparseIconSize": [160, 232],
+    "chooseGeneralBoxSparseIconSize": [171, 240],
     "chooseGeneralBoxDenseIconSize": [130, 130],
     "tinyAvatarSize": [40, 40],
     // When hp exceeds 5, we use text (e.g. 5/8) instead of drawing more than 5 magatamas. The color
@@ -53,9 +53,9 @@
     "photoVDistance": 32,
     "discardPileMinWidth": 465,
     "discardPilePadding": 50,
-    "minimumSceneSize": [1130, 635], // if smaller than this size, switch to compact skin
+    "minimumSceneSize": [1130, 650], // if smaller than this size, switch to compact skin
     //make sure that default skin's minimum scene size is smaller than maximum scene size in compact skin to avoid deadloop!!!
-    "minimumSceneSize-10player": [1145, 845]
+    "minimumSceneSize-10player": [1050, 800]
 },
 "photo":
 {
@@ -63,17 +63,17 @@
     "normalHeight": 181,
     "mainFrameArea": [0, 0, 157, 181],
     "canvasArea": [0, 0, 157, 181],
-    "handCardNumIconArea": [3, 94, 21, 22],
-    "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255]],	
-    "equipAreas": [[3, 122, 150, 13], [3, 136, 150, 13], [3, 150, 150, 13], [3, 164, 150, 13]],
-    "equipImageArea": [1, 1, 11, 11], // need adjustment
-    "equipTextArea": [35, -5, 85, 21], // need adjustment
-    "equipSuitArea": [131, -2, 21, 17], // need adjustment
-    "equipDistanceArea": [14, -5, 30, 21], // need adjustment
-    "equipPointArea": [120, 0, 14, 13], // need adjustment
-    "equipFont": ["simli", [14, 14, 0], 0, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
-    "equipPointFont": ["arial", [12, 12, 3], 0, [0, 0, 0, 255], 1, 0, [0, 0], [255, 255, 190, 255]], 
-    "delayedTrickFirstRegion": [-10, 16, 28, 28],
+    "handCardNumIconArea": [-6, 96, 30, 18],
+    "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
+    "equipAreas": [[1, 120, 150, 21], [1, 134, 150, 21], [1, 148, 150, 21], [1, 162, 150, 21]],
+    "equipImageArea": [0, 1, 140, 19],
+    //"equipTextArea": [35, -5, 85, 21], // need adjustment
+    "equipSuitArea": [117, 2, 21, 17],
+    //"equipDistanceArea": [14, -5, 30, 21], // need adjustment
+    "equipPointArea": [106, -4, 25, 25],
+    //"equipFont": ["FZLiBian-S02", [14, 14, 0], 50, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
+    "equipPointFont": ["arial", [13, 13, 3], 20, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]], 
+    "delayedTrickFirstRegion": [-13, 16, 28, 28],
     "delayedTrickStep": [0, 19],
     "roleComboBoxPos": [130, 1],
     "borderWidth": 15,
@@ -81,45 +81,46 @@
     "secondaryAvatarImageType": 4,
     "primaryAvatarImageType": 6,
     "circleImageType": 0,
-    "avatarArea": [4, 27, 148, 89],
-    "secondaryAvatarArea": [89, 27, 63, 89],
-    "circleArea": [4, 27, 148, 89],
-    "avatarNameArea": [1, 24, 40, 60],
-    "avatarNameFont": ["@simli", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
-    "smallAvatarNameFont": ["@simli", [12, 12, 0], 0, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
-    "kingdomIconArea": [2, 0, 28, 28],
-    "kingdomMaskArea": [-2, 15, 36, 98],
-    "screenNameArea": [0, 12, 157, 13],
-    "screenNameFont": ["simsun", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
-    "magatamasHorizontal": true,
-    "magatamaSize": [14, 17],
-    "magatamaImageArea": [0, 0, 14, 17],
+    "avatarArea": [1, 1, 155, 179],
+    "secondaryAvatarArea": [78, 1, 77, 179],
+    "circleArea": [1, 1, 155, 179],
+    "avatarNameArea": [1, 23, 40, 60],
+    "avatarNameFont": ["@SimLi", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
+    "smallAvatarNameArea": [78, 23, 40, 60],
+    "smallAvatarNameFont": ["@SimLi", [18, 18, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
+    "kingdomIconArea": [2, -1, 28, 28],
+    "kingdomMaskArea": [-2, 14, 36, 98],
+    "screenNameArea": [0, 2, 157, 13],
+    "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
+    "magatamasHorizontal": false,
+    "magatamaSize": [18, 17],
+    "magatamaImageArea": [2, 2, 14, 17],
     "magatamasBgVisible": true,
-    "magatamasAnchor": ["bottomRight", [163, 115]],
+    "magatamasAnchor": ["bottomRight", [156, 194]],
     "cardMoveArea": [-15, 35, 200, 130],
     "phaseArea": [25, 176, 140, 12],
     "onlineStatusArea": [122, 24, 30, 25],
     "onlineStatusBgColor": [0, 0, 0, 0],
-    "onlineStatusFont": ["simsun",12, 0, [255, 255, 255, 255], 3, 10, [0, 0], [20, 20, 20, 155]],
+    "onlineStatusFont": ["SimSun",12, 0, [255, 255, 255, 255], 3, 10, [0, 0], [20, 20, 20, 155]],
     "skillNameArea": [25, 30, 300, 50],
-    "skillNameFont": ["simli", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 255, 20, 128]],
+    "skillNameFont": ["SimLi", 30, 0, [255, 255, 255, 255], 2, 20, [0, 0], [255, 20, 255, 128]],
     "progressBarArea": ["topLeft", "bottomLeft", [0, 8], [160, 10]],
     "progressBarHorizontal": true,
-    "privatePileStartPos": [34, 27],
+    "privatePileStartPos": [27, 18],
     "privatePileStep": [0, 16],
     "privatePileButtonSize": [60, 16],
     "actionedIconRegion": [100, 78, 52, 21],
     "saveMeIconRegion": [25, 46, 122, 50],
     "votesIconRegion": [53, 66, 50, 50],
-    "chainedIconRegion": [0, 108, 156, 19],
+    "chainedIconRegion": [0, 85, 156, 19],
     "readyIconRegion": [97, 125, 44, 53],
     "deathIconRegion": [0, 50, 157, 102],
     "drankMaskColor": [250, 0, 0, 115],
     "duanchangMaskColor": [255, 255, 255, 128],
     "deathEffectColor": [50, 50, 50, 255],
-    "extraSkillArea": [26, 94, 56, 20],
-    "extraSkillFont": ["simli", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
-    "extraSkillTextArea": [26, 91, 56, 20]
+    "extraSkillArea": [32, 96, 56, 20],
+    "extraSkillFont": ["SimLi", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
+    "extraSkillTextArea": [32, 93, 56, 20]
 },
 "dashboard":
 {
@@ -127,8 +128,8 @@
     "rightWidth": 171,
     "normalHeight": 170,
     "floatingAreaHeight": 50,
-    "handCardNumIconArea": [-100, 145, 21, 22],
-    "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255]],	
+    "handCardNumIconArea": [-109, 151, 30, 18],
+    "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
     "equipAreas": [[7, 44, 149, 25], [7, 76, 149, 25], [7, 108, 149, 25], [7, 140, 149, 25]],
     "equipBorderPos": [-6, -6],
     "equipSelectedOffset": [10, 0],
@@ -137,8 +138,8 @@
     "equipSuitArea": [128, 5, 21, 17],
     "equipDistanceArea": [0, 0, 0, 0],
     "equipPointArea": [117, -5, 30, 30],
-    "equipFont": ["simli", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0], [240, 240, 240, 200]],
-    "equipPointFont": ["arial", [14, 14, 3], 0, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]], 
+    "equipFont": ["SimLi", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0], [240, 240, 240, 200]],
+    "equipPointFont": ["arial", [14, 14, 3], 20, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]], 
     "delayedTrickFirstRegion": [3, 3, 28, 28],
     "delayedTrickStep": [28, 0],
     // the width of the region to disperse cards when the cards are to be moved to the special pile. 
@@ -200,39 +201,39 @@
 },
 "skillButton":
 {
-"height": 26,
+"height": 19,
 "width": [134, 67, 45], 
-"textArea": [[23, 2, 112, 20], [19, 2, 44, 20], [11, 2, 35, 20]],
-"textAreaDown": [[23, 2, 112, 20], [19, 2, 44, 20], [11, 2, 35, 20]],
-"textFont": [["simkai", [15, 15, 10], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
-             ["simkai", [15, 15, 0], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // medium
-             ["simkai", [12, 12, 0], 40, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]]],  // narrow
+"textArea": [[20, -2, 112, 20], [22, -2, 44, 20], [9, -2, 40, 20]],
+"textAreaDown": [[21, -1, 112, 20], [23, -1, 44, 20], [10, -1, 40, 20]],
+"textFont": [["simkai", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
+             ["simkai", [13, 13, 1], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // medium
+             ["simkai", [13, 13, 0], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]]],  // narrow
 
 // The following settings override the text color defined above
 // xxButtonColor = [normalColor, downColor, disabledColor, hoverColor]
-"awakenFontColor": [[[255, 255, 255, 255], [0, 0, 0, 155]], // normalColor = [penColor, shadowColor]
-                    [[255, 255, 255, 255], [0, 0, 0, 155]], // downColor = [penColor, shadowColor]
-                    [[255, 255, 255, 255], [0, 0, 0, 155]], // disableColor = [penColor, shadowColor]
-                    [[255, 255, 255, 255], [0, 0, 0, 155]]], // hoverColor = [penColor, shadowColor]
-"compulsoryFontColor": [[[255, 255, 255, 255], [0, 0, 0, 155]],
-                        [[255, 255, 255, 255], [0, 0, 0, 155]],
-                        [[255, 255, 255, 255], [0, 0, 0, 155]],
-                        [[255, 255, 255, 255], [0, 0, 0, 155]]],
-"frequentFontColor": [[[255, 255, 255, 255], [0, 0, 0, 155]],
-                      [[255, 255, 255, 255], [0, 0, 0, 155]],
-                      [[255, 255, 255, 255], [0, 0, 0, 155]],
-                      [[255, 255, 255, 255], [0, 0, 0, 155]]],
-"oneoffFontColor": [[[255, 255, 255, 255], [0, 0, 0, 155]],
-                    [[255, 255, 255, 255], [0, 0, 0, 155]],
-                    [[255, 255, 255, 255], [0, 0, 0, 155]],
-                    [[255, 255, 255, 255], [0, 0, 0, 155]]],
-"proactiveFontColor": [[[255, 255, 255, 255], [0, 0, 0, 155]],
-                       [[255, 255, 255, 255], [0, 0, 0, 155]],
-                       [[255, 255, 255, 255], [0, 0, 0, 155]],
-                       [[255, 255, 255, 255], [0, 0, 0, 155]]],
-"attachedlordFontColor": [[[255, 255, 255, 255], [0, 0, 0, 155]],
-                          [[255, 255, 255, 255], [0, 0, 0, 155]],
-                          [[255, 255, 255, 255], [0, 0, 0, 155]],
-                          [[255, 255, 255, 255], [0, 0, 0, 155]]]
+"awakenFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]], // normalColor = [penColor, shadowColor]
+                    [[255, 255, 255, 255], [0, 0, 0, 120]], // downColor = [penColor, shadowColor]
+                    [[255, 255, 255, 255], [0, 0, 0, 120]], // disableColor = [penColor, shadowColor]
+                    [[255, 255, 255, 255], [0, 0, 0, 120]]], // hoverColor = [penColor, shadowColor]
+"compulsoryFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
+                        [[255, 255, 255, 255], [0, 0, 0, 120]],
+                        [[255, 255, 255, 255], [0, 0, 0, 120]],
+                        [[255, 255, 255, 255], [0, 0, 0, 120]]],
+"frequentFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
+                      [[255, 255, 255, 255], [0, 0, 0, 120]],
+                      [[255, 255, 255, 255], [0, 0, 0, 120]],
+                      [[255, 255, 255, 255], [0, 0, 0, 120]]],
+"oneoffFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
+                    [[255, 255, 255, 255], [0, 0, 0, 120]],
+                    [[255, 255, 255, 255], [0, 0, 0, 120]],
+                    [[255, 255, 255, 255], [0, 0, 0, 120]]],
+"proactiveFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
+                       [[255, 255, 255, 255], [0, 0, 0, 120]],
+                       [[255, 255, 255, 255], [0, 0, 0, 120]],
+                       [[255, 255, 255, 255], [0, 0, 0, 120]]],
+"attachedlordFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
+                          [[255, 255, 255, 255], [0, 0, 0, 120]],
+                          [[255, 255, 255, 255], [0, 0, 0, 120]],
+                          [[255, 255, 255, 255], [0, 0, 0, 120]]]
 }
 }

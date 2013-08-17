@@ -6,7 +6,7 @@
    "duel", "equipborder", "fire_slash",
    "jink", "killer", "no-success", "peach",
    "slash_black", "slash_red", "success",
-   "thunder_slash",
+   "thunder_slash", "revive", "skill_nullify",
    // equip
    "armor/eight_diagram", "armor/renwang_shield",
    "armor/silver_lion", "armor/vine",
@@ -14,7 +14,7 @@
    "weapon/crossbow", "weapon/double_sword", "weapon/fan",
    "weapon/guding_blade", "weapon/halberd",
    "weapon/ice_sword", "weapon/kylin_bow",
-   "weapon/qinggang_sword", "weapon/sp_moonspear",
+   "weapon/qinggang_sword", "weapon/moonspear",
    "weapon/spear"],
 
 "huashen": [
