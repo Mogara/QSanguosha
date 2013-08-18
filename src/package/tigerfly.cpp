@@ -36,6 +36,8 @@ public:
 
 };
 
+
+
 TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
 	General *caorui = new General(this, "caorui$", "wei", 3);
 	caorui->addSkill(new Shemi);

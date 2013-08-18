@@ -7,8 +7,6 @@ config = {
 		"StandardCard",
 		"StandardExCard",
 		"Maneuvering",
-		"SPCard",
-		"Nostalgia",
 		"New3v3Card",
 		"New3v3_2013Card",
 		"New1v1Card",
@@ -37,8 +35,6 @@ config = {
 		"NostalYJCM",
 		"NostalYJCM2012",
 		"NostalGeneral",
-		"Yitian",
-		"Wisdom",
 		"Test",
 		
 		"TigerFly"

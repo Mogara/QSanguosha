@@ -486,7 +486,7 @@
     <message>
         <location filename="src/client/client.cpp" line="857"/>
         <source>Do you want to use the luck card?</source>
-        <translation type="unfinished"></translation>
+        <translation>你想使用手气卡吗？</translation>
     </message>
     <message>
         <location filename="src/client/client.cpp" line="892"/>
@@ -510,13 +510,13 @@
     </message>
     <message>
         <location filename="src/client/client.cpp" line="1062"/>
-        <source>%1 %2 cards(s) are required at least</source>
-        <translation type="unfinished"></translation>
+        <source>%1 %2 card(s) are required at least</source>
+        <translation>你至少需要弃置 %1 张%2牌</translation>
     </message>
     <message>
         <location filename="src/client/client.cpp" line="1062"/>
         <source>hand</source>
-        <translation type="unfinished"></translation>
+        <translation>手</translation>
     </message>
     <message>
         <location filename="src/client/client.cpp" line="1081"/>
@@ -532,7 +532,7 @@
         <location filename="src/client/client.cpp" line="1551"/>
         <location filename="src/client/client.cpp" line="1555"/>
         <source>&lt;br/&gt; &lt;b&gt;Source&lt;/b&gt;: %1&lt;br/&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;br/&gt; &lt;b&gt;技能来源&lt;/b&gt;: %1&lt;br/&gt;</translation>
     </message>
     <message>
         <location filename="src/client/client.cpp" line="1553"/>
@@ -2380,7 +2380,7 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="848"/>
         <source>The GNU General Public License is the most widely used free software license, which guarantees end users the freedoms to use, study, share, and modify the software.</source>
-        <translation type="unfinished"></translation>
+        <translation>GNU 通用公共许可协议（简称GNU GPL或GPL），是一个广泛被使用的自由软件许可证条款，它确保了广大用户自由地使用、学习、共享或修改软件。</translation>
     </message>
     <message>
         <source>(General2)</source>
@@ -2467,12 +2467,12 @@
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="771"/>
         <source>ServerOptions:</source>
-        <translation type="unfinished"></translation>
+        <translation>服务器选项：</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="778"/>
         <source>Chat Information:</source>
-        <translation type="unfinished"></translation>
+        <translation>聊天信息：</translation>
     </message>
     <message>
         <location filename="src/dialog/mainwindow.cpp" line="808"/>
@@ -3756,17 +3756,17 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="src/server/server.cpp" line="255"/>
         <source>Prevent maxhp being less than 3 for awaken skills</source>
-        <translation type="unfinished"></translation>
+        <translation>3体力上限触发觉醒技时不扣减上限</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="259"/>
         <source>Subtraction for scheme 0</source>
-        <translation type="unfinished"></translation>
+        <translation>体力上限求和后减去</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="284"/>
         <source>Max shown num for hegemony</source>
-        <translation type="unfinished"></translation>
+        <translation>同势力最大亮将数</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="369"/>
@@ -3776,12 +3776,12 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="src/server/server.cpp" line="372"/>
         <source>Surrender at the time of Death</source>
-        <translation type="unfinished"></translation>
+        <translation>单机游戏阵亡后可立即认输</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="375"/>
         <source>Enable the luck card</source>
-        <translation type="unfinished"></translation>
+        <translation>启用手气卡</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="416"/>
@@ -3802,27 +3802,27 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="src/server/server.cpp" line="625"/>
         <location filename="src/server/server.cpp" line="664"/>
         <source>Classical</source>
-        <translation type="unfinished"></translation>
+        <translation>经典</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="634"/>
         <source>General extensions</source>
-        <translation type="unfinished"></translation>
+        <translation>武将</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="637"/>
         <source>Card extensions</source>
-        <translation type="unfinished"></translation>
+        <translation>卡牌</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="640"/>
         <source>Rule option</source>
-        <translation type="unfinished"></translation>
+        <translation>规则设置</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="643"/>
         <source>Extension setting</source>
-        <translation type="unfinished"></translation>
+        <translation>使用全扩</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="655"/>
@@ -4177,7 +4177,7 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="src/server/server.cpp" line="661"/>
         <source>Official mode</source>
-        <translation type="unfinished"></translation>
+        <translation>官方3v3</translation>
     </message>
     <message>
         <location filename="src/server/server.cpp" line="870"/>
