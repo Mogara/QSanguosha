@@ -30,7 +30,6 @@ public:
 		Card *amazing_grace = new AmazingGrace(Card::SuitToBeDecided, -1);
 		amazing_grace->addSubcards(cards);
 		amazing_grace->setSkillName(objectName());
-		Self->addHistory("ShemiAG");
 		return amazing_grace;
     };
 
