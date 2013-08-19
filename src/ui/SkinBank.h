@@ -218,6 +218,7 @@ public:
     struct DashboardLayout: public PlayerCardContainerLayout {
         int m_leftWidth, m_rightWidth;
         int m_floatingAreaHeight;
+		int m_rswidth;
         QSize m_buttonSetSize;
         QRect m_confirmButtonArea;
         QRect m_cancelButtonArea;

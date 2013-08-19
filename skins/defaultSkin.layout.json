@@ -126,11 +126,12 @@
 {
     "leftWidth": 164,
     "rightWidth": 171,
+	"reverseSelectionWidth": 10,
     "normalHeight": 170,
     "floatingAreaHeight": 50,
     "handCardNumIconArea": [-109, 151, 30, 18],
     "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
-    "equipAreas": [[7, 44, 149, 25], [7, 76, 149, 25], [7, 108, 149, 25], [7, 140, 149, 25]],
+    "equipAreas": [[5, 44, 149, 25], [5, 75, 149, 25], [5, 107, 149, 25], [5, 137, 149, 25]],
     "equipBorderPos": [-6, -6],
     "equipSelectedOffset": [10, 0],
     "equipImageArea": [0, 0, 149, 25],

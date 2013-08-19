@@ -453,10 +453,10 @@ void Dashboard::_createExtraButtons() {
     m_btnNoNullification = new QSanButton("handcard", "nullification", this);
     m_btnNoNullification->setStyle(QSanButton::S_STYLE_TOGGLE);
     // @todo: auto hide.
-    m_btnReverseSelection->setPos(G_DASHBOARD_LAYOUT.m_leftWidth, -m_btnReverseSelection->boundingRect().height());
-    m_btnSortHandcard->setPos(m_btnReverseSelection->boundingRect().right() + G_DASHBOARD_LAYOUT.m_leftWidth,
+    m_btnReverseSelection->setPos(G_DASHBOARD_LAYOUT.m_rswidth, -m_btnReverseSelection->boundingRect().height());
+    m_btnSortHandcard->setPos(m_btnReverseSelection->boundingRect().right() + G_DASHBOARD_LAYOUT.m_rswidth,
                               -m_btnReverseSelection->boundingRect().height());
-    m_btnNoNullification->setPos(m_btnReverseSelection->boundingRect().right() + m_btnSortHandcard->boundingRect().width() + G_DASHBOARD_LAYOUT.m_leftWidth,
+    m_btnNoNullification->setPos(m_btnReverseSelection->boundingRect().right() + m_btnSortHandcard->boundingRect().width() + G_DASHBOARD_LAYOUT.m_rswidth,
                                  -m_btnReverseSelection->boundingRect().height());
 
     m_btnNoNullification->hide();

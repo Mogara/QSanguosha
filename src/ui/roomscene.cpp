@@ -750,12 +750,13 @@ void RoomScene::adjustItems() {
         enemy_box->setPos(padding * 2, padding * 2);
 
     padding -= _m_roomLayout->m_photoRoomPadding;
-    m_tablew = displayRegion.width() - infoPlane.width();
-    m_tableh = displayRegion.height() - dashboard->boundingRect().height();
+    m_tablew = displayRegion.width();// - infoPlane.width();
+    m_tableh = displayRegion.height();// - dashboard->boundingRect().height();
     QPixmap tableBg = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_TABLE_BG)
                                  .scaled(m_tablew, m_tableh, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     m_tableh -= _m_roomLayout->m_photoDashboardPadding;
-    m_tableBg->setPos(padding, padding);
+    //m_tableBg->setPos(padding, padding);
+	m_tableBg->setPos(0, 0);
     m_tableBg->setPixmap(tableBg);
     updateTable();
     updateRolesBox();

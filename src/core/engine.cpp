@@ -480,7 +480,7 @@ QString Engine::getVersionName() const{
 }
 
 QString Engine::getMODName() const{
-    return "official";
+    return "Dadao";
 }
 
 QStringList Engine::getExtensions() const{

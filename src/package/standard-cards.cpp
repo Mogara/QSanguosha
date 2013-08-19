@@ -691,7 +691,7 @@ void AmazingGrace::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
 
 	//shemi count
 	if (this->getSkillName() == "shemi")
-		room->addPlayerHistory(source, "ShimiAG");
+		room->addPlayerHistory(source, "ShemiAG");
 
     // throw the rest cards
     QVariantList ag_list = room->getTag("AmazingGrace").toList();

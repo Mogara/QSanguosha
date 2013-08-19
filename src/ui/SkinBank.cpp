@@ -895,6 +895,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
     config = layoutConfig[S_SKIN_KEY_DASHBOARD];
     tryParse(config["leftWidth"], _m_dashboardLayout.m_leftWidth);
     tryParse(config["rightWidth"], _m_dashboardLayout.m_rightWidth);
+	tryParse(config["reverseSelectionWidth"], _m_dashboardLayout.m_rswidth);
     tryParse(config["floatingAreaHeight"], _m_dashboardLayout.m_floatingAreaHeight);
     tryParse(config["focusFrameArea"], _m_dashboardLayout.m_focusFrameArea);
     tryParse(config["buttonSetSize"], _m_dashboardLayout.m_buttonSetSize);
