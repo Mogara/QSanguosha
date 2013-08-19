@@ -35,6 +35,8 @@ config = {
 		"NostalYJCM",
 		"NostalYJCM2012",
 		"NostalGeneral",
+		"Yitian",
+		"Wisdom",
 		"Test",
 		
 		"TigerFly"
