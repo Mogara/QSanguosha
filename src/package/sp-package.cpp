@@ -1353,6 +1353,108 @@ public:
     }
 };
 
+class Shuijian: public DrawCardsSkill {
+public:
+    Shuijian(): DrawCardsSkill("shuijian") {
+        frequency = Frequent;
+    }
+
+    virtual int getDrawNum(ServerPlayer *player, int n) const{
+        if (player->askForSkillInvoke(objectName())) {
+            player->getRoom()->broadcastSkillInvoke(objectName());
+            return n + player->getEquips().length() / 2 + 1;
+        } else
+            return n;
+    }
+};
+
+JisuCard::JisuCard() {
+    mute = true;
+}
+
+bool JisuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    Slash *slash = new Slash(NoSuit, 0);
+    slash->setSkillName("jisu");
+    slash->deleteLater();
+    return slash->targetFilter(targets, to_select, Self);
+}
+
+void JisuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    foreach (ServerPlayer *target, targets) {
+        if (!source->canSlash(target, NULL, false))
+            targets.removeOne(target);
+    }
+
+    if (targets.length() > 0) {
+        Slash *slash = new Slash(Card::NoSuit, 0);
+        slash->setSkillName("_jisu");
+        room->useCard(CardUseStruct(slash, source, targets));
+    }
+}
+
+class JisuViewAsSkill: public ZeroCardViewAsSkill {
+public:
+    JisuViewAsSkill(): ZeroCardViewAsSkill("jisu") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@jisu";
+    }
+
+    virtual const Card *viewAs() const{
+        return new JisuCard;
+    }
+};
+
+class Jisu: public TriggerSkill {
+public:
+    Jisu(): TriggerSkill("jisu") {
+        events << EventPhaseChanging;
+        view_as_skill = new JisuViewAsSkill;
+    }
+
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::Judge && !player->isSkipped(Player::Judge)
+            && !player->isSkipped(Player::Draw)) {
+            if (Slash::IsAvailable(player) && room->askForUseCard(player, "@@jisu", "@jisu-slash")) {
+                player->skip(Player::Judge);
+                player->skip(Player::Draw);
+            }
+        }
+        return false;
+    }
+};
+
+class Shuiyong: public TriggerSkill {
+public:
+    Shuiyong(): TriggerSkill("shuiyong") {
+        events << DamageInflicted;
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.nature == DamageStruct::Fire) {
+            room->notifySkillInvoked(player, objectName());
+            room->broadcastSkillInvoke(objectName());
+
+            LogMessage log;
+            log.type = "#ShuiyongProtect";
+            log.from = player;
+            log.arg = QString::number(damage.damage);
+            log.arg2 = "fire_nature";
+            room->sendLog(log);
+            return true;
+        }
+        return false;
+    }
+};
+
 SPCardPackage::SPCardPackage()
     : Package("sp_cards")
 {
@@ -1363,6 +1465,25 @@ SPCardPackage::SPCardPackage()
 }
 
 ADD_PACKAGE(SPCard)
+
+
+ChaosPackage::ChaosPackage()
+    : Package("Chaos")
+{
+    General *sunyang = new General(this, "sunyang", "wu", 4);
+    sunyang->addSkill(new Shuijian);
+
+    General *yeshiwen = new General(this, "yeshiwen", "wu", 3, false);
+    yeshiwen->addSkill(new Jisu);
+    yeshiwen->addSkill(new SlashNoDistanceLimitSkill("jisu"));
+    yeshiwen->addSkill(new Shuiyong);
+    related_skills.insertMulti("jisu", "#jisu-slash-ndl");
+
+    addMetaObject<JisuCard>();
+}
+
+ADD_PACKAGE(Chaos)
+
 
 SPPackage::SPPackage()
     : Package("sp")

@@ -12,6 +12,13 @@ public:
     SPPackage();
 };
 
+class ChaosPackage: public Package {
+    Q_OBJECT
+
+public:
+    ChaosPackage();
+};
+
 class Yongsi: public TriggerSkill {
     Q_OBJECT
 
@@ -95,6 +102,16 @@ public:
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class JisuCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JisuCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class SPCardPackage: public Package {

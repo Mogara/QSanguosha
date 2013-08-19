@@ -37,6 +37,7 @@ config = {
 		"NostalGeneral",
 		"Yitian",
 		"Wisdom",
+		"Chaos",
 		"Test",
 		
 		"TigerFly"
