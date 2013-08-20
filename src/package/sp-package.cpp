@@ -1455,6 +1455,33 @@ public:
     }
 };
 
+Fentian::Fentian(): PhaseChangeSkill("fentian"){
+	frequency = Compulsory;
+}
+
+bool Fentian::onPhaseChange(ServerPlayer *hanba) const{
+	if (hanba->getPhase() != Player::Finish)
+		return false;
+
+	if (hanba->getHandcardNum() >= hanba->getHp())
+		return false;
+
+	QList<ServerPlayer*> targets;
+	Room* room = hanba->getRoom();
+	foreach(ServerPlayer* p, room->getOtherPlayers(hanba)){
+		if (hanba->inMyAttackRange(p) && !p->isNude())
+			targets << p;
+	};
+
+	if (targets.isEmpty())
+		return false;
+
+	ServerPlayer* target = room->askForPlayerChosen(hanba, targets, objectName());
+	int id = room->askForCardChosen(hanba, target, "he", objectName());
+	hanba->addToPile("burn", id);
+	return false;
+}
+
 SPCardPackage::SPCardPackage()
     : Package("sp_cards")
 {

@@ -27,6 +27,13 @@ public:
     NostalStandardPackage();
 };
 
+class NostalWindPackage: public Package {
+    Q_OBJECT
+
+public:
+    NostalWindPackage();
+};
+
 class NostalYJCMPackage: public Package {
     Q_OBJECT
 
@@ -82,6 +89,21 @@ class NosLijianCard: public LijianCard {
 
 public:
     Q_INVOKABLE NosLijianCard();
+};
+
+class NosGuhuoCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE NosGuhuoCard();
+    bool nosguhuo(ServerPlayer *yuji) const;
+
+    virtual bool targetFixed() const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
+
+    virtual const Card *validate(CardUseStruct &card_use) const;
+    virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
 #endif

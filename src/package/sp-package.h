@@ -114,6 +114,15 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
+#include "skill.h"
+class Fentian: public PhaseChangeSkill {
+    Q_OBJECT
+
+public:
+    Fentian();
+    virtual bool onPhaseChange(ServerPlayer *hanba) const;
+};
+
 class SPCardPackage: public Package {
     Q_OBJECT
 

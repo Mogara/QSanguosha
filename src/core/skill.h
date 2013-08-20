@@ -220,7 +220,8 @@ class MaxCardsSkill: public Skill {
 public:
     MaxCardsSkill(const QString &name);
 
-    virtual int getExtra(const Player *target) const = 0;
+    virtual int getExtra(const Player *target) const;
+    virtual int getFixed(const Player *target) const;
 };
 
 class TargetModSkill: public Skill {
