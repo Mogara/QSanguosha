@@ -196,5 +196,5 @@ return {
 	["@diyyicong"] = "你可以发动“义从”",
 	["~diyyicong"] = "选择若干张牌→点击确定",
 	["#diyyicong-dist"] = "义从",
-	["#tuqi-dist"] = "突骑"
+	["#tuqi-dist"] = "突骑",
 }

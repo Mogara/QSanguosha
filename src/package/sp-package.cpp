@@ -1622,6 +1622,7 @@ SPPackage::SPPackage()
     General *zhugeke = new General(this, "zhugeke", "wu", 3); // OL 002
     zhugeke->addSkill(new Aocai);
     zhugeke->addSkill(new Duwu);
+	//zhugeke->addSkill(new SPConvertSkill("zhugeke", "diy_zhugeke"));
 
     General *tw_diaochan = new General(this, "tw_diaochan", "qun", 3, false, true); // TW SP 002
     tw_diaochan->addSkill("lijian");
