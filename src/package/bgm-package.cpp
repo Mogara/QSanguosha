@@ -2161,7 +2161,7 @@ BGMDIYPackage::BGMDIYPackage(): Package("BGMDIY") {
     related_skills.insertMulti("diyyicong", "#diyyicong-dist");
     related_skills.insertMulti("tuqi", "#tuqi-dist");
 
-	General *diy_zhugeke = new General(this, "diy_zhugeke", "wu", 3, true, false);
+	General *diy_zhugeke = new General(this, "diy_zhugeke", "wu", 3, true, true);
 	diy_zhugeke->addSkill("aocai");
 	diy_zhugeke->addSkill("duwu");
 
