@@ -248,7 +248,7 @@ function sgs.ai_cardsview.jiuzhu(self, class_name, player)
 		elseif dying:isLord() and (self.role == "loyalist" or (self.role == "renegade" and room:alivePlayerCount() > 2)) then
 			must_save = true
 		end
-		if not must_save and self:isWeak() and not self.player:hasArmorEffect("silver_lion") then return nil end
+		if not must_save and self:isWeak() and not self.player:hasArmorEffect("SilverLion") then return nil end
 		local to_discard = self:askForDiscard(player, "dummyreason", 1, 1, false, true)
 		if #to_discard == 1 then return "@JiuzhuCard=" .. to_discard[1] .. "->." end
 		return nil

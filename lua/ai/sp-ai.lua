@@ -47,7 +47,7 @@ end
 	备注：为了解决场上有古锭刀时弃白银狮子的问题而重写此弃牌方案。
 ]]--
 sgs.ai_skill_discard.yongsi = function(self, discard_num, min_num, optional, include_equip)
-	self:assignKeep(self.player:getHp(),true)
+	self:assignKeep(self:assignKeepNum(), true)
 	if optional then 
 		return {} 
 	end
@@ -60,8 +60,7 @@ sgs.ai_skill_discard.yongsi = function(self, discard_num, min_num, optional, inc
 	local aux_func = function(card)
 		local place = self.room:getCardPlace(card:getEffectiveId())
 		if place == sgs.Player_PlaceEquip then
-			if card:isKindOf("GaleShell") then return -2
-			elseif card:isKindOf("SilverLion") then
+			if card:isKindOf("SilverLion") then
 				local players = self.room:getOtherPlayers(self.player) 
 				for _,p in sgs.qlist(players) do
 					local blade = p:getWeapon()
@@ -139,7 +138,7 @@ end
 sgs.ai_skill_choice.jilei = function(self, choices)
 	local tmptrick = sgs.Sanguosha:cloneCard("ex_nihilo", sgs.Card_NoSuit, 0)
 	if (self:isEquip("Crossbow",self.jilei_source) and self.jilei_source:inMyAttackRange(self.player)) or
-		 self.jilei_source:isJilei(tmptrick) then
+		self.jilei_source:isCardLimited(tmptrick, sgs.Card_MethodUse, true) then
 		return "BasicCard"
 	else
 		return "TrickCard"
@@ -620,12 +619,12 @@ sgs.ai_skill_playerchosen.xingwu = function(self, targets)
 	local getCmpValue = function(enemy)
 		local value = 0
 		if self:damageIsEffective(enemy) then
-			local dmg = enemy:hasArmorEffect("silver_lion") and 1 or 2
+			local dmg = enemy:hasArmorEffect("SilverLion") and 1 or 2
 			if enemy:getHp() <= dmg then value = 5 else value = value + enemy:getHp() / (enemy:getHp() - dmg) end
 			if not sgs.isGoodTarget(enemy, self.enemies, self) then value = value - 2 end
 			if self:cantbeHurt(enemy, dmg, self.player) then value = value - 5 end
 			if enemy:isLord() then value = value + 2 end
-			if enemy:hasArmorEffect("silver_lion") then value = value - 1.5 end
+			if enemy:hasArmorEffect("SilverLion") then value = value - 1.5 end
 			if self:hasSkills(sgs.exclusive_skill, enemy) then value = value - 1 end
 			if self:hasSkills(sgs.masochism_skill, enemy) then value = value - 0.5 end
 		end
@@ -633,7 +632,7 @@ sgs.ai_skill_playerchosen.xingwu = function(self, targets)
 			local len = enemy:getEquips():length()
 			if enemy:hasSkills(sgs.lose_equip_skill) then value = value - 0.6 * len end
 			if enemy:getArmor() and self:needToThrowArmor() then value = value - 1.5 end
-			if enemy:hasArmorEffect("silver_lion") then value = value - 0.5 end
+			if enemy:hasArmorEffect("SilverLion") then value = value - 0.5 end
 
 			if enemy:getWeapon() then value = value + 0.8 end
 			if enemy:getArmor() then value = value + 1 end
@@ -788,7 +787,7 @@ sgs.ai_skill_use_func.DuwuCard = function(card, use, self)
 		if index <= hc_num then return 0
 		elseif index == hc_num + 1 then
 			if eq_num == 2 then
-				return sgs.weapon_range[self.player:getWeapon():getClassName()] - self.player:getAttackRange(false)
+				return sgs.weapon_range[self.player:getWeapon():getClassName()] - 1
 			else
 				return 1
 			end

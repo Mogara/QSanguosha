@@ -29,10 +29,10 @@ sgs.ai_skill_invoke.Fan = function(self, data)
 	for _, target in sgs.qlist(use.to) do
 		if self:isFriend(target) then
 			if not self:damageIsEffective(target, sgs.DamageStruct_Fire) then return true end
-			if target:isChained() and self:isGoodChainTarget(target) then return true end			
+			if target:isChained() and self:isGoodChainTarget(target, nil, nil, nil, use.card) then return true end			
 		else
 			if not self:damageIsEffective(target, sgs.DamageStruct_Fire) then return false end
-			if target:isChained() and not self:isGoodChainTarget(target) then return false end
+			if target:isChained() and not self:isGoodChainTarget(target, nil, nil, nil, use.card) then return false end
 			if target:hasArmorEffect("Vine") or target:getMark("@gale") > 0 or (jinxuandi and jinxuandi:getMark("@wind") > 0) then
 				return true
 			end
@@ -44,7 +44,7 @@ sgs.ai_view_as.Fan = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card_place ~= sgs.Player_PlaceSpecial and card:objectName() == "slash" then
+	if sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE and card_place ~= sgs.Player_PlaceSpecial and card:objectName() == "slash" then
 		return ("fire_slash:fan[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end
@@ -77,7 +77,7 @@ fan_skill.getTurnUseCard=function(self)
 end
 
 function sgs.ai_weapon_value.Fan(self, enemy)
-	if enemy and (self:isEquip("Vine", enemy) or enemy:getMark("@gale") > 0 or  self:isEquip("GaleShell", enemy)) then return 6 end
+	if enemy and (enemy:hasArmorEffect("Vine") or enemy:getMark("@gale") > 0) then return 6 end
 end
 
 function sgs.ai_armor_value.Vine(player, self)
@@ -89,7 +89,9 @@ function sgs.ai_armor_value.Vine(player, self)
 	if self.player:hasSkill("sizhan") then return 4.9 end
 	if player:hasSkill("jujian") and not player:getArmor() and #(self:getFriendsNoself(player)) > 0 and player:getPhase() == sgs.Player_Play then return 3 end
 	if player:hasSkill("diyyicong") and not player:getArmor() and player:getPhase() == sgs.Player_Play then return 3 end
-
+	
+	if player:isChained() and not self:isGoodChainTarget(player) or not self:isGoodChainTarget(player, self.player, sgs.DamageStruct_Thunder) then return -2 end
+	
 	for _, enemy in ipairs(self:getEnemies(player)) do
 		if (enemy:canSlash(player) and self:isEquip("Fan",enemy)) or self:hasSkills("huoji|longhun|shaoying|zonghuo|wuling", enemy)
 		  or (enemy:hasSkill("yeyan") and enemy:getMark("@flame") > 0) then return -2 end
@@ -115,11 +117,11 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 	local anal = self:getCard("Analeptic")
 	if not anal then return nil end
 
-	local analAvail = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, anal)		
+	local analAvail = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, anal)
 	local slashAvail = 0
 
 	for _, card in ipairs(self.toUse) do
-		if analAvail == 1 and card:getId() ~= slash:getId() then return nil else break end
+		if analAvail == 1 and card:getId() ~= slash:getId() then return end
 		if card:isKindOf("Slash") then slashAvail = slashAvail + 1 end
 	end
 	
@@ -153,7 +155,7 @@ function SmartAI:searchForAnaleptic(use, enemy, slash)
 			end
 		end
 
-		if self.player:hasLordSkill("weidai") and not self.player:hasFlag("weidai_failed") then
+		if self.player:hasLordSkill("weidai") and not self.player:hasFlag("Global_WeidaiFailed") then
 			return sgs.Card_Parse("@WeidaiCard=.")
 		end
 	end
@@ -206,7 +208,7 @@ function SmartAI:useCardSupplyShortage(card, use)
 
 		local value = 0 - enemy:getHandcardNum()
 
-		if self:hasSkills("yongsi|haoshi|tuxi|lijian|fanjian|neofanjian|dimeng|jijiu|jieyin|manjuan|beige",enemy)
+		if self:hasSkills("yongsi|haoshi|tuxi|noslijian|lijian|fanjian|neofanjian|dimeng|jijiu|jieyin|manjuan|beige",enemy)
 		  or (enemy:hasSkill("zaiqi") and enemy:getLostHp() > 1)
 			then value = value + 10 
 		end
@@ -270,7 +272,7 @@ function SmartAI:getChainedEnemies(player)
 	return chainedEnemies
 end
 
-function SmartAI:isGoodChainPartner(player)  
+function SmartAI:isGoodChainPartner(player)
 	player = player or self.player
  	if player:hasSkill("buqu") or (self.player:hasSkill("niepan") and self.player:getMark("@nirvana") > 0) or self:needToLoseHp(player)
 			or self:getDamagedEffects(player) or (player:hasSkill("fuli") and player:getMark("@laoji") > 0) then  
@@ -279,40 +281,101 @@ function SmartAI:isGoodChainPartner(player)
 	return false
 end
 
-function SmartAI:isGoodChainTarget(who, source)	
+function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 	if not who:isChained() then return false end
 	source = source or self.player
-	local good = #(self:getChainedEnemies(source))
-	local bad = #(self:getChainedFriends(source))
+	nature = nature or sgs.DamageStruct_Fire
 	
-	if not sgs.GetConfig("EnableHegemony", false) then	
-		local lord = self.room:getLord()
-		if lord and self:isWeak(lord) and lord:isChained() and not self:isEnemy(lord, source) then
-			return false
-		end
+	if source:hasSkill("jueqing") then return true end
+	
+	-- if not sgs.GetConfig("EnableHegemony", false) then
+		-- local lord = self.room:getLord()
+		-- if lord and self:isWeak(lord) and lord:isChained() and not self:isEnemy(lord, source) then
+			-- return false
+		-- end
+	-- end
+	
+	damagecount = damagecount or 1
+	if slash then
+		nature = slash:isKindOf("FireSlash") and sgs.DamageStruct_Fire
+					or slash:isKindOf("ThunderSlash") and sgs.DamageStruct_Thunder
+					or sgs.DamageStruct_Normal
+		damagecount = self:hasHeavySlashDamage(source, slash, who, true)
+	elseif nature == sgs.DamageStruct_Fire then
+		if who:hasArmorEffect("Vine") then damagecount = damagecount + 1 end
+		if who:getMark("@gale") > 0 and self.room:findPlayerBySkillName("kuangfeng") then damagecount = damagecount + 1 end
 	end
 
-	for _, friend in ipairs(self:getChainedFriends(source)) do
-		if self:cantbeHurt(friend, nil, source) then
-			return false
-		end
-		if self:isGoodChainPartner(friend) then 
-			good = good + 1 
-		elseif self:isWeak(friend) then 
-			good = good - 1
-		end
+	
+	local jxd = self.room:findPlayerBySkillName("wuling")
+	if jxd then
+		if jxd:getMark("@fire") then nature = sgs.DamageStruct_Fire
+		elseif not slash and jxd:getMark("@thunder") > 0 and nature == sgs.DamageStruct_Thunder then damagecount = damagecount + 1
+		elseif not slash and jxd:getMark("@wind") > 0 and nature == sgs.DamageStruct_Fire then damagecount = damagecount + 1 end
 	end
+	if not self:damageIsEffective(who, nature, source) then return end	
 
-	for _, enemy in ipairs(self:getChainedEnemies(source)) do
-		if self:cantbeHurt(enemy, nil, source) then
-			return false
+	if who:hasArmorEffect("SilverLion") then damagecount = 1 end
+	
+	local kills, killlord = 0
+	local good, bad = 0, 0
+	local peach_num = self.player:objectName() == source:objectName() and self:getCardsNum("Peach") or getCardsNum("Peach", source)
+	
+	local function getChainedPlayerValue(target, dmg)
+		local newvalue = 0
+		if self:isGoodChainPartner(target) then newvalue = newvalue + 1 end
+		if self:isWeak(target) then newvalue = newvalue - 1 end
+		if nature == sgs.DamageStruct_Fire then
+			if target:hasArmorEffect("Vine") and dmg then dmg = dmg + 1 end
+			if target:getMark("@gale") > 0 and self.room:findPlayerBySkillName("kuangfeng") and dmg then dmg = dmg + 1 end
 		end
-		if self:isGoodChainPartner(enemy) then 
-			bad = bad + 1 
-		elseif self:isWeak(enemy) then
-			bad = bad - 1 
+		if self:cantbeHurt(target, damagecount, source) then newvalue = newvalue - 100 end
+		if damagecount + (dmg or 0) >= target:getHp() then
+			newvalue = newvalue - 2
+			if target:isLord() and not self:isEnemy(target, source) then kill_lord = true end
+			if self:isEnemy(target, source) then kills = kills + 1 end
+		else
+			if self:isEnemy(target, source) and source:getHandcardNum() < 2 and target:hasSkills("ganglie|neoganglie") and source:getHp() == 1
+				and self:damageIsEffective(source, nil, target) and peach_num < 1 then newvalue = newvalue - 100 end
+			if target:hasSkill("vsganglie") then
+				local can
+				for _, t in ipairs(self:getFriends(source)) do
+					if t:getHp() == 1 and t:getHandcardNum() < 2 and self:damageIsEffective(t, nil, target) and peach_num < 1 then
+						if t:isLord() then
+							newvalue = newvalue - 100
+							if not self:isEnemy(t, source) then killlord = true end
+						end
+						can = true
+					end
+				end
+				if can then newvalue = newvalue - 2 end
+			end
+		end
+		
+		if target:hasArmorEffect("SilverLion") then return newvalue - 1 end
+		return newvalue - damagecount - (dmg or 0)
+	end	
+	
+
+	local value = getChainedPlayerValue(who)
+	if self:isFriend(who) then good = value
+	elseif self:isEnemy(who) then bad = value end
+	
+	if nature == sgs.DamageStruct_Normal then return good >= bad end
+	
+	for _, player in sgs.qlist(self.room:getAllPlayers()) do
+		if player:objectName() ~= who:objectName() and player:isChained() and self:damageIsEffective(player, nature, source) then
+			local getvalue = getChainedPlayerValue(player, 0)
+			if kills == #self:getEnemies(source) and not killlord then 
+				if slash then self.room:setCardFlag(slash, "AIGlobal_killoff") end 
+				return true
+			end
+			if self:isFriend(player) then good = good + getvalue
+			elseif self:isEnemy(player) then bad = bad + getvalue end
 		end
 	end
+	
+	if killlord and sgs.evaluatePlayerRole(source) == "rebel" then return true end
 	return good >= bad
 end
 
@@ -356,8 +419,8 @@ function SmartAI:useCardIronChain(card, use)
 	local chainSelf = (not use.current_targets or not table.contains(use.current_targets, self.player:objectName()))
 						and (self:needToLoseHp(self.player) or self:getDamagedEffects(self.player)) and not self.player:isChained()
 						and not self.player:hasSkill("jueqing")
-						and (self:getCardId("FireSlash") or self:getCardId("ThunderSlash")
-							or (self:getCardId("Slash") and (self.player:hasWeapon("Fan") or self.player:hasSkill("lihuo")))
+						and (self:getCardId("FireSlash") or self:getCardId("ThunderSlash") or 
+							(self:getCardId("Slash") and (self.player:hasWeapon("fan") or self.player:hasSkill("lihuo")))
 						or (self:getCardId("FireAttack") and self.player:getHandcardNum() > 2))
 
 	local targets_num = 2 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
@@ -466,7 +529,7 @@ sgs.ai_skill_cardask["@fire-attack"] = function(self, data, pattern, target)
 	local lord = self.room:getLord()
 	if sgs.GetConfig("EnableHegemony", false) then lord = nil end
 	
-	for _, acard in ipairs(cards) do		
+	for _, acard in ipairs(cards) do
 		if acard:getSuitString() == convert[pattern] then
 			if not isCard("Peach", acard, self.player) then
 				card = acard
@@ -474,7 +537,7 @@ sgs.ai_skill_cardask["@fire-attack"] = function(self, data, pattern, target)
 			else
 				local needKeepPeach = true
 				if (self:isWeak(target) and not self:isWeak()) or target:getHp() == 1
-						or self:isGoodChainTarget(target) or self:isEquip("Vine", target) or target:getMark("@gale") > 0 then 
+						or self:isGoodChainTarget(target) or target:hasArmorEffect("Vine") or target:getMark("@gale") > 0 then 
 					needKeepPeach = false 
 				end
 				if lord and not self:isEnemy(lord) and sgs.isLordInDanger() and self:getCardsNum("Peach") == 1 and self.player:aliveCount() > 2 then 
@@ -502,8 +565,10 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	}
 
 	local cards = self.player:getHandcards()
+	local canDis = {}
 	for _, card in sgs.qlist(cards) do
 		if card:getEffectiveId() ~= fire_attack:getEffectiveId() then
+			table.insert(canDis, card)
 			lack[card:getSuitString()] = false
 		end
 	end
@@ -525,7 +590,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 			return false
 		end
 		local damage = 1
-		if not self.player:hasSkill("jueqing") and not enemy:hasArmorEffect("silver_lion") then
+		if not self.player:hasSkill("jueqing") and not enemy:hasArmorEffect("SilverLion") then
 			if enemy:hasArmorEffect("Vine") then damage = damage + 1 end
 			if enemy:getMark("@gale") > 0 then damage = damage + 1 end
 		end
@@ -550,7 +615,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	end
 
 	local can_FireAttack_self
-	for _, card in sgs.qlist(self.player:getHandcards()) do
+	for _, card in ipairs(canDis) do
 		if (not isCard("Peach", card, self.player) or self:getCardsNum("Peach") >= 3)
 			and (not isCard("Analeptic", card, self.player) or self:getCardsNum("Analeptic") >= 2) then
 			can_FireAttack_self = true
@@ -607,8 +672,15 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	if #targets > 0 then
 		local godsalvation = self:getCard("GodSalvation")
 		if godsalvation and godsalvation:getId() ~= fire_attack:getId() and self:willUseGodSalvation(godsalvation) then
-			use.card = godsalvation
-			return
+			local use_gs = true
+			for _, p in ipairs(targets) do
+				if not p:isWounded() or not self:hasTrickEffective(godsalvation, p, self.player) then break end
+				use_gs = false
+			end
+			if use_gs then
+				use.card = godsalvation
+				return
+			end
 		end
 
 		local targets_num = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, fire_attack)

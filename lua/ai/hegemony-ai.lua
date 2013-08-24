@@ -108,11 +108,10 @@ end
 
 sgs.ai_chaofeng.yuejin = 2
 
-sgs.ai_skill_use["@@shushen"] = function(self, prompt)
-	if #self.friends_noself == 0 then return "." end
+sgs.ai_skill_playerchosen.shushen = function(self, targets)
+	if #self.friends_noself == 0 then return end
 	local to = self:findPlayerToDraw(false)
 	if to then return ("@ShushenCard=.->%s"):format(to:objectName()) end
-	return "."
 end
 
 sgs.ai_card_intention.ShushenCard = -80
@@ -134,6 +133,7 @@ local duoshi_skill = {}
 duoshi_skill.name = "duoshi"
 table.insert(sgs.ai_skills, duoshi_skill)
 duoshi_skill.getTurnUseCard = function(self, inclusive)
+	if self.player:usedTimes("DuoshiCard") >= 4 then return end 
 	if sgs.turncount <= 1 and #self.friends_noself == 0 and not self:isWeak() then return end
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
@@ -302,6 +302,10 @@ sgs.ai_use_value.FenxunCard = 5.5
 sgs.ai_use_priority.FenxunCard = 4.1
 sgs.ai_card_intention.FenxunCard = 50
 
+sgs.ai_skill_invoke.lirang = function(self, data)
+	return #self.friends_noself > 0
+end
+
 sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 	local cards = {}
 	for _, card_id in ipairs(card_ids) do
@@ -362,6 +366,7 @@ sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 			return new_friends[1], cards[1]:getEffectiveId()
 		end
 	end
+
 end
 
 sgs.ai_skill_playerchosen.sijian = function(self, targets)
@@ -512,7 +517,7 @@ sgs.ai_skill_choice.kuangfu_equip = function(self, choices, data)
 			elseif card:isKindOf("OffensiveHorse") and choices:match("3") then return "3"
 			end
 		end
-		if choices:match("1") and who:hasArmorEffect("eight_diagram") and not self:needToThrowArmor(who) then return "1" end
+		if choices:match("1") and who:hasArmorEffect("EightDiagram") and not self:needToThrowArmor(who) then return "1" end
 		if self:hasSkills("jijiu|beige|mingce|weimu|qingcheng", who) and not self:doNotDiscard(who, "e", false, 1, reason) then
 			if choices:match("2") then return "2" end
 			if choices:match("1") and who:getArmor() and not self:needToThrowArmor(who) then return "1" end

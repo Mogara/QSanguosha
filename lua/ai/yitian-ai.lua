@@ -109,7 +109,7 @@ end
 ]]--
 sgs.ai_skill_use["@@ytchengxiang"]=function(self,prompt)
 	local prompts=prompt:split(":")
-	assert(prompts[1]=="@ytchengxiang-card")
+	-- assert(prompts[1]=="@ytchengxiang-card")
 	local point=tonumber(prompts[4])
 	local targets=self.friends
 	if not targets then return end
@@ -330,14 +330,14 @@ sgs.ai_skill_choice.wuling = function(self, choices)
 	end
 	if choices:match("fire") then
 		for _,enemy in ipairs(self.enemies) do
-			if self:isEquip("GaleShell", enemy) or self:isEquip("Vine", enemy) then return "fire" end
+			if enemy:hasArmorEffect("Vine") then return "fire" end
 		end
 		if #(self:getChainedFriends()) < #(self:getChainedEnemies()) and
 			#(self:getChainedFriends()) + #(self:getChainedEnemies()) > 1 then return "fire" end
 	end
 	if choices:match("wind") then
 		for _,enemy in ipairs(self.enemies) do
-			if self:isEquip("GaleShell", enemy) or self:isEquip("Vine", enemy) then return "wind" end
+			if enemy:hasArmorEffect("Vine") then return "wind" end
 		end
 		for _,friend in ipairs(self.friends) do
 			if friend:hasSkill("huoji") then return "wind" end
@@ -411,7 +411,7 @@ sgs.ai_skill_invoke.lianli_jink = function(self, data)
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if player:getMark("@tied") > 0 then tied = player break end
 	end
-	if self:isEquip("EightDiagram", tied) then return true end
+	if self:hasEightDiagramEffect(tied) then return true end
 	return self:getCardsNum("Jink") == 0
 end
 

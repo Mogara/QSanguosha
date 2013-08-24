@@ -232,10 +232,28 @@ huoji_skill.getTurnUseCard=function(self)
 
 	self:sortByUseValue(cards,true)
 
-	for _,acard in ipairs(cards)  do
+	for _,acard in ipairs(cards) do
 		if acard:isRed() and not acard:isKindOf("Peach") and (self:getDynamicUsePriority(acard) < sgs.ai_use_value.FireAttack or self:getOverflow() > 0) then
-			card = acard
-			break
+			if acard:isKindOf("Slash") and self:getCardsNum("Slash") == 1 then
+				local keep
+				local dummy_use = { isDummy = true , to = sgs.SPlayerList() }
+				self:useBasicCard(acard, dummy_use)
+				if dummy_use.card and dummy_use.to and dummy_use.to:length() > 0 then
+					for _, p in sgs.qlist(dummy_use.to) do
+						if p:getHp() <= 1 then keep = true break end
+					end
+					if dummy_use.to:length() > 1 then keep = true end
+				end
+				if keep then sgs.ai_use_priority.Slash = sgs.ai_use_priority.FireAttack + 0.1
+				else
+					sgs.ai_use_priority.Slash = 2.6
+					card = acard
+					break
+				end
+			else
+				card = acard
+				break
+			end
 		end
 	end
 
@@ -290,7 +308,14 @@ lianhuan_skill.getTurnUseCard = function(self)
 
 	local card
 	self:sortByUseValue(cards, true)
-
+	
+	local slash = self:getCard("FireSlash") or self:getCard("ThunderSlash") or self:getCard("Slash")
+	if slash then
+		local dummy_use = { isDummy = true }
+		self:useBasicCard(slash, dummy_use)
+		if not dummy_use.card then slash = nil end
+	end
+	
 	for _, acard in ipairs(cards) do
 		if acard:getSuit() == sgs.Card_Club then
 			local shouldUse = true
@@ -304,7 +329,7 @@ lianhuan_skill.getTurnUseCard = function(self)
 				self:useEquipCard(acard, dummy_use)
 				if dummy_use.card then shouldUse = false end
 			end
-			if shouldUse then
+			if shouldUse and (not slash or slash:getEffectiveId() ~= acard:getEffectiveId()) then
 				card = acard
 				break
 			end
@@ -328,15 +353,7 @@ sgs.ai_skill_invoke.niepan = function(self, data)
 	local dying = data:toDying()
 	local peaches = 1 - dying.who:getHp()
 
-	local cards = self.player:getHandcards()
-	local n = 0
-	for _, card in sgs.qlist(cards) do
-		if card:isKindOf("Peach") or card:isKindOf("Analeptic") then
-			n = n + 1
-		end
-	end
-
-	return n < peaches
+	return self:getCardsNum("Peach") + self:getCardsNum("Analeptic") < peaches
 end
 
 sgs.ai_chaofeng.pangtong = -1

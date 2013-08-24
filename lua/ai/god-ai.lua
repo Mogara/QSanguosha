@@ -133,6 +133,12 @@ function SmartAI:cantbeHurt(player, damageNum, from)
 			return true
 		end
 	end
+	if from:objectName() ~= player:objectName() then
+		if player:hasSkill("enyuan") and (player:getHp() > 1 or self:getAllPeachNum(player) >= 1) and (from:getHp() == 1 and getCardsNum("Peach", from))
+			and from:getHandcardNum() <= 1 then return true end
+		if player:hasSkill("nosenyuan") and (player:getHp() > 1 or self:getAllPeachNum(player) >= 1) and (from:getHp() == 1 and getCardsNum("Peach", from))
+			and not self:hasSuit("heart", false, from) then return true end
+	end
 	return false
 end
 
@@ -407,11 +413,10 @@ sgs.ai_skill_invoke.qinyin = function(self, data)
 	return false
 end
 
-local yeyan_skill={}
+local yeyan_skill = {}
 yeyan_skill.name = "yeyan"
 table.insert(sgs.ai_skills, yeyan_skill)
-yeyan_skill.getTurnUseCard=function(self)
-	if self.player:getRole() == "lord" and (#self.enemies > 1 or sgs.turncount <= 1) then return end
+yeyan_skill.getTurnUseCard = function(self)
 	if self.player:getMark("@flame") == 0 then return end
 	if self.player:getHandcardNum() >= 4 then
 		local spade, club, heart, diamond
@@ -426,9 +431,8 @@ yeyan_skill.getTurnUseCard=function(self)
 			self:sort(self.enemies, "hp")
 			local target_num = 0
 			for _, enemy in ipairs(self.enemies) do
-				if enemy:hasArmorEffect("Vine") or (enemy:isChained() and self:isGoodChainTarget(enemy)) then
-					target_num = target_num + 1
-				elseif enemy:getHp() <= 3 then
+				if ((enemy:hasArmorEffect("Vine") or enemy:getHp() <= 3) and not enemy:isChained())
+					or (enemy:isChained() and self:isGoodChainTarget(enemy, nil, nil, 3)) then
 					target_num = target_num + 1
 				end
 			end
@@ -446,7 +450,7 @@ yeyan_skill.getTurnUseCard=function(self)
 	local target_num = 0
 	local chained = 0
 	for _, enemy in ipairs(self.enemies) do
-		if ((enemy:hasArmorEffect("Vine") or self:isEquip("GaleShell", enemy) or enemy:getMark("@gale") > 0) or enemy:getHp() <= 1) 
+		if ((enemy:hasArmorEffect("Vine") or enemy:getMark("@gale") > 0) or enemy:getHp() <= 1) 
 			and not (self.role == "renegade" and enemy:isLord()) then
 			target_num = target_num + 1
 		end
@@ -464,7 +468,11 @@ yeyan_skill.getTurnUseCard=function(self)
 	end
 end
 
-sgs.ai_skill_use_func.GreatYeyanCard=function(card,use,self)
+sgs.ai_skill_use_func.GreatYeyanCard = function(card, use, self)
+	if self.role == "lord" and (sgs.turncount <= 1 or sgs.current_mode_players["rebel"] > #self:getChainedEnemies() or self:getAllPeachNum() < 3 - self.player:getHp()) then
+		return
+	end
+	if self.role == "renegade" and self.player:aliveCount() > 2 and self:getCardsNum("Peach") < 3 - self.player:getHp() then return end
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
 	self:sortByUseValue(cards, true)
@@ -480,71 +488,56 @@ sgs.ai_skill_use_func.GreatYeyanCard=function(card,use,self)
 	if #need_cards < 4 then return end
 	local greatyeyan = sgs.Card_Parse("@GreatYeyanCard=" .. table.concat(need_cards, "+"))
 	assert(greatyeyan)
-
+	
+	local first
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do
-		if not enemy:hasArmorEffect("SilverLion") and
-			not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and
-			self:objectiveLevel(enemy) > 3 and self:damageIsEffective(enemy, sgs.DamageStruct_Fire) then
-				if enemy:isChained() and self:isGoodChainTarget(enemy) then
-					if enemy:hasArmorEffect("Vine") then
-						use.card = greatyeyan
-						if use.to then 
-							use.to:append(enemy)
-							use.to:append(enemy)
-							use.to:append(enemy)	
-						end
-						return
-					end
+		if not enemy:hasArmorEffect("SilverLion") and self:objectiveLevel(enemy) > 3 and self:damageIsEffective(enemy, sgs.DamageStruct_Fire)
+			and not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and enemy:isChained() and self:isGoodChainTarget(enemy, nil, nil, 3) then
+			if enemy:hasArmorEffect("Vine") then
+				use.card = greatyeyan
+				if use.to then
+					use.to:append(enemy)
+					use.to:append(enemy)
+					use.to:append(enemy)
 				end
+				return
+			elseif not first then first = enemy end
 		end
 	end
+	if first then
+		use.card = greatyeyan
+		if use.to then 
+			use.to:append(first)
+			use.to:append(first)
+			use.to:append(first)
+		end
+		return
+	end
+	
+	local second
 	for _, enemy in ipairs(self.enemies) do
-		if not enemy:hasArmorEffect("SilverLion") and
-			not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) 
-			and self:objectiveLevel(enemy) > 3 and self:damageIsEffective(enemy, sgs.DamageStruct_Fire) then
-				if enemy:isChained() and self:isGoodChainTarget(enemy) then
-					use.card = greatyeyan
-					if use.to then 
-						use.to:append(enemy)
-						use.to:append(enemy)
-						use.to:append(enemy)	
-					end
-					return
+		if not enemy:hasArmorEffect("SilverLion") and self:objectiveLevel(enemy) > 3 and self:damageIsEffective(enemy, sgs.DamageStruct_Fire)
+			and not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and not enemy:isChained() then
+			if enemy:hasArmorEffect("Vine") then
+				use.card = greatyeyan
+				if use.to then 
+					use.to:append(enemy)
+					use.to:append(enemy)
+					use.to:append(enemy)
 				end
+				return
+			elseif not second then second = enemy end
 		end
 	end
-	for _, enemy in ipairs(self.enemies) do
-		if not enemy:hasArmorEffect("SilverLion") and
-			not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) 
-			and self:objectiveLevel(enemy) > 3 and self:damageIsEffective(enemy, sgs.DamageStruct_Fire) then
-				if not enemy:isChained() then
-					if enemy:hasArmorEffect("Vine") then
-						use.card = greatyeyan
-						if use.to then 
-							use.to:append(enemy)
-							use.to:append(enemy)
-							use.to:append(enemy)	
-						end
-						return
-					end
-				end
+	if second then
+		use.card = greatyeyan
+		if use.to then 
+			use.to:append(second)
+			use.to:append(second)
+			use.to:append(second)
 		end
-	end
-	for _, enemy in ipairs(self.enemies) do
-		if not enemy:hasArmorEffect("SilverLion") and
-			not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) 
-			and self:objectiveLevel(enemy) > 3 and self:damageIsEffective(enemy, sgs.DamageStruct_Fire) then
-				if not enemy:isChained() then
-					use.card = greatyeyan
-					if use.to then 
-						use.to:append(enemy)
-						use.to:append(enemy)
-						use.to:append(enemy)	
-					end
-					return
-				end
-		end
+		return
 	end
 end
 
@@ -553,56 +546,47 @@ sgs.ai_use_priority.GreatYeyanCard = 9
 
 sgs.ai_card_intention.GreatYeyanCard = 200
 
-sgs.ai_skill_use_func.SmallYeyanCard=function(card,use,self)
-	local num = 0
+sgs.ai_skill_use_func.SmallYeyanCard = function(card, use, self)
+	local targets = sgs.SPlayerList()
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do
-		if not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and self:damageIsEffective(enemy, sgs.DamageStruct_Fire) then
-			if enemy:isChained() and self:isGoodChainTarget(enemy) then
-				if enemy:hasArmorEffect("Vine") then
-					if use.to then use.to:append(enemy) end
-					num = num + 1
-					if num >=3 then break end
-				end
-			end
+		if not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and self:damageIsEffective(enemy, sgs.DamageStruct_Fire)
+			and enemy:isChained() and self:isGoodChainTarget(enemy) and enemy:hasArmorEffect("Vine") then
+			targets:append(enemy)
+			if targets:length() >= 3 then break end
 		end
 	end
-	if num < 3 then
+	if targets:length() < 3 then
 		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and self:damageIsEffective(enemy, sgs.DamageStruct_Fire) then
-				if enemy:isChained() and self:isGoodChainTarget(enemy) and not enemy:hasArmorEffect("Vine") then
-					if use.to then use.to:append(enemy) end
-					num = num + 1
-					if num >=3 then break end
-				end
+			if not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and self:damageIsEffective(enemy, sgs.DamageStruct_Fire)
+				and enemy:isChained() and self:isGoodChainTarget(enemy) then
+				targets:append(enemy)
+				if targets:length() >= 3 then break end
 			end
 		end
 	end	
-	if num < 3 then
+	if targets:length() < 3 then
 		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and self:damageIsEffective(enemy, sgs.DamageStruct_Fire) then
-				if not enemy:isChained() then
-					if enemy:hasArmorEffect("Vine") then
-						if use.to then use.to:append(enemy) end
-						num = num + 1
-						if num >=3 then break end
-					end
-				end
+			if not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and self:damageIsEffective(enemy, sgs.DamageStruct_Fire)
+				and not enemy:isChained() and enemy:hasArmorEffect("Vine") then
+				targets:append(enemy)
+				if targets:length() >= 3 then break end
 			end
 		end
 	end
-	if num < 3 then
+	if targets:length() < 3 then
 		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and self:damageIsEffective(enemy, sgs.DamageStruct_Fire) then
-				if not enemy:isChained() and not enemy:hasArmorEffect("Vine") then
-					if use.to then use.to:append(enemy) end
-					num = num + 1
-					if num >=3 then break end
-				end
+			if not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and self:damageIsEffective(enemy, sgs.DamageStruct_Fire)
+				and not enemy:isChained() then
+				targets:append(enemy)
+				if targets:length() >= 3 then break end
 			end
 		end
 	end
-	if num > 0 then use.card = card end
+	if targets:length() > 0 then
+		use.card = card
+		if use.to then use.to = targets end
+	end
 end
 
 sgs.ai_card_intention.SmallYeyanCard = 80
@@ -857,6 +841,11 @@ sgs.ai_skill_use_func.ShenfenCard = function(card,use,self)
 			break
 		end
 	end	
+	
+	if self.role == "renegade" then
+		local lord = getLord(self.player)
+		if lord and not self:isFriend(lord) and lord:getHp() == 1 and self:damageIsEffective(lord) and self:getCardsNum("Peach") == 0 then return end
+	end
 	
 	for _, friend in ipairs(self.friends_noself) do
 		friends_ZDL = friends_ZDL + friend:getCardCount(true) + friend:getHp()
