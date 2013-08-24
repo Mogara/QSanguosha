@@ -942,6 +942,7 @@ public:
             if (!extra) return false;
             use.to.append(extra);
             room->sortByActionOrder(use.to);
+			data = QVariant::fromValue(use);
 
             LogMessage log;
             log.type = "#QiaoshuiAdd";
