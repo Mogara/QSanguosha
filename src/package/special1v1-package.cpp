@@ -512,7 +512,7 @@ public:
             CardMoveReason reason = move.reason;
             int basic_reason = (reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON);
             if (basic_reason == CardMoveReason::S_REASON_USE || reason.m_reason == CardMoveReason::S_REASON_RESPONSE
-                || (basic_reason == CardMoveReason::S_REASON_RECAST && reason.m_skillName != "weapon_recast"))
+                || (basic_reason == CardMoveReason::S_REASON_RECAST && !reason.m_skillName.isEmpty()))
                 return false;
             QList<int> card_ids;
             int i = 0;
