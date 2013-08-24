@@ -143,6 +143,8 @@ function sgs.getDefenseSlash(player)
 	end
 	
 	if player:hasSkill("aocai") and player:getPhase() == sgs.Player_NotActive then defense = defense + 0.5 end
+	if player:hasSkill("wanrong") and not (player:hasSkill("manjuan") and player:getPhase() == sgs.Player_NotActive) then defense = defense + 0.5 end
+	
 	local hujiaJink = 0
 	if player:hasLordSkill("hujia") then
 		local lieges = global_room:getLieges("wei", player)
