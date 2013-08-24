@@ -611,7 +611,7 @@ sgs.ai_card_intention.ShichouCard = function(self, card, from, tos)
 end
 
 
-function SmartAI:useCardYanxiaoCard(card, use)
+sgs.ai_skill_use_func.YanxiaoCard = function(card, use, self)
 	local players = self.room:getOtherPlayers(self.player)
 	local tricks
 	self:sort(self.friends_noself, "defense")
