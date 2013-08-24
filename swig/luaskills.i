@@ -260,7 +260,7 @@ bool LuaProhibitSkill::isProhibited(const Player *from, const Player *to, const 
     for(int i = 0; i < others.length(); i++){
         const Player *player = others[i];
         SWIG_NewPointerObj(L, player, SWIGTYPE_p_Player, 0);
-        lua_rawseti(L, -5, i + 1);
+        lua_rawseti(L, -2, i + 1);
     }
 
     int error = lua_pcall(L, 5, 1, 0);
