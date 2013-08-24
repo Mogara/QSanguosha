@@ -3030,7 +3030,7 @@ void RoomScene::doScript() {
 }
 
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players) {
-    table->setColumnCount(10);
+    table->setColumnCount(11);
     table->setRowCount(players.length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 

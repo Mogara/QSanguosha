@@ -690,7 +690,7 @@ void MainWindow::on_actionRecord_analysis_triggered() {
 
     RecAnalysis *record = new RecAnalysis(filename);
     QMap<QString, PlayerRecordStruct *> record_map = record->getRecordMap();
-    table->setColumnCount(10);
+    table->setColumnCount(11);
     table->setRowCount(record_map.keys().length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
