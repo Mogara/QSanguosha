@@ -103,7 +103,7 @@ return {
 	["designer:liubiao"] = "管乐",
 	["illustrator:liubiao"] = "关东煮",
 	["zishou"] = "自守",
-	[":zishou"] = "摸牌阶段，若你已受伤，你可以额外摸X张牌，然后跳过出牌阶段。（X为你已损失的体力值）",
+	[":zishou"] = "摸牌阶段，若你已受伤，你可以额外摸X张牌（X为你已损失的体力值），然后跳过出牌阶段。",
 	["zongshi"] = "宗室",
 	[":zongshi"] = "<font color=\"blue\"><b>锁定技，</b></font>你的手牌上限+X。（X为现存势力数）",
 
