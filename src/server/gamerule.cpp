@@ -564,9 +564,11 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
             break;
         }
     case ChoiceMade: {
-            foreach (QString flag, player->getFlagList()) {
-                if (flag.startsWith("Global_") && flag.endsWith("Failed"))
-                    room->setPlayerFlag(player, "-" + flag);
+            foreach (ServerPlayer *p, room->getAlivePlayers()) {
+                foreach (QString flag, p->getFlagList()) {
+                    if (flag.startsWith("Global_") && flag.endsWith("Failed"))
+						room->setPlayerFlag(p, "-" + flag);
+				}
             }
             break;
         }
