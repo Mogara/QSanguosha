@@ -62,7 +62,7 @@ DamageStruct::DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *t
 }
 
 DamageStruct::DamageStruct(const QString &reason, ServerPlayer *from, ServerPlayer *to, int damage, DamageStruct::Nature nature)
-    : card(NULL), chain(false), by_user(true), transfer(false)
+    : card(NULL), chain(false), transfer(false), by_user(true)
 {
     this->from = from;
     this->to = to;
@@ -285,9 +285,27 @@ void RoomThread::constructTriggerTable() {
 }
 
 ServerPlayer *RoomThread::find3v3Next(QList<ServerPlayer *> &first, QList<ServerPlayer *> &second) {
+	bool all_actioned = true;
+	foreach (ServerPlayer *player, room->m_alivePlayers) {
+		if (!player->hasFlag("actioned")) {
+			all_actioned = false;
+			break;
+		}
+	}
+
+	if (all_actioned) {
+		foreach (ServerPlayer *player, room->m_alivePlayers) {
+			room->setPlayerFlag(player, "-actioned");
+			trigger(ActionedReset, room, player);
+		}
+
+		qSwap(first, second);
+		return room->askForPlayerChosen(first.first(), first, "3v3-action", "@3v3-action");
+	}
+
     ServerPlayer *current = room->getCurrent();
     if (current != first.first()) {
-        ServerPlayer *another;
+        ServerPlayer *another = NULL;
         if (current == first.last())
             another = first.at(1);
         else
@@ -327,22 +345,8 @@ void RoomThread::run3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &sec
             if (!player->hasFlag("actioned"))
                 room->setPlayerFlag(player, "actioned");
 
-            bool all_actioned = true;
-            foreach (ServerPlayer *player, room->m_alivePlayers) {
-                if (!player->hasFlag("actioned")) {
-                    all_actioned = false;
-                    break;
-                }
-            }
-
-            if (all_actioned) {
-                foreach (ServerPlayer *player, room->m_alivePlayers) {
-                    room->setPlayerFlag(player, "-actioned");
-                    trigger(ActionedReset, room, player);
-                }
-            }
-
-            run3v3(first, second, game_rule, find3v3Next(first, second));
+           ServerPlayer *next = find3v3Next(first, second);
+		   run3v3(first, second, game_rule, next);
         } else {
             throw triggerEvent;
         }
@@ -353,21 +357,6 @@ void RoomThread::action3v3(ServerPlayer *player) {
     room->setCurrent(player);
     trigger(TurnStart, room, room->getCurrent());
     room->setPlayerFlag(player, "actioned");
-
-    bool all_actioned = true;
-    foreach (ServerPlayer *player, room->m_alivePlayers) {
-        if (!player->hasFlag("actioned")) {
-            all_actioned = false;
-            break;
-        }
-    }
-
-    if (all_actioned) {
-        foreach (ServerPlayer *player, room->m_alivePlayers) {
-            room->setPlayerFlag(player, "-actioned");
-            trigger(ActionedReset, room, player);
-        }
-    }
 }
 
 ServerPlayer *RoomThread::findHulaoPassNext(ServerPlayer *shenlvbu, QList<ServerPlayer *> league, int stage) {
@@ -532,7 +521,6 @@ void RoomThread::run() {
         QList<ServerPlayer *> warm, cool;
         QList<ServerPlayer *> first, second;
         if (room->getMode() == "06_3v3") {
-            order = room->askForOrder(cool.first());
             foreach (ServerPlayer *player, room->m_players) {
                 switch (player->getRoleEnum()) {
                 case Player::Lord: warm.prepend(player); break;
@@ -541,6 +529,7 @@ void RoomThread::run() {
                 case Player::Rebel: cool.append(player); break;
                 }
             }
+			order = room->askForOrder(cool.first());
             if (order == "warm") {
                 first = warm;
                 second = cool;
