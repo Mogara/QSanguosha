@@ -751,7 +751,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const{
     const Card *slash = room->askForCard(effect.to,
                                          "slash",
                                          "savage-assault-slash:"+ effect.from->objectName(),
-                                         QVariant(),
+                                         QVariant::fromValue(effect),
                                          Card::MethodResponse,
                                          effect.from->isAlive() ? effect.from : NULL);
     if (slash) {
@@ -772,7 +772,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
     const Card *jink = room->askForCard(effect.to,
                                         "jink",
                                         "archery-attack-jink:" + effect.from->objectName(),
-                                        QVariant(),
+                                        QVariant::fromValue(effect),
                                         Card::MethodResponse,
                                         effect.from->isAlive() ? effect.from : NULL);
     if (jink && jink->getSkillName() != "eight_diagram" && jink->getSkillName() != "bazhen")
@@ -980,7 +980,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
             const Card *slash = room->askForCard(first,
                                                  "slash",
                                                  "@wushuang-slash-1:" + second->objectName(),
-                                                 QVariant(),
+                                                 QVariant::fromValue(effect),
                                                  Card::MethodResponse,
                                                  second);
             if (slash == NULL)
@@ -988,7 +988,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
 
             slash = room->askForCard(first, "slash",
                                      "@wushuang-slash-2:" + second->objectName(),
-                                     QVariant(),
+                                     QVariant::fromValue(effect),
                                      Card::MethodResponse,
                                      second);
             if (slash == NULL)
@@ -997,7 +997,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
             const Card *slash = room->askForCard(first,
                                                  "slash",
                                                  "duel-slash:" + second->objectName(),
-                                                 QVariant(),
+                                                 QVariant::fromValue(effect),
                                                  Card::MethodResponse,
                                                  second);
             if (slash == NULL)
