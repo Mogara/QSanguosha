@@ -2626,7 +2626,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 				if self:isFriend(from) then return null_card else return end
 			end
 			if not (trick:isKindOf("GlobalEffect") or trick:isKindOf("AOE")) then
-				if self:isFriend(from) then
+				if self:isFriend(from) and not self:isFriend(to) then
 					if ("snatch|dismantlement"):match(trick:objectName()) and to:isNude() then
 					elseif trick:isKindOf("FireAttack") and to:isKongcheng() then
 					else return null_card end

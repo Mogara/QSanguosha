@@ -2502,14 +2502,6 @@ end
 sgs.ai_use_value.LijianCard = 8.5
 sgs.ai_use_priority.LijianCard = 4
 
-lijian_filter = function(player, carduse)
-	if carduse.card:isKindOf("LijianCard") then
-		sgs.ai_lijian_effect = true
-	end
-end
-
-table.insert(sgs.ai_choicemade_filter.cardUsed, lijian_filter)
-
 sgs.ai_card_intention.LijianCard = function(self, card, from, to)
 	if sgs.evaluatePlayerRole(to[1]) == sgs.evaluatePlayerRole(to[2]) then
 		if sgs.evaluatePlayerRole(from) == "rebel" and sgs.evaluatePlayerRole(to[1]) == sgs.evaluatePlayerRole(from) and to[1]:getHp() == 1 then

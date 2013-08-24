@@ -1943,10 +1943,7 @@ function SmartAI:useCardDuel(duel, use)
 end
 
 sgs.ai_card_intention.Duel=function(self, card, from, tos, source)
-	if sgs.ai_lijian_effect then 
-		sgs.ai_lijian_effect = false
-		return
-	end
+	if string.find(card:getSkillName(), "lijian") then return end
 	sgs.updateIntentions(from, tos, 80)
 end
 

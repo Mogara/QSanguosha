@@ -498,14 +498,6 @@ end
 sgs.ai_use_value.NosLijianCard = sgs.ai_use_value.LijianCard
 sgs.ai_use_priority.NosLijianCard = sgs.ai_use_priority.LijianCard
 
-noslijian_filter = function(player, carduse)
-	if carduse.card:isKindOf("NosLijianCard") then
-		sgs.ai_lijian_effect = true
-	end
-end
-
-table.insert(sgs.ai_choicemade_filter.cardUsed, noslijian_filter)
-
 sgs.ai_card_intention.NosLijianCard = sgs.ai_card_intention.LijianCard
 
 local nosrende_skill = {}
