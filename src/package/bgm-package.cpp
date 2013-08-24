@@ -2161,6 +2161,10 @@ BGMDIYPackage::BGMDIYPackage(): Package("BGMDIY") {
     related_skills.insertMulti("diyyicong", "#diyyicong-dist");
     related_skills.insertMulti("tuqi", "#tuqi-dist");
 
+	General *diy_zhugeke = new General(this, "diy_zhugeke", "wu", true, false);
+	diy_zhugeke->addSkill("aocai");
+	diy_zhugeke->addSkill("duwu");
+
     addMetaObject<ZhaoxinCard>();
     addMetaObject<FuluanCard>();
     addMetaObject<HuangenCard>();
