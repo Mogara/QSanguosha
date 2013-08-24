@@ -284,3 +284,24 @@ sgs.ai_skill_playerchosen.yanhuo = function(self, targets)
 	local target = self:findPlayerToDiscard(nil, nil, nil, targets)
 	if target and target:objectName() ~= self.player:objectName() then return target end
 end
+
+sgs.ai_skill_invoke.huwei = function(self)
+	local drowning = sgs.Sanguosha:cloneCard("drowning")
+	local dummy_use = { isDummy = true }
+	self:useTrickCard(drowning, dummy_use)
+	return (dummy_use.card ~= nil)
+end
+
+sgs.ai_skill_invoke.xiaoxi = function(self)
+	local slash = sgs.Sanguosha:cloneCard("slash")
+	local dummy_use = { isDummy = true }
+	self:useBasicCard(slash, dummy_use)
+	return (dummy_use.card ~= nil)
+end
+
+sgs.ai_skill_invoke.manyi = function(self)
+	local sa = sgs.Sanguosha:cloneCard("savage_assault")
+	local dummy_use = { isDummy = true }
+	self:useTrickCard(sa, dummy_use)
+	return (dummy_use.card ~= nil)
+end
