@@ -394,6 +394,14 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                     }
                 }
             }
+            if (room->getMode() == "02_1v1") {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->hasFlag("Global_KOFDebut")) {
+                        p->setFlags("-Global_KOFDebut");
+                        room->getThread()->trigger(Debut, room, p);
+                    }
+                }
+            }
             break;
         }
     case CardEffected: {
@@ -493,6 +501,10 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                     }
 
                     changeGeneral1v1(player);
+					if (death.damage == NULL)
+						room->getThread()->trigger(Debut, room, player);
+					else
+						player->setFlags("Global_KOFDebut");
                     return false;
                 }
             } else if (room->getMode() == "06_XMode") {
@@ -617,7 +629,6 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const{
     int draw_num = classical ? 4 : player->getMaxHp();
     player->drawCards(draw_num);
     room->setTag("FirstRound", false);
-    room->getThread()->trigger(Debut, room, player);
 }
 
 void GameRule::changeGeneralXMode(ServerPlayer *player) const{

@@ -552,10 +552,12 @@ void RoomThread::run() {
         } else {
             if (room->getMode() == "02_1v1") {
                 ServerPlayer *first = room->getPlayers().first();
-                if (first->getRole() == "renegade")
-                    room->setCurrent(first);
-                else
-                    room->setCurrent(room->getPlayers().at(1));
+                if (first->getRole() != "renegade")
+                    first = room->getPlayers().at(1);
+				ServerPlayer *second = first->getNext();
+                trigger(Debut, (Room *)room, first);
+				trigger(Debut, (Room *)room, second);
+				room->setCurrent(first);
             }
 
             actionNormal(game_rule);
