@@ -5085,6 +5085,10 @@ end
 function SmartAI:hasTrickEffective(card, to, from)
 	from = from or self.room:getCurrent()
 	to = to or self.player
+	if not card then
+		self.room:writeToConsole(debug.traceback())
+		return false
+	end
 	if self.room:isProhibited(from, to, card) then return false end
 	if to:getMark("@late") > 0 and not card:isKindOf("DelayedTrick") then return false end
 	if to:getPile("dream"):length() > 0 and to:isLocked(card) then return false end
