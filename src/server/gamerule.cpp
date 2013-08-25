@@ -629,8 +629,15 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const{
 
     room->setTag("FirstRound", true); //For Manjuan
     int draw_num = classical ? 4 : player->getMaxHp();
-    player->drawCards(draw_num);
-    room->setTag("FirstRound", false);
+	try {
+		player->drawCards(draw_num);
+		room->setTag("FirstRound", false);
+	}
+	catch (TriggerEvent triggerEvent) {
+		if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+			room->setTag("FirstRound", false);
+		throw triggerEvent;
+	}
 }
 
 void GameRule::changeGeneralXMode(ServerPlayer *player) const{
@@ -671,8 +678,15 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const{
         room->setPlayerProperty(player, "chained", false);
 
     room->setTag("FirstRound", true); //For Manjuan
-    player->drawCards(4);
-    room->setTag("FirstRound", false);
+	try {
+		player->drawCards(4);
+		room->setTag("FirstRound", false);
+	}
+	catch (TriggerEvent triggerEvent) {
+		if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+			room->setTag("FirstRound", false);
+		throw triggerEvent;
+	}
 }
 
 void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const{

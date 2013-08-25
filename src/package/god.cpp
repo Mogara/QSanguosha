@@ -749,8 +749,15 @@ public:
         room->notifySkillInvoked(shenzhuge, "qixing");
 
         room->setTag("FirstRound", true); //For Manjuan
-        shenzhuge->drawCards(7);
-        room->setTag("FirstRound", false);
+        try {
+			shenzhuge->drawCards(7);
+			room->setTag("FirstRound", false);
+		}
+		catch (TriggerEvent triggerEvent) {
+			if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+				room->setTag("FirstRound", false);
+			throw triggerEvent;
+		}
 
         room->broadcastSkillInvoke("qixing");
         const Card *exchange_card = room->askForExchange(shenzhuge, "qixing", 7);
