@@ -3177,6 +3177,8 @@ void Room::damage(const DamageStruct &data) {
 				thread->trigger(Damaged, this, damage_data.to, qdata);
         } while (false);
 
+		if (!enter_stack)
+			setTag("SkipGameRule", true);
         damage_data = qdata.value<DamageStruct>();
         thread->trigger(DamageComplete, this, damage_data.to, qdata);
 
