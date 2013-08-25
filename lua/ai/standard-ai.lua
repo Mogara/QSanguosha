@@ -2239,7 +2239,7 @@ function SmartAI:findLijianTarget(card_name, use)
 
 		if friend_maxSlash then
 			local safe = false
-			if self:hasSkills("neoganglie|vsganglie|fankui|enyuan|ganglie|nosenyuan", first) and not self:hasSkills("wuyan|noswuyan", first) then
+			if first:hasSkills("neoganglie|vsganglie|fankui|enyuan|ganglie|nosenyuan") and not first:hasSkills("wuyan|noswuyan") then
 				if (first:getHp() <= 1 and first:getHandcardNum() == 0) then safe = true end
 			elseif (getCardsNum("Slash", friend_maxSlash) >= getCardsNum("Slash", first)) then safe = true end
 			if safe then return friend_maxSlash end
@@ -2251,7 +2251,7 @@ function SmartAI:findLijianTarget(card_name, use)
 	
 	if self.role == "rebel" or (self.role == "renegade" and sgs.current_mode_players["loyalist"] + 1 > sgs.current_mode_players["rebel"]) then		
 		
-		if lord and lord:isMale() and not lord:isNude() and lord:objectName() ~= self.player:objectName() then		-- 优先离间1血忠和主
+		if lord and lord:objectName() ~= self.player:objectName() and lord:isMale() and not lord:isNude() then		-- 优先离间1血忠和主
 			self:sort(self.enemies, "handcard")
 			local e_peaches = 0
 			local loyalist
@@ -2305,7 +2305,8 @@ function SmartAI:findLijianTarget(card_name, use)
 		end
 	end
 	
-	if lord and self:isFriend(lord) and lord:hasSkill("hunzi") and lord:getHp() == 2 and lord:getMark("hunzi") == 0	and lord:objectName() ~= self.player:objectName() then
+	if lord and lord:objectName() ~= self.player:objectName() and self:isFriend(lord)
+		and lord:hasSkill("hunzi") and lord:getHp() == 2 and lord:getMark("hunzi") == 0 then
 		local enemycount = self:getEnemyNumBySeat(self.player, lord)
 		local peaches = self:getAllPeachNum()
 		if peaches >= enemycount then
@@ -2387,7 +2388,9 @@ function SmartAI:findLijianTarget(card_name, use)
 		end
 		
 		if #males >= 1 and sgs.ai_role[males[1]:objectName()] == "rebel" and males[1]:getHp() == 1 then
-			if lord and self:isFriend(lord) and lord:isMale() and lord:objectName() ~= males[1]:objectName() and self:hasTrickEffective(duel, males[1], lord)
+			if lord and self:isFriend(lord) and lord:isMale()
+				and lord:objectName() ~= males[1]:objectName() and lord:objectName() ~= self.player:objectName()
+				and self:hasTrickEffective(duel, males[1], lord)
 				and not lord:isLocked(duel) and lord:objectName() ~= self.player:objectName() and lord:isAlive()
 				and (getCardsNum("Slash", males[1]) < 1
 					or getCardsNum("Slash", males[1]) < getCardsNum("Slash", lord)
@@ -2458,11 +2461,11 @@ function SmartAI:findLijianTarget(card_name, use)
 				if self.player:isLord() or sgs.isRolePredictable() then 
 					local friend_maxSlash = findFriend_maxSlash(self, first)
 					if friend_maxSlash then second = friend_maxSlash end
-				elseif lord:isMale() and not self:hasSkills("wuyan|noswuyan", lord) then
+				elseif lord and lord:objectName() ~= self.player:objectName() and lord:isMale() and not self:hasSkills("wuyan|noswuyan", lord) then
 					if self.role=="rebel" and not first:isLord() and self:hasTrickEffective(duel, first, lord) then
 						second = lord
 					else
-						if ( (self.role == "loyalist" or self.role == "renegade") and not self:hasSkills("ganglie|enyuan|neoganglie|nosenyuan", first) )
+						if (self.role == "loyalist" or self.role == "renegade") and not first:hasSkills("neoganglie|enyuan|vsganglie|ganglie|nosenyuan")
 							and ( getCardsNum("Slash", first) <= getCardsNum("Slash", second) ) then
 							second = lord
 						end
