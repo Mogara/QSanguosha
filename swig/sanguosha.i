@@ -1031,7 +1031,8 @@ public:
     void doLightbox(const char *lightboxName, int duration = 2000);
     void doAnimate(int type, const char *arg1 = NULL, const char *arg2 = NULL, QList<ServerPlayer *> players = QList<ServerPlayer *>());
 
-    bool notifyUpdateCard(ServerPlayer *player, int cardId, const Card *newCard);
+    bool notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> move, bool forceVisible, QList<ServerPlayer *> players = QList<ServerPlayer *>());
+	bool notifyUpdateCard(ServerPlayer *player, int cardId, const Card *newCard);
     bool broadcastUpdateCard(const QList<ServerPlayer *> &players, int cardId, const Card *newCard);
     bool notifyResetCard(ServerPlayer *player, int cardId);
     bool broadcastResetCard(const QList<ServerPlayer *> &players, int cardId);
