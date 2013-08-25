@@ -134,6 +134,9 @@ sgs.ai_card_intention.ShensuCard = 80
 sgs.shensu_keep_value = sgs.xiaoji_keep_value
 
 function sgs.ai_skill_invoke.jushou(self, data)
+	local sbdiaochan = self.room:findPlayerBySkillName("lihun")
+	if sbdiaochan and sbdiaochan:faceUp() and not self:willSkipPlayPhase(sbdiaochan)
+		and (self:isEnemy(sbdiaochan) or (sgs.turncount <= 1 and sgs.evaluatePlayerRole(sbdiaochan) == "neutral")) then return false end
 	if not self.player:faceUp() then return true end
 	for _, friend in ipairs(self.friends) do
 		if self:hasSkills("fangzhu|jilve", friend) then return true end
