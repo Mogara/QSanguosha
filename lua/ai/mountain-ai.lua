@@ -1117,7 +1117,7 @@ function sgs.ai_skill_choice.huashen(self, choices)
 			end
 		end
 		
-		if str:matchOne("qiuyuan") then return "qiuyuan" end
+		if str:matchOne("qiuyuan") and self.room:alivePlayerCount() > 2 then return "qiuyuan" end
 		
 		if (self:getAllPeachNum() > 0 or self.player:getHp() > 1 or not self:isWeak()) then
 			if str:matchOne("guixin") and self.room:alivePlayerCount() > 3 then return "guixin" end
