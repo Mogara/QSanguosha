@@ -325,7 +325,7 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 	if not self:damageIsEffective(who, nature, source) then return end	
 
 	if who:hasArmorEffect("SilverLion") then damagecount = 1 end
-	if nature == sgs.DamageStruct_Normal then return not self:cantbeHurt(target, damagecount, source) end
+	if nature == sgs.DamageStruct_Normal then return not self:cantbeHurt(who, source, damagecount) end
 	
 	local kills, killlord = 0
 	local good, bad = 0, 0
@@ -350,7 +350,7 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 			if target:hasSkill("vsganglie") then
 				local can
 				for _, t in ipairs(self:getFriends(source)) do
-					if t:getHp() == 1 and t:getHandcardNum() < 2 and self:damageIsEffective(t, nil, target) and peach_num < 1 then
+					if t:getHp() == 1 and t:getHandcardNum() < 2 and self:damageIsEffective(t, nil, t) and peach_num < 1 then
 						if t:isLord() then
 							newvalue = newvalue - 100
 							if not self:isEnemy(t, source) then killlord = true end
