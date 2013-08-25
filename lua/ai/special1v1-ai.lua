@@ -115,8 +115,10 @@ xiechan_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_use_func.XiechanCard = function(card, use, self)
+	self.player:setFlags("AI_XiechanUsing")
 	local max_card = self:getMaxCard()
-	if max_card:isKindOf("Slash") then return end
+	self.player:setFlags("-AI_XiechanUsing")
+	if max_card:isKindOf("Slash") and self:getCardsNum("Slash") <= 2 then return end
 	local max_point = max_card:getNumber()
 	
 	local dummy_use = { isDummy = true, xiechan = true, to = sgs.SPlayerList() }
