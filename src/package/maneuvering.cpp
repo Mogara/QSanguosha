@@ -414,7 +414,7 @@ void SupplyShortage::takeEffect(ServerPlayer *target) const{
 }
 
 ManeuveringPackage::ManeuveringPackage()
-    : Package("maneuvering")
+    : Package("maneuvering", Package::CardPack)
 {
     QList<Card *> cards;
 
@@ -484,7 +484,6 @@ ManeuveringPackage::ManeuveringPackage()
     foreach (Card *card, cards)
         card->setParent(this);
 
-    type = CardPack;
     skills << new GudingBladeSkill << new FanSkill
            << new VineSkill << new SilverLionSkill;
 }

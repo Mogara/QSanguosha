@@ -23,16 +23,11 @@ class Package: public QObject {
     Q_ENUMS(Type)
 
 public:
-    enum Type {
-        GeneralPack,
-        CardPack,
-        MixedPack,
-        SpecialPack
-    };
+    enum Type { GeneralPack, CardPack, MixedPack, SpecialPack };
 
-    Package(const QString &name) {
+	Package(const QString &name, Type pack_type = GeneralPack) {
         setObjectName(name);
-        type = GeneralPack;
+        type = pack_type;
     }
 
     QList<const QMetaObject *> getMetaObjects() const{
