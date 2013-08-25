@@ -393,12 +393,13 @@ function SmartAI:slashIsAvailable(player)
 	return slash:isAvailable(player)
 end
 
-function SmartAI:isPriorityFriendOfSlash(friend, card)
+function SmartAI:isPriorFriendOfSlash(friend, card)
 	local huatuo = self.room:findPlayerBySkillName("jijiu")
 	if not self:hasHeavySlashDamage(self.player, card, friend) and card:getSkillName() ~= "lihuo"
 		and (self:findLeijiTarget(friend, 50, self.player)
 			or (friend:isLord() and self.player:hasSkill("guagu") and friend:getLostHp() >= 1 and getCardsNum("Jink", friend) == 0)
-			or (friend:hasSkill("jieming") and self.player:hasSkill("nosrende") and (huatuo and self:isFriend(huatuo)))) then
+			or (friend:hasSkill("jieming") and self.player:hasSkill("nosrende") and (huatuo and self:isFriend(huatuo)))
+			or (friend:hasSkill("hunzi") and friend:getHp() == 2 and self:getDamagedEffects(friend, self.player))) then
 		return true
 	end
 	if card:isKindOf("NatureSlash") and friend:isChained() and self:isGoodChainTarget(friend, nil, nil, nil, card) then return true end
@@ -486,7 +487,7 @@ function SmartAI:useCardSlash(card, use)
 
 	if not use.isDummy and self.player:hasSkill("qingnang") and self:isWeak() and self:getOverflow() == 0 then return end
 	for _, friend in ipairs(self.friends_noself) do
-		if not self:slashProhibit(card, friend) and self:isPriorityFriendOfSlash(friend, card) then
+		if not self:slashProhibit(card, friend) and self:isPriorFriendOfSlash(friend, card) then
 			if (not use.current_targets or not table.contains(use.current_targets, friend:objectName()))
 				and (self.player:canSlash(friend, card, not no_distance, rangefix)
 					or (use.isDummy and (self.player:distanceTo(friend, rangefix) <= self.predictedRange)))
