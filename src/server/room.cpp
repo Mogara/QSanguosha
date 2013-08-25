@@ -3569,6 +3569,7 @@ QList<CardsMoveOneTimeStruct> Room::_mergeMoves(QList<CardsMoveStruct> cards_mov
         moveOneTime.to = cls.m_to;
         moveOneTime.to_place = cls.m_to_place;
         moveOneTime.to_pile_name = cls.m_to_pile_name;
+		moveOneTime.is_last_handcard = false;
         foreach (CardsMoveStruct move, moveMap[cls]) {
             moveOneTime.card_ids.append(move.card_ids);
             for (int i = 0; i < move.card_ids.size(); i++) {
