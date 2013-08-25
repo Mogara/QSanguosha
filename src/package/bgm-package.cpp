@@ -268,8 +268,10 @@ public:
         CardMoveReason reason(CardMoveReason::S_REASON_PUT, sp_pangtong->objectName(), "manjuan", QString());
         if (room->getTag("FirstRound").toBool())
             return false;
-        if (sp_pangtong->hasFlag("ManjuanNullified"))
+        if (sp_pangtong->hasFlag("ManjuanNullified")) {
+			sp_pangtong->setFlags("-ManjuanNullified");
             return false;
+		}
         if (move.to != sp_pangtong || move.to_place != Player::PlaceHand)
             return false;
         room->broadcastSkillInvoke(objectName());
@@ -376,7 +378,6 @@ public:
             CardMoveReason reason(CardMoveReason::S_REASON_PUT, player->objectName(), QString(), "zuixiang", "");
             CardsMoveStruct move(zuixiang, player, Player::PlaceHand, reason);
             room->moveCardsAtomic(move, true);
-            player->setFlags("-ManjuanNullified");
         }
     }
 
