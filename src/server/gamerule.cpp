@@ -876,7 +876,41 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
             return false;
         }
     case TurnStart: {
-            if (player->isLord()) {
+            if (player->isDead()) {
+				Json::Value arg(Json::arrayValue);
+				arg[0] = (int)QSanProtocol::S_GAME_EVENT_PLAYER_REFORM;
+				arg[1] = QSanProtocol::Utils::toJsonString(player->objectName());
+				room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
+
+				QString choice = player->isWounded() ? "recover" : "draw";
+				if (player->isWounded() && player->getHp() > 0)
+					choice = room->askForChoice(player, "Hulaopass", "recover+draw");
+
+				if (choice == "draw") {
+					LogMessage log;
+					log.type = "#ReformingDraw";
+					log.from = player;
+					log.arg = "1";
+					room->sendLog(log);
+					player->drawCards(1, "reform");
+				} else {
+					LogMessage log;
+					log.type = "#ReformingRecover";
+					log.from = player;
+					log.arg = "1";
+					room->sendLog(log);
+					room->setPlayerProperty(player, "hp", player->getHp() + 1);
+				}
+
+				if (player->getHp() + player->getHandcardNum() == 6) {
+					LogMessage log;
+					log.type = "#ReformingRevive";
+					log.from = player;
+					room->sendLog(log);
+
+					room->revivePlayer(player);
+				}
+			} else {
                 LogMessage log;
                 log.type = "$AppendSeparator";
                 room->sendLog(log);
@@ -886,52 +920,6 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
                     player->turnOver();
                 else
                     player->play();
-            } else {
-                if (player->isDead()) {
-                    Json::Value arg(Json::arrayValue);
-                    arg[0] = (int)QSanProtocol::S_GAME_EVENT_PLAYER_REFORM;
-                    arg[1] = QSanProtocol::Utils::toJsonString(player->objectName());
-                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, arg);
-
-                    QString choice = player->isWounded() ? "recover" : "draw";
-                    if (player->isWounded() && player->getHp() > 0)
-                        choice = room->askForChoice(player, "Hulaopass", "recover+draw");
-
-                    if (choice == "draw") {
-                        LogMessage log;
-                        log.type = "#ReformingDraw";
-                        log.from = player;
-                        log.arg = "1";
-                        room->sendLog(log);
-                        player->drawCards(1, "reform");
-                    } else {
-                        LogMessage log;
-                        log.type = "#ReformingRecover";
-                        log.from = player;
-                        log.arg = "1";
-                        room->sendLog(log);
-                        room->setPlayerProperty(player, "hp", player->getHp() + 1);
-                    }
-
-                    if (player->getHp() + player->getHandcardNum() == 6) {
-                        LogMessage log;
-                        log.type = "#ReformingRevive";
-                        log.from = player;
-                        room->sendLog(log);
-
-                        room->revivePlayer(player);
-                    }
-                } else {
-                    LogMessage log;
-                    log.type = "$AppendSeparator";
-                    room->sendLog(log);
-                    room->addPlayerMark(player, "Global_TurnCount");
-
-                    if (!player->faceUp())
-                        player->turnOver();
-                    else
-                        player->play();
-                }
             }
 
             return false;
