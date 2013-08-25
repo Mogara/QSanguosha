@@ -151,6 +151,7 @@ function sgs.CreateSkillCard(spec)
 
 	card.filter = spec.filter
 	card.feasible = spec.feasible
+	card.about_to_use = spec.about_to_use
 	card.on_use = spec.on_use
 	card.on_effect = spec.on_effect
 	card.on_validate = spec.on_validate

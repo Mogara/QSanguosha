@@ -128,6 +128,7 @@ public:
     // these functions are defined at swig/luaskills.i
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
+	virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual const Card *validate(CardUseStruct &cardUse) const;
@@ -136,6 +137,7 @@ public:
     // the lua callbacks
     LuaFunction filter;
     LuaFunction feasible;
+	LuaFunction about_to_use;
     LuaFunction on_use;
     LuaFunction on_effect;
     LuaFunction on_validate;

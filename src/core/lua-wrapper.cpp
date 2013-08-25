@@ -58,7 +58,8 @@ static QHash<QString, const LuaSkillCard *> LuaSkillCards;
 static QHash<QString, QString> LuaSkillCardsSkillName;
 
 LuaSkillCard::LuaSkillCard(const char *name, const char *skillName)
-    : SkillCard(), filter(0), feasible(0), on_use(0), on_effect(0), on_validate(0), on_validate_in_response(0)
+    : SkillCard(), filter(0), feasible(0),
+		about_to_use(0), on_use(0), on_effect(0), on_validate(0), on_validate_in_response(0)
 {
     if (name) {
         LuaSkillCards.insert(name, this);
@@ -83,6 +84,7 @@ LuaSkillCard *LuaSkillCard::clone() const{
 
     new_card->filter = filter;
     new_card->feasible = feasible;
+	new_card->about_to_use = about_to_use;
     new_card->on_use = on_use;
     new_card->on_effect = on_effect;
     new_card->on_validate = on_validate;

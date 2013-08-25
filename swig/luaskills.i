@@ -163,6 +163,7 @@ public:
 
     LuaFunction filter;    
     LuaFunction feasible;
+	LuaFunction about_to_use;
     LuaFunction on_use;
     LuaFunction on_effect;
     LuaFunction on_validate;
@@ -654,6 +655,28 @@ bool LuaSkillCard::targetsFeasible(const QList<const Player *> &targets, const P
     }
 }
 
+void LuaSkillCard::onUse(Room *room, const CardUseStruct &card_use) const{
+	if (about_to_use == 0)
+		return SkillCard::onUse(room, card_use);
+
+	lua_State *L = Sanguosha->getLuaState();
+
+	// the callback
+	lua_rawgeti(L, LUA_REGISTRYINDEX, about_to_use);
+
+	pushSelf(L);
+
+	SWIG_NewPointerObj(L, room, SWIGTYPE_p_Room, 0);
+	SWIG_NewPointerObj(L, &card_use, SWIGTYPE_p_CardUseStruct, 0);
+
+	int error = lua_pcall(L, 3, 0, 0);
+	if (error) {
+		const char *error_msg = lua_tostring(L, -1);
+		lua_pop(L, 1);
+		room->output(error_msg);
+	}
+}
+
 void LuaSkillCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     if (on_use == 0)
         return SkillCard::use(room, source, targets);
@@ -666,7 +689,6 @@ void LuaSkillCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
     pushSelf(L);
 
     SWIG_NewPointerObj(L, room, SWIGTYPE_p_Room, 0);
-
     SWIG_NewPointerObj(L, source, SWIGTYPE_p_ServerPlayer, 0);
 
     lua_createtable(L, targets.length(), 0);
