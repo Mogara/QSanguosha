@@ -992,7 +992,7 @@ sgs.ai_skill_discard.fencheng = function(self, discard_num, min_num, optional, i
 				if self:isWeak() then table.insert(to_discard, def_id)
 				else return {} end
 			elseif self.player:getArmor() and not table.contains(to_discard, arm_id) then
-				if self:isWeak() or self.player:getArmor():isKindOf("Vine") then table.insert(to_discard, arm_id)
+				if self:isWeak() or (not liru:hasSkill("jueqing") and self.player:hasArmorEffect("vine")) then table.insert(to_discard, arm_id)
 				else return {} end
 			end
 			if #to_discard == discard_num + 1 then table.removeOne(to_discard, cards[1]:getEffectiveId()) end
