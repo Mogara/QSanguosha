@@ -1634,7 +1634,9 @@ sgs.ai_skill_cardask.aoe = function(self, data, pattern, target, name)
 	if self.room:getMode():find("_mini_35") and self.player:getLostHp() == 1 and name == "archery_attack" then return "." end
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
 
-	local aoe = data:toCardEffect().card
+	local effect = data:toCardEffect()
+	local aoe
+	if effect then aoe = effect.card else aoe = sgs.Sanguosha:cloneCard(name) end
 	assert(aoe ~= nil)
 	local menghuo = self.room:findPlayerBySkillName("huoshou")
 	local attacker = target
