@@ -1413,7 +1413,7 @@ public:
                 QList<int> subcards = card->getSubcards();
                 if (from->getWeapon() && subcards.contains(from->getWeapon()->getId())) {
                     const Weapon *weapon = qobject_cast<const Weapon *>(from->getWeapon()->getRealCard());
-                    rangefix += weapon->getRange() - Self->getAttackRange(false);
+                    rangefix += weapon->getRange() - from->getAttackRange(false);
                 }
 
                 if (from->getOffensiveHorse() && subcards.contains(from->getOffensiveHorse()->getId()))
