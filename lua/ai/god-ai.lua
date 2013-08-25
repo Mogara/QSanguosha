@@ -456,7 +456,7 @@ yeyan_skill.getTurnUseCard = function(self)
 		end
 	end
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:isChained() and self:isGoodChainTarget(enemy) then 
+		if enemy:isChained() and self:isGoodChainTarget(enemy, nil, nil, 3) then
 			if chained == 0 then target_num = target_num +1 end
 			chained = chained + 1
 		end
@@ -518,7 +518,7 @@ sgs.ai_skill_use_func.GreatYeyanCard = function(card, use, self)
 	local second
 	for _, enemy in ipairs(self.enemies) do
 		if not enemy:hasArmorEffect("SilverLion") and self:objectiveLevel(enemy) > 3 and self:damageIsEffective(enemy, sgs.DamageStruct_Fire)
-			and not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and not enemy:isChained() then
+			and not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and not enemy:isChained() and self:isGoodChainTarget(enemy, nil, nil, 3) then
 			if enemy:hasArmorEffect("Vine") then
 				use.card = greatyeyan
 				if use.to then 

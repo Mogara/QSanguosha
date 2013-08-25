@@ -275,7 +275,8 @@ function SmartAI:slashProhibit(card, enemy, from)
 	if mode:find("_mini_36") then return self.player:hasSkill("keji") end
 	card = card or sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
 	from = from or self.player
-	local nature = card:isKindOf("FireSlash") and sgs.DamageStruct_Fire
+	local nature = sgs.DamageStruct_Normal
+	nature = card:isKindOf("FireSlash") and sgs.DamageStruct_Fire
 					or card:isKindOf("ThunderSlash") and sgs.DamageStruct_Thunder
 	for _, askill in sgs.qlist(enemy:getVisibleSkillList()) do
 		local filter = sgs.ai_slash_prohibit[askill:objectName()]
@@ -284,7 +285,7 @@ function SmartAI:slashProhibit(card, enemy, from)
 
 	if self:isFriend(enemy) then
 		if card:isKindOf("FireSlash") or from:hasWeapon("Fan") or from:hasSkill("zonghuo") then
-			if enemy:hasArmorEffect("Vine") and not (enemy:isChained() and self:isGoodChainTarget(enemy, nil, nil, nil, card)) then return true end
+			if enemy:hasArmorEffect("Vine") and not (enemy:isChained() and self:isGoodChainTarget(enemy, self.player, nature, nil, card)) then return true end
 		end
 		if enemy:isChained() and (card:isKindOf("NatureSlash") or from:hasSkill("zonghuo")) and self:slashIsEffective(card, enemy, nil, from)
 			and (not self:isGoodChainTarget(enemy, self.player, nature, nil, card) and not from:hasSkill("jueqing")) then return true end
@@ -392,6 +393,18 @@ function SmartAI:slashIsAvailable(player)
 	return slash:isAvailable(player)
 end
 
+function SmartAI:isPriorityFriendOfSlash(friend, card)
+	local huatuo = self.room:findPlayerBySkillName("jijiu")
+	if not self:hasHeavySlashDamage(self.player, card, friend) and card:getSkillName() ~= "lihuo"
+		and (self:findLeijiTarget(friend, 50, self.player)
+			or (friend:isLord() and self.player:hasSkill("guagu") and friend:getLostHp() >= 1 and getCardsNum("Jink", friend) == 0)
+			or (friend:hasSkill("jieming") and self.player:hasSkill("nosrende") and (huatuo and self:isFriend(huatuo)))) then
+		return true
+	end
+	if card:isKindOf("NatureSlash") and friend:isChained() and self:isGoodChainTarget(friend, nil, nil, nil, card) then return true end
+	return
+end
+
 function SmartAI:shouldUseAnaleptic(target, slash, anal)
 	if sgs.turncount <= 1 and self.role == "renegade" and sgs.isLordHealthy() and self:getOverflow() < 2 then return false end
 	if target:hasArmorEffect("SilverLion") and not IgnoreArmor(self.player, target) and not self.player:hasSkill("jueqing") then return false end
@@ -438,24 +451,6 @@ function SmartAI:shouldUseAnaleptic(target, slash, anal)
 	return self:getCardsNum("Analeptic") > 1 or getCardsNum("Jink", target) < 1 or sgs.card_lack[target:objectName()]["Jink"] == 1
 end
 
-function SmartAI:isPriorFriendOfSlash(friend, card)
-	local huatuo = self.room:findPlayerBySkillName("jijiu")
-	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
-		if p:hasSkill("jijiu") and self:isFriend(p) then huatuo = p break end
-	end
-	if not self:hasHeavySlashDamage(self.player, card, friend) and card:getSkillName() ~= "lihuo" then
-		if self:needLeiji(friend, self.player)
-			or (friend:isLord() and self.player:hasSkill("guagu") and friend:getLostHp() >= 1 and getCardsNum("Jink", friend) == 0)
-			or (friend:hasSkill("jieming") and self.player:hasSkill("rende") and not self.player:hasSkill("jueqing") and huatuo and self:isFriend(huatuo))
-			or (friend:hasSkill("hunzi") and friend:getHp() == 2 and self:getDamagedEffects(friend, self.player))
-			then
-			return true
-		end
-	end
-	if not self.player:hasSkill("jueqing") and card:isKindOf("NatureSlash") and friend:isChained() and self:isGoodChainTarget(friend, nil, nil, nil, card) then return true end
-	return
-end
-
 function SmartAI:useCardSlash(card, use)
 	if not use.isDummy and not self:slashIsAvailable() then return end
 	if not use.isDummy and sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_PLAY
@@ -491,7 +486,7 @@ function SmartAI:useCardSlash(card, use)
 
 	if not use.isDummy and self.player:hasSkill("qingnang") and self:isWeak() and self:getOverflow() == 0 then return end
 	for _, friend in ipairs(self.friends_noself) do
-		if not self:slashProhibit(card, friend) and self:isPriorFriendOfSlash(friend, card) then
+		if not self:slashProhibit(card, friend) and self:isPriorityFriendOfSlash(friend, card) then
 			if (not use.current_targets or not table.contains(use.current_targets, friend:objectName()))
 				and (self.player:canSlash(friend, card, not no_distance, rangefix)
 					or (use.isDummy and (self.player:distanceTo(friend, rangefix) <= self.predictedRange)))
@@ -889,6 +884,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 		if not target:hasSkill("jueqing") then
 			if (target:hasSkill("nosrende") or (target:hasSkill("rende") and not target:hasUsed("RendeCard"))) and self.player:hasSkill("jieming") then return "." end
 			if target:hasSkill("pojun") and not self.player:faceUp() then return "." end
+			if self.player:isChained() and self:isGoodChainTarget(self.player, nil, nil, nil, slash) then return "." end
 		end
 	else
 		if self:hasHeavySlashDamage(target, slash) then return getJink() end
