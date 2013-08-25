@@ -104,6 +104,39 @@ end
 
 sgs.ai_chaofeng.kof_zhangliao = 4
 
+xiechan_skill = {}
+xiechan_skill.name = "xiechan"
+table.insert(sgs.ai_skills, xiechan_skill)
+xiechan_skill.getTurnUseCard = function(self)
+	if self.player:getMark("@twine") <= 0 then return end
+	self:sort(self.enemies, "handcard")
+	if self.player:hasSkill("luoyi") and not self.player:hasFlag("luoyi") then return end
+	return sgs.Card_Parse("@XiechanCard=.")
+end
+
+sgs.ai_skill_use_func.XiechanCard = function(card, use, self)
+	local max_card = self:getMaxCard()
+	if max_card:isKindOf("Slash") then return end
+	local max_point = max_card:getNumber()
+	
+	local dummy_use = { isDummy = true, xiechan = true, to = sgs.SPlayerList() }
+	local duel = sgs.Sanguosha:cloneCard("Duel")
+	self:useCardDuel(duel, dummy_use)
+	if not dummy_use.card or not dummy_use.card:isKindOf("Duel") then return end
+	for _, enemy in sgs.qlist(dummy_use.to) do
+		if not enemy:isKongcheng() and not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) then
+			local enemy_max_card = self:getMaxCard(enemy)
+			local enemy_max_point = enemy_max_card and enemy_max_card:getNumber() or 100
+			if max_point > enemy_max_point then
+				self.xiechan_card = max_card:getId()
+				use.card = card
+				if use.to then use.to:append(enemy) end
+				return
+			end
+		end
+	end
+end
+
 sgs.ai_view_as.kofqingguo = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()

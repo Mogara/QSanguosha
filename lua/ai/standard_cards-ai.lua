@@ -1914,6 +1914,7 @@ function SmartAI:useCardDuel(duel, use)
 		end
 
 		local targets_num = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, duel)
+		if use.isDummy and use.xiechan then targets_num = 100 end
 		local enemySlash = 0
 		local setFlag = false
 		local lx = self.room:findPlayerBySkillName("huangen")
