@@ -489,7 +489,7 @@ public:
                 && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)
                 lingtong->setMark("xuanfeng", lingtong->getMark("xuanfeng") + move.card_ids.length());
 
-            if ((lingtong->getMark("xuanfeng") >= 2 && !lingtong->hasFlag("XuanfengUsed"))
+            if ((lingtong->getPhase() == Player::Discard && lingtong->getMark("xuanfeng") >= 2 && !lingtong->hasFlag("XuanfengUsed"))
                 || move.from_places.contains(Player::PlaceEquip)) {
                 QList<ServerPlayer *> targets;
                 foreach (ServerPlayer *target, room->getOtherPlayers(lingtong)) {

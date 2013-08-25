@@ -936,3 +936,4 @@ sgs.ai_skill_invoke.cv_huanggai = function(self, data)
 end
 
 sgs.ai_skill_invoke.cv_guojia = sgs.ai_skill_invoke.cv_huanggai
+sgs.ai_skill_invoke.cv_zhugeke = sgs.ai_skill_invoke.cv_huanggai
