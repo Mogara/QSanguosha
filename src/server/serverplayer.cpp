@@ -665,7 +665,9 @@ void ServerPlayer::play(QList<Player::Phase> set_phases) {
         setPhase(phases[i]);
         room->broadcastProperty(this, "phase");
         
-        if ((skip || _m_phases_state[i].finished) && phases[i] != NotActive)
+        if ((skip || _m_phases_state[i].finished)
+			&& !thread->trigger(EventPhaseSkipping, room, this, data)
+			&& phases[i] != NotActive)
             continue;
 
         if (!thread->trigger(EventPhaseStart, room, this)) {
