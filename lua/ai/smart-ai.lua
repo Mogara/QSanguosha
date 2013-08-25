@@ -3963,7 +3963,7 @@ function SmartAI:damageIsEffective(to, nature, from)
 	if to:getMark("@fog") > 0 and nature ~= sgs.DamageStruct_Thunder then
 		return false
 	end
-	if to:hasSkill("ayshuiyong") and nature == sgs.DamageStruct_Fire then
+	if to:hasSkill("shuiyong") and nature == sgs.DamageStruct_Fire then
 		return false
 	end
 	if to:hasSkill("mingshi") and from:getEquips():length() - (self.equipsToDec or 0) <= to:getEquips():length() then return false end

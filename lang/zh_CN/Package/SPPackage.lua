@@ -104,6 +104,26 @@ return {
 	[":aocai"] = "你的回合外，每当你需要使用或打出一张基本牌时，你可以观看牌堆顶的两张牌，然后使用或打出其中一张该类别的基本牌。",
 	["duwu"] = "黩武",
 	[":duwu"] = "出牌阶段，你可以选择攻击范围内的一名其他角色并弃置X张牌：若如此做，你对该角色造成1点伤害。若你以此法令该角色进入濒死状态，濒死结算后你失去1点体力，且本阶段你不能再次发动“黩武”。（X为该角色当前的体力值）",
+	
+	--Chaos Package
+	["chaos"] = "乱入",
+	
+	["#sunyang"] = "逐浪追风",
+	["sunyang"] = "孙杨",
+	["illustrator:sunyang"] = "LiuHeng",
+	["shuijian"] = "水箭",
+	[":shuijian"] = "摸牌阶段，你可以额外摸X+1张牌。（X为你装备区的牌数的一半，向下取整）",
+	
+	["#yeshiwen"] = "出水青莲",
+	["yeshiwen"] = "叶诗文",
+	["illustrator:yeshiwen"] = "LiuHeng",
+	["jisu"] = "急速",
+	[":jisu"] = "你可以跳过判定阶段和摸牌阶段：若如此做，视为你使用一张无距离限制的【杀】。",
+	["@jisu-slash"] = "你可以跳过判定阶段和摸牌阶段发动“急速”",
+	["~jisu"] = "选择【杀】的目标角色→点击确定",
+	["shuiyong"] = "水泳",
+	[":shuiyong"] = "<font color=\"blue\"><b>锁定技。</b></font>每当你受到火焰伤害时，你防止此伤害。",
+	["#ShuiyongProtect"] = "%from 的“<font color=\"yellow\"><b>水泳</b></font>”被触发，防止了 %arg 点伤害[%arg2]",
 
 	-- HuLao Pass
 	["Hulaopass"] = "虎牢关模式",
