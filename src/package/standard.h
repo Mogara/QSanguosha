@@ -25,7 +25,7 @@ class BasicCard: public Card {
     Q_OBJECT
 
 public:
-    BasicCard(Suit suit, int number):Card(suit, number) { handling_method = Card::MethodUse;}
+    BasicCard(Suit suit, int number): Card(suit, number) { handling_method = Card::MethodUse;}
     virtual QString getType() const;
     virtual CardType getTypeId() const;
 };

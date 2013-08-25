@@ -19,6 +19,7 @@
 
 class AI;
 class Scenario;
+class LuaBasicCard;
 
 struct lua_State;
 
@@ -78,6 +79,7 @@ public:
     QList<const DistanceSkill *> getDistanceSkills() const;
     QList<const MaxCardsSkill *> getMaxCardsSkills() const;
     QList<const TargetModSkill *> getTargetModSkills() const;
+	QList<const TriggerSkill *> getGlobalTriggerSkills() const;
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
@@ -131,6 +133,7 @@ private:
     QList<const DistanceSkill *> distance_skills;
     QList<const MaxCardsSkill *> maxcards_skills;
     QList<const TargetModSkill *> targetmod_skills;
+	QList<const TriggerSkill *> global_trigger_skills;
 
     QList<Card *> cards;
     QStringList lord_list, nonlord_list;
@@ -140,6 +143,9 @@ private:
     Scenario *m_customScene;
 
     lua_State *lua;
+
+	QHash<QString, QString> luaBasicCard_className2objectName;
+	QHash<QString, const LuaBasicCard *> luaBasicCards;
 };
 
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key) {

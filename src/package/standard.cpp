@@ -35,6 +35,7 @@ Card::CardType TrickCard::getTypeId() const{
 }
 
 bool TrickCard::isCancelable(const CardEffectStruct &effect) const{
+	Q_UNUSED(effect);
     return cancelable;
 }
 

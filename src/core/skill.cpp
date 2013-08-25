@@ -201,7 +201,7 @@ FilterSkill::FilterSkill(const QString &name)
 }
 
 TriggerSkill::TriggerSkill(const QString &name)
-    : Skill(name), view_as_skill(NULL), dynamic_priority(0.0)
+    : Skill(name), view_as_skill(NULL), global(false), dynamic_priority(0.0)
 {
 }
 

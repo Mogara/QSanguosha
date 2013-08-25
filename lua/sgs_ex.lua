@@ -8,13 +8,15 @@ function sgs.CreateTriggerSkill(spec)
 	local frequency = spec.frequency or sgs.Skill_NotFrequent
 	local skill = sgs.LuaTriggerSkill(spec.name, frequency)
 
-	if (type(spec.events) == "number") then
+	if type(spec.events) == "number" then
 		skill:addEvent(spec.events)
-	elseif (type(spec.events) == "table") then
+	elseif type(spec.events) == "table" then
 		for _, event in ipairs(spec.events) do
 			skill:addEvent(event)
 		end
 	end
+	
+	if type(spec.global) == "boolean" then skill:setGlobal(spec.global) end
 
 	skill.on_trigger = spec.on_trigger
 
@@ -157,6 +159,46 @@ function sgs.CreateSkillCard(spec)
 	card.on_validate = spec.on_validate
 	card.on_validate_in_response = spec.on_validate_in_response
 
+	return card
+end
+
+function sgs.CreateBasicCard(spec)
+	assert(type(spec.name) == "string" or type(spec.class_name) == "string")
+	if not spec.name then spec.name = spec.class_name
+	elseif not spec.class_name then spec.class_name = spec.name end
+	if spec.suit then assert(type(spec.suit) == "number") end
+	if spec.number then assert(type(spec.number) == "number") end
+	local card = sgs.LuaBasicCard(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name)
+	
+	if type(spec.target_fixed) == "boolean" then
+		card:setTargetFixed(spec.target_fixed)
+	end
+	
+	if type(spec.will_throw) == "boolean" then
+		card:setWillThrow(spec.will_throw)
+	end
+	
+	if type(spec.can_recast) == "boolean" then
+		card:setCanRecast(spec.can_recast)
+	end
+	
+	if type(spec.handling_method) == "number" then
+		card:setHandlingMethod(spec.handling_method)
+	end
+	
+	if type(spec.subtype) == "string" then
+		card:setSubtype(spec.subtype)
+	else
+		card:setSubtype("basic_card")
+	end
+	
+	card.filter = spec.filter
+	card.feasible = spec.feasible
+	card.available = spec.available
+	card.about_to_use = spec.about_to_use
+	card.on_use = spec.on_use
+	card.on_effect = spec.on_effect
+	
 	return card
 end
 

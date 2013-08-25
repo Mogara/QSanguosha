@@ -52,9 +52,6 @@ public:
     virtual void onUninstall(ServerPlayer *player) const;
 
     virtual Location location() const = 0;
-
-protected:
-    TriggerSkill *skill;
 };
 
 class Weapon:public EquipCard {

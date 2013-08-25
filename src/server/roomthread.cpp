@@ -508,6 +508,8 @@ void RoomThread::run() {
         game_rule = new GameRule(this);
 
     addTriggerSkill(game_rule);
+	foreach (const TriggerSkill *triggerSkill, Sanguosha->getGlobalTriggerSkills())
+		addTriggerSkill(triggerSkill);
     if (Config.EnableBasara) addTriggerSkill(new BasaraMode(this));
 
     if (room->getScenario() != NULL) {

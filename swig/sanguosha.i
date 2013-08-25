@@ -791,6 +791,10 @@ public:
 	void cardOnUse(Room *room, const CardUseStruct &card_use) const{
 		 $self->Card::onUse(room, card_use);
 	}
+
+	bool cardIsAvailable(const Player *player) const{
+		return $self->Card::isAvailable(player);
+	}
 };
 
 class WrappedCard: public Card {
@@ -871,6 +875,7 @@ public:
     QList<const DistanceSkill *> getDistanceSkills() const;
     QList<const MaxCardsSkill *> getMaxCardsSkills() const;
     QList<const TargetModSkill *> getTargetModSkills() const;
+	QList<const TriggerSkill *> getGlobalTriggerSkills() const;
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
@@ -934,6 +939,8 @@ public:
     virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const = 0;
+
+	bool isGlobal() const;
 };
 
 class QThread: public QObject {
@@ -1189,6 +1196,6 @@ void Room::doScript(const QString &script) {
 
 %}
 
-%include "luaskills.i"
 %include "card.i"
+%include "luaskills.i"
 %include "ai.i"

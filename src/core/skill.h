@@ -119,9 +119,12 @@ public:
     inline double getDynamicPriority() const{ return dynamic_priority; }
     inline void setDynamicPriority(double value) { dynamic_priority = value; }
 
+	inline bool isGlobal() const{ return global; }
+
 protected:
     const ViewAsSkill *view_as_skill;
     QList<TriggerEvent> events;
+	bool global;
 
 private:
     mutable double dynamic_priority;

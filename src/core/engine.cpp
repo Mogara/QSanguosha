@@ -10,6 +10,7 @@
 #include "protocol.h"
 #include "jsonutils.h"
 #include "structs.h"
+#include "lua-wrapper.h"
 #include "RoomState.h"
 
 #include "guandu-scenario.h"
@@ -161,6 +162,11 @@ void Engine::addSkills(const QList<const Skill *> &all_skills) {
             maxcards_skills << qobject_cast<const MaxCardsSkill *>(skill);
         else if (skill->inherits("TargetModSkill"))
             targetmod_skills << qobject_cast<const TargetModSkill *>(skill);
+		else if (skill->inherits("TriggerSkill")) {
+			const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+			if (trigger_skill && trigger_skill->isGlobal())
+				global_trigger_skills << trigger_skill;
+		}
     }
 }
 
@@ -176,6 +182,10 @@ QList<const TargetModSkill *> Engine::getTargetModSkills() const{
     return targetmod_skills;
 }
 
+QList<const TriggerSkill *> Engine::getGlobalTriggerSkills() const{
+	return global_trigger_skills;
+}
+
 void Engine::addPackage(Package *package) {
     if (findChild<const Package *>(package->objectName()))
         return;
@@ -187,10 +197,17 @@ void Engine::addPackage(Package *package) {
         card->setId(cards.length());
         cards << card;
 
-        Q_ASSERT(card->metaObject() != NULL);
-        QString class_name = card->metaObject()->className();
-        metaobjects.insert(class_name, card->metaObject());
-        className2objectName.insert(class_name, card->objectName());
+        if (card->isKindOf("LuaBasicCard")) {
+			const LuaBasicCard *lcard = qobject_cast<const LuaBasicCard *>(card);
+			Q_ASSERT(lcard != NULL);
+			luaBasicCard_className2objectName.insert(lcard->getClassName(), lcard->objectName());
+			if (!luaBasicCards.keys().contains(lcard->getClassName()))
+				luaBasicCards.insert(lcard->getClassName(), lcard->clone());
+		} else {
+			QString class_name = card->metaObject()->className();
+			metaobjects.insert(class_name, card->metaObject());
+			className2objectName.insert(class_name, card->objectName());
+		}
     }
 
     addSkills(package->getSkills());
@@ -435,13 +452,24 @@ Card *Engine::cloneCard(const Card *card) const{
 
 Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const QStringList &flags) const{
     Card *card = NULL;
-    const QMetaObject *meta = metaobjects.value(name, NULL);
-    if (meta == NULL)
-        meta = metaobjects.value(className2objectName.key(name, QString()), NULL);
-    if (meta) {
-        QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
-        card_obj->setObjectName(className2objectName.value(name, name));
-        card = qobject_cast<Card *>(card_obj);
+    if (luaBasicCard_className2objectName.keys().contains(name)) {
+		const LuaBasicCard *lcard = luaBasicCards.value(name, NULL);
+		if (!lcard) return NULL;
+		card = lcard->clone(suit, number);
+	} else if (luaBasicCard_className2objectName.values().contains(name)) {
+		QString class_name = luaBasicCard_className2objectName.key(name, name);
+		const LuaBasicCard *lcard = luaBasicCards.value(class_name, NULL);
+		if (!lcard) return NULL;
+		card = lcard->clone(suit, number);
+	} else {
+		const QMetaObject *meta = metaobjects.value(name, NULL);
+		if (meta == NULL)
+			meta = metaobjects.value(className2objectName.key(name, QString()), NULL);
+		if (meta) {
+			QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
+			card_obj->setObjectName(className2objectName.value(name, name));
+			card = qobject_cast<Card *>(card_obj);
+		}
     }
     if (!card) return NULL;
     card->clearFlags();

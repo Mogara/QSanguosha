@@ -93,22 +93,6 @@ LuaSkillCard *LuaSkillCard::clone() const{
     return new_card;
 }
 
-void LuaSkillCard::setTargetFixed(bool target_fixed) {
-    this->target_fixed = target_fixed;
-}
-
-void LuaSkillCard::setWillThrow(bool will_throw) {
-    this->will_throw = will_throw;
-}
-
-void LuaSkillCard::setCanRecast(bool can_recast) {
-    this->can_recast = can_recast;
-}
-
-void LuaSkillCard::setHandlingMethod(Card::HandlingMethod handling_method) {
-    this->handling_method = handling_method;
-}
-
 LuaSkillCard *LuaSkillCard::Parse(const QString &str) {
     QRegExp rx("#(\\w+):(.*):(.*)");
     QRegExp e_rx("#(\\w*)\\[(\\w+):(.+)\\]:(.*):(.*)");
@@ -184,5 +168,32 @@ QString LuaSkillCard::toString(bool hidden) const{
     return QString("#%1[%2:%3]:%4:%5").arg(objectName())
            .arg(getSuitString()).arg(getNumberString())
            .arg(subcardString()).arg(user_string);
+}
+
+LuaBasicCard::LuaBasicCard(Card::Suit suit, int number, const char *obj_name, const char *class_name)
+	: BasicCard(suit, number), filter(0), feasible(0), available(0), about_to_use(0), on_use(0), on_effect(0)
+{
+	setObjectName(obj_name);
+	this->class_name = class_name;
+}
+
+LuaBasicCard *LuaBasicCard::clone(Card::Suit suit, int number) const{
+	if (suit == Card::SuitToBeDecided) suit = this->getSuit();
+	if (number == -1) number = this->getNumber();
+	LuaBasicCard *new_card = new LuaBasicCard(suit, number, objectName().toStdString().c_str(), class_name);
+
+	new_card->target_fixed = target_fixed;
+	new_card->will_throw = will_throw;
+	new_card->can_recast = can_recast;
+	new_card->handling_method = handling_method;
+
+	new_card->filter = filter;
+	new_card->feasible = feasible;
+	new_card->available = available;
+	new_card->about_to_use = about_to_use;
+	new_card->on_use = on_use;
+	new_card->on_effect = on_effect;
+
+	return new_card;
 }
 
