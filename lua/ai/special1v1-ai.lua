@@ -29,11 +29,15 @@ function SmartAI:useCardDrowning(card, use)
 	end
 	if #targets > 0 then
 		local targets_num = 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
+		local lx = self.room:findPlayerBySkillName("huangen")
 		use.card = card
 		if use.to then
 			for i = 1, targets_num, 1 do
-				use.to:append(targets[i])
-				if #targets == i then break end
+				if not (use.to:length() > 0 and targets[i]:hasSkill("danlao"))
+					and not (use.to:length() > 0 and lx and self:isFriend(lx, targets[i]) and self:isEnemy(lx) and lx:getHp() > targets_num / 2) then
+					use.to:append(targets[i])
+					if #targets == i then break end
+				end
 			end
 		end
 	end
