@@ -389,13 +389,7 @@ SupplyShortage::SupplyShortage(Card::Suit suit, int number)
 }
 
 bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if (!targets.isEmpty())
-        return false;
-
-    if (to_select == Self)
-        return false;
-
-    if (to_select->containsTrick(objectName()))
+    if (!targets.isEmpty() || to_select->containsTrick(objectName()) || to_select == Self)
         return false;
 
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);

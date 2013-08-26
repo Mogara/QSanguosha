@@ -263,6 +263,30 @@ function onUse_GlobalEffect(self, room, card_use)
 	self:cardOnUse(room, use)
 end
 
+function onUse_DelayedTrick(self, room, card_use)
+	local use = card_use
+	local wrapped = sgs.Sanguosha:getWrappedCard(self:getEffectiveId())
+	use.card = wrapped
+
+	local logm = sgs.LogMessage()
+	logm.from = use.from
+	logm.to = use.to
+	logm.type = "#UseCard"
+	logm.card_str = self:toString()
+	room:sendLog(logm)
+
+	local data = sgs.QVariant()
+	data:setValue(use)
+	local thread = room:getThread()
+	thread:trigger(sgs.PreCardUsed, room, use.from, data)
+
+	local reason = sgs.CardMoveReason(sgs.CardMoveReason_S_REASON_USE, use.from:objectName(), use.to:first():objectName(), self:getSkillName(), "")
+	room:moveCardTo(self, use.from, use.to:first(), sgs.Player_PlaceDelayedTrick, reason, true)
+
+	thread:trigger(sgs.CardUsed, room, use.from, data)
+	thread:trigger(sgs.CardFinished, room, use.from, data)
+end
+
 function use_DelayedTrick(self, room, source, targets)
 	return
 end
@@ -298,6 +322,7 @@ function sgs.CreateTrickCard(spec)
 
 	if spec.subclass then
 		if spec.subclass == sgs.LuaTrickCard_TypeDelayedTrick then
+			if not spec.about_to_use then spec.about_to_use = onUse_DelayedTrick end
 			if not spec.on_use then spec.on_use = use_DelayedTrick end
 		elseif spec.subclass == sgs.LuaTrickCard_TypeAOE then
 			if not spec.available then spec.available = isAvailable_AOE end

@@ -1104,16 +1104,7 @@ Indulgence::Indulgence(Suit suit, int number)
 }
 
 bool Indulgence::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if (!targets.isEmpty())
-        return false;
-
-    if (to_select->containsTrick(objectName()))
-        return false;
-
-    if (to_select == Self)
-        return false;
-
-    return true;
+    return targets.isEmpty() && !to_select->containsTrick(objectName()) && to_select != Self;
 }
 
 void Indulgence::takeEffect(ServerPlayer *target) const{
