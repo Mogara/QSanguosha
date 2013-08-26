@@ -11,9 +11,6 @@
 #include <QCheckBox>
 #include <QSpinBox>
 
-#include <QtDeclarative/QDeclarativeView>
-#include <QtDeclarative/QDeclarativeContext>
-
 namespace Ui {
     class MainWindow;
 }
@@ -44,21 +41,6 @@ private:
 class BackLoader {
 public:
     static void preload();
-};
-
-class AcknowledgementScene: public QGraphicsScene {
-    Q_OBJECT
-
-public:
-    explicit AcknowledgementScene(QObject *parent = 0);
-
-signals:
-    void go_back();
-
-private:
-    QDeclarativeView *view;
-    QDeclarativeContext *ctxt;
-    QList<QObject *> tokens, equipped, loaded;
 };
 
 class MainWindow: public QMainWindow {

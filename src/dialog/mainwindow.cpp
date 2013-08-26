@@ -598,9 +598,16 @@ void MainWindow::on_actionBroadcast_triggered() {
 }
 
 void MainWindow::on_actionAcknowledgement_triggered() {
-    AcknowledgementScene* ack = new AcknowledgementScene;
-    connect(ack, SIGNAL(go_back()), this, SLOT(gotoStartScene()));
-    if (scene && !scene->inherits("RoomScene")) gotoScene(ack);
+    Window *window = new Window(QString(), QSize(1000, 677), "image/system/acknowledgement.png");
+	scene->addItem(window);
+
+	Button *button = window->addCloseButton(tr("OK"));
+	button->moveBy(-85, -35);
+	window->setZValue(32766);
+	window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
+					scene && scene->inherits("RoomScene") ? scene->height() : 0);
+
+	window->appear();
 }
 
 void MainWindow::on_actionPC_Console_Start_triggered() {
@@ -625,20 +632,6 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
 #include <QToolButton>
 #include <QCommandLinkButton>
 #include <QFormLayout>
-
-AcknowledgementScene::AcknowledgementScene(QObject *parent)
-    : QGraphicsScene(parent)
-{
-    view = new QDeclarativeView;
-    view->setSource(QUrl::fromLocalFile("acknowledgement/main.qml"));
-    addWidget(view);
-    view->move(-width() / 2, -height() / 2);
-    view->setStyleSheet(QString("background: transparent"));
-
-    QObject *item = view->rootObject();
-    connect(item, SIGNAL(go_back()), this, SIGNAL(go_back()));
-}
-
 #include "recorder.h"
 
 void MainWindow::on_actionReplay_file_convert_triggered() {
