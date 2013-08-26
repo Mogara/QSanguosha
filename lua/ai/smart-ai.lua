@@ -4192,7 +4192,7 @@ end
 
 
 function getKnownCard(player, class_name, viewas, flags)
-	if not player then global_room:writeToConsole(debug.traceback()) return 0 end
+	if not player or (flags and type(flags) ~= "string") then global_room:writeToConsole(debug.traceback()) return 0 end
 	flags = flags or "h"
 	player = findPlayerByObjectName(global_room, player:objectName())
 	local cards = player:getCards(flags)
@@ -4265,6 +4265,7 @@ end
 function SmartAI:getCards(class_name, flag)
 	local player = self.player
 	local room = self.room
+	if flag and type(flag) ~= "string" then room:writeToConsole(debug.traceback()) return {} end
 
 	local private_pile
 	if not flag then private_pile = true end

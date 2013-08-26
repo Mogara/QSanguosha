@@ -302,10 +302,8 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
             break;
         }
     } else {
-		if (room->getCardOwner(getEffectiveId()) == NULL) {
-			CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());
-			room->throwCard(this, reason, NULL);
-		}
+		CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());
+		room->throwCard(this, reason, NULL);
     }
 }
 

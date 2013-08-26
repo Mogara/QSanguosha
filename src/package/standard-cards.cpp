@@ -284,23 +284,25 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         }
     }
 
+	if (!Self->canSlash(to_select, this, distance_limit, rangefix, targets)) return false;
     if (targets.length() >= slash_targets) {
         if (Self->hasSkill("duanbing") && targets.length() == slash_targets) {
-            bool hasExtraTarget = false;
-            foreach (const Player *p, targets)
-                if (Self->distanceTo(p) == 1) {
-                    hasExtraTarget = true;
-                    break;
-                }
-            if (hasExtraTarget)
-                return Self->canSlash(to_select, this, distance_limit, rangefix, targets);
-            else
-                return Self->canSlash(to_select, this, true, 0, targets) && Self->distanceTo(to_select) == 1;
+            QList<const Player *> duanbing_targets;
+            bool no_other_assignee = true;
+            foreach (const Player *p, targets) {
+                if (Self->distanceTo(p, rangefix) == 1)
+                    duanbing_targets << p;
+                else if (no_other_assignee && p->hasFlag("SlashAssignee"))
+                    no_other_assignee = false;
+            }
+            if (no_other_assignee && duanbing_targets.length() == 1 && duanbing_targets.first()->hasFlag("SlashAssignee"))
+                return false;
+            return !duanbing_targets.isEmpty() || Self->distanceTo(to_select, rangefix) == 1;
         } else
             return false;
     }
 
-    return Self->canSlash(to_select, this, distance_limit, rangefix, targets);
+    return true;
 }
 
 Jink::Jink(Suit suit, int number): BasicCard(suit, number)
