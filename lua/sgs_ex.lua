@@ -354,7 +354,7 @@ function sgs.CreateViewAsSkill(spec)
 	local n = spec.n or 0
 
 	function skill:view_as(cards)
-		return spec.view_as(self,cards)
+		return spec.view_as(self, cards)
 	end
 
 	function skill:view_filter(selected, to_select)
