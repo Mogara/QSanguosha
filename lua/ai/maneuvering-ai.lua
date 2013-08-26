@@ -351,7 +351,7 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 			if target:hasSkill("vsganglie") then
 				local can
 				for _, t in ipairs(self:getFriends(source)) do
-					if t:getHp() == 1 and t:getHandcardNum() < 2 and self:damageIsEffective(t, nil, t) and peach_num < 1 then
+					if t:getHp() == 1 and t:getHandcardNum() < 2 and self:damageIsEffective(t, nil, target) and peach_num < 1 then
 						if t:isLord() then
 							newvalue = newvalue - 100
 							if not self:isEnemy(t, source) then killlord = true end

@@ -5,27 +5,17 @@ local nosfanjian_skill = {}
 nosfanjian_skill.name = "nosfanjian"
 table.insert(sgs.ai_skills, nosfanjian_skill)
 nosfanjian_skill.getTurnUseCard = function(self)
-	if self.player:isKongcheng() then return nil end
-	if self.player:usedTimes("NosFanjianCard") > 0 then return nil end
-
-	local cards = self.player:getHandcards()
-	
-	for _, card in sgs.qlist(cards) do
-		if card:getSuit() == sgs.Card_Diamond and self.player:getHandcardNum() == 1 then
-			return nil
-		elseif card:isKindOf("Peach") or card:isKindOf("Analeptic") then
-			return nil
-		end
-	end
-	
-	local card_str = "@NosFanjianCard=."
-	local fanjianCard = sgs.Card_Parse(card_str)
-	assert(fanjianCard)
-
-	return fanjianCard
+	if self.player:isKongcheng() or self.player:hasUsed("NosFanjianCard") then return nil end
+	return sgs.Card_Parse("@NosFanjianCard=.")
 end
 
-sgs.ai_skill_use_func.NosFanjianCard = sgs.ai_skill_use_func.FanjianCard
+sgs.ai_skill_use_func.NosFanjianCard = function(card, use, self)
+	local id, target = getFanjianCardAndTarget(card, use, self)
+	if id and target then
+		use.card = sgs.Card_Parse("@NosFanjianCard=" .. id)
+		if use.to then use.to:append(target) end
+	end
+end
 
 sgs.ai_card_intention.NosFanjianCard = sgs.ai_card_intention.FanjianCard
 
