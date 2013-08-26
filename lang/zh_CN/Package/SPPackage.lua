@@ -165,5 +165,5 @@ return {
 	["@moon-spear-jink"] = "【银月枪】效果被触发，请打出一张【闪】",
 	
 	["Taiwan_sp"] = "台版SP",
-	["WangZheZhiZhan"] = "王者之战专属",
+	["wangzhezhizhan"] = "王者之战专属",
 }
