@@ -69,8 +69,10 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals) {
         nickname_item->setData(Qt::UserRole, general->objectName());
         nickname_item->setTextAlignment(Qt::AlignCenter);
 
-        if (general->isHidden())
+        if (general->isHidden()) {
             nickname_item->setBackgroundColor(Qt::gray);
+			nickname_item->setToolTip(tr("This general is hidden"));
+		}
 
         QTableWidgetItem *name_item = new QTableWidgetItem(name);
         name_item->setTextAlignment(Qt::AlignCenter);
@@ -80,8 +82,10 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals) {
             name_item->setTextAlignment(Qt::AlignCenter);
         }
 
-        if (general->isHidden())
+        if (general->isHidden()) {
             name_item->setBackgroundColor(Qt::gray);
+			name_item->setToolTip(tr("This general is hidden"));
+		}
 
         QTableWidgetItem *kingdom_item = new QTableWidgetItem(kingdom);
         kingdom_item->setTextAlignment(Qt::AlignCenter);
@@ -94,6 +98,10 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals) {
 
         QTableWidgetItem *package_item = new QTableWidgetItem(package);
         package_item->setTextAlignment(Qt::AlignCenter);
+		if (Config.value("LuaPackages", QString()).toString().split("+").contains(general->getPackage())) {
+            package_item->setBackgroundColor(QColor(0x66, 0xCC, 0xFF));
+            package_item->setToolTip(tr("This is an Lua extension"));
+        }
 
         ui->tableWidget->setItem(i, 0, nickname_item);
         ui->tableWidget->setItem(i, 1, name_item);

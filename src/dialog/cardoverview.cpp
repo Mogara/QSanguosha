@@ -74,8 +74,14 @@ void CardOverview::addCard(int i, const Card *card) {
     ui->tableWidget->setItem(i, 1, new QTableWidgetItem(suit_icon, suit_str));
     ui->tableWidget->setItem(i, 2, new QTableWidgetItem(point));
     ui->tableWidget->setItem(i, 3, new QTableWidgetItem(type));
-    ui->tableWidget->setItem(i, 4, new QTableWidgetItem(subtype));
-    ui->tableWidget->setItem(i, 5, new QTableWidgetItem(package));    
+    ui->tableWidget->setItem(i, 4, new QTableWidgetItem(subtype));  
+
+	QTableWidgetItem *package_item = new QTableWidgetItem(package);
+    if (Config.value("LuaPackages", QString()).toString().split("+").contains(card->getPackage())) {
+        package_item->setBackgroundColor(QColor(0x66, 0xCC, 0xFF));
+        package_item->setToolTip(tr("This is an Lua extension"));
+    }
+    ui->tableWidget->setItem(i, 5, package_item);
 }
 
 CardOverview::~CardOverview() {

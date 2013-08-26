@@ -80,7 +80,7 @@
         <translation>&lt;b&gt;【%1】&lt;/b&gt; %2</translation>
     </message>
     <message>
-        <location filename="src/core/card.cpp" line="635"/>
+        <location filename="src/core/card.cpp" line="646"/>
         <source>Subcard must not be virtual card!</source>
         <translation>子卡不能是虚拟卡牌 !</translation>
     </message>
@@ -374,13 +374,18 @@
         <source>Play (female)</source>
         <translation>女性配音</translation>
     </message>
+	<message>
+		<location filename="../../src/dialog/cardoverview.cpp" line="82"/>
+        <source>This is an Lua extension</source>
+        <translation>该包为Lua扩展包</translation>
+    </message>
     <message>
-        <location filename="src/dialog/cardoverview.cpp" line="103"/>
+        <location filename="src/dialog/cardoverview.cpp" line="109"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="src/dialog/cardoverview.cpp" line="103"/>
+        <location filename="src/dialog/cardoverview.cpp" line="109"/>
         <source>These packages don&apos;t contain this card</source>
         <translation>此牌所在卡牌包已禁用</translation>
     </message>
@@ -1594,72 +1599,72 @@
 <context>
     <name>Engine</name>
     <message>
-        <location filename="src/core/engine.cpp" line="86"/>
+        <location filename="src/core/engine.cpp" line="87"/>
         <source>2 players</source>
         <translation>2 人局</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="88"/>
+        <location filename="src/core/engine.cpp" line="89"/>
         <source>2 players (KOF style)</source>
         <translation>2 人局 [KOF模式]</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="89"/>
+        <location filename="src/core/engine.cpp" line="90"/>
         <source>3 players</source>
         <translation>3 人局</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="90"/>
+        <location filename="src/core/engine.cpp" line="91"/>
         <source>4 players</source>
         <translation>4 人局</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="91"/>
+        <location filename="src/core/engine.cpp" line="92"/>
         <source>4 players (Hulao Pass)</source>
         <translation>4 人局 [虎牢关1v3]</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="92"/>
+        <location filename="src/core/engine.cpp" line="93"/>
         <source>5 players</source>
         <translation>5 人局</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="93"/>
+        <location filename="src/core/engine.cpp" line="94"/>
         <source>6 players</source>
         <translation>6 人局</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="94"/>
+        <location filename="src/core/engine.cpp" line="95"/>
         <source>6 players (2 renegades)</source>
         <translation>6 人局 [双内奸]</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="95"/>
+        <location filename="src/core/engine.cpp" line="96"/>
         <source>6 players (3v3)</source>
         <translation>6 人局 [3v3]</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="96"/>
+        <location filename="src/core/engine.cpp" line="97"/>
         <source>6 players (XMode)</source>
         <translation>6 人局 [血战到底]</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="97"/>
+        <location filename="src/core/engine.cpp" line="98"/>
         <source>7 players</source>
         <translation>7 人局</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="98"/>
+        <location filename="src/core/engine.cpp" line="99"/>
         <source>8 players</source>
         <translation>8 人局</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="99"/>
+        <location filename="src/core/engine.cpp" line="100"/>
         <source>8 players (2 renegades)</source>
         <translation>8 人局 [双内奸]</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="100"/>
+        <location filename="src/core/engine.cpp" line="101"/>
         <source>8 players (0 renegade)</source>
         <translation>8 人局 [无内奸]</translation>
     </message>
@@ -1668,32 +1673,32 @@
         <translation type="obsolete">太阳神三国杀-20130224-春分</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="101"/>
+        <location filename="src/core/engine.cpp" line="102"/>
         <source>9 players</source>
         <translation>9 人局</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="102"/>
+        <location filename="src/core/engine.cpp" line="103"/>
         <source>10 players</source>
         <translation>10 人局</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="103"/>
+        <location filename="src/core/engine.cpp" line="104"/>
         <source>10 players (1 renegade)</source>
         <translation>10 人局 [单内奸]</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="104"/>
+        <location filename="src/core/engine.cpp" line="105"/>
         <source>10 players (0 renegade)</source>
         <translation>10 人局 [无内奸]</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="152"/>
+        <location filename="src/core/engine.cpp" line="153"/>
         <source>Duplicated skill : %1</source>
         <translation>重复技能: %1</translation>
     </message>
     <message>
-        <location filename="src/core/engine.cpp" line="591"/>
+        <location filename="src/core/engine.cpp" line="634"/>
         <source>%1 [Scenario mode]</source>
         <translation>%1 【剧情模式】</translation>
     </message>
@@ -1812,8 +1817,8 @@
         <translation>配音</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="282"/>
         <location filename="src/dialog/generaloverview.cpp" line="290"/>
+		<location filename="src/dialog/generaloverview.cpp" line="298"/>
         <source>Official</source>
         <translation>官方</translation>
     </message>
@@ -1837,33 +1842,44 @@
         <source>NoGender</source>
         <translation>无性别</translation>
     </message>
+	<message>
+        <location filename="../../src/dialog/generaloverview.cpp" line="74"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="87"/>
+        <source>This general is hidden</source>
+        <translation>该武将被隐藏， 不会出现在选将列表中</translation>
+    </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="199"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="103"/>
+        <source>This is an Lua extension</source>
+        <translation>该包为Lua扩展包</translation>
+    </message>
+    <message>
+        <location filename="src/dialog/generaloverview.cpp" line="207"/>
         <source>Copy lines</source>
         <translation>复制台词</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="245"/>
+        <location filename="src/dialog/generaloverview.cpp" line="253"/>
         <source>Death</source>
         <translation>阵亡</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="254"/>
+        <location filename="src/dialog/generaloverview.cpp" line="262"/>
         <source>Victory</source>
         <translation>胜利</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="255"/>
+        <location filename="src/dialog/generaloverview.cpp" line="263"/>
         <source>Six dragons lead my chariot, I will ride the wind with the greatest speed.With all of the feudal lords under my command,to rule the world with one name!</source>
         <translation>驾六龙，乘风而行，九合诸侯，一匡天下!</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="268"/>
+        <location filename="src/dialog/generaloverview.cpp" line="276"/>
         <source>Stage Change</source>
         <translation>变身</translation>
     </message>
     <message>
-        <location filename="src/dialog/generaloverview.cpp" line="269"/>
+        <location filename="src/dialog/generaloverview.cpp" line="277"/>
         <source>Trashes, the real fun is just beginning!</source>
         <translation>杂鱼们，好戏才刚刚开始！</translation>
     </message>
@@ -3198,14 +3214,14 @@
         <translation>玩家序号应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="4292"/>
+        <location filename="src/server/room.cpp" line="4296"/>
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
  %1</translation>
     </message>
     <message>
-        <location filename="src/server/room.cpp" line="5440"/>
+        <location filename="src/server/room.cpp" line="5444"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>

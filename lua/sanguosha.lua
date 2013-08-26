@@ -29,15 +29,19 @@ end
 
 function load_extensions(just_require)
 	local scripts = sgs.GetFileNames("extensions")
-
+	local package_names = {}
 	for _, script in ipairs(scripts) do
 		if script:match(".+%.lua$") then
 			local name = script:sub(script:find("%w+"))
 			local module_name = "extensions." .. name
 			local loaded = require(module_name)
+			table.insert(package_names, name)
 			sgs.Sanguosha:addPackage(loaded.extension)
 		end
 	end
+	local lua_packages = ""
+	if #package_names > 0 then lua_packages = table.concat(package_names, "+") end
+	sgs.SetConfig("LuaPackages", lua_packages)
 end
 
 if not sgs.GetConfig("DisableLua", false) then
