@@ -1211,6 +1211,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         setPlayerFlag(player, "-continuing");
     if (has_provided || !player->isAlive()) {
         card = provided;
+		if (player->isCardLimited(card, method)) card = NULL;
         provided = NULL;
         has_provided = false;
     } else {
