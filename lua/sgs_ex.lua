@@ -371,6 +371,35 @@ function sgs.CreateViewAsSkill(spec)
 	return skill
 end
 
+function sgs.CreateWeapon(spec)
+	assert(type(spec.name) == "string" or type(spec.class_name) == "string")
+	if not spec.name then spec.name = spec.class_name
+	elseif not spec.class_name then spec.class_name = spec.name end
+	if spec.suit then assert(type(spec.suit) == "number") end
+	if spec.number then assert(type(spec.number) == "number") end
+	assert(type(spec.range) == "number")
+	local card = sgs.LuaWeapon(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.range, spec.name, spec.class_name)
+
+	card.on_install = spec.on_install
+	card.on_uninstall = spec.on_uninstall
+
+	return card
+end
+
+function sgs.CreateArmor(spec)
+	assert(type(spec.name) == "string" or type(spec.class_name) == "string")
+	if not spec.name then spec.name = spec.class_name
+	elseif not spec.class_name then spec.class_name = spec.name end
+	if spec.suit then assert(type(spec.suit) == "number") end
+	if spec.number then assert(type(spec.number) == "number") end
+	local card = sgs.LuaArmor(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name)
+
+	card.on_install = spec.on_install
+	card.on_uninstall = spec.on_uninstall
+
+	return card
+end
+
 function sgs.LoadTranslationTable(t)
 	for key, value in pairs(t) do
 		sgs.AddTranslationEntry(key, value)

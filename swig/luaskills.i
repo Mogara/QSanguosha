@@ -239,6 +239,40 @@ public:
     const char *class_name, *subtype;
 };
 
+class LuaWeapon: public Weapon {
+public:
+    LuaWeapon(Card::Suit suit, int number, int range, const char *obj_name, const char *class_name);
+    LuaWeapon *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
+
+    virtual void onInstall(ServerPlayer *player) const;
+    virtual void onUninstall(ServerPlayer *player) const;
+
+    virtual QString getClassName();
+    virtual bool isKindOf(const char *cardType);
+
+    // the lua callbacks
+    LuaFunction on_install;
+    LuaFunction on_uninstall;
+    const char *class_name;
+};
+
+class LuaArmor: public Armor {
+public:
+    LuaArmor(Card::Suit suit, int number, const char *obj_name, const char *class_name);
+    LuaArmor *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
+
+    virtual void onInstall(ServerPlayer *player) const;
+    virtual void onUninstall(ServerPlayer *player) const;
+
+    virtual QString getClassName();
+    virtual bool isKindOf(const char *cardType);
+
+    // the lua callbacks
+    LuaFunction on_install;
+    LuaFunction on_uninstall;
+    const char *class_name;
+};
+
 %{
 
 #include "lua-wrapper.h"
@@ -1224,6 +1258,104 @@ bool LuaTrickCard::isAvailable(const Player *player) const{
         bool result = lua_toboolean(L, -1);
         lua_pop(L, 1);
         return result;
+    }
+}
+
+void LuaWeapon::pushSelf(lua_State *L) const{
+    LuaWeapon *self = const_cast<LuaWeapon *>(this);
+    SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaWeapon, 0);
+}
+
+void LuaWeapon::onInstall(ServerPlayer *player) const{
+    if (on_install == 0)
+        return Weapon::onInstall(player);
+
+    lua_State *L = Sanguosha->getLuaState();
+    
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_install);
+
+    pushSelf(L);
+
+    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    int error = lua_pcall(L, 2, 0, 0);
+    if (error) {
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        Room *room = player->getRoom();
+        room->output(error_msg);
+    }
+}
+
+void LuaWeapon::onUninstall(ServerPlayer *player) const{
+    if (on_uninstall == 0)
+        return Weapon::onUninstall(player);
+
+    lua_State *L = Sanguosha->getLuaState();
+    
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_uninstall);
+
+    pushSelf(L);
+
+    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    int error = lua_pcall(L, 2, 0, 0);
+    if (error) {
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        Room *room = player->getRoom();
+        room->output(error_msg);
+    }
+}
+
+void LuaArmor::pushSelf(lua_State *L) const{
+    LuaArmor *self = const_cast<LuaArmor *>(this);
+    SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaArmor, 0);
+}
+
+void LuaArmor::onInstall(ServerPlayer *player) const{
+    if (on_install == 0)
+        return Armor::onInstall(player);
+
+    lua_State *L = Sanguosha->getLuaState();
+    
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_install);
+
+    pushSelf(L);
+
+    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    int error = lua_pcall(L, 2, 0, 0);
+    if (error) {
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        Room *room = player->getRoom();
+        room->output(error_msg);
+    }
+}
+
+void LuaArmor::onUninstall(ServerPlayer *player) const{
+    if (on_uninstall == 0)
+        return Armor::onUninstall(player);
+
+    lua_State *L = Sanguosha->getLuaState();
+    
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_uninstall);
+
+    pushSelf(L);
+
+    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    int error = lua_pcall(L, 2, 0, 0);
+    if (error) {
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        Room *room = player->getRoom();
+        room->output(error_msg);
     }
 }
 

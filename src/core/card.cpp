@@ -513,6 +513,14 @@ Card *Card::Clone(const Card *card) {
         const LuaTrickCard *lcard = qobject_cast<const LuaTrickCard *>(card);
         Q_ASSERT(lcard != NULL);
         card_obj = lcard->clone();
+	} else if (card->isKindOf("LuaWeapon")) {
+        const LuaWeapon *lcard = qobject_cast<const LuaWeapon *>(card);
+        Q_ASSERT(lcard != NULL);
+        card_obj = lcard->clone();
+    } else if (card->isKindOf("LuaArmor")) {
+        const LuaArmor *lcard = qobject_cast<const LuaArmor *>(card);
+        Q_ASSERT(lcard != NULL);
+        card_obj = lcard->clone();
 	} else {
 		const QMetaObject *meta = card->metaObject();
 		card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));

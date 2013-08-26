@@ -16,7 +16,7 @@ function debugFunc(self, room, player, data)
 	local choices = {"showVisiblecards","showHandcards","objectiveLevel","getDefenseSlash"}
 	local debugmsg =function(fmt,...)
 		if type(fmt)=="boolean" then fmt = fmt and "true" or "false" end
-		local msg=string.format(fmt, ...)
+		local msg = string.format(fmt, ...)
 		player:speak(msg)
 		logmsg("ai.html","<pre>"..msg.."</pre>")
 	end

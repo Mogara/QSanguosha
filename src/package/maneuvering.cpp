@@ -266,9 +266,8 @@ SilverLion::SilverLion(Suit suit, int number)
 }
 
 void SilverLion::onUninstall(ServerPlayer *player) const{
-    if (player->isAlive() && player->hasArmorEffect(objectName())) {
+    if (player->isAlive() && player->hasArmorEffect(objectName()))
         player->setFlags("SilverLionRecover");
-    }
 }
 
 FireAttack::FireAttack(Card::Suit suit, int number)

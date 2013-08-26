@@ -226,3 +226,39 @@ LuaTrickCard *LuaTrickCard::clone(Card::Suit suit, int number) const{
 	return new_card;
 }
 
+LuaWeapon::LuaWeapon(Card::Suit suit, int number, int range, const char *obj_name, const char *class_name)
+    : Weapon(suit, number, range)
+{
+    setObjectName(obj_name);
+    this->class_name = class_name;
+}
+
+LuaWeapon *LuaWeapon::clone(Card::Suit suit, int number) const{
+    if (suit == Card::SuitToBeDecided) suit = this->getSuit();
+    if (number == -1) number = this->getNumber();
+    LuaWeapon *new_card = new LuaWeapon(suit, number, this->getRange(), objectName().toStdString().c_str(), class_name);
+
+    new_card->on_install = on_install;
+    new_card->on_uninstall = on_uninstall;
+
+    return new_card;
+}
+
+LuaArmor::LuaArmor(Card::Suit suit, int number, const char *obj_name, const char *class_name)
+    : Armor(suit, number)
+{
+    setObjectName(obj_name);
+    this->class_name = class_name;
+}
+
+LuaArmor *LuaArmor::clone(Card::Suit suit, int number) const{
+    if (suit == Card::SuitToBeDecided) suit = this->getSuit();
+    if (number == -1) number = this->getNumber();
+    LuaArmor *new_card = new LuaArmor(suit, number, objectName().toStdString().c_str(), class_name);
+
+    new_card->on_install = on_install;
+    new_card->on_uninstall = on_uninstall;
+
+    return new_card;
+}
+

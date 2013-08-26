@@ -54,6 +54,16 @@ public:
     virtual Location location() const = 0;
 };
 
+%extend EquipCard {
+    void equipOnInstall(ServerPlayer *player) const{
+        $self->EquipCard::onInstall(player);
+    }
+
+    void equipOnUninstall(ServerPlayer *player) const{
+        $self->EquipCard::onUninstall(player);
+    }
+};
+
 class Weapon: public EquipCard {
 public:
     Weapon(Suit suit, int number, int range);

@@ -248,4 +248,58 @@ private:
     SubClass subclass;
 };
 
+class LuaWeapon: public Weapon {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LuaWeapon(Card::Suit suit, int number, int range, const char *obj_name, const char *class_name);
+    LuaWeapon *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
+
+    // member functions that do not expose to Lua interpreter
+    void pushSelf(lua_State *L) const;
+
+    virtual void onInstall(ServerPlayer *player) const;
+    virtual void onUninstall(ServerPlayer *player) const;
+
+    inline virtual QString getClassName() const{ return QString(class_name); }
+    inline virtual bool isKindOf(const char *cardType) const{
+        if (strcmp(cardType, "LuaCard") == 0 || strcmp(cardType, class_name) == 0)
+            return true;
+        else
+            return Card::isKindOf(cardType);
+    }
+
+    // the lua callbacks
+    LuaFunction on_install;
+    LuaFunction on_uninstall;
+    const char *class_name;
+};
+
+class LuaArmor: public Armor {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LuaArmor(Card::Suit suit, int number, const char *obj_name, const char *class_name);
+    LuaArmor *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
+
+    // member functions that do not expose to Lua interpreter
+    void pushSelf(lua_State *L) const;
+
+    virtual void onInstall(ServerPlayer *player) const;
+    virtual void onUninstall(ServerPlayer *player) const;
+
+    inline virtual QString getClassName() const{ return QString(class_name); }
+    inline virtual bool isKindOf(const char *cardType) const{
+        if (strcmp(cardType, "LuaCard") == 0 || strcmp(cardType, class_name) == 0)
+            return true;
+        else
+            return Card::isKindOf(cardType);
+    }
+
+    // the lua callbacks
+    LuaFunction on_install;
+    LuaFunction on_uninstall;
+    const char *class_name;
+};
+
 #endif

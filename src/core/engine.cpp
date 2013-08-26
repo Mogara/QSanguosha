@@ -209,6 +209,18 @@ void Engine::addPackage(Package *package) {
             luaTrickCard_className2objectName.insert(lcard->getClassName(), lcard->objectName());
             if (!luaTrickCards.keys().contains(lcard->getClassName()))
                 luaTrickCards.insert(lcard->getClassName(), lcard->clone());
+		} else if (card->isKindOf("LuaWeapon")) {
+            const LuaWeapon *lcard = qobject_cast<const LuaWeapon *>(card);
+            Q_ASSERT(lcard != NULL);
+            luaWeapon_className2objectName.insert(lcard->getClassName(), lcard->objectName());
+            if (!luaWeapons.keys().contains(lcard->getClassName()))
+                luaWeapons.insert(lcard->getClassName(), lcard->clone());
+        } else if (card->isKindOf("LuaArmor")) {
+            const LuaArmor *lcard = qobject_cast<const LuaArmor *>(card);
+            Q_ASSERT(lcard != NULL);
+            luaArmor_className2objectName.insert(lcard->getClassName(), lcard->objectName());
+            if (!luaArmors.keys().contains(lcard->getClassName()))
+                luaArmors.insert(lcard->getClassName(), lcard->clone());
 		} else {
 			QString class_name = card->metaObject()->className();
 			metaobjects.insert(class_name, card->metaObject());
@@ -474,6 +486,24 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
     } else if (luaTrickCard_className2objectName.values().contains(name)) {
         QString class_name = luaTrickCard_className2objectName.key(name, name);
         const LuaTrickCard *lcard = luaTrickCards.value(class_name, NULL);
+        if (!lcard) return NULL;
+        card = lcard->clone(suit, number);
+	} else if (luaWeapon_className2objectName.keys().contains(name)) {
+        const LuaWeapon *lcard = luaWeapons.value(name, NULL);
+        if (!lcard) return NULL;
+        card = lcard->clone(suit, number);
+    } else if (luaWeapon_className2objectName.values().contains(name)) {
+        QString class_name = luaWeapon_className2objectName.key(name, name);
+        const LuaWeapon *lcard = luaWeapons.value(class_name, NULL);
+        if (!lcard) return NULL;
+        card = lcard->clone(suit, number);
+    } else if (luaArmor_className2objectName.keys().contains(name)) {
+        const LuaArmor *lcard = luaArmors.value(name, NULL);
+        if (!lcard) return NULL;
+        card = lcard->clone(suit, number);
+    } else if (luaArmor_className2objectName.values().contains(name)) {
+        QString class_name = luaArmor_className2objectName.key(name, name);
+        const LuaArmor *lcard = luaArmors.value(class_name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
 	} else {
