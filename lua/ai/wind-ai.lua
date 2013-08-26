@@ -557,7 +557,7 @@ sgs.ai_skill_choice.guhuo = function(self, choices)
 	if guhuotype and guhuotype == "AmazingGrace" then return "noquestion" end
 	if guhuotype:match("Slash") then
 		if yuji:getState() ~= "robot" and math.random(1, 4) == 1 and not sgs.questioner then return "question" end
-		if not self:isEquip("Crossbow", yuji) then return "noquestion" end
+		if not self:hasCrossbowEffect(yuji) then return "noquestion" end
 	end
 	if yuji:hasFlag("guhuo_failed") and math.random(1, 6) == 1 and self:isEnemy(yuji) and self.player:getHp() >= 3 and
 		self.player:getHp() > self.player:getLostHp() then return "question" end
