@@ -3613,9 +3613,13 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
 
     QList<CardsMoveStruct> card_moves;
     int i = 0;
+	QMap<ServerPlayer *, QList<int> > from_handcards;
     foreach (_MoveSeparateClassifier cls, classifiers) {
         CardsMoveStruct card_move;
+		ServerPlayer *from = (ServerPlayer *)cls.m_from;
         card_move.from = cls.m_from;
+		if (from && !from_handcards.keys().contains(from))
+			from_handcards[from] = from->handCards();
         card_move.to = cls.m_to;
         if (card_move.from)
             card_move.from_player_name = card_move.from->objectName();
@@ -3629,18 +3633,14 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
         card_move.card_ids = ids.at(i);
         card_move.reason = cls.m_reason;
 
-        bool last_handcard = true;
-        if (card_move.from && !card_move.from->isKongcheng() && card_move.from_place == Player::PlaceHand) {
-            foreach (const Card *card, card_move.from->getHandcards()) {
-                if (!card_move.card_ids.contains(card->getEffectiveId())) {
-                    last_handcard = false;
-                    break;
-                }
+        if (from && from_handcards.keys().contains(from)) {
+			QList<int> &move_ids = from_handcards[from];
+			if (!move_ids.isEmpty()) {
+				foreach (int id, card_move.card_ids)
+					move_ids.removeOne(id);
+				card_move.is_last_handcard = move_ids.isEmpty();
             }
-        } else {
-            last_handcard = false;
         }
-        card_move.is_last_handcard = last_handcard;
 
         card_moves.append(card_move);
         i++;
