@@ -7,14 +7,6 @@ LuaTriggerSkill::LuaTriggerSkill(const char *name, Frequency frequency)
     this->frequency = frequency;
 }
 
-void LuaTriggerSkill::addEvent(TriggerEvent triggerEvent) {
-    events << triggerEvent;
-}
-
-void LuaTriggerSkill::setViewAsSkill(ViewAsSkill *view_as_skill) {
-    this->view_as_skill = view_as_skill;
-}
-
 int LuaTriggerSkill::getPriority() const{
     return priority;
 }

@@ -11,11 +11,11 @@ class LuaTriggerSkill: public TriggerSkill {
 
 public:
     LuaTriggerSkill(const char *name, Frequency frequency);
-    void addEvent(TriggerEvent triggerEvent);
-    void setViewAsSkill(ViewAsSkill *view_as_skill);
+    inline void addEvent(TriggerEvent triggerEvent) { events << triggerEvent; }
+    inline void setViewAsSkill(ViewAsSkill *view_as_skill) { this->view_as_skill = view_as_skill; }
 	inline void setGlobal(bool global) { this->global = global; }
 
-    virtual int getPriority() const;
+    int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
 
