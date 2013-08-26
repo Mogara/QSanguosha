@@ -264,8 +264,8 @@ function sgs.getDefense(player, gameProcess)
 			end
 		end
 		if player:getMark("@tied") > 0 then defense = defense + 1 end
-		if player:hasSkill("jieming") then defense = defense + 4 end
-		if player:hasSkill("yiji") then defense = defense + 4 end
+		if player:hasSkill("jieming") then defense = defense + 3 end
+		if player:hasSkill("yiji") then defense = defense + 3 end
 		if player:hasSkill("guixin") then defense = defense + 4 end
 		if player:hasSkill("yuce") then defense = defense + 2 end
 	end

@@ -188,6 +188,7 @@ function sgs.getDefenseSlash(player)
 				defense = defense + 1
 			end
 		end
+		if attacker:getWeapon() and player:hasSkill("duodao") and player:canDiscard(player, "he") then defense = defense + 1 end
 		if player:hasSkill("jieming") then defense = defense + 4 end
 		if player:hasSkill("yiji") then defense = defense + 4 end
 		if player:hasSkill("guixin") then defense = defense + 4 end
