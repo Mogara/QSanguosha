@@ -1160,7 +1160,7 @@ public:
     bool doBroadcastNotify(const QList<ServerPlayer *> &players, int command, const char *arg);
 
     void updateStateItem();
-    bool notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *propertyOwner, const char *propertyName, const QString &value = QString());
+    bool notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *propertyOwner, const char *propertyName, const char *value = NULL);
     bool broadcastProperty(ServerPlayer *player, const char *property_name, const char *value = NULL);
 };
 
