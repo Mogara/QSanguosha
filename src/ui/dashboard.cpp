@@ -812,6 +812,11 @@ void Dashboard::reverseSelection() {
 
 void Dashboard::cancelNullification() {
     ClientInstance->m_noNullificationThisTime = !ClientInstance->m_noNullificationThisTime;
+	if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
+        && Sanguosha->getCurrentCardUsePattern() == "nullification"
+        && RoomSceneInstance->isCancelButtonEnabled()) {
+        RoomSceneInstance->doCancelButton();
+    }
 }
 
 void Dashboard::controlNullificationButton(bool show) {

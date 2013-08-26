@@ -126,6 +126,8 @@ public:
     void updateTable();
     inline QMainWindow *mainWindow() { return main_window; }
 
+	inline bool isCancelButtonEnabled() const{ return cancel_button != NULL && cancel_button->isEnabled(); }
+
     bool m_skillButtonSank;
 
 public slots:
@@ -165,6 +167,10 @@ public slots:
     void handleGameEvent(const Json::Value &arg);
 
     EffectAnimation *getEA() const{ return animations; }
+
+	void doOkButton();
+    void doCancelButton();
+    void doDiscardButton();
     
 protected:    
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -315,9 +321,6 @@ private slots:
     void updateTrustButton();
     void onSkillActivated();
     void onSkillDeactivated();
-    void doOkButton();
-    void doCancelButton();
-    void doDiscardButton();
     void doTimeout();
     void startInXs();
     void hideAvatars();
