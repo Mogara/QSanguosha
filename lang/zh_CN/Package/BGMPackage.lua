@@ -139,7 +139,7 @@ return {
 	["xuehen:slash"] = "视为使用一张【杀】",
 	["#FenyongAvoid"] = "%from 的“%arg”被触发，防止了本次伤害",
 
-	["BGMDIY"] = "桌游志DIY",
+	["BGMDIY"] = "桌游志贴纸",
 
 	["#diy_simazhao"] = "狼子野心",
 	["diy_simazhao"] = "司马昭",

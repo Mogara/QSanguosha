@@ -1619,11 +1619,33 @@ SPPackage::SPPackage()
     sp_shenlvbu->addSkill("wuqian");
     sp_shenlvbu->addSkill("shenfen");
 
+	addMetaObject<WeidiCard>();
+	addMetaObject<YuanhuCard>();
+	addMetaObject<XuejiCard>();
+	addMetaObject<BifaCard>();
+	addMetaObject<SongciCard>();
+}
+
+ADD_PACKAGE(SP)
+
+OLPackage::OLPackage()
+	: Package("OL")
+{
+
     General *zhugeke = new General(this, "zhugeke", "wu", 3); // OL 002
     zhugeke->addSkill(new Aocai);
     zhugeke->addSkill(new Duwu);
 	zhugeke->addSkill(new SPConvertSkill("zhugeke", "diy_zhugeke"));
 
+	addMetaObject<AocaiCard>();
+	addMetaObject<DuwuCard>();
+}
+
+ADD_PACKAGE(OL)
+
+TaiwanSPPackage::TaiwanSPPackage()
+	: Package("Taiwan_sp")
+{
     General *tw_diaochan = new General(this, "tw_diaochan", "qun", 3, false, true); // TW SP 002
     tw_diaochan->addSkill("lijian");
     tw_diaochan->addSkill("biyue");
@@ -1674,7 +1696,13 @@ SPPackage::SPPackage()
     General *tw_luxun = new General(this, "tw_luxun", "wu", 3, true, true); // TW SP 016
     tw_luxun->addSkill("qianxun");
     tw_luxun->addSkill("lianying");
+}
 
+ADD_PACKAGE(TaiwanSP)
+
+WangZheZhiZhanPackage::WangZheZhiZhanPackage()
+	: Package("wangzhezhizhan")
+{
     General *wz_daqiao = new General(this, "wz_daqiao", "wu", 3, false, true); // WZ 001
     wz_daqiao->addSkill("guose");
     wz_daqiao->addSkill("liuli");
@@ -1682,17 +1710,9 @@ SPPackage::SPPackage()
     General *wz_xiaoqiao = new General(this, "wz_xiaoqiao", "wu", 3, false, true); // WZ 002
     wz_xiaoqiao->addSkill("tianxiang");
     wz_xiaoqiao->addSkill("hongyan");
-
-    addMetaObject<WeidiCard>();
-    addMetaObject<YuanhuCard>();
-    addMetaObject<XuejiCard>();
-    addMetaObject<BifaCard>();
-    addMetaObject<SongciCard>();
-    addMetaObject<AocaiCard>();
-    addMetaObject<DuwuCard>();
 }
 
-ADD_PACKAGE(SP)
+ADD_PACKAGE(WangZheZhiZhan)
 
 HegemonySPPackage::HegemonySPPackage()
     : Package("hegemony_sp")
