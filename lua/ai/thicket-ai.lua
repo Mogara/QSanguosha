@@ -15,7 +15,9 @@ function SmartAI:toTurnOver(player, n, isFangzhu)
 	if isFangzhu and player:getHp() == 1 and sgs.ai_AOE_data then
 		local use = sgs.ai_AOE_data:toCardUse()
 		if use.to:contains(player) and self:aoeIsEffective(use.card, player) and self:playerGetRound(player) > self:playerGetRound(self.player)
-			and player:isKongcheng() then return false end
+			and player:isKongcheng() then
+				return false 
+			end
 	end	
 	
 	if player:hasUsed("ShenfenCard") and player:faceUp() and player:getPhase() == sgs.Player_Play
