@@ -930,6 +930,12 @@ public:
     QStringList getSources() const;
 };
 
+%extend Skill {
+	const TriggerSkill *toTriggerSkill() const{
+		return qobject_cast<const TriggerSkill *>($self);
+	}
+};
+
 class TriggerSkill: public Skill {
 public:
     TriggerSkill(const char *name);

@@ -615,9 +615,8 @@ void Player::addDelayedTrick(const Card *trick) {
 
 void Player::removeDelayedTrick(const Card *trick) {
     int index = judging_area.indexOf(trick->getId());
-    if (index >= 0) {
+    if (index >= 0)
         judging_area.removeAt(index);
-    }
 }
 
 bool Player::containsTrick(const QString &trick_name) const{
@@ -626,7 +625,6 @@ bool Player::containsTrick(const QString &trick_name) const{
         if (trick->objectName() == trick_name)
             return true;
     }
-
     return false;
 }
 
