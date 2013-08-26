@@ -169,36 +169,156 @@ function sgs.CreateBasicCard(spec)
 	if spec.suit then assert(type(spec.suit) == "number") end
 	if spec.number then assert(type(spec.number) == "number") end
 	local card = sgs.LuaBasicCard(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name)
-	
+
 	if type(spec.target_fixed) == "boolean" then
 		card:setTargetFixed(spec.target_fixed)
 	end
-	
-	if type(spec.will_throw) == "boolean" then
-		card:setWillThrow(spec.will_throw)
-	end
-	
+
 	if type(spec.can_recast) == "boolean" then
 		card:setCanRecast(spec.can_recast)
 	end
-	
-	if type(spec.handling_method) == "number" then
-		card:setHandlingMethod(spec.handling_method)
-	end
-	
+
 	if type(spec.subtype) == "string" then
 		card:setSubtype(spec.subtype)
 	else
-		card:setSubtype("basic_card")
+		card:setSubtype("BasicCard")
 	end
-	
+
 	card.filter = spec.filter
 	card.feasible = spec.feasible
 	card.available = spec.available
 	card.about_to_use = spec.about_to_use
 	card.on_use = spec.on_use
 	card.on_effect = spec.on_effect
-	
+
+	return card
+end
+
+function isAvailable_AOE(self, player)
+	local canUse = false;
+	local players = player:getSiblings()
+	for _, p in sgs.qlist(players) do
+		if p:isDead() or player:isProhibited(p, self) then continue end
+		canUse = true
+		break
+	end
+	return canUse and self:cardIsAvailable(player);
+end
+
+function onUse_AOE(self, room, card_use)
+	local source = card_use.from
+	local targets = sgs.SPlayerList()
+	local other_players = room:getOtherPlayers(source)
+	for _, player in sgs.qlist(other_players) do
+		local skill = room:isProhibited(source, player, self)
+		if skill ~= nil then
+			local log_message = sgs.LogMessage()
+			log_message.type = "#SkillAvoid"
+			log_message.from = player
+			log_message.arg = skill:objectName()
+			log_message.arg2 = self:objectName()
+			room:broadcastSkillInvoke(skill:objectName())
+		else
+			targets:append(player)
+		end
+	end
+
+	local use = card_use
+	use.to = targets
+	self:cardOnUse(room, use)
+end
+
+function isAvailable_GlobalEffect(self, player)
+	local canUse = false;
+	local players = player:getSiblings()
+	players:append(player)
+	for _, p in sgs.qlist(players) do
+		if p:isDead() or player:isProhibited(p, self) then continue end
+		canUse = true
+		break
+	end
+	return canUse and self:cardIsAvailable(player);
+end
+
+function onUse_GlobalEffect(self, room, card_use)
+	local source = card_use.from
+	local targets = sgs.SPlayerList()
+	local all_players = room:getAllPlayers()
+	for _, player in sgs.qlist(all_players) do
+		local skill = room:isProhibited(source, player, self)
+		if skill ~= nil then
+			local log_message = sgs.LogMessage()
+			log_message.type = "#SkillAvoid"
+			log_message.from = player
+			log_message.arg = skill:objectName()
+			log_message.arg2 = self:objectName()
+			room:broadcastSkillInvoke(skill:objectName())
+		else
+			targets:append(player)
+		end
+	end
+
+	local use = card_use
+	use.to = targets
+	self:cardOnUse(room, use)
+end
+
+function use_DelayedTrick(self, room, source, targets)
+	return
+end
+
+function sgs.CreateTrickCard(spec)
+	assert(type(spec.name) == "string" or type(spec.class_name) == "string")
+	if not spec.name then spec.name = spec.class_name
+	elseif not spec.class_name then spec.class_name = spec.name end
+	if spec.suit then assert(type(spec.suit) == "number") end
+	if spec.number then assert(type(spec.number) == "number") end
+	local card = sgs.LuaTrickCard(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name)
+
+	if type(spec.target_fixed) == "boolean" then
+		card:setTargetFixed(spec.target_fixed)
+	end
+
+	if type(spec.can_recast) == "boolean" then
+		card:setCanRecast(spec.can_recast)
+	end
+
+	if type(spec.subtype) == "string" then
+		card:setSubtype(spec.subtype)
+	else
+		local subtype_table = { "TrickCard", "single_target_trick", "delayed_trick", "aoe", "global_effect" }
+		card:setSubtype(subtype_table[(spec.subclass or 0) + 1])
+	end
+
+	if type(spec.subclass) == "number" then
+		card:setSubClass(spec.subclass)
+	else
+		card:setSubClass(sgs.LuaTrickCard_TypeNormal)
+	end
+
+	if spec.subclass then
+		if spec.subclass == sgs.LuaTrickCard_TypeDelayedTrick then
+			if not spec.on_use then spec.on_use = use_DelayedTrick end
+		elseif spec.subclass == sgs.LuaTrickCard_TypeAOE then
+			if not spec.available then spec.available = isAvailable_AOE end
+			if not spec.about_to_use then spec.about_to_use = onUse_AOE end
+			if not spec.target_fixed then card:setTargetFixed(true) end
+		elseif spec.subclass == sgs.LuaTrickCard_TypeGlobalEffect then
+			if not spec.available then spec.available = isAvailable_AOE end
+			if not spec.about_to_use then spec.about_to_use = onUse_AOE end
+			if not spec.target_fixed then card:setTargetFixed(true) end
+		end
+	end
+
+	card.filter = spec.filter
+	card.feasible = spec.feasible
+	card.available = spec.available
+	card.is_cancelable = spec.is_cancelable
+	card.on_nullified = spec.on_nullified
+	card.about_to_use = spec.about_to_use
+	card.on_use = spec.on_use
+	card.on_effect = spec.on_effect
+
 	return card
 end
 

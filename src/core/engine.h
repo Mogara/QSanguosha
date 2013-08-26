@@ -20,6 +20,7 @@
 class AI;
 class Scenario;
 class LuaBasicCard;
+class LuaTrickCard;
 
 struct lua_State;
 
@@ -146,6 +147,8 @@ private:
 
 	QHash<QString, QString> luaBasicCard_className2objectName;
 	QHash<QString, const LuaBasicCard *> luaBasicCards;
+	QHash<QString, QString> luaTrickCard_className2objectName;
+    QHash<QString, const LuaTrickCard *> luaTrickCards;
 };
 
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key) {

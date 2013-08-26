@@ -181,18 +181,47 @@ LuaBasicCard *LuaBasicCard::clone(Card::Suit suit, int number) const{
 	if (suit == Card::SuitToBeDecided) suit = this->getSuit();
 	if (number == -1) number = this->getNumber();
 	LuaBasicCard *new_card = new LuaBasicCard(suit, number, objectName().toStdString().c_str(), class_name);
+	new_card->subtype = subtype;
+
+    new_card->target_fixed = target_fixed;
+    new_card->can_recast = can_recast;
+
+    new_card->filter = filter;
+    new_card->feasible = feasible;
+    new_card->available = available;
+    new_card->about_to_use = about_to_use;
+    new_card->on_use = on_use;
+    new_card->on_effect = on_effect;
+
+    return new_card;
+}
+
+LuaTrickCard::LuaTrickCard(Card::Suit suit, int number, const char *obj_name, const char *class_name)
+    : TrickCard(suit, number), filter(0), feasible(0), available(0), is_cancelable(0),
+      about_to_use(0), on_use(0), on_effect(0), on_nullified(0)
+{
+    setObjectName(obj_name);
+    this->class_name = class_name;
+}
+
+LuaTrickCard *LuaTrickCard::clone(Card::Suit suit, int number) const{
+    if (suit == Card::SuitToBeDecided) suit = this->getSuit();
+    if (number == -1) number = this->getNumber();
+    LuaTrickCard *new_card = new LuaTrickCard(suit, number, objectName().toStdString().c_str(), class_name);
+    new_card->subclass = subclass;
+    new_card->subtype = subtype;
 
 	new_card->target_fixed = target_fixed;
-	new_card->will_throw = will_throw;
 	new_card->can_recast = can_recast;
-	new_card->handling_method = handling_method;
 
 	new_card->filter = filter;
 	new_card->feasible = feasible;
 	new_card->available = available;
+	new_card->is_cancelable = is_cancelable;
 	new_card->about_to_use = about_to_use;
 	new_card->on_use = on_use;
 	new_card->on_effect = on_effect;
+	new_card->on_nullified = on_nullified;
 
 	return new_card;
 }

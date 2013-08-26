@@ -782,25 +782,6 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
         room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to));
 }
 
-void SingleTargetTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    CardEffectStruct effect;
-    effect.card = this;
-    effect.from = source;
-    if (!targets.isEmpty()) {
-        foreach (ServerPlayer *tmp, targets) {
-            effect.to = tmp;
-            room->cardEffect(effect);
-        }
-    }
-
-    if (room->getCardPlace(this->getEffectiveId()) == Player::PlaceTable) {
-        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName());
-        reason.m_skillName = this->getSkillName();
-        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
-        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason);
-    }
-}
-
 Collateral::Collateral(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {

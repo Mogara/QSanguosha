@@ -203,6 +203,12 @@ void Engine::addPackage(Package *package) {
 			luaBasicCard_className2objectName.insert(lcard->getClassName(), lcard->objectName());
 			if (!luaBasicCards.keys().contains(lcard->getClassName()))
 				luaBasicCards.insert(lcard->getClassName(), lcard->clone());
+		} else if (card->isKindOf("LuaTrickCard")) {
+            const LuaTrickCard *lcard = qobject_cast<const LuaTrickCard *>(card);
+            Q_ASSERT(lcard != NULL);
+            luaTrickCard_className2objectName.insert(lcard->getClassName(), lcard->objectName());
+            if (!luaTrickCards.keys().contains(lcard->getClassName()))
+                luaTrickCards.insert(lcard->getClassName(), lcard->clone());
 		} else {
 			QString class_name = card->metaObject()->className();
 			metaobjects.insert(class_name, card->metaObject());
@@ -461,6 +467,15 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
 		const LuaBasicCard *lcard = luaBasicCards.value(class_name, NULL);
 		if (!lcard) return NULL;
 		card = lcard->clone(suit, number);
+	} else if (luaTrickCard_className2objectName.keys().contains(name)) {
+        const LuaTrickCard *lcard = luaTrickCards.value(name, NULL);
+        if (!lcard) return NULL;
+        card = lcard->clone(suit, number);
+    } else if (luaTrickCard_className2objectName.values().contains(name)) {
+        QString class_name = luaTrickCard_className2objectName.key(name, name);
+        const LuaTrickCard *lcard = luaTrickCards.value(class_name, NULL);
+        if (!lcard) return NULL;
+        card = lcard->clone(suit, number);
 	} else {
 		const QMetaObject *meta = metaobjects.value(name, NULL);
 		if (meta == NULL)

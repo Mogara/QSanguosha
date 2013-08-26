@@ -12,7 +12,7 @@ public:
     virtual CardType getTypeId() const;
 };
 
-class TrickCard:public Card {
+class TrickCard: public Card {
 public:
     TrickCard(Suit suit, int number);
     void setCancelable(bool cancelable);
@@ -54,7 +54,7 @@ public:
     virtual Location location() const = 0;
 };
 
-class Weapon:public EquipCard {
+class Weapon: public EquipCard {
 public:
     Weapon(Suit suit, int number, int range);
     int getRange();

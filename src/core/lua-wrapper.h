@@ -153,9 +153,7 @@ public:
 	Q_INVOKABLE LuaBasicCard(Card::Suit suit, int number, const char *obj_name, const char *class_name);
 	LuaBasicCard *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
 	inline void setTargetFixed(bool target_fixed) { this->target_fixed = target_fixed; }
-	inline void setWillThrow(bool will_throw) { this->will_throw = will_throw; }
 	inline void setCanRecast(bool can_recast) { this->can_recast = can_recast; }
-	inline void setHandlingMethod(Card::HandlingMethod handling_method) { this->handling_method = handling_method; }
 
 	// member functions that do not expose to Lua interpreter
 	void pushSelf(lua_State *L) const;
@@ -187,5 +185,67 @@ public:
 	LuaFunction on_effect;
 	const char *class_name, *subtype;
 }
+
+class LuaTrickCard: public TrickCard {
+    Q_OBJECT
+
+public:
+    enum SubClass { TypeNormal, TypeSingleTargetTrick, TypeDelayedTrick, TypeAOE, TypeGlobalEffect };
+
+    Q_INVOKABLE LuaTrickCard(Card::Suit suit, int number, const char *obj_name, const char *class_name);
+    LuaTrickCard *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
+    inline void setTargetFixed(bool target_fixed) { this->target_fixed = target_fixed; }
+    inline void setCanRecast(bool can_recast) { this->can_recast = can_recast; }
+
+    // member functions that do not expose to Lua interpreter
+    void pushSelf(lua_State *L) const;
+
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    virtual void onNullified(ServerPlayer *target) const;
+    virtual bool isCancelable(const CardEffectStruct &effect) const;
+
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual bool isAvailable(const Player *player) const;
+
+    inline virtual QString getClassName() const{ return QString(class_name); }
+    inline void setSubtype(const char *subtype) { this->subtype = subtype; }
+    inline virtual QString getSubtype() const{ return QString(subtype); }
+    inline void setSubClass(SubClass subclass) { this->subclass = subclass; }
+    inline SubClass getSubClass() const{ return subclass; }
+    inline virtual bool isKindOf(const char *cardType) const{
+        if (strcmp(cardType, "LuaCard") == 0 || strcmp(cardType, class_name) == 0)
+            return true;
+        else {
+            if (Card::isKindOf(cardType)) return true;
+            switch (subclass) {
+            case TypeSingleTargetTrick: return strcmp(cardType, "SingleTargetTrick") == 0; break;
+            case TypeDelayedTrick: return strcmp(cardType, "DelayedTrick") == 0; break;
+            case TypeAOE: return strcmp(cardType, "AOE") == 0; break;
+            case TypeGlobalEffect: return strcmp(cardType, "GlobalEffect") == 0; break;
+            case TypeNormal:
+            default:
+                    return false;
+                    break;
+            }
+        }
+    }
+
+    // the lua callbacks
+    LuaFunction filter;
+    LuaFunction feasible;
+    LuaFunction available;
+    LuaFunction is_cancelable;
+    LuaFunction about_to_use;
+    LuaFunction on_use;
+    LuaFunction on_effect;
+    LuaFunction on_nullified;
+    const char *class_name, *subtype;
+
+private:
+    SubClass subclass;
+};
 
 #endif
