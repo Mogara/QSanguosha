@@ -805,7 +805,7 @@ public:
                 slash_list << QVariant::fromValue((CardStar)damage.card);
                 damage.from->tag["InvokeLihuo"] = QVariant::fromValue(slash_list);
             }
-        } else if (TriggerSkill::triggerable(player)) {
+        } else if (TriggerSkill::triggerable(player) && !player->hasFlag("Global_ProcessBroken")) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (!use.card->isKindOf("Slash"))
                 return false;

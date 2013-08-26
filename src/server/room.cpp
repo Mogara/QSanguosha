@@ -2939,7 +2939,9 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
                 moveCardTo(card_use.card, card_use.from, NULL, Player::DiscardPile, reason, true);
             }
             QVariant data = QVariant::fromValue(card_use);
+			card_use.from->setFlags("Global_ProcessBroken");
             thread->trigger(CardFinished, this, card_use.from, data);
+			card_use.from->setFlags("-Global_ProcessBroken");
 
             foreach (ServerPlayer *p, m_alivePlayers) {
                 p->tag.remove("Qinggang");
