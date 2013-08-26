@@ -79,6 +79,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+	connect(ui->actionAcknowledgement_2, SIGNAL(triggered()), this, SLOT(on_actionAcknowledgement_triggered()));
 
     StartScene *start_scene = new StartScene;
 

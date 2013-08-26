@@ -64,6 +64,8 @@
     <addaction name="actionAbout_Lua"/>
     <addaction name="actionAbout_fmod"/>
     <addaction name="separator"/>
+	<addaction name="actionAcknowledgement_2"/>
+	<addaction name="separator"/>
     <addaction name="actionRole_assign_table"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -380,6 +382,11 @@
    </property>
    <property name="text">
     <string>Never nullify my trick</string>
+   </property>
+  </action>
+  <action name="actionAcknowledgement_2">
+   <property name="text">
+	<string>Acknowledgement</string>
    </property>
   </action>
  </widget>
