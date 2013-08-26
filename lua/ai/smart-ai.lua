@@ -1418,40 +1418,28 @@ end
 
 function SmartAI:getFriendsNoself(player)
 	player = player or self.player
-	if self:isFriend(self.player, player) then
-		return self.friends_noself
-	elseif self:isEnemy(self.player, player) then
-		friends = sgs.QList2Table(self.lua_ai:getEnemies())
-		for i = #friends, 1, -1 do
-			if friends[i]:objectName() == player:objectName() or not friends[i]:isAlive() then
-				table.remove(friends, i)
-			end
-		end
-		return friends
-	else
-		return {}
+	local friends_noself = {}
+	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+		if self:isFriend(p, player) and p:objectName() ~= player:objectName() then table.insert(friends_noself, p) end
 	end
+	return friends_noself
 end
 
 function SmartAI:getFriends(player)
 	player = player or self.player
-	if self:isFriend(self.player, player) then
-		return self.friends
-	elseif self:isEnemy(self.player, player) then
-		return self.enemies
-	else
-		return {player}
+	local friends = {}
+	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+		if self:isFriend(p, player) then table.insert(friends, p) end
 	end
+	return friends
 end
 
 function SmartAI:getEnemies(player)
-	if self:isFriend(self.player, player) then
-		return self.enemies
-	elseif self:isEnemy(self.player, player) then
-		return self.friends
-	else
-		return {}
+	local enemies = {}
+	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+		if self:isEnemy(p, player) then table.insert(enemies, p) end
 	end
+	return enemies
 end
 
 function SmartAI:sortEnemies(players)
