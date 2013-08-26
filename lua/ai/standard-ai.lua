@@ -1719,7 +1719,7 @@ function getFanjianCardAndTarget(card, use, self)
 	if wgt and self:isFriend(wgt) then wgt = nil end
 	for _, card in ipairs(cards) do
 		if not (card:getSuit() == sgs.Card_Diamond and self.player:getHandcardNum() == 1)
-			and not (cards:length() <= 4 and (card:isKindOf("Peach") or card:isKindOf("Analeptic"))) then
+			and not (#cards <= 4 and (card:isKindOf("Peach") or card:isKindOf("Analeptic"))) then
 			for _, enemy in ipairs(self.enemies) do
 				if self:canAttack(enemy) and not self:hasSkills("qingnang|jijiu|tianxiang", enemy)
 					and not (wgt and card:getTypeId() ~= sgs.Card_Basic and (enemy:isKongcheng() or enemy:objectName() == wgt:objectName())) then
