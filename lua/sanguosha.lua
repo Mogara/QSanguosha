@@ -35,8 +35,10 @@ function load_extensions(just_require)
 			local name = script:sub(script:find("%w+"))
 			local module_name = "extensions." .. name
 			local loaded = require(module_name)
-			table.insert(package_names, name)
-			sgs.Sanguosha:addPackage(loaded.extension)
+			if not loaded.hidden then
+				table.insert(package_names, name)
+				sgs.Sanguosha:addPackage(loaded.extension)
+			end
 		end
 	end
 	local lua_packages = ""
