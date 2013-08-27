@@ -142,54 +142,63 @@ public:
 class Mingzhe: public TriggerSkill {
 public:
     Mingzhe(): TriggerSkill("mingzhe") {
-        events << BeforeCardsMove << CardsMoveOneTime;
+        events << BeforeCardsMove << CardsMoveOneTime << CardUsed << CardResponded;
         frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->getPhase() != Player::NotActive)
-            return false;
+        if (player->getPhase() != Player::NotActive) return false;
+		if (triggerEvent == BeforeCardsMove || triggerEvent == CardsMoveOneTime) {
+			CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+			if (move.from != player) return false;
 
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.from != player)
-            return false;
-
-        if (triggerEvent == BeforeCardsMove) {
-            CardMoveReason reason = move.reason;
-
-            if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE
-                || (reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD
-                || (reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_RESPONSE) {
-                const Card *card;
-                int i = 0;
-                foreach (int card_id, move.card_ids) {
-                    card = Sanguosha->getCard(card_id);
-                    if (room->getCardOwner(card_id) == player && card->isRed()
-                        && (move.from_places[i] == Player::PlaceHand
-                            || move.from_places[i] == Player::PlaceEquip)) {
-                        player->addMark(objectName());
+			if (triggerEvent == BeforeCardsMove) {
+				CardMoveReason reason = move.reason;
+				if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
+					const Card *card;
+					int i = 0;
+					foreach (int card_id, move.card_ids) {
+						card = Sanguosha->getCard(card_id);
+						if (room->getCardOwner(card_id) == player && card->isRed()
+							&& (move.from_places[i] == Player::PlaceHand
+								|| move.from_places[i] == Player::PlaceEquip)) {
+							player->addMark(objectName());
+						}
+						i++;
                     }
-                    i++;
+                }
+            } else {
+				int n = player->getMark(objectName());
+				try {
+					for (int i = 0; i < n; i++) {
+						player->removeMark(objectName());
+						if (player->isAlive() && player->askForSkillInvoke(objectName(), data)) {
+							room->broadcastSkillInvoke(objectName());
+							player->drawCards(1);
+						} else {
+							break;
+						}
+                    }
+					player->setMark(objectName(), 0);
+				}
+				catch (TriggerEvent triggerEvent) {
+					if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+						player->setMark(objectName(), 0);
+					throw triggerEvent;
                 }
             }
         } else {
-            int n = player->getMark(objectName());
-            try {
-                for (int i = 0; i < n; i++) {
-                    player->removeMark(objectName());
-                    if (player->isAlive() && player->askForSkillInvoke(objectName(), data)) {
-                        room->broadcastSkillInvoke(objectName());
-                        player->drawCards(1);
-                    } else {
-                        break;
-                    }
-                }
-                player->setMark(objectName(), 0);
-            }
-            catch (TriggerEvent triggerEvent) {
-                if (triggerEvent == TurnBroken || triggerEvent == StageChange)
-                    player->setMark(objectName(), 0);
-                throw triggerEvent;
+			CardStar card = NULL;
+			if (triggerEvent == CardUsed) {
+				CardUseStruct use = data.value<CardUseStruct>();
+				card = use.card;
+			} else if (triggerEvent == CardResponded) {
+				CardResponseStruct resp = data.value<CardResponseStruct>();
+				card = resp.m_card;
+			}
+			if (card && card->isRed() && player->askForSkillInvoke(objectName(), data)) {
+				room->broadcastSkillInvoke(objectName());
+				player->drawCards(1);
             }
         }
         return false;
