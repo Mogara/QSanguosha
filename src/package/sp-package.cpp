@@ -1428,8 +1428,6 @@ public:
 				PlayerStar zhangbao = player->tag["ZhoufuSource" + QString::number(id)].value<PlayerStar>();
 				if (zhangbao && zhangbao->isAlive())
 					zhangbao->obtainCard(Sanguosha->getCard(id));
-				else
-					room->throwCard(id, NULL);
 			}
 		}
 		return false;
