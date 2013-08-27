@@ -1,28 +1,6 @@
 sgs.weapon_range.MoonSpear = 3
 sgs.ai_use_priority.MoonSpear = 2.635
 
-local nosfanjian_skill = {}
-nosfanjian_skill.name = "nosfanjian"
-table.insert(sgs.ai_skills, nosfanjian_skill)
-nosfanjian_skill.getTurnUseCard = function(self)
-	if self.player:isKongcheng() or self.player:hasUsed("NosFanjianCard") then return nil end
-	return sgs.Card_Parse("@NosFanjianCard=.")
-end
-
-sgs.ai_skill_use_func.NosFanjianCard = function(card, use, self)
-	local id, target = getFanjianCardAndTarget(card, use, self)
-	if id and target then
-		use.card = sgs.Card_Parse("@NosFanjianCard=" .. id)
-		if use.to then use.to:append(target) end
-	end
-end
-
-sgs.ai_card_intention.NosFanjianCard = sgs.ai_card_intention.FanjianCard
-
-sgs.dynamic_value.damage_card.NosFanjianCard = true
-
-sgs.ai_chaofeng.noszhouyu = sgs.ai_chaofeng.zhouyu
-
 nosjujian_skill = {}
 nosjujian_skill.name = "nosjujian"
 table.insert(sgs.ai_skills, nosjujian_skill)
