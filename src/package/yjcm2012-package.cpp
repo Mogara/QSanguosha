@@ -967,9 +967,7 @@ YJCM2012Package::YJCM2012Package()
     chengpu->addSkill(new Lihuo);
     chengpu->addSkill(new LihuoTargetMod);
     chengpu->addSkill(new Chunlao);
-    chengpu->addSkill(new DetachEffectSkill("chunlao", "wine"));
     related_skills.insertMulti("lihuo", "#lihuo-target");
-    related_skills.insertMulti("chunlao", "#chunlao-clear");
 
     General *guanxingzhangbao = new General(this, "guanxingzhangbao", "shu"); // YJ 104
     guanxingzhangbao->addSkill(new Fuhun);

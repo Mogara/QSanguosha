@@ -1260,11 +1260,9 @@ YJCMPackage::YJCMPackage()
     General *zhonghui = new General(this, "zhonghui", "wei"); // YJ 012
     zhonghui->addSkill(new QuanjiKeep);
     zhonghui->addSkill(new Quanji);
-    zhonghui->addSkill(new DetachEffectSkill("quanji", "power"));
     zhonghui->addSkill(new Zili);
     zhonghui->addRelateSkill("paiyi");
     related_skills.insertMulti("quanji", "#quanji");
-    related_skills.insertMulti("quanji", "#quanji-clear");
 
     addMetaObject<MingceCard>();
     addMetaObject<GanluCard>();

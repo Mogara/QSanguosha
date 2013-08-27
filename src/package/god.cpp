@@ -129,17 +129,6 @@ public:
     }
 };
 
-class WuhunClear: public DetachEffectSkill {
-public:
-    WuhunClear(): DetachEffectSkill("wuhun") {
-    }
-
-    virtual void onSkillDetached(Room *room, ServerPlayer *player) const{
-        foreach (ServerPlayer *p, room->getAllPlayers())
-            p->loseAllMarks("@nightmare");
-    }
-};
-
 static bool CompareBySuit(int card1, int card2) {
     const Card *c1 = Sanguosha->getCard(card1);
     const Card *c2 = Sanguosha->getCard(card2);
@@ -517,16 +506,6 @@ public:
         player->gainMark("@wrath", damage.damage);
         room->broadcastSkillInvoke(objectName());
         return false;
-    }
-};
-
-class KuangbaoClear: public DetachEffectSkill {
-public:
-    KuangbaoClear(): DetachEffectSkill("kuangbao") {
-    }
-
-    virtual void onSkillDetached(Room *room, ServerPlayer *player) const{
-        player->loseAllMarks("@wrath");
     }
 };
 
@@ -979,16 +958,6 @@ public:
     }
 };
 
-class RenjieClear: public DetachEffectSkill {
-public:
-    RenjieClear(): DetachEffectSkill("renjie") {
-    }
-
-    virtual void onSkillDetached(Room *, ServerPlayer *player) const{
-        player->loseAllMarks("@bear");
-    }
-};
-
 class Baiyin: public PhaseChangeSkill {
 public:
     Baiyin(): PhaseChangeSkill("baiyin") {
@@ -1404,10 +1373,8 @@ GodPackage::GodPackage()
     shenguanyu->addSkill(new WushenTargetMod);
     shenguanyu->addSkill(new Wuhun);
     shenguanyu->addSkill(new WuhunRevenge);
-    shenguanyu->addSkill(new WuhunClear);
     related_skills.insertMulti("wushen", "#wushen-target");
     related_skills.insertMulti("wuhun", "#wuhun");
-    related_skills.insertMulti("wuhun", "#wuhun-clear");
 
     General *shenlvmeng = new General(this, "shenlvmeng", "god", 3); // LE 002
     shenlvmeng->addSkill(new Shelie);
@@ -1438,8 +1405,6 @@ GodPackage::GodPackage()
 
     General *shenlvbu = new General(this, "shenlvbu", "god", 5); // LE 006
     shenlvbu->addSkill(new Kuangbao);
-    shenlvbu->addSkill(new KuangbaoClear);
-    related_skills.insertMulti("kuangbao", "#kuangbao-clear");
     shenlvbu->addSkill(new MarkAssignSkill("@wrath", 2));
     shenlvbu->addSkill(new Wumou);
     shenlvbu->addSkill(new Wuqian);
@@ -1455,8 +1420,6 @@ GodPackage::GodPackage()
 
     General *shensimayi = new General(this, "shensimayi", "god", 4); // LE 008
     shensimayi->addSkill(new Renjie);
-    shensimayi->addSkill(new RenjieClear);
-    related_skills.insertMulti("renjie", "#renjie-clear");
     shensimayi->addSkill(new Baiyin);
     shensimayi->addRelateSkill("jilve");
     related_skills.insertMulti("jilve", "#jilve-clear");

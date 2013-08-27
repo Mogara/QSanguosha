@@ -1374,11 +1374,9 @@ MountainPackage::MountainPackage()
     General *dengai = new General(this, "dengai", "wei", 4); // WEI 015
     dengai->addSkill(new Tuntian);
     dengai->addSkill(new TuntianDistance);
-    dengai->addSkill(new DetachEffectSkill("tuntian", "field"));
     dengai->addSkill(new Zaoxian);
     dengai->addRelateSkill("jixi");
     related_skills.insertMulti("tuntian", "#tuntian-dist");
-    related_skills.insertMulti("tuntian", "#tuntian-clear");
 
     General *jiangwei = new General(this, "jiangwei", "shu"); // SHU 012
     jiangwei->addSkill(new Tiaoxin);
