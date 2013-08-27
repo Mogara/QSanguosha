@@ -405,8 +405,10 @@ bool HaoshiCard::targetFilter(const QList<const Player *> &targets, const Player
     return to_select->getHandcardNum() == Self->getMark("haoshi");
 }
 
-void HaoshiCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const{
-    room->moveCardTo(this, targets.first(), Player::PlaceHand, false);
+void HaoshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(),
+							targets.first()->objectName(), "haoshi", QString());
+	room->moveCardTo(this, targets.first(), Player::PlaceHand, reason);
 }
 
 class HaoshiViewAsSkill: public ViewAsSkill {
@@ -523,7 +525,7 @@ bool DimengCard::targetsFeasible(const QList<const Player *> &targets, const Pla
 }
 
 #include "jsonutils.h"
-void DimengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void DimengCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const{
     ServerPlayer *a = targets.at(0);
     ServerPlayer *b = targets.at(1);
     a->setFlags("DimengTarget");

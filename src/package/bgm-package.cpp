@@ -133,7 +133,6 @@ public:
 
             CardMoveReason reason(CardMoveReason::S_REASON_GIVE, diaochan->objectName(),
                                   target->objectName(), objectName(), QString());
-            reason.m_playerId = target->objectName();
             room->moveCardTo(to_goback, diaochan, target, Player::PlaceHand, reason);
             delete to_goback;
         } else if (triggerEvent == EventPhaseStart && diaochan->getPhase() == Player::NotActive) {
