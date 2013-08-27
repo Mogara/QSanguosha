@@ -150,7 +150,7 @@ end
 sgs.ai_need_damaged.vsganglie = function(self, attacker, player)
 	for _, enemy in ipairs(self.enemies) do
 		if self:isEnemy(enemy, player) and enemy:getHp() + enemy:getHandcardNum() <= 3
-			and not (self:hasSkills(sgs.need_kongcheng .. "|buqu", enemy) and attacker:getHandcardNum() > 1) and sgs.isGoodTarget(enemy, self.enemies, self) then
+			and not (enemy:hasSkills(sgs.need_kongcheng) and not hasBuquEffect(enemy) and attacker:getHandcardNum() > 1) and sgs.isGoodTarget(enemy, self.enemies, self) then
 			return true
 		end
 	end

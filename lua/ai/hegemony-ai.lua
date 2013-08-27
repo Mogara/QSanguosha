@@ -588,7 +588,7 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do
 		if self:getFriendNumBySeat(self.player, enemy) > 1 then
-			if enemy:getHp() < 1 and enemy:hasSkill("buqu", true) and enemy:getMark("Qingchengbuqu") == 0 then
+			if enemy:getHp() < 1 and enemy:hasSkill("nosbuqu", true) and enemy:getMark("Qingchengnosbuqu") == 0 then
 				target = enemy
 				break
 			end
@@ -637,7 +637,7 @@ sgs.ai_skill_choice.qingcheng = function(self, choices, data)
 	if self:isFriend(target) then
 		if target:hasSkill("shiyong", true) and target:getMark("Qingchengshiyong") == 0 then return "shiyong" end
 	end
-	if target:getHp() < 1 and target:hasSkill("buqu", true) and target:getMark("Qingchengbuqu") == 0 then return "buqu" end 
+	if target:getHp() < 1 and target:hasSkill("nosbuqu", true) and target:getMark("Qingchengnosbuqu") == 0 then return "nosbuqu" end
 	if self:isWeak(target) then
 		for _, askill in ipairs((sgs.exclusive_skill .. "|" .. sgs.save_skill):split("|")) do
 			if target:hasSkill(askill, true) and target:getMark("Qingcheng" .. askill) == 0 then

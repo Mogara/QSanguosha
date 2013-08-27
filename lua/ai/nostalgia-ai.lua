@@ -432,7 +432,7 @@ sgs.ai_skill_invoke.nosqianxi = function(self, data)
 	local target = damage.to
 	if self:isFriend(target) then return false end
 	if target:getLostHp() >= 2 and target:getHp() <= 1 then return false end
-	if self:hasSkills(sgs.masochism_skill, target) or self:hasSkills(sgs.recover_skill, target) or self:hasSkills("longhun|buqu", target) then return true end
+	if target:hasSkills(sgs.masochism_skill .. "|" .. sgs.recover_skill .. "|longhun|buqu|nosbuqu") then return true end
 	if self:hasHeavySlashDamage(self.player, damage.card, target) then return false end
 	return (target:getMaxHp() - target:getHp()) < 2
 end
@@ -531,3 +531,70 @@ sgs.ai_cardneed.nosjizhi = sgs.ai_cardneed.jizhi
 sgs.nosjizhi_keep_value = sgs.jizhi_keep_value
 
 sgs.ai_chaofeng.nos_huangyueying = sgs.ai_chaofeng.huangyueying
+
+sgs.ai_skill_askforag.nosbuqu = function(self, card_ids)
+	for i, card_id in ipairs(card_ids) do
+		for j, card_id2 in ipairs(card_ids) do
+			if i ~= j and sgs.Sanguosha:getCard(card_id):getNumber() == sgs.Sanguosha:getCard(card_id2):getNumber() then
+				return card_id
+			end
+		end
+	end
+	
+	return card_ids[1]
+end
+
+function sgs.ai_skill_invoke.nosbuqu(self, data)
+	if #self.enemies == 1 and self.enemies[1]:hasSkill("nosguhuo") then
+		return false
+	else
+		local damage = data:toDamage()
+		if self.player:getHp() == 1 and damage.to and damage:getReason() == "duwu" and self:getSaveNum(true) >= 1 then return false end
+		return true
+	end
+	
+end
+
+sgs.ai_chaofeng.nos_zhoutai = -4
+
+sgs.ai_skill_playerchosen.nosleiji = function(self, targets)
+	local mode = self.room:getMode()
+	if mode:find("_mini_17") or mode:find("_mini_19") or mode:find("_mini_20") or mode:find("_mini_26") then
+		local players = self.room:getAllPlayers();
+		for _, aplayer in sgs.qlist(players) do
+			if aplayer:getState() ~= "robot" then
+				return aplayer
+			end
+		end
+	end
+
+	self:updatePlayers()
+	return self:findLeijiTarget(self.player, 100, nil, false)
+end
+
+sgs.ai_playerchosen_intention.nosleiji = sgs.ai_playerchosen_intention.leiji
+
+function sgs.ai_slash_prohibit.nosleiji(self, from, to, card)
+	if self:isFriend(to, from) then return false end
+	if to:hasFlag("QianxiTarget") and (not self:hasEightDiagramEffect(to) or self.player:hasWeapon("qinggang_sword")) then return false end
+	local hcard = to:getHandcardNum()
+	if from:hasSkill("liegong") and (hcard >= from:getHp() or hcard <= from:getAttackRange()) then return false end
+	if from:hasSkill("kofliegong") and hcard >= from:getHp() then return false end
+	if from:getRole() == "rebel" and to:isLord() then
+		local other_rebel
+		for _, player in sgs.qlist(self.room:getOtherPlayers(from)) do
+			if sgs.evaluatePlayerRole(player) == "rebel" or sgs.compareRoleEvaluation(player, "rebel", "loyalist") == "rebel" then
+				other_rebel = player
+				break
+			end
+		end
+		if not other_rebel and ((from:getHp() >= 4 and (getCardsNum("Peach", from) > 0 or self:hasSkills("ganglie|vsganglie|neoganglie", from))) or from:hasSkill("hongyan")) then
+			return false
+		end
+	end
+
+	if getKnownCard(to, "Jink", true) >= 1 or (self:hasSuit("spade", true, to) and hcard >= 2) then return true end
+	if self:hasEightDiagramEffect(to) then return true end
+end
+
+sgs.ai_cardneed.nosleiji = sgs.ai_cardneed.leiji

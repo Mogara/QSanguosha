@@ -23,7 +23,7 @@ end
 
 function sgs.isGoodHp(player)
 	local goodHp = player:getHp() > 1 or getCardsNum("Peach", player) >= 1 or getCardsNum("Analeptic", player) >= 1
-					or (player:hasSkill("buqu") and player:getPile("buqu"):length() <= 4)
+					or hasBuquEffect(player)
 					or (player:hasSkill("niepan") and player:getMark("@nirvana") > 0)
 					or (player:hasSkill("fuli") and player:getMark("@laoji") > 0)
 	if goodHp then 
@@ -414,7 +414,7 @@ function SmartAI:shouldUseAnaleptic(target, slash, anal)
 	if target:hasSkill("zhenlie") then return false end
 	if target:hasSkill("anxian") and target:getHandcardNum() > 0 then return false end
 	
-	if self:hasSkills(sgs.masochism_skill .. "|longhun|buqu|" .. sgs.recover_skill .. "|" .. sgs.exclusive_skill ,target) and 
+	if self:hasSkills(sgs.masochism_skill .. "|longhun|buqu|nosbuqu|" .. sgs.recover_skill .. "|" .. sgs.exclusive_skill ,target) and 
 		self.player:hasSkill("nosqianxi") and self.player:distanceTo(enemy) == 1 then
 			return false
 	end
@@ -1038,7 +1038,7 @@ function SmartAI:useCardPeach(card, use)
 		mustusepeach = true
 	end
 
-	if mustusepeach or (self.player:hasSkill("buqu") and self.player:getHp() < 1) or peaches > self.player:getHp() then
+	if mustusepeach or (self.player:hasSkill("nosbuqu") and self.player:getHp() < 1 and self.player:getMaxCards() == 0) or peaches > self.player:getHp() then
 		use.card = card
 		return
 	end
@@ -1065,7 +1065,7 @@ function SmartAI:useCardPeach(card, use)
 		return
 	end
 
-	if #self.friends > 1 and self.friends[2]:getHp() < 3 and not self.friends[2]:hasSkill("buqu") and self:getOverflow() < 1 then
+	if #self.friends > 1 and self.friends[2]:getHp() < 3 and not hasBuquEffect(self.friends[2]) and self:getOverflow() < 1 then
 		return
 	end
 
@@ -1270,7 +1270,7 @@ sgs.ai_skill_cardask["@Axe"] = function(self, data, pattern, target)
 	if self:hasHeavySlashDamage(self.player, effect.slash, target) 
 	  or (#allcards - 3 >= self.player:getHp()) 
 	  or (self.player:hasSkill("kuanggu") and self.player:isWounded() and self.player:distanceTo(effect.to) == 1)
-	  or (effect.to:getHp() == 1 and not effect.to:hasSkill("buqu")) 
+	  or (effect.to:getHp() == 1 and not hasBuquEffect(effect.to)) 
 	  or (self:needKongcheng() and self.player:getHandcardNum() > 0)
 	  or (self:hasSkills(sgs.lose_equip_skill, self.player) and self.player:getEquips():length() > 1 and self.player:getHandcardNum() < 2)
 	  or self:needToThrowAll() then
@@ -1513,7 +1513,7 @@ sgs.ai_skill_invoke.EightDiagram = function(self, data)
 	local dying = 0
 	local handang = self.room:findPlayerBySkillName("nosjiefan")
 	for _, aplayer in sgs.qlist(self.room:getAlivePlayers()) do
-		if aplayer:getHp() < 1 and not aplayer:hasSkill("buqu") then dying = 1 break end
+		if aplayer:getHp() < 1 and not aplayer:hasSkill("nosbuqu") then dying = 1 break end
 	end
 	
 	local heart_jink = false
@@ -1967,7 +1967,7 @@ sgs.ai_skill_cardask["duel-slash"] = function(self, data, pattern, target)
 	end
 	
 	if (not self:isFriend(target) and self:getCardsNum("Slash") >= getCardsNum("Slash", target))
-		or (target:getHp() > 2 and self.player:getHp() <= 1 and self:getCardsNum("Peach") == 0 and not self.player:hasSkill("buqu")) then
+		or (target:getHp() > 2 and self.player:getHp() <= 1 and self:getCardsNum("Peach") == 0 and not hasBuquEffect(self.player)) then
 		return self:getCardId("Slash")
 	else return "." end
 	

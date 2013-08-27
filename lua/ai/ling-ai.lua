@@ -258,7 +258,7 @@ end
 
 sgs.ai_need_damaged.neoganglie = function (self, attacker, player)
 	if not player:hasSkill("neoganglie") then return false end
-	if self:isEnemy(attacker, player) and attacker:getHp() <= 2 and not attacker:hasSkill("buqu") and sgs.isGoodTarget(attacker, self.enemies, self)
+	if self:isEnemy(attacker, player) and attacker:getHp() <= 2 and not hasBuquEffect(attacker) and sgs.isGoodTarget(attacker, self.enemies, self)
 		and not self:getDamagedEffects(attacker, player) and not self:needToLoseHp(attacker, player) then
 			return true
 	end
