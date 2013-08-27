@@ -1353,6 +1353,115 @@ public:
     }
 };
 
+ZhoufuCard::ZhoufuCard() {
+	mute = true;
+	will_throw = false;
+	handling_method = Card::MethodNone;
+}
+
+bool ZhoufuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+	return targets.isEmpty() && to_select != Self && to_select->getPile("incantation").isEmpty();
+}
+
+void ZhoufuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+	ServerPlayer *target = targets.first();
+	target->tag["ZhoufuSource" + QString::number(getEffectiveId())] = QVariant::fromValue((PlayerStar)source);
+	room->broadcastSkillInvoke("zhoufu");
+	target->addToPile("incantation", this);
+}
+
+class ZhoufuViewAsSkill: public OneCardViewAsSkill {
+public:
+	ZhoufuViewAsSkill(): OneCardViewAsSkill("zhoufu") {
+	}
+
+	virtual bool isEnabledAtPlay(const Player *player) const{
+		return !player->hasUsed("ZhoufuCard");
+	}
+
+	virtual bool viewFilter(const Card *to_select) const{
+		return !to_select->isEquipped();
+	}
+
+	virtual const Card *viewAs(const Card *originalcard) const{
+		Card *card = new ZhoufuCard;
+		card->addSubcard(originalcard);
+		return card;
+	}
+};
+
+class Zhoufu: public TriggerSkill {
+public:
+	Zhoufu(): TriggerSkill("zhoufu") {
+		events << StartJudge << EventPhaseChanging;
+		view_as_skill = new ZhoufuViewAsSkill;
+	}
+
+	virtual bool triggerable(const ServerPlayer *target) const{
+		return target != NULL && target->getPile("incantation").length() > 0;
+	}
+
+	virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+		if (triggerEvent == StartJudge) {
+			int card_id = player->getPile("incantation").first();
+
+			JudgeStar judge = data.value<JudgeStar>();
+			judge->card = Sanguosha->getCard(card_id);
+
+			LogMessage log;
+			log.type = "$ZhoufuJudge";
+			log.from = player;
+			log.arg = objectName();
+			log.card_str = QString::number(judge->card->getEffectiveId());
+			room->sendLog(log);
+
+			room->moveCardTo(judge->card, NULL, judge->who, Player::PlaceJudge,
+								CardMoveReason(CardMoveReason::S_REASON_JUDGE,
+								judge->who->objectName(),
+								QString(), QString(), judge->reason), true);
+			judge->updateResult();
+			room->setTag("SkipGameRule", true);
+		} else {
+			PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+			if (change.to == Player::NotActive) {
+				int id = player->getPile("incantation").first();
+				PlayerStar zhangbao = player->tag["ZhoufuSource" + QString::number(id)].value<PlayerStar>();
+				if (zhangbao && zhangbao->isAlive())
+					zhangbao->obtainCard(Sanguosha->getCard(id));
+				else
+					room->throwCard(id, NULL);
+			}
+		}
+		return false;
+	}
+};
+
+class Yingbing: public TriggerSkill {
+public:
+	Yingbing(): TriggerSkill("yingbing") {
+		events << StartJudge;
+		frequency = Frequent;
+	}
+
+	virtual int getPriority() const{
+		return -1;
+	}
+
+	virtual bool triggerable(const ServerPlayer *target) const{
+		return target != NULL;
+	}
+
+	virtual bool trigger(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
+		JudgeStar judge = data.value<JudgeStar>();
+		int id = judge->card->getEffectiveId();
+		PlayerStar zhangbao = player->tag["ZhoufuSource" + QString::number(id)].value<PlayerStar>();
+		if (zhangbao && TriggerSkill::triggerable(zhangbao)
+			&& zhangbao->askForSkillInvoke(objectName(), data))
+			zhangbao->drawCards(2);
+		return false;
+	}
+};
+
 class Shuijian: public DrawCardsSkill {
 public:
     Shuijian(): DrawCardsSkill("shuijian") {
@@ -1637,7 +1746,12 @@ OLPackage::OLPackage()
     zhugeke->addSkill(new Duwu);
 	zhugeke->addSkill(new SPConvertSkill("zhugeke", "diy_zhugeke"));
 
+	General *zhangbao = new General(this, "zhangbao", "qun", 3);
+	zhangbao->addSkill(new Zhoufu);
+	zhangbao->addSkill(new Yingbing);
+
 	addMetaObject<AocaiCard>();
+	addMetaObject<ZhoufuCard>();
 	addMetaObject<DuwuCard>();
 }
 
