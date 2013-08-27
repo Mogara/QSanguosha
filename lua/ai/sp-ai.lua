@@ -137,8 +137,8 @@ end
 
 sgs.ai_skill_choice.jilei = function(self, choices)
 	local tmptrick = sgs.Sanguosha:cloneCard("ex_nihilo", sgs.Card_NoSuit, 0)
-	if (self:isEquip("Crossbow",self.jilei_source) and self.jilei_source:inMyAttackRange(self.player)) or
-		self.jilei_source:isCardLimited(tmptrick, sgs.Card_MethodUse, true) then
+	if (self:hasCrossbowEffect(self.jilei_source) and self.jilei_source:inMyAttackRange(self.player))
+		or self.jilei_source:isCardLimited(tmptrick, sgs.Card_MethodUse, true) then
 		return "BasicCard"
 	else
 		return "TrickCard"
