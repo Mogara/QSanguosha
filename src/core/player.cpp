@@ -346,7 +346,7 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
         return false;
 
     if (isLord())
-        return skills.contains(skill_name) || (include_lose && hasInnateSkill(skill_name));
+        return skills.contains(skill_name);
 
     if (hasSkill("weidi")) {
         foreach (const Player *player, getSiblings()) {
