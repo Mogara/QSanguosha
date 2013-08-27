@@ -543,6 +543,7 @@ struct JudgeStruct {
     bool isGood() const;
     bool isBad() const;
     bool isEffected() const;
+	void updateResult();
 
     bool isGood(const Card *card) const; // For AI
 
