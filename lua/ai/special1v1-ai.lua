@@ -193,7 +193,9 @@ end
 sgs.ai_skill_use_func.MouzhuCard = function(card, use, self)
 
 	local canleiji
-	if self.player:hasSkill("leiji") and self:findLeijiTarget(self.player, 51) and self:hasSuit("spade", true) then
+	if self:findLeijiTarget(self.player, 50)
+		and ((self.player:hasSkill("leiji") and self:hasSuit("spade", true))
+		or (self.player:hasSkill("nosleiji") and self:hasSuit("black", true))) then
 		canleiji = true
 		self:sort(self.friends_noself, "handcard")
 		sgs.reverse(self.friends_noself)
