@@ -710,7 +710,7 @@ public:
 
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from == player && TriggerSkill::triggerable(player)
+            if (move.from == player && player->isAlive() && player->hasSkill(objectName(), true)
                 && player->getMark("@wu") > 0 && player->getHandcardNum() <= 2) {
                 room->broadcastSkillInvoke(objectName());
 

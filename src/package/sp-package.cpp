@@ -691,7 +691,7 @@ public:
             if (data.toString() != objectName()) return false;
         }
 
-        if (!TriggerSkill::triggerable(player)) return false;
+        if (!player->isAlive() || !player->hasSkill(objectName(), true)) return false;
 
         acquired_skills.clear();
         detached_skills.clear();
@@ -1087,7 +1087,7 @@ public:
                 room->notifySkillInvoked(player, objectName());
                 room->handleAcquireDetachSkills(player, "tianxiang|liuli");
             }
-        } else if (triggerEvent == CardsMoveOneTime && TriggerSkill::triggerable(player)) {
+        } else if (triggerEvent == CardsMoveOneTime && player->isAlive() && player->hasSkill(objectName(), true)) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.to == player && move.to_place == Player::PlaceSpecial && move.to_pile_name == "xingwu") {
                 if (player->getPile("xingwu").length() == 1) {
