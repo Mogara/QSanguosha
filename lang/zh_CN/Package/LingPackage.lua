@@ -6,7 +6,7 @@ return {
 	["neo_xiahoudun"] = "夏侯惇-翼",
 	["&neo_xiahoudun"] = "夏侯惇",
 	["neoganglie"] = "刚烈",
-	[":neoganglie"] = "每当你受到伤害后，你可以进行一次判定，若判定结果不为<font color=\"red\">♥</font>，则你选择一项：令伤害来源弃置两张手牌，或对伤害来源造成1点伤害。",
+	[":neoganglie"] = "每当你受到伤害后，你可以进行判定，若结果不为<font color=\"red\">♥</font>，则你选择一项：令伤害来源弃置两张手牌，或对伤害来源造成1点伤害。",
 	["neoganglie:throw"] = "令伤害来源弃置两张手牌",
 	["neoganglie:damage"] = "对伤害来源造成1点伤害",
 

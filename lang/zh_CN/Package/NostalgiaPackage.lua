@@ -28,6 +28,12 @@ return {
 	[":nosjizhi"] = "每当你使用非延时类锦囊牌选择目标后，你可以摸一张牌。",
 	["nosqicai"] = "奇才",
 	[":nosqicai"] = "<font color=\"blue\"><b>锁定技，</b></font>你使用锦囊牌无距离限制。",
+	
+	["nos_zhangjiao"] = "张角-旧",
+	["&nos_zhangjiao"] = "张角",
+	["illustrator:nos_zhangjiao"] = "LiuHeng",
+	["nosleiji"] = "雷击",
+	[":nosleiji"] = "每当你使用或打出【闪】时，你可以令一名角色进行判定，若结果为♠，你对其造成2点雷电伤害。",
 
 	["nos_fazheng"] = "法正-旧",
 	["&nos_fazheng"] = "法正",
@@ -91,14 +97,14 @@ return {
 	["noszhenlie"] = "贞烈",
 	[":noszhenlie"] = "每当你的判定牌生效前，你可以展示牌堆顶的一张牌代替之。",
 	["nosmiji"] = "秘计",
-	[":nosmiji"] = "回合开始或结束阶段开始时，若你已受伤，你可以进行一次判定，若判定结果为黑色，你观看牌堆顶的X张牌然后将其交给一名角色。（X为你已损失的体力值）",
+	[":nosmiji"] = "准备/结束阶段开始时，若你已受伤，你可以进行判定，若结果为黑色，你观看牌堆顶的X张牌（X为你已损失的体力值），然后将这些牌交给一名角色。",
 
 	["nos_madai"] = "马岱-旧",
 	["&nos_madai"] = "马岱",
 	["designer:nos_madai"] = "凌天翼",
 	["illustrator:nos_madai"] = "大佬荣",
 	["nosqianxi"] = "潜袭",
-	[":nosqianxi"] = "每当你使用【杀】对距离1的目标角色造成伤害时，你可以进行一次判定，若判定结果不为<font color=\"red\">♥</font>，你防止此伤害，该角色减1点体力上限。",
+	[":nosqianxi"] = "每当你使用【杀】对距离为1的目标角色造成伤害时，你可以进行判定，若结果不为<font color=\"red\">♥</font>，你防止此伤害，然后令其减1点体力上限。",
 
 	["nos_guanxingzhangbao"] = "关＆张-旧",
 	["&nos_guanxingzhangbao"] = "关兴张苞",

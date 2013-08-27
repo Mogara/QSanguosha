@@ -8,7 +8,7 @@ return {
 	["wushen"] = "武神",
 	[":wushen"] = "<font color=\"blue\"><b>锁定技，</b></font>你的<font color=\"red\">♥</font>手牌视为普通【杀】。你使用<font color=\"red\">♥</font>【杀】无距离限制。",
 	["wuhun"] = "武魂",
-	[":wuhun"] = "<font color=\"blue\"><b>锁定技，</b></font>每当你受到伤害扣减体力前，伤害来源获得等于伤害点数的“梦魇”标记。你死亡时，你选择拥有“梦魇”标记数最多的一名存活角色，该角色进行一次判定：若判定结果不为【桃】或【桃园结义】，该角色死亡。",
+	[":wuhun"] = "<font color=\"blue\"><b>锁定技，</b></font>每当你受到1点伤害后，你令来源获得1枚“梦魇”标记；<font color=\"blue\"><b>锁定技，</b></font>当你死亡时，你令拥有最多该标记的一名其他角色进行判定，若结果不为【桃】或【桃园结义】，其死亡。",
 	["@wuhun-revenge"] = "请选择“梦魇”标记最多的一名其他角色",
 	["@nightmare"] = "梦魇",
 	["$WuhunAnimate"] = "image=image/animate/wuhun.png",

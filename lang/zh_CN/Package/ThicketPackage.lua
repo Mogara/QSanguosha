@@ -84,6 +84,6 @@ return {
 	["benghuai:hp"] = "体力",
 	["benghuai:maxhp"] = "体力上限",
 	["baonue"] = "暴虐",
-	[":baonue"] = "<font color=\"orange\"><b>主公技，</b></font>其他群雄角色造成伤害一次后，该角色可以进行一次判定：若判定结果为♠，你回复1点体力。",
+	[":baonue"] = "<font color=\"orange\"><b>主公技，</b></font>每当其他群势力角色造成伤害后，其可以进行判定，若结果为♠，你回复1点体力。",
 	["@baonue-to"] = "请选择“暴虐”的目标角色",
 }
