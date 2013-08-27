@@ -819,7 +819,7 @@ sgs.ai_skill_use_func.ShenfenCard = function(card,use,self)
 	if self.player:getRole() == "rebel" then good = good + 1 end	
 	if self.player:getRole() == "renegade" then good = good + 0.5 end	
 	if not self.player:faceUp() then good = good + 1 end
-	if self:hasSkills("jushou|neojushou|lihun|kuiwei|jiushi") then good = good + 1 end
+	if self.player:hasSkills("jushou|nosjushou|neojushou|kuiwei") then good = good + 1 end
 	if self.player:getWeapon() and self.player:getWeapon():isKindOf("Crossbow") and self:getCardsNum("Slash", self.player) > 1 then good = good + 1 end
 	
 	for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
