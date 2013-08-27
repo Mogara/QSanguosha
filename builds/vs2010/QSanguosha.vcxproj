@@ -75,7 +75,7 @@
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4005</DisableSpecificWarnings>
       <TreatWarningAsError>true</TreatWarningAsError>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -125,7 +125,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
-      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4005</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(QTDIR)\lib\qtmain.lib;..\..\lib\fmodex.lib;..\..\lib\freetype2410.lib;..\..\lib\breakpad.lib;$(QTDIR)\lib\QAxContainer.lib;$(QTDIR)\lib\QtDeclarative4.lib;$(QTDIR)\lib\QtSql4.lib;$(QTDIR)\lib\QtGui4.lib;$(QTDIR)\lib\QtNetwork4.lib;$(QTDIR)\lib\QtCore4.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
