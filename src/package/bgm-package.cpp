@@ -674,17 +674,25 @@ public:
     }
 };
 
-class MouduanStart: public GameStartSkill {
+class MouduanStart: public TriggerSkill {
 public:
-    MouduanStart(): GameStartSkill("#mouduan-start") {
-    }
+    MouduanStart(): TriggerSkill("#mouduan-start") {
+		events << GameStart << EventAcquireSkill;
+	}
 
-    virtual void onGameStart(ServerPlayer *lvmeng) const{
-        Room *room = lvmeng->getRoom();
-        lvmeng->gainMark("@wu");
-        room->acquireSkill(lvmeng, "jiang");
-        room->acquireSkill(lvmeng, "qianxun");
-    }
+	virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *lvmeng, QVariant &data) const{
+		if (triggerEvent == GameStart) {
+			lvmeng->gainMark("@wu");
+			room->handleAcquireDetachSkills(lvmeng, "jiang|qianxun");
+			room->getThread()->addTriggerSkill(Sanguosha->getTriggerSkill("keji"));
+		} else if (data.toString() == "mouduan") {
+			if (lvmeng->getMark("@wu") > 0)
+				room->handleAcquireDetachSkills(lvmeng, "jiang|qianxun");
+			else if (lvmeng->getMark("@wen") > 0)
+				room->handleAcquireDetachSkills(lvmeng, "yingzi|keji");
+		}
+		return false;
+	}
 };
 
 class Mouduan: public TriggerSkill {
