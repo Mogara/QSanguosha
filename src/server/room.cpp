@@ -1101,7 +1101,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
 }
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason,
-                           bool handcard_visible, Card::HandlingMethod method) {
+                           bool handcard_visible, Card::HandlingMethod method, QList<int> &disabled_ids) {
     while (isPaused()) {}
     notifyMoveFocus(player, S_COMMAND_CHOOSE_CARD);
 
@@ -1127,7 +1127,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
                 QList<const Card *> cards = who->getCards(flags);
                 if (method == Card::MethodDiscard) {
                     foreach (const Card *card, cards) {
-                        if (!player->canDiscard(who, card->getEffectiveId()))
+                        if (!player->canDiscard(who, card->getEffectiveId()) || disabled_ids.contains(card->getEffectiveId()))
                             cards.removeOne(card);
                     }
                 }
@@ -1141,6 +1141,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
             arg[2] = toJsonString(reason);
             arg[3] = handcard_visible;
             arg[4] = (int)method;
+			arg[5] = toJsonArray(disabled_ids);
             bool success = doRequest(player, S_COMMAND_CHOOSE_CARD, arg, true);
             //@todo: check if the card returned is valid
             Json::Value clientReply = player->getClientReply();
@@ -1324,7 +1325,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
     return result;
 }
 
-bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index,
+const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index,
                          Card::HandlingMethod method, bool addHistory) {
     Q_ASSERT(method != Card::MethodResponse);
     while (isPaused()) {}
@@ -1364,16 +1365,16 @@ bool Room::askForUseCard(ServerPlayer *player, const QString &pattern, const QSt
         thread->trigger(ChoiceMade, this, player, decisionData);
         if (!useCard(card_use, addHistory))
             return askForUseCard(player, pattern, prompt, notice_index, method, addHistory);
-        return true;
+        return card_use.card;
     } else {
         QVariant decisionData = QVariant::fromValue("cardUsed:" + pattern + ":" + prompt + ":nil");
         thread->trigger(ChoiceMade, this, player, decisionData);
     }
 
-    return false;
+    return NULL;
 }
 
-bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt,
+const Card *Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt,
                             bool distance_limit, bool disable_extra, bool addHistory) {
     Q_ASSERT(!victims.isEmpty());
 
@@ -1388,8 +1389,8 @@ bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims
     foreach (ServerPlayer *victim, victims)
         setPlayerFlag(victim, "SlashAssignee");
 
-    bool use = askForUseCard(slasher, "slash", prompt, -1, Card::MethodUse, addHistory);
-    if (!use) {
+    const Card *slash = askForUseCard(slasher, "slash", prompt, -1, Card::MethodUse, addHistory);
+    if (slash == NULL) {
         setPlayerFlag(slasher, "-slashTargetFix");
         setPlayerFlag(slasher, "-slashTargetFixToOne");
         foreach (ServerPlayer *victim, victims)
@@ -1400,10 +1401,10 @@ bool Room::askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims
             setPlayerFlag(slasher, "-slashDisableExtraTarget");
     }
 
-    return use;
+    return slash;
 }
 
-bool Room::askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt,
+const Card *Room::askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt,
                             bool distance_limit, bool disable_extra, bool addHistory) {
     Q_ASSERT(victim != NULL);
     QList<ServerPlayer *> victims;

@@ -1224,7 +1224,7 @@ void Client::askForChoice(const Json::Value &ask_str) {
 }
 
 void Client::askForCardChosen(const Json::Value &ask_str) {
-    if (!ask_str.isArray() || ask_str.size() != 5 || !isStringArray(ask_str, 0, 2)
+    if (!ask_str.isArray() || ask_str.size() != 6 || !isStringArray(ask_str, 0, 2)
         || !ask_str[3].isBool() || !ask_str[4].isInt()) return;
     QString player_name = toQString(ask_str[0]);
     QString flags = toQString(ask_str[1]);
@@ -1233,7 +1233,9 @@ void Client::askForCardChosen(const Json::Value &ask_str) {
     Card::HandlingMethod method = (Card::HandlingMethod)ask_str[4].asInt();
     ClientPlayer *player = getPlayer(player_name);
     if (player == NULL) return;
-    emit cards_got(player, flags, reason, handcard_visible, method);
+    QList<int> disabled_ids;
+	tryParse(ask_str[5], disabled_ids);
+	emit cards_got(player, flags, reason, handcard_visible, method, disabled_ids);
     setStatus(ExecDialog);
 }
 
