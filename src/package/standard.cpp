@@ -314,6 +314,8 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
             CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), this->getSkillName(), QString());
             room->moveCardTo(this, target, player, Player::PlaceDelayedTrick, reason, true);
 
+			if (target == player) break;
+
 			CardUseStruct use;
 			use.from = NULL;
 			use.to << player;

@@ -186,7 +186,7 @@ public:
 	LuaFunction on_use;
 	LuaFunction on_effect;
 	const char *class_name, *subtype;
-}
+};
 
 class LuaTrickCard: public TrickCard {
     Q_OBJECT
