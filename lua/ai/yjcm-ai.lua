@@ -988,3 +988,14 @@ end
 sgs.ai_skill_askforag.paiyi = function(self, card_ids)
 	return card_ids[math.random(1, #card_ids)]
 end
+
+sgs.ai_card_intention.PaiyiCard = function(self, card, from, tos)
+	local to = tos[1]
+	if to:objectName() == from:objectName() then return end
+	if not to:hasSkill("manjuan")
+		and ((to:getHandcardNum() < 2 and to:getHandcardNum() + 1 < from:getHandcardNum() and not self:needKongcheng(to, true))
+			or (to:getHandcardNum() + 2 > from:getHandcardNum() and (self:getDamagedEffects(to, from) or self:needToLoseHp(to, from)))) then
+	else
+		sgs.updateIntention(from, to, 60)
+	end
+end
