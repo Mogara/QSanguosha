@@ -1,6 +1,6 @@
 class LuaTriggerSkill: public TriggerSkill {
 public:
-    LuaTriggerSkill(const char *name, Frequency frequency);
+    LuaTriggerSkill(const char *name, Frequency frequency, const char *limit_mark);
     void addEvent(TriggerEvent event);
     void setViewAsSkill(ViewAsSkill *view_as_skill);
 	void setGlobal(bool global);

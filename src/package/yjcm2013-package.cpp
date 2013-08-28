@@ -1016,6 +1016,7 @@ class Fencheng: public ZeroCardViewAsSkill {
 public:
     Fencheng(): ZeroCardViewAsSkill("fencheng") {
         frequency = Limited;
+		limit_mark = "@burn";
     }
 
     virtual const Card *viewAs() const{
@@ -1200,10 +1201,8 @@ YJCM2013Package::YJCM2013Package()
     liru->addSkill(new MiejiForExNihiloAndCollateral);
 	liru->addSkill(new MiejiEffect);
     liru->addSkill(new Fencheng);
-    liru->addSkill(new MarkAssignSkill("@burn", 1));
     related_skills.insertMulti("mieji", "#mieji");
 	related_skills.insertMulti("mieji", "#mieji-effect");
-    related_skills.insertMulti("fencheng", "#@burn-1");
 
     General *liufeng = new General(this, "liufeng", "shu"); // YJ 207
     liufeng->addSkill(new Xiansi);

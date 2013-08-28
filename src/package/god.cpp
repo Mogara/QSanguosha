@@ -325,6 +325,7 @@ class Yeyan: public ViewAsSkill {
 public:
     Yeyan(): ViewAsSkill("yeyan") {
         frequency = Limited;
+		limit_mark = "@flame";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -1376,9 +1377,7 @@ GodPackage::GodPackage()
 
     General *shenzhouyu = new General(this, "shenzhouyu", "god"); // LE 003
     shenzhouyu->addSkill(new Qinyin);
-    shenzhouyu->addSkill(new MarkAssignSkill("@flame", 1));
     shenzhouyu->addSkill(new Yeyan);
-    related_skills.insertMulti("yeyan", "#@flame-1");
 
     General *shenzhugeliang = new General(this, "shenzhugeliang", "god", 3); // LE 004
     shenzhugeliang->addSkill(new Qixing);

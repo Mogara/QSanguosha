@@ -300,6 +300,7 @@ public:
     Niepan(): TriggerSkill("niepan") {
         events << AskForPeaches;
         frequency = Limited;
+		limit_mark = "@nirvana";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -517,9 +518,7 @@ FirePackage::FirePackage()
 
     General *pangtong = new General(this, "pangtong", "shu", 3); // SHU 010
     pangtong->addSkill(new Lianhuan);
-    pangtong->addSkill(new MarkAssignSkill("@nirvana", 1));
     pangtong->addSkill(new Niepan);
-    related_skills.insertMulti("niepan", "#@nirvana-1");
 
     General *wolong = new General(this, "wolong", "shu", 3); // SHU 011
     wolong->addSkill(new Huoji);

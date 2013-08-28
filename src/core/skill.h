@@ -45,10 +45,12 @@ public:
     void initMediaSource();
     void playAudioEffect(int index = -1) const;
     Frequency getFrequency() const;
+	QString getLimitMark() const;
     QStringList getSources() const;
 
 protected:
     Frequency frequency;
+	QString limit_mark;
     QString default_choice;
     bool attached_lord_skill;
 

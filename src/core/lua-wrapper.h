@@ -10,7 +10,7 @@ class LuaTriggerSkill: public TriggerSkill {
     Q_OBJECT
 
 public:
-    LuaTriggerSkill(const char *name, Frequency frequency);
+    LuaTriggerSkill(const char *name, Frequency frequency, const char *limit_mark);
     inline void addEvent(TriggerEvent triggerEvent) { events << triggerEvent; }
     inline void setViewAsSkill(ViewAsSkill *view_as_skill) { this->view_as_skill = view_as_skill; }
 	inline void setGlobal(bool global) { this->global = global; }

@@ -655,6 +655,7 @@ class Luanwu: public ZeroCardViewAsSkill {
 public:
     Luanwu(): ZeroCardViewAsSkill("luanwu") {
         frequency = Limited;
+		limit_mark = "@chaos";
     }
 
     virtual const Card *viewAs() const{
@@ -957,11 +958,9 @@ ThicketPackage::ThicketPackage()
 
     General *jiaxu = new General(this, "jiaxu", "qun", 3); // QUN 007
     jiaxu->addSkill(new Wansha);
-    jiaxu->addSkill(new MarkAssignSkill("@chaos", 1));
     jiaxu->addSkill(new Luanwu);
     jiaxu->addSkill(new Weimu);
     jiaxu->addSkill(new SPConvertSkill("jiaxu", "sp_jiaxu"));
-    related_skills.insertMulti("luanwu", "#@chaos-1");
 
     addMetaObject<DimengCard>();
     addMetaObject<LuanwuCard>();

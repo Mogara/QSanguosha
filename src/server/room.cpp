@@ -609,6 +609,8 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
                 thread->addTriggerSkill(trigger_skill);
             }
+			if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
+				addPlayerMark(player, skill->getLimitMark());
 
             if (skill->isVisible()) {
                 Json::Value args;
@@ -1833,6 +1835,8 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
                  if (invokeStart && trigger->getTriggerEvents().contains(GameStart) && trigger->triggerable(player))
                      game_start << trigger;
             }
+			if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
+				addPlayerMark(player, skill->getLimitMark());
         }
     }
     if (invokeStart) {
@@ -4216,6 +4220,8 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open) {
         const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
         thread->addTriggerSkill(trigger_skill);
     }
+	if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
+		addPlayerMark(player, skill->getLimitMark());
 
     if (skill->isVisible()) {
         if (open) {

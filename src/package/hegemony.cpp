@@ -468,6 +468,7 @@ class Xiongyi: public ZeroCardViewAsSkill {
 public:
     Xiongyi(): ZeroCardViewAsSkill("xiongyi") {
         frequency = Limited;
+		limit_mark = "@arise";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -763,9 +764,7 @@ HegemonyPackage::HegemonyPackage()
 
     General *mateng = new General(this, "mateng", "qun"); // QUN 013
     mateng->addSkill("mashu");
-    mateng->addSkill(new MarkAssignSkill("@arise", 1));
     mateng->addSkill(new Xiongyi);
-    related_skills.insertMulti("xiongyi", "#@arise-1");
 
     General *kongrong = new General(this, "kongrong", "qun", 3); // QUN 014
     kongrong->addSkill(new Mingshi);

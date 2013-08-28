@@ -10,7 +10,7 @@
 #include <QFile>
 
 Skill::Skill(const QString &name, Frequency frequency)
-    : frequency(frequency), default_choice("no"), attached_lord_skill(false)
+    : frequency(frequency), limit_mark(QString()), default_choice("no"), attached_lord_skill(false)
 {
     static QChar lord_symbol('$');
 
@@ -106,6 +106,10 @@ void Skill::playAudioEffect(int index) const{
 
 Skill::Frequency Skill::getFrequency() const{
     return frequency;
+}
+
+QString Skill::getLimitMark() const{
+	return limit_mark;
 }
 
 QStringList Skill::getSources() const{

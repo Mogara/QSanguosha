@@ -301,6 +301,7 @@ public:
     Zuixiang(): TriggerSkill("zuixiang") {
         events << EventPhaseStart << SlashEffected << CardEffected;
         frequency = Limited;
+		limit_mark = "@sleep";
 
         type[Card::TypeBasic] = "BasicCard";
         type[Card::TypeTrick] = "TrickCard";
@@ -378,20 +379,24 @@ public:
         }
     }
 
+	virtual bool triggerable(const ServerPlayer *target) const{
+		return target != NULL;
+	}
+
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *sp_pangtong, QVariant &data) const{
         QList<int> zuixiang = sp_pangtong->getPile("dream");
 
         if (triggerEvent == EventPhaseStart && sp_pangtong->getMark("zuixiangHasTrigger") == 0) {
             if (sp_pangtong->getPhase() == Player::Start) {
-                if (sp_pangtong->getMark("@sleep") > 0) {
+                if (TriggerSkill::triggerable(sp_pangtong) && sp_pangtong->getMark("@sleep") > 0) {
                     if (!sp_pangtong->askForSkillInvoke(objectName()))
                         return false;
                     room->removePlayerMark(sp_pangtong, "@sleep");
                     doZuixiang(sp_pangtong);
-                } else
+                } else if (!sp_pangtong->getPile("dream").isEmpty())
                     doZuixiang(sp_pangtong);
             }
-        } else if (triggerEvent == CardEffected) {
+        } else if (triggerEvent == CardEffected && TriggerSkill::triggerable(sp_pangtong)) {
             if (zuixiang.isEmpty())
                 return false;
 
@@ -419,7 +424,7 @@ public:
                 room->broadcastSkillInvoke(objectName());
                 return true;
             }
-        } else if (triggerEvent == SlashEffected) {
+        } else if (triggerEvent == SlashEffected && TriggerSkill::triggerable(sp_pangtong)) {
             if (zuixiang.isEmpty())
                 return false;
 
@@ -452,6 +457,20 @@ public:
 
 private:
     QMap<Card::CardType, QString> type;
+};
+
+class ZuixiangClear: public DetachEffectSkill {
+public:
+    ZuixiangClear(): DetachEffectSkill("zuixiang") {
+    }
+
+    virtual void onSkillDetached(Room *room, ServerPlayer *player) const{
+        room->setPlayerMark(player, "Equips_Nullified_to_Yourself", 0);
+        room->setPlayerMark(player, "Equips_of_Others_Nullified_to_You", 0);
+        room->removePlayerCardLimitation(player, "use,response", "BasicCard$0");
+        room->removePlayerCardLimitation(player, "use,response", "TrickCard$0");
+        room->removePlayerCardLimitation(player, "use,response", "EquipCard$0");
+    }
 };
 
 class Jie: public TriggerSkill {
@@ -927,6 +946,7 @@ public:
     Shichou(): TriggerSkill("shichou$") {
         events << GameStart << EventPhaseStart << DamageInflicted << Dying;
         frequency = Limited;
+		limit_mark = "@hate";
         view_as_skill = new ShichouViewAsSkill;
     }
 
@@ -1412,8 +1432,8 @@ BGMPackage::BGMPackage(): Package("BGM") {
     General *bgm_pangtong = new General(this, "bgm_pangtong", "qun", 3); // *SP 004
     bgm_pangtong->addSkill(new Manjuan);
     bgm_pangtong->addSkill(new Zuixiang);
-    bgm_pangtong->addSkill(new MarkAssignSkill("@sleep", 1));
-    related_skills.insertMulti("zuixiang", "#@sleep-1");
+	bgm_pangtong->addSkill(new ZuixiangClear);
+	related_skills.insertMulti("zuixiang", "#zuixiang-clear");
 
     General *bgm_zhangfei = new General(this, "bgm_zhangfei", "shu"); // *SP 005
     bgm_zhangfei->addSkill(new Jie);

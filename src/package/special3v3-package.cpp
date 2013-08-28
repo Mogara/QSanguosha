@@ -257,6 +257,7 @@ class Zhongyi: public OneCardViewAsSkill {
 public:
     Zhongyi(): OneCardViewAsSkill("zhongyi") {
         frequency = Limited;
+		limit_mark = "@loyal";
     }
 
     virtual bool viewFilter(const Card *to_select) const{
@@ -586,9 +587,7 @@ Special3v3_2013Package::Special3v3_2013Package()
     vs_guanyu->addSkill("wusheng");
     vs_guanyu->addSkill(new Zhongyi);
     vs_guanyu->addSkill(new ZhongyiAction);
-    vs_guanyu->addSkill(new MarkAssignSkill("@loyal", 1));
     related_skills.insertMulti("zhongyi", "#zhongyi-action");
-    related_skills.insertMulti("zhongyi", "#@loyal-1");
 
     General *vs_zhaoyun = new General(this, "vs_zhaoyun", "shu");
     vs_zhaoyun->addSkill("longdan");

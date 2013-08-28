@@ -407,6 +407,7 @@ public:
     Fuli(): TriggerSkill("fuli") {
         events << AskForPeaches;
         frequency = Limited;
+		limit_mark = "@laoji";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -659,6 +660,7 @@ class Jiefan: public ZeroCardViewAsSkill {
 public:
     Jiefan(): ZeroCardViewAsSkill("jiefan") {
         frequency = Limited;
+		limit_mark = "@rescue";
     }
 
     virtual const Card *viewAs() const{
@@ -975,17 +977,13 @@ YJCM2012Package::YJCM2012Package()
     General *handang = new General(this, "handang", "wu"); // YJ 105
     handang->addSkill(new Gongqi);
     handang->addSkill(new Jiefan);
-    handang->addSkill(new MarkAssignSkill("@rescue", 1));
-    related_skills.insertMulti("jiefan", "#@rescue-1");
 
     General *huaxiong = new General(this, "huaxiong", "qun", 6); // YJ 106
     huaxiong->addSkill(new Shiyong);
 
     General *liaohua = new General(this, "liaohua", "shu"); // YJ 107
     liaohua->addSkill(new Dangxian);
-    liaohua->addSkill(new MarkAssignSkill("@laoji", 1));
     liaohua->addSkill(new Fuli);
-    related_skills.insertMulti("fuli", "#@laoji-1");
 
     General *liubiao = new General(this, "liubiao", "qun", 4); // YJ 108
     liubiao->addSkill(new Zishou);
