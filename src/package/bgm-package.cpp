@@ -1347,7 +1347,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         ServerPlayer *xiahou = room->findPlayerBySkillName("fenyong");
-        if (zuoci == NULL)
+        if (xiahou == NULL)
             return false;
         if (xiahou->getPhase() == Player::Finish && xiahou->getMark("@fenyong") > 0) {
             if (xiahou->tag["HuashenSkill"].toString() == "fenyong"
