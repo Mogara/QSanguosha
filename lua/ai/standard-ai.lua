@@ -1900,7 +1900,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 	if (self:isWeak() or self:hasHeavySlashDamage(source, slash)) and source:hasWeapon("Axe") and source:getCards("he"):length() > 2
 	  and not self:getCardId("Peach") and not self:getCardId("Analeptic") then
 		for _, friend in ipairs(self.friends_noself) do
-			if not self:isWeak(friend) then
+			if not self:isWeak(friend) or (self:hasEightDiagramEffect(friend) and getCardsNum("Jink", friend) >= 1) then
 				if not (source and (source:objectName() == friend:objectName())) then
 					local ret = doLiuli(friend)
 					if ret ~= "." then return ret end
