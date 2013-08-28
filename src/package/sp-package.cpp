@@ -54,7 +54,7 @@ SPMoonSpear::SPMoonSpear(Suit suit, int number)
 class Jilei: public TriggerSkill {
 public:
     Jilei(): TriggerSkill("jilei") {
-        events << DamageInflicted;
+        events << Damaged;
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *yangxiu, QVariant &data) const{
