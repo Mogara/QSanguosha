@@ -1,6 +1,10 @@
 -- lines for Nostalgia Package
 
 return {
+	-- 旧 于吉
+	["$nosguhuo1"] = "你信吗？",
+	["$nosguhuo2"] = "猜猜看哪？",
+
 	-- 旧 凌统
 	["cv:nos_lingtong"] = "官方",
 	["$nosxuanfeng1"] = "伤敌于千里之外！",
