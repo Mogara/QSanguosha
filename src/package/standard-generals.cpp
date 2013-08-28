@@ -1092,8 +1092,7 @@ public:
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *daqiao, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
 
-        if (use.card && use.card->isKindOf("Slash")
-            && use.to.contains(daqiao) && daqiao->canDiscard(daqiao, "he") && room->alivePlayerCount() > 2) {
+        if (use.card->isKindOf("Slash") && use.to.contains(daqiao) && daqiao->canDiscard(daqiao, "he")) {
             QList<ServerPlayer *> players = room->getOtherPlayers(daqiao);
             players.removeOne(use.from);
 

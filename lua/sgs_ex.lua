@@ -291,7 +291,10 @@ function onUse_DelayedTrick(self, room, card_use)
 end
 
 function use_DelayedTrick(self, room, source, targets)
-	return
+	if #targets == 0 then
+		local reason = sgs.CardMoveReason(sgs.CardMoveReason_S_REASON_USE, source:objectName(), "", self:getSkillName(), "")
+		room:moveCardTo(self, source, nil, sgs.Player_DiscardPile, reason, true)
+	end
 end
 
 function sgs.CreateTrickCard(spec)

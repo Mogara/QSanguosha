@@ -67,7 +67,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card && use.card->isKindOf("Slash") && room->askForSkillInvoke(player, objectName())) {
+        if (use.card->isKindOf("Slash") && room->askForSkillInvoke(player, objectName())) {
             room->broadcastSkillInvoke(objectName(), 1);
             room->askForDiscard(player, objectName(), 2, 2, false, true);
             player->drawCards(2);

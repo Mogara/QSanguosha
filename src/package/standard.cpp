@@ -65,7 +65,11 @@ void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{
     thread->trigger(CardFinished, room, player, data);
 }
 
-void EquipCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const{
+void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+	if (targets.isEmpty()) {
+		CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+		room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+	}
     int equipped_id = Card::S_UNKNOWN_CARD_ID;
     ServerPlayer *target = targets.first();
     if (target->getEquip(location()))
@@ -236,6 +240,14 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void DelayedTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+	if (targets.isEmpty()) {
+		if (movable) {
+			onNullified(source);
+			if (room->getCardOwner(getEffectiveId()) != source) return;
+		}
+		CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+		room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+	}
 }
 
 QString DelayedTrick::getSubtype() const{
@@ -266,7 +278,7 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
         }
     } else if (movable) {
         onNullified(effect.to);
-    } else if (!movable) {
+    } else {
         if (room->getCardOwner(getEffectiveId()) == NULL) {
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
             room->throwCard(this, reason, NULL);
@@ -276,6 +288,7 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
 
 void DelayedTrick::onNullified(ServerPlayer *target) const{
     Room *room = target->getRoom();
+	RoomThread *thread = room->getThread();
     if (movable) {
         QList<ServerPlayer *> players = room->getOtherPlayers(target);
         players << target;
@@ -299,6 +312,19 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
 
             CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), this->getSkillName(), QString());
             room->moveCardTo(this, target, player, Player::PlaceDelayedTrick, reason, true);
+
+			CardUseStruct use;
+			use.from = NULL;
+			use.to << player;
+			use.card = this;
+			QVariant data = QVariant::fromValue(use);
+			thread->trigger(TargetConfirming, room, player, data);
+			CardUseStruct new_use = data.value<CardUseStruct>();
+			if (new_use.to.isEmpty())
+				continue;
+
+			foreach (ServerPlayer *p, room->getAllPlayers())
+				thread->trigger(TargetConfirmed, room, p, data);
             break;
         }
     } else {

@@ -913,7 +913,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *liushan, QVariant &data) const{
         if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card && use.card->isKindOf("Slash")) {
+            if (use.card->isKindOf("Slash")) {
                 room->broadcastSkillInvoke(objectName());
                 room->notifySkillInvoked(liushan, objectName());
 
