@@ -797,10 +797,9 @@ function SmartAI:getGuhuoCard(class_name, at_play, latest_version)
 	if not latest_version then return self:getGuhuoCard(class_name, at_play, 1) or self:getGuhuoCard(class_name, at_play, -1) end
 	local player = self.player
 	local current = self.room:getCurrent()
-	if not player
-		or not (latest_version == 1 and player:hasSkill("guhuo") and not player:hasFlag("GuhuoUsed")
+	if not (latest_version == 1 and player:hasSkill("guhuo") and not player:hasFlag("GuhuoUsed")
 			and current and current:isAlive() and current:getPhase() ~= sgs.Player_NotActive)
-		or not (latest_version == -1 and player:hasSkill("nosguhuo")) then return end
+		and not (latest_version == -1 and player:hasSkill("nosguhuo")) then return end
 	if at_play then
 		if class_name == "Peach" and not player:isWounded() then return
 		elseif class_name == "Analeptic" and player:hasUsed("Analeptic") then return
