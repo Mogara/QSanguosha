@@ -171,8 +171,8 @@ public:
     bool canDiscard(const Player *to, const QString &flags) const;
     bool canDiscard(const Player *to, int card_id) const;
 
-    void addMark(const QString &mark);
-    void removeMark(const QString &mark);
+    void addMark(const QString &mark, int add_num = 1);
+    void removeMark(const QString &mark, int remove_num = 1);
     virtual void setMark(const QString &mark, int value);
     int getMark(const QString &mark) const;
 

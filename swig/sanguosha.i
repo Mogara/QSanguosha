@@ -177,8 +177,8 @@ public:
     bool canDiscard(const Player *to, const char *flags) const;
     bool canDiscard(const Player *to, int card_id) const;
 
-    void addMark(const char *mark);
-    void removeMark(const char *mark);
+    void addMark(const char *mark, int add_num = 1);
+    void removeMark(const char *mark, int remove_num = 1);
     virtual void setMark(const char *mark, int value);
     int getMark(const char *mark) const;
 

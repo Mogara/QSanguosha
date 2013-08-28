@@ -273,7 +273,11 @@ QStringList Engine::getBanPackages() const{
 }
 
 QString Engine::translate(const QString &to_translate) const{
-    return translations.value(to_translate, to_translate);
+    QStringList list = to_translate.split("\\");
+	QString res;
+	foreach (QString str, list)
+		res.append(translations.value(str, str));
+	return res;
 }
 
 int Engine::getRoleIndex() const{

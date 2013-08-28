@@ -7,7 +7,7 @@ return {
 	["caopi"] = "曹丕",
 	["illustrator:caopi"] = "SoniaTang",
 	["xingshang"] = "行殇",
-	[":xingshang"] = "其他角色死亡时，你可以获得该角色的牌。",
+	[":xingshang"] = "每当其他角色死亡时，你可以获得其所有牌。",
 	["fangzhu"] = "放逐",
 	[":fangzhu"] = "每当你受到一次伤害后，你可以令一名其他角色摸X张牌，然后该角色将其武将牌翻面。（X为你已损失的体力值）",
 	["fangzhu-invoke"] = "你可以发动“放逐”<br/> <b>操作提示</b>: 选择一名其他角色→点击确定<br/>",

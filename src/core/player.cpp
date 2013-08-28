@@ -642,15 +642,15 @@ void Player::setChained(bool chained) {
     }
 }
 
-void Player::addMark(const QString &mark) {
+void Player::addMark(const QString &mark, int add_num) {
     int value = marks.value(mark, 0);
-    value++;
+    value += add_num;
     setMark(mark, value);
 }
 
-void Player::removeMark(const QString &mark) {
+void Player::removeMark(const QString &mark, int remove_num) {
     int value = marks.value(mark, 0);
-    value--;
+    value -= remove_num;
     value = qMax(0, value);
     setMark(mark, value);
 }
