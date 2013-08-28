@@ -36,7 +36,7 @@ return {
 	["lianhuan"] = "连环",
 	[":lianhuan"] = "你可以将一张♣手牌当【铁索连环】使用或重铸。",
 	["niepan"] = "涅槃",
-	[":niepan"] = "<font color=\"red\"><b>限定技，</b></font>当你处于濒死状态时，你可以弃置你区域里所有的牌，然后将你的武将牌翻转至正面朝上并重置之，再摸三张牌且将你当前的体力值回复至3点。 ",
+	[":niepan"] = "<font color=\"red\"><b>限定技，</b></font>当你处于濒死状态时，你可以弃置你区域里所有的牌，然后将你的武将牌恢复至游戏开始时的状态，再摸三张牌，最后回复至3点体力。 ",
 	["$NiepanAnimate"] = "image=image/animate/niepan.png",
 	["@nirvana"] = "涅槃",
 

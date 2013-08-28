@@ -513,18 +513,12 @@ class Wumou: public TriggerSkill {
 public:
     Wumou(): TriggerSkill("wumou") {
         frequency = Compulsory;
-        events << CardUsed << CardResponded;
+        events << CardUsed;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        CardStar card = NULL;
-        if (triggerEvent == CardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            card = use.card;
-        } else if (triggerEvent == CardResponded)
-            card = data.value<CardResponseStruct>().m_card;
-
-        if (card->isNDTrick()) {
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+		CardUseStruct use = data.value<CardUseStruct>();
+		if (use.card->isNDTrick()) {
             room->broadcastSkillInvoke(objectName());
 
             LogMessage log;
