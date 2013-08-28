@@ -1249,7 +1249,7 @@ private:
         if (!general) return QStringList();
         QStringList skill_list;
         foreach (const Skill *skill, general->getSkillList()) {
-            if (!skill->isLordSkill() && skill->getFrequency() != Skill::Wake)
+            if (skill->isVisible() && !skill->isLordSkill() && skill->getFrequency() != Skill::Wake)
                 skill_list.append(skill->objectName());
         }
         return skill_list;
