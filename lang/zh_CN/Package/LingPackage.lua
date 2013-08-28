@@ -41,7 +41,7 @@ return {
 	["neo_zhouyu"] = "周瑜-翼",
 	["&neo_zhouyu"] = "周瑜", 
 	["neofanjian"] = "反间",
-	[":neofanjian"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以选择一张手牌并令一名其他角色选择一种花色，然后该角色获得该牌并展示之。若该牌花色与该角色所选花色不同，你对其造成1点伤害。",
+	[":neofanjian"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以选择一张手牌并令一名其他角色选择一种花色，然后该角色正面朝上获得该牌。若该牌花色与该角色所选花色不同，你对其造成1点伤害。",
 
 	["neo_gongsunzan"] = "公孙瓒-翼",
 	["&neo_gongsunzan"] = "公孙瓒",
