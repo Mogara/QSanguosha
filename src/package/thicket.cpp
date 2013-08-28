@@ -545,10 +545,12 @@ void DimengCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets)
         move1.card_ids = a->handCards();
         move1.to = b;
         move1.to_place = Player::PlaceHand;
+		move1.reason = CardMoveReason(CardMoveReason::S_REASON_SWAP, a->objectName(), b->objectName(), "dimeng", QString());
         CardsMoveStruct move2;
         move2.card_ids = b->handCards();
         move2.to = a;
         move2.to_place = Player::PlaceHand;
+		move2.reason = CardMoveReason(CardMoveReason::S_REASON_SWAP, b->objectName(), a->objectName(), "dimeng", QString());
         exchangeMove.push_back(move1);
         exchangeMove.push_back(move2);
         room->moveCards(exchangeMove, false);
