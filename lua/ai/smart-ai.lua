@@ -257,12 +257,10 @@ function sgs.getDefense(player, gameProcess)
 	if player:hasSkills("tuntian+zaoxian") then defense = defense + player:getHandcardNum() * 0.4 end
 	if player:hasSkill("aocai") and player:getPhase() == sgs.Player_NotActive then defense = defense + 0.3 end
 	if (attacker and not attacker:hasSkill("jueqing")) or gameProcess then
-		if not gameProcess and sgs.isGoodHp(player) then
-			local m = sgs.masochism_skill:split("|")
-			for _, masochism in ipairs(m) do
-				if player:hasSkill(masochism) and sgs.isGoodHp(player) then
-					defense = defense + 1
-				end
+		local m = sgs.masochism_skill:split("|")
+		for _, masochism in ipairs(m) do
+			if player:hasSkill(masochism) and sgs.isGoodHp(player) then
+				defense = defense + 1
 			end
 		end
 		if player:getMark("@tied") > 0 then defense = defense + 1 end
