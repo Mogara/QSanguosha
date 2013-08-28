@@ -640,7 +640,7 @@ void JiefanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     room->doLightbox("$JiefanAnimate", 2500);
 
     foreach (ServerPlayer *player, room->getAllPlayers()) {
-        if (player->isAlive() && player->inMyAttackRange(target))
+        if (player->isAlive() && player->inMyAttackRange(target) && player != target)
             room->cardEffect(this, source, player);
     }
     source->tag.remove("JiefanTarget");
