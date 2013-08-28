@@ -1335,6 +1335,29 @@ public:
     }
 };
 
+class FenyongWithoutXuehen: public TriggerSkill {
+public:
+    FenyongWithoutXuehen():TriggerSkill("#fenyong-without-xuehen") {
+        events << EventPhaseStart;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+        ServerPlayer *xiahou = room->findPlayerBySkillName("fenyong");
+        if (zuoci == NULL)
+            return false;
+        if (xiahou->getPhase() == Player::Finish && xiahou->getMark("@fenyong") > 0) {
+            if (xiahou->tag["HuashenSkill"].toString() == "fenyong"
+                || xiahou->tag["XiaodeSkill"].toString() == "fenyong")
+                room->setPlayerMark(xiahou, "@fenyong", 0);
+        }
+        return false;
+    }
+};
+
 class FenyongClear: public DetachEffectSkill {
 public:
     FenyongClear(): DetachEffectSkill("fenyong") {
@@ -1471,11 +1494,13 @@ BGMPackage::BGMPackage(): Package("BGM") {
 
     General *bgm_xiahoudun = new General(this, "bgm_xiahoudun", "wei"); // *SP 010
     bgm_xiahoudun->addSkill(new Fenyong);
+	bgm_xiahoudun->addSkill(new FenyongWithoutXuehen);
     bgm_xiahoudun->addSkill(new FenyongClear);
     bgm_xiahoudun->addSkill(new Xuehen);
     bgm_xiahoudun->addSkill(new SlashNoDistanceLimitSkill("xuehen"));
     bgm_xiahoudun->addSkill(new FakeMoveSkill("xuehen"));
     related_skills.insertMulti("fenyong", "#fenyong-clear");
+	related_skills.insertMulti("fenyong", "#fenyong-without-xuehen");
     related_skills.insertMulti("xuehen", "#xuehen-slash-ndl");
     related_skills.insertMulti("xuehen", "#xuehen-fake-move");
 
