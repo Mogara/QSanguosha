@@ -1405,8 +1405,6 @@ public:
 
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &) const{
         if (card->isKindOf("Slash")) {
-            if (to->hasSkill(objectName()))
-                return false;
             // get rangefix
             int rangefix = 0;
             if (card->isVirtualCard()) {
@@ -1421,7 +1419,7 @@ public:
             }
             // find yuanshu
             foreach (const Player *p, from->getSiblings()) {
-                if (p->isAlive() && p->hasSkill(objectName()) && p->getHandcardNum() > p->getHp()
+                if (p->isAlive() && p->hasSkill(objectName()) && p != to && p->getHandcardNum() > p->getHp()
                     && from->distanceTo(p, rangefix) <= from->getAttackRange()) {
                     return true;
                 }
