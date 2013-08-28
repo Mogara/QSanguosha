@@ -292,6 +292,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
     if (movable) {
         QList<ServerPlayer *> players = room->getOtherPlayers(target);
         players << target;
+		ServerPlayer *p = NULL;
 
         foreach (ServerPlayer *player, players) {
             if (player->containsTrick(objectName()))
@@ -320,13 +321,17 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
 			QVariant data = QVariant::fromValue(use);
 			thread->trigger(TargetConfirming, room, player, data);
 			CardUseStruct new_use = data.value<CardUseStruct>();
-			if (new_use.to.isEmpty())
-				continue;
+			if (new_use.to.isEmpty()) {
+				p = player;
+				break;
+			}
 
 			foreach (ServerPlayer *p, room->getAllPlayers())
 				thread->trigger(TargetConfirmed, room, p, data);
             break;
         }
+		if (p)
+			onNullified(p);
     } else {
 		CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());
 		room->throwCard(this, reason, NULL);

@@ -32,6 +32,7 @@ config = {
 		"BGM",
 		"BGMDIY",
 		"Hegemony",
+		"Formation",
 		"HegemonySP",
 		"Ling",
 		"NostalStandard",
