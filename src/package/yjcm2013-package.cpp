@@ -855,7 +855,7 @@ public:
             if (current && current->isAlive() && current->getPhase() != Player::NotActive) {
 				room->broadcastSkillInvoke(objectName());
                 LogMessage log;
-                log.type = "#TurnBroken";
+                log.type = "#SkipAllPhase";
                 log.from = current;
                 room->sendLog(log);
             }
