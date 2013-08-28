@@ -64,11 +64,14 @@ RenxinCard::RenxinCard() {
 }
 
 void RenxinCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> &) const{
+	if (player->isKongcheng()) return;
     ServerPlayer *who = room->getCurrentDyingPlayer();
     if (!who) return;
 
     player->turnOver();
-    room->obtainCard(who, player->wholeHandCards(), false);
+	CardMoveReason reason(CardMoveReason::S_REASON_GIVE, player->objectName());
+	reason.m_playerId = who->objectName();
+    room->obtainCard(who, player->wholeHandCards(), reason, false);
 
     RecoverStruct recover;
     recover.who = player;
