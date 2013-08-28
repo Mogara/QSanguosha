@@ -369,7 +369,7 @@ private slots:
 
     // 3v3 mode & 1v1 mode
     void fillGenerals(const QStringList &names);
-    void takeGeneral(const QString &who, const QString &name);
+    void takeGeneral(const QString &who, const QString &name, const QString &rule);
     void recoverGeneral(int index, const QString &name);
     void startGeneralSelection();
     void selectGeneral();

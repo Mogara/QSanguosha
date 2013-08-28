@@ -136,7 +136,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
 				}
             }
             room->setTag("FirstRound", true);
-            if (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() == "2013") {
+            if (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() != "Classical") {
                 QList<int> n_list;
                 foreach (ServerPlayer *player, room->getPlayers())
                     n_list << player->getMaxHp();
@@ -594,7 +594,10 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const{
         player->tag.remove("1v1ChangeGeneral");
     } else {
         QStringList list = player->tag["1v1Arrange"].toStringList();
-        new_general = room->askForGeneral(player, list);
+		if (player->getAI())
+			new_general = list.first();
+		else
+			new_general = room->askForGeneral(player, list);
         list.removeOne(new_general);
         player->tag["1v1Arrange"] = QVariant::fromValue(list);
     }

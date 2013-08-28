@@ -154,7 +154,8 @@ void RoomThread3v3::takeGeneral(ServerPlayer *player, const QString &name) {
     log.arg2 = name;
     room->sendLog(log);
 
-    room->doBroadcastNotify(S_COMMAND_TAKE_GENERAL, toJsonArray(group, name));
+	QString rule = Config.value("3v3/OfficialRule", "2012").toString();
+    room->doBroadcastNotify(S_COMMAND_TAKE_GENERAL, toJsonArray(group, name, rule));
 }
 
 void RoomThread3v3::startArrange(QList<ServerPlayer *> &players) {

@@ -19,15 +19,15 @@ RoomThread1v1::RoomThread1v1(Room *room)
 void RoomThread1v1::run() {
     // initialize the random seed for this thread
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
-    bool new_rule = (Config.value("1v1/Rule", "Classical").toString() == "2013");
-    int total_num = new_rule ? 12 : 10;
+    QString rule = Config.value("1v1/Rule", "Classical").toString();
+    int total_num = rule != "Classical" ? 12 : 10;
 
     if (!Config.value("1v1/UsingExtension", false).toBool()) {
         const Package *stdpack = Sanguosha->findChild<const Package *>("standard");
         const Package *windpack = Sanguosha->findChild<const Package *>("wind");
 
         QStringList candidates;
-        if (!new_rule) {
+        if (rule == "Classical") {
             foreach (const General *general, stdpack->findChildren<const General *>())
                 candidates << general->objectName();
             foreach (const General *general, windpack->findChildren<const General *>())
@@ -49,7 +49,7 @@ void RoomThread1v1::run() {
         general_names = Sanguosha->getRandomGenerals(total_num, banset);
     }
 
-    if (!new_rule) {
+    if (rule == "Classical") {
         QStringList known_list = general_names.mid(0, 6);
         unknown_list = general_names.mid(6, 4);
 
@@ -57,8 +57,17 @@ void RoomThread1v1::run() {
             general_names[i + 6] = QString("x%1").arg(QString::number(i));
 
         room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(known_list << "x0" << "x1" << "x2" << "x3"));
-    } else {
+    } else if (rule == "2013") {
         room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(general_names));
+	} else if (rule == "OL") {
+		QStringList known_list = general_names.mid(0, 6);
+		unknown_list = general_names.mid(6, 6);
+
+		for (int i = 0; i < 6; i++)
+			general_names[i + 6] = QString("x%1").arg(QString::number(i));
+
+		room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(known_list << "x0" << "x1" << "x2"
+																				<< "x3" << "x4" << "x5"));
     }
 
     int index = qrand() % 2;
@@ -73,6 +82,15 @@ void RoomThread1v1::run() {
     room->broadcastProperty(next, "role");
     room->adjustSeats();
 
+	if (rule == "OL") {
+		takeGeneral(first, "x0");
+		takeGeneral(first, "x2");
+		takeGeneral(first, "x4");
+		takeGeneral(next, "x1");
+		takeGeneral(next, "x3");
+		takeGeneral(next, "x5");
+	}
+
     askForTakeGeneral(first);
 
     while (general_names.length() > 1) {
@@ -83,7 +101,10 @@ void RoomThread1v1::run() {
     }
     askForTakeGeneral(next);
 
-    startArrange(QList<ServerPlayer *>() << first << next);
+    if (rule == "OL")
+		askForFirstGeneral(QList<ServerPlayer *>() << first << next);
+	else
+		startArrange(QList<ServerPlayer *>() << first << next);
 }
 
 void RoomThread1v1::askForTakeGeneral(ServerPlayer *player) {
@@ -113,8 +134,9 @@ void RoomThread1v1::askForTakeGeneral(ServerPlayer *player) {
 }
 
 void RoomThread1v1::takeGeneral(ServerPlayer *player, const QString &name) {
+	QString rule = Config.value("1v1/Rule", "Classical").toString();
     QString group = player->isLord() ? "warm" : "cool";
-    room->doBroadcastNotify(room->getOtherPlayers(player, true), S_COMMAND_TAKE_GENERAL, toJsonArray(group, name));
+    room->doBroadcastNotify(room->getOtherPlayers(player, true), S_COMMAND_TAKE_GENERAL, toJsonArray(group, name, rule));
 
     QRegExp unknown_rx("x(\\d)");
     QString general_name = name;
@@ -128,7 +150,7 @@ void RoomThread1v1::takeGeneral(ServerPlayer *player, const QString &name) {
         room->doNotify(player, S_COMMAND_RECOVER_GENERAL, arg);
     }
 
-    room->doNotify(player, S_COMMAND_TAKE_GENERAL, toJsonArray(group, general_name));
+    room->doNotify(player, S_COMMAND_TAKE_GENERAL, toJsonArray(group, general_name, rule));
 
     QString namearg = unknown_rx.exactMatch(name) ? "anjiang" : name;
     foreach (ServerPlayer *p, room->getPlayers()) {
@@ -173,16 +195,57 @@ void RoomThread1v1::startArrange(QList<ServerPlayer *> players) {
     }
 }
 
-void RoomThread1v1::arrange(ServerPlayer *player, const QStringList &arranged) {
-    Q_ASSERT(arranged.length() == 3);
+void RoomThread1v1::askForFirstGeneral(QList<ServerPlayer *> players) {
+	while (room->isPaused()) {}
+	QList<ServerPlayer *> online = players;
+	foreach (ServerPlayer *player, players) {
+		if (!player->isOnline()) {
+			GeneralSelector *selector = GeneralSelector::getInstance();
+			QStringList arranged = player->getSelected();
+			QStringList selected = selector->arrange1v1(player);
+			selected.append(arranged);
+			selected.removeDuplicates();
+			arrange(player, selected);
+			online.removeOne(player);
+		}
+	}
+	if (online.isEmpty()) return;
 
-    QStringList left = arranged.mid(1, 2);
+	foreach (ServerPlayer *player, online)
+		player->m_commandArgs = toJsonArray(player->getSelected());
+
+	room->doBroadcastRequest(online, S_COMMAND_CHOOSE_GENERAL);
+
+	foreach (ServerPlayer *player, online) {
+		Json::Value clientReply = player->getClientReply();
+		if (player->m_isClientResponseReady && clientReply.isString() && player->getSelected().contains(clientReply.asCString())) {
+			QStringList arranged = player->getSelected();
+			QString first_gen = clientReply.asCString();
+			arranged.removeOne(first_gen);
+			arranged.prepend(first_gen);
+			arrange(player, arranged);
+		} else {
+			GeneralSelector *selector = GeneralSelector::getInstance();
+			QStringList arranged = player->getSelected();
+			QStringList selected = selector->arrange1v1(player);
+			selected.append(arranged);
+			selected.removeDuplicates();
+			arrange(player, selected);
+		}
+	}
+}
+
+void RoomThread1v1::arrange(ServerPlayer *player, const QStringList &arranged) {
+    QString rule = Config.value("1v1/Rule", "Classical").toString();
+	Q_ASSERT(arranged.length() == ((rule == "OL") ? 6 : 3));
+
+    QStringList left = arranged.mid(1);
     player->tag["1v1Arrange"] = QVariant::fromValue(left);
     player->setGeneralName(arranged.first());
 
     foreach (QString general, arranged) {
         room->doNotify(player, S_COMMAND_REVEAL_GENERAL, toJsonArray(player->objectName(), general));
-        if (Config.value("1v1/Rule", "Classical").toString() == "2013") break;
+        if (rule != "Classical") break;
     }
 }
 

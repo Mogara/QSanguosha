@@ -2671,7 +2671,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 		if to_choose then
 			local is_handcard
 			if not who:isKongcheng() and who:handCards():contains(to_choose) then is_handcard = true end
-			if is_handcard and reason == "dismantlement" and self.room:getMode() == "02_1v1" and sgs.GetConfig("1v1/Rule", "Classical") == "2013" then
+			if is_handcard and reason == "dismantlement" and self.room:getMode() == "02_1v1" and sgs.GetConfig("1v1/Rule", "Classical") ~= "Classical" then
 				local cards = sgs.QList2Table(who:getHandcards())
 				local peach, jink
 				for _, card in ipairs(cards) do

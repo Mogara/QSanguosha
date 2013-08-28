@@ -199,7 +199,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         if (ServerInfo.GameMode != "06_XMode") {
             connect(ClientInstance, SIGNAL(generals_filled(QStringList)), this, SLOT(fillGenerals(QStringList)));
             connect(ClientInstance, SIGNAL(general_asked()), this, SLOT(startGeneralSelection()));
-            connect(ClientInstance, SIGNAL(general_taken(QString, QString)), this, SLOT(takeGeneral(QString, QString)));
+            connect(ClientInstance, SIGNAL(general_taken(QString, QString, QString)), this, SLOT(takeGeneral(QString, QString, QString)));
             connect(ClientInstance, SIGNAL(general_recovered(int, QString)), this, SLOT(recoverGeneral(int, QString)));
         }
         connect(ClientInstance, SIGNAL(arrange_started(QString)), this, SLOT(startArrange(QString)));
@@ -3903,7 +3903,7 @@ void RoomScene::bringToFront(QGraphicsItem *front_item) {
     m_zValueMutex.unlock();
 }
 
-void RoomScene::takeGeneral(const QString &who, const QString &name) {
+void RoomScene::takeGeneral(const QString &who, const QString &name, const QString &rule) {
     bool self_taken;
     if (who == "warm")
         self_taken = Self->getRole().startsWith("l");
@@ -3938,7 +3938,8 @@ void RoomScene::takeGeneral(const QString &who, const QString &name) {
     general_item->setHomePos(QPointF(x, y));
     general_item->goBack(true);
 
-    if (ServerInfo.GameMode == "06_3v3" && (Self->getRole() != "lord" && Self->getRole() != "renegade")
+    if (((ServerInfo.GameMode == "06_3v3" && Self->getRole() != "lord" && Self->getRole() != "renegade")
+			|| (ServerInfo.GameMode == "02_1v1" && rule == "OL"))
         && general_items.isEmpty()) {
         if (selector_box) {
             selector_box->hide();

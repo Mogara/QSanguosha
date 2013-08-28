@@ -624,12 +624,15 @@ QGroupBox *ServerDialog::create1v1Box() {
     QComboBox *officialComboBox = new QComboBox;
     officialComboBox->addItem(tr("Classical"), "Classical");
     officialComboBox->addItem("2013", "2013");
+	officialComboBox->addItem("OL", "OL");
 
     official_1v1_ComboBox = officialComboBox;
 
     QString rule = Config.value("1v1/Rule", "Classical").toString();
     if (rule == "2013")
         officialComboBox->setCurrentIndex(1);
+	else if (rule == "OL")
+		officialComboBox->setCurrentIndex(2);
 
     kof_using_extension_checkbox = new QCheckBox(tr("General extensions"));
     kof_using_extension_checkbox->setChecked(Config.value("1v1/UsingExtension", false).toBool());

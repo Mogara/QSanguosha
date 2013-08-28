@@ -852,7 +852,7 @@ public:
 
     virtual void onGameStart(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        if (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() == "2013")
+        if (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() != "Classical")
             room->setPlayerMark(player, "ZhihengInLatestKOF", 1);
     }
 };

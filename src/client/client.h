@@ -320,7 +320,7 @@ signals:
     void ag_cleared();
 
     void generals_filled(const QStringList &general_names);
-    void general_taken(const QString &who, const QString &name);
+    void general_taken(const QString &who, const QString &name, const QString &rule);
     void general_asked();
     void arrange_started(const QString &to_arrange);
     void general_recovered(int index, const QString &name);

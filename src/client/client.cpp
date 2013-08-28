@@ -1695,11 +1695,12 @@ void Client::askForGeneral3v3(const Json::Value &) {
 }
 
 void Client::takeGeneral(const Json::Value &take_str) {
-    if (!take_str.isArray() || take_str.size() != 2 || !take_str[0].isString() || !take_str[1].isString()) return;
+    if (!isStringArray(take_str, 0, 2)) return;
     QString who = toQString(take_str[0]);
     QString name = toQString(take_str[1]);
+	QString rule = toQString(take_str[2]);
 
-    emit general_taken(who, name);
+    emit general_taken(who, name, rule);
 }
 
 void Client::startArrange(const Json::Value &to_arrange) {
