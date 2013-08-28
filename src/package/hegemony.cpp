@@ -257,7 +257,7 @@ public:
             QList<int> original_lirang = lirang_card;
             while (room->askForYiji(kongrong, lirang_card, objectName(), false, true, true, -1,
                                     QList<ServerPlayer *>(), move.reason, "@lirang-distribute", true)) {
-                if (kongrong->isDead()) return false;
+                if (kongrong->isDead()) break;
             }
 
             QList<int> ids = move.card_ids;
