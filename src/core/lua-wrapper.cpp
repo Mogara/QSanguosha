@@ -33,7 +33,7 @@ LuaDistanceSkill::LuaDistanceSkill(const char *name)
 }
 
 LuaMaxCardsSkill::LuaMaxCardsSkill(const char *name)
-    : MaxCardsSkill(name), extra_func(0)
+    : MaxCardsSkill(name), extra_func(0), fixed_func(0)
 {
 }
 

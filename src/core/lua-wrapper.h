@@ -89,8 +89,10 @@ public:
     LuaMaxCardsSkill(const char *name);
 
     virtual int getExtra(const Player *target) const;
+	virtual int getFixed(const Player *target) const;
 
     LuaFunction extra_func;
+	LuaFunction fixed_func;
 };
 
 class LuaTargetModSkill: public TargetModSkill {

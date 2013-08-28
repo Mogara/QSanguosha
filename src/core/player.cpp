@@ -546,6 +546,9 @@ void Player::setFaceUp(bool face_up) {
 }
 
 int Player::getMaxCards() const{
+	int origin = Sanguosha->correctMaxCards(this, true);
+	if (origin == 0)
+		origin = qMax(hp, 0);
     int rule = 0, total = 0, extra = 0;
     if (Config.MaxHpScheme == 3 && general2) {
         total = general->getMaxHp() + general2->getMaxHp();
@@ -554,7 +557,7 @@ int Player::getMaxCards() const{
     }
     extra += Sanguosha->correctMaxCards(this);
 
-    return qMax((qMax(hp, 0) + rule + extra), 0);
+    return qMax(origin + rule + extra, 0);
 }
 
 QString Player::getKingdom() const{

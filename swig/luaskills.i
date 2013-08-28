@@ -39,7 +39,8 @@ class MaxCardsSkill: public Skill {
 public:
     MaxCardsSkill(const QString &name);
 
-    virtual int getExtra(const Player *target) const = 0;
+    virtual int getExtra(const Player *target) const;
+	virtual int getFixed(const Player *target) const;
 };
 
 class TargetModSkill: public Skill {
@@ -135,8 +136,10 @@ class LuaMaxCardsSkill: public MaxCardsSkill {
 public:
     LuaMaxCardsSkill(const char *name);
     virtual int getExtra(const Player *target) const;
+	virtual int getFixed(const Player *target) const;
 
     LuaFunction extra_func;
+	LuaFunction fixed_func;
 };
 
 class LuaTargetModSkill: public TargetModSkill {
@@ -409,6 +412,29 @@ int LuaMaxCardsSkill::getExtra(const Player *target) const{
     lua_State *L = Sanguosha->getLuaState();
 
     lua_rawgeti(L, LUA_REGISTRYINDEX, extra_func);
+
+    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaMaxCardsSkill, 0);
+    SWIG_NewPointerObj(L, target, SWIGTYPE_p_Player, 0);
+
+    int error = lua_pcall(L, 2, 1, 0);
+    if (error) {
+        Error(L);
+        return 0;
+    }
+
+    int extra = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
+    return extra;
+}
+
+int LuaMaxCardsSkill::getFixed(const Player *target) const{
+    if (fixed_func == 0)
+        return 0;
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    lua_rawgeti(L, LUA_REGISTRYINDEX, fixed_func);
 
     SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaMaxCardsSkill, 0);
     SWIG_NewPointerObj(L, target, SWIGTYPE_p_Player, 0);

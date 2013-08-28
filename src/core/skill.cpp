@@ -355,6 +355,14 @@ QStringList SPConvertSkill::getToName() const{
     return to_list;
 }
 
+int MaxCardsSkill::getExtra(const Player *) const{
+	return 0;
+}
+
+int MaxCardsSkill::getFixed(const Player *) const{
+	return -1;
+}
+
 ProhibitSkill::ProhibitSkill(const QString &name)
     : Skill(name, Skill::Compulsory)
 {
@@ -368,14 +376,6 @@ DistanceSkill::DistanceSkill(const QString &name)
 MaxCardsSkill::MaxCardsSkill(const QString &name)
     : Skill(name, Skill::Compulsory)
 {
-}
-
-int MaxCardsSkill::getExtra(const Player *) const{
-    return 0;
-}
-
-int MaxCardsSkill::getFixed(const Player *) const{
-    return -1;
 }
 
 TargetModSkill::TargetModSkill(const QString &name)
