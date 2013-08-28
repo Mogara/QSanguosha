@@ -60,7 +60,7 @@ return {
 	["designer:guanxingzhangbao"] = "诺思冥羽",
 	["illustrator:guanxingzhangbao"] = "HOOO",
 	["fuhun"] = "父魂",
-	[":fuhun"] = "你可以将两张手牌当普通【杀】使用或打出。每当你于出牌阶段内以此法使用【杀】造成伤害后，你获得技能“武圣”、“咆哮”，直到回合结束。",
+	[":fuhun"] = "你可以将两张手牌当【杀】使用或打出；<font color=\"blue\"><b>锁定技，</b></font>每当你于出牌阶段内以此法使用的【杀】造成伤害后，你拥有“武圣”、“咆哮”，直到回合结束。",
 
 	["#chengpu"] = "三朝虎臣",
 	["chengpu"] = "程普",

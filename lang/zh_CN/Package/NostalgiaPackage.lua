@@ -132,5 +132,5 @@ return {
 	["designer:nos_guanxingzhangbao"] = "诺思冥羽",
 	["illustrator:nos_guanxingzhangbao"] = "HOOO",
 	["nosfuhun"] = "父魂",
-	[":nosfuhun"] = "摸牌阶段开始时，你可以放弃摸牌，展示牌堆顶的两张牌并获得之。若展示的牌不为同一颜色，你获得技能“武圣”、“咆哮”，直到回合结束。",
+	[":nosfuhun"] = "摸牌阶段开始时，你可以放弃摸牌，从牌堆顶亮出两张牌并获得之，若亮出的牌颜色不同，你拥有“武圣”、“咆哮”，直到回合结束。",
 }
