@@ -4,9 +4,12 @@
 function sgs.CreateTriggerSkill(spec)
 	assert(type(spec.name) == "string")
 	assert(type(spec.on_trigger) == "function")
+	if spec.frequency then assert(type(spec.frequency) == "number") end
+	if spec.limit_mark then assert(type(spec.limit_mark) == "string") end
 
 	local frequency = spec.frequency or sgs.Skill_NotFrequent
-	local skill = sgs.LuaTriggerSkill(spec.name, frequency)
+	local limit_mark = spec.limit_mark or ""
+	local skill = sgs.LuaTriggerSkill(spec.name, frequency, limit_mark)
 
 	if type(spec.events) == "number" then
 		skill:addEvent(spec.events)

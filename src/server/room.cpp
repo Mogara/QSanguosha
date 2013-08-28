@@ -4792,7 +4792,7 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target) {
     QString result = askForChoice(shenlvmeng, "gongxin", "discard+put");
     shenlvmeng->tag.remove("GongxinTarget");
     if (result == "discard") {
-        CardMoveReason reason(CardMoveReason::S_REASON_THROW, shenlvmeng->objectName(), QString(), "gongxin", QString());
+        CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, shenlvmeng->objectName(), QString(), "gongxin", QString());
         throwCard(Sanguosha->getCard(card_id), reason, target, shenlvmeng);
     } else {
         shenlvmeng->setFlags("Global_GongxinOperator");
