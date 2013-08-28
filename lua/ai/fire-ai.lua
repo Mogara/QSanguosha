@@ -244,13 +244,9 @@ huoji_skill.getTurnUseCard=function(self)
 					end
 					if dummy_use.to:length() > 1 then keep = true end
 				end
-				if keep then sgs.ai_use_priority.Slash = sgs.ai_use_priority.FireAttack + 0.1
-				else
-					sgs.ai_use_priority.Slash = 2.6
-					card = acard
-					break
-				end
+				if keep then sgs.ai_use_priority.Slash = sgs.ai_use_priority.FireAttack + 0.1 end
 			else
+				sgs.ai_use_priority.Slash = 2.6
 				card = acard
 				break
 			end
