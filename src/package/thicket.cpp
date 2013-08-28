@@ -48,14 +48,13 @@ public:
         Room *room = caopi->getRoom();
         ServerPlayer *to = room->askForPlayerChosen(caopi, room->getOtherPlayers(caopi), objectName(),
                                                     "fangzhu-invoke", caopi->getMark("JilveEvent") != int(Damaged), true);
-        if (to) {
-            to->drawCards(caopi->getLostHp());
-
+		if (to) { 
             if (caopi->hasInnateSkill("fangzhu") || !caopi->hasSkill("jilve"))
                 room->broadcastSkillInvoke("fangzhu", to->faceUp() ? 1 : 2);
             else
                 room->broadcastSkillInvoke("jilve", 2);
 
+			to->drawCards(caopi->getLostHp());
             to->turnOver();
         }
     }
