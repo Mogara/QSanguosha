@@ -46,10 +46,6 @@
 #include <qmath.h>
 #include "uiUtils.h"
 
-#ifdef Q_OS_WIN32
-#include <QAxObject>
-#endif
-
 using namespace QSanProtocol;
 
 RoomScene *RoomSceneInstance;
