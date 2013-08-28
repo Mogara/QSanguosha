@@ -14,6 +14,7 @@ return {
 
 	["#caoren"] = "大将军",
 	["caoren"] = "曹仁",
+	["illustrator:caoren"] = "Ccat",
 	["jushou"] = "据守",
 	[":jushou"] = "结束阶段开始时，你可以摸三张牌，然后将你的武将牌翻面。",
 	["jiewei"] = "解围",
@@ -57,6 +58,7 @@ return {
 
 	["#zhoutai"] = "历战之驱",
 	["zhoutai"] = "周泰",
+	["illustrator:zhoutai"] = "Thinking",
 	["buqu"] = "不屈",
 	[":buqu"] = "每当你扣减1点体力后，若你当前的体力值为0，你可以从牌堆顶亮出一张牌置于你的武将牌上。若此牌的点数与你武将牌上已有的任何一张牌都不同，你不会死亡。若出现相同点数的牌，你进入濒死状态。",
 	["#BuquDuplicate"] = "%from 发动“<font color=\"yellow\"><b>不屈</b></font>”失败，其“不屈牌”中有 %arg 组重复点数",
@@ -66,7 +68,7 @@ return {
 
 	["#yuji"] = "太平道人",
 	["yuji"] = "于吉",
-	["illustrator:yuji"] = "LiuHeng",
+	["illustrator:yuji"] = "魔鬼鱼",
 	["guhuo"] = "蛊惑",
 	[":guhuo"] = "你可以声明一张基本牌或非延时类锦囊牌的名称并背面朝上使用或打出一张手牌。若无其他角色质疑，亮出此牌并按你所述之牌结算。若有其他角色质疑，亮出验明：若为真，质疑者各失去1点体力；若为假，质疑者各摸一张牌。若被质疑的牌为<font color=\"red\">♥</font>且为真，此牌仍然进行结算，否则无论真假，你将此牌置入弃牌堆。",
 	["question"] = "质疑",
