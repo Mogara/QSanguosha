@@ -86,7 +86,7 @@ QiangxiCard::QiangxiCard() {
 }
 
 bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if (!targets.isEmpty())
+    if (!targets.isEmpty() || to_select != Self)
         return false;
 
     int rangefix = 0;

@@ -18,7 +18,7 @@ return {
 	["dianwei"] = "典韦",
 	["illustrator:dianwei"] = "小冷",
 	["qiangxi"] = "强袭",
-	[":qiangxi"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以失去1点体力或弃置一张武器牌，并选择你攻击范围内的一名角色，对其造成1点伤害。",
+	[":qiangxi"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以失去1点体力或弃置一张武器牌，并选择你攻击范围内的一名其他角色，对其造成1点伤害。",
 
 	["#wolong"] = "卧龙",
 	["wolong"] = "卧龙诸葛亮",
