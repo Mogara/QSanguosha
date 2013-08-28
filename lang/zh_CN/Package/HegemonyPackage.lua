@@ -32,7 +32,7 @@ return {
 	["duanbing"] = "短兵",
 	[":duanbing"] = "<font color=\"blue\"><b>锁定技，</b></font>你使用【杀】可以额外选择一名距离1的目标。",
 	["fenxun"] = "奋迅",
-	[":fenxun"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张牌并选择一名其他角色，你获得以下锁定技：本回合你无视与该角色的距离。",
+	[":fenxun"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张牌并选择一名其他角色，你与其的距离视为1，直到回合结束。",
 
 	["#mateng"] = "驰骋西陲",
 	["mateng"] = "马腾",

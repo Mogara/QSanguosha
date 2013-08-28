@@ -215,7 +215,7 @@ public:
 class Shuangxiong: public TriggerSkill {
 public:
     Shuangxiong(): TriggerSkill("shuangxiong") {
-        events << EventPhaseStart << FinishJudge;
+        events << EventPhaseStart << FinishJudge << EventPhaseChanging;
         view_as_skill = new ShuangxiongViewAsSkill;
     }
 
@@ -248,6 +248,10 @@ public:
             JudgeStar judge = data.value<JudgeStar>();
             if (judge->reason == "shuangxiong")
                 shuangxiong->obtainCard(judge->card);
+		} else if (triggerEvent == EventPhaseChanging) {
+			PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+			if (change.to == Player::NotActive && shuangxiong->hasFlag("shuangxiong"))
+				room->setPlayerFlag(shuangxiong, "-shuangxiong");
         }
 
         return false;
@@ -480,21 +484,21 @@ public:
     }
 
     virtual int getResidueNum(const Player *from, const Card *) const{
-        if (from->hasSkill("tianyi") && from->hasFlag("TianyiSuccess"))
+        if (from->hasFlag("TianyiSuccess"))
             return 1;
         else
             return 0;
     }
 
     virtual int getDistanceLimit(const Player *from, const Card *) const{
-        if (from->hasSkill("tianyi") && from->hasFlag("TianyiSuccess"))
+        if (from->hasFlag("TianyiSuccess"))
             return 1000;
         else
             return 0;
     }
 
     virtual int getExtraTargetNum(const Player *from, const Card *) const{
-        if (from->hasSkill("tianyi") && from->hasFlag("TianyiSuccess"))
+        if (from->hasFlag("TianyiSuccess"))
             return 1;
         else
             return 0;

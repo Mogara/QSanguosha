@@ -205,7 +205,7 @@ return {
 	["zhiba_sunquan"] = "制霸孙权",
 	["&zhiba_sunquan"] = "孙权",
 	["super_zhiheng"] = "制衡",
-	[":super_zhiheng"] = "出牌阶段，你可以弃置任意数量的牌：若如此做，你摸等数量的牌。每阶段你可以发动X+1次该技能。（X为你已损失的体力值）",
+	[":super_zhiheng"] = "出牌阶段限X+1次，你可以弃置任意数量的牌：若如此做，你摸等数量的牌。（X为你已损失的体力值）",
 	["$super_zhiheng1"] = "容我三思。",
 	["$super_zhiheng2"] = "且慢。",
 

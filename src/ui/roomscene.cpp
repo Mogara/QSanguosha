@@ -3993,11 +3993,15 @@ void RoomScene::revealGeneral(bool self, const QString &general) {
 }
 
 void RoomScene::skillStateChange(const QString &skill_name) {
-    if (skill_name == "shuangxiong") {
-        const Skill *skill = Sanguosha->getSkill("shuangxiong");
+	static QStringList button_remain;
+	if (button_remain.isEmpty())
+		button_remain << "shuangxiong" << "xianzhen";
+	if (button_remain.contains(skill_name)) {
+		const Skill *skill = Sanguosha->getSkill(skill_name);
         addSkillButton(skill);
-    } else if (skill_name == "-shuangxiong" || skill_name == ".")
-        detachSkill("shuangxiong");
+    } else if (skill_name.startsWith('-') && button_remain.contains(skill_name.mid(1))) {
+		detachSkill(skill_name.mid(1));
+	}
 }
 
 void RoomScene::trust() {

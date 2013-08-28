@@ -269,14 +269,14 @@ public:
     }
 
     virtual int getResidueNum(const Player *from, const Card *) const{
-        if (from->hasSkill("jiangchi") && from->hasFlag("JiangchiInvoke"))
+        if (from->hasFlag("JiangchiInvoke"))
             return 1;
         else
             return 0;
     }
 
     virtual int getDistanceLimit(const Player *from, const Card *) const{
-        if (from->hasSkill("jiangchi") && from->hasFlag("JiangchiInvoke"))
+        if (from->hasFlag("JiangchiInvoke"))
             return 1000;
         else
             return 0;

@@ -168,7 +168,7 @@ public:
 class Fenxun: public TriggerSkill {
 public:
     Fenxun(): TriggerSkill("fenxun") {
-        events << EventPhaseChanging << Death << EventLoseSkill;
+        events << EventPhaseChanging << Death;
         view_as_skill = new FenxunViewAsSkill;
     }
 
@@ -184,9 +184,6 @@ public:
         } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
             if (death.who != dingfeng)
-                return false;
-        } else if (triggerEvent == EventLoseSkill) {
-            if (data.toString() != "fenxun")
                 return false;
         }
         ServerPlayer *target = dingfeng->tag["FenxunTarget"].value<PlayerStar>();
