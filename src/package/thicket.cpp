@@ -717,7 +717,7 @@ public:
 
     virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const{
         return to->hasSkill(objectName()) && (card->isKindOf("TrickCard") || card->isKindOf("QiceCard"))
-               && card->isBlack() && card->getSkillName() != "guhuo"; // Be care!!!!!!
+               && card->isBlack() && card->getSkillName() != "nosguhuo"; // Be care!!!!!!
     }
 };
 

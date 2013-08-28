@@ -590,7 +590,9 @@ local guhuo_skill = {}
 guhuo_skill.name = "guhuo"
 table.insert(sgs.ai_skills, guhuo_skill)
 guhuo_skill.getTurnUseCard = function(self)
-	if self.player:isKongcheng() then return end
+	if self.player:isKongcheng() or player:hasFlag("GuhuoUsed") then return end
+	local current = self.room:getCurrent()
+	if not current or current:isDead() or current:getPhase() == sgs.Player_NotActive then return end
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	local otherSuit_str, GuhuoCard_str = {}, {}
 	for _,card in ipairs(cards) do
@@ -629,7 +631,7 @@ guhuo_skill.getTurnUseCard = function(self)
 		table.insertTable(GuhuoCard_str, otherSuit_str)
 	end
 
-	local peach_str = self:getGuhuoCard("Peach", self.player, true) 
+	local peach_str = self:getGuhuoCard("Peach", true, 1)
 	if peach_str then table.insert(GuhuoCard_str, peach_str) end
 	
 	local fakeCards = {}
@@ -740,7 +742,7 @@ guhuo_skill.getTurnUseCard = function(self)
 			end
 		end
 		
-		local slash_str = self:getGuhuoCard("Slash", self.player, true)
+		local slash_str = self:getGuhuoCard("Slash", true, 1)
 		if slash_str and self:slashIsAvailable() then
 			local card = sgs.Card_Parse(slash_str)
 			local slash = sgs.Sanguosha:cloneCard("slash", card:getSuit(), card:getNumber())
@@ -763,7 +765,7 @@ end
 
 sgs.ai_use_priority.GuhuoCard = 10
 
-function SmartAI:getGuhuoViewCard(class_name)
+function SmartAI:getGuhuoViewCard(class_name, latest_version)
 	local card_use = {}
 	local ghly = (self.room:getMode() == "_mini_48")
 	if ghly then
@@ -779,20 +781,26 @@ function SmartAI:getGuhuoViewCard(class_name)
 		["Nullification"] = "nullification",
 	}
 
-	if #card_use > 1 or (#card_use > 0 and (card_use[1]:getSuit() == sgs.Card_Heart or ghly)) then
+	if #card_use > 1 or (#card_use > 0 and (latest_version == 1 or card_use[1]:getSuit() == sgs.Card_Heart or ghly)) then
 		local index = 1
 		if class_name == "Peach" or (class_name == "Analeptic" and not sgs.GetConfig("BanPackages", ""):match("maneuvering")) or class_name == "Jink" then
 			index = #card_use
 		end
 		local card = sgs.Sanguosha:cloneCard(classname2objectname[class_name])
 		if self.player:isCardLimited(card, sgs.Card_MethodUse, true) then return end
-		return "@GuhuoCard=" .. card_use[index]:getEffectiveId() .. ":" .. classname2objectname[class_name]
+		local card_class = latest_version == 1 and "@GuhuoCard=" or "@NosGuhuoCard="
+		return card_class .. card_use[index]:getEffectiveId() .. ":" .. classname2objectname[class_name]
 	end
 end
 
-function SmartAI:getGuhuoCard(class_name, at_play)
+function SmartAI:getGuhuoCard(class_name, at_play, latest_version)
+	if not latest_version then return self:getGuhuoCard(class_name, at_play, 1) or self:getGuhuoCard(class_name, at_play, -1) end
 	local player = self.player
-	if not player or not player:hasSkill("guhuo") then return end
+	local current = self.room:getCurrent()
+	if not player
+		or not (latest_version == 1 and player:hasSkill("guhuo") and not player:hasFlag("GuhuoUsed")
+			and current and current:isAlive() and current:getPhase() ~= sgs.Player_NotActive)
+		or not (latest_version == -1 and player:hasSkill("nosguhuo")) then return end
 	if at_play then
 		if class_name == "Peach" and not player:isWounded() then return
 		elseif class_name == "Analeptic" and player:hasUsed("Analeptic") then return
@@ -802,7 +810,7 @@ function SmartAI:getGuhuoCard(class_name, at_play)
 	else
 		if class_name == "Peach" and self.player:hasFlag("Global_PreventPeach") then return end
 	end
-	return self:getGuhuoViewCard(class_name)
+	return self:getGuhuoViewCard(class_name, latest_version)
 end
 
 sgs.guhuo_suit_value = {
@@ -819,11 +827,6 @@ sgs.ai_suit_priority.guhuo= "club|spade|diamond|heart"
 sgs.ai_skill_choice.guhuo_slash = function(self, choices)
 	return "slash"
 end
-
-function sgs.ai_cardneed.guhuo(to, card)
-	return card:getSuit() == sgs.Card_Heart and (card:isKindOf("BasicCard") or card:isNDTrick())
-end
-
 
 function sgs.ai_cardneed.kuanggu(to, card)
 	return card:isKindOf("OffensiveHorse") and not (to:getOffensiveHorse() or getKnownCard(to, "OffensiveHorse", false) > 0)

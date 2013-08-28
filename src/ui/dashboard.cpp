@@ -863,7 +863,7 @@ void Dashboard::startPending(const ViewAsSkill *skill) {
 
 void Dashboard::stopPending() {
     m_mutexEnableCards.lock();
-    if (view_as_skill && view_as_skill->objectName() == "guhuo") {
+    if (view_as_skill && view_as_skill->objectName().contains("guhuo")) {
         foreach (CardItem *item, m_handCards)
             item->hideFootnote();
     }
@@ -956,12 +956,12 @@ void Dashboard::updatePending() {
             delete pending_card;
             pending_card = NULL;
         }
-        if (view_as_skill->objectName() == "guhuo"
+        if (view_as_skill->objectName().contains("guhuo")
             && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             foreach (CardItem *item, m_handCards) {
                 item->hideFootnote();
                 if (new_pending_card && item->getCard() == cards.first()) {
-                    const GuhuoCard *guhuo = qobject_cast<const GuhuoCard *>(new_pending_card);
+                    const SkillCard *guhuo = qobject_cast<const SkillCard *>(new_pending_card);
                     item->setFootnote(Sanguosha->translate(guhuo->getUserString()));
                     item->showFootnote();
                 }

@@ -372,7 +372,7 @@ function SmartAI:slashIsEffective(slash, to, ignore_armor, from)
 		elseif armor:objectName() == "Vine" then
 			local skill_name = slash:getSkillName() or ""
 			local can_convert = false
-			if skill_name == "guhuo" then
+			if skill_name == "guhuo" or skillname == "nosguhuo" then
 				can_convert = true
 			else
 				local skill = sgs.Sanguosha:getSkill(skill_name)

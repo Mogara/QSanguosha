@@ -338,7 +338,7 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
     if (Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    if (getSkillName() == "guhuo" || getSkillName() == "qice")
+    if (getSkillName().contains("guhuo") || getSkillName() == "qice")
         return targets.length() > 0 && targets.length() <= total_num;
     else
         return targets.length() <= total_num;

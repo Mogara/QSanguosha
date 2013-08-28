@@ -66,7 +66,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         QString skill_name = getSkillName();
         if (!skill_name.isEmpty()) {
             const Skill *skill = Sanguosha->getSkill(skill_name);
-            if (skill && !skill->inherits("FilterSkill") && skill->objectName() != "guhuo")
+            if (skill && !skill->inherits("FilterSkill") && !skill->objectName().contains("guhuo"))
                 has_changed = true;
         }
         if (!has_changed || subcardsLength() == 0) {
@@ -107,7 +107,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             }
         }
     }
-    if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || (getSkillName() == "guhuo" && use.card != this))
+    if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || (getSkillName().contains("guhuo") && use.card != this))
         && !player->hasFlag("slashDisableExtraTarget")) {
         QList<ServerPlayer *> targets_ts;
         while (true) {
