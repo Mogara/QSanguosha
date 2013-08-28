@@ -97,7 +97,7 @@ return {
 	["luoyan"] = "落雁",
 	[":luoyan"] = "<font color=\"blue\"><b>锁定技，</b></font>若你的武将牌上有“星舞牌”，你视为拥有技能“天香”和“流离”。",
 	
-	["#xiahoushi"] = "",
+	["#xiahoushi"] = "疾冲之恋",
 	["xiahoushi"] = "夏侯氏",
 	["illustrator:xiahoushi"] = "牧童的短笛",
 	["yanyu"] = "燕语",
