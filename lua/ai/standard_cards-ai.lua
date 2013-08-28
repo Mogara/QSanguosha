@@ -404,7 +404,7 @@ function SmartAI:isPriorFriendOfSlash(friend, card)
 			or (friend:hasSkill("hunzi") and friend:getHp() == 2 and self:getDamagedEffects(friend, self.player))) then
 		return true
 	end
-	if card:isKindOf("NatureSlash") and friend:isChained() and self:isGoodChainTarget(friend, nil, nil, nil, card) then return true end
+	if not self.player:hasSkill("jueqing") and card:isKindOf("NatureSlash") and friend:isChained() and self:isGoodChainTarget(friend, nil, nil, nil, card) then return true end
 	return
 end
 
