@@ -1201,11 +1201,15 @@ public:
 class Xiaode: public TriggerSkill {
 public:
     Xiaode(): TriggerSkill("xiaode") {
-        events << Death << EventPhaseChanging;
+        events << Death << EventPhaseChanging << EventLoseSkill;
     }
 
+	virtual bool triggerable(const ServerPlayer *target) const{
+		return target != NULL;
+	}
+
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == Death) {
+        if (triggerEvent == Death && TriggerSkill::triggerable(player)) {
             if (!player->tag["XiaodeSkill"].toString().isEmpty()) return false;
             if (!room->askForSkillInvoke(player, objectName(), data)) return false;
             DeathStruct death = data.value<DeathStruct>();
@@ -1221,10 +1225,16 @@ public:
             if (change.to == Player::NotActive) {
                 QString skill_name = player->tag["XiaodeSkill"].toString();
                 if (!skill_name.isEmpty()) {
-                    room->detachSkillFromPlayer(player, skill_name);
+                    room->detachSkillFromPlayer(player, skill_name, false, true);
                     player->tag.remove("XiaodeSkill");
                 }
             }
+		} else if (triggerEvent == EventLoseSkill && data.toString() == objectName()) {
+			QString skill_name = player->tag["XiaodeSkill"].toString();
+			if (!skill_name.isEmpty()) {
+				room->detachSkillFromPlayer(player, skill_name, false, true);
+				player->tag.remove("XiaodeSkill");
+			}
         }
         return false;
     }
@@ -1234,7 +1244,7 @@ private:
         if (!general) return QStringList();
         QStringList skill_list;
         foreach (const Skill *skill, general->getSkillList()) {
-            if (!skill->isLordSkill() && skill->getFrequency() != Skill::Limited && skill->getFrequency() != Skill::Wake)
+            if (!skill->isLordSkill() && skill->getFrequency() != Skill::Wake)
                 skill_list.append(skill->objectName());
         }
         return skill_list;
