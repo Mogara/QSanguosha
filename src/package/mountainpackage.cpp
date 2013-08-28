@@ -278,9 +278,8 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from == player
-                && (move.from_places.contains(Player::PlaceHand)
-                    || move.from_places.contains(Player::PlaceEquip))
+            if (move.from == player && (move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip))
+				&& !(move.to == player && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip))
                 && player->askForSkillInvoke("tuntian", data)) {
                 room->broadcastSkillInvoke("tuntian");
                 JudgeStruct judge;
