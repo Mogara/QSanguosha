@@ -5234,6 +5234,10 @@ function SmartAI:evaluateWeapon(card)
 				local added = sgs.ai_slash_weaponfilter[card:objectName()]
 				if added and type(added) == "function" and added(enemy, self) then deltaSelfThreat = deltaSelfThreat + 1 end
 				deltaSelfThreat = deltaSelfThreat + (callback(self, enemy) or 0)
+				if self.player:getWeapon() and not self:hasCrossbowEffect() and card:isKindOf("Crossbow") and self:getCardsNum("Slash") > 0
+					and sgs.card_lack[enemy:objectName()]["Jink"] == 1 and not self.player:canSlashWithoutCrossbow() then
+					deltaSelfThreat = deltaSelfThreat + 5
+				end
 			end
 		end
 	end

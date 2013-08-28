@@ -277,7 +277,7 @@ sgs.ai_skill_use_func.FenxunCard = function(card, use, self)
 		if not card:getSubcards() or slash:getEffectiveId() ~= card:getSubcards():at(0) then
 			local target_num, hastarget = 0
 			for _, enemy in ipairs(self.enemies) do
-				if not self:slashProhibit(slash, enemy) and self.player:canSlash(enemy, slash, false) and sgs.isGoodTarget(enemy, self.enemies, self) then
+				if not self:slashProhibit(slash, enemy) and self.player:canSlash(enemy, slash, false) and sgs.isGoodTarget(enemy, self.enemies, self, true) then
 					if self.player:distanceTo(enemy) > 1 and not target then target = enemy
 					elseif self.player:distanceTo(enemy) == 1 then
 						hastarget = true

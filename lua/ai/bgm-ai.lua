@@ -409,7 +409,7 @@ local function need_mouduan(self)
 			and (not self:willSkipPlayPhase() or self.player:hasSkill("dangxian")) then
 			local hasTarget = false
 			for _, enemy in ipairs(self.enemies) do
-				if not self:slashProhibit(slash, enemy) and self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self) then
+				if not self:slashProhibit(slash, enemy) and self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self, true) then
 					hasTarget = true
 					break
 				end

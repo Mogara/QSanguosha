@@ -1606,7 +1606,7 @@ kurou_skill.getTurnUseCard=function(self,inclusive)
 			    and not (enemy:hasSkill("kongcheng") and enemy:isKongcheng())
 				and not (self:hasSkills("fankui|guixin", enemy) and not self:hasSkills("paoxiao"))
 				and not self:hasSkills("fenyong|jilei|zhichi", enemy)
-				and sgs.isGoodTarget(enemy, self.enemies, self) and not self:slashProhibit(slash, enemy) and self.player:getHp()>1 then
+				and sgs.isGoodTarget(enemy, self.enemies, self, true) and not self:slashProhibit(slash, enemy) and self.player:getHp()>1 then
 				return sgs.Card_Parse("@KurouCard=.")
 			end
 		end
