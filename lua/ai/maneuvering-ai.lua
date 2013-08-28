@@ -326,7 +326,6 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 	if not self:damageIsEffective(who, nature, source) then return end	
 
 	if who:hasArmorEffect("SilverLion") then damagecount = 1 end
-	if nature == sgs.DamageStruct_Normal then return not self:cantbeHurt(who, source, damagecount) end
 	
 	local kills, killlord = 0
 	local good, bad = 0, 0
