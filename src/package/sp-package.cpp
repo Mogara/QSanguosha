@@ -835,18 +835,20 @@ SongciCard::SongciCard() {
 }
 
 bool SongciCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select->getMark("@songci") == 0 && to_select->getHandcardNum() != to_select->getHp();
+    return targets.isEmpty() && to_select->getMark("songci" + Self->objectName()) == 0 && to_select->getHandcardNum() != to_select->getHp();
 }
 
 void SongciCard::onEffect(const CardEffectStruct &effect) const{
     int handcard_num = effect.to->getHandcardNum();
     int hp = effect.to->getHp();
     effect.to->gainMark("@songci");
+	Room *room = effect.from->getRoom();
+	room->addPlayerMark(effect.to, "songci" + effect.from->objectName());
     if (handcard_num > hp) {
-        effect.to->getRoom()->broadcastSkillInvoke("songci", 2);
-        effect.to->getRoom()->askForDiscard(effect.to, "songci", 2, 2, false, true);
+        room->broadcastSkillInvoke("songci", 2);
+		room->askForDiscard(effect.to, "songci", 2, 2, false, true);
     } else if (handcard_num < hp) {
-        effect.to->getRoom()->broadcastSkillInvoke("songci", 1);
+        room->broadcastSkillInvoke("songci", 1);
         effect.to->drawCards(2, "songci");
     }
 }
@@ -861,9 +863,9 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        if (player->getMark("@songci") == 0 && player->getHandcardNum() != player->getHp()) return true;
+        if (player->getMark("songci" + player->objectName()) == 0 && player->getHandcardNum() != player->getHp()) return true;
         foreach (const Player *sib, player->getSiblings())
-            if (sib->getMark("@songci") == 0 && sib->getHandcardNum() != sib->getHp())
+            if (sib->getMark("songci" + player->objectName()) == 0 && sib->getHandcardNum() != sib->getHp())
                 return true;
         return false;
     }
@@ -883,9 +885,12 @@ public:
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DeathStruct death = data.value<DeathStruct>();
         if (death.who != player) return false;
-        foreach (ServerPlayer *p, room->getAllPlayers())
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->getMark("@songci") > 0)
                 room->setPlayerMark(p, "@songci", 0);
+			if (p->getMark("songci" + player->objectName()) > 0)
+				room->setPlayerMark(p, "songci" + player->objectName(), 0);
+		}
         return false;
     }
 };

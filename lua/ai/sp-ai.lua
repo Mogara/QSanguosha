@@ -523,7 +523,7 @@ end
 sgs.ai_skill_use_func.SongciCard = function(card,use,self)
 	self:sort(self.friends, "handcard")
 	for _, friend in ipairs(self.friends) do
-		if friend:getMark("@songci") == 0 and friend:getHandcardNum() < friend:getHp() and not (friend:hasSkill("manjuan") and self.room:getCurrent() ~= friend) then
+		if friend:getMark("songci" .. self.player:objectName()) == 0 and friend:getHandcardNum() < friend:getHp() and not (friend:hasSkill("manjuan") and self.room:getCurrent() ~= friend) then
 			if not (friend:hasSkill("haoshi") and friend:getHandcardNum() <= 1 and friend:getHp() >= 3) then
 				use.card = sgs.Card_Parse("@SongciCard=.")
 				if use.to then use.to:append(friend) end
@@ -535,7 +535,7 @@ sgs.ai_skill_use_func.SongciCard = function(card,use,self)
 	self:sort(self.enemies, "handcard")
 	self.enemies = sgs.reverse(self.enemies)
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:getMark("@songci") == 0 and enemy:getHandcardNum() > enemy:getHp() and not enemy:isNude()
+		if enemy:getMark("songci" .. self.player:objectName()) == 0 and enemy:getHandcardNum() > enemy:getHp() and not enemy:isNude()
 		  and not self:doNotDiscard(enemy, "he", nil, 2, true) then
 			use.card = sgs.Card_Parse("@SongciCard=.")
 			if use.to then use.to:append(enemy) end
