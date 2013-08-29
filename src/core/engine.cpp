@@ -588,15 +588,14 @@ QColor Engine::getKingdomColor(const QString &kingdom) const{
         while (itor.hasNext()) {
             itor.next();
             QColor color(itor.value().toString());
-            if (color.isValid())
-                color_map[itor.key()] = color;
-            else
+            if (!color.isValid()) {
                 qWarning("Invalid color for kingdom %s", qPrintable(itor.key()));
+				color = QColor(128, 128, 128);
+			}
+			color_map[itor.key()] = color;
         }
 
         Q_ASSERT(!color_map.isEmpty());
-		if (color_map.isEmpty())
-			qWarning("Load kingdom colors from lua script failed!");
     }
 
     return color_map.value(kingdom);
