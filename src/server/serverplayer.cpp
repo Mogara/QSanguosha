@@ -1060,6 +1060,7 @@ void ServerPlayer::exchangeFreelyFromPrivatePile(const QString &skill_name, cons
     delete dummy;
 }
 
+#include "gamerule.h"
 void ServerPlayer::gainAnExtraTurn() {
     ServerPlayer *current = room->getCurrent();
     try {
@@ -1068,8 +1069,19 @@ void ServerPlayer::gainAnExtraTurn() {
         room->setCurrent(current);
     }
     catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken)
+        if (triggerEvent == TurnBroken) {
+            if (getPhase() != Player::NotActive) {
+                const GameRule *game_rule = NULL;
+                if (room->getMode() == "04_1v3")
+                    game_rule = qobject_cast<const GameRule *>(Sanguosha->getTriggerSkill("hulaopass_mode"));
+                else
+                    game_rule = qobject_cast<const GameRule *>(Sanguosha->getTriggerSkill("game_rule"));
+                if (game_rule)
+                    game_rule->trigger(EventPhaseEnd, room, this, QVariant());
+                changePhase(getPhase(), Player::NotActive);
+            }
             room->setCurrent(current);
+        }
         throw triggerEvent;
     }
 }

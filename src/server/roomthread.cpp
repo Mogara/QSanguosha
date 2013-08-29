@@ -330,33 +330,41 @@ ServerPlayer *RoomThread::find3v3Next(QList<ServerPlayer *> &first, QList<Server
 void RoomThread::run3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &second, GameRule *game_rule, ServerPlayer *current) {
     try {
         forever {
-            action3v3(current);
+            room->setCurrent(current);
+			trigger(TurnStart, room, room->getCurrent());
+			room->setPlayerFlag(current, "actioned");
             current = find3v3Next(first, second);
         }
     }
     catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken) {
-            ServerPlayer *player = room->getCurrent();
-            trigger(TurnBroken, room, player);
-            if (player->getPhase() != Player::NotActive) {
-                game_rule->trigger(EventPhaseEnd, room, player);
-                player->changePhase(player->getPhase(), Player::NotActive);
-            }
-            if (!player->hasFlag("actioned"))
-                room->setPlayerFlag(player, "actioned");
-
-           ServerPlayer *next = find3v3Next(first, second);
-		   run3v3(first, second, game_rule, next);
-        } else {
-            throw triggerEvent;
-        }
+        if (triggerEvent == TurnBroken)
+			_handleTurnBroken3v3(first, second, game_rule);
+		else
+			throw triggerEvent;
     }
 }
 
-void RoomThread::action3v3(ServerPlayer *player) {
-    room->setCurrent(player);
-    trigger(TurnStart, room, room->getCurrent());
-    room->setPlayerFlag(player, "actioned");
+void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &second, GameRule *game_rule) {
+	try {
+		ServerPlayer *player = room->getCurrent();
+		trigger(TurnBroken, room, player);
+		if (player->getPhase() != Player::NotActive) {
+			game_rule->trigger(EventPhaseEnd, room, player, QVariant());
+			player->changePhase(player->getPhase(), Player::NotActive);
+		}
+		if (!player->hasFlag("actioned"))
+			room->setPlayerFlag(player, "actioned");
+
+		ServerPlayer *next = find3v3Next(first, second);
+		run3v3(first, second, game_rule, next);
+	}
+	catch (TriggerEvent triggerEvent) {
+		if (triggerEvent == TurnBroken) {
+			_handleTurnBroken3v3(first, second, game_rule);
+		} else {
+			throw triggerEvent;
+		}
+	}
 }
 
 ServerPlayer *RoomThread::findHulaoPassNext(ServerPlayer *shenlvbu, QList<ServerPlayer *> league, int stage) {
@@ -452,21 +460,33 @@ void RoomThread::actionHulaoPass(ServerPlayer *shenlvbu, QList<ServerPlayer *> l
             room->setCurrent(shenlvbu);
             actionHulaoPass(shenlvbu, league, game_rule, 2);
         } else if (triggerEvent == TurnBroken) {
-            ServerPlayer *player = room->getCurrent();
-            trigger(TurnBroken, room, player);
-            ServerPlayer *next = findHulaoPassNext(shenlvbu, league, stage);
-            if (player->getPhase() != Player::NotActive) {
-                game_rule->trigger(EventPhaseEnd, room, player);
-                player->changePhase(player->getPhase(), Player::NotActive);
-                if (player != shenlvbu && stage == 1)
-                    room->setPlayerFlag(player, "actioned");
-            }
-
-            room->setCurrent(next);
-            actionHulaoPass(shenlvbu, league, game_rule, stage);
+            _handleTurnBrokenHulaoPass(shenlvbu, league, game_rule, stage);
         } else {
             throw triggerEvent;
         }
+    }
+}
+
+void RoomThread::_handleTurnBrokenHulaoPass(ServerPlayer *shenlvbu, QList<ServerPlayer *> league, GameRule *game_rule, int stage) {
+    try {
+        ServerPlayer *player = room->getCurrent();
+        trigger(TurnBroken, room, player);
+        ServerPlayer *next = findHulaoPassNext(shenlvbu, league, stage);
+        if (player->getPhase() != Player::NotActive) {
+            game_rule->trigger(EventPhaseEnd, room, player, QVariant());
+            player->changePhase(player->getPhase(), Player::NotActive);
+            if (player != shenlvbu && stage == 1)
+                room->setPlayerFlag(player, "actioned");
+        }
+
+        room->setCurrent(next);
+        actionHulaoPass(shenlvbu, league, game_rule, stage);
+    }
+    catch (TriggerEvent triggerEvent) {
+        if (triggerEvent == TurnBroken)
+            _handleTurnBrokenHulaoPass(shenlvbu, league, game_rule, stage);
+        else
+            throw triggerEvent;
     }
 }
 
@@ -479,20 +499,31 @@ void RoomThread::actionNormal(GameRule *game_rule) {
         }
     }
     catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken) {
-            ServerPlayer *player = room->getCurrent();
-            trigger(TurnBroken, room, player);
-            ServerPlayer *next = player->getNextAlive();
-            if (player->getPhase() != Player::NotActive) {
-                game_rule->trigger(EventPhaseEnd, room, player);
-                player->changePhase(player->getPhase(), Player::NotActive);
-            }
-
-            room->setCurrent(next);
-            actionNormal(game_rule);
-        } else {
+        if (triggerEvent == TurnBroken)
+			_handleTurnBrokenNormal(game_rule);
+		else
             throw triggerEvent;
+    }
+}
+
+void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule) {
+    try {
+        ServerPlayer *player = room->getCurrent();
+        trigger(TurnBroken, room, player);
+        ServerPlayer *next = player->getNextAlive();
+        if (player->getPhase() != Player::NotActive) {
+            game_rule->trigger(EventPhaseEnd, room, player, QVariant());
+            player->changePhase(player->getPhase(), Player::NotActive);
         }
+
+        room->setCurrent(next);
+        actionNormal(game_rule);
+    }
+    catch (TriggerEvent triggerEvent) {
+        if (triggerEvent == TurnBroken)
+            _handleTurnBrokenNormal(game_rule);
+        else
+            throw triggerEvent;
     }
 }
 

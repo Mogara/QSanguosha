@@ -6,7 +6,6 @@ class TriggerSkill;
 class ServerPlayer;
 class Card;
 class Slash;
-class GameRule;
 
 #include "player.h"
 
