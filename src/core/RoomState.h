@@ -1,7 +1,6 @@
 #ifndef _ROOM_STATE_H
 #define _ROOM_STATE_H
 
-#include <QHash>
 #include "player.h"
 #include "structs.h"
 #include "WrappedCard.h"
@@ -32,6 +31,7 @@ public:
     void resetCard(int cardId);
     // Reset all cards, generals' states of the room instance
     void reset();
+
 protected:
     QHash<int, WrappedCard *> m_cards;
     bool m_isClient;

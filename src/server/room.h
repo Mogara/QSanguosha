@@ -352,11 +352,11 @@ public:
     void broadcastInvoke(const QSanProtocol::QSanPacket *packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void networkDelayTestCommand(ServerPlayer *player, const QString &);
-    inline virtual RoomState *getRoomState() { return &_m_roomState; }
-    inline virtual Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
-    inline virtual void resetCard(int cardId) { _m_roomState.resetCard(cardId); }
-    virtual void updateCardsOnLose(const CardsMoveStruct &move);
-    virtual void updateCardsOnGet(const CardsMoveStruct &move);
+    inline RoomState *getRoomState() { return &_m_roomState; }
+    inline Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
+    inline void resetCard(int cardId) { _m_roomState.resetCard(cardId); }
+    void updateCardsOnLose(const CardsMoveStruct &move);
+    void updateCardsOnGet(const CardsMoveStruct &move);
 
 protected:
     virtual void run();
