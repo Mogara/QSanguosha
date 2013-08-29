@@ -29,8 +29,8 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
 
     generals.removeOne(Sanguosha->getGeneral("yuji"));
     QStringList list_nostal, list_neo;
-    list_nostal << "nos_liubei" << "nos_diaochan" << "nos_huangyueying";
-    list_neo << "liubei" << "diaochan" << "huangyueying" << "st_yuanshu" << "st_huaxiong";
+    list_nostal << "nos_liubei" << "nos_diaochan" << "nos_huangyueying" << "nos_zhangjiao" << "nos_caoren" << "nos_zhoutai";
+    list_neo << "liubei" << "diaochan" << "huangyueying" << "st_yuanshu" << "st_huaxiong" << "zhangjiao" << "caoren" << "zhoutai";
     foreach (QString general_name, list_neo)
         generals.removeOne(Sanguosha->getGeneral(general_name));
     foreach (QString general_name, list_nostal)
@@ -39,7 +39,7 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
     QString rule = Config.value("3v3/OfficialRule", "2012").toString();
     if (rule == "2012") {
         QStringList list_remove, list_add;
-        list_remove << "zhangjiao" << "caoren" << "lvmeng" << "xiahoudun" << "weiyan";
+        list_remove << "nos_zhangjiao" << "nos_caoren" << "lvmeng" << "xiahoudun" << "weiyan";
         list_add << "sunjian" << "menghuo" << "xuhuang" << "pangde" << "zhugejin";
         foreach (QString general_name, list_remove)
             generals.removeOne(Sanguosha->getGeneral(general_name));
@@ -47,8 +47,8 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
             generals << Sanguosha->getGeneral(general_name);
     } else if (rule == "2013") {
         QStringList list_remove, list_add;
-        list_remove << "zhangjiao" << "caoren" << "lvmeng" << "xiahoudun" << "weiyan"
-                    << "luxun" << "huangzhong" << "xuchu" << "zhoutai" << "zhaoyun"
+        list_remove << "nos_zhangjiao" << "nos_caoren" << "lvmeng" << "xiahoudun" << "weiyan"
+                    << "luxun" << "huangzhong" << "xuchu" << "nos_zhoutai" << "zhaoyun"
                     << "guanyu" << "lvbu";
         list_add << "sunjian" << "xuhuang" << "pangde" << "jiaxu" << "sunce"
                  << "jiangwei" << "zhugejin" << "vs_xiahoudun" << "vs_guanyu" << "vs_zhaoyun"
