@@ -4740,7 +4740,7 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
 }
 
-void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target) {
+int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids, QString skill_name) {
     Q_ASSERT(!target->isKongcheng());
     while (isPaused()) {}
     notifyMoveFocus(shenlvmeng, S_COMMAND_SKILL_GONGXIN);
@@ -4755,7 +4755,7 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target) {
     QVariant decisionData = QVariant::fromValue("viewCards:" + shenlvmeng->objectName() + ":" + target->objectName());
     thread->trigger(ChoiceMade, this, shenlvmeng, decisionData);
 
-    shenlvmeng->tag["GongxinTarget"] = QVariant::fromValue((PlayerStar)target);
+    shenlvmeng->tag[skill_name] = QVariant::fromValue((PlayerStar)target);
     int card_id;
     AI *ai = shenlvmeng->getAI();
     if (ai) {
@@ -4764,14 +4764,14 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target) {
             if (Sanguosha->getCard(id)->getSuit() == Card::Heart)
                 hearts << id;
         }
-        if (hearts.isEmpty()) {
-            shenlvmeng->tag.remove("GongxinTarget");
-            return;
+        if (enabled_ids.isEmpty()) {
+            shenlvmeng->tag.remove(skill_name);
+            return -1;
         }
-        card_id = ai->askForAG(hearts, true, "gongxin");
+        card_id = ai->askForAG(enabled_ids, true, objectName());
         if (card_id == -1) {
-            shenlvmeng->tag.remove("GongxinTarget");
-            return;
+            shenlvmeng->tag.remove(skill_name);
+            return -1;
         }
     } else {
         foreach (int cardId, target->handCards()) {
@@ -4786,27 +4786,17 @@ void Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target) {
         gongxinArgs[0] = toJsonString(target->objectName());
         gongxinArgs[1] = true;
         gongxinArgs[2] = toJsonArray(target->handCards());
+		gongxinArgs[3] = toJsonArray(enabled_ids);
         bool success = doRequest(shenlvmeng, S_COMMAND_SKILL_GONGXIN, gongxinArgs, true);
         Json::Value clientReply = shenlvmeng->getClientReply();
         if (!success || !clientReply.isInt() || !target->handCards().contains(clientReply.asInt())) {
-            shenlvmeng->tag.remove("GongxinTarget");
-            return;
+            shenlvmeng->tag.remove(skill_name);
+            return -1;
         }
 
         card_id = clientReply.asInt();
     }
-
-    QString result = askForChoice(shenlvmeng, "gongxin", "discard+put");
-    shenlvmeng->tag.remove("GongxinTarget");
-    if (result == "discard") {
-        CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, shenlvmeng->objectName(), QString(), "gongxin", QString());
-        throwCard(Sanguosha->getCard(card_id), reason, target, shenlvmeng);
-    } else {
-        shenlvmeng->setFlags("Global_GongxinOperator");
-        CardMoveReason reason(CardMoveReason::S_REASON_PUT, shenlvmeng->objectName(), QString(), "gongxin", QString());
-        moveCardTo(Sanguosha->getCard(card_id), target, NULL, Player::DrawPile, reason, true);
-        shenlvmeng->setFlags("-Global_GongxinOperator");
-    }
+	return card_id; // Do remember to remove the tag later!
 }
 
 const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, ServerPlayer *to, const QString &reason) {

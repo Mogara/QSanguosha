@@ -203,7 +203,7 @@ sgs.ai_skill_use_func.GongxinCard=function(card,use,self)
 end
 
 sgs.ai_skill_askforag.gongxin = function(self, card_ids)
-	local target = self.player:getTag("GongxinTarget"):toPlayer()
+	local target = self.player:getTag("gongxin"):toPlayer()
 	if not target or self:isFriend(target) then return -1 end
 	local nextAlive = self.player
 	repeat

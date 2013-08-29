@@ -359,7 +359,7 @@ private slots:
     void attachSkill(const QString &skill_name, bool from_left);
     void detachSkill(const QString &skill_name);
 
-    void doGongxin(const QList<int> &card_ids, bool enable_heart);
+    void doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids);
 
     void startAssign();
 

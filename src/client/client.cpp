@@ -1465,21 +1465,23 @@ void Client::showAllCards(const Json::Value &arg) {
 
     if (who) who->setCards(card_ids);
 
-    emit gongxin(card_ids, false);
+    emit gongxin(card_ids, false, QList<int>());
 }
 
 void Client::askForGongxin(const Json::Value &arg) {
-    if (!arg.isArray() || arg.size() != 3
+    if (!arg.isArray() || arg.size() != 4
         || !arg[0].isString() || ! arg[1].isBool())
         return;
     ClientPlayer *who = getPlayer(toQString(arg[0]));
     bool enable_heart = arg[1].asBool();   
     QList<int> card_ids;
-    if (!tryParse(arg[2], card_ids)) return;    
+    if (!tryParse(arg[2], card_ids)) return;
+	QList<int> enabled_ids;
+	if (!tryParse(arg[3], enabled_ids)) return;
 
     who->setCards(card_ids);
 
-    emit gongxin(card_ids, enable_heart);
+    emit gongxin(card_ids, enable_heart, enabled_ids);
     setStatus(AskForGongxin);
 }
 

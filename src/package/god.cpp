@@ -204,8 +204,29 @@ bool GongxinCard::targetFilter(const QList<const Player *> &targets, const Playe
 }
 
 void GongxinCard::onEffect(const CardEffectStruct &effect) const{
-    if (!effect.to->isKongcheng())
-        effect.from->getRoom()->doGongxin(effect.from, effect.to);
+    Room *room = effect.from->getRoom();
+    if (!effect.to->isKongcheng()) {
+        QList<int> ids;
+        foreach (const Card *card, effect.to->getHandcards()) {
+            if (card->getSuit() == Card::Heart)
+                ids << card->getEffectiveId();
+        }
+
+        int card_id = room->doGongxin(effect.from, effect.to, ids);
+        if (card_id == -1) return;
+
+        QString result = room->askForChoice(effect.from, "gongxin", "discard+put");
+        effect.from->tag.remove("gongxin");
+        if (result == "discard") {
+            CardMoveReason reason(CardMoveReason::S_REASON_DISMANTLE, effect.from->objectName(), QString(), "gongxin", QString());
+            room->throwCard(Sanguosha->getCard(card_id), reason, effect.to, effect.from);
+        } else {
+            effect.from->setFlags("Global_GongxinOperator");
+            CardMoveReason reason(CardMoveReason::S_REASON_PUT, effect.from->objectName(), QString(), "gongxin", QString());
+            room->moveCardTo(Sanguosha->getCard(card_id), effect.to, NULL, Player::DrawPile, reason, true);
+            effect.from->setFlags("-Global_GongxinOperator");
+        }
+    }
 }
 
 class Gongxin: public ZeroCardViewAsSkill {
