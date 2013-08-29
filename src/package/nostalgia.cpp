@@ -993,6 +993,7 @@ bool NosGuhuoCard::nosguhuo(ServerPlayer *yuji) const{
     QList<CardsMoveStruct> moves;
     foreach (int card_id, getSubcards())
         used_cards << card_id;
+	room->setTag("NosGuhuoType", user_string);
 
     foreach (ServerPlayer *player, players) {
         if (player->getHp() <= 0) {

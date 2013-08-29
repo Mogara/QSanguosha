@@ -780,6 +780,7 @@ bool GuhuoCard::guhuo(ServerPlayer *yuji) const{
     QList<CardsMoveStruct> moves;
     foreach (int card_id, getSubcards())
         used_cards << card_id;
+	room->setTag("GuhuoType", user_string);
 
     ServerPlayer *questioned = NULL;
     foreach (ServerPlayer *player, players) {

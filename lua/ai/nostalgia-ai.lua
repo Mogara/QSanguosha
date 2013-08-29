@@ -672,7 +672,7 @@ nosguhuo_skill.getTurnUseCard = function(self)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	local otherSuit_str, NosGuhuoCard_str = {}, {}
 
-	for _,card in ipairs(cards) do
+	for _, card in ipairs(cards) do
 		if card:isNDTrick() then
 			local dummyuse = { isDummy = true }
 			self:useTrickCard(card, dummyuse)
@@ -740,7 +740,7 @@ nosguhuo_skill.getTurnUseCard = function(self)
 				if nosguhuos[i] == "god_salvation" then table.remove(nosguhuos, i) break end
 			end
 		end
-		for i=1, 10 do
+		for i = 1, 10 do
 			local card = fakeCards[math.random(1, #fakeCards)]
 			local newnosguhuo = objectName or nosguhuos[math.random(1, #nosguhuos)]
 			local nosguhuocard = sgs.Sanguosha:cloneCard(newnosguhuo, card:getSuit(), card:getNumber())
