@@ -905,8 +905,13 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
         Json::Value skillCommand;
         if (data.type() == QVariant::String)
             skillCommand = toJsonArray(skill_name, data.toString());
-        else
-            skillCommand = toJsonArray(skill_name, QString());
+        else {
+			PlayerStar player = data.value<PlayerStar>();
+			QString data_str;
+			if (player != NULL)
+				data_str = "playerdata:" + player->objectName();
+            skillCommand = toJsonArray(skill_name, data_str);
+		}
 
         if (!doRequest(player, S_COMMAND_INVOKE_SKILL, skillCommand, true)) {
             invoked = false;

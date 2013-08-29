@@ -822,6 +822,10 @@ void Client::askForSkillInvoke(const Json::Value &arg) {
     if (data.isEmpty()) {
         text = tr("Do you want to invoke skill [%1] ?").arg(Sanguosha->translate(skill_name));
         prompt_doc->setHtml(text);
+	} else if (data.startsWith("playerdata:")) {
+		QString name = getPlayerName(data.split(":").last());
+		text = tr("Do you want to invoke skill [%1] to %2 ?").arg(Sanguosha->translate(skill_name)).arg(name);
+		prompt_doc->setHtml(text);
     } else {
         QStringList texts = data.split(":");
         text = QString("%1:%2").arg(skill_name).arg(texts.first());
