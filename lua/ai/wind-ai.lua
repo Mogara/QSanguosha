@@ -133,8 +133,67 @@ sgs.ai_card_intention.ShensuCard = 80
 
 sgs.shensu_keep_value = sgs.xiaoji_keep_value
 
--- @todo: Jushou AI
--- @todo: Jiewei AI
+function sgs.ai_skill_invoke.jushou(self, data)
+	if not self.player:faceUp() then return true end
+	for _, friend in ipairs(self.friends) do
+		if self:hasSkills("fangzhu|jilve", friend) and not friend:isWeak() then return true end
+		if friend:hasSkill("junxing") and friend:faceUp() and not self:willSkipPlayPhase(friend)
+			and not (friend:isKongcheng() and self:willSkipDrawPhase(friend)) then
+			return true
+		end
+	end
+	if not self.player:hasSkill("jiewei") then return false end
+	for _, card in sgs.qlist(self.player:getHandcards()) do
+		if card:getTypeId() == sgs.Card_TypeTrick then
+			local dummy_use = { isDummy = true }
+			self:useTrickCard(card, dummy_use)
+			if dummy_use.card then return true end
+		elseif card:getTypeId() == sgs.Card_TypeEquip then
+			local dummy_use = { isDummy = true }
+			self:useEquipCard(card, dummy_use)
+			if dummy_use.card then return true end
+		end
+	end
+	return false
+end
+
+sgs.ai_skill_invoke.jiewei = true
+
+sgs.ai_skill_use["TrickCard,EquipCard"] = function(self, prompt, method)
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByUseValue(cards)
+	for _, cards in ipairs(cards) do
+		if card:getTypeId() == sgs.Card_TypeTrick then
+			local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+			self:useTrickCard(card, dummy_use)
+			if dummy_use.card then
+				self.jiewei_type = sgs.Card_TypeTrick
+				if dummy_use.to:isEmpty() then
+					return dummy_use.card:toString()
+				else
+					local target_objectname = {}
+					for _, p in sgs.qlist(dummy_use.to) do
+						table.insert(target_objectname, p:objectName())
+					end
+					return dummy_use.card:toString() .. "->" .. table.concat(target_objectname, "+")
+				end
+			end
+		elseif card:getTypeId() == sgs.Card_TypeEquip then
+			local dummy_use = { isDummy = true }
+			self:useEquipCard(card, dummy_use)
+			if dummy_use.card then
+				self.jiewei_type = sgs.Card_TypeEquip
+				return dummy_use.card:toString()
+			end
+		end
+	end
+	return "."
+end
+
+sgs.ai_skill_playerchosen.jiewei = function(self, targets)
+	if self.jiewei_type == sgs.Card_TypeTrick then return self:findPlayerToDiscard("j", true, true, targets)
+	elseif self.jiewei_type == sgs.Card_TypeEquip then return self:findPlayerToDiscard("e", true, true, targets) end
+end
 
 function sgs.ai_cardneed.liegong(to, card)
 	return (isCard("Slash", card, to) and getKnownCard(to, "Slash", true) == 0) or (card:isKindOf("Weapon") and not (to:getWeapon() or getKnownCard(to, "Weapon", false) > 0))
