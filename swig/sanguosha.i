@@ -54,6 +54,9 @@ public:
     QSet<const Skill *> getVisibleSkills() const;
     QSet<const TriggerSkill *> getTriggerSkills() const;
 
+	void addRelateSkill(const char *skill_name);
+	QStringList getRelatedSkillNames() const;
+
     QString getPackage() const;
     QString getSkillDescription(bool include_name = false) const;
 
