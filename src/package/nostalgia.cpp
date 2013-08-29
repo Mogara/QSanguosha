@@ -381,10 +381,13 @@ public:
             return false;
 
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
-            && Self->getWeapon() && to_select->getEffectiveId() == Self->getWeapon()->getId() && to_select->isKindOf("Crossbow"))
-            return Self->canSlashWithoutCrossbow();
-        else
+            && Self->getWeapon() && to_select->getEffectiveId() == Self->getWeapon()->getId() && to_select->isKindOf("Crossbow")) {
+            Slash *slash = new Slash(to_select->getSuit(), to_select->getNumber());
+			slash->deleteLater();
+			return Self->canSlashWithoutCrossbow(slash);
+		} else {
             return true;
+		}
     }
 
     const Card *viewAs(const Card *originalCard) const{

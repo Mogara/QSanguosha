@@ -1279,10 +1279,13 @@ bool Longhun::viewFilter(const QList<const Card *> &selected, const Card *card) 
                 return true;
             else if (Slash::IsAvailable(Self) && card->getSuit() == Card::Diamond) {
                 if (Self->getWeapon() && card->getEffectiveId() == Self->getWeapon()->getId()
-                    && card->isKindOf("Crossbow"))
-                    return Self->canSlashWithoutCrossbow();
-                else
+                    && card->isKindOf("Crossbow")) {
+					FireSlash *slash = new FireSlash(card->getSuit(), card->getNumber());
+					slash->deleteLater();
+                    return Self->canSlashWithoutCrossbow(slash);
+				} else {
                     return true;
+				}
             } else
                 return false;
         }

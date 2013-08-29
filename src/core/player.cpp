@@ -821,13 +821,15 @@ bool Player::isProhibited(const Player *to, const Card *card, const QList<const 
     return Sanguosha->isProhibited(this, to, card, others);
 }
 
-bool Player::canSlashWithoutCrossbow() const{
+bool Player::canSlashWithoutCrossbow(const Card *slash) const{
+	Slash *newslash = new Slash(Card::NoSuit, 0);
+	newslash->deleteLater();
+#define THIS_SLASH (slash == NULL ? newslash : slash)
     int slash_count = getSlashCount();
     int valid_slash_count = 1;
-    Slash *slash = new Slash(Card::NoSuit, 0);
-    slash->deleteLater();
-    valid_slash_count += Sanguosha->correctCardTarget(TargetModSkill::Residue, this, slash);
+    valid_slash_count += Sanguosha->correctCardTarget(TargetModSkill::Residue, this, THIS_SLASH);
     return slash_count < valid_slash_count;
+#undef THIS_SLASH
 }
 
 void Player::setCardLimitation(const QString &limit_list, const QString &pattern, bool single_turn) {
