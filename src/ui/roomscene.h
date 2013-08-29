@@ -163,6 +163,7 @@ public slots:
     void makeKilling();
     void makeReviving();
     void doScript();
+	void viewGenerals(const QString &reason, const QStringList &names);
 
     void handleGameEvent(const Json::Value &arg);
 

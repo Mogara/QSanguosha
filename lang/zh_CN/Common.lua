@@ -177,6 +177,10 @@ CommonTranslationTable = {
 	["@askforretrial"] = "请使用“%dest”来修改 %src 的 %arg 判定",
 	["$CheatCard"] = "%from 作弊，获得了 %card",
 	["#FilterJudge"] = "%from 的“%arg”效果被触发，判定牌被改变",
+	["$CancelTarget"] = "%from 使用【%arg】的目标 %to 被取消",
+	["$CancelTargetNoUser"] = "【%arg】的目标 %to 被取消",
+	["$ViewRole"] = "%from 观看了 %to 的身份 %arg",
+	["#UseLuckCard"] = "%from 使用了 <font color=\"yellow\"><b>手气卡</b></font>",
 
 	["cw"] = "顺时针",
 	["ccw"] = "逆时针",

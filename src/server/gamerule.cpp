@@ -470,8 +470,8 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
     case GameOverJudge: {
             if (room->getMode() == "02_1v1") {
                 QStringList list = player->tag["1v1Arrange"].toStringList();
-                if (!list.isEmpty())
-                    return false;
+                QString rule = Config.value("1v1/Rule", "Classical").toString();
+                if (list.length() > ((rule == "OL") ? 3 : 0)) break;
             }
 
             QString winner = getWinner(player);

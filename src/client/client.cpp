@@ -69,6 +69,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_ENABLE_SURRENDER] = &Client::enableSurrender;
     m_callbacks[S_COMMAND_EXCHANGE_KNOWN_CARDS] = &Client::exchangeKnownCards;
     m_callbacks[S_COMMAND_SET_KNOWN_CARDS] = &Client::setKnownCards;
+	m_callbacks[S_COMMAND_VIEW_GENERALS] = &Client::viewGenerals;
 
     m_callbacks[S_COMMAND_UPDATE_STATE_ITEM] = &Client::updateStateItem;
     m_callbacks[S_COMMAND_AVAILABLE_CARDS] = &Client::setAvailableCards;
@@ -698,6 +699,14 @@ void Client::setKnownCards(const Json::Value &set_str) {
 
 }
 
+void Client::viewGenerals(const Json::Value &str) {
+	if (str.size() != 2 || !str[0].isString()) return;
+	QString reason = toQString(str[0]);
+	QStringList names;
+	if (!tryParse(str[1], names)) return;
+	emit generals_viewed(reason, names);
+}
+
 Replayer *Client::getReplayer() const{
     return replayer;
 }
@@ -1203,7 +1212,6 @@ void Client::askForGeneral(const Json::Value &arg) {
     emit generals_got(generals);
     setStatus(ExecDialog);
 }
-
 
 void Client::askForSuit(const Json::Value &) {
     QStringList suits;

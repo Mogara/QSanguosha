@@ -122,6 +122,7 @@ public:
     void enableSurrender(const Json::Value &enabled);
     void exchangeKnownCards(const Json::Value &players);
     void setKnownCards(const Json::Value &set_str);
+	void viewGenerals(const Json::Value &str);
     void setFixedDistance(const Json::Value &set_str);
     void updateStateItem(const Json::Value &state_str);
     void setAvailableCards(const Json::Value &pile);
@@ -326,7 +327,8 @@ signals:
     void general_recovered(int index, const QString &name);
     void general_revealed(bool self, const QString &general);
 
-    void role_state_changed(const QString & state_str);
+    void role_state_changed(const QString &state_str);
+	void generals_viewed(const QString &reason, const QStringList &names);
 
     void assign_asked();
     void start_in_xs();
