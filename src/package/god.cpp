@@ -1154,19 +1154,19 @@ public:
             if (killer && current && current->isAlive() && current->getPhase() != Player::NotActive) {
                 killer->addMark("lianpo");
 
-                if (killer->hasSkill("lianpo")) {
+                if (TriggerSkill::triggerable(player)) {
                     LogMessage log;
                     log.type = "#LianpoRecord";
                     log.from = killer;
                     log.to << player;
 
-                    log.arg = room->getCurrent()->getGeneralName();
+                    log.arg = current->getGeneralName();
                     room->sendLog(log);
                 }
             }
-        } else if (player->getPhase() == Player::NotActive)
-                foreach (ServerPlayer *p, room->getAlivePlayers())
-                    p->setMark("lianpo", 0);
+        } else if (player->getPhase() == Player::NotActive) {
+			foreach (ServerPlayer *p, room->getAlivePlayers())
+				p->setMark("lianpo", 0);
 
         return false;
     }

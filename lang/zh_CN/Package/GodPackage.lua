@@ -103,7 +103,7 @@ return {
 	["jilve_guicai"] = "极略（鬼才）",
 	["jilve_fangzhu"] = "极略（放逐）",
 	["lianpo"] = "连破",
-	[":lianpo"] = "一名角色的回合结束后，若你于此回合内杀死了至少一名角色，你可以获得一个额外的回合。",
+	[":lianpo"] = "若你于一个回合内杀死过的角色数量不小于1，此回合结束后，你可以获得一个额外的回合。",
 	["@jilve-zhiheng"] = "请发动“制衡”",
 	["~zhiheng"] = "选择需要弃置的牌→点击确定",
 	["#BaiyinWake"] = "%from 的“忍”为 %arg 个，触发“<font color=\"yellow\"><b>拜印</b></font>”觉醒",
