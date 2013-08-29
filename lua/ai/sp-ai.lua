@@ -209,7 +209,7 @@ local function yuanhu_validate(self, equip_type, is_handcard)
 				end
 				self:sort(self.enemies, "defense")
 				for _, enemy in ipairs(self.enemies) do
-					if friend:distanceTo(enemy) == 1 and not enemy:isNude() then
+					if friend:distanceTo(enemy) == 1 and self.player:canDiscard(enemy, "he") then
 						enemy:setFlags("AI_YuanhuToChoose")
 						return friend
 					end
@@ -224,58 +224,48 @@ sgs.ai_skill_use["@@yuanhu"] = function(self, prompt)
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
 	self:sortByKeepValue(cards)
-	if self.player:hasArmorEffect("SilverLion") and yuanhu_validate(self, "SilverLion", false) then
+	if self.player:hasArmorEffect("SilverLion") then
 		local player = yuanhu_validate(self, "SilverLion", false)
-		local card_id = self.player:getArmor():getEffectiveId()
-		return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+		if player then return "@YuanhuCard=" .. self.player:getArmor():getEffectiveId() .. "->" .. player:objectName() end
 	end
-	if self.player:getOffensiveHorse() and yuanhu_validate(self, "OffensiveHorse", false) then
+	if self.player:getOffensiveHorse() then
 		local player = yuanhu_validate(self, "OffensiveHorse", false)
-		local card_id = self.player:getOffensiveHorse():getEffectiveId()
-		return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+		if player then return "@YuanhuCard=" .. self.player:getOffensiveHorse():getEffectiveId() .. "->" .. player:objectName() end
 	end
-	if self.player:getWeapon() and yuanhu_validate(self, "Weapon", false) then
+	if self.player:getWeapon() then
 		local player = yuanhu_validate(self, "Weapon", false)
-		local card_id = self.player:getWeapon():getEffectiveId()
-		return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+		if player then return "@YuanhuCard=" .. self.player:getWeapon():getEffectiveId() .. "->" .. player:objectName() end
 	end
-	if self.player:getArmor() and self.player:getLostHp() <= 1 and self.player:getHandcardNum() >= 3
-		and yuanhu_validate(self, "Armor", false) then
+	if self.player:getArmor() and self.player:getLostHp() <= 1 and self.player:getHandcardNum() >= 3 then
 		local player = yuanhu_validate(self, "Armor", false)
-		local card_id = self.player:getArmor():getEffectiveId()
-		return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+		if player then return "@YuanhuCard=" .. self.player:getArmor():getEffectiveId() .. "->" .. player:objectName() end
 	end
 	for _, card in ipairs(cards) do
-		if card:isKindOf("DefensiveHorse") and yuanhu_validate(self, "DefensiveHorse", true) then
+		if card:isKindOf("DefensiveHorse") then
 			local player = yuanhu_validate(self, "DefensiveHorse", true)
-			local card_id = card:getEffectiveId()
-			return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+			if player then return "@YuanhuCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
 		end
 	end
 	for _, card in ipairs(cards) do
-		if card:isKindOf("OffensiveHorse") and yuanhu_validate(self, "OffensiveHorse", true) then
+		if card:isKindOf("OffensiveHorse") then
 			local player = yuanhu_validate(self, "OffensiveHorse", true)
-			local card_id = card:getEffectiveId()
-			return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+			if player then return "@YuanhuCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
 		end
 	end
 	for _, card in ipairs(cards) do
-		if card:isKindOf("Weapon") and yuanhu_validate(self, "Weapon", true) then
+		if card:isKindOf("Weapon") then
 			local player = yuanhu_validate(self, "Weapon", true)
-			local card_id = card:getEffectiveId()
-			return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+			if player then return "@YuanhuCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
 		end
 	end
 	for _, card in ipairs(cards) do
-		if card:isKindOf("SilverLion") and yuanhu_validate(self, "SilverLion", true) then
+		if card:isKindOf("SilverLion") then
 			local player = yuanhu_validate(self, "SilverLion", true)
-			local card_id = card:getEffectiveId()
-			return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+			if player then return "@YuanhuCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
 		end
 		if card:isKindOf("Armor") and yuanhu_validate(self, "Armor", true) then
 			local player = yuanhu_validate(self, "Armor", true)
-			local card_id = card:getEffectiveId()
-			return "@YuanhuCard=" .. card_id .. "->" .. player:objectName()
+			if player then return "@YuanhuCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
 		end
 	end
 end
