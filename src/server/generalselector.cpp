@@ -4,6 +4,7 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <qmath.h>
 
 static GeneralSelector *Selector;
 

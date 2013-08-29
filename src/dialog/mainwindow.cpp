@@ -11,7 +11,7 @@
 #include "pixmapanimation.h"
 #include "record-analysis.h"
 
-#include <cmath>
+#include <qmath.h>
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>

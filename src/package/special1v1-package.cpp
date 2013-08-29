@@ -1008,9 +1008,10 @@ ADD_PACKAGE(Special1v1)
 Special1v1OLPackage::Special1v1OLPackage()
     : Package("Special1v1OL")
 {
-	General *kof_liubei = new General(this, "kof_liubei", "shu");
+	General *kof_liubei = new General(this, "kof_liubei$", "shu");
     kof_liubei->addSkill(new Renwang);
     kof_liubei->addSkill(new RenwangRemoveMark);
+	kof_liubei->addSkill("jijiang");
     related_skills.insertMulti("renwang", "#renwang");
 
     General *kof_weiyan = new General(this, "kof_weiyan", "shu");
