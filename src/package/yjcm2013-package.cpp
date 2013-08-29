@@ -35,7 +35,7 @@ public:
             }
             if (card_ids.isEmpty()) break;
 
-            int card_id = room->askForAG(target, card_ids, true, objectName());
+            int card_id = room->askForAG(target, card_ids, card_ids.length() < 4, objectName());
             if (card_id == -1) break;
             card_ids.removeOne(card_id);
             to_get << card_id;
