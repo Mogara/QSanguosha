@@ -105,6 +105,7 @@ void MagatamasBoxItem::update() {
     QGraphicsItem::update();
 }
 
+#include "sprite.h"
 void MagatamasBoxItem::_doHpChangeAnimation(int newHp) {
     if (newHp >= m_hp) return;
 
@@ -125,7 +126,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp) {
         mHp = 0;
     }
     for (int i = newHp; i < mHp; i++) {
-        QGraphicsObject *aniMaga = new QGraphicsObject;
+        Sprite *aniMaga = new Sprite;
         aniMaga->setPixmap(_icons[qBound(0, i, 5)]);
         aniMaga->setParentItem(this);
         aniMaga->setOffset(QPoint(-(width - m_imageArea.left()) / 2, -(height - m_imageArea.top()) / 2));
