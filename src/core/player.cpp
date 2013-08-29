@@ -111,6 +111,17 @@ void Player::setSeat(int seat) {
     this->seat = seat;
 }
 
+bool Player::isAdjacentTo(const Player *another) const{
+	int alive_length = 1;
+	foreach (const Player *p, getSiblings()) {
+		if (p->isAlive())
+			alive_length++;
+	}
+	return qAbs(seat - another->seat) == 1
+			|| (seat == 1 && another->seat == alive_length)
+			|| (seat == alive_length && another->seat == 1);
+}
+
 bool Player::isAlive() const{
     return alive;
 }

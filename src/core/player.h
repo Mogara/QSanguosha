@@ -99,6 +99,7 @@ public:
 
     int getSeat() const;
     void setSeat(int seat);
+	bool isAdjacentTo(const Player *another) const;
     QString getPhaseString() const;
     void setPhaseString(const QString &phase_str);
     Phase getPhase() const;
