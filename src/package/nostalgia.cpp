@@ -445,8 +445,8 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
         if (!pattern.contains("peach")) return false;
         if (player->hasFlag("Global_NosJiefanFailed")) return false;
-        foreach (const Player *p, player->getSiblings()) {
-            if (p->isAlive() && p->getPhase() != Player::NotActive)
+        foreach (const Player *p, player->getAliveSiblings()) {
+            if (p->getPhase() != Player::NotActive)
                 return true;
         }
         return false;

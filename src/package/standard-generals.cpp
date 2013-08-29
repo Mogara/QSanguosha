@@ -493,8 +493,8 @@ const Card *JijiangViewAsSkill::viewAs() const{
 }
 
 bool JijiangViewAsSkill::hasShuGenerals(const Player *player) {
-    foreach (const Player *p, player->getSiblings())
-        if (p->isAlive() && p->getKingdom() == "shu")
+    foreach (const Player *p, player->getAliveSiblings())
+        if (p->getKingdom() == "shu")
             return true;
     return false;
 }
@@ -1420,8 +1420,8 @@ public:
                     rangefix += 1;
             }
             // find yuanshu
-            foreach (const Player *p, from->getSiblings()) {
-                if (p->isAlive() && p->hasSkill(objectName()) && p != to && p->getHandcardNum() > p->getHp()
+            foreach (const Player *p, from->getAliveSiblings()) {
+                if (p->hasSkill(objectName()) && p != to && p->getHandcardNum() > p->getHp()
                     && from->distanceTo(p, rangefix) <= from->getAttackRange()) {
                     return true;
                 }

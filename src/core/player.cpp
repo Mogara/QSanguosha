@@ -112,11 +112,7 @@ void Player::setSeat(int seat) {
 }
 
 bool Player::isAdjacentTo(const Player *another) const{
-	int alive_length = 1;
-	foreach (const Player *p, getSiblings()) {
-		if (p->isAlive())
-			alive_length++;
-	}
+	int alive_length = 1 + getAliveSiblings().length();
 	return qAbs(seat - another->seat) == 1
 			|| (seat == 1 && another->seat == alive_length)
 			|| (seat == alive_length && another->seat == 1);
@@ -360,7 +356,7 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
         return skills.contains(skill_name);
 
     if (hasSkill("weidi")) {
-        foreach (const Player *player, getSiblings()) {
+        foreach (const Player *player, getAliveSiblings()) {
             if (player->isLord())
                 return player->hasLordSkill(skill_name, true);
         }
@@ -959,7 +955,15 @@ QList<const Player *> Player::getSiblings() const{
         siblings = parent()->findChildren<const Player *>();
         siblings.removeOne(this);
     }
-
     return siblings;
+}
+
+QList<const Player *> Player::getAliveSiblings() const{
+	QList<const Player *> siblings = getSiblings();
+	foreach (const Player *p, siblings) {
+		if (!p->isAlive())
+			siblings.removeOne(p);
+	}
+	return siblings;
 }
 

@@ -1022,10 +1022,10 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
         bool current = false;
-        QList<const Player *> players = player->getSiblings();
+        QList<const Player *> players = player->getAliveSiblings();
         players.append(player);
         foreach (const Player *p, players) {
-            if (p->isAlive() && p->getPhase() != Player::NotActive) {
+            if (p->getPhase() != Player::NotActive) {
                 current = true;
                 break;
             }
@@ -1045,10 +1045,10 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         bool current = false;
-        QList<const Player *> players = player->getSiblings();
+        QList<const Player *> players = player->getAliveSiblings();
         players.append(player);
         foreach (const Player *p, players) {
-            if (p->isAlive() && p->getPhase() != Player::NotActive) {
+            if (p->getPhase() != Player::NotActive) {
                 current = true;
                 break;
             }

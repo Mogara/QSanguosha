@@ -169,15 +169,15 @@ public:
     }
 
     virtual int getExtra(const Player *target) const{
-        int extra = 0;
-        QList<const Player *> players = target->getSiblings();
-        foreach (const Player *player, players) {
-            if (player->isAlive() && player->getKingdom() == "qun")
-                extra += 2;
-        }
-        if (target->hasLordSkill(objectName()))
+        if (target->hasLordSkill(objectName())) {
+			int extra = 0;
+			QList<const Player *> players = target->getAliveSiblings();
+			foreach (const Player *player, players) {
+				if (player->getKingdom() == "qun")
+					extra += 2;
+			}
             return extra;
-        else
+		} else
             return 0;
     }
 };

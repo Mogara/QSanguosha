@@ -240,7 +240,7 @@ bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player 
         return false;
 
     const Player *from = NULL;
-    foreach (const Player *p, Self->getSiblings()) {
+    foreach (const Player *p, Self->getAliveSiblings()) {
         if (p->hasFlag("LiuliSlashSource")) {
             from = p;
             break;

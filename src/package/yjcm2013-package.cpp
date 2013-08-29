@@ -643,8 +643,8 @@ public:
 private:
     static bool canSlashLiufeng(const Player *player) {
         const Player *liufeng = NULL;
-        foreach (const Player *p, player->getSiblings()) {
-            if (p->isAlive() && p->hasSkill("xiansi") && p->getPile("counter").length() > 1) {
+        foreach (const Player *p, player->getAliveSiblings()) {
+            if (p->hasSkill("xiansi") && p->getPile("counter").length() > 1) {
                 liufeng = p;
                 break;
             }

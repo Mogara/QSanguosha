@@ -864,7 +864,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         if (player->getMark("songci" + player->objectName()) == 0 && player->getHandcardNum() != player->getHp()) return true;
-        foreach (const Player *sib, player->getSiblings())
+        foreach (const Player *sib, player->getAliveSiblings())
             if (sib->getMark("songci" + player->objectName()) == 0 && sib->getHandcardNum() != sib->getHp())
                 return true;
         return false;

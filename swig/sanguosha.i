@@ -233,6 +233,7 @@ public:
     void copyFrom(Player *p);
 
     QList<const Player *> getSiblings() const;
+	QList<const Player *> getAliveSiblings() const;
 };
 
 %extend Player {

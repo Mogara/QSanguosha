@@ -148,10 +148,10 @@ void GlobalEffect::onUse(Room *room, const CardUseStruct &card_use) const{
 
 bool GlobalEffect::isAvailable(const Player *player) const{
     bool canUse = false;
-    QList<const Player *> players = player->getSiblings();
+    QList<const Player *> players = player->getAliveSiblings();
     players << player;
     foreach (const Player *p, players) {
-        if (p->isDead() || player->isProhibited(p, this))
+        if (player->isProhibited(p, this))
             continue;
 
         canUse = true;
@@ -167,9 +167,9 @@ QString AOE::getSubtype() const{
 
 bool AOE::isAvailable(const Player *player) const{
     bool canUse = false;
-    QList<const Player *> players = player->getSiblings();
+    QList<const Player *> players = player->getAliveSiblings();
     foreach (const Player *p, players) {
-        if (p->isDead() || player->isProhibited(p, this))
+        if (player->isProhibited(p, this))
             continue;
 
         canUse = true;

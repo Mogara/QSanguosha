@@ -792,8 +792,8 @@ Collateral::Collateral(Card::Suit suit, int number)
 
 bool Collateral::isAvailable(const Player *player) const{
     bool canUse = false;
-    foreach (const Player *p, player->getSiblings()) {
-        if (p->getWeapon() && p->isAlive()) {
+    foreach (const Player *p, player->getAliveSiblings()) {
+        if (p->getWeapon()) {
             canUse = true;
             break;
         }
@@ -819,7 +819,7 @@ bool Collateral::targetFilter(const QList<const Player *> &targets,
     } else {
         if (!to_select->getWeapon() || to_select == Self)
             return false;
-        foreach (const Player *p, to_select->getSiblings()) {
+        foreach (const Player *p, to_select->getAliveSiblings()) {
             if (to_select->canSlash(p)
                 && (!(p == Self && p->hasSkill("kongcheng") && Self->isLastHandCard(this, true))))
                 return true;

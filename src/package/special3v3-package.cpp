@@ -347,8 +347,8 @@ public:
         if (pattern != "peach" || !player->canDiscard(player, "he") || player->getHp() <= 1) return false;
         QString dyingobj = player->property("currentdying").toString();
         const Player *who = NULL;
-        foreach (const Player *p, player->getSiblings()) {
-            if (p->isAlive() && p->objectName() == dyingobj) {
+        foreach (const Player *p, player->getAliveSiblings()) {
+            if (p->objectName() == dyingobj) {
                 who = p;
                 break;
             }
@@ -438,7 +438,7 @@ public:
             return 0;
         } else {
             bool hasWenpin = false;
-            foreach (const Player *p, to->getSiblings()) {
+            foreach (const Player *p, to->getAliveSiblings()) {
                 if (p->hasSkill("zhenwei")) {
                     hasWenpin = true;
                     break;
@@ -448,7 +448,7 @@ public:
         }
         if (ServerInfo.GameMode.startsWith("06_")) {
             if (from->getRole().at(0) != to->getRole().at(0)) {
-                foreach (const Player *p, to->getSiblings()) {
+                foreach (const Player *p, to->getAliveSiblings()) {
                     if (p->hasSkill(objectName()) && p->getRole().at(0) == to->getRole().at(0))
                         return 1;
                 }
