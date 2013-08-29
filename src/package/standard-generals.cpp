@@ -1212,8 +1212,7 @@ public:
                 can_invoke = true;
                 QVariantList jink_list = player->tag["Jink_" + use.card->toString()].toList();
                 for (int i = 0; i < use.to.length(); i++) {
-                    int n = jink_list.at(i).toInt();
-                    if (n > 0 && n < 2)
+                    if (jink_list.at(i).toInt() == 1)
                         jink_list.replace(i, QVariant(2));
                 }
                 player->tag["Jink_" + use.card->toString()] = QVariant::fromValue(jink_list);

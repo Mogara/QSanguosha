@@ -767,8 +767,7 @@ public:
                 foreach (ServerPlayer *p, use.to) {
                     if (p->isFemale()) {
                         play_effect = true;
-                        int n = jink_list.at(index).toInt();
-                        if (n > 0 && n < 2)
+                        if (jink_list.at(index).toInt() == 1)
                             jink_list.replace(index, QVariant(2));
                     }
                     index++;
@@ -788,8 +787,7 @@ public:
                 foreach (ServerPlayer *p, use.to) {
                     if (p->hasSkill(objectName())) {
                         play_effect = true;
-                        int n = jink_list.at(index).toInt();
-                        if (n > 0 && n < 2)
+                        if (jink_list.at(index).toInt() == 1)
                             jink_list.replace(index, QVariant(2));
                     }
                     index++;
