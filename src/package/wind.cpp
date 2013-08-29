@@ -452,6 +452,13 @@ public:
 
         if (zhoutai->getHp() > 0) return false;
         room->broadcastSkillInvoke(objectName());
+		LogMessage log;
+		log.type = "#TriggerSkill";
+		log.from = zhoutai;
+		log.arg = objectName();
+		room->sendLog(log);
+		room->notifySkillInvoked(zhoutai, objectName());
+
         int id = room->drawCard();
         int num = Sanguosha->getCard(id)->getNumber();
         bool duplicate = false;
