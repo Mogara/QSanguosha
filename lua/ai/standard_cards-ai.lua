@@ -1017,13 +1017,16 @@ function SmartAI:useCardPeach(card, use)
 	end
 	
 	for _, enemy in ipairs(self.enemies) do
-		if self.player:getHandcardNum() < 3 and 
-				(self:hasSkills(sgs.drawpeach_skill,enemy) or getCardsNum("Dismantlement", enemy) >= 1
-					or enemy:hasSkill("jixi") and enemy:getPile("field"):length() >0 and enemy:distanceTo(self.player) == 1
-					or enemy:hasSkill("qixi") and getKnownCard(enemy, "black", nil, "he") >= 1
-					or getCardsNum("Snatch", enemy) >= 1 and enemy:distanceTo(self.player) == 1
-					or (enemy:hasSkill("tiaoxin") and self.player:inMyAttackRange(enemy) and self:getCardsNum("Slash") < 1 or not self.player:canSlash(enemy)))
-				then
+		if self.player:getHandcardNum() < 3
+			and (self:hasSkills(sgs.drawpeach_skill, enemy) or getCardsNum("Dismantlement", enemy) >= 1
+				or (not self.player:hasSkill("qianxun") and enemy:hasSkill("jixi") and enemy:getPile("field"):length() > 0
+					and (enemy:distanceTo(self.player, 1) == 1 or enemy:hasSkills("qicai|nosqicai")))
+				or (((enemy:hasSkill("qixi") and not self.player:hasSkill("weimu")) or enemy:hasSkill("yinling"))
+					and getKnownCard(enemy, "black", nil, "he") >= 1)
+				or (not self.player:hasSkill("qianxun") and getCardsNum("Snatch", enemy) >= 1
+					and (enemy:distanceTo(self.player) == 1 or enemy:hasSkills("qicai|nosqicai")))
+				or (enemy:hasSkill("tiaoxin") and self.player:inMyAttackRange(enemy)
+					and (self:getCardsNum("Slash") < 1) or not self.player:canSlash(enemy))) then
 			mustusepeach = true
 			break
 		end
@@ -1065,7 +1068,8 @@ function SmartAI:useCardPeach(card, use)
 		return
 	end
 
-	if #self.friends > 1 and self.friends[2]:getHp() < 3 and not hasBuquEffect(self.friends[2]) and self:getOverflow() < 1 then
+	if #self.friends > 1 and ((not hasBuquEffect(self.friends[2]) and self.friends[2]:getHp() < 3 and self:getOverflow() < 2)
+		or (not hasBuquEffect(self.friends[1]) and self.friends[1]:getHp() < 2 and peaches <= 1 and self:getOverflow() < 3)) then
 		return
 	end
 
