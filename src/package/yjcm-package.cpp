@@ -411,75 +411,19 @@ public:
     }
 };
 
-XuanfengCard::XuanfengCard(){
-}
-
-bool XuanfengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(targets.length() >= 2)
-        return false;
-
-    if(to_select == Self)
-        return false;
-
-    return Self->canDiscard(to_select, "he");
-}
-
-void XuanfengCard::use(Room *room, ServerPlayer *lingtong, QList<ServerPlayer *> &targets) const{
-    lingtong->setFlags("XuanfengUsed");
-    QMap<ServerPlayer*,int> map;
-    int totaltarget = 0;
-    foreach(ServerPlayer* sp, targets)
-        map[sp]++;
-    for (int i = 0; i < map.keys().size(); i++) {
-        totaltarget++;
-    }
-    // only chose one and throw only one card of him is forbiden
-    if(totaltarget == 1){
-        foreach(ServerPlayer* sp,map.keys()){
-            map[sp]++;
-        }
-    }
-    foreach(ServerPlayer* sp, targets){
-        while(map[sp] > 0){
-            if(lingtong->isAlive() && sp->isAlive() && lingtong->canDiscard(sp, "he")){
-                int card_id = room->askForCardChosen(lingtong, sp, "he", "xuanfeng", false, Card::MethodDiscard);
-                room->throwCard(card_id, sp, lingtong);
-            }
-            map[sp]--;
-        }
-    }
-}
-
-class XuanfengViewAsSkill: public ZeroCardViewAsSkill{
-public:
-    XuanfengViewAsSkill():ZeroCardViewAsSkill("xuanfeng"){
-    }
-
-    virtual const Card *viewAs() const{
-        return new XuanfengCard;
-    }
-
-protected:
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@@xuanfeng";
-    }
-};
-
 class Xuanfeng: public TriggerSkill {
 public:
     Xuanfeng(): TriggerSkill("xuanfeng") {
-        events << CardsMoveOneTime << EventPhaseStart;
-        view_as_skill = new XuanfengViewAsSkill;
+        events << CardsMoveOneTime << EventPhaseChanging;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *lingtong, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart) {
+        if (triggerEvent == EventPhaseChanging) {
             lingtong->setMark("xuanfeng", 0);
-            lingtong->setFlags("-XuanfengUsed");
         } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.from != lingtong)
@@ -498,7 +442,34 @@ public:
                 }
                 if (targets.isEmpty())
                     return false;
-                room->askForUseCard(lingtong, "@@xuanfeng", "@xuanfeng-card");
+
+                if (TriggerSkill::triggerable(lingtong) && lingtong->askForSkillInvoke(objectName())) {
+                    if (!move.from_places.contains(Player::PlaceEquip))
+                        lingtong->setFlags("XuanfengUsed");
+                    room->broadcastSkillInvoke(objectName());
+
+                    ServerPlayer *first = room->askForPlayerChosen(lingtong, targets, "xuanfeng");
+                    ServerPlayer *second = NULL;
+                    int first_id = -1;
+                    int second_id = -1;
+                    if (first != NULL) {
+                        first_id = room->askForCardChosen(lingtong, first, "he", "xuanfeng", false, Card::MethodDiscard);
+                        room->throwCard(first_id, first, lingtong);
+                    }
+                    if (!lingtong->isAlive())
+                        return false;
+                    targets.clear();
+                    foreach (ServerPlayer *target, room->getOtherPlayers(lingtong)) {
+                        if (lingtong->canDiscard(target, "he"))
+                            targets << target;
+                    }
+                    if (!targets.isEmpty())
+                        second = room->askForPlayerChosen(lingtong, targets, "xuanfeng");
+                    if (second != NULL) {
+                        second_id = room->askForCardChosen(lingtong, second, "he", "xuanfeng", false, Card::MethodDiscard);
+                        room->throwCard(second_id, second, lingtong);
+                    }
+                }
             }
         }
 
@@ -1271,7 +1242,6 @@ YJCMPackage::YJCMPackage()
     addMetaObject<XianzhenCard>();
     addMetaObject<XianzhenSlashCard>();
     addMetaObject<XinzhanCard>();
-    addMetaObject<XuanfengCard>();
     addMetaObject<JujianCard>();
     addMetaObject<PaiyiCard>();
 
