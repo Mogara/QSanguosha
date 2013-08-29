@@ -132,43 +132,43 @@ return {
 	-- Hegemony SP
 	["hegemony_sp"] = "国战SP",
 
-	["sp_heg_zhouyu"] = "国战SP周瑜",
+	["sp_heg_zhouyu"] = "SP周瑜-国",
 	["&sp_heg_zhouyu"] = "周瑜",
 	["illustrator:sp_heg_zhouyu"] = "牧童的短笛",
 	["cv_zhouyu:convert"] = "你可以替换为国战周瑜或国战SP周瑜",
 
-	["heg_caopi"] = "国战曹丕",
+	["heg_caopi"] = "曹丕-国",
 	["&heg_caopi"] = "曹丕", 
 	["illustrator:heg_caopi"] = "DH",
 	["cv_caopi:convert"] = "你可以替换为国战曹丕",
 
-	["heg_zhenji"] = "国战甄姬",
+	["heg_zhenji"] = "甄姬-国",
 	["&heg_zhenji"] = "甄姬", 
 	["illustrator:heg_zhenji"] = "DH",
 
-	["heg_zhugeliang"] = "国战诸葛亮",
+	["heg_zhugeliang"] = "诸葛亮-国",
 	["&heg_zhugeliang"] = "诸葛亮", 
 	["illustrator:heg_zhugeliang"] = "木美人",
 	["cv_zhugeliang:convert"] = "你可以替换为国战诸葛亮或台版诸葛亮",
 
-	["heg_huangyueying"] = "国战黄月英",
+	["heg_huangyueying"] = "黄月英-国",
 	["&heg_huangyueying"] = "黄月英", 
 	["illustrator:heg_huangyueying"] = "木美人",
 	["cv_nos_huangyueying:convert"] = "你可以替换为国战黄月英或台版黄月英",
 
-	["heg_zhouyu"] = "国战周瑜",
+	["heg_zhouyu"] = "周瑜-国",
 	["&heg_zhouyu"] = "周瑜", 
 	["illustrator:heg_zhouyu"] = "苍月白龙",
 
-	["heg_xiaoqiao"] = "国战小乔",
+	["heg_xiaoqiao"] = "小乔-国",
 	["&heg_xiaoqiao"] = "小乔", 
 	["illustrator:heg_xiaoqiao"] = "苍月白龙",
 
-	["heg_lvbu"] = "国战吕布",
+	["heg_lvbu"] = "吕布-国",
 	["&heg_lvbu"] = "吕布", 
 	["illustrator:heg_lvbu"] = "LiuHeng",
 
-	["heg_diaochan"] = "国战貂蝉",
+	["heg_diaochan"] = "貂蝉-国",
 	["&heg_diaochan"] = "貂蝉", 
 	["illustrator:heg_diaochan"] = "LiuHeng",
 }
