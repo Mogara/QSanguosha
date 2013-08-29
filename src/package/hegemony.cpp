@@ -27,6 +27,8 @@ public:
             if (!room->askForCard(player, ".Equip", "@xiaoguo-discard", QVariant())) {
                 room->broadcastSkillInvoke(objectName(), 2);
                 room->damage(DamageStruct("xiaoguo", yuejin, player));
+				if (yuejin->isAlive())
+					yuejin->drawCards(1);
             } else
                 room->broadcastSkillInvoke(objectName(), 3);
         }
