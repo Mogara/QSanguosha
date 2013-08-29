@@ -965,10 +965,59 @@ public:
     }
 };
 
+FangquanCard::FangquanCard() {
+}
+
+bool FangquanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && to_select != Self;
+}
+
+void FangquanCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+    ServerPlayer *liushan = effect.from, *player = effect.to;
+
+    LogMessage log;
+    log.type = "#Fangquan";
+    log.from = liushan;
+    log.to << player;
+    room->sendLog(log);
+
+    room->setTag("FangquanTarget", QVariant::fromValue((PlayerStar)player));
+}
+
+class FangquanViewAsSkill: public OneCardViewAsSkill {
+public:
+    FangquanViewAsSkill(): OneCardViewAsSkill("fangquan") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@fangquan";
+    }
+
+    virtual bool viewFilter(const Card *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        FangquanCard *fangquan = new FangquanCard;
+        fangquan->addSubcard(originalCard);
+        return fangquan;
+    }
+};
+
 class Fangquan: public TriggerSkill {
 public:
     Fangquan(): TriggerSkill("fangquan") {
         events << EventPhaseChanging;
+		view_as_skill = new FangquanViewAsSkill;
+    }
+
+	virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
     }
 
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *liushan, QVariant &data) const{
@@ -976,41 +1025,25 @@ public:
         switch (change.to) {
         case Player::Play: {
                 bool invoked = false;
-                if (liushan->isSkipped(Player::Play))
+                if (!TriggerSkill::triggerable(liushan) || liushan->isSkipped(Player::Play))
                     return false;
                 invoked = liushan->askForSkillInvoke(objectName());
                 if (invoked) {
-                    liushan->setFlags("fangquan");
+                    liushan->setFlags(objectName());
                     liushan->skip(Player::Play);
                 }
                 break;
             }
         case Player::NotActive: {
-                if (liushan->hasFlag("fangquan")) {
-                    if (!liushan->canDiscard(liushan, "h") || !room->askForDiscard(liushan, "fangquan", 1, 1, true))
+                if (liushan->hasFlag(objectName())) {
+                    if (!liushan->canDiscard(liushan, "h"))
                         return false;
-
-                    ServerPlayer *player = room->askForPlayerChosen(liushan, room->getOtherPlayers(liushan), objectName());
-
-                    QString name = player->getGeneralName();
-                    if (name == "zhugeliang" || name == "shenzhugeliang" || name == "wolong")
-                        room->broadcastSkillInvoke("fangquan", 1);
-                    else
-                        room->broadcastSkillInvoke("fangquan", 2);
-
-                    LogMessage log;
-                    log.type = "#Fangquan";
-                    log.from = liushan;
-                    log.to << player;
-                    room->sendLog(log);
-
-                    PlayerStar p = player;
-                    room->setTag("FangquanTarget", QVariant::fromValue(p));
+					room->askForUseCard(liushan, "@@fangquan", "@fangquan-give", -1, Card::MethodDiscard);
                 }
                 break;
             }
         default:
-            break;
+				break;
         }
         return false;
     }
@@ -1424,6 +1457,7 @@ MountainPackage::MountainPackage()
     addMetaObject<ZhibaCard>();
     addMetaObject<JixiCard>();
     addMetaObject<JixiSnatchCard>();
+	addMetaObject<FangquanCard>();
 
     skills << new ZhibaPindian << new Jixi;
 }

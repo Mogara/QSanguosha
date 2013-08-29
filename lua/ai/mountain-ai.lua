@@ -490,7 +490,7 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	if self.player:isKongcheng() then return false end
 	if self:getCardsNum("Peach") >= limit - 2 and self.player:isWounded() then return false end
 
-	local to_discard = {}
+	local to_discard = nil
 
 	local index = 0
 	local all_peaches = 0
@@ -499,70 +499,65 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 			all_peaches = all_peaches + 1
 		end
 	end
-	if all_peaches >= 2 and self:getOverflow() <= 0 then return {} end
+	if all_peaches >= 2 and self:getOverflow() <= 0 then return false end
 	self:sortByKeepValue(cards)
 	cards = sgs.reverse(cards)
 
 	for i = #cards, 1, -1 do
 		local card = cards[i]
 		if not isCard("Peach", card, self.player) and not self.player:isJilei(card) then
-			table.insert(to_discard, card:getEffectiveId())
-			table.remove(cards, i)
+			to_discard = card:getEffectiveId()
 			break
 		end
 	end
-	return #to_discard > 0
+	return to_discard ~= nil
 end
 
-sgs.ai_skill_discard.fangquan = function(self, discard_num, min_num, optional, include_equip)
-	return self:askForDiscard("dummyreason", 1, 1, false, false)
-end
+sgs.ai_skill_use["@@fangquan"] = function(self, prompt)
+	local to_discard = nil
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	local index = 0
+	local all_peaches = 0
+	for _, card in ipairs(cards) do
+		if card:isKindOf("Peach") then
+			all_peaches = all_peaches + 1
+		end
+	end
+	if all_peaches >= 2 and self:getOverflow() <= 0 then return "." end
+	self:sortByKeepValue(cards)
+	cards = sgs.reverse(cards)
 
-sgs.ai_skill_playerchosen.fangquan = function(self, targets)
+	for i = #cards, 1, -1 do
+		local card = cards[i]
+		if not card:isKindOf("Peach") and not self.player:isJilei(card) then
+			to_discard = card:getEffectiveId()
+			break
+		end
+	end
+	if not to_discard then return "." end
+
 	self:sort(self.friends_noself, "handcard")
 	self.friends_noself = sgs.reverse(self.friends_noself)
-	
-	local AssistTarget = self:AssistTarget()
-	
 	for _, target in ipairs(self.friends_noself) do
-		if not target:hasSkill("dawu") and self:hasSkills("yongsi",target) and not self:willSkipPlayPhase(target) and not self:willSkipDrawPhase(target) then
-			return target
+		if not target:hasSkill("dawu") and self:hasSkills("yongsi|zhiheng|" .. sgs.priority_skill .. "|shensu", target)
+			and (not self:willSkipPlayPhase(target) or target:hasSkill("shensu")) then
+			return "@FangquanCard=" .. to_discard .. "->" .. target:objectName()
 		end
 	end
-	
-	if AssistTarget and not AssistTarget:hasSkill("dawu") and not self:willSkipPlayPhase(AssistTarget) and not self:willSkipDrawPhase(AssistTarget) 
-		and AssistTarget:getVisibleSkillList():length() > 0 then return AssistTarget end
-
 	for _, target in ipairs(self.friends_noself) do
-		if not target:hasSkill("dawu") and self:hasSkills("zhiheng|shensu|"..sgs.priority_skill, target) and not self:willSkipPlayPhase(target) and not self:willSkipDrawPhase(target) then
-			return target
+		if target:hasSkill("dawu") then
+			local use = true
+			for _, p in ipairs(self.friends_noself) do
+				if p:getMark("@fog") > 0 then use = false break end
+			end
+			if use then return "@FangquanCard=" .. to_discard .. "->" .. target:objectName() end
 		end
 	end
-	
-	if AssistTarget and not AssistTarget:hasSkill("dawu") and AssistTarget:getVisibleSkillList():length() > 0 then return AssistTarget end
-
-	for _, target in ipairs(self.friends_noself) do
-		if not target:hasSkill("dawu") then
-			return target
-		end
-	end
-
-	if #self.friends_noself > 0 then return self.friends_noself[1] end
-	
-	if not targets:isEmpty() then
-		return targets:first()
-	end
+	if #self.friends_noself > 0 then return "@FangquanCard=" .. to_discard .. "->" .. self.friends_noself[1]:objectName() end
+	return "."
 end
 
-sgs.ai_playerchosen_intention.fangquan = function(self, from, to)
-	sgs.fangquan_effect = false
-	local intention = -10
-	if to:hasSkill("benghuai") then
-		sgs.fangquan_effect = true
-		intention = 0
-	end
-	sgs.updateIntention(from, to, intention)
-end
+sgs.ai_card_intention.FangquanCard = -120
 
 function SmartAI:isTiaoxinTarget(enemy)
 	if not enemy then self.room:writeToConsole(debug.traceback()) return end
