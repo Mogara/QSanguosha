@@ -17,7 +17,7 @@ class Sprite: public QObject, public QGraphicsPixmapItem {
     Q_PROPERTY(qreal scale READ scale WRITE setScale)
 
 public:
-    Sprite(): QGraphicsPixmapItem(NULL) {}
+    Sprite(QGraphicsItem *parent = NULL): QGraphicsPixmapItem(parent) {}
 };
 
 class QAnimatedEffect: public QGraphicsEffect {
