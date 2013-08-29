@@ -1413,7 +1413,6 @@ MountainPackage::MountainPackage()
     General *jiangwei = new General(this, "jiangwei", "shu"); // SHU 012
     jiangwei->addSkill(new Tiaoxin);
     jiangwei->addSkill(new Zhiji);
-    related_skills.insertMulti("zhiji", "guanxing");
 
     General *liushan = new General(this, "liushan$", "shu", 3); // SHU 013
     liushan->addSkill(new Xiangle);
@@ -1428,7 +1427,6 @@ MountainPackage::MountainPackage()
     sunce->addSkill(new Jiang);
     sunce->addSkill(new Hunzi);
     sunce->addSkill(new Zhiba);
-    related_skills.insertMulti("hunzi", "yinghun");
 
     General *erzhang = new General(this, "erzhang", "wu", 3); // WU 015
     erzhang->addSkill(new Zhijian);

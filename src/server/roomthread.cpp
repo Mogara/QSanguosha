@@ -638,11 +638,12 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
         for (int i = 0; i < skills.size(); i++) {
             const TriggerSkill *skill = skills[i];
-            if (skill->triggerable(target) && !triggered.contains(skill)) {
+            if (!triggered.contains(skill) && skill->triggerable(target)) {
                 while (room->isPaused()) {}
                 triggered.append(skill);
                 broken = skill->trigger(triggerEvent, room, target, data);
                 if (broken) break;
+				i = 0;
             }
         }
 
