@@ -3,6 +3,14 @@
 
 config = {
 	kingdoms = { "wei", "shu", "wu", "qun", "god" },
+	kingdom_colors = {
+		wei = "#547998",
+		shu = "#D0796C",
+		wu = "#4DB873",
+		qun = "#8A807A",
+		god = "#96943D",
+	},
+	
 	package_names = {
 		"StandardCard",
 		"StandardExCard",
@@ -59,12 +67,6 @@ config = {
 		"nostal_standard",
 		"nostal_wind",
 	},
-
-	color_wei = "#547998",
-	color_shu = "#D0796C",
-	color_wu = "#4DB873",
-	color_qun = "#8A807A",
-	color_god = "#96943D",
 
 	easy_text = {
 		"太慢了，做两个俯卧撑吧！",

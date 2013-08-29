@@ -10,6 +10,7 @@
 #include "TimedProgressBar.h"
 #include "GenericCardContainerUI.h"
 #include "pixmapanimation.h"
+#include "sprite.h"
 
 #include <QPushButton>
 #include <QComboBox>

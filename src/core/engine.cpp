@@ -583,20 +583,20 @@ QStringList Engine::getKingdoms() const{
 QColor Engine::getKingdomColor(const QString &kingdom) const{
     static QMap<QString, QColor> color_map;
     if (color_map.isEmpty()) {
-        foreach (QString k, getKingdoms()) {
-            QString color_str = GetConfigFromLuaState(lua, ("color_" + k).toAscii()).toString();
-            QRegExp rx("#?([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{2})");
-            if (rx.exactMatch(color_str)) {
-                QStringList results = rx.capturedTexts();
-                int red = results.at(1).toInt(NULL, 16);
-                int green = results.at(2).toInt(NULL, 16);
-                int blue = results.at(3).toInt(NULL, 16);
-
-                color_map.insert(k, QColor(red, green, blue));
-            }
+        QVariantMap map = GetValueFromLuaState(lua, "config", "kingdom_colors").toMap();
+        QMapIterator<QString, QVariant> itor(map);
+        while (itor.hasNext()) {
+            itor.next();
+            QColor color(itor.value().toString());
+            if (color.isValid())
+                color_map[itor.key()] = color;
+            else
+                qWarning("Invalid color for kingdom %s", qPrintable(itor.key()));
         }
 
         Q_ASSERT(!color_map.isEmpty());
+		if (color_map.isEmpty())
+			qWarning("Load kingdom colors from lua script failed!");
     }
 
     return color_map.value(kingdom);

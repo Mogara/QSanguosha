@@ -10,6 +10,7 @@
 #include "clientlogbox.h"
 #include "chatwidget.h"
 #include "SkinBank.h"
+#include "sprite.h"
 #include "qsanbutton.h"
 
 class Window;
@@ -164,8 +165,6 @@ public slots:
     void doScript();
 
     void handleGameEvent(const Json::Value &arg);
-
-    EffectAnimation *getEA() const{ return animations; }
 
 	void doOkButton();
     void doCancelButton();

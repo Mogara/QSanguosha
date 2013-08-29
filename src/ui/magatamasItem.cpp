@@ -125,7 +125,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp) {
         mHp = 0;
     }
     for (int i = newHp; i < mHp; i++) {
-        QGraphicsPixmapItem *aniMaga = new QGraphicsPixmapItem;
+        QGraphicsObject *aniMaga = new QGraphicsObject;
         aniMaga->setPixmap(_icons[qBound(0, i, 5)]);
         aniMaga->setParentItem(this);
         aniMaga->setOffset(QPoint(-(width - m_imageArea.left()) / 2, -(height - m_imageArea.top()) / 2));
