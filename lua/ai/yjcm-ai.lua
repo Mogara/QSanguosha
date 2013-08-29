@@ -954,7 +954,7 @@ sgs.ai_skill_use_func.PaiyiCard = function(card, use, self)
 		for _, enemy in ipairs(self.enemies) do
 			if enemy:hasSkill("manjuan")
 				and not (self:hasSkills(sgs.masochism_skill, enemy) and not self.player:hasSkill("jueqing")) 
-				and self:damageIsEffective(enemy, sgs.DamageStruct_Normal, self.player)
+				and self:damageIsEffective(enemy, sgs.DamageStruct_Normal, self.player) and not self:cantbeHurt(enemy)
 				and not (self:getDamagedEffects(enemy, self.player) or self:needToLoseHp(enemy))
 				and enemy:getHandcardNum() > self.player:getHandcardNum() then
 				target = enemy
@@ -964,9 +964,8 @@ sgs.ai_skill_use_func.PaiyiCard = function(card, use, self)
 		if not target then
 			for _, enemy in ipairs(self.enemies) do
 				if not (self:hasSkills(sgs.masochism_skill, enemy) and not self.player:hasSkill("jueqing")) 
-					and not self:hasSkills(sgs.cardneed_skill, enemy)
-					and not self:hasSkills("jijiu|tianxiang|buyi", enemy)
-					and self:damageIsEffective(enemy, sgs.DamageStruct_Normal, self.player)
+					and not enemy:hasSkills(sgs.cardneed_skill .. "|jijiu|tianxiang|buyi")
+					and self:damageIsEffective(enemy, sgs.DamageStruct_Normal, self.player) and not self:cantbeHurt(enemy)
 					and not (self:getDamagedEffects(enemy, self.player) or self:needToLoseHp(enemy))
 					and enemy:getHandcardNum() + 2 > self.player:getHandcardNum()
 					and not enemy:hasSkill("manjuan") then
