@@ -21,47 +21,40 @@ sgs.ai_skill_invoke.tianming = function(self, data)
 	local unpreferedCards = {}
 	local cards = sgs.QList2Table(self.player:getHandcards())
 
-	local zcards = self.player:getCards("he")
-	for _, zcard in sgs.qlist(zcards) do
-		if not isCard("Peach", zcard, self.player) then
-			table.insert(unpreferedCards, zcard:getId())
+	if self:getCardsNum("Slash") > 1 then
+		self:sortByKeepValue(cards)
+		for _, card in ipairs(cards) do
+			if card:isKindOf("Slash") then table.insert(unpreferedCards, card:getId()) end
 		end
+		table.remove(unpreferedCards, 1)
 	end
 
-	if #unpreferedCards == 0 then
-		if self:getCardsNum("Slash") > 1 then
-			self:sortByKeepValue(cards)
-			for _, card in ipairs(cards) do
-				if card:isKindOf("Slash") then table.insert(unpreferedCards, card:getId()) end
-			end
-			table.remove(unpreferedCards, 1)
-		end
-		if self:needToThrowArmor() then
-			table.insert(unpreferedCards, self.player:getArmor():getId())
-		end
-
-		local num = self:getCardsNum("Jink") - 1
-		if self.player:getArmor() then num = num + 1 end
-		if num > 0 then
-			for _, card in ipairs(cards) do
-				if card:isKindOf("Jink") and num > 0 then
-					table.insert(unpreferedCards, card:getId())
-					num = num - 1
-				end
-			end
-		end
+	local num = self:getCardsNum("Jink") - 1
+	if self.player:getArmor() then num = num + 1 end
+	if num > 0 then
 		for _, card in ipairs(cards) do
-			if (card:isKindOf("Weapon") and self.player:getHandcardNum() < 3) or card:isKindOf("OffensiveHorse")
-				or self:getSameEquip(card, self.player) or card:isKindOf("AmazingGrace") or card:isKindOf("Lightning") then
+			if card:isKindOf("Jink") and num > 0 then
 				table.insert(unpreferedCards, card:getId())
+				num = num - 1
 			end
 		end
-		if self.player:getWeapon() and self.player:getHandcardNum() < 3 then
-			table.insert(unpreferedCards, self.player:getWeapon():getId())
+	end
+	for _, card in ipairs(cards) do
+		if (card:isKindOf("Weapon") and self.player:getHandcardNum() < 3) or card:isKindOf("OffensiveHorse")
+			or self:getSameEquip(card, self.player) or card:isKindOf("AmazingGrace") or card:isKindOf("Lightning") then
+			table.insert(unpreferedCards, card:getId())
 		end
-		if self.player:getOffensiveHorse() and self.player:getWeapon() then
-			table.insert(unpreferedCards, self.player:getOffensiveHorse():getId())
-		end
+	end
+	if self.player:getWeapon() and self.player:getHandcardNum() < 3 then
+		table.insert(unpreferedCards, self.player:getWeapon():getId())
+	end
+	
+	if self:needToThrowArmor() then
+		table.insert(unpreferedCards, self.player:getArmor():getId())
+	end
+	
+	if self.player:getOffensiveHorse() and self.player:getWeapon() then
+		table.insert(unpreferedCards, self.player:getOffensiveHorse():getId())
 	end
 
 	local use_cards = {}
