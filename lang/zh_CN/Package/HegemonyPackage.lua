@@ -93,7 +93,7 @@ return {
 	["huoshui"] = "祸水",
 	[":huoshui"] = "<font color=\"blue\"><b>锁定技，</b></font>你的回合内，体力值不少于体力上限一半的其他角色所有武将技能无效。",
 	["qingcheng"] = "倾城",
-	[":qingcheng"] = "出牌阶段，你可以弃置一张装备牌，令一名其他角色的一项武将技能无效，直到其下个回合开始时。",
-	["$QingchengNullify"] = "%to 的技能“%arg”由于“<font color=\"yellow\"><b>倾城</b></font>”效果无效直到其下个回合开始时",
+	[":qingcheng"] = "出牌阶段，你可以弃置一张装备牌，令一名其他角色的一项武将技能无效，直到其回合开始时。",
+	["$QingchengNullify"] = "%to 的技能“%arg”由于“<font color=\"yellow\"><b>倾城</b></font>”效果无效直到其回合开始时",
 	["$QingchengReset"] = "%from 回合开始，“%arg”恢复有效",
 }
