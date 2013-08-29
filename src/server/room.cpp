@@ -3240,8 +3240,12 @@ bool Room::hasWelfare(const ServerPlayer *player) const{
 }
 
 ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const{
-    ServerPlayer *p;
-    for (p = current; ; p = p->getNext()) {
+    ServerPlayer *starter = current;
+	if (starter == NULL)
+		starter = m_players.first();
+	bool loop = false;
+    for (ServerPlayer *p = starter; p != starter || !loop; p = p->getNext()) {
+		loop = true;
         if (p == a)
             return a;
         else if (p == b)
