@@ -648,8 +648,7 @@ void NosRendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
     ServerPlayer *target = targets.first();
 
     room->broadcastSkillInvoke("rende");
-    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName());
-    reason.m_playerId = target->objectName();
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "nosrende", QString());
     room->obtainCard(target, this, reason, false);
 
     int old_value = source->getMark("nosrende");

@@ -37,8 +37,7 @@ void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 		rende_list.removeOne(id);
 	room->setPlayerProperty(source, "rende", IntList2StringList(rende_list).join("+"));
 
-    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName());
-    reason.m_playerId = target->objectName();
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "rende", QString());
     room->obtainCard(target, this, reason, false);
 
     int new_value = old_value + subcards.length();
