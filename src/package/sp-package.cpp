@@ -1882,6 +1882,9 @@ SPPackage::SPPackage()
 	xiahoushi->addSkill(new Yanyu);
 	xiahoushi->addSkill(new Xiaode);
 
+	General *sp_yuejin = new General(this, "sp_yuejin", "wei", 4, true, true); // SP 024
+	sp_yuejin->addSkill("xiaoguo");
+
 	addMetaObject<WeidiCard>();
 	addMetaObject<YuanhuCard>();
 	addMetaObject<XuejiCard>();

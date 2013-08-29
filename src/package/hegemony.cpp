@@ -31,6 +31,7 @@ public:
 				room->broadcastSkillInvoke(objectName(), 3);
 				if (yuejin->isAlive())
 					yuejin->drawCards(1);
+			}
         }
         return false;
     }
@@ -751,6 +752,7 @@ HegemonyPackage::HegemonyPackage()
 {
     General *yuejin = new General(this, "yuejin", "wei"); // WEI 016
     yuejin->addSkill(new Xiaoguo);
+	yuejin->addSkill(new SPConvertSkill("yuejin", "sp_yuejin"));
 
     General *ganfuren = new General(this, "ganfuren", "shu", 3, false); // SHU 016
     ganfuren->addSkill(new Shushen);
