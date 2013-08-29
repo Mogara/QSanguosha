@@ -8,7 +8,6 @@
 #include "client.h"
 #include "aux-skills.h"
 #include "clientlogbox.h"
-#include "sprite.h"
 #include "chatwidget.h"
 #include "SkinBank.h"
 #include "qsanbutton.h"
