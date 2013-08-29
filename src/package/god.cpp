@@ -1167,7 +1167,7 @@ public:
         } else if (player->getPhase() == Player::NotActive) {
 			foreach (ServerPlayer *p, room->getAlivePlayers())
 				p->setMark("lianpo", 0);
-
+		}
         return false;
     }
 };

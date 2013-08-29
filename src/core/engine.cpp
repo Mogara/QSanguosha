@@ -540,7 +540,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersionNumber() const{
-    return "20130801";
+    return "20130829";
 }
 
 QString Engine::getVersion() const{
@@ -557,7 +557,7 @@ QString Engine::getVersionName() const{
 }
 
 QString Engine::getMODName() const{
-    return "Dadao";
+    return "Rara";
 }
 
 QStringList Engine::getExtensions() const{
@@ -875,6 +875,36 @@ QStringList Engine::getLimitedGeneralNames() const{
     }
 
     return general_names;
+}
+
+void Engine::banRandomGods() const{
+	QStringList all_generals = getLimitedGeneralNames();
+
+	qShuffle(all_generals);
+
+	int count = 0;
+	int max = Config.value("GodLimit", 5).toInt();
+
+	if (max == -1)
+		return;
+
+	QStringList gods;
+
+	foreach(const QString &general, all_generals) {
+		if (getGeneral(general)->getKingdom() == "god")
+			gods << general;
+			count ++;
+	};
+	int bancount = count - max;
+	if (bancount <= 0)
+		return;
+	QStringList ban_gods = gods.mid(0, bancount);
+	Q_ASSERT(ban_gods.count() == bancount);
+
+	QStringList ban_list = Config.value("Banlist/Roles").toStringList();
+
+	ban_list.append(ban_gods);
+	Config.setValue("Banlist/Roles", ban_list);
 }
 
 QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) const{

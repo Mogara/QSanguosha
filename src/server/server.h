@@ -100,6 +100,8 @@ private:
     QCheckBox *without_lordskill_checkbox;
     QCheckBox *sp_convert_checkbox;
     QSpinBox *maxchoice_spinbox;
+	QSpinBox *godlimit_spinbox;
+	QLabel *godlimit_label;
     QLabel *lord_maxchoice_label;
     QSpinBox *lord_maxchoice_spinbox;
     QSpinBox *nonlord_maxchoice_spinbox;

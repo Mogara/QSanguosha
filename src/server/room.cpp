@@ -2404,6 +2404,8 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign) {
 }
 
 void Room::chooseGenerals() {
+	QStringList ban_list = Config.value("Banlist/Roles").toStringList();
+	Sanguosha->banRandomGods();
     // for lord.
     int lord_num = Config.value("LordMaxChoice", -1).toInt();
     int nonlord_num = Config.value("NonLordMaxChoice", 2).toInt();
@@ -2488,6 +2490,7 @@ void Room::chooseGenerals() {
             this->setTag(player->objectName(), QVariant::fromValue(names));
         }
     }
+	Config.setValue("Banlist/Roles", ban_list);
 }
 
 void Room::run() {

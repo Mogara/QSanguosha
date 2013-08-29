@@ -93,6 +93,7 @@ public:
 
     QStringList getLords(bool contain_banned = false) const;
     QStringList getRandomLords() const;
+	void banRandomGods() const;
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;
     QString getRandomGeneralName() const;

@@ -219,6 +219,12 @@ QWidget *ServerDialog::createAdvancedTab() {
     maxchoice_spinbox->setRange(3, 10);
     maxchoice_spinbox->setValue(Config.value("MaxChoice", 5).toInt());
 
+	godlimit_label = new QLabel(tr("Upperlimit for gods"));
+	godlimit_label->setToolTip(tr("-1 means that all gods may appear in your general chosen dialog!"));
+	godlimit_spinbox = new QSpinBox;
+	godlimit_spinbox->setRange(-1, 8);
+	godlimit_spinbox->setValue(Config.value("GodLimit", -1).toInt());
+
     lord_maxchoice_label = new QLabel(tr("Upperlimit for lord"));
     lord_maxchoice_label->setToolTip(tr("-1 means that all lords are available"));
     lord_maxchoice_spinbox = new QSpinBox;
@@ -308,6 +314,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     layout->addLayout(HLay(pile_swapping_label, pile_swapping_spinbox));
     layout->addLayout(HLay(without_lordskill_checkbox, sp_convert_checkbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
+	layout->addLayout(HLay(godlimit_label, godlimit_spinbox));
     layout->addLayout(HLay(lord_maxchoice_label, lord_maxchoice_spinbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for non-lord")), nonlord_maxchoice_spinbox));
     layout->addWidget(second_general_checkbox);
@@ -1085,6 +1092,7 @@ bool ServerDialog::config() {
     Config.setValue("WithoutLordskill", without_lordskill_checkbox->isChecked());
     Config.setValue("EnableSPConvert", sp_convert_checkbox->isChecked());
     Config.setValue("MaxChoice", maxchoice_spinbox->value());
+	Config.setValue("GodLimit", godlimit_spinbox->value());
     Config.setValue("LordMaxChoice", lord_maxchoice_spinbox->value());
     Config.setValue("NonLordMaxChoice", nonlord_maxchoice_spinbox->value());
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);

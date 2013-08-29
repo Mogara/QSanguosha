@@ -526,7 +526,7 @@ bool Player::hasArmorEffect(const QString &armor_name) const{
 		if (armor->objectName() == armor_name || armor->isKindOf(armor_name.toStdString().c_str())) return true;
 		const Card *real_armor = Sanguosha->getEngineCard(armor->getEffectiveId());
         return real_armor->objectName() == armor_name || real_armor->isKindOf(armor_name.toStdString().c_str());
-
+	}
     return false;
 }
 
