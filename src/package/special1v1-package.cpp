@@ -701,6 +701,158 @@ public:
     }
 };
 
+class Renwang: public TriggerSkill {
+public:
+    Renwang(): TriggerSkill("renwang") {
+        events << CardUsed << CardEffected << SlashEffected << EventPhaseChanging;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == CardUsed && player->getPhase() == Player::Play) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (!use.card->isKindOf("Slash") && !use.card->isNDTrick()) return false;
+            QList<ServerPlayer *> liubeis;
+            foreach (ServerPlayer *to, use.to.toSet()) {
+                if (to != use.from && TriggerSkill::triggerable(to)) {
+                    if (to->hasFlag("RenwangEffect"))
+                        liubeis << to;
+                    else
+                        to->setFlags("RenwangEffect");
+                }
+            }
+            if (liubeis.isEmpty()) return false;
+            foreach (ServerPlayer *to, use.to) {
+                if (room->askForSkillInvoke(to, objectName(), data)
+                    && (!use.from->canDiscard(use.from, "he")
+                        || !room->askForDiscard(use.from, objectName(), 1, 1, true, true)))
+                    to->addMark(objectName());
+            }
+        } else if (triggerEvent == CardEffected) {
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            if (effect.card->isNDTrick() && player->getMark(objectName()) > 0) {
+                player->removeMark(objectName());
+
+                LogMessage log;
+                log.type = "#DanlaoAvoid";
+                log.from = player;
+                log.arg = effect.card->objectName();
+                log.arg2 = objectName();
+                room->sendLog(log);
+
+                return true;
+            }
+        } else if (triggerEvent == SlashEffected) {
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if (player->getMark(objectName()) > 0) {
+                player->removeMark(objectName());
+
+                LogMessage log;
+                log.type = "#DanlaoAvoid";
+                log.from = player;
+                log.arg = effect.slash->objectName();
+                log.arg2 = objectName();
+                room->sendLog(log);
+
+                return true;
+            }
+        } else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive) {
+                foreach (ServerPlayer *to, room->getAlivePlayers()) {
+                    if (to->hasFlag("RenwangEffect"))
+                        to->setFlags("-RenwangEffect");
+                }
+            }
+        }
+        return false;
+    }
+};
+
+class RenwangRemoveMark: public TriggerSkill {
+public:
+    RenwangRemoveMark(): TriggerSkill("#renwang") {
+        events << CardFinished;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *, ServerPlayer *, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("Slash") || use.card->isNDTrick()) {
+            foreach (ServerPlayer *to, use.to)
+                to->setMark("renwang", 0);
+        }
+        return false;
+    }
+};
+
+class KOFKuanggu: public TriggerSkill {
+public:
+    KOFKuanggu(): TriggerSkill("kofkuanggu") {
+        events << Damage;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (room->askForSkillInvoke(player, objectName(), data)) {
+            JudgeStruct judge;
+            judge.pattern = ".|heart";
+            judge.good = false;
+            judge.who = player;
+            judge.reason = objectName();
+
+            room->judge(judge);
+            if (judge.isGood() && player->isWounded()) {
+                room->broadcastSkillInvoke("kuanggu");
+
+                RecoverStruct recover;
+                recover.who = player;
+                room->recover(player, recover);
+            }
+        }
+
+        return false;
+    }
+};
+
+class Shenju: public MaxCardsSkill {
+public:
+    Shenju(): MaxCardsSkill("shenju") {
+    }
+
+    virtual int getExtra(const Player *target) const{
+        if (target->hasSkill(objectName()))
+            return target->getMark(objectName());
+        else
+            return 0;
+    }
+};
+
+class ShenjuMark: public TriggerSkill {
+public:
+    ShenjuMark(): TriggerSkill("#shenju") {
+        events << EventPhaseStart;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (player->getPhase() == Player::Discard) {
+            int max_hp = -1000;
+            foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
+                int hp = p->getHp();
+                if (hp > max_hp)
+                    max_hp = hp;
+            }
+            player->setMark("shenju", max_hp);
+        }
+        return false;
+    }
+};
+
 class Wanrong: public TriggerSkill {
 public:
     Wanrong(): TriggerSkill("wanrong") {
@@ -714,6 +866,44 @@ public:
             && room->askForSkillInvoke(player, objectName(), data))
             player->drawCards(1);
         return false;
+    }
+};
+
+PujiCard::PujiCard() {
+}
+
+bool PujiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && Self->canDiscard(to_select, "he") && to_select != Self;
+}
+
+void PujiCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+    int id = room->askForCardChosen(effect.from, effect.to, "he", "puji");
+    room->throwCard(id, effect.to, effect.from);
+
+    if (effect.from->isAlive() && this->getSuit() == Card::Spade)
+        effect.from->drawCards(1);
+    if (effect.to->isAlive() && Sanguosha->getCard(id)->getSuit() == Card::Spade)
+        effect.to->drawCards(1);
+}
+
+class Puji: public OneCardViewAsSkill {
+public:
+    Puji(): OneCardViewAsSkill("puji") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->canDiscard(player, "he") && !player->hasUsed("PujiCard");
+    }
+
+    virtual bool viewFilter(const Card *to_select) const{
+        return true;
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        PujiCard *card = new PujiCard;
+        card->addSubcard(originalCard);
+        return card;
     }
 };
 
@@ -818,13 +1008,32 @@ ADD_PACKAGE(Special1v1)
 Special1v1OLPackage::Special1v1OLPackage()
     : Package("Special1v1OL")
 {
+	General *kof_liubei = new General(this, "kof_liubei", "shu");
+    kof_liubei->addSkill(new Renwang);
+    kof_liubei->addSkill(new RenwangRemoveMark);
+    related_skills.insertMulti("renwang", "#renwang");
+
+    General *kof_weiyan = new General(this, "kof_weiyan", "shu");
+    kof_weiyan->addSkill(new KOFKuanggu);
+
+    General *kof_lvmeng = new General(this, "kof_lvmeng", "wu");
+    kof_lvmeng->addSkill(new Shenju);
+    kof_lvmeng->addSkill(new ShenjuMark);
+    related_skills.insertMulti("shenju", "#shenju");
+
     General *kof_daqiao = new General(this, "kof_daqiao", "wu", 3, false);
     kof_daqiao->addSkill("guose");
     kof_daqiao->addSkill(new Wanrong);
 
+	General *kof_huatuo = new General(this, "kof_huatuo", "qun", 3);
+    kof_huatuo->addSkill("jijiu");
+    kof_huatuo->addSkill(new Puji);
+
     General *kof_pangde = new General(this, "kof_pangde", "qun", 4);
     kof_pangde->addSkill("mengjin");
     kof_pangde->addSkill("xiaoxi");
+
+	addMetaObject<PujiCard>();
 }
 
 ADD_PACKAGE(Special1v1OL)

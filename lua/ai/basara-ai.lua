@@ -30,7 +30,7 @@ function askForShowGeneral(self, choices)
 
 	if sgs.getValue(self.player) < 6 then return "no" end
 
-	local skills_to_show = "bazhen|yizhong|zaiqi|feiying|buqu|kuanggu|guanxing|luoshen|tuxi|zhiheng|qiaobian|longdan|liuli|longhun|shelie|luoying|anxian|yicong|wushuang|jueqing|niepan"
+	local skills_to_show = "bazhen|yizhong|zaiqi|feiying|buqu|kuanggu|kofkuanggu|guanxing|luoshen|tuxi|zhiheng|qiaobian|longdan|liuli|longhun|shelie|luoying|anxian|yicong|wushuang|jueqing|niepan"
 
 	for _, player in ipairs(players) do
 		if self:hasSkills(skills_to_show, player) then return "yes" end

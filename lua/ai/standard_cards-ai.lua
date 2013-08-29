@@ -200,6 +200,7 @@ function sgs.getDefenseSlash(player)
 
 	if player:hasSkills("nosrende|rende") and player:getHp() > 2 then defense = defense + 1 end
 	if player:hasSkill("kuanggu") and player:getHp() > 1 then defense = defense + 0.2 end
+	if player:hasSkill("kofkuanggu") and player:getHp() > 1 then defense = defense + 0.25 end
 	if player:hasSkill("zaiqi") and player:getHp() > 1 then defense = defense + 0.35 end
 	if player:hasSkill("tianming") then defense = defense + 0.1 end
 	
@@ -1269,6 +1270,7 @@ sgs.ai_skill_cardask["@Axe"] = function(self, data, pattern, target)
 	if self:hasHeavySlashDamage(self.player, effect.slash, target) 
 	  or (#allcards - 3 >= self.player:getHp()) 
 	  or (self.player:hasSkill("kuanggu") and self.player:isWounded() and self.player:distanceTo(effect.to) == 1)
+	  or (self.player:hasSkill("kofkuanggu"))
 	  or (effect.to:getHp() == 1 and not hasBuquEffect(effect.to)) 
 	  or (self:needKongcheng() and self.player:getHandcardNum() > 0)
 	  or (self:hasSkills(sgs.lose_equip_skill, self.player) and self.player:getEquips():length() > 1 and self.player:getHandcardNum() < 2)

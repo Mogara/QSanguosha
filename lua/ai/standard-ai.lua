@@ -2027,7 +2027,7 @@ function SmartAI:getWoundedFriend(maleOnly)
 				addToList(friend, 1)
 			end
 		else
-			if self:needToLoseHp(friend, nil, nil, nil, true) or (self:hasSkills("rende|kuanggu|zaiqi", friend) and friend:getHp() >= 2) then
+			if self:needToLoseHp(friend, nil, nil, nil, true) or (self:hasSkills("rende|kuanggu|kofkuanggu|zaiqi", friend) and friend:getHp() >= 2) then
 				addToList(friend, 2)
 			else
 				addToList(friend, 1)

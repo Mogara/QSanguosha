@@ -570,7 +570,7 @@ sgs.ai_skill_choice.guhuo = function(self, choices)
 	local questioner
 	for _, friend in ipairs(self.friends) do
 		if friend:getHp() == self.friends[#self.friends]:getHp() then
-			if friend:hasSkills("nosrende|rende|kuanggu|zaiqi|buqu|nosbuqu|yinghun|longhun|xueji|baobian") then
+			if friend:hasSkills("nosrende|rende|kuanggu|kofkuanggu|zaiqi|buqu|nosbuqu|yinghun|longhun|xueji|baobian") then
 				questioner = friend
 				break
 			end
