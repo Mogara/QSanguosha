@@ -495,22 +495,22 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
 
             if (room->getMode() == "02_1v1") {
                 QStringList list = player->tag["1v1Arrange"].toStringList();
+				QString rule = Config.value("1v1/Rule", "Classical").toString();
+				if (list.length() <= ((rule == "OL") ? 3 : 0)) break;
 
-                if (!list.isEmpty()) {
-                    if (Config.value("1v1/Rule", "Classical").toString() == "Classical") {
-                        player->tag["1v1ChangeGeneral"] = list.takeFirst();
-                        player->tag["1v1Arrange"] = list;
-                    } else {
-                        player->tag["1v1ChangeGeneral"] = list.first();
-                    }
-
-                    changeGeneral1v1(player);
-					if (death.damage == NULL)
-						room->getThread()->trigger(Debut, room, player);
-					else
-						player->setFlags("Global_KOFDebut");
-                    return false;
+                if (rule == "Classical") {
+					player->tag["1v1ChangeGeneral"] = list.takeFirst();
+					player->tag["1v1Arrange"] = list;
+				} else {
+                    player->tag["1v1ChangeGeneral"] = list.first();
                 }
+
+				changeGeneral1v1(player);
+				if (death.damage == NULL)
+					room->getThread()->trigger(Debut, room, player);
+				else
+					player->setFlags("Global_KOFDebut");
+				return false;
             } else if (room->getMode() == "06_XMode") {
                 changeGeneralXMode(player);
                 return false;
