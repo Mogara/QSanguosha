@@ -516,6 +516,14 @@ function table.copyFrom(list)
 	return l
 end
 
+function table:indexOf(value, from)
+	if not from then from = 1 end
+	for i = from, #self do
+		if self[i] == value then return i end
+	end
+	return -1
+end
+
 function string:matchOne(option)
 	return self:match("^" .. option .. "%p") or self:match("%p" .. option .. "%p") or self:match("%p" .. option .. "$")
 end
