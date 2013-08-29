@@ -271,7 +271,7 @@ end
 
 sgs.ai_skill_playerchosen.leiji = function(self, targets)
 	self:updatePlayers()
-	return self:findLeijiTarget(self.player, 100, nil, true)
+	return self:findLeijiTarget(self.player, 100, nil, 1)
 end
 
 function SmartAI:needLeiji(to, from)
@@ -349,7 +349,7 @@ huangtianv_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_use_func.HuangtianCard = function(card, use, self)
-	if self:needBear() or self:getCardsNum("Jink", self.player, "h") <= 1 then
+	if self:needBear() or self:getCardsNum("Jink", "h") <= 1 then
 		return "."
 	end
 	local targets = {}

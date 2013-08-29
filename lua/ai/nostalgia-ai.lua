@@ -584,7 +584,7 @@ sgs.ai_skill_playerchosen.nosleiji = function(self, targets)
 	end
 
 	self:updatePlayers()
-	return self:findLeijiTarget(self.player, 100, nil, false)
+	return self:findLeijiTarget(self.player, 100, nil, -1)
 end
 
 sgs.ai_playerchosen_intention.nosleiji = sgs.ai_playerchosen_intention.leiji
