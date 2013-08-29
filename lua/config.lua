@@ -99,7 +99,6 @@ config = {
 		"kof_zhurong",
 		"kof_sunshangxiang",
 		"kof_nos_diaochan",
-		"kof_pangde"
 	},
 
 	kof_ban = {
