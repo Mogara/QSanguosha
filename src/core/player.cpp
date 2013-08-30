@@ -171,7 +171,7 @@ int Player::getAttackRange(bool include_weapon) const{
         Q_ASSERT(card);
         weapon_range = card->getRange();
     }
-	return qMax(original_range, weapon_range) + hasSkill("fentian") ? getPile("burn").length() : 0;
+	return qMax(original_range, weapon_range) + (hasSkill("fentian") ? getPile("burn").length() : 0);
 }
 
 bool Player::inMyAttackRange(const Player *other) const{
