@@ -164,6 +164,7 @@ CommonTranslationTable = {
 	["#IronChainDamage"] = "%from 处于横置状态，将受到传导的属性伤害",
 	["#LoseHp"] = "%from 失去了 %arg 点体力",
 	["#LoseMaxHp"] = "%from 失去了 %arg 点体力上限",
+	["#GainMaxHp"] = "%from 增加了 %arg 点体力上限",
 	["#GetHp"] = "%from 当前体力为 %arg ，体力上限为 %arg2",
 	["#ChangeKingdom"] = "%from 把 %to 的势力由 %arg 改成了 %arg2",
 	["#AnalepticBuff"] = "%from 使用【<font color=\"yellow\"><b>酒</b></font>】，对 %to 造成的伤害从 %arg 点增加至 %arg2 点",

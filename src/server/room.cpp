@@ -3054,6 +3054,19 @@ bool Room::changeMaxHpForAwakenSkill(ServerPlayer *player, int magnitude) {
         }
     } else {
         setPlayerProperty(player, "maxhp", player->getMaxHp() + magnitude);
+
+		LogMessage log;
+        log.type = "#GainMaxHp";
+        log.from = player;
+        log.arg = QString::number(magnitude);
+        sendLog(log);
+
+        LogMessage log2;
+        log2.type = "#GetHp";
+        log2.from = player;
+        log2.arg = QString::number(player->getHp());
+        log2.arg2 = QString::number(player->getMaxHp());
+        sendLog(log2);
     }
     return (player->getMark("@waked") >= n);
 }
