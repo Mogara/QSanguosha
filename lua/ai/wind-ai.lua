@@ -159,7 +159,7 @@ end
 
 sgs.ai_skill_invoke.jiewei = true
 
-sgs.ai_skill_use["TrickCard,EquipCard"] = function(self, prompt, method)
+sgs.ai_skill_use["TrickCard,EquipCard|.|.|hand"] = function(self, prompt, method)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(cards)
 	for _, cards in ipairs(cards) do
