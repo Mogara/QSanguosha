@@ -1035,7 +1035,7 @@ bool NosGuhuoCard::nosguhuo(ServerPlayer *yuji) const{
             room->setEmotion(player, ".");
 
         CardMoveReason reason(CardMoveReason::S_REASON_USE, yuji->objectName(), QString(), "nosguhuo");
-        CardsMoveStruct move(used_cards, yuji, NULL, Player::PlaceTable, reason);
+        CardsMoveStruct move(used_cards, yuji, NULL, Player::PlaceUnknown, Player::PlaceTable, reason);
         moves.append(move);
         room->moveCardsAtomic(moves, true);
     } else {
@@ -1053,7 +1053,7 @@ bool NosGuhuoCard::nosguhuo(ServerPlayer *yuji) const{
         success = real && card->getSuit() == Card::Heart;
         if (success) {
             CardMoveReason reason(CardMoveReason::S_REASON_USE, yuji->objectName(), QString(), "nosguhuo");
-            CardsMoveStruct move(used_cards, yuji, NULL, Player::PlaceTable, reason);
+            CardsMoveStruct move(used_cards, yuji, NULL, Player::PlaceUnknown, Player::PlaceTable, reason);
             moves.append(move);
             room->moveCardsAtomic(moves, true);
         } else {

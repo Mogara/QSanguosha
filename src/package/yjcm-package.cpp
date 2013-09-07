@@ -798,16 +798,10 @@ void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second) const{
         equips2.append(equip->getId());
 
     QList<CardsMoveStruct> exchangeMove;
-    CardsMoveStruct move1;
-    move1.card_ids = equips1;
-    move1.to = second;
-    move1.to_place = Player::PlaceEquip;
-	move1.reason = CardMoveReason(CardMoveReason::S_REASON_SWAP, first->objectName(), second->objectName(), "ganlu", QString());
-    CardsMoveStruct move2;
-    move2.card_ids = equips2;
-    move2.to = first;
-    move2.to_place = Player::PlaceEquip;
-	move2.reason = CardMoveReason(CardMoveReason::S_REASON_SWAP, second->objectName(), first->objectName(), "ganlu", QString());
+    CardsMoveStruct move1(equips1, second, Player::PlaceEquip,
+						  CardMoveReason(CardMoveReason::S_REASON_SWAP, first->objectName(), second->objectName(), "ganlu", QString()));
+	CardsMoveStruct move2(equips2, first, Player::PlaceEquip,
+						  CardMoveReason(CardMoveReason::S_REASON_SWAP, second->objectName(), first->objectName(), "ganlu", QString()));
     exchangeMove.push_back(move2);
     exchangeMove.push_back(move1);
     room->moveCards(exchangeMove, false);

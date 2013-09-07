@@ -3472,7 +3472,7 @@ void Room::throwCard(const Card *card, const CardMoveReason &reason, ServerPlaye
 
     QList<CardsMoveStruct> moves;
     if (who) {
-        CardsMoveStruct move(to_discard, who, NULL, Player::DiscardPile, reason);
+        CardsMoveStruct move(to_discard, who, NULL, Player::PlaceUnknown, Player::DiscardPile, reason);
         moves.append(move);
         moveCardsAtomic(moves, true);
     } else {
@@ -3537,10 +3537,12 @@ void Room::_fillMoveInfo(CardsMoveStruct &moves, int card_index) const{
     if (moves.from) { // Hand/Equip/Judge
         if (moves.from_place == Player::PlaceSpecial || moves.from_place == Player::PlaceTable)
             moves.from_pile_name = moves.from->getPileName(card_id);
-        moves.from_player_name = moves.from->objectName();
+		if (moves.from_player_name.isEmpty())
+			moves.from_player_name = moves.from->objectName();
     }
     if (moves.to) {
-        moves.to_player_name = moves.to->objectName();
+		if (moves.to_player_name.isEmpty())
+			moves.to_player_name = moves.to->objectName();
         int card_id = moves.card_ids[card_index];
         if (moves.to_place == Player::PlaceSpecial || moves.to_place == Player::PlaceTable)
             moves.to_pile_name = moves.to->getPileName(card_id);
@@ -5299,6 +5301,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
     CardsMoveStruct move2(QList<int>(),
                           judge->who,
                           exchange ? player : NULL,
+						  Player::PlaceUnknown,
                           exchange ? Player::PlaceHand : Player::DiscardPile,
                           reason);
 

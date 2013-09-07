@@ -148,14 +148,8 @@ void Yiji::onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
         _guojia.append(guojia);
         QList<int> yiji_cards = room->getNCards(n, false);
 
-        CardsMoveStruct move;
-        move.card_ids = yiji_cards;
-        move.from = NULL;
-        move.from_place = Player::PlaceTable;
-        move.to = guojia;
-        move.to_player_name = guojia->objectName();
-        move.to_place = Player::PlaceHand;
-        move.reason = CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString());
+        CardsMoveStruct move(yiji_cards, NULL, guojia, Player::PlaceTable, Player::PlaceHand,
+							 CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
         QList<CardsMoveStruct> moves;
         moves.append(move);
         room->notifyMoveCards(true, moves, false, _guojia);
@@ -163,13 +157,8 @@ void Yiji::onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
 
         QList<int> origin_yiji = yiji_cards;
         while (room->askForYiji(guojia, yiji_cards, objectName(), true, false, true, -1, room->getAlivePlayers())) {
-            CardsMoveStruct move;
-            move.from = guojia;
-            move.from_player_name = guojia->objectName();
-            move.from_place = Player::PlaceHand;
-            move.to = NULL;
-            move.to_place = Player::PlaceTable;
-            move.reason = CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString());
+            CardsMoveStruct move(QList<int>(), guojia, NULL, Player::PlaceHand, Player::PlaceTable,
+								 CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
             foreach (int id, origin_yiji) {
                 if (room->getCardPlace(id) != Player::DrawPile) {
                     move.card_ids << id;
@@ -186,14 +175,8 @@ void Yiji::onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
         }
 
         if (!yiji_cards.isEmpty()) {
-            CardsMoveStruct move;
-            move.from = guojia;
-            move.from_player_name = guojia->objectName();
-            move.from_place = Player::PlaceHand;
-            move.to = NULL;
-            move.to_place = Player::PlaceTable;
-            move.reason = CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString());
-            move.card_ids = yiji_cards;
+            CardsMoveStruct move(yiji_cards, guojia, NULL, Player::PlaceHand, Player::PlaceTable,
+								 CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
             QList<CardsMoveStruct> moves;
             moves.append(move);
             room->notifyMoveCards(true, moves, false, _guojia);
@@ -768,11 +751,8 @@ public:
                 room->broadcastSkillInvoke(objectName());
 
             QList<int> ids = room->getNCards(1, false);
-            CardsMoveStruct move;
-            move.card_ids = ids;
-            move.to = yueying;
-            move.to_place = Player::PlaceTable;
-            move.reason = CardMoveReason(CardMoveReason::S_REASON_TURNOVER, yueying->objectName(), "jizhi", QString());
+            CardsMoveStruct move(ids, yueying, Player::PlaceTable,
+								 CardMoveReason(CardMoveReason::S_REASON_TURNOVER, yueying->objectName(), "jizhi", QString()));
             room->moveCardsAtomic(move, true);
 
             int id = ids.first();
@@ -787,8 +767,8 @@ public:
                 if (card_ex) {
                     CardMoveReason reason1(CardMoveReason::S_REASON_PUT, yueying->objectName(), "jizhi", QString());
                     CardMoveReason reason2(CardMoveReason::S_REASON_OVERRIDE, yueying->objectName(), "jizhi", QString());
-                    CardsMoveStruct move1(QList<int>() << card_ex->getEffectiveId(), yueying, NULL, Player::DrawPile, reason1);
-                    CardsMoveStruct move2(ids, yueying, yueying, Player::PlaceHand, reason2);
+                    CardsMoveStruct move1(card_ex->getEffectiveId(), yueying, NULL, Player::PlaceUnknown, Player::DrawPile, reason1);
+                    CardsMoveStruct move2(ids, yueying, yueying, Player::PlaceUnknown, Player::PlaceHand, reason2);
 
                     QList<CardsMoveStruct> moves;
                     moves.append(move1);

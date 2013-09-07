@@ -248,11 +248,7 @@ bool CangjiCard::targetFilter(const QList<const Player *> &targets, const Player
 void CangjiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
 
-    CardsMoveStruct move;
-    move.from = effect.from;
-    move.to = effect.to;
-    move.to_place = Player::PlaceEquip;
-    move.card_ids = subcards;
+    CardsMoveStruct move(subcards, effect.from, effect.to, Player::PlaceUnknown, Player::PlaceEquip, CardMoveReason());
     room->moveCardsAtomic(move, true);
 
     if (effect.from->getEquips().isEmpty())
@@ -362,17 +358,13 @@ public:
         if (equip_list.isEmpty())
             return false;
 
-        CardsMoveStruct move;
-        move.card_ids = equip_list;
-        move.to = player;
-        move.to_place = Player::PlaceEquip;
-
         LogMessage log;
         log.from = player;
         log.type = "$Install";
         log.card_str = IntList2StringList(equip_list).join("+");
         room->sendLog(log);
 
+		CardsMoveStruct move(equip_list, player, Player::PlaceEquip, CardMoveReason());
         room->moveCardsAtomic(move, true);
         return false;
     }

@@ -321,11 +321,8 @@ public:
         }
 
         QList<int> ids = room->getNCards(3, false);
-        CardsMoveStruct move;
-        move.card_ids = ids;
-        move.to = player;
-        move.to_place = Player::PlaceTable;
-        move.reason = CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->objectName(), "zuixiang", QString());
+        CardsMoveStruct move(ids, player, Player::PlaceTable,
+							 CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->objectName(), "zuixiang", QString()));
         room->moveCardsAtomic(move, true);
 
         room->getThread()->delay();
@@ -373,7 +370,8 @@ public:
             room->sendLog(log);
 
             player->setFlags("ManjuanInvoke");
-            CardMoveReason reason(CardMoveReason::S_REASON_PUT, player->objectName(), QString(), "zuixiang", "");
+            CardsMoveStruct move(zuixiang, player, Player::PlaceHand,
+								 CardMoveReason(CardMoveReason::S_REASON_PUT, player->objectName(), QString(), "zuixiang", QString()));
             CardsMoveStruct move(zuixiang, player, Player::PlaceHand, reason);
             room->moveCardsAtomic(move, true);
         }
@@ -825,10 +823,8 @@ public:
         for (int i = 0; i < 3; i++) {
             int id = room->drawCard();
             cardIds << id;
-            CardsMoveStruct move;
-            move.card_ids << id;
-            move.to_place = Player::PlaceTable;
-            move.reason = CardMoveReason(CardMoveReason::S_REASON_TURNOVER, liubei->objectName(), QString(), "zhaolie", QString());
+            CardsMoveStruct move(id, NULL, Player::PlaceTable,
+								 CardMoveReason(CardMoveReason::S_REASON_TURNOVER, liubei->objectName(), QString(), "zhaolie", QString()));
             room->moveCardsAtomic(move, true);
             room->getThread()->delay();
         }
@@ -1280,18 +1276,12 @@ public:
             equip_index = static_cast<int>(equip->location());
 
             QList<CardsMoveStruct> exchangeMove;
-            CardsMoveStruct move1;
-            move1.card_ids << card_id;
-            move1.to = player;
-            move1.to_place = Player::PlaceEquip;
-            move1.reason = CardMoveReason(CardMoveReason::S_REASON_PUT, player->objectName());
+            CardsMoveStruct move1(card_id, player, Player::PlaceEquip,
+								  CardMoveReason(CardMoveReason::S_REASON_PUT, player->objectName()));
             exchangeMove.push_back(move1);
             if (player->getEquip(equip_index) != NULL) {
-                CardsMoveStruct move2;
-                move2.card_ids << player->getEquip(equip_index)->getId();
-                move2.to = NULL;
-                move2.to_place = Player::DiscardPile;
-                move2.reason = CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, player->objectName());
+                CardsMoveStruct move2(player->getEquip(equip_index)->getId(), NULL, Player::DiscardPile,
+									  CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, player->objectName()));
                 exchangeMove.push_back(move2);
             }
             LogMessage log;

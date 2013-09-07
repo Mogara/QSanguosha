@@ -500,8 +500,15 @@ struct CardUseStruct {
 
 struct CardsMoveStruct {
     CardsMoveStruct();
+	CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Player::Place from_place, Player::Place to_place, CardMoveReason reason);
+	CardsMoveStruct(const QList<int> &ids, Player *to, Player::Place to_place, CardMoveReason reason);
+	CardsMoveStruct(int id, Player *from, Player *to, Player::Place from_place, Player::Place to_place, CardMoveReason reason);
+	CardsMoveStruct(int id, Player *to, Player::Place to_place, CardMoveReason reason);
+
     QList<int> card_ids;
     Player::Place from_place, to_place;
+	QString from_player_name, to_player_name;
+	QString from_pile_name, to_pile_name;
     Player *from, *to;
     CardMoveReason reason;
     bool open;

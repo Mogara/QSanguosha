@@ -76,18 +76,12 @@ void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         equipped_id = target->getEquip(location())->getEffectiveId();
 
     QList<CardsMoveStruct> exchangeMove;
-    CardsMoveStruct move1;
-    move1.card_ids << getId();
-    move1.to = target;
-    move1.to_place = Player::PlaceEquip;
-    move1.reason = CardMoveReason(CardMoveReason::S_REASON_USE, target->objectName());
+    CardsMoveStruct move1(getEffectiveId(), target, Player::PlaceEquip,
+						  CardMoveReason(CardMoveReason::S_REASON_USE, target->objectName()));
     exchangeMove.push_back(move1);
     if (equipped_id != Card::S_UNKNOWN_CARD_ID) {
-         CardsMoveStruct move2;
-         move2.card_ids << equipped_id;
-         move2.to = NULL;
-         move2.to_place = Player::DiscardPile;
-         move2.reason = CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName());
+         CardsMoveStruct move2(equipped_id, NULL, Player::DiscardPile,
+							   CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
          exchangeMove.push_back(move2);
     }
     LogMessage log;

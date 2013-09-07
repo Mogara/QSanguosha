@@ -246,11 +246,8 @@ public:
                 bool has_heart = false;
                 int x = menghuo->getLostHp();
                 QList<int> ids = room->getNCards(x, false);
-                CardsMoveStruct move;
-                move.card_ids = ids;
-                move.to = menghuo;
-                move.to_place = Player::PlaceTable;
-                move.reason = CardMoveReason(CardMoveReason::S_REASON_TURNOVER, menghuo->objectName(), "zaiqi", QString());
+                CardsMoveStruct move(ids, menghuo, Player::PlaceTable,
+									 CardMoveReason(CardMoveReason::S_REASON_TURNOVER, menghuo->objectName(), "zaiqi", QString()));
                 room->moveCardsAtomic(move, true);
 
                 room->getThread()->delay();
@@ -540,16 +537,10 @@ void DimengCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets)
                                QSanProtocol::Utils::toJsonArray(a->objectName(), b->objectName()));
         }
         QList<CardsMoveStruct> exchangeMove;
-        CardsMoveStruct move1;
-        move1.card_ids = a->handCards();
-        move1.to = b;
-        move1.to_place = Player::PlaceHand;
-		move1.reason = CardMoveReason(CardMoveReason::S_REASON_SWAP, a->objectName(), b->objectName(), "dimeng", QString());
-        CardsMoveStruct move2;
-        move2.card_ids = b->handCards();
-        move2.to = a;
-        move2.to_place = Player::PlaceHand;
-		move2.reason = CardMoveReason(CardMoveReason::S_REASON_SWAP, b->objectName(), a->objectName(), "dimeng", QString());
+        CardsMoveStruct move1(a->handCards(), b, Player::PlaceHand,
+							  CardMoveReason(CardMoveReason::S_REASON_SWAP, a->objectName(), b->objectName(), "dimeng", QString()));
+		CardsMoveStruct move2(b->handCards(), a, Player::PlaceHand,
+							  CardMoveReason(CardMoveReason::S_REASON_SWAP, b->objectName(), a->objectName(), "dimeng", QString()));
         exchangeMove.push_back(move1);
         exchangeMove.push_back(move2);
         room->moveCards(exchangeMove, false);
