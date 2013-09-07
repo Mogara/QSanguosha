@@ -944,7 +944,7 @@ public:
 class Shichou: public TriggerSkill {
 public:
     Shichou(): TriggerSkill("shichou$") {
-        events << GameStart << EventPhaseStart << DamageInflicted << Dying;
+        events << EventPhaseStart << DamageInflicted << Dying;
         frequency = Limited;
 		limit_mark = "@hate";
         view_as_skill = new ShichouViewAsSkill;
@@ -955,9 +955,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == GameStart && player->hasLordSkill("shichou")) {
-            room->addPlayerMark(player, "@hate");
-        } else if (triggerEvent == EventPhaseStart && player->getMark("xhate") == 0 && player->hasLordSkill("shichou")
+        if (triggerEvent == EventPhaseStart && player->getMark("xhate") == 0 && player->hasLordSkill("shichou")
                    && player->getPhase() == Player::Start && player->getCards("he").length() > 1) {
             foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
                 if (p->getKingdom() == "shu") {
