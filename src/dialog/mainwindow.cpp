@@ -414,13 +414,13 @@ void MainWindow::on_actionAbout_triggered() {
     const char *time = __TIME__;
     content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
 
-    QString project_url = "http://github.com/gaodayihao/QSanguosha";
+    QString project_url = "https://github.com/YanGuam/QSanguoshaForDadao";
     content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
     QString forum_url = "http://qsanguosha.org";
     content.append(tr("Forum: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(forum_url));
 
-    Window *window = new Window(tr("About QSanguosha"), QSize(420, 450));
+    Window *window = new Window(tr("About QSanguosha"), QSize(420, 465));
     scene->addItem(window);
     window->setZValue(32766);
 
