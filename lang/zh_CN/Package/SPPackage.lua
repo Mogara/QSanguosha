@@ -128,7 +128,7 @@ return {
 	["$ZhoufuJudge"] = "%from 的判定牌为 %arg 牌 %card",
 	
 	--Chaos Package
-	["chaos"] = "乱入",
+	["Chaos"] = "乱入",
 	
 	["#sunyang"] = "逐浪追风",
 	["sunyang"] = "孙杨",

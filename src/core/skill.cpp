@@ -37,7 +37,7 @@ QString Skill::getDescription() const{
     QString des_src = Sanguosha->translate(":" + objectName());
     if (des_src == ":" + objectName())
         return QString();
-    return des_src;
+	return QString("<font color=#FF0080>%1</font>").arg(des_src);
 }
 
 QString Skill::getNotice(int index) const{

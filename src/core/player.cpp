@@ -817,7 +817,7 @@ QString Player::getSkillDescription() const{
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription();
         desc.replace("\n", "<br/>");
-        description.append(QString("<b>%1</b>: <font color=white>%2</font> <br/> <br/>").arg(skill_name).arg(desc));
+        description.append(QString("<b>%1</b>: %2 <br/> <br/>").arg(skill_name).arg(desc));
     }
 
     if (description.isEmpty()) description = tr("No skills");

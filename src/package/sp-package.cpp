@@ -1735,11 +1735,87 @@ bool Fentian::onPhaseChange(ServerPlayer *hanba) const{
 	if (targets.isEmpty())
 		return false;
 
-	ServerPlayer* target = room->askForPlayerChosen(hanba, targets, objectName());
+	room->broadcastSkillInvoke(objectName());
+	ServerPlayer *target = room->askForPlayerChosen(hanba, targets, objectName());
 	int id = room->askForCardChosen(hanba, target, "he", objectName());
 	hanba->addToPile("burn", id);
 	return false;
 }
+
+Zhiri::Zhiri(): PhaseChangeSkill("zhiri") {
+	frequency = Wake;
+}
+
+bool Zhiri::onPhaseChange(ServerPlayer *hanba) const {
+	if (hanba->getMark(objectName()) > 0 || hanba->getPhase() != Player::Start)
+		return false;
+
+	if (hanba->getPile("burn").length() < 3)
+		return false;
+
+	Room *room = hanba->getRoom();
+	if (room->changeMaxHpForAwakenSkill(hanba)) {
+		room->broadcastSkillInvoke(objectName());
+		room->doLightbox("$ZhiriAnimate", 4000);
+		room->acquireSkill(hanba, "xintan");
+		room->addPlayerMark(hanba, objectName());
+	}
+
+	return false;
+};
+
+XintanCard::XintanCard() {
+	will_throw = true;
+	handling_method = Card::MethodNone;
+}
+
+bool XintanCard::targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const {
+	return targets.isEmpty();
+}
+
+void XintanCard::onEffect(const CardEffectStruct &effect) const {
+	ServerPlayer *hanba = effect.from;
+	QList<int> burn = hanba->getPile("burn");
+	if (burn.length() < 2)
+		return;
+
+	Room *room = hanba->getRoom();
+	QList<int> subs;
+
+	if (burn.length() == 2)
+		subs = burn;
+	else {
+		while (subs.length() < 2) {
+			room->fillAG(burn, hanba);
+			int id = room->askForAG(hanba, burn, false, objectName());
+			subs << id;
+			subs.removeOne(id);
+		};
+		room->clearAG(hanba);
+	};
+	CardsMoveStruct move;
+	move.from = hanba;
+	move.to_place = Player::DiscardPile;
+	move.reason = CardMoveReason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, hanba->objectName(), objectName(), QString());
+	move.card_ids = subs;
+	room->moveCardsAtomic(move, true);
+
+	room->loseHp(effect.to);
+}
+
+class Xintan: public ZeroCardViewAsSkill {
+public:
+	Xintan(): ZeroCardViewAsSkill("xintan") {
+	}
+
+	virtual bool isEnabledAtPlay(const Player *player) const{
+		return player->getPile("burn").length() >= 2 && !player->hasUsed("XintanCard");
+	}
+
+	virtual const Card *viewAs() const{
+		return new XintanCard;
+	}
+};
 
 SPCardPackage::SPCardPackage()
     : Package("sp_cards")
@@ -1765,7 +1841,14 @@ ChaosPackage::ChaosPackage()
     yeshiwen->addSkill(new Shuiyong);
     related_skills.insertMulti("jisu", "#jisu-slash-ndl");
 
+	General *hanba = new General(this, "hanba", "qun", 4, false);
+	hanba->addSkill(new Fentian);
+	hanba->addSkill(new Zhiri);
+
     addMetaObject<JisuCard>();
+	addMetaObject<XintanCard>();
+
+	skills << new Xintan;
 }
 
 ADD_PACKAGE(Chaos)

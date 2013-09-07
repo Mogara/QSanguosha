@@ -154,6 +154,24 @@ public:
     virtual bool onPhaseChange(ServerPlayer *hanba) const;
 };
 
+class Zhiri: public PhaseChangeSkill {
+	Q_OBJECT
+
+public:
+	Zhiri();
+	virtual bool onPhaseChange(ServerPlayer *hanba) const;
+};
+
+class XintanCard: public SkillCard {
+	Q_OBJECT
+
+public:
+	Q_INVOKABLE XintanCard();
+
+	virtual bool targetFilter(const QList<const Player *> &targets, const Player *, const Player *) const;
+	virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 class SPCardPackage: public Package {
     Q_OBJECT
 
