@@ -107,4 +107,5 @@ return {
 	["xinsheng"] = "新生",
 	[":xinsheng"] = "每当你受到1点伤害后，你可以获得一张“化身牌”。",
 	["#GetHuashen"] = "%from 获得了 %arg 张“化身牌”，现在共有 %arg2 张“化身牌”",
+	["#GetHuashenDetail"] = "%from 获得了“化身牌” %arg",
 }
