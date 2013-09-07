@@ -1219,12 +1219,12 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == Death && TriggerSkill::triggerable(player)) {
             if (!player->tag["XiaodeSkill"].toString().isEmpty()) return false;
-            if (!room->askForSkillInvoke(player, objectName(), data)) return false;
             DeathStruct death = data.value<DeathStruct>();
             QStringList skill_list;
             skill_list.append(addSkillList(death.who->getGeneral()));
             skill_list.append(addSkillList(death.who->getGeneral2()));
             if (skill_list.isEmpty()) return false;
+			if (!room->askForSkillInvoke(player, objectName(), skill_list.join("+"))) return false;
             QString skill_name = room->askForChoice(player, objectName(), skill_list.join("+"));
             player->tag["XiaodeSkill"] = skill_name;
             room->acquireSkill(player, skill_name);

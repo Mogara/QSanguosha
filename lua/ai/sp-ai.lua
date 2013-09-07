@@ -788,7 +788,21 @@ sgs.ai_playerchosen_intention.yanyu = function(self, from, to)
 	sgs.updateIntention(from, to, intention)
 end
 
--- @todo: Xiaode AI
+sgs.ai_skill_invoke.xiaode = function(self, data)
+	local round = self:playerGetRound(self.player)
+	local xiaode_skill = sgs.ai_skill_choice.huashen(self, data:toString(), math.random(1 - round, 7 - round))
+	if xiaode_skill then
+		sgs.xiaode_choice = xiaode_skill
+		return true
+	else
+		sgs.xiaode_choice = nil
+		return false
+	end
+end
+
+sgs.ai_skill_choice.xiaode = function(self, choices)
+	return sgs.xiaode_choice
+end
 
 function sgs.ai_cardsview_valuable.aocai(self, class_name, player)
 	if player:hasFlag("Global_AocaiFailed") or player:getPhase() ~= sgs.Player_NotActive then return end

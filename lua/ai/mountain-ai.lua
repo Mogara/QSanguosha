@@ -1016,12 +1016,12 @@ sgs.ai_skill_invoke.huashen = function(self)
 	return self.player:getHp() > 0
 end
 
-function sgs.ai_skill_choice.huashen(self, choices)
+function sgs.ai_skill_choice.huashen(self, choices, xiaode_choice)
 	local str = choices
 	choices = str:split("+")
-	if self.player:getHp() < 1 and str:matchOne("nosbuqu") then return "nosbuqu" end
-	if self.player:getPhase() == sgs.Player_RoundStart then
-		if self.player:getHp() < 1 and str:matchOne("nosbuqu") then return "nosbuqu" end
+	if not xiaode_choice and self.player:getHp() < 1 and str:matchOne("nosbuqu") then return "nosbuqu" end
+	if (xiaode_choice and xiaode_choice > 0) or self.player:getPhase() == sgs.Player_RoundStart then
+		if not xiaode_choice and self.player:getHp() < 1 and str:matchOne("nosbuqu") then return "nosbuqu" end
 		if (self.player:getHandcardNum() >= self.player:getHp() and self.player:getHandcardNum() < 10 and not self:isWeak()) or self.player:isSkipped(sgs.Player_Play) then
 			if str:matchOne("keji") then return "keji" end
 		end
@@ -1194,7 +1194,7 @@ function sgs.ai_skill_choice.huashen(self, choices)
 			table.remove(choices,index)
 		end
 	end
-	if #choices > 0 then
+	if not xiaode_choice and #choices > 0 then
 		return choices[math.random(1,#choices)]
 	end
 end
