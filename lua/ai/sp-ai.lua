@@ -643,6 +643,153 @@ end
 
 sgs.ai_playerchosen_intention.xingwu = 80
 
+sgs.ai_skill_cardask["@yanyu-discard"] = function(self, data)
+	if self.player:getHandcardNum() < 3 then
+		if self:needToThrowArmor() then return "$" .. self.player:getArmor():getEffectiveId()
+		elseif self:needKongcheng(self.player, true) and self.player:getHandcardNum() == 1 then return "$" .. self.player:handCards():first()
+		else return "." end
+	end
+	local current = self.room:getCurrent()
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(cards)
+	if current:objectName() == self.player:objectName() then
+		local ex_nihilo, savage_assault, archery_attack
+		for _, card in ipairs(cards) do
+			if card:isKindOf("ExNihilo") then ex_nihilo = card
+			elseif card:isKindOf("SavageAssault") then savage_assault = card
+			elseif card:isKindOf("ArcheryAttack") then archery_attack = card
+			end
+		end
+		if savage_assault and self:getAoeValue(savage_assault) <= 0 then savage_assault = nil end
+		if archery_attack and self:getAoeValue(archery_attack) <= 0 then archery_attack = nil end
+		local aoe = archery_attack or savage_assault
+		if ex_nihilo then
+			for _, card in ipairs(cards) do
+				if card:getTypeId() == sgs.Card_TypeTrick and not card:isKindOf("ExNihilo") and card:getEffectiveId() ~= ex_nihilo:getEffectiveId() then
+					return "$" .. card:getEffectiveId()
+				end
+			end
+		end
+		if self.player:isWounded() then
+			local peach
+			for _, card in ipairs(cards) do
+				if card:isKindOf("Peach") then
+					peach = card
+					break
+				end
+			end
+			local dummy_use = { isDummy = true }
+			self:useCardPeach(peach, dummy_use)
+			if dummy_use.card and dummy_use.card:isKindOf("Peach") then
+				for _, card in ipairs(cards) do
+					if card:getTypeId() == sgs.Card_TypeBasic and card:getEffectiveId() ~= peach:getEffectiveId() then
+						return "$" .. card:getEffectiveId()
+					end
+				end
+			end
+		end
+		if aoe then
+			for _, card in ipairs(cards) do
+				if card:getTypeId() == sgs.Card_TypeTrick and card:getEffectiveId() ~= aoe:getEffectiveId() then
+					return "$" .. card:getEffectiveId()
+				end
+			end
+		end
+		if self:getCardsNum("Slash") > 1 then
+			for _, card in ipairs(cards) do
+				if card:objectName() == "slash" then
+					return "$" .. card:getEffectiveId()
+				end
+			end
+		end
+	else
+		local throw_trick
+		local aoe_type
+		if getCardsNum("ArcheryAttack", current) >= 1 then aoe_type = "archery_attack" end
+		if getCardsNum("SavageAssault", current) >= 1 then aoe_type = "savage_assault" end
+		if aoe_type then
+			local aoe = sgs.Sanguosha:cloneCard(aoe_type)
+			if self:getAoeValue(aoe, current) > 0 then throw_trick = true end
+		end
+		if getCardsNum("ExNihilo", current) > 0 then throw_trick = true end
+		if throw_trick then
+			for _, card in ipairs(cards) do
+				if card:getTypeId() == sgs.Card_TypeTrick and not isCard("ExNihilo", card, self.player) then
+					return "$" .. card:getEffectiveId()
+				end
+			end
+		end
+		if self:getCardsNum("Slash") > 1 then
+			for _, card in ipairs(cards) do
+				if card:objectName() == "slash" then
+					return "$" .. card:getEffectiveId()
+				end
+			end
+		end
+		if self:getCardsNum("Jink") > 1 then
+			for _, card in ipairs(cards) do
+				if card:isKindOf("Jink") then
+					return "$" .. card:getEffectiveId()
+				end
+			end
+		end
+		if self.player:getHp() >= 3 and (self.player:getHandcardNum() > 3 or self:getCardsNum("Peach") > 0) then
+			for _, card in ipairs(cards) do
+				if card:isKindOf("Slash") then
+					return "$" .. card:getEffectiveId()
+				end
+			end
+		end
+		if getCardsNum("TrickCard", current) - getCardsNum("Nullification", current) > 0 then
+			for _, card in ipairs(cards) do
+				if card:getTypeId() == sgs.Card_TypeTrick and not isCard("ExNihilo", card, self.player) then
+					return "$" .. card:getEffectiveId()
+				end
+			end
+		end
+	end
+	if self:needToThrowArmor() then return "$" .. self.player:getArmor():getEffectiveId() else return "." end
+end
+
+sgs.ai_skill_askforag.yanyu = function(self, card_ids)
+	local cards = {}
+	for _, id in ipairs(card_ids) do
+		table.insert(cards, sgs.Sanguosha:getEngineCard(id))
+	end
+	self.yanyu_need_player = nil
+	local card, player = self:getCardNeedPlayer(cards, true)
+	if card and player then
+		self.yanyu_need_player = player
+		return card:getEffectiveId()
+	end
+	return -1
+end
+
+sgs.ai_skill_playerchosen.yanyu = function(self, targets)
+	local only_id = self.player:getMark("YanyuOnlyId") - 1
+	if only_id < 0 then
+		assert(self.yanyu_need_player ~= nil)
+		return self.yanyu_need_player
+	else
+		local card = sgs.Sanguosha:getEngineCard(only_id)
+		if card:getTypeId() == sgs.Card_TypeTrick and not card:isKindOf("Nullification") then
+			return self.player
+		end
+		local cards = { card }
+		local c, player = self:getCardNeedPlayer(cards, true)
+		return player
+	end
+end
+
+sgs.ai_playerchosen_intention.yanyu = function(self, from, to)
+	if to:hasSkill("manjuan") and to:getPhase() == sgs.Player_NotActive then return end
+	local intention = -60
+	if self:needKongcheng(to, true) then intention = 10 end
+	sgs.updateIntention(from, to, intention)
+end
+
+-- @todo: Xiaode AI
+
 function sgs.ai_cardsview_valuable.aocai(self, class_name, player)
 	if player:hasFlag("Global_AocaiFailed") or player:getPhase() ~= sgs.Player_NotActive then return end
 	if class_name == "Slash" and sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE then

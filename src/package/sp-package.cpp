@@ -1152,6 +1152,8 @@ public:
                     else
                         card_id = room->askForAG(player, ids, true, objectName());
                     if (card_id == -1) break;
+					if (only)
+						player->setMark("YanyuOnlyId", card_id + 1); // For AI
                     const Card *card = Sanguosha->getCard(card_id);
                     ServerPlayer *target = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName(),
                                                                     QString("@yanyu-give:::%1:%2\\%3").arg(card->objectName())
@@ -1159,6 +1161,7 @@ public:
                                                                                                       .arg(card->getNumberString()),
                                                                     only, true);
                     room->clearAG(player);
+					player->setMark("YanyuOnlyId", 0);
                     if (target) {
                         player->removeMark("YanyuDiscard" + QString::number(card->getTypeId()));
                         int index = move.card_ids.indexOf(card_id);

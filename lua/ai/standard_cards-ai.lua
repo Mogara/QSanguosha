@@ -1980,6 +1980,9 @@ sgs.ai_skill_cardask["duel-slash"] = function(self, data, pattern, target)
 end
 
 function SmartAI:useCardExNihilo(card, use)
+	local xiahou = self.room:findPlayerBySkillName("yanyu")
+	if xiahou and self:isEnemy(xiahou) and xiahou:getMark("YanyuDiscard2") > 0 then return end
+	
 	use.card = card
 	if not use.isDummy then
 		self:speak("lucky")
