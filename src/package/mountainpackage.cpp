@@ -357,11 +357,9 @@ void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
     QList<int> fields;
     QList<int> total = dengai->getPile("field");
-    QList<Snatch *> snatches;
     foreach (int id, total) {
         Snatch *snatch = new Snatch(Card::SuitToBeDecided, -1);
         snatch->addSubcard(id);
-        snatches << snatch;
         if (!snatch->isAvailable(dengai))
             continue;
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
@@ -370,11 +368,10 @@ void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
             if (dengai->isProhibited(p, snatch))
                 continue;
             fields << id;
+			break;
         }
-    }
-    foreach (Snatch *snatch, snatches) {
-        snatch = NULL;
         delete snatch;
+		snatch = NULL;
     }
 
     if (fields.isEmpty())
