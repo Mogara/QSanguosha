@@ -303,7 +303,7 @@ function SmartAI:findLeijiTarget(player, leiji_value, slasher, latest_version)
 			elseif not self:hasSuit("club", true, player) and player:getHandcardNum() < 3 then value = value + 80
 			else value = value + 70 end
 		end
-		if self:cantbeHurt(enemy, player, latest_version == 1 and 1 or 2) or self:objectiveLevel(enemy) < 3
+		if self:cantbeHurt(enemy, latest_version == 1 and 1 or 2, player) or self:objectiveLevel(enemy) < 3
 			or (enemy:isChained() and not self:isGoodChainTarget(enemy, player, sgs.DamageStruct_Thunder, latest_version == 1 and 1 or 2)) then return 100 end
 		if not sgs.isGoodTarget(enemy, self.enemies, self) then value = value + 50 end
 		if not latest_version and enemy:hasArmorEffect("silver_lion") then value = value + 20 end
