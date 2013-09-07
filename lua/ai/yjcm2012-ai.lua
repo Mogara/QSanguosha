@@ -1,4 +1,18 @@
 sgs.ai_skill_invoke.qianxi = function(self, data)
+	if self.player:getPile("incantation"):length() > 0 then
+		local card = sgs.Sanguosha:getCard(self.player:getPile("incantation"):first())
+		if not self.player:getJudgingArea():isEmpty() and not self.player:containsTrick("YanxiaoCard") and not self:hasWizard(self.enemies, true) then
+			local trick = self.player:getJudgingArea():last()
+			if trick:isKindOf("Indulgence") then
+				if card:getSuit() == sgs.Card_Heart or (self.player:hasSkill("hongyan") and card:getSuit() == sgs.Card_Spade) then return false end
+			elseif trick:isKindOf("SupplyShortage") then
+				if card:getSuit() == sgs.Card_Club then return false end
+			end
+		end
+		local zhangbao = self.room:findPlayerBySkillName("yingbing")
+		if zhangbao and self:isEnemy(zhangbao) and not zhangbao:hasSkill("manjuan")
+			and (card:isRed() or (self.player:hasSkill("hongyan") and card:getSuit() == sgs.Card_Spade)) then return false end
+	end
  	for _, p in ipairs(self.enemies) do
 		if self.player:distanceTo(p) == 1 and not p:isKongcheng() then
 			return true

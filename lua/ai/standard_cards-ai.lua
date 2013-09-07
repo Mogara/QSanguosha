@@ -1548,6 +1548,12 @@ sgs.ai_skill_invoke.EightDiagram = function(self, data)
 		if getKnownCard(zhangjiao, "black", false, "he") > 1 then return false end
 		if self:getCardsNum("Jink") > 1 and getKnownCard(zhangjiao, "black", false, "he") > 0 then return false end
 	end
+	if self.player:getPile("incantation"):length() > 0 then
+		local card = sgs.Sanguosha:getCard(self.player:getPile("incantation"):first())
+		local zhangbao = self.room:findPlayerBySkillName("yingbing")
+		if zhangbao and self:isEnemy(zhangbao) and not zhangbao:hasSkill("manjuan") and not self:hasWizard(self.friends)
+			and (card:isBlack() and not (self.player:hasSkill("hongyan") and card:getSuit() == sgs.Card_Spade)) then return false end
+	end
 	return true
 end
 

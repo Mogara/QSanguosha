@@ -2496,13 +2496,20 @@ function SmartAI:askForNullification(trick, from, to, positive)
 			if not (to:hasSkill("guanxing") and global_room:alivePlayerCount() > 4) then 
 				--无观星友方判定区有乐不思蜀->视“突袭”、“巧变”情形而定
 				if trick:isKindOf("Indulgence") then
+					if to:getPile("incantation"):length() > 0 then
+						local card = sgs.Sanguosha:getCard(to:getPile("incantation"):first())
+						if card:getSuit() == sgs.Card_Heart or (to:hasSkill("hongyan") and card:getSuit() == sgs.Card_Spade) then return nil end
+					end
 					if to:getHp() - to:getHandcardNum() >= 2 then return nil end
 					if to:hasSkill("tuxi") and to:getHp() > 2 then return nil end
 					if to:hasSkill("qiaobian") and not to:isKongcheng() then return nil end
 					return null_card
-				end
 				--无观星友方判定区有兵粮寸断->视“鬼道”、“天妒”、“溃围”、“巧变”情形而定
-				if trick:isKindOf("SupplyShortage") then
+				elseif trick:isKindOf("SupplyShortage") then
+					if to:getPile("incantation"):length() > 0 then
+						local card = sgs.Sanguosha:getCard(to:getPile("incantation"):first())
+						if card:getSuit() == sgs.Card_Club then return nil end
+					end
 					if self:hasSkills("guidao|tiandu",to) then return nil end
 					if to:getMark("@kuiwei") == 0 then return nil end
 					if to:hasSkill("qiaobian") and not to:isKongcheng() then return nil end
