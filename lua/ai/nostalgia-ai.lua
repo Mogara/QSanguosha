@@ -731,9 +731,12 @@ nosguhuo_skill.getTurnUseCard = function(self)
 		if not sgs.GetConfig("BanPackages", ""):match("maneuvering") then nosguhuo = nosguhuo .. "|fire_attack" end
 		local nosguhuos = nosguhuo:split("|")
 		for i = 1, #nosguhuos do
-			local forbiden = nosguhuos[i]
-			forbid = sgs.Sanguosha:cloneCard(forbiden)
-			if self.player:isLocked(forbid) then table.remove(forbiden, #nosguhuos) end
+			local forbidden = nosguhuos[i]
+			local forbid = sgs.Sanguosha:cloneCard(forbidden)
+			if self.player:isLocked(forbid) then 
+				table.remove(nosguhuos, i)
+				i = i - 1
+			end
 		end
 		if can_fake_nosguhuo then
 			for i = 1, #nosguhuos do
