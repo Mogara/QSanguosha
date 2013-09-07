@@ -1016,7 +1016,7 @@ sgs.ai_skill_invoke.huashen = function(self)
 	return self.player:getHp() > 0
 end
 
-function sgs.ai_skill_choice.huashen(self, choices, xiaode_choice)
+function sgs.ai_skill_choice.huashen(self, choices, data, xiaode_choice)
 	local str = choices
 	choices = str:split("+")
 	if not xiaode_choice and self.player:getHp() < 1 and str:matchOne("nosbuqu") then return "nosbuqu" end
