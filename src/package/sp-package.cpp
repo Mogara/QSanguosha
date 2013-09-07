@@ -1792,9 +1792,9 @@ void XintanCard::onEffect(const CardEffectStruct &effect) const {
 			room->fillAG(burn, hanba);
 			int id = room->askForAG(hanba, burn, false, objectName());
 			subs << id;
-			subs.removeOne(id);
+			burn.removeOne(id);
+			room->clearAG(hanba);
 		};
-		room->clearAG(hanba);
 	};
 	CardsMoveStruct move;
 	move.from = hanba;

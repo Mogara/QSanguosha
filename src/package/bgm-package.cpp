@@ -372,7 +372,6 @@ public:
             player->setFlags("ManjuanInvoke");
             CardsMoveStruct move(zuixiang, player, Player::PlaceHand,
 								 CardMoveReason(CardMoveReason::S_REASON_PUT, player->objectName(), QString(), "zuixiang", QString()));
-            CardsMoveStruct move(zuixiang, player, Player::PlaceHand, reason);
             room->moveCardsAtomic(move, true);
         }
     }
