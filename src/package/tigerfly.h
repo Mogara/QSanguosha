@@ -2,6 +2,19 @@
 #define _TIGERFLY_H
 
 #include "package.h"
+#include "card.h"
+
+class PozhenCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE PozhenCard();
+    virtual bool targetFilter(const QList<const Player *> &, const Player *, const Player *) const;
+    virtual void onEffect(const CardEffectStruct &) const;
+
+private:
+    QString suittb(Card::Suit s) const;
+};
 
 class TigerFlyPackage: public Package {
 	Q_OBJECT
