@@ -681,7 +681,7 @@ public:
 };
 
 AssassinsPackage::AssassinsPackage(): Package("assassins") {
-    /*General *fuhuanghou = new General(this, "as_fuhuanghou", "qun", 3, false);
+    General *fuhuanghou = new General(this, "as_fuhuanghou", "qun", 3, false);
     fuhuanghou->addSkill(new Mixin);
     fuhuanghou->addSkill(new Cangni);
 
@@ -695,7 +695,7 @@ AssassinsPackage::AssassinsPackage(): Package("assassins") {
     fuwan->addSkill(new Fengyin);
     fuwan->addSkill(new ChizhongKeep);
     fuwan->addSkill(new Chizhong);
-    related_skills.insertMulti("chizhong", "#chizhong");*/
+    related_skills.insertMulti("chizhong", "#chizhong");
 
     General *mushun = new General(this, "as_mushun", "qun");
     mushun->addSkill(new Moukui);
@@ -712,8 +712,8 @@ AssassinsPackage::AssassinsPackage(): Package("assassins") {
     
     addMetaObject<MizhaoCard>();
     addMetaObject<MixinCard>();
-    /*addMetaObject<DuyiCard>();
-    addMetaObject<FengyinCard>();*/
+    addMetaObject<DuyiCard>();
+    addMetaObject<FengyinCard>();
 }
 
 ADD_PACKAGE(Assassins)
