@@ -74,10 +74,7 @@ void LihunCard::onEffect(const CardEffectStruct &effect) const{
 class LihunSelect: public OneCardViewAsSkill {
 public:
     LihunSelect(): OneCardViewAsSkill("lihun") {
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !Self->isJilei(to_select);
+		filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -203,6 +200,7 @@ public:
 class Yanzheng: public OneCardViewAsSkill {
 public:
     Yanzheng(): OneCardViewAsSkill("yanzheng") {
+		filter_pattern = ".|.|.|equipped";
     }
 
     virtual bool isEnabledAtPlay(const Player *) const{
@@ -211,10 +209,6 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
         return pattern == "nullification" && player->getHandcardNum() > player->getHp();
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->isEquipped();
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -1065,10 +1059,7 @@ void YanxiaoCard::takeEffect(ServerPlayer *) const{
 class YanxiaoViewAsSkill: public OneCardViewAsSkill {
 public:
     YanxiaoViewAsSkill(): OneCardViewAsSkill("yanxiao") {
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->getSuit() == Card::Diamond;
+		filter_pattern = ".|diamond";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -1178,10 +1169,7 @@ void YinlingCard::onEffect(const CardEffectStruct &effect) const{
 class Yinling: public OneCardViewAsSkill {
 public:
     Yinling(): OneCardViewAsSkill("yinling") {
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->isBlack() && !Self->isJilei(to_select);
+		filter_pattern = ".|black!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{

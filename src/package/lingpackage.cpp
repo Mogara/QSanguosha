@@ -16,14 +16,11 @@ void LuoyiCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const
 class NeoLuoyi: public OneCardViewAsSkill {
 public:
     NeoLuoyi(): OneCardViewAsSkill("neoluoyi") {
+		filter_pattern = "EquipCard!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->hasUsed("LuoyiCard") && player->canDiscard(player, "he");
-    }
-
-    virtual bool viewFilter(const Card *card) const{
-        return card->isKindOf("EquipCard") && !Self->isJilei(card);
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -96,14 +93,11 @@ void NeoFanjianCard::onEffect(const CardEffectStruct &effect) const{
 class NeoFanjian: public OneCardViewAsSkill {
 public:
     NeoFanjian(): OneCardViewAsSkill("neofanjian") {
+		filter_pattern = ".|.|.|hand";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->isKongcheng() && !player->hasUsed("NeoFanjianCard");
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !to_select->isEquipped();
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

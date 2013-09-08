@@ -123,10 +123,7 @@ public:
 class KOFQingguo: public OneCardViewAsSkill {
 public:
     KOFQingguo(): OneCardViewAsSkill("kofqingguo") {
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->isEquipped();
+		filter_pattern = ".|.|.|equipped";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -882,14 +879,11 @@ void PujiCard::onEffect(const CardEffectStruct &effect) const{
 class Puji: public OneCardViewAsSkill {
 public:
     Puji(): OneCardViewAsSkill("puji") {
+		filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->canDiscard(player, "he") && !player->hasUsed("PujiCard");
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

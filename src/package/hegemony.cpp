@@ -117,14 +117,11 @@ void DuoshiCard::onEffect(const CardEffectStruct &effect) const{
 class Duoshi: public OneCardViewAsSkill {
 public:
     Duoshi(): OneCardViewAsSkill("duoshi") {
+		filter_pattern = ".|red|.|hand!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->usedTimes("DuoshiCard") < 4;
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->isRed() && !to_select->isEquipped() && !Self->isJilei(to_select);
     }
 
     virtual const Card *viewAs(const Card *originalcard) const{
@@ -150,14 +147,11 @@ void FenxunCard::onEffect(const CardEffectStruct &effect) const{
 class FenxunViewAsSkill: public OneCardViewAsSkill {
 public:
     FenxunViewAsSkill(): OneCardViewAsSkill("fenxun") {
+		filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->canDiscard(player, "he") && !player->hasUsed("FenxunCard");
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !Self->isJilei(to_select);
     }
 
     virtual const Card *viewAs(const Card *originalcard) const{
@@ -689,14 +683,11 @@ bool QingchengCard::targetFilter(const QList<const Player *> &targets, const Pla
 class QingchengViewAsSkill: public OneCardViewAsSkill {
 public:
     QingchengViewAsSkill(): OneCardViewAsSkill("qingcheng") {
+		filter_pattern = "EquipCard!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->canDiscard(player, "he");
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->isKindOf("EquipCard") && !Self->isJilei(to_select);
     }
 
     virtual const Card *viewAs(const Card *originalcard) const{

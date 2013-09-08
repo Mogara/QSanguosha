@@ -603,14 +603,11 @@ void GongqiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
 class Gongqi: public OneCardViewAsSkill {
 public:
     Gongqi(): OneCardViewAsSkill("gongqi") {
+		filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->hasUsed("GongqiCard");
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !Self->isJilei(to_select);
     }
 
     virtual const Card *viewAs(const Card *originalcard) const{
@@ -767,6 +764,7 @@ public:
 class LihuoViewAsSkill: public OneCardViewAsSkill {
 public:
     LihuoViewAsSkill(): OneCardViewAsSkill("lihuo") {
+		filter_pattern = "%slash";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -776,10 +774,6 @@ public:
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
                && pattern == "slash";
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->objectName() == "slash";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

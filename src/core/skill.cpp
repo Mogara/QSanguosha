@@ -183,12 +183,25 @@ bool ZeroCardViewAsSkill::viewFilter(const QList<const Card *> &, const Card *) 
 }
 
 OneCardViewAsSkill::OneCardViewAsSkill(const QString &name)
-    : ViewAsSkill(name)
+    : ViewAsSkill(name), filter_pattern(QString())
 {
 }
 
 bool OneCardViewAsSkill::viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
     return selected.isEmpty() && !to_select->hasFlag("using") && viewFilter(to_select);
+}
+
+bool OneCardViewAsSkill::viewFilter(const Card *to_select) const{
+    if (!inherits("FilterSkill") && !filter_pattern.isEmpty()) {
+        QString pat = filter_pattern;
+        if (pat.endsWith("!")) {
+            if (Self->isJilei(to_select)) return false;
+            pat.chop(1);
+        }
+        ExpPattern pattern(pat);
+        return pattern.match(Self, to_select);
+    }
+    return false;
 }
 
 const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards) const{

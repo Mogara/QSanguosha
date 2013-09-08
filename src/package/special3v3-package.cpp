@@ -258,10 +258,7 @@ public:
     Zhongyi(): OneCardViewAsSkill("zhongyi") {
         frequency = Limited;
 		limit_mark = "@loyal";
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !to_select->isEquipped() && to_select->isRed();
+		filter_pattern = ".|red|.|hand";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -337,6 +334,7 @@ void JiuzhuCard::use(Room *room, ServerPlayer *player, QList<ServerPlayer *> &) 
 class Jiuzhu: public OneCardViewAsSkill {
 public:
     Jiuzhu(): OneCardViewAsSkill("jiuzhu") {
+		filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *) const{
@@ -358,10 +356,6 @@ public:
             return player->getRole().at(0) == who->getRole().at(0);
         else
             return true;
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !Self->isJilei(to_select);
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

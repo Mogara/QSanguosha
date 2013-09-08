@@ -787,10 +787,7 @@ void ZhijianCard::onEffect(const CardEffectStruct &effect) const{
 class Zhijian: public OneCardViewAsSkill {
 public:
     Zhijian():OneCardViewAsSkill("zhijian") {
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !to_select->isEquipped() && to_select->getTypeId() == Card::TypeEquip;
+		filter_pattern = "EquipCard|.|.|hand";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -981,6 +978,7 @@ void FangquanCard::onEffect(const CardEffectStruct &effect) const{
 class FangquanViewAsSkill: public OneCardViewAsSkill {
 public:
     FangquanViewAsSkill(): OneCardViewAsSkill("fangquan") {
+		filter_pattern = ".|.|.|hand!";
     }
 
     virtual bool isEnabledAtPlay(const Player *) const{
@@ -989,10 +987,6 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@fangquan";
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !to_select->isEquipped();
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

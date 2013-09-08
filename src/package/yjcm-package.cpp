@@ -230,16 +230,13 @@ void JujianCard::onEffect(const CardEffectStruct &effect) const{
 class JujianViewAsSkill: public OneCardViewAsSkill {
 public:
     JujianViewAsSkill(): OneCardViewAsSkill("jujian") {
+		filter_pattern = "^BasicCard!";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
         JujianCard *jujianCard = new JujianCard;
         jujianCard->addSubcard(originalCard);
         return jujianCard;
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !to_select->isKindOf("BasicCard") && !Self->isJilei(to_select);
     }
 
     virtual bool isEnabledAtPlay(const Player *) const{
@@ -674,15 +671,11 @@ void MingceCard::onEffect(const CardEffectStruct &effect) const{
 class Mingce: public OneCardViewAsSkill {
 public:
     Mingce(): OneCardViewAsSkill("mingce") {
-        default_choice = "draw";
+        filter_pattern = "EquipCard,Slash";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->hasUsed("MingceCard");
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->isKindOf("EquipCard") || to_select->isKindOf("Slash");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

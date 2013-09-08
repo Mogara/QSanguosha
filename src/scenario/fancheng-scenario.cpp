@@ -233,14 +233,11 @@ void ZhiyuanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
 class ZhiyuanViewAsSkill: public OneCardViewAsSkill {
 public:
     ZhiyuanViewAsSkill(): OneCardViewAsSkill("zhiyuan") {
+		filter_pattern = "BasicCard";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->getMark("zhiyuan") > 0;
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->isKindOf("BasicCard");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

@@ -118,15 +118,11 @@ class HuangtianViewAsSkill: public OneCardViewAsSkill {
 public:
     HuangtianViewAsSkill():OneCardViewAsSkill("huangtianv") {
         attached_lord_skill = true;
+		filter_pattern = "Jink,Lightning";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->getKingdom() == "qun" && !player->hasFlag("ForbidHuangtian");
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        const Card *card = to_select;
-        return card->objectName() == "jink" || card->objectName() == "lightning";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -570,6 +566,7 @@ void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
 class TianxiangViewAsSkill: public OneCardViewAsSkill {
 public:
     TianxiangViewAsSkill(): OneCardViewAsSkill("tianxiang") {
+		filter_pattern = ".|heart|.|hand!";
     }
 
     virtual bool isEnabledAtPlay(const Player *) const{
@@ -578,10 +575,6 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@tianxiang";
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !to_select->isEquipped() && to_select->getSuit() == Card::Heart && !Self->isJilei(to_select);
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -1019,6 +1012,7 @@ const Card *GuhuoCard::validateInResponse(ServerPlayer *yuji) const{
 class Guhuo: public OneCardViewAsSkill {
 public:
     Guhuo(): OneCardViewAsSkill("guhuo") {
+		filter_pattern = ".|.|.|hand";
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
@@ -1056,10 +1050,6 @@ public:
         }
         if (!current) return false;
         return !player->isKongcheng() && !player->hasFlag("GuhuoUsed");
-    }
-
-    virtual bool viewFilter(const Card* to_select) const{
-        return !to_select->isEquipped();
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

@@ -228,14 +228,11 @@ void NosXuanhuoCard::onEffect(const CardEffectStruct &effect) const{
 class NosXuanhuo: public OneCardViewAsSkill {
 public:
     NosXuanhuo():OneCardViewAsSkill("nosxuanhuo") {
+		filter_pattern = ".|heart|.|hand";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->isKongcheng() && !player->hasUsed("NosXuanhuoCard");
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !to_select->isEquipped() && to_select->getSuit() == Card::Heart;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -750,14 +747,11 @@ NosLijianCard::NosLijianCard(): LijianCard(false) {
 class NosLijian: public OneCardViewAsSkill {
 public:
     NosLijian(): OneCardViewAsSkill("noslijian") {
+		filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->canDiscard(player, "he") && !player->hasUsed("NosLijianCard");
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !Self->isJilei(to_select);
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -1217,6 +1211,7 @@ const Card *NosGuhuoCard::validateInResponse(ServerPlayer *yuji) const{
 class NosGuhuo: public OneCardViewAsSkill {
 public:
     NosGuhuo(): OneCardViewAsSkill("nosguhuo") {
+		filter_pattern = ".|.|.|hand";
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
@@ -1231,10 +1226,6 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->isKongcheng();
-    }
-
-    virtual bool viewFilter(const Card* to_select) const{
-        return !to_select->isEquipped();
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
