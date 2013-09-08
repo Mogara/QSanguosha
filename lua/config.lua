@@ -201,7 +201,7 @@ config = {
 		"caopi|caozhi+zhenji",
 		"simayi+zhangchunhua",
 		"liubei+ganfuren|sp_sunshangxiang",
-		"zhangfei|bgm_zhangfei+xiahoushi",
+		"zhangfei|bgm_zhangfei+xiahoushi|xiahoujuan",
 		"zhugeliang|wolong+huangyueying",
 		"menghuo+zhurong",
 		"zhouyu+xiaoqiao",
