@@ -122,8 +122,8 @@ public:
 
         QVariant data_card = QVariant::fromValue(card);
         if (guojia->askForSkillInvoke(objectName(), data_card)) {
-            guojia->obtainCard(judge->card);
             room->broadcastSkillInvoke(objectName());
+			guojia->obtainCard(judge->card);
             return false;
         }
 
