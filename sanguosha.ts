@@ -76,8 +76,12 @@
     </message>
     <message>
         <location filename="../../src/core/card.cpp" line="318"/>
+        <source>&lt;font color=%1&gt;&lt;b&gt;[%2]&lt;/b&gt; %3&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;&lt;b&gt;【%2】&lt;/b&gt; %3&lt;/font&gt;</translation>
+    </message>
+    <message>
         <source>&lt;b&gt;[%1]&lt;/b&gt; %2</source>
-        <translation>&lt;b&gt;【%1】&lt;/b&gt; %2</translation>
+        <translation type="obsolete">&lt;b&gt;【%1】&lt;/b&gt; %2</translation>
     </message>
     <message>
         <location filename="../../src/core/card.cpp" line="654"/>
@@ -375,9 +379,13 @@
         <translation>女性配音</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/cardoverview.cpp" line="82"/>
         <source>This is an Lua extension</source>
-        <translation>该包为Lua扩展包</translation>
+        <translation type="obsolete">该包为Lua扩展包</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/cardoverview.cpp" line="82"/>
+        <source>&lt;font color=#FFFF33&gt;This is an Lua extension&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;该包为Lua扩展包&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/cardoverview.cpp" line="109"/>
@@ -1142,9 +1150,8 @@
         <translation>无</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/customassigndialog.cpp" line="109"/>
         <source>%1 mark</source>
-        <translation>%1标记</translation>
+        <translation type="obsolete">%1标记</translation>
     </message>
     <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="137"/>
@@ -1241,6 +1248,11 @@
         <location filename="../../src/dialog/customassigndialog.cpp" line="210"/>
         <source>win</source>
         <translation>赢</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/customassigndialog.cpp" line="109"/>
+        <source>&lt;font color=#FFFF33&gt;%1 mark&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;%1标记&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="192"/>
@@ -2801,9 +2813,13 @@
 <context>
     <name>Player</name>
     <message>
-        <location filename="../../src/core/player.cpp" line="823"/>
         <source>No skills</source>
-        <translation>无技能</translation>
+        <translation type="obsolete">无技能</translation>
+    </message>
+    <message>
+        <location filename="../../src/core/player.cpp" line="824"/>
+        <source>&lt;font color=%1&gt;No skills&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;无技能&lt;/font&gt;</translation>
     </message>
 </context>
 <context>
@@ -3171,12 +3187,12 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="../../src/server/room.cpp" line="2019"/>
+        <location filename="../../src/server/room.cpp" line="2022"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2258"/>
+        <location filename="../../src/server/room.cpp" line="2261"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
@@ -3185,54 +3201,54 @@
         <translation type="obsolete">选手</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2042"/>
+        <location filename="../../src/server/room.cpp" line="2045"/>
         <source>&lt;font color=#000000&gt;Player &lt;b&gt;%1&lt;/b&gt; left the game&lt;/font&gt;</source>
         <translation>&lt;font color=#000000&gt;玩家 %1 离开了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2239"/>
+        <location filename="../../src/server/room.cpp" line="2242"/>
         <source>%1: %2 is not invokable</source>
         <translation>%1: 不可调用的方法名 %2</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2262"/>
+        <location filename="../../src/server/room.cpp" line="2265"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2326"/>
+        <location filename="../../src/server/room.cpp" line="2329"/>
         <source>&lt;font color=#EEB422&gt;Player &lt;b&gt;%1&lt;/b&gt; joined the game&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 加入了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2846"/>
+        <location filename="../../src/server/room.cpp" line="2849"/>
         <source>Unable to parse player</source>
         <translation>不可分析的玩家</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2848"/>
+        <location filename="../../src/server/room.cpp" line="2851"/>
         <source>Server is not waiting for reply from %1</source>
         <translation>服务器无法获取 %1 的响应</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2850"/>
+        <location filename="../../src/server/room.cpp" line="2853"/>
         <source>Reply command should be %1 instead of %2</source>
         <translation>应答指令应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2853"/>
+        <location filename="../../src/server/room.cpp" line="2856"/>
         <source>Reply serial should be %1 instead of %2</source>
         <translation>玩家序号应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="4338"/>
+        <location filename="../../src/server/room.cpp" line="4360"/>
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
  %1</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="5479"/>
+        <location filename="../../src/server/room.cpp" line="5501"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
@@ -3776,14 +3792,28 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>禁表 ...</translation>
     </message>
     <message>
+        <location filename="../../src/server/server.cpp" line="87"/>
+        <source>&lt;font color=#FFFF33&gt;The setting takes effect after reboot&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;此项设置保存后重启游戏方能生效&lt;/font&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/server/server.cpp" line="185"/>
+        <source>&lt;font color=#FFFF33&gt;This option enables the cheat menu&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;本选项启用作弊菜单&lt;/font&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/server/server.cpp" line="207"/>
+        <source>&lt;font color=#FFFF33&gt;-1 means no limitations&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;-1表示无次数限制（虎牢关模式不生效）&lt;/font&gt;</translation>
+    </message>
+    <message>
         <location filename="../../src/server/server.cpp" line="222"/>
         <source>Upperlimit for gods</source>
         <translation>备选神将上限</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="223"/>
         <source>-1 means that all gods may appear in your general chosen dialog!</source>
-        <translation>-1表示所有神将都有可能出现在选框中</translation>
+        <translation type="obsolete">-1表示所有神将都有可能出现在选框中</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="255"/>
@@ -3882,9 +3912,8 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>禁用Lua扩展（重启后生效）</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="87"/>
         <source>The setting takes effect after reboot</source>
-        <translation>此项设置保存后重启游戏方能生效</translation>
+        <translation type="obsolete">此项设置保存后重启游戏方能生效</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="95"/>
@@ -3907,9 +3936,8 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>启用作弊</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="185"/>
         <source>This option enables the cheat menu</source>
-        <translation>本选项启用作弊菜单</translation>
+        <translation type="obsolete">本选项启用作弊菜单</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="196"/>
@@ -3917,9 +3945,8 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>仅分配自己的身份</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="207"/>
         <source>-1 means no limitations</source>
-        <translation>-1表示无次数限制（虎牢关模式不生效）</translation>
+        <translation type="obsolete">-1表示无次数限制（虎牢关模式不生效）</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="212"/>
@@ -3932,9 +3959,8 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>同技能SP替换</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="229"/>
         <source>-1 means that all lords are available</source>
-        <translation>-1表示所有默认主公均会出现在选将列表中</translation>
+        <translation type="obsolete">-1表示所有默认主公均会出现在选将列表中</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="250"/>
@@ -4202,6 +4228,16 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>服务器名</translation>
     </message>
     <message>
+        <location filename="../../src/server/server.cpp" line="223"/>
+        <source>&lt;font color=#FFFF33&gt;-1 means that all gods may appear in your general chosen dialog!&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;-1表示所有神将都有可能出现在选框中&lt;/font&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/server/server.cpp" line="229"/>
+        <source>&lt;font color=#FFFF33&gt;-1 means that all lords are available&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;-1表示所有默认主公均会出现在选将列表中&lt;/font&gt;</translation>
+    </message>
+    <message>
         <location filename="../../src/server/server.cpp" line="330"/>
         <source>Port</source>
         <translation>端口</translation>
@@ -4450,9 +4486,13 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>请输入内部技能名，如rende</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/customassigndialog.cpp" line="1728"/>
         <source>Internal skill name is a phonetic form, the rest of the special circumstances, please see the translation of documents in the lang directory.</source>
-        <translation>内部技能名一般是拼音形式，其余特殊情况请查看lang目录下的翻译文件。</translation>
+        <translation type="obsolete">内部技能名一般是拼音形式，其余特殊情况请查看lang目录下的翻译文件。</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/customassigndialog.cpp" line="1728"/>
+        <source>&lt;font color=#FFFF33&gt;Internal skill name is a phonetic form, the rest of the special circumstances, please see the translation of documents in the lang directory.&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;内部技能名一般是拼音形式，其余特殊情况请查看lang目录下的翻译文件。&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="1735"/>
