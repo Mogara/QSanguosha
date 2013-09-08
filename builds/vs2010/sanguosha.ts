@@ -481,7 +481,7 @@
     <message>
         <location filename="../../src/client/client.cpp" line="836"/>
         <source>Do you want to invoke skill [%1] to %2 ?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">你想对%2发动技能“%1”吗?</translation>
     </message>
     <message>
         <location filename="../../src/client/client.cpp" line="857"/>
@@ -1047,24 +1047,24 @@
     <message>
         <location filename="../../src/server/contestdb.cpp" line="26"/>
         <source>Database open error</source>
-        <translation type="unfinished">数据库打开出错</translation>
+        <translation>数据库打开出错</translation>
     </message>
     <message>
         <location filename="../../src/server/contestdb.cpp" line="26"/>
         <source>The database can not be opened:
  %1</source>
-        <translation type="unfinished">数据库无法打开:
+        <translation>数据库无法打开:
 %1</translation>
     </message>
     <message>
         <location filename="../../src/server/contestdb.cpp" line="59"/>
         <source>Database query error</source>
-        <translation type="unfinished">数据库查询出错</translation>
+        <translation>数据库查询出错</translation>
     </message>
     <message>
         <location filename="../../src/server/contestdb.cpp" line="59"/>
         <source>Please create database before using this mode</source>
-        <translation type="unfinished">在使用竞赛模式前，请先创建好相关的数据库文件</translation>
+        <translation>在使用竞赛模式前，请先创建好相关的数据库文件</translation>
     </message>
 </context>
 <context>
