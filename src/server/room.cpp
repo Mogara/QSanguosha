@@ -51,7 +51,10 @@ Room::Room(QObject *parent, const QString &mode)
 
     L = CreateLuaState();
     QStringList scripts;
-    scripts << "lua/sanguosha.lua" << "lua/ai/smart-ai.lua";
+
+	QString AI = QFile::exists("lua/ai/private-smart-ai.lua") ? "lua/ai/private-smart-ai.lua" : "lua/ai/smart-ai.lua";
+
+    scripts << "lua/sanguosha.lua" << AI;
     DoLuaScripts(L, scripts);
 }
 
