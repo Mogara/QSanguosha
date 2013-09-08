@@ -48,13 +48,13 @@ public:
         Room *room = caopi->getRoom();
         ServerPlayer *to = room->askForPlayerChosen(caopi, room->getOtherPlayers(caopi), objectName(),
                                                     "fangzhu-invoke", caopi->getMark("JilveEvent") != int(Damaged), true);
-		if (to) { 
+        if (to) { 
             if (caopi->hasInnateSkill("fangzhu") || !caopi->hasSkill("jilve"))
                 room->broadcastSkillInvoke("fangzhu", to->faceUp() ? 1 : 2);
             else
                 room->broadcastSkillInvoke("jilve", 2);
 
-			to->drawCards(caopi->getLostHp());
+            to->drawCards(caopi->getLostHp());
             to->turnOver();
         }
     }
@@ -84,7 +84,11 @@ public:
             while (!caopis.isEmpty()) {
                 ServerPlayer *caopi = room->askForPlayerChosen(player, caopis, objectName(), "@songwei-to", true);
                 if (caopi) {
-                    room->broadcastSkillInvoke(objectName());
+                    if (!caopi->isLord() && caopi->hasSkill("weidi"))
+                        room->broadcastSkillInvoke("weidi");
+                    else
+                        room->broadcastSkillInvoke(objectName());
+
                     room->notifySkillInvoked(caopi, objectName());
                     LogMessage log;
                     log.type = "#InvokeOthersSkill";
@@ -107,7 +111,7 @@ public:
 class Duanliang: public OneCardViewAsSkill {
 public:
     Duanliang(): OneCardViewAsSkill("duanliang") {
-		filter_pattern = "BasicCard,EquipCard|black";
+        filter_pattern = "BasicCard,EquipCard|black";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -244,7 +248,7 @@ public:
                 int x = menghuo->getLostHp();
                 QList<int> ids = room->getNCards(x, false);
                 CardsMoveStruct move(ids, menghuo, Player::PlaceTable,
-									 CardMoveReason(CardMoveReason::S_REASON_TURNOVER, menghuo->objectName(), "zaiqi", QString()));
+                                     CardMoveReason(CardMoveReason::S_REASON_TURNOVER, menghuo->objectName(), "zaiqi", QString()));
                 room->moveCardsAtomic(move, true);
 
                 room->getThread()->delay();
@@ -400,14 +404,14 @@ bool HaoshiCard::targetFilter(const QList<const Player *> &targets, const Player
 
 void HaoshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(),
-							targets.first()->objectName(), "haoshi", QString());
-	room->moveCardTo(this, targets.first(), Player::PlaceHand, reason);
+                            targets.first()->objectName(), "haoshi", QString());
+    room->moveCardTo(this, targets.first(), Player::PlaceHand, reason);
 }
 
 class HaoshiViewAsSkill: public ViewAsSkill {
 public:
     HaoshiViewAsSkill(): ViewAsSkill("haoshi") {
-		response_pattern = "@@haoshi!";
+        response_pattern = "@@haoshi!";
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
@@ -528,9 +532,9 @@ void DimengCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets)
         }
         QList<CardsMoveStruct> exchangeMove;
         CardsMoveStruct move1(a->handCards(), b, Player::PlaceHand,
-							  CardMoveReason(CardMoveReason::S_REASON_SWAP, a->objectName(), b->objectName(), "dimeng", QString()));
-		CardsMoveStruct move2(b->handCards(), a, Player::PlaceHand,
-							  CardMoveReason(CardMoveReason::S_REASON_SWAP, b->objectName(), a->objectName(), "dimeng", QString()));
+                              CardMoveReason(CardMoveReason::S_REASON_SWAP, a->objectName(), b->objectName(), "dimeng", QString()));
+        CardsMoveStruct move2(b->handCards(), a, Player::PlaceHand,
+                              CardMoveReason(CardMoveReason::S_REASON_SWAP, b->objectName(), a->objectName(), "dimeng", QString()));
         exchangeMove.push_back(move1);
         exchangeMove.push_back(move2);
         room->moveCards(exchangeMove, false);
@@ -636,7 +640,7 @@ class Luanwu: public ZeroCardViewAsSkill {
 public:
     Luanwu(): ZeroCardViewAsSkill("luanwu") {
         frequency = Limited;
-		limit_mark = "@chaos";
+        limit_mark = "@chaos";
     }
 
     virtual const Card *viewAs() const{
@@ -705,7 +709,7 @@ public:
 class Jiuchi: public OneCardViewAsSkill {
 public:
     Jiuchi(): OneCardViewAsSkill("jiuchi") {
-		filter_pattern = ".|spade|.|hand";
+        filter_pattern = ".|spade|.|hand";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -875,7 +879,10 @@ public:
                     room->judge(judge);
 
                     if (judge.isGood()) {
-                        room->broadcastSkillInvoke(objectName());
+                        if (!dongzhuo->isLord() && dongzhuo->hasSkill("weidi"))
+                            room->broadcastSkillInvoke("weidi");
+                        else
+                            room->broadcastSkillInvoke(objectName());
 
                         RecoverStruct recover;
                         recover.who = player;

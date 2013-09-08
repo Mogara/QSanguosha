@@ -144,7 +144,11 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             name = "huxiao";
         if (!name.isEmpty()) {
             player->setFlags("-Global_MoreSlashInOneTurn");
-            room->broadcastSkillInvoke(name);
+            if (name == "paoxiao" && player->hasSkill("baobian"))
+                room->broadcastSkillInvoke("baobian", qrand() % 2 + 3);
+            else
+                room->broadcastSkillInvoke(name);
+
             room->notifySkillInvoked(player, name);
         }
     }
@@ -284,7 +288,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         }
     }
 
-	if (!Self->canSlash(to_select, this, distance_limit, rangefix, targets)) return false;
+    if (!Self->canSlash(to_select, this, distance_limit, rangefix, targets)) return false;
     if (targets.length() >= slash_targets) {
         if (Self->hasSkill("duanbing") && targets.length() == slash_targets) {
             QList<const Player *> duanbing_targets;
@@ -500,7 +504,7 @@ Spear::Spear(Suit suit, int number)
 class AxeViewAsSkill: public ViewAsSkill {
 public:
     AxeViewAsSkill(): ViewAsSkill("Axe") {
-		response_pattern = "@Axe";
+        response_pattern = "@Axe";
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
@@ -684,9 +688,9 @@ void AmazingGrace::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
     GlobalEffect::use(room, source, targets);
     room->clearAG();
 
-	//shemi count
-	if (this->getSkillName() == "shemi")
-		room->addPlayerHistory(source, "ShemiAG");
+    //shemi count
+    if (this->getSkillName() == "shemi")
+        room->addPlayerHistory(source, "ShemiAG");
 
     // throw the rest cards
     QVariantList ag_list = room->getTag("AmazingGrace").toList();
@@ -1031,8 +1035,8 @@ void Snatch::onEffect(const CardEffectStruct &effect) const{
 
     Room *room = effect.to->getRoom();
     bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() != "Classical");
-	QString flag = using_2013 ? "he" : "hej";
-	int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName());
+    QString flag = using_2013 ? "he" : "hej";
+    int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName());
     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
     room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
 }

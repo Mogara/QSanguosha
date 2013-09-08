@@ -95,7 +95,12 @@ void HuangtianCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
     ServerPlayer *zhangjiao = targets.first();
     if (zhangjiao->hasLordSkill("huangtian")) {
         room->setPlayerFlag(zhangjiao, "HuangtianInvoked");
-        room->broadcastSkillInvoke("huangtian");
+
+        if (!zhangjiao->isLord() && zhangjiao->hasSkill("weidi"))
+            room->broadcastSkillInvoke("weidi");
+        else
+            room->broadcastSkillInvoke("huangtian");
+
         room->notifySkillInvoked(zhangjiao, "huangtian");
         zhangjiao->obtainCard(this);
         QList<ServerPlayer *> zhangjiaos;
@@ -118,7 +123,7 @@ class HuangtianViewAsSkill: public OneCardViewAsSkill {
 public:
     HuangtianViewAsSkill():OneCardViewAsSkill("huangtianv") {
         attached_lord_skill = true;
-		filter_pattern = "Jink,Lightning";
+        filter_pattern = "Jink,Lightning";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -214,7 +219,10 @@ void ShensuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 
     if (targets.length() > 0) {
         Slash *slash = new Slash(Card::NoSuit, 0);
-        slash->setSkillName("_shensu");
+        if (source->hasSkill("baobian"))
+            slash->setSkillName("_baobian");
+        else
+            slash->setSkillName("_shensu");
         room->useCard(CardUseStruct(slash, source, targets));
     }
 }
@@ -228,9 +236,9 @@ public:
         return false;
     }
 
-	virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-		return pattern.startsWith("@@shensu");
-	}
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern.startsWith("@@shensu");
+    }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
         if (Sanguosha->currentRoomState()->getCurrentCardUsePattern().endsWith("1"))
@@ -307,7 +315,7 @@ public:
         if (!room->askForSkillInvoke(player, objectName())) return false;
         player->drawCards(1);
 
-		const Card *card = room->askForUseCard(player, "TrickCard,EquipCard|.|.|hand", "@jiewei");
+        const Card *card = room->askForUseCard(player, "TrickCard,EquipCard|.|.|hand", "@jiewei");
         if (!card) return false;
 
         QList<ServerPlayer *> targets;
@@ -448,12 +456,12 @@ public:
 
         if (zhoutai->getHp() > 0) return false;
         room->broadcastSkillInvoke(objectName());
-		LogMessage log;
-		log.type = "#TriggerSkill";
-		log.from = zhoutai;
-		log.arg = objectName();
-		room->sendLog(log);
-		room->notifySkillInvoked(zhoutai, objectName());
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = zhoutai;
+        log.arg = objectName();
+        room->sendLog(log);
+        room->notifySkillInvoked(zhoutai, objectName());
 
         int id = room->drawCard();
         int num = Sanguosha->getCard(id)->getNumber();
@@ -541,10 +549,17 @@ public:
 };
 
 TianxiangCard::TianxiangCard() {
+    mute = true;
 }
 
 void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
+
+    if (effect.from->hasSkill("luoyan"))
+        room->broadcastSkillInvoke("luoyan", 2);
+    else
+        room->broadcastSkillInvoke("tianxiang");
+
     effect.to->addMark("TianxiangTarget");
     DamageStruct damage = effect.from->tag.value("TianxiangDamage").value<DamageStruct>();
 
@@ -566,8 +581,8 @@ void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
 class TianxiangViewAsSkill: public OneCardViewAsSkill {
 public:
     TianxiangViewAsSkill(): OneCardViewAsSkill("tianxiang") {
-		filter_pattern = ".|heart|.|hand!";
-		response_pattern = "@@tianxiang";
+        filter_pattern = ".|heart|.|hand!";
+        response_pattern = "@@tianxiang";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -766,7 +781,7 @@ bool GuhuoCard::guhuo(ServerPlayer *yuji) const{
     QList<CardsMoveStruct> moves;
     foreach (int card_id, getSubcards())
         used_cards << card_id;
-	room->setTag("GuhuoType", user_string);
+    room->setTag("GuhuoType", user_string);
 
     ServerPlayer *questioned = NULL;
     foreach (ServerPlayer *player, players) {
@@ -1005,7 +1020,7 @@ const Card *GuhuoCard::validateInResponse(ServerPlayer *yuji) const{
 class Guhuo: public OneCardViewAsSkill {
 public:
     Guhuo(): OneCardViewAsSkill("guhuo") {
-		filter_pattern = ".|.|.|hand";
+        filter_pattern = ".|.|.|hand";
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{

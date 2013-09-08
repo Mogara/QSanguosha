@@ -29,13 +29,13 @@ void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 
     int old_value = source->getMark("rende");
     QList<int> rende_list;
-	if (old_value > 0)
-		rende_list = StringList2IntList(source->property("rende").toString().split("+"));
-	else
-		rende_list = source->handCards();
-	foreach (int id, this->subcards)
-		rende_list.removeOne(id);
-	room->setPlayerProperty(source, "rende", IntList2StringList(rende_list).join("+"));
+    if (old_value > 0)
+        rende_list = StringList2IntList(source->property("rende").toString().split("+"));
+    else
+        rende_list = source->handCards();
+    foreach (int id, this->subcards)
+        rende_list.removeOne(id);
+    room->setPlayerProperty(source, "rende", IntList2StringList(rende_list).join("+"));
 
     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "rende", QString());
     room->obtainCard(target, this, reason, false);
@@ -229,6 +229,7 @@ void QingnangCard::onEffect(const CardEffectStruct &effect) const{
 }
 
 LiuliCard::LiuliCard() {
+    mute = true;
 }
 
 bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -263,6 +264,11 @@ bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player 
 }
 
 void LiuliCard::onEffect(const CardEffectStruct &effect) const{
+    if (effect.from->hasSkill("luoyan"))
+        effect.from->getRoom()->broadcastSkillInvoke("luoyan", 1);
+    else
+        effect.from->getRoom()->broadcastSkillInvoke("liuli");
+
     effect.to->setFlags("LiuliTarget");
 }
 
@@ -280,7 +286,10 @@ const Card *JijiangCard::validate(CardUseStruct &cardUse) const{
     ServerPlayer *liubei = cardUse.from;
     QList<ServerPlayer *> targets = cardUse.to;
     Room *room = liubei->getRoom();
-    liubei->broadcastSkillInvoke(this);
+    if (liubei->hasSkill("weidi"))
+        room->broadcastSkillInvoke("weidi");
+    else
+        liubei->broadcastSkillInvoke(this);
     room->notifySkillInvoked(liubei, "jijiang");
 
     LogMessage log;

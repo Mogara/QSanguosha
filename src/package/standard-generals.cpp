@@ -38,7 +38,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *caocao, QVariant &data) const{
-		QString pattern = data.toStringList().first();
+        QString pattern = data.toStringList().first();
         QString prompt = data.toStringList().at(1);
         if (pattern != "jink" || prompt.startsWith("@hujia-jink"))
             return false;
@@ -50,7 +50,11 @@ public:
         if (!room->askForSkillInvoke(caocao, objectName(), data))
             return false;
 
-        room->broadcastSkillInvoke(objectName());
+        if (caocao->hasSkill("weidi"))
+            room->broadcastSkillInvoke("weidi");
+        else
+            room->broadcastSkillInvoke(objectName());
+
         QVariant tohelp = QVariant::fromValue((PlayerStar)caocao);
         foreach (ServerPlayer *liege, lieges) {
             const Card *jink = room->askForCard(liege, "jink", "@hujia-jink:" + caocao->objectName(),
@@ -68,7 +72,7 @@ public:
 class TuxiViewAsSkill: public ZeroCardViewAsSkill {
 public:
     TuxiViewAsSkill(): ZeroCardViewAsSkill("tuxi") {
-		response_pattern = "@@tuxi";
+        response_pattern = "@@tuxi";
     }
 
     virtual const Card *viewAs() const{
@@ -116,7 +120,7 @@ public:
         QVariant data_card = QVariant::fromValue(card);
         if (guojia->askForSkillInvoke(objectName(), data_card)) {
             room->broadcastSkillInvoke(objectName());
-			guojia->obtainCard(judge->card);
+            guojia->obtainCard(judge->card);
             return false;
         }
 
@@ -142,7 +146,7 @@ void Yiji::onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
         QList<int> yiji_cards = room->getNCards(n, false);
 
         CardsMoveStruct move(yiji_cards, NULL, guojia, Player::PlaceTable, Player::PlaceHand,
-							 CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
+                             CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
         QList<CardsMoveStruct> moves;
         moves.append(move);
         room->notifyMoveCards(true, moves, false, _guojia);
@@ -151,7 +155,7 @@ void Yiji::onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
         QList<int> origin_yiji = yiji_cards;
         while (room->askForYiji(guojia, yiji_cards, objectName(), true, false, true, -1, room->getAlivePlayers())) {
             CardsMoveStruct move(QList<int>(), guojia, NULL, Player::PlaceHand, Player::PlaceTable,
-								 CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
+                                 CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
             foreach (int id, origin_yiji) {
                 if (room->getCardPlace(id) != Player::DrawPile) {
                     move.card_ids << id;
@@ -169,7 +173,7 @@ void Yiji::onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
 
         if (!yiji_cards.isEmpty()) {
             CardsMoveStruct move(yiji_cards, guojia, NULL, Player::PlaceHand, Player::PlaceTable,
-								 CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
+                                 CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
             QList<CardsMoveStruct> moves;
             moves.append(move);
             room->notifyMoveCards(true, moves, false, _guojia);
@@ -367,8 +371,8 @@ public:
 class Qingguo: public OneCardViewAsSkill {
 public:
     Qingguo(): OneCardViewAsSkill("qingguo") {
-		filter_pattern = ".|black|.|hand";
-		response_pattern = "jink";
+        filter_pattern = ".|black|.|hand";
+        response_pattern = "jink";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -486,8 +490,10 @@ public:
 
         if (!room->askForSkillInvoke(liubei, objectName(), data))
             return false;
-
-        room->broadcastSkillInvoke(objectName(), getEffectIndex(liubei, NULL));
+        if (liubei->hasSkill("weidi"))
+            room->broadcastSkillInvoke("weidi");
+        else
+            room->broadcastSkillInvoke(objectName(), getEffectIndex(liubei, NULL));
 
         foreach (ServerPlayer *liege, lieges) {
             const Card *slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName(), QVariant(), Card::MethodResponse, liubei);
@@ -527,12 +533,12 @@ public:
 
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
             && Self->getWeapon() && card->getEffectiveId() == Self->getWeapon()->getId() && card->isKindOf("Crossbow")) {
-			Slash *slash = new Slash(card->getSuit(), card->getNumber());
-			slash->deleteLater();
+            Slash *slash = new Slash(card->getSuit(), card->getNumber());
+            slash->deleteLater();
             return Self->canSlashWithoutCrossbow(slash);
-		} else {
+        } else {
             return true;
-		}
+        }
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -733,7 +739,7 @@ public:
 
             QList<int> ids = room->getNCards(1, false);
             CardsMoveStruct move(ids, yueying, Player::PlaceTable,
-								 CardMoveReason(CardMoveReason::S_REASON_TURNOVER, yueying->objectName(), "jizhi", QString()));
+                                 CardMoveReason(CardMoveReason::S_REASON_TURNOVER, yueying->objectName(), "jizhi", QString()));
             room->moveCardsAtomic(move, true);
 
             int id = ids.first();
@@ -842,8 +848,12 @@ public:
         } else if (triggerEvent == PreHpRecover) {
             RecoverStruct rec = data.value<RecoverStruct>();
             if (rec.card && rec.card->hasFlag("jiuyuan")) {
+                if (sunquan->hasSkill("weidi"))
+                    room->broadcastSkillInvoke("weidi");
+                else
+                    room->broadcastSkillInvoke("jiuyuan", rec.who->isMale() ? 1 : 2);
+
                 room->notifySkillInvoked(sunquan, "jiuyuan");
-                room->broadcastSkillInvoke("jiuyuan", rec.who->isMale() ? 1 : 2);
 
                 LogMessage log;
                 log.type = "#JiuyuanExtraRecover";
@@ -1008,7 +1018,7 @@ public:
 class Guose: public OneCardViewAsSkill {
 public:
     Guose(): OneCardViewAsSkill("guose") {
-		filter_pattern = ".|diamond";
+        filter_pattern = ".|diamond";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -1022,8 +1032,8 @@ public:
 class LiuliViewAsSkill: public OneCardViewAsSkill {
 public:
     LiuliViewAsSkill(): OneCardViewAsSkill("liuli") {
-		filter_pattern = ".!";
-		response_pattern = "@@liuli";
+        filter_pattern = ".!";
+        response_pattern = "@@liuli";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -1198,12 +1208,12 @@ public:
 class Lijian: public OneCardViewAsSkill {
 public:
     Lijian(): OneCardViewAsSkill("lijian") {
-		filter_pattern = ".!";
+        filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->getAliveSiblings().length() > 1
-			   && player->canDiscard(player, "he") && !player->hasUsed("LijianCard");
+               && player->canDiscard(player, "he") && !player->hasUsed("LijianCard");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -1239,7 +1249,7 @@ public:
 class Qingnang: public OneCardViewAsSkill {
 public:
     Qingnang(): OneCardViewAsSkill("qingnang") {
-		filter_pattern = ".|.|.|hand!";
+        filter_pattern = ".|.|.|hand!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -1256,7 +1266,7 @@ public:
 class Jijiu: public OneCardViewAsSkill {
 public:
     Jijiu(): OneCardViewAsSkill("jijiu") {
-		filter_pattern = ".|red";
+        filter_pattern = ".|red";
     }
 
     virtual bool isEnabledAtPlay(const Player *) const{

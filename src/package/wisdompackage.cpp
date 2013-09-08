@@ -353,12 +353,18 @@ public:
 
 WeidaiCard::WeidaiCard(){
     target_fixed = true;
+    mute = true;
 }
 
 const Card *WeidaiCard::validate(CardUseStruct &card_use) const {
     card_use.m_isOwnerUse = false;
     ServerPlayer *sunce = card_use.from;
     Room *room = sunce->getRoom();
+    if (!sunce->isLord() && sunce->hasSkill("weidi"))
+        room->broadcastSkillInvoke("weidi");
+    else
+        room->broadcastSkillInvoke("weidai");
+
     foreach (ServerPlayer *liege, room->getLieges("wu", sunce)) {
         QVariant tohelp = QVariant::fromValue((PlayerStar)sunce);
         QString prompt = QString("@weidai-analeptic:%1").arg(sunce->objectName());
@@ -376,9 +382,14 @@ const Card *WeidaiCard::validate(CardUseStruct &card_use) const {
     return NULL;
 }
 
-const Card *WeidaiCard::validateInResponse(ServerPlayer *user, bool &continuable) const {
-    continuable = true;
+const Card *WeidaiCard::validateInResponse(ServerPlayer *user) const {
+    //continuable = true;
     Room *room = user->getRoom();
+    if (!user->isLord() && user->hasSkill("weidi"))
+        room->broadcastSkillInvoke("weidi");
+    else
+        room->broadcastSkillInvoke("weidai");
+
     foreach (ServerPlayer *liege, room->getLieges("wu", user)) {
         QVariant tohelp = QVariant::fromValue((PlayerStar)user);
         QString prompt = QString("@weidai-analeptic:%1").arg(user->objectName());

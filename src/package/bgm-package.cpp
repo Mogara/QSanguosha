@@ -74,7 +74,7 @@ void LihunCard::onEffect(const CardEffectStruct &effect) const{
 class LihunSelect: public OneCardViewAsSkill {
 public:
     LihunSelect(): OneCardViewAsSkill("lihun") {
-		filter_pattern = ".!";
+        filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -153,7 +153,7 @@ public:
         int n = 0;
         foreach (ServerPlayer *p, caoren->getRoom()->getAlivePlayers()) {
             if (p->getWeapon()) n++;
-		}
+        }
 
         return n;
     }
@@ -200,7 +200,7 @@ public:
 class Yanzheng: public OneCardViewAsSkill {
 public:
     Yanzheng(): OneCardViewAsSkill("yanzheng") {
-		filter_pattern = ".|.|.|equipped";
+        filter_pattern = ".|.|.|equipped";
     }
 
     virtual bool isEnabledAtPlay(const Player *) const{
@@ -283,8 +283,8 @@ public:
 
         foreach (int _card_id, ids) {
             doManjuan(sp_pangtong, _card_id);
-			if (!sp_pangtong->isAlive()) break;
-		}
+            if (!sp_pangtong->isAlive()) break;
+        }
 
         return false;
     }
@@ -295,7 +295,7 @@ public:
     Zuixiang(): TriggerSkill("zuixiang") {
         events << EventPhaseStart << SlashEffected << CardEffected;
         frequency = Limited;
-		limit_mark = "@sleep";
+        limit_mark = "@sleep";
 
         type[Card::TypeBasic] = "BasicCard";
         type[Card::TypeTrick] = "TrickCard";
@@ -316,7 +316,7 @@ public:
 
         QList<int> ids = room->getNCards(3, false);
         CardsMoveStruct move(ids, player, Player::PlaceTable,
-							 CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->objectName(), "zuixiang", QString()));
+                             CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->objectName(), "zuixiang", QString()));
         room->moveCardsAtomic(move, true);
 
         room->getThread()->delay();
@@ -365,14 +365,14 @@ public:
 
             player->setFlags("ManjuanInvoke");
             CardsMoveStruct move(zuixiang, player, Player::PlaceHand,
-								 CardMoveReason(CardMoveReason::S_REASON_PUT, player->objectName(), QString(), "zuixiang", QString()));
+                                 CardMoveReason(CardMoveReason::S_REASON_PUT, player->objectName(), QString(), "zuixiang", QString()));
             room->moveCardsAtomic(move, true);
         }
     }
 
-	virtual bool triggerable(const ServerPlayer *target) const{
-		return target != NULL;
-	}
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *sp_pangtong, QVariant &data) const{
         QList<int> zuixiang = sp_pangtong->getPile("dream");
@@ -684,22 +684,22 @@ public:
 class MouduanStart: public TriggerSkill {
 public:
     MouduanStart(): TriggerSkill("#mouduan-start") {
-		events << GameStart << EventAcquireSkill;
-	}
+        events << GameStart << EventAcquireSkill;
+    }
 
-	virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *lvmeng, QVariant &data) const{
-		if (triggerEvent == GameStart) {
-			lvmeng->gainMark("@wu");
-			room->handleAcquireDetachSkills(lvmeng, "jiang|qianxun");
-			room->getThread()->addTriggerSkill(Sanguosha->getTriggerSkill("keji"));
-		} else if (data.toString() == "mouduan") {
-			if (lvmeng->getMark("@wu") > 0)
-				room->handleAcquireDetachSkills(lvmeng, "jiang|qianxun");
-			else if (lvmeng->getMark("@wen") > 0)
-				room->handleAcquireDetachSkills(lvmeng, "yingzi|keji");
-		}
-		return false;
-	}
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *lvmeng, QVariant &data) const{
+        if (triggerEvent == GameStart) {
+            lvmeng->gainMark("@wu");
+            room->handleAcquireDetachSkills(lvmeng, "jiang|qianxun");
+            room->getThread()->addTriggerSkill(Sanguosha->getTriggerSkill("keji"));
+        } else if (data.toString() == "mouduan") {
+            if (lvmeng->getMark("@wu") > 0)
+                room->handleAcquireDetachSkills(lvmeng, "jiang|qianxun");
+            else if (lvmeng->getMark("@wen") > 0)
+                room->handleAcquireDetachSkills(lvmeng, "yingzi|keji");
+        }
+        return false;
+    }
 };
 
 class Mouduan: public TriggerSkill {
@@ -817,7 +817,7 @@ public:
             int id = room->drawCard();
             cardIds << id;
             CardsMoveStruct move(id, NULL, Player::PlaceTable,
-								 CardMoveReason(CardMoveReason::S_REASON_TURNOVER, liubei->objectName(), QString(), "zhaolie", QString()));
+                                 CardMoveReason(CardMoveReason::S_REASON_TURNOVER, liubei->objectName(), QString(), "zhaolie", QString()));
             room->moveCardsAtomic(move, true);
             room->getThread()->delay();
         }
@@ -890,8 +890,14 @@ bool ShichouCard::targetFilter(const QList<const Player *> &targets, const Playe
 void ShichouCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     ServerPlayer *player = effect.from, *victim = effect.to;
-    room->broadcastSkillInvoke("shichou");
-    room->doLightbox("$ShichouAnimate", 4500);
+    if (!player->isLord() && player->hasSkill("weidi")){
+        room->broadcastSkillInvoke("weidi");
+        room->doLightbox("$ShichouAnimate", 2500);
+    }
+    else{
+        room->broadcastSkillInvoke("shichou");
+        room->doLightbox("$ShichouAnimate", 4500);
+    }
 
     room->removePlayerMark(player, "@hate");
     room->setPlayerMark(player, "xhate", 1);
@@ -906,7 +912,7 @@ void ShichouCard::onEffect(const CardEffectStruct &effect) const{
 class ShichouViewAsSkill: public ViewAsSkill {
 public:
     ShichouViewAsSkill(): ViewAsSkill("shichou") {
-		response_pattern = "@@shichou";
+        response_pattern = "@@shichou";
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *) const{
@@ -928,7 +934,7 @@ public:
     Shichou(): TriggerSkill("shichou$") {
         events << EventPhaseStart << DamageInflicted << Dying;
         frequency = Limited;
-		limit_mark = "@hate";
+        limit_mark = "@hate";
         view_as_skill = new ShichouViewAsSkill;
     }
 
@@ -1052,7 +1058,7 @@ void YanxiaoCard::takeEffect(ServerPlayer *) const{
 class YanxiaoViewAsSkill: public OneCardViewAsSkill {
 public:
     YanxiaoViewAsSkill(): OneCardViewAsSkill("yanxiao") {
-		filter_pattern = ".|diamond";
+        filter_pattern = ".|diamond";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -1162,7 +1168,7 @@ void YinlingCard::onEffect(const CardEffectStruct &effect) const{
 class Yinling: public OneCardViewAsSkill {
 public:
     Yinling(): OneCardViewAsSkill("yinling") {
-		filter_pattern = ".|black!";
+        filter_pattern = ".|black!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -1257,11 +1263,11 @@ public:
 
             QList<CardsMoveStruct> exchangeMove;
             CardsMoveStruct move1(card_id, player, Player::PlaceEquip,
-								  CardMoveReason(CardMoveReason::S_REASON_PUT, player->objectName()));
+                                  CardMoveReason(CardMoveReason::S_REASON_PUT, player->objectName()));
             exchangeMove.push_back(move1);
             if (player->getEquip(equip_index) != NULL) {
                 CardsMoveStruct move2(player->getEquip(equip_index)->getId(), NULL, Player::DiscardPile,
-									  CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, player->objectName()));
+                                      CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, player->objectName()));
                 exchangeMove.push_back(move2);
             }
             LogMessage log;
@@ -1423,8 +1429,8 @@ BGMPackage::BGMPackage(): Package("BGM") {
     General *bgm_pangtong = new General(this, "bgm_pangtong", "qun", 3); // *SP 004
     bgm_pangtong->addSkill(new Manjuan);
     bgm_pangtong->addSkill(new Zuixiang);
-	bgm_pangtong->addSkill(new ZuixiangClear);
-	related_skills.insertMulti("zuixiang", "#zuixiang-clear");
+    bgm_pangtong->addSkill(new ZuixiangClear);
+    related_skills.insertMulti("zuixiang", "#zuixiang-clear");
 
     General *bgm_zhangfei = new General(this, "bgm_zhangfei", "shu"); // *SP 005
     bgm_zhangfei->addSkill(new Jie);
@@ -1462,13 +1468,13 @@ BGMPackage::BGMPackage(): Package("BGM") {
 
     General *bgm_xiahoudun = new General(this, "bgm_xiahoudun", "wei"); // *SP 010
     bgm_xiahoudun->addSkill(new Fenyong);
-	bgm_xiahoudun->addSkill(new FenyongWithoutXuehen);
+    bgm_xiahoudun->addSkill(new FenyongWithoutXuehen);
     bgm_xiahoudun->addSkill(new FenyongClear);
     bgm_xiahoudun->addSkill(new Xuehen);
     bgm_xiahoudun->addSkill(new SlashNoDistanceLimitSkill("xuehen"));
     bgm_xiahoudun->addSkill(new FakeMoveSkill("xuehen"));
     related_skills.insertMulti("fenyong", "#fenyong-clear");
-	related_skills.insertMulti("fenyong", "#fenyong-without-xuehen");
+    related_skills.insertMulti("fenyong", "#fenyong-without-xuehen");
     related_skills.insertMulti("xuehen", "#xuehen-slash-ndl");
     related_skills.insertMulti("xuehen", "#xuehen-fake-move");
 
@@ -1749,7 +1755,7 @@ void HuangenCard::onEffect(const CardEffectStruct &effect) const{
 class HuangenViewAsSkill: public ZeroCardViewAsSkill {
 public:
     HuangenViewAsSkill():ZeroCardViewAsSkill("huangen") {
-		response_pattern = "@@huangen";
+        response_pattern = "@@huangen";
     }
 
     virtual const Card *viewAs() const{
@@ -2035,7 +2041,7 @@ void DIYYicongCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) c
 class DIYYicongViewAsSkill: public ViewAsSkill {
 public:
     DIYYicongViewAsSkill(): ViewAsSkill("diyyicong") {
-		response_pattern = "@@diyyicong";
+        response_pattern = "@@diyyicong";
     }
 
     virtual bool viewFilter(const QList<const Card *> &, const Card *) const{
@@ -2163,9 +2169,9 @@ BGMDIYPackage::BGMDIYPackage(): Package("BGMDIY") {
     related_skills.insertMulti("diyyicong", "#diyyicong-dist");
     related_skills.insertMulti("tuqi", "#tuqi-dist");
 
-	General *diy_zhugeke = new General(this, "diy_zhugeke", "wu", 3, true, true);
-	diy_zhugeke->addSkill("aocai");
-	diy_zhugeke->addSkill("duwu");
+    General *diy_zhugeke = new General(this, "diy_zhugeke", "wu", 3, true, true);
+    diy_zhugeke->addSkill("aocai");
+    diy_zhugeke->addSkill("duwu");
 
     addMetaObject<ZhaoxinCard>();
     addMetaObject<FuluanCard>();
