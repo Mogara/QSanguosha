@@ -360,7 +360,6 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void IronChain::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    source->broadcastSkillInvoke("@tiesuo");
     TrickCard::use(room, source, targets);
 }
 
