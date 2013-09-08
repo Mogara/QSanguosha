@@ -1634,14 +1634,6 @@ public:
 		response_pattern = "@@jisu";
     }
 
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@jisu";
-    }
-
     virtual const Card *viewAs() const{
         return new JisuCard;
     }
