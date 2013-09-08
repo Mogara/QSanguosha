@@ -891,9 +891,10 @@ void Engine::banRandomGods() const{
 	QStringList gods;
 
 	foreach(const QString &general, all_generals) {
-		if (getGeneral(general)->getKingdom() == "god")
+		if (getGeneral(general)->getKingdom() == "god") {
 			gods << general;
 			count ++;
+		}
 	};
 	int bancount = count - max;
 	if (bancount <= 0)
