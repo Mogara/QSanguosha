@@ -4384,103 +4384,111 @@ void Room::askForLuckCard() {
             players << player;
         }
     }
-    if (players.isEmpty())
-        return;
 
-    Countdown countdown;
-    countdown.m_max = ServerInfo.getCommandTimeout(S_COMMAND_LUCK_CARD, S_CLIENT_INSTANCE);
-    countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
-    notifyMoveFocus(players, S_COMMAND_LUCK_CARD, countdown);
+	int n = 0;
+	while (n < Config.LuckCardLimitation) {
+		if (players.isEmpty())
+			return;
 
-    doBroadcastRequest(players, S_COMMAND_LUCK_CARD);
+		n ++;
 
-    QList<ServerPlayer *> used;
-    foreach (ServerPlayer *player, players) {
-        Json::Value clientReply = player->getClientReply();
-        if (!player->m_isClientResponseReady || !clientReply.isBool() || !clientReply.asBool())
-            continue;
-        used << player;
-    }
-    if (used.isEmpty())
-        return;
+		Countdown countdown;
+		countdown.m_max = ServerInfo.getCommandTimeout(S_COMMAND_LUCK_CARD, S_CLIENT_INSTANCE);
+		countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
+		notifyMoveFocus(players, S_COMMAND_LUCK_CARD, countdown);
 
-    LogMessage log;
-    log.type = "#UseLuckCard";
-    foreach (ServerPlayer *player, used) {
-        log.from = player;
-        sendLog(log);
-    }
+		doBroadcastRequest(players, S_COMMAND_LUCK_CARD);
 
-    QList<int> draw_list;
-    foreach (ServerPlayer *player, used) {
-        draw_list << player->getHandcardNum();
+		QList<ServerPlayer *> used;
+		foreach (ServerPlayer *player, players) {
+			Json::Value clientReply = player->getClientReply();
+			if (!player->m_isClientResponseReady || !clientReply.isBool() || !clientReply.asBool()) {
+				players.removeOne(player);
+				continue;
+			}
+			used << player;
+		}
+		if (used.isEmpty())
+			return;
 
-        CardMoveReason reason(CardMoveReason::S_REASON_PUT, player->objectName(), "luck_card", QString());
-        QList<CardsMoveStruct> moves;
-        CardsMoveStruct move;
-        move.from = player;
-        move.from_place = Player::PlaceHand;
-        move.to = NULL;
-        move.to_place = Player::DrawPile;
-        move.card_ids = player->handCards();
-        move.reason = reason;
-        moves.append(move);
-        moves = _breakDownCardMoves(moves);
+		LogMessage log;
+		log.type = "#UseLuckCard";
+		foreach (ServerPlayer *player, used) {
+			log.from = player;
+			sendLog(log);
+		}
 
-        QList<ServerPlayer *> tmp_list;
-        tmp_list.append(player);
+		QList<int> draw_list;
+		foreach (ServerPlayer *player, used) {
+			draw_list << player->getHandcardNum();
 
-        notifyMoveCards(true, moves, false, tmp_list);
-        for (int j = 0; j < move.card_ids.size(); j++) {
-            int card_id = move.card_ids[j];
-            const Card *card = Sanguosha->getCard(card_id);
-            player->removeCard(card, Player::PlaceHand);
-        }
+			CardMoveReason reason(CardMoveReason::S_REASON_PUT, player->objectName(), "luck_card", QString());
+			QList<CardsMoveStruct> moves;
+			CardsMoveStruct move;
+			move.from = player;
+			move.from_place = Player::PlaceHand;
+			move.to = NULL;
+			move.to_place = Player::DrawPile;
+			move.card_ids = player->handCards();
+			move.reason = reason;
+			moves.append(move);
+			moves = _breakDownCardMoves(moves);
 
-        updateCardsOnLose(move);
-        for (int j = 0; j < move.card_ids.size(); j++)
-            setCardMapping(move.card_ids[j], NULL, Player::DrawPile);
-        updateCardsOnGet(move);
+			QList<ServerPlayer *> tmp_list;
+			tmp_list.append(player);
 
-        notifyMoveCards(false, moves, false, tmp_list);
-        for (int j = 0; j < move.card_ids.size(); j++) {
-            int card_id = move.card_ids[j];
-            m_drawPile->prepend(card_id);
-        }
-    }
-    qShuffle(*m_drawPile);
-    int index = -1;
-    foreach (ServerPlayer *player, used) {
-        index++;
-        QList<CardsMoveStruct> moves;
-        CardsMoveStruct move;
-        move.from = NULL;
-        move.from_place = Player::DrawPile;
-        move.to = player;
-        move.to_place = Player::PlaceHand;
-        move.card_ids = getNCards(draw_list.at(index), false);
-        moves.append(move);
-        moves = _breakDownCardMoves(moves);
+			notifyMoveCards(true, moves, false, tmp_list);
+			for (int j = 0; j < move.card_ids.size(); j++) {
+				int card_id = move.card_ids[j];
+				const Card *card = Sanguosha->getCard(card_id);
+				player->removeCard(card, Player::PlaceHand);
+			}
 
-        notifyMoveCards(true, moves, false);
-        for (int j = 0; j < move.card_ids.size(); j++) {
-            int card_id = move.card_ids[j];
-            m_drawPile->removeOne(card_id);
-        }
+			updateCardsOnLose(move);
+			for (int j = 0; j < move.card_ids.size(); j++)
+				setCardMapping(move.card_ids[j], NULL, Player::DrawPile);
+			updateCardsOnGet(move);
 
-        updateCardsOnLose(move);
-        for (int j = 0; j < move.card_ids.size(); j++)
-            setCardMapping(move.card_ids[j], player, Player::PlaceHand);
-        updateCardsOnGet(move);
+			notifyMoveCards(false, moves, false, tmp_list);
+			for (int j = 0; j < move.card_ids.size(); j++) {
+				int card_id = move.card_ids[j];
+				m_drawPile->prepend(card_id);
+			}
+		}
+		qShuffle(*m_drawPile);
+		int index = -1;
+		foreach (ServerPlayer *player, used) {
+			index++;
+			QList<CardsMoveStruct> moves;
+			CardsMoveStruct move;
+			move.from = NULL;
+			move.from_place = Player::DrawPile;
+			move.to = player;
+			move.to_place = Player::PlaceHand;
+			move.card_ids = getNCards(draw_list.at(index), false);
+			moves.append(move);
+			moves = _breakDownCardMoves(moves);
 
-        notifyMoveCards(false, moves, false);
-        for (int j = 0; j < move.card_ids.size(); j++) {
-            int card_id = move.card_ids[j];
-            const Card *card = Sanguosha->getCard(card_id);
-            player->addCard(card, Player::PlaceHand);
-        }
-    }
-    doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
+			notifyMoveCards(true, moves, false);
+			for (int j = 0; j < move.card_ids.size(); j++) {
+				int card_id = move.card_ids[j];
+				m_drawPile->removeOne(card_id);
+			}
+
+			updateCardsOnLose(move);
+			for (int j = 0; j < move.card_ids.size(); j++)
+				setCardMapping(move.card_ids[j], player, Player::PlaceHand);
+			updateCardsOnGet(move);
+
+			notifyMoveCards(false, moves, false);
+			for (int j = 0; j < move.card_ids.size(); j++) {
+				int card_id = move.card_ids[j];
+				const Card *card = Sanguosha->getCard(card_id);
+				player->addCard(card, Player::PlaceHand);
+			}
+		}
+		doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
+	}
 }
 
 Card::Suit Room::askForSuit(ServerPlayer *player, const QString &reason) {

@@ -145,7 +145,7 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
             } else {
                 room->drawCards(room->getPlayers(), 4, QString());
             }
-            if (Config.EnableLuckCard)
+            if (Config.LuckCardLimitation > 0)
                 room->askForLuckCard();
         }
         return false;
