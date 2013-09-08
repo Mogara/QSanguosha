@@ -481,7 +481,7 @@
     <message>
         <location filename="../../src/client/client.cpp" line="836"/>
         <source>Do you want to invoke skill [%1] to %2 ?</source>
-        <translation type="unfinished">你想对%2发动技能“%1”吗?</translation>
+        <translation>你想对%2发动技能“%1”吗?</translation>
     </message>
     <message>
         <location filename="../../src/client/client.cpp" line="857"/>
