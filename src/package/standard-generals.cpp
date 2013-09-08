@@ -138,8 +138,8 @@ Yiji::Yiji(): MasochismSkill("yiji") {
 
 void Yiji::onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
     Room *room = guojia->getRoom();
-    int x = damage.damage, i;
-    for (i = 0; i < x; i++) {
+    int x = damage.damage;
+    for (int i = 0; i < x; i++) {
         if (!guojia->isAlive() || !room->askForSkillInvoke(guojia, objectName()))
             return;
         room->broadcastSkillInvoke("yiji");
@@ -185,8 +185,6 @@ void Yiji::onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
             DummyCard *dummy = new DummyCard(yiji_cards);
             guojia->obtainCard(dummy, false);
             delete dummy;
-        } else {
-            continue;
         }
     }
 }
