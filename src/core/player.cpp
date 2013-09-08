@@ -808,19 +808,20 @@ QSet<QString> Player::getAcquiredSkills() const{
     return acquired_skills;
 }
 
-QString Player::getSkillDescription() const{
+QString Player::getSkillDescription(bool yellow) const{
     QString description = QString();
+	QString color = yellow ? "#FFFF33" : "#FF0080";
 
     foreach (const Skill *skill, getVisibleSkillList()) {
         if (skill->inherits("SPConvertSkill") || skill->isAttachedLordSkill() || !hasSkill(skill->objectName()))
             continue;
         QString skill_name = Sanguosha->translate(skill->objectName());
-        QString desc = skill->getDescription();
+        QString desc = skill->getDescription(yellow);
         desc.replace("\n", "<br/>");
-        description.append(QString("<font color=#FF0080><b>%1</b>:</font> %2 <br/> <br/>").arg(skill_name).arg(desc));
+		description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(color).arg(skill_name).arg(desc));
     }
 
-    if (description.isEmpty()) description = tr("No skills");
+    if (description.isEmpty()) description = tr("<font color=%1>No skills</font>").arg(color);
     return description;
 }
 

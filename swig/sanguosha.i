@@ -58,7 +58,7 @@ public:
 	QStringList getRelatedSkillNames() const;
 
     QString getPackage() const;
-    QString getSkillDescription(bool include_name = false) const;
+    QString getSkillDescription(bool include_name = false, bool yellow = true) const;
 
     void lastWord() const;
 };
@@ -212,7 +212,7 @@ public:
     QSet<const Skill *> getVisibleSkills(bool include_equip = false) const;
     QList<const Skill *> getVisibleSkillList(bool include_equip = false) const;
     QSet<QString> getAcquiredSkills() const;
-    QString getSkillDescription() const;
+    QString getSkillDescription(bool yellow = true) const;
 
     virtual bool isProhibited(const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlashWithoutCrossbow() const;
@@ -733,7 +733,7 @@ public:
     QString getName() const;
     QString getSkillName(bool removePrefix = true) const;
     void setSkillName(const char *skill_name);
-    QString getDescription() const;
+    QString getDescription(bool yellow = true) const;
 
     bool isVirtualCard() const;
     virtual bool match(const char *pattern) const;
@@ -934,7 +934,7 @@ public:
     explicit Skill(const char *name, Frequency frequent = NotFrequent);
     bool isLordSkill() const;
     bool isAttachedLordSkill() const;
-    QString getDescription() const;
+    QString getDescription(bool yellow = true) const;
     bool isVisible() const;
 
     virtual QString getDefaultChoice(ServerPlayer *player) const;

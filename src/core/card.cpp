@@ -312,10 +312,10 @@ void Card::setSkillName(const QString &name) {
     this->m_skillName = name;
 }
 
-QString Card::getDescription() const{
+QString Card::getDescription(bool yellow) const{
     QString desc = Sanguosha->translate(":" + objectName());
     desc.replace("\n", "<br/>");
-    return tr("<font color=#FF0080><b>[%1]</b> %2</font>").arg(getName()).arg(desc);
+	return tr("<font color=%1><b>[%2]</b> %3</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(getName()).arg(desc);
 }
 
 QString Card::toString(bool hidden) const{

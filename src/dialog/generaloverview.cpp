@@ -300,7 +300,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
     ui->illustratorLineEdit->setText(getIllustratorInfo(general->objectName()));
 
     button_layout->addStretch();
-    ui->skillTextEdit->append(general->getSkillDescription());
+    ui->skillTextEdit->append(general->getSkillDescription(false, false));
     ui->changeGeneralButton->setEnabled(Self && Self->getGeneralName() != general->objectName());
     ui->changeGeneral2Button->setEnabled(Self && Self->getGeneral2Name() != general->objectName());
 }

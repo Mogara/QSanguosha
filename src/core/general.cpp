@@ -132,16 +132,16 @@ QString General::getPackage() const{
         return QString(); // avoid null pointer exception;
 }
 
-QString General::getSkillDescription(bool include_name) const{
+QString General::getSkillDescription(bool include_name, bool yellow) const{
     QString description;
 
     foreach (const Skill *skill, getVisibleSkillList()) {
         if (skill->inherits("SPConvertSkill"))
             continue;
         QString skill_name = Sanguosha->translate(skill->objectName());
-        QString desc = skill->getDescription();
+        QString desc = skill->getDescription(yellow);
         desc.replace("\n", "<br/>");
-        description.append(QString("<font color=#FF0080><b>%1</b>:</font> %2 <br/> <br/>").arg(skill_name).arg(desc));
+        description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(yellow ? "#FFFF33" : "#FF0080").arg(skill_name).arg(desc));
     }
 
     if (include_name) {

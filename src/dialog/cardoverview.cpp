@@ -95,7 +95,7 @@ void CardOverview::on_tableWidget_itemSelectionChanged() {
     QString pixmap_path = QString("image/big-card/%1.png").arg(card->objectName());
     ui->cardLabel->setPixmap(pixmap_path);
 
-    ui->cardDescriptionBox->setText(card->getDescription());
+    ui->cardDescriptionBox->setText(card->getDescription(false));
 }
 
 void CardOverview::askCard() {
