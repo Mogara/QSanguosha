@@ -699,7 +699,8 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const{
 
 void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const{
     Q_ASSERT(killer->getRoom() != NULL);
-    if (killer->isDead() || killer->getRoom()->getMode() == "06_XMode")
+    Room *room = killer->getRoom();
+    if (killer->isDead() || room->getMode() == "06_XMode")
         return;
 
     if (killer->getRoom()->getMode() == "06_3v3") {
@@ -708,10 +709,40 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
         else
             killer->drawCards(3);
     } else {
-        if (victim->getRole() == "rebel" && killer != victim)
-            killer->drawCards(3);
-        else if (victim->getRole() == "loyalist" && killer->getRole() == "lord")
-            killer->throwAllHandCardsAndEquips();
+        ServerPlayer *hmkiller = room->getTag("huamingkiller").value<ServerPlayer *>();
+        ServerPlayer *shanfu = room->getTag("shanfu").value<ServerPlayer *>();
+        if (hmkiller == killer && shanfu == victim){ // For the Skill "Huaming"
+            if (killer == victim) return;
+            if (shanfu->askForSkillInvoke("huaming")){
+                QString role = room->askForChoice(shanfu, objectName(), "loyalist+renegade+rebel");
+                LogMessage log;
+                log.type = "#huaming";
+                log.from = shanfu;
+                log.to.append(killer);
+                log.arg = objectName();
+                log.arg2 = role;
+                room->sendLog(log);
+                if (role == "loyalist"){
+                    if (killer->isLord())
+                        killer->throwAllHandCardsAndEquips();
+                    room->broadcastSkillInvoke(objectName(), 1);
+                }
+                else if (role == "renegade")
+                    room->broadcastSkillInvoke(objectName(), 2);
+                else if (role == "rebel"){
+                    killer->drawCards(3);
+                    room->broadcastSkillInvoke(objectName(), 3);
+                }
+                room->removeTag("huamingkiller");
+                room->removeTag("shanfu");
+                room->getThread()->delay(2000); //原来6秒的大延迟太不科学了……
+            }
+        }
+        else
+            if (victim->getRole() == "rebel" && killer != victim)
+                killer->drawCards(3);
+            else if (victim->getRole() == "loyalist" && killer->getRole() == "lord")
+                killer->throwAllHandCardsAndEquips();
     }
 }
 
