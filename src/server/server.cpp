@@ -84,7 +84,7 @@ QWidget *ServerDialog::createBasicTab() {
 QWidget *ServerDialog::createPackageTab() {
     disable_lua_checkbox = new QCheckBox(tr("Disable Lua"));
     disable_lua_checkbox->setChecked(Config.DisableLua);
-    disable_lua_checkbox->setToolTip(tr("The setting takes effect after reboot"));
+    disable_lua_checkbox->setToolTip(tr("<font color=#FFFF33>The setting takes effect after reboot</font>"));
 
     extension_group = new QButtonGroup;
     extension_group->setExclusive(false);
@@ -182,7 +182,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     random_seat_checkbox->setChecked(Config.RandomSeat);
 
     enable_cheat_checkbox = new QCheckBox(tr("Enable cheat"));
-    enable_cheat_checkbox->setToolTip(tr("This option enables the cheat menu"));
+    enable_cheat_checkbox->setToolTip(tr("<font color=#FFFF33>This option enables the cheat menu</font>"));
     enable_cheat_checkbox->setChecked(Config.EnableCheat);
 
     free_choose_checkbox = new QCheckBox(tr("Choose generals and cards freely"));
@@ -204,7 +204,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     connect(free_assign_checkbox, SIGNAL(toggled(bool)), free_assign_self_checkbox, SLOT(setEnabled(bool)));
 
     pile_swapping_label = new QLabel(tr("Pile-swapping limitation"));
-    pile_swapping_label->setToolTip(tr("-1 means no limitations"));
+    pile_swapping_label->setToolTip(tr("<font color=#FFFF33>-1 means no limitations</font>"));
     pile_swapping_spinbox = new QSpinBox;
     pile_swapping_spinbox->setRange(-1, 15);
     pile_swapping_spinbox->setValue(Config.value("PileSwappingLimitation", 5).toInt());
@@ -220,13 +220,13 @@ QWidget *ServerDialog::createAdvancedTab() {
     maxchoice_spinbox->setValue(Config.value("MaxChoice", 5).toInt());
 
 	godlimit_label = new QLabel(tr("Upperlimit for gods"));
-	godlimit_label->setToolTip(tr("-1 means that all gods may appear in your general chosen dialog!"));
+	godlimit_label->setToolTip(tr("<font color=#FFFF33>-1 means that all gods may appear in your general chosen dialog!</font>"));
 	godlimit_spinbox = new QSpinBox;
 	godlimit_spinbox->setRange(-1, 8);
 	godlimit_spinbox->setValue(Config.value("GodLimit", -1).toInt());
 
     lord_maxchoice_label = new QLabel(tr("Upperlimit for lord"));
-    lord_maxchoice_label->setToolTip(tr("-1 means that all lords are available"));
+    lord_maxchoice_label->setToolTip(tr("<font color=#FFFF33>-1 means that all lords are available</font>"));
     lord_maxchoice_spinbox = new QSpinBox;
     lord_maxchoice_spinbox->setRange(-1, 10);
     lord_maxchoice_spinbox->setValue(Config.value("LordMaxChoice", -1).toInt());
