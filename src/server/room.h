@@ -391,6 +391,11 @@ private:
             m_from = move.from; m_to = move.to;
             m_to_place = move.to_place;
             m_to_pile_name = move.to_pile_name;
+
+			m_origin_from = move.origin_from;
+			m_origin_to = move.origin_to;
+			m_origin_to_place = move.origin_to_place;
+			m_origin_to_pile_name = move.origin_to_pile_name;
         }
         inline bool operator ==(const _MoveMergeClassifier &other) const{
             return m_from == other.m_from && m_to == other.m_to
@@ -404,6 +409,11 @@ private:
         Player *m_to;
         Player::Place m_to_place;
         QString m_to_pile_name;
+
+		Player *m_origin_from;
+		Player *m_origin_to;
+		Player::Place m_origin_to_place;
+		QString m_origin_to_pile_name;
     };
 
     struct _MoveSeparateClassifier {

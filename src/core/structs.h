@@ -185,6 +185,12 @@ struct CardsMoveOneTimeStruct {
     QStringList from_pile_names;
     QString to_pile_name;
 
+	QList<Player::Place> origin_from_places;
+	Player::Place origin_to_place;
+	Player *origin_from, *origin_to; 
+	QStringList origin_from_pile_names; 
+	QString origin_to_pile_name; //for case of the movement transitted
+
     QList<bool> open; // helper to prevent sending card_id to unrelevant clients
     bool is_last_handcard;
 };
@@ -264,6 +270,11 @@ struct CardsMoveStruct {
     CardMoveReason reason;
     bool open; // helper to prevent sending card_id to unrelevant clients
     bool is_last_handcard;
+
+	Player::Place origin_from_place, origin_to_place;
+	Player *origin_from, *origin_to; 
+	QString origin_from_pile_name, origin_to_pile_name; //for case of the movement transitted
+
     bool tryParse(const Json::Value &);
     Json::Value toJsonValue() const;
     inline bool isRelevant(const Player *player) {

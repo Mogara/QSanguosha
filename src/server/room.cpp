@@ -3605,11 +3605,17 @@ QList<CardsMoveOneTimeStruct> Room::_mergeMoves(QList<CardsMoveStruct> cards_mov
         moveOneTime.to_place = cls.m_to_place;
         moveOneTime.to_pile_name = cls.m_to_pile_name;
 		moveOneTime.is_last_handcard = false;
+		moveOneTime.origin_from = cls.m_origin_from;
+		moveOneTime.origin_to = cls.m_origin_to;
+		moveOneTime.origin_to_place = cls.m_origin_to_place;
+		moveOneTime.origin_to_pile_name = cls.m_origin_to_pile_name;
         foreach (CardsMoveStruct move, moveMap[cls]) {
             moveOneTime.card_ids.append(move.card_ids);
             for (int i = 0; i < move.card_ids.size(); i++) {
                 moveOneTime.from_places.append(move.from_place);
+				moveOneTime.origin_from_places.append(move.from_place);
                 moveOneTime.from_pile_names.append(move.from_pile_name);
+				moveOneTime.origin_from_pile_names.append(move.from_pile_name);
                 moveOneTime.open.append(move.open);
             }
             if (move.is_last_handcard)
@@ -3663,6 +3669,13 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
         card_move.open = cls.m_open;
         card_move.card_ids = ids.at(i);
         card_move.reason = cls.m_reason;
+
+		card_move.origin_from = cls.m_from;
+		card_move.origin_to = cls.m_to;
+		card_move.origin_from_place = cls.m_from_place;
+		card_move.origin_to_place = cls.m_to_place;
+		card_move.origin_from_pile_name = cls.m_from_pile_name;
+		card_move.origin_to_pile_name = cls.m_to_pile_name;
 
         if (from && from_handcards.keys().contains(from)) {
 			QList<int> &move_ids = from_handcards[from];
@@ -3817,11 +3830,17 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
 			if (moveOneTime.card_ids.size() == 0) continue;
 			Player *origin_to = moveOneTime.to;
 			Player::Place origin_place = moveOneTime.to_place;
+			Player *origin_from = moveOneTime.from;
+			QList<Player::Place> origin_from_places = moveOneTime.from_places;
+			moveOneTime.origin_to_place = origin_place;
+			moveOneTime.origin_to = origin_to;
 			moveOneTime.to = NULL;
 			moveOneTime.to_place = Player::PlaceTable;
 			QVariant data = QVariant::fromValue(moveOneTime);
             thread->trigger(BeforeCardsMove, this, player, data);
 			moveOneTime = data.value<CardsMoveOneTimeStruct>();
+			moveOneTime.origin_from_places = origin_from_places;
+			moveOneTime.origin_from = origin_from;
 			moveOneTime.to = origin_to;
 			moveOneTime.to_place = origin_place;
 			moveOneTimes[i] = moveOneTime;
