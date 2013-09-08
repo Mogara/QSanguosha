@@ -73,6 +73,9 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const;
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
     static const ViewAsSkill *parseViewAsSkill(const Skill *skill);
+
+protected:
+	QString response_pattern;
 };
 
 class ZeroCardViewAsSkill: public ViewAsSkill {

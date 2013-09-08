@@ -50,14 +50,7 @@ class DujiangViewAsSkill: public ViewAsSkill {
 public:
     DujiangViewAsSkill(): ViewAsSkill("dujiang") {
         frequency = Limited;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@dujiang";
+		response_pattern = "@@dujiang";
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{

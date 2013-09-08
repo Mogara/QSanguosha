@@ -906,14 +906,7 @@ void ShichouCard::onEffect(const CardEffectStruct &effect) const{
 class ShichouViewAsSkill: public ViewAsSkill {
 public:
     ShichouViewAsSkill(): ViewAsSkill("shichou") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@shichou";
+		response_pattern = "@@shichou";
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *) const{
@@ -1756,19 +1749,12 @@ void HuangenCard::onEffect(const CardEffectStruct &effect) const{
 class HuangenViewAsSkill: public ZeroCardViewAsSkill {
 public:
     HuangenViewAsSkill():ZeroCardViewAsSkill("huangen") {
+		response_pattern = "@@huangen";
     }
 
     virtual const Card *viewAs() const{
         HuangenCard *card = new HuangenCard;
         return card;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@huangen";
     }
 };
 
@@ -2049,14 +2035,7 @@ void DIYYicongCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) c
 class DIYYicongViewAsSkill: public ViewAsSkill {
 public:
     DIYYicongViewAsSkill(): ViewAsSkill("diyyicong") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@diyyicong";
+		response_pattern = "@@diyyicong";
     }
 
     virtual bool viewFilter(const QList<const Card *> &, const Card *) const{

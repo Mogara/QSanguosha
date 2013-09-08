@@ -98,19 +98,11 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
 class QiaobianViewAsSkill: public ZeroCardViewAsSkill {
 public:
     QiaobianViewAsSkill(): ZeroCardViewAsSkill("qiaobian") {
+		response_pattern = "@@qiaobian";
     }
 
     virtual const Card *viewAs() const{
-        QiaobianCard *card = new QiaobianCard;
-        return card;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@qiaobian";
+        return new QiaobianCard;
     }
 };
 
@@ -146,8 +138,9 @@ public:
         QString use_prompt = QString("@qiaobian-%1").arg(index);
         if (index > 0 && room->askForDiscard(zhanghe, objectName(), 1, 1, true, false, discard_prompt)) {
             room->broadcastSkillInvoke("qiaobian", index);
+			if (!zhanghe->isAlive()) return false;
             if (!zhanghe->isSkipped(change.to) && (index == 2 || index == 3))
-                room->askForUseCard(zhanghe, "@qiaobian", use_prompt, index);
+                room->askForUseCard(zhanghe, "@@qiaobian", use_prompt, index);
             zhanghe->skip(change.to);
         }
         return false;
@@ -979,14 +972,7 @@ class FangquanViewAsSkill: public OneCardViewAsSkill {
 public:
     FangquanViewAsSkill(): OneCardViewAsSkill("fangquan") {
 		filter_pattern = ".|.|.|hand!";
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@fangquan";
+		response_pattern = "@@fangquan";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

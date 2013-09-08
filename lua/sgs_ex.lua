@@ -354,9 +354,11 @@ function sgs.CreateTrickCard(spec)
 end
 
 function sgs.CreateViewAsSkill(spec)
-	assert(spec.name)
+	assert(type(spec.name) == "string")
+	if spec.response_pattern then assert(type(spec.response_pattern) == "string") end
+	local response_pattern = spec.response_pattern or ""
 
-	local skill = sgs.LuaViewAsSkill(spec.name)
+	local skill = sgs.LuaViewAsSkill(spec.name, response_pattern)
 	local n = spec.n or 0
 
 	function skill:view_as(cards)

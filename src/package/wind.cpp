@@ -228,15 +228,15 @@ public:
         return false;
     }
 
+	virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+		return pattern.startsWith("@@shensu");
+	}
+
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
         if (Sanguosha->currentRoomState()->getCurrentCardUsePattern().endsWith("1"))
             return false;
         else
             return selected.isEmpty() && to_select->isKindOf("EquipCard") && !Self->isJilei(to_select);
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern.startsWith("@@shensu") && Slash::IsAvailable(player);
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
@@ -567,14 +567,7 @@ class TianxiangViewAsSkill: public OneCardViewAsSkill {
 public:
     TianxiangViewAsSkill(): OneCardViewAsSkill("tianxiang") {
 		filter_pattern = ".|heart|.|hand!";
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@tianxiang";
+		response_pattern = "@@tianxiang";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

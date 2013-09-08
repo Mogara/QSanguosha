@@ -780,14 +780,7 @@ void KuangfengCard::onEffect(const CardEffectStruct &effect) const{
 class KuangfengViewAsSkill: public ZeroCardViewAsSkill {
 public:
     KuangfengViewAsSkill(): ZeroCardViewAsSkill("kuangfeng") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@kuangfeng";
+		response_pattern = "@@kuangfeng";
     }
 
     virtual const Card *viewAs() const{
@@ -900,14 +893,7 @@ void DawuCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &targets)
 class DawuViewAsSkill: public ZeroCardViewAsSkill {
 public:
     DawuViewAsSkill(): ZeroCardViewAsSkill("dawu") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@dawu";
+		response_pattern = "@@dawu";
     }
 
     virtual const Card *viewAs() const{

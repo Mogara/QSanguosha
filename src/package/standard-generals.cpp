@@ -68,18 +68,11 @@ public:
 class TuxiViewAsSkill: public ZeroCardViewAsSkill {
 public:
     TuxiViewAsSkill(): ZeroCardViewAsSkill("tuxi") {
+		response_pattern = "@@tuxi";
     }
 
     virtual const Card *viewAs() const{
         return new TuxiCard;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@tuxi";
     }
 };
 
@@ -375,6 +368,7 @@ class Qingguo: public OneCardViewAsSkill {
 public:
     Qingguo(): OneCardViewAsSkill("qingguo") {
 		filter_pattern = ".|black|.|hand";
+		response_pattern = "jink";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -382,14 +376,6 @@ public:
         jink->setSkillName(objectName());
         jink->addSubcard(originalCard->getId());
         return jink;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "jink";
     }
 };
 
@@ -1037,14 +1023,7 @@ class LiuliViewAsSkill: public OneCardViewAsSkill {
 public:
     LiuliViewAsSkill(): OneCardViewAsSkill("liuli") {
 		filter_pattern = ".!";
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@liuli";
+		response_pattern = "@@liuli";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

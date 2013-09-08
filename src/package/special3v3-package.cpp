@@ -26,18 +26,11 @@ void HongyuanCard::onEffect(const CardEffectStruct &effect) const{
 class HongyuanViewAsSkill: public ZeroCardViewAsSkill {
 public:
     HongyuanViewAsSkill(): ZeroCardViewAsSkill("hongyuan") {
+		response_pattern = "@@hongyuan";
     }
 
     virtual const Card *viewAs() const{
         return new HongyuanCard;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@hongyuan";
     }
 };
 
@@ -469,14 +462,7 @@ void ZhenweiCard::onEffect(const CardEffectStruct &effect) const{
 class ZhenweiViewAsSkill: public ZeroCardViewAsSkill {
 public:
     ZhenweiViewAsSkill(): ZeroCardViewAsSkill("zhenwei") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@zhenwei";
+		response_pattern = "@@zhenwei";
     }
 
     virtual const Card *viewAs() const{

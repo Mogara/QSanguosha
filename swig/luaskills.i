@@ -84,7 +84,7 @@ public:
 
 class LuaViewAsSkill: public ViewAsSkill {
 public:
-    LuaViewAsSkill(const char *name);
+    LuaViewAsSkill(const char *name, const char *response_pattern = "");
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
     virtual const Card *viewAs(const QList<const Card *> &cards) const;

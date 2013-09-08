@@ -407,6 +407,7 @@ void HaoshiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 class HaoshiViewAsSkill: public ViewAsSkill {
 public:
     HaoshiViewAsSkill(): ViewAsSkill("haoshi") {
+		response_pattern = "@@haoshi!";
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
@@ -424,14 +425,6 @@ public:
         HaoshiCard *card = new HaoshiCard;
         card->addSubcards(cards);
         return card;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@haoshi!";
     }
 };
 

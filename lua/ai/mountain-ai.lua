@@ -259,7 +259,7 @@ sgs.ai_skill_playerchosen.qiaobian = function(self, targets)
 	end
 end
 
-sgs.ai_skill_use["@qiaobian"] = function(self, prompt)
+sgs.ai_skill_use["@@qiaobian"] = function(self, prompt)
 	self:updatePlayers()
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)

@@ -396,14 +396,7 @@ class Kanpo: public OneCardViewAsSkill {
 public:
     Kanpo(): OneCardViewAsSkill("kanpo") {
 		filter_pattern = ".|black|.|hand";
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return  pattern == "nullification";
+		response_pattern = "nullification";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

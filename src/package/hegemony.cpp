@@ -379,14 +379,7 @@ void ShuangrenCard::onEffect(const CardEffectStruct &effect) const{
 class ShuangrenViewAsSkill: public ZeroCardViewAsSkill {
 public:
     ShuangrenViewAsSkill(): ZeroCardViewAsSkill("shuangren") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@shuangren";
+		response_pattern = "@@shuangren";
     }
 
     virtual const Card *viewAs() const{

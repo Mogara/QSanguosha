@@ -231,20 +231,13 @@ class JujianViewAsSkill: public OneCardViewAsSkill {
 public:
     JujianViewAsSkill(): OneCardViewAsSkill("jujian") {
 		filter_pattern = "^BasicCard!";
+		response_pattern = "@@jujian";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
         JujianCard *jujianCard = new JujianCard;
         jujianCard->addSubcard(originalCard);
         return jujianCard;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@jujian";
     }
 };
 

@@ -463,14 +463,7 @@ class YuanhuViewAsSkill: public OneCardViewAsSkill {
 public:
     YuanhuViewAsSkill(): OneCardViewAsSkill("yuanhu") {
 		filter_pattern = "EquipCard";
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@yuanhu";
+		response_pattern = "@@yuanhu";
     }
 
     virtual const Card *viewAs(const Card *originalcard) const{
@@ -741,14 +734,7 @@ class BifaViewAsSkill: public OneCardViewAsSkill {
 public:
     BifaViewAsSkill(): OneCardViewAsSkill("bifa") {
 		filter_pattern = ".|.|.|hand";
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@bifa";
+		response_pattern = "@@bifa";
     }
 
     virtual const Card *viewAs(const Card *originalcard) const{
@@ -1645,6 +1631,7 @@ void JisuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targ
 class JisuViewAsSkill: public ZeroCardViewAsSkill {
 public:
     JisuViewAsSkill(): ZeroCardViewAsSkill("jisu") {
+		response_pattern = "@@jisu";
     }
 
     virtual bool isEnabledAtPlay(const Player *) const{

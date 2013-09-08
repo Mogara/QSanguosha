@@ -121,7 +121,7 @@ QDialog *Skill::getDialog() const{
 }
 
 ViewAsSkill::ViewAsSkill(const QString &name)
-    : Skill(name)
+    : Skill(name), response_pattern(QString())
 {
 }
 
@@ -140,10 +140,12 @@ bool ViewAsSkill::isAvailable(const Player *invoker,
 }
 
 bool ViewAsSkill::isEnabledAtPlay(const Player *) const{
-    return true;
+    return response_pattern.isEmpty();
 }
 
-bool ViewAsSkill::isEnabledAtResponse(const Player *, const QString &) const{
+bool ViewAsSkill::isEnabledAtResponse(const Player *, const QString &pattern) const{
+	if (!response_pattern.isEmpty())
+		return pattern == response_pattern;
     return false;
 }
 

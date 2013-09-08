@@ -269,14 +269,7 @@ void CangjiCard::onEffect(const CardEffectStruct &effect) const{
 class CangjiViewAsSkill: public ViewAsSkill {
 public:
     CangjiViewAsSkill(): ViewAsSkill("cangji") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@cangji";
+		response_pattern = "@@cangji";
     }
 
     virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const{
