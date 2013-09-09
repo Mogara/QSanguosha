@@ -52,7 +52,7 @@ public:
     bool AlterAIDelayAD;
     int AIDelayAD;
     bool SurrenderAtDeath;
-    bool EnableLuckCard;
+    int LuckCardLimitation;
     ushort ServerPort;
     bool DisableLua;
 

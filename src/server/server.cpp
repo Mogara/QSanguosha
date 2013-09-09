@@ -379,8 +379,10 @@ QWidget *ServerDialog::createMiscTab() {
     surrender_at_death_checkbox = new QCheckBox(tr("Surrender at the time of Death"));
     surrender_at_death_checkbox->setChecked(Config.SurrenderAtDeath);
 
-    luck_card_checkbox = new QCheckBox(tr("Enable the luck card"));
-    luck_card_checkbox->setChecked(Config.EnableLuckCard);
+	luck_card_label = new QLabel(tr("Upperlimit for use time of luck card"));
+    luck_card_spinbox = new QSpinBox;
+	luck_card_spinbox->setRange(0, 3);
+    luck_card_spinbox->setValue(Config.LuckCardLimitation);
 
     QGroupBox *ai_groupbox = new QGroupBox(tr("Artificial intelligence"));
     ai_groupbox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -424,7 +426,8 @@ QWidget *ServerDialog::createMiscTab() {
     tablayout->addLayout(HLay(new QLabel(tr("Nullification count down")), nullification_spinbox));
     tablayout->addWidget(minimize_dialog_checkbox);
     tablayout->addWidget(surrender_at_death_checkbox);
-    tablayout->addWidget(luck_card_checkbox);
+	tablayout->addLayout(HLay(luck_card_label, luck_card_spinbox));
+    tablayout->addWidget(luck_card_spinbox);
     tablayout->addWidget(ai_groupbox);
     tablayout->addStretch();
 
@@ -1065,7 +1068,7 @@ bool ServerDialog::config() {
     Config.ServerPort = port_edit->text().toInt();
     Config.DisableLua = disable_lua_checkbox->isChecked();
     Config.SurrenderAtDeath = surrender_at_death_checkbox->isChecked();
-    Config.EnableLuckCard = luck_card_checkbox->isChecked();
+    Config.LuckCardLimitation = luck_card_spinbox->value();
 
     // game mode
     QString objname = mode_group->checkedButton()->objectName();
@@ -1116,7 +1119,7 @@ bool ServerDialog::config() {
     Config.setValue("AlterAIDelayAD", ai_delay_altered_checkbox->isChecked());
     Config.setValue("AIDelayAD", Config.AIDelayAD);
     Config.setValue("SurrenderAtDeath", Config.SurrenderAtDeath);
-    Config.setValue("EnableLuckCard", Config.EnableLuckCard);
+    Config.setValue("LuckCardLimitation", Config.LuckCardLimitation);
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("Address", Config.Address);
     Config.setValue("DisableLua", disable_lua_checkbox->isChecked());
