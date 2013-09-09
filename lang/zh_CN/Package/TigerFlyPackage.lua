@@ -53,5 +53,62 @@ return {
 	["cv:neo_zhugeke"] = "Aimer彩三",
 	--["@jisi_pindian"] = "请选择你拼点的牌",
 	["@neoaocaigive"] = "请交给诸葛恪一张牌",
+
+	
+	["#liuzhang"] = "蹯踞西川",
+	["liuzhang"]="刘璋",
+	["tushou"]="图守",
+    [":tushou"]= "准备阶段开始时，你可以选择一项：1.将一张牌交给除你外当前的体力值最大的一名角色，若如此做，你将你拥有的牌补至X张（X为你的体力上限），且每当你于此回合内造成伤害时，你防止此伤害；2.弃置两张牌，若如此做，你回复1点体力，且每当你于此回合内受到伤害时，你防止此伤害。",
+	["designer:liuzhang"] = "凌天翼&祭酒",
+	["illustrator:liuzhang"] = "大佬荣",
+	["cv:liuzhang"] = "逍遥小鱼儿",
+	["tushou:give"] = "请刘备入川",
+	["tushou:discard"] = "向刘备请降",
+	["tushou:cancel"] = "啥事儿不干",
+	["#TushouAvoid"] = "受“图守”技能影响， %from 对 %to 造成的伤害无效。" ,
+	["@tushou-give"] = "请将一张牌交给场上体力最多的一名其他角色。",
+	["@tushou-discard"] = "请弃置两张牌以发动“图守”。" ,
+	["~tushou"] = "选择要给出的牌→选择你要将牌交给的角色→点确定。",
+
+	
+	
+	
+	["#tadun"] = "狼王",
+	["tadun"]="蹋顿",
+	["xiongjie"]="凶桀",
+	["@xiongjie"] = "凶桀",
+    [":xiongjie"]= "<b>锁定技</b>，每当你造成伤害时，此伤害改为 X 点（X 为你本回合已造成过的伤害点数之和且至少为 1）。",
+	["designer:tadun"] = "韩旭",
+	["illustrator:tadun"] = "Aimer彩三",
+	["cv:tadun"] = "Aimer彩三",
+
+	
+	["#zhoucang"] = "武圣的侍卫",
+	["zhoucang"]="周仓",
+	["kangdao"]="扛刀",
+    [":kangdao"]= "每当其他角色拥有的装备牌直接或在只经过处理区后置入弃牌堆时，你可以将其中至少一张牌置于你的装备区里，若如此做，该角色可以将你装备区里的一张牌移动至其装备区里，然后你摸一张牌。",
+	["designer:zhoucang"] = "凌天翼&天气",
+	["illustrator:zhoucang"] = "G.G.G.",
+	["cv:zhoucang"] = "逍遥小鱼儿",
+	["kangdaogain"] = "把刀要回来",
+	["kangdaocancel"] = "先放周仓那",
+	
+	["#guanlu"] = "玄妙殊巧",
+	["guanlu"]="管辂",
+	["xiangshu"]="相术",
+    [":xiangshu"]= "<b>锁定技</b>，牌堆顶的四张牌对你可见。",
+	["bushi"]="卜筮",
+    [":bushi"]= "一名角色的出牌阶段开始前，若你的手牌数不大于4，你可以展示一张手牌，若该角色于此阶段内使用过与此牌颜色相同的牌，此阶段结束后，你摸一张牌，然后令其手牌上限+1或-1，直到回合结束。",
+	["designer:guanlu"] = "凌天翼",
+	["illustrator:guanlu"] = "大佬荣",
+	["cv:guanlu"] = "白水",
+	["$xiangshudrawpile"] = "牌堆顶的牌为： %card" ,
+	["@bushi-discard"]="你可以弃置一张牌发动“卜筮”。",
+	["bushiinc"]="手牌上限+1",
+	["bushidec"]="手牌上限-1",
+	["#bushi_inc"] = "%from 发动 %arg ，%to 手牌上限<font color='yellow'><b>+1</b></font>",
+	["#bushi_dec"] = "%from 发动 %arg ，%to 手牌上限<font color='yellow'><b>-1</b></font>",
+
+
 	
 }
