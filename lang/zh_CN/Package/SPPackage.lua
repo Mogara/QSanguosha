@@ -147,6 +147,17 @@ return {
 	[":shuiyong"] = "<font color=\"blue\"><b>锁定技，</b></font>每当你受到火焰伤害时，防止此伤害。",
 	["#ShuiyongProtect"] = "%from 的“<font color=\"yellow\"><b>水泳</b></font>”被触发，防止了 %arg 点伤害[%arg2]",
 
+	["#hanba"] = "如惔如焚" ,
+	["hanba"] = "旱魃" ,
+	["illustrator:hanba"] = "张可" ,
+	["fentian"] = "焚天" ,
+	[":fentian"] = "<font color=\"blue\"><b>锁定技，</b></font>回合结束阶段，若你的手牌数小于体力值，你选择一名你攻击范围内的角色，将其一张牌置于你的武将牌上，成为“焚”。你的攻击范围+X(X为焚的数量)。" ,
+	["zhiri"] = "炙日" ,
+	[":zhiri"] = "<font color=\"purple\"><b>觉醒技，</b></font>准回合开始阶段，若焚的数量达到3或者更多，你减1点体力上限，然后获得技能“心惔”(<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将两张“焚”置入弃牌区并选择一名角色，该角色失去一点体力。)" ,
+	["xintan"] = "心惔" ,
+	[":xintan"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以将两张“焚”置入弃牌区并选择一名角色，该角色失去一点体力。" ,
+	["$ZhiriAnimate"] = "image=image/animate/zhiri.png" ,
+	
 	-- HuLao Pass
 	["Hulaopass"] = "虎牢关模式",
 	["HulaoPass"] = "虎牢关",

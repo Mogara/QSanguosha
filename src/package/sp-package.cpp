@@ -286,7 +286,7 @@ public:
             jijiang->deleteLater();
             return jijiang->isEnabledAtResponse(player, pattern);
         }
-        
+
         return false;
     }
 
@@ -696,7 +696,7 @@ public:
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const {
         return qrand() % 2 + 5;
     }
-    
+
 private:
     void BaobianChange(Room *room, ServerPlayer *player, int hp, const QString &skill_name) const{
         QStringList baobian_skills = player->tag["BaobianSkills"].toStringList();
@@ -1731,9 +1731,10 @@ bool Zhiri::onPhaseChange(ServerPlayer *hanba) const {
         return false;
 
     Room *room = hanba->getRoom();
+    room->broadcastSkillInvoke(objectName());
+    room->doLightbox("$ZhiriAnimate", 4000);
+
     if (room->changeMaxHpForAwakenSkill(hanba)) {
-        room->broadcastSkillInvoke(objectName());
-        room->doLightbox("$ZhiriAnimate", 4000);
         room->acquireSkill(hanba, "xintan");
         room->addPlayerMark(hanba, objectName());
     }
@@ -1821,6 +1822,7 @@ ChaosPackage::ChaosPackage()
     General *hanba = new General(this, "hanba", "qun", 4, false);
     hanba->addSkill(new Fentian);
     hanba->addSkill(new Zhiri);
+    hanba->addRelateSkill("xintan");
 
     addMetaObject<JisuCard>();
     addMetaObject<XintanCard>();
@@ -1942,9 +1944,9 @@ SPPackage::SPPackage()
     xiahoushi->addSkill(new Yanyu);
     xiahoushi->addSkill(new Xiaode);
 
-	General *sp_yuejin = new General(this, "sp_yuejin", "wei"); // SP 024
+    General *sp_yuejin = new General(this, "sp_yuejin", "wei"); // SP 024
     sp_yuejin->addSkill("xiaoguo");
-	sp_yuejin->addSkill(new SPConvertSkill("sp_yuejin", "yuejin"));
+    sp_yuejin->addSkill(new SPConvertSkill("sp_yuejin", "yuejin"));
 
     addMetaObject<WeidiCard>();
     addMetaObject<YuanhuCard>();

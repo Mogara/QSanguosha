@@ -12,8 +12,8 @@ return {
 	["~xiahouyuan"] = "竟然比我还…快……",
 
 	-- 黄忠
-	["$liegong1"] = "百步穿杨！",
-	["$liegong2"] = "中！",
+	["$liegong2"] = "百步穿杨！",
+	["$liegong1"] = "中！",
 	["~huangzhong"] = "不得不服老了……",
 
 	-- 魏延
