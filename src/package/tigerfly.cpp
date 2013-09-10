@@ -1006,6 +1006,162 @@ public:
     }
 };
 
+class Juanxia:public DistanceSkill{
+public:
+    Juanxia():DistanceSkill("juanxia"){
+    }
+
+    virtual int getCorrect(const Player *from, const Player *to) const{
+        if (from->hasSkill(objectName()))
+            if (from->getHp() <= to->getHp())
+                return -1;
+        if (to->hasSkill(objectName()))
+            if (to->getHp() <= from->getHp())
+                return 1;
+        return 0;
+    }
+};
+
+ChouduCard::ChouduCard(){
+    will_throw = false;
+}
+
+bool ChouduCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if (targets.length() < Self->getMark("chouduuse"))
+        if (to_select != Self)
+            return !to_select->isKongcheng();
+    return false;
+}
+
+void ChouduCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    room->setPlayerMark(source, "choudutargets", targets.length());
+    QList<CardsMoveStruct> moves;
+    QStringList players;
+    foreach(ServerPlayer *p, targets){
+        players << p->objectName();
+        CardsMoveStruct move;
+        int id = room->askForCardChosen(source, p, "h", objectName());
+        move.card_ids << id;
+        move.to = source;
+        move.to_place = Player::PlaceHand;
+        moves << move;
+        room->setPlayerFlag(p, "choudutarget");
+    }
+    room->setTag("choudutargets", players.join("+"));
+    room->setPlayerMark(source, "chouduuse", 0);
+    room->moveCards(moves, false);
+}
+
+class ChouduVS: public ZeroCardViewAsSkill{
+public:
+    ChouduVS(): ZeroCardViewAsSkill("choudu"){
+    }
+
+    virtual const Card *viewAs() const{
+        return new ChouduCard;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@choudu";
+    }
+};
+
+class Choudu: public TriggerSkill{
+public:
+    Choudu(): TriggerSkill("choudu"){
+        view_as_skill = new ChouduVS;
+        events << CardUsed << CardResponded << EventPhaseStart << CardsMoveOneTime;
+    }
+
+private:
+    ServerPlayer *findPlayerByObjectName(Room *room, QString name, bool include_death = false, ServerPlayer *except = NULL) const{
+        QList<ServerPlayer *> players;
+        if (include_death)
+            players = room->getPlayers();
+        else
+            players = room->getAllPlayers();
+        if (except != NULL)
+            players.removeOne(except);
+        foreach(ServerPlayer *p, players){
+            if (p->objectName() == name)
+                return p;
+        }
+        return NULL;
+    }
+
+public:
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == CardUsed || triggerEvent == CardResponded){
+            if (player->getPhase() == Player::NotActive)
+                return false;
+            const Card *c;
+            if (triggerEvent == CardUsed)
+                c = data.value<CardUseStruct>().card;
+            else {
+                CardResponseStruct resp = data.value<CardResponseStruct>();
+                if (resp.m_isUse)
+                    c = resp.m_card;
+                else
+                    return false;
+            }
+            if (!c->isKindOf("SkillCard"))
+                room->addPlayerMark(player, "chouduuse");
+        }
+        else if (triggerEvent == EventPhaseStart){
+            if (player->getPhase() == Player::Discard){
+                int count = player->getMark("chouduuse");
+                if (count > 0){
+                    bool can_invoke = false;
+                    foreach(ServerPlayer *target, room->getOtherPlayers(player))
+                        if (!target->isKongcheng()){
+                            can_invoke = true;
+                            break;
+                        }
+                    if (!can_invoke)
+                        return false;
+                    if (room->askForUseCard(player, "@@choudu", "@choudu")){
+                        QList<int> ids;
+                        foreach(const Card *card, player->getCards("he"))
+                            ids << card->getId();
+                        room->setPlayerFlag(player, "choudumove");
+                        QStringList players = room->getTag("choudutargets").toString().split("+");
+                        QList<ServerPlayer *> targets;
+                        foreach(QString name, players)
+                            targets << findPlayerByObjectName(room, name);
+                        while (room->askForYiji(player, ids, objectName(), false, false, true ,-1, targets))
+                            ;
+                        room->setPlayerFlag(player, "-choudumove");
+                        if (player->getMark("choudutargets") > 0){
+                            room->broadcastSkillInvoke(objectName(), 4);
+                            room->loseHp(player, player->getMark("choudutargets"));
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from && move.from == player && move.from->hasFlag("choudumove")){
+                if (!move.to->hasFlag("chouduselected"))
+                    room->removePlayerMark(player, "choudutargets");
+                room->setPlayerFlag(room->findPlayer(move.to->getGeneralName()), "chouduselected");
+
+                room->broadcastSkillInvoke(objectName(), qrand() % 2 + 2);
+            }
+        }
+        return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
+        return 1;
+    }
+};
+
+
 TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
     General *caorui = new General(this, "caorui$", "wei", 3);
     caorui->addSkill(new Shemi);
@@ -1050,8 +1206,13 @@ TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
     guanlu->addSkill(new BushiMaxCards);
     related_skills.insertMulti("bushi", "#bushi");
 
+    General *yangyi = new General(this, "yangyi", "shu", 3);
+    yangyi->addSkill(new Juanxia);
+    yangyi->addSkill(new Choudu);
+
     addMetaObject<PozhenCard>();
     addMetaObject<TushouGiveCard>();
+    addMetaObject<ChouduCard>();
 
     skills << new Zhuanquan;
 };

@@ -26,6 +26,15 @@ public:
 
 };
 
+class ChouduCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ChouduCard();
+    virtual bool targetFilter(const QList<const Player *> &, const Player *, const Player *) const;
+    virtual void use(Room *, ServerPlayer *, QList<ServerPlayer *> &) const;
+};
+
 class TigerFlyPackage: public Package {
 	Q_OBJECT
 
