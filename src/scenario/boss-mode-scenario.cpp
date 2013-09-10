@@ -158,7 +158,7 @@ public:
                 }
             } else if (player->hasFlag("DajiOnlyTarget") && triggerEvent == CardEffected) {
                 CardEffectStruct effect = data.value<CardEffectStruct>();
-                if(!effect.card->isKindOf("TrickCard") && player->getPhase() == Player::NotActive){
+                if(effect.card->isKindOf("TrickCard") && player->getPhase() == Player::NotActive){
                     LogMessage log;
                     log.type = "#DajiAvoid";
                     log.from = effect.from;
