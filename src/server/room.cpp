@@ -1115,6 +1115,10 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     while (isPaused()) {}
     notifyMoveFocus(player, S_COMMAND_CHOOSE_CARD);
 
+    if (getTag("Dongchaee").toString() == who->objectName()
+            && getTag("Dongchaer").toString() == player->objectName())
+        handcard_visible = true;
+
     if (handcard_visible && !who->isKongcheng()) {
         QList<int> handcards = who->handCards();
         Json::Value arg(Json::arrayValue);
@@ -1123,7 +1127,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
         doNotify(player, S_COMMAND_SET_KNOWN_CARDS, arg);
     }
     int card_id = Card::S_UNKNOWN_CARD_ID;
-    if (who != player && !handcard_visible
+    if (who != player && !handcard_visible 
         && (flags == "h"
             || (flags == "he" && !who->hasEquip())
             || (flags == "hej" && !who->hasEquip() && who->getJudgingArea().isEmpty())))
