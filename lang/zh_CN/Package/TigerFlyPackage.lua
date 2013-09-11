@@ -75,6 +75,7 @@ return {
 	["xiongjie"]="凶桀",
 	["@xiongjie"] = "凶桀",
 	[":xiongjie"]= "<b>锁定技</b>，每当你造成伤害时，此伤害改为 X 点（X 为你本回合已造成过的伤害点数之和且至少为 1）。",
+	["#xiongjiedamage"] = "受“凶桀”技能影响， %from 对 %to 造成的伤害改为 %arg 点。" ,
 	["designer:tadun"] = "韩旭",
 	["illustrator:tadun"] = "Aimer彩三",
 	["cv:tadun"] = "Aimer彩三",
