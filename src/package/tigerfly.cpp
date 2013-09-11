@@ -491,17 +491,19 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
+        int d = damage.damage;
         damage.damage = qMax(player->getMark("@xiongjie"), 1);
         data = QVariant::fromValue(damage);
 
-        LogMessage l;
-        l.type = "#xiongjiedamage";
-        l.from = player;
-        l.to << damage.to;
-        l.arg = QString::number(damage.damage);
-        room->sendLog(l);
-
-        room->broadcastSkillInvoke(objectName());
+        if (damage.damage > d){
+            room->broadcastSkillInvoke(objectName());
+            LogMessage l;
+            l.type = "#xiongjiedamage";
+            l.from = player;
+            l.to << damage.to;
+            l.arg = QString::number(damage.damage);
+            room->sendLog(l);
+        }
 
         return false;
     }
