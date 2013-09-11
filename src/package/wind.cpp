@@ -554,16 +554,11 @@ public:
 };
 
 TianxiangCard::TianxiangCard() {
-    mute = true;
+    //mute = true;
 }
 
 void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-
-    if (effect.from->hasSkill("luoyan"))
-        room->broadcastSkillInvoke("luoyan", 2);
-    else
-        room->broadcastSkillInvoke("tianxiang");
 
     effect.to->addMark("TianxiangTarget");
     DamageStruct damage = effect.from->tag.value("TianxiangDamage").value<DamageStruct>();
@@ -611,6 +606,13 @@ public:
             return room->askForUseCard(xiaoqiao, "@@tianxiang", "@tianxiang-card", -1, Card::MethodDiscard);
         }
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+        if (player->hasSkill("luoyan"))
+            return 3;
+        else
+            return qrand() % 2 + 1;
     }
 };
 

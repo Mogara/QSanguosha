@@ -229,7 +229,7 @@ void QingnangCard::onEffect(const CardEffectStruct &effect) const{
 }
 
 LiuliCard::LiuliCard() {
-    mute = true;
+    //mute = true;
 }
 
 bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -264,11 +264,6 @@ bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player 
 }
 
 void LiuliCard::onEffect(const CardEffectStruct &effect) const{
-    if (effect.from->hasSkill("luoyan"))
-        effect.from->getRoom()->broadcastSkillInvoke("luoyan", 1);
-    else
-        effect.from->getRoom()->broadcastSkillInvoke("liuli");
-
     effect.to->setFlags("LiuliTarget");
 }
 

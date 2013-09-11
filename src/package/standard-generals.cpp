@@ -1096,6 +1096,13 @@ public:
 
         return false;
     }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+        if (player->hasSkill("luoyan"))
+            return 3;
+        else
+            return qrand() % 2 + 1;
+    }
 };
 
 class Jieyin: public ViewAsSkill {
