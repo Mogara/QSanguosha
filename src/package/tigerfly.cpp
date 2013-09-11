@@ -246,8 +246,8 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DeathStruct death = data.value<DeathStruct>();
-        if (player->objectName() == death.who->objectName() && death.who->hasSkill(objectName()))
-            if (death.damage && death.damage->from && death.damage->from->objectName() != player->objectName()){
+        if (player == death.who && death.who->hasSkill(objectName()))
+            if (death.damage && death.damage->from && death.damage->from != death.who){
                 room->setTag("huamingkiller", QVariant::fromValue(death.damage->from));
                 room->setTag("shanfu", QVariant::fromValue(death.who));
             }

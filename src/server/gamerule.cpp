@@ -713,8 +713,12 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
         ServerPlayer *shanfu = room->getTag("shanfu").value<ServerPlayer *>();
         if (hmkiller == killer && shanfu == victim){ // For the Skill "Huaming"
             if (killer == victim) return;
-            if (shanfu->askForSkillInvoke("huaming")){
-                QString role = room->askForChoice(shanfu, "huaming", "loyalist+renegade+rebel");
+            /*DeathStruct huaming_data;
+            huaming_data.damage = new DamageStruct;
+            huaming_data.who = victim;
+            huaming_data.damage->from = killer;*/
+            if (shanfu->askForSkillInvoke("huaming", QVariant::fromValue(killer))){
+                QString role = room->askForChoice(shanfu, "huaming", "loyalist+renegade+rebel", QVariant::fromValue(killer));
                 LogMessage log;
                 log.type = "#huaming";
                 log.from = shanfu;
@@ -737,6 +741,7 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
                 room->removeTag("shanfu");
                 room->getThread()->delay(2000); //原来6秒的大延迟太不科学了……
             }
+            /*delete huaming_data.damage;*/
         }
         else
             if (victim->getRole() == "rebel" && killer != victim)
