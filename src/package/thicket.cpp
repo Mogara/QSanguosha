@@ -20,8 +20,8 @@ public:
         if (player->isNude() || caopi == player)
             return false;
         if (caopi->isAlive() && room->askForSkillInvoke(caopi, objectName(), data)) {
-            bool isCaoCao = player->getGeneralName().contains("caocao");
-            room->broadcastSkillInvoke(objectName(), (isCaoCao ? 3 : (player->isMale() ? 1 : 2)));
+            //bool isCaoCao = player->getGeneralName().contains("caocao");
+            room->broadcastSkillInvoke(objectName()/*, (isCaoCao ? 3 : (player->isMale() ? 1 : 2))*/);
 
             DummyCard *dummy = new DummyCard(player->handCards());
             QList <const Card *> equips = player->getEquips();
@@ -284,8 +284,8 @@ public:
 
                 if (has_heart)
                     room->broadcastSkillInvoke(objectName(), 2);
-                else
-                    room->broadcastSkillInvoke(objectName(), 3);
+                /*else
+                    room->broadcastSkillInvoke(objectName(), 3);*/
 
                 return true;
             }
@@ -824,7 +824,7 @@ public:
             room->notifySkillInvoked(dongzhuo, objectName());
 
             QString result = room->askForChoice(dongzhuo, "benghuai", "hp+maxhp");
-            int index = (dongzhuo->isFemale()) ? 2 : 1;
+            int index = (result == "hp") ? 2 : 1;
             room->broadcastSkillInvoke(objectName(), index);
             if (result == "hp")
                 room->loseHp(dongzhuo);

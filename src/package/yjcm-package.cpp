@@ -84,7 +84,7 @@ public:
                 Config.AIDelay = ai_delay;
 
                 if (!card_ids.empty()) {
-                    room->broadcastSkillInvoke("luoying", move.from->getGeneralName().contains("zhenji") ? 2 : 1);
+                    room->broadcastSkillInvoke("luoying"/*, move.from->getGeneralName().contains("zhenji") ? 2 : 1*/);
                     foreach (int id, card_ids) {
                         if (move.card_ids.contains(id)) {
                             move.from_places.removeAt(move.card_ids.indexOf(id));
@@ -143,7 +143,7 @@ public:
             bool faceup = player->tag.value("PredamagedFace").toBool();
             player->tag.remove("PredamagedFace");
             if (!faceup && !player->faceUp() && player->askForSkillInvoke("jiushi", data)) {
-                room->broadcastSkillInvoke("jiushi", 3);
+                room->broadcastSkillInvoke("jiushi", 2);
                 player->turnOver();
             }
         }

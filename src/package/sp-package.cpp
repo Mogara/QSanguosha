@@ -201,7 +201,7 @@ bool Yongsi::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *yuansh
         room->sendLog(log);
         room->notifySkillInvoked(yuanshu, objectName());
 
-        room->broadcastSkillInvoke("yongsi", x % 2 + 1);
+        room->broadcastSkillInvoke("yongsi");
     } else if (triggerEvent == EventPhaseStart && yuanshu->getPhase() == Player::Discard) {
         int x = getKingdoms(yuanshu);
         LogMessage log;
@@ -797,7 +797,7 @@ public:
                     chenlin->obtainCard(to_give, false);
                     player->obtainCard(cd, false);
                 } else {
-                    room->broadcastSkillInvoke(objectName(), 3);
+                    room->broadcastSkillInvoke(objectName(), 2);
                     CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), objectName(), QString());
                     room->throwCard(cd, reason, NULL);
                     room->loseHp(player);
@@ -1925,6 +1925,7 @@ SPPackage::SPPackage()
 
     General *fuwan = new General(this, "fuwan", "qun", 4);
     fuwan->addSkill("moukui");
+    fuwan->addSkill(new SPConvertSkill("fuwan", "as_mushun"));
 
     General *xiahouba = new General(this, "xiahouba", "shu"); // SP 019
     xiahouba->addSkill(new Baobian);
@@ -1947,9 +1948,11 @@ SPPackage::SPPackage()
     xiahoushi->addSkill(new Yanyu);
     xiahoushi->addSkill(new Xiaode);
 
-    General *sp_yuejin = new General(this, "sp_yuejin", "wei"); // SP 024
+    //rename sp_yuejin 2 yuejin, rename yuejin 2 heg_yuejin
+
+    General *sp_yuejin = new General(this, "yuejin", "wei"); // SP 024
     sp_yuejin->addSkill("xiaoguo");
-    sp_yuejin->addSkill(new SPConvertSkill("sp_yuejin", "yuejin"));
+    sp_yuejin->addSkill(new SPConvertSkill("yuejin", "heg_yuejin"));
 
     addMetaObject<WeidiCard>();
     addMetaObject<YuanhuCard>();

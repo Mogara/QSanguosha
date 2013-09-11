@@ -57,7 +57,7 @@ bool LihunCard::targetFilter(const QList<const Player *> &targets, const Player 
 void LihunCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     effect.from->turnOver();
-    room->broadcastSkillInvoke("lihun", 1);
+    room->broadcastSkillInvoke("lihun", qrand() % 2 + 1);
 
     DummyCard *dummy_card = new DummyCard;
     foreach (const Card *cd, effect.to->getHandcards())
@@ -113,12 +113,8 @@ public:
             if (!target || target->getHp() < 1 || diaochan->isNude())
                 return false;
 
-            if (target->getGeneralName().contains("lvbu"))
-                room->broadcastSkillInvoke(objectName(), 3);
-            else if (target->getGeneralName().contains("dongzhuo"))
-                room->broadcastSkillInvoke(objectName(), 4);
-            else
-                room->broadcastSkillInvoke(objectName(), 2);
+            room->broadcastSkillInvoke(objectName(), qrand() % 2 + 3);
+
             DummyCard *to_goback;
             if (diaochan->getCardCount(true) <= target->getHp()) {
                 to_goback = diaochan->isKongcheng() ? new DummyCard : diaochan->wholeHandCards();
@@ -170,7 +166,7 @@ public:
             if (!caoren->askForSkillInvoke(objectName()))
                 return false;
 
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), 1);
             int n = getWeaponCount(caoren);
             caoren->drawCards(n + 2);
             caoren->turnOver();
@@ -189,7 +185,7 @@ public:
                 log.arg = QString::number(n);
                 log.arg2 = objectName();
                 room->sendLog(log);
-
+                room->broadcastSkillInvoke(objectName(), 2);
                 room->askForDiscard(caoren, objectName(), n, n, false, true);
             }
         }

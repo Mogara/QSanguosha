@@ -95,7 +95,7 @@ public:
             ServerPlayer *from = damage.from;
             Room *room = xuyou->getRoom();
             if(from && from != xuyou && !from->isKongcheng() && !xuyou->isKongcheng() && room->askForSkillInvoke(xuyou, objectName(), data)){
-                room->broadcastSkillInvoke(objectName());
+                room->broadcastSkillInvoke(objectName(), 1);
                 room->notifySkillInvoked(xuyou, objectName());
                 xuyou->pindian(from, objectName());
             }
@@ -103,10 +103,13 @@ public:
         }
         else {
             PindianStar pindian = data.value<PindianStar>();
-            if(pindian->reason == objectName() && pindian->isSuccess()){
-                xuyou->obtainCard(pindian->to_card);
-                xuyou->obtainCard(pindian->from_card);
-            }
+            if(pindian->reason == objectName())
+                if (pindian->success){
+                    xuyou->obtainCard(pindian->to_card);
+                    xuyou->obtainCard(pindian->from_card);
+                }
+                else
+                    xuyou->getRoom()->broadcastSkillInvoke(objectName(), 2);
         }
         return false;
     }
@@ -137,8 +140,11 @@ public:
             log.from = xuyou;
             log.arg = objectName();
             room->sendLog(log);
+            int index = 1;
+            if (pindian->reason == "tanlan")
+                index = 2;
 
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), index);
             room->notifySkillInvoked(xuyou, objectName());
 
             xuyou->drawCards(1);
@@ -174,6 +180,7 @@ public:
         else if (card && card->isKindOf("Slash") && data.value<CardUseStruct>().from->hasFlag("yicairesponding")){
             room->broadcastSkillInvoke(objectName());
             room->notifySkillInvoked(jiangwei, objectName());
+            room->setPlayerFlag(data.value<CardUseStruct>().from, "-yicairesponding");
         }
         return false;
     }
@@ -356,15 +363,23 @@ public:
         if(!effect.to->isNude() && !sunce->isKongcheng() && !effect.to->isKongcheng()){
             Room *room = sunce->getRoom();
             if(room->askForSkillInvoke(sunce, objectName(), data)){
+                room->broadcastSkillInvoke(objectName(), 1);
+                room->notifySkillInvoked(sunce, objectName());
                 bool success = sunce->pindian(effect.to, objectName(), NULL);
                 if(success){
                     if(sunce->hasFlag("drank"))
                         room->setPlayerFlag(sunce, "-drank");
                     room->askForUseCard(sunce, "@@bawang", "@bawang");
                 }
+                else
+                    room->broadcastSkillInvoke(objectName(), 3);
             }
         }
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+        return 2;
     }
 };
 
@@ -380,7 +395,7 @@ const Card *WeidaiCard::validate(CardUseStruct &card_use) const {
     if (!sunce->isLord() && sunce->hasSkill("weidi"))
         room->broadcastSkillInvoke("weidi");
     else
-        room->broadcastSkillInvoke("weidai");
+        room->broadcastSkillInvoke("weidai", 1);
     room->notifySkillInvoked(sunce, "weidai");
 
     foreach (ServerPlayer *liege, room->getLieges("wu", sunce)) {
@@ -406,7 +421,7 @@ const Card *WeidaiCard::validateInResponse(ServerPlayer *user) const {
     if (!user->isLord() && user->hasSkill("weidi"))
         room->broadcastSkillInvoke("weidi");
     else
-        room->broadcastSkillInvoke("weidai");
+        room->broadcastSkillInvoke("weidai", 2);
     room->notifySkillInvoked(user, "weidai");
 
     foreach (ServerPlayer *liege, room->getLieges("wu", user)) {
@@ -590,13 +605,17 @@ public:
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@jincui", true, true);
         if (target == NULL)
             return false;
-        room->broadcastSkillInvoke(objectName());
+        //room->broadcastSkillInvoke(objectName());
 
         QVariant t_data = QVariant::fromValue((PlayerStar)target);
-        if (room->askForChoice(player, objectName(), "draw+throw", t_data) == "draw")
+        if (room->askForChoice(player, objectName(), "draw+throw", t_data) == "draw"){
+            room->broadcastSkillInvoke(objectName(), 1);
             target->drawCards(3);
-        else
+        }
+        else {
+            room->broadcastSkillInvoke(objectName(), 2);
             room->askForDiscard(target, objectName(), 3, 3, false, true);
+        }
         return false;
     }
 };
@@ -629,6 +648,7 @@ public:
             if (use.card && use.card->isKindOf("Slash") && use.from->hasFlag("badaoresponding")){
                 room->broadcastSkillInvoke(objectName());
                 room->notifySkillInvoked(hua, "badao");
+                room->setPlayerFlag(use.from, "-badaoresponding");
             }
         }
 

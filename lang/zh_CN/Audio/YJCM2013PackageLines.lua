@@ -7,4 +7,28 @@ return {
 	["$renxin1"] = "仁者爱人，人恒爱之。",
 	["$renxin2"] = "有我在，别怕。",
 	["~caochong"] = "子桓哥哥……",
+	
+	--关平
+	["$longyin1"] = "虎啸既响，龙吟当附！" ,
+	["$longyin2"] = "破阵杀敌，愿献犬马之劳！" ,
+	["~guanping"] = "父亲快走，孩儿断后……" ,
+	
+	["~fuhuanghou"] = " " ,
+	
+	["~guohuai"] = " " ,
+	
+	["~jianyong"] = " " ,
+	
+	["~liru"] = " " ,
+	
+	["~liufeng"] = " " ,
+	
+	["~manchong"] = " " ,
+	
+	["~panzhangmazhong"] = " " ,
+	
+	["~yufan"] = " " ,
+	
+	["~zhuran"] = " " ,
+	
 }

@@ -137,7 +137,7 @@ public:
         QString discard_prompt = QString("#qiaobian-%1").arg(index);
         QString use_prompt = QString("@qiaobian-%1").arg(index);
         if (index > 0 && room->askForDiscard(zhanghe, objectName(), 1, 1, true, false, discard_prompt)) {
-            room->broadcastSkillInvoke("qiaobian", index);
+            room->broadcastSkillInvoke("qiaobian"/*, index*/);
             if (!zhanghe->isAlive()) return false;
             if (!zhanghe->isSkipped(change.to) && (index == 2 || index == 3))
                 room->askForUseCard(zhanghe, "@@qiaobian", use_prompt, index);
@@ -166,6 +166,9 @@ public:
             QList<ServerPlayer *> cais = room->findPlayersBySkillName(objectName());
             foreach (ServerPlayer *caiwenji, cais) {
                 if (caiwenji->canDiscard(caiwenji, "he") && room->askForCard(caiwenji, "..", "@beige", data, objectName())) {
+                    
+                    room->broadcastSkillInvoke(objectName());
+                    
                     JudgeStruct judge;
                     judge.good = true;
                     judge.play_animation = false;
@@ -177,7 +180,7 @@ public:
                     Card::Suit suit = (Card::Suit)(judge.pattern.toInt());
                     switch (suit) {
                     case Card::Heart: {
-                            room->broadcastSkillInvoke(objectName(), 4);
+                            //room->broadcastSkillInvoke(objectName(), 4);
                             RecoverStruct recover;
                             recover.who = caiwenji;
                             room->recover(player, recover);
@@ -185,19 +188,19 @@ public:
                             break;
                         }
                     case Card::Diamond: {
-                            room->broadcastSkillInvoke(objectName(), 3);
+                            //room->broadcastSkillInvoke(objectName(), 3);
                             player->drawCards(2);
                             break;
                         }
                     case Card::Club: {
-                            room->broadcastSkillInvoke(objectName(), 1);
+                            //room->broadcastSkillInvoke(objectName(), 1);
                             if (damage.from && damage.from->isAlive())
                                 room->askForDiscard(damage.from, "beige", 2, 2, false, true);
 
                             break;
                         }
                     case Card::Spade: {
-                            room->broadcastSkillInvoke(objectName(), 2);
+                            //room->broadcastSkillInvoke(objectName(), 2);
                             if (damage.from && damage.from->isAlive())
                                 damage.from->turnOver();
 
@@ -497,7 +500,9 @@ public:
         if (use.from == sunce || use.to.contains(sunce)) {
             if (use.card->isKindOf("Duel") || (use.card->isKindOf("Slash") && use.card->isRed())) {
                 if (sunce->askForSkillInvoke(objectName(), data)) {
-                    int index = qrand() % 2 + 1;
+                    int index = 1;
+                    if (use.from != sunce)
+                        index = 2;
                     if (!sunce->hasInnateSkill(objectName()) && sunce->hasSkill("mouduan"))
                         index += 2;
                     room->broadcastSkillInvoke(objectName(), index);
@@ -565,12 +570,12 @@ void ZhibaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         log.arg = "zhiba_pindian";
         room->sendLog(log);
 
-        room->broadcastSkillInvoke("zhiba", 4);
+        room->broadcastSkillInvoke("zhiba", 3);
         return;
     }
 
     if (!sunce->isLord() && sunce->hasSkill("weidi"))
-        room->broadcastSkillInvoke("weidi");
+        room->broadcastSkillInvoke("weidi", 2);
     else
         room->broadcastSkillInvoke("zhiba", 1);
 
@@ -652,14 +657,12 @@ public:
                 return false;
             if (!pindian->isSuccess()) {
                 if (!pindian->to->isLord() && pindian->to->hasSkill("weidi"))
-                    room->broadcastSkillInvoke("weidi");
+                    room->broadcastSkillInvoke("weidi", 1);
                 else
                     room->broadcastSkillInvoke(objectName(), 2);
                 pindian->to->obtainCard(pindian->from_card);
                 pindian->to->obtainCard(pindian->to_card);
-            } else
-                if (pindian->to->isLord())
-                    room->broadcastSkillInvoke(objectName(), 3);
+            }
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct phase_change = data.value<PhaseChangeStruct>();
             if (phase_change.from != Player::Play)
@@ -875,7 +878,6 @@ public:
         QList<int> cards = cardsToGet + cardsOther;
 
         if (erzhang->askForSkillInvoke("guzheng", cards.length())) {
-            room->broadcastSkillInvoke("guzheng");
             room->fillAG(cards, erzhang, cardsOther);
 
             int to_back = room->askForAG(erzhang, cardsToGet, false, "guzheng");
@@ -888,6 +890,7 @@ public:
             DummyCard *dummy = new DummyCard(cards);
             room->obtainCard(erzhang, dummy);
             delete dummy;
+            room->broadcastSkillInvoke("guzheng");
         }
 
         return false;
@@ -1118,7 +1121,7 @@ public:
     }
 
     static void playAudioEffect(ServerPlayer *zuoci, const QString &skill_name) {
-        zuoci->getRoom()->broadcastSkillInvoke(skill_name, zuoci->isMale(), -1);
+        zuoci->getRoom()->broadcastSkillInvoke(skill_name);
     }
 
     static void AcquireGenerals(ServerPlayer *zuoci, int n) {

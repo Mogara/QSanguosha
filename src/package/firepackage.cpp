@@ -7,7 +7,7 @@
 #include "maneuvering.h"
 
 QuhuCard::QuhuCard() {
-    mute = true;
+    //mute = true;
 }
 
 bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -17,11 +17,11 @@ bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *
 void QuhuCard::use(Room *room, ServerPlayer *xunyu, QList<ServerPlayer *> &targets) const{
     ServerPlayer *tiger = targets.first();
 
-    room->broadcastSkillInvoke("quhu", 1);
+    room->broadcastSkillInvoke("quhu");
 
     bool success = xunyu->pindian(tiger, "quhu", NULL);
     if (success) {
-        room->broadcastSkillInvoke("quhu", 2);
+        //room->broadcastSkillInvoke("quhu", 2);
 
         QList<ServerPlayer *> players = room->getOtherPlayers(tiger), wolves;
         foreach (ServerPlayer *player, players) {
@@ -231,7 +231,7 @@ public:
                 if (shuangxiong->askForSkillInvoke(objectName())) {
                     room->setPlayerFlag(shuangxiong, "shuangxiong");
 
-                    room->broadcastSkillInvoke("shuangxiong");
+                    room->broadcastSkillInvoke("shuangxiong", 1);
                     JudgeStruct judge;
                     judge.good = true;
                     judge.play_animation = false;
@@ -256,6 +256,11 @@ public:
 
         return false;
     }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
+        return 2;
+    }
+
 };
 
 class Mengjin: public TriggerSkill {
@@ -370,7 +375,10 @@ public:
         if (pattern != "jink")
             return false;
 
-        if (wolong->askForSkillInvoke(objectName())) {
+        //此处更改是因为“八阵”是“视为”装备八卦阵，真正发动的技能是八卦阵，而不是八阵。
+
+        /*if (wolong->askForSkillInvoke(objectName())) {*/
+        if (wolong->askForSkillInvoke("EightDiagram")) {
             JudgeStruct judge;
             judge.pattern = ".|red";
             judge.good = true;
@@ -382,7 +390,9 @@ public:
 
             if (judge.isGood()) {
                 Jink *jink = new Jink(Card::NoSuit, 0);
-                jink->setSkillName(objectName());
+                /*jink->setSkillName(objectName());*/
+                jink->setSkillName("EightDiagram");
+                room->broadcastSkillInvoke(objectName());
                 room->provide(jink);
                 return true;
             }

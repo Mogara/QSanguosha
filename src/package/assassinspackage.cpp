@@ -30,7 +30,7 @@ public:
                         room->broadcastSkillInvoke(objectName(), 1);
                         player->drawCards(1);
                     } else {
-                        room->broadcastSkillInvoke(objectName(), 2);
+                        room->broadcastSkillInvoke(objectName(), 1);
                         int disc = room->askForCardChosen(player, p, "he", objectName(), false, Card::MethodDiscard);
                         room->throwCard(disc, p, player);
                     }
@@ -44,7 +44,7 @@ public:
             if (!effect.from->isAlive() || !effect.to->isAlive() || !effect.to->canDiscard(effect.from, "he"))
                 return false;
             int disc = room->askForCardChosen(effect.to, effect.from, "he", objectName(), false, Card::MethodDiscard);
-            room->broadcastSkillInvoke(objectName(), 3);
+            room->broadcastSkillInvoke(objectName(), 2);
             room->throwCard(disc, effect.from, effect.to);
             room->removePlayerMark(effect.to, objectName() + effect.slash->toString());
         } else if (triggerEvent == CardFinished) {
@@ -88,10 +88,7 @@ public:
             }
             ServerPlayer *mosthp = maxs.first();
             if (room->askForSkillInvoke(mosthp, objectName())) {
-                int index = 2;
-                if (mosthp->isFemale())
-                    index = 3;
-                room->broadcastSkillInvoke(objectName(), index);
+                room->broadcastSkillInvoke(objectName(), 2);
                 room->askForDiscard(mosthp, objectName(), 2, 2, false, true);
                 mosthp->drawCards(2);
             }
@@ -116,7 +113,7 @@ void MizhaoCard::onEffect(const CardEffectStruct &effect) const{
     if (effect.to->isKongcheng()) return;
 
     Room *room = effect.from->getRoom();
-    room->broadcastSkillInvoke("mizhao", effect.to->getGeneralName().contains("liubei") ? 2 : 1);
+    room->broadcastSkillInvoke("mizhao"/*, effect.to->getGeneralName().contains("liubei") ? 2 : 1*/);
 
     QList<ServerPlayer *> targets;
     foreach (ServerPlayer *p, room->getOtherPlayers(effect.to))
@@ -697,18 +694,24 @@ AssassinsPackage::AssassinsPackage(): Package("assassins") {
     fuwan->addSkill(new Chizhong);
     related_skills.insertMulti("chizhong", "#chizhong");
 
-    General *mushun = new General(this, "as_mushun", "qun");
+    //SPconvert from SP fuwan to as_mushun
+
+    General *mushun = new General(this, "as_mushun", "qun", 4, true, true);
     mushun->addSkill(new Moukui);
 
-    General *hanxiandi = new General(this, "as_liuxie", "qun", 3);
+    //hide these two generals because the skills and the cards are same with the ones in SP package
+    //and I don't want to move the codes to sp-package.h/.cpp
+
+    General *hanxiandi = new General(this, "as_liuxie", "qun", 3, true, true, true);
     hanxiandi->addSkill(new Tianming);
     hanxiandi->addSkill(new Mizhao);
     hanxiandi->addSkill(new MizhaoSlashNoDistanceLimit);
     related_skills.insertMulti("mizhao", "#mizhao-slash-ndl");
 
-    General *lingju = new General(this, "as_lingju", "qun", 3, false);
+    General *lingju = new General(this, "as_lingju", "qun", 3, false, true, true);
     lingju->addSkill(new Jieyuan);
     lingju->addSkill(new Fenxin);
+
     
     addMetaObject<MizhaoCard>();
     addMetaObject<MixinCard>();

@@ -112,7 +112,7 @@ public:
                             break;
                     }
                 }
-                room->broadcastSkillInvoke(objectName(), qrand() % 2 + 2);
+                room->broadcastSkillInvoke(objectName(), 2);
             }
         }
         return false;
@@ -297,7 +297,9 @@ public:
         if (triggerEvent == EventPhaseStart && TriggerSkill::triggerable(target)
             && target->getPhase() == Player::Start) {
             if (room->askForSkillInvoke(target, objectName())) {
-                room->broadcastSkillInvoke(objectName());
+                //room->broadcastSkillInvoke(objectName());
+
+                room->notifySkillInvoked(target, objectName());
 
                 JudgeStruct judge;
                 judge.reason = objectName();
@@ -316,9 +318,14 @@ public:
 					return false;
 
 				ServerPlayer *victim = room->askForPlayerChosen(target, to_choose, objectName());
-				QString pattern = QString(".|%1|.|hand$0").arg(color);
+				
+                int index = 1;
+                if (color == "black")
+                    index = 2;
 
-				room->broadcastSkillInvoke(objectName());
+                room->broadcastSkillInvoke(objectName(), index);
+
+                QString pattern = QString(".|%1|.|hand$0").arg(color);
 				room->setPlayerFlag(victim, "QianxiTarget");
 				room->addPlayerMark(victim, QString("@qianxi_%1").arg(color));
 				room->setPlayerCardLimitation(victim, "use,response", pattern, false);
@@ -452,7 +459,7 @@ public:
         Room *room = liubiao->getRoom();
         if (liubiao->isWounded() && room->askForSkillInvoke(liubiao, objectName())) {
             int losthp = liubiao->getLostHp();
-            room->broadcastSkillInvoke(objectName(), qMin(3, losthp));
+            room->broadcastSkillInvoke(objectName());
             liubiao->clearHistory();
             liubiao->skip(Player::Play);
             return n + losthp;
@@ -630,13 +637,13 @@ void JiefanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
     room->removePlayerMark(source, "@rescue");
     ServerPlayer *target = targets.first();
     source->tag["JiefanTarget"] = QVariant::fromValue((PlayerStar)target);
-    int index = 1;
+    /*int index = 1;
     if (target->isLord()
         && (target->getGeneralName().contains("sunquan")
-            || target->getGeneralName().contains("sunjian")
-            || target->getGeneralName().contains("sunce")))
-        index = 2;
-    room->broadcastSkillInvoke("jiefan", index);
+        || target->getGeneralName().contains("sunjian")
+        || target->getGeneralName().contains("sunce")))
+        index = 2;*/
+    room->broadcastSkillInvoke("jiefan");
     room->doLightbox("$JiefanAnimate", 2500);
 
     foreach (ServerPlayer *player, room->getAllPlayers()) {
@@ -672,7 +679,7 @@ public:
 };
 
 AnxuCard::AnxuCard() {
-    mute = true;
+    /*mute = true;*/
 }
 
 bool AnxuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -694,10 +701,11 @@ void AnxuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targ
     QList<ServerPlayer *> selecteds = targets;
     ServerPlayer *from = selecteds.first()->getHandcardNum() < selecteds.last()->getHandcardNum() ? selecteds.takeFirst() : selecteds.takeLast();
     ServerPlayer *to = selecteds.takeFirst();
+/*
     if (from->getGeneralName().contains("sunquan"))
         room->broadcastSkillInvoke("anxu", 2);
     else
-        room->broadcastSkillInvoke("anxu", 1);
+        room->broadcastSkillInvoke("anxu", 1);*/
     int id = room->askForCardChosen(from, to, "h", "anxu");
     const Card *cd = Sanguosha->getCard(id);
     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName());
@@ -747,10 +755,10 @@ public:
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), prompt, true, true);
         if (!target) return false;
 
-        if (target->getGeneralName().contains("sunquan"))
+        /*if (target->getGeneralName().contains("sunquan"))
             room->broadcastSkillInvoke(objectName(), 2);
-        else
-            room->broadcastSkillInvoke(objectName(), 1);
+        else*/
+            room->broadcastSkillInvoke(objectName()/*, 1*/);
 
         target->drawCards(3);
         RecoverStruct recover;
@@ -940,9 +948,9 @@ public:
 
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
         if (card->isKindOf("Analeptic")) {
-            if (player->getGeneralName().contains("zhouyu"))
+            /*if (player->getGeneralName().contains("zhouyu"))
                 return 3;
-            else
+            else*/
                 return 2;
         } else
             return 1;

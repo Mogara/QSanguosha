@@ -303,13 +303,8 @@ void GreatYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlaye
     if (criticaltarget > 0) {
         room->removePlayerMark(shenzhouyu, "@flame");
         room->loseHp(shenzhouyu, 3);
-        if (totalvictim > 1) {
-            room->broadcastSkillInvoke("yeyan", 2);
-            room->doLightbox("$YeyanAnimate");
-        } else {
-            room->broadcastSkillInvoke("yeyan", 3);
-            room->doLightbox("$YeyanAnimate");
-        }
+        room->broadcastSkillInvoke("yeyan", 1);
+        room->doLightbox("$YeyanAnimate");
 
         QList<ServerPlayer *> targets = map.keys();
         room->sortByActionOrder(targets);
@@ -332,7 +327,7 @@ bool SmallYeyanCard::targetFilter(const QList<const Player *> &targets, const Pl
 }
 
 void SmallYeyanCard::use(Room *room, ServerPlayer *shenzhouyu, QList<ServerPlayer *> &targets) const{
-    room->broadcastSkillInvoke("yeyan", 1);
+    room->broadcastSkillInvoke("yeyan", 2);
     room->doLightbox("$YeyanAnimate");
     room->removePlayerMark(shenzhouyu, "@flame");
     Card::use(room, shenzhouyu, targets);
@@ -411,11 +406,7 @@ public:
                 room->loseHp(player);
             }
 
-            int index = 1;
-            if (room->findPlayer("caocao+shencaocao+yt_shencaocao"))
-                index = 3;
-
-            room->broadcastSkillInvoke(objectName(), index);
+            room->broadcastSkillInvoke(objectName(), 1);
         }
     }
 

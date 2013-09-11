@@ -885,7 +885,7 @@ public:
                 if (zhouyu->hasSkill("mouduan"))
                     index += 2;
                 else if (zhouyu->hasSkill("hunzi"))
-                    index = 5;
+                    index += 4;
             }
 
             room->broadcastSkillInvoke(objectName(), index);

@@ -11,7 +11,8 @@ return {
 	["nostal_standard"] = "怀旧-标准",
 	["nostal_yjcm"] = "怀旧-一将",
 	["nostal_yjcm2012"] = "怀旧-一将2",
-
+	["nostal_wind"] = "怀旧-风包" ,
+	
 	["nos_liubei"] = "刘备-旧",
 	["&nos_liubei"] = "刘备",
 	["nosrende"] = "仁德",

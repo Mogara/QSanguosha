@@ -734,7 +734,7 @@ public:
 HegemonyPackage::HegemonyPackage()
     : Package("hegemony")
 {
-    General *yuejin = new General(this, "yuejin", "wei", 4, true, true); // WEI 016
+    General *yuejin = new General(this, "heg_yuejin", "wei", 4, true, true); // WEI 016
     yuejin->addSkill(new Xiaoguo);
 
     General *ganfuren = new General(this, "ganfuren", "shu", 3, false); // SHU 016

@@ -2,6 +2,7 @@
 
 return {
 
+	["cv:shenguanyu"] = "官方、奈何" ,
 	["$wushen1"] = "还不速速领死！",
 	["$wushen2"] = "取汝狗头，有如探囊取物。",
 	["$wuhun1"] = "关某记下了",
@@ -16,12 +17,10 @@ return {
 	["$gongxin2"] = "我替施主把把脉。",
 	["~shenlvmeng"] = "劫数难逃，我们别无选择。",
 
-	["$qinyin1"] = " ",
-	["$qinyin2"] = " ",
-	--["$qinyin3"] = "聆听吧，孟德，这首献给你的镇魂曲",
-	["$yeyan1"] = " ",
+	["$qinyin1"] = "（杂乱的琴声）",
+	["$qinyin2"] = "（舒缓的琴声）",
 	["$yeyan2"] = "聆听吧，这献给你的镇魂曲！",
-	["$yeyan3"] = "让这熊熊烈火，焚尽你的罪恶！",
+	["$yeyan1"] = "让这熊熊烈火，焚尽你的罪恶！",
 	["~shenzhouyu"] = "逝者不死，浴火重生！",
 
 	["$qixing1"] = "伏望天恩，誓讨汉贼！",
@@ -32,13 +31,11 @@ return {
 	["$dawu2"] = "此非万全之策，唯惧天雷。",
 	["~shenzhugeliang"] = "今当远离，临表涕零，不知所言。",
 
-
 	["$guixin1"] = "周公吐哺，天下归心！",
 	["$guixin2"] = "山不厌高，海不厌深！",
 	["~shencaocao"] = "腾蛇乘雾，终为土灰……",
 
-	["cv:shenlvbu"] = "笑傲糨糊",
-	["$kuangbao1"] = "(嚎叫声)",
+	["$kuangbao1"] = "呒——唔！",
 	["$kuangbao2"] = "哼！",
 	["$wumou1"] = "那个说我有勇无谋？",
 	["$wumou2"] = "不管这些啦！",
@@ -49,12 +46,12 @@ return {
 	["~shenlvbu"] = "我在修罗炼狱，等着你们！哈哈哈哈哈哈哈哈！！",
 
 	["cv:shenzhaoyun"] = "猎狐",
-	["$juejing"] = "龙战于野,其血玄黄",
-	["$longhun1"] = "金甲映日,驱邪祛秽", -- spade
-	["$longhun2"] = "腾龙行云,首尾不见", -- club
-	["$longhun3"] = "潜龙于渊,涉灵愈伤", -- heart
-	["$longhun4"] = "千里一怒,红莲灿世", -- diamond
-	["~shenzhaoyun"] = "血染鳞甲,龙坠九天",
+	["$juejing"] = "龙战于野，其血玄黄。",
+	["$longhun1"] = "金甲映日，驱邪祛秽。", -- spade
+	["$longhun2"] = "腾龙行云，首尾不见。", -- club
+	["$longhun3"] = "潜龙于渊，涉灵愈伤。", -- heart
+	["$longhun4"] = "千里一怒，红莲灿世！", -- diamond
+	["~shenzhaoyun"] = "血染鳞甲，龙坠九天……",
 
 	["cv:shensimayi"] = "泥马",
 	["$renjie"] = "韬光养晦，静待时机。",
@@ -62,7 +59,7 @@ return {
 	["$jilve1"] = "天意如何，我命由我。", -- guicai
 	["$jilve2"] = "远逐敌雠，拔除异己。", -- fangzhu
 	["$jilve3"] = "心狠手毒，方能成事。", -- wansha
-	["$jilve4"] = "且暂思量，再作打算。", -- zhiheng
+	["$jilve4"] = "暂且思量，再作打算。", -- zhiheng
 	["$jilve5"] = "此计即成，彼计亦得。", -- jizhi
 	["$lianpo"] = "敌军已乱，乘胜追击。",
 	["~shensimayi"] = "我已谋划至此，奈何……",

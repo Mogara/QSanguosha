@@ -49,10 +49,10 @@ return {
 	["cv_shenlvbu:convert"] = "你可以替换为SP神吕布",
 	["$ShenfenAnimateSP"] = "image=image/animate/shenfenSP.png",
 	
-	["sp_yuejin"] = "SP乐进",
-	["&sp_yuejin"] = "乐进",
-	["illustrator:sp_yuejin"] = "巴萨小马",
-	["cv_yuejin:convert"] = "你可以替换为SP乐进",
+	["yuejin"] = "乐进",
+	["&yuejin"] = "乐进",
+	["illustrator:yuejin"] = "巴萨小马",
+	["cv_yuejin:convert"] = "你可以替换为国战乐进",
 
 	["tw_diaochan"] = "台版貂蝉",
 	["&tw_diaochan"] = "貂蝉",
