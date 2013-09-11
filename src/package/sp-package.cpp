@@ -693,9 +693,6 @@ public:
         return false;
     }
 
-    virtual int getEffectIndex(const ServerPlayer *, const Card *) const {
-        return qrand() % 2 + 5;
-    }
 
 private:
     void BaobianChange(Room *room, ServerPlayer *player, int hp, const QString &skill_name) const{
