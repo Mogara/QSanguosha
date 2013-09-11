@@ -568,6 +568,7 @@ public:
 TushouGiveCard::TushouGiveCard(){
     will_throw = false;
     handling_method = Card::MethodNone;
+    mute = true;
 }
 
 bool TushouGiveCard::targetFilter(const QList<const Player *> &selected, const Player *to_select, const Player *) const{
@@ -1162,6 +1163,148 @@ public:
 };
 
 
+class Xuedian: public TargetModSkill{
+public:
+    Xuedian(): TargetModSkill("xuedian"){
+        pattern = "Slash";
+        frequency = NotFrequent;
+    }
+    
+    virtual int getExtraTargetNum(const Player *from, const Card *) const{
+        if (from->hasSkill(objectName()))
+            return from->getLostHp();
+
+        return 0;
+    }
+};
+class Xuediantr: public TriggerSkill{
+public:
+    Xuediantr(): TriggerSkill("#xuediantr"){
+        events << Damage << EventPhaseChanging;
+    }
+    
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == Damage){
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.card && damage.card->isKindOf("Slash"))
+                room->setPlayerFlag(player, "xuedian_damage");
+        }
+        else {
+            int x = player->getLostHp();
+            if (x == 0)
+                return false;
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive && player->hasFlag("xuedian_damage")){
+                const Card *card = room->askForCard(player, ".|red", "@xuedian:" + QString::number(x), data, Card::MethodNone);
+                if (card != NULL){
+                    player->drawCards(x);
+                    room->moveCardTo(card, NULL, Player::DrawPile, true);
+                }
+            }
+        }
+        return false;
+    }
+};
+
+class Duanhun: public ViewAsSkill{
+public:
+    Duanhun(): ViewAsSkill("duanhun"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getCardCount(true) >= 2 && Slash::IsAvailable(player);
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return player->getCardCount(true) >= 2 && pattern == "slash";
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
+        if (selected.length() >= 2)
+            return false;
+
+        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
+                && Self->getWeapon() && to_select->getEffectiveId() == Self->getWeapon()->getId()
+                && to_select->isKindOf("Crossbow"))
+            return Self->canSlashWithoutCrossbow();
+
+        return true;
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+        if (cards.length() != 2)
+            return NULL;
+
+        Slash *slash = new Slash(Card::SuitToBeDecided, 0);
+        slash->setSkillName(objectName());
+        slash->addSubcards(cards);
+        
+        return slash;
+    }
+};
+
+class Zhanji: public TriggerSkill{
+public:
+    Zhanji(): TriggerSkill("zhanji"){
+        frequency = Wake;
+        events << PreDamageDone << EventPhaseChanging << EventPhaseStart;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        switch (triggerEvent){
+            case (PreDamageDone):{
+                DamageStruct damage = data.value<DamageStruct>();
+                if (damage.from != NULL && damage.from->isAlive()
+                        && damage.from == room->getCurrent()
+                        && damage.from->getMark("zhanji") == 0)
+                    room->addPlayerMark(damage.from, "zhanji_damage", damage.damage);
+                break;
+            }
+            case (EventPhaseChanging):{
+                PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+                if (change.to == Player::NotActive)
+                    if (player->getMark("zhanji_damage") > 0)
+                        room->setPlayerMark(player, "zhanji_damage", 0);
+                break;
+            }
+            case (EventPhaseStart):{
+                if (TriggerSkill::triggerable(player)
+                        && player->getPhase() == Player::Finish
+                        && player->getMark("zhanji") == 0
+                        && player->getMark("zhanji_damage") >= 3){
+
+                    room->notifySkillInvoked(player, objectName());
+                    LogMessage l;
+                    l.type = "#ZhanjiWake";
+                    l.from = player;
+                    l.arg = QString::number(player->getMark("zhanji_damage"));
+                    l.arg2 = objectName();
+                    room->sendLog(l);
+                    room->broadcastSkillInvoke(objectName());
+                    room->doLightbox("$ZhanjiAnimate", 4000);
+
+                    if (room->changeMaxHpForAwakenSkill(player, 1)){
+                        room->addPlayerMark(player, "zhanji");
+                        RecoverStruct recover;
+                        recover.who = player;
+                        room->recover(player, recover);
+
+                        room->handleAcquireDetachSkills(player, "-duanhun");
+                    }
+                }
+                break;
+            }
+            default:
+                break;
+        }
+        return false;
+    }
+};
+
 TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
     General *caorui = new General(this, "caorui$", "wei", 3);
     caorui->addSkill(new Shemi);
@@ -1209,6 +1352,13 @@ TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
     General *yangyi = new General(this, "yangyi", "shu", 3);
     yangyi->addSkill(new Juanxia);
     yangyi->addSkill(new Choudu);
+
+    General *zhangxingcai = new General(this, "zhangxingcai", "shu", 3, false);
+    zhangxingcai->addSkill(new Duanhun);
+    zhangxingcai->addSkill(new Xuedian);
+    zhangxingcai->addSkill(new Xuediantr);
+    zhangxingcai->addSkill(new Zhanji);
+    related_skills.insertMulti("xuedian", "#xuediantr");
 
     addMetaObject<PozhenCard>();
     addMetaObject<TushouGiveCard>();
