@@ -219,10 +219,7 @@ void ShensuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 
     if (targets.length() > 0) {
         Slash *slash = new Slash(Card::NoSuit, 0);
-        if (source->hasSkill("baobian"))
-            slash->setSkillName("_baobian");
-        else
-            slash->setSkillName("_shensu");
+        slash->setSkillName("_shensu");
         room->useCard(CardUseStruct(slash, source, targets));
     }
 }
@@ -282,6 +279,13 @@ public:
                 xiahouyuan->skip(Player::Play);
         }
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+        if (player->hasSkill("baobian"))
+            return qrand() % 2 + 3;
+        else
+            return qrand() % 2 + 1;
     }
 };
 

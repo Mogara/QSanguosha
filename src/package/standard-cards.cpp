@@ -144,8 +144,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             name = "huxiao";
         if (!name.isEmpty()) {
             player->setFlags("-Global_MoreSlashInOneTurn");
-            if (name == "paoxiao" && player->hasSkill("baobian"))
-                room->broadcastSkillInvoke("baobian", qrand() % 2 + 3);
+            if (name == "paoxiao")
+                room->broadcastSkillInvoke("paoxiao", player->hasSkill("baobian") ? (qrand() % 2 + 3) : (qrand() % 2 + 1));
             else
                 room->broadcastSkillInvoke(name);
 

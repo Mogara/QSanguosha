@@ -689,9 +689,7 @@ void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
 
     if (effect.from->hasSkill("baobian"))
-        room->broadcastSkillInvoke("baobian", qrand() % 2 + 1);
-    else if (effect.from->hasArmorEffect("EightDiagram") || effect.from->hasSkill("bazhen"))
-        room->broadcastSkillInvoke("tiaoxin", 3);
+        room->broadcastSkillInvoke("tiaoxin", qrand() % 2 + 3);
     else
         room->broadcastSkillInvoke("tiaoxin", qrand() % 2 + 1);
 
