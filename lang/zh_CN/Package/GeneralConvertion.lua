@@ -53,6 +53,8 @@ return {
 	["&yuejin"] = "乐进",
 	["illustrator:yuejin"] = "巴萨小马",
 	["cv_yuejin:convert"] = "你可以替换为国战乐进",
+	
+	["cv_fuwan:convert"] = "你可以替换为铜雀台穆顺" ,
 
 	["tw_diaochan"] = "台版貂蝉",
 	["&tw_diaochan"] = "貂蝉",
