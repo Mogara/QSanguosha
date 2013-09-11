@@ -543,12 +543,14 @@ public:
             if (TriggerSkill::triggerable(player) && player->getPhase() == Player::RoundStart) {
                 effected = true;
                 setHuoshuiFlag(room, player, false);
+                room->broadcastSkillInvoke(objectName(), 1);
             }
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (TriggerSkill::triggerable(player) && change.to == Player::NotActive) {
                 effected = true;
                 setHuoshuiFlag(room, player, true);
+                room->broadcastSkillInvoke(objectName(), 2);
             }
         } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
