@@ -43,6 +43,7 @@ config = {
 		"Formation",
 		"HegemonySP",
 		"Ling",
+		"Ling2013" ,
 		"NostalStandard",
 		"NostalWind",
 		"NostalYJCM",
