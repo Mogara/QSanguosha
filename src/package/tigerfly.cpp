@@ -495,15 +495,15 @@ public:
         damage.damage = qMax(player->getMark("@xiongjie"), 1);
         data = QVariant::fromValue(damage);
 
-        if (damage.damage > d){
+        LogMessage l;
+        l.type = "#xiongjiedamage";
+        l.from = player;
+        l.to << damage.to;
+        l.arg = QString::number(damage.damage);
+        room->sendLog(l);
+
+        if (damage.damage > d)
             room->broadcastSkillInvoke(objectName());
-            LogMessage l;
-            l.type = "#xiongjiedamage";
-            l.from = player;
-            l.to << damage.to;
-            l.arg = QString::number(damage.damage);
-            room->sendLog(l);
-        }
 
         return false;
     }
