@@ -4974,8 +4974,11 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
     notifyMoveFocus(player, S_COMMAND_CHOOSE_PLAYER);
     AI *ai = player->getAI();
     ServerPlayer *choice = NULL;
-    if (ai)
+    if (ai){
         choice = ai->askForPlayerChosen(targets, skillName);
+        if (optional && choice != NULL)
+            getThread()->delay();
+    }
     else {
         Json::Value req;
         req[0] = Json::Value(Json::arrayValue);
