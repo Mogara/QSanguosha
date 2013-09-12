@@ -4985,7 +4985,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
     if (ai){
         choice = ai->askForPlayerChosen(targets, skillName);
         if (optional && choice != NULL)
-            getThread()->delay();
+            thread->delay();
     }
     else {
         Json::Value req;
