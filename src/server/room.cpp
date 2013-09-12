@@ -2988,7 +2988,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
 }
 
 void Room::loseHp(ServerPlayer *victim, int lose) {
-    Q_ASSERT(lose <= 0);
+    Q_ASSERT(lose > 0);
     if (lose <= 0)
         return ;
 
@@ -3016,7 +3016,7 @@ void Room::loseHp(ServerPlayer *victim, int lose) {
 }
 
 void Room::loseMaxHp(ServerPlayer *victim, int lose) {
-    Q_ASSERT(lose <= 0);
+    Q_ASSERT(lose > 0);
     if (lose <= 0)
         return ;
 
