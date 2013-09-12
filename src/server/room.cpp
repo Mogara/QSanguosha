@@ -2988,6 +2988,10 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
 }
 
 void Room::loseHp(ServerPlayer *victim, int lose) {
+    Q_ASSERT(lose <= 0);
+    if (lose <= 0)
+        return ;
+
     if (victim->isDead())
         return;
     QVariant data = lose;
@@ -3012,6 +3016,10 @@ void Room::loseHp(ServerPlayer *victim, int lose) {
 }
 
 void Room::loseMaxHp(ServerPlayer *victim, int lose) {
+    Q_ASSERT(lose <= 0);
+    if (lose <= 0)
+        return ;
+
     int hp_1 = victim->getHp();
     victim->setMaxHp(qMax(victim->getMaxHp() - lose, 0));
     int hp_2 = victim->getHp();
