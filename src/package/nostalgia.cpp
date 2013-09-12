@@ -274,12 +274,12 @@ public:
                 QString choice = room->askForChoice(lingtong, objectName(), choicelist.join("+"));
                 if (choice == "slash") {
                     ServerPlayer *target = room->askForPlayerChosen(lingtong, targets1, "nosxuanfeng_slash", "@dummy-slash");
-                    room->broadcastSkillInvoke(objectName(), 1);
+                    room->broadcastSkillInvoke("xuanfeng", 1);
                     Slash *slash = new Slash(Card::NoSuit, 0);
                     slash->setSkillName(objectName());
                     room->useCard(CardUseStruct(slash, lingtong, target), false);
                 } else if (choice == "damage") {
-                    room->broadcastSkillInvoke(objectName(), 2);
+                    room->broadcastSkillInvoke("xuanfeng", 2);
 
                     LogMessage log;
                     log.type = "#InvokeSkill";
@@ -470,6 +470,7 @@ public:
             if (use.card->isKindOf("Slash")) {
                 handang->setFlags("-NosJiefanUsed");
                 room->setCardFlag(use.card, "nosjiefan-slash");
+                room->broadcastSkillInvoke(objectName(), 2);
             }
         } else if (triggerEvent == DamageCaused) {
             ServerPlayer *current = room->getCurrent();
@@ -500,7 +501,7 @@ public:
                     room->sendLog(log);
                 } else {
                     Peach *peach = new Peach(Card::NoSuit, 0);
-                    peach->setSkillName("_jiefan");
+                    peach->setSkillName("_nosjiefan");
 
                     room->setCardFlag(damage.card, "nosjiefan_success");
                     if ((target->getGeneralName().contains("sunquan")
@@ -527,10 +528,7 @@ public:
     }
 
     virtual int getEffectIndex(const ServerPlayer *player, const Card *) const{
-        if (player->hasFlag("NosJiefanToLord"))
-            return 2;
-        else
-            return 1;
+        return 1;
     }
 };
 
@@ -577,7 +575,7 @@ public:
 
         if (player->askForSkillInvoke(objectName(), data)) {
             int card_id = room->drawCard();
-            room->broadcastSkillInvoke(objectName(), room->getCurrent() == player ? 2 : 1);
+            room->broadcastSkillInvoke(objectName()/*, room->getCurrent() == player ? 2 : 1*/);
             room->getThread()->delay();
             const Card *card = Sanguosha->getCard(card_id);
 

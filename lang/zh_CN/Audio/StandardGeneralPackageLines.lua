@@ -79,9 +79,9 @@ return {
 	["~machao"] = "（马蹄声……）",
 
 	-- 黄月英
-	["$jizhi1"] = "哼哼~",
-	["$jizhi2"] = "哼~",
-	["~huangyueying"] = "亮……",
+	["$jizhi1"] = "哼哼",
+	["$jizhi2"] = "哼" ,
+	["~huangyueying"] = "亮",
 
 	-- 孙权
 	["$zhiheng1"] = "容我三思。",
