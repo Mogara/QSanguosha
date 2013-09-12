@@ -382,7 +382,7 @@ public:
             JudgeStruct judge;
             judge.pattern = ".|red";
             judge.good = true;
-            judge.reason = objectName();
+            judge.reason = "EightDiagram";
             judge.who = wolong;
 
             room->setEmotion(wolong, "armor/eight_diagram");
