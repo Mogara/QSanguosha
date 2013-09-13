@@ -77,12 +77,6 @@ void DoLuaScript(lua_State *L, const char *script) {
     }
 }
 
-void DoLuaScripts(lua_State *L, const QStringList &scripts) {
-    foreach (QString script, scripts) {
-        DoLuaScript(L, script.toLocal8Bit());
-    }
-}
-
 QStringList IntList2StringList(const QList<int> &intlist) {
     QStringList stringlist;
     for (int i = 0; i < intlist.size(); i++)
