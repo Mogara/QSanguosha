@@ -668,6 +668,17 @@ AmazingGrace::AmazingGrace(Suit suit, int number)
     has_preact = true;
 }
 
+void AmazingGrace::clearRestCards(Room *room) const{
+    room->clearAG();
+
+    QVariantList ag_list = room->getTag("AmazingGrace").toList();
+    if (ag_list.isEmpty()) return;
+    DummyCard *dummy = new DummyCard(VariantList2IntList(ag_list));
+    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "amazing_grace", QString());
+    room->throwCard(dummy, reason, NULL);
+    delete dummy;
+}
+
 void AmazingGrace::doPreAction(Room *room, const CardUseStruct &) const{
     QList<int> card_ids = room->getNCards(room->getAllPlayers().length());
     room->fillAG(card_ids);
@@ -675,20 +686,19 @@ void AmazingGrace::doPreAction(Room *room, const CardUseStruct &) const{
 }
 
 void AmazingGrace::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    GlobalEffect::use(room, source, targets);
-    room->clearAG();
-
-    //shemi count
+	//shemi count
     if (this->getSkillName() == "shemi")
         room->addPlayerHistory(source, "ShemiAG");
 
-    // throw the rest cards
-    QVariantList ag_list = room->getTag("AmazingGrace").toList();
-    if (ag_list.isEmpty()) return;
-    DummyCard *dummy = new DummyCard(VariantList2IntList(ag_list));
-    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "amazing_grace", QString());
-    room->throwCard(dummy, reason, NULL);
-    delete dummy;
+    try {
+        GlobalEffect::use(room, source, targets);
+        clearRestCards(room);
+    }
+    catch (TriggerEvent triggerEvent) {
+        if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+            clearRestCards(room);
+        throw triggerEvent;
+    }
 }
 
 void AmazingGrace::onEffect(const CardEffectStruct &effect) const{
@@ -800,6 +810,8 @@ bool Collateral::targetFilter(const QList<const Player *> &targets,
         Q_ASSERT(targets.length() <= 2);
         if (targets.length() == 2) return false;
         const Player *slashFrom = targets[0];
+		/* @todo: develop a new mechanism of filtering targets
+					to remove the coupling here and to fix the similar bugs caused by TongJi */
         if (to_select == Self && to_select->hasSkill("kongcheng") && Self->isLastHandCard(this, true))
             return false;
         return slashFrom->canSlash(to_select);
