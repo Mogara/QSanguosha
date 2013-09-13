@@ -508,16 +508,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
-        if (selected.length() >= 2)
-            return false;
-
-        if (to_select == Self->getWeapon())
-            return false;
-
-        if (Self->isJilei(to_select))
-            return false;
-
-        return true;
+        return selected.length() < 2 && to_select != Self->getWeapon() && !Self->isJilei(to_select);
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
