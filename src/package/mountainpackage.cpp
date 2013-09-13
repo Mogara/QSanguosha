@@ -265,6 +265,7 @@ class Tuntian: public TriggerSkill {
 public:
     Tuntian(): TriggerSkill("tuntian") {
         events << CardsMoveOneTime << FinishJudge;
+        frequency = Frequent;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -298,7 +299,7 @@ public:
 class TuntianDistance: public DistanceSkill {
 public:
     TuntianDistance(): DistanceSkill("#tuntian-dist") {
-        frequency = NotFrequent;
+        //frequency = NotFrequent;
     }
 
     virtual int getCorrect(const Player *from, const Player *) const{
