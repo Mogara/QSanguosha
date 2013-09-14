@@ -1875,15 +1875,23 @@
         <translation>无性别</translation>
     </message>
     <message>
+        <source>This general is hidden</source>
+        <translation type="obsolete">该武将被隐藏， 不会出现在选将列表中</translation>
+    </message>
+    <message>
+        <source>This is an Lua extension</source>
+        <translation type="obsolete">该包为Lua扩展包</translation>
+    </message>
+    <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="299"/>
         <location filename="../../src/dialog/generaloverview.cpp" line="312"/>
-        <source>This general is hidden</source>
-        <translation>该武将被隐藏， 不会出现在选将列表中</translation>
+        <source>&lt;font color=#FFFF33&gt;This general is hidden&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;该武将被隐藏， 不会出现在选将列表中&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="328"/>
-        <source>This is an Lua extension</source>
-        <translation>该包为Lua扩展包</translation>
+        <source>&lt;font color=#FFFF33&gt;This is an Lua extension&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;该包为Lua扩展包&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="432"/>
@@ -1944,9 +1952,8 @@
         <translation>称号</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="45"/>
         <source>Input characters included by the nickname. &apos;?&apos; and &apos;*&apos; is available. Every nickname meets the condition if the line is empty.</source>
-        <translation>输入武将称号，可以使用&apos;?&apos;与&apos;*&apos;通配符</translation>
+        <translation type="obsolete">输入武将称号，可以使用&apos;?&apos;与&apos;*&apos;通配符</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="50"/>
@@ -1954,9 +1961,8 @@
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="51"/>
         <source>Input characters included by the name. &apos;?&apos; and &apos;*&apos; is available. Every name meets the condition if the line is empty.</source>
-        <translation>输入武将称号，可以使用&apos;?&apos;与&apos;*&apos;通配符</translation>
+        <translation type="obsolete">输入武将称号，可以使用&apos;?&apos;与&apos;*&apos;通配符</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="56"/>
@@ -1964,10 +1970,8 @@
         <translation>体力上限（最小值）</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="57"/>
-        <location filename="../../src/dialog/generaloverview.cpp" line="59"/>
         <source>Set lowerlimit and upperlimit of max HP. 0 ~ 0 meets all conditions.</source>
-        <translation>设置武将体力上限范围，若最小值与最大值均为0则所有武将符合条件（若最大值小于最小值，则按最小值计算）</translation>
+        <translation type="obsolete">设置武将体力上限范围，若最小值与最大值均为0则所有武将符合条件（若最大值小于最小值，则按最小值计算）</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="58"/>
@@ -1980,9 +1984,29 @@
         <translation>性别</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="75"/>
         <source>Select genders. Every gender meets the condition if none is selected.</source>
-        <translation>选择武将性别，若未选择任何性别则所有性别均符合条件</translation>
+        <translation type="obsolete">选择武将性别，若未选择任何性别则所有性别均符合条件</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/generaloverview.cpp" line="45"/>
+        <source>&lt;font color=#FFFF33&gt;Input characters included by the nickname. &apos;?&apos; and &apos;*&apos; is available. Every nickname meets the condition if the line is empty.&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;输入武将称号，可以使用&apos;?&apos;与&apos;*&apos;通配符&lt;/font&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/generaloverview.cpp" line="51"/>
+        <source>&lt;font color=#FFFF33&gt;Input characters included by the name. &apos;?&apos; and &apos;*&apos; is available. Every name meets the condition if the line is empty.&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;输入武将名，可以使用&apos;?&apos;与&apos;*&apos;通配符&lt;/font&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/generaloverview.cpp" line="57"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="59"/>
+        <source>&lt;font color=#FFFF33&gt;Set lowerlimit and upperlimit of max HP. 0 ~ 0 meets all conditions.&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;设置武将体力上限范围，若最小值与最大值均为0则所有武将符合条件（若最大值小于最小值，则按最小值计算）&lt;/font&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/generaloverview.cpp" line="75"/>
+        <source>&lt;font color=#FFFF33&gt;Select genders. Every gender meets the condition if none is selected.&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;选择武将性别，若未选择任何性别则所有性别均符合条件&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="81"/>
@@ -2006,8 +2030,17 @@
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="110"/>
+        <source>&lt;font color=#FFFF33&gt;Select kingdoms. Every kingdom meets the condition if none is selected.&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;选择武将势力，若未选择任何势力则所有势力均符合条件&lt;/font&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/generaloverview.cpp" line="137"/>
+        <source>&lt;font color=#FFFF33&gt;Select packages. Every package meets the condition if none is selected.&lt;/font&gt;</source>
+        <translation>&lt;font color=#FFFF33&gt;选择武将包，若未选择任何包则所有包均符合条件&lt;/font&gt;</translation>
+    </message>
+    <message>
         <source>Select kingdoms. Every kingdom meets the condition if none is selected.</source>
-        <translation>选择武将势力，若未选择任何势力则所有势力均符合条件</translation>
+        <translation type="obsolete">选择武将势力，若未选择任何势力则所有势力均符合条件</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="136"/>
@@ -2015,9 +2048,8 @@
         <translation>包</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="137"/>
         <source>Select packages. Every package meets the condition if none is selected.</source>
-        <translation>选择武将包，若未选择任何包则所有包均符合条件</translation>
+        <translation type="obsolete">选择武将包，若未选择任何包则所有包均符合条件</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="169"/>
