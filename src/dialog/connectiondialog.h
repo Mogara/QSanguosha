@@ -20,6 +20,7 @@ public:
     ~ConnectionDialog();
     void hideAvatarList();
     void showAvatarList();
+
 private:
     Ui::ConnectionDialog *ui;
 
