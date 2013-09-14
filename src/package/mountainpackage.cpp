@@ -299,7 +299,6 @@ public:
 class TuntianDistance: public DistanceSkill {
 public:
     TuntianDistance(): DistanceSkill("#tuntian-dist") {
-        //frequency = NotFrequent;
     }
 
     virtual int getCorrect(const Player *from, const Player *) const{

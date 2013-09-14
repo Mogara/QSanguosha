@@ -274,39 +274,40 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
 
     for (int i = 0; i < copy_generals.length(); i++) {
         const General *general = copy_generals[i];
+        QString general_name = general->objectName();
         QString name, kingdom, gender, max_hp, package;
 
-        name = Sanguosha->translate(general->objectName());
+        name = Sanguosha->translate(general_name);
         kingdom = Sanguosha->translate(general->getKingdom());
         gender = general->isMale() ? tr("Male") : (general->isFemale() ? tr("Female") : tr("NoGender"));
         max_hp = QString::number(general->getMaxHp());
         package = Sanguosha->translate(general->getPackage());
 
-        QString nickname = Sanguosha->translate("#" + general->objectName());
-        if (nickname.startsWith("#"))
-            nickname = Sanguosha->translate("#" + general->objectName().split("_").last());
+        QString nickname = Sanguosha->translate("#" + general_name);
+        if (nickname.startsWith("#") && general_name.contains("_"))
+            nickname = Sanguosha->translate("#" +general_name.split("_").last());
         QTableWidgetItem *nickname_item;
         if (!nickname.startsWith("#"))
             nickname_item = new QTableWidgetItem(nickname);
         else
             nickname_item = new QTableWidgetItem(Sanguosha->translate("UnknowNick"));
-        nickname_item->setData(Qt::UserRole, general->objectName());
+        nickname_item->setData(Qt::UserRole, general_name);
         nickname_item->setTextAlignment(Qt::AlignCenter);
 
-        if (Sanguosha->isGeneralHidden(general->objectName())) {
+        if (Sanguosha->isGeneralHidden(general_name)) {
             nickname_item->setBackgroundColor(Qt::gray);
 			nickname_item->setToolTip(tr("This general is hidden"));
 		}
 
         QTableWidgetItem *name_item = new QTableWidgetItem(name);
         name_item->setTextAlignment(Qt::AlignCenter);
-        name_item->setData(Qt::UserRole, general->objectName());
+        name_item->setData(Qt::UserRole, general_name);
         if (general->isLord()) {
             name_item->setIcon(lord_icon);
             name_item->setTextAlignment(Qt::AlignCenter);
         }
 
-        if (Sanguosha->isGeneralHidden(general->objectName())) {
+        if (Sanguosha->isGeneralHidden(general_name)) {
             name_item->setBackgroundColor(Qt::gray);
 			name_item->setToolTip(tr("This general is hidden"));
 		}
@@ -467,11 +468,8 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
         addLines(skill);
 
     QString last_word = Sanguosha->translate("~" + general->objectName());
-    if (last_word.startsWith("~")) {
-        QStringList origin_generals = general->objectName().split("_");
-        if (origin_generals.length() > 1)
-            last_word = Sanguosha->translate(("~") + origin_generals.last());
-    }
+    if (last_word.startsWith("~") && general->objectName().contains("_"))
+        last_word = Sanguosha->translate(("~") + general->objectName().split("_").last());
 
     if (!last_word.startsWith("~")) {
         QCommandLinkButton *death_button = new QCommandLinkButton(tr("Death"), last_word);
