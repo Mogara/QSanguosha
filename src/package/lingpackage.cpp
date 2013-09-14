@@ -439,7 +439,6 @@ void Neo2013FanjianCard::onEffect(const CardEffectStruct &effect) const{
     QVariant data;
     data.setValue(source);
 
-
     QString choice = room->askForChoice(target, "neo2013fanjian", "getIt+discardOne", data);
     //ToAsk: 这里应该是不能弃牌的话就直接拿这张牌，不能先选弃牌，然后发现不能弃，放弃弃牌吧？
 
@@ -578,6 +577,112 @@ public:
     }
 };
 
+class Neo2013Qianhuan: public TriggerSkill{
+public:
+    Neo2013Qianhuan(): TriggerSkill("neo2013qianhuan"){
+        events << Damaged << TargetConfirming << CardsMoveOneTime;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->isAlive();
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *selfplayer = room->findPlayerBySkillName(objectName());
+        if (selfplayer == NULL)
+            return false;
+        switch (triggerEvent){
+            case (Damaged):{
+                if (room->askForSkillInvoke(player, objectName(), data)){
+                    if (player != selfplayer){
+                        room->notifySkillInvoked(selfplayer, objectName());
+                        LogMessage l;
+                        l.type = "#InvokeOthersSkill";
+                        l.from = player;
+                        l.to << selfplayer;
+                        l.arg = objectName();
+                        room->sendLog(l);
+                    }
+                    int id = room->drawCard();
+                    QList<int> fantasy = selfplayer->getPile("fantasy");
+                    selfplayer->addToPile("fantasy", id);
+                    const Card *card = Sanguosha->getCard(id);
+                    foreach(int id, fantasy){
+                        if (card->getSuit() == card->getSuit()){
+                            room->throwCard(card, NULL, player);
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+            case (TargetConfirming):{
+                CardUseStruct use = data.value<CardUseStruct>();
+                if (use.to.length() == 1 && (use.card->isKindOf("BasicCard") || use.card->isKindOf("TrickCard"))
+                        && !selfplayer->getPile("fantasy").isEmpty()){
+                    bool invalid = false;
+                    if (room->askForSkillInvoke(selfplayer, objectName(), data)){
+                        if (selfplayer != player && room->askForSkillInvoke(player, objectName(), data)){
+                            room->notifySkillInvoked(selfplayer, objectName());
+                            LogMessage l;
+                            l.type = "#InvokeOthersSkill";
+                            l.from = player;
+                            l.to << selfplayer;
+                            l.arg = objectName();
+                            room->sendLog(l);
+                            invalid = true;
+                        }
+                        else
+                            invalid = true;
+                    }
+                    if (invalid){
+                        QList<int> fantasy = selfplayer->getPile("fantasy");
+                        room->fillAG(fantasy, selfplayer);
+                        int id = room->askForAG(selfplayer, fantasy, true, objectName());
+                        if (id != -1){
+                            room->throwCard(id, NULL, selfplayer);
+                            use.to.removeOne(use.to.first());
+                            data = QVariant::fromValue(use);
+                            if (use.card->isKindOf("DelayedTrick"))
+                                room->throwCard(use.card, NULL);
+                            LogMessage l;
+                            l.type = "#QiaoshuiRemove";
+                            l.from = player;
+                            l.to << player;
+                            l.arg = use.card->objectName();
+                            l.arg2 = objectName();
+                            room->sendLog(l);
+                        }
+                        room->clearAG(selfplayer);
+                    }
+                }
+                break;
+            }
+            case (CardsMoveOneTime):{
+                //It seems this part of skill is not necessary anymore.
+                break;
+            }
+            default:
+                Q_ASSERT(false);
+        }
+        return false;
+    }
+};
+
+
+
+//每当你成为其他角色使用【杀】或非延时类锦囊牌的唯一目标后，
+//你可以将一张手牌背面朝上置于你的武将牌上，称为“箭”；
+//你可以将一张“箭”当【杀】使用（无距离限制），
+//当此【杀】对目标角色造成伤害后：
+//锁定技，若此【杀】为红色，你可以摸一张牌；
+//锁定技，若此【杀】为黑色，你可以弃置该角色的一张牌。",
+
+//锁定技怎么能“可以”…………这又不是袁术的视为拥有…………
+
+
+
+
 
 Ling2013Package::Ling2013Package(): Package("Ling2013"){
     General *neo2013_masu = new General(this, "neo2013_masu", "shu", 3);
@@ -609,6 +714,9 @@ Ling2013Package::Ling2013Package(): Package("Ling2013"){
     neo2013_liubei->addSkill(new Neo2013RenWang);
     neo2013_liubei->addSkill("jijiang");
     neo2013_liubei->addSkill("rende");
+
+    General *neo2013_yuji = new General(this, "neo2013_yuji", "qun", 3);
+    neo2013_yuji->addSkill(new Neo2013Qianhuan);
 
     addMetaObject<Neo2013XinzhanCard>();
     addMetaObject<Neo2013FanjianCard>();
