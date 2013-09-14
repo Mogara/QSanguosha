@@ -1148,9 +1148,11 @@ public:
                     room->removePlayerMark(player, "Qingcheng" + skill_name);
                 player->tag["ChanyuanSkills"] = QVariant();
             }
+			room->removePlayerMark("@chanyuan");
             return false;
         } else if (triggerEvent == EventAcquireSkill) {
             if (data.toString() != objectName()) return false;
+			room->addPlayerMark("@chanyuan");
         }
 
         if (!TriggerSkill::triggerable(player)) return false;
