@@ -200,6 +200,8 @@ void Engine::addPackage(Package *package) {
 
     package->setParent(this);
 	sp_convert_pairs.unite(package->getConvertPairs());
+	patterns.unite(package->getPatterns());
+	related_skills.unite(package->getRelatedSkills());
 
     QList<Card *> all_cards = package->findChildren<Card *>();
     foreach (Card *card, all_cards) {
@@ -265,9 +267,6 @@ void Engine::addPackage(Package *package) {
     QList<const QMetaObject *> metas = package->getMetaObjects();
     foreach (const QMetaObject *meta, metas)
         metaobjects.insert(meta->className(), meta);
-
-    patterns.unite(package->getPatterns());
-    related_skills.unite(package->getRelatedSkills());
 }
 
 void Engine::addBanPackage(const QString &package_name) {

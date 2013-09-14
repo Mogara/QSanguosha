@@ -962,7 +962,6 @@ Special1v1Package::Special1v1Package()
 
     General *kof_zhurong = new General(this, "kof_zhurong", "shu", 4, false);
     kof_zhurong->addSkill("manyi");
-    kof_zhurong->addSkill("#manyi-avoid");
     kof_zhurong->addSkill("lieren");
 
     General *kof_sunshangxiang = new General(this, "kof_sunshangxiang", "wu", 3, false);
