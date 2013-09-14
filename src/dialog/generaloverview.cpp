@@ -29,12 +29,17 @@ GeneralSearch::GeneralSearch(GeneralOverview *parent)
     layout->addLayout(createButtonLayout());
     setLayout(layout);
 
-    connect(this, SIGNAL(search(QString, QString, QStringList, QStringList, int, int, QStringList)),
-            parent, SLOT(startSearch(QString, QString, QStringList, QStringList, int, int, QStringList)));
+    connect(this, SIGNAL(search(bool, QString, QString, QStringList, QStringList, int, int, QStringList)),
+            parent, SLOT(startSearch(bool, QString, QString, QStringList, QStringList, int, int, QStringList)));
 }
 
 QWidget *GeneralSearch::createInfoTab() {
     QVBoxLayout *layout = new QVBoxLayout;
+
+	include_hidden_checkbox = new QCheckBox;
+	include_hidden_checkbox->setText(tr("Include hidden generals"));
+	include_hidden_checkbox->setChecked(true);
+	layout->addWidget(include_hidden_checkbox);
 
     nickname_label = new QLabel(tr("Nickname"));
     nickname_label->setToolTip(tr("Input characters included by the nickname. '?' and '*' is available. Every nickname meets the condition if the line is empty."));
@@ -193,11 +198,12 @@ void GeneralSearch::accept() {
         if (button->isChecked())
             packages << button->objectName();
     }
-    emit search(nickname, name, genders, kingdoms, lower, upper, packages);
+    emit search(include_hidden_checkbox->isChecked(), nickname, name, genders, kingdoms, lower, upper, packages);
     QDialog::accept();
 }
 
 void GeneralSearch::clearAll() {
+	include_hidden_checkbox->setChecked(true);
     nickname_edit->clear();
     name_edit->clear();
     foreach (QAbstractButton *button, gender_buttons->buttons())
@@ -562,11 +568,13 @@ void GeneralOverview::askChangeSkin() {
     ui->illustratorLineEdit->setText(getIllustratorInfo(general_name));
 }
 
-void GeneralOverview::startSearch(const QString &nickname, const QString &name, const QStringList &genders,
+void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
                                   const QStringList &kingdoms, int lower, int upper, const QStringList &packages) {
     QList<const General *> generals;
     foreach (const General *general, all_generals) {
         QString general_name = general->objectName();
+		if (!include_hidden && Sanguosha->isGeneralHidden(general_name))
+			continue;
         if (!nickname.isEmpty()) {
             QString v_nickname = nickname;
             v_nickname.replace("?", ".");

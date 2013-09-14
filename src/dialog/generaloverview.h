@@ -23,6 +23,7 @@ public:
     GeneralSearch(GeneralOverview *parent);
 
 private:
+	QCheckBox *include_hidden_checkbox;
     QLabel *nickname_label;
     QLineEdit *nickname_edit;
     QLabel *name_label;
@@ -35,7 +36,7 @@ private:
     QButtonGroup *package_buttons;
 
 signals:
-    void search(const QString &nickname, const QString &name, const QStringList &genders,
+    void search(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
                 const QStringList &kingdoms, int lower, int upper, const QStringList &packages);
 
 protected:
@@ -75,7 +76,7 @@ private:
     QString getIllustratorInfo(const QString &general_name);
 
 public slots:
-	void startSearch(const QString &nickname, const QString &name, const QStringList &genders,
+	void startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
 					 const QStringList &kingdoms, int lower, int upper, const QStringList &packages);
 
 private slots:
