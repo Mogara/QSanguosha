@@ -1065,12 +1065,13 @@ public:
                     if (!skip) {
                         player->skip(Player::Play);
                         skip = true;
-                    } else {
-                        room->setFixedDistance(player, fuhuanghou, 1);
-                        QVariantList zhuikonglist = player->tag[objectName()].toList();
-                        zhuikonglist.append(QVariant::fromValue((PlayerStar)fuhuanghou));
-                        player->tag[objectName()] = QVariant::fromValue(zhuikonglist);
-                    }
+                    } 
+                } 
+                else {
+                    room->setFixedDistance(player, fuhuanghou, 1);
+                    QVariantList zhuikonglist = player->tag[objectName()].toList();
+                    zhuikonglist.append(QVariant::fromValue((PlayerStar)fuhuanghou));
+                    player->tag[objectName()] = QVariant::fromValue(zhuikonglist);
                 }
             }
         }
