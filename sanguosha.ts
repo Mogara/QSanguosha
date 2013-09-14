@@ -2002,7 +2002,7 @@
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="105"/>
         <source>Select kingdoms. Every kingdom meets the condition if none is selected.</source>
-        <translation>选择武将势力，若未选择任何性别则所有性别均符合条件</translation>
+        <translation>选择武将势力，若未选择任何势力则所有势力均符合条件</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="131"/>
