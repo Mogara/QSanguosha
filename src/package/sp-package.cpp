@@ -1208,15 +1208,14 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         ServerPlayer *xiahoushi = room->findPlayerBySkillName(objectName());
         if (!xiahoushi || !xiahoushi->tag["XiaodeSkill"].toString().isEmpty()) return false;
-        DeathStruct death = data.value<DeathStruct>();
         QStringList skill_list;
-        skill_list.append(addSkillList(death.who->getGeneral()));
-        skill_list.append(addSkillList(death.who->getGeneral2()));
+        skill_list.append(addSkillList(player->getGeneral()));
+        skill_list.append(addSkillList(player->getGeneral2()));
         if (skill_list.isEmpty()) return false;
-        if (!room->askForSkillInvoke(xiahoushi, objectName(), skill_list.join("+"))) return false;
+        if (!room->askForSkillInvoke(xiahoushi, objectName(), QVariant::fromValue(skill_list))) return false;
         QString skill_name = room->askForChoice(xiahoushi, objectName(), skill_list.join("+"));
         xiahoushi->tag["XiaodeSkill"] = skill_name;
         room->acquireSkill(xiahoushi, skill_name);
