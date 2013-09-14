@@ -1181,12 +1181,12 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 
 const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
                              const QVariant &data, const QString &skill_name) {
-    return askForCard(player, pattern, prompt, data, Card::MethodDiscard, NULL, false, skill_name);
+    return askForCard(player, pattern, prompt, data, Card::MethodDiscard, NULL, false, skill_name, false);
 }
 
 const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
                              const QVariant &data, Card::HandlingMethod method, ServerPlayer *to,
-                             bool isRetrial, const QString &skill_name) {
+                             bool isRetrial, const QString &skill_name, bool isProvision) {
     // @@Compatibility.
     // ===================================================
     TriggerEvent triggerEvent = (TriggerEvent)int(method);
@@ -1305,7 +1305,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         } else if (method != Card::MethodNone && !isRetrial) {
             CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->objectName());
             reason.m_skillName = card->getSkillName();
-            moveCardTo(card, player, NULL, Player::DiscardPile, reason);
+            moveCardTo(card, player, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
         }
 
         if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {

@@ -58,7 +58,7 @@ public:
         QVariant tohelp = QVariant::fromValue((PlayerStar)caocao);
         foreach (ServerPlayer *liege, lieges) {
             const Card *jink = room->askForCard(liege, "jink", "@hujia-jink:" + caocao->objectName(),
-                                                tohelp, Card::MethodResponse, caocao);
+                                                tohelp, Card::MethodResponse, caocao, false, QString(), true);
             if (jink) {
                 room->provide(jink);
                 return true;
@@ -496,7 +496,8 @@ public:
             room->broadcastSkillInvoke(objectName(), getEffectIndex(liubei, NULL));
 
         foreach (ServerPlayer *liege, lieges) {
-            const Card *slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName(), QVariant(), Card::MethodResponse, liubei);
+            const Card *slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName(),
+												 QVariant(), Card::MethodResponse, liubei, false, QString(), true);
             if (slash) {
                 room->provide(slash);
                 return true;
