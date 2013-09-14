@@ -1275,7 +1275,6 @@ NostalStandardPackage::NostalStandardPackage()
     General *huangyueying = new General(this, "nos_huangyueying", "shu", 3, false);
     huangyueying->addSkill(new NosJizhi);
     huangyueying->addSkill(new NosQicai);
-    huangyueying->addSkill(new SPConvertSkill("nos_huangyueying", "heg_huangyueying+tw_huangyueying"));
 
     General *nos_diaochan = new General(this, "nos_diaochan", "qun", 3, false);
     nos_diaochan->addSkill(new NosLijian);

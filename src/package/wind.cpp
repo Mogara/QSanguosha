@@ -1148,9 +1148,11 @@ public:
                     room->removePlayerMark(player, "Qingcheng" + skill_name);
                 player->tag["ChanyuanSkills"] = QVariant();
             }
+			room->removePlayerMark(player, "@chanyuan");
             return false;
         } else if (triggerEvent == EventAcquireSkill) {
             if (data.toString() != objectName()) return false;
+			room->addPlayerMark(player, "@chanyuan");
         }
 
         if (!TriggerSkill::triggerable(player)) return false;
@@ -1204,7 +1206,6 @@ WindPackage::WindPackage()
     xiaoqiao->addSkill(new TianxiangDraw);
     xiaoqiao->addSkill(new Hongyan);
     related_skills.insertMulti("tianxiang", "#tianxiang");
-    xiaoqiao->addSkill(new SPConvertSkill("xiaoqiao", "wz_xiaoqiao+heg_xiaoqiao"));
 
     General *zhoutai = new General(this, "zhoutai", "wu"); // WU 013
     zhoutai->addSkill(new Buqu);

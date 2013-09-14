@@ -953,7 +953,7 @@ void Select3v3GeneralDialog::fillTabWidget() {
 void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pack) {
     QList<const General *> generals = pack->findChildren<const General *>();
     foreach (const General *general, generals) {
-        if (general->isHidden()) continue;
+        if (Sanguosha->isGeneralHidden(general->objectName())) continue;
 
         QListWidgetItem *item = new QListWidgetItem(list);
         item->setData(Qt::UserRole, general->objectName());

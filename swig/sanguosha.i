@@ -42,7 +42,7 @@ public:
     bool isHidden() const;
     bool isTotallyHidden() const;
 
-    enum Gender { SexLess, Male, Female, Neuter };
+    enum Gender { Sexless, Male, Female, Neuter };
     Gender getGender() const;
     void setGender(Gender gender);
 
@@ -83,7 +83,6 @@ public:
     bool isWounded() const;
     General::Gender getGender() const;
     virtual void setGender(General::Gender gender);
-    bool isSexLess() const;
     bool isMale() const;
     bool isFemale() const;
     bool isNeuter() const;
@@ -850,6 +849,7 @@ public:
 
 	Package(const char *name, Type pack_type = GeneralPack);
     void insertRelatedSkills(const char *main_skill, const char *related_skill);
+	void insertConvertPairs(const char *from, const char *to);
 };
 
 class Engine: public QObject {
@@ -922,6 +922,9 @@ public:
 
     QString getCurrentCardUsePattern();
     CardUseStruct::CardUseReason getCurrentCardUseReason();
+
+	QString findConvertFrom(const char *general_name) const;
+	bool isGeneralHidden(const char *general_name) const;
 };
 
 extern Engine *Sanguosha;
@@ -1156,9 +1159,8 @@ public:
                          bool handcard_visible = false, Card::HandlingMethod method = Card::MethodNone);
     const Card *askForCard(ServerPlayer *player, const char *pattern,
                            const char *prompt, const QVariant &data, const char *skill_name);
-    const Card *askForCard(ServerPlayer *player, const char *pattern,
-                           const char *prompt, const QVariant &data = QVariant(),
-                           Card::HandlingMethod method = Card::MethodDiscard, ServerPlayer *to = NULL, bool isRetrial = false, const char *skill_name = NULL);
+    const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, const QVariant &data = QVariant(),
+                           Card::HandlingMethod method = Card::MethodDiscard, ServerPlayer *to = NULL, bool isRetrial = false, const char *skill_name = NULL, bool isProvision = false);
     const Card *askForUseCard(ServerPlayer *player, const char *pattern, const char *prompt, int notice_index = -1, Card::HandlingMethod method = Card::MethodUse, bool addHistory = true);
     const Card *askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const char *prompt,
 									bool distance_limit = true, bool disable_extra = false, bool addHistory = false);

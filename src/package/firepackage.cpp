@@ -534,7 +534,6 @@ FirePackage::FirePackage()
     General *pangde = new General(this, "pangde", "qun"); // QUN 008
     pangde->addSkill("mashu");
     pangde->addSkill(new Mengjin);
-    pangde->addSkill(new SPConvertSkill("pangde", "sp_pangde"));
 
     addMetaObject<QuhuCard>();
     addMetaObject<QiangxiCard>();

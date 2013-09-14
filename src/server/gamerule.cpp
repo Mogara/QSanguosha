@@ -1086,7 +1086,7 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *pl
                 room->setTag("SkipNormalDeathProcess", true);
             foreach (ServerPlayer *sp, room->getAlivePlayers()) {
                 room->setPlayerProperty(sp, "general", "anjiang");
-                sp->setGender(General::SexLess);
+                sp->setGender(General::Sexless);
                 room->setPlayerProperty(sp, "kingdom", "god");
 
                 LogMessage log;
@@ -1095,6 +1095,7 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *pl
 
                 if (Config.Enable2ndGeneral) {
                     room->setPlayerProperty(sp, "general2", "anjiang");
+					log.type = "#BasaraGeneralChosenDual";
                     log.arg2 = room->getTag(sp->objectName()).toStringList().at(1);
                 }
 

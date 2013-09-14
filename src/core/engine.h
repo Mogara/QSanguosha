@@ -117,13 +117,16 @@ public:
     QString getCurrentCardUsePattern();
     CardUseStruct::CardUseReason getCurrentCardUseReason();
 
+	QString findConvertFrom(const QString &general_name) const;
+	bool isGeneralHidden(const QString &general_name) const;
+
 private:
     void _loadMiniScenarios();
     void _loadModScenarios();
 
     QMutex m_mutex;
     QHash<QString, QString> translations;
-    QHash<QString, const General *> generals, hidden_generals;
+    QHash<QString, const General *> generals;
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, QString> className2objectName;
     QHash<QString, const Skill *> skills;
@@ -140,7 +143,7 @@ private:
 	QList<const TriggerSkill *> global_trigger_skills;
 
     QList<Card *> cards;
-    QStringList lord_list, nonlord_list;
+    QStringList lord_list;
     QSet<QString> ban_package;
     QHash<QString, Scenario *> m_scenarios;
     QHash<QString, Scenario *> m_miniScenes;
@@ -156,6 +159,8 @@ private:
     QHash<QString, const LuaWeapon*> luaWeapons;
     QHash<QString, QString> luaArmor_className2objectName;
     QHash<QString, const LuaArmor *> luaArmors;
+
+	QMultiMap<QString, QString> sp_convert_pairs;
 };
 
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key) {

@@ -73,6 +73,14 @@ Engine::Engine()
     lua = CreateLuaState();
     DoLuaScript(lua, "lua/config.lua");
 
+	QStringList stringlist_sp_convert = GetConfigFromLuaState(lua, "convert_pairs").toStringList();
+	foreach (QString cv_pair, stringlist_sp_convert) {
+		QStringList pairs = cv_pair.split("->");
+		QStringList cv_to = pairs.at(1).split("|");
+		foreach (QString to, cv_to)
+			sp_convert_pairs.insertMulti(pairs.at(0), to);
+	}
+
     QStringList package_names = GetConfigFromLuaState(lua, "package_names").toStringList();
     foreach (QString name, package_names)
         addPackage(name);
@@ -191,6 +199,9 @@ void Engine::addPackage(Package *package) {
         return;
 
     package->setParent(this);
+	sp_convert_pairs.unite(package->getConvertPairs());
+	patterns.unite(package->getPatterns());
+	related_skills.unite(package->getRelatedSkills());
 
     QList<Card *> all_cards = package->findChildren<Card *>();
     foreach (Card *card, all_cards) {
@@ -238,27 +249,20 @@ void Engine::addPackage(Package *package) {
             foreach (const Skill *related, getRelatedSkills(skill_name))
                 general->addSkill(related->objectName());
         }
-
-        if ((general->isHidden() && !Config.value("EnableHidden", false).toBool())
-            || (general->objectName() == "shenlvbu1" || general->objectName() == "shenlvbu2")) {
-            hidden_generals.insert(general->objectName(), general);
-            continue;
-        }
-
-        if (general->isLord())
-            lord_list << general->objectName();
-        else
-            nonlord_list << general->objectName();
-
+		if (sp_convert_pairs.keys().contains(general->objectName())) {
+			QStringList to_list(sp_convert_pairs.values(general->objectName()));
+			const Skill *skill = new SPConvertSkill(general->objectName(), to_list.join("+"));
+			addSkills(QList<const Skill *>() << skill);
+			general->addSkill(skill->objectName());
+		}
         generals.insert(general->objectName(), general);
+		if (isGeneralHidden(general->objectName())) continue;
+		if (general->isLord()) lord_list << general->objectName();
     }
 
     QList<const QMetaObject *> metas = package->getMetaObjects();
     foreach (const QMetaObject *meta, metas)
         metaobjects.insert(meta->className(), meta);
-
-    patterns.unite(package->getPatterns());
-    related_skills.unite(package->getRelatedSkills());
 }
 
 void Engine::addBanPackage(const QString &package_name) {
@@ -334,10 +338,7 @@ const Skill *Engine::getMainSkill(const QString &skill_name) const{
 }
 
 const General *Engine::getGeneral(const QString &name) const{
-    if (generals.contains(name))
-        return generals.value(name);
-    else
-        return hidden_generals.value(name, NULL);
+    return generals.value(name, NULL);
 }
 
 int Engine::getGeneralCount(bool include_banned) const{
@@ -421,6 +422,23 @@ QString Engine::getCurrentCardUsePattern() {
 
 CardUseStruct::CardUseReason Engine::getCurrentCardUseReason() {
     return currentRoomState()->getCurrentCardUseReason();
+}
+
+QString Engine::findConvertFrom(const QString &general_name) const{
+	foreach (QString general, sp_convert_pairs.keys()) {
+		if (sp_convert_pairs.values(general).contains(general_name))
+			return general;
+	}
+	return QString();
+}
+
+bool Engine::isGeneralHidden(const QString &general_name) const{
+	const General *general = getGeneral(general_name);
+	if (!general) return false;
+	if (!general->isHidden())
+		return Config.ExtraHiddenGenerals.contains(general_name);
+	else
+		return !Config.RemovedHiddenGenerals.contains(general_name);
 }
 
 WrappedCard *Engine::getWrappedCard(int cardId) {
@@ -819,7 +837,8 @@ QStringList Engine::getRandomLords() const{
     }
 
     QStringList nonlord_list;
-    foreach (QString nonlord, this->nonlord_list) {
+    foreach (QString nonlord, generals.keys()) {
+		if (isGeneralHidden(nonlord) || lord_list.contains(nonlord)) continue;
         const General *general = generals.value(nonlord);
         if (getBanPackages().contains(general->getPackage()))
             continue;
@@ -856,14 +875,15 @@ QStringList Engine::getLimitedGeneralNames() const{
         }
 
         foreach (const General *general, hulao_generals) {
-            if (general->isTotallyHidden())
+            if (isGeneralHidden(general->objectName()) || general->isTotallyHidden()
+				|| general->objectName() == "shenlvbu1" || general->objectName() == "shenlvbu2")
                 continue;
             general_names << general->objectName();
         }
     } else {
         while (itor.hasNext()) {
             itor.next();
-            if (!getBanPackages().contains(itor.value()->getPackage()))
+            if (!isGeneralHidden(itor.value()->objectName()) && !getBanPackages().contains(itor.value()->getPackage()))
                 general_names << itor.key();
         }
     }

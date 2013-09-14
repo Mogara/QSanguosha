@@ -7,7 +7,7 @@
 
 Player::Player(QObject *parent)
     : QObject(parent), owner(false), ready(false), general(NULL), general2(NULL),
-      m_gender(General::SexLess), hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
+      m_gender(General::Sexless), hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
       phase(NotActive),
       weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
       face_up(true), chained(false)
@@ -85,10 +85,6 @@ General::Gender Player::getGender() const{
 
 void Player::setGender(General::Gender gender) {
     m_gender = gender;
-}
-
-bool Player::isSexLess() const{
-    return m_gender == General::SexLess;
 }
 
 bool Player::isMale() const{

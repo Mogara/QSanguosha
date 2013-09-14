@@ -233,7 +233,7 @@ public:
             ServerPlayer *guanping = room->findPlayerBySkillName(objectName());
             if (guanping && guanping->canDiscard(guanping, "he")
                 && room->askForCard(guanping, "..", "@longyin", data, objectName())) {
-				room->broadcastSkillInvoke(objectName());
+				room->broadcastSkillInvoke(objectName(), use.card->isRed() ? 2 : 1);
                 if (use.m_addHistory)
                     room->addPlayerHistory(player, use.card->getClassName(), -1);
                 if (use.card->isRed())

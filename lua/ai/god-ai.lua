@@ -1,33 +1,3 @@
-wushen_skill={}
-wushen_skill.name="wushen"
-table.insert(sgs.ai_skills,wushen_skill)
-wushen_skill.getTurnUseCard=function(self)
-	local cards = self.player:getCards("he")
-	cards=sgs.QList2Table(cards)
-
-	local red_card
-	self:sortByUseValue(cards,true)
-
-	for _,card in ipairs(cards)  do
-		if card:getSuit() == sgs.Card_Heart then
-			red_card = card
-			break
-		end
-	end
-
-	if red_card then
-		local suit = red_card:getSuitString()
-		local number = red_card:getNumberString()
-		local card_id = red_card:getEffectiveId()
-		local card_str = ("slash:wushen[%s:%s]=%d"):format(suit, number, card_id)
-		local slash = sgs.Card_Parse(card_str)
-
-		assert(slash)
-
-		return slash
-	end
-end
-
 sgs.ai_filterskill_filter.wushen = function(card, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()

@@ -320,7 +320,7 @@ public:
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(),
                            Card::HandlingMethod method = Card::MethodDiscard, ServerPlayer *to = NULL, bool isRetrial = false,
-                           const QString &skill_name = QString());
+                           const QString &skill_name = QString(), bool isProvision = false);
     const Card *askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index = -1,
                        Card::HandlingMethod method = Card::MethodUse, bool addHistory = true);
     const Card *askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt,

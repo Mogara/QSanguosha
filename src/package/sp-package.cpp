@@ -1009,7 +1009,7 @@ public:
                 const Card *card = room->askForCard(player, pattern, "@xingwu", QVariant(), Card::MethodNone);
                 if (card) {
                     room->notifySkillInvoked(player, objectName());
-                    room->broadcastSkillInvoke(objectName());
+                    room->broadcastSkillInvoke(objectName(), 1);
 
                     LogMessage log;
                     log.type = "#InvokeSkill";
@@ -1034,6 +1034,7 @@ public:
                 if (males.isEmpty()) return false;
 
                 ServerPlayer *target = room->askForPlayerChosen(player, males, objectName(), "@xingwu-choose");
+				room->broadcastSkillInvoke(objectName(), 2);
                 room->damage(DamageStruct(objectName(), player, target, 2));
 
                 if (!player->isAlive()) return false;
@@ -1857,7 +1858,6 @@ SPPackage::SPPackage()
     General *yuanshu = new General(this, "yuanshu", "qun"); // SP 004
     yuanshu->addSkill(new Yongsi);
     yuanshu->addSkill(new Weidi);
-    yuanshu->addSkill(new SPConvertSkill("yuanshu", "tw_yuanshu"));
 
     General *sp_sunshangxiang = new General(this, "sp_sunshangxiang", "shu", 3, false, true); // SP 005
     sp_sunshangxiang->addSkill("jieyin");
@@ -1952,7 +1952,6 @@ SPPackage::SPPackage()
 
     General *sp_yuejin = new General(this, "yuejin", "wei"); // SP 024
     sp_yuejin->addSkill("xiaoguo");
-    sp_yuejin->addSkill(new SPConvertSkill("yuejin", "heg_yuejin"));
 
     addMetaObject<WeidiCard>();
     addMetaObject<YuanhuCard>();
@@ -1970,7 +1969,6 @@ OLPackage::OLPackage()
     General *zhugeke = new General(this, "zhugeke", "wu", 3); // OL 002
     zhugeke->addSkill(new Aocai);
     zhugeke->addSkill(new Duwu);
-    zhugeke->addSkill(new SPConvertSkill("zhugeke", "diy_zhugeke"));
 
     General *zhangbao = new General(this, "zhangbao", "qun", 3);
     zhangbao->addSkill(new Zhoufu);

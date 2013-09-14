@@ -311,7 +311,6 @@ SPConvertSkill::SPConvertSkill(const QString &from, const QString &to)
 bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
     if (target == NULL) return false;
     if (!Config.value("EnableSPConvert", true).toBool()) return false;
-    if (Config.value("EnableHidden", false).toBool()) return false;
     if (Config.EnableHegemony) return false;
     if (!isNormalGameMode(Config.GameMode)) return false;
     bool available = false;
@@ -328,16 +327,18 @@ bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
 }
 
 void SPConvertSkill::onGameStart(ServerPlayer *player) const{
-    QVariant data = "convert";
+    Room *room = player->getRoom();
+	QStringList choicelist;
+	foreach (QString to_gen, to_list) {
+		const General *gen = Sanguosha->getGeneral(to_gen);
+		if (gen && !Config.value("Banlist/Roles", "").toStringList().contains(to_gen)
+			&& !Sanguosha->getBanPackages().contains(gen->getPackage()))
+			choicelist << to_gen;
+	}
+	QString data = choicelist.join("\\,\\");
+	if (choicelist.length() >= 2)
+		data.replace("\\,\\" + choicelist.last(), "\\or\\" + choicelist.last());
     if (player->askForSkillInvoke(objectName(), data)) {
-        Room *room = player->getRoom();
-        QStringList choicelist;
-        foreach (QString to_gen, to_list) {
-            const General *gen = Sanguosha->getGeneral(to_gen);
-            if (gen && !Config.value("Banlist/Roles", "").toStringList().contains(to_gen)
-                && !Sanguosha->getBanPackages().contains(gen->getPackage()))
-                choicelist << to_gen;
-        }
         QString to_cv;
         AI *ai = player->getAI();
         if (ai)
@@ -359,14 +360,6 @@ void SPConvertSkill::onGameStart(ServerPlayer *player) const{
         if (!isSecondaryHero && kingdom != "god" && kingdom != player->getKingdom())
             room->setPlayerProperty(player, "kingdom", kingdom);
     }
-}
-
-QString SPConvertSkill::getFromName() const{
-    return from;
-}
-
-QStringList SPConvertSkill::getToName() const{
-    return to_list;
 }
 
 int MaxCardsSkill::getExtra(const Player *) const{
