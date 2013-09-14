@@ -1009,7 +1009,7 @@ public:
                 const Card *card = room->askForCard(player, pattern, "@xingwu", QVariant(), Card::MethodNone);
                 if (card) {
                     room->notifySkillInvoked(player, objectName());
-                    room->broadcastSkillInvoke(objectName());
+                    room->broadcastSkillInvoke(objectName(), 1);
 
                     LogMessage log;
                     log.type = "#InvokeSkill";
@@ -1034,6 +1034,7 @@ public:
                 if (males.isEmpty()) return false;
 
                 ServerPlayer *target = room->askForPlayerChosen(player, males, objectName(), "@xingwu-choose");
+				room->broadcastSkillInvoke(objectName(), 2);
                 room->damage(DamageStruct(objectName(), player, target, 2));
 
                 if (!player->isAlive()) return false;
