@@ -69,7 +69,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals) {
         nickname_item->setData(Qt::UserRole, general->objectName());
         nickname_item->setTextAlignment(Qt::AlignCenter);
 
-        if (general->isHidden()) {
+        if (Sanguosha->isGeneralHidden(general->objectName())) {
             nickname_item->setBackgroundColor(Qt::gray);
 			nickname_item->setToolTip(tr("This general is hidden"));
 		}
@@ -82,7 +82,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals) {
             name_item->setTextAlignment(Qt::AlignCenter);
         }
 
-        if (general->isHidden()) {
+        if (Sanguosha->isGeneralHidden(general->objectName())) {
             name_item->setBackgroundColor(Qt::gray);
 			name_item->setToolTip(tr("This general is hidden"));
 		}

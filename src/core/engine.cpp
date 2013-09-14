@@ -253,12 +253,6 @@ void Engine::addPackage(Package *package) {
 			general->addSkill(skill->objectName());
 		}
 
-        if ((general->isHidden() && !Config.value("EnableHidden", false).toBool())
-            || (general->objectName() == "shenlvbu1" || general->objectName() == "shenlvbu2")) {
-            hidden_generals.insert(general->objectName(), general);
-            continue;
-        }
-
         if (general->isLord())
             lord_list << general->objectName();
         else
@@ -348,10 +342,7 @@ const Skill *Engine::getMainSkill(const QString &skill_name) const{
 }
 
 const General *Engine::getGeneral(const QString &name) const{
-    if (generals.contains(name))
-        return generals.value(name);
-    else
-        return hidden_generals.value(name, NULL);
+    return generals.value(name, NULL);
 }
 
 int Engine::getGeneralCount(bool include_banned) const{
@@ -443,6 +434,15 @@ QString Engine::findConvertFrom(const QString &general_name) const{
 			return general;
 	}
 	return QString();
+}
+
+bool Engine::isGeneralHidden(const QString &general_name) const{
+	const General *general = getGeneral(general_name);
+	if (!general) return false;
+	if (!general->isHidden())
+		return Config.ExtraHiddenGenerals.contains(general_name);
+	else
+		return !Config.RemovedHiddenGenerals.contains(general_name);
 }
 
 WrappedCard *Engine::getWrappedCard(int cardId) {
@@ -878,14 +878,15 @@ QStringList Engine::getLimitedGeneralNames() const{
         }
 
         foreach (const General *general, hulao_generals) {
-            if (general->isTotallyHidden())
+            if (isGeneralHidden(general->objectName()) || general->isTotallyHidden()
+				|| general->objectName() == "shenlvbu1" || general->objectName() == "shenlvbu2")
                 continue;
             general_names << general->objectName();
         }
     } else {
         while (itor.hasNext()) {
             itor.next();
-            if (!getBanPackages().contains(itor.value()->getPackage()))
+            if (!isGeneralHidden(itor.value()->objectName()) && !getBanPackages().contains(itor.value()->getPackage()))
                 general_names << itor.key();
         }
     }

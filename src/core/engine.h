@@ -118,6 +118,7 @@ public:
     CardUseStruct::CardUseReason getCurrentCardUseReason();
 
 	QString findConvertFrom(const QString &general_name) const;
+	bool isGeneralHidden(const QString &general_name) const;
 
 private:
     void _loadMiniScenarios();
@@ -125,7 +126,7 @@ private:
 
     QMutex m_mutex;
     QHash<QString, QString> translations;
-    QHash<QString, const General *> generals, hidden_generals;
+    QHash<QString, const General *> generals;
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, QString> className2objectName;
     QHash<QString, const Skill *> skills;

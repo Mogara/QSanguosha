@@ -924,6 +924,7 @@ public:
     CardUseStruct::CardUseReason getCurrentCardUseReason();
 
 	QString findConvertFrom(const char *general_name) const;
+	bool isGeneralHidden(const char *general_name) const;
 };
 
 extern Engine *Sanguosha;
