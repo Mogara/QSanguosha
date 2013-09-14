@@ -1409,7 +1409,6 @@ GodPackage::GodPackage()
     shenlvbu->addSkill(new Wuqian);
     shenlvbu->addSkill(new Shenfen);
     related_skills.insertMulti("kuangbao", "#@wrath-2");
-    shenlvbu->addSkill(new SPConvertSkill("shenlvbu", "sp_shenlvbu"));
 
     General *shenzhaoyun = new General(this, "shenzhaoyun", "god", 2); // LE 007
     shenzhaoyun->addSkill(new JuejingKeep);

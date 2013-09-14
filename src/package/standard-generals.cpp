@@ -1432,7 +1432,6 @@ void StandardPackage::addGenerals() {
 
     General *zhangliao = new General(this, "zhangliao", "wei"); // WEI 004
     zhangliao->addSkill(new Tuxi);
-    zhangliao->addSkill(new SPConvertSkill("zhangliao", "tw_zhangliao"));
 
     General *xuchu = new General(this, "xuchu", "wei"); // WEI 005
     xuchu->addSkill(new Luoyi);
@@ -1442,12 +1441,10 @@ void StandardPackage::addGenerals() {
     General *guojia = new General(this, "guojia", "wei", 3); // WEI 006
     guojia->addSkill(new Tiandu);
     guojia->addSkill(new Yiji);
-    guojia->addSkill(new SPConvertSkill("guojia", "tw_guojia"));
 
     General *zhenji = new General(this, "zhenji", "wei", 3, false); // WEI 007
     zhenji->addSkill(new Qingguo);
     zhenji->addSkill(new Luoshen);
-    zhenji->addSkill(new SPConvertSkill("zhenji", "sp_zhenji+heg_zhenji+tw_zhenji"));
 
     // Shu
     General *liubei = new General(this, "liubei$", "shu"); // SHU 001
@@ -1465,16 +1462,13 @@ void StandardPackage::addGenerals() {
     zhugeliang->addSkill(new Kongcheng);
     zhugeliang->addSkill(new KongchengEffect);
     related_skills.insertMulti("kongcheng", "#kongcheng-effect");
-    zhugeliang->addSkill(new SPConvertSkill("zhugeliang", "heg_zhugeliang+tw_zhugeliang"));
 
     General *zhaoyun = new General(this, "zhaoyun", "shu"); // SHU 005
     zhaoyun->addSkill(new Longdan);
-    zhaoyun->addSkill(new SPConvertSkill("zhaoyun", "tw_zhaoyun"));
 
     General *machao = new General(this, "machao", "shu"); // SHU 006
     machao->addSkill(new Tieji);
     machao->addSkill(new Mashu);
-    machao->addSkill(new SPConvertSkill("machao", "sp_machao+tw_machao"));
 
     General *huangyueying = new General(this, "huangyueying", "shu", 3, false); // SHU 007
     huangyueying->addSkill(new Jizhi);
@@ -1489,36 +1483,30 @@ void StandardPackage::addGenerals() {
 
     General *ganning = new General(this, "ganning", "wu"); // WU 002
     ganning->addSkill(new Qixi);
-    ganning->addSkill(new SPConvertSkill("ganning", "tw_ganning"));
 
     General *lvmeng = new General(this, "lvmeng", "wu"); // WU 003
     lvmeng->addSkill(new Keji);
 
     General *huanggai = new General(this, "huanggai", "wu"); // WU 004
     huanggai->addSkill(new Kurou);
-    huanggai->addSkill(new SPConvertSkill("huanggai", "tw_huanggai"));
 
     General *zhouyu = new General(this, "zhouyu", "wu", 3); // WU 005
     zhouyu->addSkill(new Yingzi);
     zhouyu->addSkill(new Fanjian);
-    zhouyu->addSkill(new SPConvertSkill("zhouyu", "heg_zhouyu+sp_heg_zhouyu"));
 
     General *daqiao = new General(this, "daqiao", "wu", 3, false); // WU 006
     daqiao->addSkill(new Guose);
     daqiao->addSkill(new Liuli);
-    daqiao->addSkill(new SPConvertSkill("daqiao", "wz_daqiao+tw_daqiao"));
 
     General *luxun = new General(this, "luxun", "wu", 3); // WU 007
     luxun->addSkill(new Qianxun);
     luxun->addSkill(new Lianying);
     luxun->addSkill(new LianyingForZeroMaxCards);
     related_skills.insertMulti("lianying", "#lianying-for-zero-maxcards");
-    luxun->addSkill(new SPConvertSkill("luxun", "tw_luxun"));
 
     General *sunshangxiang = new General(this, "sunshangxiang", "wu", 3, false); // WU 008
     sunshangxiang->addSkill(new Jieyin);
     sunshangxiang->addSkill(new Xiaoji);
-    sunshangxiang->addSkill(new SPConvertSkill("sunshangxiang", "sp_sunshangxiang"));
 
     // Qun
     General *huatuo = new General(this, "huatuo", "qun", 3); // QUN 001
@@ -1527,12 +1515,10 @@ void StandardPackage::addGenerals() {
 
     General *lvbu = new General(this, "lvbu", "qun"); // QUN 002
     lvbu->addSkill(new Wushuang);
-    lvbu->addSkill(new SPConvertSkill("lvbu", "heg_lvbu+tw_lvbu"));
 
     General *diaochan = new General(this, "diaochan", "qun", 3, false); // QUN 003
     diaochan->addSkill(new Lijian);
     diaochan->addSkill(new Biyue);
-    diaochan->addSkill(new SPConvertSkill("diaochan", "sp_diaochan+heg_diaochan+tw_diaochan"));
 
     General *st_yuanshu = new General(this, "st_yuanshu", "qun", 4);
     st_yuanshu->addSkill(new Wangzun);

@@ -1194,9 +1194,21 @@ public:
         foreach (QVariant huashen, huashens)
             huashen_set << huashen.toString();
         foreach (ServerPlayer *player, room->getAlivePlayers()) {
-            room_set << player->getGeneralName();
-            if (player->getGeneral2())
-                room_set << player->getGeneral2Name();
+            QString name = player->getGeneralName();
+			if (player->getGeneral()->isHidden()) {
+				QString fname = Sanguosha->findConvertFrom(name);
+				if (!fname.isEmpty()) name = fname;
+			}
+			room_set << name;
+
+			if (!player->getGeneral2()) continue;
+
+			name = player->getGeneral2Name();
+			if (player->getGeneral()->isHidden()) {
+				QString fname = Sanguosha->findConvertFrom(name);
+				if (!fname.isEmpty()) name = fname;
+			}
+			room_set << name;
         }
 
         static QSet<QString> banned;
@@ -1442,7 +1454,6 @@ MountainPackage::MountainPackage()
     General *caiwenji = new General(this, "caiwenji", "qun", 3, false); // QUN 012
     caiwenji->addSkill(new Beige);
     caiwenji->addSkill(new Duanchang);
-    caiwenji->addSkill(new SPConvertSkill("caiwenji", "sp_caiwenji"));
 
     addMetaObject<QiaobianCard>();
     addMetaObject<TiaoxinCard>();

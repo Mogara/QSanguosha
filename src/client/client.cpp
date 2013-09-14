@@ -835,6 +835,8 @@ void Client::askForSkillInvoke(const Json::Value &arg) {
 		QString name = getPlayerName(data.split(":").last());
 		text = tr("Do you want to invoke skill [%1] to %2 ?").arg(Sanguosha->translate(skill_name)).arg(name);
 		prompt_doc->setHtml(text);
+	} else if (skill_name.startsWith("cv_")) {
+		setPromptList(QStringList() << "@sp_convert" << QString() << QString() << data);
     } else {
         QStringList texts = data.split(":");
         text = QString("%1:%2").arg(skill_name).arg(texts.first());

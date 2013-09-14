@@ -180,23 +180,28 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *weiwudi) const{
-        if(weiwudi->getPhase() != Player::Finish)
+        if (weiwudi->getPhase() != Player::Finish)
             return false;
 
         Room *room = weiwudi->getRoom();
-        /*if(!room->askForSkillInvoke(weiwudi, objectName()))
-            return false;*/
+        if (!room->askForSkillInvoke(weiwudi, objectName()))
+            return false;
 
-        QString choice = room->askForChoice(weiwudi, objectName(), "cancel+modify+obtain");
+        QString choice = room->askForChoice(weiwudi, objectName(), "modify+obtain");
 
-        if(choice == "modify"){
-            room->notifySkillInvoked(weiwudi, objectName());
+        int index = qrand() % 2;
+
+        if (choice == "modify") {
             PlayerStar to_modify = room->askForPlayerChosen(weiwudi, room->getOtherPlayers(weiwudi), objectName());
             room->setTag("Guixin2Modify", QVariant::fromValue(to_modify));
-            QString kingdom = room->askForChoice(weiwudi, objectName(), "wei+shu+wu+qun");
+            QStringList kingdomList = Sanguosha->getKingdoms();
+            kingdomList.removeOne("god");
+            QString kingdom = room->askForChoice(weiwudi, objectName(), kingdomList.join("+"));
             room->removeTag("Guixin2Modify");
             QString old_kingdom = to_modify->getKingdom();
             room->setPlayerProperty(to_modify, "kingdom", kingdom);
+
+            room->broadcastSkillInvoke(objectName(), index);
 
             LogMessage log;
             log.type = "#ChangeKingdom";
@@ -205,41 +210,44 @@ public:
             log.arg = old_kingdom;
             log.arg2 = kingdom;
             room->sendLog(log);
-
-        }else if(choice == "obtain"){
-            room->notifySkillInvoked(weiwudi, objectName());
+        } else if (choice == "obtain") {
+            room->broadcastSkillInvoke(objectName(), index + 2);
             QStringList lords = Sanguosha->getLords();
-            QList<ServerPlayer *> players = room->getOtherPlayers(weiwudi);
-            foreach(ServerPlayer *player, players){
-                lords.removeOne(player->getGeneralName());
+            foreach (ServerPlayer *player, room->getAlivePlayers()) {
+                QString name = player->getGeneralName();
+                if (player->getGeneral()->isHidden()) {
+                    QString fname = Sanguosha->findConvertFrom(name);
+                    if (!fname.isEmpty()) name = fname;
+                }
+                lords.removeOne(name);
+
+                if (!player->getGeneral2()) continue;
+
+                name = player->getGeneral2Name();
+                if (player->getGeneral()->isHidden()) {
+                    QString fname = Sanguosha->findConvertFrom(name);
+                    if (!fname.isEmpty()) name = fname;
+                }
+                lords.removeOne(name);
             }
 
             QStringList lord_skills;
-            foreach(QString lord, lords){
+            foreach (QString lord, lords) {
                 const General *general = Sanguosha->getGeneral(lord);
                 QList<const Skill *> skills = general->findChildren<const Skill *>();
-                foreach(const Skill *skill, skills){
-                    if(skill->isLordSkill() && !weiwudi->hasSkill(skill->objectName()))
+                foreach (const Skill *skill, skills) {
+                    if (skill->isLordSkill() && !weiwudi->hasSkill(skill->objectName()))
                         lord_skills << skill->objectName();
                 }
             }
 
-            if(!lord_skills.isEmpty()){
+            if (!lord_skills.isEmpty()) {
                 QString skill_name = room->askForChoice(weiwudi, objectName(), lord_skills.join("+"));
 
                 const Skill *skill = Sanguosha->getSkill(skill_name);
                 room->acquireSkill(weiwudi, skill);
-
-                if(skill->inherits("GameStartSkill")){
-                    const GameStartSkill *game_start_skill = qobject_cast<const GameStartSkill *>(skill);
-                    game_start_skill->onGameStart(weiwudi);
-                }
             }
         }
-
-        if (!(choice == "cancel"))
-            room->broadcastSkillInvoke(objectName());
-
         return false;
     }
 };

@@ -908,7 +908,6 @@ ThicketPackage::ThicketPackage()
     caopi->addSkill(new Xingshang);
     caopi->addSkill(new Fangzhu);
     caopi->addSkill(new Songwei);
-    caopi->addSkill(new SPConvertSkill("caopi", "heg_caopi"));
 
     General *menghuo = new General(this, "menghuo", "shu"); // SHU 014
     menghuo->addSkill(new SavageAssaultAvoid("huoshou"));
@@ -943,7 +942,6 @@ ThicketPackage::ThicketPackage()
     jiaxu->addSkill(new Wansha);
     jiaxu->addSkill(new Luanwu);
     jiaxu->addSkill(new Weimu);
-    jiaxu->addSkill(new SPConvertSkill("jiaxu", "sp_jiaxu"));
 
     addMetaObject<DimengCard>();
     addMetaObject<LuanwuCard>();

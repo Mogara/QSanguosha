@@ -117,6 +117,8 @@ public:
     QString getCurrentCardUsePattern();
     CardUseStruct::CardUseReason getCurrentCardUseReason();
 
+	QString findConvertFrom(const QString &general_name) const;
+
 private:
     void _loadMiniScenarios();
     void _loadModScenarios();
@@ -156,6 +158,8 @@ private:
     QHash<QString, const LuaWeapon*> luaWeapons;
     QHash<QString, QString> luaArmor_className2objectName;
     QHash<QString, const LuaArmor *> luaArmors;
+
+	QMultiMap<QString, QString> sp_convert_pairs;
 };
 
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key) {

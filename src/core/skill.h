@@ -199,9 +199,6 @@ public:
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual void onGameStart(ServerPlayer *player) const;
 
-    QString getFromName() const;
-    QStringList getToName() const;
-
 private:
     QString from, to;
     QStringList to_list;
