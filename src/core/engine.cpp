@@ -255,13 +255,9 @@ void Engine::addPackage(Package *package) {
 			addSkills(QList<const Skill *>() << skill);
 			general->addSkill(skill->objectName());
 		}
-
-        if (general->isLord())
-            lord_list << general->objectName();
-        else
-            nonlord_list << general->objectName();
-
         generals.insert(general->objectName(), general);
+		if (isGeneralHidden(general->objectName())) continue;
+		if (general->isLord()) lord_list << general->objectName();
     }
 
     QList<const QMetaObject *> metas = package->getMetaObjects();
@@ -841,7 +837,8 @@ QStringList Engine::getRandomLords() const{
     }
 
     QStringList nonlord_list;
-    foreach (QString nonlord, this->nonlord_list) {
+    foreach (QString nonlord, generals.keys()) {
+		if (isGeneralHidden(nonlord) || lord_list.contains(nonlord)) continue;
         const General *general = generals.value(nonlord);
         if (getBanPackages().contains(general->getPackage()))
             continue;

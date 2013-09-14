@@ -143,7 +143,7 @@ private:
 	QList<const TriggerSkill *> global_trigger_skills;
 
     QList<Card *> cards;
-    QStringList lord_list, nonlord_list;
+    QStringList lord_list;
     QSet<QString> ban_package;
     QHash<QString, Scenario *> m_scenarios;
     QHash<QString, Scenario *> m_miniScenes;
