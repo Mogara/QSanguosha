@@ -170,7 +170,7 @@ public:
             }
         } else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card->isKindOf("AOE")) {
+            if (effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack")) {
                 room->setEmotion(player, "armor/vine");
                 LogMessage log;
                 log.from = player;
