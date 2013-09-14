@@ -456,7 +456,7 @@ const Card *LianliSlashCard::validate(CardUseStruct &cardUse) const{
 
     ServerPlayer *xiahoujuan = room->findPlayerBySkillName("lianli");
     if(xiahoujuan){
-        const Card *slash = room->askForCard(xiahoujuan, "slash", "@lianli-slash", QVariant(), Card::MethodResponse);
+        const Card *slash = room->askForCard(xiahoujuan, "slash", "@lianli-slash", QVariant(), Card::MethodResponse, NULL, false, QString(), true);
         if (slash)
             return slash;
     }
@@ -505,7 +505,7 @@ public:
 
         ServerPlayer *xiahoujuan = room->findPlayerBySkillName("lianli");
         if(xiahoujuan){
-            const Card *slash = room->askForCard(xiahoujuan, "slash", "@lianli-slash", data, Card::MethodResponse);
+            const Card *slash = room->askForCard(xiahoujuan, "slash", "@lianli-slash", data, Card::MethodResponse, NULL, false, QString(), true);
             if(slash){
                 room->provide(slash);
                 return true;
@@ -539,7 +539,7 @@ public:
             if(player->getMark("@tied") > 0){
                 ServerPlayer *zhangfei = player;
 
-                const Card *jink = room->askForCard(zhangfei, "jink", "@lianli-jink", data, Card::MethodResponse);
+                const Card *jink = room->askForCard(zhangfei, "jink", "@lianli-jink", data, Card::MethodResponse, NULL, false, QString(), true);
                 if(jink){
                     room->provide(jink);
                     return true;
