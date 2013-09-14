@@ -61,7 +61,7 @@ return {
 
 	["#as_mushun"] = "屈身为国",
 	["as_mushun"] = "穆顺",
-	["cv:as_mushun"] = "王乾龙",
+	--["cv:as_mushun"] = "王乾龙",
 	["illustrator:as_mushun"] = "佚名",
 	["designer:as_mushun"] = "嘉言懿行",
 
