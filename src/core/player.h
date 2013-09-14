@@ -66,7 +66,6 @@ public:
     bool isWounded() const;
     General::Gender getGender() const;
     virtual void setGender(General::Gender gender);
-    bool isSexLess() const;
     bool isMale() const;
     bool isFemale() const;
     bool isNeuter() const;

@@ -1086,7 +1086,7 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *pl
                 room->setTag("SkipNormalDeathProcess", true);
             foreach (ServerPlayer *sp, room->getAlivePlayers()) {
                 room->setPlayerProperty(sp, "general", "anjiang");
-                sp->setGender(General::SexLess);
+                sp->setGender(General::Sexless);
                 room->setPlayerProperty(sp, "kingdom", "god");
 
                 LogMessage log;

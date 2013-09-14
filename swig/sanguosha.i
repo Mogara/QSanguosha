@@ -42,7 +42,7 @@ public:
     bool isHidden() const;
     bool isTotallyHidden() const;
 
-    enum Gender { SexLess, Male, Female, Neuter };
+    enum Gender { Sexless, Male, Female, Neuter };
     Gender getGender() const;
     void setGender(Gender gender);
 
@@ -83,7 +83,6 @@ public:
     bool isWounded() const;
     General::Gender getGender() const;
     virtual void setGender(General::Gender gender);
-    bool isSexLess() const;
     bool isMale() const;
     bool isFemale() const;
     bool isNeuter() const;
