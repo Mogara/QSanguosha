@@ -1197,7 +1197,48 @@ public:
 class Xiaode: public TriggerSkill {
 public:
     Xiaode(): TriggerSkill("xiaode") {
-        events << Death << EventPhaseChanging << EventLoseSkill;
+        events << BuryVictim;
+    }
+
+    virtual int getPriority() const{
+        return -2;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *xiahoushi = room->findPlayerBySkillName(objectName());
+        if (!xiahoushi || !xiahoushi->tag["XiaodeSkill"].toString().isEmpty()) return false;
+        DeathStruct death = data.value<DeathStruct>();
+        QStringList skill_list;
+        skill_list.append(addSkillList(death.who->getGeneral()));
+        skill_list.append(addSkillList(death.who->getGeneral2()));
+        if (skill_list.isEmpty()) return false;
+        if (!room->askForSkillInvoke(xiahoushi, objectName(), skill_list.join("+"))) return false;
+        QString skill_name = room->askForChoice(xiahoushi, objectName(), skill_list.join("+"));
+        xiahoushi->tag["XiaodeSkill"] = skill_name;
+        room->acquireSkill(xiahoushi, skill_name);
+        return false;
+    }
+
+private:
+    QStringList addSkillList(const General *general) const{
+        if (!general) return QStringList();
+        QStringList skill_list;
+        foreach (const Skill *skill, general->getSkillList()) {
+            if (skill->isVisible() && !skill->isLordSkill() && skill->getFrequency() != Skill::Wake)
+                skill_list.append(skill->objectName());
+        }
+        return skill_list;
+    }
+};
+
+class XiaodeEx: public TriggerSkill {
+public:
+    XiaodeEx(): TriggerSkill("#xiaode") {
+        events << EventPhaseChanging << EventLoseSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1205,18 +1246,7 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == Death && TriggerSkill::triggerable(player)) {
-            if (!player->tag["XiaodeSkill"].toString().isEmpty()) return false;
-            DeathStruct death = data.value<DeathStruct>();
-            QStringList skill_list;
-            skill_list.append(addSkillList(death.who->getGeneral()));
-            skill_list.append(addSkillList(death.who->getGeneral2()));
-            if (skill_list.isEmpty()) return false;
-            if (!room->askForSkillInvoke(player, objectName(), skill_list.join("+"))) return false;
-            QString skill_name = room->askForChoice(player, objectName(), skill_list.join("+"));
-            player->tag["XiaodeSkill"] = skill_name;
-            room->acquireSkill(player, skill_name);
-        } else if (triggerEvent == EventPhaseChanging) {
+        if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive) {
                 QString skill_name = player->tag["XiaodeSkill"].toString();
@@ -1233,17 +1263,6 @@ public:
             }
         }
         return false;
-    }
-
-private:
-    QStringList addSkillList(const General *general) const{
-        if (!general) return QStringList();
-        QStringList skill_list;
-        foreach (const Skill *skill, general->getSkillList()) {
-            if (skill->isVisible() && !skill->isLordSkill() && skill->getFrequency() != Skill::Wake)
-                skill_list.append(skill->objectName());
-        }
-        return skill_list;
     }
 };
 
@@ -1947,6 +1966,8 @@ SPPackage::SPPackage()
     General *xiahoushi = new General(this, "xiahoushi", "shu", 3, false); // SP 023
     xiahoushi->addSkill(new Yanyu);
     xiahoushi->addSkill(new Xiaode);
+    xiahoushi->addSkill(new XiaodeEx);
+    related_skills.insertMulti("xiaode", "#xiaode");
 
     //rename sp_yuejin 2 yuejin, rename yuejin 2 heg_yuejin
 
