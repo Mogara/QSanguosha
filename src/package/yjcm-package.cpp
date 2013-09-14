@@ -34,7 +34,6 @@ public:
 
             return true;
         }
-
         return false;
     }
 };
@@ -166,7 +165,7 @@ public:
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.card && damage.card->getTypeId() == Card::TypeTrick) {
-            if (triggerEvent == DamageInflicted && player->hasSkill(objectName())) {
+            if (triggerEvent == DamageInflicted && TriggerSkill::triggerable(player)) {
                 LogMessage log;
                 log.type = "#WuyanGood";
                 log.from = player;
