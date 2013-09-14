@@ -199,6 +199,7 @@ void Engine::addPackage(Package *package) {
         return;
 
     package->setParent(this);
+	sp_convert_pairs.unite(package->getConvertPairs());
 
     QList<Card *> all_cards = package->findChildren<Card *>();
     foreach (Card *card, all_cards) {
