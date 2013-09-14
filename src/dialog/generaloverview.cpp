@@ -216,10 +216,20 @@ void GeneralSearch::clearAll() {
         button->setChecked(false);
 }
 
+static GeneralOverview *Overview;
+
+GeneralOverview *GeneralOverview::getInstance(QWidget *main_window) {
+	if (Overview == NULL)
+		Overview = new GeneralOverview(main_window);
+
+	return Overview;
+}
+
 GeneralOverview::GeneralOverview(QWidget *parent)
     : QDialog(parent), ui(new Ui::GeneralOverview)
 {
     ui->setupUi(this);
+	origin_window_title = windowTitle();
 
     button_layout = new QVBoxLayout;
 
@@ -251,8 +261,11 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         if (!general->isTotallyHidden())
             copy_generals.append(general);
     }
-	if (init)
+	if (init) {
+		ui->returnButton->hide();
+		setWindowTitle(origin_window_title);
 		all_generals = copy_generals;
+	}
 
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(copy_generals.length());
@@ -617,7 +630,7 @@ void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, 
         QMessageBox::warning(this, tr("Warning"), tr("No generals are found"));
     } else {
         ui->returnButton->show();
-        if (!windowTitle().contains(" "))
+        if (windowTitle() == origin_window_title)
             setWindowTitle(windowTitle() + " " + tr("Search..."));
         fillGenerals(generals, false);
     }
@@ -625,6 +638,6 @@ void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, 
 
 void GeneralOverview::fillAllGenerals() {
     ui->returnButton->hide();
-    setWindowTitle(windowTitle().split(" ").first());
+    setWindowTitle(origin_window_title);
     fillGenerals(all_generals, false);
 }
