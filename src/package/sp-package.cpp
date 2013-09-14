@@ -1943,7 +1943,7 @@ SPPackage::SPPackage()
 
     General *fuwan = new General(this, "fuwan", "qun", 4);
     fuwan->addSkill("moukui");
-    fuwan->addSkill(new SPConvertSkill("fuwan", "as_mushun"));
+    //fuwan->addSkill(new SPConvertSkill("fuwan", "as_mushun"));
 
     General *xiahouba = new General(this, "xiahouba", "shu"); // SP 019
     xiahouba->addSkill(new Baobian);
