@@ -4982,7 +4982,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
     ServerPlayer *choice = NULL;
     if (ai){
         choice = ai->askForPlayerChosen(targets, skillName);
-        if (optional && choice != NULL)
+        if (choice && notify_skill)
             thread->delay();
     }
     else {

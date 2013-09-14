@@ -790,7 +790,7 @@ end
 
 sgs.ai_skill_invoke.xiaode = function(self, data)
 	local round = self:playerGetRound(self.player)
-	local xiaode_skill = sgs.ai_skill_choice.huashen(self, data:toString(), nil, math.random(1 - round, 7 - round))
+	local xiaode_skill = sgs.ai_skill_choice.huashen(self, table.concat(data:toStringList(), "+"), nil, math.random(1 - round, 7 - round))
 	if xiaode_skill then
 		sgs.xiaode_choice = xiaode_skill
 		return true
