@@ -608,7 +608,7 @@ public:
                     selfplayer->addToPile("fantasy", id);
                     const Card *card = Sanguosha->getCard(id);
                     foreach(int id, fantasy){
-                        if (card->getSuit() == card->getSuit()){
+                        if (card->getSuit() == Sanguosha->getCard(id)->getSuit()){
                             room->throwCard(card, NULL, player);
                             break;
                         }
