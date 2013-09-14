@@ -530,7 +530,9 @@ sgs.ai_skill_invoke.buyi = function(self, data)
 	if dying.who:isKongcheng() then return false end
 
 	isFriend = not self:isEnemy(dying.who)
-	if not sgs.GetConfig("EnableHegemony", false) and self.role == "renegade" and not (dying.who:isLord() or dying.who:objectName() == self.player:objectName())
+	if not sgs.GetConfig("EnableHegemony", false) and self.role == "renegade"
+		and not (dying.who:isLord() or dying.who:objectName() == self.player:objectName())
+		and not (self.room:getMode() == "couple" and dying.who:getGeneralName() == "sunjian")
 		and (sgs.current_mode_players["loyalist"] + 1 == sgs.current_mode_players["rebel"]
 				or sgs.current_mode_players["loyalist"] == sgs.current_mode_players["rebel"]
 				or self.room:getCurrent():objectName() == self.player:objectName()) then
