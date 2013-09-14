@@ -705,9 +705,9 @@ public:
         if (move.to_place == Player::PlaceTable){
             foreach(int card_id, move.card_ids){
                 const Card *card = Sanguosha->getCard(card_id);
-                if (Sanguosha->getCard(card_id)->getTypeId() == Card::TypeEquip 
+                if (Sanguosha->getCard(card_id)->getTypeId() == Card::TypeEquip
                         && room->getCardOwner(card_id) == move.from
-                        && (room->getCardPlace(card_id) == Player::PlaceHand 
+                        && (room->getCardPlace(card_id) == Player::PlaceHand
                         || room->getCardPlace(card_id) == Player::PlaceEquip))
                     card->setFlags("kangdaomove");
             }
@@ -718,9 +718,9 @@ public:
             foreach(int card_id, move.card_ids){
                 const Card *cd = Sanguosha->getCard(card_id);
                 if (cd->getTypeId() == Card::TypeEquip){
-                    if (cd->hasFlag("kangdaomove") || 
-                            (room->getCardOwner(card_id) == move.from 
-                            && (room->getCardPlace(card_id) == Player::PlaceHand 
+                    if (cd->hasFlag("kangdaomove") ||
+                            (room->getCardOwner(card_id) == move.from
+                            && (room->getCardPlace(card_id) == Player::PlaceHand
                             || room->getCardPlace(card_id) == Player::PlaceEquip))){
                         if (can_kangdao(player, card_id))
                             card_ids << card_id;
@@ -839,7 +839,7 @@ public:
         events << CardUsed << CardFinished << CardsMoveOneTime;
         frequency = Compulsory;
     }
-    
+
     virtual bool triggerable(const ServerPlayer *target) const{
         return target != NULL && target->isAlive();
     }
@@ -863,7 +863,7 @@ public:
             QList<int> watchlist;
             for (int i = 0; i < qMin(drawpile.length(), 4); i++)
                 watchlist << drawpile[i];
-/*            
+/*
             Json::Value gongxinArgs(Json::arrayValue);
 
             gongxinArgs[0] = QSanProtocol::Utils::toJsonString(QString());
@@ -923,7 +923,7 @@ public:
                 }
                 else
                     room->setPlayerMark(player, "bushi_color", bushi_notinvoke);
-                
+
                 break;
             }
             case (CardsMoveOneTime):{
@@ -969,7 +969,7 @@ public:
 
 
                     room->drawCards(p, 1, "bushi");
-                    
+
                     QString choice = room->askForChoice(p, "bushi", "bushiinc+bushidec", QVariant::fromValue(player));
 
                     room->setPlayerFlag(player, choice);
@@ -1171,7 +1171,7 @@ public:
         pattern = "Slash";
         frequency = NotFrequent;
     }
-    
+
     virtual int getExtraTargetNum(const Player *from, const Card *) const{
         if (from->hasSkill(objectName()))
             return from->getLostHp();
@@ -1184,7 +1184,7 @@ public:
     Xuediantr(): TriggerSkill("#xuediantr"){
         events << Damage << EventPhaseChanging;
     }
-    
+
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == Damage){
             DamageStruct damage = data.value<DamageStruct>();
@@ -1240,7 +1240,7 @@ public:
         Slash *slash = new Slash(Card::SuitToBeDecided, 0);
         slash->setSkillName(objectName());
         slash->addSubcards(cards);
-        
+
         return slash;
     }
 };

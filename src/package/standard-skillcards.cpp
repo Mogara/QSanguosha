@@ -302,7 +302,7 @@ const Card *JijiangCard::validate(CardUseStruct &cardUse) const{
     foreach (ServerPlayer *liege, lieges) {
         try {
             slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName(),
-									 QVariant(), Card::MethodResponse, liubei, false, QString(), true);
+                                     QVariant(), Card::MethodResponse, liubei, false, QString(), true);
         }
         catch (TriggerEvent triggerEvent) {
             if (triggerEvent == TurnBroken || triggerEvent == StageChange) {

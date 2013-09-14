@@ -170,14 +170,14 @@ public:
 
     virtual int getExtra(const Player *target) const{
         if (target->hasLordSkill(objectName())) {
-			int extra = 0;
-			QList<const Player *> players = target->getAliveSiblings();
-			foreach (const Player *player, players) {
-				if (player->getKingdom() == "qun")
-					extra += 2;
-			}
+            int extra = 0;
+            QList<const Player *> players = target->getAliveSiblings();
+            foreach (const Player *player, players) {
+                if (player->getKingdom() == "qun")
+                    extra += 2;
+            }
             return extra;
-		} else
+        } else
             return 0;
     }
 };
@@ -248,10 +248,10 @@ public:
             JudgeStar judge = data.value<JudgeStar>();
             if (judge->reason == "shuangxiong")
                 shuangxiong->obtainCard(judge->card);
-		} else if (triggerEvent == EventPhaseChanging) {
-			PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-			if (change.to == Player::NotActive && shuangxiong->hasFlag("shuangxiong"))
-				room->setPlayerFlag(shuangxiong, "-shuangxiong");
+        } else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::NotActive && shuangxiong->hasFlag("shuangxiong"))
+                room->setPlayerFlag(shuangxiong, "-shuangxiong");
         }
 
         return false;
@@ -286,7 +286,7 @@ public:
 class Lianhuan: public OneCardViewAsSkill {
 public:
     Lianhuan(): OneCardViewAsSkill("lianhuan") {
-		filter_pattern = ".|club|.|hand";
+        filter_pattern = ".|club|.|hand";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -302,7 +302,7 @@ public:
     Niepan(): TriggerSkill("niepan") {
         events << AskForPeaches;
         frequency = Limited;
-		limit_mark = "@nirvana";
+        limit_mark = "@nirvana";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -347,7 +347,7 @@ public:
 class Huoji: public OneCardViewAsSkill {
 public:
     Huoji(): OneCardViewAsSkill("huoji") {
-		filter_pattern = ".|red|.|hand";
+        filter_pattern = ".|red|.|hand";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -405,8 +405,8 @@ public:
 class Kanpo: public OneCardViewAsSkill {
 public:
     Kanpo(): OneCardViewAsSkill("kanpo") {
-		filter_pattern = ".|black|.|hand";
-		response_pattern = "nullification";
+        filter_pattern = ".|black|.|hand";
+        response_pattern = "nullification";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

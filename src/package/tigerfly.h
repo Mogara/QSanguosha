@@ -36,10 +36,10 @@ public:
 };
 
 class TigerFlyPackage: public Package {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	TigerFlyPackage();
+    TigerFlyPackage();
 };
 
 #endif

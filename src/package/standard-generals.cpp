@@ -497,7 +497,7 @@ public:
 
         foreach (ServerPlayer *liege, lieges) {
             const Card *slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName(),
-												 QVariant(), Card::MethodResponse, liubei, false, QString(), true);
+                                                 QVariant(), Card::MethodResponse, liubei, false, QString(), true);
             if (slash) {
                 room->provide(slash);
                 return true;

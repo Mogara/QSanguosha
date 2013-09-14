@@ -229,8 +229,8 @@ void JujianCard::onEffect(const CardEffectStruct &effect) const{
 class JujianViewAsSkill: public OneCardViewAsSkill {
 public:
     JujianViewAsSkill(): OneCardViewAsSkill("jujian") {
-		filter_pattern = "^BasicCard!";
-		response_pattern = "@@jujian";
+        filter_pattern = "^BasicCard!";
+        response_pattern = "@@jujian";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -498,7 +498,7 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
         PlayerStar target = effect.to;
         effect.from->tag["XianzhenTarget"] = QVariant::fromValue(target);
         room->setPlayerFlag(effect.from, "XianzhenSuccess");
-		room->setPlayerFlag(effect.from, "xianzhen");
+        room->setPlayerFlag(effect.from, "xianzhen");
         room->setFixedDistance(effect.from, effect.to, 1);
         room->addPlayerMark(effect.to, "Armor_Nullified");
     } else {
@@ -578,8 +578,8 @@ public:
             }
         }
         if (target) {
-			if (target->hasFlag("xianzhen"))
-				room->setPlayerFlag(gaoshun, "-xianzhen");
+            if (target->hasFlag("xianzhen"))
+                room->setPlayerFlag(gaoshun, "-xianzhen");
             room->setFixedDistance(gaoshun, target, -1);
             gaoshun->tag.remove("XianzhenTarget");
             room->removePlayerMark(target, "Armor_Nullified");
@@ -784,9 +784,9 @@ void GanluCard::swapEquip(ServerPlayer *first, ServerPlayer *second) const{
 
     QList<CardsMoveStruct> exchangeMove;
     CardsMoveStruct move1(equips1, second, Player::PlaceEquip,
-						  CardMoveReason(CardMoveReason::S_REASON_SWAP, first->objectName(), second->objectName(), "ganlu", QString()));
-	CardsMoveStruct move2(equips2, first, Player::PlaceEquip,
-						  CardMoveReason(CardMoveReason::S_REASON_SWAP, second->objectName(), first->objectName(), "ganlu", QString()));
+                          CardMoveReason(CardMoveReason::S_REASON_SWAP, first->objectName(), second->objectName(), "ganlu", QString()));
+    CardsMoveStruct move2(equips2, first, Player::PlaceEquip,
+                          CardMoveReason(CardMoveReason::S_REASON_SWAP, second->objectName(), first->objectName(), "ganlu", QString()));
     exchangeMove.push_back(move2);
     exchangeMove.push_back(move1);
     room->moveCards(exchangeMove, false);

@@ -87,7 +87,7 @@ void Analeptic::onEffect(const CardEffectStruct &effect) const{
 class FanSkill: public OneCardViewAsSkill {
 public:
     FanSkill(): OneCardViewAsSkill("Fan") {
-		filter_pattern = "%slash";
+        filter_pattern = "%slash";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{

@@ -271,12 +271,12 @@ public:
 
         boss_skillbanned << "luanji" << "shuangxiong" << "longdan" << "wusheng" << "guixin" << "fenyong" << "xuehen";
 
-        dummy_skills << "xinsheng" << "wuhu" << "kuangfeng" << "dawu" << "wumou" << "wuqian" 
+        dummy_skills << "xinsheng" << "wuhu" << "kuangfeng" << "dawu" << "wumou" << "wuqian"
                      << "shenfen" << "renjie" << "weidi" << "danji" << "shiyong" << "zhiba"
                      << "super_guanxing" << "chongzhen" << "tongxin"
                      << "liqian" << "shenjun" << "xunzhi" << "shenli" << "yishe" << "yitian"
                      << "fenyong" << "xuehen";
-                     
+
         available_wake_skills << "hunzi" << "zhiji" ;
     }
 

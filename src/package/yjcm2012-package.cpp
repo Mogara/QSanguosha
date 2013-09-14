@@ -307,18 +307,18 @@ public:
                 judge.who = target;
 
                 room->judge(judge);
-				if (!target->isAlive()) return false;
-				QString color = judge.pattern;
-				QList<ServerPlayer *> to_choose;
-				foreach (ServerPlayer *p, room->getOtherPlayers(target)) {
-					if (target->distanceTo(p) == 1)
-						to_choose << p;
-				}
-				if (to_choose.isEmpty())
-					return false;
+                if (!target->isAlive()) return false;
+                QString color = judge.pattern;
+                QList<ServerPlayer *> to_choose;
+                foreach (ServerPlayer *p, room->getOtherPlayers(target)) {
+                    if (target->distanceTo(p) == 1)
+                        to_choose << p;
+                }
+                if (to_choose.isEmpty())
+                    return false;
 
-				ServerPlayer *victim = room->askForPlayerChosen(target, to_choose, objectName());
-				
+                ServerPlayer *victim = room->askForPlayerChosen(target, to_choose, objectName());
+
                 int index = 1;
                 if (color == "black")
                     index = 2;
@@ -326,15 +326,15 @@ public:
                 room->broadcastSkillInvoke(objectName(), index);
 
                 QString pattern = QString(".|%1|.|hand$0").arg(color);
-				room->setPlayerFlag(victim, "QianxiTarget");
-				room->addPlayerMark(victim, QString("@qianxi_%1").arg(color));
-				room->setPlayerCardLimitation(victim, "use,response", pattern, false);
+                room->setPlayerFlag(victim, "QianxiTarget");
+                room->addPlayerMark(victim, QString("@qianxi_%1").arg(color));
+                room->setPlayerCardLimitation(victim, "use,response", pattern, false);
 
-				LogMessage log;
-				log.type = "#Qianxi";
-				log.from = victim;
-				log.arg = QString("no_suit_%1").arg(color);
-				room->sendLog(log);
+                LogMessage log;
+                log.type = "#Qianxi";
+                log.from = victim;
+                log.arg = QString("no_suit_%1").arg(color);
+                room->sendLog(log);
             }
         } else if (triggerEvent == FinishJudge) {
             JudgeStar judge = data.value<JudgeStar>();
@@ -342,7 +342,7 @@ public:
 
             QString color = judge->card->isRed() ? "red" : "black";
             target->tag[objectName()] = QVariant::fromValue(color);
-			judge->pattern = color;
+            judge->pattern = color;
         }
         return false;
     }
@@ -416,7 +416,7 @@ public:
     Fuli(): TriggerSkill("fuli") {
         events << AskForPeaches;
         frequency = Limited;
-		limit_mark = "@laoji";
+        limit_mark = "@laoji";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -610,7 +610,7 @@ void GongqiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
 class Gongqi: public OneCardViewAsSkill {
 public:
     Gongqi(): OneCardViewAsSkill("gongqi") {
-		filter_pattern = ".!";
+        filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -666,7 +666,7 @@ class Jiefan: public ZeroCardViewAsSkill {
 public:
     Jiefan(): ZeroCardViewAsSkill("jiefan") {
         frequency = Limited;
-		limit_mark = "@rescue";
+        limit_mark = "@rescue";
     }
 
     virtual const Card *viewAs() const{
@@ -772,7 +772,7 @@ public:
 class LihuoViewAsSkill: public OneCardViewAsSkill {
 public:
     LihuoViewAsSkill(): OneCardViewAsSkill("lihuo") {
-		filter_pattern = "%slash";
+        filter_pattern = "%slash";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{

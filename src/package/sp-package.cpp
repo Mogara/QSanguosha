@@ -1034,7 +1034,7 @@ public:
                 if (males.isEmpty()) return false;
 
                 ServerPlayer *target = room->askForPlayerChosen(player, males, objectName(), "@xingwu-choose");
-				room->broadcastSkillInvoke(objectName(), 2);
+                room->broadcastSkillInvoke(objectName(), 2);
                 room->damage(DamageStruct(objectName(), player, target, 2));
 
                 if (!player->isAlive()) return false;
@@ -1169,7 +1169,7 @@ public:
                             log.card_str = QString::number(card_id);
                             room->sendLog(log);
                         }
-                        target->obtainCard(card); 
+                        target->obtainCard(card);
                         /*
                             ToAsk: 这么写会不会和激将/护驾/连理杀闪等多次provide技能混合出现Bug？
                             Para版曾经就出过这样的Bug，当时我用袁术（伪帝激将）激将决斗，

@@ -247,7 +247,7 @@ public:
     Fenxin(): TriggerSkill("fenxin") {
         events << BeforeGameOverJudge;
         frequency = Limited;
-		limit_mark = "@burnheart";
+        limit_mark = "@burnheart";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -404,7 +404,7 @@ public:
 
                 return false;
             }
-        
+
             if(move.to == player && move.from != player)
                 if(move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip){
                     room->setPlayerFlag(player, "cangniget");    //for AI
@@ -421,7 +421,7 @@ public:
 
         return false;
     }
-};                    
+};
 
 DuyiCard::DuyiCard(){
     target_fixed = true;
@@ -476,7 +476,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const {
-		return target != NULL && target->hasInnateSkill(objectName());
+        return target != NULL && target->hasInnateSkill(objectName());
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -519,7 +519,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if(use.card->getTypeId() == Card::TypeSkill || use.from == player || !use.to.contains(player))
             return false;
-        
+
         if(player->askForSkillInvoke(objectName(), data)) {
             room->setPlayerFlag(player, "duanzhi_InTempMoving");
             ServerPlayer *target = use.from;
@@ -540,7 +540,7 @@ public:
             if (dummy->subcardsLength() > 0)
                 for (int i = 0; i < dummy->subcardsLength(); i++)
                     room->moveCardTo(Sanguosha->getCard(card_ids[i]), target, original_places[i], false);
-            
+
             room->setPlayerFlag(player, "-duanzhi_InTempMoving");
 
             if (dummy->subcardsLength() > 0)
@@ -609,7 +609,7 @@ public:
         if(triggerEvent == EventPhaseChanging && data.value<PhaseChangeStruct>().to == Player::Start)
             if(player->getHp() >= splayer->getHp())
                 room->askForUseCard(splayer, "@@fengyin", "@fengyin", -1, Card::MethodNone);
-        
+
         if(triggerEvent == EventPhaseStart && player->hasFlag("fengyin_target")){
             player->skip(Player::Play);
             player->skip(Player::Discard);
@@ -712,7 +712,7 @@ AssassinsPackage::AssassinsPackage(): Package("assassins") {
     lingju->addSkill(new Jieyuan);
     lingju->addSkill(new Fenxin);
 
-    
+
     addMetaObject<MizhaoCard>();
     addMetaObject<MixinCard>();
     addMetaObject<DuyiCard>();

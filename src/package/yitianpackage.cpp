@@ -1430,7 +1430,7 @@ public:
                 killer->gainMark("@collapse");
                 room->acquireSkill(killer, "benghuai");
             }
-        
+
 
         return false;
     }
@@ -1591,7 +1591,7 @@ public:
     }
 
     virtual void onDamaged(ServerPlayer *player, const DamageStruct &) const{
-        
+
         if (player->faceUp() || player->isKongcheng())
             return;
 
@@ -1800,7 +1800,7 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-		if(damage.to->getGeneralName().contains("caocao") && player->askForSkillInvoke(objectName(), data)){
+        if(damage.to->getGeneralName().contains("caocao") && player->askForSkillInvoke(objectName(), data)){
             LogMessage log;
             log.type = "#YitianSolace";
             log.from = player;
@@ -1841,7 +1841,7 @@ void TaichenCard::onEffect(const CardEffectStruct &effect) const{
         room->loseHp(effect.from);
     else
         room->throwCard(this, effect.from);
-        
+
     for(int i = 0; i < 2; i++) {
         if(effect.from->canDiscard(effect.to, "hej"))
             room->throwCard(room->askForCardChosen(effect.from, effect.to, "hej", "taichen"), effect.to, effect.from);

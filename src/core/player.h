@@ -98,7 +98,7 @@ public:
 
     int getSeat() const;
     void setSeat(int seat);
-	bool isAdjacentTo(const Player *another) const;
+    bool isAdjacentTo(const Player *another) const;
     QString getPhaseString() const;
     void setPhaseString(const QString &phase_str);
     Phase getPhase() const;
@@ -223,7 +223,7 @@ public:
     void copyFrom(Player *p);
 
     QList<const Player *> getSiblings() const;
-	QList<const Player *> getAliveSiblings() const;
+    QList<const Player *> getAliveSiblings() const;
 
     QVariantMap tag;
 

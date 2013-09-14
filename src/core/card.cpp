@@ -315,7 +315,7 @@ void Card::setSkillName(const QString &name) {
 QString Card::getDescription(bool yellow) const{
     QString desc = Sanguosha->translate(":" + objectName());
     desc.replace("\n", "<br/>");
-	return tr("<font color=%1><b>[%2]</b> %3</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(getName()).arg(desc);
+    return tr("<font color=%1><b>[%2]</b> %3</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(getName()).arg(desc);
 }
 
 QString Card::toString(bool hidden) const{
@@ -503,17 +503,17 @@ const Card *Card::Parse(const QString &str) {
 Card *Card::Clone(const Card *card) {
     Card::Suit suit = card->getSuit();
     int number = card->getNumber();
-    
-	QObject *card_obj = NULL;
-	if (card->isKindOf("LuaBasicCard")) {
-		const LuaBasicCard *lcard = qobject_cast<const LuaBasicCard *>(card);
-		Q_ASSERT(lcard != NULL);
-		card_obj = lcard->clone();
-	} else if (card->isKindOf("LuaTrickCard")) {
+
+    QObject *card_obj = NULL;
+    if (card->isKindOf("LuaBasicCard")) {
+        const LuaBasicCard *lcard = qobject_cast<const LuaBasicCard *>(card);
+        Q_ASSERT(lcard != NULL);
+        card_obj = lcard->clone();
+    } else if (card->isKindOf("LuaTrickCard")) {
         const LuaTrickCard *lcard = qobject_cast<const LuaTrickCard *>(card);
         Q_ASSERT(lcard != NULL);
         card_obj = lcard->clone();
-	} else if (card->isKindOf("LuaWeapon")) {
+    } else if (card->isKindOf("LuaWeapon")) {
         const LuaWeapon *lcard = qobject_cast<const LuaWeapon *>(card);
         Q_ASSERT(lcard != NULL);
         card_obj = lcard->clone();
@@ -521,10 +521,10 @@ Card *Card::Clone(const Card *card) {
         const LuaArmor *lcard = qobject_cast<const LuaArmor *>(card);
         Q_ASSERT(lcard != NULL);
         card_obj = lcard->clone();
-	} else {
-		const QMetaObject *meta = card->metaObject();
-		card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
-	}
+    } else {
+        const QMetaObject *meta = card->metaObject();
+        card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
+    }
     if (card_obj) {
         Card *new_card = qobject_cast<Card *>(card_obj);
         new_card->setId(card->getId());
@@ -553,7 +553,7 @@ bool Card::targetFilter(const QList<const Player *> &targets, const Player *to_s
 bool Card::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self,
                         int &maxVotes) const{
     bool canSelect = targetFilter(targets, to_select, Self);
-    maxVotes = canSelect ? 1 : 0; 
+    maxVotes = canSelect ? 1 : 0;
     return canSelect;
 }
 
@@ -604,7 +604,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
     Q_ASSERT(thread != NULL);
     thread->trigger(PreCardUsed, room, player, data);
     card_use = data.value<CardUseStruct>();
- 
+
     if (card_use.card->getTypeId() != TypeSkill) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->getSkillName(), QString());
         if (card_use.to.size() == 1)

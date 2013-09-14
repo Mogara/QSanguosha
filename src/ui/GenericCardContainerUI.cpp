@@ -84,12 +84,12 @@ void GenericCardContainer::_doUpdate() {
 void GenericCardContainer::_playMoveCardsAnimation(QList<CardItem *> &cards, bool destroyCards) {
     QParallelAnimationGroup *animation = new QParallelAnimationGroup;
     foreach (CardItem *card_item, cards) {
-        if (destroyCards)        
+        if (destroyCards)
             connect(card_item, SIGNAL(movement_animation_finished()), this, SLOT(_destroyCard()));
         animation->addAnimation(card_item->getGoBackAnimation(true));
     }
-    
-    connect(animation, SIGNAL(finished()), this, SLOT(_doUpdate())); 
+
+    connect(animation, SIGNAL(finished()), this, SLOT(_doUpdate()));
     connect(animation, SIGNAL(finished()), this, SLOT(onAnimationFinished()));
     animation->start();
 }
@@ -97,7 +97,7 @@ void GenericCardContainer::_playMoveCardsAnimation(QList<CardItem *> &cards, boo
 void GenericCardContainer::addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo) {
     foreach (CardItem *card_item, card_items) {
         card_item->setPos(mapFromScene(card_item->scenePos()));
-        card_item->setParentItem(this);        
+        card_item->setParentItem(this);
     }
     bool destroy = _addCardItems(card_items, moveInfo);
     _playMoveCardsAnimation(card_items, destroy);
@@ -120,10 +120,10 @@ QPixmap PlayerCardContainer::_getPixmap(const QString &key, const QString &sArg)
     Q_ASSERT(key.contains("%1"));
     if (key.contains("%2")) {
         QString rKey = key.arg(getResourceKeyName()).arg(sArg);
- 
+
         if (G_ROOM_SKIN.isImageKeyDefined(rKey))
             return G_ROOM_SKIN.getPixmap(rKey); // first try "%1key%2 = ...", %1 = "photo", %2 = sArg
-    
+
         rKey = key.arg(getResourceKeyName());
         return G_ROOM_SKIN.getPixmap(rKey, sArg); // then try "%1key = ..."
     } else {
@@ -154,7 +154,7 @@ void PlayerCardContainer::_paintPixmap(QGraphicsPixmapItem *&item, const QRect &
 
 void PlayerCardContainer::_clearPixmap(QGraphicsPixmapItem *pixmap) {
     QPixmap dummy;
-    if (pixmap == NULL) return;   
+    if (pixmap == NULL) return;
     pixmap->setPixmap(dummy);
     pixmap->hide();
 }
@@ -177,7 +177,7 @@ void PlayerCardContainer::updateAvatar() {
     const General *general = NULL;
     if (m_player) {
         general = m_player->getAvatarGeneral();
-        _m_layout->m_screenNameFont.paintText(_m_screenNameItem, 
+        _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
                                               _m_layout->m_screenNameArea,
                                               Qt::AlignCenter,
                                               m_player->screenName());
@@ -201,10 +201,10 @@ void PlayerCardContainer::updateAvatar() {
             QString name = Sanguosha->translate("&" + general->objectName());
             if (name.startsWith("&"))
                 name = Sanguosha->translate(general->objectName());
-            _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem, 
+            _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem,
                                                   _m_layout->m_avatarNameArea,
                                                   Qt::AlignLeft | Qt::AlignJustify, name);
-        }        
+        }
     } else {
         _paintPixmap(_m_avatarIcon, _m_layout->m_avatarArea,
                      QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
@@ -333,7 +333,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
             delete menu;
             button->setMenu(NULL);
         }
-    }        
+    }
 
     QPoint start = _m_layout->m_privatePileStartPos;
     QPoint step = _m_layout->m_privatePileStep;
@@ -358,10 +358,10 @@ void PlayerCardContainer::updateDuanchang() {
 }
 
 void PlayerCardContainer::updateHandcardNum() {
-    int num = 0;    
+    int num = 0;
     if (m_player && m_player->getGeneral()) num = m_player->getHandcardNum();
     Q_ASSERT(num >= 0);
-    _m_layout->m_handCardFont.paintText(_m_handCardNumText, _m_layout->m_handCardArea, 
+    _m_layout->m_handCardFont.paintText(_m_handCardNumText, _m_layout->m_handCardArea,
                                         Qt::AlignCenter, QString::number(num));
     _m_handCardNumText->setVisible(true);
 }
@@ -434,7 +434,7 @@ void PlayerCardContainer::repaintAll() {
     _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea, QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM,
                  _getAvatarParent());
     if (_m_roleComboBox != NULL)
-        _m_roleComboBox->setPos(_m_layout->m_roleComboBoxPos); 
+        _m_roleComboBox->setPos(_m_layout->m_roleComboBoxPos);
 
     _m_hpBox->setIconSize(_m_layout->m_magatamaSize);
     _m_hpBox->setOrientation(_m_layout->m_magatamasHorizontal ?  Qt::Horizontal : Qt::Vertical);
@@ -630,7 +630,7 @@ QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds) {
         equip->setPos(_m_layout->m_equipAreas[index].center());
         result.append(equip);
         _m_equipCards[index] = NULL;
-        _mutexEquipAnim.lock();        
+        _mutexEquipAnim.lock();
         _m_equipAnim[index]->stop();
         _m_equipAnim[index]->clear();
         QPropertyAnimation *anim = new QPropertyAnimation(_m_equipRegions[index], "pos");
@@ -718,7 +718,7 @@ PlayerCardContainer::PlayerCardContainer() {
     _m_roleComboBox = NULL;
     m_player = NULL;
     _m_selectedFrame = NULL;
-    
+
     for (int i = 0; i < 4; i++) {
         _m_equipCards[i] = NULL;
         _m_equipRegions[i] = NULL;
@@ -790,7 +790,7 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_markItem);
     _layUnder(_m_progressBarItem);
     _layUnder(_m_roleComboBox);
-    _layUnder(_m_chainIcon);        
+    _layUnder(_m_chainIcon);
     _layUnder(_m_hpBox);
     _layUnder(_m_handCardNumText);
     _layUnder(_m_handCardBg);
@@ -808,7 +808,7 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_selectedFrame);
     _layUnder(_m_extraSkillText);
     _layUnder(_m_extraSkillBg);
-    _layUnder(_m_faceTurnedIcon);  
+    _layUnder(_m_faceTurnedIcon);
     _layUnder(_m_smallAvatarArea);
     _layUnder(_m_avatarArea);
     _layUnder(_m_circleItem);
@@ -817,7 +817,7 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_huashenItem);
     if (second_zuoci)
         _layUnder(_m_smallAvatarIcon);
-    _layUnder(_m_avatarIcon);    
+    _layUnder(_m_avatarIcon);
 }
 
 void PlayerCardContainer::updateRole(const QString &role) {
@@ -827,7 +827,7 @@ void PlayerCardContainer::updateRole(const QString &role) {
 void PlayerCardContainer::_updateProgressBar() {
     QGraphicsItem *parent = _getProgressBarParent();
     if (parent == NULL) return;
-    _m_progressBar->setOrientation(_m_layout->m_isProgressBarHorizontal ? Qt::Horizontal : Qt::Vertical);  
+    _m_progressBar->setOrientation(_m_layout->m_isProgressBarHorizontal ? Qt::Horizontal : Qt::Vertical);
     QRectF newRect = _m_layout->m_progressBarArea.getTranslatedRect(parent->boundingRect().toRect());
     _m_progressBar->setFixedHeight(newRect.height());
     _m_progressBar->setFixedWidth(newRect.width());
@@ -837,28 +837,28 @@ void PlayerCardContainer::_updateProgressBar() {
 
 void PlayerCardContainer::_createControls() {
     _m_floatingArea = new QGraphicsPixmapItem(_m_groupMain);
-    
+
     _m_screenNameItem = new QGraphicsPixmapItem(_getAvatarParent());
 
     _m_avatarArea = new QGraphicsRectItem(_m_layout->m_avatarArea, _getAvatarParent());
     _m_avatarArea->setPen(Qt::NoPen);
     _m_avatarNameItem = new QGraphicsPixmapItem(_getAvatarParent());
-    
+
     _m_smallAvatarArea = new QGraphicsRectItem(_m_layout->m_smallAvatarArea, _getAvatarParent());
     _m_smallAvatarArea->setPen(Qt::NoPen);
     _m_smallAvatarNameItem = new QGraphicsPixmapItem(_getAvatarParent());
-    
+
     _m_extraSkillText = new QGraphicsPixmapItem(_getAvatarParent());
     _m_extraSkillText->hide();
-    
+
     _m_handCardNumText = new QGraphicsPixmapItem(_getAvatarParent());
 
     _m_hpBox = new MagatamasBoxItem(_getAvatarParent());
-    
+
      // Now set up progress bar
     _m_progressBar = new QSanCommandProgressBar;
     _m_progressBar->setAutoHide(true);
-    _m_progressBar->hide();  
+    _m_progressBar->hide();
     _m_progressBarItem = new QGraphicsProxyWidget(_getProgressBarParent());
     _m_progressBarItem->setWidget(_m_progressBar);
     _updateProgressBar();
@@ -889,7 +889,7 @@ void PlayerCardContainer::_updateDeathIcon() {
                  QPixmap(m_player->getDeathPixmapPath()), _getDeathIconParent());
     _m_deathIcon->setZValue(30000.0);
 }
-    
+
 void PlayerCardContainer::killPlayer() {
     _m_roleComboBox->fix(m_player->getRole());
     _m_roleComboBox->setEnabled(false);
@@ -915,7 +915,7 @@ void PlayerCardContainer::revivePlayer() {
     _m_groupMain->setGraphicsEffect(NULL);
     Q_ASSERT(_m_deathIcon);
     _m_deathIcon->hide();
-    refresh();    
+    refresh();
 }
 
 void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
@@ -990,7 +990,7 @@ QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVaria
     } else if (change == ItemEnabledHasChanged) {
         _m_votesGot = 0;
         emit enable_changed();
-    } 
+    }
 
     return QGraphicsObject::itemChange(change, value);
 }

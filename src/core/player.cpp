@@ -108,10 +108,10 @@ void Player::setSeat(int seat) {
 }
 
 bool Player::isAdjacentTo(const Player *another) const{
-	int alive_length = 1 + getAliveSiblings().length();
-	return qAbs(seat - another->seat) == 1
-			|| (seat == 1 && another->seat == alive_length)
-			|| (seat == alive_length && another->seat == 1);
+    int alive_length = 1 + getAliveSiblings().length();
+    return qAbs(seat - another->seat) == 1
+            || (seat == 1 && another->seat == alive_length)
+            || (seat == alive_length && another->seat == 1);
 }
 
 bool Player::isAlive() const{
@@ -167,7 +167,7 @@ int Player::getAttackRange(bool include_weapon) const{
         Q_ASSERT(card);
         weapon_range = card->getRange();
     }
-	return qMax(original_range, weapon_range) + (hasSkill("fentian") ? getPile("burn").length() : 0);
+    return qMax(original_range, weapon_range) + (hasSkill("fentian") ? getPile("burn").length() : 0);
 }
 
 bool Player::inMyAttackRange(const Player *other) const{
@@ -506,9 +506,9 @@ const EquipCard *Player::getEquip(int index) const{
 
 bool Player::hasWeapon(const QString &weapon_name) const{
     if (!weapon || getMark("Equips_Nullified_to_Yourself") > 0) return false;
-	if (weapon->objectName() == weapon_name || weapon->isKindOf(weapon_name.toStdString().c_str())) return true;
-	const Card *real_weapon = Sanguosha->getEngineCard(weapon->getEffectiveId());
-	return real_weapon->objectName() == weapon_name || real_weapon->isKindOf(weapon_name.toStdString().c_str());
+    if (weapon->objectName() == weapon_name || weapon->isKindOf(weapon_name.toStdString().c_str())) return true;
+    const Card *real_weapon = Sanguosha->getEngineCard(weapon->getEffectiveId());
+    return real_weapon->objectName() == weapon_name || real_weapon->isKindOf(weapon_name.toStdString().c_str());
 }
 
 bool Player::hasArmorEffect(const QString &armor_name) const{
@@ -518,11 +518,11 @@ bool Player::hasArmorEffect(const QString &armor_name) const{
     if (armor_name == "bazhen")
         return armor == NULL && alive && hasSkill("bazhen");
     else {
-		if (!armor) return false;
-		if (armor->objectName() == armor_name || armor->isKindOf(armor_name.toStdString().c_str())) return true;
-		const Card *real_armor = Sanguosha->getEngineCard(armor->getEffectiveId());
+        if (!armor) return false;
+        if (armor->objectName() == armor_name || armor->isKindOf(armor_name.toStdString().c_str())) return true;
+        const Card *real_armor = Sanguosha->getEngineCard(armor->getEffectiveId());
         return real_armor->objectName() == armor_name || real_armor->isKindOf(armor_name.toStdString().c_str());
-	}
+    }
     return false;
 }
 
@@ -554,9 +554,9 @@ void Player::setFaceUp(bool face_up) {
 }
 
 int Player::getMaxCards() const{
-	int origin = Sanguosha->correctMaxCards(this, true);
-	if (origin == 0)
-		origin = qMax(hp, 0);
+    int origin = Sanguosha->correctMaxCards(this, true);
+    if (origin == 0)
+        origin = qMax(hp, 0);
     int rule = 0, total = 0, extra = 0;
     if (Config.MaxHpScheme == 3 && general2) {
         total = general->getMaxHp() + general2->getMaxHp();
@@ -806,7 +806,7 @@ QSet<QString> Player::getAcquiredSkills() const{
 
 QString Player::getSkillDescription(bool yellow) const{
     QString description = QString();
-	QString color = yellow ? "#FFFF33" : "#FF0080";
+    QString color = yellow ? "#FFFF33" : "#FF0080";
 
     foreach (const Skill *skill, getVisibleSkillList()) {
         if (skill->inherits("SPConvertSkill") || skill->isAttachedLordSkill() || !hasSkill(skill->objectName()))
@@ -814,7 +814,7 @@ QString Player::getSkillDescription(bool yellow) const{
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription(yellow);
         desc.replace("\n", "<br/>");
-		description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(color).arg(skill_name).arg(desc));
+        description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(color).arg(skill_name).arg(desc));
     }
 
     if (description.isEmpty()) description = tr("<font color=%1>No skills</font>").arg(color);
@@ -826,8 +826,8 @@ bool Player::isProhibited(const Player *to, const Card *card, const QList<const 
 }
 
 bool Player::canSlashWithoutCrossbow(const Card *slash) const{
-	Slash *newslash = new Slash(Card::NoSuit, 0);
-	newslash->deleteLater();
+    Slash *newslash = new Slash(Card::NoSuit, 0);
+    newslash->deleteLater();
 #define THIS_SLASH (slash == NULL ? newslash : slash)
     int slash_count = getSlashCount();
     int valid_slash_count = 1;
@@ -956,11 +956,11 @@ QList<const Player *> Player::getSiblings() const{
 }
 
 QList<const Player *> Player::getAliveSiblings() const{
-	QList<const Player *> siblings = getSiblings();
-	foreach (const Player *p, siblings) {
-		if (!p->isAlive())
-			siblings.removeOne(p);
-	}
-	return siblings;
+    QList<const Player *> siblings = getSiblings();
+    foreach (const Player *p, siblings) {
+        if (!p->isAlive())
+            siblings.removeOne(p);
+    }
+    return siblings;
 }
 

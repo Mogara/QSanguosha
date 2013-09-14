@@ -129,11 +129,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(player_added(ClientPlayer *)), SLOT(addPlayer(ClientPlayer *)));
     connect(ClientInstance, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));
     connect(ClientInstance, SIGNAL(generals_got(QStringList)), this, SLOT(chooseGeneral(QStringList)));
-	connect(ClientInstance, SIGNAL(generals_viewed(QString, QStringList)), this, SLOT(viewGenerals(QString, QStringList)));
+    connect(ClientInstance, SIGNAL(generals_viewed(QString, QStringList)), this, SLOT(viewGenerals(QString, QStringList)));
     connect(ClientInstance, SIGNAL(suits_got(QStringList)), this, SLOT(chooseSuit(QStringList)));
     connect(ClientInstance, SIGNAL(options_got(QString, QStringList)), this, SLOT(chooseOption(QString, QStringList)));
     connect(ClientInstance, SIGNAL(cards_got(const ClientPlayer *, QString, QString, bool, Card::HandlingMethod, QList<int>)),
-			this, SLOT(chooseCard(const ClientPlayer *, QString, QString, bool, Card::HandlingMethod, QList<int>)));
+            this, SLOT(chooseCard(const ClientPlayer *, QString, QString, bool, Card::HandlingMethod, QList<int>)));
     connect(ClientInstance, SIGNAL(roles_got(QString, QStringList)), this, SLOT(chooseRole(QString, QStringList)));
     connect(ClientInstance, SIGNAL(directions_got()), this, SLOT(chooseDirection()));
     connect(ClientInstance, SIGNAL(orders_got(QSanProtocol::Game3v3ChooseOrderCommand)), this, SLOT(chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand)));
@@ -754,7 +754,7 @@ void RoomScene::adjustItems() {
                                  .scaled(m_tablew, m_tableh, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     m_tableh -= _m_roomLayout->m_photoDashboardPadding;
     //m_tableBg->setPos(padding, padding);
-	m_tableBg->setPos(0, 0);
+    m_tableBg->setPos(0, 0);
     m_tableBg->setPixmap(tableBg);
     updateTable();
     updateRolesBox();
@@ -3028,10 +3028,10 @@ void RoomScene::doScript() {
 }
 
 void RoomScene::viewGenerals(const QString &reason, const QStringList &names) {
-	QDialog *dialog = new ChooseGeneralDialog(names, main_window, true, Sanguosha->translate(reason));
-	connect(dialog, SIGNAL(rejected()), dialog, SLOT(deleteLater()));
-	dialog->setParent(main_window, Qt::Dialog);
-	dialog->show();
+    QDialog *dialog = new ChooseGeneralDialog(names, main_window, true, Sanguosha->translate(reason));
+    connect(dialog, SIGNAL(rejected()), dialog, SLOT(deleteLater()));
+    dialog->setParent(main_window, Qt::Dialog);
+    dialog->show();
 }
 
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players) {
@@ -3355,8 +3355,8 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart, QList<i
     fillCards(card_ids);
     if (enable_heart)
         card_container->startGongxin(enabled_ids);
-	else
-		card_container->addCloseButton();
+    else
+        card_container->addCloseButton();
 }
 
 void RoomScene::showOwnerButtons(bool owner) {
@@ -3947,7 +3947,7 @@ void RoomScene::takeGeneral(const QString &who, const QString &name, const QStri
     general_item->goBack(true);
 
     if (((ServerInfo.GameMode == "06_3v3" && Self->getRole() != "lord" && Self->getRole() != "renegade")
-			|| (ServerInfo.GameMode == "02_1v1" && rule == "OL"))
+            || (ServerInfo.GameMode == "02_1v1" && rule == "OL"))
         && general_items.isEmpty()) {
         if (selector_box) {
             selector_box->hide();
@@ -3998,15 +3998,15 @@ void RoomScene::revealGeneral(bool self, const QString &general) {
 }
 
 void RoomScene::skillStateChange(const QString &skill_name) {
-	static QStringList button_remain;
-	if (button_remain.isEmpty())
-		button_remain << "shuangxiong" << "xianzhen";
-	if (button_remain.contains(skill_name)) {
-		const Skill *skill = Sanguosha->getSkill(skill_name);
+    static QStringList button_remain;
+    if (button_remain.isEmpty())
+        button_remain << "shuangxiong" << "xianzhen";
+    if (button_remain.contains(skill_name)) {
+        const Skill *skill = Sanguosha->getSkill(skill_name);
         addSkillButton(skill);
     } else if (skill_name.startsWith('-') && button_remain.contains(skill_name.mid(1))) {
-		detachSkill(skill_name.mid(1));
-	}
+        detachSkill(skill_name.mid(1));
+    }
 }
 
 void RoomScene::trust() {

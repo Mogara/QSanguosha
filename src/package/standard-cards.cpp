@@ -627,7 +627,7 @@ public:
         if (asked == "jink") {
             if (room->askForSkillInvoke(player, "EightDiagram")) {
                 int armor_id = player->getArmor()->getId();
-				room->setCardFlag(armor_id, "using");
+                room->setCardFlag(armor_id, "using");
                 room->setEmotion(player, "armor/eight_diagram");
                 JudgeStruct judge;
                 judge.pattern = ".|red";
@@ -636,7 +636,7 @@ public:
                 judge.who = player;
 
                 room->judge(judge);
-				room->setCardFlag(armor_id, "-using");
+                room->setCardFlag(armor_id, "-using");
 
                 if (judge.isGood()) {
                     Jink *jink = new Jink(Card::NoSuit, 0);
@@ -686,7 +686,7 @@ void AmazingGrace::doPreAction(Room *room, const CardUseStruct &) const{
 }
 
 void AmazingGrace::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-	//shemi count
+    //shemi count
     if (this->getSkillName() == "shemi")
         room->addPlayerHistory(source, "ShemiAG");
 
@@ -810,8 +810,8 @@ bool Collateral::targetFilter(const QList<const Player *> &targets,
         Q_ASSERT(targets.length() <= 2);
         if (targets.length() == 2) return false;
         const Player *slashFrom = targets[0];
-		/* @todo: develop a new mechanism of filtering targets
-					to remove the coupling here and to fix the similar bugs caused by TongJi */
+        /* @todo: develop a new mechanism of filtering targets
+                    to remove the coupling here and to fix the similar bugs caused by TongJi */
         if (to_select == Self && to_select->hasSkill("kongcheng") && Self->isLastHandCard(this, true))
             return false;
         return slashFrom->canSlash(to_select);

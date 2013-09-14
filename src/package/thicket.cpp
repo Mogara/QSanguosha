@@ -48,7 +48,7 @@ public:
         Room *room = caopi->getRoom();
         ServerPlayer *to = room->askForPlayerChosen(caopi, room->getOtherPlayers(caopi), objectName(),
                                                     "fangzhu-invoke", caopi->getMark("JilveEvent") != int(Damaged), true);
-        if (to) { 
+        if (to) {
             if (caopi->hasInnateSkill("fangzhu") || !caopi->hasSkill("jilve"))
                 room->broadcastSkillInvoke("fangzhu", to->faceUp() ? 1 : 2);
             else
@@ -80,7 +80,7 @@ public:
                 if (p->hasLordSkill(objectName()))
                     caopis << p;
             }
-            
+
             while (!caopis.isEmpty()) {
                 ServerPlayer *caopi = room->askForPlayerChosen(player, caopis, objectName(), "@songwei-to", true);
                 if (caopi) {
@@ -443,7 +443,7 @@ public:
             lusu->setFlags("-haoshi");
 
             if (lusu->getHandcardNum() <= 5)
-                return false;            
+                return false;
 
             QList<ServerPlayer *> other_players = room->getOtherPlayers(lusu);
             int least = 1000;

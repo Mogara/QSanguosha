@@ -13,7 +13,7 @@ public:
     LuaTriggerSkill(const char *name, Frequency frequency, const char *limit_mark);
     inline void addEvent(TriggerEvent triggerEvent) { events << triggerEvent; }
     inline void setViewAsSkill(ViewAsSkill *view_as_skill) { this->view_as_skill = view_as_skill; }
-	inline void setGlobal(bool global) { this->global = global; }
+    inline void setGlobal(bool global) { this->global = global; }
 
     virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
@@ -89,10 +89,10 @@ public:
     LuaMaxCardsSkill(const char *name);
 
     virtual int getExtra(const Player *target) const;
-	virtual int getFixed(const Player *target) const;
+    virtual int getFixed(const Player *target) const;
 
     LuaFunction extra_func;
-	LuaFunction fixed_func;
+    LuaFunction fixed_func;
 };
 
 class LuaTargetModSkill: public TargetModSkill {
@@ -119,9 +119,9 @@ public:
     LuaSkillCard(const char *name, const char *skillName);
     LuaSkillCard *clone() const;
     inline void setTargetFixed(bool target_fixed) { this->target_fixed = target_fixed; }
-	inline void setWillThrow(bool will_throw) { this->will_throw = will_throw; }
-	inline void setCanRecast(bool can_recast) { this->can_recast = can_recast; }
-	inline void setHandlingMethod(Card::HandlingMethod handling_method) { this->handling_method = handling_method; }
+    inline void setWillThrow(bool will_throw) { this->will_throw = will_throw; }
+    inline void setCanRecast(bool can_recast) { this->can_recast = can_recast; }
+    inline void setHandlingMethod(Card::HandlingMethod handling_method) { this->handling_method = handling_method; }
 
     // member functions that do not expose to Lua interpreter
     static LuaSkillCard *Parse(const QString &str);
@@ -132,7 +132,7 @@ public:
     // these functions are defined at swig/luaskills.i
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-	virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual const Card *validate(CardUseStruct &cardUse) const;
@@ -141,7 +141,7 @@ public:
     // the lua callbacks
     LuaFunction filter;
     LuaFunction feasible;
-	LuaFunction about_to_use;
+    LuaFunction about_to_use;
     LuaFunction on_use;
     LuaFunction on_effect;
     LuaFunction on_validate;
@@ -149,43 +149,43 @@ public:
 };
 
 class LuaBasicCard: public BasicCard {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	Q_INVOKABLE LuaBasicCard(Card::Suit suit, int number, const char *obj_name, const char *class_name);
-	LuaBasicCard *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
-	inline void setTargetFixed(bool target_fixed) { this->target_fixed = target_fixed; }
-	inline void setCanRecast(bool can_recast) { this->can_recast = can_recast; }
+    Q_INVOKABLE LuaBasicCard(Card::Suit suit, int number, const char *obj_name, const char *class_name);
+    LuaBasicCard *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
+    inline void setTargetFixed(bool target_fixed) { this->target_fixed = target_fixed; }
+    inline void setCanRecast(bool can_recast) { this->can_recast = can_recast; }
 
-	// member functions that do not expose to Lua interpreter
-	void pushSelf(lua_State *L) const;
+    // member functions that do not expose to Lua interpreter
+    void pushSelf(lua_State *L) const;
 
-	virtual void onUse(Room *room, const CardUseStruct &card_use) const;
-	virtual void onEffect(const CardEffectStruct &effect) const;
-	virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 
-	virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
-	virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-	virtual bool isAvailable(const Player *player) const;
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual bool isAvailable(const Player *player) const;
 
-	inline virtual QString getClassName() const{ return QString(class_name); }
-	inline void setSubtype(const char *subtype) { this->subtype = subtype; }
-	inline virtual QString getSubtype() const{ return QString(subtype); }
-	inline virtual bool isKindOf(const char *cardType) const{
-		if (strcmp(cardType, "LuaCard") == 0 || strcmp(cardType, class_name) == 0)
-			return true;
-		else
-			return Card::isKindOf(cardType);
-	}
+    inline virtual QString getClassName() const{ return QString(class_name); }
+    inline void setSubtype(const char *subtype) { this->subtype = subtype; }
+    inline virtual QString getSubtype() const{ return QString(subtype); }
+    inline virtual bool isKindOf(const char *cardType) const{
+        if (strcmp(cardType, "LuaCard") == 0 || strcmp(cardType, class_name) == 0)
+            return true;
+        else
+            return Card::isKindOf(cardType);
+    }
 
-	// the lua callbacks
-	LuaFunction filter;
-	LuaFunction feasible;
-	LuaFunction available;
-	LuaFunction about_to_use;
-	LuaFunction on_use;
-	LuaFunction on_effect;
-	const char *class_name, *subtype;
+    // the lua callbacks
+    LuaFunction filter;
+    LuaFunction feasible;
+    LuaFunction available;
+    LuaFunction about_to_use;
+    LuaFunction on_use;
+    LuaFunction on_effect;
+    const char *class_name, *subtype;
 };
 
 class LuaTrickCard: public TrickCard {

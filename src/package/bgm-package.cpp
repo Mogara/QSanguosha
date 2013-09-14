@@ -341,7 +341,7 @@ public:
             if (numbers.contains(card->getNumber())) {
                 zuixiangDone = true;
                 break;
-            }            
+            }
             numbers.insert(card->getNumber());
         }
         if (zuixiangDone) {

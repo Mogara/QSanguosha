@@ -45,12 +45,12 @@ public:
     void initMediaSource();
     void playAudioEffect(int index = -1) const;
     Frequency getFrequency() const;
-	QString getLimitMark() const;
+    QString getLimitMark() const;
     QStringList getSources() const;
 
 protected:
     Frequency frequency;
-	QString limit_mark;
+    QString limit_mark;
     QString default_choice;
     bool attached_lord_skill;
 
@@ -75,7 +75,7 @@ public:
     static const ViewAsSkill *parseViewAsSkill(const Skill *skill);
 
 protected:
-	QString response_pattern;
+    QString response_pattern;
 };
 
 class ZeroCardViewAsSkill: public ViewAsSkill {
@@ -101,8 +101,8 @@ public:
     virtual bool viewFilter(const Card *to_select) const;
     virtual const Card *viewAs(const Card *originalCard) const = 0;
 
-	protected:
-		QString filter_pattern;
+    protected:
+        QString filter_pattern;
 };
 
 class FilterSkill: public OneCardViewAsSkill {
@@ -127,12 +127,12 @@ public:
     inline double getDynamicPriority() const{ return dynamic_priority; }
     inline void setDynamicPriority(double value) { dynamic_priority = value; }
 
-	inline bool isGlobal() const{ return global; }
+    inline bool isGlobal() const{ return global; }
 
 protected:
     const ViewAsSkill *view_as_skill;
     QList<TriggerEvent> events;
-	bool global;
+    bool global;
 
 private:
     mutable double dynamic_priority;

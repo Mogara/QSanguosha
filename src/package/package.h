@@ -25,7 +25,7 @@ class Package: public QObject {
 public:
     enum Type { GeneralPack, CardPack, MixedPack, SpecialPack };
 
-	Package(const QString &name, Type pack_type = GeneralPack) {
+    Package(const QString &name, Type pack_type = GeneralPack) {
         setObjectName(name);
         type = pack_type;
     }
@@ -46,9 +46,9 @@ public:
         return related_skills;
     }
 
-	QMultiMap<QString, QString> getConvertPairs() const{
-		return convert_pairs;
-	}
+    QMultiMap<QString, QString> getConvertPairs() const{
+        return convert_pairs;
+    }
 
     Type getType() const{
         return type;
@@ -63,16 +63,16 @@ public:
         related_skills.insertMulti(main_skill, related_skill);
     }
 
-	inline void insertConvertPairs(const QString &from, const QString &to) {
-		convert_pairs.insertMulti(from, to);
-	}
+    inline void insertConvertPairs(const QString &from, const QString &to) {
+        convert_pairs.insertMulti(from, to);
+    }
 
 protected:
     QList<const QMetaObject *> metaobjects;
     QList<const Skill *> skills;
     QMap<QString, const CardPattern *> patterns;
     QMultiMap<QString, QString> related_skills;
-	QMultiMap<QString, QString> convert_pairs;
+    QMultiMap<QString, QString> convert_pairs;
     Type type;
 };
 
@@ -83,7 +83,7 @@ public:
     PackageAdder(const QString &name, Package *pack) {
         packages()[name] = pack;
     }
-    
+
     static PackageHash &packages(void);
 };
 

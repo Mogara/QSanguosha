@@ -37,7 +37,7 @@ QString Skill::getDescription(bool yellow) const{
     QString des_src = Sanguosha->translate(":" + objectName());
     if (des_src == ":" + objectName())
         return QString();
-	return QString("<font color=%1>%2</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(des_src);
+    return QString("<font color=%1>%2</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(des_src);
 }
 
 QString Skill::getNotice(int index) const{
@@ -109,7 +109,7 @@ Skill::Frequency Skill::getFrequency() const{
 }
 
 QString Skill::getLimitMark() const{
-	return limit_mark;
+    return limit_mark;
 }
 
 QStringList Skill::getSources() const{
@@ -126,7 +126,7 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 }
 
 bool ViewAsSkill::isAvailable(const Player *invoker,
-                              CardUseStruct::CardUseReason reason, 
+                              CardUseStruct::CardUseReason reason,
                               const QString &pattern) const{
     if (!invoker->hasSkill(objectName()) && !invoker->hasFlag(objectName())) // For Shuangxiong
         return false;
@@ -144,8 +144,8 @@ bool ViewAsSkill::isEnabledAtPlay(const Player *) const{
 }
 
 bool ViewAsSkill::isEnabledAtResponse(const Player *, const QString &pattern) const{
-	if (!response_pattern.isEmpty())
-		return pattern == response_pattern;
+    if (!response_pattern.isEmpty())
+        return pattern == response_pattern;
     return false;
 }
 
@@ -328,16 +328,16 @@ bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
 
 void SPConvertSkill::onGameStart(ServerPlayer *player) const{
     Room *room = player->getRoom();
-	QStringList choicelist;
-	foreach (QString to_gen, to_list) {
-		const General *gen = Sanguosha->getGeneral(to_gen);
-		if (gen && !Config.value("Banlist/Roles", "").toStringList().contains(to_gen)
-			&& !Sanguosha->getBanPackages().contains(gen->getPackage()))
-			choicelist << to_gen;
-	}
-	QString data = choicelist.join("\\,\\");
-	if (choicelist.length() >= 2)
-		data.replace("\\,\\" + choicelist.last(), "\\or\\" + choicelist.last());
+    QStringList choicelist;
+    foreach (QString to_gen, to_list) {
+        const General *gen = Sanguosha->getGeneral(to_gen);
+        if (gen && !Config.value("Banlist/Roles", "").toStringList().contains(to_gen)
+            && !Sanguosha->getBanPackages().contains(gen->getPackage()))
+            choicelist << to_gen;
+    }
+    QString data = choicelist.join("\\,\\");
+    if (choicelist.length() >= 2)
+        data.replace("\\,\\" + choicelist.last(), "\\or\\" + choicelist.last());
     if (player->askForSkillInvoke(objectName(), data)) {
         QString to_cv;
         AI *ai = player->getAI();
@@ -363,11 +363,11 @@ void SPConvertSkill::onGameStart(ServerPlayer *player) const{
 }
 
 int MaxCardsSkill::getExtra(const Player *) const{
-	return 0;
+    return 0;
 }
 
 int MaxCardsSkill::getFixed(const Player *) const{
-	return -1;
+    return -1;
 }
 
 ProhibitSkill::ProhibitSkill(const QString &name)

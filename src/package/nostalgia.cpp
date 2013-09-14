@@ -228,7 +228,7 @@ void NosXuanhuoCard::onEffect(const CardEffectStruct &effect) const{
 class NosXuanhuo: public OneCardViewAsSkill {
 public:
     NosXuanhuo():OneCardViewAsSkill("nosxuanhuo") {
-		filter_pattern = ".|heart|.|hand";
+        filter_pattern = ".|heart|.|hand";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -380,11 +380,11 @@ public:
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
             && Self->getWeapon() && to_select->getEffectiveId() == Self->getWeapon()->getId() && to_select->isKindOf("Crossbow")) {
             Slash *slash = new Slash(to_select->getSuit(), to_select->getNumber());
-			slash->deleteLater();
-			return Self->canSlashWithoutCrossbow(slash);
-		} else {
+            slash->deleteLater();
+            return Self->canSlashWithoutCrossbow(slash);
+        } else {
             return true;
-		}
+        }
     }
 
     const Card *viewAs(const Card *originalCard) const{
@@ -745,12 +745,12 @@ NosLijianCard::NosLijianCard(): LijianCard(false) {
 class NosLijian: public OneCardViewAsSkill {
 public:
     NosLijian(): OneCardViewAsSkill("noslijian") {
-		filter_pattern = ".!";
+        filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->getAliveSiblings().length() > 1
-			   && player->canDiscard(player, "he") && !player->hasUsed("NosLijianCard");
+               && player->canDiscard(player, "he") && !player->hasUsed("NosLijianCard");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -986,7 +986,7 @@ bool NosGuhuoCard::nosguhuo(ServerPlayer *yuji) const{
     QList<CardsMoveStruct> moves;
     foreach (int card_id, getSubcards())
         used_cards << card_id;
-	room->setTag("NosGuhuoType", user_string);
+    room->setTag("NosGuhuoType", user_string);
 
     foreach (ServerPlayer *player, players) {
         if (player->getHp() <= 0) {
@@ -1210,7 +1210,7 @@ const Card *NosGuhuoCard::validateInResponse(ServerPlayer *yuji) const{
 class NosGuhuo: public OneCardViewAsSkill {
 public:
     NosGuhuo(): OneCardViewAsSkill("nosguhuo") {
-		filter_pattern = ".|.|.|hand";
+        filter_pattern = ".|.|.|hand";
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{

@@ -101,7 +101,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 
 private:
-	void clearRestCards(Room *room) const;
+    void clearRestCards(Room *room) const;
 };
 
 class AOE: public TrickCard {

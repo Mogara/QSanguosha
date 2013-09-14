@@ -166,9 +166,9 @@ public:
             QList<ServerPlayer *> cais = room->findPlayersBySkillName(objectName());
             foreach (ServerPlayer *caiwenji, cais) {
                 if (caiwenji->canDiscard(caiwenji, "he") && room->askForCard(caiwenji, "..", "@beige", data, objectName())) {
-                    
+
                     room->broadcastSkillInvoke(objectName());
-                    
+
                     JudgeStruct judge;
                     judge.good = true;
                     judge.play_animation = false;
@@ -1194,20 +1194,20 @@ public:
             huashen_set << huashen.toString();
         foreach (ServerPlayer *player, room->getAlivePlayers()) {
             QString name = player->getGeneralName();
-			if (Sanguosha->isGeneralHidden(name)) {
-				QString fname = Sanguosha->findConvertFrom(name);
-				if (!fname.isEmpty()) name = fname;
-			}
-			room_set << name;
+            if (Sanguosha->isGeneralHidden(name)) {
+                QString fname = Sanguosha->findConvertFrom(name);
+                if (!fname.isEmpty()) name = fname;
+            }
+            room_set << name;
 
-			if (!player->getGeneral2()) continue;
+            if (!player->getGeneral2()) continue;
 
-			name = player->getGeneral2Name();
-			if (Sanguosha->isGeneralHidden(name)) {
-				QString fname = Sanguosha->findConvertFrom(name);
-				if (!fname.isEmpty()) name = fname;
-			}
-			room_set << name;
+            name = player->getGeneral2Name();
+            if (Sanguosha->isGeneralHidden(name)) {
+                QString fname = Sanguosha->findConvertFrom(name);
+                if (!fname.isEmpty()) name = fname;
+            }
+            room_set << name;
         }
 
         static QSet<QString> banned;

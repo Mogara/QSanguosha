@@ -1095,7 +1095,7 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *pl
 
                 if (Config.Enable2ndGeneral) {
                     room->setPlayerProperty(sp, "general2", "anjiang");
-					log.type = "#BasaraGeneralChosenDual";
+                    log.type = "#BasaraGeneralChosenDual";
                     log.arg2 = room->getTag(sp->objectName()).toStringList().at(1);
                 }
 

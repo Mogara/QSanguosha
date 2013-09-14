@@ -61,13 +61,13 @@ public:
         if(player->getPhase() == Player::Start){
             Room *room = player->getRoom();
             player->setMark("juao", 0);
-            
+
             LogMessage log;
             log.type = "#JuaoObtain";
             log.from = player;
             log.arg = objectName();
             room->sendLog(log);
-            
+
             DummyCard *dummy = new DummyCard;
 
             foreach (int card_id, player->getPile("hautain")) {
@@ -694,7 +694,7 @@ public:
                 room->notifySkillInvoked(player, objectName());
             }
         }
-        
+
 
         return false;
     }

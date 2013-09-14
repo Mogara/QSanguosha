@@ -100,8 +100,8 @@ private:
     QCheckBox *without_lordskill_checkbox;
     QCheckBox *sp_convert_checkbox;
     QSpinBox *maxchoice_spinbox;
-	QSpinBox *godlimit_spinbox;
-	QLabel *godlimit_label;
+    QSpinBox *godlimit_spinbox;
+    QLabel *godlimit_label;
     QLabel *lord_maxchoice_label;
     QSpinBox *lord_maxchoice_spinbox;
     QSpinBox *nonlord_maxchoice_spinbox;
@@ -135,7 +135,7 @@ private:
     QCheckBox *ai_delay_altered_checkbox;
     QSpinBox *ai_delay_ad_spinbox;
     QCheckBox *surrender_at_death_checkbox;
-	QLabel *luck_card_label;
+    QLabel *luck_card_label;
     QSpinBox *luck_card_spinbox;
     QRadioButton *official_3v3_radiobutton;
     QComboBox *official_3v3_ComboBox;

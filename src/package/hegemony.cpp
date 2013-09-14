@@ -27,11 +27,11 @@ public:
             if (!room->askForCard(player, ".Equip", "@xiaoguo-discard", QVariant())) {
                 room->broadcastSkillInvoke(objectName(), 2);
                 room->damage(DamageStruct("xiaoguo", yuejin, player));
-			} else {
-				room->broadcastSkillInvoke(objectName(), 3);
-				if (yuejin->isAlive())
-					yuejin->drawCards(1);
-			}
+            } else {
+                room->broadcastSkillInvoke(objectName(), 3);
+                if (yuejin->isAlive())
+                    yuejin->drawCards(1);
+            }
         }
         return false;
     }
@@ -117,7 +117,7 @@ void DuoshiCard::onEffect(const CardEffectStruct &effect) const{
 class Duoshi: public OneCardViewAsSkill {
 public:
     Duoshi(): OneCardViewAsSkill("duoshi") {
-		filter_pattern = ".|red|.|hand!";
+        filter_pattern = ".|red|.|hand!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -147,7 +147,7 @@ void FenxunCard::onEffect(const CardEffectStruct &effect) const{
 class FenxunViewAsSkill: public OneCardViewAsSkill {
 public:
     FenxunViewAsSkill(): OneCardViewAsSkill("fenxun") {
-		filter_pattern = ".!";
+        filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -379,7 +379,7 @@ void ShuangrenCard::onEffect(const CardEffectStruct &effect) const{
 class ShuangrenViewAsSkill: public ZeroCardViewAsSkill {
 public:
     ShuangrenViewAsSkill(): ZeroCardViewAsSkill("shuangren") {
-		response_pattern = "@@shuangren";
+        response_pattern = "@@shuangren";
     }
 
     virtual const Card *viewAs() const{
@@ -458,7 +458,7 @@ class Xiongyi: public ZeroCardViewAsSkill {
 public:
     Xiongyi(): ZeroCardViewAsSkill("xiongyi") {
         frequency = Limited;
-		limit_mark = "@arise";
+        limit_mark = "@arise";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -678,7 +678,7 @@ bool QingchengCard::targetFilter(const QList<const Player *> &targets, const Pla
 class QingchengViewAsSkill: public OneCardViewAsSkill {
 public:
     QingchengViewAsSkill(): OneCardViewAsSkill("qingcheng") {
-		filter_pattern = "EquipCard!";
+        filter_pattern = "EquipCard!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{

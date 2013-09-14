@@ -266,7 +266,7 @@ bool GreatYeyanCard::targetsFeasible(const QList<const Player *> &targets, const
         if (allsuits.contains(card->getSuit())) return false;
         allsuits.append(card->getSuit());
     }
-    
+
     //We can only assign 2 damage to one player
     //If we select only one target only once, we assign 3 damage to the target
     if (targets.toSet().size() == 1)
@@ -341,7 +341,7 @@ class Yeyan: public ViewAsSkill {
 public:
     Yeyan(): ViewAsSkill("yeyan") {
         frequency = Limited;
-		limit_mark = "@flame";
+        limit_mark = "@flame";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -367,7 +367,7 @@ public:
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
-        if (cards.length()  == 0) 
+        if (cards.length()  == 0)
             return new SmallYeyanCard;
         if (cards.length() != 4)
             return NULL;
@@ -386,9 +386,9 @@ public:
         default_choice = "down";
     }
 
-	virtual bool triggerable(const ServerPlayer *target) const{
-		return target != NULL;
-	}
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
 
     void perform(ServerPlayer *shenzhouyu) const{
         Room *room = shenzhouyu->getRoom();
@@ -414,7 +414,7 @@ public:
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (shenzhouyu->getPhase() == Player::Discard && move.from == shenzhouyu
-				&& (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
+                && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
                 shenzhouyu->setMark("qinyin", shenzhouyu->getMark("qinyin") + move.card_ids.size());
                 if (!shenzhouyu->hasFlag("QinyinUsed") && shenzhouyu->getMark("qinyin") >= 2) {
                     if (TriggerSkill::triggerable(shenzhouyu) && shenzhouyu->askForSkillInvoke(objectName())) {
@@ -532,8 +532,8 @@ public:
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-		CardUseStruct use = data.value<CardUseStruct>();
-		if (use.card->isNDTrick()) {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isNDTrick()) {
             room->broadcastSkillInvoke(objectName());
 
             LogMessage log;
@@ -617,7 +617,7 @@ WuqianCard::WuqianCard() {
 }
 
 bool WuqianCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select != Self; 
+    return targets.isEmpty() && to_select != Self;
 }
 
 void WuqianCard::onEffect(const CardEffectStruct &effect) const{
@@ -738,14 +738,14 @@ public:
 
         room->setTag("FirstRound", true); //For Manjuan
         try {
-			shenzhuge->drawCards(7);
-			room->setTag("FirstRound", false);
-		}
-		catch (TriggerEvent triggerEvent) {
-			if (triggerEvent == TurnBroken || triggerEvent == StageChange)
-				room->setTag("FirstRound", false);
-			throw triggerEvent;
-		}
+            shenzhuge->drawCards(7);
+            room->setTag("FirstRound", false);
+        }
+        catch (TriggerEvent triggerEvent) {
+            if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+                room->setTag("FirstRound", false);
+            throw triggerEvent;
+        }
 
         room->broadcastSkillInvoke("qixing");
         const Card *exchange_card = room->askForExchange(shenzhuge, "qixing", 7);
@@ -771,7 +771,7 @@ void KuangfengCard::onEffect(const CardEffectStruct &effect) const{
 class KuangfengViewAsSkill: public ZeroCardViewAsSkill {
 public:
     KuangfengViewAsSkill(): ZeroCardViewAsSkill("kuangfeng") {
-		response_pattern = "@@kuangfeng";
+        response_pattern = "@@kuangfeng";
     }
 
     virtual const Card *viewAs() const{
@@ -884,7 +884,7 @@ void DawuCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &targets)
 class DawuViewAsSkill: public ZeroCardViewAsSkill {
 public:
     DawuViewAsSkill(): ZeroCardViewAsSkill("dawu") {
-		response_pattern = "@@dawu";
+        response_pattern = "@@dawu";
     }
 
     virtual const Card *viewAs() const{
@@ -977,7 +977,7 @@ public:
         log.from = shensimayi;
         log.arg = QString::number(shensimayi->getMark("@bear"));
         room->sendLog(log);
-        
+
         room->setPlayerMark(shensimayi, "baiyin", 1);
         if (room->changeMaxHpForAwakenSkill(shensimayi))
             room->acquireSkill(shensimayi, "jilve");
@@ -1142,9 +1142,9 @@ public:
                 }
             }
         } else if (player->getPhase() == Player::NotActive) {
-			foreach (ServerPlayer *p, room->getAlivePlayers())
-				p->setMark("lianpo", 0);
-		}
+            foreach (ServerPlayer *p, room->getAlivePlayers())
+                p->setMark("lianpo", 0);
+        }
         return false;
     }
 };
@@ -1153,7 +1153,7 @@ class Lianpo: public TriggerSkill {
 public:
     Lianpo(): TriggerSkill("lianpo") {
         events << EventPhaseChanging;
-		frequency = Frequent;
+        frequency = Frequent;
     }
 
     virtual int getPriority() const{
@@ -1280,15 +1280,15 @@ bool Longhun::viewFilter(const QList<const Card *> &selected, const Card *card) 
             else if (Slash::IsAvailable(Self) && card->getSuit() == Card::Diamond) {
                 if (Self->getWeapon() && card->getEffectiveId() == Self->getWeapon()->getId()
                     && card->isKindOf("Crossbow")) {
-					int number = card->getNumber();
-					foreach (const Card *c, selected)
-						number += c->getNumber();
-					FireSlash *slash = new FireSlash(card->getSuit(), number);
-					slash->deleteLater();
+                    int number = card->getNumber();
+                    foreach (const Card *c, selected)
+                        number += c->getNumber();
+                    FireSlash *slash = new FireSlash(card->getSuit(), number);
+                    slash->deleteLater();
                     return Self->canSlashWithoutCrossbow(slash);
-				} else {
+                } else {
                     return true;
-				}
+                }
             } else
                 return false;
         }

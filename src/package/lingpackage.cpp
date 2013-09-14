@@ -17,7 +17,7 @@ void LuoyiCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const
 class NeoLuoyi: public OneCardViewAsSkill {
 public:
     NeoLuoyi(): OneCardViewAsSkill("neoluoyi") {
-		filter_pattern = "EquipCard!";
+        filter_pattern = "EquipCard!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -94,7 +94,7 @@ void NeoFanjianCard::onEffect(const CardEffectStruct &effect) const{
 class NeoFanjian: public OneCardViewAsSkill {
 public:
     NeoFanjian(): OneCardViewAsSkill("neofanjian") {
-		filter_pattern = ".|.|.|hand";
+        filter_pattern = ".|.|.|hand";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -474,7 +474,7 @@ public:
 class Neo2013Fankui: public MasochismSkill{
 public:
     Neo2013Fankui(): MasochismSkill("neo2013fankui"){
-        
+
     }
 
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{

@@ -82,7 +82,7 @@ public:
     QList<const DistanceSkill *> getDistanceSkills() const;
     QList<const MaxCardsSkill *> getMaxCardsSkills() const;
     QList<const TargetModSkill *> getTargetModSkills() const;
-	QList<const TriggerSkill *> getGlobalTriggerSkills() const;
+    QList<const TriggerSkill *> getGlobalTriggerSkills() const;
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
@@ -93,7 +93,7 @@ public:
 
     QStringList getLords(bool contain_banned = false) const;
     QStringList getRandomLords() const;
-	void banRandomGods() const;
+    void banRandomGods() const;
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
     QList<int> getRandomCards() const;
     QString getRandomGeneralName() const;
@@ -117,8 +117,8 @@ public:
     QString getCurrentCardUsePattern();
     CardUseStruct::CardUseReason getCurrentCardUseReason();
 
-	QString findConvertFrom(const QString &general_name) const;
-	bool isGeneralHidden(const QString &general_name) const;
+    QString findConvertFrom(const QString &general_name) const;
+    bool isGeneralHidden(const QString &general_name) const;
 
 private:
     void _loadMiniScenarios();
@@ -140,7 +140,7 @@ private:
     QList<const DistanceSkill *> distance_skills;
     QList<const MaxCardsSkill *> maxcards_skills;
     QList<const TargetModSkill *> targetmod_skills;
-	QList<const TriggerSkill *> global_trigger_skills;
+    QList<const TriggerSkill *> global_trigger_skills;
 
     QList<Card *> cards;
     QStringList lord_list;
@@ -151,16 +151,16 @@ private:
 
     lua_State *lua;
 
-	QHash<QString, QString> luaBasicCard_className2objectName;
-	QHash<QString, const LuaBasicCard *> luaBasicCards;
-	QHash<QString, QString> luaTrickCard_className2objectName;
+    QHash<QString, QString> luaBasicCard_className2objectName;
+    QHash<QString, const LuaBasicCard *> luaBasicCards;
+    QHash<QString, QString> luaTrickCard_className2objectName;
     QHash<QString, const LuaTrickCard *> luaTrickCards;
-	QHash<QString, QString> luaWeapon_className2objectName;
+    QHash<QString, QString> luaWeapon_className2objectName;
     QHash<QString, const LuaWeapon*> luaWeapons;
     QHash<QString, QString> luaArmor_className2objectName;
     QHash<QString, const LuaArmor *> luaArmors;
 
-	QMultiMap<QString, QString> sp_convert_pairs;
+    QMultiMap<QString, QString> sp_convert_pairs;
 };
 
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key) {

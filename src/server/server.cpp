@@ -219,11 +219,11 @@ QWidget *ServerDialog::createAdvancedTab() {
     maxchoice_spinbox->setRange(3, 10);
     maxchoice_spinbox->setValue(Config.value("MaxChoice", 5).toInt());
 
-	godlimit_label = new QLabel(tr("Upperlimit for gods"));
-	godlimit_label->setToolTip(tr("<font color=#FFFF33>-1 means that all gods may appear in your general chosen dialog!</font>"));
-	godlimit_spinbox = new QSpinBox;
-	godlimit_spinbox->setRange(-1, 8);
-	godlimit_spinbox->setValue(Config.value("GodLimit", -1).toInt());
+    godlimit_label = new QLabel(tr("Upperlimit for gods"));
+    godlimit_label->setToolTip(tr("<font color=#FFFF33>-1 means that all gods may appear in your general chosen dialog!</font>"));
+    godlimit_spinbox = new QSpinBox;
+    godlimit_spinbox->setRange(-1, 8);
+    godlimit_spinbox->setValue(Config.value("GodLimit", -1).toInt());
 
     lord_maxchoice_label = new QLabel(tr("Upperlimit for lord"));
     lord_maxchoice_label->setToolTip(tr("<font color=#FFFF33>-1 means that all lords are available</font>"));
@@ -314,7 +314,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     layout->addLayout(HLay(pile_swapping_label, pile_swapping_spinbox));
     layout->addLayout(HLay(without_lordskill_checkbox, sp_convert_checkbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
-	layout->addLayout(HLay(godlimit_label, godlimit_spinbox));
+    layout->addLayout(HLay(godlimit_label, godlimit_spinbox));
     layout->addLayout(HLay(lord_maxchoice_label, lord_maxchoice_spinbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for non-lord")), nonlord_maxchoice_spinbox));
     layout->addWidget(second_general_checkbox);
@@ -379,9 +379,9 @@ QWidget *ServerDialog::createMiscTab() {
     surrender_at_death_checkbox = new QCheckBox(tr("Surrender at the time of Death"));
     surrender_at_death_checkbox->setChecked(Config.SurrenderAtDeath);
 
-	luck_card_label = new QLabel(tr("Upperlimit for use time of luck card"));
+    luck_card_label = new QLabel(tr("Upperlimit for use time of luck card"));
     luck_card_spinbox = new QSpinBox;
-	luck_card_spinbox->setRange(0, 3);
+    luck_card_spinbox->setRange(0, 3);
     luck_card_spinbox->setValue(Config.LuckCardLimitation);
 
     QGroupBox *ai_groupbox = new QGroupBox(tr("Artificial intelligence"));
@@ -426,7 +426,7 @@ QWidget *ServerDialog::createMiscTab() {
     tablayout->addLayout(HLay(new QLabel(tr("Nullification count down")), nullification_spinbox));
     tablayout->addWidget(minimize_dialog_checkbox);
     tablayout->addWidget(surrender_at_death_checkbox);
-	tablayout->addLayout(HLay(luck_card_label, luck_card_spinbox));
+    tablayout->addLayout(HLay(luck_card_label, luck_card_spinbox));
     tablayout->addWidget(luck_card_spinbox);
     tablayout->addWidget(ai_groupbox);
     tablayout->addStretch();
@@ -634,15 +634,15 @@ QGroupBox *ServerDialog::create1v1Box() {
     QComboBox *officialComboBox = new QComboBox;
     officialComboBox->addItem(tr("Classical"), "Classical");
     officialComboBox->addItem("2013", "2013");
-	officialComboBox->addItem("OL", "OL");
+    officialComboBox->addItem("OL", "OL");
 
     official_1v1_ComboBox = officialComboBox;
 
     QString rule = Config.value("1v1/Rule", "Classical").toString();
     if (rule == "2013")
         officialComboBox->setCurrentIndex(1);
-	else if (rule == "OL")
-		officialComboBox->setCurrentIndex(2);
+    else if (rule == "OL")
+        officialComboBox->setCurrentIndex(2);
 
     kof_using_extension_checkbox = new QCheckBox(tr("General extensions"));
     kof_using_extension_checkbox->setChecked(Config.value("1v1/UsingExtension", false).toBool());
@@ -815,7 +815,7 @@ QGroupBox *ServerDialog::createGameModeBox() {
     mini_scene_ComboBox = new QComboBox;
     int index = -1;
     int stage = qMin(Sanguosha->getMiniSceneCounts(), Config.value("MiniSceneStage", 1).toInt());
-        
+
     for (int i = 1; i <= stage; i++) {
         QString name = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(i));
         QString scenario_name = Sanguosha->translate(name);
@@ -1095,7 +1095,7 @@ bool ServerDialog::config() {
     Config.setValue("WithoutLordskill", without_lordskill_checkbox->isChecked());
     Config.setValue("EnableSPConvert", sp_convert_checkbox->isChecked());
     Config.setValue("MaxChoice", maxchoice_spinbox->value());
-	Config.setValue("GodLimit", godlimit_spinbox->value());
+    Config.setValue("GodLimit", godlimit_spinbox->value());
     Config.setValue("LordMaxChoice", lord_maxchoice_spinbox->value());
     Config.setValue("NonLordMaxChoice", nonlord_maxchoice_spinbox->value());
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);

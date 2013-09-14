@@ -185,11 +185,11 @@ struct CardsMoveOneTimeStruct {
     QStringList from_pile_names;
     QString to_pile_name;
 
-	QList<Player::Place> origin_from_places;
-	Player::Place origin_to_place;
-	Player *origin_from, *origin_to; 
-	QStringList origin_from_pile_names; 
-	QString origin_to_pile_name; //for case of the movement transitted
+    QList<Player::Place> origin_from_places;
+    Player::Place origin_to_place;
+    Player *origin_from, *origin_to;
+    QStringList origin_from_pile_names;
+    QString origin_to_pile_name; //for case of the movement transitted
 
     QList<bool> open; // helper to prevent sending card_id to unrelevant clients
     bool is_last_handcard;
@@ -205,7 +205,7 @@ struct CardsMoveStruct {
     }
 
     inline CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Player::Place from_place,
-						   Player::Place to_place, CardMoveReason reason) {
+                           Player::Place to_place, CardMoveReason reason) {
         this->card_ids = ids;
         this->from_place = from_place;
         this->to_place = to_place;
@@ -213,8 +213,8 @@ struct CardsMoveStruct {
         this->to = to;
         this->reason = reason;
         this->is_last_handcard = false;
-		if (from) this->from_player_name = from->objectName();
-		if (to) this->to_player_name = to->objectName();
+        if (from) this->from_player_name = from->objectName();
+        if (to) this->to_player_name = to->objectName();
     }
 
     inline CardsMoveStruct(const QList<int> &ids, Player *to, Player::Place to_place, CardMoveReason reason) {
@@ -225,31 +225,31 @@ struct CardsMoveStruct {
         this->to = to;
         this->reason = reason;
         this->is_last_handcard = false;
-		if (to) this->to_player_name = to->objectName();
+        if (to) this->to_player_name = to->objectName();
     }
 
     inline CardsMoveStruct(int id, Player *from, Player *to, Player::Place from_place,
-						   Player::Place to_place, CardMoveReason reason) {
-		this->card_ids << id;
+                           Player::Place to_place, CardMoveReason reason) {
+        this->card_ids << id;
         this->from_place = from_place;
         this->to_place = to_place;
-		this->from = from;
-		this->to = to;
-		this->reason = reason;
-		this->is_last_handcard = false;
-		if (from) this->from_player_name = from->objectName();
-		if (to) this->to_player_name = to->objectName();
+        this->from = from;
+        this->to = to;
+        this->reason = reason;
+        this->is_last_handcard = false;
+        if (from) this->from_player_name = from->objectName();
+        if (to) this->to_player_name = to->objectName();
     }
 
     inline CardsMoveStruct(int id, Player *to, Player::Place to_place, CardMoveReason reason) {
         this->card_ids << id;
         this->from_place = Player::PlaceUnknown;
-		this->to_place = to_place;
-		this->from = NULL;
-		this->to = to;
-		this->reason = reason;
-		this->is_last_handcard = false;
-		if (to) this->to_player_name = to->objectName();
+        this->to_place = to_place;
+        this->from = NULL;
+        this->to = to;
+        this->reason = reason;
+        this->is_last_handcard = false;
+        if (to) this->to_player_name = to->objectName();
     }
 
     inline bool operator == (const CardsMoveStruct &other) const{
@@ -271,9 +271,9 @@ struct CardsMoveStruct {
     bool open; // helper to prevent sending card_id to unrelevant clients
     bool is_last_handcard;
 
-	Player::Place origin_from_place, origin_to_place;
-	Player *origin_from, *origin_to; 
-	QString origin_from_pile_name, origin_to_pile_name; //for case of the movement transitted
+    Player::Place origin_from_place, origin_to_place;
+    Player *origin_from, *origin_to;
+    QString origin_from_pile_name, origin_to_pile_name; //for case of the movement transitted
 
     bool tryParse(const Json::Value &);
     Json::Value toJsonValue() const;
@@ -405,7 +405,7 @@ enum TriggerEvent {
     EventPhaseProceeding,
     EventPhaseEnd,
     EventPhaseChanging,
-	EventPhaseSkipping,
+    EventPhaseSkipping,
 
     DrawNCards,
     AfterDrawNCards,

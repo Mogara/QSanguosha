@@ -299,7 +299,7 @@ int Jushou::getJushouDrawNum(ServerPlayer *) const{
 bool Jushou::onPhaseChange(ServerPlayer *target) const{
     if (target->getPhase() == Player::Finish) {
         Room *room = target->getRoom();
-        if (room->askForSkillInvoke(target, objectName())) {          
+        if (room->askForSkillInvoke(target, objectName())) {
             room->broadcastSkillInvoke(objectName() == "neojushou" ? "neojushou" : "jushou");
             target->drawCards(getJushouDrawNum(target));
             target->turnOver();
@@ -515,8 +515,8 @@ public:
         if (move.from && move.from->isAlive() && move.from_places.contains(Player::PlaceHand)
             && ((move.reason.m_reason == CardMoveReason::S_REASON_DISMANTLE
                  && move.reason.m_playerId != move.reason.m_targetId)
-                || ((move.to_place == Player::PlaceTable && move.origin_to && move.origin_to != move.from && move.origin_to_place == Player::PlaceHand) 
-					|| (move.to && move.to != move.from && move.to_place == Player::PlaceHand)))) {
+                || ((move.to_place == Player::PlaceTable && move.origin_to && move.origin_to != move.from && move.origin_to_place == Player::PlaceHand)
+                    || (move.to && move.to != move.from && move.to_place == Player::PlaceHand)))) {
             if (room->askForSkillInvoke(player, objectName(), data)) {
                 room->loseHp(player);
                 if (move.from->isAlive())
@@ -1148,11 +1148,11 @@ public:
                     room->removePlayerMark(player, "Qingcheng" + skill_name);
                 player->tag["ChanyuanSkills"] = QVariant();
             }
-			room->removePlayerMark(player, "@chanyuan");
+            room->removePlayerMark(player, "@chanyuan");
             return false;
         } else if (triggerEvent == EventAcquireSkill) {
             if (data.toString() != objectName()) return false;
-			room->addPlayerMark(player, "@chanyuan");
+            room->addPlayerMark(player, "@chanyuan");
         }
 
         if (!TriggerSkill::triggerable(player)) return false;

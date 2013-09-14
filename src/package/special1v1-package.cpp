@@ -123,7 +123,7 @@ public:
 class KOFQingguo: public OneCardViewAsSkill {
 public:
     KOFQingguo(): OneCardViewAsSkill("kofqingguo") {
-		filter_pattern = ".|.|.|equipped";
+        filter_pattern = ".|.|.|equipped";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -269,7 +269,7 @@ void CangjiCard::onEffect(const CardEffectStruct &effect) const{
 class CangjiViewAsSkill: public ViewAsSkill {
 public:
     CangjiViewAsSkill(): ViewAsSkill("cangji") {
-		response_pattern = "@@cangji";
+        response_pattern = "@@cangji";
     }
 
     virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const{
@@ -354,7 +354,7 @@ public:
         log.card_str = IntList2StringList(equip_list).join("+");
         room->sendLog(log);
 
-		CardsMoveStruct move(equip_list, player, Player::PlaceEquip, CardMoveReason());
+        CardsMoveStruct move(equip_list, player, Player::PlaceEquip, CardMoveReason());
         room->moveCardsAtomic(move, true);
         return false;
     }
@@ -872,7 +872,7 @@ void PujiCard::onEffect(const CardEffectStruct &effect) const{
 class Puji: public OneCardViewAsSkill {
 public:
     Puji(): OneCardViewAsSkill("puji") {
-		filter_pattern = ".!";
+        filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -986,10 +986,10 @@ ADD_PACKAGE(Special1v1)
 Special1v1OLPackage::Special1v1OLPackage()
     : Package("Special1v1OL")
 {
-	General *kof_liubei = new General(this, "kof_liubei$", "shu");
+    General *kof_liubei = new General(this, "kof_liubei$", "shu");
     kof_liubei->addSkill(new Renwang);
     kof_liubei->addSkill(new RenwangRemoveMark);
-	kof_liubei->addSkill("jijiang");
+    kof_liubei->addSkill("jijiang");
     related_skills.insertMulti("renwang", "#renwang");
 
     General *kof_weiyan = new General(this, "kof_weiyan", "shu");
@@ -1004,7 +1004,7 @@ Special1v1OLPackage::Special1v1OLPackage()
     kof_daqiao->addSkill("guose");
     kof_daqiao->addSkill(new Wanrong);
 
-	General *kof_huatuo = new General(this, "kof_huatuo", "qun", 3);
+    General *kof_huatuo = new General(this, "kof_huatuo", "qun", 3);
     kof_huatuo->addSkill("jijiu");
     kof_huatuo->addSkill(new Puji);
 
@@ -1012,7 +1012,7 @@ Special1v1OLPackage::Special1v1OLPackage()
     kof_pangde->addSkill("mengjin");
     kof_pangde->addSkill("xiaoxi");
 
-	addMetaObject<PujiCard>();
+    addMetaObject<PujiCard>();
 }
 
 ADD_PACKAGE(Special1v1OL)
