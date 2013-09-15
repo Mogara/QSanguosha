@@ -3,6 +3,8 @@
 
 #include "package.h"
 #include "card.h"
+#include "skill.h"
+#include "structs.h"
 
 class ThicketPackage: public Package {
     Q_OBJECT
@@ -40,6 +42,16 @@ public:
 
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+
+class SavageAssaultAvoid: public TriggerSkill {
+public:
+    SavageAssaultAvoid(const QString &);
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+private:
+    QString avoid_skill;
 };
 
 #endif

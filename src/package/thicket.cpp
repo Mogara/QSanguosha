@@ -138,34 +138,29 @@ public:
     }
 };
 
-class SavageAssaultAvoid: public TriggerSkill {
-public:
-    SavageAssaultAvoid(const QString &avoid_skill)
-        : TriggerSkill("#sa_avoid_" + avoid_skill), avoid_skill(avoid_skill)
-    {
-        events << CardEffected;
-    }
 
-    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
-        CardEffectStruct effect = data.value<CardEffectStruct>();
-        if (effect.card->isKindOf("SavageAssault")) {
-            room->broadcastSkillInvoke(avoid_skill);
+SavageAssaultAvoid::SavageAssaultAvoid(const QString &avoid_skill): TriggerSkill("#sa_avoid_" + avoid_skill), avoid_skill(avoid_skill){
+    events << CardEffected;
+}
 
-            LogMessage log;
-            log.type = "#SkillNullify";
-            log.from = player;
-            log.arg = avoid_skill;
-            log.arg2 = "savage_assault";
-            room->sendLog(log);
+bool SavageAssaultAvoid::trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
+    CardEffectStruct effect = data.value<CardEffectStruct>();
+    if (effect.card->isKindOf("SavageAssault")) {
+        room->broadcastSkillInvoke(avoid_skill);
 
-            return true;
-        } else
-            return false;
-    }
+        LogMessage log;
+        log.type = "#SkillNullify";
+        log.from = player;
+        log.arg = avoid_skill;
+        log.arg2 = "savage_assault";
+        room->sendLog(log);
 
-private:
-    QString avoid_skill;
-};
+        return true;    
+    } else
+        return false;
+}
+
+
 
 class Huoshou: public TriggerSkill {
 public:

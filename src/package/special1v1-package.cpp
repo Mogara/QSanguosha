@@ -9,6 +9,7 @@
 #include "room.h"
 #include "ai.h"
 #include "settings.h"
+#include "thicket.h"
 
 class KOFTuxi: public DrawCardsSkill {
 public:
@@ -412,6 +413,8 @@ public:
     }
 };
 
+/*
+
 class ManyiAvoid: public TriggerSkill {
 public:
     ManyiAvoid(): TriggerSkill("#manyi-avoid") {
@@ -434,7 +437,8 @@ public:
         } else
             return false;
     }
-};
+};*/
+
 
 class KOFXiaoji: public TriggerSkill {
 public:
@@ -956,9 +960,10 @@ Special1v1Package::Special1v1Package()
 
     General *kof_menghuo = new General(this, "kof_menghuo", "shu");
     kof_menghuo->addSkill(new Manyi);
-    kof_menghuo->addSkill(new ManyiAvoid);
+    //kof_menghuo->addSkill(new ManyiAvoid);
+    kof_menghuo->addSkill(new SavageAssaultAvoid("manyi"));
     kof_menghuo->addSkill("zaiqi");
-    related_skills.insertMulti("manyi", "#manyi-avoid");
+    related_skills.insertMulti("manyi", "#sa_avoid_manyi");
 
     General *kof_zhurong = new General(this, "kof_zhurong", "shu", 4, false);
     kof_zhurong->addSkill("manyi");
