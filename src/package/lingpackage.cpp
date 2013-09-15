@@ -668,20 +668,137 @@ public:
         return false;
     }
 };
-
-
-
+//
+//
+//
 //每当你成为其他角色使用【杀】或非延时类锦囊牌的唯一目标后，
 //你可以将一张手牌背面朝上置于你的武将牌上，称为“箭”；
 //你可以将一张“箭”当【杀】使用（无距离限制），
 //当此【杀】对目标角色造成伤害后：
 //锁定技，若此【杀】为红色，你可以摸一张牌；
-//锁定技，若此【杀】为黑色，你可以弃置该角色的一张牌。",
-
+//锁定技，若此【杀】为黑色，你可以弃置该角色的一张牌。
+//
 //锁定技怎么能“可以”…………这又不是袁术的视为拥有…………
+//
+//
 
+class Neo2013Duoyi: public TriggerSkill{
+public:
+    Neo2013Duoyi(): TriggerSkill("neo2013duoyi"){
+        events << EventPhaseStart << CardUsed << CardResponded << EventPhaseChanging;
+    }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->isAlive() && !target->hasSkill(objectName());
+    }
 
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *selfplayer = room->findPlayerBySkillName(objectName());
+        if (selfplayer == NULL)
+            return false;
+        static QStringList types;
+        if (types.isEmpty())
+            types << "BasicCard" << "EquipCard" << "TrickCard";
+
+        if (triggerEvent == EventPhaseStart){
+            if (player->getPhase() != Player::RoundStart)
+                return false;
+
+            if (room->askForDiscard(selfplayer, objectName(), 1, 1, true, true, "@neo2013duoyi")){
+                QString choice = room->askForChoice(selfplayer, objectName(), types.join("+"), data);
+                room->setPlayerMark(player, "YiDuoyiType", types.indexOf(choice) + 1);
+            }
+        }
+        else if (triggerEvent == CardUsed || triggerEvent == CardResponded){
+            if (player->getMark("YiDuoyiType") == 0)
+                return false;
+
+            std::string t = types[player->getMark("YiDuoyiType") - 1].toStdString();   //QString转char *好麻烦！
+
+            const Card *c = NULL;
+
+            if (triggerEvent == CardUsed)
+                c = data.value<CardUseStruct>().card;
+            else {
+                CardResponseStruct resp = data.value<CardResponseStruct>();
+                if (resp.m_isUse)
+                    c = resp.m_card;
+            }
+            if (c == NULL)
+                return false;
+
+            if (c->isKindOf(t.c_str()))
+                selfplayer->drawCards(1);
+        }
+        else {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::PhaseNone)
+                room->setPlayerMark(player, "YiDuoyiType", 0);
+        }
+        return false;
+    }
+};
+
+Neo2013PujiCard::Neo2013PujiCard(): SkillCard(){
+    //handling_method = Card::MethodDiscard;
+}
+
+bool Neo2013PujiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.length() == 0 && !to_select->isNude() && to_select != Self;
+}
+
+void Neo2013PujiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    ServerPlayer *target = targets[0];
+    const Card *card = Sanguosha->getCard(room->askForCardChosen(source, target, "he", objectName(), false, Card::MethodDiscard));
+    
+    QList<ServerPlayer *> beneficiary;
+    if (Sanguosha->getCard(getSubcards()[0])->isBlack())
+        beneficiary << source;
+
+    if (card->isBlack())
+        beneficiary << target;
+
+    room->throwCard(card, target, source);
+
+    if (beneficiary.length() != 0)
+        foreach(ServerPlayer *p, beneficiary){
+            QStringList choicelist;
+            choicelist << "draw";
+            if (p->isWounded())
+                choicelist << "recover";
+
+            QString choice = room->askForChoice(p, objectName(), choicelist.join("+"));
+
+            if (choice == "draw")
+                p->drawCards(1);
+            else {
+                RecoverStruct r;
+                r.who = p;
+                room->recover(p, r);
+            }
+        }
+}
+
+class Neo2013Puji: public OneCardViewAsSkill{
+public:
+    Neo2013Puji(): OneCardViewAsSkill("neo2013puji"){
+
+    }
+
+    virtual bool viewFilter(const Card *to_select) const{
+        return !Self->isJilei(to_select);
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        Neo2013PujiCard *c = new Neo2013PujiCard;
+        c->addSubcard(originalCard);
+        return c;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->canDiscard(player, "he") && !player->hasUsed("Neo2013PujiCard");
+    }
+};
 
 
 Ling2013Package::Ling2013Package(): Package("Ling2013"){
@@ -717,6 +834,15 @@ Ling2013Package::Ling2013Package(): Package("Ling2013"){
 
     General *neo2013_yuji = new General(this, "neo2013_yuji", "qun", 3);
     neo2013_yuji->addSkill(new Neo2013Qianhuan);
+
+    General *neo2013_yangxiu = new General(this, "neo2013_yangxiu", "wei", 3);
+    neo2013_yangxiu->addSkill(new Neo2013Duoyi);
+    neo2013_yangxiu->addSkill("jilei");
+    neo2013_yangxiu->addSkill("danlao");
+
+    General *neo2013_huatuo = new General(this, "neo2013_huatuo", "qun", 3);
+    neo2013_huatuo->addSkill(new Neo2013Puji);
+    neo2013_huatuo->addSkill("jijiu");
 
     addMetaObject<Neo2013XinzhanCard>();
     addMetaObject<Neo2013FanjianCard>();
