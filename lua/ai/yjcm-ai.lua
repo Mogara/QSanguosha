@@ -358,50 +358,42 @@ end
 
 sgs.ai_chaofeng.fazheng = -3
 
-sgs.ai_skill_use["@@xuanfeng"] = function(self, prompt)
-	local erzhang = self.room:findPlayerBySkillName("guzheng")
-	if erzhang and self:isEnemy(erzhang) and self.room:getCurrent():getPhase() == sgs.Player_Discard then return "." end
-	local first
-	local second
-	first = self:findPlayerToDiscard("he", false)
-	second = self:findPlayerToDiscard("he", false, true, self.room:getOtherPlayers(first))
-
-	if first then
-		if first and not second then
-			if self:isFriend(first) then return "." end
-			return ("@XuanfengCard=.->%s"):format(first:objectName())
-		else
-			return ("@XuanfengCard=.->%s+%s"):format(first:objectName(), second:objectName())
+function sgs.ai_skill_invoke.xuanfeng(self, data)
+	if self.player:getPhase() == sgs.Player_Discard then
+		local erzhang = self.room:findPlayerBySkillName("guzheng")
+		if erzhang and self:isEnemy(erzhang) then return false end
+	end
+	local player = self:findPlayerToDiscard("he", false)
+	if player then return true else return false end
+end
+sgs.ai_skill_playerchosen.xuanfeng = function(self, targets)
+	local to
+	local player = self:findPlayerToDiscard()
+	targets = sgs.QList2Table(targets)
+	self:sort(self.friends_noself, "threat")
+	self:sort(self.enemies, "defense")
+	for _, enemy in ipairs(self.enemies) do
+		if self.player:canDiscard(enemy, "he") then to = enemy break end
+	end
+	if not to then
+		for _, fr in ipairs(self.friends_noself) do
+			if self.player:canDiscard(fr, "he") then to = fr break end
 		end
 	end
-	return "."
+	return player or to or targets[math.random(1, #targets)]
 end
 
-sgs.ai_card_intention.XuanfengCard = function(self, card, from, tos)
-	local intention = 80
-	for i=1, #tos do
-		local to = tos[i]
-		if to:hasSkill("kongcheng") and to:getHandcardNum() == 1 and to:getHp() <= 2 then
-			intention = 0
-		end
-		if self:needToThrowArmor(to) then
-			  intention = 0
-		end
-		sgs.updateIntention(from, tos[i], intention)
+sgs.ai_playerchosen_intention.xuanfeng = function(self, from, to)
+	local intention = 77
+	if to:hasSkill("kongcheng") and to:getHandcardNum() == 1 and to:getHp() <= 2 then
+		intention = 0
 	end
+	if self:needToThrowArmor(to) then
+		intention = 0
+	end	
+	sgs.updateIntention(from, to, intention)
 end
 sgs.xuanfeng_keep_value = sgs.xiaoji_keep_value
-
-sgs.ai_skill_playerchosen.xuanfeng = function(self, targets)	
-	targets = sgs.QList2Table(targets)
-	self:sort(targets,"defense")
-	for _, enemy in ipairs(self.enemies) do
-		if (not self:doNotDiscard(enemy) or self:getDangerousCard(enemy) or self:getValuableCard(enemy)) and not enemy:isNude() and
-		not (enemy:hasSkill("guzheng") and self.room:getCurrent():getPhase() == sgs.Player_Discard) then
-			return enemy
-		end
-	end
-end
 
 sgs.ai_skill_invoke.pojun = function(self, data)
 	local damage = data:toDamage()
