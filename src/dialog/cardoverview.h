@@ -31,6 +31,7 @@ private:
 private slots:
     void on_femalePlayButton_clicked();
     void on_malePlayButton_clicked();
+    void on_playAudioEffectButton_clicked();
     void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
     void on_tableWidget_itemSelectionChanged();
     void askCard();

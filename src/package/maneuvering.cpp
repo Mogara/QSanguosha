@@ -124,7 +124,6 @@ public:
         if (damage.card && damage.card->isKindOf("Slash")
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
             && damage.to->isKongcheng() && damage.by_user && !damage.chain && !damage.transfer) {
-            room->broadcastSkillInvoke(objectName());
             room->setEmotion(player, "weapon/guding_blade");
 
             LogMessage log;
@@ -158,7 +157,6 @@ public:
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (effect.nature == DamageStruct::Normal) {
-                room->broadcastSkillInvoke(objectName());
                 room->setEmotion(player, "armor/vine");
                 LogMessage log;
                 log.from = player;
@@ -187,7 +185,6 @@ public:
         } else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.nature == DamageStruct::Fire) {
-                room->broadcastSkillInvoke("VineBurn");
                 room->setEmotion(player, "armor/vineburn");
                 LogMessage log;
                 log.type = "#VineDamage";
@@ -224,7 +221,6 @@ public:
         if (triggerEvent == DamageInflicted && ArmorSkill::triggerable(player)) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.damage > 1) {
-                room->broadcastSkillInvoke(objectName());
                 room->setEmotion(player, "armor/silver_lion");
                 LogMessage log;
                 log.type = "#SilverLion";
@@ -246,7 +242,6 @@ public:
                 if (card->objectName() == objectName()) {
                     player->setFlags("-SilverLionRecover");
                     if (player->isWounded()) {
-                        room->broadcastSkillInvoke(objectName());
                         room->setEmotion(player, "armor/silver_lion");
                         RecoverStruct recover;
                         recover.card = card;

@@ -8,6 +8,8 @@
 	"playerAudioEffect-common-weapon": "audio/card/common/weapon.ogg",
 	"playerAudioEffect-common-armor": "audio/card/common/armor.ogg",
 	"playerAudioEffect-common-horse": "audio/card/common/horse.ogg",
+	
+	"playerAudioEffect-equip-default": "audio/equip/%1.ogg",
 
 	"playerAudioEffect-male-default": "audio/card/male/%1.ogg",
 	"playerAudioEffect-female-default": "audio/card/female/%1.ogg"

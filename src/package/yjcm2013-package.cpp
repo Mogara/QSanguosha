@@ -1066,8 +1066,7 @@ public:
                         player->skip(Player::Play);
                         skip = true;
                     }
-                }
-                else {
+                } else {
                     room->setFixedDistance(player, fuhuanghou, 1);
                     QVariantList zhuikonglist = player->tag[objectName()].toList();
                     zhuikonglist.append(QVariant::fromValue((PlayerStar)fuhuanghou));
