@@ -317,7 +317,7 @@ sgs.ai_card_intention.MouzhuCard = function(self, card, from, tos)
 end
 
 sgs.ai_skill_invoke.yanhuo = function(self, data)
-	local opponent = self.player:getOtherPlayers(self.player, true):first()
+	local opponent = self.room:getOtherPlayers(self.player, true):first()
 	return opponent:isAlive() and not self:doNotDiscard(opponent)
 end
 
