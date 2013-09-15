@@ -367,39 +367,32 @@ end
 	技能：连理
 	描述：回合开始阶段开始时，你可以选择一名男性角色，你和其进入连理状态直到你的下回合开始：该角色可以帮你出闪，你可以帮其出杀 
 ]]--
-sgs.ai_skill_use["@@lianli"] = function(self, prompt)
-	self:sort(self.friends, "defense")
-	
+sgs.ai_skill_playerchosen.lianli = function(self, targets)
+	local key = math.random(0, 2) == 1 and "defenseSlash" or "defense"
+	self:sort(self.friends_noself, key)
 	local AssistTarget = self:AssistTarget()
-	if AssistTarget and AssistTarget:isMale() and not AssistTarget:hasSkill("manjuan") then return "@LianliCard=.->" .. AssistTarget:objectName() end
-	
+	if AssistTarget and AssistTarget:isMale() and not AssistTarget:hasSkill("manjuan") then return AssistTarget end
 	for _, friend in ipairs(self.friends_noself) do --优先考虑与队友连理
 		if friend:isMale() and not friend:hasSkill("manjuan") then
-			return "@LianliCard=.->" .. friend:objectName()
+			return friend
 		end
 	end
-
 	for _, friend in ipairs(self.friends_noself) do
 		if friend:isMale() then
-			return "@LianliCard=.->" .. friend:objectName()
+			return friend
 		end
 	end
-	
-	if self.player:isMale() then --双将时可以和自己连理
-		return "@LianliCard=.->"..self.player:objectName()
-	end
-
+	if self.player:isMale() then return self.player end
 	if sgs.turncount <= 2 then
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 			if player:isMale() and not self:isEnemy(player) and not player:inMyAttackRange(self.player) then
-				return "@LianliCard=.->" .. player:objectName()
+				return player
 			end
 		end
 	end	
-	return "."	
+	return nil
 end
-
-sgs.ai_card_intention.LianliCard = -80
+sgs.ai_playerchosen_intention.lianli = -77
 
 table.insert(sgs.ai_global_flags, "lianlisource")
 sgs.ai_skill_invoke.lianli_slash = function(self, data) --CardAsk
