@@ -203,7 +203,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         room->setEmotion(player, "weapon/spear");
     else if (use.to.size() > 1 && player->hasWeapon("halberd") && player->isLastHandCard(this))
         room->setEmotion(player, "weapon/halberd");
-    else if (use.card->isVirtualCard() && use.card->getSkillName() == "fan") {
+    else if (use.card->isVirtualCard() && use.card->getSkillName() == "fan")
         room->setEmotion(player, "weapon/fan");
 
     if (player->getPhase() == Player::Play
