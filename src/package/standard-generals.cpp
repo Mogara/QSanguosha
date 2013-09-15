@@ -1100,7 +1100,7 @@ public:
 
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
         if (player->hasSkill("luoyan"))
-            return 3;
+            return qrand() % 2 + 3;
         else
             return qrand() % 2 + 1;
     }
