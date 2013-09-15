@@ -645,6 +645,7 @@ bool Player::isChained() const{
 
 void Player::setChained(bool chained) {
     if (this->chained != chained) {
+        Sanguosha->playSystemAudioEffect("chained");
         this->chained = chained;
         emit state_changed();
     }
