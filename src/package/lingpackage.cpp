@@ -800,6 +800,63 @@ public:
     }
 };
 
+class Neo2013Suishi: public TriggerSkill{
+public:
+    Neo2013Suishi(): TriggerSkill("neo2013suishi"){
+        events << Damage << Death;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->isAlive();
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *selfplayer = room->findPlayerBySkillName(objectName());
+        if (triggerEvent == Damage){
+            if (selfplayer->hasFlag("YiSuishiUsed"))
+                return false;
+            DamageStruct damage = data.value<DamageStruct>();
+            if (!damage.from->hasSkill(objectName()))
+                if (room->askForSkillInvoke(player, objectName(), data)){
+                    room->broadcastSkillInvoke(objectName(), 1);
+                    room->notifySkillInvoked(selfplayer, objectName());
+                    LogMessage l;
+                    l.type = "#InvokeOthersSkill";
+                    l.from = player;
+                    l.to << selfplayer;
+                    l.arg = objectName();
+                    room->sendLog(l);
+                    selfplayer->drawCards(1);
+                    room->setPlayerFlag(selfplayer, "YiSuishiUsed");
+                }
+        }
+        else if (TriggerSkill::triggerable(player)){
+            if (player->isNude())
+                return false;
+            ServerPlayer *target = NULL;
+            DeathStruct death = data.value<DeathStruct>();
+            if (death.who->hasSkill(objectName()))
+                return false;
+            if (death.damage && death.damage->from)
+                target = death.damage->from;
+
+            if (target != NULL && room->askForSkillInvoke(target, objectName(), data)){
+                room->broadcastSkillInvoke(objectName(), 2);
+                if (target != player){
+                    LogMessage l;
+                    l.type = "#InvokeOthersSkill";
+                    l.from = target;
+                    l.to << player;
+                    l.arg = objectName();
+                    room->sendLog(l);
+                }
+                room->askForDiscard(player, objectName(), 1, 1, false, true, "@yisuishidiscard");
+            }
+        }
+        return false;
+    }
+};
+
 
 Ling2013Package::Ling2013Package(): Package("Ling2013"){
     General *neo2013_masu = new General(this, "neo2013_masu", "shu", 3);
@@ -843,6 +900,19 @@ Ling2013Package::Ling2013Package(): Package("Ling2013"){
     General *neo2013_huatuo = new General(this, "neo2013_huatuo", "qun", 3);
     neo2013_huatuo->addSkill(new Neo2013Puji);
     neo2013_huatuo->addSkill("jijiu");
+
+    General *neo2013_xuchu = new General(this, "neo2013_xuchu", "wei", 4);
+    neo2013_xuchu->addSkill("neoluoyi");
+    neo2013_xuchu->addSkill("xiechan");
+
+    General *neo2013_zhaoyun = new General(this, "neo2013_zhaoyun", "shu", 4);
+    neo2013_zhaoyun->addSkill("longdan");
+    neo2013_zhaoyun->addSkill("yicong");
+    neo2013_zhaoyun->addSkill("jiuzhu");
+
+    General *neo2013_tianfeng = new General(this, "neo2013_tianfeng", "qun", 3);
+    neo2013_tianfeng->addSkill(new Neo2013Suishi);
+    neo2013_tianfeng->addSkill("sijian");
 
     addMetaObject<Neo2013XinzhanCard>();
     addMetaObject<Neo2013FanjianCard>();
