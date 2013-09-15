@@ -2251,10 +2251,18 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &) {
     if (player && !player->isOwner()) return;
     if (isFull()) return;
 
+    QStringList names = GetConfigFromLuaState(Sanguosha->getLuaState(), "robot_names").toStringList();
+    qShuffle(names);
+
     int n = 0;
     foreach (ServerPlayer *player, m_players) {
-        if (player->getState() == "robot")
-            n++;
+        if (player->getState() == "robot") {
+            QString screenname = player->screenName();
+            if (names.contains(screenname))
+                names.removeAll(screenname);
+            else
+                n++;
+        }
     }
 
     ServerPlayer *robot = new ServerPlayer(this);
@@ -2262,7 +2270,7 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &) {
 
     m_players << robot;
 
-    const QString robot_name = tr("Computer %1").arg(QChar('A' + n));
+    const QString robot_name = names.isEmpty() ? tr("Computer %1").arg(QChar('A' + n)) : names.first();
     const QString robot_avatar = Sanguosha->getRandomGeneralName();
     signup(robot, robot_name, robot_avatar, true);
 
