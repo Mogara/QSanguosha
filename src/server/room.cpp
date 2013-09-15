@@ -341,6 +341,8 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason) {
         if (p->isAlive() || p == victim)
             thread->trigger(Death, this, p, data);
 
+    doNotify(victim, S_COMMAND_SET_DASHBOARD_SHADOW, toJsonString(victim->objectName()));
+
     victim->detachAllSkills();
     thread->trigger(BuryVictim, this, victim, data);
 

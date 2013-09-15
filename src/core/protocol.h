@@ -123,7 +123,8 @@ namespace QSanProtocol {
         S_COMMAND_AVAILABLE_CARDS,
         S_COMMAND_ANIMATE,
         S_COMMAND_LUCK_CARD,
-		S_COMMAND_VIEW_GENERALS
+		S_COMMAND_VIEW_GENERALS,
+        S_COMMAND_SET_DASHBOARD_SHADOW
     };
 
     enum GameEventType {

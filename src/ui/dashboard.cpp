@@ -175,11 +175,6 @@ void Dashboard::killPlayer() {
     if (_m_votesItem) _m_votesItem->hide();
     if (_m_distanceItem) _m_distanceItem->hide();
 
-    QGraphicsColorizeEffect *effect = new QGraphicsColorizeEffect();
-    effect->setColor(_m_layout->m_deathEffectColor);
-    effect->setStrength(1.0);
-    this->setGraphicsEffect(effect);
-    refresh();
     _m_deathIcon->show();
     if (ServerInfo.GameMode == "04_1v3" && !Self->isLord()) {
         _m_votesGot = 6;
@@ -192,6 +187,14 @@ void Dashboard::revivePlayer() {
     this->setGraphicsEffect(NULL);
     Q_ASSERT(_m_deathIcon);
     _m_deathIcon->hide();
+    refresh();
+}
+
+void Dashboard::setDeathColor() {
+    QGraphicsColorizeEffect *effect = new QGraphicsColorizeEffect();
+    effect->setColor(_m_layout->m_deathEffectColor);
+    effect->setStrength(1.0);
+    this->setGraphicsEffect(effect);
     refresh();
 }
 

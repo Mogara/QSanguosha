@@ -156,6 +156,7 @@ public slots:
     void updateStatus(Client::Status oldStatus, Client::Status newStatus);
     void killPlayer(const QString &who);
     void revivePlayer(const QString &who);
+    void setDashboardShadow(const QString &who);
     void showServerInformation();
     void surrender();
     void saveReplayRecord();

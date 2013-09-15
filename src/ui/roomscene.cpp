@@ -146,6 +146,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(pile_reset()), this, SLOT(resetPiles()));
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
     connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
+    connect(ClientInstance, SIGNAL(dashboard_death(QString)), this, SLOT(setDashboardShadow(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString, int)), this, SLOT(showCard(QString, int)));
     connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool, QList<int>)), this, SLOT(doGongxin(QList<int>, bool, QList<int>)));
     connect(ClientInstance, SIGNAL(focus_moved(QStringList, QSanProtocol::Countdown)), this, SLOT(moveFocus(QStringList, QSanProtocol::Countdown)));
@@ -3190,6 +3191,11 @@ void RoomScene::revivePlayer(const QString &who) {
         photo->revivePlayer();
         item2player.insert(photo, photo->getPlayer());
     }
+}
+
+void RoomScene::setDashboardShadow(const QString &who) {
+    if (who != Self->objectName()) return;
+    dashboard->setDeathColor();
 }
 
 void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id, bool move_cards) {

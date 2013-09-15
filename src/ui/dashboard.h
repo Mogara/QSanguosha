@@ -52,6 +52,7 @@ public:
     void setTrust(bool trust);
     virtual void killPlayer();
     virtual void revivePlayer();
+    virtual void setDeathColor();
     void selectCard(const QString &pattern, bool forward = true, bool multiple = false);
     void selectEquip(int position);
     void selectOnlyCard(bool need_only = false);

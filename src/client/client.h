@@ -106,6 +106,7 @@ public:
     void updateProperty(const Json::Value &);
     void killPlayer(const Json::Value &player_arg);
     void revivePlayer(const Json::Value &player_arg);
+    void setDashboardShadow(const Json::Value &player_arg);
     void warn(const QString &);
     void setMark(const Json::Value &mark_str);
     void showCard(const Json::Value &show_str);    
@@ -287,6 +288,7 @@ signals:
     void pile_reset();
     void player_killed(const QString &who);
     void player_revived(const QString &who);
+    void dashboard_death(const QString &who);
     void card_shown(const QString &player_name, int card_id);
     void log_received(const QStringList &log_str);
     void guanxing(const QList<int> &card_ids, bool up_only);
