@@ -490,7 +490,7 @@ public:
                 return;
 
             ServerPlayer *victim;
-            if ((victim = room->askForPlayerChosen(target, players, objectName(), "@fankui", true, true)) != NULL){
+            if ((victim = room->askForPlayerChosen(target, players, objectName(), "@neo2013fankui", true, true)) != NULL){
                 int card_id = room->askForCardChosen(target, victim, "he", objectName());
                 room->obtainCard(target, Sanguosha->getCard(card_id), room->getCardPlace(card_id) != Player::PlaceHand);
             }
@@ -850,12 +850,173 @@ public:
                     l.arg = objectName();
                     room->sendLog(l);
                 }
-                room->askForDiscard(player, objectName(), 1, 1, false, true, "@yisuishidiscard");
+                room->askForDiscard(player, objectName(), 1, 1, false, true, "@neo2013suishi");
             }
         }
         return false;
     }
 };
+
+class Neo2013Shushen: public TriggerSkill{
+public:
+    Neo2013Shushen(): TriggerSkill("neo2013_shushen"){
+        events << HpRecover;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        RecoverStruct recover_struct = data.value<RecoverStruct>();
+        int recover = recover_struct.recover;
+        for (int i = 1; i <= recover; i++){
+            ServerPlayer *target = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName(), "@neo2013shushen", true, true);
+            if (target != NULL){
+                room->broadcastSkillInvoke(objectName());
+                room->drawCards(target, 1);
+            }
+            else
+                break;
+        }
+        return false;
+    }
+};
+
+class Neo2013Shenzhi: public PhaseChangeSkill{
+public:
+    Neo2013Shenzhi(): PhaseChangeSkill("neo2013shenzhi"){
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        if (player->getPhase() != Player::Start || player->isKongcheng())
+            return false;
+
+        foreach (const Card *card, player->getHandcards()){
+            if (player->isJilei(card))
+                return false;
+        }
+
+        Room *room = player->getRoom();
+        if (room->askForSkillInvoke(player, objectName())){
+            room->broadcastSkillInvoke(objectName());
+            player->throwAllHandCards();
+            RecoverStruct recover;
+            recover.who = player;
+            recover.recover = 1;
+            room->recover(player, recover);
+        }
+        return false;
+    }
+};
+
+class Neo2013Longyin: public TriggerSkill{
+public:
+    Neo2013Longyin(): TriggerSkill("neo2013longyin"){
+        events << CardUsed;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->getPhase() == Player::Play;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("Slash")){
+            ServerPlayer *selfplayer = room->findPlayerBySkillName(objectName());
+            if (selfplayer != NULL && selfplayer->canDiscard(selfplayer, "he")){
+                const Card *c = NULL;
+                if (use.card->isRed())
+                    c = room->askForCard(selfplayer, ".|red", "@neo2013longyin", data, objectName());
+                else if (use.card->isBlack())
+                    c = room->askForCard(selfplayer, ".|black", "@neo2013longyin", data, objectName());
+                if (c != NULL){
+                    if (use.m_addHistory)
+                        room->addPlayerHistory(player, use.card->getClassName(), -1);
+                    selfplayer->drawCards(1);
+                }
+            }
+        }
+        return false;
+    }
+
+};
+
+Neo2013FengyinCard::Neo2013FengyinCard(): SkillCard(){
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
+
+bool Neo2013FengyinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.length() == 0 && to_select->hasFlag("Neo2013FengyinTarget");
+}
+
+void Neo2013FengyinCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    ServerPlayer *target = targets[0];
+    target->obtainCard(this, true);
+    target->skip(Player::Play);
+    target->skip(Player::Discard);
+    source->drawCards(1);
+}
+
+class Neo2013FengyinVS: public ViewAsSkill{ //这算是写LUA留下的后遗症么……
+public:
+    Neo2013FengyinVS(): ViewAsSkill("neo2013fengyin"){
+
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
+        return selected.length() == 0 && (to_select->isKindOf("Slash") || to_select->isKindOf("EquipCard"));
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+        if (cards.length() != 1)
+            return NULL;
+
+        Neo2013FengyinCard *card = new Neo2013FengyinCard;
+        card->addSubcard(cards[0]);
+        return card;
+    }
+    
+    virtual bool isEnabledAtPlay(const Player *) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@neo2013fengyin";
+    }
+};
+
+class Neo2013Fengyin: public TriggerSkill{
+public:
+    Neo2013Fengyin(): TriggerSkill("neo2013fengyin"){
+        events << EventPhaseChanging;
+        view_as_skill = new Neo2013FengyinVS;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *splayer = room->findPlayerBySkillName(objectName());
+        if (splayer == NULL || splayer == player)
+            return false;
+
+        if (player->getHp() >= splayer->getHp())
+            room->askForUseCard(splayer, "@@neo2013fengyin", "@neo2013fengyin", -1, Card::MethodNone);
+
+        return false;
+    }
+};
+
+class Neo2013Cangni: public ProhibitSkill{
+public:
+    Neo2013Cangni(): ProhibitSkill("neo2013cangni"){
+
+    }
+
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const{
+        return from != to && card->isKindOf("TrickCard") && to->hasSkill(objectName()) && from->inMyAttackRange(to);
+    }
+};
+
 
 
 Ling2013Package::Ling2013Package(): Package("Ling2013"){
@@ -914,8 +1075,24 @@ Ling2013Package::Ling2013Package(): Package("Ling2013"){
     neo2013_tianfeng->addSkill(new Neo2013Suishi);
     neo2013_tianfeng->addSkill("sijian");
 
+    General *neo2013_gan = new General(this, "neo2013_ganfuren", "shu", 3, false);
+    neo2013_gan->addSkill(new Neo2013Shushen);
+    neo2013_gan->addSkill(new Neo2013Shenzhi);
+
+    General *neo2013_guanping = new General(this, "neo2013_guanping", "shu", 4);
+    neo2013_guanping->addSkill(new Neo2013Longyin);
+
+    General *neo2013_fuwan = new General(this, "neo2013_fuwan", "qun", 3);
+    neo2013_fuwan->addSkill(new Neo2013Fengyin);
+    neo2013_fuwan->addSkill("chizhong");
+
+    General *neo2013_fuhh = new General(this, "neo2013_fuhuanghou", "qun", 3);
+    neo2013_fuhh->addSkill(new Neo2013Cangni);
+    neo2013_fuhh->addSkill("mixin");
+
     addMetaObject<Neo2013XinzhanCard>();
     addMetaObject<Neo2013FanjianCard>();
+    addMetaObject<Neo2013FengyinCard>();
 
     skills << new Neo2013HuileiDecrease;
 }
