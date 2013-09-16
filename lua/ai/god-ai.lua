@@ -80,9 +80,11 @@ function SmartAI:cantbeHurt(player, damageNum, from)
 		if self:isEnemy(player, from) then
 			if maxfriendmark + damageNum >= maxenemymark and not (#(self:getEnemies(from)) == 1 and #(self:getFriends(from)) + #(self:getEnemies(from)) == self.room:alivePlayerCount())
 				and not (from:getMark("@nightmare") == maxfriendmark and from:getRole() == "loyalist") then
+				--这里提示damageNum为userdata value，非数字，不知是哪里出了错误
 				return true
 			end
 		elseif maxfriendmark + damageNum > maxenemymark then
+			--这里也是
 			return true
 		end
 	end
