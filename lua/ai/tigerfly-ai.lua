@@ -78,7 +78,8 @@ local function need_kuanhui(self, who)
 			return false
 		end
 		if card:isKindOf("AmazingGrace") and self:hasTrickEffective(card, who, from) and self:needKongcheng(who, true) then return true end
-		if card:isKindOf("AmazingGrace") then return not self:hasTrickEffective(card, who, from) end
+		if card:isKindOf("AmazingGrace") and self:hasTrickEffective(card, who, from) and not self:needKongcheng(who, true) then return false end
+		if sgs.dynamic_value.benefit[card:getClassName()] == true then return false end
 		return true
 	end
 end
@@ -97,7 +98,7 @@ sgs.ai_skill_playerchosen.kuanhui = function(self, targets)
 	targets = sgs.QList2Table(targets)
 	self:sort(targets, "defenseSlash")
 	for _, player in ipairs(targets) do
-	if need_kuanhui(self, player) then return player end
+	if player and need_kuanhui(self, player) then return player end
 	end
 end
 sgs.ai_playerchosen_intention.kuanhui = function(self, from, to)
