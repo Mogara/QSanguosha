@@ -955,6 +955,7 @@ void Neo2013FengyinCard::use(Room *room, ServerPlayer *source, QList<ServerPlaye
     source->drawCards(1);
 }
 
+/*
 class Neo2013FengyinVS: public ViewAsSkill{ //这算是写LUA留下的后遗症么……
 public:
     Neo2013FengyinVS(): ViewAsSkill("neo2013fengyin"){
@@ -981,7 +982,23 @@ public:
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@neo2013fengyin";
     }
+};*/
+
+
+class Neo2013FengyinVS: public OneCardViewAsSkill{  //话说加的两个新变量是这么用的吧……我不会用
+public:
+    Neo2013FengyinVS(): OneCardViewAsSkill("neo2013fengyin"){
+        response_pattern = "@@neo2013fengyin";
+        filter_pattern = "Slash,EquipCard";
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        Neo2013FengyinCard *card = new Neo2013FengyinCard;
+        card->addSubcard(originalCard);
+        return card;
+    }
 };
+
 
 class Neo2013Fengyin: public TriggerSkill{
 public:
