@@ -62,3 +62,4 @@ ai.html
 /image/system/to.png
 /src/dialog/halldialog.*
 /Qt*.dll
+/dmp/*.dmp
