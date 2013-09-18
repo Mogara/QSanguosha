@@ -112,8 +112,51 @@ sgs.ai_playerchosen_intention.kuanhui = function(self, from, to)
 end
 
 
-
-
+--技能：宏量
+sgs.ai_skill_cardask["@HongliangGive"] = function(self, data)
+	local damage = data:toDamage()
+	local target = damage.from
+	local eid = self:getValuableCard(self.player) 
+	if not target then return "." end
+	if self:needKongcheng(self.player, true) and self.player:getHandcardNum() <= 2 then
+		if self.player:getHandcardNum() == 1 then
+			local card = self.player:getHandcards():first()
+			return (isCard("Jink", card, self.player)) and "." or ("$" .. card:getEffectiveId())
+		end
+		if self.player:getHandcardNum() == 2 then
+			local first = self.player:getHandcards():first()
+			local last = self.player:getHandcards():last()			
+			local jink = isCard("Jink", first, self.player) and first or (isCard("Jink", last, self.player) and last)		
+			if jink then
+				return first:getEffectiveId() == jink:getEffectiveId() and ("$"..last:getEffectiveId()) or ("$"..first:getEffectiveId())
+			end
+		end		
+	end
+	if self:needToThrowArmor() and self.player:getArmor() then 
+		return "$"..self.player:getArmor():getEffectiveId() 
+	end
+	if self:isFriend(target) then 
+		local cards = sgs.QList2Table(self.player:getCards("he"))
+		self:sortByCardNeed(cards)
+		if self:isWeak(target) then return "$"..cards[#cards]:getEffectiveId() end
+		if self:isWeak() then
+			for _, card in ipairs(cards) do
+				if  card:isKindOf("Peach") or (card:getEffectiveId() == eid) then return "." end
+			end
+		else	
+			return "$"..cards[1]:getEffectiveId() 
+		end
+	else
+		local flag = "h"
+		if self:hasSkills(sgs.lose_equip_skill) then flag = "eh" end
+		local card2s = sgs.QList2Table(self.player:getCards(flag))
+		self:sortByUseValue(card2s, true)
+			for _, card in ipairs(card2s) do
+				if not self:isValuableCard(card) and (card:getEffectiveId() ~= eid) then return "$"..card:getEffectiveId() end
+			end
+		end	
+	return "." 
+end
 
 
 
