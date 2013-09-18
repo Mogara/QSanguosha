@@ -1034,6 +1034,90 @@ public:
     }
 };
 
+class Neo2013Duoshi: public OneCardViewAsSkill{
+public:
+    Neo2013Duoshi(): OneCardViewAsSkill("neo2013duoshi"){
+        filter_pattern = ".|red|.|hand!";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->usedTimes("NeoDuoshiAE") <= 4;
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        AwaitExhausted *ae = new AwaitExhausted(originalCard->getSuit(), originalCard->getNumber());
+        ae->addSubcard(originalCard);
+        ae->setSkillName(objectName());
+        return ae;
+    }
+};
+
+class Neo2013Danji: public PhaseChangeSkill{
+public:
+    Neo2013Danji(): PhaseChangeSkill("neo2013danji"){
+        frequency = Wake;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return PhaseChangeSkill::triggerable(target) 
+            && target->getPhase() == Player::RoundStart
+            && target->getMark(objectName()) == 0
+            && target->getHandcardNum() > target->getHp();
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        room->notifySkillInvoked(player, objectName());
+        LogMessage l;
+        l.type = "#NeoDanjiWake";
+        l.from = player;
+        l.arg = QString::number(player->getHandcardNum());
+        l.arg2 = QString::number(player->getHp());
+        room->sendLog(l);
+        room->broadcastSkillInvoke(objectName());
+        room->doLightbox("$DanjiAnimate", 5000);
+        if (room->changeMaxHpForAwakenSkill(player)){
+            room->setPlayerProperty(player, "kingdom", "shu");
+            room->setPlayerMark(player, objectName(), 1);
+            room->acquireSkill(player, "mashu");
+            room->acquireSkill(player, "zhongyi");
+            room->acquireSkill(player, "neo2013huwei");
+        }
+
+        return false;
+    }
+};
+
+class Neo2013Huwei: public PhaseChangeSkill{
+public:
+    Neo2013Huwei(): PhaseChangeSkill("neo2013huwei"){
+        frequency = Limited;
+        limit_mark = "@yihuwei";
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        if (player->getPhase() != Player::RoundStart)
+            return false;
+        if (player->getMark("@yihuwei") == 0)
+            return false;
+        
+        NeoDrowning *dr = new NeoDrowning(Card::NoSuit, 0);
+        dr->setSkillName(objectName());
+
+        if (!dr->isAvailable(player)){
+            delete dr;
+            return false;
+        }
+        if (player->askForSkillInvoke(objectName())){
+            room->doLightbox("$HuweiAnimate", 4000);
+            room->setPlayerMark(player, "@yihuwei", 0);
+            room->useCard(CardUseStruct(dr, player, room->getOtherPlayers(player)), false);
+        }
+        return false;
+
+    }
+};
 
 
 Ling2013Package::Ling2013Package(): Package("Ling2013"){
@@ -1107,11 +1191,171 @@ Ling2013Package::Ling2013Package(): Package("Ling2013"){
     neo2013_fuhh->addSkill(new Neo2013Cangni);
     neo2013_fuhh->addSkill("mixin");
 
+    General *neo2013_luxun = new General(this, "neo2013_luxun", "wu", 3);
+    neo2013_luxun->addSkill(new Neo2013Duoshi);
+    neo2013_luxun->addSkill("qianxun");
+
+    General *neo2013_spguanyu = new General(this, "neo2013_sp_guanyu", "wei", 4);
+    neo2013_spguanyu->addSkill(new Neo2013Danji);
+    neo2013_spguanyu->addSkill("wusheng");
+    neo2013_spguanyu->addRelateSkill("neo2013huwei");
+
     addMetaObject<Neo2013XinzhanCard>();
     addMetaObject<Neo2013FanjianCard>();
     addMetaObject<Neo2013FengyinCard>();
 
-    skills << new Neo2013HuileiDecrease;
+    skills << new Neo2013HuileiDecrease << new Neo2013Huwei;
 }
 
 ADD_PACKAGE(Ling2013)
+
+
+AwaitExhausted::AwaitExhausted(Card::Suit suit, int number): TrickCard(suit, number){
+    setObjectName("await_exhausted");
+}
+
+
+QString AwaitExhausted::getSubtype() const{
+    return "await_exhausted";
+}
+
+bool AwaitExhausted::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const {
+    return to_select != Self;
+}
+
+bool AwaitExhausted::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    return true;
+}
+
+void AwaitExhausted::onUse(Room *room, const CardUseStruct &card_use) const{
+    CardUseStruct new_use = card_use;
+    if (!card_use.to.contains(card_use.from))
+        new_use.to << card_use.from;
+
+    if (getSkillName() == "neo2013duoshi")
+        room->addPlayerHistory(card_use.from, "NeoDuoshiAE", 1);
+
+    TrickCard::onUse(room, new_use);
+}
+
+void AwaitExhausted::onEffect(const CardEffectStruct &effect) const{
+    effect.to->drawCards(2);
+    effect.to->getRoom()->askForDiscard(effect.to, objectName(), 2, 2, false, true);
+}
+
+
+BefriendAttacking::BefriendAttacking(Card::Suit suit, int number): SingleTargetTrick(suit, number){
+    setObjectName("befriend_attacking");
+}
+
+bool BefriendAttacking::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num)
+        return false;
+
+    QList<const Player *> siblings = Self->getAliveSiblings();
+    int distance = 0;
+
+    foreach(const Player *p, siblings){
+        int dist = Self->distanceTo(p);
+        if (dist > distance)
+            distance = dist;
+    }
+
+    return Self->distanceTo(to_select) == distance;
+}
+
+bool BefriendAttacking::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    return targets.length() > 0;
+}
+
+void BefriendAttacking::onEffect(const CardEffectStruct &effect) const{
+    effect.to->drawCards(1);
+    effect.from->drawCards(3);
+}
+
+KnownBoth::KnownBoth(Card::Suit suit, int number): SingleTargetTrick(suit, number){
+    setObjectName("known_both");
+    can_recast = true;
+}
+
+bool KnownBoth::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if (Self->isCardLimited(this, Card::MethodUse))
+        return false;
+
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num || to_select == Self)
+        return false;
+
+    return !to_select->isKongcheng();
+}
+
+bool KnownBoth::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    if (Self->isCardLimited(this, Card::MethodUse))
+        return targets.length() == 0;
+
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (getSkillName() == "guhuo" || getSkillName() == "qice")  // Dirty hack here!!!
+        return targets.length() > 0 && targets.length() <= total_num;
+    else
+        return targets.length() <= total_num;
+}
+
+void KnownBoth::onUse(Room *room, const CardUseStruct &card_use) const{
+    if (card_use.to.isEmpty()){
+        CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
+        reason.m_skillName = this->getSkillName();
+        room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason);
+        card_use.from->broadcastSkillInvoke("@recast");
+
+        LogMessage log;
+        log.type = "#Card_Recast";
+        log.from = card_use.from;
+        log.card_str = card_use.card->toString();
+        room->sendLog(log);
+
+        card_use.from->drawCards(1);
+    }
+    else
+        SingleTargetTrick::onUse(room, card_use);
+}
+
+void KnownBoth::onEffect(const CardEffectStruct &effect) const{
+    effect.to->getRoom()->showAllCards(effect.to, effect.from);
+}
+
+NeoDrowning::NeoDrowning(Card::Suit suit, int number): AOE(suit, number){
+    setObjectName("neo_drowning");
+}
+
+void NeoDrowning::onEffect(const CardEffectStruct &effect) const{
+    QVariant data = QVariant::fromValue(effect);
+    Room *room = effect.to->getRoom();
+    if (!effect.to->getEquips().isEmpty() && room->askForChoice(effect.to, objectName(), "throw+damage", data) == "throw")
+        effect.to->throwAllEquips();
+    else{
+        ServerPlayer *source = NULL;
+        if (effect.from->isAlive())
+            source = effect.from;
+        room->damage(DamageStruct(this, source, effect.to));
+    }
+}
+
+LingCardsPackage::LingCardsPackage(): Package("LingCards", Package::CardPack){
+
+    QList<Card *> cards;
+
+    cards << new AwaitExhausted(Card::Diamond, 4);
+    cards << new AwaitExhausted(Card::Heart, 11);
+    cards << new BefriendAttacking(Card::Heart, 9);
+    cards << new KnownBoth(Card::Club, 3);
+    cards << new KnownBoth(Card::Club, 4);
+    cards << new NeoDrowning(Card::Club, 7);
+
+
+    foreach(Card *c, cards)
+        c->setParent(this);
+
+}
+
+ADD_PACKAGE(LingCards)
