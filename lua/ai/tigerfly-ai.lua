@@ -189,7 +189,7 @@ sgs.ai_skill_use_func.PozhenCard = function(card,use,self)
 	end
 	for _, enemy in ipairs(self.enemies) do
 		if (not self.player:canSlash(enemy) or not self:needToThrowArmor(enemy) or self.player:distanceTo(enemy) > 1) and not enemy:getEquips():isEmpty() and enemy:getHandcardNum() < 3 then
-				use.card = use.card = card
+				use.card = card
 				if use.to then use.to:append(enemy) end
 				return
 		end
