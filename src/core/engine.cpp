@@ -129,7 +129,7 @@ void Engine::addTranslationEntry(const char *key, const char *value) {
 }
 
 Engine::~Engine() {
-    lua_close(lua);
+    lua_close(lua); //此条语句会导致闪退（只不过是正在退出的过程中闪退，看不出来），不知什么原因
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif
