@@ -140,7 +140,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         QString name;
         if (player->hasSkill("paoxiao"))
             name = "paoxiao";
-        else if (player->hasSkill("huxiao"))
+        else if (player->hasSkill("huxiao") && player->getMark("huxiao") > 0)
             name = "huxiao";
         if (!name.isEmpty()) {
             player->setFlags("-Global_MoreSlashInOneTurn");
@@ -208,9 +208,9 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
 
     if (player->getPhase() == Player::Play
         && player->hasFlag("Global_MoreSlashInOneTurn")
-        && (player->hasWeapon("Crossbow") || player->hasWeapon("VSCrossbow"))
+        && player->hasWeapon("Crossbow")
         && !player->hasSkill("paoxiao")
-        && !player->hasSkill("huxiao")) {
+        && !(player->hasSkill("huxiao") && player->getMark("huxiao") > 0)) {
         player->setFlags("-Global_MoreSlashInOneTurn");
         room->setEmotion(player, "weapon/crossbow");
     }

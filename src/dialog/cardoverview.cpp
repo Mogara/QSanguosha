@@ -50,6 +50,17 @@ void CardOverview::loadFromAll() {
 
     if (n > 0) {
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0, 0));
+
+        const Card *card = Sanguosha->getEngineCard(0);
+        if (card->getTypeId() == Card::TypeEquip) {
+            ui->playAudioEffectButton->show();
+            ui->malePlayButton->hide();
+            ui->femalePlayButton->hide();
+        } else {
+            ui->playAudioEffectButton->hide();
+            ui->malePlayButton->show();
+            ui->femalePlayButton->show();
+        }
     }
 }
 
@@ -65,7 +76,10 @@ void CardOverview::loadFromList(const QList<const Card *> &list) {
         const Card *card = list.first();
         if (card->getTypeId() == Card::TypeEquip) {
             ui->playAudioEffectButton->show();
+            ui->malePlayButton->hide();
+            ui->femalePlayButton->hide();
         } else {
+            ui->playAudioEffectButton->hide();
             ui->malePlayButton->show();
             ui->femalePlayButton->show();
         }
@@ -165,7 +179,10 @@ void CardOverview::on_playAudioEffectButton_clicked() {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const Card *card = Sanguosha->getEngineCard(card_id);
         if (card->getTypeId() == Card::TypeEquip) {
-            QString fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(card->objectName(), QString("equip"), -1);
+            QString objectName = card->objectName();
+            if (objectName == "vscrossbow")
+                objectName = "crossbow";
+            QString fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(objectName, QString("equip"), -1);
             if (!QFile::exists(fileName))
                 fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(card->getCommonEffectName(), QString("common"), -1);
             Sanguosha->playAudioEffect(fileName);

@@ -204,7 +204,7 @@ void PozhenCard::onEffect(const CardEffectStruct &effect) const{
     if (!dest->isKongcheng() &&
             room->askForCard(dest, pattern, "@pozhen:" + source->objectName() + "::" + suittb(suit), QVariant(), "pozhen")){
         room->broadcastSkillInvoke("pozhen", 2);
-        source->setFlags("Global_EndPlayPhase");
+        source->setFlags("Global_PlayPhaseTerminated");
     }
     else {
         room->broadcastSkillInvoke("pozhen", 3);
