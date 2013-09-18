@@ -860,6 +860,29 @@ end
 	技能：偷渡
 	描述：当你的武将牌背面向上时若受到伤害，你可以弃置一张手牌并将你的武将牌翻面，视为对一名其他角色使用了一张【杀】
 ]]--
+
+sgs.ai_skill_use["@@toudu"] = function(self, prompt)
+	local toudu_target = nil
+	local targets = sgs.SPlayerList()
+	for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if self.player:canSlash(p, nil, false) then targets:append(p) end
+	end
+	if targets:length() == 0 then return "." end
+	toudu_target = sgs.ai_skill_playerchosen.zero_card_as_slash(self, targets)
+	if not toudu_target then return "." end
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(cards)
+	local card_id = -1
+	for _, card in ipairs(cards) do
+		if not (isCard("Peach", card, self.player) and self:isFriend(toudu_target)) then
+			card_id = card:getEffectiveId()
+		end
+	end
+	if card_id == -1 then return "." end
+	--self.player:speak(sgs.Sanguosha:getCard(card_id):getClassName() .. ":toudu:" .. toudu_target:getGeneralName())
+	return "@TouduCard=" .. tostring(card_id) .. "->" .. toudu_target:objectName() --有时会把桃拿出来偷渡，不知什么原因
+end
+--[[
 sgs.ai_skill_cardask['@toudu'] = function(self, data, pattern, target, target2)
 	self.toudu_target = nil
 	local targets = sgs.SPlayerList()
@@ -905,7 +928,7 @@ sgs.ai_skill_playerchosen.toudu = function(self, targets)
 	end
 	return targetlist[#targetlist]
 end
-
+]]
 sgs.ai_need_damaged.toudu = function(self, attacker, player)
 	if not player:hasSkill("toudu") or player:faceUp() then return false end
 	local peaches = getCardsNum("Peach", player)
