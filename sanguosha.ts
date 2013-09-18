@@ -388,17 +388,17 @@
         <translation type="obsolete">该包为Lua扩展包</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/cardoverview.cpp" line="96"/>
+        <location filename="../../src/dialog/cardoverview.cpp" line="110"/>
         <source>&lt;font color=#FFFF33&gt;This is an Lua extension&lt;/font&gt;</source>
         <translation>&lt;font color=#FFFF33&gt;该包为Lua扩展包&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/cardoverview.cpp" line="133"/>
+        <location filename="../../src/dialog/cardoverview.cpp" line="147"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/cardoverview.cpp" line="133"/>
+        <location filename="../../src/dialog/cardoverview.cpp" line="147"/>
         <source>These packages don&apos;t contain this card</source>
         <translation>此牌所在卡牌包已禁用</translation>
     </message>

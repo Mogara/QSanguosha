@@ -50,6 +50,17 @@ void CardOverview::loadFromAll() {
 
     if (n > 0) {
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0, 0));
+
+        const Card *card = Sanguosha->getEngineCard(0);
+        if (card->getTypeId() == Card::TypeEquip) {
+            ui->playAudioEffectButton->show();
+            ui->malePlayButton->hide();
+            ui->femalePlayButton->hide();
+        } else {
+            ui->playAudioEffectButton->hide();
+            ui->malePlayButton->show();
+            ui->femalePlayButton->show();
+        }
     }
 }
 
@@ -65,7 +76,10 @@ void CardOverview::loadFromList(const QList<const Card *> &list) {
         const Card *card = list.first();
         if (card->getTypeId() == Card::TypeEquip) {
             ui->playAudioEffectButton->show();
+            ui->malePlayButton->hide();
+            ui->femalePlayButton->hide();
         } else {
+            ui->playAudioEffectButton->hide();
             ui->malePlayButton->show();
             ui->femalePlayButton->show();
         }
