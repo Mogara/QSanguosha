@@ -61,10 +61,4 @@ ai.html
 /image/system/small-back.png
 /image/system/to.png
 /src/dialog/halldialog.*
-/QtCore4.dll
-/QtDeclarative4.dll
-/QtGui4.dll
-/QtNetwork4.dll
-/QtScript4.dll
-/QtSql4.dll
-/QtXmlPatterns4.dll
+/Qt*.dll
