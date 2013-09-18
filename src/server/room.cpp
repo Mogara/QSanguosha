@@ -5544,3 +5544,7 @@ void Room::sortByActionOrder(QList<ServerPlayer *> &players) {
     if (players.length() > 1)
         qSort(players.begin(), players.end(), ServerPlayer::CompareByActionOrder);
 }
+
+void Room::doBreakTurn(){
+    throw TurnBroken;
+}
