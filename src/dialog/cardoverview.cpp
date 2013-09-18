@@ -179,7 +179,10 @@ void CardOverview::on_playAudioEffectButton_clicked() {
         int card_id = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toInt();
         const Card *card = Sanguosha->getEngineCard(card_id);
         if (card->getTypeId() == Card::TypeEquip) {
-            QString fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(card->objectName(), QString("equip"), -1);
+            QString objectName = card->objectName();
+            if (objectName == "vscrossbow")
+                objectName = "crossbow";
+            QString fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(objectName, QString("equip"), -1);
             if (!QFile::exists(fileName))
                 fileName = G_ROOM_SKIN.getPlayerAudioEffectPath(card->getCommonEffectName(), QString("common"), -1);
             Sanguosha->playAudioEffect(fileName);
