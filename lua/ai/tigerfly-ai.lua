@@ -251,7 +251,7 @@ sgs.ai_skill_cardask["@pozhen"] = function(self, data)
 	if self:isFriend(source) then return "." end
 	if source == self.player then return "." end
 	if self:isEnemy(source) then 
-		if not self:isWeak(source) and (self.friend:hasSkills(sgs.lose_equip_skill) or self:needToThrowArmor()) then 
+		if not self:isWeak(source) and (self.player:hasSkills(sgs.lose_equip_skill) or self:needToThrowArmor()) then 
 			return "." 
 		end
 	end
