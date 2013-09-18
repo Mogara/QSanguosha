@@ -441,6 +441,7 @@ yeyan_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_use_func.GreatYeyanCard = function(card, use, self)
+	if self.player:getMark("@flame") == 0 then return end
 	if self.role == "lord" and (sgs.turncount <= 1 or sgs.current_mode_players["rebel"] > #self:getChainedEnemies() or self:getAllPeachNum() < 3 - self.player:getHp()) then
 		return
 	end
@@ -519,6 +520,7 @@ sgs.ai_use_priority.GreatYeyanCard = 9
 sgs.ai_card_intention.GreatYeyanCard = 200
 
 sgs.ai_skill_use_func.SmallYeyanCard = function(card, use, self)
+	if self.player:getMark("@flame") == 0 then return end
 	local targets = sgs.SPlayerList()
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do

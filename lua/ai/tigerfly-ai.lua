@@ -159,8 +159,114 @@ sgs.ai_skill_cardask["@HongliangGive"] = function(self, data)
 end
 
 
+--技能：破阵
+local pozhen_skill = {}
+pozhen_skill.name = "pozhen"
+table.insert(sgs.ai_skills, pozhen_skill)
+pozhen_skill.getTurnUseCard = function(self)
+	if not self.player:hasUsed("PozhenCard") then return sgs.Card_Parse("@RendeCard=.") end
+end
+sgs.ai_skill_use_func.PozhenCard = function(card,use,self)
+	self:sort(self.enemies, "defense")
+	self:sort(self.friends, "threat")
+	for _, friend in ipairs(self.friends) do
+		if friend and not friend:getEquips():isEmpty() and (friend:hasSkills(sgs.lose_equip_skill) or self:needToThrowArmor(friend)) and not self:willSkipPlayPhase(friend) then
+			use.card = card
+			if use.to then
+				use.to:append(friend)
+			end
+			return
+		end
+	end
+	for _, friend in ipairs(self.friends) do
+		if friend and not friend:getEquips():isEmpty() and friend:hasSkills(sgs.lose_equip_skill) then
+			use.card = card
+			if use.to then
+				use.to:append(friend)
+			end
+			return
+		end
+	end
+	for _, enemy in ipairs(self.enemies) do
+		if (not self.player:canSlash(enemy) or not self:needToThrowArmor(enemy) or self.player:distanceTo(enemy) > 1) and not enemy:getEquips():isEmpty() and enemy:getHandcardNum() < 3 then
+				use.card = card
+				if use.to then use.to:append(enemy) end
+				return
+		end
+	end
+	for _, enemy in ipairs(self.enemies) do
+		if enemy:getEquips():isEmpty() then continue end
+		if (not self.player:canSlash(enemy) or not self:needToThrowArmor(enemy) or self.player:distanceTo(enemy) > 1) and not enemy:hasSkills("kofxiaoji|xiaoji") then
+			if not self:hasSuit("spade", true, enemy) then
+				sgs.suit_for_ai = 0
+				use.card =  card
+				if use.to then use.to:append(enemy) end
+				return
+			end
+			if not self:hasSuit("club", true, enemy) then
+				sgs.suit_for_ai = 1
+				use.card =  card
+				if use.to then use.to:append(enemy) end
+				return
+			end
+			if not self:hasSuit("diamond", true, enemy) then
+				sgs.suit_for_ai = 3
+				use.card =  card
+				if use.to then use.to:append(enemy) end
+				return
+			end
+			if not self:hasSuit("heart", true, enemy) then
+				sgs.suit_for_ai = 2
+				use.card =  card
+				if use.to then use.to:append(enemy) end
+				return
+			end
+		end
+	end
+	local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
+	if zhugeliang and not self:isFriend(zhugeliang) and zhugeliang:getHandcardNum() == 0 and not zhugeliang:getEquips():isEmpty() then
+		use.card =  card
+		if use.to then use.to:append(zhugeliang) end
+			return
+	end
+	if self.player and self.player:isAlive() and not self.player:getEquips():isEmpty() then
+		use.card =  card
+		if use.to then use.to:append(self.player) end
+		return
+	end
+end
+sgs.ai_use_value.PozhenCard = 6.5
+sgs.ai_use_priority.PozhenCard = 8
 
+function sgs.ai_skill_suit.pozhen(self)
+	local map = {0, 1, 2, 2, 2, 3}
+	local suit = map[math.random(1, 6)]
+	if sgs.suit_for_ai ~= nil and type(sgs.suit_for_ai) == "number" then return sgs.suit_for_ai end
+	return suit 
+end
 
+sgs.ai_skill_cardask["@pozhen"] = function(self, data)
+	local source = self.room:getTag("pozhen_source"):toPlayer()
+	if not source or source:isDead() then return "." end
+	if self:isFriend(source) then return "." end
+	if source == self.player then return "." end
+	if self:isEnemy(source) then 
+		if not self:isWeak(source) and (self.player:hasSkills(sgs.lose_equip_skill) or self:needToThrowArmor()) then 
+			return "." 
+		end
+	end
+	local suits = pattern:split("|")[2]:split(",")
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByCardNeed(cards)
+	for _, card in ipairs(cards) do
+		if not self:isValuableCard(card) then
+			for _, obname in ipairs(suits) do
+				if card:getSuitString() == obname then return "$" .. card:getEffectiveId() end
+			end
+		end
+	end
+	return "."
+end
 
 
 

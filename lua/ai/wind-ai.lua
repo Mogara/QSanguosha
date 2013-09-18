@@ -480,11 +480,12 @@ sgs.ai_chaofeng.zhangjiao = 4
 
 sgs.ai_skill_invoke.fenji = function(self, data)
 	local move = data:toMoveOneTime()
-	if self:isWeak() or not move.from or not self:isFriend(move.from)
-		or (move.from:hasSkill("manjuan") and move.from:getPhase() == sgs.Player_NotActive) then return false end
+	local from = findPlayerByObjectName(self.room, move.from:objectName())
+	if self:isWeak() or not from or not self:isFriend(from)
+		or (from:hasSkill("manjuan") and from:getPhase() == sgs.Player_NotActive) then return false end
 	local skill_name = move.reason.m_skillName
 	if skill_name == "rende" or skill_name == "nosrende" then return true end
-	return move.from:getHandcardNum() < (self.player:getHp() <= 1 and 3 or 5)
+	return from:getHandcardNum() < (self.player:getHp() <= 1 and 3 or 5)
 end
 
 function sgs.ai_filterskill_filter.hongyan(card, card_place)

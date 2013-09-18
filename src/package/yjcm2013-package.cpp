@@ -862,7 +862,7 @@ public:
         if (player->getPhase() != Player::NotActive && move.from && move.from_places.contains(Player::PlaceHand)
             && move.is_last_handcard) {
             ServerPlayer *from = (ServerPlayer *)move.from;
-            if (room->askForSkillInvoke(player, objectName(), data)) {
+            if (from->getHp() > 0 && room->askForSkillInvoke(player, objectName(), data)) {
                 room->broadcastSkillInvoke(objectName());
                 room->damage(DamageStruct(objectName(), player, from));
             }

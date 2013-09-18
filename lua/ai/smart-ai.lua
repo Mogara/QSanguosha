@@ -4658,6 +4658,7 @@ function SmartAI:useSkillCard(card,use)
 	else
 		name = card:getClassName()
 	end
+	if not use.isDummy and not self.player:hasSkill(card:getSkillName()) then return end
 	if sgs.ai_skill_use_func[name] then
 		sgs.ai_skill_use_func[name](card, use, self)
 		if use.to then
@@ -5840,6 +5841,7 @@ dofile "lua/ai/chat-ai.lua"
 dofile "lua/ai/basara-ai.lua"
 dofile "lua/ai/hegemony-ai.lua"
 dofile "lua/ai/hulaoguan-ai.lua"
+dofile "lua/ai/nostalgia-ai.lua"
 
 local loaded = "standard|standard_cards|maneuvering|sp"
 
