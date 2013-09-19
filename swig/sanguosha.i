@@ -749,6 +749,7 @@ public:
     virtual QString getSubtype() const = 0;
     virtual CardType getTypeId() const = 0;
     virtual QString toString(bool hidden = false) const;
+	virtual QString getEffectName() const;
     bool isNDTrick() const;
 
     // card target selection

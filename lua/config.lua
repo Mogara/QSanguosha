@@ -49,7 +49,6 @@ config = {
 		"NostalWind",
 		"NostalYJCM",
 		"NostalYJCM2012",
-		"NostalGeneral",
 		"Yitian",
 		"Wisdom",
 		"Chaos",
