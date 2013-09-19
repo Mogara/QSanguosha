@@ -268,12 +268,39 @@ sgs.ai_skill_cardask["@pozhen"] = function(self, data, pattern)
 	return "."
 end
 
+--技能：化名
+sgs.ai_skill_invoke["huaming"] = function(self,data)
+	local source = self.room:getTag("huamingkiller"):toPlayer()
+	return source 
+end
+ 
+sgs.ai_skill_choice["huaming"] = function(self, choices, data)
+	local source = data:toPlayer()
+	local orirole = self.role
+	local sourole = source:getRole()
+	if self:isFriend(source) then
+		if sourole == "renegade" then return math.random(0, 1) == 1 and "renegade" or "loyalist" end
+		return "rebel"
+	else
+		if source:isLord() then 
+			return "loyalist"
+		else
+			return math.random(0, 1) == 1 and "renegade" or "loyalist"
+		end
+	end
+	return orirole
+end 
 
+--技能：迫离
 
-
-
-
-
+sgs.ai_skill_choice.poli = function(self, choices)
+	local willdis = false
+	local lightning = self:getCard("Lightning")
+	if self.player:getMaxHp() == 1 or (lightning and not self:willUseLightning(lightning)) then willdis = true end
+	if self:needToThrowArmor() or self:doNotDiscard(self.player) then willdis = true end
+	if self:hasSkills(sgs.lose_equip_skill, self.player) and not self.player:getEquips():isEmpty() then willdis = true end
+	return willdis and "discard" or "changehero"
+end  
 
 
 
