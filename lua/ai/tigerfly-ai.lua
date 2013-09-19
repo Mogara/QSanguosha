@@ -309,7 +309,7 @@ sgs.ai_skill_invoke.zhuixi = true
 
 --技能：急思
 
---[[local]] function SmartAI:getAllnullNum(player, beenemy)
+function SmartAI:getAllnullNum(player, beenemy)
 	player = player or self.player
 	local n = 0
 	if beenemy then
