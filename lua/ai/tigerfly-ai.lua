@@ -302,10 +302,159 @@ sgs.ai_skill_choice.poli = function(self, choices)
 	return willdis and "discard" or "changehero"
 end  
 
+--技能：追袭
 
 
+sgs.ai_skill_invoke.zhuixi = true
 
+--技能：急思
 
+local function SmartAI:getAllnullNum(player, beenemy)
+	player = player or self.player
+	local n = 0
+	if beenemy then
+		for _, enemy in ipairs(self:getEnemies(player)) do
+			local num = getCardsNum("Nullification", enemy)
+			n = n + num
+		end
+	else
+		for _, friend in ipairs(self:getFriends(player)) do
+		local num = self.player:objectName() == friend:objectName() and self:getCardsNum("Nullification") or getCardsNum("Nullification", friend)
+		n = n + num
+		end
+	end	
+	return n
+end
+sgs.ai_skill_invoke.jisi = function(self, data) --大体上，根据无懈可击的使用方法...（好不麻烦）
+	if self:getAllnullNum() > 0 and self:getAllnullNum() >= self:getAllnullNum(self.player, true) then return false end
+	local effect = data:toCardEffect()
+	local to = effect.to
+	local from = effect.from
+	local card = effect.card
+	local max_card = self:getMaxCard()
+	local cc = self.room:getCurrent()
+	local ccmaxcard = self:getMaxCard(cc)
+	if not self:hasTrickEffective(card, to, from) then return false end
+	if not max_card then return false end
+	if max_card <= ccmaxcard and not self:isFriend(cc) then return false end
+	if self:doNotDiscard(cc, "h") and not self:isFriend(cc) and not self:isWeak() then return false end
+	if card:isKindOf("FireAttack") then
+		if to:isKongcheng() or from:isKongcheng() then return false end
+	end
+	if self:isFriend(to) and to:hasFlag("AIGlobal_NeedToWake") then return false end
+	if from and not from:hasSkill("jueqing") then
+		if (card:isKindOf("Duel") or card:isKindOf("FireAttack") or card:isKindOf("Drowning") or card:isKindOf("AOE")) and
+			(to:hasSkill("wuyan") or (self:getDamagedEffects(to, from) and self:isFriend(to))) then
+			return false
+		end
+		if (card:isKindOf("Duel") or card:isKindOf("Drowning") or card:isKindOf("AOE")) and not self:damageIsEffective(to, sgs.DamageStruct_Normal) then return false end --决斗、AOE 
+		if card:isKindOf("FireAttack") and not self:damageIsEffective(to, sgs.DamageStruct_Fire) then return false end --火攻
+	end 
+	if (card:isKindOf("Duel") or card:isKindOf("FireAttack") or card:isKindOf("Drowning") or card:isKindOf("AOE")) and self:needToLoseHp(to, from) and self:isFriend(to) then
+		return false
+	end
+	if ("snatch|dismantlement"):match(card:objectName()) and not to:containsTrick("YanxiaoCard") and (to:containsTrick("indulgence") or to:containsTrick("supply_shortage")) then
+		if self:isEnemy(from) then return true end
+		if self:isFriend(to) and to:isNude() then return false end
+	end
+		if card:getSkillName() == "lijian" and card:isKindOf("Duel") then
+			if self:isFriend(to) and (self:isWeak(to) or not self:isWeak()) then return true end
+			return
+		end
+		if card:isKindOf("ExNihilo") and (self:isWeak(from) or self:hasSkills(sgs.cardneed_skill, from) or from:hasSkill("manjuan")) and self:isEnemy(from) then return true end
+		if card:isKindOf("IronChain") then return false end
+		if self:isFriend(to) and not self:isEnemy(from) then
+			if card:isKindOf("Dismantlement") then 
+					if self:getDangerousCard(to) or self:getValuableCard(to) then return true end
+					if to:getHandcardNum() == 1 and not self:needKongcheng(to) then
+						if (getKnownCard(to, "TrickCard", false) == 1 or getKnownCard(to, "EquipCard", false) == 1 or getKnownCard(to, "Slash", false) == 1) then
+							return false
+						end
+						return true
+					end
+			else
+				if card:isKindOf("Snatch") then return true end
+				if card:isKindOf("Duel") and not from:hasSkill("wuyan") and self:isWeak(to) then return true end
+				if card:isKindOf("FireAttack") and from:objectName() ~= to:objectName() and not from:hasSkill("wuyan") then
+						if from:getHandcardNum() > 2
+							or self:isWeak(to)
+							or to:hasArmorEffect("Vine")
+							or to:getMark("@gale") > 0
+							or to:isChained() and not self:isGoodChainTarget(to)
+							then return true end
+					end
+				end
+			elseif self:isEnemy(to) and not self:isFriend(from) then
+				if (card:isKindOf("Snatch") or card:isKindOf("Dismantlement")) and to:getCards("j"):length() > 0 then
+					return true
+			end
+		end
+
+		if card:isKindOf("AOE") and (self.player:objectName() == to:objectName() or self:isFriend(to)) then
+			if self:hasSkills("jieming|yiji|guixin", self.player) and 
+				(self.player:getHp() > 1 or self:getCardsNum("Peach") > 0 or self:getCardsNum("Analeptic") > 0) then
+						return false
+			elseif not self:canAvoidAOE(card) then
+					return true
+			end
+		end
+		if self.player:objectName() == to:objectName():isKindOf("Duel") and not from:hasSkill("wuyan") and self.player:objectName() == to:objectName() then
+			if self:hasSkills(sgs.masochism_skill, self.player) and 
+						(self.player:getHp() > 1 or self:getCardsNum("Peach") > 0 or self:getCardsNum("Analeptic") > 0) then
+					return false
+			elseif self:getCardsNum("Slash") == 0 then
+					return true
+			end
+		end
+		if from then
+			if self:isEnemy(to) then
+				if card:isKindOf("GodSalvation") and self:isWeak(to) then
+					return true
+				end
+			end
+		end
+		if card:isKindOf("AmazingGrace") and self:isEnemy(to) then
+			local NP = to:getNextAlive()
+			if self:isFriend(NP) then
+				local ag_ids = self.room:getTag("AmazingGrace"):toStringList()
+				local peach_num, exnihilo_num, snatch_num, analeptic_num, crossbow_num = 0, 0, 0, 0, 0
+				for _, ag_id in ipairs(ag_ids) do
+					local ag_card = sgs.Sanguosha:getCard(ag_id)
+					if ag_card:isKindOf("Peach") then peach_num = peach_num + 1 end
+					if ag_card:isKindOf("ExNihilo") then exnihilo_num = exnihilo_num + 1 end
+					if ag_card:isKindOf("Snatch") then snatch_num = snatch_num + 1 end
+					if ag_card:isKindOf("Analeptic") then analeptic_num = analeptic_num + 1 end
+					if ag_card:isKindOf("Crossbow") then crossbow_num = crossbow_num + 1 end
+				end
+				if (peach_num == 1 and to:getHp() < getBestHp(to)) or
+					(peach_num > 0 and (self:isWeak(to) or NP:getHp() < getBestHp(NP) and self:getOverflow(NP) < 1)) then
+					return true
+				end
+				if peach_num == 0 and not self:willSkipPlayPhase(NP) then
+					if exnihilo_num > 0 then
+						if NP:hasSkills("nosjizhi|jizhi|nosrende|rende|zhiheng") or NP:hasSkill("jilve") and NP:getMark("@bear") > 0 then return true end
+					else
+						for _, enemy in ipairs(self.enemies) do
+							if snatch_num > 0 and to:distanceTo(enemy) == 1 and
+								(self:willSkipPlayPhase(enemy, true) or self:willSkipDrawPhase(enemy, true)) then
+								return true
+							elseif analeptic_num > 0 and (self:isEquip("Axe", enemy) or self:getCardsNum("Axe", enemy) > 0) then
+								return true
+							elseif crossbow_num > 0 and getCardsNum("Slash", enemy) >= 3 then
+								local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+								for _, friend in ipairs(self.friends) do
+									if enemy:distanceTo(friend) == 1 and self:slashIsEffective(slash, friend, nil, enemy) then
+										return true
+									end
+								end
+							end
+						end
+					end
+				end
+			end
+		end
+	return false 
+end 
 
 
 
