@@ -333,8 +333,8 @@ QString Card::getEffectName() const{
     for (int i = 0; i < name.length(); i++) {
         QChar ch = name[i];
         if (ch.isUpper()) {
-            ch = ch.toLower();
-            if (i == 0) continue;
+            name[i] = ch.toLower();
+            if (i == 0 || objectName() == "VSCrossbow") continue;
             name.insert(i, "_");
             break;
         }
