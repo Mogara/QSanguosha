@@ -140,6 +140,8 @@ public:
     static const Card *Parse(const QString &str);
     virtual QString toString(bool hidden = false) const;
 
+    virtual QString getEffectName() const;
+
 protected:
     QList<int> subcards;
     bool target_fixed;

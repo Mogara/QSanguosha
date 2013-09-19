@@ -328,6 +328,20 @@ QString Card::toString(bool hidden) const{
                        .arg(getSuitString()).arg(getNumberString()).arg(subcardString());
 }
 
+QString Card::getEffectName() const{
+    QString name = objectName();
+    for (int i = 0; i < name.length(); i++) {
+        QChar ch = name[i];
+        if (ch.isUpper()) {
+            ch = ch.toLower();
+            if (i == 0) continue;
+            name.insert(i, "_");
+            break;
+        }
+    }
+    return name;
+}
+
 QString Card::subcardString() const{
     if (subcards.isEmpty())
         return ".";
