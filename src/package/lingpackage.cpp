@@ -1341,6 +1341,127 @@ void NeoDrowning::onEffect(const CardEffectStruct &effect) const{
     }
 }
 
+SixSwords::SixSwords(Card::Suit suit, int number): Weapon(suit, number, 2){
+    setObjectName("SixSwords");
+}
+
+SixSwordsSkillCard::SixSwordsSkillCard(): SkillCard(){
+    
+}
+
+bool SixSwordsSkillCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return to_select != Self;
+}
+
+void SixSwordsSkillCard::onEffect(const CardEffectStruct &effect) const{
+    effect.to->gainMark("@SixSwordsBuff");
+}
+
+class SixSwordsSkillVS: public ZeroCardViewAsSkill{
+public:
+    SixSwordsSkillVS(): ZeroCardViewAsSkill("SixSwords"){
+        response_pattern = "@@SixSwords";
+    }
+
+    virtual const Card *viewAs() const{
+        return new SixSwordsSkillCard;
+    }
+};
+
+class SixSwordsSkill: public WeaponSkill{
+public:
+    SixSwordsSkill(): WeaponSkill("SixSwords"){
+        events << EventPhaseStart << BeforeCardsMove;
+        view_as_skill = new SixSwordsSkillVS;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        QList<ServerPlayer *> players = room->getOtherPlayers(player);
+        if (triggerEvent == BeforeCardsMove){
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from != NULL && move.from == player && move.from_places.contains(Player::PlaceEquip))
+                foreach(int id, move.card_ids){
+                    const Card *card = Sanguosha->getCard(id);
+                    if (card->getClassName() == "SixSwords"){
+                        foreach(ServerPlayer *p, players)
+                            if (p->getMark("@SixSwordsBuff") > 0)
+                                p->loseMark("@SixSwordsBuff");
+                        break;
+                    }
+                }
+        }
+        else if (player->getPhase() == Player::NotActive){
+            foreach(ServerPlayer *p, players)
+                if (p->getMark("@SixSwordsBuff") > 0)
+                    p->loseMark("@SixSwordsBuff");
+            room->askForUseCard(player, "@@SixSwords", "@six_swords");
+        }
+        return false;
+    }
+};
+
+Triblade::Triblade(Card::Suit suit, int number): Weapon(suit, number, 3){
+
+}
+
+TribladeSkillCard::TribladeSkillCard(): SkillCard(){
+
+}
+
+bool TribladeSkillCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.length() == 0 && to_select->hasFlag("TribladeFilter");
+}
+
+void TribladeSkillCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    room->damage(DamageStruct("Triblade", source, targets[0]));
+}
+
+class TribladeSkillVS: public OneCardViewAsSkill{
+public:
+    TribladeSkillVS(): OneCardViewAsSkill("Triblade"){
+        response_pattern = "@@Triblade";
+        filter_pattern = ".|.|.|hand!";
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        TribladeSkillCard *c = new TribladeSkillCard;
+        c->addSubcard(originalCard);
+        return c;
+    }
+};
+
+class TribladeSkill: public WeaponSkill{
+public:
+    TribladeSkill(): WeaponSkill("Triblade"){
+        events << Damage;
+        view_as_skill = new TribladeSkillVS;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.to && damage.to->isAlive() && damage.card && damage.card->isKindOf("Slash") 
+                && damage.by_user && !damage.chain && !damage.transfer){
+            QList<ServerPlayer *> players;
+            foreach(ServerPlayer *p, room->getOtherPlayers(damage.to))
+                if (damage.to->distanceTo(p) == 1){
+                    players << p;
+                    p->setFlags("TribladeFilter");
+                }
+            if (players.isEmpty()) 
+                return false;
+            room->askForUseCard(player, "@@Triblade", "@triblade");
+        }
+
+        foreach(ServerPlayer *p, room->getAllPlayers())
+            if (p->hasFlag("TribladeFilter"))
+                p->setFlags("-TribladeFilter");
+
+        return false;
+    }
+};
+
+
+
 LingCardsPackage::LingCardsPackage(): Package("LingCards", Package::CardPack){
 
     QList<Card *> cards;
@@ -1351,11 +1472,17 @@ LingCardsPackage::LingCardsPackage(): Package("LingCards", Package::CardPack){
     cards << new KnownBoth(Card::Club, 3);
     cards << new KnownBoth(Card::Club, 4);
     cards << new NeoDrowning(Card::Club, 7);
-
+    cards << new SixSwords(Card::Diamond, 6); //¹¥»÷·¶Î§Ð´ÔÚPlayer::getAttackRange(bool)ÖÐ
+    cards << new Triblade(Card::Diamond, 12);
 
     foreach(Card *c, cards)
         c->setParent(this);
 
+
+    skills << new SixSwordsSkill << new TribladeSkill;
+
+    addMetaObject<SixSwordsSkillCard>();
+    addMetaObject<TribladeSkillCard>();
 }
 
 ADD_PACKAGE(LingCards)

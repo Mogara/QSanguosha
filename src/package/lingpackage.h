@@ -122,6 +122,37 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class SixSwords: public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SixSwords(Card::Suit suit, int number);
+};
+
+class SixSwordsSkillCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SixSwordsSkillCard();
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class Triblade: public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Triblade(Card::Suit suit, int number);
+};
+
+class TribladeSkillCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE TribladeSkillCard();
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
 
 #endif
 
