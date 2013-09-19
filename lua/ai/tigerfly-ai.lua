@@ -245,7 +245,7 @@ function sgs.ai_skill_suit.pozhen(self)
 	return suit 
 end
 
-sgs.ai_skill_cardask["@pozhen"] = function(self, data)
+sgs.ai_skill_cardask["@pozhen"] = function(self, data, pattern)
 	local source = self.room:getTag("pozhen_source"):toPlayer()
 	if not source or source:isDead() then return "." end
 	if self:isFriend(source) then return "." end
