@@ -368,6 +368,62 @@ function sgs.CreateViewAsSkill(spec)
 	return skill
 end
 
+function sgs.CreateOneCardViewAsSkill(spec)
+	assert(type(spec.name) == "string")
+	if spec.response_pattern then assert(type(spec.response_pattern) == "string") end
+	local response_pattern = spec.response_pattern or ""
+	if spec.filter_pattern then assert(type(spec.filter_pattern) == "string") end
+	
+	local skill = sgs.LuaViewAsSkill(spec.name, response_pattern)
+	
+	function skill:view_as(cards)
+		if #cards ~= 1 then return nil end
+		return spec.view_as(self, cards[1])
+	end
+	
+	function skill:view_filter(selected, to_select)
+		if #selected >= 1 or to_select:hasFlag("using") then return false end
+		if spec.view_filter then return spec.view_filter(self, to_select) end
+		if spec.filter_pattern then
+			local pat = spec.filter_pattern
+			if string.endsWith(pat, "!") then
+				if sgs.Self:isJilei(to_select) then return false end
+				pat = string.chop(pat, 1)
+			end
+			return sgs.Sanguosha:matchExpPattern(pat, sgs.Self, to_select)
+		end
+	end
+	
+	skill.enabled_at_play = spec.enabled_at_play
+	skill.enabled_at_response = spec.enabled_at_response
+	skill.enabled_at_nullification = spec.enabled_at_nullification
+	
+	return skill
+end
+
+function sgs.CreateZeroCardViewAsSkill(spec)
+	assert(type(spec.name) == "string")
+	if spec.response_pattern then assert(type(spec.response_pattern) == "string") end
+	local response_pattern = spec.response_pattern or ""
+	
+	local skill = sgs.LuaViewAsSkill(spec.name, response_pattern)
+	
+	function skill:view_as(cards)
+		if #cards > 0 then return nil end
+		return spec.view_as(self)
+	end
+	
+	function skill:view_filter(selected, to_select)
+		return false
+	end
+	
+	skill.enabled_at_play = spec.enabled_at_play
+	skill.enabled_at_response = spec.enabled_at_response
+	skill.enabled_at_nullification = spec.enabled_at_nullification
+	
+	return skill
+end
+
 function sgs.CreateWeapon(spec)
 	assert(type(spec.name) == "string" or type(spec.class_name) == "string")
 	if not spec.name then spec.name = spec.class_name

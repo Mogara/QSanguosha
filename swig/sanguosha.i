@@ -879,6 +879,7 @@ public:
     int getRoleIndex() const;
 
     const CardPattern *getPattern(const char *name) const;
+	bool matchExpPattern(const char *pattern, const Player *player, const Card *card) const;
     Card::HandlingMethod getCardHandlingMethod(const char *method_name) const;
     QList<const Skill *> getRelatedSkills(const char *skill_name) const;
     const Skill *getMainSkill(const QString &skill_name) const;

@@ -302,6 +302,11 @@ const CardPattern *Engine::getPattern(const QString &name) const{
     return expptn;
 }
 
+bool Engine::matchExpPattern(const QString &pattern, const Player *player, const Card *card) const{
+    ExpPattern p(pattern);
+    return p.match(player, card);
+}
+
 Card::HandlingMethod Engine::getCardHandlingMethod(const QString &method_name) const{
     if (method_name == "use")
         return Card::MethodUse;
