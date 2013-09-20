@@ -33,6 +33,7 @@ private:
     QLabel *maxhp_lower_label, *maxhp_upper_label;
     QSpinBox *maxhp_lower_spinbox;
     QSpinBox *maxhp_upper_spinbox;
+    QPushButton *select_all_button, *unselect_all_button;
     QButtonGroup *package_buttons;
 
 signals:
@@ -48,6 +49,8 @@ private:
 
 private slots:
     void clearAll();
+    void selectAllPackages();
+    void unselectAllPackages();
 };
 
 namespace Ui {

@@ -136,8 +136,18 @@ QWidget *GeneralSearch::createInfoTab() {
     QGroupBox *package_box = new QGroupBox(tr("Packages"));
     package_box->setToolTip(tr("<font color=#FFFF33>Select packages. Every package meets the condition if none is selected.</font>"));
 
-    QGridLayout *package_layout = new QGridLayout;
-    package_box->setLayout(package_layout);
+    QVBoxLayout *package_layout = new QVBoxLayout;
+
+    QHBoxLayout *package_button_layout = new QHBoxLayout;
+    select_all_button = new QPushButton(tr("Select All"));
+    connect(select_all_button, SIGNAL(clicked()), this, SLOT(selectAllPackages()));
+    unselect_all_button = new QPushButton(tr("Unselect All"));
+    connect(unselect_all_button, SIGNAL(clicked()), this, SLOT(unselectAllPackages()));
+    package_button_layout->addWidget(select_all_button);
+    package_button_layout->addWidget(unselect_all_button);
+    package_button_layout->addStretch();
+
+    QGridLayout *packages_layout = new QGridLayout;
 
     i = 0;
     foreach (QString extension, extensions) {
@@ -154,8 +164,11 @@ QWidget *GeneralSearch::createInfoTab() {
         int row = i / 5;
         int column = i % 5;
         i++;
-        package_layout->addWidget(checkbox, row, column + 1);
+        packages_layout->addWidget(checkbox, row, column + 1);
     }
+    package_layout->addLayout(package_button_layout);
+    package_layout->addLayout(packages_layout);
+    package_box->setLayout(package_layout);
     layout->addWidget(package_box);
 
     QWidget *widget = new QWidget;
@@ -212,6 +225,16 @@ void GeneralSearch::clearAll() {
         button->setChecked(false);
     maxhp_lower_spinbox->setValue(0);
     maxhp_upper_spinbox->setValue(0);
+    foreach (QAbstractButton *button, package_buttons->buttons())
+        button->setChecked(false);
+}
+
+void GeneralSearch::selectAllPackages() {
+    foreach (QAbstractButton *button, package_buttons->buttons())
+        button->setChecked(true);
+}
+
+void GeneralSearch::unselectAllPackages() {
     foreach (QAbstractButton *button, package_buttons->buttons())
         button->setChecked(false);
 }
