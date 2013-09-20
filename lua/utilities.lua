@@ -114,6 +114,23 @@ function string:matchOne(option)
 	return self:match("^" .. option .. "%p") or self:match("%p" .. option .. "%p") or self:match("%p" .. option .. "$")
 end
 
+function string:startsWith(substr)
+	local len = string.len(substr)
+	if len == 0 or len > string.len(self) then return false end
+	return string.sub(self, 1, len) == substr
+end
+
+function string:endsWith(substr)
+	local len = string.len(substr)
+	if len == 0 or len > string.len(self) then return false end
+	return string.sub(self, -len, -1) == substr
+end
+
+function string:chop(n)
+	if n >= string.len(self) then return "" end
+	return string.sub(self, 1, string.len(self) - n)
+end
+
 function math:mod(num)
 	return math.fmod(self, num)
 end
