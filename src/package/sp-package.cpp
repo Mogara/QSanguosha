@@ -1325,9 +1325,9 @@ public:
             room->sendLog(log);
 
             room->moveCardTo(judge->card, NULL, judge->who, Player::PlaceJudge,
-                CardMoveReason(CardMoveReason::S_REASON_JUDGE,
-                judge->who->objectName(),
-                QString(), QString(), judge->reason), true);
+                             CardMoveReason(CardMoveReason::S_REASON_JUDGE,
+                             judge->who->objectName(),
+                             QString(), QString(), judge->reason), true);
             judge->updateResult();
             room->setTag("SkipGameRule", true);
         } else {

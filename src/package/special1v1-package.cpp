@@ -673,6 +673,7 @@ public:
             }
             if (killer && killer->isAlive() && player->canDiscard(killer, "he")
                 && (normal || room->askForSkillInvoke(player, objectName()))) {
+                room->broadcastSkillInvoke(objectName());
                 for (int i = 0; i < n; i++) {
                     if (player->canDiscard(killer, "he")) {
                         int card_id = room->askForCardChosen(player, killer, "he", objectName(), false, Card::MethodDiscard);
