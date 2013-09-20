@@ -282,10 +282,10 @@ public:
     }
 
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
-        if (player->hasSkill("baobian"))
-            return qrand() % 2 + 3;
-        else
-            return qrand() % 2 + 1;
+        int index = qrand() % 2 + 1;
+        if (!player->hasInnateSkill(objectName()) && player->hasSkill("baobian"))
+            index += 2;
+        return index;
     }
 };
 

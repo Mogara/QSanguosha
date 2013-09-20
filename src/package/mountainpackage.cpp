@@ -681,7 +681,6 @@ public:
 };
 
 TiaoxinCard::TiaoxinCard() {
-    mute = true;
 }
 
 bool TiaoxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -690,12 +689,6 @@ bool TiaoxinCard::targetFilter(const QList<const Player *> &targets, const Playe
 
 void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-
-    if (effect.from->hasSkill("baobian"))
-        room->broadcastSkillInvoke("tiaoxin", qrand() % 2 + 3);
-    else
-        room->broadcastSkillInvoke("tiaoxin", qrand() % 2 + 1);
-
     bool use_slash = false;
     if (effect.to->canSlash(effect.from, NULL, false))
         use_slash = room->askForUseSlashTo(effect.to, effect.from, "@tiaoxin-slash:" + effect.from->objectName());
@@ -714,6 +707,13 @@ public:
 
     virtual const Card *viewAs() const{
         return new TiaoxinCard;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *) const{
+        int index = qrand() % 2 + 1;
+        if (!player->hasInnateSkill(objectName()) && player->hasSkill("baobian"))
+            index += 2;
+        return index;
     }
 };
 
