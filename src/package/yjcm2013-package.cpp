@@ -1121,7 +1121,10 @@ public:
             if (targets.isEmpty()) return false;
             ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "qiuyuan-invoke", true, true);
             if (target) {
-                room->broadcastSkillInvoke(objectName());
+                if (target->getGeneralName().contains("fuwan") || target->getGeneral2Name().contains("fuwan"))
+                    room->broadcastSkillInvoke(objectName(), 2);
+                else
+                    room->broadcastSkillInvoke(objectName(), 1);
                 const Card *card = NULL;
                 if (target->getHandcardNum() > 1) {
                     card = room->askForCard(target, ".!", "@qiuyuan-give:" + player->objectName(), data, Card::MethodNone);
@@ -1138,7 +1141,6 @@ public:
                         use.to.append(target);
                         room->sortByActionOrder(use.to);
                         data = QVariant::fromValue(use);
-                        //room->getThread()->trigger(TargetConfirming, room, target, data);
                     }
                 }
             }
