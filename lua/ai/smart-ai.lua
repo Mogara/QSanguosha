@@ -5839,11 +5839,10 @@ dofile "lua/ai/classical-ai.lua"
 dofile "lua/ai/standard-ai.lua"
 dofile "lua/ai/chat-ai.lua"
 dofile "lua/ai/basara-ai.lua"
-dofile "lua/ai/hegemony-ai.lua"
 dofile "lua/ai/hulaoguan-ai.lua"
 dofile "lua/ai/nostalgia-ai.lua"
 
-local loaded = "standard|standard_cards|maneuvering|sp"
+local loaded = "standard|standard_cards|maneuvering"
 
 local files = table.concat(sgs.GetFileNames("lua/ai"), " ")
 
@@ -5852,9 +5851,6 @@ for _, aextension in ipairs(sgs.Sanguosha:getExtensions()) do
 		dofile("lua/ai/" .. string.lower(aextension) .. "-ai.lua")
 	end
 end
-
-dofile "lua/ai/sp-ai.lua"
-dofile "lua/ai/special3v3-ai.lua"
 
 for _, ascenario in ipairs(sgs.Sanguosha:getModScenarioNames()) do
 	if not loaded:match(ascenario) and files:match(string.lower(ascenario)) then

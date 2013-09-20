@@ -1,8 +1,8 @@
 -- translation for Special 3v3 Package
 
 return {
-	["Special3v3"] = "2012-3v3",
-	["New3v3Card"] = "2012-3v3卡牌",
+	["Special3v3"] = "3v3",
+	["New3v3Card"] = "3v3卡牌(2012)",
 
 	["#zhugejin"] = "联盟的维系者",
 	["zhugejin"] = "诸葛瑾",
@@ -22,8 +22,7 @@ return {
 	["mingzhe"] = "明哲",
 	[":mingzhe"] = "每当你于回合外使用、打出或因弃置而失去一张红色牌时，你可以摸一张牌。",
 
-	["Special3v3_2013"] = "2013-3v3",
-	["New3v3_2013Card"] = "2013-3v3卡牌",
+	["New3v3_2013Card"] = "3v3卡牌(2013)",
 
 	["vs_xiahoudun"] = "夏侯惇3v3",
 	["&vs_xiahoudun"] = "夏侯惇",

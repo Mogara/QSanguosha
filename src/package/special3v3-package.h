@@ -59,13 +59,6 @@ public:
     Special3v3Package();
 };
 
-class Special3v3_2013Package: public Package {
-    Q_OBJECT
-
-public:
-    Special3v3_2013Package();
-};
-
 class New3v3CardPackage: public Package {
     Q_OBJECT
 

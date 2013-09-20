@@ -527,21 +527,6 @@ New3v3CardPackage::New3v3CardPackage()
 
 ADD_PACKAGE(New3v3Card)
 
-Special3v3Package::Special3v3Package()
-    : Package("Special3v3")
-{
-    General *zhugejin = new General(this, "zhugejin", "wu", 3); // WU 018
-    zhugejin->addSkill(new Hongyuan);
-    zhugejin->addSkill(new HongyuanDraw);
-    zhugejin->addSkill(new Huanshi);
-    zhugejin->addSkill(new Mingzhe);
-    related_skills.insertMulti("hongyuan", "#hongyuan");
-
-    addMetaObject<HongyuanCard>();
-}
-
-ADD_PACKAGE(Special3v3)
-
 New3v3_2013CardPackage::New3v3_2013CardPackage()
     : Package("New3v3_2013Card")
 {
@@ -557,8 +542,8 @@ New3v3_2013CardPackage::New3v3_2013CardPackage()
 
 ADD_PACKAGE(New3v3_2013Card)
 
-Special3v3_2013Package::Special3v3_2013Package()
-    : Package("Special3v3_2013")
+Special3v3Package::Special3v3Package()
+    : Package("Special3v3")
 {
     General *vs_xiahoudun = new General(this, "vs_xiahoudun", "wei");
     vs_xiahoudun->addSkill(new VsGanglie);
@@ -582,10 +567,17 @@ Special3v3_2013Package::Special3v3_2013Package()
     wenpin->addSkill(new ZhenweiDistance);
     related_skills.insert("zhenwei", "#zhenwei");
 
+    General *zhugejin = new General(this, "zhugejin", "wu", 3); // WU 018
+    zhugejin->addSkill(new Hongyuan);
+    zhugejin->addSkill(new HongyuanDraw);
+    zhugejin->addSkill(new Huanshi);
+    zhugejin->addSkill(new Mingzhe);
+    related_skills.insertMulti("hongyuan", "#hongyuan");
+
     addMetaObject<ZhongyiCard>();
     addMetaObject<JiuzhuCard>();
     addMetaObject<ZhenweiCard>();
 }
 
-ADD_PACKAGE(Special3v3_2013)
+ADD_PACKAGE(Special3v3)
 
