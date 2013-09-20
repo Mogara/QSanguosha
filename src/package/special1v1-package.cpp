@@ -561,7 +561,7 @@ public:
             log2.from = opponent;
             room->sendLog(log2);
 
-            room->doBreakTurn();
+            throw TurnBroken;
         }
         return false;
     }
