@@ -1121,6 +1121,9 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *pl
                     log.arg2 = ces.card->objectName();
                     room->sendLog(log);
 
+                    room->broadcastSkillInvoke(prohibit->objectName());
+                    room->notifySkillInvoked(ces.to, prohibit->objectName());
+
                     return true;
                 }
             }
