@@ -144,7 +144,7 @@ public:
 
 class LuaTargetModSkill: public TargetModSkill {
 public:
-    LuaTargetModSkill(const char *name);
+    LuaTargetModSkill(const char *name, const char *pattern);
 
     virtual int getResidueNum(const Player *from, const Card *card) const;
     virtual int getDistanceLimit(const Player *from, const Card *card) const;
@@ -153,7 +153,6 @@ public:
     LuaFunction residue_func;
     LuaFunction distance_limit_func;
     LuaFunction extra_target_func;
-    //const char *pattern;
 };
 
 class LuaSkillCard: public SkillCard {
@@ -176,7 +175,7 @@ public:
 
 class LuaBasicCard: public BasicCard {
 public:
-	LuaBasicCard(Card::Suit suit, int number, const char *obj_name, const char *class_name);
+	LuaBasicCard(Card::Suit suit, int number, const char *obj_name, const char *class_name, const char *subtype);
 	LuaBasicCard *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
 	void setTargetFixed(bool target_fixed);
 	void setCanRecast(bool can_recast);
@@ -189,9 +188,8 @@ public:
 	virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
 	virtual bool isAvailable(const Player *player) const;
 
-	void setSubtype(const char *subtype);
-	virtual QString getSubtype() const;
 	virtual QString getClassName() const;
+	virtual QString getSubtype() const;
 	virtual bool isKindOf(const char *cardType) const;
 
 	// the lua callbacks
@@ -201,14 +199,13 @@ public:
 	LuaFunction about_to_use;
 	LuaFunction on_use;
 	LuaFunction on_effect;
-	const char *class_name, *subtype;
 };
 
 class LuaTrickCard: public TrickCard {
 public:
     enum SubClass { TypeNormal, TypeSingleTargetTrick, TypeDelayedTrick, TypeAOE, TypeGlobalEffect };
     
-    LuaTrickCard(Card::Suit suit, int number, const char *obj_name, const char *class_name);
+    LuaTrickCard(Card::Suit suit, int number, const char *obj_name, const char *class_name, const char *subtype);
     LuaTrickCard *clone(Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
     void setTargetFixed(bool target_fixed);
     void setCanRecast(bool can_recast);
@@ -224,7 +221,6 @@ public:
     virtual bool isAvailable(const Player *player) const;
 
     virtual QString getClassName() const;
-    void setSubtype(const char *subtype);
     void setSubClass(SubClass subclass);
     SubClass getSubClass() const;
     virtual QString getSubtype() const;
@@ -239,7 +235,6 @@ public:
     LuaFunction on_use;
     LuaFunction on_effect;
     LuaFunction on_nullified;
-    const char *class_name, *subtype;
 };
 
 class LuaWeapon: public Weapon {
@@ -256,7 +251,6 @@ public:
     // the lua callbacks
     LuaFunction on_install;
     LuaFunction on_uninstall;
-    const char *class_name;
 };
 
 class LuaArmor: public Armor {
@@ -273,7 +267,6 @@ public:
     // the lua callbacks
     LuaFunction on_install;
     LuaFunction on_uninstall;
-    const char *class_name;
 };
 
 %{

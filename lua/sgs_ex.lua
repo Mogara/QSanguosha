@@ -94,8 +94,9 @@ end
 function sgs.CreateTargetModSkill(spec)
 	assert(type(spec.name) == "string")
 	assert(type(spec.residue_func) == "function" or type(spec.distance_limit_func) == "function" or type(spec.extra_target_func) == "function")
+	if spec.pattern then assert(type(spec.pattern) == "string") end
 
-	local skill = sgs.LuaTargetModSkill(spec.name)
+	local skill = sgs.LuaTargetModSkill(spec.name, spec.pattern or "Slash")
 	if spec.residue_func then
 		skill.residue_func = spec.residue_func
 	end
@@ -104,12 +105,6 @@ function sgs.CreateTargetModSkill(spec)
 	end
 	if spec.extra_target_func then
 		skill.extra_target_func = spec.extra_target_func
-	end
-	
-	if type(spec.pattern) == "string" then
-		skill.pattern = spec.pattern
-	else
-		skill.pattern = "Slash"
 	end
 
 	return skill
@@ -171,20 +166,15 @@ function sgs.CreateBasicCard(spec)
 	elseif not spec.class_name then spec.class_name = spec.name end
 	if spec.suit then assert(type(spec.suit) == "number") end
 	if spec.number then assert(type(spec.number) == "number") end
-	local card = sgs.LuaBasicCard(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name)
-
+	if spec.subtype then assert(type(spec.subtype) == "string") end
+	local card = sgs.LuaBasicCard(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name, spec.subtype or "BasicCard")
+	
 	if type(spec.target_fixed) == "boolean" then
 		card:setTargetFixed(spec.target_fixed)
 	end
 
 	if type(spec.can_recast) == "boolean" then
 		card:setCanRecast(spec.can_recast)
-	end
-
-	if type(spec.subtype) == "string" then
-		card:setSubtype(spec.subtype)
-	else
-		card:setSubtype("BasicCard")
 	end
 
 	card.filter = spec.filter
@@ -303,7 +293,15 @@ function sgs.CreateTrickCard(spec)
 	elseif not spec.class_name then spec.class_name = spec.name end
 	if spec.suit then assert(type(spec.suit) == "number") end
 	if spec.number then assert(type(spec.number) == "number") end
-	local card = sgs.LuaTrickCard(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name)
+	
+	if spec.subtype then
+		assert(type(spec.subtype) == "string")
+	else
+		local subtype_table = { "TrickCard", "single_target_trick", "delayed_trick", "aoe", "global_effect" }
+		spec.subtype = subtype_table[(spec.subclass or 0) + 1]
+	end
+	
+	local card = sgs.LuaTrickCard(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name, spec.subtype)
 
 	if type(spec.target_fixed) == "boolean" then
 		card:setTargetFixed(spec.target_fixed)
@@ -311,13 +309,6 @@ function sgs.CreateTrickCard(spec)
 
 	if type(spec.can_recast) == "boolean" then
 		card:setCanRecast(spec.can_recast)
-	end
-
-	if type(spec.subtype) == "string" then
-		card:setSubtype(spec.subtype)
-	else
-		local subtype_table = { "TrickCard", "single_target_trick", "delayed_trick", "aoe", "global_effect" }
-		card:setSubtype(subtype_table[(spec.subclass or 0) + 1])
 	end
 
 	if type(spec.subclass) == "number" then
