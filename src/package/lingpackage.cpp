@@ -577,6 +577,7 @@ public:
     }
 };
 
+/*
 class Neo2013Qianhuan: public TriggerSkill{
 public:
     Neo2013Qianhuan(): TriggerSkill("neo2013qianhuan"){
@@ -667,7 +668,9 @@ public:
         }
         return false;
     }
-};
+};*/
+
+
 //
 //
 //
@@ -1151,8 +1154,10 @@ Ling2013Package::Ling2013Package(): Package("Ling2013"){
     neo2013_liubei->addSkill("jijiang");
     neo2013_liubei->addSkill("rende");
 
+/*
     General *neo2013_yuji = new General(this, "neo2013_yuji", "qun", 3);
     neo2013_yuji->addSkill(new Neo2013Qianhuan);
+*/
 
     General *neo2013_yangxiu = new General(this, "neo2013_yangxiu", "wei", 3);
     neo2013_yangxiu->addSkill(new Neo2013Duoyi);
@@ -1401,7 +1406,7 @@ public:
 };
 
 Triblade::Triblade(Card::Suit suit, int number): Weapon(suit, number, 3){
-
+    setObjectName("Triblade");
 }
 
 TribladeSkillCard::TribladeSkillCard(): SkillCard(){
@@ -1460,6 +1465,77 @@ public:
     }
 };
 
+DragonPhoenix::DragonPhoenix(Card::Suit suit, int number): Weapon(suit, number, 2){
+    setObjectName("DragonPhoenix");
+}
+
+class DragonPhoenixSkill: public WeaponSkill{
+public:
+    DragonPhoenixSkill(): WeaponSkill("DragonPhoenix"){
+        events << TargetConfirmed << Death;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == TargetConfirmed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from != player)
+                return false;
+
+            if (use.card->isKindOf("Slash"))
+                foreach(ServerPlayer *to, use.to){
+                    if (!to->canDiscard(to, "he"))
+                        return false;
+                    else if (use.from->askForSkillInvoke(objectName())){
+                        QString prompt = "dragon-phoenix-card:" + use.from->objectName();
+                        room->askForDiscard(to, objectName(), 1, 1, false, true, prompt);
+                    }
+                }
+        }
+        else {
+            DeathStruct death = data.value<DeathStruct>();
+            if (death.damage != NULL && death.damage->card != NULL && death.damage->card->isKindOf("Slash")
+                    && death.damage->from == player && player->askForSkillInvoke(objectName())){
+                QString general1 = death.who->getGeneralName(), general2 = death.who->getGeneral2Name();
+                QString general3 = player->getGeneralName(), general4 = player->getGeneral2Name();
+                int maxhp1 = death.who->getMaxHp(), maxhp2 = player->getMaxHp();
+                QList<const Skill *> skills1 = death.who->getVisibleSkillList(), skills2 = player->getVisibleSkillList();
+
+                QStringList detachlist;
+                foreach(const Skill *skill, skills1)
+                    if (player->hasSkill(skill->objectName()))
+                        detachlist.append(QString("-") + skill->objectName());
+                
+                if (!detachlist.isEmpty())
+                    room->handleAcquireDetachSkills(player, detachlist);
+
+                detachlist.clear();
+
+                foreach(const Skill *skill, skills2)
+                    if (death.who->hasSkill(skill->objectName()))
+                        detachlist.append(QString("-") + skill->objectName());
+
+                if (!detachlist.isEmpty())
+                    room->handleAcquireDetachSkills(player, detachlist);
+
+                room->changeHero(player, general1, false, false, false, true);
+                if (general2.length() > 0)
+                    room->changeHero(player, general2, false, false, true, true);
+
+                room->changeHero(death.who, general3, false, false, false, true);
+                if (general4.length() > 0)
+                    room->changeHero(death.who, general4, false, false, true, true);
+
+                if (player->getMaxHp() != maxhp1)
+                    room->setPlayerProperty(player, "maxhp", (player->isLord()) ? maxhp1 + 1 : maxhp1);
+
+                if (death.who->getMaxHp() != maxhp2)
+                    room->setPlayerProperty(death.who, "maxhp", (death.who->isLord()) ? maxhp2 + 1: maxhp2);
+
+            }
+        }
+        return false;
+    }
+};
 
 
 LingCardsPackage::LingCardsPackage(): Package("LingCards", Package::CardPack){
@@ -1474,12 +1550,13 @@ LingCardsPackage::LingCardsPackage(): Package("LingCards", Package::CardPack){
     cards << new NeoDrowning(Card::Club, 7);
     cards << new SixSwords(Card::Diamond, 6); //¹¥»÷·¶Î§Ð´ÔÚPlayer::getAttackRange(bool)ÖÐ
     cards << new Triblade(Card::Diamond, 12);
+    cards << new DragonPhoenix(Card::Spade, 2);
 
     foreach(Card *c, cards)
         c->setParent(this);
 
 
-    skills << new SixSwordsSkill << new TribladeSkill;
+    skills << new SixSwordsSkill << new TribladeSkill << new DragonPhoenixSkill;
 
     addMetaObject<SixSwordsSkillCard>();
     addMetaObject<TribladeSkillCard>();
