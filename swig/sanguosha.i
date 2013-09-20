@@ -1069,7 +1069,6 @@ public:
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
     void retrial(const Card *card, ServerPlayer *player, JudgeStar judge, const char *skill_name, bool exchange = false);
-    void doBreakTurn();
     void notifySkillInvoked(ServerPlayer *player, const char *skill_name);
     void broadcastSkillInvoke(const char *skillName);
     void broadcastSkillInvoke(const char *skillName, const char *category);
@@ -1210,6 +1209,9 @@ public:
         $self->output(msg);
         qWarning("%s", msg);
     }
+	void throwEvent(const TriggerEvent event) {
+		throw event;
+	}
 };
 
 %{

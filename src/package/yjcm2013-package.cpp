@@ -845,7 +845,7 @@ public:
                 log.from = current;
                 room->sendLog(log);
             }
-            room->doBreakTurn();
+            throw TurnBroken;
         }
         return false;
     }
