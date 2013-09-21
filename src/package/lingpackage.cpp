@@ -753,7 +753,7 @@ bool Neo2013PujiCard::targetFilter(const QList<const Player *> &targets, const P
 void Neo2013PujiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets[0];
     const Card *card = Sanguosha->getCard(room->askForCardChosen(source, target, "he", objectName(), false, Card::MethodDiscard));
-    
+
     QList<ServerPlayer *> beneficiary;
     if (Sanguosha->getCard(getSubcards()[0])->isBlack())
         beneficiary << source;
@@ -977,7 +977,7 @@ public:
         card->addSubcard(cards[0]);
         return card;
     }
-    
+
     virtual bool isEnabledAtPlay(const Player *) const{
         return false;
     }
@@ -1062,7 +1062,7 @@ public:
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target) 
+        return PhaseChangeSkill::triggerable(target)
             && target->getPhase() == Player::RoundStart
             && target->getMark(objectName()) == 0
             && target->getHandcardNum() > target->getHp();
@@ -1104,7 +1104,7 @@ public:
             return false;
         if (player->getMark("@yihuwei") == 0)
             return false;
-        
+
         NeoDrowning *dr = new NeoDrowning(Card::NoSuit, 0);
         dr->setSkillName(objectName());
 
@@ -1351,7 +1351,7 @@ SixSwords::SixSwords(Card::Suit suit, int number): Weapon(suit, number, 2){
 }
 
 SixSwordsSkillCard::SixSwordsSkillCard(): SkillCard(){
-    
+
 }
 
 bool SixSwordsSkillCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -1444,7 +1444,7 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.to && damage.to->isAlive() && damage.card && damage.card->isKindOf("Slash") 
+        if (damage.to && damage.to->isAlive() && damage.card && damage.card->isKindOf("Slash")
                 && damage.by_user && !damage.chain && !damage.transfer){
             QList<ServerPlayer *> players;
             foreach(ServerPlayer *p, room->getOtherPlayers(damage.to))
@@ -1452,7 +1452,7 @@ public:
                     players << p;
                     p->setFlags("TribladeFilter");
                 }
-            if (players.isEmpty()) 
+            if (players.isEmpty())
                 return false;
             room->askForUseCard(player, "@@Triblade", "@triblade");
         }
@@ -1504,7 +1504,7 @@ public:
                 foreach(const Skill *skill, skills1)
                     if (player->hasSkill(skill->objectName()))
                         detachlist.append(QString("-") + skill->objectName());
-                
+
                 if (!detachlist.isEmpty())
                     room->handleAcquireDetachSkills(player, detachlist);
 

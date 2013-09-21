@@ -102,7 +102,7 @@ public:
     PindianStruct *toPindian() const{
         return $self->value<PindianStar>();
     }
-    
+
     void setValue(PhaseChangeStruct *phase) {
         $self->setValue(QVariant::fromValue(*phase));
     }
@@ -118,7 +118,7 @@ public:
     CardsMoveOneTimeStruct toMoveOneTime() const{
         return $self->value<CardsMoveOneTimeStruct>();
     }
-    
+
     void setValue(CardResponseStruct *resp) {
         $self->setValue(QVariant::fromValue(*resp));
     }

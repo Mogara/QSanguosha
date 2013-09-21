@@ -35,7 +35,7 @@ Card::CardType TrickCard::getTypeId() const{
 }
 
 bool TrickCard::isCancelable(const CardEffectStruct &effect) const{
-	Q_UNUSED(effect);
+    Q_UNUSED(effect);
     return cancelable;
 }
 
@@ -66,10 +66,10 @@ void EquipCard::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-	if (targets.isEmpty()) {
-		CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
-		room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
-	}
+    if (targets.isEmpty()) {
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+    }
     int equipped_id = Card::S_UNKNOWN_CARD_ID;
     ServerPlayer *target = targets.first();
     if (target->getEquip(location()))
@@ -77,11 +77,11 @@ void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 
     QList<CardsMoveStruct> exchangeMove;
     CardsMoveStruct move1(getEffectiveId(), target, Player::PlaceEquip,
-						  CardMoveReason(CardMoveReason::S_REASON_USE, target->objectName()));
+                          CardMoveReason(CardMoveReason::S_REASON_USE, target->objectName()));
     exchangeMove.push_back(move1);
     if (equipped_id != Card::S_UNKNOWN_CARD_ID) {
          CardsMoveStruct move2(equipped_id, NULL, Player::DiscardPile,
-							   CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
+                               CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
          exchangeMove.push_back(move2);
     }
     LogMessage log;
@@ -234,14 +234,14 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void DelayedTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-	if (targets.isEmpty()) {
-		if (movable) {
-			onNullified(source);
-			if (room->getCardOwner(getEffectiveId()) != source) return;
-		}
-		CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
-		room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
-	}
+    if (targets.isEmpty()) {
+        if (movable) {
+            onNullified(source);
+            if (room->getCardOwner(getEffectiveId()) != source) return;
+        }
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+    }
 }
 
 QString DelayedTrick::getSubtype() const{
@@ -282,11 +282,11 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
 
 void DelayedTrick::onNullified(ServerPlayer *target) const{
     Room *room = target->getRoom();
-	RoomThread *thread = room->getThread();
+    RoomThread *thread = room->getThread();
     if (movable) {
         QList<ServerPlayer *> players = room->getOtherPlayers(target);
         players << target;
-		ServerPlayer *p = NULL;
+        ServerPlayer *p = NULL;
 
         foreach (ServerPlayer *player, players) {
             if (player->containsTrick(objectName()))
@@ -308,29 +308,29 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
             CardMoveReason reason(CardMoveReason::S_REASON_TRANSFER, target->objectName(), QString(), this->getSkillName(), QString());
             room->moveCardTo(this, target, player, Player::PlaceDelayedTrick, reason, true);
 
-			if (target == player) break;
+            if (target == player) break;
 
-			CardUseStruct use;
-			use.from = NULL;
-			use.to << player;
-			use.card = this;
-			QVariant data = QVariant::fromValue(use);
-			thread->trigger(TargetConfirming, room, player, data);
-			CardUseStruct new_use = data.value<CardUseStruct>();
-			if (new_use.to.isEmpty()) {
-				p = player;
-				break;
-			}
+            CardUseStruct use;
+            use.from = NULL;
+            use.to << player;
+            use.card = this;
+            QVariant data = QVariant::fromValue(use);
+            thread->trigger(TargetConfirming, room, player, data);
+            CardUseStruct new_use = data.value<CardUseStruct>();
+            if (new_use.to.isEmpty()) {
+                p = player;
+                break;
+            }
 
-			foreach (ServerPlayer *p, room->getAllPlayers())
-				thread->trigger(TargetConfirmed, room, p, data);
+            foreach (ServerPlayer *p, room->getAllPlayers())
+                thread->trigger(TargetConfirmed, room, p, data);
             break;
         }
-		if (p)
-			onNullified(p);
+        if (p)
+            onNullified(p);
     } else {
-		CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());
-		room->throwCard(this, reason, NULL);
+        CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());
+        room->throwCard(this, reason, NULL);
     }
 }
 

@@ -37,7 +37,7 @@ void RoomThreadXMode::run() {
     foreach (QString pack_name, GetConfigFromLuaState(Sanguosha->getLuaState(), "xmode_packages").toStringList()) {
          const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
          if (pack) generals << pack->findChildren<const General *>();
-	}
+    }
 
     foreach (const General *general, generals) {
         if (general->isTotallyHidden())
@@ -220,7 +220,7 @@ void RoomThreadXMode::assignRoles(const QString &scheme) {
 
     bool valid = true;
     QList<ServerPlayer *> players = room->m_players;
-	do {
+    do {
         qShuffle(players);
         valid = true;
         int total = players.length();

@@ -14,7 +14,7 @@ class QSanButton: public QGraphicsObject{
 public:
     QSanButton(QGraphicsItem *parent);
     QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent);
-    enum ButtonState { S_STATE_UP, S_STATE_HOVER, S_STATE_DOWN, 
+    enum ButtonState { S_STATE_UP, S_STATE_HOVER, S_STATE_DOWN,
                        S_STATE_DISABLED, S_NUM_BUTTON_STATES };
     enum ButtonStyle { S_STYLE_PUSH, S_STYLE_TOGGLE };
     void setSize(QSize size);
@@ -92,7 +92,7 @@ protected:
     bool _m_emitActivateSignal;
     bool _m_emitDeactivateSignal;
     bool _m_canEnable;
-    bool _m_canDisable; 
+    bool _m_canDisable;
     const Skill *_m_skill;
     const ViewAsSkill *_m_viewAsSkill;
 
@@ -120,7 +120,7 @@ public:
 
 protected:
     // this function does not update the button's bg and is therefore not exposed to outside
-    // classes.    
+    // classes.
     virtual void _repaint();
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     SkillButtonWidth _m_enumWidth;
@@ -155,9 +155,9 @@ public:
     inline QList<QSanInvokeSkillButton *> getAllSkillButtons() { return _m_buttons; }
 
 protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {}    
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {}
     QList<QSanInvokeSkillButton *> _m_buttons;
-    int _m_width;    
+    int _m_width;
 
 signals:
     void skill_activated(const Skill *skill);

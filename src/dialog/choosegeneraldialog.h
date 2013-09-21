@@ -40,10 +40,10 @@ protected:
     QDialog *m_freeChooseDialog;
 
 private:
-    QSanCommandProgressBar *progress_bar;    
+    QSanCommandProgressBar *progress_bar;
 
 private slots:
-    void freeChoose();   
+    void freeChoose();
 };
 
 class FreeChooseDialog: public QDialog {

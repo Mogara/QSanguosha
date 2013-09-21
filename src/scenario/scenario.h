@@ -13,7 +13,7 @@ class Scenario: public Package {
     Q_OBJECT
 
 public:
-    explicit Scenario(const QString &name);    
+    explicit Scenario(const QString &name);
     ScenarioRule *getRule() const;
 
     virtual bool exposeRoles() const;

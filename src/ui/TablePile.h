@@ -13,7 +13,7 @@
 class TablePile: public GenericCardContainer {
     Q_OBJECT
 
-public:  
+public:
     inline TablePile(): GenericCardContainer(), m_currentTime(0) { m_timer = startTimer(S_CLEARANCE_UPDATE_INTERVAL_MSEC); }
     virtual QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place);
     inline void setSize(QSize newSize) { setSize(newSize.width(), newSize.height()); }

@@ -749,7 +749,7 @@ public:
     virtual QString getSubtype() const = 0;
     virtual CardType getTypeId() const = 0;
     virtual QString toString(bool hidden = false) const;
-	virtual QString getEffectName() const;
+    virtual QString getEffectName() const;
     bool isNDTrick() const;
 
     // card target selection
@@ -879,7 +879,7 @@ public:
     int getRoleIndex() const;
 
     const CardPattern *getPattern(const char *name) const;
-	bool matchExpPattern(const char *pattern, const Player *player, const Card *card) const;
+    bool matchExpPattern(const char *pattern, const Player *player, const Card *card) const;
     Card::HandlingMethod getCardHandlingMethod(const char *method_name) const;
     QList<const Skill *> getRelatedSkills(const char *skill_name) const;
     const Skill *getMainSkill(const QString &skill_name) const;
@@ -1209,9 +1209,9 @@ public:
         $self->output(msg);
         qWarning("%s", msg);
     }
-	void throwEvent(const TriggerEvent event) {
-		throw event;
-	}
+    void throwEvent(const TriggerEvent event) {
+        throw event;
+    }
 };
 
 %{

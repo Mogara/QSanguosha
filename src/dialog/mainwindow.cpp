@@ -79,7 +79,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-	connect(ui->actionAcknowledgement_2, SIGNAL(triggered()), this, SLOT(on_actionAcknowledgement_triggered()));
+    connect(ui->actionAcknowledgement_2, SIGNAL(triggered()), this, SLOT(on_actionAcknowledgement_triggered()));
 
     StartScene *start_scene = new StartScene;
 
@@ -600,15 +600,15 @@ void MainWindow::on_actionBroadcast_triggered() {
 
 void MainWindow::on_actionAcknowledgement_triggered() {
     Window *window = new Window(QString(), QSize(1000, 677), "image/system/acknowledgement.png");
-	scene->addItem(window);
+    scene->addItem(window);
 
-	Button *button = window->addCloseButton(tr("OK"));
-	button->moveBy(-85, -35);
-	window->setZValue(32766);
-	window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
-					scene && scene->inherits("RoomScene") ? scene->height() : 0);
+    Button *button = window->addCloseButton(tr("OK"));
+    button->moveBy(-85, -35);
+    window->setZValue(32766);
+    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
+                    scene && scene->inherits("RoomScene") ? scene->height() : 0);
 
-	window->appear();
+    window->appear();
 }
 
 void MainWindow::on_actionPC_Console_Start_triggered() {

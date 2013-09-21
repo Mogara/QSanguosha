@@ -41,10 +41,10 @@ void RoomThread1v1::run() {
                        << "sunquan" << "ganning" << "huanggai" << "zhouyu"
                        << "luxun" << "kof_sunshangxiang" << "sunjian" << "xiaoqiao"
                        << "lvbu" << "kof_nos_diaochan" << "yanliangwenchou" << "hejin";
-			if (rule == "OL") {
-				candidates << "kof_liubei" << "kof_weiyan" << "kof_lvmeng" << "kof_daqiao"
-							<< "nos_zhoutai" << "kof_huatuo" << "nos_zhangjiao" << "kof_pangde";
-			}
+            if (rule == "OL") {
+                candidates << "kof_liubei" << "kof_weiyan" << "kof_lvmeng" << "kof_daqiao"
+                            << "nos_zhoutai" << "kof_huatuo" << "nos_zhangjiao" << "kof_pangde";
+            }
         }
         qShuffle(candidates);
         general_names = candidates.mid(0, total_num);
@@ -63,15 +63,15 @@ void RoomThread1v1::run() {
         room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(known_list << "x0" << "x1" << "x2" << "x3"));
     } else if (rule == "2013") {
         room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(general_names));
-	} else if (rule == "OL") {
-		QStringList known_list = general_names.mid(0, 6);
-		unknown_list = general_names.mid(6, 6);
+    } else if (rule == "OL") {
+        QStringList known_list = general_names.mid(0, 6);
+        unknown_list = general_names.mid(6, 6);
 
-		for (int i = 0; i < 6; i++)
-			general_names[i + 6] = QString("x%1").arg(QString::number(i));
+        for (int i = 0; i < 6; i++)
+            general_names[i + 6] = QString("x%1").arg(QString::number(i));
 
-		room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(known_list << "x0" << "x1" << "x2"
-																				<< "x3" << "x4" << "x5"));
+        room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(known_list << "x0" << "x1" << "x2"
+                                                                                << "x3" << "x4" << "x5"));
     }
 
     int index = qrand() % 2;
@@ -86,14 +86,14 @@ void RoomThread1v1::run() {
     room->broadcastProperty(next, "role");
     room->adjustSeats();
 
-	if (rule == "OL") {
-		takeGeneral(first, "x0");
-		takeGeneral(first, "x2");
-		takeGeneral(first, "x4");
-		takeGeneral(next, "x1");
-		takeGeneral(next, "x3");
-		takeGeneral(next, "x5");
-	}
+    if (rule == "OL") {
+        takeGeneral(first, "x0");
+        takeGeneral(first, "x2");
+        takeGeneral(first, "x4");
+        takeGeneral(next, "x1");
+        takeGeneral(next, "x3");
+        takeGeneral(next, "x5");
+    }
 
     askForTakeGeneral(first);
 
@@ -106,9 +106,9 @@ void RoomThread1v1::run() {
     askForTakeGeneral(next);
 
     if (rule == "OL")
-		askForFirstGeneral(QList<ServerPlayer *>() << first << next);
-	else
-		startArrange(QList<ServerPlayer *>() << first << next);
+        askForFirstGeneral(QList<ServerPlayer *>() << first << next);
+    else
+        startArrange(QList<ServerPlayer *>() << first << next);
 }
 
 void RoomThread1v1::askForTakeGeneral(ServerPlayer *player) {
@@ -138,7 +138,7 @@ void RoomThread1v1::askForTakeGeneral(ServerPlayer *player) {
 }
 
 void RoomThread1v1::takeGeneral(ServerPlayer *player, const QString &name) {
-	QString rule = Config.value("1v1/Rule", "Classical").toString();
+    QString rule = Config.value("1v1/Rule", "Classical").toString();
     QString group = player->isLord() ? "warm" : "cool";
     room->doBroadcastNotify(room->getOtherPlayers(player, true), S_COMMAND_TAKE_GENERAL, toJsonArray(group, name, rule));
 
@@ -200,48 +200,48 @@ void RoomThread1v1::startArrange(QList<ServerPlayer *> players) {
 }
 
 void RoomThread1v1::askForFirstGeneral(QList<ServerPlayer *> players) {
-	while (room->isPaused()) {}
-	QList<ServerPlayer *> online = players;
-	foreach (ServerPlayer *player, players) {
-		if (!player->isOnline()) {
-			GeneralSelector *selector = GeneralSelector::getInstance();
-			QStringList arranged = player->getSelected();
-			QStringList selected = selector->arrange1v1(player);
-			selected.append(arranged);
-			selected.removeDuplicates();
-			arrange(player, selected);
-			online.removeOne(player);
-		}
-	}
-	if (online.isEmpty()) return;
+    while (room->isPaused()) {}
+    QList<ServerPlayer *> online = players;
+    foreach (ServerPlayer *player, players) {
+        if (!player->isOnline()) {
+            GeneralSelector *selector = GeneralSelector::getInstance();
+            QStringList arranged = player->getSelected();
+            QStringList selected = selector->arrange1v1(player);
+            selected.append(arranged);
+            selected.removeDuplicates();
+            arrange(player, selected);
+            online.removeOne(player);
+        }
+    }
+    if (online.isEmpty()) return;
 
-	foreach (ServerPlayer *player, online)
-		player->m_commandArgs = toJsonArray(player->getSelected());
+    foreach (ServerPlayer *player, online)
+        player->m_commandArgs = toJsonArray(player->getSelected());
 
-	room->doBroadcastRequest(online, S_COMMAND_CHOOSE_GENERAL);
+    room->doBroadcastRequest(online, S_COMMAND_CHOOSE_GENERAL);
 
-	foreach (ServerPlayer *player, online) {
-		Json::Value clientReply = player->getClientReply();
-		if (player->m_isClientResponseReady && clientReply.isString() && player->getSelected().contains(clientReply.asCString())) {
-			QStringList arranged = player->getSelected();
-			QString first_gen = clientReply.asCString();
-			arranged.removeOne(first_gen);
-			arranged.prepend(first_gen);
-			arrange(player, arranged);
-		} else {
-			GeneralSelector *selector = GeneralSelector::getInstance();
-			QStringList arranged = player->getSelected();
-			QStringList selected = selector->arrange1v1(player);
-			selected.append(arranged);
-			selected.removeDuplicates();
-			arrange(player, selected);
-		}
-	}
+    foreach (ServerPlayer *player, online) {
+        Json::Value clientReply = player->getClientReply();
+        if (player->m_isClientResponseReady && clientReply.isString() && player->getSelected().contains(clientReply.asCString())) {
+            QStringList arranged = player->getSelected();
+            QString first_gen = clientReply.asCString();
+            arranged.removeOne(first_gen);
+            arranged.prepend(first_gen);
+            arrange(player, arranged);
+        } else {
+            GeneralSelector *selector = GeneralSelector::getInstance();
+            QStringList arranged = player->getSelected();
+            QStringList selected = selector->arrange1v1(player);
+            selected.append(arranged);
+            selected.removeDuplicates();
+            arrange(player, selected);
+        }
+    }
 }
 
 void RoomThread1v1::arrange(ServerPlayer *player, const QStringList &arranged) {
     QString rule = Config.value("1v1/Rule", "Classical").toString();
-	Q_ASSERT(arranged.length() == ((rule == "OL") ? 6 : 3));
+    Q_ASSERT(arranged.length() == ((rule == "OL") ? 6 : 3));
 
     QStringList left = arranged.mid(1);
     player->tag["1v1Arrange"] = QVariant::fromValue(left);

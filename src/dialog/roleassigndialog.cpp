@@ -105,7 +105,7 @@ void RoleAssignDialog::accept() {
         QDialog::accept();
         return;
     }
-    
+
     for (int i = 0; i < list->count(); i++) {
         QString name = list->item(i)->data(Qt::UserRole).toString();
         QString role = role_mapping.value(name);

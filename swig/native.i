@@ -43,7 +43,7 @@ static int AddTranslationEntry(lua_State *lua) {
 
     Sanguosha->addTranslationEntry(key, value);
 
-    return 0;    
+    return 0;
 }
 
 static int GetConfig(lua_State *lua) {
@@ -79,30 +79,30 @@ static int GetConfig(lua_State *lua) {
 static int SetConfig(lua_State *lua) {
     const char *key = luaL_checkstring(lua, 1);
     int type = lua_type(lua, 2);
-    
+
     switch (type) {
     case LUA_TNUMBER: {
             int n = luaL_checkint(lua, 2);
             Config.setValue(key, n);
-            
+
             break;
         }
     case LUA_TBOOLEAN: {
             bool b = lua_toboolean(lua, 2);
             Config.setValue(key, b);
-            
+
             break;
         }
     case LUA_TSTRING: {
             const char *str = luaL_checkstring(lua, 2);
             Config.setValue(key, str);
-            
+
             break;
         }
     default:
         luaL_error(lua, "The second argument of %s should be a number, boolean or a string", __FUNCTION__);
     }
-    
+
     return 0;
 }
 

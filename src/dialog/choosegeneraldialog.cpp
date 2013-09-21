@@ -45,10 +45,10 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     : QDialog(parent)
 {
     m_freeChooseDialog = NULL;
-	if (title.isEmpty())
-		setWindowTitle(tr("Choose general"));
-	else
-		setWindowTitle(title);
+    if (title.isEmpty())
+        setWindowTitle(tr("Choose general"));
+    else
+        setWindowTitle(title);
 
     QString lord_name;
 
@@ -94,11 +94,11 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         button->setToolTip(general->getSkillDescription(true));
         buttons << button;
 
-		if (!view_only) {
-			mapper->setMapping(button, general->objectName());
-			connect(button, SIGNAL(double_clicked()), mapper, SLOT(map()));
-			connect(button, SIGNAL(double_clicked()), this, SLOT(accept()));
-		}
+        if (!view_only) {
+            mapper->setMapping(button, general->objectName());
+            connect(button, SIGNAL(double_clicked()), mapper, SLOT(map()));
+            connect(button, SIGNAL(double_clicked()), this, SLOT(accept()));
+        }
     }
 
     if (!view_only && ServerInfo.EnableHegemony && ServerInfo.Enable2ndGeneral && generals.length() > 2) {
@@ -169,12 +169,12 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         }
     }
 
-	if (!view_only) {
-		mapper->setMapping(this, default_name);
-		connect(this, SIGNAL(rejected()), mapper, SLOT(map()));
+    if (!view_only) {
+        mapper->setMapping(this, default_name);
+        connect(this, SIGNAL(rejected()), mapper, SLOT(map()));
 
-		connect(mapper, SIGNAL(mapped(QString)), ClientInstance, SLOT(onPlayerChooseGeneral(QString)));
-	}
+        connect(mapper, SIGNAL(mapped(QString)), ClientInstance, SLOT(onPlayerChooseGeneral(QString)));
+    }
 
     QVBoxLayout *dialog_layout = new QVBoxLayout;
     dialog_layout->addLayout(layout);

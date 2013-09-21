@@ -11,7 +11,7 @@ if (lua_isfunction(L, $input)) {
 
 %typemap(out) LuaFunction
 %{
-lua_rawgeti(L, LUA_REGISTRYINDEX, $1);    
+lua_rawgeti(L, LUA_REGISTRYINDEX, $1);
 SWIG_arg ++;
 %}
 

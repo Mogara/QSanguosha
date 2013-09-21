@@ -5,7 +5,7 @@ LuaTriggerSkill::LuaTriggerSkill(const char *name, Frequency frequency, const ch
     : TriggerSkill(name), on_trigger(0), can_trigger(0), priority(2)
 {
     this->frequency = frequency;
-	this->limit_mark = QString(limit_mark);
+    this->limit_mark = QString(limit_mark);
 }
 
 int LuaTriggerSkill::getPriority() const{
@@ -21,7 +21,7 @@ LuaViewAsSkill::LuaViewAsSkill(const char *name, const char *response_pattern)
     : ViewAsSkill(name), view_filter(0), view_as(0),
       enabled_at_play(0), enabled_at_response(0), enabled_at_nullification(0)
 {
-	this->response_pattern = response_pattern;
+    this->response_pattern = response_pattern;
 }
 
 LuaFilterSkill::LuaFilterSkill(const char *name)
@@ -50,7 +50,7 @@ static QHash<QString, QString> LuaSkillCardsSkillName;
 
 LuaSkillCard::LuaSkillCard(const char *name, const char *skillName)
     : SkillCard(), filter(0), feasible(0),
-		about_to_use(0), on_use(0), on_effect(0), on_validate(0), on_validate_in_response(0)
+        about_to_use(0), on_use(0), on_effect(0), on_validate(0), on_validate_in_response(0)
 {
     if (name) {
         LuaSkillCards.insert(name, this);
@@ -75,7 +75,7 @@ LuaSkillCard *LuaSkillCard::clone() const{
 
     new_card->filter = filter;
     new_card->feasible = feasible;
-	new_card->about_to_use = about_to_use;
+    new_card->about_to_use = about_to_use;
     new_card->on_use = on_use;
     new_card->on_effect = on_effect;
     new_card->on_validate = on_validate;
@@ -162,18 +162,18 @@ QString LuaSkillCard::toString(bool hidden) const{
 }
 
 LuaBasicCard::LuaBasicCard(Card::Suit suit, int number, const char *obj_name, const char *class_name, const char *subtype)
-	: BasicCard(suit, number), filter(0), feasible(0), available(0), about_to_use(0), on_use(0), on_effect(0)
+    : BasicCard(suit, number), filter(0), feasible(0), available(0), about_to_use(0), on_use(0), on_effect(0)
 {
-	setObjectName(obj_name);
-	this->class_name = class_name;
+    setObjectName(obj_name);
+    this->class_name = class_name;
     this->subtype = subtype;
 }
 
 LuaBasicCard *LuaBasicCard::clone(Card::Suit suit, int number) const{
-	if (suit == Card::SuitToBeDecided) suit = this->getSuit();
-	if (number == -1) number = this->getNumber();
-	LuaBasicCard *new_card = new LuaBasicCard(suit, number, objectName().toStdString().c_str(), class_name.toStdString().c_str(), subtype.toStdString().c_str());
-	new_card->subtype = subtype;
+    if (suit == Card::SuitToBeDecided) suit = this->getSuit();
+    if (number == -1) number = this->getNumber();
+    LuaBasicCard *new_card = new LuaBasicCard(suit, number, objectName().toStdString().c_str(), class_name.toStdString().c_str(), subtype.toStdString().c_str());
+    new_card->subtype = subtype;
 
     new_card->target_fixed = target_fixed;
     new_card->can_recast = can_recast;
@@ -204,19 +204,19 @@ LuaTrickCard *LuaTrickCard::clone(Card::Suit suit, int number) const{
     new_card->subclass = subclass;
     new_card->subtype = subtype;
 
-	new_card->target_fixed = target_fixed;
-	new_card->can_recast = can_recast;
+    new_card->target_fixed = target_fixed;
+    new_card->can_recast = can_recast;
 
-	new_card->filter = filter;
-	new_card->feasible = feasible;
-	new_card->available = available;
-	new_card->is_cancelable = is_cancelable;
-	new_card->about_to_use = about_to_use;
-	new_card->on_use = on_use;
-	new_card->on_effect = on_effect;
-	new_card->on_nullified = on_nullified;
+    new_card->filter = filter;
+    new_card->feasible = feasible;
+    new_card->available = available;
+    new_card->is_cancelable = is_cancelable;
+    new_card->about_to_use = about_to_use;
+    new_card->on_use = on_use;
+    new_card->on_effect = on_effect;
+    new_card->on_nullified = on_nullified;
 
-	return new_card;
+    return new_card;
 }
 
 LuaWeapon::LuaWeapon(Card::Suit suit, int number, int range, const char *obj_name, const char *class_name)

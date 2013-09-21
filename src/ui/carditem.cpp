@@ -29,7 +29,7 @@ void CardItem::_initialize() {
 
 CardItem::CardItem(const Card *card) {
     _initialize();
-    setCard(card);    
+    setCard(card);
     setAcceptHoverEvents(true);
 }
 
@@ -59,7 +59,7 @@ void CardItem::setCard(const Card *card) {
 }
 
 void CardItem::setEnabled(bool enabled) {
-     QSanSelectableItem::setEnabled(enabled);    
+     QSanSelectableItem::setEnabled(enabled);
 }
 
 CardItem::~CardItem() {
@@ -107,7 +107,7 @@ void CardItem::goBack(bool playAnimation, bool doFade) {
             delete m_currentAnimation;
             m_currentAnimation = NULL;
         }
-        setPos(homePos());        
+        setPos(homePos());
         m_animationMutex.unlock();
     }
 }
@@ -126,9 +126,9 @@ QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
 
     if (doFade) {
         QParallelAnimationGroup *group = new QParallelAnimationGroup;
-        QPropertyAnimation *disappear = new QPropertyAnimation(this, "opacity");        
+        QPropertyAnimation *disappear = new QPropertyAnimation(this, "opacity");
         double middleOpacity = qMax(opacity(), m_opacityAtHome);
-        if (middleOpacity == 0) middleOpacity = 1.0;        
+        if (middleOpacity == 0) middleOpacity = 1.0;
         disappear->setEndValue(m_opacityAtHome);
         if (!smoothTransition) {
             disappear->setKeyValueAt(0.2, middleOpacity);
@@ -149,7 +149,7 @@ QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
 }
 
 void CardItem::showFrame(const QString &result) {
-    _m_frameType = result;    
+    _m_frameType = result;
 }
 
 void CardItem::hideFrame() {
@@ -203,7 +203,7 @@ void CardItem::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent) {
 
 void CardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) {
     if (frozen) return;
-    
+
     QPointF totalMove = mapToParent(mouseEvent->pos()) - _m_lastMousePressScenePos;
     if (totalMove.x() * totalMove.x() + totalMove.y() * totalMove.y() < _S_MOVE_JITTER_TOLERANCE)
         emit clicked();
@@ -246,10 +246,10 @@ void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
 
 void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    
+
     if (!_m_frameType.isEmpty())
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardFrameArea, G_ROOM_SKIN.getCardAvatarPixmap(_m_frameType));
-    
+
     if (!isEnabled()) {
         painter->fillRect(G_COMMON_LAYOUT.m_cardMainArea, QColor(100, 100, 100, 255 * opacity()));
         painter->setOpacity(0.7 * opacity());
@@ -267,7 +267,7 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         // Deal with stupid QT...
         if (_m_showFootnote) painter->drawImage(rect, _m_footnoteImage);
     }
-    
+
     if (!_m_avatarName.isEmpty())
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardAvatarArea, G_ROOM_SKIN.getCardAvatarPixmap(_m_avatarName));
 }
@@ -279,7 +279,7 @@ void CardItem::setFootnote(const QString &desc) {
     _m_footnoteImage = QImage(rect.size(), QImage::Format_ARGB32);
     _m_footnoteImage.fill(Qt::transparent);
     QPainter painter(&_m_footnoteImage);
-    font.paintText(&painter, QRect(QPoint(0, 0), rect.size()), 
+    font.paintText(&painter, QRect(QPoint(0, 0), rect.size()),
                    (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);
 }
 

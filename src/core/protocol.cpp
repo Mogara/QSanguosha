@@ -12,7 +12,7 @@ const string QSanProtocol::Countdown::S_COUNTDOWN_MAGIC = "MG_COUNTDOWN";
 const char *QSanProtocol::S_PLAYER_SELF_REFERENCE_ID = "MG_SELF";
 
 bool QSanProtocol::Countdown::tryParse(Json::Value val) {
-    if (!val.isArray() || (val.size() != 2 && val.size() != 3) || 
+    if (!val.isArray() || (val.size() != 2 && val.size() != 3) ||
         !val[0].isString() || val[0].asString() != S_COUNTDOWN_MAGIC)
         return false;
     if (val.size() == 3) {
@@ -86,7 +86,7 @@ string QSanProtocol::QSanGeneralPacket::toString() const{
     const Json::Value &body = constructBody();
     if (body != Json::nullValue)
         result[4] = body;
-    
+
     string msg = result.toStyledString();
     msg.erase(remove_if(msg.begin(), msg.end(), (int(*)(int))isspace), msg.end());
     //truncate too long messages

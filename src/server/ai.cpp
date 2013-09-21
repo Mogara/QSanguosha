@@ -97,9 +97,9 @@ AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b) {
 
     QString roleA = a->getRole();
     QString roleB = b->getRole();
-    
+
     Room *room = a->getRoom();
-    
+
     int good = 0, bad = 0;
     QList<ServerPlayer *> players = room->getAlivePlayers();
     foreach (ServerPlayer *player, players) {
@@ -115,7 +115,7 @@ AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b) {
         return map_bad.get(roleA, roleB);
     else if (good > bad)
         return map_good.get(roleA, roleB);
-    else 
+    else
         return map.get(roleA, roleB);
 }
 
@@ -461,7 +461,7 @@ void LuaAI::pushCallback(lua_State *L, const char *function_name) {
 
 void LuaAI::pushQIntList(lua_State *L, const QList<int> &list) {
     lua_createtable(L, list.length(), 0);
-        
+
     for (int i = 0; i < list.length(); i++) {
         lua_pushinteger(L, list.at(i));
         lua_rawseti(L, -2, i + 1);

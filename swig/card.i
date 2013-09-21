@@ -118,7 +118,7 @@ public:
     void setNature(DamageStruct::Nature nature);
 
     static bool IsAvailable(const Player *player, const Card *slash = NULL);
-    
+
 protected:
     DamageStruct::Nature nature;
     mutable int drank;

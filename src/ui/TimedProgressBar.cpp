@@ -44,7 +44,7 @@ void TimedProgressBar::timerEvent(QTimerEvent *) {
             killTimer(m_timer);
             m_timer = 0;
         }
-        emitTimeout = true; 
+        emitTimeout = true;
     }
     val = m_val;
     m_mutex.unlock();
@@ -77,7 +77,7 @@ void QSanCommandProgressBar::paintEvent(QPaintEvent *e) {
     QPainter painter(this);
     if (orientation() == Qt::Vertical) {
         painter.translate(0, height);
-        qSwap(width, height); 
+        qSwap(width, height);
         painter.rotate(-90);
     }
     QPixmap progBg = G_ROOM_SKIN.getProgressBarPixmap(0);

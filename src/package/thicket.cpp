@@ -155,7 +155,7 @@ bool SavageAssaultAvoid::trigger(TriggerEvent , Room *room, ServerPlayer *player
         log.arg2 = "savage_assault";
         room->sendLog(log);
 
-        return true;    
+        return true;
     } else
         return false;
 }

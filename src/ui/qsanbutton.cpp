@@ -12,7 +12,7 @@ QSanButton::QSanButton(QGraphicsItem *parent): QGraphicsObject(parent)
 {
     _m_state = S_STATE_UP;
     _m_style = S_STYLE_PUSH;
-    _m_mouseEntered = false;    
+    _m_mouseEntered = false;
     setSize(QSize(0, 0));
     setAcceptsHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
@@ -69,7 +69,7 @@ void QSanButton::setStyle(ButtonStyle style) {
 }
 
 void QSanButton::setEnabled(bool enabled) {
-    bool changed = (enabled != isEnabled()); 
+    bool changed = (enabled != isEnabled());
     if (!changed) return;
     if (enabled) {
         setState(S_STATE_UP);
@@ -98,7 +98,7 @@ void QSanButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
     if (_m_mouseEntered || !insideButton(point)) return; // fake event;
 
     Q_ASSERT(_m_state != S_STATE_HOVER);
-    _m_mouseEntered = true;    
+    _m_mouseEntered = true;
     if (_m_state == S_STATE_UP)
         setState(S_STATE_HOVER);
 }
@@ -133,11 +133,11 @@ void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 
 void QSanButton::_onMouseClick(bool inside) {
     if (_m_style == S_STYLE_PUSH)
-        setState(S_STATE_UP);        
+        setState(S_STATE_UP);
     else if (_m_style == S_STYLE_TOGGLE) {
         if (_m_state == S_STATE_HOVER)
             _m_state = S_STATE_UP; // temporarily set, do not use setState!
-        
+
         if (_m_state == S_STATE_DOWN && inside)
             setState(S_STATE_UP);
         else if (_m_state == S_STATE_UP && inside)
@@ -149,9 +149,9 @@ void QSanButton::_onMouseClick(bool inside) {
 }
 
 void QSanButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
-    Q_ASSERT(_m_state != S_STATE_DISABLED);    
+    Q_ASSERT(_m_state != S_STATE_DISABLED);
     QPointF point = event->pos();
-    bool inside = insideButton(point);    
+    bool inside = insideButton(point);
     _onMouseClick(inside);
 }
 
@@ -269,7 +269,7 @@ void QSanInvokeSkillButton::paint(QPainter *painter, const QStyleOptionGraphicsI
 QSanSkillButton *QSanInvokeSkillDock::addSkillButtonByName(const QString &skillName) {
     Q_ASSERT(getSkillButtonByName(skillName) == NULL);
     QSanInvokeSkillButton *button = new QSanInvokeSkillButton(this);
-    
+
     const Skill *skill = Sanguosha->getSkill(skillName);
     button->setSkill(skill);
     connect(button, SIGNAL(skill_activated(const Skill *)), this, SIGNAL(skill_activated(const Skill *)));

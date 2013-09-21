@@ -367,7 +367,7 @@ void ServerPlayer::removeCard(const Card *card, Place place) {
     case PlaceSpecial: {
             int card_id = card->getEffectiveId();
             QString pile_name = getPileName(card_id);
-            
+
             //@todo: sanity check required
             if (!pile_name.isEmpty())
                 piles[pile_name].removeOne(card_id);
@@ -574,7 +574,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
                                                         .arg(this->objectName())
                                                         .arg(pindian_struct.from_card->getEffectiveId())
                                                         .arg(target->objectName())
-														.arg(pindian_struct.to_card->getEffectiveId()));
+                                                        .arg(pindian_struct.to_card->getEffectiveId()));
     thread->trigger(ChoiceMade, room, this, decisionData);
 
     return pindian_struct.success;
@@ -664,10 +664,10 @@ void ServerPlayer::play(QList<Player::Phase> set_phases) {
 
         setPhase(phases[i]);
         room->broadcastProperty(this, "phase");
-        
+
         if ((skip || _m_phases_state[i].finished)
-			&& !thread->trigger(EventPhaseSkipping, room, this, data)
-			&& phases[i] != NotActive)
+            && !thread->trigger(EventPhaseSkipping, room, this, data)
+            && phases[i] != NotActive)
             continue;
 
         if (!thread->trigger(EventPhaseStart, room, this)) {

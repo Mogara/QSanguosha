@@ -21,7 +21,7 @@ public:
     ~CardItem();
 
     virtual QRectF boundingRect() const;
-    virtual void setEnabled(bool enabled);   
+    virtual void setEnabled(bool enabled);
 
     const Card *getCard() const;
     void setCard(const Card *card);
@@ -29,7 +29,7 @@ public:
 
     // For move card animation
     void setHomePos(QPointF home_pos);
-    QPointF homePos() const;    
+    QPointF homePos() const;
     QAbstractAnimation *getGoBackAnimation(bool doFadeEffect, bool smoothTransition = false,
                                            int duration = Config.S_MOVE_CARD_ANIMATION_DURATION);
     void goBack(bool playAnimation, bool doFade = true);
@@ -55,7 +55,7 @@ public:
     inline void hideFootnote() { _m_showFootnote = false; }
 
     static CardItem *FindItem(const QList<CardItem *> &items, int card_id);
-    
+
     struct UiHelper {
         int tablePileClearTimeStamp;
     } m_uiHelper;
@@ -80,9 +80,9 @@ protected:
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *);
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);    
-    
-private:    
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+private:
     int m_cardId;
     QString _m_frameType, _m_avatarName;
     QPointF home_pos;

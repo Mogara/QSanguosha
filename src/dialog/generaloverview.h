@@ -23,7 +23,7 @@ public:
     GeneralSearch(GeneralOverview *parent);
 
 private:
-	QCheckBox *include_hidden_checkbox;
+    QCheckBox *include_hidden_checkbox;
     QLabel *nickname_label;
     QLineEdit *nickname_edit;
     QLabel *name_label;
@@ -65,15 +65,15 @@ public:
     ~GeneralOverview();
     void fillGenerals(const QList<const General *> &generals, bool init = true);
 
-	static GeneralOverview *getInstance(QWidget *main_window);
+    static GeneralOverview *getInstance(QWidget *main_window);
 
 private:
     Ui::GeneralOverview *ui;
     QVBoxLayout *button_layout;
-	GeneralSearch *general_search;
+    GeneralSearch *general_search;
 
-	QString origin_window_title;
-	QList<const General *> all_generals;
+    QString origin_window_title;
+    QList<const General *> all_generals;
 
     void resetButtons();
     void addLines(const Skill *skill);
@@ -82,15 +82,15 @@ private:
     QString getIllustratorInfo(const QString &general_name);
 
 public slots:
-	void startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
-					 const QStringList &kingdoms, int lower, int upper, const QStringList &packages);
+    void startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
+                     const QStringList &kingdoms, int lower, int upper, const QStringList &packages);
 
 private slots:
     void playAudioEffect();
     void copyLines();
     void askTransfiguration();
     void askChangeSkin();
-	void fillAllGenerals();
+    void fillAllGenerals();
     void on_tableWidget_itemSelectionChanged();
     void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
 };

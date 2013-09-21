@@ -38,7 +38,7 @@ public:
         rect.moveTopLeft(topLeft);
         return rect;
     }
-    
+
     void hideControlButtons();
     void showControlButtons();
     virtual void showProgressBar(QSanProtocol::Countdown countdown);
@@ -46,7 +46,7 @@ public:
     QSanSkillButton *removeSkillButton(const QString &skillName);
     QSanSkillButton *addSkillButton(const QString &skillName);
     bool isAvatarUnderMouse();
-    
+
     void highlightEquip(QString skillName, bool hightlight);
 
     void setTrust(bool trust);
@@ -66,7 +66,7 @@ public:
     void enableAllCards();
 
     void adjustCards(bool playAnimation = true);
-    
+
     virtual QGraphicsItem *getMouseClickReceiver();
 
     QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place);
@@ -125,12 +125,12 @@ protected:
     inline virtual QGraphicsItem *_getFocusFrameParent() { return _m_rightFrame; }
     inline virtual QGraphicsItem *_getDeathIconParent() { return _m_middleFrame;}
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_DASHBOARD; }
-    
+
     bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
-    void _addHandCard(CardItem *card_item);    
+    void _addHandCard(CardItem *card_item);
     void _adjustCards();
     void _adjustCards(const QList<CardItem *> &list, int y);
 
@@ -138,16 +138,16 @@ protected:
     // sync objects
     QMutex m_mutex;
     QMutex m_mutexEnableCards;
-    
+
     QSanButton *m_btnReverseSelection;
     QSanButton *m_btnSortHandcard;
     QSanButton *m_btnNoNullification;
-    QGraphicsPixmapItem *_m_leftFrame, *_m_middleFrame, *_m_rightFrame;    
+    QGraphicsPixmapItem *_m_leftFrame, *_m_middleFrame, *_m_rightFrame;
     // we can not draw bg directly _m_rightFrame because then it will always be
     // under avatar (since it's avatar's parent).
     QGraphicsPixmapItem *_m_rightFrameBg;
     QGraphicsItem *button_widget;
-        
+
     CardItem *selected;
     QList<CardItem *> m_handCards;
 
@@ -171,7 +171,7 @@ protected:
     const Card *pending_card;
     const ViewAsSkill *view_as_skill;
     const FilterSkill *filter;
-    
+
     // for equip skill/selections
     PixmapAnimation *_m_equipBorders[4];
     QSanSkillButton *_m_equipSkillBtns[4];
@@ -188,7 +188,7 @@ protected:
 
 protected slots:
     virtual void _onEquipSelectChanged();
-    
+
 private slots:
     void onCardItemClicked();
     void onCardItemThrown();

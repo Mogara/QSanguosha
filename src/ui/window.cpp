@@ -45,7 +45,7 @@ Window::Window(const QString &title, const QSizeF &size, const QString &path)
             QRgb rgb = bgimg.pixel(x, y);
             outimg->setPixel(i, j, rgb);
         }
-	}
+    }
 
     scaleTransform = new QGraphicsScale(this);
     scaleTransform->setXScale(1.05);
@@ -87,7 +87,7 @@ Button *Window::addCloseButton(const QString &label) {
     ok_button->setPos(x, y);
 
     connect(ok_button, SIGNAL(clicked()), this, SLOT(disappear()));
-	return ok_button;
+    return ok_button;
 }
 
 void Window::shift(int pos_x, int pos_y) {

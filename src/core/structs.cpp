@@ -10,8 +10,8 @@ bool CardsMoveStruct::tryParse(const Json::Value &arg) {
         !isIntArray(arg, 1, 2) || !isStringArray(arg, 3, 6)) return false;
     if (arg[0].isInt()) {
         int size = arg[0].asInt();
-        for (int i = 0; i < size; i++)        
-            card_ids.append(Card::S_UNKNOWN_CARD_ID);        
+        for (int i = 0; i < size; i++)
+            card_ids.append(Card::S_UNKNOWN_CARD_ID);
     } else if (!QSanProtocol::Utils::tryParse(arg[0], card_ids))
         return false;
     from_place = (Player::Place)arg[1].asInt();
@@ -40,8 +40,8 @@ Json::Value CardsMoveStruct::toJsonValue() const{
 
 bool CardMoveReason::tryParse(const Json::Value &arg) {
     m_reason = arg[0].asInt();
-    m_playerId = arg[1].asCString(); 
-    m_skillName = arg[2].asCString(); 
+    m_playerId = arg[1].asCString();
+    m_skillName = arg[2].asCString();
     m_eventName = arg[3].asCString();
     m_targetId = arg[4].asCString();
     return true; // @todo: fix this
@@ -50,8 +50,8 @@ bool CardMoveReason::tryParse(const Json::Value &arg) {
 Json::Value CardMoveReason::toJsonValue() const{
     Json::Value result;
     result[0] = m_reason;
-    result[1] = toJsonString(m_playerId); 
-    result[2] = toJsonString(m_skillName); 
+    result[1] = toJsonString(m_playerId);
+    result[2] = toJsonString(m_skillName);
     result[3] = toJsonString(m_eventName);
     result[4] = toJsonString(m_targetId);
     return result;

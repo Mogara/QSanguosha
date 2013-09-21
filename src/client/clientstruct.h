@@ -13,7 +13,7 @@ struct ServerInfoStruct {
     //@param command: type of command
     //@return countdown for command in milliseconds.
     time_t getCommandTimeout(QSanProtocol::CommandType command, QSanProtocol::ProcessInstanceType instance);
-    
+
     QString Name;
     QString GameMode;
     int OperationTimeout;

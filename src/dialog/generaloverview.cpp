@@ -36,10 +36,10 @@ GeneralSearch::GeneralSearch(GeneralOverview *parent)
 QWidget *GeneralSearch::createInfoTab() {
     QVBoxLayout *layout = new QVBoxLayout;
 
-	include_hidden_checkbox = new QCheckBox;
-	include_hidden_checkbox->setText(tr("Include hidden generals"));
-	include_hidden_checkbox->setChecked(true);
-	layout->addWidget(include_hidden_checkbox);
+    include_hidden_checkbox = new QCheckBox;
+    include_hidden_checkbox->setText(tr("Include hidden generals"));
+    include_hidden_checkbox->setChecked(true);
+    layout->addWidget(include_hidden_checkbox);
 
     nickname_label = new QLabel(tr("Nickname"));
     nickname_label->setToolTip(tr("<font color=#FFFF33>Input characters included by the nickname. '?' and '*' is available. Every nickname meets the condition if the line is empty.</font>"));
@@ -216,7 +216,7 @@ void GeneralSearch::accept() {
 }
 
 void GeneralSearch::clearAll() {
-	include_hidden_checkbox->setChecked(true);
+    include_hidden_checkbox->setChecked(true);
     nickname_edit->clear();
     name_edit->clear();
     foreach (QAbstractButton *button, gender_buttons->buttons())
@@ -242,17 +242,17 @@ void GeneralSearch::unselectAllPackages() {
 static GeneralOverview *Overview;
 
 GeneralOverview *GeneralOverview::getInstance(QWidget *main_window) {
-	if (Overview == NULL)
-		Overview = new GeneralOverview(main_window);
+    if (Overview == NULL)
+        Overview = new GeneralOverview(main_window);
 
-	return Overview;
+    return Overview;
 }
 
 GeneralOverview::GeneralOverview(QWidget *parent)
     : QDialog(parent), ui(new Ui::GeneralOverview)
 {
     ui->setupUi(this);
-	origin_window_title = windowTitle();
+    origin_window_title = windowTitle();
 
     button_layout = new QVBoxLayout;
 
@@ -272,7 +272,7 @@ GeneralOverview::GeneralOverview(QWidget *parent)
     }
     connect(ui->changeHeroSkinButton, SIGNAL(clicked()), this, SLOT(askChangeSkin()));
 
-	general_search = new GeneralSearch(this);
+    general_search = new GeneralSearch(this);
     connect(ui->searchButton, SIGNAL(clicked()), general_search, SLOT(show()));
     ui->returnButton->hide();
     connect(ui->returnButton, SIGNAL(clicked()), this, SLOT(fillAllGenerals()));
@@ -284,11 +284,11 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         if (!general->isTotallyHidden())
             copy_generals.append(general);
     }
-	if (init) {
-		ui->returnButton->hide();
-		setWindowTitle(origin_window_title);
-		all_generals = copy_generals;
-	}
+    if (init) {
+        ui->returnButton->hide();
+        setWindowTitle(origin_window_title);
+        all_generals = copy_generals;
+    }
 
     ui->tableWidget->clearContents();
     ui->tableWidget->setRowCount(copy_generals.length());
@@ -319,8 +319,8 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
 
         if (Sanguosha->isGeneralHidden(general_name)) {
             nickname_item->setBackgroundColor(Qt::gray);
-			nickname_item->setToolTip(tr("<font color=#FFFF33>This general is hidden</font>"));
-		}
+            nickname_item->setToolTip(tr("<font color=#FFFF33>This general is hidden</font>"));
+        }
 
         QTableWidgetItem *name_item = new QTableWidgetItem(name);
         name_item->setTextAlignment(Qt::AlignCenter);
@@ -332,8 +332,8 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
 
         if (Sanguosha->isGeneralHidden(general_name)) {
             name_item->setBackgroundColor(Qt::gray);
-			name_item->setToolTip(tr("<font color=#FFFF33>This general is hidden</font>"));
-		}
+            name_item->setToolTip(tr("<font color=#FFFF33>This general is hidden</font>"));
+        }
 
         QTableWidgetItem *kingdom_item = new QTableWidgetItem(kingdom);
         kingdom_item->setTextAlignment(Qt::AlignCenter);
@@ -346,7 +346,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
 
         QTableWidgetItem *package_item = new QTableWidgetItem(package);
         package_item->setTextAlignment(Qt::AlignCenter);
-		if (Config.value("LuaPackages", QString()).toString().split("+").contains(general->getPackage())) {
+        if (Config.value("LuaPackages", QString()).toString().split("+").contains(general->getPackage())) {
             package_item->setBackgroundColor(QColor(0x66, 0xCC, 0xFF));
             package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
         }
@@ -607,8 +607,8 @@ void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, 
     QList<const General *> generals;
     foreach (const General *general, all_generals) {
         QString general_name = general->objectName();
-		if (!include_hidden && Sanguosha->isGeneralHidden(general_name))
-			continue;
+        if (!include_hidden && Sanguosha->isGeneralHidden(general_name))
+            continue;
         if (!nickname.isEmpty()) {
             QString v_nickname = nickname;
             v_nickname.replace("?", ".");

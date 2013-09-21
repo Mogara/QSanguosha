@@ -64,7 +64,7 @@ public:
     void onPlayerResponseCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
     void setStatus(Status status);
     Status getStatus() const;
-    int alivePlayerCount() const;    
+    int alivePlayerCount() const;
     void onPlayerInvokeSkill(bool invoke);
     void onPlayerDiscardCards(const Card *card);
     void onPlayerReplyYiji(const Card *card, const Player *to);
@@ -79,7 +79,7 @@ public:
     void setLines(const QString &skill_name);
     Replayer *getReplayer() const;
     QString getPlayerName(const QString &str);
-    QString getSkillNameToInvoke() const;    
+    QString getSkillNameToInvoke() const;
 
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
@@ -109,7 +109,7 @@ public:
     void setDashboardShadow(const Json::Value &player_arg);
     void warn(const QString &);
     void setMark(const Json::Value &mark_str);
-    void showCard(const Json::Value &show_str);    
+    void showCard(const Json::Value &show_str);
     void log(const Json::Value &log_str);
     void speak(const QString &speak_data);
     void addHistory(const Json::Value &history);
@@ -122,7 +122,7 @@ public:
     void enableSurrender(const Json::Value &enabled);
     void exchangeKnownCards(const Json::Value &players);
     void setKnownCards(const Json::Value &set_str);
-	void viewGenerals(const Json::Value &str);
+    void viewGenerals(const Json::Value &str);
     void setFixedDistance(const Json::Value &set_str);
     void updateStateItem(const Json::Value &state_str);
     void setAvailableCards(const Json::Value &pile);
@@ -145,7 +145,7 @@ public:
     void askForSuit(const Json::Value &);
     void askForKingdom(const Json::Value &);
     void askForNullification(const Json::Value &);
-    void askForPindian(const Json::Value &);    
+    void askForPindian(const Json::Value &);
     void askForCardChosen(const Json::Value &);
     void askForPlayerChosen(const Json::Value &);
     void askForGeneral(const Json::Value &);
@@ -160,19 +160,19 @@ public:
     //3v3 & 1v1
     void askForOrder(const Json::Value &);
     void askForRole3v3(const Json::Value &);
-    void askForDirection(const Json::Value &);    
+    void askForDirection(const Json::Value &);
 
     // 3v3 & 1v1 methods
     void fillGenerals(const Json::Value &generals);
     void askForGeneral3v3(const Json::Value &);
     void takeGeneral(const Json::Value &take_str);
     void startArrange(const Json::Value &to_arrange);
-    
+
     void recoverGeneral(const Json::Value &);
     void revealGeneral(const Json::Value &);
 
     void attachSkill(const Json::Value &skill);
-    
+
     inline virtual RoomState *getRoomState() { return &_m_roomState; }
     inline virtual Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
 
@@ -200,7 +200,7 @@ public:
     int min_num;
     QString skill_name;
     QList<const Card *> discarded_list;
-    QStringList players_to_choose;    
+    QStringList players_to_choose;
 
 public slots:
     void signup();
@@ -213,22 +213,22 @@ public slots:
     void addRobot();
     void fillRobots();
     void arrange(const QStringList &order);
-    
+
     void onPlayerReplyGongxin(int card_id = -1);
 
 protected:
     // operation countdown
     QSanProtocol::Countdown m_countdown;
-    // sync objects    
+    // sync objects
     QMutex m_mutexCountdown;
-    Status status;  
+    Status status;
     int alive_count;
     int swap_pile;
     RoomState _m_roomState;
 
 private:
     ClientSocket *socket;
-    bool m_isGameOver;  
+    bool m_isGameOver;
     QHash<QString, Callback> callbacks;
     QHash<QSanProtocol::CommandType, CallBack> m_interactions;
     QHash<QSanProtocol::CommandType, CallBack> m_callbacks;
@@ -275,11 +275,11 @@ signals:
     void suits_got(const QStringList &suits);
     void options_got(const QString &skillName, const QStringList &options);
     void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible,
-					Card::HandlingMethod method, QList<int> disabled_ids);
+                    Card::HandlingMethod method, QList<int> disabled_ids);
     void roles_got(const QString &scheme, const QStringList &roles);
-    void directions_got();    
+    void directions_got();
     void orders_got(QSanProtocol::Game3v3ChooseOrderCommand reason);
-    
+
     void seats_arranged(const QList<const ClientPlayer *> &seats);
     void hp_changed(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);
     void maxhp_changed(const QString &who, int delta);
@@ -306,7 +306,7 @@ signals:
     void game_over();
     void standoff();
     void event_received(const Json::Value &);
-        
+
     void move_cards_lost(int moveId, QList<CardsMoveStruct> moves);
     void move_cards_got(int moveId, QList<CardsMoveStruct> moves);
 
@@ -329,7 +329,7 @@ signals:
     void general_revealed(bool self, const QString &general);
 
     void role_state_changed(const QString &state_str);
-	void generals_viewed(const QString &reason, const QStringList &names);
+    void generals_viewed(const QString &reason, const QStringList &names);
 
     void assign_asked();
     void start_in_xs();

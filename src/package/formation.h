@@ -6,10 +6,10 @@
 #include "skill.h"
 
 class FormationPackage: public Package {
-	Q_OBJECT
-	
+    Q_OBJECT
+
 public:
-	FormationPackage();
+    FormationPackage();
 };
 
 #endif
