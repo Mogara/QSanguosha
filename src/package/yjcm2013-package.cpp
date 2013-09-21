@@ -974,7 +974,7 @@ public:
 
 class MiejiEffect: public TriggerSkill {
 public:
-    MiejiEffect(): TriggerSkill("#mieji-effdct") {
+    MiejiEffect(): TriggerSkill("#mieji-effect") {
         events << PreCardUsed;
     }
 
