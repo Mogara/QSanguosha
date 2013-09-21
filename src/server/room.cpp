@@ -4090,6 +4090,7 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                                   || cards_moves[i].to_place == Player::DiscardPile
                                   // any card from/to discard pile should be visible
                                   || cards_moves[i].from_place == Player::PlaceTable
+                                  || cards_moves[i].to_place == Player::PlaceTable
                                   // any card from/to place table should be visible
                                   || player->hasFlag("Global_GongxinOperator")
                                   // the player put someone's cards to the drawpile
