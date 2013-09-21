@@ -543,10 +543,11 @@ function SmartAI:getTSCard()
 end
 	return card_id
 end
-sgs.ai_skill_use["@@tushou"]=function(self,prompt)
+sgs.ai_skill_use["@@tushou"]=function(self, prompt)
 
 	local cards = self.player:getCards("he")
 	cards = sgs.QList2Table(cards)
+	self:sortByUseValue(cards, true)
 	local cdid
 	local others = self.room:getOtherPlayers(self.player)
 	local tar
