@@ -19,7 +19,7 @@ bool Scenario::exposeRoles() const{
 }
 
 QString Scenario::getRoles() const{
-    QString roles = "Z";   
+    QString roles = "Z";
     for (int i = 0; i < loyalists.length(); i++)
         roles.append('C');
     for (int i = 0; i < rebels.length(); i++)

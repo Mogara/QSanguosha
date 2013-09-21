@@ -32,19 +32,19 @@ Dashboard::Dashboard(QGraphicsItem *widget)
         _m_isEquipsAnimOn[i] = false;
     }
     // At this stage, we cannot decide the dashboard size yet, the whole
-    // point in creating them here is to allow PlayerCardContainer to 
+    // point in creating them here is to allow PlayerCardContainer to
     // anchor all controls and widgets to the correct frame.
     //
     // Note that 20 is just a random plug-in so that we can proceed with
     // control creation, the actual width is updated when setWidth() is
     // called by its graphics parent.
     //
-    _m_width = G_DASHBOARD_LAYOUT.m_leftWidth + G_DASHBOARD_LAYOUT.m_rightWidth + 20; 
+    _m_width = G_DASHBOARD_LAYOUT.m_leftWidth + G_DASHBOARD_LAYOUT.m_rightWidth + 20;
 
     _createLeft();
     _createMiddle();
     _createRight();
-    
+
     // only do this after you create all frames.
     _createControls();
     _createExtraButtons();
@@ -73,7 +73,7 @@ void Dashboard::showProgressBar(QSanProtocol::Countdown countdown) {
 }
 
 QGraphicsItem *Dashboard::getMouseClickReceiver() {
-    return _m_avatarIcon; 
+    return _m_avatarIcon;
 }
 
 void Dashboard::_createLeft() {
@@ -88,7 +88,7 @@ int Dashboard::getButtonWidgetWidth() const{
     return button_widget->boundingRect().width();
 }
 
-void Dashboard::_createMiddle() {    
+void Dashboard::_createMiddle() {
     // this is just a random rect. see constructor for more details
     QRect rect = QRect(0, 0, 1, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_middleFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_MIDDLEFRAME), this);
@@ -103,7 +103,7 @@ void Dashboard::_createMiddle() {
     trusting_item->setBrush(trusting_brush);
     trusting_item->setOpacity(0.36);
     trusting_item->setZValue(1002.0);
-    
+
     trusting_text->setFont(Config.BigFont);
     trusting_text->setBrush(Qt::white);
     trusting_text->setZValue(1002.1);
@@ -119,7 +119,7 @@ void Dashboard::_adjustComponentZValues() {
     // middle frame
     _layUnder(_m_rightFrame);
     _layUnder(_m_leftFrame);
-    _layUnder(_m_middleFrame);    
+    _layUnder(_m_middleFrame);
     _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
     _layBetween(_m_rightFrameBg, _m_faceTurnedIcon, _m_equipRegions[3]);
 }
@@ -129,24 +129,24 @@ int Dashboard::width() {
 }
 
 void Dashboard::_createRight() {
-    QRect rect = QRect(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth, 0, 
+    QRect rect = QRect(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth, 0,
                        G_DASHBOARD_LAYOUT.m_rightWidth,
                        G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_rightFrame, rect, QPixmap(1, 1), _m_groupMain);
-    _paintPixmap(_m_rightFrameBg, QRect(0, 0, rect.width(), rect.height()), 
+    _paintPixmap(_m_rightFrameBg, QRect(0, 0, rect.width(), rect.height()),
                  _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME), _m_rightFrame);
     _m_rightFrame->setZValue(-1000); // nobody should be under me.
-    
+
     _m_skillDock = new QSanInvokeSkillDock(_m_rightFrame);
     QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea;
-    _m_skillDock->setPos(avatar.left(), avatar.bottom() + 
+    _m_skillDock->setPos(avatar.left(), avatar.bottom() +
                          G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height());
     _m_skillDock->setWidth(avatar.width());
 }
 
 void Dashboard::_updateFrames() {
     // Here is where we adjust all frames to actual width
-    QRect rect = QRect(G_DASHBOARD_LAYOUT.m_leftWidth, 0, 
+    QRect rect = QRect(G_DASHBOARD_LAYOUT.m_leftWidth, 0,
         this->width() - G_DASHBOARD_LAYOUT.m_rightWidth - G_DASHBOARD_LAYOUT.m_leftWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_middleFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_MIDDLEFRAME), this);
     QRect rect2 = QRect(0, 0, this->width(), G_DASHBOARD_LAYOUT.m_normalHeight);
@@ -210,13 +210,13 @@ bool Dashboard::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
         return true;
     }
 
-    if (place == Player::PlaceEquip)        
+    if (place == Player::PlaceEquip)
         addEquips(card_items);
     else if (place == Player::PlaceDelayedTrick)
         addDelayedTricks(card_items);
     else if (place == Player::PlaceHand)
         addHandCards(card_items);
-    
+
     adjustCards(true);
     return false;
 }
@@ -232,7 +232,7 @@ void Dashboard::_addHandCard(CardItem *card_item) {
         card_item->setEnabled(card_item->getCard()->isAvailable(Self));
     else
         card_item->setEnabled(false);
-    
+
     card_item->setHomeOpacity(1.0);
     card_item->setRotation(0.0);
     card_item->setFlags(ItemIsFocusable);
@@ -242,7 +242,7 @@ void Dashboard::_addHandCard(CardItem *card_item) {
     connect(card_item, SIGNAL(clicked()), this, SLOT(onCardItemClicked()));
     connect(card_item, SIGNAL(thrown()), this, SLOT(onCardItemThrown()));
     connect(card_item, SIGNAL(enter_hover()), this, SLOT(onCardItemHover()));
-    connect(card_item, SIGNAL(leave_hover()), this, SLOT(onCardItemLeaveHover()));      
+    connect(card_item, SIGNAL(leave_hover()), this, SLOT(onCardItemLeaveHover()));
 }
 
 void Dashboard::selectCard(const QString &pattern, bool forward, bool multiple) {
@@ -490,7 +490,7 @@ void Dashboard::skillButtonDeactivated() {
         if (btn->getViewAsSkill() != NULL && btn->isDown())
             btn->setState(QSanButton::S_STATE_UP);
     }
-    
+
     for (int i = 0; i < 4; i++) {
         if (_m_equipSkillBtns[i] != NULL) {
             _m_equipSkillBtns[i]->setEnabled(true);
@@ -588,13 +588,13 @@ void Dashboard::_setEquipBorderAnimation(int index, bool turnOn) {
         _mutexEquipAnim.unlock();
         return;
     }
-    
+
     QPoint newPos;
     if (turnOn)
-        newPos = _dlayout->m_equipSelectedOffset + _dlayout->m_equipAreas[index].topLeft();        
+        newPos = _dlayout->m_equipSelectedOffset + _dlayout->m_equipAreas[index].topLeft();
     else
         newPos = _dlayout->m_equipAreas[index].topLeft();
-    
+
     _m_equipAnim[index]->stop();
     _m_equipAnim[index]->clear();
     QPropertyAnimation *anim = new QPropertyAnimation(_m_equipRegions[index], "pos");
@@ -606,7 +606,7 @@ void Dashboard::_setEquipBorderAnimation(int index, bool turnOn) {
     anim->setDuration(200);
     _m_equipAnim[index]->addAnimation(anim);
     _m_equipAnim[index]->start();
-    
+
     Q_ASSERT(_m_equipBorders[index]);
     if (turnOn) {
         _m_equipBorders[index]->show();
@@ -647,14 +647,14 @@ void Dashboard::_adjustCards() {
 
     _m_highestZ = n;
     _disperseCards(row, rowRect, Qt::AlignLeft, true, true);
-    
+
     row.clear();
     rowRect.translate(0, 1.5 * S_PENDING_OFFSET_Y);
     for (int i = maxCards; i < n; i++)
         row.push_back(m_handCards[i]);
 
     _m_highestZ = 0;
-    _disperseCards(row, rowRect, Qt::AlignLeft, true, true); 
+    _disperseCards(row, rowRect, Qt::AlignLeft, true, true);
 
     for (int i = 0; i < n; i++) {
         CardItem *card = m_handCards[i];
@@ -725,7 +725,7 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
         Q_ASSERT(false);
 
     Q_ASSERT(result.size() == card_ids.size());
-    if (place == Player::PlaceHand)    
+    if (place == Player::PlaceHand)
         adjustCards();
     else if (result.size() > 1 || place == Player::PlaceSpecial) {
         QRect rect(0, 0, _dlayout->m_disperseWidth, 0);
@@ -815,7 +815,7 @@ void Dashboard::reverseSelection() {
 
 void Dashboard::cancelNullification() {
     ClientInstance->m_noNullificationThisTime = !ClientInstance->m_noNullificationThisTime;
-	if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
+    if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
         && Sanguosha->getCurrentCardUsePattern() == "nullification"
         && RoomSceneInstance->isCancelButtonEnabled()) {
         RoomSceneInstance->doCancelButton();
@@ -916,7 +916,7 @@ void Dashboard::onCardItemClicked() {
             emit card_selected(NULL);
         } else {
             unselectAll();
-            selectCard(card_item, true);          
+            selectCard(card_item, true);
             selected = card_item;
 
             emit card_selected(selected->getCard());

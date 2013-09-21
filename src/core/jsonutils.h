@@ -13,7 +13,7 @@
 namespace QSanProtocol
 {
     namespace Utils
-    {        
+    {
         inline QString toQString(const Json::Value &value) {
             Q_ASSERT(value.isString());
             return QString::fromLocal8Bit(value.asCString());

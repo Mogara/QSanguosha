@@ -195,7 +195,7 @@ bool CardUseStruct::isValid(const QString &pattern) const{
                 else {
                     validSkill = true;
                     break;
-                }                
+                }
             } else if (skill->getFrequency() == Skill::Wake) {
                 bool valid = (from->getMark(skill->objectName()) > 0);
                 if (!valid)
@@ -238,8 +238,8 @@ void CardUseStruct::parse(const QString &str, Room *room) {
     QString card_str = words.at(0);
     QString target_str = ".";
 
-    if (words.length() == 2 && !words.at(1).isEmpty()) 
-        target_str = words.at(1);    
+    if (words.length() == 2 && !words.at(1).isEmpty())
+        target_str = words.at(1);
 
     card = Card::Parse(card_str);
 
@@ -285,23 +285,23 @@ void RoomThread::constructTriggerTable() {
 }
 
 ServerPlayer *RoomThread::find3v3Next(QList<ServerPlayer *> &first, QList<ServerPlayer *> &second) {
-	bool all_actioned = true;
-	foreach (ServerPlayer *player, room->m_alivePlayers) {
-		if (!player->hasFlag("actioned")) {
-			all_actioned = false;
-			break;
-		}
-	}
+    bool all_actioned = true;
+    foreach (ServerPlayer *player, room->m_alivePlayers) {
+        if (!player->hasFlag("actioned")) {
+            all_actioned = false;
+            break;
+        }
+    }
 
-	if (all_actioned) {
-		foreach (ServerPlayer *player, room->m_alivePlayers) {
-			room->setPlayerFlag(player, "-actioned");
-			trigger(ActionedReset, room, player);
-		}
+    if (all_actioned) {
+        foreach (ServerPlayer *player, room->m_alivePlayers) {
+            room->setPlayerFlag(player, "-actioned");
+            trigger(ActionedReset, room, player);
+        }
 
-		qSwap(first, second);
-		return room->askForPlayerChosen(first.first(), first, "3v3-action", "@3v3-action");
-	}
+        qSwap(first, second);
+        return room->askForPlayerChosen(first.first(), first, "3v3-action", "@3v3-action");
+    }
 
     ServerPlayer *current = room->getCurrent();
     if (current != first.first()) {
@@ -331,40 +331,40 @@ void RoomThread::run3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &sec
     try {
         forever {
             room->setCurrent(current);
-			trigger(TurnStart, room, room->getCurrent());
-			room->setPlayerFlag(current, "actioned");
+            trigger(TurnStart, room, room->getCurrent());
+            room->setPlayerFlag(current, "actioned");
             current = find3v3Next(first, second);
         }
     }
     catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken)
-			_handleTurnBroken3v3(first, second, game_rule);
-		else
-			throw triggerEvent;
+            _handleTurnBroken3v3(first, second, game_rule);
+        else
+            throw triggerEvent;
     }
 }
 
 void RoomThread::_handleTurnBroken3v3(QList<ServerPlayer *> &first, QList<ServerPlayer *> &second, GameRule *game_rule) {
-	try {
-		ServerPlayer *player = room->getCurrent();
-		trigger(TurnBroken, room, player);
-		if (player->getPhase() != Player::NotActive) {
-			game_rule->trigger(EventPhaseEnd, room, player, QVariant());
-			player->changePhase(player->getPhase(), Player::NotActive);
-		}
-		if (!player->hasFlag("actioned"))
-			room->setPlayerFlag(player, "actioned");
+    try {
+        ServerPlayer *player = room->getCurrent();
+        trigger(TurnBroken, room, player);
+        if (player->getPhase() != Player::NotActive) {
+            game_rule->trigger(EventPhaseEnd, room, player, QVariant());
+            player->changePhase(player->getPhase(), Player::NotActive);
+        }
+        if (!player->hasFlag("actioned"))
+            room->setPlayerFlag(player, "actioned");
 
-		ServerPlayer *next = find3v3Next(first, second);
-		run3v3(first, second, game_rule, next);
-	}
-	catch (TriggerEvent triggerEvent) {
-		if (triggerEvent == TurnBroken) {
-			_handleTurnBroken3v3(first, second, game_rule);
-		} else {
-			throw triggerEvent;
-		}
-	}
+        ServerPlayer *next = find3v3Next(first, second);
+        run3v3(first, second, game_rule, next);
+    }
+    catch (TriggerEvent triggerEvent) {
+        if (triggerEvent == TurnBroken) {
+            _handleTurnBroken3v3(first, second, game_rule);
+        } else {
+            throw triggerEvent;
+        }
+    }
 }
 
 ServerPlayer *RoomThread::findHulaoPassNext(ServerPlayer *shenlvbu, QList<ServerPlayer *> league, int stage) {
@@ -500,8 +500,8 @@ void RoomThread::actionNormal(GameRule *game_rule) {
     }
     catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken)
-			_handleTurnBrokenNormal(game_rule);
-		else
+            _handleTurnBrokenNormal(game_rule);
+        else
             throw triggerEvent;
     }
 }
@@ -539,8 +539,8 @@ void RoomThread::run() {
         game_rule = new GameRule(this);
 
     addTriggerSkill(game_rule);
-	foreach (const TriggerSkill *triggerSkill, Sanguosha->getGlobalTriggerSkills())
-		addTriggerSkill(triggerSkill);
+    foreach (const TriggerSkill *triggerSkill, Sanguosha->getGlobalTriggerSkills())
+        addTriggerSkill(triggerSkill);
     if (Config.EnableBasara) addTriggerSkill(new BasaraMode(this));
 
     if (room->getScenario() != NULL) {
@@ -562,7 +562,7 @@ void RoomThread::run() {
                 case Player::Rebel: cool.append(player); break;
                 }
             }
-			order = room->askForOrder(cool.first());
+            order = room->askForOrder(cool.first());
             if (order == "warm") {
                 first = warm;
                 second = cool;
@@ -587,10 +587,10 @@ void RoomThread::run() {
                 ServerPlayer *first = room->getPlayers().first();
                 if (first->getRole() != "renegade")
                     first = room->getPlayers().at(1);
-				ServerPlayer *second = first->getNext();
+                ServerPlayer *second = first->getNext();
                 trigger(Debut, (Room *)room, first);
-				trigger(Debut, (Room *)room, second);
-				room->setCurrent(first);
+                trigger(Debut, (Room *)room, second);
+                room->setCurrent(first);
             }
 
             actionNormal(game_rule);
@@ -643,7 +643,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                 triggered.append(skill);
                 broken = skill->trigger(triggerEvent, room, target, data);
                 if (broken) break;
-				i = 0;
+                i = 0;
             }
         }
 

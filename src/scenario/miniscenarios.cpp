@@ -207,7 +207,7 @@ bool MiniSceneRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
 
             str = this->players.at(i)["hand"];
             if (str != QString()) {
-                QStringList hands = str.split(",");               
+                QStringList hands = str.split(",");
                 DummyCard *dummy = new DummyCard(StringList2IntList(hands));
                 room->obtainCard(sp, dummy);
                 dummy->deleteLater();

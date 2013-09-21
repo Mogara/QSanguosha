@@ -77,7 +77,7 @@ namespace QSanProtocol {
         S_COMMAND_SET_FLAG,
         S_COMMAND_CARD_FLAG,
         S_COMMAND_NULLIFICATION,
-        S_COMMAND_MULTIPLE_CHOICE,        
+        S_COMMAND_MULTIPLE_CHOICE,
         S_COMMAND_PINDIAN,
         S_COMMAND_AMAZING_GRACE,
         S_COMMAND_SKILL_YIJI,
@@ -123,7 +123,7 @@ namespace QSanProtocol {
         S_COMMAND_AVAILABLE_CARDS,
         S_COMMAND_ANIMATE,
         S_COMMAND_LUCK_CARD,
-		S_COMMAND_VIEW_GENERALS,
+        S_COMMAND_VIEW_GENERALS,
         S_COMMAND_SET_DASHBOARD_SHADOW
     };
 
@@ -175,21 +175,21 @@ namespace QSanProtocol {
         enum CountdownType {
             S_COUNTDOWN_NO_LIMIT,
             S_COUNTDOWN_USE_SPECIFIED,
-            S_COUNTDOWN_USE_DEFAULT           
+            S_COUNTDOWN_USE_DEFAULT
         } m_type;
         static const std::string S_COUNTDOWN_MAGIC;
         time_t m_current;
         time_t m_max;
         inline Countdown(CountdownType type = S_COUNTDOWN_NO_LIMIT, time_t current = 0, time_t max = 0)
             : m_type(type), m_current(current), m_max(max) {}
-        bool tryParse(Json::Value val);        
+        bool tryParse(Json::Value val);
         inline Json::Value toJsonValue() {
             if (m_type == S_COUNTDOWN_NO_LIMIT
                 || m_type == S_COUNTDOWN_USE_DEFAULT) {
                 Json::Value val(Json::arrayValue);
                 val[0] = S_COUNTDOWN_MAGIC;
-                val[1] = (int)m_type;                
-                return val;                
+                val[1] = (int)m_type;
+                return val;
             } else {
                 Json::Value val(Json::arrayValue);
                 val[0] = S_COUNTDOWN_MAGIC;
@@ -221,7 +221,7 @@ namespace QSanProtocol {
     public:
         //format: [global_serial, local_serial, packet_type, command_name, command_body]
         unsigned int m_globalSerial;
-        unsigned int m_localSerial;        
+        unsigned int m_localSerial;
         inline QSanGeneralPacket(int packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN) {
             _m_globalSerial++;
             m_globalSerial = _m_globalSerial;
@@ -254,12 +254,12 @@ namespace QSanProtocol {
         inline virtual bool parseBody(const Json::Value &value) { m_msgBody = value; return true; }
         virtual const Json::Value &constructBody() const{ return m_msgBody; }
 
-        //helper functions                
+        //helper functions
         static bool tryParse(const std::string &result, int &val);
         static const unsigned int S_MAX_PACKET_SIZE;
 
         Json::Reader m_jsonReader;
-    };    
+    };
 }
 
 #endif

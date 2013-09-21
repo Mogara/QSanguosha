@@ -154,5 +154,12 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
+class DragonPhoenix: public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE DragonPhoenix(Card::Suit suit, int number);
+};
+
 #endif
 

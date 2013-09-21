@@ -214,7 +214,7 @@ QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName,
 }
 
 QPixmap QSanRoomSkin::getSkillButtonPixmap(QSanButton::ButtonState state,
-                                           QSanInvokeSkillButton::SkillType type, 
+                                           QSanInvokeSkillButton::SkillType type,
                                            QSanInvokeSkillButton::SkillButtonWidth width) const{
     QString path = getButtonPixmapPath(S_SKIN_KEY_BUTTON_SKILL,
                                        QSanInvokeSkillButton::getSkillTypeString(type),
@@ -229,7 +229,7 @@ QPixmap QSanRoomSkin::getSkillButtonPixmap(QSanButton::ButtonState state,
             arg2 = "2";
         else if (width == QSanInvokeSkillButton::S_WIDTH_WIDE)
             arg2 = "1";
-        return getPixmapFromFileName(path.arg(arg2));        
+        return getPixmapFromFileName(path.arg(arg2));
     }
 }
 
@@ -351,14 +351,14 @@ QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(QRect parentRect, QSiz
     Qt::Alignment hAlign = m_anchorParent & Qt::AlignHorizontal_Mask;
     if (hAlign & Qt::AlignRight)
         parentAnchor.setX(parentRect.right());
-    else if (hAlign & Qt::AlignHCenter) 
+    else if (hAlign & Qt::AlignHCenter)
         parentAnchor.setX(parentRect.center().x());
     else
         parentAnchor.setX(parentRect.left());
     Qt::Alignment vAlign = m_anchorParent & Qt::AlignVertical_Mask;
     if (vAlign & Qt::AlignBottom)
         parentAnchor.setY(parentRect.bottom());
-    else if (vAlign & Qt::AlignVCenter) 
+    else if (vAlign & Qt::AlignVCenter)
         parentAnchor.setY(parentRect.center().y());
     else
         parentAnchor.setY(parentRect.top());
@@ -374,11 +374,11 @@ QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(QRect parentRect, QSiz
     vAlign = m_anchorChild & Qt::AlignVertical_Mask;
     if (vAlign & Qt::AlignBottom)
         childAnchor.setY(size.height());
-    else if (vAlign & Qt::AlignVCenter) 
+    else if (vAlign & Qt::AlignVCenter)
         childAnchor.setY(size.height() / 2);
     else
         childAnchor.setY(0);
-    
+
     QPoint pos = parentAnchor - childAnchor + m_offset;
     QRect rect(pos, size);
     return rect;
@@ -739,17 +739,17 @@ const QSanRoomSkin::CommonLayout &QSanRoomSkin::getCommonLayout() const{
     return _m_commonLayout;
 }
 
-QSanRoomSkin::QSanShadowTextFont 
+QSanRoomSkin::QSanShadowTextFont
 QSanRoomSkin::DashboardLayout::getSkillTextFont(QSanButton::ButtonState state,
                                                 QSanInvokeSkillButton::SkillType type,
-                                                QSanInvokeSkillButton::SkillButtonWidth width) const{ 
+                                                QSanInvokeSkillButton::SkillButtonWidth width) const{
     int i = QSanButton::S_NUM_BUTTON_STATES * (int)type + (int)state;
     QSanShadowTextFont font = m_skillTextFonts[width];
     font.m_color = m_skillTextColors[i];
     font.m_shadowColor = m_skillTextShadowColors[i];
     return font;
 }
-    
+
 bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
     Json::Value config = layoutConfig[S_SKIN_KEY_COMMON];
     tryParse(config["cardNormalHeight"], _m_commonLayout.m_cardNormalHeight);
@@ -761,7 +761,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
     tryParse(config["cardFrameArea"], _m_commonLayout.m_cardFrameArea);
     tryParse(config["cardFootnoteArea"], _m_commonLayout.m_cardFootnoteArea);
     tryParse(config["cardAvatarArea"], _m_commonLayout.m_cardAvatarArea);
-    tryParse(config["chooseGeneralBoxSwitchIconSizeThreshold"], 
+    tryParse(config["chooseGeneralBoxSwitchIconSizeThreshold"],
              _m_commonLayout.m_chooseGeneralBoxSwitchIconSizeThreshold);
     tryParse(config["chooseGeneralBoxSwitchIconEachRow"],
              _m_commonLayout.m_chooseGeneralBoxSwitchIconEachRow);
@@ -821,7 +821,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
 
         tryParse(playerConfig["delayedTrickFirstRegion"], layout->m_delayedTrickFirstRegion);
         tryParse(playerConfig["delayedTrickStep"], layout->m_delayedTrickStep);
-        
+
         layout->m_markTextArea.tryParse(playerConfig["markTextArea"]);
         tryParse(playerConfig["roleComboBoxPos"], layout->m_roleComboBoxPos);
 
@@ -873,7 +873,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
 
 
     config = layoutConfig[S_SKIN_KEY_PHOTO];
-    
+
     tryParse(config["normalWidth"], _m_photoLayout.m_normalWidth);
     if (!tryParse(config["focusFrameArea"], _m_photoLayout.m_focusFrameArea)
         && config["borderWidth"].isInt()) {
@@ -895,7 +895,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
     config = layoutConfig[S_SKIN_KEY_DASHBOARD];
     tryParse(config["leftWidth"], _m_dashboardLayout.m_leftWidth);
     tryParse(config["rightWidth"], _m_dashboardLayout.m_rightWidth);
-	tryParse(config["reverseSelectionWidth"], _m_dashboardLayout.m_rswidth);
+    tryParse(config["reverseSelectionWidth"], _m_dashboardLayout.m_rswidth);
     tryParse(config["floatingAreaHeight"], _m_dashboardLayout.m_floatingAreaHeight);
     tryParse(config["focusFrameArea"], _m_dashboardLayout.m_focusFrameArea);
     tryParse(config["buttonSetSize"], _m_dashboardLayout.m_buttonSetSize);
@@ -940,14 +940,14 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
             tryParse(config[sKey][j][1], _m_dashboardLayout.m_skillTextShadowColors[index]);
         }
     }
-    
+
     return true;
 }
 
 bool QSanSkinScheme::load(Json::Value configs) {
     if (!configs.isObject()) return false;
     QString layoutFile, imageFile, audioFile, animFile;
-    tryParse(configs["roomLayoutConfigFile"], layoutFile); 
+    tryParse(configs["roomLayoutConfigFile"], layoutFile);
     tryParse(configs["roomImageConfigFile"], imageFile);
     tryParse(configs["roomAudioConfigFile"], audioFile);
     tryParse(configs["roomAnimationConfigFile"], animFile);

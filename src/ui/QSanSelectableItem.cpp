@@ -30,7 +30,7 @@ bool QSanSelectableItem::_load(const QString &filename, QSize size, bool useNewS
         QString error_string = reader.errorString();
         QString warning = tr("Can not load image %1[%2], error string is %3")
                              .arg(filename).arg(metaObject()->className()).arg(error_string);
-        QMessageBox::warning(NULL, tr("Warning"), warning);        
+        QMessageBox::warning(NULL, tr("Warning"), warning);
     } else {
         if (useNewSize) {
             _m_width = size.width();
@@ -45,7 +45,7 @@ bool QSanSelectableItem::_load(const QString &filename, QSize size, bool useNewS
         } else
             this->prepareGeometryChange();
     }
-    return success; 
+    return success;
 }
 
 void QSanSelectableItem::setPixmap(const QPixmap &pixmap) {

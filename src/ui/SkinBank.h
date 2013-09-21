@@ -22,7 +22,7 @@ public:
     static const QPixmap &getPixmap(const QString &key, const QString &fileName);
     // Load pixmap from a existing key.
     static const QPixmap &getPixmap(const QString &key);
-    static bool contains(const QString &key); 
+    static bool contains(const QString &key);
 
 private:
     static QHash<QString, QPixmap> _m_pixmapBank;
@@ -97,7 +97,7 @@ protected:
     QString _readImageConfig(const QString &key, QRect &clipRegion, bool &clipping,
                              QSize &newScale, bool scaled,
                              const QString &defaultValue = QString()) const;
-    
+
     Json::Value _m_imageConfig;
     Json::Value _m_audioConfig;
     Json::Value _m_animationConfig;
@@ -135,7 +135,7 @@ public:
         QRect m_boundingRect;
         QRect m_focusFrameArea;
         QRect m_handCardArea;
-        
+
         // equips
         QRect m_equipAreas[4];
         QRect m_equipImageArea;
@@ -149,7 +149,7 @@ public:
         // delayed trick area
         QRect m_delayedTrickFirstRegion;
         QPoint m_delayedTrickStep;
-        
+
         AnchoredRect m_markTextArea;
         QPoint m_roleComboBoxPos;
 
@@ -170,7 +170,7 @@ public:
         QSanShadowTextFont m_handCardFont;
         QRect m_screenNameArea;
         QSanShadowTextFont m_screenNameFont;
-        
+
         // progress bar and other controls
         bool m_isProgressBarHorizontal;
         AnchoredRect m_progressBarArea;
@@ -181,8 +181,8 @@ public:
         QPoint m_magatamasAnchor;
         Qt::Alignment m_magatamasAlign;
 
-        AnchoredRect m_phaseArea;        
-        
+        AnchoredRect m_phaseArea;
+
         // private pile (e.g. 7 stars, buqu)
         QPoint m_privatePileStartPos;
         QPoint m_privatePileStep;
@@ -192,7 +192,7 @@ public:
         QRect m_actionedIconRegion;
         QRect m_saveMeIconRegion;
         QRect m_chainedIconRegion;
-        QRect m_readyIconRegion;        
+        QRect m_readyIconRegion;
         AnchoredRect m_deathIconRegion;
         QRect m_votesIconRegion;
         QColor m_drankMaskColor;
@@ -207,18 +207,18 @@ public:
     struct PhotoLayout: public PlayerCardContainerLayout {
         int m_normalWidth;
         QRect m_mainFrameArea;
-        QRect m_cardMoveRegion;        
+        QRect m_cardMoveRegion;
         QRect m_onlineStatusArea;
         QSanShadowTextFont m_onlineStatusFont;
         QColor m_onlineStatusBgColor;
         QRect m_skillNameArea;
-        QSanShadowTextFont m_skillNameFont;        
+        QSanShadowTextFont m_skillNameFont;
     };
 
     struct DashboardLayout: public PlayerCardContainerLayout {
         int m_leftWidth, m_rightWidth;
         int m_floatingAreaHeight;
-		int m_rswidth;
+        int m_rswidth;
         QSize m_buttonSetSize;
         QRect m_confirmButtonArea;
         QRect m_cancelButtonArea;
@@ -237,7 +237,7 @@ public:
 
         QSanShadowTextFont getSkillTextFont(QSanButton::ButtonState state,
                                             QSanInvokeSkillButton::SkillType type,
-                                            QSanInvokeSkillButton::SkillButtonWidth width) const;        
+                                            QSanInvokeSkillButton::SkillButtonWidth width) const;
     };
 
     struct CommonLayout {
@@ -254,7 +254,7 @@ public:
         QSanShadowTextFont m_hpFont[6];
         int m_hpExtraSpaceHolder;
 
-        // dialogs        
+        // dialogs
         // when # of generals <= switchIconSizeThreadshold
         QSize m_chooseGeneralBoxSparseIconSize;
         // when # of generals > switchIconSizeThreadshold
@@ -288,7 +288,7 @@ public:
     QString getButtonPixmapPath(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
     QPixmap getButtonPixmap(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
     QPixmap getSkillButtonPixmap(QSanButton::ButtonState state,
-                                 QSanInvokeSkillButton::SkillType type, 
+                                 QSanInvokeSkillButton::SkillType type,
                                  QSanInvokeSkillButton::SkillButtonWidth width) const;
     QPixmap getCardMainPixmap(const QString &cardName) const;
     QPixmap getCardSuitPixmap(Card::Suit suit) const;
@@ -310,7 +310,7 @@ public:
     static const char *S_SKIN_KEY_DASHBOARD;
     static const char *S_SKIN_KEY_PHOTO;
     static const char *S_SKIN_KEY_COMMON;
-    static const char *S_SKIN_KEY_ROOM; 
+    static const char *S_SKIN_KEY_ROOM;
 
     //bg
     static const char *S_SKIN_KEY_TABLE_BG;

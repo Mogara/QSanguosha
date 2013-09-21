@@ -154,7 +154,7 @@ void RoomThread3v3::takeGeneral(ServerPlayer *player, const QString &name) {
     log.arg2 = name;
     room->sendLog(log);
 
-	QString rule = Config.value("3v3/OfficialRule", "2012").toString();
+    QString rule = Config.value("3v3/OfficialRule", "2012").toString();
     room->doBroadcastNotify(S_COMMAND_TAKE_GENERAL, toJsonArray(group, name, rule));
 }
 
@@ -263,7 +263,7 @@ void RoomThread3v3::assignRoles(const QString &scheme) {
           << "renegade" << "rebel" << "loyalist";
 
     if (scheme == "Random") {
-        // the easiest way        
+        // the easiest way
         qShuffle(room->m_players);
 
         for (int i = 0; i < roles.length(); i++)

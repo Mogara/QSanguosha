@@ -25,7 +25,7 @@ public:
     void speak(const QString &content);
     virtual void repaintAll();
     QList<CardItem *> removeCardItems(const QList<int> &card_id, Player::Place place);
-    
+
     void setEmotion(const QString &emotion, bool permanent = false);
     void tremble();
     void showSkillName(const QString &skill_name);
@@ -67,9 +67,9 @@ protected:
 
     bool _m_isReadyIconVisible;
     FrameType _m_frameType;
-    QGraphicsPixmapItem *_m_mainFrame;    
+    QGraphicsPixmapItem *_m_mainFrame;
     Sprite *emotion_item;
-	QGraphicsPixmapItem *_m_skillNameItem;
+    QGraphicsPixmapItem *_m_skillNameItem;
     QGraphicsPixmapItem *_m_focusFrame;
     QGraphicsPixmapItem *_m_onlineStatusItem;
     QGraphicsRectItem *_m_duanchangMask;

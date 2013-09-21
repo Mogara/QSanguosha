@@ -72,7 +72,7 @@ public:
     virtual const Card *askForSinglePeach(ServerPlayer *dying);
     virtual const Card *askForPindian(ServerPlayer *requestor, const char *reanson);
     virtual Card::Suit askForSuit(const QString&);
-    
+
     LuaFunction callback;
 };
 
@@ -304,7 +304,7 @@ ServerPlayer *LuaAI::askForPlayerChosen(const QList<ServerPlayer *> &targets, co
     void *player_ptr;
     int result = SWIG_ConvertPtr(L, -1, &player_ptr, SWIGTYPE_p_ServerPlayer, 0);
     lua_pop(L, 1);
-    if (SWIG_IsOK(result)) 
+    if (SWIG_IsOK(result))
         return static_cast<ServerPlayer *>(player_ptr);
     else
         return TrustAI::askForPlayerChosen(targets, reason);

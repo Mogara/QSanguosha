@@ -16,7 +16,7 @@ public:
     void setMute(bool mute);
     void setFont(const QFont &font);
 
-    virtual QRectF boundingRect() const;    
+    virtual QRectF boundingRect() const;
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

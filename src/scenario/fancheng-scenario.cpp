@@ -50,7 +50,7 @@ class DujiangViewAsSkill: public ViewAsSkill {
 public:
     DujiangViewAsSkill(): ViewAsSkill("dujiang") {
         frequency = Limited;
-		response_pattern = "@@dujiang";
+        response_pattern = "@@dujiang";
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
@@ -226,7 +226,7 @@ void ZhiyuanCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
 class ZhiyuanViewAsSkill: public OneCardViewAsSkill {
 public:
     ZhiyuanViewAsSkill(): OneCardViewAsSkill("zhiyuan") {
-		filter_pattern = "BasicCard";
+        filter_pattern = "BasicCard";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{

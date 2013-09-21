@@ -100,7 +100,7 @@ public:
 public slots:
     void setTime(int secs);
     void setSpeed(qreal speed);
-    
+
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     static const int S_BUTTON_GAP = 3;
@@ -126,7 +126,7 @@ public:
     void updateTable();
     inline QMainWindow *mainWindow() { return main_window; }
 
-	inline bool isCancelButtonEnabled() const{ return cancel_button != NULL && cancel_button->isEnabled(); }
+    inline bool isCancelButtonEnabled() const{ return cancel_button != NULL && cancel_button->isEnabled(); }
 
     bool m_skillButtonSank;
 
@@ -164,15 +164,15 @@ public slots:
     void makeKilling();
     void makeReviving();
     void doScript();
-	void viewGenerals(const QString &reason, const QStringList &names);
+    void viewGenerals(const QString &reason, const QStringList &names);
 
     void handleGameEvent(const Json::Value &arg);
 
-	void doOkButton();
+    void doOkButton();
     void doCancelButton();
     void doDiscardButton();
-    
-protected:    
+
+protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
@@ -214,10 +214,10 @@ private:
 
     QGraphicsRectItem *pausing_item;
     QGraphicsSimpleTextItem *pausing_text;
-    
+
     QList<QGraphicsPixmapItem *> role_items;
     CardContainer *card_container;
-    
+
     QList<QSanSkillButton *> m_skillButtons;
 
     ResponseSkill *response_skill;
@@ -296,7 +296,7 @@ private:
     // animation related functions
     typedef void (RoomScene::*AnimationFunc)(const QString &, const QStringList &);
     QGraphicsObject *getAnimationObject(const QString &name) const;
-        
+
     void doMovingAnimation(const QString &name, const QStringList &args);
     void doAppearingAnimation(const QString &name, const QStringList &args);
     void doLightboxAnimation(const QString &name, const QStringList &args);

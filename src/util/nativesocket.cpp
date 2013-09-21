@@ -43,7 +43,7 @@ void NativeServerSocket::processNewConnection() {
 
 // ---------------------------------
 
-NativeClientSocket::NativeClientSocket()    
+NativeClientSocket::NativeClientSocket()
     : socket(new QTcpSocket(this))
 {
     init();

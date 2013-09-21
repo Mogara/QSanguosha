@@ -30,7 +30,7 @@ bool BanPair::isBanned(const QString &first, const QString &second) {
         return true;
 
     BanPair pair(first, second);
-    return BanPairSet.contains(pair);    
+    return BanPairSet.contains(pair);
 }
 
 void BanPair::loadBanPairs() {

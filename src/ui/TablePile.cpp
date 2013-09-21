@@ -7,7 +7,7 @@
 
 QList<CardItem *> TablePile::removeCardItems(const QList<int> &card_ids, Player::Place place) {
     QList<CardItem *> result;
-    _m_mutex_pileCards.lock();    
+    _m_mutex_pileCards.lock();
     result = _createCards(card_ids);
     _disperseCards(result, m_cardsDisplayRegion, Qt::AlignCenter, false, true);
     foreach (CardItem *card, result) {
@@ -44,7 +44,7 @@ void TablePile::timerEvent(QTimerEvent *) {
         } else if (m_currentTime > toRemove->m_uiHelper.tablePileClearTimeStamp)
             toRemove->setEnabled(false); // @todo: this is a dirty trick. Use another property in the future
     }
-    
+
     if (oldCards.empty()) {
         _m_mutex_pileCards.unlock();
         return;
@@ -52,7 +52,7 @@ void TablePile::timerEvent(QTimerEvent *) {
 
     _fadeOutCardsLocked(oldCards);
     _m_mutex_pileCards.unlock();
-    
+
     adjustCards();
 }
 
@@ -137,12 +137,12 @@ bool TablePile::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
     m_visibleCards.append(card_items);
     int numAdded = card_items.length();
     int numRemoved = m_visibleCards.size() - qMax(m_numCardsVisible, numAdded + 1);
-    
+
     for (int i = 0; i < numRemoved; i++) {
         CardItem *toRemove = m_visibleCards[i];
         _markClearance(toRemove);
     }
-    
+
     foreach (CardItem *card_item, card_items) {
         card_item->setHomeOpacity(1.0);
         card_item->showFootnote();
@@ -157,10 +157,10 @@ bool TablePile::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
     }
 
     _m_mutex_pileCards.unlock();
-    adjustCards();    
+    adjustCards();
     return false;
 }
-    
+
 void TablePile::adjustCards() {
     if (m_visibleCards.length() == 0) return;
     _disperseCards(m_visibleCards, m_cardsDisplayRegion, Qt::AlignCenter, true, true);

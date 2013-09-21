@@ -68,7 +68,7 @@ void CardOverview::loadFromList(const QList<const Card *> &list) {
     int n = list.length();
     ui->tableWidget->setRowCount(n);
     for (int i = 0; i < n; i++)
-        addCard(i, list.at(i));    
+        addCard(i, list.at(i));
 
     if (n > 0) {
         ui->tableWidget->setCurrentItem(ui->tableWidget->item(0, 0));
@@ -102,9 +102,9 @@ void CardOverview::addCard(int i, const Card *card) {
     ui->tableWidget->setItem(i, 1, new QTableWidgetItem(suit_icon, suit_str));
     ui->tableWidget->setItem(i, 2, new QTableWidgetItem(point));
     ui->tableWidget->setItem(i, 3, new QTableWidgetItem(type));
-    ui->tableWidget->setItem(i, 4, new QTableWidgetItem(subtype));  
+    ui->tableWidget->setItem(i, 4, new QTableWidgetItem(subtype));
 
-	QTableWidgetItem *package_item = new QTableWidgetItem(package);
+    QTableWidgetItem *package_item = new QTableWidgetItem(package);
     if (Config.value("LuaPackages", QString()).toString().split("+").contains(card->getPackage())) {
         package_item->setBackgroundColor(QColor(0x66, 0xCC, 0xFF));
         package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));

@@ -27,7 +27,7 @@ void Shit::onMove(const CardMoveStruct &move) const{
 
         Room *room = from->getRoom();
 
-        if(getSuit() == Spade){            
+        if(getSuit() == Spade){
             log.type = "$ShitLostHp";
             room->sendLog(log);
 
