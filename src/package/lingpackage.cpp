@@ -440,16 +440,15 @@ void Neo2013FanjianCard::onEffect(const CardEffectStruct &effect) const{
     QVariant data;
     data.setValue(source);
 
-    QString choice = room->askForChoice(target, "neo2013fanjian", "getIt+discardOne", data);
-    //ToAsk: 这里应该是不能弃牌的话就直接拿这张牌，不能先选弃牌，然后发现不能弃，放弃弃牌吧？
+    QString choice = "getIt";
+    if (target->canDiscard(source, "h"))
+        choice = room->askForChoice(target, "neo2013fanjian", "getIt+discardOne", data);
 
     if (choice == "getIt")
         target->obtainCard(this);
-    else {
-        if (!target->canDiscard(source, "h"))
-            return ;
+    else 
         room->throwCard(room->askForCardChosen(target, source, "h", "neo2013fanjian", false, Card::MethodDiscard), source, target);
-    }
+
 }
 class Neo2013Fanjian: public OneCardViewAsSkill{
 public:
@@ -494,6 +493,8 @@ public:
             if ((victim = room->askForPlayerChosen(target, players, objectName(), "@neo2013fankui", true, true)) != NULL){
                 int card_id = room->askForCardChosen(target, victim, "he", objectName());
                 room->obtainCard(target, Sanguosha->getCard(card_id), room->getCardPlace(card_id) != Player::PlaceHand);
+
+                room->broadcastSkillInvoke(objectName());
             }
         }
     }
@@ -530,10 +531,8 @@ public:
 
         switch (triggerEvent){
             case (TargetConfirming):{
-                if (!TriggerSkill::triggerable(player)){
-                    room->setPlayerFlag(selfplayer, "-YiRenWangInvalid");
+                if (!TriggerSkill::triggerable(player))
                     return false;
-                }
                 CardUseStruct use = data.value<CardUseStruct>();
                 ServerPlayer *source = use.from;
                 const Card *card = use.card;
@@ -543,33 +542,52 @@ public:
                         room->setPlayerFlag(source, "YiRenwangFirst");
                     else
                         if (room->askForSkillInvoke(player, objectName(), data)){
-                            QStringList choicelist;
-                            choicelist << "invalid";
-                            if (!source->isNude())
-                                choicelist << "discard";
-                            QString choice = room->askForChoice(source, objectName(), choicelist.join("+"), data);
-                            if (choice == "discard"){
-                                room->askForDiscard(source, objectName(), 1, 1, false, true);
-                                room->setPlayerFlag(player, "-YiRenWangInvalid");
+                            room->broadcastSkillInvoke(objectName());
+                            if (!room->askForDiscard(source, objectName(), 1, 1, true, true, "@neo2013renwang-discard")){
+                                if (!player->tag["neorenwang"].canConvert<QList<const Card *> >()){
+                                    QList<const Card *> emptyqlist;
+                                    player->tag["neorenwang"] = QVariant::fromValue(emptyqlist);
+                                }
+                                QList<const Card *> neorenwanginvalid = player->tag["neorenwang"].value<QList<const Card *> >();
+                                neorenwanginvalid << card;
+                                player->tag["neorenwang"] = QVariant::fromValue(neorenwanginvalid);
                             }
-                            else
-                                room->setPlayerFlag(player, "YiRenWangInvalid");
                         }
                 }
                 break;
             }
             case (CardEffected):{
-                return data.value<CardEffectStruct>().card->isNDTrick() && selfplayer->hasFlag("YiRenWangInvalid");
+                CardEffectStruct effect = data.value<CardEffectStruct>();
+                if (effect.card->isNDTrick() && effect.to == selfplayer){
+                    QList<const Card *> neorenwanginvalid = selfplayer->tag["neorenwang"].value<QList<const Card *> >();
+                    if (neorenwanginvalid.contains(effect.card)){
+                        neorenwanginvalid.removeOne(effect.card);
+                        selfplayer->tag["neorenwang"] = QVariant::fromValue(neorenwanginvalid);
+                        return true;
+                    }
+                }
                 break;
             }
             case (SlashEffected):{
-                return selfplayer->hasFlag("YiRenWangInvalid");
+                SlashEffectStruct effect = data.value<SlashEffectStruct>();
+                if (effect.to != selfplayer)
+                    return false;
+
+                QList<const Card *> neorenwanginvalid = selfplayer->tag["neorenwang"].value<QList<const Card *> >();
+                if (neorenwanginvalid.contains(effect.slash)){
+                    neorenwanginvalid.removeOne(effect.slash);
+                    selfplayer->tag["neorenwang"] = QVariant::fromValue(neorenwanginvalid);
+                    return true;
+                }
                 break;
             }
             case (CardFinished):{
-                if (selfplayer->hasFlag("YiRenWangInvalid"))
-                    room->setPlayerFlag(player, "-YiRenWangInvalid");
-                break;
+                const Card *c = data.value<CardUseStruct>().card;
+                QList<const Card *> neorenwanginvalid = selfplayer->tag["neorenwang"].value<QList<const Card *> >();
+                if (neorenwanginvalid.contains(c)){
+                    neorenwanginvalid.removeOne(c);
+                    selfplayer->tag["neorenwang"] = QVariant::fromValue(neorenwanginvalid);
+                }
             }
             default:
                 Q_ASSERT(false);
@@ -789,17 +807,25 @@ public:
             if (damage.card != NULL && damage.card->isKindOf("Slash") && damage.card->getSkillName() == objectName()
                     && !damage.chain && !damage.transfer && damage.by_user)
                 if (damage.card->isRed()){
-                    if (player->askForSkillInvoke(objectName(), data))
+                    if (player->askForSkillInvoke(objectName(), data)){
+                        room->broadcastSkillInvoke(objectName(), 3);
                         player->drawCards(1);
+                    }
                 }
                 else if (damage.card->isBlack()){
                     if (!damage.to->isNude() && player->askForSkillInvoke(objectName(), data)){
                         int card_id = room->askForCardChosen(player, damage.to, "he", objectName(), false, Card::MethodDiscard);
                         room->throwCard(card_id, damage.to, player);
+                        room->broadcastSkillInvoke(objectName(), 4);
                     }
                 }
         }
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+        if (card->isKindOf("Slash"))
+            return qrand() % 2 + 1;
     }
 };
 
