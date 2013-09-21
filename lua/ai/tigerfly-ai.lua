@@ -479,4 +479,12 @@ sgs.ai_skill_invoke.neoaocai = function(self) --没细想
 		return false
 end
 
+--技能：专权
+
+function sgs.ai_skill_invoke.zhuanquan(self, data)
+	local current = self.room:getCurrent()
+	local erzhang = self.room:findPlayerBySkillName("guzheng")
+	if erzhang and self:isEnemy(erzhang) then return false end
+	return self:isEnemy(current) and not self:doNotDiscard(current, "h")
+end
 
