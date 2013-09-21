@@ -164,7 +164,7 @@ local pozhen_skill = {}
 pozhen_skill.name = "pozhen"
 table.insert(sgs.ai_skills, pozhen_skill)
 pozhen_skill.getTurnUseCard = function(self)
-	if not self.player:hasUsed("PozhenCard") then return sgs.Card_Parse("@RendeCard=.") end
+	if not self.player:hasUsed("PozhenCard") then return sgs.Card_Parse("@PozhenCard=.") end
 end
 sgs.ai_skill_use_func.PozhenCard = function(card,use,self)
 	self:sort(self.enemies, "defense")
