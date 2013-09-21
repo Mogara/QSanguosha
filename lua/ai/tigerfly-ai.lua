@@ -565,3 +565,28 @@ sgs.ai_skill_use["@@tushou"]=function(self,prompt)
 	if tar then return  "@TushouGiveCard="..card_id.."->"..tar:objectName() end
 	return "."
 end
+
+
+
+sgs.ai_skill_invoke.kangdao = true
+
+sgs.ai_skill_cardask["@bushi-discard"] = function(self, data)
+
+	local cards = sgs.QList2Table(self.player:getHandcards())
+
+	self:sortByUseValue(cards, true)
+	for _, acard in ipairs(cards) do
+		if acard:isBlack() then return "$" .. acard:getEffectiveId() end
+	end
+	for _, acard in ipairs(cards) do
+		if acard then return "$" .. acard:getEffectiveId() end
+	end
+	return  "."
+end
+
+sgs.ai_skill_choice.bushi = function(self, choices, data)
+	local aim = data:toPlayer()
+	local isfriend = false
+	if self:isFriend(aim) or aim == self.player then isfriend = true end
+	return isfriend and "bushiinc" or "bushidec"
+end
