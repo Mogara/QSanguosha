@@ -1128,7 +1128,8 @@ public:
             ServerPlayer *killer = death.damage ? death.damage->from : NULL;
             ServerPlayer *current = room->getCurrent();
 
-            if (killer && current && current->isAlive() && current->getPhase() != Player::NotActive) {
+            if (killer && current && (current->isAlive() || death.who == current)
+                && current->getPhase() != Player::NotActive) {
                 killer->addMark("lianpo");
 
                 if (TriggerSkill::triggerable(player)) {
