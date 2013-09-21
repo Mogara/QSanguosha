@@ -126,6 +126,8 @@ public:
     void updateTable();
     inline QMainWindow *mainWindow() { return main_window; }
 
+    void changeTableBg();
+
     inline bool isCancelButtonEnabled() const{ return cancel_button != NULL && cancel_button->isEnabled(); }
 
     bool m_skillButtonSank;
