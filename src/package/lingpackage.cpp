@@ -5,6 +5,7 @@
 #include "client.h"
 #include "engine.h"
 #include "maneuvering.h"
+#include "settings.h"
 
 LuoyiCard::LuoyiCard() {
     target_fixed = true;
@@ -670,20 +671,138 @@ public:
     }
 };*/
 
+Neo2013YongyiCard::Neo2013YongyiCard(): SkillCard(){
+    mute = true;
+}
 
-//
-//
-//
-//每当你成为其他角色使用【杀】或非延时类锦囊牌的唯一目标后，
-//你可以将一张手牌背面朝上置于你的武将牌上，称为“箭”；
-//你可以将一张“箭”当【杀】使用（无距离限制），
-//当此【杀】对目标角色造成伤害后：
-//锁定技，若此【杀】为红色，你可以摸一张牌；
-//锁定技，若此【杀】为黑色，你可以弃置该角色的一张牌。
-//
-//锁定技怎么能“可以”…………这又不是袁术的视为拥有…………
-//
-//
+bool Neo2013YongyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    QList<int> arrows = Self->getPile("neoarrow");
+    QList<const Card *> arrowcards;
+
+    foreach(int id, arrows)
+        arrowcards << Sanguosha->getCard(id);
+
+    QList<const Player *> players = Self->getAliveSiblings();
+
+    QList<const Player *> tars;
+
+    foreach(const Card *c, arrowcards){
+        Slash *slash = new Slash(c->getSuit(), c->getNumber());
+        slash->addSubcard(c);
+        slash->setSkillName("neo2013yongyi");
+        QList<const Player *> oldplayers = players;
+        foreach(const Player *p, oldplayers)
+            if (slash->targetFilter(targets, p, Self)){
+                players.removeOne(p);
+                tars << p;
+            }
+        delete slash;
+        slash = NULL;
+        if (players.isEmpty())
+            break;
+    }
+
+    return tars.contains(to_select);
+}
+
+const Card *Neo2013YongyiCard::validate(CardUseStruct &cardUse) const{
+    QList<int> arrows = cardUse.from->getPile("neoarrow");
+    QList<int> arrowsdisabled;
+    QList<const Card *> arrowcards;
+
+    foreach(int id, arrows)
+        arrowcards << Sanguosha->getCard(id);
+
+    foreach(const Card *c, arrowcards){
+        Slash *slash = new Slash(c->getSuit(), c->getNumber());
+        slash->addSubcard(c);
+        slash->setSkillName("neo2013yongyi");
+        foreach(ServerPlayer *to, cardUse.to)
+            if (cardUse.from->isProhibited(to, slash)){
+                arrows.removeOne(slash->getSubcards()[0]);
+                arrowsdisabled << slash->getSubcards()[0];
+                break;
+            }
+        delete slash;
+        slash = NULL;
+    }
+
+    if (arrows.isEmpty())
+        return NULL;
+
+    Room *room = cardUse.from->getRoom();
+
+    int or_aidelay = Config.AIDelay;
+    Config.AIDelay = 0;
+
+    room->fillAG(arrows + arrowsdisabled, cardUse.from, arrowsdisabled);
+
+    int slashcard = room->askForAG(cardUse.from, arrows, false, "neo2013yongyi");
+
+    room->clearAG(cardUse.from);
+    Config.AIDelay = or_aidelay;
+
+    const Card *c = Sanguosha->getCard(slashcard);
+    Slash *realslash = new Slash(c->getSuit(), c->getNumber());
+    realslash->addSubcard(c);
+    realslash->setSkillName("neo2013yongyi");
+    return realslash;
+}
+
+class Neo2013YongyiVS: public ZeroCardViewAsSkill{
+public:
+    Neo2013YongyiVS(): ZeroCardViewAsSkill("neo2013yongyi"){
+
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return Slash::IsAvailable(player);
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return pattern == "slash" && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
+    }
+
+    virtual const Card *viewAs() const{
+        return new Neo2013YongyiCard;
+    }
+};
+
+class Neo2013Yongyi: public TriggerSkill{
+public:
+    Neo2013Yongyi(): TriggerSkill("neo2013yongyi"){
+        events << TargetConfirmed << Damage;
+        view_as_skill = new Neo2013YongyiVS;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == TargetConfirmed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if ((use.card->isKindOf("Slash") || use.card->isNDTrick()) && use.to.contains(player)){
+                const Card *c = room->askForExchange(player, objectName(), 1, false, "@neo2013yongyiput", true);
+                if (c != NULL)
+                    player->addToPile("neoarrow", c, false);
+            }
+        }
+        else {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.card != NULL && damage.card->isKindOf("Slash") && damage.card->getSkillName() == objectName()
+                    && !damage.chain && !damage.transfer && damage.by_user)
+                if (damage.card->isRed()){
+                    if (player->askForSkillInvoke(objectName(), data))
+                        player->drawCards(1);
+                }
+                else if (damage.card->isBlack()){
+                    if (!damage.to->isNude() && player->askForSkillInvoke(objectName(), data)){
+                        int card_id = room->askForCardChosen(player, damage.to, "he", objectName(), false, Card::MethodDiscard);
+                        room->throwCard(card_id, damage.to, player);
+                    }
+                }
+        }
+        return false;
+    }
+};
+
 
 class Neo2013Duoyi: public TriggerSkill{
 public:
@@ -1159,6 +1278,13 @@ Ling2013Package::Ling2013Package(): Package("Ling2013"){
     neo2013_yuji->addSkill(new Neo2013Qianhuan);
 */
 
+    General *neo2013_huangzhong = new General(this, "neo2013_huangzhong", "shu", 4);
+    neo2013_huangzhong->addSkill(new Neo2013Yongyi);
+    neo2013_huangzhong->addSkill(new SlashNoDistanceLimitSkill("neo2013yongyi"));
+    neo2013_huangzhong->addSkill("liegong");
+    related_skills.insertMulti("neo2013yongyi", "#neo2013yongyi-slash-ndl");
+
+
     General *neo2013_yangxiu = new General(this, "neo2013_yangxiu", "wei", 3);
     neo2013_yangxiu->addSkill(new Neo2013Duoyi);
     neo2013_yangxiu->addSkill("jilei");
@@ -1208,6 +1334,7 @@ Ling2013Package::Ling2013Package(): Package("Ling2013"){
     addMetaObject<Neo2013XinzhanCard>();
     addMetaObject<Neo2013FanjianCard>();
     addMetaObject<Neo2013FengyinCard>();
+    addMetaObject<Neo2013YongyiCard>();
 
     skills << new Neo2013HuileiDecrease << new Neo2013Huwei;
 }

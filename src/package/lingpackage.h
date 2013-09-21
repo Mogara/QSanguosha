@@ -161,5 +161,14 @@ public:
     Q_INVOKABLE DragonPhoenix(Card::Suit suit, int number);
 };
 
+class Neo2013YongyiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Neo2013YongyiCard();
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual const Card *validate(CardUseStruct &cardUse) const;
+};
+
 #endif
 
