@@ -144,7 +144,7 @@ function sgs.ai_skill_invoke.jushou(self, data)
 	end
 	if not self.player:hasSkill("jiewei") then return false end
 	for _, card in sgs.qlist(self.player:getHandcards()) do
-		if card:getTypeId() == sgs.Card_TypeTrick then
+		if card:getTypeId() == sgs.Card_TypeTrick and not card:isKindOf("Nullification") then
 			local dummy_use = { isDummy = true }
 			self:useTrickCard(card, dummy_use)
 			if dummy_use.card then return true end
@@ -159,11 +159,11 @@ end
 
 sgs.ai_skill_invoke.jiewei = true
 
-sgs.ai_skill_use["TrickCard,EquipCard|.|.|hand"] = function(self, prompt, method)
+sgs.ai_skill_use["TrickCard+^Nullification,EquipCard|.|.|hand"] = function(self, prompt, method)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(cards)
 	for _, cards in ipairs(cards) do
-		if card:getTypeId() == sgs.Card_TypeTrick then
+		if card:getTypeId() == sgs.Card_TypeTrick and not card:isKindOf("Nullification") then
 			local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 			self:useTrickCard(card, dummy_use)
 			if dummy_use.card then

@@ -319,7 +319,7 @@ public:
         if (!room->askForSkillInvoke(player, objectName())) return false;
         player->drawCards(1);
 
-        const Card *card = room->askForUseCard(player, "TrickCard,EquipCard|.|.|hand", "@jiewei");
+        const Card *card = room->askForUseCard(player, "TrickCard+^Nullification,EquipCard|.|.|hand", "@jiewei");
         if (!card) return false;
 
         QList<ServerPlayer *> targets;
