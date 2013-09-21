@@ -1307,6 +1307,170 @@ public:
     }
 };
 
+class Tuwei: public TargetModSkill{
+public:
+    Tuwei(): TargetModSkill("tuwei"){
+    }
+
+    virtual int getExtraTargetNum(const Player *from, const Card *card) const{
+        if (!from->hasSkill(objectName()))
+            return 0;
+
+        int i = 0;
+        foreach(const Player *p, from->getAliveSiblings()) {
+            if(p->inMyAttackRange(from))
+                i++;
+        }
+
+        return i > from->getHp() ? 1 : 0;
+    }
+};
+
+GudanCard::GudanCard() {
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
+
+bool GudanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+        const Card *card = NULL;
+        if (!user_string.isEmpty())
+            card = Sanguosha->cloneCard(user_string.split("+").first());
+        return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
+    } else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+        return false;
+    }
+
+    CardStar card = Self->tag.value("gudan").value<CardStar>();
+    return card && card->targetFilter(targets, to_select, Self) && !Self->isProhibited(to_select, card, targets);
+}
+
+bool GudanCard::targetFixed() const{
+    if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+        const Card *card = NULL;
+        if (!user_string.isEmpty())
+            card = Sanguosha->cloneCard(user_string.split("+").first());
+        return card && card->targetFixed();
+    } else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+        return true;
+    }
+
+    CardStar card = Self->tag.value("gudan").value<CardStar>();
+    return card && card->targetFixed();
+}
+
+bool GudanCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+        const Card *card = NULL;
+        if (!user_string.isEmpty())
+            card = Sanguosha->cloneCard(user_string.split("+").first());
+        return card && card->targetsFeasible(targets, Self);
+    } else if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE) {
+        return true;
+    }
+
+    CardStar card = Self->tag.value("gudan").value<CardStar>();
+    return card && card->targetsFeasible(targets, Self);
+}
+
+const Card *GudanCard::validate(CardUseStruct &card_use) const{
+    ServerPlayer *wenyang = card_use.from;
+    Room *room = wenyang->getRoom();
+
+    QString to_gudan = user_string;
+    if (user_string == "slash"
+        && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+            QStringList gudan_list;
+            gudan_list << "slash";
+            if (!Config.BanPackages.contains("maneuvering"))
+                gudan_list << "thunder_slash" << "fire_slash";
+            to_gudan = room->askForChoice(wenyang, "gudan_slash", gudan_list.join("+"));
+    }
+
+    Card *use_card = Sanguosha->cloneCard(to_gudan, SuitToBeDecided, -1);
+    use_card->setSkillName("gudan");
+    use_card->addSubcards(subcards);
+    use_card->deleteLater();
+    return use_card;
+}
+
+const Card *GudanCard::validateInResponse(ServerPlayer *wenyang) const{
+    Room *room = wenyang->getRoom();
+
+    QString to_gudan;
+    if (user_string == "peach+analeptic") {
+        QStringList gudan_list;
+        gudan_list << "peach";
+        if (!Config.BanPackages.contains("maneuvering"))
+            gudan_list << "analeptic";
+        to_gudan = room->askForChoice(wenyang, "gudan_saveself", gudan_list.join("+"));
+    } else if (user_string == "slash") {
+        QStringList gudan_list;
+        gudan_list << "slash";
+        if (!Config.BanPackages.contains("maneuvering"))
+            gudan_list << "thunder_slash" << "fire_slash";
+        to_gudan = room->askForChoice(wenyang, "gudan_slash", gudan_list.join("+"));
+    }
+    else
+        to_gudan = user_string;
+
+    Card *use_card = Sanguosha->cloneCard(to_gudan, SuitToBeDecided, -1);
+    use_card->setSkillName("gudan");
+    use_card->addSubcards(subcards);
+    use_card->deleteLater();
+    return use_card;
+}
+
+class Gudan: public ViewAsSkill {
+public:
+    Gudan(): ViewAsSkill("gudan") {
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        if (player->isKongcheng() || pattern.startsWith(".") || pattern.startsWith("@")) return false;
+        if (pattern == "peach" && player->hasFlag("Global_PreventPeach")) return false;
+        for (int i = 0; i < pattern.length(); i++) {
+            QChar ch = pattern[i];
+            if (ch.isUpper() || ch.isDigit()) return false; // This is an extremely dirty hack!! For we need to prevent patterns like 'BasicCard'
+        }
+        return true;
+    }
+
+    virtual QDialog *getDialog() const{
+        return GuhuoDialog::getInstance("gudan", true, false);
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &, const Card *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+        if (cards.length() < Self->getHandcardNum())
+            return NULL;
+
+        if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE
+            || Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE) {
+                GudanCard *card = new GudanCard;
+                card->setUserString(Sanguosha->getCurrentCardUsePattern());
+                card->addSubcards(cards);
+                return card;
+        }
+
+        CardStar c = Self->tag.value("gudan").value<CardStar>();
+        if (c) {
+            GudanCard *card = new GudanCard;
+            card->setUserString(c->objectName());
+            card->addSubcards(cards);
+            return card;
+        } else
+            return NULL;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->isKongcheng();
+    }
+};
+
 TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
     General *caorui = new General(this, "caorui$", "wei", 3);
     caorui->addSkill(new Shemi);
@@ -1362,9 +1526,14 @@ TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
     zhangxingcai->addSkill(new Zhanji);
     related_skills.insertMulti("xuedian", "#xuediantr");
 
+    General *wenyang = new General(this, "wenyang", "wei");
+    wenyang->addSkill(new Tuwei);
+    wenyang->addSkill(new Gudan);
+
     addMetaObject<PozhenCard>();
     addMetaObject<TushouGiveCard>();
     addMetaObject<ChouduCard>();
+    addMetaObject<GudanCard>();
 
     skills << new Zhuanquan;
 };
