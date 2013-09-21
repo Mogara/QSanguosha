@@ -164,7 +164,7 @@ local pozhen_skill = {}
 pozhen_skill.name = "pozhen"
 table.insert(sgs.ai_skills, pozhen_skill)
 pozhen_skill.getTurnUseCard = function(self)
-	if not self.player:hasUsed("PozhenCard") then return sgs.Card_Parse("@RendeCard=.") end
+	if not self.player:hasUsed("PozhenCard") then return sgs.Card_Parse("@PozhenCard=.") end
 end
 sgs.ai_skill_use_func.PozhenCard = function(card,use,self)
 	self:sort(self.enemies, "defense")
@@ -489,3 +489,104 @@ function sgs.ai_skill_invoke.zhuanquan(self, data)
 	return self:isEnemy(current) and not self:doNotDiscard(current, "h")
 end
 
+--技能：图守
+
+sgs.ai_skill_choice.tushou = function(self, choices)
+	local lightning = self:getCard("Lightning")
+	local sp = self.player
+	local others = self.room:getOtherPlayers(sp)
+	if sp:isWounded() and sp:getHandcardNum() == 2 and self:getCardsNum("Peach") == 0 and not self:needToLoseHp() then return "discard" end
+	if self:isWeak() and sp:getHandcardNum() > 2 and not self:needToLoseHp() then return "discard" end
+	if sp:isWounded() and not self:needToLoseHp() and sp:getCardCount(true) > 2 and (self:needToThrowArmor() or self:doNotDiscard(self.player)) then return "discard" end
+	if sp:getMaxHp() > 2 and sp:getMaxHp()-sp:getHandcardNum() > 0 and lightning and sp:aliveCount() < 3 and not self:willSkipPlayPhase() then others:at(0):setFlags("AI_tushouTarget") return "give" end
+	if self:isWeak() and sp:getCardCount(true) > 1 and self:willSkipPlayPhase() then return "discard" end
+	for _, enemy in ipairs(self.enemies) do
+		if (enemy:inMyAttackRange(sp) and self:canAttack(enemy)) or self:canAttack(enemy) then return "cancel" end
+	end
+	local m = {} 
+	self:sort(self.friends_noself, "defense")
+	for _,p in sgs.qlist(others) do table.insert(m, p:getHp()) end
+	local maxhp = math.max(unpack(m))
+	for _,p2 in ipairs(self.friends_noself) do 
+		if p2:getHp() == maxhp then p2:setFlags("AI_tushouTarget") return "give" end
+	end
+	return "cancel"
+end  
+
+function SmartAI:getTSCard()
+	local card_id
+	local cards = self.player:getHandcards()
+	cards = sgs.QList2Table(cards)
+	self:sortByUseValue(cards, true)
+	local lightning = self:getCard("Lightning")
+	if lightning and not self:willUseLightning(lightning) then card_id = lightning:getEffectiveId() end
+	if not card_id then
+	if self:needToThrowArmor() then card_id = self.player:getArmor():getId()
+	elseif self.player:getHandcardNum() >= self.player:getHp() then			
+		for _, acard in ipairs(cards) do
+			if (acard:isKindOf("EquipCard") or acard:isKindOf("AmazingGrace") or acard:isKindOf("BasicCard"))
+				and self:cardNeed(acard) <= 6 then card_id = acard:getEffectiveId() break 
+			elseif acard:getTypeId() == sgs.Card_TypeTrick then
+					local dummy_use = { isDummy = true }
+					self:useTrickCard(acard, dummy_use)
+				if not dummy_use.card then card_id = acard:getEffectiveId() break end	
+			end
+		end
+	elseif not self.player:getEquips():isEmpty() then
+	local equips=sgs.QList2Table(self.player:getEquips())
+	self:sortByCardNeed(equips)
+	for _, card in ipairs(equips) do
+		if (card:isKindOf("Armor") and self:needToThrowArmor()) or (card:getId()~=self:getValuableCard(self.player) and not card:isKindOf("Armor")) then 
+			card_id = card:getEffectiveId() break end 
+		end
+	end
+end
+	return card_id
+end
+sgs.ai_skill_use["@@tushou"]=function(self,prompt)
+
+	local cards = self.player:getCards("he")
+	cards = sgs.QList2Table(cards)
+	local cdid
+	local others = self.room:getOtherPlayers(self.player)
+	local tar
+	for _,card in ipairs(cards) do
+		if not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player) then cdid = card:getEffectiveId() break end
+	end
+	local card_id = self:getTSCard() or cdid
+
+	if not card_id or self.player:isNude() then return "." end
+	for _,p in sgs.qlist(others) do 
+		if not p:hasFlag("AI_tushouTarget") then continue end
+		if self:isFriend(p) and not self:needKongcheng(p, true) and not p:hasSkill("manjuan") then tar = p break end
+		if self:isFriend(p) and not self:needKongcheng(p, true) then tar = p break end
+		if p then tar = p break end		
+	end
+	if tar then return  "@TushouGiveCard="..card_id.."->"..tar:objectName() end
+	return "."
+end
+
+
+
+sgs.ai_skill_invoke.kangdao = true
+
+sgs.ai_skill_cardask["@bushi-discard"] = function(self, data)
+
+	local cards = sgs.QList2Table(self.player:getHandcards())
+
+	self:sortByUseValue(cards, true)
+	for _, acard in ipairs(cards) do
+		if acard:isBlack() then return "$" .. acard:getEffectiveId() end
+	end
+	for _, acard in ipairs(cards) do
+		if acard then return "$" .. acard:getEffectiveId() end
+	end
+	return  "."
+end
+
+sgs.ai_skill_choice.bushi = function(self, choices, data)
+	local aim = data:toPlayer()
+	local isfriend = false
+	if self:isFriend(aim) or aim == self.player then isfriend = true end
+	return isfriend and "bushiinc" or "bushidec"
+end
