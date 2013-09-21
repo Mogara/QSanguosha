@@ -579,7 +579,7 @@ public:
             }
         }
         if (target) {
-            if (target->hasFlag("xianzhen"))
+            if (gaoshun->hasFlag("xianzhen"))
                 room->setPlayerFlag(gaoshun, "-xianzhen");
             room->setFixedDistance(gaoshun, target, -1);
             gaoshun->tag.remove("XianzhenTarget");
