@@ -456,6 +456,27 @@ sgs.ai_skill_invoke.jisi = function(self, data) --大体上，根据无懈可击
 	return false 
 end 
 
+--技能：傲才
 
+sgs.ai_skill_invoke.neoaocai = function(self) --没细想
+	if self.player:getMark("@neoaocai") <= 0 then return false end
+	local lord = self.room:getLord()
+	if self.role ~= "rebel" and self:isWeak(lord) then return false end
+	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if self:isFriend(player) and self:isWeak(player) and self:getAllPeachNum() == 0 then return false end
+	end
+	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if (not self:isFriend(player)) and self:isWeak(player) then return true end
+	end
+	if self.player:getHp() <= 2 then return true end	
+	if #self.friends*2 > self.room:alivePlayerCount() then
+		 if self:getCardsNum("Peach") > 0 then return true end	
+	end	
+	if #self.friends*2 == self.room:alivePlayerCount() then
+		 if self:getAllPeachNum() > 0 then return true end	
+		if self.room:alivePlayerCount() <= 3 then return true end	
+	end	
+		return false
+end
 
 
