@@ -26,10 +26,13 @@ private slots:
     void on_browseBgMusicButton_clicked();
     void on_resetBgButton_clicked();
     void on_browseBgButton_clicked();
+    void on_resetTableBgButton_clicked();
+    void on_browseTableBgButton_clicked();
     void saveConfig();
 
 signals:
     void bg_changed();
+    void tableBg_changed();
 };
 
 #endif

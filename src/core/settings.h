@@ -80,6 +80,7 @@ public:
     float EffectVolume;
 
     QString BackgroundImage;
+    QString TableBgImage;
 
     // consts
     static const int S_SURRENDER_REQUEST_MIN_INTERVAL;

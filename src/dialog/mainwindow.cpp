@@ -77,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent)
     config_dialog = new ConfigDialog(this);
     connect(ui->actionConfigure, SIGNAL(triggered()), config_dialog, SLOT(show()));
     connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));
+    connect(config_dialog, SIGNAL(tableBg_changed()), this, SLOT(changeTableBg()));
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->actionAcknowledgement_2, SIGNAL(triggered()), this, SLOT(on_actionAcknowledgement_triggered()));
@@ -456,6 +457,13 @@ void MainWindow::changeBackground() {
         StartScene *start_scene = qobject_cast<StartScene *>(scene);
         start_scene->setServerLogBackground();
     }
+}
+
+void MainWindow::changeTableBg() {
+    if (!scene->inherits("RoomScene"))
+        return;
+
+    RoomSceneInstance->changeTableBg();
 }
 
 void MainWindow::on_actionFullscreen_triggered()
