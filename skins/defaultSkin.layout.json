@@ -63,7 +63,7 @@
     "normalHeight": 181,
     "mainFrameArea": [0, 0, 157, 181],
     "canvasArea": [0, 0, 157, 181],
-    "handCardNumIconArea": [-2, 96, 30, 18],
+    "handCardNumIconArea": [-8, 104, 30, 18],
     "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
     "equipAreas": [[1, 120, 150, 21], [1, 134, 150, 21], [1, 148, 150, 21], [1, 162, 150, 21]],
     "equipImageArea": [0, 1, 140, 19],
