@@ -422,8 +422,9 @@ public:
                 && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)
                 lingtong->setMark("xuanfeng", lingtong->getMark("xuanfeng") + move.card_ids.length());
 
-            if ((lingtong->getPhase() == Player::Discard && lingtong->getMark("xuanfeng") >= 2 && !lingtong->hasFlag("XuanfengUsed"))
-                || move.from_places.contains(Player::PlaceEquip)) {
+            if (TriggerSkill::triggerable(lingtong) &&
+                ((lingtong->getPhase() == Player::Discard && lingtong->getMark("xuanfeng") >= 2 && !lingtong->hasFlag("XuanfengUsed"))
+                 || move.from_places.contains(Player::PlaceEquip))) {
                 QList<ServerPlayer *> targets;
                 foreach (ServerPlayer *target, room->getOtherPlayers(lingtong)) {
                     if (lingtong->canDiscard(target, "he"))
@@ -432,7 +433,7 @@ public:
                 if (targets.isEmpty())
                     return false;
 
-                if (TriggerSkill::triggerable(lingtong) && lingtong->askForSkillInvoke(objectName())) {
+                if (lingtong->askForSkillInvoke(objectName())) {
                     if (!move.from_places.contains(Player::PlaceEquip))
                         lingtong->setFlags("XuanfengUsed");
                     room->broadcastSkillInvoke(objectName());
