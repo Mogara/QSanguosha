@@ -3008,6 +3008,7 @@ function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 	end
 	if from:hasFlag("luoyi") then dmg = dmg + 1 end
 	if from:hasFlag("neoluoyi") then dmg = dmg + 1 end
+	if from:getMark("@xiongjie") > 0 then dmg = math.max(from:getMark("@xiongjie"), 1) end
 	if slash and from:hasSkill("jie") and slash:isRed() then dmg = dmg + 1 end
 	if slash and from:hasSkill("wenjiu") and slash:isBlack() then dmg = dmg + 1 end
 	if slash and from:hasFlag("shenli") and from:getMark("@struggle") > 0 then dmg = dmg + math.min(3, from:getMark("@struggle")) end
