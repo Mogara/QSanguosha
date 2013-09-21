@@ -485,6 +485,7 @@ function sgs.ai_skill_invoke.zhuanquan(self, data)
 	local current = self.room:getCurrent()
 	local erzhang = self.room:findPlayerBySkillName("guzheng")
 	if erzhang and self:isEnemy(erzhang) then return false end
+	if self:isFriend(current) and self:doNotDiscard(current, "h") then return true end
 	return self:isEnemy(current) and not self:doNotDiscard(current, "h")
 end
 
