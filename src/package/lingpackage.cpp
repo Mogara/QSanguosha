@@ -517,7 +517,7 @@ public:
 class Neo2013RenWang: public TriggerSkill{
 public:
     Neo2013RenWang():TriggerSkill("neo2013renwang"){
-        events << TargetConfirming << SlashEffected << CardEffected << CardFinished;
+        events << EventPhaseStart << TargetConfirming << SlashEffected << CardEffected << CardFinished;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -530,6 +530,12 @@ public:
             return false;
 
         switch (triggerEvent){
+            case (EventPhaseStart):{
+                if (player->getPhase() == Player::RoundStart){
+                    QStringList emptylist;
+                    selfplayer->tag["neorenwang"] = emptylist;
+                }
+            }
             case (TargetConfirming):{
                 if (!TriggerSkill::triggerable(player))
                     return false;
@@ -544,13 +550,9 @@ public:
                         if (room->askForSkillInvoke(player, objectName(), data)){
                             room->broadcastSkillInvoke(objectName());
                             if (!room->askForDiscard(source, objectName(), 1, 1, true, true, "@neo2013renwang-discard")){
-                                if (!player->tag["neorenwang"].canConvert<QList<const Card *> >()){
-                                    QList<const Card *> emptyqlist;
-                                    player->tag["neorenwang"] = QVariant::fromValue(emptyqlist);
-                                }
-                                QList<const Card *> neorenwanginvalid = player->tag["neorenwang"].value<QList<const Card *> >();
-                                neorenwanginvalid << card;
-                                player->tag["neorenwang"] = QVariant::fromValue(neorenwanginvalid);
+                                QStringList neorenwanginvalid = player->tag["neorenwang"].toStringList();
+                                neorenwanginvalid << card->toString();
+                                player->tag["neorenwang"] = neorenwanginvalid;
                             }
                         }
                 }
@@ -559,10 +561,10 @@ public:
             case (CardEffected):{
                 CardEffectStruct effect = data.value<CardEffectStruct>();
                 if (effect.card->isNDTrick() && effect.to == selfplayer){
-                    QList<const Card *> neorenwanginvalid = selfplayer->tag["neorenwang"].value<QList<const Card *> >();
-                    if (neorenwanginvalid.contains(effect.card)){
-                        neorenwanginvalid.removeOne(effect.card);
-                        selfplayer->tag["neorenwang"] = QVariant::fromValue(neorenwanginvalid);
+                    QStringList neorenwanginvalid = selfplayer->tag["neorenwang"].toStringList();
+                    if (neorenwanginvalid.contains(effect.card->toString())){
+                        neorenwanginvalid.removeOne(effect.card->toString());
+                        selfplayer->tag["neorenwang"] = neorenwanginvalid;
                         return true;
                     }
                 }
@@ -573,20 +575,20 @@ public:
                 if (effect.to != selfplayer)
                     return false;
 
-                QList<const Card *> neorenwanginvalid = selfplayer->tag["neorenwang"].value<QList<const Card *> >();
-                if (neorenwanginvalid.contains(effect.slash)){
-                    neorenwanginvalid.removeOne(effect.slash);
-                    selfplayer->tag["neorenwang"] = QVariant::fromValue(neorenwanginvalid);
+                QStringList neorenwanginvalid = selfplayer->tag["neorenwang"].toStringList();
+                if (neorenwanginvalid.contains(effect.slash->toString())){
+                    neorenwanginvalid.removeOne(effect.slash->toString());
+                    selfplayer->tag["neorenwang"] = neorenwanginvalid;
                     return true;
                 }
                 break;
             }
             case (CardFinished):{
                 const Card *c = data.value<CardUseStruct>().card;
-                QList<const Card *> neorenwanginvalid = selfplayer->tag["neorenwang"].value<QList<const Card *> >();
-                if (neorenwanginvalid.contains(c)){
-                    neorenwanginvalid.removeOne(c);
-                    selfplayer->tag["neorenwang"] = QVariant::fromValue(neorenwanginvalid);
+                QStringList neorenwanginvalid = selfplayer->tag["neorenwang"].toStringList();
+                if (neorenwanginvalid.contains(c->toString())){
+                    neorenwanginvalid.removeOne(c->toString());
+                    selfplayer->tag["neorenwang"] = neorenwanginvalid;
                 }
             }
             default:
@@ -826,6 +828,7 @@ public:
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
         if (card->isKindOf("Slash"))
             return qrand() % 2 + 1;
+        return -1;
     }
 };
 
