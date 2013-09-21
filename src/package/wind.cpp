@@ -703,7 +703,7 @@ QGroupBox *GuhuoDialog::createLeft() {
             c->setParent(this);
             layout->addWidget(createButton(c));
 
-            if (card->objectName() == "slash" && !Config.BanPackages.contains("maneuvering")) {
+            if (card->objectName() == "slash" && !Config.BanPackages.contains("maneuvering") && objectName() != "gudan") {
                 Card *c2 = Sanguosha->cloneCard(card->objectName());
                 c2->setParent(this);
                 layout->addWidget(createButton(c2));
@@ -753,7 +753,8 @@ QGroupBox *GuhuoDialog::createRight() {
 }
 
 QAbstractButton *GuhuoDialog::createButton(const Card *card) {
-    if (card->objectName() == "slash" && map.contains(card->objectName()) && !map.contains("normal_slash")) {
+    if (card->objectName() == "slash" && map.contains(card->objectName()) 
+        && !map.contains("normal_slash") && objectName() != "gudan") {
         QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate("normal_slash"));
         button->setObjectName("normal_slash");
         button->setToolTip(card->getDescription());

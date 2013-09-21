@@ -3,6 +3,7 @@
 
 #include "package.h"
 #include "card.h"
+#include "wind.h"
 
 class PozhenCard: public SkillCard{
     Q_OBJECT
@@ -33,6 +34,20 @@ public:
     Q_INVOKABLE ChouduCard();
     virtual bool targetFilter(const QList<const Player *> &, const Player *, const Player *) const;
     virtual void use(Room *, ServerPlayer *, QList<ServerPlayer *> &) const;
+};
+
+class GudanCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE GudanCard();
+
+    virtual bool targetFixed() const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
+
+    virtual const Card *validate(CardUseStruct &card_use) const;
+    virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
 class TigerFlyPackage: public Package {
