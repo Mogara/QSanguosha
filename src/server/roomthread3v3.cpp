@@ -36,7 +36,7 @@ QStringList RoomThread3v3::getGeneralsWithoutExtension() const{
     foreach (QString general_name, list_nostal)
         generals << Sanguosha->getGeneral(general_name);
 
-    QString rule = Config.value("3v3/OfficialRule", "2012").toString();
+    QString rule = Config.value("3v3/OfficialRule", "2013").toString();
     if (rule == "2012") {
         QStringList list_remove, list_add;
         list_remove << "nos_zhangjiao" << "nos_caoren" << "lvmeng" << "xiahoudun" << "weiyan";
@@ -154,7 +154,7 @@ void RoomThread3v3::takeGeneral(ServerPlayer *player, const QString &name) {
     log.arg2 = name;
     room->sendLog(log);
 
-    QString rule = Config.value("3v3/OfficialRule", "2012").toString();
+    QString rule = Config.value("3v3/OfficialRule", "2013").toString();
     room->doBroadcastNotify(S_COMMAND_TAKE_GENERAL, toJsonArray(group, name, rule));
 }
 

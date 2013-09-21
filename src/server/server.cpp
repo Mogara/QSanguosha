@@ -680,7 +680,7 @@ QGroupBox *ServerDialog::create3v3Box() {
 
     official_3v3_ComboBox = officialComboBox;
 
-    QString rule = Config.value("3v3/OfficialRule", "2012").toString();
+    QString rule = Config.value("3v3/OfficialRule", "2013").toString();
     if (rule == "2012")
         officialComboBox->setCurrentIndex(1);
     else if (rule == "2013")

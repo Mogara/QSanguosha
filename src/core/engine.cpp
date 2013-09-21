@@ -968,8 +968,8 @@ QList<int> Engine::getRandomCards() const{
     bool exclude_disaters = false, using_2012_3v3 = false, using_2013_3v3 = false;
 
     if (Config.GameMode == "06_3v3") {
-        using_2012_3v3 = (Config.value("3v3/OfficialRule", "2012").toString() == "2012");
-        using_2013_3v3 = (Config.value("3v3/OfficialRule", "2012").toString() == "2013");
+        using_2012_3v3 = (Config.value("3v3/OfficialRule", "2013").toString() == "2012");
+        using_2013_3v3 = (Config.value("3v3/OfficialRule", "2013").toString() == "2013");
         exclude_disaters = !Config.value("3v3/UsingExtension", false).toBool() || Config.value("3v3/ExcludeDisasters", true).toBool();
     }
 
