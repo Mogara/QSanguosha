@@ -25,7 +25,7 @@ class BasicCard: public Card {
     Q_OBJECT
 
 public:
-    BasicCard(Suit suit, int number):Card(suit, number) { handling_method = Card::MethodUse;}
+    BasicCard(Suit suit, int number): Card(suit, number) { handling_method = Card::MethodUse;}
     virtual QString getType() const;
     virtual CardType getTypeId() const;
 };
@@ -97,8 +97,11 @@ class AmazingGrace: public GlobalEffect {
 public:
     Q_INVOKABLE AmazingGrace(Card::Suit suit, int number);
     virtual void doPreAction(Room *room, const CardUseStruct &card_use) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+
+private:
+    void clearRestCards(Room *room) const;
 };
 
 class AOE: public TrickCard {
@@ -135,7 +138,6 @@ public:
     virtual QString getSubtype() const;
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
 class Collateral: public SingleTargetTrick {

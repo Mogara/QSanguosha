@@ -4,6 +4,7 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <qmath.h>
 
 static GeneralSelector *Selector;
 
@@ -27,48 +28,42 @@ GeneralSelector::GeneralSelector() {
 }
 
 QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &candidates) {
+    QMap<QString, qreal> values;
     QString role = player->getRole();
-    int seat = player->getSeat();
-    Q_ASSERT(player->getRoom() != NULL);
-    int player_count = Sanguosha->getPlayerCount(player->getRoom()->getMode());
-    int index = seat;
-    if (player_count < 8 && seat == player_count)
-        index = 8;
-    else if (player_count > 8 && seat > 8)
-        index = 8;
-
-    QString max_general;
-
     ServerPlayer *lord = player->getRoom()->getLord();
-    QString suffix = QString();
-    if (lord->getGeneral() && lord->getGeneral()->isLord())
-        suffix = lord->getGeneralName();
-
-    QStringList key_list;
     foreach (QString candidate, candidates) {
-        QString key = QString("%1:%2:%3:%4").arg(candidate).arg(role).arg(index).arg(suffix);
-        key_list << key;
+        qreal value = 5.0;
+        const General *general = Sanguosha->getGeneral(candidate);
+        if (role == "loyalist" && (general->getKingdom() == lord->getKingdom() || general->getKingdom() == "god"))
+            value *= 1.05;
+        if (role == "rebel" && lord->hasLordSkill("xueyi") && general->getKingdom() == "qun")
+            value *= 0.8;
+        if (role != "loyalist" && lord->hasLordSkill("shichou") && general->getKingdom() == "shu")
+            value *= 0.1;
+        QString key = QString("_:%1:%2").arg(candidate).arg(role);
+        value *= qPow(1.1, first_general_table.value(key, 0.0));
+        QString key2 = QString("%1:%2:%3").arg(lord->getGeneralName()).arg(candidate).arg(role);
+        value *= qPow(1.1, first_general_table.value(key2, 0.0));
+        values.insert(candidate, value);
     }
+
+    QStringList _candidates = candidates;
     QStringList choice_list;
-    while (!key_list.isEmpty() && choice_list.length() < 6) {
+    while (!_candidates.isEmpty() && choice_list.length() < 6) {
         qreal max = -1;
         QString choice = QString();
-        foreach (QString key, key_list) {
-            qreal value = first_general_table.value(key, 0.0);
-            if (value < 0.001) {
-                QString _key = QString("%1:%2:%3:").arg(key.split(":").first()).arg(role).arg(index);
-                value = first_general_table.value(_key, 0.0);
-            }
-            if (value < 0.001) value = 5.0;
+        foreach (QString candidate, _candidates) {
+            qreal value = values.value(candidate, 5.0);
             if (value > max) {
                 max = value;
-                choice = key;
+                choice = candidate;
             }
         }
         choice_list << choice;
-        key_list.removeOne(choice);
+        _candidates.removeOne(choice);
     }
 
+    QString max_general;
     int rnd = qrand() % 100;
     int total = choice_list.length();
     int prob[6] = {70, 85, 92, 95, 97, 99};
@@ -80,7 +75,6 @@ QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &ca
     }
 
     Q_ASSERT(!max_general.isEmpty());
-
     return max_general;
 }
 
@@ -95,7 +89,7 @@ QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &c
         int value = second_general_table.value(key, 0);
         if (value == 0) {
             key = QString("%1+%2").arg(candidate).arg(first);
-            value = second_general_table.value(key, 3);
+            value = second_general_table.value(key, 50);
         }
 
         if (value > max) {
@@ -114,7 +108,7 @@ QString GeneralSelector::select3v3(ServerPlayer *, const QStringList &candidates
 }
 
 QString GeneralSelector::select1v1(const QStringList &candidates) {
-    return selectHighest(priority_1v1_table, candidates, 5);
+    return selectHighest(priority_1v1_table, candidates, 50);
 }
 
 QString GeneralSelector::selectHighest(const QHash<QString, int> &table, const QStringList &candidates, int default_value) {
@@ -194,26 +188,20 @@ void GeneralSelector::loadFirstGeneralTable() {
 }
 
 void GeneralSelector::loadFirstGeneralTable(const QString &role) {
-    QStringList prefix = Sanguosha->getLords();
-    prefix << QString();
-    foreach (QString lord, prefix) {
-        QFile file(QString("etc/%1%2%3.txt").arg(lord).arg((lord.isEmpty() ? "" : "_")).arg(role));
-        if (file.open(QIODevice::ReadOnly)) {
-            QTextStream stream(&file);
-            while (!stream.atEnd()) {
-                QString name;
-                stream >> name;
-                for (int i = 0; i < 7; i++) {
-                    qreal value;
-                    stream >> value;
+    QFile file(QString("etc/%1.txt").arg(role));
+    if (file.open(QIODevice::ReadOnly)) {
+        QTextStream stream(&file);
+        while (!stream.atEnd()) {
+            QString lord_name, name;
+            stream >> lord_name >> name;
+            qreal value;
+            stream >> value;
 
-                    QString key = QString("%1:%2:%3:%4").arg(name).arg(role).arg(i + 2).arg(lord);
-                    first_general_table.insert(key, value);
-                }
-            }
-
-            file.close();
+            QString key = QString("%1:%2:%3").arg(lord_name).arg(name).arg(role);
+            first_general_table.insert(key, value);
         }
+
+        file.close();
     }
 }
 

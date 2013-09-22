@@ -32,7 +32,7 @@ public:
     virtual QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place);
     int getFirstEnabled() const;
     void startChoose();
-    void startGongxin();
+    void startGongxin(const QList<int> &enabled_ids);
     void addCloseButton();
     void view(const ClientPlayer *player);
     virtual QRectF boundingRect() const;

@@ -28,20 +28,18 @@ void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     ServerPlayer *target = targets.first();
 
     int old_value = source->getMark("rende");
-    if (old_value > 0) {
-        QList<int> rende_list = StringList2IntList(source->property("rende").toString().split("+"));
-        foreach (int id, this->subcards)
-            rende_list.removeOne(id);
-        room->setPlayerProperty(source, "rende", IntList2StringList(rende_list).join("+"));
-    }
-    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName());
-    reason.m_playerId = target->objectName();
+    QList<int> rende_list;
+    if (old_value > 0)
+        rende_list = StringList2IntList(source->property("rende").toString().split("+"));
+    else
+        rende_list = source->handCards();
+    foreach (int id, this->subcards)
+        rende_list.removeOne(id);
+    room->setPlayerProperty(source, "rende", IntList2StringList(rende_list).join("+"));
+
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "rende", QString());
     room->obtainCard(target, this, reason, false);
 
-    if (old_value == 0 && !source->isKongcheng()) {
-        QList<int> handcards = source->handCards();
-        room->setPlayerProperty(source, "rende", IntList2StringList(handcards).join("+"));
-    }
     int new_value = old_value + subcards.length();
     room->setPlayerMark(source, "rende", new_value);
 
@@ -53,7 +51,7 @@ void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     }
 
     if (room->getMode() == "04_1v3" && source->getMark("rende") >= 2) return;
-    if (source->isKongcheng() || source->isDead()) return;
+    if (source->isKongcheng() || source->isDead() || rende_list.isEmpty()) return;
     room->addPlayerHistory(source, "RendeCard", -1);
     if (!room->askForUseCard(source, "@@rende", "@rende-give", -1, Card::MethodNone))
         room->addPlayerHistory(source, "RendeCard");
@@ -89,21 +87,13 @@ bool TuxiCard::targetFilter(const QList<const Player *> &targets, const Player *
     return !to_select->isKongcheng();
 }
 
-void TuxiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    QList<CardsMoveStruct> moves;
-    CardsMoveStruct move1;
-    move1.card_ids << room->askForCardChosen(source, targets[0], "h", "tuxi");
-    move1.to = source;
-    move1.to_place = Player::PlaceHand;
-    moves.push_back(move1);
-    if (targets.length() == 2) {
-        CardsMoveStruct move2;
-        move2.card_ids << room->askForCardChosen(source, targets[1], "h", "tuxi");
-        move2.to = source;
-        move2.to_place = Player::PlaceHand;
-        moves.push_back(move2);
+void TuxiCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+    if (effect.from->isAlive() && !effect.to->isKongcheng()) {
+        int card_id = room->askForCardChosen(effect.from, effect.to, "h", "tuxi");
+        CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
+        room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, false);
     }
-    room->moveCards(moves, false);
 }
 
 FanjianCard::FanjianCard() {
@@ -241,7 +231,7 @@ bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player 
         return false;
 
     const Player *from = NULL;
-    foreach (const Player *p, Self->getSiblings()) {
+    foreach (const Player *p, Self->getAliveSiblings()) {
         if (p->hasFlag("LiuliSlashSource")) {
             from = p;
             break;
@@ -299,7 +289,8 @@ const Card *JijiangCard::validate(CardUseStruct &cardUse) const{
         target->setFlags("JijiangTarget");
     foreach (ServerPlayer *liege, lieges) {
         try {
-            slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName(), QVariant(), Card::MethodResponse, liubei);
+            slash = room->askForCard(liege, "slash", "@jijiang-slash:" + liubei->objectName(),
+                                     QVariant(), Card::MethodResponse, liubei, false, QString(), true);
         }
         catch (TriggerEvent triggerEvent) {
             if (triggerEvent == TurnBroken || triggerEvent == StageChange) {

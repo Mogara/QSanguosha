@@ -9,6 +9,7 @@ return {
 
 	["nostal_general"] = "怀旧-测试",
 	["nostal_standard"] = "怀旧-标准",
+	["nostal_wind"] = "怀旧-风",
 	["nostal_yjcm"] = "怀旧-一将",
 	["nostal_yjcm2012"] = "怀旧-一将2",
 
@@ -28,6 +29,33 @@ return {
 	[":nosjizhi"] = "每当你使用非延时类锦囊牌选择目标后，你可以摸一张牌。",
 	["nosqicai"] = "奇才",
 	[":nosqicai"] = "<font color=\"blue\"><b>锁定技，</b></font>你使用锦囊牌无距离限制。",
+
+	["nos_caoren"] = "曹仁-旧",
+	["&nos_caoren"] = "曹仁",
+	["nosjushou"] = "据守",
+	[":nosjushou"] = "结束阶段开始时，你可以摸三张牌，然后将武将牌翻面。",
+
+	["nos_zhoutai"] = "周泰-旧",
+	["&nos_zhoutai"] = "周泰",
+	["nosbuqu"] = "不屈",
+	[":nosbuqu"] = "每当你扣减1点体力后，若你的体力值为0或更低，你可以将牌堆顶的一张牌置于你的武将牌上，然后若无同点数的“不屈牌”，你不进入濒死状态。每当你回复1点体力后，你将一张“不屈牌”置入弃牌堆。",
+	["#NosBuquDuplicate"] = "%from 发动“<font color=\"yellow\"><b>不屈</b></font>”失败，其“不屈牌”中有 %arg 组重复点数",
+	["#NosBuquDuplicateGroup"] = "第 %arg 组重复点数为 %arg2",
+	["$NosBuquDuplicateItem"] = "重复“不屈牌”: %card",
+	["$NosBuquRemove"] = "%from 移除了“不屈牌”：%card",
+
+	["nos_zhangjiao"] = "张角-旧",
+	["&nos_zhangjiao"] = "张角",
+	["illustrator:nos_zhangjiao"] = "LiuHeng",
+	["nosleiji"] = "雷击",
+	[":nosleiji"] = "每当你使用或打出一张【闪】时，你可以令一名角色进行判定：若结果为♠，你对该角色造成2点雷电伤害。",
+
+	["nos_yuji"] = "于吉-旧",
+	["&nos_yuji"] = "于吉",
+	["nosguhuo"] = "蛊惑",
+	[":nosguhuo"] = "你可以扣置一张手牌当做一张基本牌或非延时锦囊牌使用或打出，体力值大于0的其他角色选择是否质疑，然后你展示该牌：若无角色质疑，该牌按你所述类型结算；若有角色质疑：若该牌为真，质疑角色各失去1点体力；若该牌为假，质疑角色各摸一张牌；且若该牌为<font color=\"red\">♥</font>且为真，则依旧进行结算，否则将其置入弃牌堆。",
+	["nosguhuo_saveself"] = "“蛊惑”【桃】或【酒】",
+	["nosguhuo_slash"] = "“蛊惑”【杀】",
 
 	["nos_fazheng"] = "法正-旧",
 	["&nos_fazheng"] = "法正",

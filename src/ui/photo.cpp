@@ -47,8 +47,7 @@ Photo::Photo(): PlayerCardContainer() {
     setTransform(QTransform::fromTranslate(-G_PHOTO_LAYOUT.m_normalWidth / 2, -G_PHOTO_LAYOUT.m_normalHeight / 2), true);
     _m_skillNameItem = new QGraphicsPixmapItem(_m_groupMain);
         
-    emotion_item = new QGraphicsPixmapItem(_m_groupMain);
-    emotion_item->moveBy(10, 0);
+    emotion_item = new Sprite(_m_groupMain);
 
     _m_duanchangMask = new QGraphicsRectItem(_m_groupMain);
     _m_duanchangMask->setRect(boundingRect());
@@ -108,18 +107,30 @@ void Photo::_adjustComponentZValues() {
 
 void Photo::setEmotion(const QString &emotion, bool permanent) {
     if (emotion == ".") {
-        emotion_item->hide();
+        hideEmotion();
         return;
     }
 
     QString path = QString("image/system/emotion/%1.png").arg(emotion);
     if (QFile::exists(path)) {
-        emotion_item->setPixmap(QPixmap(path));
+        QPixmap pixmap = QPixmap(path);
+        emotion_item->setPixmap(pixmap);
+        emotion_item->setPos((G_PHOTO_LAYOUT.m_normalWidth - pixmap.width()) / 2,
+                             (G_PHOTO_LAYOUT.m_normalHeight - pixmap.height()) / 2);
         _layBetween(emotion_item, _m_chainIcon, _m_roleComboBox);
-        emotion_item->show();
 
-        if (!permanent)
-            QTimer::singleShot(2000, this, SLOT(hideEmotion()));
+        QPropertyAnimation *appear = new QPropertyAnimation(emotion_item, "opacity");
+        appear->setStartValue(0.0);
+        if (permanent) {
+            appear->setEndValue(1.0);
+            appear->setDuration(500);
+        } else {
+            appear->setKeyValueAt(0.25, 1.0);
+            appear->setKeyValueAt(0.75, 1.0);
+            appear->setEndValue(0.0);
+            appear->setDuration(2000);
+        }
+        appear->start(QAbstractAnimation::DeleteWhenStopped);
     } else {
         PixmapAnimation::GetPixmapAnimation(this, emotion);
     }
@@ -151,7 +162,11 @@ void Photo::hideSkillName() {
 }
 
 void Photo::hideEmotion() {
-    emotion_item->hide();
+    QPropertyAnimation *disappear = new QPropertyAnimation(emotion_item, "opacity");
+    disappear->setStartValue(1.0);
+    disappear->setEndValue(0.0);
+    disappear->setDuration(500);
+    disappear->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void Photo::updateDuanchang() {

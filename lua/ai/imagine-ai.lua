@@ -7,6 +7,8 @@
 		SmartAI:DamageToTurnOver(target, source, count)
 		SmartAI:DamageResult(target, source, nature, card, chained)
 		SmartAI:tdr(result, source, target)
+		SmartAI:KingdomsCount(players)
+		SmartAI:SortByAtomDamageCount(targets, source, nature, card, inverse)
 ]]--
 --[[
 	函数名：AtomDamageCount
@@ -54,12 +56,9 @@ function SmartAI:AtomDamageCount(target, source, nature, card)
 		end
 	end
 	if nature == sgs.DamageStruct_Fire then --如果是火焰伤害
-		local armor = target:getArmor()
-		if armor then 
-			if armor:isKindOf("Vine") or armor:isKindOf("GaleShell") then --如果目标装备了藤甲或狂风甲
-				count = count + 1
-				self.room:writeToConsole("vine+1")
-			end
+		if target:hasArmorEffect("Vine") then --如果目标装备了藤甲
+			count = count + 1
+			self.room:writeToConsole("vine+1")
 		end
 		if target:getMark("@gale") > 0 then --如果目标有狂风标记
 			count = count + 1
@@ -102,20 +101,31 @@ end
 	功能：模拟一次伤害带来的卡牌收入
 	参数表：
 		target：伤害目标
-		source：伤害来源
+		source：伤害来源，默认值为nil（无源伤害）
 		count：伤害点数，默认值为1
-	返回值：table类型，表示卡牌收入。包含6个项目：
-		第一项：对target方带来的收入的平均值
-		第二项：对target方带来的最高收入
-		第三项：对target方带来的最低收入
-		第四项：对target的对方带来的收入的平均值
-		第五项：对target的对方带来的最高收入
-		第六项：对target的对方带来的最低收入
+	返回值：table类型，表示卡牌收入。包含2个项目：
+		thisIncome：table类型，表示对target方带来的卡牌收入情况，其中：
+			Max：最高收入；
+			Min：最低收入；
+			Expectancy：收入的平均值。
+		thatIncome：table类型，表示对target的对方带来的卡牌收入情况，其中：
+			Max：最高收入；
+			Min：最低收入；
+			Expectancy：收入的平均值。
 ]]--
 function SmartAI:DamageToCards(target, source, count)
-	local result = {}
-	local thisIncome = {0, 0, 0}
-	local thatIncome = {0, 0, 0}
+	local result = {
+		thisIncome = {
+			Max = 0,
+			Min = 0,
+			Expectancy = 0,
+		},
+		thatIncome = {
+			Max = 0,
+			Min = 0,
+			Expectancy = 0,
+		}
+	}
 	local thisRangeMax = 0
 	local thisRangeMin = 0
 	local thatRangeMax = 0
@@ -128,6 +138,9 @@ function SmartAI:DamageToCards(target, source, count)
 		local friends = {}
 		local players = room:getAlivePlayers()
 		local others = room:getOtherPlayers(target)
+		if not count then
+			count = 1
+		end
 		if source then
 			civil = self:isFriend(target, source)
 		end
@@ -333,18 +346,12 @@ function SmartAI:DamageToCards(target, source, count)
 		end
 	end
 	--产生结果
-	thisIncome[1] = math.floor( (thisRangeMax + thisRangeMin) / 2 ) --对己方收入向下取整
-	thisIncome[2] = thisRangeMax
-	thisIncome[3] = thisRangeMin
-	thatIncome[1] = math.ceil( (thatRangeMax + thatRangeMax) / 2 ) --对对方收入向上取整
-	thatIncome[2] = thatRangeMax
-	thatIncome[3] = thatRangeMin
-	table.insert(result, thisIncome[1])
-	table.insert(result, thisIncome[2])
-	table.insert(result, thisIncome[3])
-	table.insert(result, thatIncome[1])
-	table.insert(result, thatIncome[2])
-	table.insert(result, thatIncome[3])
+	result[thisIncome][Expectancy] = math.floor( (thisRangeMax + thisRangeMin) / 2 ) --对己方收入向下取整
+	result[thisIncome][Max] = thisRangeMax
+	result[thisIncome][Min] = thisRangeMin
+	result[thatIncome][Expectancy] = math.ceil( (thatRangeMax + thatRangeMax) / 2 ) --对对方收入向上取整
+	result[thatIncome][Max] = thatRangeMax
+	result[thatIncome][Min] = thatRangeMin
 	return result
 end
 --[[
@@ -352,28 +359,42 @@ end
 	功能：模拟一次伤害造成的翻面影响
 	参数表：
 		target：伤害目标
-		source：伤害来源
-		count：伤害点数
-	返回值：table类型，包含8个项目：
-		第一项：对target一方带来的翻面人数
-		第二项：对target一方带来的等价翻回人数
-		第三项：伤害后target一方正面向上的人数
-		第四项：伤害后target一方背面向上的人数
-		第五项：对target的对方带来的翻面人数
-		第六项：对target的对方带来的等价翻回人数
-		第七项：伤害后target的对方正面向上的人数
-		第八项：伤害后target的对方背面向上的人数
+		source：伤害来源，默认为nil（无源伤害）
+		count：伤害点数，默认为1
+	返回值：table类型，包含2个项目：
+		thisResult：table类型，表示对target一方造成的翻面影响，其中：
+			turnOver：target一方受到翻面影响的人数（被翻面人数+被翻回人数）
+			equalNum：对target一方造成的等价翻面人数（被翻面人数-被翻回人数）
+			faceUp：伤害后target一方正面向上的人数
+			faceDown：伤害后target一方背面向上的人数
+		thatResult：table类型，表示对target的对方造成的翻面影响，其中：
+			turnOver：target的对方受到翻面影响的人数（被翻面人数+被翻回人数）
+			equalNum：对target的对方造成的等价翻面人数（被翻面人数-被翻回人数）
+			faceUp：伤害后target的对方正面向上的人数
+			faceDown：伤害后target的对方背面向上的人数
 ]]--
 function SmartAI:DamageToTurnOver(target, source, count)
-	local result = {}
-	local targetFriendsResult = {0, 0, 0}
-	local targetEnemiesResult = {0, 0, 0}
+	local result = {
+		thisResult = {
+			turnOver = 0,
+			equalNum = 0,
+			faceUp = 0,
+			faceDown = 0,
+		},
+		thatResult = {
+			turnOver = 0,
+			equalNum = 0,
+			faceUp = 0,
+			faceDown = 0,
+		},
+	}
 	local thisTurnOverCount = 0
 	local thatTurnOverCount = 0
 	local thisDownCount = 0
 	local thatDownCount = 0
 	local thisEqualNum = 0
 	local thatEqualNum = 0
+	
 	if target then
 		local room = self.room
 		local civil = false --是否自相残杀
@@ -495,21 +516,15 @@ function SmartAI:DamageToTurnOver(target, source, count)
 			end
 		end
 		--产生结果
-		targetFriendsResult[1] = thisTurnOverCount
-		targetFriendsResult[2] = #friends - thisDownCount
-		targetFriendsResult[3] = thisDownCount
-		targetEnemiesResult[1] = thatTurnOverCount
-		targetEnemiesResult[2] = #enemies - thatDownCount
-		targetEnemiesResult[3] = thatDownCount
+		result[thisResult][turnOver] = thisTurnOverCount
+		result[thisResult][equalNum] = thisEqualNum
+		result[thisResult][faceUp] = #friends - thisDownCount
+		result[thisResult][faceDown] = thisDownCount
+		result[thatResult][turnOver] = thatTurnOverCount
+		result[thatResult][equalNum] = thatEqualNum
+		result[thatResult][faceUp] = #enemies - thatDownCount
+		result[thatResult][faceDown] = thatDownCount
 	end
-	table.insert(result, targetFriendsResult[1])
-	table.insert(result, thisEqualNum)
-	table.insert(result, targetFriendsResult[2])
-	table.insert(result, targetFriendsResult[3])
-	table.insert(result, targetEnemiesResult[1])
-	table.insert(result, thatEqualNum)
-	table.insert(result, targetEnemiesResult[2])
-	table.insert(result, targetEnemiesResult[3])
 	return result
 end
 --[[
@@ -526,18 +541,32 @@ end
 		chained：是否考虑铁索连环的影响，取值为：
 			考虑铁索连环：true（默认值）
 			忽略铁索连环：false
-	返回值：table类型，表示伤害结果。包含7个项目：
-		第一项：伤害收益价值
-		第二项：对target一方造成的伤害点数
-		第三项：对target一方造成的手牌收入
-		第四项：对target一方造成的翻面人数
-		第五项：对target的对方造成的伤害点数
-		第六项：对target的对方造成的手牌收入
-		第七项：对target的对方造成的翻面人数
+	返回值：table类型，表示伤害结果。包含3个项目：
+		damageValue：表示伤害总收益价值
+		friendProfit：table类型，表示本次伤害对target一方造成的影响，其中：
+			damageCount：对target一方造成的伤害点数
+			cardsIncome：对target一方造成的手牌收入
+			turnOver：对target一方造成的翻面人数
+		enemyProfit：table类型，表示本次伤害对target的对方造成的影响，其中：
+			damageCount：对target的对方造成的伤害点数
+			cardsIncome：对target的对方造成的手牌收入
+			turnOver：对target的对方造成的翻面人数
 ]]--
 function SmartAI:DamageResult(target, source, nature, card, chained)
-	local result = {}
-	local damageValue = {0}
+	local result = {
+		damageValue = 0,
+		friendProfit = {
+			damageCount = 0,
+			cardsIncome = 0,
+			turnOver = 0,
+		},
+		enemyProfit = {
+			damageCount = 0,
+			cardsIncome = 0,
+			turnOver = 0,
+		},
+	}
+	local damageValue = 0
 	local enemyProfit = {0, 0, 0}
 	local friendProfit = {0, 0, 0}
 	if target then --伤害目标必须存在
@@ -554,19 +583,41 @@ function SmartAI:DamageResult(target, source, nature, card, chained)
 		if count > 1 and shrink then
 			count = 1
 		end
+		--DEBUG--
 		self.room:writeToConsole(string.format("Now:immediateDamage=%d", count))
+		
 		local cardsEffect = self:DamageToCards(target, source, count) --平均收入、最高收入、最低收入
 		local turnOverEffect = self:DamageToTurnOver(target, source, count) --翻面人数、正面人数、背面人数
-		friendProfit[1] = friendProfit[1] + count
-		friendProfit[2] = friendProfit[2] + cardsEffect[3]
-		friendProfit[3] = friendProfit[3] + turnOverEffect[2]
-		damageValue[1] = damageValue[1] - 2*friendProfit[1] + friendProfit[2] - 2.5*friendProfit[3]
-		self.room:writeToConsole(string.format("Now:damageValue=%d,fd=%d,fc=%d,ft=%d", damageValue[1], friendProfit[1], friendProfit[2], friendProfit[3]))
-		enemyProfit[1] = enemyProfit[1] + 0
-		enemyProfit[2] = enemyProfit[2] + cardsEffect[4]
-		enemyProfit[3] = enemyProfit[3] + turnOverEffect[6]
-		damageValue[1] = damageValue[1] + 2*enemyProfit[1] - enemyProfit[3] + 2.5*enemyProfit[3]
-		self.room:writeToConsole(string.format("Now:damageValue=%d,ed=%d,ec=%d,et=%d", damageValue[1], enemyProfit[1], enemyProfit[2], enemyProfit[3]))
+		
+		friendProfit[1] = friendProfit[1] + count --对target一方造成的伤害点数
+		friendProfit[2] = friendProfit[2] + cardsEffect[thisIncome][Min] --对target一方造成的卡牌收入
+		friendProfit[3] = friendProfit[3] + turnOverEffect[thisResult][equalNum] --对target一方造成的翻面影响
+		damageValue = damageValue - 2*friendProfit[1] + friendProfit[2] - 2.5*friendProfit[3] --target一方收益
+		--DEBUG--
+		self.room:writeToConsole(
+			string.format(
+				"Now:damageValue=%d,fd=%d,fc=%d,ft=%d", 
+				damageValue, 
+				friendProfit[1], 
+				friendProfit[2], 
+				friendProfit[3]
+				)
+			)
+		
+		enemyProfit[1] = enemyProfit[1] + 0 --对target对方造成的伤害点数
+		enemyProfit[2] = enemyProfit[2] + cardsEffect[thatIncome][Max] --对target对方造成的卡牌收入
+		enemyProfit[3] = enemyProfit[3] + turnOverEffect[thatResult][equalNum] --对target对方造成的翻面影响
+		damageValue = damageValue + 2*enemyProfit[1] - enemyProfit[3] + 2.5*enemyProfit[3] --target对方收益
+		--DEBUG--
+		self.room:writeToConsole(
+			string.format("Now:damageValue=%d,ed=%d,ec=%d,et=%d", 
+				damageValue, 
+				enemyProfit[1], 
+				enemyProfit[2], 
+				enemyProfit[3]
+				)
+			)
+		
 		--传导伤害
 		if chained then --如果考虑铁索连环
 			if nature ~= sgs.DamageStruct_Normal then --如果是属性伤害
@@ -574,18 +625,20 @@ function SmartAI:DamageResult(target, source, nature, card, chained)
 					local others = self.room:getOtherPlayers(target)
 					for _,p in sgs.qlist(others) do
 						if p:isChained() then
+							--DEBUG--
 							self.room:writeToConsole("in chained.")
+							
 							local SubResult = self:DamageResult(p, source, nature, nil, false)
 							if self:isFriend(p, target) then
-								friendProfit[1] = friendProfit[1] + SubResult[2]
-								friendProfit[2] = friendProfit[2] + SubResult[3]
-								friendProfit[3] = friendProfit[3] + SubResult[4]
-								damageValue[1] = damageValue[1] + SubResult[1]
+								friendProfit[1] = friendProfit[1] + SubResult[friendProfit][damageCount]
+								friendProfit[2] = friendProfit[2] + SubResult[friendProfit][cardsIncome]
+								friendProfit[3] = friendProfit[3] + SubResult[friendProfit][turnOver]
+								damageValue = damageValue + SubResult[damageValue]
 							else
-								enemyProfit[1] = enemyProfit[1] + SubResult[5]
-								enemyProfit[2] = enemyProfit[2] + SubResult[6]
-								enemyProfit[3] = enemyProfit[3] + SubResult[7]
-								damageValue[1] = damageValue[1] - SubResult[1]
+								enemyProfit[1] = enemyProfit[1] + SubResult[enemyProfit][damageCount]
+								enemyProfit[2] = enemyProfit[2] + SubResult[enemyProfit][cardsIncome]
+								enemyProfit[3] = enemyProfit[3] + SubResult[enemyProfit][turnOver]
+								damageValue = damageValue - SubResult[damageValue]
 							end
 						end
 					end
@@ -594,13 +647,13 @@ function SmartAI:DamageResult(target, source, nature, card, chained)
 		end
 	end
 	--产生最终结果
-	table.insert(result, damageValue[1])
-	table.insert(result, friendProfit[1])
-	table.insert(result, friendProfit[2])
-	table.insert(result, friendProfit[3])
-	table.insert(result, enemyProfit[1])
-	table.insert(result, enemyProfit[2])
-	table.insert(result, enemyProfit[3])
+	result[damageValue] = damageValue
+	result[friendProfit][damageCount] = friendProfit[1]
+	result[friendProfit][cardsIncome] = friendProfit[2]
+	result[friendProfit][turnOver] = friendProfit[3]
+	result[enemyProfit][damageCount] = enemyProfit[1]
+	result[enemyProfit][cardsIncome] = enemyProfit[2]
+	result[enemyProfit][turnOver] = enemyProfit[3]
 	return result
 end
 --[[
@@ -622,15 +675,15 @@ function SmartAI:tdr(result, source, target)
 	room:writeToConsole("--------------------")
 	room:writeToConsole("*******START********")
 	room:writeToConsole(string.format("damage from %s to %s:", from, to))
-	room:writeToConsole(string.format("	damageValue: %d", result[1]))
+	room:writeToConsole(string.format("	damageValue: %d", result[damageValue]))
 	room:writeToConsole("target:")
-	room:writeToConsole(string.format("	damageCount: %d", result[2]))
-	room:writeToConsole(string.format("	drawCards: %d", result[3]))
-	room:writeToConsole(string.format("	turnDelt: %d", result[4]))
+	room:writeToConsole(string.format("	damageCount: %d", result[friendProfit][damageCount]))
+	room:writeToConsole(string.format("	drawCards: %d", result[friendProfit][cardsIncome]))
+	room:writeToConsole(string.format("	turnDelt: %d", result[friendProfit][turnOver]))
 	room:writeToConsole("another:")
-	room:writeToConsole(string.format("	damageCount: %d", result[5]))
-	room:writeToConsole(string.format("	drawCards: %d", result[6]))
-	room:writeToConsole(string.format("	turnDelt: %d", result[7]))
+	room:writeToConsole(string.format("	damageCount: %d", result[enemyProfit][damageCount]))
+	room:writeToConsole(string.format("	drawCards: %d", result[enemyProfit][cardsIncome]))
+	room:writeToConsole(string.format("	turnDelt: %d", result[enemyProfit][turnOver]))
 	room:writeToConsole("********END*********")
 	room:writeToConsole("--------------------")
 end
@@ -697,55 +750,13 @@ function SmartAI:SortByAtomDamageCount(targets, source, nature, card, inverse)
 	return targets
 end
 --[[
-	函数名：qvt
-	功能：测试QVariant中的数据类型
-	参数表：data，QVariant类型，表示待测试的数据
-	返回值：一个字符串，表示数据类型
-]]--
-function SmartAI:qvt(data)
-	if not data then
-		return "nil"
-	elseif data:toDamage() and data:toDamage().to then
-			return "Damage"
-	elseif data:toCardEffect() and data:toCardEffect().card then
-		return "CardEffect"
-	elseif data:toSlashEffect() and data:toSlashEffect().slash then
-		return "SlashEffect"
-	elseif data:toCardUse() and data:toSlashEffect().card then
-		return "CardUse"
-	elseif data:toCard() and data:toCard():getSuit() then
-		return "Card"
-	elseif data:toPlayer() and data:toPlayer():getHp() then
-		return "Player"
-	elseif data:toDying() and data:toDying().who then
-		return "Dying"
-	elseif data:toDamageStar() and data:toDamageStar().to then
-		return "DamageStart"
-	elseif data:toRecover() and data:toRecover().recover then
-		return "Recover"
-	elseif data:toJudge() and data:toJudge().who then
-		return "Judge"
-	elseif data:toPindian() and data:toPindian().from then
-		return "Pindian"
-	elseif data:toPhaseChange() and data:toPhaseChange().to then
-		return "PhaseChange"
-	elseif data:toMoveOneTime() and data:toMoveOneTime().card_ids then
-		return "MoveOneTime"
-	elseif data:toResponsed() and data:toResponsed().m_who then
-		return "Responsed"
-	elseif data:toInt() then
-		return "Int"
-	elseif data:toString() then
-		return "String"
-	elseif data:toStringList() then
-		return "StringList"
-	elseif data:toBool() ~= nil then
-		return "Bool"
-	end
-	return "Unknown"
-end
---[[
 	主题：集火
+	函数列表：
+		SmartAI:getDamagePoint(player)
+		SmartAI:getRecoverPoint(player)
+		SmartAI:RecoverRate(player)
+		SmartAI:sortByRecoverRate(players, inverse)
+		SmartAI:getFocusTarget(players)
 ]]--
 sgs.ai_event_callback[sgs.Damaged].general = function(self, player, data)
 	local damage = data:toDamage()
@@ -805,10 +816,12 @@ function SmartAI:getFocusTarget(players)
 end
 --[[
 	主题：特定事件模拟
+	函数列表：
+		SmartAI:ImitateResult_DrawNCards(player, skills, overall)
 ]]--
 --[[
 	函数名：ImitateResult_DrawNCards
-	功能：模拟指定技能对摸牌数目的影响
+	功能：模拟指定技能对摸牌阶段摸牌数目的影响
 	参数表：
 		player：摸牌目标，ServerPlayer类型
 		skills：技能列表，表示加以考虑的技能，QList<Skill*>类型

@@ -64,8 +64,7 @@ public:
     inline virtual bool isModified() const{ return m_isModified; }
     inline virtual QString getClassName() const{
         Q_ASSERT(m_card != NULL);
-        Q_ASSERT(m_card->metaObject() != NULL);
-        return m_card->metaObject()->className();
+        return m_card->getClassName();
     }
 
     inline virtual const Card *getRealCard() const{
@@ -191,7 +190,7 @@ public:
 
     inline virtual bool isKindOf(const char *cardType) const{
         Q_ASSERT(m_card != NULL);
-        return m_card->inherits(cardType);
+        return m_card->isKindOf(cardType);
     }
 
 protected:

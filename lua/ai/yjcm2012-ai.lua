@@ -117,7 +117,7 @@ function sgs.ai_skill_invoke.zhenlie(self, data)
 				or self:getCardsNum("Jink") < jink_num
 				or (use.from:hasSkill("dahe") and self.player:hasFlag("dahe") and not hasHeart) then
 
-				if self.player:isChained() and not self:isGoodChainTarget(self.player) and use.card:isKindOf("NatureSlash") then return true end
+				if use.card:isKindOf("NatureSlash") and self.player:isChained() and not self:isGoodChainTarget(self.player, nil, nil, nil, use.card) then return true end
 				if use.from:hasSkill("nosqianxi") and use.from:distanceTo(self.player) == 1 then return true end
 				if self:isFriend(use.from) and self.role == "loyalist" and not use.from:hasSkill("jueqing") and use.from:isLord() and self.player:getHp() == 1 then return true end
 				if (not (self:hasSkills(sgs.masochism_skill) or (self.player:hasSkill("tianxiang") and getKnownCard(self.player, "heart") > 0)) or use.from:hasSkill("jueqing"))
@@ -155,7 +155,7 @@ function sgs.ai_skill_invoke.zhenlie(self, data)
 			if use.card:isKindOf("FireAttack") then
 				if not self:hasTrickEffective(use.card, self.player) then return false end
 				if not self:damageIsEffective(self.player, sgs,DamageStruct_Fire, use.from) then return false end
-				if (self.player:hasArmorEffect("vine") or self.player:getMark("@gale") > 0) and use.from:getHandcardNum() > 3
+				if (self.player:hasArmorEffect("Vine") or self.player:getMark("@gale") > 0) and use.from:getHandcardNum() > 3
 					and not (use.from:hasSkill("hongyan") and getKnownCard(self.player, "spade") > 0) then
 					return not self:doNotDiscard(use.from)
 				elseif self.player:isChained() and not self:isGoodChainTarget(self.player) then
@@ -413,7 +413,7 @@ sgs.ai_skill_cardask["@jiefan-discard"] = function(self, data)
 
 	if not self.player:getWeapon() then return "." end
 	local count = 0
-	local range_fix = sgs.weapon_range[self.player:getWeapon():getClassName()] - self.player:getAttackRange(false)
+	local range_fix = sgs.weapon_range[self.player:getWeapon():getClassName()] - 1
 
 	for _, p in sgs.qlist(self.room:getAllPlayers()) do
 		if self:isEnemy(p) and self.player:distanceTo(p, range_fix) > self.player:getAttackRange() then count = count + 1 end
@@ -445,10 +445,8 @@ sgs.ai_skill_use_func.AnxuCard = function(card,use,self)
 	local friends = {}
 	for _, friend in ipairs(self.friends_noself) do
 		if friend:hasSkill("manjuan") then
-			if friend:hasSkill("kongcheng") and friend:isKongcheng() then
-				table.insert(friends, friend)
-			end
-		elseif not (friend:hasSkill("kongcheng") and friend:isKongcheng()) then
+			if self:needKongcheng(friend, true) then table.insert(friends, friend) end
+		elseif not self:needKongcheng(friend, true) then
 			table.insert(friends, friend)
 		end
 	end
@@ -645,30 +643,21 @@ sgs.ai_card_intention.AnxuCard = 0
 sgs.ai_use_priority.AnxuCard = 9.6
 sgs.ai_chaofeng.bulianshi = 4
 
-sgs.ai_skill_invoke.zhuiyi = function(self, data)
-	local damage = data:toDamageStar()
-	local exclude = self.player
-	if damage and damage.from then exclude = damage.from end
-
-	for _, friend in ipairs(self.friends_noself) do
-		if friend:isAlive() and friend:objectName() ~= exclude:objectName() then
-			if not (friend:hasSkill("manjuan") and friend:getPhase() == sgs.Player_NotActive and friend:getLostHp() == 0) then return true end
-		end
-	end
-	return false
-end
-
 sgs.ai_skill_playerchosen.zhuiyi = function(self, targets)
-	local target
+	local first, second
 	targets = sgs.QList2Table(targets)
 	self:sort(targets,"defense")
 	for _, friend in ipairs(targets) do
 		if self:isFriend(friend) and friend:isAlive() and not (friend:hasSkill("manjuan") and friend:getPhase() == sgs.Player_NotActive and friend:getLostHp() == 0) then
 			if isLord(friend) and self:isWeak(friend) then return friend end
-			if not target then target = friend end
+			if not (friend:hasSkill("zhiji") and friend:getMark("zhiji") == 0 and not self:isWeak(friend) and friend:getPhase() == sgs.Player_NotActive) then
+				if sgs.evaluatePlayerRole(friend) == "renegade" then second = friend
+				elseif sgs.evaluatePlayerRole(friend) ~= "renegade" and not first then first = friend
+				end
+			end
 		end
 	end
-	if target then return target end
+	return first or second
 end
 
 
@@ -681,8 +670,10 @@ sgs.ai_skill_invoke.lihuo = function(self, data)
 	if not sgs.ai_skill_invoke.Fan(self, data) then return false end
 	local use = data:toCardUse()
 	for _, player in sgs.qlist(use.to) do
-		if self:isEnemy(player) and self:damageIsEffective(player, sgs.DamageStruct_Fire) and sgs.isGoodTarget(player, self.enemies, self) and
-			(player:hasArmorEffect("Vine") or player:isChained() and self:isGoodChainTarget(player)) then return true end
+		if self:isEnemy(player) and self:damageIsEffective(player, sgs.DamageStruct_Fire) and sgs.isGoodTarget(player, self.enemies, self) then
+			if player:isChained() then return self:isGoodChainTarget(player) end
+			if player:hasArmorEffect("Vine") then return true end
+		end
 	end
 	return false
 end
@@ -691,7 +682,7 @@ sgs.ai_view_as.lihuo = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card:isKindOf("Slash") and not (card:isKindOf("FireSlash") or card:isKindOf("ThunderSlash")) then
+	if sgs.Sanguosha:getCurrentCardUseReason() ~= sgs.CardUseStruct_CARD_USE_REASON_RESPONSE and card_place ~= sgs.Player_PlaceSpecial and card:objectName() == "slash" then
 		return ("fire_slash:lihuo[%s:%s]=%d"):format(suit, number, card_id)
 	end
 end

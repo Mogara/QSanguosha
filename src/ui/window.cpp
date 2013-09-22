@@ -28,7 +28,7 @@ Window::Window(const QString &title, const QSizeF &size, const QString &path)
 
     qreal xc = (w - 2 * pad) / (tw - 2 * pad), yc = (h - 2 * pad) / (th - 2 * pad);
 
-    for (int i = 0; i < tw; i++)
+    for (int i = 0; i < tw; i++) {
         for (int j = 0; j < th; j++) {
             int x = i, y = j;
 
@@ -45,6 +45,7 @@ Window::Window(const QString &title, const QSizeF &size, const QString &path)
             QRgb rgb = bgimg.pixel(x, y);
             outimg->setPixel(i, j, rgb);
         }
+    }
 
     scaleTransform = new QGraphicsScale(this);
     scaleTransform->setXScale(1.05);
@@ -74,7 +75,7 @@ void Window::addContent(const QString &content) {
     content_item->setFont(*font);
 }
 
-void Window::addCloseButton(const QString &label) {
+Button *Window::addCloseButton(const QString &label) {
     Button *ok_button = new Button(label, 0.6);
     QFont font = Config.TinyFont;
     font.setBold(true);
@@ -86,6 +87,7 @@ void Window::addCloseButton(const QString &label) {
     ok_button->setPos(x, y);
 
     connect(ok_button, SIGNAL(clicked()), this, SLOT(disappear()));
+    return ok_button;
 }
 
 void Window::shift(int pos_x, int pos_y) {

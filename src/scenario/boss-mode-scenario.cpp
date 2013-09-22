@@ -154,11 +154,11 @@ public:
                         if (p != player)
                             return false;
                     }
-                    player->setFlags("DajiOnlyTarget");
+                    player->addMark("DajiOnlyTarget");
                 }
-            } else if (player->hasFlag("DajiOnlyTarget") && triggerEvent == CardEffected) {
+            } else if (player->getMark("DajiOnlyTarget") > 0 && triggerEvent == CardEffected) {
                 CardEffectStruct effect = data.value<CardEffectStruct>();
-                if(!effect.card->isKindOf("TrickCard") && player->getPhase() == Player::NotActive){
+                if(effect.card->isKindOf("TrickCard") && player->getPhase() == Player::NotActive){
                     LogMessage log;
                     log.type = "#DajiAvoid";
                     log.from = effect.from;
@@ -172,8 +172,8 @@ public:
                 }
             } else if (triggerEvent == CardFinished) {
                 CardUseStruct use = data.value<CardUseStruct>();
-                if (use.to.length() > 0 && use.to.first()->hasFlag("DajiOnlyTarget"))
-                    use.to.first()->setFlags("-DajiOnlyTarget");
+                if (use.to.length() > 0 && use.to.first()->getMark("DajiOnlyTarget") > 0)
+                    use.to.first()->removeMark("DajiOnlyTarget");
             }
         }
 

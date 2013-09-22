@@ -459,7 +459,7 @@ sgs.ai_skill_cardask["@longyin"] = function(self, data)
 				end
 			end
 			if offhorse_avail and not self.player:isJilei(self.player:getOffensiveHorse()) then return "$" .. self.player:getOffensiveHorse():getEffectiveId() end
-			if isRed and slashc then return "$" .. slash:getEffectiveId() end
+			if isRed and slashc then return "$" .. slashc:getEffectiveId() end
 		end
 	end
 	local use = data:toCardUse()
@@ -875,7 +875,7 @@ sgs.ai_skill_invoke.juece = function(self, data)
 	local move = data:toMoveOneTime()
 	if not move.from then return false end
 	local from = findPlayerByObjectName(self.room, move.from:objectName())
-	return from and self:canAttack(from)
+	return from and ((self:isFriend(from) and self:getDamagedEffects(from, self.player)) or self:canAttack(from))
 end
 
 sgs.ai_skill_playerchosen.mieji = function(self, targets) -- extra target for Ex Nihilo
@@ -992,7 +992,7 @@ sgs.ai_skill_discard.fencheng = function(self, discard_num, min_num, optional, i
 				if self:isWeak() then table.insert(to_discard, def_id)
 				else return {} end
 			elseif self.player:getArmor() and not table.contains(to_discard, arm_id) then
-				if self:isWeak() then table.insert(to_discard, arm_id)
+				if self:isWeak() or (not liru:hasSkill("jueqing") and self.player:hasArmorEffect("vine")) then table.insert(to_discard, arm_id)
 				else return {} end
 			end
 			if #to_discard == discard_num + 1 then table.removeOne(to_discard, cards[1]:getEffectiveId()) end
@@ -1033,6 +1033,7 @@ sgs.ai_skill_playerchosen.qiuyuan = function(self, targets)
 			elseif not enemy and not self:canLiuli(p, self.friends_noself) then enemy = p end
 		end
 	end
+	if enemy then return enemy end
 	targetlist = sgs.reverse(targetlist)
 	local friend
 	for _, p in ipairs(targetlist) do

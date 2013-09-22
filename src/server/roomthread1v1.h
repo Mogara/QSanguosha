@@ -25,6 +25,7 @@ private:
 
     void askForTakeGeneral(ServerPlayer *player);
     void startArrange(QList<ServerPlayer *> players);
+    void askForFirstGeneral(QList<ServerPlayer *> players);
 };
 
 #endif

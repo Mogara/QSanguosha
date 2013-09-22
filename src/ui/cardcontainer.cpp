@@ -163,10 +163,14 @@ void CardContainer::startChoose() {
     }
 }
 
-void CardContainer::startGongxin() {
+void CardContainer::startGongxin(const QList<int> &enabled_ids) {
+    if (enabled_ids.isEmpty()) return;
     foreach (CardItem *item, items) {
-        if (item->getCard()->getSuit() == Card::Heart)
+        const Card *card = item->getCard();
+        if (card && enabled_ids.contains(card->getEffectiveId()))
             connect(item, SIGNAL(double_clicked()), this, SLOT(gongxinItem()));
+        else
+            item->setEnabled(false);
     }
 }
 

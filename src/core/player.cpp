@@ -7,7 +7,7 @@
 
 Player::Player(QObject *parent)
     : QObject(parent), owner(false), ready(false), general(NULL), general2(NULL),
-      m_gender(General::SexLess), hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
+      m_gender(General::Sexless), hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
       phase(NotActive),
       weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
       face_up(true), chained(false)
@@ -87,10 +87,6 @@ void Player::setGender(General::Gender gender) {
     m_gender = gender;
 }
 
-bool Player::isSexLess() const{
-    return m_gender == General::SexLess;
-}
-
 bool Player::isMale() const{
     return m_gender == General::Male;
 }
@@ -109,6 +105,13 @@ int Player::getSeat() const{
 
 void Player::setSeat(int seat) {
     this->seat = seat;
+}
+
+bool Player::isAdjacentTo(const Player *another) const{
+    int alive_length = 1 + getAliveSiblings().length();
+    return qAbs(seat - another->seat) == 1
+           || (seat == 1 && another->seat == alive_length)
+           || (seat == alive_length && another->seat == 1);
 }
 
 bool Player::isAlive() const{
@@ -346,10 +349,10 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
         return false;
 
     if (isLord())
-        return skills.contains(skill_name) || (include_lose && hasInnateSkill(skill_name));
+        return skills.contains(skill_name);
 
     if (hasSkill("weidi")) {
-        foreach (const Player *player, getSiblings()) {
+        foreach (const Player *player, getAliveSiblings()) {
             if (player->isLord())
                 return player->hasLordSkill(skill_name, true);
         }
@@ -502,8 +505,10 @@ const EquipCard *Player::getEquip(int index) const{
 }
 
 bool Player::hasWeapon(const QString &weapon_name) const{
-    if (getMark("Equips_Nullified_to_Yourself") > 0) return false;
-    return weapon && weapon->objectName() == weapon_name;
+    if (!weapon || getMark("Equips_Nullified_to_Yourself") > 0) return false;
+    if (weapon->objectName() == weapon_name) return true;
+    const Card *real_weapon = Sanguosha->getEngineCard(weapon->getEffectiveId());
+    return real_weapon->objectName() == weapon_name;
 }
 
 bool Player::hasArmorEffect(const QString &armor_name) const{
@@ -512,8 +517,12 @@ bool Player::hasArmorEffect(const QString &armor_name) const{
         return false;
     if (armor_name == "bazhen")
         return armor == NULL && alive && hasSkill("bazhen");
-    else
-        return armor && armor->objectName() == armor_name;
+    else {
+        if (!armor) return false;
+        if (armor->objectName() == armor_name) return true;
+        const Card *real_armor = Sanguosha->getEngineCard(armor->getEffectiveId());
+        return real_armor->objectName() == armor_name;
+    }
 
     return false;
 }
@@ -546,6 +555,9 @@ void Player::setFaceUp(bool face_up) {
 }
 
 int Player::getMaxCards() const{
+    int origin = Sanguosha->correctMaxCards(this, true);
+    if (origin == 0)
+        origin = qMax(hp, 0);
     int rule = 0, total = 0, extra = 0;
     if (Config.MaxHpScheme == 3 && general2) {
         total = general->getMaxHp() + general2->getMaxHp();
@@ -554,7 +566,7 @@ int Player::getMaxCards() const{
     }
     extra += Sanguosha->correctMaxCards(this);
 
-    return qMax((qMax(hp, 0) + rule + extra), 0);
+    return qMax(origin + rule + extra, 0);
 }
 
 QString Player::getKingdom() const{
@@ -615,9 +627,8 @@ void Player::addDelayedTrick(const Card *trick) {
 
 void Player::removeDelayedTrick(const Card *trick) {
     int index = judging_area.indexOf(trick->getId());
-    if (index >= 0) {
+    if (index >= 0)
         judging_area.removeAt(index);
-    }
 }
 
 bool Player::containsTrick(const QString &trick_name) const{
@@ -626,7 +637,6 @@ bool Player::containsTrick(const QString &trick_name) const{
         if (trick->objectName() == trick_name)
             return true;
     }
-
     return false;
 }
 
@@ -641,15 +651,15 @@ void Player::setChained(bool chained) {
     }
 }
 
-void Player::addMark(const QString &mark) {
+void Player::addMark(const QString &mark, int add_num) {
     int value = marks.value(mark, 0);
-    value++;
+    value += add_num;
     setMark(mark, value);
 }
 
-void Player::removeMark(const QString &mark) {
+void Player::removeMark(const QString &mark, int remove_num) {
     int value = marks.value(mark, 0);
-    value--;
+    value -= remove_num;
     value = qMax(0, value);
     setMark(mark, value);
 }
@@ -815,13 +825,15 @@ bool Player::isProhibited(const Player *to, const Card *card, const QList<const 
     return Sanguosha->isProhibited(this, to, card, others);
 }
 
-bool Player::canSlashWithoutCrossbow() const{
+bool Player::canSlashWithoutCrossbow(const Card *slash) const{
+    Slash *newslash = new Slash(Card::NoSuit, 0);
+    newslash->deleteLater();
+#define THIS_SLASH (slash == NULL ? newslash : slash)
     int slash_count = getSlashCount();
     int valid_slash_count = 1;
-    Slash *slash = new Slash(Card::NoSuit, 0);
-    slash->deleteLater();
-    valid_slash_count += Sanguosha->correctCardTarget(TargetModSkill::Residue, this, slash);
+    valid_slash_count += Sanguosha->correctCardTarget(TargetModSkill::Residue, this, THIS_SLASH);
     return slash_count < valid_slash_count;
+#undef THIS_SLASH
 }
 
 void Player::setCardLimitation(const QString &limit_list, const QString &pattern, bool single_turn) {
@@ -940,7 +952,14 @@ QList<const Player *> Player::getSiblings() const{
         siblings = parent()->findChildren<const Player *>();
         siblings.removeOne(this);
     }
-
     return siblings;
 }
 
+QList<const Player *> Player::getAliveSiblings() const{
+    QList<const Player *> siblings = getSiblings();
+    foreach (const Player *p, siblings) {
+        if (!p->isAlive())
+            siblings.removeOne(p);
+    }
+    return siblings;
+}

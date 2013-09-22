@@ -160,6 +160,7 @@ void UdpDetectorDialog::startDetection() {
 void UdpDetectorDialog::stopDetection() {
     detect_button->setEnabled(true);
     detector->stop();
+    delete detector;
     detector = NULL;
 }
 

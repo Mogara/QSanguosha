@@ -607,8 +607,7 @@ sgs.ai_card_intention.ShichouCard = function(self, card, from, tos)
 	end
 end
 
-
-function SmartAI:useCardYanxiaoCard(card, use)
+sgs.ai_skill_use_func.YanxiaoCard = function(card, use, self)
 	local players = self.room:getOtherPlayers(self.player)
 	local tricks
 	self:sort(self.friends_noself, "defense")
@@ -1243,13 +1242,19 @@ sgs.ai_skill_invoke.hantong_acquire = function(self, data)
 		for _, friend in ipairs(self.friends_noself) do
 			if friend:getKingdom() == "wei" and getCardsNum("Jink", friend) > 0 then can_invoke = true end
 		end
-		if can_invoke then return sgs.ai_skill_invoke.hujia(self, data) end
+		if can_invoke then
+			local origin_data = self.player:getTag("HantongOriginData")
+			return sgs.ai_skill_invoke.hujia(self, origin_data)
+		end
 	elseif skill == "jijiang" and not self.player:hasSkill("jijiang") then
 		local can_invoke = false
 		for _, friend in ipairs(self.friends_noself) do
 			if friend:getKingdom() == "shu" and getCardsNum("Slash", friend) > 0 then can_invoke = true end
 		end
-		if can_invoke then return sgs.ai_skill_invoke.jijiang(self, data) end
+		if can_invoke then
+			local origin_data = self.player:getTag("HantongOriginData")
+			return sgs.ai_skill_invoke.jijiang(self, origin_data)
+		end
 	elseif skill == "jiuyuan" and not self.player:hasSkill("jiuyuan") then
 		return true
 	elseif skill == "xueyi" and not self.player:hasSkill("xueyi") then

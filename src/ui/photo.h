@@ -7,6 +7,7 @@
 #include "protocol.h"
 
 #include "GenericCardContainerUI.h"
+#include "sprite.h"
 #include <QGraphicsObject>
 #include <QPixmap>
 #include <QComboBox>
@@ -67,7 +68,8 @@ protected:
     bool _m_isReadyIconVisible;
     FrameType _m_frameType;
     QGraphicsPixmapItem *_m_mainFrame;    
-    QGraphicsPixmapItem *emotion_item, *_m_skillNameItem;
+    Sprite *emotion_item;
+    QGraphicsPixmapItem *_m_skillNameItem;
     QGraphicsPixmapItem *_m_focusFrame;
     QGraphicsPixmapItem *_m_onlineStatusItem;
     QGraphicsRectItem *_m_duanchangMask;

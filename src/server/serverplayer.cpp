@@ -529,7 +529,6 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     RoomThread *thread = room->getThread();
     PindianStar pindian_star = &pindian_struct;
     QVariant data = QVariant::fromValue(pindian_star);
-    Q_ASSERT(thread != NULL);
     thread->trigger(PindianVerifying, room, this, data);
 
     PindianStar new_star = data.value<PindianStar>();
@@ -590,14 +589,11 @@ void ServerPlayer::turnOver() {
     log.arg = faceUp() ? "face_up" : "face_down";
     room->sendLog(log);
 
-    Q_ASSERT(room->getThread() != NULL);
     room->getThread()->trigger(TurnedOver, room, this);
 }
 
 bool ServerPlayer::changePhase(Player::Phase from, Player::Phase to) {
     RoomThread *thread = room->getThread();
-    Q_ASSERT(room->getThread() != NULL);
-
     setPhase(PhaseNone);
 
     PhaseChangeStruct phase_change;
@@ -665,7 +661,9 @@ void ServerPlayer::play(QList<Player::Phase> set_phases) {
         setPhase(phases[i]);
         room->broadcastProperty(this, "phase");
         
-        if ((skip || _m_phases_state[i].finished) && phases[i] != NotActive)
+        if ((skip || _m_phases_state[i].finished)
+            && !thread->trigger(EventPhaseSkipping, room, this, data)
+            && phases[i] != NotActive)
             continue;
 
         if (!thread->trigger(EventPhaseStart, room, this)) {
@@ -1058,6 +1056,7 @@ void ServerPlayer::exchangeFreelyFromPrivatePile(const QString &skill_name, cons
     delete dummy;
 }
 
+#include "gamerule.h"
 void ServerPlayer::gainAnExtraTurn() {
     ServerPlayer *current = room->getCurrent();
     try {
@@ -1066,8 +1065,19 @@ void ServerPlayer::gainAnExtraTurn() {
         room->setCurrent(current);
     }
     catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken)
+        if (triggerEvent == TurnBroken) {
+            if (getPhase() != Player::NotActive) {
+                const GameRule *game_rule = NULL;
+                if (room->getMode() == "04_1v3")
+                    game_rule = qobject_cast<const GameRule *>(Sanguosha->getTriggerSkill("hulaopass_mode"));
+                else
+                    game_rule = qobject_cast<const GameRule *>(Sanguosha->getTriggerSkill("game_rule"));
+                if (game_rule)
+                    game_rule->trigger(EventPhaseEnd, room, this);
+                changePhase(getPhase(), Player::NotActive);
+            }
             room->setCurrent(current);
+        }
         throw triggerEvent;
     }
 }

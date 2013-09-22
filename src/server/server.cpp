@@ -216,17 +216,17 @@ QWidget *ServerDialog::createAdvancedTab() {
     sp_convert_checkbox->setChecked(Config.value("EnableSPConvert", true).toBool());
 
     maxchoice_spinbox = new QSpinBox;
-    maxchoice_spinbox->setRange(3, 10);
+    maxchoice_spinbox->setRange(3, 21);
     maxchoice_spinbox->setValue(Config.value("MaxChoice", 5).toInt());
 
     lord_maxchoice_label = new QLabel(tr("Upperlimit for lord"));
     lord_maxchoice_label->setToolTip(tr("-1 means that all lords are available"));
     lord_maxchoice_spinbox = new QSpinBox;
-    lord_maxchoice_spinbox->setRange(-1, 10);
+    lord_maxchoice_spinbox->setRange(-1, 15);
     lord_maxchoice_spinbox->setValue(Config.value("LordMaxChoice", -1).toInt());
 
     nonlord_maxchoice_spinbox = new QSpinBox;
-    nonlord_maxchoice_spinbox->setRange(0, 10);
+    nonlord_maxchoice_spinbox->setRange(0, 15);
     nonlord_maxchoice_spinbox->setValue(Config.value("NonLordMaxChoice", 2).toInt());
 
     forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
@@ -278,7 +278,7 @@ QWidget *ServerDialog::createAdvancedTab() {
 
     hegemony_maxchoice_label = new QLabel(tr("Upperlimit for hegemony"));
     hegemony_maxchoice_spinbox = new QSpinBox;
-    hegemony_maxchoice_spinbox->setRange(5, 10);
+    hegemony_maxchoice_spinbox->setRange(5, 21);
     hegemony_maxchoice_spinbox->setValue(Config.value("HegemonyMaxChoice", 7).toInt());
 
     hegemony_maxshown_label = new QLabel(tr("Max shown num for hegemony"));
@@ -624,12 +624,15 @@ QGroupBox *ServerDialog::create1v1Box() {
     QComboBox *officialComboBox = new QComboBox;
     officialComboBox->addItem(tr("Classical"), "Classical");
     officialComboBox->addItem("2013", "2013");
+    officialComboBox->addItem("OL", "OL");
 
     official_1v1_ComboBox = officialComboBox;
 
     QString rule = Config.value("1v1/Rule", "Classical").toString();
     if (rule == "2013")
         officialComboBox->setCurrentIndex(1);
+    else if (rule == "OL")
+        officialComboBox->setCurrentIndex(2);
 
     kof_using_extension_checkbox = new QCheckBox(tr("General extensions"));
     kof_using_extension_checkbox->setChecked(Config.value("1v1/UsingExtension", false).toBool());
@@ -667,7 +670,7 @@ QGroupBox *ServerDialog::create3v3Box() {
 
     official_3v3_ComboBox = officialComboBox;
 
-    QString rule = Config.value("3v3/OfficialRule", "2012").toString();
+    QString rule = Config.value("3v3/OfficialRule", "2013").toString();
     if (rule == "2012")
         officialComboBox->setCurrentIndex(1);
     else if (rule == "2013")
@@ -940,7 +943,7 @@ void Select3v3GeneralDialog::fillTabWidget() {
 void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pack) {
     QList<const General *> generals = pack->findChildren<const General *>();
     foreach (const General *general, generals) {
-        if (general->isHidden()) continue;
+        if (Sanguosha->isGeneralHidden(general->objectName())) continue;
 
         QListWidgetItem *item = new QListWidgetItem(list);
         item->setData(Qt::UserRole, general->objectName());

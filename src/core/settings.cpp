@@ -62,13 +62,14 @@ void Settings::init() {
 
     QStringList banpackagelist = value("BanPackages").toStringList();
     if (banpackagelist.isEmpty()) {
-        banpackagelist << "nostalgia" << "nostal_standard" << "yitian" << "wisdom"
-                       << "disaster" << "god" << "YJCM" /*<< "yitian_cards"*/ << "test"
-                       << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
-                       << "New3v3Card" /*<< "joy"*/ << "joy_equip" << "hegemony_card"
-                       << "hegemony" << "ling" << "BGMDIY" << "New3v3_2013Card"
-                       << "nostal_yjcm" << "nostal_yjcm2012" << "YJCM2013" << "New1v1Card" << "assassins"
-                       << "hegemony_sp" << "Special1v1" << "Special1v1OL" << "Special3v3_2013";
+        banpackagelist << "nostalgia"
+                       << "nostal_standard" << "nostal_wind"
+                       << "nostal_yjcm" << "nostal_yjcm2012"
+                       << "test"
+                       << "sp_cards" << "ling" << "Special1v1OL"
+                       << "New3v3Card" << "New3v3_2013Card" << "New1v1Card"
+                       << "yitian" << "wisdom" << "BGM" << "BGMDIY"
+                       << "hegemony" << "h_formation";
     }
     setValue("BanPackages", banpackagelist);
 
@@ -207,4 +208,7 @@ void Settings::init() {
 
         setValue("ForbidPackages", forbid_packages);
     }
+
+    Config.ExtraHiddenGenerals = GetConfigFromLuaState(lua, "extra_hidden_generals").toStringList();
+    Config.RemovedHiddenGenerals = GetConfigFromLuaState(lua, "removed_hidden_generals").toStringList();
 }

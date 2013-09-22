@@ -11,7 +11,7 @@
 #include "pixmapanimation.h"
 #include "record-analysis.h"
 
-#include <cmath>
+#include <qmath.h>
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>
@@ -19,14 +19,12 @@
 #include <QVariant>
 #include <QMessageBox>
 #include <QTime>
-#include <QProcess>
 #include <QCheckBox>
 #include <QFileDialog>
 #include <QDesktopServices>
-#include <QSystemTrayIcon>
-#include <QInputDialog>
 #include <QLabel>
-#include <QStatusBar>
+#include <QProcess>
+#include <QSystemTrayIcon>
 
 class FitView: public QGraphicsView {
 public:
@@ -79,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+    connect(ui->actionAcknowledgement_2, SIGNAL(triggered()), this, SLOT(on_actionAcknowledgement_triggered()));
 
     StartScene *start_scene = new StartScene;
 
@@ -352,7 +351,7 @@ void MainWindow::startGameInAnotherInstance() {
 }
 
 void MainWindow::on_actionGeneral_Overview_triggered() {
-    GeneralOverview *overview = new GeneralOverview(this);
+    GeneralOverview *overview = GeneralOverview::getInstance(this);
     overview->fillGenerals(Sanguosha->findChildren<const General *>());
     overview->show();
 }
@@ -598,9 +597,16 @@ void MainWindow::on_actionBroadcast_triggered() {
 }
 
 void MainWindow::on_actionAcknowledgement_triggered() {
-    AcknowledgementScene* ack = new AcknowledgementScene;
-    connect(ack, SIGNAL(go_back()), this, SLOT(gotoStartScene()));
-    if (scene && !scene->inherits("RoomScene")) gotoScene(ack);
+    Window *window = new Window(QString(), QSize(1000, 677), "image/system/acknowledgement.png");
+    scene->addItem(window);
+
+    Button *button = window->addCloseButton(tr("OK"));
+    button->moveBy(-85, -35);
+    window->setZValue(32766);
+    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
+                  scene && scene->inherits("RoomScene") ? scene->height() : 0);
+
+    window->appear();
 }
 
 void MainWindow::on_actionPC_Console_Start_triggered() {
@@ -625,20 +631,6 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
 #include <QToolButton>
 #include <QCommandLinkButton>
 #include <QFormLayout>
-
-AcknowledgementScene::AcknowledgementScene(QObject *parent)
-    : QGraphicsScene(parent)
-{
-    view = new QDeclarativeView;
-    view->setSource(QUrl::fromLocalFile("acknowledgement/main.qml"));
-    addWidget(view);
-    view->move(-width() / 2, -height() / 2);
-    view->setStyleSheet(QString("background: transparent"));
-
-    QObject *item = view->rootObject();
-    connect(item, SIGNAL(go_back()), this, SIGNAL(go_back()));
-}
-
 #include "recorder.h"
 
 void MainWindow::on_actionReplay_file_convert_triggered() {
@@ -690,7 +682,7 @@ void MainWindow::on_actionRecord_analysis_triggered() {
 
     RecAnalysis *record = new RecAnalysis(filename);
     QMap<QString, PlayerRecordStruct *> record_map = record->getRecordMap();
-    table->setColumnCount(10);
+    table->setColumnCount(11);
     table->setRowCount(record_map.keys().length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 

@@ -69,6 +69,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_ENABLE_SURRENDER] = &Client::enableSurrender;
     m_callbacks[S_COMMAND_EXCHANGE_KNOWN_CARDS] = &Client::exchangeKnownCards;
     m_callbacks[S_COMMAND_SET_KNOWN_CARDS] = &Client::setKnownCards;
+    m_callbacks[S_COMMAND_VIEW_GENERALS] = &Client::viewGenerals;
 
     m_callbacks[S_COMMAND_UPDATE_STATE_ITEM] = &Client::updateStateItem;
     m_callbacks[S_COMMAND_AVAILABLE_CARDS] = &Client::setAvailableCards;
@@ -695,7 +696,14 @@ void Client::setKnownCards(const Json::Value &set_str) {
     QList<int> ids;
     tryParse(set_str[1], ids);
     player->setCards(ids);
+}
 
+void Client::viewGenerals(const Json::Value &str) {
+    if (str.size() != 2 || !str[0].isString()) return;
+    QString reason = toQString(str[0]);
+    QStringList names;
+    if (!tryParse(str[1], names)) return;
+    emit generals_viewed(reason, names);
 }
 
 Replayer *Client::getReplayer() const{
@@ -822,6 +830,12 @@ void Client::askForSkillInvoke(const Json::Value &arg) {
     if (data.isEmpty()) {
         text = tr("Do you want to invoke skill [%1] ?").arg(Sanguosha->translate(skill_name));
         prompt_doc->setHtml(text);
+    } else if (data.startsWith("playerdata:")) {
+        QString name = getPlayerName(data.split(":").last());
+        text = tr("Do you want to invoke skill [%1] to %2 ?").arg(Sanguosha->translate(skill_name)).arg(name);
+        prompt_doc->setHtml(text);
+    } else if (skill_name.startsWith("cv_")) {
+        setPromptList(QStringList() << "@sp_convert" << QString() << QString() << data);
     } else {
         QStringList texts = data.split(":");
         text = QString("%1:%2").arg(skill_name).arg(texts.first());
@@ -1200,7 +1214,6 @@ void Client::askForGeneral(const Json::Value &arg) {
     setStatus(ExecDialog);
 }
 
-
 void Client::askForSuit(const Json::Value &) {
     QStringList suits;
     suits << "spade" << "club" << "heart" << "diamond";
@@ -1224,7 +1237,7 @@ void Client::askForChoice(const Json::Value &ask_str) {
 }
 
 void Client::askForCardChosen(const Json::Value &ask_str) {
-    if (!ask_str.isArray() || ask_str.size() != 5 || !isStringArray(ask_str, 0, 2)
+    if (!ask_str.isArray() || ask_str.size() != 6 || !isStringArray(ask_str, 0, 2)
         || !ask_str[3].isBool() || !ask_str[4].isInt()) return;
     QString player_name = toQString(ask_str[0]);
     QString flags = toQString(ask_str[1]);
@@ -1233,7 +1246,9 @@ void Client::askForCardChosen(const Json::Value &ask_str) {
     Card::HandlingMethod method = (Card::HandlingMethod)ask_str[4].asInt();
     ClientPlayer *player = getPlayer(player_name);
     if (player == NULL) return;
-    emit cards_got(player, flags, reason, handcard_visible, method);
+    QList<int> disabled_ids;
+    tryParse(ask_str[5], disabled_ids);
+    emit cards_got(player, flags, reason, handcard_visible, method, disabled_ids);
     setStatus(ExecDialog);
 }
 
@@ -1459,21 +1474,23 @@ void Client::showAllCards(const Json::Value &arg) {
 
     if (who) who->setCards(card_ids);
 
-    emit gongxin(card_ids, false);
+    emit gongxin(card_ids, false, QList<int>());
 }
 
 void Client::askForGongxin(const Json::Value &arg) {
-    if (!arg.isArray() || arg.size() != 3
+    if (!arg.isArray() || arg.size() != 4
         || !arg[0].isString() || ! arg[1].isBool())
         return;
     ClientPlayer *who = getPlayer(toQString(arg[0]));
     bool enable_heart = arg[1].asBool();   
     QList<int> card_ids;
-    if (!tryParse(arg[2], card_ids)) return;    
+    if (!tryParse(arg[2], card_ids)) return;
+    QList<int> enabled_ids;
+    if (!tryParse(arg[3], enabled_ids)) return;
 
     who->setCards(card_ids);
 
-    emit gongxin(card_ids, enable_heart);
+    emit gongxin(card_ids, enable_heart, enabled_ids);
     setStatus(AskForGongxin);
 }
 
@@ -1591,7 +1608,11 @@ void Client::log(const Json::Value &log_str) {
         tryParse(log_str, log);
         if (log.first() == "#BasaraReveal")
             Sanguosha->playSystemAudioEffect("choose-item");
-        else if (log.first() == "#UseLuckCard") {
+        else if (log.first() == "#Zombify") {
+            ClientPlayer *from = getPlayer(log.at(1));
+            if (from)
+                Sanguosha->playSystemAudioEffect(QString("zombify-%1").arg(from->isMale() ? "male" : "female"));
+        } else if (log.first() == "#UseLuckCard") {
             ClientPlayer *from = getPlayer(log.at(1));
             if (from && from != Self)
                 from->setHandcardNum(0);
@@ -1693,11 +1714,12 @@ void Client::askForGeneral3v3(const Json::Value &) {
 }
 
 void Client::takeGeneral(const Json::Value &take_str) {
-    if (!take_str.isArray() || take_str.size() != 2 || !take_str[0].isString() || !take_str[1].isString()) return;
+    if (!isStringArray(take_str, 0, 2)) return;
     QString who = toQString(take_str[0]);
     QString name = toQString(take_str[1]);
+    QString rule = toQString(take_str[2]);
 
-    emit general_taken(who, name);
+    emit general_taken(who, name, rule);
 }
 
 void Client::startArrange(const Json::Value &to_arrange) {

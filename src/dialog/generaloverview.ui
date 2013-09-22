@@ -245,10 +245,24 @@
              <x>0</x>
              <y>0</y>
              <width>241</width>
-             <height>477</height>
+             <height>419</height>
             </rect>
            </property>
           </widget>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="searchButton">
+          <property name="text">
+           <string>Search...</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="returnButton">
+          <property name="text">
+           <string>Return...</string>
+          </property>
          </widget>
         </item>
        </layout>

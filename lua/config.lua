@@ -3,6 +3,14 @@
 
 config = {
 	kingdoms = { "wei", "shu", "wu", "qun", "god" },
+	kingdom_colors = {
+		wei = "#547998",
+		shu = "#D0796C",
+		wu = "#4DB873",
+		qun = "#8A807A",
+		god = "#96943D",
+	},
+
 	package_names = {
 		"StandardCard",
 		"StandardExCard",
@@ -22,21 +30,26 @@ config = {
 		"YJCM",
 		"YJCM2012",
 		"YJCM2013",
-		"Assassins", 
+		"Assassins",
 		"Special3v3",
-		"Special3v3_2013",
 		"Special1v1",
 		"Special1v1OL",
 		"SP",
+		"OL",
+		"TaiwanSP",
+		"WangZheZhiZhan",
 		"BGM",
 		"BGMDIY",
+		--"Wandianba",
 		"Hegemony",
+		"HFormation",
 		"HegemonySP",
 		"Ling",
 		"NostalStandard",
+		"NostalWind",
 		"NostalYJCM",
 		"NostalYJCM2012",
-		"NostalGeneral",
+		--"NostalGeneral",
 		"Yitian",
 		"Wisdom",
 		"Test"
@@ -51,14 +64,9 @@ config = {
 		"standard",
 		"wind",
 		"fire",
-		"nostal_standard"
+		"nostal_standard",
+		"nostal_wind",
 	},
-
-	color_wei = "#547998",
-	color_shu = "#D0796C",
-	color_wu = "#4DB873",
-	color_qun = "#8A807A",
-	color_god = "#96943D",
 
 	easy_text = {
 		"太慢了，做两个俯卧撑吧！",
@@ -90,7 +98,7 @@ config = {
 		"kof_menghuo",
 		"kof_zhurong",
 		"kof_sunshangxiang",
-		"kof_nos_diaochan"
+		"kof_nos_diaochan",
 	},
 
 	kof_ban = {
@@ -105,12 +113,16 @@ config = {
 	xmode_ban = {
 		"huatuo",
 		"zhangjiao",
+		"caoren",
+		"zhoutai",
 		"yuji",
 		"liubei",
 		"diaochan",
 		"huangyueying",
 		"st_yuanshu",
-		"st_huaxiong"
+		"st_huaxiong",
+		"nos_zhangjiao",
+		"nos_yuji",
 	},
 
 	basara_ban = {
@@ -127,7 +139,7 @@ config = {
 	},
 
 	pairs_ban = {
-		"huatuo", "zhoutai", "zuoci", "bgm_pangtong", "shencaocao", "liaohua",
+		"huatuo", "zhoutai", "zuoci", "bgm_pangtong", "shencaocao", "nos_zhoutai",
 		"+luboyan",
 		"simayi+zhenji", "simayi+dengai",
 		"caoren+shenlvbu", "caoren+caozhi", "caoren+bgm_diaochan", "caoren+bgm_caoren", "caoren+neo_caoren",
@@ -181,16 +193,45 @@ config = {
 	couple_lord = "caocao",
 	couple_couples = {
 		"caopi|caozhi+zhenji",
-		"simayi+zhangchunhua",
-		"liubei+ganfuren|sp_sunshangxiang",
-		"zhugeliang|wolong+huangyueying",
-		"menghuo+zhurong",
-		"zhouyu+xiaoqiao",
-		"lvbu|dongzhuo+diaochan",
-		"sunjian+wuguotai",
-		"sunce+daqiao",
-		"sunquan+bulianshi",
+		"simayi|shensimayi+zhangchunhua",
 		"diy_simazhao+diy_wangyuanji",
-		"liuxie|diy_liuxie+fuhuanghou|as_fuhuanghou"
+		"liubei|bgm_liubei+ganfuren|sp_sunshangxiang",
+		"zhangfei|bgm_zhangfei+xiahoushi|xiahoujuan",
+		"zhugeliang|wolong|shenzhugeliang+huangyueying",
+		"menghuo+zhurong",
+		"zhouyu|shenzhouyu+xiaoqiao",
+		"lvbu|shenlvbu|dongzhuo+diaochan|bgm_diaochan",
+		"sunjian+wuguotai",
+		"sunce+daqiao|bgm_daqiao",
+		"sunquan+bulianshi",
+		"liuxie|diy_liuxie+fuhuanghou|as_fuhuanghou",
+		"luxun|heg_luxun+sunru"
+	},
+
+	convert_pairs = {
+		"caiwenji->sp_caiwenji",
+		"caopi->heg_caopi",
+		"daqiao->wz_daqiao|tw_daqiao",
+		"diaochan->sp_diaochan|heg_diaochan|tw_diaochan",
+		"ganning->tw_ganning",
+		"guojia->tw_guojia",
+		"huanggai->tw_huanggai",
+		"jiaxu->sp_jiaxu",
+		"luxun->tw_luxun",
+		"lvbu->heg_lvbu|tw_lvbu",
+		"machao->sp_machao|tw_machao",
+		"nos_huangyueying->heg_huangyueying|tw_huangyueying",
+		"pangde->sp_pangde",
+		"shenlvbu->sp_shenlvbu",
+		"sunshangxiang->sp_sunshangxiang",
+		"xiaoqiao->wz_xiaoqiao|heg_xiaoqiao",
+		"yuanshu->tw_yuanshu",
+		"yuejin->sp_yuejin",
+		"zhangliao->tw_zhangliao",
+		"zhaoyun->tw_zhaoyun",
+		"zhenji->sp_zhenji|heg_zhenji|tw_zhenji",
+		"zhouyu->heg_zhouyu|sp_heg_zhouyu",
+		"zhugeke->diy_zhugeke",
+		"zhugeliang->heg_zhugeliang|tw_zhugeliang"
 	}
 }

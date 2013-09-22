@@ -16,14 +16,11 @@ void LuoyiCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const
 class NeoLuoyi: public OneCardViewAsSkill {
 public:
     NeoLuoyi(): OneCardViewAsSkill("neoluoyi") {
+        filter_pattern = "EquipCard!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->hasUsed("LuoyiCard") && player->canDiscard(player, "he");
-    }
-
-    virtual bool viewFilter(const Card *card) const{
-        return card->isKindOf("EquipCard") && !Self->isJilei(card);
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -96,14 +93,11 @@ void NeoFanjianCard::onEffect(const CardEffectStruct &effect) const{
 class NeoFanjian: public OneCardViewAsSkill {
 public:
     NeoFanjian(): OneCardViewAsSkill("neofanjian") {
+        filter_pattern = ".|.|.|hand";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->isKongcheng() && !player->hasUsed("NeoFanjianCard");
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !to_select->isEquipped();
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -125,7 +119,7 @@ public:
         if (damage.card && damage.card->isKindOf("Slash") && damage.card->getSuit() == Card::Heart
             && damage.by_user && !damage.chain && !damage.transfer
             && player->askForSkillInvoke(objectName(), data)) {
-            room->broadcastSkillInvoke("yishi", 1);
+            room->broadcastSkillInvoke(objectName(), 1);
             LogMessage log;
             log.type = "#Yishi";
             log.from = player;
@@ -135,11 +129,11 @@ public:
             if (!damage.to->isAllNude()) {
                 int card_id = room->askForCardChosen(player, damage.to, "hej", objectName());
                 if(room->getCardPlace(card_id) == Player::PlaceDelayedTrick)
-                    room->broadcastSkillInvoke("yishi", 2);
+                    room->broadcastSkillInvoke(objectName(), 2);
                 else if(room->getCardPlace(card_id) == Player::PlaceEquip)
-                    room->broadcastSkillInvoke("yishi", 3);
+                    room->broadcastSkillInvoke(objectName(), 3);
                 else
-                    room->broadcastSkillInvoke("yishi", 4);
+                    room->broadcastSkillInvoke(objectName(), 4);
                 CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, player->objectName());
                 room->obtainCard(player, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
             }

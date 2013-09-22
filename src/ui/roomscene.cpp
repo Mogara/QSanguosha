@@ -46,10 +46,6 @@
 #include <qmath.h>
 #include "uiUtils.h"
 
-#ifdef Q_OS_WIN32
-#include <QAxObject>
-#endif
-
 using namespace QSanProtocol;
 
 RoomScene *RoomSceneInstance;
@@ -133,9 +129,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(player_added(ClientPlayer *)), SLOT(addPlayer(ClientPlayer *)));
     connect(ClientInstance, SIGNAL(player_removed(QString)), SLOT(removePlayer(QString)));
     connect(ClientInstance, SIGNAL(generals_got(QStringList)), this, SLOT(chooseGeneral(QStringList)));
+    connect(ClientInstance, SIGNAL(generals_viewed(QString, QStringList)), this, SLOT(viewGenerals(QString, QStringList)));
     connect(ClientInstance, SIGNAL(suits_got(QStringList)), this, SLOT(chooseSuit(QStringList)));
     connect(ClientInstance, SIGNAL(options_got(QString, QStringList)), this, SLOT(chooseOption(QString, QStringList)));
-    connect(ClientInstance, SIGNAL(cards_got(const ClientPlayer *, QString, QString, bool, Card::HandlingMethod)), this, SLOT(chooseCard(const ClientPlayer *, QString, QString, bool, Card::HandlingMethod)));
+    connect(ClientInstance, SIGNAL(cards_got(const ClientPlayer *, QString, QString, bool, Card::HandlingMethod, QList<int>)),
+            this, SLOT(chooseCard(const ClientPlayer *, QString, QString, bool, Card::HandlingMethod, QList<int>)));
     connect(ClientInstance, SIGNAL(roles_got(QString, QStringList)), this, SLOT(chooseRole(QString, QStringList)));
     connect(ClientInstance, SIGNAL(directions_got()), this, SLOT(chooseDirection()));
     connect(ClientInstance, SIGNAL(orders_got(QSanProtocol::Game3v3ChooseOrderCommand)), this, SLOT(chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand)));
@@ -149,7 +147,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(player_killed(QString)), this, SLOT(killPlayer(QString)));
     connect(ClientInstance, SIGNAL(player_revived(QString)), this, SLOT(revivePlayer(QString)));
     connect(ClientInstance, SIGNAL(card_shown(QString, int)), this, SLOT(showCard(QString, int)));
-    connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool)), this, SLOT(doGongxin(QList<int>, bool)));
+    connect(ClientInstance, SIGNAL(gongxin(QList<int>, bool, QList<int>)), this, SLOT(doGongxin(QList<int>, bool, QList<int>)));
     connect(ClientInstance, SIGNAL(focus_moved(QStringList, QSanProtocol::Countdown)), this, SLOT(moveFocus(QStringList, QSanProtocol::Countdown)));
     connect(ClientInstance, SIGNAL(emotion_set(QString, QString)), this, SLOT(setEmotion(QString, QString)));
     connect(ClientInstance, SIGNAL(skill_invoked(QString, QString)), this, SLOT(showSkillInvocation(QString, QString)));
@@ -202,7 +200,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         if (ServerInfo.GameMode != "06_XMode") {
             connect(ClientInstance, SIGNAL(generals_filled(QStringList)), this, SLOT(fillGenerals(QStringList)));
             connect(ClientInstance, SIGNAL(general_asked()), this, SLOT(startGeneralSelection()));
-            connect(ClientInstance, SIGNAL(general_taken(QString, QString)), this, SLOT(takeGeneral(QString, QString)));
+            connect(ClientInstance, SIGNAL(general_taken(QString, QString, QString)), this, SLOT(takeGeneral(QString, QString, QString)));
             connect(ClientInstance, SIGNAL(general_recovered(int, QString)), this, SLOT(recoverGeneral(int, QString)));
         }
         connect(ClientInstance, SIGNAL(arrange_started(QString)), this, SLOT(startArrange(QString)));
@@ -1552,8 +1550,8 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
 }
 
 void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, const QString &reason,
-                           bool handcard_visible, Card::HandlingMethod method) {
-    PlayerCardDialog *dialog = new PlayerCardDialog(player, flags, handcard_visible, method);
+                           bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids) {
+    PlayerCardDialog *dialog = new PlayerCardDialog(player, flags, handcard_visible, method, disabled_ids);
     dialog->setWindowTitle(Sanguosha->translate(reason));
     connect(dialog, SIGNAL(card_id_chosen(int)), ClientInstance, SLOT(onPlayerChooseCard(int)));
     connect(dialog, SIGNAL(rejected()), ClientInstance, SLOT(onPlayerChooseCard()));
@@ -2542,7 +2540,7 @@ void RoomScene::onSkillActivated() {
         const Card *card = dashboard->pendingCard();
         if (card && card->targetFixed() && card->isAvailable(Self)) {
             useSelectedCard();
-        } else if (skill->inherits("OneCardViewAsSkill") && Config.EnableIntellectualSelection)
+        } else if (skill->inherits("OneCardViewAsSkill") && !skill->getDialog() && Config.EnableIntellectualSelection)
             dashboard->selectOnlyCard(ClientInstance->getStatus() == Client::Playing);
     }
 }
@@ -3028,8 +3026,15 @@ void RoomScene::doScript() {
     dialog->exec();
 }
 
+void RoomScene::viewGenerals(const QString &reason, const QStringList &names) {
+    QDialog *dialog = new ChooseGeneralDialog(names, main_window, true, Sanguosha->translate(reason));
+    connect(dialog, SIGNAL(rejected()), dialog, SLOT(deleteLater()));
+    dialog->setParent(main_window, Qt::Dialog);
+    dialog->show();
+}
+
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players) {
-    table->setColumnCount(10);
+    table->setColumnCount(11);
     table->setRowCount(players.length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -3254,7 +3259,6 @@ void RoomScene::chooseSkillButton() {
     QVBoxLayout *layout = new QVBoxLayout;
 
     foreach (QSanSkillButton *btn, enabled_buttons) {
-        Q_ASSERT(btn->getSkill());
         QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate(btn->getSkill()->objectName()));
         connect(button, SIGNAL(clicked()), btn, SLOT(click()));
         connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
@@ -3345,10 +3349,10 @@ void RoomScene::fillCards(const QList<int> &card_ids, const QList<int> &disabled
     card_container->show();
 }
 
-void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart) {
+void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids) {
     fillCards(card_ids);
     if (enable_heart)
-        card_container->startGongxin();
+        card_container->startGongxin(enabled_ids);
     else
         card_container->addCloseButton();
 }
@@ -3523,8 +3527,11 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion) {
 }
 
 void RoomScene::setEmotion(const QString &who, const QString &emotion, bool permanent) {
-    if (Config.value("NoEquipAnim", false).toBool() && (emotion.startsWith("weapon/") || emotion.startsWith("armor/")))
-        return;
+    if (emotion.startsWith("weapon/") || emotion.startsWith("armor/")) {
+        if (Config.value("NoEquipAnim", false).toBool()) return;
+        QString name = emotion.split("/").last();
+        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(name, QString("equip"), -1));
+    }
     Photo *photo = name2photo[who];
     if (photo) {
         photo->setEmotion(emotion, permanent);
@@ -3905,7 +3912,7 @@ void RoomScene::bringToFront(QGraphicsItem *front_item) {
     m_zValueMutex.unlock();
 }
 
-void RoomScene::takeGeneral(const QString &who, const QString &name) {
+void RoomScene::takeGeneral(const QString &who, const QString &name, const QString &rule) {
     bool self_taken;
     if (who == "warm")
         self_taken = Self->getRole().startsWith("l");
@@ -3940,7 +3947,8 @@ void RoomScene::takeGeneral(const QString &who, const QString &name) {
     general_item->setHomePos(QPointF(x, y));
     general_item->goBack(true);
 
-    if (ServerInfo.GameMode == "06_3v3" && (Self->getRole() != "lord" && Self->getRole() != "renegade")
+    if (((ServerInfo.GameMode == "06_3v3" && Self->getRole() != "lord" && Self->getRole() != "renegade")
+         || (ServerInfo.GameMode == "02_1v1" && rule == "OL"))
         && general_items.isEmpty()) {
         if (selector_box) {
             selector_box->hide();
@@ -3991,11 +3999,15 @@ void RoomScene::revealGeneral(bool self, const QString &general) {
 }
 
 void RoomScene::skillStateChange(const QString &skill_name) {
-    if (skill_name == "shuangxiong") {
-        const Skill *skill = Sanguosha->getSkill("shuangxiong");
+    static QStringList button_remain;
+    if (button_remain.isEmpty())
+        button_remain << "shuangxiong" << "xianzhen";
+    if (button_remain.contains(skill_name)) {
+        const Skill *skill = Sanguosha->getSkill(skill_name);
         addSkillButton(skill);
-    } else if (skill_name == "-shuangxiong" || skill_name == ".")
-        detachSkill("shuangxiong");
+    } else if (skill_name.startsWith('-') && button_remain.contains(skill_name.mid(1))) {
+        detachSkill(skill_name.mid(1));
+    }
 }
 
 void RoomScene::trust() {

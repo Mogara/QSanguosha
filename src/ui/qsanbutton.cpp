@@ -305,7 +305,7 @@ void QSanInvokeSkillDock::update() {
 
         int numButtons = regular_buttons.length();
         int lordskillNum = lordskill_buttons.length();
-        Q_ASSERT(lordskillNum <= 6); // HuangTian, ZhiBa, DrJiuYuan and XianSi
+        Q_ASSERT(lordskillNum <= 6); // HuangTian, ZhiBa and XianSi
         int rows = (numButtons == 0) ? 0 : (numButtons - 1) / 3 + 1;
         int rowH = G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height();
         int *btnNum = new int[rows + 2 + 1]; // we allocate one more row in case we need it.

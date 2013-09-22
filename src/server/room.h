@@ -94,7 +94,7 @@ public:
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord() const;
     void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only);
-    void doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target);
+    int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids = QList<int>(), QString skill_name = "gongxin");
     int drawCard();
     void fillAG(const QList<int> &card_ids, ServerPlayer *who = NULL, const QList<int> &disabled_ids = QList<int>());
     void takeAG(ServerPlayer *player, int card_id, bool move_cards = true);
@@ -316,17 +316,17 @@ public:
     bool askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason,
-                         bool handcard_visible = false, Card::HandlingMethod method = Card::MethodNone);
+                         bool handcard_visible = false, Card::HandlingMethod method = Card::MethodNone, QList<int> &disabled_ids = QList<int>());
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data, const QString &skill_name);
     const Card *askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt, const QVariant &data = QVariant(),
                            Card::HandlingMethod method = Card::MethodDiscard, ServerPlayer *to = NULL, bool isRetrial = false,
-                           const QString &skill_name = QString());
-    bool askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index = -1,
+                           const QString &skill_name = QString(), bool isProvision = false);
+    const Card *askForUseCard(ServerPlayer *player, const QString &pattern, const QString &prompt, int notice_index = -1,
                        Card::HandlingMethod method = Card::MethodUse, bool addHistory = true);
-    bool askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt,
-                          bool distance_limit = true, bool disable_extra = false, bool addHistory = false, const QString &pattern = "slash");
-    bool askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt,
-                          bool distance_limit = true, bool disable_extra = false, bool addHistory = false, const QString &pattern = "slash");
+    const Card *askForUseSlashTo(ServerPlayer *slasher, ServerPlayer *victim, const QString &prompt,
+                                 bool distance_limit = true, bool disable_extra = false, bool addHistory = false);
+    const Card *askForUseSlashTo(ServerPlayer *slasher, QList<ServerPlayer *> victims, const QString &prompt,
+                                 bool distance_limit = true, bool disable_extra = false, bool addHistory = false);
     int askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusable, const QString &reason);
     const Card *askForCardShow(ServerPlayer *player, ServerPlayer *requestor, const QString &reason);
     bool askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &skill_name = QString(),
@@ -352,11 +352,11 @@ public:
     void broadcastInvoke(const QSanProtocol::QSanPacket *packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void networkDelayTestCommand(ServerPlayer *player, const QString &);
-    inline virtual RoomState *getRoomState() { return &_m_roomState; }
-    inline virtual Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
-    inline virtual void resetCard(int cardId) { _m_roomState.resetCard(cardId); }
-    virtual void updateCardsOnLose(const CardsMoveStruct &move);
-    virtual void updateCardsOnGet(const CardsMoveStruct &move);
+    inline RoomState *getRoomState() { return &_m_roomState; }
+    inline Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
+    inline void resetCard(int cardId) { _m_roomState.resetCard(cardId); }
+    void updateCardsOnLose(const CardsMoveStruct &move);
+    void updateCardsOnGet(const CardsMoveStruct &move);
 
 protected:
     virtual void run();

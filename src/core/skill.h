@@ -45,10 +45,12 @@ public:
     void initMediaSource();
     void playAudioEffect(int index = -1) const;
     Frequency getFrequency() const;
+    QString getLimitMark() const;
     QStringList getSources() const;
 
 protected:
     Frequency frequency;
+    QString limit_mark;
     QString default_choice;
     bool attached_lord_skill;
 
@@ -71,6 +73,9 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const;
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
     static const ViewAsSkill *parseViewAsSkill(const Skill *skill);
+
+protected:
+    QString response_pattern;
 };
 
 class ZeroCardViewAsSkill: public ViewAsSkill {
@@ -93,8 +98,11 @@ public:
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const;
     virtual const Card *viewAs(const QList<const Card *> &cards) const;
 
-    virtual bool viewFilter(const Card *to_select) const = 0;
+    virtual bool viewFilter(const Card *to_select) const;
     virtual const Card *viewAs(const Card *originalCard) const = 0;
+
+protected:
+    QString filter_pattern;
 };
 
 class FilterSkill: public OneCardViewAsSkill {
@@ -119,9 +127,12 @@ public:
     inline double getDynamicPriority() const{ return dynamic_priority; }
     inline void setDynamicPriority(double value) { dynamic_priority = value; }
 
+    inline bool isGlobal() const{ return global; }
+
 protected:
     const ViewAsSkill *view_as_skill;
     QList<TriggerEvent> events;
+    bool global;
 
 private:
     mutable double dynamic_priority;
@@ -188,9 +199,6 @@ public:
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual void onGameStart(ServerPlayer *player) const;
 
-    QString getFromName() const;
-    QStringList getToName() const;
-
 private:
     QString from, to;
     QStringList to_list;
@@ -220,7 +228,8 @@ class MaxCardsSkill: public Skill {
 public:
     MaxCardsSkill(const QString &name);
 
-    virtual int getExtra(const Player *target) const = 0;
+    virtual int getExtra(const Player *target) const;
+    virtual int getFixed(const Player *target) const;
 };
 
 class TargetModSkill: public Skill {

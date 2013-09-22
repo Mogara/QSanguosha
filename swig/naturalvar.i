@@ -32,7 +32,9 @@ SWIG_arg ++;
 
 %typemap(in, checkfn = "lua_istable") QStringList
 %{
-for (size_t i = 0; i < lua_objlen(L, $input); i++) {
+size_t len = lua_objlen(L, $input);
+
+for (size_t i = 0; i < len; i++) {
     lua_rawgeti(L, $input, i + 1);
     const char *elem = luaL_checkstring(L, -1);
     $1 << elem;

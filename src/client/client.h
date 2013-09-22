@@ -122,6 +122,7 @@ public:
     void enableSurrender(const Json::Value &enabled);
     void exchangeKnownCards(const Json::Value &players);
     void setKnownCards(const Json::Value &set_str);
+    void viewGenerals(const Json::Value &str);
     void setFixedDistance(const Json::Value &set_str);
     void updateStateItem(const Json::Value &state_str);
     void setAvailableCards(const Json::Value &pile);
@@ -273,7 +274,8 @@ signals:
     void kingdoms_got(const QStringList &kingdoms);
     void suits_got(const QStringList &suits);
     void options_got(const QString &skillName, const QStringList &options);
-    void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible, Card::HandlingMethod method);
+    void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible,
+                   Card::HandlingMethod method, QList<int> disabled_ids);
     void roles_got(const QString &scheme, const QStringList &roles);
     void directions_got();    
     void orders_got(QSanProtocol::Game3v3ChooseOrderCommand reason);
@@ -289,7 +291,7 @@ signals:
     void card_shown(const QString &player_name, int card_id);
     void log_received(const QStringList &log_str);
     void guanxing(const QList<int> &card_ids, bool up_only);
-    void gongxin(const QList<int> &card_ids, bool enable_heart);
+    void gongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids);
     void focus_moved(const QStringList &focus, QSanProtocol::Countdown countdown);
     void emotion_set(const QString &target, const QString &emotion);
     void skill_invoked(const QString &who, const QString &skill_name);
@@ -319,13 +321,14 @@ signals:
     void ag_cleared();
 
     void generals_filled(const QStringList &general_names);
-    void general_taken(const QString &who, const QString &name);
+    void general_taken(const QString &who, const QString &name, const QString &rule);
     void general_asked();
     void arrange_started(const QString &to_arrange);
     void general_recovered(int index, const QString &name);
     void general_revealed(bool self, const QString &general);
 
-    void role_state_changed(const QString & state_str);
+    void role_state_changed(const QString &state_str);
+    void generals_viewed(const QString &reason, const QStringList &names);
 
     void assign_asked();
     void start_in_xs();

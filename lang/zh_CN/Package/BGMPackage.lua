@@ -139,7 +139,7 @@ return {
 	["xuehen:slash"] = "视为使用一张【杀】",
 	["#FenyongAvoid"] = "%from 的“%arg”被触发，防止了本次伤害",
 
-	["BGMDIY"] = "桌游志DIY",
+	["BGMDIY"] = "桌游志贴纸",
 
 	["#diy_simazhao"] = "狼子野心",
 	["diy_simazhao"] = "司马昭",
@@ -164,7 +164,7 @@ return {
 	[":shude"] = "结束阶段开始时，你可以将手牌数补至等于体力上限的张数。",
 
 	["#diy_liuxie"] = "汉献帝",
-	["diy_liuxie"] = "刘协-DIY",
+	["diy_liuxie"] = "刘协-贴纸",
 	["&diy_liuxie"] = "刘协",
 	["illustrator:diy_liuxie"] = "XXX",
 	["designer:diy_liuxie"] = "姚以轩",
@@ -184,7 +184,7 @@ return {
 	["~jijiang"] = "选择【杀】的目标角色→点击确定",
 
 	["#diy_gongsunzan"] = "白马将军",
-	["diy_gongsunzan"] = "公孙瓒-DIY",
+	["diy_gongsunzan"] = "公孙瓒-贴纸",
 	["&diy_gongsunzan"] = "公孙瓒",
 	["illustrator:diy_gongsunzan"] = "XXX",
 	["designer:diy_gongsunzan"] = "爱放泡的鱼",

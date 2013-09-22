@@ -250,6 +250,7 @@ public:
     Fenxin(): TriggerSkill("fenxin") {
         events << BeforeGameOverJudge;
         frequency = Limited;
+        limit_mark = "@burnheart";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -626,55 +627,34 @@ public:
     ChizhongKeep():MaxCardsSkill("chizhong"){
     }
 
-    virtual int getExtra(const Player *target) const{
+    virtual int getFixed(const Player *target) const{
         if(target->hasSkill(objectName()))
-            return target->getLostHp();
+            return target->getMaxHp();
         else
-            return 0;
+            return -1;
     }
 };
 
 class Chizhong: public TriggerSkill{
 public:
     Chizhong():TriggerSkill("#chizhong"){
-        events << Death << EventPhaseStart;
+        events << Death;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *splayer = room->findPlayerBySkillName(objectName());
-        if(!splayer)
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        DeathStruct death = data.value<DeathStruct>();
+        if (death.who == player)
             return false;
 
-        if(triggerEvent == EventPhaseStart && splayer == player && player->getPhase() == Player::Discard) {
-            if(player->getHandcardNum() > player->getHp() && player->isWounded()){
-                LogMessage log;
-                log.type = "#Chizhong";
-                log.from = splayer;
-                log.arg = "chizhong";
-                room->sendLog(log);
-                room->broadcastSkillInvoke("chizhong", 1);
-            }
-            return false;
-        }
+        room->setPlayerProperty(splayer, "maxhp", splayer->getMaxHp() + 1);
+        // @todo_P: log message here
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = splayer;
+        log.arg = "chizhong";
+        room->sendLog(log);
+        room->broadcastSkillInvoke("chizhong", 2);
 
-        if(triggerEvent == Death && TriggerSkill::triggerable(player))
-        {
-            DeathStruct death = data.value<DeathStruct>();
-            if (death.who == player)
-                return false;
-
-            room->setPlayerProperty(splayer, "maxhp", splayer->getMaxHp()+1);
-            LogMessage log;
-            log.type = "#TriggerSkill";
-            log.from = splayer;
-            log.arg = "chizhong";
-            room->sendLog(log);
-            room->broadcastSkillInvoke("chizhong", 2);
-        }
         return false;
     }
 };
@@ -708,8 +688,6 @@ AssassinsPackage::AssassinsPackage(): Package("assassins") {
     General *lingju = new General(this, "as_lingju", "qun", 3, false);
     lingju->addSkill(new Jieyuan);
     lingju->addSkill(new Fenxin);
-    lingju->addSkill(new MarkAssignSkill("@burnheart", 1));
-    related_skills.insertMulti("fenxin", "#@burnheart-1");
     
     addMetaObject<MizhaoCard>();
     addMetaObject<MixinCard>();

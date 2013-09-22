@@ -20,7 +20,7 @@ neoluoyi_skill.getTurnUseCard = function(self)
 	local noHorseTargets = 0
 	self:sort(self.enemies,"hp")
 	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:isKindOf("EquipCard") and not (card:isKindOf("Weapon") and self:hasEquip(card))  then
+		if card:isKindOf("EquipCard") and not (card:isKindOf("Weapon") and self:hasEquip(card)) then
 			equipnum = equipnum + 1
 		end
 	end
@@ -73,7 +73,7 @@ neoluoyi_skill.getTurnUseCard = function(self)
 		end
 		if not luoyicard then
 			for _, card in sgs.qlist(self.player:getCards("he")) do
-				if card:isKindOf("EquipCard") and not card:isKindOf("Weapon") then 
+				if card:isKindOf("EquipCard") and not (card:isKindOf("Weapon") and self.player:hasEquip(card)) then
 					luoyicard = card
 					break
 				end
@@ -95,7 +95,7 @@ neofanjian_skill.name = "neofanjian"
 table.insert(sgs.ai_skills, neofanjian_skill)
 neofanjian_skill.getTurnUseCard = function(self)
 	if self.player:isKongcheng() then return nil end
-	if self.player:usedTimes("NeoFanjianCard") > 0 then return nil end
+	if self.player:hasUsed("NeoFanjianCard") then return nil end
 	return sgs.Card_Parse("@NeoFanjianCard=.")
 end
 
@@ -113,7 +113,7 @@ sgs.ai_skill_use_func.NeoFanjianCard = function(card, use, self)
 			handcards = sgs.QList2Table(handcards)
 			self:sortByKeepValue(handcards)
 			for _,cd in ipairs(handcards) do
-				local flag = not (cd:isKindOf("Peach") or card:isKindOf("Analeptic"))
+				local flag = not (cd:isKindOf("Peach") or cd:isKindOf("Analeptic"))
 				local suit = cd:getSuit()
 				if flag and care then
 					flag = cd:isKindOf("BasicCard")
@@ -136,7 +136,7 @@ sgs.ai_skill_use_func.NeoFanjianCard = function(card, use, self)
 				local keep_value = self:getKeepValue(ucard)
 				if ucard:getSuit() == sgs.Card_Diamond then keep_value = keep_value + 0.5 end
 				if keep_value < 6 then
-					use.card = sgs.Card_Parse("@NeoFanjianCard=" .. ucard:getId() .. "->" .. target:objectName())
+					use.card = sgs.Card_Parse("@NeoFanjianCard=" .. ucard:getEffectiveId())
 					if use.to then use.to:append(target) end
 					return
 				end
@@ -241,8 +241,9 @@ sgs.ai_skill_invoke.neoganglie = function(self, data)
 end
 
 sgs.ai_choicemade_filter.skillInvoke.neoganglie = function(player, promptlist, self)
-	if sgs.ganglie_target then
-		local target = sgs.ganglie_target
+	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
+	if damage.from then
+		local target = damage.from
 		local intention = 10
 		if promptlist[3] == "yes" then
 			if self:getDamagedEffects(target, player) or self:needToLoseHp(target, player, nil, true) then
@@ -253,7 +254,6 @@ sgs.ai_choicemade_filter.skillInvoke.neoganglie = function(player, promptlist, s
 			sgs.updateIntention(player, target, -10)
 		end
 	end
-	sgs.ganglie_target = nil
 end
 
 sgs.ai_need_damaged.neoganglie = function (self, attacker, player)

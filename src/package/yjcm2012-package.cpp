@@ -269,14 +269,14 @@ public:
     }
 
     virtual int getResidueNum(const Player *from, const Card *) const{
-        if (from->hasSkill("jiangchi") && from->hasFlag("JiangchiInvoke"))
+        if (from->hasFlag("JiangchiInvoke"))
             return 1;
         else
             return 0;
     }
 
     virtual int getDistanceLimit(const Player *from, const Card *) const{
-        if (from->hasSkill("jiangchi") && from->hasFlag("JiangchiInvoke"))
+        if (from->hasFlag("JiangchiInvoke"))
             return 1000;
         else
             return 0;
@@ -305,6 +305,29 @@ public:
                 judge.who = target;
 
                 room->judge(judge);
+                if (!target->isAlive()) return false;
+                QString color = judge.pattern;
+                QList<ServerPlayer *> to_choose;
+                foreach (ServerPlayer *p, room->getOtherPlayers(target)) {
+                    if (target->distanceTo(p) == 1)
+                        to_choose << p;
+                }
+                if (to_choose.isEmpty())
+                    return false;
+
+                ServerPlayer *victim = room->askForPlayerChosen(target, to_choose, objectName());
+                QString pattern = QString(".|%1|.|hand$0").arg(color);
+
+                room->broadcastSkillInvoke(objectName());
+                room->setPlayerFlag(victim, "QianxiTarget");
+                room->addPlayerMark(victim, QString("@qianxi_%1").arg(color));
+                room->setPlayerCardLimitation(victim, "use,response", pattern, false);
+
+                LogMessage log;
+                log.type = "#Qianxi";
+                log.from = victim;
+                log.arg = QString("no_suit_%1").arg(color);
+                room->sendLog(log);
             }
         } else if (triggerEvent == FinishJudge) {
             JudgeStar judge = data.value<JudgeStar>();
@@ -312,28 +335,7 @@ public:
 
             QString color = judge->card->isRed() ? "red" : "black";
             target->tag[objectName()] = QVariant::fromValue(color);
-
-            QList<ServerPlayer *> to_choose;
-            foreach (ServerPlayer *p, room->getOtherPlayers(target)) {
-                if (target->distanceTo(p) == 1)
-                    to_choose << p;
-            }
-            if (to_choose.isEmpty())
-                return false;
-
-            ServerPlayer *victim = room->askForPlayerChosen(target, to_choose, objectName());
-            QString pattern = QString(".|%1|.|hand$0").arg(color);
-
-            room->broadcastSkillInvoke(objectName());
-            room->setPlayerFlag(victim, "QianxiTarget");
-            room->addPlayerMark(victim, QString("@qianxi_%1").arg(color));
-            room->setPlayerCardLimitation(victim, "use,response", pattern, false);
-
-            LogMessage log;
-            log.type = "#Qianxi";
-            log.from = victim;
-            log.arg = QString("no_suit_%1").arg(color);
-            room->sendLog(log);
+            judge->pattern = color;
         }
         return false;
     }
@@ -407,6 +409,7 @@ public:
     Fuli(): TriggerSkill("fuli") {
         events << AskForPeaches;
         frequency = Limited;
+        limit_mark = "@laoji";
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -600,14 +603,11 @@ void GongqiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
 class Gongqi: public OneCardViewAsSkill {
 public:
     Gongqi(): OneCardViewAsSkill("gongqi") {
+        filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->hasUsed("GongqiCard");
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !Self->isJilei(to_select);
     }
 
     virtual const Card *viewAs(const Card *originalcard) const{
@@ -659,6 +659,7 @@ class Jiefan: public ZeroCardViewAsSkill {
 public:
     Jiefan(): ZeroCardViewAsSkill("jiefan") {
         frequency = Limited;
+        limit_mark = "@rescue";
     }
 
     virtual const Card *viewAs() const{
@@ -763,6 +764,7 @@ public:
 class LihuoViewAsSkill: public OneCardViewAsSkill {
 public:
     LihuoViewAsSkill(): OneCardViewAsSkill("lihuo") {
+        filter_pattern = "%slash";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -772,10 +774,6 @@ public:
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
                && pattern == "slash";
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->objectName() == "slash";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -805,7 +803,7 @@ public:
                 slash_list << QVariant::fromValue((CardStar)damage.card);
                 damage.from->tag["InvokeLihuo"] = QVariant::fromValue(slash_list);
             }
-        } else if (TriggerSkill::triggerable(player)) {
+        } else if (TriggerSkill::triggerable(player) && !player->hasFlag("Global_ProcessBroken")) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (!use.card->isKindOf("Slash"))
                 return false;
@@ -967,9 +965,7 @@ YJCM2012Package::YJCM2012Package()
     chengpu->addSkill(new Lihuo);
     chengpu->addSkill(new LihuoTargetMod);
     chengpu->addSkill(new Chunlao);
-    chengpu->addSkill(new DetachEffectSkill("chunlao", "wine"));
     related_skills.insertMulti("lihuo", "#lihuo-target");
-    related_skills.insertMulti("chunlao", "#chunlao-clear");
 
     General *guanxingzhangbao = new General(this, "guanxingzhangbao", "shu"); // YJ 104
     guanxingzhangbao->addSkill(new Fuhun);
@@ -977,17 +973,13 @@ YJCM2012Package::YJCM2012Package()
     General *handang = new General(this, "handang", "wu"); // YJ 105
     handang->addSkill(new Gongqi);
     handang->addSkill(new Jiefan);
-    handang->addSkill(new MarkAssignSkill("@rescue", 1));
-    related_skills.insertMulti("jiefan", "#@rescue-1");
 
     General *huaxiong = new General(this, "huaxiong", "qun", 6); // YJ 106
     huaxiong->addSkill(new Shiyong);
 
     General *liaohua = new General(this, "liaohua", "shu"); // YJ 107
     liaohua->addSkill(new Dangxian);
-    liaohua->addSkill(new MarkAssignSkill("@laoji", 1));
     liaohua->addSkill(new Fuli);
-    related_skills.insertMulti("fuli", "#@laoji-1");
 
     General *liubiao = new General(this, "liubiao", "qun", 4); // YJ 108
     liubiao->addSkill(new Zishou);

@@ -27,8 +27,11 @@ public:
             if (!room->askForCard(player, ".Equip", "@xiaoguo-discard", QVariant())) {
                 room->broadcastSkillInvoke(objectName(), 2);
                 room->damage(DamageStruct("xiaoguo", yuejin, player));
-            } else
+            } else {
                 room->broadcastSkillInvoke(objectName(), 3);
+                if (yuejin->isAlive())
+                    yuejin->drawCards(1);
+            }
         }
         return false;
     }
@@ -114,14 +117,11 @@ void DuoshiCard::onEffect(const CardEffectStruct &effect) const{
 class Duoshi: public OneCardViewAsSkill {
 public:
     Duoshi(): OneCardViewAsSkill("duoshi") {
+        filter_pattern = ".|red|.|hand!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->usedTimes("DuoshiCard") < 4;
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->isRed() && !to_select->isEquipped() && !Self->isJilei(to_select);
     }
 
     virtual const Card *viewAs(const Card *originalcard) const{
@@ -147,14 +147,11 @@ void FenxunCard::onEffect(const CardEffectStruct &effect) const{
 class FenxunViewAsSkill: public OneCardViewAsSkill {
 public:
     FenxunViewAsSkill(): OneCardViewAsSkill("fenxun") {
+        filter_pattern = ".!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->canDiscard(player, "he") && !player->hasUsed("FenxunCard");
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return !Self->isJilei(to_select);
     }
 
     virtual const Card *viewAs(const Card *originalcard) const{
@@ -168,7 +165,7 @@ public:
 class Fenxun: public TriggerSkill {
 public:
     Fenxun(): TriggerSkill("fenxun") {
-        events << EventPhaseChanging << Death << EventLoseSkill;
+        events << EventPhaseChanging << Death;
         view_as_skill = new FenxunViewAsSkill;
     }
 
@@ -184,9 +181,6 @@ public:
         } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
             if (death.who != dingfeng)
-                return false;
-        } else if (triggerEvent == EventLoseSkill) {
-            if (data.toString() != "fenxun")
                 return false;
         }
         ServerPlayer *target = dingfeng->tag["FenxunTarget"].value<PlayerStar>();
@@ -257,7 +251,7 @@ public:
             QList<int> original_lirang = lirang_card;
             while (room->askForYiji(kongrong, lirang_card, objectName(), false, true, true, -1,
                                     QList<ServerPlayer *>(), move.reason, "@lirang-distribute", true)) {
-                if (kongrong->isDead()) return false;
+                if (kongrong->isDead()) break;
             }
 
             QList<int> ids = move.card_ids;
@@ -385,14 +379,7 @@ void ShuangrenCard::onEffect(const CardEffectStruct &effect) const{
 class ShuangrenViewAsSkill: public ZeroCardViewAsSkill {
 public:
     ShuangrenViewAsSkill(): ZeroCardViewAsSkill("shuangren") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@shuangren";
+        response_pattern = "@@shuangren";
     }
 
     virtual const Card *viewAs() const{
@@ -471,6 +458,7 @@ class Xiongyi: public ZeroCardViewAsSkill {
 public:
     Xiongyi(): ZeroCardViewAsSkill("xiongyi") {
         frequency = Limited;
+        limit_mark = "@arise";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -688,14 +676,11 @@ bool QingchengCard::targetFilter(const QList<const Player *> &targets, const Pla
 class QingchengViewAsSkill: public OneCardViewAsSkill {
 public:
     QingchengViewAsSkill(): OneCardViewAsSkill("qingcheng") {
+        filter_pattern = "EquipCard!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->canDiscard(player, "he");
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->isKindOf("EquipCard") && !Self->isJilei(to_select);
     }
 
     virtual const Card *viewAs(const Card *originalcard) const{
@@ -766,9 +751,7 @@ HegemonyPackage::HegemonyPackage()
 
     General *mateng = new General(this, "mateng", "qun"); // QUN 013
     mateng->addSkill("mashu");
-    mateng->addSkill(new MarkAssignSkill("@arise", 1));
     mateng->addSkill(new Xiongyi);
-    related_skills.insertMulti("xiongyi", "#@arise-1");
 
     General *kongrong = new General(this, "kongrong", "qun", 3); // QUN 014
     kongrong->addSkill(new Mingshi);

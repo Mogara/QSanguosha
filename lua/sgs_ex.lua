@@ -4,17 +4,22 @@
 function sgs.CreateTriggerSkill(spec)
 	assert(type(spec.name) == "string")
 	assert(type(spec.on_trigger) == "function")
+	if spec.frequency then assert(type(spec.frequency) == "number") end
+	if spec.limit_mark then assert(type(spec.limit_mark) == "string") end
 
 	local frequency = spec.frequency or sgs.Skill_NotFrequent
-	local skill = sgs.LuaTriggerSkill(spec.name, frequency)
+	local limit_mark = spec.limit_mark or ""
+	local skill = sgs.LuaTriggerSkill(spec.name, frequency, limit_mark)
 
-	if (type(spec.events) == "number") then
+	if type(spec.events) == "number" then
 		skill:addEvent(spec.events)
-	elseif (type(spec.events) == "table") then
+	elseif type(spec.events) == "table" then
 		for _, event in ipairs(spec.events) do
 			skill:addEvent(event)
 		end
 	end
+
+	if type(spec.global) == "boolean" then skill:setGlobal(spec.global) end
 
 	skill.on_trigger = spec.on_trigger
 
@@ -89,8 +94,9 @@ end
 function sgs.CreateTargetModSkill(spec)
 	assert(type(spec.name) == "string")
 	assert(type(spec.residue_func) == "function" or type(spec.distance_limit_func) == "function" or type(spec.extra_target_func) == "function")
+	if spec.pattern then assert(type(spec.pattern) == "string") end
 
-	local skill = sgs.LuaTargetModSkill(spec.name)
+	local skill = sgs.LuaTargetModSkill(spec.name, spec.pattern or "Slash")
 	if spec.residue_func then
 		skill.residue_func = spec.residue_func
 	end
@@ -99,12 +105,6 @@ function sgs.CreateTargetModSkill(spec)
 	end
 	if spec.extra_target_func then
 		skill.extra_target_func = spec.extra_target_func
-	end
-	
-	if type(spec.pattern) == "string" then
-		skill.pattern = spec.pattern
-	else
-		skill.pattern = "Slash"
 	end
 
 	return skill
@@ -151,6 +151,7 @@ function sgs.CreateSkillCard(spec)
 
 	card.filter = spec.filter
 	card.feasible = spec.feasible
+	card.about_to_use = spec.about_to_use
 	card.on_use = spec.on_use
 	card.on_effect = spec.on_effect
 	card.on_validate = spec.on_validate
@@ -159,20 +160,204 @@ function sgs.CreateSkillCard(spec)
 	return card
 end
 
-function sgs.CreateViewAsSkill(spec)
-	assert(spec.name)
+function sgs.CreateBasicCard(spec)
+	assert(type(spec.name) == "string" or type(spec.class_name) == "string")
+	if not spec.name then spec.name = spec.class_name
+	elseif not spec.class_name then spec.class_name = spec.name end
+	if spec.suit then assert(type(spec.suit) == "number") end
+	if spec.number then assert(type(spec.number) == "number") end
+	if spec.subtype then assert(type(spec.subtype) == "string") end
+	local card = sgs.LuaBasicCard(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name, spec.subtype or "BasicCard")
 
-	local skill = sgs.LuaViewAsSkill(spec.name)
+	if type(spec.target_fixed) == "boolean" then
+		card:setTargetFixed(spec.target_fixed)
+	end
+
+	if type(spec.can_recast) == "boolean" then
+		card:setCanRecast(spec.can_recast)
+	end
+
+	card.filter = spec.filter
+	card.feasible = spec.feasible
+	card.available = spec.available
+	card.about_to_use = spec.about_to_use
+	card.on_use = spec.on_use
+	card.on_effect = spec.on_effect
+
+	return card
+end
+
+function isAvailable_AOE(self, player)
+	local canUse = false;
+	local players = player:getSiblings()
+	for _, p in sgs.qlist(players) do
+		if p:isDead() or player:isProhibited(p, self) then continue end
+		canUse = true
+		break
+	end
+	return canUse and self:cardIsAvailable(player);
+end
+
+function onUse_AOE(self, room, card_use)
+	local source = card_use.from
+	local targets = sgs.SPlayerList()
+	local other_players = room:getOtherPlayers(source)
+	for _, player in sgs.qlist(other_players) do
+		local skill = room:isProhibited(source, player, self)
+		if skill ~= nil then
+			local log_message = sgs.LogMessage()
+			log_message.type = "#SkillAvoid"
+			log_message.from = player
+			log_message.arg = skill:objectName()
+			log_message.arg2 = self:objectName()
+			room:broadcastSkillInvoke(skill:objectName())
+		else
+			targets:append(player)
+		end
+	end
+
+	local use = card_use
+	use.to = targets
+	self:cardOnUse(room, use)
+end
+
+function isAvailable_GlobalEffect(self, player)
+	local canUse = false;
+	local players = player:getSiblings()
+	players:append(player)
+	for _, p in sgs.qlist(players) do
+		if p:isDead() or player:isProhibited(p, self) then continue end
+		canUse = true
+		break
+	end
+	return canUse and self:cardIsAvailable(player);
+end
+
+function onUse_GlobalEffect(self, room, card_use)
+	local source = card_use.from
+	local targets = sgs.SPlayerList()
+	local all_players = room:getAllPlayers()
+	for _, player in sgs.qlist(all_players) do
+		local skill = room:isProhibited(source, player, self)
+		if skill ~= nil then
+			local log_message = sgs.LogMessage()
+			log_message.type = "#SkillAvoid"
+			log_message.from = player
+			log_message.arg = skill:objectName()
+			log_message.arg2 = self:objectName()
+			room:broadcastSkillInvoke(skill:objectName())
+		else
+			targets:append(player)
+		end
+	end
+
+	local use = card_use
+	use.to = targets
+	self:cardOnUse(room, use)
+end
+
+function onUse_DelayedTrick(self, room, card_use)
+	local use = card_use
+	local wrapped = sgs.Sanguosha:getWrappedCard(self:getEffectiveId())
+	use.card = wrapped
+
+	local logm = sgs.LogMessage()
+	logm.from = use.from
+	logm.to = use.to
+	logm.type = "#UseCard"
+	logm.card_str = self:toString()
+	room:sendLog(logm)
+
+	local data = sgs.QVariant()
+	data:setValue(use)
+	local thread = room:getThread()
+	thread:trigger(sgs.PreCardUsed, room, use.from, data)
+
+	local reason = sgs.CardMoveReason(sgs.CardMoveReason_S_REASON_USE, use.from:objectName(), use.to:first():objectName(), self:getSkillName(), "")
+	room:moveCardTo(self, use.from, use.to:first(), sgs.Player_PlaceDelayedTrick, reason, true)
+
+	thread:trigger(sgs.CardUsed, room, use.from, data)
+	thread:trigger(sgs.CardFinished, room, use.from, data)
+end
+
+function use_DelayedTrick(self, room, source, targets)
+	if #targets == 0 then
+		local reason = sgs.CardMoveReason(sgs.CardMoveReason_S_REASON_USE, source:objectName(), "", self:getSkillName(), "")
+		room:moveCardTo(self, source, nil, sgs.Player_DiscardPile, reason, true)
+	end
+end
+
+function sgs.CreateTrickCard(spec)
+	assert(type(spec.name) == "string" or type(spec.class_name) == "string")
+	if not spec.name then spec.name = spec.class_name
+	elseif not spec.class_name then spec.class_name = spec.name end
+	if spec.suit then assert(type(spec.suit) == "number") end
+	if spec.number then assert(type(spec.number) == "number") end
+
+	if spec.subtype then
+		assert(type(spec.subtype) == "string")
+	else
+		local subtype_table = { "TrickCard", "single_target_trick", "delayed_trick", "aoe", "global_effect" }
+		spec.subtype = subtype_table[(spec.subclass or 0) + 1]
+	end
+
+	local card = sgs.LuaTrickCard(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name, spec.subtype)
+
+	if type(spec.target_fixed) == "boolean" then
+		card:setTargetFixed(spec.target_fixed)
+	end
+
+	if type(spec.can_recast) == "boolean" then
+		card:setCanRecast(spec.can_recast)
+	end
+
+	if type(spec.subclass) == "number" then
+		card:setSubClass(spec.subclass)
+	else
+		card:setSubClass(sgs.LuaTrickCard_TypeNormal)
+	end
+
+	if spec.subclass then
+		if spec.subclass == sgs.LuaTrickCard_TypeDelayedTrick then
+			if not spec.about_to_use then spec.about_to_use = onUse_DelayedTrick end
+			if not spec.on_use then spec.on_use = use_DelayedTrick end
+		elseif spec.subclass == sgs.LuaTrickCard_TypeAOE then
+			if not spec.available then spec.available = isAvailable_AOE end
+			if not spec.about_to_use then spec.about_to_use = onUse_AOE end
+			if not spec.target_fixed then card:setTargetFixed(true) end
+		elseif spec.subclass == sgs.LuaTrickCard_TypeGlobalEffect then
+			if not spec.available then spec.available = isAvailable_AOE end
+			if not spec.about_to_use then spec.about_to_use = onUse_AOE end
+			if not spec.target_fixed then card:setTargetFixed(true) end
+		end
+	end
+
+	card.filter = spec.filter
+	card.feasible = spec.feasible
+	card.available = spec.available
+	card.is_cancelable = spec.is_cancelable
+	card.on_nullified = spec.on_nullified
+	card.about_to_use = spec.about_to_use
+	card.on_use = spec.on_use
+	card.on_effect = spec.on_effect
+
+	return card
+end
+
+function sgs.CreateViewAsSkill(spec)
+	assert(type(spec.name) == "string")
+	if spec.response_pattern then assert(type(spec.response_pattern) == "string") end
+	local response_pattern = spec.response_pattern or ""
+
+	local skill = sgs.LuaViewAsSkill(spec.name, response_pattern)
 	local n = spec.n or 0
 
 	function skill:view_as(cards)
-		return spec.view_as(self,cards)
+		return spec.view_as(self, cards)
 	end
 
 	function skill:view_filter(selected, to_select)
-		if #selected >= n then
-			return false
-		end
+		if #selected >= n then return false end
 		return spec.view_filter(self, selected, to_select)
 	end
 
@@ -183,198 +368,93 @@ function sgs.CreateViewAsSkill(spec)
 	return skill
 end
 
+function sgs.CreateOneCardViewAsSkill(spec)
+	assert(type(spec.name) == "string")
+	if spec.response_pattern then assert(type(spec.response_pattern) == "string") end
+	local response_pattern = spec.response_pattern or ""
+	if spec.filter_pattern then assert(type(spec.filter_pattern) == "string") end
+
+	local skill = sgs.LuaViewAsSkill(spec.name, response_pattern)
+
+	function skill:view_as(cards)
+		if #cards ~= 1 then return nil end
+		return spec.view_as(self, cards[1])
+	end
+
+	function skill:view_filter(selected, to_select)
+		if #selected >= 1 or to_select:hasFlag("using") then return false end
+		if spec.view_filter then return spec.view_filter(self, to_select) end
+		if spec.filter_pattern then
+			local pat = spec.filter_pattern
+			if string.endsWith(pat, "!") then
+				if sgs.Self:isJilei(to_select) then return false end
+				pat = string.chop(pat, 1)
+			end
+			return sgs.Sanguosha:matchExpPattern(pat, sgs.Self, to_select)
+		end
+	end
+
+	skill.enabled_at_play = spec.enabled_at_play
+	skill.enabled_at_response = spec.enabled_at_response
+	skill.enabled_at_nullification = spec.enabled_at_nullification
+
+	return skill
+end
+
+function sgs.CreateZeroCardViewAsSkill(spec)
+	assert(type(spec.name) == "string")
+	if spec.response_pattern then assert(type(spec.response_pattern) == "string") end
+	local response_pattern = spec.response_pattern or ""
+
+	local skill = sgs.LuaViewAsSkill(spec.name, response_pattern)
+
+	function skill:view_as(cards)
+		if #cards > 0 then return nil end
+		return spec.view_as(self)
+	end
+
+	function skill:view_filter(selected, to_select)
+		return false
+	end
+
+	skill.enabled_at_play = spec.enabled_at_play
+	skill.enabled_at_response = spec.enabled_at_response
+	skill.enabled_at_nullification = spec.enabled_at_nullification
+
+	return skill
+end
+
+function sgs.CreateWeapon(spec)
+	assert(type(spec.name) == "string" or type(spec.class_name) == "string")
+	if not spec.name then spec.name = spec.class_name
+	elseif not spec.class_name then spec.class_name = spec.name end
+	if spec.suit then assert(type(spec.suit) == "number") end
+	if spec.number then assert(type(spec.number) == "number") end
+	assert(type(spec.range) == "number")
+	local card = sgs.LuaWeapon(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.range, spec.name, spec.class_name)
+
+	card.on_install = spec.on_install
+	card.on_uninstall = spec.on_uninstall
+
+	return card
+end
+
+function sgs.CreateArmor(spec)
+	assert(type(spec.name) == "string" or type(spec.class_name) == "string")
+	if not spec.name then spec.name = spec.class_name
+	elseif not spec.class_name then spec.class_name = spec.name end
+	if spec.suit then assert(type(spec.suit) == "number") end
+	if spec.number then assert(type(spec.number) == "number") end
+	local card = sgs.LuaArmor(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name)
+
+	card.on_install = spec.on_install
+	card.on_uninstall = spec.on_uninstall
+
+	return card
+end
+
 function sgs.LoadTranslationTable(t)
 	for key, value in pairs(t) do
 		sgs.AddTranslationEntry(key, value)
 	end
-end
-
--- utilities, i.e: convert QList<const Card> to Lua's native table
-function sgs.QList2Table(qlist)
-	local t = {}
-	for i = 0, qlist:length() - 1 do
-		table.insert(t, qlist:at(i))
-	end
-
-	return t
-end
-
--- the iterator of QList object
-local qlist_iterator = function(list, n)
-	if n < list:length() - 1 then
-		return n + 1, list:at(n + 1) -- the next element of list
-	end
-end
-
-function sgs.qlist(list)
-	return qlist_iterator, list, -1
-end
-
--- more general iterator
-function sgs.list(list)
-	if type(list) == "table" then
-		return ipairs(list)
-	else
-		return sgs.qlist(list)
-	end
-end
-
-function sgs.reverse(list)
-	local new = {}
-	for i = #list, 1, -1 do
-		table.insert(new, list[i])
-	end
-	return new
-end
-
--- copied from "Well House Consultants"
--- used to split string into a table, similar with php' explode function
-function string:split(delimiter)
-	local result = {}
-	local from = 1
-	local delim_from, delim_to = string.find(self, delimiter, from)
-	while delim_from do
-		table.insert(result, string.sub(self, from, delim_from - 1))
-		from  = delim_to + 1
-		delim_from, delim_to = string.find(self, delimiter, from)
-	end
-	table.insert(result, string.sub(self, from))
-	return result
-end
-
-function table:contains(element)
-	if #self == 0 or type(self[1]) ~= type(element) then return false end
-	for _, e in ipairs(self) do
-		if e == element then return true end
-	end
-end
-
-function table:removeOne(element)
-	if #self == 0 or type(self[1]) ~= type(element) then return false end
-
-	for i = 1, #self do
-		if self[i] == element then 
-			table.remove(self, i)
-			return true
-		end
-	end
-	return false
-end
-
-function table:removeAll(element)
-	if #self == 0 or type(self[1]) ~= type(element) then return 0 end
-	local n = 0
-	for i = 1, #self do
-		if self[i] == element then 
-			table.remove(self, i)
-			n = n + 1
-		end
-	end
-	return n
-end
-
-function table:insertTable(list)
-	for _, e in ipairs(list) do
-		table.insert(self, e)
-	end
-end
-
-function table:removeTable(list)
-	for _, e in ipairs(list) do
-		table.removeAll(self, e)
-	end
-end
-
-function table.copyFrom(list)
-	local l = {}
-	for _, e in ipairs(list) do
-		table.insert(l, e)
-	end
-	return l
-end
-
-function string:matchOne(option)
-	return self:match("^" .. option .. "%p") or self:match("%p" .. option .. "%p") or self:match("%p" .. option .. "$")
-end
-
-function math:mod(num)
-	return math.fmod(self, num)
-end
-
-sgs.CommandType = {
-	"S_COMMAND_UNKNOWN",
-	"S_COMMAND_CHOOSE_CARD",
-	"S_COMMAND_PLAY_CARD",
-	"S_COMMAND_RESPONSE_CARD",
-	"S_COMMAND_SHOW_CARD",
-	"S_COMMAND_SHOW_ALL_CARDS",
-	"S_COMMAND_EXCHANGE_CARD",
-	"S_COMMAND_DISCARD_CARD",
-	"S_COMMAND_INVOKE_SKILL",
-	"S_COMMAND_MOVE_FOCUS",
-	"S_COMMAND_CHOOSE_GENERAL",
-	"S_COMMAND_CHOOSE_KINGDOM",
-	"S_COMMAND_CHOOSE_SUIT",
-	"S_COMMAND_CHOOSE_ROLE",
-	"S_COMMAND_CHOOSE_ROLE_3V3",
-	"S_COMMAND_CHOOSE_DIRECTION",
-	"S_COMMAND_CHOOSE_PLAYER",
-	"S_COMMAND_CHOOSE_ORDER",
-	"S_COMMAND_ASK_PEACH",
-	"S_COMMAND_SET_MARK",
-	"S_COMMAND_SET_FLAG",
-	"S_COMMAND_CARD_FLAG",
-	"S_COMMAND_NULLIFICATION",
-	"S_COMMAND_MULTIPLE_CHOICE",
-	"S_COMMAND_PINDIAN",
-	"S_COMMAND_AMAZING_GRACE",
-	"S_COMMAND_SKILL_YIJI",
-	"S_COMMAND_SKILL_GUANXING",
-	"S_COMMAND_SKILL_GONGXIN",
-	"S_COMMAND_SET_PROPERTY",
-	"S_COMMAND_CHANGE_HP",
-	"S_COMMAND_CHANGE_MAXHP",
-	"S_COMMAND_CHEAT",
-	"S_COMMAND_SURRENDER",
-	"S_COMMAND_ENABLE_SURRENDER",
-	"S_COMMAND_GAME_OVER",
-	"S_COMMAND_GAME_START",
-	"S_COMMAND_MOVE_CARD",
-	"S_COMMAND_GET_CARD",
-	"S_COMMAND_LOSE_CARD",
-	"S_COMMAND_LOG_EVENT",
-	"S_COMMAND_LOG_SKILL",
-	"S_COMMAND_UPDATE_CARD",
-	"S_COMMAND_CARD_LIMITATION",
-	"S_COMMAND_ADD_HISTORY",
-	"S_COMMAND_SET_EMOTION",
-	"S_COMMAND_FILL_AMAZING_GRACE",
-	"S_COMMAND_CLEAR_AMAZING_GRACE",
-	"S_COMMAND_TAKE_AMAZING_GRACE",
-	"S_COMMAND_FIXED_DISTANCE",
-	"S_COMMAND_KILL_PLAYER",
-	"S_COMMAND_REVIVE_PLAYER",
-	"S_COMMAND_ATTACH_SKILL",
-	"S_COMMAND_NULLIFICATION_ASKED",
-	"S_COMMAND_EXCHANGE_KNOWN_CARDS", -- For Dimeng only
-	"S_COMMAND_SET_KNOWN_CARDS",
-	"S_COMMAND_UPDATE_PILE",
-	"S_COMMAND_RESET_PILE",
-	"S_COMMAND_UPDATE_STATE_ITEM",
-	"S_COMMAND_SPEAK",
-	"S_COMMAND_ASK_GENERAL", -- the following 6 for 1v1 and 3v3
-	"S_COMMAND_ARRANGE_GENERAL",
-	"S_COMMAND_FILL_GENERAL",
-	"S_COMMAND_TAKE_GENERAL",
-	"S_COMMAND_RECOVER_GENERAL",
-	"S_COMMAND_REVEAL_GENERAL",
-	"S_COMMAND_AVAILABLE_CARDS",
-	"S_COMMAND_ANIMATE",
-	"S_COMMAND_LUCK_CARD"
-}
-
-local i = 0
-for _, command in ipairs(sgs.CommandType) do
-	sgs.CommandType[command] = i
-	i = i + 1
 end

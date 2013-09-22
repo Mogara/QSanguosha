@@ -122,7 +122,8 @@ namespace QSanProtocol {
         S_COMMAND_REVEAL_GENERAL,
         S_COMMAND_AVAILABLE_CARDS,
         S_COMMAND_ANIMATE,
-        S_COMMAND_LUCK_CARD
+        S_COMMAND_LUCK_CARD,
+        S_COMMAND_VIEW_GENERALS
     };
 
     enum GameEventType {

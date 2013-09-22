@@ -66,7 +66,6 @@ public:
     bool isWounded() const;
     General::Gender getGender() const;
     virtual void setGender(General::Gender gender);
-    bool isSexLess() const;
     bool isMale() const;
     bool isFemale() const;
     bool isNeuter() const;
@@ -99,6 +98,7 @@ public:
 
     int getSeat() const;
     void setSeat(int seat);
+    bool isAdjacentTo(const Player *another) const;
     QString getPhaseString() const;
     void setPhaseString(const QString &phase_str);
     Phase getPhase() const;
@@ -171,8 +171,8 @@ public:
     bool canDiscard(const Player *to, const QString &flags) const;
     bool canDiscard(const Player *to, int card_id) const;
 
-    void addMark(const QString &mark);
-    void removeMark(const QString &mark);
+    void addMark(const QString &mark, int add_num = 1);
+    void removeMark(const QString &mark, int remove_num = 1);
     virtual void setMark(const QString &mark, int value);
     int getMark(const QString &mark) const;
 
@@ -205,7 +205,7 @@ public:
     QString getSkillDescription() const;
 
     virtual bool isProhibited(const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
-    bool canSlashWithoutCrossbow() const;
+    bool canSlashWithoutCrossbow(const Card *slash = NULL) const;
     virtual bool isLastHandCard(const Card *card, bool contain = false) const = 0;
 
     inline bool isJilei(const Card *card) const{ return isCardLimited(card, Card::MethodDiscard); }
@@ -223,6 +223,7 @@ public:
     void copyFrom(Player *p);
 
     QList<const Player *> getSiblings() const;
+    QList<const Player *> getAliveSiblings() const;
 
     QVariantMap tag;
 

@@ -501,11 +501,30 @@ const Card *Card::Parse(const QString &str) {
 }
 
 Card *Card::Clone(const Card *card) {
-    const QMetaObject *meta = card->metaObject();
     Card::Suit suit = card->getSuit();
     int number = card->getNumber();
     
-    QObject *card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
+    QObject *card_obj = NULL;
+    if (card->isKindOf("LuaBasicCard")) {
+        const LuaBasicCard *lcard = qobject_cast<const LuaBasicCard *>(card);
+        Q_ASSERT(lcard != NULL);
+        card_obj = lcard->clone();
+    } else if (card->isKindOf("LuaTrickCard")) {
+        const LuaTrickCard *lcard = qobject_cast<const LuaTrickCard *>(card);
+        Q_ASSERT(lcard != NULL);
+        card_obj = lcard->clone();
+    } else if (card->isKindOf("LuaWeapon")) {
+        const LuaWeapon *lcard = qobject_cast<const LuaWeapon *>(card);
+        Q_ASSERT(lcard != NULL);
+        card_obj = lcard->clone();
+    } else if (card->isKindOf("LuaArmor")) {
+        const LuaArmor *lcard = qobject_cast<const LuaArmor *>(card);
+        Q_ASSERT(lcard != NULL);
+        card_obj = lcard->clone();
+    } else {
+        const QMetaObject *meta = card->metaObject();
+        card_obj = meta->newInstance(Q_ARG(Card::Suit, suit), Q_ARG(int, number));
+    }
     if (card_obj) {
         Card *new_card = qobject_cast<Card *>(card_obj);
         new_card->setId(card->getId());
@@ -582,7 +601,6 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
 
     QVariant data = QVariant::fromValue(card_use);
     RoomThread *thread = room->getThread();
-    Q_ASSERT(thread != NULL);
     thread->trigger(PreCardUsed, room, player, data);
     card_use = data.value<CardUseStruct>();
  
@@ -590,7 +608,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
         CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->getSkillName(), QString());
         if (card_use.to.size() == 1)
             reason.m_targetId = card_use.to.first()->objectName();
-        CardsMoveStruct move(used_cards, card_use.from, NULL, Player::PlaceTable, reason);
+        CardsMoveStruct move(used_cards, card_use.from, NULL, Player::PlaceUnknown, Player::PlaceTable, reason);
         moves.append(move);
         room->moveCardsAtomic(moves, true);
     } else if (card_use.card->willThrow()) {

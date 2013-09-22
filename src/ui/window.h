@@ -3,6 +3,7 @@
 
 #include <QGraphicsScale>
 #include <QGraphicsObject>
+#include "button.h"
 
 class Window: public QGraphicsObject {
     Q_OBJECT
@@ -10,7 +11,7 @@ class Window: public QGraphicsObject {
 public:
     explicit Window(const QString &title, const QSizeF &size, const QString &path = QString());
     void addContent(const QString &content);
-    void addCloseButton(const QString &label);
+    Button *addCloseButton(const QString &label);
     void shift(int pos_x = 0, int pos_y = 0);
     void keepWhenDisappear();
     void setTitle(const QString &title);

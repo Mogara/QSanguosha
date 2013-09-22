@@ -34,9 +34,23 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 				end
 			end
 		end
-		if friend:hasSkill("jizhi") then --队友有集智
+		if friend:hasSkill("nosjizhi") then --队友有集智
 			for _, hcard in sgs.qlist(cards) do
 				if hcard:isKindOf("TrickCard") and not hcard:isKindOf("DelayedTrick") then
+					table.insert(givecard, hcard:getId())
+				end
+				if #givecard == 1 and givecard[1] ~= hcard:getId() then
+					table.insert(givecard, hcard:getId())
+				elseif #givecard == 2 then
+					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
+					if use.to then use.to:append(friend) end
+					return
+				end
+			end
+		end
+		if friend:hasSkill("jizhi") then --队友有集智
+			for _, hcard in sgs.qlist(cards) do
+				if hcard:isKindOf("TrickCard") then
 					table.insert(givecard, hcard:getId())
 				end
 				if #givecard == 1 and givecard[1] ~= hcard:getId() then
@@ -172,15 +186,15 @@ sgs.ai_skill_invoke.tanlan = function(self, data)
 end
 
 sgs.ai_choicemade_filter.skillInvoke.tanlan = function(player, promptlist, self)
-	if sgs.tanlan_target and promptlist[3] == "yes" then
-		local target = sgs.tanlan_target
+	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
+	if damage.from and promptlist[3] == "yes" then
+		local target = damage.from
 		local intention = 10
 		if target:getHandcardNum() == 1 and self:needKongcheng(target) then intention = 0 end
 		if self:getOverflow(target) > 2 then intention = 0 end
 		if not self:hasLoseHandcardEffective(target) then intention = 0 end
-		sgs.updateIntention(player, sgs.tanlan_target, intention)
+		sgs.updateIntention(player, target, intention)
 	end
-	sgs.tanlan_target = nil
 end
 
 function sgs.ai_skill_pindian.tanlan(minusecard, self, requestor)
