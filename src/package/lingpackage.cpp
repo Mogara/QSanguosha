@@ -1641,7 +1641,7 @@ public:
                 foreach(ServerPlayer *to, use.to){
                     if (!to->canDiscard(to, "he"))
                         return false;
-                    else if (use.from->askForSkillInvoke(objectName())){
+                    else if (use.from->askForSkillInvoke(objectName(), data)){
                         QString prompt = "dragon-phoenix-card:" + use.from->objectName();
                         room->askForDiscard(to, objectName(), 1, 1, false, true, prompt);
                     }
@@ -1650,7 +1650,7 @@ public:
         else {
             DeathStruct death = data.value<DeathStruct>();
             if (death.damage != NULL && death.damage->card != NULL && death.damage->card->isKindOf("Slash")
-                    && death.damage->from == player && player->askForSkillInvoke(objectName())){
+                    && death.damage->from == player && player->askForSkillInvoke(objectName(), data)){
                 QString general1 = death.who->getGeneralName(), general2 = death.who->getGeneral2Name();
                 QString general3 = player->getGeneralName(), general4 = player->getGeneral2Name();
                 int maxhp1 = death.who->getMaxHp(), maxhp2 = player->getMaxHp();
