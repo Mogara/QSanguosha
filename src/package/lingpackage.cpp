@@ -1010,7 +1010,7 @@ public:
 
 class Neo2013Shushen: public TriggerSkill{
 public:
-    Neo2013Shushen(): TriggerSkill("neo2013_shushen"){
+    Neo2013Shushen(): TriggerSkill("neo2013shushen"){
         events << HpRecover;
     }
 
