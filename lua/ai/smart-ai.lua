@@ -5029,7 +5029,7 @@ function SmartAI:getAoeValue(card, player)
 	
 	local enemy_number = 0
 	for _, player in sgs.qlist(self.room:getOtherPlayers(attacker)) do
-		if self:cantbeHurt(player, attacker) and self:aoeIsEffective(card, player, attacker) then
+		if self:cantbeHurt(player, 1, attacker) and self:aoeIsEffective(card, player, attacker) then
 			if player:hasSkill("wuhun") and not self:isWeak(player) and attacker:getMark("@nightmare") == 0 then
 				if attacker:objectName() == self.player:objectName() and self.role ~= "renegade" and self.role ~= "lord" then
 				elseif attacker:objectName() ~= self.player:objectName() and not (self:isFriend(attacker) and attacker:objectName() == lord:objectName()) then
