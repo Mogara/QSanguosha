@@ -644,7 +644,7 @@ end
 sgs.ai_playerchosen_intention.xingwu = 80
 
 sgs.ai_skill_cardask["@yanyu-discard"] = function(self, data)
-	if self.player:getHandcardNum() < 3 then
+	if self.player:getHandcardNum() < 3 and self.player:getPhase() ~= sgs.Player_Play then
 		if self:needToThrowArmor() then return "$" .. self.player:getArmor():getEffectiveId()
 		elseif self:needKongcheng(self.player, true) and self.player:getHandcardNum() == 1 then return "$" .. self.player:handCards():first()
 		else return "." end
