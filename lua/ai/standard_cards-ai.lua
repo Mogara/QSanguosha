@@ -500,7 +500,7 @@ function SmartAI:useCardSlash(card, use)
 					no_other_assignee = false
 				end
 			end
-			if no_other_assignee and #duanbing_targets == 1 and duanbing_targets[1]:hasFlag("SlashAssignee") then return false end
+			if no_other_assignee and #duanbing_targets == 1 and duanbing_targets[1]:hasFlag("SlashAssignee") then return self.player:distanceTo(target, rangefix) == 1 end
 			return #duanbing_targets > 0 or self.player:distanceTo(target, rangefix) == 1
 		elseif use.to:length() < self.slash_targets then
 			return true

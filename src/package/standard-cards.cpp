@@ -300,7 +300,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
                     no_other_assignee = false;
             }
             if (no_other_assignee && duanbing_targets.length() == 1 && duanbing_targets.first()->hasFlag("SlashAssignee"))
-                return false;
+                return Self->distanceTo(to_select, rangefix) == 1;
             return !duanbing_targets.isEmpty() || Self->distanceTo(to_select, rangefix) == 1;
         } else
             return false;
