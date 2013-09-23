@@ -498,6 +498,8 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
     if (effect.from->pindian(effect.to, "xianzhen", NULL)) {
         PlayerStar target = effect.to;
         effect.from->tag["XianzhenTarget"] = QVariant::fromValue(target);
+        QVariant _data = effect.to->objectName();
+        room->setPlayerProperty(effect.from, "xianzhen", _data);
         room->setPlayerFlag(effect.from, "XianzhenSuccess");
         room->setPlayerFlag(effect.from, "xianzhen");
         room->setFixedDistance(effect.from, effect.to, 1);
@@ -507,6 +509,7 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
     }
 }
 
+/*
 XianzhenSlashCard::XianzhenSlashCard() {
     target_fixed = true;
     handling_method = Card::MethodUse;
@@ -522,6 +525,7 @@ void XianzhenSlashCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
     room->askForUseSlashTo(card_use.from, target, "@xianzhen-slash");
 }
+*/
 
 class XianzhenViewAsSkill: public ZeroCardViewAsSkill {
 public:
@@ -531,10 +535,12 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const{
         if (!player->hasUsed("XianzhenCard") && !player->isKongcheng())
             return true;
+/*
         Slash *slashx = new Slash(Card::NoSuit, 0);
         slashx->deleteLater();
         if (!player->isCardLimited(slashx, Card::MethodUse) && player->hasFlag("XianzhenSuccess"))
             return true;
+*/
 
         return false;
     }
@@ -542,9 +548,11 @@ public:
     virtual const Card *viewAs() const{
         if (!Self->hasUsed("XianzhenCard"))
             return new XianzhenCard;
+/*
         else if (Self->hasFlag("XianzhenSuccess"))
             return new XianzhenSlashCard;
         else
+*/
             return NULL;
     }
 };
@@ -584,6 +592,8 @@ public:
             room->setFixedDistance(gaoshun, target, -1);
             gaoshun->tag.remove("XianzhenTarget");
             room->removePlayerMark(target, "Armor_Nullified");
+            QVariant _data = QString();
+            room->setPlayerProperty(gaoshun, "xianzhen", _data);
         }
         return false;
     }
@@ -1220,7 +1230,7 @@ YJCMPackage::YJCMPackage()
     addMetaObject<MingceCard>();
     addMetaObject<GanluCard>();
     addMetaObject<XianzhenCard>();
-    addMetaObject<XianzhenSlashCard>();
+    /*addMetaObject<XianzhenSlashCard>();*/
     addMetaObject<XinzhanCard>();
     addMetaObject<JujianCard>();
     addMetaObject<PaiyiCard>();

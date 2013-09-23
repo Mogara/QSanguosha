@@ -34,6 +34,13 @@ bool Slash::IsAvailable(const Player *player, const Card *slash) {
     int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
     if (player->hasWeapon("VSCrossbow") && used < valid + 3)
         return true;
+
+    QString xianzhen = player->property("xianzhen").toString();
+    if (xianzhen != "")
+        foreach(const Player *p, player->getAliveSiblings())
+            if (p->objectName() == xianzhen)
+                return true;
+
     return false;
 #undef THIS_SLASH
 }
@@ -289,6 +296,17 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     }
 
     if (!Self->canSlash(to_select, this, distance_limit, rangefix, targets)) return false;
+
+    QString xianzhen = Self->property("xianzhen").toString();
+    if (xianzhen != ""){
+        int used = Self->getSlashCount();
+        int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, Self, this);
+
+        if (used >= valid && targets.length() == 0){
+            return to_select->objectName() == xianzhen;
+        }
+    }
+
     if (targets.length() >= slash_targets) {
         if (Self->hasSkill("duanbing") && targets.length() == slash_targets) {
             QList<const Player *> duanbing_targets;
