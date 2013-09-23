@@ -119,8 +119,8 @@ sgs.ai_skill_use["@@shensu2"] = function(self, prompt)
 		if selfSub < 0 then return "." end
 	end
 	
-	if best_target then return "@ShensuCard="..eCard:getEffectiveId().."->"..best_target:objectName() end
-	if target then return "@ShensuCard="..eCard:getEffectiveId().."->"..target:objectName() end
+	if best_target then return "@ShensuCard=" .. eCard:getEffectiveId() .. "->" .. best_target:objectName() end
+	if target then return "@ShensuCard=" .. eCard:getEffectiveId() .. "->" .. target:objectName() end
 	
 	return "."
 end
@@ -129,7 +129,7 @@ sgs.ai_cardneed.shensu = function(to, card)
 	return card:getTypeId() == sgs.Card_Equip and getKnownCard(to, "EquipCard", false) < 2
 end
 
-sgs.ai_card_intention.ShensuCard = 80
+sgs.ai_card_intention.ShensuCard = sgs.ai_card_intention.Slash
 
 sgs.shensu_keep_value = sgs.xiaoji_keep_value
 
