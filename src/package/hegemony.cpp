@@ -517,8 +517,8 @@ class Huoshui: public TriggerSkill {
 public:
     Huoshui(): TriggerSkill("huoshui") {
         events << EventPhaseStart << EventPhaseChanging << Death
-               << EventLoseSkill << EventAcquireSkill
-               << PostHpReduced << HpRecover << MaxHpChanged;
+            << EventLoseSkill << EventAcquireSkill
+            << HpChanged << MaxHpChanged;
         frequency = Compulsory;
     }
 
@@ -530,84 +530,34 @@ public:
         return 5;
     }
 
-    void setHuoshuiFlag(Room *room, ServerPlayer *player, bool is_lose) const{
-        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            room->setPlayerFlag(p, is_lose ? "-huoshui" : "huoshui");
-            room->filterCards(p, p->getCards("he"), !is_lose);
-        }
-    }
-
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        bool effected = false;
         if (triggerEvent == EventPhaseStart) {
-            if (TriggerSkill::triggerable(player) && player->getPhase() == Player::RoundStart) {
-                effected = true;
-                setHuoshuiFlag(room, player, false);
-                room->broadcastSkillInvoke(objectName(), 1);
-            }
+            if (!TriggerSkill::triggerable(player) || player->getPhase() != Player::RoundStart) return false;
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (TriggerSkill::triggerable(player) && change.to == Player::NotActive) {
-                effected = true;
-                setHuoshuiFlag(room, player, true);
-                room->broadcastSkillInvoke(objectName(), 2);
-            }
+            if (!TriggerSkill::triggerable(player) || change.to != Player::NotActive) return false;
         } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
-            if (death.who != player)
-                return false;
-            if (player->hasSkill(objectName())) {
-                effected = true;
-                setHuoshuiFlag(room, player, true);
-            }
+            if (death.who != player || !player->hasSkill(objectName())) return false;
         } else if (triggerEvent == EventLoseSkill) {
-            if (data.toString() == objectName() && room->getCurrent() && room->getCurrent() == player) {
-                effected = true;
-                setHuoshuiFlag(room, player, true);
-            }
+            if (data.toString() != objectName() || player->getPhase() == Player::NotActive) return false;
         } else if (triggerEvent == EventAcquireSkill) {
-            if (data.toString() == objectName() && room->getCurrent() && room->getCurrent() == player) {
-                effected = true;
-                setHuoshuiFlag(room, player, false);
-            }
-        } else if (triggerEvent == PostHpReduced) {
-            if (player->hasFlag(objectName())) {
-                int reduce = 0;
-                if (data.canConvert<DamageStruct>()) {
-                    DamageStruct damage = data.value<DamageStruct>();
-                    reduce = damage.damage;
-                } else
-                    reduce = data.toInt();
-                int hp = player->getHp();
-                int maxhp_2 = (player->getMaxHp() + 1) / 2;
-                if (hp < maxhp_2 && hp + reduce >= maxhp_2) {
-                    effected = true;
-                    room->filterCards(player, player->getCards("he"), false);
-                }
-            }
-        } else if (triggerEvent == MaxHpChanged) {
-            if (player->hasFlag(objectName())) {
-                effected = true;
-                room->filterCards(player, player->getCards("he"), true);
-            }
-        } else if (triggerEvent == HpRecover) {
-            RecoverStruct recover_struct = data.value<RecoverStruct>();
-            int recover = recover_struct.recover;
-            if (player->hasFlag(objectName())) {
-                int hp = player->getHp();
-                int maxhp_2 = (player->getMaxHp() + 1) / 2;
-                if (hp >= maxhp_2 && hp - recover < maxhp_2) {
-                    effected = true;
-                    room->filterCards(player, player->getCards("he"), true);
-                }
-            }
+            if (data.toString() != objectName() || !player->hasSkill(objectName()) || player->getPhase() == Player::NotActive)
+                return false;
+        } else if (triggerEvent == MaxHpChanged || triggerEvent == HpChanged) {
+            if (!room->getCurrent() || !room->getCurrent()->hasSkill(objectName())) return false;
         }
 
-        if (effected) {
-            Json::Value args;
-            args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-            room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-        }
+        if (triggerEvent == EventPhaseStart || triggerEvent == EventAcquireSkill)
+            room->broadcastSkillInvoke(objectName(), 1);
+        else if (triggerEvent == EventPhaseChanging || triggerEvent == EventLoseSkill)
+            room->broadcastSkillInvoke(objectName(), 2);
+
+        foreach (ServerPlayer *p, room->getAllPlayers())
+            room->filterCards(p, p->getCards("he"), true);
+        Json::Value args;
+        args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
         return false;
     }
@@ -651,8 +601,10 @@ void QingchengCard::onUse(Room *room, const CardUseStruct &use) const{
         QStringList Qingchenglist = to->tag["Qingcheng"].toStringList();
         Qingchenglist << skill_qc;
         to->tag["Qingcheng"] = QVariant::fromValue(Qingchenglist);
-        room->setPlayerMark(to, "Qingcheng" + skill_qc, 1);
-        room->filterCards(to, to->getCards("he"), true);
+        room->addPlayerMark(to, "Qingcheng" + skill_qc);
+
+        foreach (ServerPlayer *p, room->getAllPlayers())
+            room->filterCards(p, p->getCards("he"), true);
 
         Json::Value args;
         args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
@@ -705,7 +657,7 @@ public:
     }
 
     virtual int getPriority() const{
-        return 5;
+        return 6;
     }
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
@@ -723,7 +675,8 @@ public:
                 }
             }
             player->tag.remove("Qingcheng");
-            room->filterCards(player, player->getCards("he"), false);
+            foreach (ServerPlayer *p, room->getAllPlayers())
+                room->filterCards(p, p->getCards("he"), true);
 
             Json::Value args;
             args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
@@ -732,6 +685,7 @@ public:
         return false;
     }
 };
+
 
 HegemonyPackage::HegemonyPackage()
     : Package("hegemony")

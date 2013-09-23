@@ -1130,6 +1130,7 @@ public:
     }
 };
 
+
 class Chanyuan: public TriggerSkill {
 public:
     Chanyuan(): TriggerSkill("chanyuan") {
@@ -1141,41 +1142,25 @@ public:
         return target != NULL;
     }
 
+    virtual int getPriority() const{
+        return 5;
+    }
+
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == EventLoseSkill) {
-            if (data.toString() == objectName()) {
-                QStringList chanyuan_skills = player->tag["ChanyuanSkills"].toStringList();
-                foreach (QString skill_name, chanyuan_skills)
-                    room->removePlayerMark(player, "Qingcheng" + skill_name);
-                player->tag["ChanyuanSkills"] = QVariant();
-            }
+            if (data.toString() == objectName()) return false;
             room->removePlayerMark(player, "@chanyuan");
-            return false;
         } else if (triggerEvent == EventAcquireSkill) {
             if (data.toString() != objectName()) return false;
             room->addPlayerMark(player, "@chanyuan");
         }
+        if (triggerEvent != EventLoseSkill && !player->hasSkill(objectName())) return false;
 
-        if (!TriggerSkill::triggerable(player)) return false;
-
-        if (player->getHp() == 1) {
-            QStringList chanyuan_skills = player->tag["ChanyuanSkills"].toStringList();
-            QList<const Skill *> skills = player->getVisibleSkillList();
-            foreach (const Skill *skill, skills) {
-                if (skill->objectName() != objectName() && skill->getLocation() == Skill::Right
-                    && !skill->inherits("SPConvertSkill") && !skill->isAttachedLordSkill()
-                    && !chanyuan_skills.contains(skill->objectName())) {
-                    room->addPlayerMark(player, "Qingcheng" + skill->objectName());
-                    chanyuan_skills.append(skill->objectName());
-                }
-            }
-            player->tag["ChanyuanSkills"] = QVariant::fromValue(chanyuan_skills);
-        } else {
-            QStringList chanyuan_skills = player->tag["ChanyuanSkills"].toStringList();
-            foreach (QString skill_name, chanyuan_skills)
-                room->removePlayerMark(player, "Qingcheng" + skill_name);
-            player->tag["ChanyuanSkills"] = QVariant();
-        }
+        foreach (ServerPlayer *p, room->getOtherPlayers(player))
+            room->filterCards(p, p->getCards("he"), true);
+        Json::Value args;
+        args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
         return false;
     }
 
