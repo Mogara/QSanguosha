@@ -845,7 +845,7 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *selfplayer = room->findPlayerBySkillName(objectName());
-        if (selfplayer == NULL)
+        if (selfplayer == NULL || selfplayer->isKongcheng())
             return false;
         static QStringList types;
         if (types.isEmpty())
@@ -883,7 +883,7 @@ public:
         }
         else {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to == Player::PhaseNone)
+            if (change.to == Player::NotActive)
                 room->setPlayerMark(player, "YiDuoyiType", 0);
         }
         return false;
