@@ -117,7 +117,8 @@ public:
     DamageStruct::Nature getNature() const;
     void setNature(DamageStruct::Nature nature);
 
-    static bool IsAvailable(const Player *player, const Card *slash = NULL);
+    static bool IsAvailable(const Player *player, const Card *slash = NULL, bool considerSpecificAssignee = true);
+    static bool IsSpecificAssignee(const Player *player, const Player *from, const Card *slash);
 
 protected:
     DamageStruct::Nature nature;

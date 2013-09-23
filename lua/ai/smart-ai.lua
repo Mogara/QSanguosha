@@ -3632,7 +3632,7 @@ function SmartAI:getTurnUse()
 	self:fillSkillCards(cards)
 	self:sortByUseValue(cards)
 
-	if self:isEquip("Crossbow") then
+	if self:isEquip("Crossbow") or #self.player:property("extra_slash_specific_assignee"):toString():split("+") > 0 then
 		slashAvail = 100
 	end
 

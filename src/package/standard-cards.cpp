@@ -21,14 +21,14 @@ void Slash::setNature(DamageStruct::Nature nature) {
     this->nature = nature;
 }
 
-bool Slash::IsAvailable(const Player *player, const Card *slash) {
+bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSpecificAssignee) {
     Slash *newslash = new Slash(Card::NoSuit, 0);
     newslash->deleteLater();
 #define THIS_SLASH (slash == NULL ? newslash : slash)
     if (player->isCardLimited(THIS_SLASH, Card::MethodUse))
        return false;
 
-    if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+    if (player->getPhase() == Player::Play && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
         QList<int> ids;
         if (slash) {
             if (slash->isVirtualCard()) {
@@ -45,12 +45,34 @@ bool Slash::IsAvailable(const Player *player, const Card *slash) {
         int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
         if ((!has_weapon && player->hasWeapon("vscrossbow")) && used < valid + 3)
             return true;
+
+        if (considerSpecificAssignee) {
+            QStringList assignee_list = player->property("extra_slash_specific_assignee").toString().split("+");
+            if (!assignee_list.isEmpty()) {
+                foreach (const Player *p, player->getAliveSiblings()) {
+                    if (assignee_list.contains(p->objectName()) && player->canSlash(p, THIS_SLASH))
+                        return true;
+                }
+            }
+        } 
         return false;
     } else {
         return true;
     }
 #undef THIS_SLASH
 }
+
+bool Slash::IsSpecificAssignee(const Player *player, const Player *from, const Card *slash) {
+    if (from->hasFlag("slashTargetFix") && player->hasFlag("SlashAssignee"))
+        return true;
+    else if (from->getPhase() == Player::Play && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
+            && !Slash::IsAvailable(from, slash, false)) {
+        QStringList assignee_list = from->property("extra_slash_specific_assignee").toString().split("+");
+        if (assignee_list.contains(player->objectName())) return true;
+    }
+    return false;
+}
+
 
 bool Slash::isAvailable(const Player *player) const{
     return IsAvailable(player, this) && BasicCard::isAvailable(player);
@@ -286,14 +308,22 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
         rangefix += 1;
 
-    if (Self->hasFlag("slashTargetFix")) {
+    bool has_specific_assignee = false;
+    foreach (const Player *p, Self->getAliveSiblings()) {
+        if (Slash::IsSpecificAssignee(p, Self, this)) {
+            has_specific_assignee = true;
+            break;
+        }
+    }
+
+    if (has_specific_assignee) { 
         if (targets.isEmpty())
-            return to_select->hasFlag("SlashAssignee") && Self->canSlash(to_select, this, distance_limit, rangefix);
+            return Slash::IsSpecificAssignee(to_select, Self, this) && Self->canSlash(to_select, this, distance_limit, rangefix);
         else {
             if (Self->hasFlag("slashDisableExtraTarget")) return false;
             bool canSelect = false;
             foreach (const Player *p, targets) {
-                if (p->hasFlag("SlashAssignee")) {
+                if (Slash::IsSpecificAssignee(p, Self, this)) {
                     canSelect = true;
                     break;
                 }
@@ -310,10 +340,10 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
             foreach (const Player *p, targets) {
                 if (Self->distanceTo(p, rangefix) == 1)
                     duanbing_targets << p;
-                else if (no_other_assignee && p->hasFlag("SlashAssignee"))
+                else if (no_other_assignee && Slash::IsSpecificAssignee(p, Self, this))
                     no_other_assignee = false;
             }
-            if (no_other_assignee && duanbing_targets.length() == 1 && duanbing_targets.first()->hasFlag("SlashAssignee"))
+            if (no_other_assignee && duanbing_targets.length() == 1 && Slash::IsSpecificAssignee(duanbing_targets.first(), Self, this))
                 return Self->distanceTo(to_select, rangefix) == 1;
             return !duanbing_targets.isEmpty() || Self->distanceTo(to_select, rangefix) == 1;
         } else

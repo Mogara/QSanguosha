@@ -499,28 +499,16 @@ void XianzhenCard::onEffect(const CardEffectStruct &effect) const{
         PlayerStar target = effect.to;
         effect.from->tag["XianzhenTarget"] = QVariant::fromValue(target);
         room->setPlayerFlag(effect.from, "XianzhenSuccess");
-        room->setPlayerFlag(effect.from, "xianzhen");
+
+        QStringList assignee_list = effect.from->property("extra_slash_specific_assignee").toString().split("+");
+        assignee_list << target->objectName();
+        room->setPlayerProperty(effect.from, "extra_slash_specific_assignee", assignee_list.join("+"));
+ 
         room->setFixedDistance(effect.from, effect.to, 1);
         room->addPlayerMark(effect.to, "Armor_Nullified");
     } else {
         room->setPlayerCardLimitation(effect.from, "use", "Slash", true);
     }
-}
-
-XianzhenSlashCard::XianzhenSlashCard() {
-    target_fixed = true;
-    handling_method = Card::MethodUse;
-}
-
-void XianzhenSlashCard::onUse(Room *room, const CardUseStruct &card_use) const{
-    ServerPlayer *target = card_use.from->tag["XianzhenTarget"].value<PlayerStar>();
-    if (target == NULL || target->isDead())
-        return;
-
-    if (!card_use.from->canSlash(target, NULL, false))
-        return;
-
-    room->askForUseSlashTo(card_use.from, target, "@xianzhen-slash");
 }
 
 class XianzhenViewAsSkill: public ZeroCardViewAsSkill {
@@ -529,23 +517,11 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        if (!player->hasUsed("XianzhenCard") && !player->isKongcheng())
-            return true;
-        Slash *slashx = new Slash(Card::NoSuit, 0);
-        slashx->deleteLater();
-        if (!player->isCardLimited(slashx, Card::MethodUse) && player->hasFlag("XianzhenSuccess"))
-            return true;
-
-        return false;
+       return !player->hasUsed("XianzhenCard") && !player->isKongcheng();
     }
 
     virtual const Card *viewAs() const{
-        if (!Self->hasUsed("XianzhenCard"))
-            return new XianzhenCard;
-        else if (Self->hasFlag("XianzhenSuccess"))
-            return new XianzhenSlashCard;
-        else
-            return NULL;
+        return new XianzhenCard;
     }
 };
 
@@ -579,8 +555,10 @@ public:
             }
         }
         if (target) {
-            if (gaoshun->hasFlag("xianzhen"))
-                room->setPlayerFlag(gaoshun, "-xianzhen");
+            QStringList assignee_list = gaoshun->property("extra_slash_specific_assignee").toString().split("+");
+            assignee_list.removeOne(target->objectName());
+            room->setPlayerProperty(gaoshun, "extra_slash_specific_assignee", assignee_list.join("+"));
+
             room->setFixedDistance(gaoshun, target, -1);
             gaoshun->tag.remove("XianzhenTarget");
             room->removePlayerMark(target, "Armor_Nullified");
@@ -1220,7 +1198,6 @@ YJCMPackage::YJCMPackage()
     addMetaObject<MingceCard>();
     addMetaObject<GanluCard>();
     addMetaObject<XianzhenCard>();
-    addMetaObject<XianzhenSlashCard>();
     addMetaObject<XinzhanCard>();
     addMetaObject<JujianCard>();
     addMetaObject<PaiyiCard>();

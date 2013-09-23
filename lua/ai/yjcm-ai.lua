@@ -708,21 +708,8 @@ local xianzhen_skill = {}
 xianzhen_skill.name = "xianzhen"
 table.insert(sgs.ai_skills, xianzhen_skill)
 xianzhen_skill.getTurnUseCard = function(self)
-	if self:needBear() then return end
-	if not self.player:hasUsed("XianzhenCard") and not self.player:isKongcheng() then return sgs.Card_Parse("@XianzhenCard=.") 
-	elseif self.player:hasUsed("XianzhenCard") and self.player:hasFlag("XianzhenSuccess") then
-		local card_str = "@XianzhenSlashCard=."
-		local card = sgs.Card_Parse(card_str)
-		return card
-	end
-end
-
-sgs.ai_skill_use_func.XianzhenSlashCard = function(card,use,self)
-	local target = self.player:getTag("XianzhenTarget"):toPlayer()
-	if self:askForCard("slash", "@xianzhen-slash") == "." then return end
-	if self:getCard("Slash") and self.player:canSlash(target, nil, false) and target:isAlive() then
-		use.card = card
-	end
+	if self.player:hasUsed("XianzhenCard") or self.player:isKongcheng() then return end
+	return sgs.Card_Parse("@XianzhenCard=.") 
 end
 
 sgs.ai_skill_use_func.XianzhenCard = function(card, use, self)
@@ -825,18 +812,6 @@ sgs.dynamic_value.control_card.XianzhenCard = true
 
 sgs.ai_use_value.XianzhenCard = 9.2
 sgs.ai_use_priority.XianzhenCard = 9.2
-
-sgs.ai_skill_cardask["@xianzhen-slash"] = function(self)
-	local target = self.player:getTag("XianzhenTarget"):toPlayer()
-	local slashes = self:getCards("Slash")
-	for _, slash in ipairs(slashes) do
-		if self:slashIsEffective(slash, target) then return slash:toString() end
-	end
-	return "."
-end
-
-sgs.ai_use_value.XianzhenSlashCard = 9.2
-sgs.ai_use_priority.XianzhenSlashCard = 2.45
 
 sgs.ai_skill_invoke.shangshi = function(self, data)	
 	if self.player:getLostHp() == 1 then return sgs.ai_skill_invoke.lianying(self, data) end	
