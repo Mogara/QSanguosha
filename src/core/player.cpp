@@ -312,6 +312,9 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
                 }
                 if (current && current->hasSkill("huoshui") && hp >= (max_hp + 1) / 2 && (!skill || !skill->isAttachedLordSkill()))
                     return false;
+                if (current && current->hasSkill("neo2013huoshui") && current->getEquips().length() >= getEquips().length()
+                        && (!skill || !skill->isAttachedLordSkill()))
+                    return false;
             }
             if (getMark("Qingcheng" + skill_name) > 0)
                 return false;
@@ -568,8 +571,8 @@ void Player::setFaceUp(bool face_up) {
     }
 }
 
-int Player::getMaxCards() const{
-    int origin = Sanguosha->correctMaxCards(this, true);
+int Player::getMaxCards(const QStringList notInclude) const{
+    int origin = Sanguosha->correctMaxCards(this, true, notInclude);
     if (origin == 0)
         origin = qMax(hp, 0);
     int rule = 0, total = 0, extra = 0;
@@ -578,7 +581,7 @@ int Player::getMaxCards() const{
         if (total % 2 != 0 && getMark("AwakenLostMaxHp") == 0)
             rule = 1;
     }
-    extra += Sanguosha->correctMaxCards(this);
+    extra += Sanguosha->correctMaxCards(this, false, notInclude);
 
     return qMax(origin + rule + extra, 0);
 }

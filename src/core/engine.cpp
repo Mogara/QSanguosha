@@ -1096,10 +1096,12 @@ int Engine::correctDistance(const Player *from, const Player *to) const{
     return correct;
 }
 
-int Engine::correctMaxCards(const Player *target, bool fixed) const{
+int Engine::correctMaxCards(const Player *target, bool fixed, const QStringList &notInclude) const{
     int extra = 0;
 
     foreach (const MaxCardsSkill *skill, maxcards_skills) {
+        if (notInclude.contains(skill->objectName()))
+            continue;
         if (fixed) {
             int f = skill->getFixed(target);
             if (f >= 0) return f;
