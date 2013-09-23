@@ -532,14 +532,13 @@ public:
         if (!card->isRed())
             return false;
 
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
-            && Self->getWeapon() && card->getEffectiveId() == Self->getWeapon()->getId() && card->isKindOf("Crossbow")) {
-            Slash *slash = new Slash(card->getSuit(), card->getNumber());
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+            slash->addSubcard(card->getEffectiveId());
             slash->deleteLater();
-            return Self->canSlashWithoutCrossbow(slash);
-        } else {
-            return true;
+            return slash->isAvailable(Self);
         }
+        return false;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

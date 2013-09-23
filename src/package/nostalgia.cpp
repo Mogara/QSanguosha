@@ -377,14 +377,13 @@ public:
         if (to_select->getTypeId() != Card::TypeEquip)
             return false;
 
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
-            && Self->getWeapon() && to_select->getEffectiveId() == Self->getWeapon()->getId() && to_select->isKindOf("Crossbow")) {
-            Slash *slash = new Slash(to_select->getSuit(), to_select->getNumber());
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+            slash->addSubcard(to_select->getEffectiveId());
             slash->deleteLater();
-            return Self->canSlashWithoutCrossbow(slash);
-        } else {
-            return true;
+            return slash->isAvailable(Self);
         }
+        return false;
     }
 
     const Card *viewAs(const Card *originalCard) const{

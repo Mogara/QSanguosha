@@ -1278,18 +1278,12 @@ bool Longhun::viewFilter(const QList<const Card *> &selected, const Card *card) 
     case CardUseStruct::CARD_USE_REASON_PLAY: {
             if (Self->isWounded() && card->getSuit() == Card::Heart)
                 return true;
-            else if (Slash::IsAvailable(Self) && card->getSuit() == Card::Diamond) {
-                if (Self->getWeapon() && card->getEffectiveId() == Self->getWeapon()->getId()
-                    && card->isKindOf("Crossbow")) {
-                    int number = card->getNumber();
-                    foreach (const Card *c, selected)
-                        number += c->getNumber();
-                    FireSlash *slash = new FireSlash(card->getSuit(), number);
-                    slash->deleteLater();
-                    return Self->canSlashWithoutCrossbow(slash);
-                } else {
-                    return true;
-                }
+           else if (card->getSuit() == Card::Diamond) {
+               FireSlash *slash = new FireSlash(Card::SuitToBeDecided, -1);
+               slash->addSubcards(selected);
+               slash->addSubcard(card->getEffectiveId());
+               slash->deleteLater();
+               return slash->isAvailable(Self); 
             } else
                 return false;
         }

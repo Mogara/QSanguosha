@@ -28,13 +28,27 @@ bool Slash::IsAvailable(const Player *player, const Card *slash) {
     if (player->isCardLimited(THIS_SLASH, Card::MethodUse))
        return false;
 
-    if (player->hasWeapon("Crossbow") || player->canSlashWithoutCrossbow(THIS_SLASH))
+    if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+        QList<int> ids;
+        if (slash) {
+            if (slash->isVirtualCard()) {
+                if (slash->subcardsLength() > 0)
+                    ids = slash->getSubcards();
+            } else {
+                ids << slash->getEffectiveId();
+            }
+        }
+        bool has_weapon = (player->hasWeapon("crossbow") || player->hasWeapon("vscrossbow")) && ids.contains(player->getWeapon()->getEffectiveId());
+        if ((!has_weapon && player->hasWeapon("crossbow")) || player->canSlashWithoutCrossbow(THIS_SLASH))
+            return true;
+        int used = player->getSlashCount();
+        int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
+        if ((!has_weapon && player->hasWeapon("vscrossbow")) && used < valid + 3)
+            return true;
+        return false;
+    } else {
         return true;
-    int used = player->getSlashCount();
-    int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
-    if (player->hasWeapon("VSCrossbow") && used < valid + 3)
-        return true;
-    return false;
+    }
 #undef THIS_SLASH
 }
 
