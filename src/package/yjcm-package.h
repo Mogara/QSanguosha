@@ -43,7 +43,7 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
-/*
+
 class XianzhenSlashCard: public SkillCard {
     Q_OBJECT
 
@@ -52,7 +52,6 @@ public:
 
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
-*/
 
 class XianzhenCard: public SkillCard {
     Q_OBJECT
