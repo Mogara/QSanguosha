@@ -75,6 +75,8 @@ sgs.ai_skill_choice.drowning = function(self, choices, data)
 	if value < 8 then return "throw" else return "damage" end
 end
 
+sgs.ai_skill_choice.neo_drowning = sgs.ai_skill_choice.drowning
+
 sgs.ai_skill_playerchosen.koftuxi = function(self, targets)
 	local cardstr = sgs.ai_skill_use["@@tuxi"](self, "@tuxi")
 	if cardstr:match("->") then
