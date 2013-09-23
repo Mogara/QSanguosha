@@ -1623,7 +1623,7 @@ void YisheCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) c
 class YisheViewAsSkill: public ViewAsSkill{
 public:
     YisheViewAsSkill():ViewAsSkill("yishe"){
-        card = new YisheCard;
+        /*card = new YisheCard;*/
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -1645,13 +1645,15 @@ public:
         if(Self->getPile("rice").isEmpty() && cards.isEmpty())
             return NULL;
 
-        card->clearSubcards();
+        /*card->clearSubcards();*/
+        YisheCard *card = new YisheCard;
         card->addSubcards(cards);
         return card;
     }
 
+/*
 private:
-    YisheCard *card;
+    YisheCard *card;*/
 };
 
 YisheAskCard::YisheAskCard(){
