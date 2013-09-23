@@ -543,7 +543,7 @@ public:
                 ServerPlayer *source = use.from;
                 const Card *card = use.card;
 
-                if (card->isKindOf("Slash") || card->isNDTrick()){
+                if (card != NULL && (card->isKindOf("Slash") || card->isNDTrick())){
                     if (!source->hasFlag("YiRenwangFirst"))
                         room->setPlayerFlag(source, "YiRenwangFirst");
                     else
