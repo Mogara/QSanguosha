@@ -362,7 +362,7 @@ local to = tars:at(math.random(0,tars:length()-1))
 local voke = math.random(0,5) == 3
 local tw = math.random(0,1) == 1
 use.card = card
-if (not self:isWeak()) and not self.player:hasSkill("yongsi") and (voke or (usesed<=1 and tw)) and not self.room:isProhibited(self.player,to,card) and self:hasTrickEffective(card, to) then
+if (not self:isWeak()) and not self.player:hasSkill("yongsi") and (voke or (usesed<=1 and tw)) and not self.room:isProhibited(self.player,to,card) and self:hasTrickEffective(card, to) and not to:isKongcheng() then
 if use.to then use.to:append(to) end
 return
 end 
@@ -376,11 +376,10 @@ sgs.weapon_range.Triblade = 3
 sgs.weapon_range.DragonPhoenix = 2
 
 sgs.ai_skill_use["@@SixSwords"] = function(self, prompt)
-	local targets = self.friends_noself
-	self:sort(targets, "defense")
-	if #targets == 0 then return "."
-	else return "@SixSwordsSkillCard=.->" .. table.concat(targets, "+")
-	end
+	local targets = {}
+	self:sort(self.friends_noself, "defense")
+	for _, friend in ipairs(self.friends_noself) do table.insert(targets, friend:objectName()) end
+	if #targets == 0 then return "." else return "@SixSwordsSkillCard=.->" .. table.concat(targets, "+") end
 end
 
 sgs.ai_skill_use["@@Triblade"]=function(self,prompt)
