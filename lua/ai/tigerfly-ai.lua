@@ -599,10 +599,11 @@ sgs.ai_skill_use["@@choudu"] = function(self, prompt)
 	local tarnum = self.player:getMark("chouduuse")
 	local others = self.room:getOtherPlayers(self.player)
 	for _, tar in sgs.qlist(others) do
-		if self:isFriend(p) then 
-			if (self:needToThrowArmor(tar) or self:doNotDiscard(tar)) and not tar:hasSkill("manjuan") then table.insert(targets, tar:objectName()) end
+		if tar:isKongcheng() then continue end
+		if self:isFriend(tar) then 
+			if self:doNotDiscard(tar, "h") and not tar:hasSkill("manjuan") then table.insert(targets, tar:objectName()) end
 		else
-			if not self:doNotDiscard(tar) then table.insert(targets, tar:objectName()) end
+			if not self:doNotDiscard(tar, "h") then table.insert(targets, tar:objectName()) end
 		end
 		if #targets >= tarnum then break end		
 	end	
@@ -611,20 +612,22 @@ end
 sgs.ai_choicemade_filter.cardChosen.choudu = sgs.ai_choicemade_filter.cardChosen.snatch
 sgs.ai_skill_askforyiji.choudu = function(self, card_ids)
 	local cards = {}
-	for _, card_id in ipairs(card_ids) do
-		table.insert(cards, sgs.Sanguosha:getCard(card_id))
-	end
+	local target = sgs.SPlayerList()
+	for _, card_id in ipairs(card_ids) do table.insert(cards, sgs.Sanguosha:getCard(card_id)) end
 	local players = self.room:getTag("choudutargets"):toString():split("+")
 	local marknum = self.player:getMark("choudutargets")
-	for _,player in ipairs(players) do
+	for _,name in ipairs(players) do target:append(findPlayerByObjectName(self.room, name)) end
+	for _,player in sgs.qlist(target) do
+		if player:hasFlag("chouduselected") then continue end
 		if self:isFriend(player) then 
-			self:sortByUseValue(cards, true)
-			return player, cards[#cards]
-		else
 			self:sortByCardNeed(cards)
-			if marknum == 1 and self.player:getHp() > 2 then return nil, -1 else return player, cards[1] end
+			return player, cards[#cards]:getEffectiveId()
+		else
+			self:sortByKeepValue(cards)
+			if marknum < 2 and self.player:getHp() > 3 then return nil, -1 else return player, cards[1]:getEffectiveId() end
 		end
 	end
+	return nil, -1
 end
 
 sgs.ai_skill_cardask["@xuedian"] = function(self, data)
