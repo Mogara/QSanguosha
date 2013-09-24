@@ -684,7 +684,7 @@ local duanhun_skill = {}
 duanhun_skill.name = "duanhun"
 table.insert(sgs.ai_skills, duanhun_skill)
 duanhun_skill.getTurnUseCard = function(self, inclusive)
-	local cards = player:getCards("he")
+	local cards = self.player:getCards("he")
 	cards = sgs.QList2Table(cards)
 	for _, acard in ipairs(cards) do
 		if isCard("Slash", acard, player) then return end
