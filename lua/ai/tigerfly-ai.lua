@@ -704,7 +704,7 @@ duanhun_skill.getTurnUseCard = function(self, inclusive)
 		end
 	end
 	if #newcards <= self.player:getHp() - 1 and self.player:getHp() <= 4 and not self:hasHeavySlashDamage(self.player)
-		and not self.player:hasSkills("kongcheng|lianying|paoxiao|shangshi|noshangshi|luaXh")
+		and not self.player:hasSkills("kongcheng|lianying|paoxiao|shangshi|noshangshi")
 		and not (self.player:hasSkill("zhiji") and self.player:getMark("zhiji") == 0) then return end
 	if #newcards < 2 then return end
 
