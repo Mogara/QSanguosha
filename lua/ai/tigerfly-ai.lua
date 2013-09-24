@@ -591,3 +591,155 @@ sgs.ai_skill_choice.bushi = function(self, choices, data)
 	if self:isFriend(aim) or aim == self.player then isfriend = true end
 	return isfriend and "bushiinc" or "bushidec"
 end
+
+
+
+sgs.ai_skill_use["@@choudu"] = function(self, prompt)
+	local targets = {}
+	local tarnum = self.player:getMark("chouduuse")
+	local others = self.room:getOtherPlayers(self.player)
+	for _, tar in sgs.qlist(others) do
+		if self:isFriend(p) then 
+			if (self:needToThrowArmor(tar) or self:doNotDiscard(tar)) and not tar:hasSkill("manjuan") then table.insert(targets, tar:objectName()) end
+		else
+			if not self:doNotDiscard(tar) then table.insert(targets, tar:objectName()) end
+		end
+		if #targets >= tarnum then break end		
+	end	
+	if #targets == 0 then return "." else return "@ChouduCard=.->" .. table.concat(targets, "+") end
+end
+sgs.ai_choicemade_filter.cardChosen.choudu = sgs.ai_choicemade_filter.cardChosen.snatch
+sgs.ai_skill_askforyiji.choudu = function(self, card_ids)
+	local cards = {}
+	for _, card_id in ipairs(card_ids) do
+		table.insert(cards, sgs.Sanguosha:getCard(card_id))
+	end
+	local players = self.room:getTag("choudutargets"):toString():split("+")
+	local marknum = self.player:getMark("choudutargets")
+	for _,player in ipairs(players) do
+		if self:isFriend(player) then 
+			self:sortByUseValue(cards, true)
+			return player, cards[#cards]
+		else
+			self:sortByCardNeed(cards)
+			if marknum == 1 and self.player:getHp() > 2 then return nil, -1 else return player, cards[1] end
+		end
+	end
+end
+
+sgs.ai_skill_cardask["@xuedian"] = function(self, data)
+	local x = self.player:getLostHp()
+	if self:needToThrowArmor() and self.player:getArmor():isRed() then 
+		return "$"..self.player:getArmor():getEffectiveId() 
+	end
+	local hcards = sgs.QList2Table(self.player:getCards("h"))
+	local ecards = sgs.QList2Table(self.player:getCards("e"))
+	self:sortByCardNeed(ecards)
+	self:sortByCardNeed(hcards)
+	if self:hasSkills(sgs.lose_equip_skill) and not self.player:getEquips():isEmpty() then
+		for _, ecard in ipairs(ecards) do
+			if ecard:isRed() then return "$"..ecard:getEffectiveId() end
+		end
+	end
+	if x == 1 then	
+		local card = sgs.Sanguosha:getCard(self.room:getDrawPile():at(0))
+		if card:isKindOf("Slash") and not self:slashIsAvailable() then return "." end
+		for _, hcard in ipairs(hcards) do
+			if hcard:isRed() and self:getUseValue(hcard) < self:getUseValue(card) and not self:isValuableCard(hcard) then return "$"..hcard:getEffectiveId() end
+		end
+	else
+		for _, hcard in ipairs(hcards) do
+			if hcard:isRed() and not self:isValuableCard(hcard) then return "$"..hcard:getEffectiveId() end
+		end
+	end		
+	return "." 
+end
+
+function sgs.ai_cardsview.duanhun(self, class_name, player)
+	if class_name == "Slash" then
+		local cards = player:getCards("he")
+		cards = sgs.QList2Table(cards)
+		for _, acard in ipairs(cards) do
+			if isCard("Slash", acard, player) then return end
+		end
+		local flag = "he"
+		if self:needToThrowArmor() then flag = "eh"  elseif self:getOverflow() > 0 then flag = "h" end
+		local cds = sgs.QList2Table(self.player:getCards(flag))
+		local eid = self:getValuableCard(self.player) 
+		local newcards = {}
+		for _, card in ipairs(cds) do
+			if not isCard("Slash", card, player) and not isCard("Peach", card, player) and not (isCard("ExNihilo", card, player) and player:getPhase() == sgs.Player_Play) and (card:getEffectiveId() ~= eid or not eid) then
+				table.insert(newcards, card)
+			end
+		end
+		if #newcards < 2 then return end
+		self:sortByCardNeed(newcards)
+		local card_id1 = newcards[1]:getEffectiveId()
+		local card_id2 = newcards[2]:getEffectiveId()
+		local card_str = ("slash:duanhun[to_be_decided:0]=%d+%d"):format(card_id1, card_id2)
+		return card_str
+	end
+end
+local duanhun_skill = {}
+duanhun_skill.name = "duanhun"
+table.insert(sgs.ai_skills, duanhun_skill)
+duanhun_skill.getTurnUseCard = function(self, inclusive)
+	local cards = player:getCards("he")
+	cards = sgs.QList2Table(cards)
+	for _, acard in ipairs(cards) do
+		if isCard("Slash", acard, player) then return end
+	end
+	local flag = "he"
+	if self:needToThrowArmor() then flag = "eh"  elseif self:getOverflow() > 0 then flag = "h" end
+	local cds = sgs.QList2Table(self.player:getCards(flag))
+	local eid = self:getValuableCard(self.player) 
+	self:sortByCardNeed(cds)
+	local newcards = {}
+	for _, card in ipairs(cds) do
+		if not isCard("Slash", card, player) and not isCard("Peach", card, player) and not (isCard("ExNihilo", card, player) and player:getPhase() == sgs.Player_Play) and (card:getEffectiveId() ~= eid or not eid) then
+			table.insert(newcards, card)
+		end
+	end
+	if #newcards <= self.player:getHp() - 1 and self.player:getHp() <= 4 and not self:hasHeavySlashDamage(self.player)
+		and not self.player:hasSkills("kongcheng|lianying|paoxiao|shangshi|noshangshi")
+		and not (self.player:hasSkill("zhiji") and self.player:getMark("zhiji") == 0) then return end
+	if #newcards < 2 then return end
+
+	local card_id1 = newcards[1]:getEffectiveId()
+	local card_id2 = newcards[2]:getEffectiveId()
+
+	if newcards[1]:isBlack() and newcards[2]:isBlack() then
+		local black_slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuitBlack)
+		local nosuit_slash = sgs.Sanguosha:cloneCard("slash")
+
+		self:sort(self.enemies, "defenseSlash")
+		for _, enemy in ipairs(self.enemies) do
+			if self.player:canSlash(enemy) and not self:slashProhibit(nosuit_slash, enemy) and self:slashIsEffective(nosuit_slash, enemy)
+				and self:canAttack(enemy) and self:slashProhibit(black_slash, enemy) and self:isWeak(enemy) then
+				local redcards, blackcards = {}, {}
+				for _, acard in ipairs(newcards) do
+					if acard:isBlack() then table.insert(blackcards, acard) else table.insert(redcards, acard) end
+				end
+				if #redcards == 0 then break end
+
+				local redcard, othercard
+
+				self:sortByUseValue(blackcards, true)
+				self:sortByUseValue(redcards, true)
+				redcard = redcards[1]
+
+				othercard = #blackcards > 0 and blackcards[1] or redcards[2]
+				if redcard and othercard then
+					card_id1 = redcard:getEffectiveId()
+					card_id2 = othercard:getEffectiveId()
+					break
+				end
+			end
+		end
+	end
+	local card_str = ("slash:duanhun[to_be_decided:0]=%d+%d"):format(card_id1, card_id2)
+	local slash = sgs.Card_Parse(card_str)
+	assert(slash)
+	return slash
+end
+
