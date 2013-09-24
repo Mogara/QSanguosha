@@ -76,7 +76,7 @@ public:
     bool isReady() const;
     void setReady(bool ready);
 
-    int getMaxCards(const QStringList notInclude = QStringList()) const;
+    int getMaxCards() const;
 
     QString getKingdom() const;
     void setKingdom(const QString &kingdom);

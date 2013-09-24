@@ -499,7 +499,7 @@ public:
         }
     }
 };
-
+/*
 
 class Neo2013Xiezun: public MaxCardsSkill{
 public:
@@ -508,20 +508,10 @@ public:
     }
 
     virtual int getFixed(const Player *target) const{
-        if (target->hasSkill(objectName())){
-            QStringList notinclude;
-            notinclude << objectName();
-            int maxcards = -999;
-            foreach(const Player *p, target->getAliveSiblings())
-                if (p->getMaxCards(notinclude) > maxcards)
-                    maxcards = p->getMaxCards(notinclude);
 
-            return qMax(maxcards, target->getMaxCards(notinclude));
-        }
-        return -1;
     }
 };
- //temporily lay it aside
+*/ //temporily lay it aside
 //todo：在player::getMaxCards里加个参数，令其计算手牌上限时不考虑某技能
 
 class Neo2013RenWang: public TriggerSkill{
@@ -607,6 +597,99 @@ public:
         return false;
     }
 };
+
+/*
+class Neo2013Qianhuan: public TriggerSkill{
+public:
+    Neo2013Qianhuan(): TriggerSkill("neo2013qianhuan"){
+        events << Damaged << TargetConfirming << CardsMoveOneTime;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->isAlive();
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *selfplayer = room->findPlayerBySkillName(objectName());
+        if (selfplayer == NULL)
+            return false;
+        switch (triggerEvent){
+            case (Damaged):{
+                if (room->askForSkillInvoke(player, objectName(), data)){
+                    if (player != selfplayer){
+                        room->notifySkillInvoked(selfplayer, objectName());
+                        LogMessage l;
+                        l.type = "#InvokeOthersSkill";
+                        l.from = player;
+                        l.to << selfplayer;
+                        l.arg = objectName();
+                        room->sendLog(l);
+                    }
+                    int id = room->drawCard();
+                    QList<int> fantasy = selfplayer->getPile("fantasy");
+                    selfplayer->addToPile("fantasy", id);
+                    const Card *card = Sanguosha->getCard(id);
+                    foreach(int id, fantasy){
+                        if (card->getSuit() == Sanguosha->getCard(id)->getSuit()){
+                            room->throwCard(card, NULL, player);
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+            case (TargetConfirming):{
+                CardUseStruct use = data.value<CardUseStruct>();
+                if (use.to.length() == 1 && (use.card->isKindOf("BasicCard") || use.card->isKindOf("TrickCard"))
+                        && !selfplayer->getPile("fantasy").isEmpty()){
+                    bool invalid = false;
+                    if (room->askForSkillInvoke(selfplayer, objectName(), data)){
+                        if (selfplayer != player && room->askForSkillInvoke(player, objectName(), data)){
+                            room->notifySkillInvoked(selfplayer, objectName());
+                            LogMessage l;
+                            l.type = "#InvokeOthersSkill";
+                            l.from = player;
+                            l.to << selfplayer;
+                            l.arg = objectName();
+                            room->sendLog(l);
+                            invalid = true;
+                        }
+                        else
+                            invalid = true;
+                    }
+                    if (invalid){
+                        QList<int> fantasy = selfplayer->getPile("fantasy");
+                        room->fillAG(fantasy, selfplayer);
+                        int id = room->askForAG(selfplayer, fantasy, true, objectName());
+                        if (id != -1){
+                            room->throwCard(id, NULL, selfplayer);
+                            use.to.removeOne(use.to.first());
+                            data = QVariant::fromValue(use);
+                            if (use.card->isKindOf("DelayedTrick"))
+                                room->throwCard(use.card, NULL);
+                            LogMessage l;
+                            l.type = "#QiaoshuiRemove";
+                            l.from = player;
+                            l.to << player;
+                            l.arg = use.card->objectName();
+                            l.arg2 = objectName();
+                            room->sendLog(l);
+                        }
+                        room->clearAG(selfplayer);
+                    }
+                }
+                break;
+            }
+            case (CardsMoveOneTime):{
+                //It seems this part of skill is not necessary anymore.
+                break;
+            }
+            default:
+                Q_ASSERT(false);
+        }
+        return false;
+    }
+};*/
 
 Neo2013YongyiCard::Neo2013YongyiCard(): SkillCard(){
     mute = true;
@@ -808,6 +891,7 @@ public:
 };
 
 Neo2013PujiCard::Neo2013PujiCard(): SkillCard(){
+    //handling_method = Card::MethodDiscard;
 }
 
 bool Neo2013PujiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -1022,7 +1106,37 @@ void Neo2013FengyinCard::use(Room *room, ServerPlayer *source, QList<ServerPlaye
     source->drawCards(1);
 }
 
-class Neo2013FengyinVS: public OneCardViewAsSkill{
+/*
+class Neo2013FengyinVS: public ViewAsSkill{ //这算是写LUA留下的后遗症么……
+public:
+    Neo2013FengyinVS(): ViewAsSkill("neo2013fengyin"){
+
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
+        return selected.length() == 0 && (to_select->isKindOf("Slash") || to_select->isKindOf("EquipCard"));
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+        if (cards.length() != 1)
+            return NULL;
+
+        Neo2013FengyinCard *card = new Neo2013FengyinCard;
+        card->addSubcard(cards[0]);
+        return card;
+    }
+
+    virtual bool isEnabledAtPlay(const Player *) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@neo2013fengyin";
+    }
+};*/
+
+
+class Neo2013FengyinVS: public OneCardViewAsSkill{  //话说加的两个新变量是这么用的吧……我不会用
 public:
     Neo2013FengyinVS(): OneCardViewAsSkill("neo2013fengyin"){
         response_pattern = "@@neo2013fengyin";
@@ -1157,136 +1271,6 @@ public:
 };
 
 
-class Neo2013Huoshui: public TriggerSkill{
-public:
-    Neo2013Huoshui(): TriggerSkill("neo2013huoshui") {
-        events << EventPhaseStart << EventPhaseChanging << Death
-            << EventLoseSkill << EventAcquireSkill
-            << HpChanged << MaxHpChanged;
-        frequency = Compulsory;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual int getPriority() const{
-        return 5;
-    }
-
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart) {
-            if (!TriggerSkill::triggerable(player) || player->getPhase() != Player::RoundStart) return false;
-        } else if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (!TriggerSkill::triggerable(player) || change.to != Player::NotActive) return false;
-        } else if (triggerEvent == Death) {
-            DeathStruct death = data.value<DeathStruct>();
-            if (death.who != player || !player->hasSkill(objectName())) return false;
-        } else if (triggerEvent == EventLoseSkill) {
-            if (data.toString() != objectName() || player->getPhase() == Player::NotActive) return false;
-        } else if (triggerEvent == EventAcquireSkill) {
-            if (data.toString() != objectName() || !player->hasSkill(objectName()) || player->getPhase() == Player::NotActive)
-                return false;
-        } else if (triggerEvent == MaxHpChanged || triggerEvent == HpChanged) {
-            if (!room->getCurrent() || !room->getCurrent()->hasSkill(objectName())) return false;
-        }
-
-        if (triggerEvent == EventPhaseStart || triggerEvent == EventAcquireSkill)
-            room->broadcastSkillInvoke(objectName(), 1);
-        else if (triggerEvent == EventPhaseChanging || (triggerEvent == EventLoseSkill && player->isAlive()))
-            room->broadcastSkillInvoke(objectName(), 2);
-
-        foreach (ServerPlayer *p, room->getAllPlayers())
-            room->filterCards(p, p->getCards("he"), true);
-        Json::Value args;
-        args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-
-        return false;
-    }
-};
-
-class Neo2013Qingcheng: public TriggerSkill{
-public:
-    Neo2013Qingcheng(): TriggerSkill("neo2013qingcheng"){
-        events << EventPhaseStart << EventPhaseChanging;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->isAlive();
-    }
-
-    virtual int getPriority() const{
-        return 6;
-    }
-
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::RoundStart){
-            ServerPlayer *zou = room->findPlayerBySkillName(objectName());
-            if (zou == NULL || zou->isNude())
-                return false;
-
-            if (room->askForDiscard(zou, "neo2013qingcheng", 1, 1, true, true, "@neo2013qingcheng-discard")){
-                QStringList skill_list;
-                foreach (const Skill *skill, player->getVisibleSkillList()){
-                    if (!skill_list.contains(skill->objectName()) && !skill->inherits("SPConvertSkill") && !skill->isAttachedLordSkill()) {
-                        skill_list << skill->objectName();
-                    }
-                }
-                QString skill_qc;
-                if (!skill_list.isEmpty()) {
-                    QVariant data_for_ai = QVariant::fromValue(player);
-                    skill_qc = room->askForChoice(zou, "neo2013qingcheng", skill_list.join("+"), data_for_ai);
-                }
-
-                if (!skill_qc.isEmpty()) {
-                    LogMessage log;
-                    log.type = "$QingchengNullify";
-                    log.from = zou;
-                    log.to << player;
-                    log.arg = skill_qc;
-                    room->sendLog(log);
-
-                    QStringList Qingchenglist = player->tag["neo2013qingcheng"].toStringList();
-                    Qingchenglist << skill_qc;
-                    player->tag["neo2013qingcheng"] = QVariant::fromValue(Qingchenglist);
-                    room->addPlayerMark(player, "Qingcheng" + skill_qc);
-                    room->broadcastSkillInvoke(objectName(), 1);
-                }
-            }
-        }
-        else if (triggerEvent == EventPhaseChanging && data.value<PhaseChangeStruct>().to == Player::NotActive){
-            QStringList Qingchenglist = player->tag["neo2013qingcheng"].toStringList();
-            if (Qingchenglist.isEmpty()) return false;
-            foreach (QString skill_name, Qingchenglist) {
-                room->setPlayerMark(player, "Qingcheng" + skill_name, 0);
-                if (player->hasSkill(skill_name)) {
-                    LogMessage log;
-                    log.type = "$QingchengReset";
-                    log.from = player;
-                    log.arg = skill_name;
-                    room->sendLog(log);
-                }
-            }
-            player->tag.remove("neo2013qingcheng");
-            room->broadcastSkillInvoke(objectName(), 2);
-        }
-        else
-            return false;
-
-        foreach (ServerPlayer *p, room->getAllPlayers())
-            room->filterCards(p, p->getCards("he"), true);
-
-        Json::Value args;
-        args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-
-        return false;
-    }
-};
-
-
 Ling2013Package::Ling2013Package(): Package("Ling2013"){
     General *neo2013_masu = new General(this, "neo2013_masu", "shu", 3);
     neo2013_masu->addSkill(new Neo2013Xinzhan);
@@ -1318,10 +1302,10 @@ Ling2013Package::Ling2013Package(): Package("Ling2013"){
     neo2013_liubei->addSkill("jijiang");
     neo2013_liubei->addSkill("rende");
 
-    General *neo2013_caocao = new General(this, "neo2013_caocao$", "wei", 4);
-    neo2013_caocao->addSkill(new Neo2013Xiezun);
-    neo2013_caocao->addSkill("jianxiong");
-    neo2013_caocao->addSkill("hujia");
+/*
+    General *neo2013_yuji = new General(this, "neo2013_yuji", "qun", 3);
+    neo2013_yuji->addSkill(new Neo2013Qianhuan);
+*/
 
     General *neo2013_huangzhong = new General(this, "neo2013_huangzhong", "shu", 4);
     neo2013_huangzhong->addSkill(new Neo2013Yongyi);
@@ -1375,10 +1359,6 @@ Ling2013Package::Ling2013Package(): Package("Ling2013"){
     neo2013_spguanyu->addSkill(new Neo2013Danji);
     neo2013_spguanyu->addSkill("wusheng");
     neo2013_spguanyu->addRelateSkill("neo2013huwei");
-
-    General *neo2013_zoushi = new General(this, "neo2013_zoushi", "qun", 3);
-    neo2013_zoushi->addSkill(new Neo2013Huoshui);
-    neo2013_zoushi->addSkill(new Neo2013Qingcheng);
 
     addMetaObject<Neo2013XinzhanCard>();
     addMetaObject<Neo2013FanjianCard>();

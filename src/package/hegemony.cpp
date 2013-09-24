@@ -550,7 +550,7 @@ public:
 
         if (triggerEvent == EventPhaseStart || triggerEvent == EventAcquireSkill)
             room->broadcastSkillInvoke(objectName(), 1);
-        else if (triggerEvent == EventPhaseChanging || (triggerEvent == EventLoseSkill && player->isAlive()))
+        else if (triggerEvent == EventPhaseChanging || triggerEvent == EventLoseSkill)
             room->broadcastSkillInvoke(objectName(), 2);
 
         foreach (ServerPlayer *p, room->getAllPlayers())
