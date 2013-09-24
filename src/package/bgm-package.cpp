@@ -2213,6 +2213,9 @@ public:
     virtual void onDamaged(ServerPlayer *player, const DamageStruct &damage) const{
         Room *room = player->getRoom();
         for (int i = 0; i < damage.damage; i++){
+            if (!player->askForSkillInvoke(objectName(), QVariant::fromValue(damage)))
+                break;
+
             QList<int> to_show = room->getNCards(2, false);
 
             CardsMoveStruct move(to_show, NULL, Player::PlaceTable, 
