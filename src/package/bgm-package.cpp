@@ -2207,7 +2207,7 @@ public:
 class Yinzhi: public MasochismSkill{
 public:
     Yinzhi(): MasochismSkill("yinzhi"){
-
+        frequency = Frequent;
     }
 
     virtual void onDamaged(ServerPlayer *player, const DamageStruct &damage) const{
