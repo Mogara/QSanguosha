@@ -2134,6 +2134,125 @@ public:
     }
 };
 
+class Mingjian: public TriggerSkill{
+public:
+    Mingjian(): TriggerSkill("mingjian"){
+        events << EventPhaseStart << EventPhaseChanging;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->isAlive();
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *xin = room->findPlayerBySkillName(objectName());
+        if (xin == NULL || xin->isNude())
+            return false;
+        QVariant _data = QVariant::fromValue(player);
+        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start && xin->askForSkillInvoke(objectName(), _data)){
+            QString choice = "discard";
+            if (!xin->isKongcheng())
+                choice = room->askForChoice(xin, objectName(), "discard+put", _data);
+            if (choice == "discard")
+                if (room->askForDiscard(xin, objectName() + "-discard", 1, 1, true, true, "@mingjian-discard")){
+                    room->broadcastSkillInvoke(objectName(), 1);
+                    player->skip(Player::Judge);
+                }
+            else if (choice == "put"){
+                const Card *c = room->askForExchange(xin, objectName() + "-put", 1, false, "@mingjian-put", true);
+                if (c != NULL){
+                    room->broadcastSkillInvoke(objectName(), 2);
+                    player->addToPile("mingjian", c, true);
+                }
+            }
+            else
+                Q_ASSERT(false);
+        }
+        else if (triggerEvent == EventPhaseChanging && data.value<PhaseChangeStruct>().to == Player::NotActive && !player->getPile("mingjian").isEmpty())
+            player->clearOnePrivatePile("mingjian");
+
+        return false;
+    }
+
+};
+
+class MingjianPreventRetrial: public TriggerSkill{
+public:
+    MingjianPreventRetrial():TriggerSkill("#mingjian-prevent"){
+        events << AskForRetrial;
+    }
+
+    virtual int getPriority() const{
+        return 4;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+        if (player->getPile("mingjian").length() > 0){
+            LogMessage l;
+            l.type = "#preventretrial";
+            l.from = player;
+            l.arg = objectName();
+            room->sendLog(l);
+            room->broadcastSkillInvoke("mingjian", 3);
+            return true;
+        }
+        return false;
+    }
+};
+
+class Yinzhi: public MasochismSkill{
+public:
+    Yinzhi(): MasochismSkill("yinzhi"){
+
+    }
+
+    virtual void onDamaged(ServerPlayer *player, const DamageStruct &damage) const{
+        Room *room = player->getRoom();
+        for (int i = 0; i < damage.damage; i++){
+            QList<int> to_show = room->getNCards(2, false);
+
+            CardsMoveStruct move(to_show, NULL, Player::PlaceTable, 
+                CardMoveReason(CardMoveReason::S_REASON_TURNOVER, player->objectName(), objectName(), QString()));
+            room->moveCardsAtomic(move, true);
+            room->getThread()->delay();
+            room->getThread()->delay();
+
+            QList<const Card *> cards;
+            foreach(int id, to_show)
+                cards << Sanguosha->getCard(id);
+
+            DummyCard dummyget, dummythrow; //This is the first time I use a Card variable not Card * pointer, bugs exist possibly
+
+            foreach(const Card *c, cards)
+                if (c->getSuit() == Card::Spade){
+                    dummythrow.addSubcard(c);
+                    if (damage.from && !damage.from->isNude()){
+                        ServerPlayer *aplayer = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName(), "@yinzhi-select", true, false);
+                        int id_tofetch = room->askForCardChosen(aplayer, damage.from, "he", objectName());
+                        aplayer->obtainCard(Sanguosha->getCard(id_tofetch));
+                    }
+                }
+                else 
+                    dummyget.addSubcard(c);
+
+            if (!dummythrow.getSubcards().isEmpty()){
+                CardsMoveStruct move_throw(dummythrow.getSubcards(), NULL, Player::DiscardPile,
+                    CardMoveReason(CardMoveReason::S_REASON_NATURAL_ENTER, player->objectName()));
+                room->moveCardsAtomic(move_throw, true);
+            }
+            if (!dummyget.getSubcards().isEmpty()){
+                CardMoveReason reason_get(CardMoveReason::S_REASON_GOTBACK, player->objectName());
+                room->obtainCard(player, &dummyget, reason_get);
+            }
+
+        }
+    }
+};
+
 BGMDIYPackage::BGMDIYPackage(): Package("BGMDIY") {
     General *diy_simazhao = new General(this, "diy_simazhao", "wei", 3); // DIY 001
     diy_simazhao->addSkill(new Zhaoxin);
@@ -2164,6 +2283,12 @@ BGMDIYPackage::BGMDIYPackage(): Package("BGMDIY") {
     related_skills.insertMulti("diyyicong", "#diyyicong-clear");
     related_skills.insertMulti("diyyicong", "#diyyicong-dist");
     related_skills.insertMulti("tuqi", "#tuqi-dist");
+
+    General *diy_xin = new General(this, "diy_xinxianying", "wei", 3, false);
+    diy_xin->addSkill(new Mingjian);
+    diy_xin->addSkill(new MingjianPreventRetrial);
+    diy_xin->addSkill(new Yinzhi);
+    related_skills.insertMulti("mingjian", "#mingjian-prevent");
 
     General *diy_zhugeke = new General(this, "diy_zhugeke", "wu", 3, true, true);
     diy_zhugeke->addSkill("aocai");
