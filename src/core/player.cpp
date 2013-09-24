@@ -312,6 +312,9 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
                 }
                 if (current && current->hasSkill("huoshui") && hp >= (max_hp + 1) / 2 && (!skill || !skill->isAttachedLordSkill()))
                     return false;
+                if (current && current->hasSkill("neo2013huoshui") && current->getEquips().length() >= getEquips().length()
+                    && (!skill || !skill->isAttachedLordSkill()))
+                    return false;
             }
             if (getMark("Qingcheng" + skill_name) > 0)
                 return false;
