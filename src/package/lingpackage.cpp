@@ -1741,7 +1741,8 @@ public:
             foreach(ServerPlayer *p, room->getOtherPlayers(damage.to))
                 if (damage.to->distanceTo(p) == 1){
                     players << p;
-                    p->setFlags("TribladeFilter");
+                    //p->setFlags("TribladeFilter");
+                    room->setPlayerFlag(p, "TribladeFilter");
                 }
             if (players.isEmpty())
                 return false;
@@ -1750,7 +1751,8 @@ public:
 
         foreach(ServerPlayer *p, room->getAllPlayers())
             if (p->hasFlag("TribladeFilter"))
-                p->setFlags("-TribladeFilter");
+                //p->setFlags("-TribladeFilter");
+                room->setPlayerFlag(p, "TribladeFilter");
 
         return false;
     }
