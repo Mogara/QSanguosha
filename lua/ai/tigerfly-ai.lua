@@ -667,8 +667,8 @@ function sgs.ai_cardsview.duanhun(self, class_name, player)
 		end
 		local flag = "he"
 		if self:needToThrowArmor() then flag = "eh"  elseif self:getOverflow() > 0 then flag = "h" end
-		local cds = sgs.QList2Table(self.player:getCards(flag))
-		local eid = self:getValuableCard(self.player) 
+		local cds = sgs.QList2Table(player:getCards(flag))
+		local eid = self:getValuableCard(player) 
 		local newcards = {}
 		for _, card in ipairs(cds) do
 			if not isCard("Slash", card, player) and not isCard("Peach", card, player) and not (isCard("ExNihilo", card, player) and player:getPhase() == sgs.Player_Play) and (card:getEffectiveId() ~= eid or not eid) then
@@ -690,7 +690,7 @@ duanhun_skill.getTurnUseCard = function(self, inclusive)
 	local cards = self.player:getCards("he")
 	cards = sgs.QList2Table(cards)
 	for _, acard in ipairs(cards) do
-		if isCard("Slash", acard, player) then return end
+		if isCard("Slash", acard, self.player) then return end
 	end
 	local flag = "he"
 	if self:needToThrowArmor() then flag = "eh"  elseif self:getOverflow() > 0 then flag = "h" end
@@ -699,12 +699,12 @@ duanhun_skill.getTurnUseCard = function(self, inclusive)
 	self:sortByCardNeed(cds)
 	local newcards = {}
 	for _, card in ipairs(cds) do
-		if not isCard("Slash", card, player) and not isCard("Peach", card, player) and not (isCard("ExNihilo", card, player) and player:getPhase() == sgs.Player_Play) and (card:getEffectiveId() ~= eid or not eid) then
+		if not isCard("Slash", card, self.player) and not isCard("Peach", card, self.player) and not (isCard("ExNihilo", card, self.player) and self.player:getPhase() == sgs.Player_Play) and (card:getEffectiveId() ~= eid or not eid) then
 			table.insert(newcards, card)
 		end
 	end
 	if #newcards <= self.player:getHp() - 1 and self.player:getHp() <= 4 and not self:hasHeavySlashDamage(self.player)
-		and not self.player:hasSkills("kongcheng|lianying|paoxiao|shangshi|noshangshi")
+		and not self.player:hasSkills("kongcheng|lianying|paoxiao|shangshi|noshangshi|luaXh")
 		and not (self.player:hasSkill("zhiji") and self.player:getMark("zhiji") == 0) then return end
 	if #newcards < 2 then return end
 
@@ -745,4 +745,3 @@ duanhun_skill.getTurnUseCard = function(self, inclusive)
 	assert(slash)
 	return slash
 end
-
