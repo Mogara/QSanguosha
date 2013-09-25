@@ -243,6 +243,13 @@ return {
 	["&nobenghuai_dongzhuo"] = "董卓",
 	["illustrator:nobenghuai_dongzhuo"] = "小冷",
 	
+	["nos_kongrong"] = "亮牌孔融" ,
+	["&nos_kongrong"] = "孔融" ,
+	["nosmingshi"] = "名士" ,
+	[":nosmingshi"] = "<b>锁定技</b>，每当你受到伤害时，若伤害来源有手牌，需展示所有手牌，否则此伤害-1。" ,
+	["nosmingshi:show"] = "展示所有手牌" ,
+	["nosmingshi:dismiss"] = "取消" ,
+	
 	["#sujiang"] = "金童",
 	["sujiang"] = "素将",
 	["illustrator:sujiang"] = "巴萨小马",

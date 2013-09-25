@@ -1712,6 +1712,38 @@ public:
     }
 };
 
+//nos kongrong
+
+class NosMingshi: public TriggerSkill{
+public:
+    NosMingshi(): TriggerSkill("nosmingshi"){
+        events << DamageInflicted;
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.from != NULL && !damage.from->isKongcheng()){
+            room->broadcastSkillInvoke("mingshi");
+            if (room->askForChoice(damage.from, objectName(), "show+dismiss", data) == "show")
+                room->showAllCards(damage.from);
+            else {
+                LogMessage log;
+                log.type = "#Mingshi";
+                log.from = player;
+                log.arg = QString::number(damage.damage);
+                log.arg2 = QString::number(--damage.damage);
+                room->sendLog(log);
+
+                if (damage.damage < 1)
+                    return true;
+                data = QVariant::fromValue(damage);
+            }
+        }
+        return false;
+    }
+};
+
 TestPackage::TestPackage()
     : Package("test")
 {
@@ -1745,6 +1777,10 @@ TestPackage::TestPackage()
     nobenghuai_dongzhuo->addSkill("jiuchi");
     nobenghuai_dongzhuo->addSkill("roulin");
     nobenghuai_dongzhuo->addSkill("baonue");
+
+    General *nos_kongrong = new General(this, "nos_kongrong", "qun", 3, true, true);
+    nos_kongrong->addSkill(new NosMingshi);
+    nos_kongrong->addSkill("lirang");
 
     new General(this, "sujiang", "god", 5, true, true);
     new General(this, "sujiangf", "god", 5, false, true);
