@@ -32,6 +32,15 @@ return {
 	["qianhuan:reject"] = "拒绝取消目标",
 	["sorcery"] = "幻",
 	
+	["#hetaihou"] = "弄权之蛇蝎",
+	["hetaihou"] = "何太后",
+	["illustrator:hetaihou"] = "KayaK, 木美人",
+	["zhendu"] = "鸩毒",
+	[":zhendu"] = "每当一名其他角色的出牌阶段开始时，你可以弃置一张手牌：若如此做，视为该角色使用一张【酒】（计入限制），然后你对该角色造成1点伤害。",
+	["@zhendu-discard"] = "你可以弃置一张手牌发动“鸩毒”",
+	["qiluan"] = "戚乱",
+	[":qiluan"] = "每当一名角色的回合结束后，若你于本回合杀死至少一名角色，你可以摸三张牌。", 
+	
 	["#jiangwanfeiyi"] = "社稷股肱",
 	["jiangwanfeiyi"] = "蒋琬＆费祎",
 	["&jiangwanfeiyi"] = "蒋琬费祎",

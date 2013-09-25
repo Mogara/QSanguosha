@@ -9,6 +9,7 @@
 #include "room.h"
 #include "ai.h"
 #include "settings.h"
+#include "maneuvering.h"
 
 
 HuyuanCard::HuyuanCard() {
@@ -225,6 +226,75 @@ public:
 };
 
 
+class Zhendu: public TriggerSkill {
+public:
+    Zhendu(): TriggerSkill("zhendu") {
+        events << EventPhaseStart;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+        if (player->getPhase() != Player::Play)
+            return false;
+        QList<ServerPlayer *> hetaihous = room->findPlayersBySkillName(objectName());
+        foreach (ServerPlayer *hetaihou, hetaihous) {
+            if (!hetaihou->isAlive() || !hetaihou->canDiscard(hetaihou, "h") || hetaihou->getPhase() == Player::Play)
+                continue;
+            if (room->askForCard(hetaihou, ".", "@zhendu-discard", QVariant(), objectName())) {
+                Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
+                analeptic->setSkillName("_zhendu");
+                room->useCard(CardUseStruct(analeptic, player, QList<ServerPlayer *>(), true));
+                if (player->isAlive())
+                    room->damage(DamageStruct(objectName(), hetaihou, player));
+            }
+        }
+        return false;
+    }
+};
+
+class Qiluan: public TriggerSkill {
+public:
+    Qiluan(): TriggerSkill("qiluan") {
+        events << Death << EventPhaseStart;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == Death) {
+            DeathStruct death = data.value<DeathStruct>();
+            if (death.who != player)
+                return false;
+            ServerPlayer *killer = death.damage ? death.damage->from : NULL;
+            ServerPlayer *current = room->getCurrent();
+
+            if (killer && current && current->isAlive() && current->getPhase() != Player::NotActive)
+                killer->addMark(objectName());
+        } else {
+            if (player->getPhase() == Player::NotActive) {
+                QList<ServerPlayer *> hetaihous;
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (p->getMark(objectName()) > 0 && TriggerSkill::triggerable(p))
+                        hetaihous << p;
+                    p->setMark(objectName(), 0);
+                }
+
+                foreach (ServerPlayer *p, hetaihous) {
+                    if (p->isAlive() && room->askForSkillInvoke(p, objectName()))
+                        p->drawCards(3);
+                }
+            }
+        }
+        return false;
+    }
+};
+ 
+
 class Shengxi: public TriggerSkill {
 public:
     Shengxi(): TriggerSkill("shengxi") {
@@ -301,6 +371,10 @@ FormationPackage::FormationPackage()
 
     General *heg_yuji = new General(this, "heg_yuji", "qun", 3); // QUN 011 G
     heg_yuji->addSkill(new Qianhuan);
+
+    General *hetaihou = new General(this, "hetaihou", "qun", 3, false); // QUN 020
+    hetaihou->addSkill(new Zhendu);
+    hetaihou->addSkill(new Qiluan); 
 }
 
 ADD_PACKAGE(Formation)
