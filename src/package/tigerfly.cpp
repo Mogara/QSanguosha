@@ -1433,7 +1433,7 @@ public:
             QChar ch = pattern[i];
             if (ch.isUpper() || ch.isDigit()) return false; // This is an extremely dirty hack!! For we need to prevent patterns like 'BasicCard'
         }
-        return true;
+        return !(pattern == "nullification"); //bugfix: gudan is enabled when pattern == nullification and there are nullifications in hand
     }
 
     virtual QDialog *getDialog() const{
