@@ -92,6 +92,133 @@ public:
     }
 }; 
 
+
+HeyiCard::HeyiCard() {
+}
+
+bool HeyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.length() < 2;
+}
+
+bool HeyiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    return targets.length() == 2;
+}
+
+void HeyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *caohong = card_use.from;
+
+    LogMessage log;
+    log.from = caohong;
+    log.to << card_use.to;
+    log.type = "#UseCard";
+    log.card_str = toString();
+    room->sendLog(log);
+
+    QVariant data = QVariant::fromValue(card_use);
+    RoomThread *thread = room->getThread();
+
+    thread->trigger(PreCardUsed, room, caohong, data);
+    thread->trigger(CardUsed, room, caohong, data);
+    thread->trigger(CardFinished, room, caohong, data);
+}
+
+void HeyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    QList<ServerPlayer *> players = room->getAllPlayers();
+    int index1 = players.indexOf(targets.first()), index2 = players.indexOf(targets.last());
+    int index_self = players.indexOf(source);
+    QList<ServerPlayer *> cont_targets;
+    if (index1 == index_self || index2 == index_self) {
+        forever {
+            cont_targets.append(players.at(index1));
+            if (index1 == index2) break;
+            index1++;
+            if (index1 >= players.length())
+                index1 -= players.length();
+        }
+    } else {
+        if (index1 > index2)
+            qSwap(index1, index2);
+        if (index_self > index1 && index_self < index2) {
+            for (int i = index1; i <= index2; i++)
+                cont_targets.append(players.at(i));
+        } else {
+            forever {
+                cont_targets.append(players.at(index2));
+                if (index1 == index2) break;
+                index2++;
+                if (index2 >= players.length())
+                    index2 -= players.length();
+            }
+        }
+    }
+    cont_targets.removeOne(source);
+    QStringList list;
+    foreach(ServerPlayer *p, cont_targets) {
+        if (!p->isAlive()) continue;
+        list.append(p->objectName());
+        source->tag["heyi"] = QVariant::fromValue(list);
+        room->acquireSkill(p, "feiying");
+    }
+}
+
+class HeyiViewAsSkill: public ZeroCardViewAsSkill {
+public:
+    HeyiViewAsSkill(): ZeroCardViewAsSkill("heyi") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@heyi";
+    }
+
+    virtual const Card *viewAs() const{
+        return new HeyiCard;
+    }
+};
+
+class Heyi: public TriggerSkill {
+public:
+    Heyi(): TriggerSkill("heyi") {
+        events << EventPhaseChanging << Death << EventLoseSkill;
+        view_as_skill = new HeyiViewAsSkill;
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == EventLoseSkill) {
+            if (data.toString() != objectName())
+                return false;
+        } else if (triggerEvent == Death) {
+            DeathStruct death = data.value<DeathStruct>();
+            if (death.who != player || !player->hasSkill(objectName()))
+                return false;
+        } else if (triggerEvent == EventPhaseChanging) {
+            if (!TriggerSkill::triggerable(player))
+                return false;
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to != Player::NotActive)
+                return false;
+        }
+        QStringList list = player->tag[objectName()].toStringList();
+        player->tag.remove(objectName());
+        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (list.contains(p->objectName()))
+                room->detachSkillFromPlayer(p, "feiying", false, true);
+        }
+        if (triggerEvent == EventPhaseChanging)
+            room->askForUseCard(player, "@@heyi", "@heyi");
+        return false;
+    }
+};
+ 
+
 class Ziliang: public TriggerSkill {
 public:
     Ziliang(): TriggerSkill("ziliang") {
@@ -361,6 +488,10 @@ FormationPackage::FormationPackage()
     heg_dengai->addSkill("tuntian");
     heg_dengai->addSkill(new Ziliang); 
 
+    General *heg_caohong = new General(this, "heg_caohong", "wei"); // WEI 018
+    heg_caohong->addSkill(new Huyuan);
+    heg_caohong->addSkill(new Heyi);
+
     General *jiangwanfeiyi = new General(this, "jiangwanfeiyi", "shu", 3); // SHU 018 
     //ToDo: Add skin for jiangwanfeiyi @@Yan Guam
     jiangwanfeiyi->addSkill(new Shengxi);
@@ -375,6 +506,9 @@ FormationPackage::FormationPackage()
     General *hetaihou = new General(this, "hetaihou", "qun", 3, false); // QUN 020
     hetaihou->addSkill(new Zhendu);
     hetaihou->addSkill(new Qiluan); 
+
+    addMetaObject<HuyuanCard>();
+    addMetaObject<HeyiCard>();
 }
 
 ADD_PACKAGE(Formation)
