@@ -11,6 +11,27 @@
 #include "settings.h"
 #include "maneuvering.h"
 
+class Ziliang: public TriggerSkill {
+public:
+    Ziliang(): TriggerSkill("ziliang") {
+        events << Damaged;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        QList<ServerPlayer *> dengais = room->findPlayersBySkillName(objectName());
+        foreach (ServerPlayer *dengai, dengais) {
+            if (!player->isAlive()) break;
+            if (dengai->getPile("field").isEmpty()) continue;
+            if (!room->askForSkillInvoke(dengai, objectName(), data)) continue;
+            room->obtainCard(player, room->askForAG(dengai, dengai->getPile("field"), false, objectName()));
+        }
+        return false;
+    }
+}; 
 
 HuyuanCard::HuyuanCard() {
     will_throw = false;
@@ -43,12 +64,12 @@ void HuyuanCard::onEffect(const CardEffectStruct &effect) const{
 
     QList<ServerPlayer *> targets;
     foreach (ServerPlayer *p, room->getAllPlayers()) {
-        if (effect.to->distanceTo(p) == 1 && caohong->canDiscard(p, "hej"))
+        if (effect.to->distanceTo(p) == 1 && caohong->canDiscard(p, "he"))
             targets << p;
     }
     if (!targets.isEmpty()) {
         ServerPlayer *to_dismantle = room->askForPlayerChosen(caohong, targets, "huyuan", "@huyuan-discard:" + effect.to->objectName());
-        int card_id = room->askForCardChosen(caohong, to_dismantle, "hej", "huyuan", false, Card::MethodDiscard);
+        int card_id = room->askForCardChosen(caohong, to_dismantle, "he", "huyuan", false, Card::MethodDiscard);
         room->throwCard(Sanguosha->getCard(card_id), to_dismantle, caohong);
     }
 }
@@ -123,6 +144,7 @@ void HeyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void HeyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    room->setTag("HeyiSource", QVariant::fromValue((PlayerStar)source)); 
     QList<ServerPlayer *> players = room->getAllPlayers();
     int index1 = players.indexOf(targets.first()), index2 = players.indexOf(targets.last());
     int index_self = players.indexOf(source);
@@ -182,7 +204,7 @@ public:
 class Heyi: public TriggerSkill {
 public:
     Heyi(): TriggerSkill("heyi") {
-        events << EventPhaseChanging << Death << EventLoseSkill;
+        events << EventPhaseChanging << Death;
         view_as_skill = new HeyiViewAsSkill;
         frequency = Compulsory;
     }
@@ -192,27 +214,25 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == EventLoseSkill) {
-            if (data.toString() != objectName())
-                return false;
-        } else if (triggerEvent == Death) {
+        if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
-            if (death.who != player || !player->hasSkill(objectName()))
+            if (death.who != player)
                 return false;
         } else if (triggerEvent == EventPhaseChanging) {
-            if (!TriggerSkill::triggerable(player))
-                return false;
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to != Player::NotActive)
                 return false;
         }
-        QStringList list = player->tag[objectName()].toStringList();
-        player->tag.remove(objectName());
-        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (list.contains(p->objectName()))
-                room->detachSkillFromPlayer(p, "feiying", false, true);
+        if (room->getTag("HeyiSource").value<PlayerStar>() == player) {
+            room->removeTag("HeyiSource");
+            QStringList list = player->tag[objectName()].toStringList();
+            player->tag.remove(objectName());
+            foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
+                if (list.contains(p->objectName()))
+                    room->detachSkillFromPlayer(p, "feiying", false, true);
+            } 
         }
-        if (triggerEvent == EventPhaseChanging)
+        if (TriggerSkill::triggerable(player) && triggerEvent == EventPhaseChanging)
             room->askForUseCard(player, "@@heyi", "@heyi");
         return false;
     }
@@ -264,28 +284,6 @@ public:
         return false;
     }
 };
-
-class Ziliang: public TriggerSkill {
-public:
-    Ziliang(): TriggerSkill("ziliang") {
-        events << Damaged;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        QList<ServerPlayer *> dengais = room->findPlayersBySkillName(objectName());
-        foreach (ServerPlayer *dengai, dengais) {
-            if (!player->isAlive()) break;
-            if (dengai->getPile("field").isEmpty()) continue;
-            if (!room->askForSkillInvoke(dengai, objectName(), data)) continue;
-            room->obtainCard(player, room->askForAG(dengai, dengai->getPile("field"), false, objectName()));
-        }
-        return false;
-    }
-}; 
 
 class Yicheng: public TriggerSkill {
 public:
@@ -546,6 +544,8 @@ FormationPackage::FormationPackage()
     //ToDo: Add skin for jiangwanfeiyi @@Yan Guam
     jiangwanfeiyi->addSkill(new Shengxi);
     jiangwanfeiyi->addSkill(new Shoucheng);
+
+    //ToDo: Jiang Qin(I don't understand the skill
 
     General *heg_xusheng = new General(this, "heg_xusheng", "wu"); // WU 020
     heg_xusheng->addSkill(new Yicheng);
