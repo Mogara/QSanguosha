@@ -963,6 +963,8 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *selfplayer = room->findPlayerBySkillName(objectName());
+        if (selfplayer == NULL || selfplayer->isDead())
+            return false;
         if (triggerEvent == Damage){
             if (selfplayer->hasFlag("YiSuishiUsed"))
                 return false;
