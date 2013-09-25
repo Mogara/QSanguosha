@@ -401,11 +401,11 @@ sgs.ai_skill_use["@@Triblade"]=function(self,prompt)
 	if not cdid or self.player:isKongcheng() then return "." end
 	self:sort(self.enemies, "hp")
 	self:sort(self.friends, "threat")
-	for _,e in sgs.qlist(self.enemies) do 
+	for _,e in ipairs(self.enemies) do 
 		if e:hasFlag("TribladeFilter") and not self:getDamagedEffects(e, self.player) and self:canAttack(e) then tar = e break end
 	end
 	if not tar then
-		for _,f in sgs.qlist(self.friends) do 
+		for _,f in ipairs(self.friends) do 
 			if f:hasFlag("TribladeFilter") and self:getDamagedEffects(f, self.player) and not self:isWeak(f) then tar = f break end
 		end
 	end
