@@ -2195,7 +2195,7 @@ public:
             if (player == data.value<JudgeStar>()->who){
                 LogMessage l;
                 l.type = "#preventretrial";
-                l.arg = objectName();
+                l.arg = "mingjian";
                 l.from = player;
                 room->sendLog(l);
                 room->broadcastSkillInvoke("mingjian", 3);
@@ -2237,8 +2237,10 @@ public:
                     dummythrow.addSubcard(c);
                     if (damage.from && !damage.from->isNude()){
                         ServerPlayer *aplayer = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName(), "@yinzhi-select", true, false);
-                        int id_tofetch = room->askForCardChosen(aplayer, damage.from, "he", objectName());
-                        aplayer->obtainCard(Sanguosha->getCard(id_tofetch));
+                        if (aplayer != NULL){
+                            int id_tofetch = room->askForCardChosen(aplayer, damage.from, "he", objectName());
+                            aplayer->obtainCard(Sanguosha->getCard(id_tofetch));
+                        }
                     }
                 }
                 else 
