@@ -71,6 +71,18 @@ public:
                     CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), objectName(), QString());
                     room->throwCard(Sanguosha->getCard(id), reason, NULL);
 
+                    LogMessage log;
+                    if (use.from) {
+                        log.type = "$CancelTarget";
+                        log.from = use.from;
+                    } else {
+                        log.type = "$CancelTargetNoUser";
+                    }
+                    log.to = use.to;
+                    log.arg = use.card->objectName();
+                    room->sendLog(log);
+
+
                     use.to.clear();
                     data = QVariant::fromValue(use);
                 } else {
