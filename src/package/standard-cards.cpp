@@ -38,12 +38,12 @@ bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSp
                 ids << slash->getEffectiveId();
             }
         }
-        bool has_weapon = (player->hasWeapon("crossbow") || player->hasWeapon("vscrossbow")) && ids.contains(player->getWeapon()->getEffectiveId());
-        if ((!has_weapon && player->hasWeapon("crossbow")) || player->canSlashWithoutCrossbow(THIS_SLASH))
+        bool has_weapon = (player->hasWeapon("Crossbow") || player->hasWeapon("VSCrossbow")) && ids.contains(player->getWeapon()->getEffectiveId());
+        if ((!has_weapon && player->hasWeapon("Crossbow")) || player->canSlashWithoutCrossbow(THIS_SLASH))
             return true;
         int used = player->getSlashCount();
         int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
-        if ((!has_weapon && player->hasWeapon("vscrossbow")) && used < valid + 3)
+        if ((!has_weapon && player->hasWeapon("VSCrossbow")) && used < valid + 3)
             return true;
 
         if (considerSpecificAssignee) {
@@ -236,7 +236,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         room->sendLog(log);
     } else if (use.card->isVirtualCard() && use.card->getSkillName() == "spear")
         room->setEmotion(player, "weapon/spear");
-    else if (use.to.size() > 1 && player->hasWeapon("halberd") && player->isLastHandCard(this))
+    else if (use.to.size() > 1 && player->hasWeapon("Halberd") && player->isLastHandCard(this))
         room->setEmotion(player, "weapon/halberd");
     else if (use.card->isVirtualCard() && use.card->getSkillName() == "fan")
         room->setEmotion(player, "weapon/fan");
