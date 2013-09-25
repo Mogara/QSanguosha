@@ -10,6 +10,87 @@
 #include "ai.h"
 #include "settings.h"
 
+
+HuyuanCard::HuyuanCard() {
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
+
+bool HuyuanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if (!targets.isEmpty())
+        return false;
+
+    const Card *card = Sanguosha->getCard(subcards.first());
+    const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
+    int equip_index = static_cast<int>(equip->location());
+    return to_select->getEquip(equip_index) == NULL;
+}
+
+void HuyuanCard::onEffect(const CardEffectStruct &effect) const{
+    ServerPlayer *caohong = effect.from;
+    Room *room = caohong->getRoom();
+    room->moveCardTo(this, caohong, effect.to, Player::PlaceEquip,
+                     CardMoveReason(CardMoveReason::S_REASON_PUT, caohong->objectName(), "huyuan", QString()));
+
+    const Card *card = Sanguosha->getCard(subcards.first());
+
+    LogMessage log;
+    log.type = "$ZhijianEquip";
+    log.from = effect.to;
+    log.card_str = QString::number(card->getEffectiveId());
+    room->sendLog(log);
+
+    QList<ServerPlayer *> targets;
+    foreach (ServerPlayer *p, room->getAllPlayers()) {
+        if (effect.to->distanceTo(p) == 1 && caohong->canDiscard(p, "hej"))
+            targets << p;
+    }
+    if (!targets.isEmpty()) {
+        ServerPlayer *to_dismantle = room->askForPlayerChosen(caohong, targets, "huyuan", "@huyuan-discard:" + effect.to->objectName());
+        int card_id = room->askForCardChosen(caohong, to_dismantle, "hej", "huyuan", false, Card::MethodDiscard);
+        room->throwCard(Sanguosha->getCard(card_id), to_dismantle, caohong);
+    }
+}
+
+class HuyuanViewAsSkill: public OneCardViewAsSkill {
+public:
+    HuyuanViewAsSkill(): OneCardViewAsSkill("huyuan") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@huyuan";
+    }
+
+    virtual bool viewFilter(const Card *to_select) const{
+        return to_select->isKindOf("EquipCard");
+    }
+
+    virtual const Card *viewAs(const Card *originalcard) const{
+        HuyuanCard *first = new HuyuanCard;
+        first->addSubcard(originalcard->getId());
+        first->setSkillName(objectName());
+        return first;
+    }
+};
+
+class Huyuan: public PhaseChangeSkill {
+public:
+    Huyuan(): PhaseChangeSkill("huyuan") {
+        view_as_skill = new HuyuanViewAsSkill;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        Room *room = target->getRoom();
+        if (target->getPhase() == Player::Finish && !target->isNude())
+            room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
+        return false;
+    }
+}; 
+
 class Ziliang: public TriggerSkill {
 public:
     Ziliang(): TriggerSkill("ziliang") {

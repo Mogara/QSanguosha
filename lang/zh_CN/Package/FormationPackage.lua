@@ -3,6 +3,12 @@
 return {
 	["formation"] = "国战-阵包",
 	
+	["huyuan"] = "护援",
+	[":huyuan"] = "结束阶段开始时，你可以将一张装备牌置于一名角色装备区内，然后你弃置该角色距离1的一名角色区域内的一张牌。",
+	["@huyuan-equip"] = "你可以发动“护援”",
+	["@huyuan-discard"] = "请选择 %src 距离1的一名角色",
+	["~huyuan"] = "选择一张装备牌→选择一名角色→点击确定",
+	
 	["heg_dengai"] = "邓艾-国",
 	["&heg_dengai"] = "邓艾",
 	["illustrator:heg_dengai"] = "Amo",
