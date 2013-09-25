@@ -123,7 +123,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card->isKindOf("Slash")) return false;
         foreach (ServerPlayer *p, use.to) {
-            if (room->askForSkillInvoke(player, objectName(), "invoke:" + p->objectName())) {
+            if (room->askForSkillInvoke(player, objectName(), QVariant::fromValue(p))) {
                 p->drawCards(1);
                 if (p->isAlive() && p->canDiscard(p, "he"))
                     room->askForDiscard(p, objectName(), 1, 1, false, true);

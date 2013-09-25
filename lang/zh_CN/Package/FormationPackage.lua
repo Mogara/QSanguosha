@@ -17,6 +17,7 @@ return {
 	
 	["heg_xusheng"] = "徐盛-国",
 	["&heg_xusheng"] = "徐盛",
+	["illustrator:heg_xusheng"] = "XXX", 
 	["yicheng"] = "疑城",
 	[":yicheng"] = "每当一名角色被指定为【杀】的目标后，你可以令该角色摸一张牌，然后弃置一张牌。",
 	
