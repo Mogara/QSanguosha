@@ -2190,13 +2190,16 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (data.value<JudgeStar>()->who->getPile("mingjian").length() > 0){
-            LogMessage l;
-            l.type = "#preventretrial";
-            l.arg = objectName();
-            room->sendLog(l);
-            room->broadcastSkillInvoke("mingjian", 3);
+            if (player == data.value<JudgeStar>()->who){
+                LogMessage l;
+                l.type = "#preventretrial";
+                l.arg = objectName();
+                l.from = player;
+                room->sendLog(l);
+                room->broadcastSkillInvoke("mingjian", 3);
+            }
             return true;
         }
         return false;
