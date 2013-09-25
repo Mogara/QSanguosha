@@ -2190,11 +2190,10 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
-        if (player->getPile("mingjian").length() > 0){
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
+        if (data.value<JudgeStar>()->who->getPile("mingjian").length() > 0){
             LogMessage l;
             l.type = "#preventretrial";
-            l.from = player;
             l.arg = objectName();
             room->sendLog(l);
             room->broadcastSkillInvoke("mingjian", 3);
