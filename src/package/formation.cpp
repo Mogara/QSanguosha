@@ -113,6 +113,28 @@ public:
     }
 }; 
 
+class Yicheng: public TriggerSkill {
+public:
+    Yicheng(): TriggerSkill("yicheng") {
+        events << TargetConfirmed;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (!use.card->isKindOf("Slash")) return false;
+        foreach (ServerPlayer *p, use.to) {
+            if (room->askForSkillInvoke(player, objectName(), "invoke:" + p->objectName())) {
+                p->drawCards(1);
+                if (p->isAlive() && p->canDiscard(p, "he"))
+                    room->askForDiscard(p, objectName(), 1, 1, false, true);
+            }
+            if (!player->isAlive())
+                break;
+        }
+        return false;
+    }
+}; 
+
 class Qianhuan: public TriggerSkill {
 public:
     Qianhuan(): TriggerSkill("qianhuan") {
@@ -273,6 +295,9 @@ FormationPackage::FormationPackage()
     //ToDo: Add skin for jiangwanfeiyi @@Yan Guam
     jiangwanfeiyi->addSkill(new Shengxi);
     jiangwanfeiyi->addSkill(new Shoucheng);
+
+    General *heg_xusheng = new General(this, "heg_xusheng", "wu"); // WU 020
+    heg_xusheng->addSkill(new Yicheng);
 
     General *heg_yuji = new General(this, "heg_yuji", "qun", 3); // QUN 011 G
     heg_yuji->addSkill(new Qianhuan);
