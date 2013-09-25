@@ -10,6 +10,28 @@
 #include "ai.h"
 #include "settings.h"
 
+class Ziliang: public TriggerSkill {
+public:
+    Ziliang(): TriggerSkill("ziliang") {
+        events << Damaged;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        QList<ServerPlayer *> dengais = room->findPlayersBySkillName(objectName());
+        foreach (ServerPlayer *dengai, dengais) {
+            if (!player->isAlive()) break;
+            if (dengai->getPile("field").isEmpty()) continue;
+            if (!room->askForSkillInvoke(dengai, objectName(), data)) continue;
+            room->obtainCard(player, room->askForAG(dengai, dengai->getPile("field"), false, objectName()));
+        }
+        return false;
+    }
+}; 
+
 class Qianhuan: public TriggerSkill {
 public:
     Qianhuan(): TriggerSkill("qianhuan") {
@@ -99,10 +121,79 @@ public:
     }
 };
 
+
+class Shengxi: public TriggerSkill {
+public:
+    Shengxi(): TriggerSkill("shengxi") {
+        events << DamageDone << EventPhaseEnd;
+        frequency = Frequent;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == EventPhaseEnd) {
+            if (TriggerSkill::triggerable(player) && player->getPhase() == Player::Play) {
+                if (!player->hasFlag("ShengxiDamageInPlayPhase") && player->askForSkillInvoke(objectName()))
+                    player->drawCards(2);
+            }
+            if (player->hasFlag("ShengxiDamageInPlayPhase"))
+                player->setFlags("-ShengxiDamageInPlayPhase");
+        } else if (triggerEvent == DamageDone) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from && damage.from->getPhase() == Player::Play && !player->hasFlag("ShengxiDamageInPlayPhase"))
+                player->setFlags("ShengxiDamageInPlayPhase");
+        }
+        return false;
+    }
+};
+
+class Shoucheng: public TriggerSkill {
+public:
+    Shoucheng(): TriggerSkill("shoucheng") {
+        events << CardsMoveOneTime;
+        frequency = Frequent;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        if (move.from && move.from->getPhase() == Player::NotActive
+            && move.from_places.contains(Player::PlaceHand) && move.is_last_handcard) {
+            if (room->askForSkillInvoke(player, objectName(), data)) {
+                if (move.from == player || room->askForChoice(player, objectName(), "accept+reject") == "accept") {
+                    room->broadcastSkillInvoke(objectName());
+                    ServerPlayer *from = (ServerPlayer *)move.from;
+                    from->drawCards(1);
+                } else {
+                    LogMessage log;
+                    log.type = "#ZhibaReject";
+                    log.from = (ServerPlayer *)move.from;
+                    log.to << player;
+                    log.arg = objectName();
+                    room->sendLog(log);
+                }
+            }
+        }
+        return false;
+    }
+};
+ 
+
 FormationPackage::FormationPackage()
     : Package("formation")
 {
-    General *heg_yuji = new General(this, "heg_yuji", "qun", 3);
+    General *heg_dengai = new General(this, "heg_dengai", "wei"); // WEI 015 G
+    heg_dengai->addSkill("tuntian");
+    heg_dengai->addSkill(new Ziliang); 
+
+    General *jiangwanfeiyi = new General(this, "jiangwanfeiyi", "shu", 3); // SHU 018 
+    //ToDo: Add skin for jiangwanfeiyi @@Yan Guam
+    jiangwanfeiyi->addSkill(new Shengxi);
+    jiangwanfeiyi->addSkill(new Shoucheng);
+
+    General *heg_yuji = new General(this, "heg_yuji", "qun", 3); // QUN 011 G
     heg_yuji->addSkill(new Qianhuan);
 }
 
