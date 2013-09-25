@@ -143,8 +143,8 @@ public:
                 player->setFlags("-ShengxiDamageInPlayPhase");
         } else if (triggerEvent == DamageDone) {
             DamageStruct damage = data.value<DamageStruct>();
-            if (damage.from && damage.from->getPhase() == Player::Play && !player->hasFlag("ShengxiDamageInPlayPhase"))
-                player->setFlags("ShengxiDamageInPlayPhase");
+            if (damage.from && damage.from->getPhase() == Player::Play && !damage.from->hasFlag("ShengxiDamageInPlayPhase"))
+                damage.from->setFlags("ShengxiDamageInPlayPhase");
         }
         return false;
     }
