@@ -338,7 +338,7 @@ public:
             if (room->askForSkillInvoke(yuji, objectName(), data)) {
                 room->broadcastSkillInvoke(objectName());
                 room->notifySkillInvoked(yuji, objectName());
-                if (yuji == player || room->askForChoice(player, objectName(), "accept+reject") == "accept") {
+                if (yuji == player || room->askForChoice(player, objectName(), "accept+reject", data) == "accept") {
                     QList<int> ids = yuji->getPile("sorcery");
                     int id = -1;
                     if (ids.length() > 1) {
