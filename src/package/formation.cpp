@@ -430,6 +430,7 @@ class Qiluan: public TriggerSkill {
 public:
     Qiluan(): TriggerSkill("qiluan") {
         events << Death << EventPhaseStart;
+        frequency = Frequent;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
