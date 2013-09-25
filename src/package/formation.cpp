@@ -77,18 +77,8 @@ void HuyuanCard::onEffect(const CardEffectStruct &effect) const{
 class HuyuanViewAsSkill: public OneCardViewAsSkill {
 public:
     HuyuanViewAsSkill(): OneCardViewAsSkill("huyuan") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@huyuan";
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->isKindOf("EquipCard");
+        response_pattern == "@@huyuan";
+        filter_pattern == "EquipCard";
     }
 
     virtual const Card *viewAs(const Card *originalcard) const{
@@ -186,14 +176,7 @@ void HeyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targ
 class HeyiViewAsSkill: public ZeroCardViewAsSkill {
 public:
     HeyiViewAsSkill(): ZeroCardViewAsSkill("heyi") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@heyi";
+        response_pattern = "@@heyi";
     }
 
     virtual const Card *viewAs() const{
@@ -445,7 +428,8 @@ public:
             ServerPlayer *killer = death.damage ? death.damage->from : NULL;
             ServerPlayer *current = room->getCurrent();
 
-            if (killer && current && current->isAlive() && current->getPhase() != Player::NotActive)
+            if (killer && current && (current->isAlive() || death.who == current)
+                    && current->getPhase() != Player::NotActive)
                 killer->addMark(objectName());
         } else {
             if (player->getPhase() == Player::NotActive) {
@@ -546,7 +530,7 @@ FormationPackage::FormationPackage()
     jiangwanfeiyi->addSkill(new Shengxi);
     jiangwanfeiyi->addSkill(new Shoucheng);
 
-    //ToDo: Jiang Qin(I don't understand the skill
+    //ToDo: Jiang Qin(I don't understand the skill)
 
     General *heg_xusheng = new General(this, "heg_xusheng", "wu"); // WU 020
     heg_xusheng->addSkill(new Yicheng);
