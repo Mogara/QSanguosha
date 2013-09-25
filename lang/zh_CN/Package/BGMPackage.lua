@@ -197,4 +197,17 @@ return {
 	["~diyyicong"] = "选择若干张牌→点击确定",
 	["#diyyicong-dist"] = "义从",
 	["#tuqi-dist"] = "突骑",
+	
+	["#diy_xinxianying"] = "明鉴之才" ,
+	["diy_xinxianying"] = "辛宪英" ,
+	["illustrator:diy_xinxianying"] = "鸿仑" ,
+	["designer:diy_xinxianying"] = "KISS_飞雪" ,
+	["mingjian"] = "明鉴" ,
+	[":mingjian"] = "任意角色的准备阶段开始时，你可以选择一项：弃置一张牌，跳过该角色的判定阶段，或将一张牌竖置在该角色的武将牌上，则该角色本回合内的判定结果不能被代替或替换，回合结束后，将该牌置入弃牌堆。" ,
+	["@mingjian-discard"] = "你可以弃置1张牌，跳过该角色的判定阶段" ,
+	["@mingjian-put"] = "你可以将一张牌移出游戏，该角色判定不可更改" ,
+	["#preventretrial"] = "受到 %arg 技能影响， %from 的判定牌不可被代替或替换。" ,
+	["yinzhi"] = "隐智" ,
+	[":yinzhi"] = "你每受到一点伤害，可以展示排队顶的两张牌，其中每有一张黑桃牌，你可以令一名角色获得伤害来源的一张牌，然后你将这些黑桃牌置于弃牌堆，并获得其余的牌。" ,
+	["@yinzhi-select"] = "你可以选择一名角色获得伤害来源的一张牌。" ,
 }
