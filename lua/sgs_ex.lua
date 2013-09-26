@@ -116,7 +116,8 @@ function sgs.CreateMasochismSkill(spec)
 	spec.events = sgs.Damaged
 	
 	function spec.on_trigger(skill, event, player, data)
-		spec.on_damaged(skill, player)
+		local damage = data:toDamage()
+		spec.on_damaged(skill, player, damage)
 		return false
 	end
 	
