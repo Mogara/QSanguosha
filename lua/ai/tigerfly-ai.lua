@@ -572,26 +572,37 @@ end
 sgs.ai_skill_invoke.kangdao = true
 
 sgs.ai_skill_cardask["@bushi-discard"] = function(self, data)
-
-	local cards = sgs.QList2Table(self.player:getHandcards())
-
-	self:sortByUseValue(cards, true)
-	for _, acard in ipairs(cards) do
-		if acard:isBlack() then return "$" .. acard:getEffectiveId() end
+	if self.player:isNude() then return "." end
+	local aim = data:toPlayer()
+	local cards = sgs.QList2Table(self.player:getCards("he"))
+	local cards2 = aim:getCards("he")
+	self:sortByCardNeed(cards)
+	local card = cards[1]
+	local rednum = 0
+	local blacknum = 0
+	local reds = {}
+	local blacks = {}
+	for _, scard in sgs.qlist(cards2) do
+		if scard:isRed() then rednum = rednum + 1 end
+	end
+	for _, scard in sgs.qlist(cards2) do
+		if scard:isBlack() then blacknum = blacknum + 1 end
 	end
 	for _, acard in ipairs(cards) do
-		if acard then return "$" .. acard:getEffectiveId() end
+		if acard:isBlack() then table.insert(blacks, acard:getEffectiveId()) end
 	end
-	return  "."
+	for _, acard in ipairs(cards) do
+		if acard:isRed() then return table.insert(reds, acard:getEffectiveId()) end
+	end
+	local str = rednum > blacknum and "$" .. reds[1] or "$" .. blacks[1]
+	return  str or "$" .. card:getId()
 end
 
 sgs.ai_skill_choice.bushi = function(self, choices, data)
 	local aim = data:toPlayer()
-	local isfriend = false
-	if self:isFriend(aim) or aim == self.player then isfriend = true end
-	return isfriend and "bushiinc" or "bushidec"
+	if self:isFriend(aim) or aim:getSeat() == self.player:getSeat() then return "bushiinc" end
+	return "bushidec" 
 end
-
 
 
 sgs.ai_skill_use["@@choudu"] = function(self, prompt)
