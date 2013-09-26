@@ -117,7 +117,35 @@ function sgs.CreateMasochismSkill(spec)
 	
 	function spec.on_trigger(skill, event, player, data)
 		local damage = data:toDamage()
-		spec.on_damaged(skill, player, damage)
+		if player:isAlive() then
+			spec.on_damaged(skill, player, damage)
+		end
+		return false
+	end
+	
+	return sgs.CreateTriggerSkill(spec)
+end
+
+function sgs.CreatePhaseChangeSkill(spec)
+	assert(type(spec.on_phasechange) == "function")
+	
+	spec.events = {sgs.EventPhaseStart}
+	
+	function spec.on_trigger(self, event, player, data)
+		return spec.on_phasechange(self, player)
+	end
+	
+	return sgs.CreateTriggerSkill(spec)
+end
+
+function sgs.CreateDrawCardsSkill(spec)
+	assert(type(spec.draw_num_func) == "function")
+	
+	spec.events = {sgs.DrawNCards}
+	
+	function spec.on_trigger(self, event, player, data)
+		local n = data:toInt()
+		data:setValue(spec.draw_num_func(self, player, n))
 		return false
 	end
 	
