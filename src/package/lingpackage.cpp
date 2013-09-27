@@ -1278,7 +1278,7 @@ public:
     Neo2013Huoshui(): TriggerSkill("neo2013huoshui") {
         events << EventPhaseStart << EventPhaseChanging << Death
             << EventLoseSkill << EventAcquireSkill
-            << HpChanged << MaxHpChanged;
+            << CardsMoveOneTime;
         frequency = Compulsory;
     }
 
@@ -1304,7 +1304,7 @@ public:
         } else if (triggerEvent == EventAcquireSkill) {
             if (data.toString() != objectName() || !player->hasSkill(objectName()) || player->getPhase() == Player::NotActive)
                 return false;
-        } else if (triggerEvent == MaxHpChanged || triggerEvent == HpChanged) {
+        } else if (triggerEvent == CardsMoveOneTime) {  //this can fix filter skill?
             if (!room->getCurrent() || !room->getCurrent()->hasSkill(objectName())) return false;
         }
 
