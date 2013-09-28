@@ -484,21 +484,11 @@ function SmartAI:useCardSlash(card, use)
 
 	local function canAppendTarget(target)
 		if use.to:contains(target) then return false end
-		if use.to:length() == self.slash_targets - 1 and self.player:hasSkill("duanbing") then
-			local duanbing_targets = {}
-			local no_other_assignee = true
-			for _, tg in sgs.qlist(use.to) do
-				if self.player:distanceTo(p, rangefix) == 1 then
-					table.insert(duanbing_targets, p)
-				elseif no_other_assignee and p:hasFlag("SlashAssignee") then
-					no_other_assignee = false
-				end
-			end
-			if no_other_assignee and #duanbing_targets == 1 and duanbing_targets[1]:hasFlag("SlashAssignee") then return self.player:distanceTo(target, rangefix) == 1 end
-			return #duanbing_targets > 0 or self.player:distanceTo(target, rangefix) == 1
-		elseif use.to:length() < self.slash_targets then
-			return true
+		local targets = sgs.PlayerList()
+		for _, to in sgs.qlist(use.to) do
+			targets:append(to)
 		end
+		return card:targetFilter(targets, target, self.player) 
 	end
 
 	if not use.isDummy and self.player:hasSkill("qingnang") and self:isWeak() and self:getOverflow() == 0 then return end
