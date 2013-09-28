@@ -328,6 +328,16 @@ sgs.ai_skill_playerchosen.yanhuo = function(self, targets)
 	if target and target:objectName() ~= self.player:objectName() then return target end
 end
 
+sgs.ai_skill_invoke.kofkuanggu = function(self, data)
+	local zhangbao = self.room:findPlayerBySkillName("yingbing")
+	if zhangbao and self:isEnemy(zhangbao)
+		and self.player:getPile("incantation"):length() > 0 and sgs.Sanguosha:getCard(self.player:getPile("incantation"):first()):isRed()
+		and not self:hasWizard(self.friends) then return false end
+	if self.player:isWounded() then return true end
+	local zhangjiao = self.room:findPlayerBySkillName("guidao")
+	return zhangjiao and self:isFriend(zhangjiao) and not zhangjiao:isNude()
+end
+
 sgs.ai_skill_invoke.huwei = function(self, data)
 	local drowning = sgs.Sanguosha:cloneCard("drowning")
 	local dummy_use = { isDummy = true }

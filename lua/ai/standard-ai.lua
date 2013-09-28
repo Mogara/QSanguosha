@@ -245,7 +245,7 @@ sgs.ai_skill_invoke.ganglie = function(self, data)
 	local damage = data:toDamage()
 	if not damage.from then
 		local zhangjiao = self.room:findPlayerBySkillName("guidao")
-		return zhangjiao and self:isFriend(zhangjiao)
+		return zhangjiao and self:isFriend(zhangjiao) and not zhangjiao:isNude()
 	end
 	if self:getDamagedEffects(damage.from, self.player) then
 		if self:isFriend(damage.from) then
