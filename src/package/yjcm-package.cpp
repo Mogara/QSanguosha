@@ -565,6 +565,10 @@ public:
         }
         return false;
     }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+        return 1;
+    }
 };
 
 class Jinjiu: public FilterSkill {
