@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGame">
@@ -83,7 +83,6 @@
     <property name="title">
      <string>Cheat</string>
     </property>
-    <addaction name="actionGet_card"/>
     <addaction name="actionDamage_maker"/>
     <addaction name="actionDeath_note"/>
     <addaction name="actionRevive_wand"/>
@@ -287,14 +286,6 @@
    </property>
    <property name="text">
     <string>Expand dashboard</string>
-   </property>
-  </action>
-  <action name="actionGet_card">
-   <property name="enabled">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Get card ...</string>
    </property>
   </action>
   <action name="actionDeath_note">
