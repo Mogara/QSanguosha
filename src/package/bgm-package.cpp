@@ -2198,7 +2198,7 @@ public:
                 l.arg = "mingjian";
                 l.from = player;
                 room->sendLog(l);
-                room->broadcastSkillInvoke("mingjian", 3);
+                //room->broadcastSkillInvoke("mingjian", 3);
             }
             return true;
         }
