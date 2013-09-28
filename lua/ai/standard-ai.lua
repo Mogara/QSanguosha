@@ -1337,6 +1337,10 @@ function SmartAI:isValuableCard(card, player)
 		or (player:getPhase() == sgs.Player_Play and isCard("ExNihilo", card, player) and not player:isLocked(card)) then
 		return true
 	end
+	local dangerous = self:getDangerousCard(player)
+	if dangerous and card:getEffectiveId() == dangerous then return true end
+	local valuable = self:getValuableCard(player)
+	if valuable and card:getEffectiveId() == valuable then return true end
 end
 
 sgs.ai_skill_cardask["@jizhi-exchange"] = function(self, data)

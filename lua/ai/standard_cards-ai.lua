@@ -430,6 +430,10 @@ function SmartAI:shouldUseAnaleptic(target, slash, anal)
 			if acard:getTypeId() == sgs.Card_Basic and not acard:isKindOf("Peach") then basicnum = basicnum + 1 end
 		end
 		if basicnum < 3 then return false end
+	elseif target:hasSkill("renwang") and target:hasFlag("RenwangEffect") then
+		if not self.player:canDiscard(self.player, "he") then return false end
+		local to_discard = self:askForDiscard("dummyreason", 1, 1, false, true)
+		if #to_discard == 0 or self:isValuableCard(sgs.Sanguosha:getCard(to_discard[1])) then return false end
 	end
 	
 	if anal:getSkillName() == "jiushi" and (target:hasSkill("fangzhu") or target:hasSkill("jilve") and target:getMark("@bear") > 0) then return true end
@@ -534,7 +538,9 @@ function SmartAI:useCardSlash(card, use)
 				or (use.isDummy and self.predictedRange and self.player:distanceTo(target, rangefix) <= self.predictedRange))
 			and self:objectiveLevel(target) > 3
 			and self:slashIsEffective(card, target)
-			and not (target:hasSkill("xiangle") and basicnum < 2) and not canliuli
+			and not (target:hasSkill("xiangle") and basicnum < 2)
+			and not (target:hasSkill("renwang") and target:hasFlag("RenwangEffect") and self.player:getCardCount(true) < 3)
+			and not canliuli
 			and not (not self:isWeak(target) and #self.enemies > 1 and #self.friends > 1 and self.player:hasSkill("keji")
 			and self:getOverflow() > 0 and not self:hasCrossbowEffect()) then
 			-- fill the card use struct

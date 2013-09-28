@@ -20,9 +20,9 @@ function askForShowGeneral(self, choices)
 		local effect = data:toCardEffect()
 		for _, player in ipairs(players) do
 			if self.room:isProhibited(effect.from, player, effect.card) and self:isEnemy(effect.from, effect.to) then return "yes" end
-			if self:hasSkills("xiangle", player) and effect.card:isKindOf("Slash") then return "yes" end
-			if self:hasSkills("jiang", player) and ((effect.card:isKindOf("Slash") and effect.card:isRed()) or effect.card:isKindOf("Duel")) then return "yes" end
-			if self:hasSkills("tuntian", player) then return "yes" end
+			if player:hasSkill("xiangle") and effect.card:isKindOf("Slash") then return "yes" end
+			if player:hasSkill("jiang") and ((effect.card:isKindOf("Slash") and effect.card:isRed()) or effect.card:isKindOf("Duel")) then return "yes" end
+			if player:hasSkill("tuntian") then return "yes" end
 		end
 	end
 
