@@ -5112,6 +5112,20 @@ function SmartAI:hasTrickEffective(card, to, from)
 			return false
 		end
 	end
+	
+	if to:hasSkill("renwang") and to:hasFlag("RenwangEffect") then
+		if self:isFriend(from, to) then return false end
+		local can_discard = false
+		for _, c in from:getCards("he") do
+			if c:getEffectiveId() ~= card:getEffectiveId()
+				and not (not from:hasEquip(c) and card:getSkillName() == "qice")
+				and not self:isValuableCard(card, from) then
+				can_discard = true
+				break
+			end
+		end
+		if not can_discard then return false end
+	end
 
 	local nature = sgs.DamageStruct_Normal
 	if card:isKindOf("FireAttack") then nature = sgs.DamageStruct_Fire end
@@ -5417,7 +5431,10 @@ function SmartAI:damageMinusHp(self, enemy, type)
 				trick_effectivenum = trick_effectivenum + 1
 			elseif acard:isKindOf("Slash") and self:slashIsEffective(acard, enemy) and ( slash_damagenum == 0 or self:isEquip("Crossbow", self.player)) 
 				and (self.player:distanceTo(enemy) <= self.player:getAttackRange()) then
-				if not (enemy:hasSkill("xiangle") and basicnum < 2) then slash_damagenum = slash_damagenum + 1 end
+				if not (enemy:hasSkill("xiangle") and basicnum < 2)
+					and not (enemy:hasSkill("renwang") and enemy:hasFlag("RenwangEffect") and self.player:getCardCount(true) < 3) then
+					slash_damagenum = slash_damagenum + 1
+				end
 				if self:getCardsNum("Analeptic") > 0 and analepticpowerup == 0
 				  and not (enemy:hasArmorEffect("SilverLion") or self:hasEightDiagramEffect(enemy))
 				  and not IgnoreArmor(self.player, enemy) then 

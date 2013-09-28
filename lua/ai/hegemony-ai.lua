@@ -602,7 +602,7 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 				if target then break end
 			end
 			for _, askill in ipairs(("noswuyan|weimu|wuyan|guixin|fenyong|liuli|yiji|jieming|neoganglie|fankui|fangzhu|enyuan|nosenyuan|" ..
-						"ganglie|langgu|qingguo|luoying|guzheng|jianxiong|longdan|xiangle|huangen|tianming|yizhong|bazhen|jijiu|" ..
+						"ganglie|langgu|qingguo|luoying|guzheng|jianxiong|longdan|xiangle|renwang|huangen|tianming|yizhong|bazhen|jijiu|" ..
 						"beige|longhun|gushou|buyi|mingzhe|danlao|qianxun|jiang|yanzheng|juxiang|huoshou|anxian|zhichi|feiying|" ..
 						"tianxiang|xiaoji|xuanfeng|nosxuanfeng|xiaoguo|guhuo|nosguhuo|guidao|guicai|nosshangshi|lianying|sijian|mingshi|" ..
 						"yicong|zhiyu|lirang|xingshang|shushen|shangshi|leiji|wusheng|wushuang|tuntian|quanji|kongcheng|jieyuan|" ..
@@ -646,7 +646,7 @@ sgs.ai_skill_choice.qingcheng = function(self, choices, data)
 		end
 	end
 	for _, askill in ipairs(("noswuyan|weimu|wuyan|guixin|fenyong|liuli|yiji|jieming|neoganglie|fankui|fangzhu|enyuan|nosenyuan|" ..
-						"ganglie|langgu|qingguo|luoying|guzheng|jianxiong|longdan|xiangle|huangen|tianming|yizhong|bazhen|jijiu|" ..
+						"ganglie|langgu|qingguo|luoying|guzheng|jianxiong|longdan|xiangle|renwang|huangen|tianming|yizhong|bazhen|jijiu|" ..
 						"beige|longhun|gushou|buyi|mingzhe|danlao|qianxun|jiang|yanzheng|juxiang|huoshou|anxian|zhichi|feiying|" ..
 						"tianxiang|xiaoji|xuanfeng|nosxuanfeng|xiaoguo|guhuo|nosguhuo|guidao|guicai|nosshangshi|lianying|sijian|mingshi|" ..
 						"yicong|zhiyu|lirang|xingshang|shushen|shangshi|leiji|wusheng|wushuang|tuntian|quanji|kongcheng|jieyuan|" ..

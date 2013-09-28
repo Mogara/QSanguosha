@@ -328,6 +328,15 @@ sgs.ai_skill_playerchosen.yanhuo = function(self, targets)
 	if target and target:objectName() ~= self.player:objectName() then return target end
 end
 
+function sgs.ai_slash_prohibit.renwang(self, from, to)
+	if not to:hasFlag("RenwangEffect") then return false end
+	for _, card in from:getCards("he") do
+		if not self:isValuableCard(card, from) then return false end
+	end
+	return true
+	
+end
+
 sgs.ai_skill_invoke.kofkuanggu = function(self, data)
 	local zhangbao = self.room:findPlayerBySkillName("yingbing")
 	if zhangbao and self:isEnemy(zhangbao)
