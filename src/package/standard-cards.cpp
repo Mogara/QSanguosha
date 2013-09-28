@@ -28,7 +28,7 @@ bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSp
     if (player->isCardLimited(THIS_SLASH, Card::MethodUse))
        return false;
 
-    if (player->getPhase() == Player::Play && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+    if (Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
         QList<int> ids;
         if (slash) {
             if (slash->isVirtualCard()) {
