@@ -1099,7 +1099,7 @@ public:
     QList<ServerPlayer *> findPlayersBySkillName(const char *skill_name) const;
     void installEquip(ServerPlayer *player, const char *equip_name);
     void resetAI(ServerPlayer *player);
-    void changeHero(ServerPlayer *player, const char *new_general, bool full_state, bool invokeStart, bool isSecondaryHero, bool sendLog);
+    void changeHero(ServerPlayer *player, const char *new_general, bool full_state, bool invokeStart = true, bool isSecondaryHero = false, bool sendLog = true);
     void swapSeat(ServerPlayer *a, ServerPlayer *b);
     lua_State *getLuaState() const;
     void setFixedDistance(Player *from, const Player *to, int distance);

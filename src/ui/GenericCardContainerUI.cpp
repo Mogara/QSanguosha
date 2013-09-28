@@ -249,6 +249,11 @@ void PlayerCardContainer::updateSmallAvatar() {
                                                    Qt::AlignLeft | Qt::AlignJustify, name);
         _m_smallAvatarIcon->show();
     } else {
+        _clearPixmap(_m_smallAvatarIcon);
+        _clearPixmap(_m_circleItem);
+        _m_layout->m_smallAvatarNameFont.paintText(_m_smallAvatarNameItem,
+                                                   _m_layout->m_smallAvatarNameArea,
+                                                   Qt::AlignLeft | Qt::AlignJustify, QString());
         _m_smallAvatarArea->setToolTip(QString());
     }
     _adjustComponentZValues();
