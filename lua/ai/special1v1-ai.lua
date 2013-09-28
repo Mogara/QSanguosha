@@ -367,3 +367,50 @@ sgs.ai_skill_invoke.manyi = function(self, data)
 	self:useTrickCard(sa, dummy_use)
 	return (dummy_use.card ~= nil)
 end
+
+local puji_skill = {}
+puji_skill.name = "puji"
+table.insert(sgs.ai_skills, puji_skill)
+puji_skill.getTurnUseCard = function(self, inclusive)
+	if not self.player:canDiscard(self.player, "he") or self.player:hasUsed("PujiCard") then return nil end
+
+	local cards = self.player:getCards("he")
+	cards = sgs.QList2Table(cards)
+	self:sortByUseValue(cards, true)
+
+	if self:needToThrowArmor() then return sgs.Card_Parse("@PujiCard=" .. self.player:getArmor():getEffectiveId()) end
+	for _, card in ipairs(cards) do
+		if not self:isValuableCard(card) then
+			if card:getSuit() == sgs.Card_Spade then return sgs.Card_Parse("@PujiCard=" .. card:getEffectiveId()) end
+		end
+	end
+	for _, card in ipairs(cards) do
+		if not self:isValuableCard(card) and not (self.player:hasSkill("jijiu") and card:isRed() and self:getOverflow() < 2) then
+			if card:getSuit() == sgs.Card_Spade then return sgs.Card_Parse("@PujiCard=" .. card:getEffectiveId()) end
+		end
+	end
+end
+
+sgs.ai_skill_use_func.PujiCard = function(card, use, self)
+	self.puji_id_choice = nil
+	local players = self:findPlayerToDiscard("he", false, true, nil, true)
+	for _, p in ipairs(players) do
+		local id = self:askForCardChosen(p, "he", "dummyreason", sgs.Card_MethodDiscard)
+		if id and (self:isFriend(p) or not p:hasEquip(sgs.Sanguosha:getCard(id)) or sgs.Sanguosha:getCard(id):getSuit() ~= sgs.Card_Spade) then
+			self.puji_id_choice = id
+			use.card = card
+			if use.to then use.to:append(p) end
+			return
+		end
+	end
+end
+
+sgs.ai_use_value.PujiCard = 5
+sgs.ai_use_priority.PujiCard = 4.6
+
+sgs.ai_card_intention.PujiCard = function(self, card, from, tos)
+	if not self.puji_id_choice then return end
+	local to = tos[1]
+	local em_prompt = { "cardChosen", "puji", tostring(self.puji_id_choice), from:objectName(), to:objectName() }
+	sgs.ai_choicemade_filter.cardChosen.snatch = function(self, nil, em_prompt)
+end
