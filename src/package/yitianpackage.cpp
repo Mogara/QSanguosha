@@ -71,15 +71,7 @@ void YTChengxiangCard::onEffect(const CardEffectStruct &effect) const{
 class YTChengxiangViewAsSkill: public ViewAsSkill{
 public:
     YTChengxiangViewAsSkill():ViewAsSkill("ytchengxiang"){
-
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@@ytchengxiang";
+        response_pattern = "@@ytchengxiang";
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
@@ -386,41 +378,6 @@ public:
 };
 
 // ---------- Lianli related skills
-/*
-
-LianliCard::LianliCard(){
-
-}
-
-bool LianliCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select->isMale();
-}
-
-void LianliCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.from->getRoom();
-
-    LogMessage log;
-    log.type = "#LianliConnection";
-    log.from = effect.from;
-    log.to << effect.to;
-    room->sendLog(log);
-
-    if(effect.from->getMark("@tied") == 0)
-        effect.from->gainMark("@tied");
-
-    if(effect.to->getMark("@tied") == 0){
-        QList<ServerPlayer *> players = room->getOtherPlayers(effect.from);
-        foreach(ServerPlayer *player, players){
-            if(player->getMark("@tied") > 0){
-                player->loseMark("@tied");
-                break;
-            }
-        }
-
-        effect.to->gainMark("@tied");
-    }
-}
-*/
 
 class LianliStart: public GameStartSkill{
 public:
@@ -552,38 +509,15 @@ public:
         return false;
     }
 };
-/*
-
-class LianliViewAsSkill: public ZeroCardViewAsSkill{
-public:
-    LianliViewAsSkill():ZeroCardViewAsSkill("lianli"){
-
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern == "@@lianli";
-    }
-
-    virtual const Card *viewAs() const{
-        return new LianliCard;
-    }
-};
-*/
 
 class Lianli: public PhaseChangeSkill{
 public:
     Lianli():PhaseChangeSkill("lianli"){
-        //view_as_skill = new LianliViewAsSkill;
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         if(target->getPhase() == Player::Start){
             Room *room = target->getRoom();
-            //bool used = room->askForUseCard(target, "@@lianli", "@lianli-card");
 
             QList<ServerPlayer *> males;
             foreach(ServerPlayer *p, room->getAlivePlayers()){
@@ -1518,7 +1452,6 @@ class Zhenggong: public TriggerSkill{
 public:
     Zhenggong():TriggerSkill("zhenggong"){
         events << TurnStart;
-        //frequency = Frequent;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1563,24 +1496,14 @@ void TouduCard::onEffect(const CardEffectStruct &effect) const{
 class TouduViewAsSkill: public OneCardViewAsSkill{
 public:
     TouduViewAsSkill(): OneCardViewAsSkill("toudu"){
-    }
-
-    bool viewFilter(const Card *to_select) const{
-        return !to_select->isEquipped();
+        response_pattern == "@@toudu";
+        filter_pattern == ".|.|.|hand!";
     }
 
     const Card *viewAs(const Card *card) const{
         TouduCard *toudu = new TouduCard;
         toudu->addSubcard(card);
         return toudu;
-    }
-
-    bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern == "@@toudu";
     }
 };
 
@@ -1623,7 +1546,6 @@ void YisheCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) c
 class YisheViewAsSkill: public ViewAsSkill{
 public:
     YisheViewAsSkill():ViewAsSkill("yishe"){
-        /*card = new YisheCard;*/
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -1645,15 +1567,10 @@ public:
         if(Self->getPile("rice").isEmpty() && cards.isEmpty())
             return NULL;
 
-        /*card->clearSubcards();*/
         YisheCard *card = new YisheCard;
         card->addSubcards(cards);
         return card;
     }
-
-/*
-private:
-    YisheCard *card;*/
 };
 
 YisheAskCard::YisheAskCard(){
@@ -1779,7 +1696,6 @@ class YTZhenwei: public TriggerSkill{
 public:
     YTZhenwei():TriggerSkill("ytzhenwei"){
         events << SlashMissed;
-        //frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{

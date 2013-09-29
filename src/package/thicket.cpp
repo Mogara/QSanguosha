@@ -20,8 +20,7 @@ public:
         if (player->isNude() || caopi == player)
             return false;
         if (caopi->isAlive() && room->askForSkillInvoke(caopi, objectName(), data)) {
-            //bool isCaoCao = player->getGeneralName().contains("caocao");
-            room->broadcastSkillInvoke(objectName()/*, (isCaoCao ? 3 : (player->isMale() ? 1 : 2))*/);
+            room->broadcastSkillInvoke(objectName());
 
             DummyCard *dummy = new DummyCard(player->handCards());
             QList <const Card *> equips = player->getEquips();
@@ -279,8 +278,6 @@ public:
 
                 if (has_heart)
                     room->broadcastSkillInvoke(objectName(), 2);
-                /*else
-                    room->broadcastSkillInvoke(objectName(), 3);*/
 
                 return true;
             }

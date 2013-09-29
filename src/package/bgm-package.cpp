@@ -966,11 +966,7 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
 
             if (damage.card && damage.card->isKindOf("Slash")) {
-                QStringList qinggang = player->tag["Qinggang"].toStringList();
-                if (!qinggang.isEmpty()) {
-                    qinggang.removeOne(damage.card->toString());
-                    player->tag["Qinggang"] = qinggang;
-                }
+                player->removeQinggangTag(damage.card);
             }
 
             DamageStruct newdamage = damage;
@@ -2198,7 +2194,6 @@ public:
                 l.arg = "mingjian";
                 l.from = player;
                 room->sendLog(l);
-                //room->broadcastSkillInvoke("mingjian", 3);
             }
             return true;
         }

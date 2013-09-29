@@ -163,7 +163,6 @@ public:
         CardStar card = data.value<CardUseStruct>().card;
 
         if(card && card->isNDTrick()){
-            //if(room->askForSkillInvoke(jiangwei, objectName(), data))
             jiangwei->setFlags("yicairesponding");
             try{
                 room->askForUseCard(jiangwei, "slash", "@askforslash");
@@ -210,7 +209,7 @@ public:
             if(!players.isEmpty())
                 target = room->askForPlayerChosen(jiangwei, players, objectName());
 
-            if (target == NULL/* && !jiangwei->isProhibited(jiangwei, slash)*/)
+            if (target == NULL)
                 target = jiangwei;
 
             CardUseStruct use;
@@ -309,7 +308,6 @@ public:
 };
 
 BawangCard::BawangCard(){
-    //mute = true ;
 }
 
 bool BawangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -336,18 +334,11 @@ void BawangCard::onEffect(const CardEffectStruct &effect) const{
 class BawangViewAsSkill: public ZeroCardViewAsSkill{
 public:
     BawangViewAsSkill():ZeroCardViewAsSkill("bawang"){
+        response_pattern = "@@bawang";
     }
 
     virtual const Card *viewAs() const{
         return new BawangCard;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return  pattern == "@@bawang";
     }
 };
 
@@ -512,18 +503,8 @@ void FuzuoCard::onEffect(const CardEffectStruct &effect) const{
 class FuzuoViewAsSkill: public OneCardViewAsSkill {
 public:
     FuzuoViewAsSkill(): OneCardViewAsSkill("fuzuo") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern == "@@fuzuo";
-    }
-
-    virtual bool viewFilter(const Card* to_select) const{
-        return !to_select->isEquipped() && to_select->getNumber() < 8;
+        response_pattern = "@@fuzuo";
+        filter_pattern = ".|.|8-13|hand!";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -605,7 +586,6 @@ public:
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@jincui", true, true);
         if (target == NULL)
             return false;
-        //room->broadcastSkillInvoke(objectName());
 
         QVariant t_data = QVariant::fromValue((PlayerStar)target);
         if (room->askForChoice(player, objectName(), "draw+throw", t_data) == "draw"){
@@ -716,7 +696,6 @@ public:
         QList<ServerPlayer *> tians = room->findPlayersBySkillName(objectName());
         foreach(ServerPlayer *tianfeng, tians){
             if(tianfeng->getCardCount(true)>=2
-               //&& room->askForSkillInvoke(tianfeng, objectName(), QVariant::fromValue(player))
                 && room->askForDiscard(tianfeng, objectName(), 2, 2, true, true, "@shipo")){
                     room->broadcastSkillInvoke(objectName());
                     room->notifySkillInvoked(tianfeng, objectName());
@@ -823,7 +802,7 @@ void ShouyeCard::onEffect(const CardEffectStruct &effect) const{
 class Shouye: public OneCardViewAsSkill{
 public:
     Shouye():OneCardViewAsSkill("shouye"){
-
+        filter_pattern = ".|red|.|hand!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -831,10 +810,6 @@ public:
             return !player->hasUsed("ShouyeCard");
         else
             return true;
-    }
-
-    virtual bool viewFilter(const Card* to_select) const{
-        return !to_select->isEquipped() && to_select->isRed();
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{

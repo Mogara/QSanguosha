@@ -137,7 +137,7 @@ public:
         QString discard_prompt = QString("#qiaobian-%1").arg(index);
         QString use_prompt = QString("@qiaobian-%1").arg(index);
         if (index > 0 && room->askForDiscard(zhanghe, objectName(), 1, 1, true, false, discard_prompt)) {
-            room->broadcastSkillInvoke("qiaobian"/*, index*/);
+            room->broadcastSkillInvoke("qiaobian");
             if (!zhanghe->isAlive()) return false;
             if (!zhanghe->isSkipped(change.to) && (index == 2 || index == 3))
                 room->askForUseCard(zhanghe, "@@qiaobian", use_prompt, index);
@@ -180,7 +180,6 @@ public:
                     Card::Suit suit = (Card::Suit)(judge.pattern.toInt());
                     switch (suit) {
                     case Card::Heart: {
-                            //room->broadcastSkillInvoke(objectName(), 4);
                             RecoverStruct recover;
                             recover.who = caiwenji;
                             room->recover(player, recover);
@@ -188,19 +187,16 @@ public:
                             break;
                         }
                     case Card::Diamond: {
-                            //room->broadcastSkillInvoke(objectName(), 3);
                             player->drawCards(2);
                             break;
                         }
                     case Card::Club: {
-                            //room->broadcastSkillInvoke(objectName(), 1);
                             if (damage.from && damage.from->isAlive())
                                 room->askForDiscard(damage.from, "beige", 2, 2, false, true);
 
                             break;
                         }
                     case Card::Spade: {
-                            //room->broadcastSkillInvoke(objectName(), 2);
                             if (damage.from && damage.from->isAlive())
                                 damage.from->turnOver();
 

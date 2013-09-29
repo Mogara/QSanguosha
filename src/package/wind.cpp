@@ -554,7 +554,6 @@ public:
 };
 
 TianxiangCard::TianxiangCard() {
-    //mute = true;
 }
 
 void TianxiangCard::onEffect(const CardEffectStruct &effect) const{

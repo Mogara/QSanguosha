@@ -7,7 +7,6 @@
 #include "maneuvering.h"
 
 QuhuCard::QuhuCard() {
-    //mute = true;
 }
 
 bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -21,8 +20,6 @@ void QuhuCard::use(Room *room, ServerPlayer *xunyu, QList<ServerPlayer *> &targe
 
     bool success = xunyu->pindian(tiger, "quhu", NULL);
     if (success) {
-        //room->broadcastSkillInvoke("quhu", 2);
-
         QList<ServerPlayer *> players = room->getOtherPlayers(tiger), wolves;
         foreach (ServerPlayer *player, players) {
             if (tiger->inMyAttackRange(player))
@@ -64,6 +61,9 @@ public:
 
             room->broadcastSkillInvoke(objectName());
             to->drawCards(x);
+
+            if (!xunyu->isAlive())
+                return ;
         }
     }
 };
@@ -239,15 +239,17 @@ public:
                     judge.who = shuangxiong;
 
                     room->judge(judge);
-                    room->setPlayerMark(shuangxiong, "shuangxiong", judge.card->isRed() ? 1 : 2);
+                    room->setPlayerMark(shuangxiong, "shuangxiong", judge.pattern == "red" ? 1 : 2);
 
                     return true;
                 }
             }
         } else if (triggerEvent == FinishJudge) {
             JudgeStar judge = data.value<JudgeStar>();
-            if (judge->reason == "shuangxiong")
+            if (judge->reason == "shuangxiong"){
                 shuangxiong->obtainCard(judge->card);
+                judge->pattern = judge->card->isRed() ? "red" : "black";
+            }
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to == Player::NotActive && shuangxiong->hasFlag("shuangxiong"))
@@ -377,7 +379,6 @@ public:
 
         //此处更改是因为“八阵”是“视为”装备八卦阵，真正发动的技能是八卦阵，而不是八阵。
 
-        /*if (wolong->askForSkillInvoke(objectName())) {*/
         if (wolong->askForSkillInvoke("EightDiagram")) {
             JudgeStruct judge;
             judge.pattern = ".|red";
@@ -390,7 +391,6 @@ public:
 
             if (judge.isGood()) {
                 Jink *jink = new Jink(Card::NoSuit, 0);
-                /*jink->setSkillName(objectName());*/
                 jink->setSkillName("EightDiagram");
                 room->broadcastSkillInvoke(objectName());
                 room->provide(jink);

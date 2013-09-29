@@ -700,8 +700,6 @@ private:
         if (player->getHp() <= hp) {
             if (!baobian_skills.contains(skill_name)) {
                 room->notifySkillInvoked(player, "baobian");
-                /*if (player->getHp() == hp)
-                    room->broadcastSkillInvoke("baobian", 4 - hp);*/
                 acquired_skills.append(skill_name);
                 baobian_skills << skill_name;
             }
@@ -1170,12 +1168,6 @@ public:
                             room->sendLog(log);
                         }
                         target->obtainCard(card);
-                        /*
-                            ToAsk: 这么写会不会和激将/护驾/连理杀闪等多次provide技能混合出现Bug？
-                            Para版曾经就出过这样的Bug，当时我用袁术（伪帝激将）激将决斗，
-                            当时第一次Provide时，夏侯氏燕语收回，然后第二次Provide之后
-                            我的决斗目标和夏侯氏两个人卡一张Bug杀，我一直在激将，两个人轮流打出同一张杀。
-                        */
                     } else
                         break;
                 }
@@ -1943,7 +1935,6 @@ SPPackage::SPPackage()
 
     General *fuwan = new General(this, "fuwan", "qun", 4);
     fuwan->addSkill("moukui");
-    //fuwan->addSkill(new SPConvertSkill("fuwan", "as_mushun"));
 
     General *xiahouba = new General(this, "xiahouba", "shu"); // SP 019
     xiahouba->addSkill(new Baobian);

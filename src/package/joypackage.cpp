@@ -428,6 +428,6 @@ JoyEquipPackage::JoyEquipPackage()
     skills << new GaleShellSkill << new YxSwordSkill;
 }
 
-//ADD_PACKAGE(Joy)
+//ADD_PACKAGE(Joy) //Fs: in fact I want to add these packs back to game
 ADD_PACKAGE(Disaster)
 ADD_PACKAGE(JoyEquip)

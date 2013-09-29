@@ -598,99 +598,6 @@ public:
     }
 };
 
-/*
-class Neo2013Qianhuan: public TriggerSkill{
-public:
-    Neo2013Qianhuan(): TriggerSkill("neo2013qianhuan"){
-        events << Damaged << TargetConfirming << CardsMoveOneTime;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->isAlive();
-    }
-
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *selfplayer = room->findPlayerBySkillName(objectName());
-        if (selfplayer == NULL)
-            return false;
-        switch (triggerEvent){
-            case (Damaged):{
-                if (room->askForSkillInvoke(player, objectName(), data)){
-                    if (player != selfplayer){
-                        room->notifySkillInvoked(selfplayer, objectName());
-                        LogMessage l;
-                        l.type = "#InvokeOthersSkill";
-                        l.from = player;
-                        l.to << selfplayer;
-                        l.arg = objectName();
-                        room->sendLog(l);
-                    }
-                    int id = room->drawCard();
-                    QList<int> fantasy = selfplayer->getPile("fantasy");
-                    selfplayer->addToPile("fantasy", id);
-                    const Card *card = Sanguosha->getCard(id);
-                    foreach(int id, fantasy){
-                        if (card->getSuit() == Sanguosha->getCard(id)->getSuit()){
-                            room->throwCard(card, NULL, player);
-                            break;
-                        }
-                    }
-                }
-                break;
-            }
-            case (TargetConfirming):{
-                CardUseStruct use = data.value<CardUseStruct>();
-                if (use.to.length() == 1 && (use.card->isKindOf("BasicCard") || use.card->isKindOf("TrickCard"))
-                        && !selfplayer->getPile("fantasy").isEmpty()){
-                    bool invalid = false;
-                    if (room->askForSkillInvoke(selfplayer, objectName(), data)){
-                        if (selfplayer != player && room->askForSkillInvoke(player, objectName(), data)){
-                            room->notifySkillInvoked(selfplayer, objectName());
-                            LogMessage l;
-                            l.type = "#InvokeOthersSkill";
-                            l.from = player;
-                            l.to << selfplayer;
-                            l.arg = objectName();
-                            room->sendLog(l);
-                            invalid = true;
-                        }
-                        else
-                            invalid = true;
-                    }
-                    if (invalid){
-                        QList<int> fantasy = selfplayer->getPile("fantasy");
-                        room->fillAG(fantasy, selfplayer);
-                        int id = room->askForAG(selfplayer, fantasy, true, objectName());
-                        if (id != -1){
-                            room->throwCard(id, NULL, selfplayer);
-                            use.to.removeOne(use.to.first());
-                            data = QVariant::fromValue(use);
-                            if (use.card->isKindOf("DelayedTrick"))
-                                room->throwCard(use.card, NULL);
-                            LogMessage l;
-                            l.type = "#QiaoshuiRemove";
-                            l.from = player;
-                            l.to << player;
-                            l.arg = use.card->objectName();
-                            l.arg2 = objectName();
-                            room->sendLog(l);
-                        }
-                        room->clearAG(selfplayer);
-                    }
-                }
-                break;
-            }
-            case (CardsMoveOneTime):{
-                //It seems this part of skill is not necessary anymore.
-                break;
-            }
-            default:
-                Q_ASSERT(false);
-        }
-        return false;
-    }
-};*/
-
 Neo2013YongyiCard::Neo2013YongyiCard(): SkillCard(){
     mute = true;
 }
@@ -864,7 +771,7 @@ public:
             if (player->getMark("YiDuoyiType") == 0)
                 return false;
 
-            std::string t = types[player->getMark("YiDuoyiType") - 1].toStdString();   //QString转char *好麻烦！
+            std::string t = types[player->getMark("YiDuoyiType") - 1].toStdString();   //QString 2 char * is TOO complicated!
 
             const Card *c = NULL;
 
@@ -891,7 +798,6 @@ public:
 };
 
 Neo2013PujiCard::Neo2013PujiCard(): SkillCard(){
-    //handling_method = Card::MethodDiscard;
 }
 
 bool Neo2013PujiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -1108,37 +1014,7 @@ void Neo2013FengyinCard::use(Room *room, ServerPlayer *source, QList<ServerPlaye
     source->drawCards(1);
 }
 
-/*
-class Neo2013FengyinVS: public ViewAsSkill{ //这算是写LUA留下的后遗症么……
-public:
-    Neo2013FengyinVS(): ViewAsSkill("neo2013fengyin"){
-
-    }
-
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
-        return selected.length() == 0 && (to_select->isKindOf("Slash") || to_select->isKindOf("EquipCard"));
-    }
-
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
-        if (cards.length() != 1)
-            return NULL;
-
-        Neo2013FengyinCard *card = new Neo2013FengyinCard;
-        card->addSubcard(cards[0]);
-        return card;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@neo2013fengyin";
-    }
-};*/
-
-
-class Neo2013FengyinVS: public OneCardViewAsSkill{  //话说加的两个新变量是这么用的吧……我不会用
+class Neo2013FengyinVS: public OneCardViewAsSkill{
 public:
     Neo2013FengyinVS(): OneCardViewAsSkill("neo2013fengyin"){
         response_pattern = "@@neo2013fengyin";
@@ -1434,17 +1310,11 @@ Ling2013Package::Ling2013Package(): Package("Ling2013"){
     neo2013_liubei->addSkill("jijiang");
     neo2013_liubei->addSkill("rende");
 
-/*
-    General *neo2013_yuji = new General(this, "neo2013_yuji", "qun", 3);
-    neo2013_yuji->addSkill(new Neo2013Qianhuan);
-*/
-
     General *neo2013_huangzhong = new General(this, "neo2013_huangzhong", "shu", 4);
     neo2013_huangzhong->addSkill(new Neo2013Yongyi);
     neo2013_huangzhong->addSkill(new SlashNoDistanceLimitSkill("neo2013yongyi"));
     neo2013_huangzhong->addSkill("liegong");
     related_skills.insertMulti("neo2013yongyi", "#neo2013yongyi-slash-ndl");
-
 
     General *neo2013_yangxiu = new General(this, "neo2013_yangxiu", "wei", 3);
     neo2013_yangxiu->addSkill(new Neo2013Duoyi);
@@ -1495,7 +1365,6 @@ Ling2013Package::Ling2013Package(): Package("Ling2013"){
     General *neo2013_zoushi = new General(this, "neo2013_zoushi", "qun", 3);
     neo2013_zoushi->addSkill(new Neo2013Huoshui);
     neo2013_zoushi->addSkill(new Neo2013Qingcheng);
-
 
     addMetaObject<Neo2013XinzhanCard>();
     addMetaObject<Neo2013FanjianCard>();
@@ -1593,7 +1462,7 @@ bool KnownBoth::targetsFeasible(const QList<const Player *> &targets, const Play
         return targets.length() == 0;
 
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    if (getSkillName() == "guhuo" || getSkillName() == "qice")  // Dirty hack here!!!
+    if (getSkillName().contains("guhuo") || getSkillName() == "qice")  // Dirty hack here!!!
         return targets.length() > 0 && targets.length() <= total_num;
     else
         return targets.length() <= total_num;
@@ -1743,7 +1612,6 @@ public:
             foreach(ServerPlayer *p, room->getOtherPlayers(damage.to))
                 if (damage.to->distanceTo(p) == 1){
                     players << p;
-                    //p->setFlags("TribladeFilter");
                     room->setPlayerFlag(p, "TribladeFilter");
                 }
             if (players.isEmpty())
@@ -1753,7 +1621,6 @@ public:
 
         foreach(ServerPlayer *p, room->getAllPlayers())
             if (p->hasFlag("TribladeFilter"))
-                //p->setFlags("-TribladeFilter");
                 room->setPlayerFlag(p, "TribladeFilter");
 
         return false;

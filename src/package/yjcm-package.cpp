@@ -83,7 +83,7 @@ public:
                 Config.AIDelay = ai_delay;
 
                 if (!card_ids.empty()) {
-                    room->broadcastSkillInvoke("luoying"/*, move.from->getGeneralName().contains("zhenji") ? 2 : 1*/);
+                    room->broadcastSkillInvoke("luoying");
                     foreach (int id, card_ids) {
                         if (move.card_ids.contains(id)) {
                             move.from_places.removeAt(move.card_ids.indexOf(id));

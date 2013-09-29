@@ -113,7 +113,7 @@ void MizhaoCard::onEffect(const CardEffectStruct &effect) const{
     if (effect.to->isKongcheng()) return;
 
     Room *room = effect.from->getRoom();
-    room->broadcastSkillInvoke("mizhao"/*, effect.to->getGeneralName().contains("liubei") ? 2 : 1*/);
+    room->broadcastSkillInvoke("mizhao");
 
     QList<ServerPlayer *> targets;
     foreach (ServerPlayer *p, room->getOtherPlayers(effect.to))

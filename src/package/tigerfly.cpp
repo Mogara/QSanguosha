@@ -430,6 +430,7 @@ public:
                     for (int i = 0; i < x; ++i){
                         int card = room->askForCardChosen(owner, player, "h", objectName());
                         //ToAsk: CardMoveReason哪里去了？
+                        //ToDo: 忘了问了……
                         room->throwCard(card, player, owner);
                     }
                 }
@@ -599,24 +600,14 @@ void TushouGiveCard::onEffect(const CardEffectStruct &effect) const{
 class TushouGiveVS: public OneCardViewAsSkill{
 public:
     TushouGiveVS(): OneCardViewAsSkill("tushou"){
-    }
-
-    virtual bool viewFilter(const Card *) const{
-        return true;
+        filter_pattern = ".";
+        response_pattern = "@@tushou";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
         TushouGiveCard *c = new TushouGiveCard;
         c->addSubcard(originalCard);
         return c;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@tushou";
     }
 };
 
@@ -872,6 +863,7 @@ public:
 
             room->doNotify(player, QSanProtocol::S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
 */
+            //我在想这段代码应该怎么加……
 
             LogMessage l;
             l.type = "$xiangshudrawpile";
@@ -945,6 +937,7 @@ public:
                     int index = move.card_ids.indexOf(id);
                     if (move.from_places[index] == Player::PlaceHand || move.from_places[index] == Player::PlaceEquip){
                         //ToAsk: 如果牌移动过程是不可见的，怎么确定已经失去了这个颜色的牌？
+                        //这个也忘了……
                         room->setPlayerFlag(player, "bushi_candraw");
                         return false;
                     }
@@ -1058,18 +1051,11 @@ void ChouduCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 class ChouduVS: public ZeroCardViewAsSkill{
 public:
     ChouduVS(): ZeroCardViewAsSkill("choudu"){
+        response_pattern == "@@choudu";
     }
 
     virtual const Card *viewAs() const{
         return new ChouduCard;
-    }
-
-    virtual bool isEnabledAtPlay(const Player *) const{
-        return false;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@choudu";
     }
 };
 
