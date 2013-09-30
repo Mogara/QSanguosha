@@ -1051,7 +1051,7 @@ void ChouduCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &ta
 class ChouduVS: public ZeroCardViewAsSkill{
 public:
     ChouduVS(): ZeroCardViewAsSkill("choudu"){
-        response_pattern == "@@choudu";
+        response_pattern = "@@choudu";
     }
 
     virtual const Card *viewAs() const{
