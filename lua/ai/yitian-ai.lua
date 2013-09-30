@@ -838,6 +838,194 @@ end
 function sgs.ai_skill_use_func.XunzhiCard(card, use)
 	use.card = card
 end
+
+function sgs.ai_skill_choice.xunzhi(self, choices)
+	local xunzhi = choices:split("+")
+	xunzhi:removeOne("weiyan")
+	xunzhi:removeOne("zhugeliang")
+	xunzhi:removeOne("pangtong")
+	xunzhi:removeOne("menghuo")
+	xunzhi:removeOne("liushan")
+	xunzhi:removeOne("fazheng")
+	xunzhi:removeOne("xushu")
+	xunzhi:removeOne("liaohua")
+	xunzhi:removeOne("madai")
+	xunzhi:removeOne("jianyong")
+	xunzhi:removeOne("guanping")
+	xunzhi:removeOne("liufeng")
+	xunzhi:removeOne("xiahoushi")
+	xunzhi:removeOne("bgm_liubei")
+	xunzhi:removeOne("ganfuren")
+	xunzhi:removeOne("heg_jiangwei")
+	xunzhi:removeOne("jiangwanfeiyi")
+	xunzhi:removeOne("neo2013_masu")
+	xunzhi:removeOne("neo2013_ganfuren")
+	xunzhi:removeOne("neo2013_guanping")
+	xunzhi:removeOne("nos_guanxingzhangbao")
+	xunzhi:removeOne("wis_jiangwei")
+	xunzhi:removeOne("shanfu")
+	xunzhi:removeOne("zhoucang")
+	
+	
+	--只是举个例子，不详细写了
+	return xunzhi[1];
+	
+	
+	--[[
+
++        QStringList xunzhizhangfei;
++        foreach(QString s, xunzhi)
++            if (s.contains("zhangfei"))
++                xunzhizhangfei << s;
++        
++        xunzhizhangfei.removeOne("bgm_zhangfei");
++        if (xunzhizhangfei.length() > 1)
++            xunzhizhangfei.removeOne("zhangfei");
++        if (xunzhi.contains("xiahouba") && player->getHp() <= 2)
++            xunzhizhangfei << "xiahouba";
++        
++        if (xunzhizhangfei.length() > 0){
++            int slashcount = 0;
++            foreach(const Card *c, player->getHandcards())
++                if (c->isKindOf("Slash"))
++                    slashcount ++;
++
++            if (slashcount > 2)
++                return xunzhizhangfei.at(qrand() % xunzhizhangfei.length());
++        }
++
++        QStringList xunzhihuangyueying;
++        foreach(QString s, xunzhi)
++            if (s.contains("huangyueying"))
++                xunzhihuangyueying << s;
++        if (xunzhihuangyueying.length() > 1)
++            xunzhihuangyueying.removeOne("huangyueying");
++
++        if (xunzhihuangyueying.length() > 0){
++            int trickcount = 0;
++            foreach(const Card *c, player->getHandcards())
++                if (c->isNDTrick())
++                    trickcount ++;
++
++            if (trickcount > 2)
++                return xunzhihuangyueying.first();
++        }
++
++        bool hascrossbow = false;
++        QList<const Card *> cards = player->getHandcards();
++        cards << player->getWeapon();
++        foreach(const Card *c, cards)
++            if (c->isKindOf("Crossbow") || c->isKindOf("VSCrossbow")){
++                hascrossbow = true;
++                break;
++            }
++        
++        if (hascrossbow){
++
++            QStringList xunzhiguanyu;
++            foreach(QString s, xunzhi)
++                if (s.contains("guanyu"))
++                    xunzhiguanyu << s;
++
++            if (xunzhiguanyu.length() > 1)
++                xunzhiguanyu.removeOne("guanyu");
++
++            if (xunzhiguanyu.length() > 0){
++                int redcount = 0;
++                foreach(const Card *c, player->getCards("he"))
++                    if (c->isRed() && (!c->isKindOf("Crossbow") || c->isKindOf("VSCrossbow")))
++                        redcount ++;
++
++                if (redcount > 1)
++                    return xunzhiguanyu.first();
++            }
++
++            QStringList xunzhizhaoyun;
++            foreach(QString s, xunzhi)
++                if (s.contains("zhaoyun"))
++                    xunzhizhaoyun << s;
++
++            if (xunzhizhaoyun.length() > 1)
++                xunzhizhaoyun.removeOne("zhaoyun");
++
++            if (xunzhizhaoyun.length() > 0){
++                int jinkcount = 0;
++                foreach(const Card *c, player->getHandcards())
++                    if (c->isKindOf("Jink"))
++                        jinkcount ++;
++
++                if (jinkcount > 1)
++                    return xunzhizhaoyun.first();
++            }
++        }
++
++        if (xunzhi.contains("huangzhong")){
++            bool haskylin = false;
++            bool hasslash = false;
++            QList<const Card *> cards = player->getHandcards();
++            cards << player->getWeapon();
++            foreach(const Card *c, cards)
++                if (c->isKindOf("Weapon") && ((const Weapon *)c)->getRange() >= 3)
++                    haskylin = true;
++                else if (c->isKindOf("Slash"))
++                    hasslash = true;
++
++            if (haskylin && hasslash)
++                return "huangzhong";
++
++        }
++
++        QStringList xunzhiothers;
++        if (xunzhi.contains("machao"))
++            xunzhiothers << "machao";
++        if (xunzhi.contains("nos_madai"))
++            xunzhiothers << "nos_madai";
++
++        if (xunzhiothers.length() > 0){
++            ServerPlayer *lastretrial;
++            foreach(ServerPlayer *s, getAlivePlayers())
++                if (s->hasSkills("guicai|guidao|huanshi|jilve"))
++                    lastretrial = s;
++
++            if (player->getAI()->GetRelation(player, lastretrial) == AI::Friend)
++                return xunzhiothers.last();
++        }
++
++        if (xunzhi.contains("wolong")){
++            int redcount = 0;
++            foreach(const Card *c, player->getHandcards())
++                if (c->isRed())
++                    redcount ++;
++
++            if (redcount > 2)
++                return "wolong";
++        }
++
++        if (xunzhi.contains("bgm_zhangfei") || xunzhi.contains("zhurong")){
++            int maxcard = 0;
++            bool red_slash = false;
++            bool slash = false;
++            foreach(const Card *c, player->getHandcards()){
++                if (c->getNumber() > maxcard)
++                    maxcard = c->getNumber();
++                if (c->isKindOf("Slash")){
++                    slash = true;
++                    if (c->isRed())
++                        red_slash = true;
++                }
++            }
++            if (maxcard >= 11)
++                if (red_slash && xunzhi.contains("bgm_zhangfei"))
++                    return "bgm_zhangfei";
++                else
++                    return "zhurong";
++        }
++
++        return xunzhi.at(qrand() % xunzhi.length());
++ 
+	]]
+end
+
 --[[
 	技能：毒士
 	描述：杀死你的角色获得崩坏技能直到游戏结束 
