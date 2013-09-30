@@ -1255,7 +1255,10 @@ void XunzhiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
             shu_generals << name;
     }
 
+    room->setPlayerFlag(source, "xunzhi_selecting");
     QString general = room->askForGeneral(source, shu_generals);
+    room->setPlayerFlag(source, "-xunzhi_selecting");
+
     source->tag["newgeneral"] = general;
     bool isSecondaryHero = (source->getGeneralName() != "jiangboyue");
     room->changeHero(source, general, false, true, isSecondaryHero);
@@ -1282,6 +1285,10 @@ public:
     Xunzhi():TriggerSkill("xunzhi"){
         events << EventPhaseChanging;
         view_as_skill = new XunzhiViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->isAlive();
     }
 
     virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *target, QVariant &data) const{
