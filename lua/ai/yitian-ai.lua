@@ -839,10 +839,12 @@ function sgs.ai_skill_use_func.XunzhiCard(card, use)
 	use.card = card
 end
 
-function sgs.ai_skill_choice.xunzhi(self, choices)
+function sgs.ai_skill_choice.xunzhi(self, choices)  --待完善，目前只写了这部分，关于出牌阶段对牌的处理还没有写，还是有带连弩变关羽留红牌过的现象
 	local xunzhi = choices:split("+")
 	xunzhi:removeOne("weiyan")
+	xunzhi:removeOne("zhaoyun")
 	xunzhi:removeOne("zhugeliang")
+	xunzhi:removeOne("wolong")
 	xunzhi:removeOne("pangtong")
 	xunzhi:removeOne("menghuo")
 	xunzhi:removeOne("liushan")
@@ -866,164 +868,160 @@ function sgs.ai_skill_choice.xunzhi(self, choices)
 	xunzhi:removeOne("shanfu")
 	xunzhi:removeOne("zhoucang")
 	
+	local xunzhizhangfei = {}
+	for _, s in ipairs(xunzhi) do
+		if string.find(s, "zhangfei") then
+			table.insert(xunzhizhangfei, s)
+		end
+	end
+	xunzhizhangfei:removeOne("bgm_zhangfei")
 	
-	--只是举个例子，不详细写了
-	return xunzhi[1];
+	if #xunzhizhangfei > 1 then
+		xunzhizhangfei:removeOne("zhangfei")
+	end
+	if xunzhizhangfei:contains("xiahouba") and (self.player:getHp() <= 2) then
+		table.insert(xunzhizhangfei, "xiahouba")
+	end
 	
+	if #xunzhizhangfei > 0 then
+		local slashcount = 0
+		for _, c in sgs.qlist(self.player:getHandcards()) do
+			if c:isKindOf("Slash") then
+				slashcount = slashcount + 1
+			end
+		end
+		
+		if slashcount > 2 then
+			return xunzhizhangfei[math.random(#xunzhizhangfei)]
+		end
+	end
 	
-	--[[
+	local xunzhihuangyueying = {}
+	
+	for _, s in ipairs(xunzhi) do
+		if string.find(s, "huangyueying") then
+			table.insert(xunzhihuangyueying, s)
+		end
+	end
+	
+	if #xunzhihuangyueying > 1 then
+		xunzhihuangyueying:removeOne("huangyueying")
+	end
+	
+	if #xunzhihuangyueying > 0 then
+		local trickcount = 0
+		for _, c in sgs.qlist(self.player:getHandcards()) do
+			if c:isNDTrick() then
+				trickcount = trickcount + 1
+			end
+		end
+		
+		if trickcount > 2 then
+			return xunzhihuangyueying[1]
+		end
+	end
 
-+        QStringList xunzhizhangfei;
-+        foreach(QString s, xunzhi)
-+            if (s.contains("zhangfei"))
-+                xunzhizhangfei << s;
-+        
-+        xunzhizhangfei.removeOne("bgm_zhangfei");
-+        if (xunzhizhangfei.length() > 1)
-+            xunzhizhangfei.removeOne("zhangfei");
-+        if (xunzhi.contains("xiahouba") && player->getHp() <= 2)
-+            xunzhizhangfei << "xiahouba";
-+        
-+        if (xunzhizhangfei.length() > 0){
-+            int slashcount = 0;
-+            foreach(const Card *c, player->getHandcards())
-+                if (c->isKindOf("Slash"))
-+                    slashcount ++;
-+
-+            if (slashcount > 2)
-+                return xunzhizhangfei.at(qrand() % xunzhizhangfei.length());
-+        }
-+
-+        QStringList xunzhihuangyueying;
-+        foreach(QString s, xunzhi)
-+            if (s.contains("huangyueying"))
-+                xunzhihuangyueying << s;
-+        if (xunzhihuangyueying.length() > 1)
-+            xunzhihuangyueying.removeOne("huangyueying");
-+
-+        if (xunzhihuangyueying.length() > 0){
-+            int trickcount = 0;
-+            foreach(const Card *c, player->getHandcards())
-+                if (c->isNDTrick())
-+                    trickcount ++;
-+
-+            if (trickcount > 2)
-+                return xunzhihuangyueying.first();
-+        }
-+
-+        bool hascrossbow = false;
-+        QList<const Card *> cards = player->getHandcards();
-+        cards << player->getWeapon();
-+        foreach(const Card *c, cards)
-+            if (c->isKindOf("Crossbow") || c->isKindOf("VSCrossbow")){
-+                hascrossbow = true;
-+                break;
-+            }
-+        
-+        if (hascrossbow){
-+
-+            QStringList xunzhiguanyu;
-+            foreach(QString s, xunzhi)
-+                if (s.contains("guanyu"))
-+                    xunzhiguanyu << s;
-+
-+            if (xunzhiguanyu.length() > 1)
-+                xunzhiguanyu.removeOne("guanyu");
-+
-+            if (xunzhiguanyu.length() > 0){
-+                int redcount = 0;
-+                foreach(const Card *c, player->getCards("he"))
-+                    if (c->isRed() && (!c->isKindOf("Crossbow") || c->isKindOf("VSCrossbow")))
-+                        redcount ++;
-+
-+                if (redcount > 1)
-+                    return xunzhiguanyu.first();
-+            }
-+
-+            QStringList xunzhizhaoyun;
-+            foreach(QString s, xunzhi)
-+                if (s.contains("zhaoyun"))
-+                    xunzhizhaoyun << s;
-+
-+            if (xunzhizhaoyun.length() > 1)
-+                xunzhizhaoyun.removeOne("zhaoyun");
-+
-+            if (xunzhizhaoyun.length() > 0){
-+                int jinkcount = 0;
-+                foreach(const Card *c, player->getHandcards())
-+                    if (c->isKindOf("Jink"))
-+                        jinkcount ++;
-+
-+                if (jinkcount > 1)
-+                    return xunzhizhaoyun.first();
-+            }
-+        }
-+
-+        if (xunzhi.contains("huangzhong")){
-+            bool haskylin = false;
-+            bool hasslash = false;
-+            QList<const Card *> cards = player->getHandcards();
-+            cards << player->getWeapon();
-+            foreach(const Card *c, cards)
-+                if (c->isKindOf("Weapon") && ((const Weapon *)c)->getRange() >= 3)
-+                    haskylin = true;
-+                else if (c->isKindOf("Slash"))
-+                    hasslash = true;
-+
-+            if (haskylin && hasslash)
-+                return "huangzhong";
-+
-+        }
-+
-+        QStringList xunzhiothers;
-+        if (xunzhi.contains("machao"))
-+            xunzhiothers << "machao";
-+        if (xunzhi.contains("nos_madai"))
-+            xunzhiothers << "nos_madai";
-+
-+        if (xunzhiothers.length() > 0){
-+            ServerPlayer *lastretrial;
-+            foreach(ServerPlayer *s, getAlivePlayers())
-+                if (s->hasSkills("guicai|guidao|huanshi|jilve"))
-+                    lastretrial = s;
-+
-+            if (player->getAI()->GetRelation(player, lastretrial) == AI::Friend)
-+                return xunzhiothers.last();
-+        }
-+
-+        if (xunzhi.contains("wolong")){
-+            int redcount = 0;
-+            foreach(const Card *c, player->getHandcards())
-+                if (c->isRed())
-+                    redcount ++;
-+
-+            if (redcount > 2)
-+                return "wolong";
-+        }
-+
-+        if (xunzhi.contains("bgm_zhangfei") || xunzhi.contains("zhurong")){
-+            int maxcard = 0;
-+            bool red_slash = false;
-+            bool slash = false;
-+            foreach(const Card *c, player->getHandcards()){
-+                if (c->getNumber() > maxcard)
-+                    maxcard = c->getNumber();
-+                if (c->isKindOf("Slash")){
-+                    slash = true;
-+                    if (c->isRed())
-+                        red_slash = true;
-+                }
-+            }
-+            if (maxcard >= 11)
-+                if (red_slash && xunzhi.contains("bgm_zhangfei"))
-+                    return "bgm_zhangfei";
-+                else
-+                    return "zhurong";
-+        }
-+
-+        return xunzhi.at(qrand() % xunzhi.length());
-+ 
-	]]
+	local hascrossbow = false
+	local cards = self.player:getHandcards()
+	cards:append(self.player:getWeapon())
+	for _, c in sgs.qlist(cards) do
+		if c:isKindOf("Crossbow") or c:isKindOf("VSCrossbow") then
+			hascrossbow = true
+			break
+		end
+	end
+	
+	if hascrossbow then
+		
+		local xunzhiguanyu = {}
+		for _, s in ipairs(xunzhi) do
+			if string.find(s, "guanyu") then
+				table.insert(xunzhiguanyu, s)
+			end
+		end
+		
+		if #xunzhiguanyu > 1 then
+			xunzhiguanyu:removeOne("guanyu")
+		end
+		
+		if #xunzhiguanyu > 0 then
+			local redcount = 0
+			for _, c in sgs.qlist(self.player:getCards("he")) do
+				if c:isRed() and (not (c:isKindOf("Crossbow") or c:isKindOf("VSCrossbow"))) then
+					redcount = redcount + 1
+				end
+			end
+			
+			if redcount > 1 then
+				return xunzhiguanyu[1]
+			end
+		end
+		--不想加赵云了，相比关羽没用太多
+	end
+	
+	if xunzhi:contains("bgm_zhangfei") or xunzhi:contains("zhurong") then
+		local maxcard = 0
+		local red_slash = false
+		local slash = false
+		for _, c in sgs.qlist(self.player:getHandcards()) do
+			if c:getNumber() > maxcard then
+				maxcard = c:getNumber()
+			end
+			if c:isKindOf("Slash") then
+				slash = true
+				if c:isRed() then
+					red_slash = true
+				end
+			end
+		end
+		if (maxcard >= 11) then
+			if (red_slash and xunzhi:contains("bgm_zhangfei")) then
+				return "bgm_zhangfei"
+			else
+				return "zhurong"
+			end
+		end
+	end
+	
+	if xunzhi:contains("huangzhong") then
+		local haskylin = false
+		local hasslash = false
+		local cards = self.player:getHandcards()
+		cards:append(self.player:getWeapon())
+		for _, c in sgs.qlist(cards) do
+			if c:isKindOf("Weapon") and (c:toWeapon():getRange() >= 3) then
+				haskylin = true
+			elseif c:isKindOf("Slash") then
+				hasslash = true
+			end
+		end
+		if haskylin and hasslash then
+			return "huangzhong"
+		end
+	end
+	
+	if xunzhi:contains("nos_madai") then
+		local lastretrial = nil
+		for _, s in sgs.qlist(self.room:getAlivePlayers()) do
+			if s.hasSkills("guicai|guidao|huanshi|jilve") then
+				lastretrial = s
+			end
+		end
+		if (not lastretrial) or (self:GetRelation(self.player, lastretrial) == sgs.AI_Friend) then
+			return "nos_madai"
+		end
+	end
+	
+	if xunzhi:contains("nos_liubei") then
+		return "nos_liubei"
+	end
+	
+	if xunzhi:contains("liubei") then
+		return "liubei"
+	end
+	
+	return xunzhi[math.random(#xunzhi)]
+	
 end
 
 --[[
