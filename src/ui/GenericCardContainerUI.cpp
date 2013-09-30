@@ -204,6 +204,10 @@ void PlayerCardContainer::updateAvatar() {
             _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem,
                                                   _m_layout->m_avatarNameArea,
                                                   Qt::AlignLeft | Qt::AlignJustify, name);
+        } else {
+            _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
+                         _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, QSanRoomSkin::S_SKIN_KEY_DEFAULT_SECOND),
+                         _getAvatarParent());
         }
     } else {
         _paintPixmap(_m_avatarIcon, _m_layout->m_avatarArea,
