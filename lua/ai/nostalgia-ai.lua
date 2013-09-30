@@ -728,7 +728,8 @@ nosguhuo_skill.getTurnUseCard = function(self)
 
 		local fakeCard
 		local nosguhuo = "peach|ex_nihilo|snatch|dismantlement|amazing_grace|archery_attack|savage_assault|god_salvation"
-		if not sgs.GetConfig("BanPackages", ""):match("maneuvering") then nosguhuo = nosguhuo .. "|fire_attack" end
+		local ban = table.concat(sgs.Sanguosha:getBanPackages(), "|")
+		if not ban:match("maneuvering") then nosguhuo = nosguhuo .. "|fire_attack" end
 		local nosguhuos = nosguhuo:split("|")
 		for i = 1, #nosguhuos do
 			local forbidden = nosguhuos[i]

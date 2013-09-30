@@ -667,7 +667,8 @@ guhuo_skill.getTurnUseCard = function(self)
 
 		local fakeCard
 		local guhuo = "peach|ex_nihilo|snatch|dismantlement|amazing_grace|archery_attack|savage_assault"
-		if not sgs.GetConfig("BanPackages", ""):match("maneuvering") then guhuo = guhuo .. "|fire_attack" end
+		local ban = table.concat(sgs.Sanguosha:getBanPackages(), "|")
+		if not ban:match("maneuvering") then guhuo = guhuo .. "|fire_attack" end
 		local guhuos = guhuo:split("|")
 		for i = 1, #guhuos do
 			local forbidden = guhuos[i]
@@ -763,7 +764,8 @@ function SmartAI:getGuhuoViewCard(class_name, latest_version)
 
 	if classname2objectname[class_name] and #card_use > 1 or (#card_use > 0 and (latest_version == 1 or card_use[1]:getSuit() == sgs.Card_Heart or ghly)) then
 		local index = 1
-		if class_name == "Peach" or (class_name == "Analeptic" and not sgs.GetConfig("BanPackages", ""):match("maneuvering")) or class_name == "Jink" then
+		local ban = table.concat(sgs.Sanguosha:getBanPackages(), "|")
+		if class_name == "Peach" or (class_name == "Analeptic" and not ban:match("maneuvering")) or class_name == "Jink" then
 			index = #card_use
 		end
 		local card = sgs.Sanguosha:cloneCard(classname2objectname[class_name])

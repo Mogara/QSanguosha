@@ -4535,7 +4535,7 @@ function SmartAI:getAllPeachNum(player)
 end
 function SmartAI:getRestCardsNum(class_name, yuji)
 	yuji = yuji or self.player
-	local ban = sgs.GetConfig("BanPackages", "")
+	local ban = table.concat(sgs.Sanguosha:getBanPackages(), "|")
 	sgs.discard_pile = self.room:getDiscardPile()
 	local totalnum = 0
 	local discardnum = 0
