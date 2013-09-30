@@ -5401,6 +5401,16 @@ function SmartAI:useEquipCard(card, use)
 				end
 			end
 		end
+	elseif card:isKindOf("DefensiveHorse") then
+		local tiaoxin = true
+		if self.player:hasSkill("tiaoxin") then
+			local dummy_use = { isDummy = true, defHorse = true }
+			self:useSkillCard(sgs.Card_Parse("@TiaoxinCard=."), dummy_use)
+			if not dummy_use.card then tiaoxin = false end
+		end
+		if tiaoxin and self.lua_ai:useCard(card) then
+			use.card = card
+		end
 	elseif self.lua_ai:useCard(card) then
 		use.card = card
 	end
