@@ -1330,3 +1330,10 @@ sgs.ai_skill_use["@@diyyicong"] = function(self, prompt)
 	end
 	return "."
 end
+
+sgs.ai_skill_invoke.yinzhi = function(self, data)
+	local damage = data:toDamage()
+	local target = damage.from
+	if self:isFriend(target) and self:doNotDiscard(target) then return true end
+	return self:isEnemy(target) and not self:doNotDiscard(target)
+end
