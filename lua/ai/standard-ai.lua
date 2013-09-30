@@ -2532,7 +2532,7 @@ sgs.ai_card_intention.LijianCard = function(self, card, from, to)
 		else
 			sgs.updateIntentions(from, to, 40)
 		end
-	elseif sgs.evaluatePlayerRole(to[1]) ~= sgs.evaluatePlayerRole(to[2]) then
+	elseif sgs.evaluatePlayerRole(to[1]) ~= sgs.evaluatePlayerRole(to[2]) and not to[1]:hasSkill("wuhun") then
 		sgs.updateIntention(from, to[1], 80)
 	end
 end
