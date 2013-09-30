@@ -32,7 +32,7 @@ sgs.ai_skill_invoke.hujia = function(self, data)
 	if lieges:isEmpty() then return end
 	local has_friend = false
 	for _, p in sgs.qlist(lieges) do
-		if self:isFriend(p) then
+		if not self:isEnemy(p) then
 			has_friend = true
 			break
 		end

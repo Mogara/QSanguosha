@@ -1938,6 +1938,103 @@ function SmartAI:filterEvent(event, player, data)
 			
 			if from and intention ~= 0 then sgs.updateIntention(from, to, intention) end
 		end
+	elseif event == sgs.PreCardUsed then
+		local struct = data:toCardUse()
+		local card = struct.card
+		local to = struct.to
+		to = sgs.QList2Table(to)
+		local from = struct.from
+		local source = self.room:getCurrent()
+		local str
+		str = card:getClassName() .. card:toString() .. ":"
+		local toname = {}
+		for _, ato in ipairs(to) do
+			table.insert(toname, ato:getGeneralName())
+			speakTrigger(card, from, ato)
+		end
+		if from then str = str .. from:getGeneralName() .. "->" .. table.concat(toname, "+") end
+		if source then str = str .. "#" .. source:getGeneralName() end
+		sgs.laststr = str
+
+		if card:isKindOf("Collateral") then sgs.ai_collateral = true end
+
+		sgs.ai_leiji_effect = {}
+		if card:isKindOf("Slash") then
+			for _, t in ipairs(to) do
+				if self:findLeijiTarget(t, 50, from) then
+					table.insert(sgs.ai_leiji_effect, t)
+				end
+			end
+		end
+
+		if card:isKindOf("AOE") and self.player:objectName() == player:objectName() then sgs.ai_AOE_data = data end
+		if card:isKindOf("Slash") and struct.from:getPhase() < sgs.Player_Play and struct.m_reason == sgs.CardUseStruct_CARD_USE_REASON_PLAY
+			and struct.m_addHistory then
+			struct.from:setFlags("AI_SlashInPlayPhase")
+		end
+
+		sgs.do_not_save_targets = {}
+		if from and sgs.ai_role[from:objectName()] == "rebel" and not self:isFriend(from, from:getNextAlive())
+			and (card:isKindOf("SavageAssault") or card:isKindOf("ArcheryAttack") or card:isKindOf("Duel") or card:isKindOf("Slash")) then
+			for _, target in ipairs(to) do
+				if self:isFriend(target, from) and sgs.ai_role[target:objectName()] == "rebel" and target:getHp() == 1 and target:isKongcheng()
+				and sgs.isGoodTarget(target, nil, self) and getCardsNum("Analeptic", target) + getCardsNum("Peach", target) == 0
+				and self:getEnemyNumBySeat(from, target) > 0 then
+					table.insert(sgs.do_not_save_targets, target)
+				end
+			end
+		end
+
+		local callback = sgs.ai_card_intention[card:getClassName()]
+		if #to > 0 and callback then
+			if type(callback) == "function" then
+				callback(self, card, from, to)
+			elseif type(callback) == "number" then
+				sgs.updateIntentions(from, to, callback, card)
+			end
+		else
+			if #to > 0 and not sgs.isRolePredictable() and card:isKindOf("SkillCard") and not card:targetFixed() then
+				logmsg("card_intention.txt", card:getClassName()) -- tmp debug
+			end
+		end
+		if card:getClassName() == "LuaSkillCard" and card:isKindOf("LuaSkillCard") then
+			local luaskillcardcallback = sgs.ai_card_intention[card:objectName()]
+			if #to > 0 and luaskillcardcallback then
+				if type(luaskillcardcallback) == "function" then
+					luaskillcardcallback(card, from, to)
+				elseif type(luaskillcardcallback) == "number" then
+					sgs.updateIntentions(from, to, luaskillcardcallback, card)
+				end
+			end
+		end
+
+		local lords = {}
+		for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+			if p:getRole() == "lord" or ((self.room:getMode() == "06_3v3" or self.room:getMode() == "06_XMode") and p:getRole() == "renegade") then
+				table.insert(lords, p)
+			end
+		end
+		for _, lord in ipairs(lords) do
+			if card and lord and lord:getHp() == 1 and self:aoeIsEffective(card, lord, from) then
+				if card:isKindOf("SavageAssault") then
+					lord:setFlags("AIGlobal_LordInDangerSA")
+				elseif card:isKindOf("ArcheryAttack") then
+					lord:setFlags("AIGlobal_LordInDangerAA")
+				end
+			end
+		end
+
+		if sgs.turncount <= 1 and #to > 0 then
+			local who = to[1]
+			local lord = self.room:getLord()
+			if not lord then return end
+			if (card:isKindOf("Snatch") or card:isKindOf("Dismantlement") or card:isKindOf("YinlingCard")) and sgs.evaluatePlayerRole(who) == "neutral" then
+				local aplayer = self:exclude({ lord }, card, player)
+				if #aplayer == 1 and (lord:getJudgingArea():isEmpty() or lord:containsTrick("YanxiaoCard")) and not self:doNotDiscard(lord, "he") then
+					sgs.updateIntention(player, lord, -50)
+				end
+			end
+		end
 	elseif event == sgs.CardUsed then
 		local struct = data:toCardUse()
 		local card = struct.card
@@ -2817,7 +2914,9 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 end
 
 function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
-	local damage_nature = sgs.DamageStruct_Normal	if self.player:isDead() then return "." end
+	local damage_nature = sgs.DamageStruct_Normal	
+	if self.player:isDead() then return "." end
+	if target and self:needDeath() then return "." end
 	local effect
 	if type(data) == "userdata" then
 		effect = data:toSlashEffect()
@@ -2834,7 +2933,9 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 	if effect and self:hasHeavySlashDamage(target, effect.slash, self.player) then return end
 	if target and target:hasSkill("jueqing") and self:needToLoseHp() then return "." end
 	if target and target:hasSkill("jueqing") then return end
-	if effect and effect.from and effect.from:hasSkill("nosqianxi") and effect.from:distanceTo(self.player) == 1 then return end	
+	if effect and effect.from and effect.from:hasSkill("nosqianxi") and effect.from:distanceTo(self.player) == 1 then return end
+	if target and sgs.ai_role[target:objectName()] == "rebel"
+		and self.role == "rebel" and sgs.do_not_save_targets and table.contains(sgs.do_not_save_targets, player) then return "." end
 	if not self:damageIsEffective(nil, damage_nature, target) then return "." end
 	if target and target:hasSkill("guagu") and self.player:isLord() then return "." end
 	if effect and target and target:hasWeapon("IceSword") and self.player:getCards("he"):length() > 1 then return end	

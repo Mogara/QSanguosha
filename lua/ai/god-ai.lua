@@ -141,6 +141,7 @@ function SmartAI:doNotSave(player)
 		return true
 	end
 	if player:hasFlag("AI_doNotSave") then return true end
+	if sgs.do_not_save_targets and table.contains(sgs.do_not_save_targets, player) then return true end
 	return false
 end
 
