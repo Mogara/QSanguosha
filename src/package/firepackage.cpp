@@ -61,9 +61,8 @@ public:
 
             room->broadcastSkillInvoke(objectName());
             to->drawCards(x);
-
             if (!xunyu->isAlive())
-                return ;
+                break;
         }
     }
 };
