@@ -1548,13 +1548,13 @@ qixi_skill.getTurnUseCard = function(self,inclusive)
 
 			if card:isKindOf("Armor") then
 				if not self.player:getArmor() then shouldUse = false 
-				elseif self:hasEquip(card) and not not self:needToThrowArmor() then shouldUse = false
+				elseif self.player:hasEquip(card) and not not self:needToThrowArmor() then shouldUse = false
 				end
 			end
 
 			if card:isKindOf("Weapon") then
 				if not self.player:getWeapon() then shouldUse=false
-				elseif self:hasEquip(card) and not has_weapon then shouldUse=false
+				elseif self.player:hasEquip(card) and not has_weapon then shouldUse=false
 				end
 			end
 			
@@ -1800,13 +1800,13 @@ guose_skill.getTurnUseCard=function(self,inclusive)
 			
 			if acard:isKindOf("Armor") then
 				if not self.player:getArmor() then shouldUse=false 
-				elseif self:hasEquip(acard) and not has_armor and self:evaluateArmor()>0 then shouldUse=false
+				elseif self.player:hasEquip(acard) and not has_armor and self:evaluateArmor()>0 then shouldUse=false
 				end
 			end
 			
 			if acard:isKindOf("Weapon") then
 				if not self.player:getWeapon() then shouldUse=false
-				elseif self:hasEquip(acard) and not has_weapon then shouldUse=false
+				elseif self.player:hasEquip(acard) and not has_weapon then shouldUse=false
 				end
 			end
 			

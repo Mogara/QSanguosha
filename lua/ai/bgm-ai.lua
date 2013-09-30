@@ -769,13 +769,13 @@ yinling_skill.getTurnUseCard = function(self, inclusive)
 
 			if card:isKindOf("Armor") then
 				if not self.player:getArmor() then shouldUse = false 
-				elseif self:hasEquip(card) and not (card:isKindOf("SilverLion") and self.player:isWounded()) then shouldUse = false
+				elseif self.player:hasEquip(card) and not (card:isKindOf("SilverLion") and self.player:isWounded()) then shouldUse = false
 				end
 			end
 
 			if card:isKindOf("Weapon") then
 				if not self.player:getWeapon() then shouldUse = false
-				elseif self:hasEquip(card) and not has_weapon then shouldUse=false
+				elseif self.player:hasEquip(card) and not has_weapon then shouldUse=false
 				end
 			end
 			

@@ -234,7 +234,7 @@ huoji_skill.getTurnUseCard=function(self)
 
 	for _,acard in ipairs(cards) do
 		if not acard:isRed() then continue end
-		if not isCard("Peach", acard, self.player) and (self:getDynamicUsePriority(acard) < sgs.ai_use_value.FireAttack or self:getOverflow() > 0) then
+		if not isCard("Peach", acard, self.player) and (self:getUsePriority(acard) < sgs.ai_use_value.FireAttack or self:getOverflow() > 0) then
 			if acard:isKindOf("Slash") and self:getCardsNum("Slash") == 1 then
 				local keep
 				local dummy_use = { isDummy = true , to = sgs.SPlayerList() }
