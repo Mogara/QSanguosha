@@ -412,5 +412,5 @@ sgs.ai_card_intention.PujiCard = function(self, card, from, tos)
 	if not self.puji_id_choice then return end
 	local to = tos[1]
 	local em_prompt = { "cardChosen", "puji", tostring(self.puji_id_choice), from:objectName(), to:objectName() }
-	sgs.ai_choicemade_filter.cardChosen.snatch = function(self, nil, em_prompt)
+	--sgs.ai_choicemade_filter.cardChosen.snatch = function(self, nil, em_prompt) --这里没写完？
 end
