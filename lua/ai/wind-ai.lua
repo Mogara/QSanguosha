@@ -12,7 +12,7 @@ sgs.ai_skill_use["@@shensu1"]=function(self,prompt)
 	local selfDef = sgs.getDefense(self.player)
 	
 	for _,enemy in ipairs(self.enemies) do
-		local def = sgs.getDefense(enemy)
+		local def = sgs.getDefenseSlash(enemy, self)
 		local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
 		local eff = self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
 			
@@ -311,7 +311,7 @@ function SmartAI:findLeijiTarget(player, leiji_value, slasher, latest_version)
 		if self:hasSkills(sgs.masochism_skill, enemy) then value = value + 5 end
 		if enemy:isChained() and self:isGoodChainTarget(enemy, player, sgs.DamageStruct_Thunder, latest_version == 1 and 1 or 2) and #(self:getChainedEnemies(player)) > 1 then value = value - 25 end
 		if enemy:isLord() then value = value - 5 end
-		value = value + enemy:getHp() + sgs.getDefenseSlash(enemy) * 0.01
+		value = value + enemy:getHp() + sgs.getDefenseSlash(enemy, self) * 0.01
 		if latest_version and player:isWounded() and not self:needToLoseHp(player) then value = value + 15 end
 		return value
 	end

@@ -1450,7 +1450,7 @@ function SmartAI:sortEnemies(players)
 		local blevel = self:objectiveLevel(b)
 
 		if alevel~= blevel then return alevel > blevel end
-		return sgs.getDefenseSlash(a) < sgs.getDefenseSlash(b)
+		return sgs.getDefenseSlash(a, self) < sgs.getDefenseSlash(b, self)
 	end
 	table.sort(players,comp_func)
 end
@@ -2795,7 +2795,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 		end
 
 		if flags:match("h") and not self:doNotDiscard(who, "h") then
-			if (who:getHandcardNum() == 1 and sgs.getDefenseSlash(who) < 3 and who:getHp() <= 2) or self:hasSkills(sgs.cardneed_skill, who) then
+			if (who:getHandcardNum() == 1 and sgs.getDefenseSlash(who, self) < 3 and who:getHp() <= 2) or self:hasSkills(sgs.cardneed_skill, who) then
 				return self:getCardRandomly(who, "h")
 			end
 		end
@@ -4173,7 +4173,6 @@ function SmartAI:getMinCard(player)
 end
 
 function SmartAI:getKnownNum(player)
-	player = player or self.player
 	if not player then
 		return self.player:getHandcardNum()
 	else

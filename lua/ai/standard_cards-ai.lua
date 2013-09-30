@@ -161,7 +161,7 @@ function sgs.getDefenseSlash(player)
 
 	if player:getMark("@tied") > 0 and not attacker:hasSkill("jueqing") then defense = defense + 1 end
 
-	if attacker and attacker:canSlashWithoutCrossbow() and attacker:getPhase() == sgs.Player_Play then
+	if attacker and attacker:objectName() ~= player:objectName() and attacker:canSlashWithoutCrossbow() and attacker:getPhase() == sgs.Player_Play then
 		local hcard = player:getHandcardNum()
 		if attacker:hasSkill("liegong") and (hcard >= attacker:getHp() or hcard <= attacker:getAttackRange()) then defense = 0 end
 		if attacker:hasSkill("kofliegong") and hcard >= attacker:getHp() then defense = 0 end
@@ -183,7 +183,37 @@ function sgs.getDefenseSlash(player)
 		end
 	end
 	
-	if attacker and not attacker:hasSkill("jueqing") then
+	if defense > 0 and attacker:objectName() ~= player:objectName() then
+		local jiangqin = self.room:findPlayerBySkillName("niaoxiang")
+		local need_double_jink = attacker:hasSkills("wushuang|drwushuang")
+					or (attacker:hasSkill("roulin") and player:isFemale())
+					or (player:hasSkill("roulin") and attacker:isFemale())
+					or (jiangqin and jiangqin:isAdjacentTo(player) and attacker:isAdjacentTo(player) and self and self:isFriend(jiangqin, attacker))
+		if need_double_jink and getKnownCard(player, "Jink", true, "he") < 2
+			and getCardsNum("Jink", player) < 1.5
+			and (not player:hasLordSkill("hujia") or hujiaJink < 2) then
+			defense = 0
+		end
+		
+		if attacker:hasSkill("dahe") and player:hasFlag("dahe") and self:getKnownNum(player) / player:getHandcardNum() >= 0.7 then
+			local cards = player:getHandcards()
+			local known = 0
+			for _, card in sgs.qlist(cards) do
+				local flag = string.format("%s_%s_%s", "visible", global_room:getCurrent():objectName(), player:objectName())
+				if isCard("Jink", card, player) and (card:hasFlag("visible") or card:hasFlag(flag)) then
+					known = known + 1
+				end
+			end
+			for _, card in sgs.qlist(player:getEquips()) do
+				if isCard("Jink", card, player) then
+					known = known + 1
+				end
+			end
+			if known == 0 then defense = 0 end
+		end
+	end
+	
+	if attacker and not attacker:hasSkill("jueqing") and attacker:objectName() ~= player:objectName() then
 		local m = sgs.masochism_skill:split("|")
 		for _, masochism in ipairs(m) do
 			if player:hasSkill(masochism) and sgs.isGoodHp(player) then
@@ -219,7 +249,7 @@ function sgs.getDefenseSlash(player)
 		if player:getHp() <= 1 then defense = defense - 2.5 end
 		if player:getHp() == 2 then defense = defense - 1.5 end
 		if not hasEightDiagram then defense = defense - 2 end
-		if attacker:hasWeapon("GudingBlade") and player:getHandcardNum() == 0 
+		if attacker:hasWeapon("GudingBlade") and attacker:objectName() ~= player:objectName() and player:getHandcardNum() == 0 
 		  and not (player:hasArmorEffect("SilverLion") and not IgnoreArmor(attacker, player)) then
 			defense = defense - 2
 		end
@@ -234,7 +264,7 @@ function sgs.getDefenseSlash(player)
 		end
 	end
 	
-	if player:hasArmorEffect("Vine") and not IgnoreArmor(attacker, player) and has_fire_slash then 
+	if player:hasArmorEffect("Vine") and attacker:objectName() ~= player:objectName() and not IgnoreArmor(attacker, player) and has_fire_slash then 
 		defense = defense - 0.6
 	end	
 
@@ -253,7 +283,7 @@ function sgs.getDefenseSlash(player)
 	if player:containsTrick("supply_shortage") and not player:containsTrick("YanxiaoCard") then defense = defense - 0.15 end
 
 	if (attacker:hasSkill("roulin") and player:isFemale()) or (attacker:isFemale() and player:hasSkill("roulin")) then
-		defense = defense - 2.4
+		defense = defense - 0.4
 	end
 	
 	if not hasEightDiagram then
@@ -1862,7 +1892,7 @@ function SmartAI:useCardDuel(duel, use)
 		if a:hasLordSkill("jijiang") then v1 = v1 + self:JijiangSlash(a) * 2 end
 		if b:hasLordSkill("jijiang") then v2 = v2 + self:JijiangSlash(b) * 2 end
 
-		if v1 == v2 then return sgs.getDefenseSlash(a) < sgs.getDefenseSlash(b) end
+		if v1 == v2 then return sgs.getDefenseSlash(a, self) < sgs.getDefenseSlash(b, self) end
 
 		return v1 < v2
 	end
@@ -2315,7 +2345,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 		for _, enemy in ipairs(enemies) do
 			if not enemy:isNude() and (self:hasTrickEffective(card, enemy) or isYinling)
 				and not (self:needKongcheng(enemy) and i <= 2) and not self:doNotDiscard(enemy) then
-				if (enemy:getHandcardNum() == i and sgs.getDefenseSlash(enemy) < 6 + (isJixi and 6 or 0) and enemy:getHp() <= 3 + (isJixi and 2 or 0)) then
+				if (enemy:getHandcardNum() == i and sgs.getDefenseSlash(enemy, self) < 6 + (isJixi and 6 or 0) and enemy:getHp() <= 3 + (isJixi and 2 or 0)) then
 					local cardchosen
 					if self.player:distanceTo(enemy) == self.player:getAttackRange() + 1 and enemy:getDefensiveHorse() and not self:doNotDiscard(enemy, "e")
 						and (not isDiscard or self.player:canDiscard(enemy, enemy:getDefensiveHorse():getEffectiveId()))then
@@ -3021,7 +3051,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 				possible_attack = possible_attack + 1
 			end
 		end
-		if possible_attack > self:getCardsNum("Jink") and self:getCardsNum("Jink") <= 2 and sgs.getDefenseSlash(self.player) <= 2 then
+		if possible_attack > self:getCardsNum("Jink") and self:getCardsNum("Jink") <= 2 and sgs.getDefenseSlash(self.player, self) <= 2 then
 			if jink or analeptic or exnihilo then return jink or analeptic or exnihilo end
 		else
 			if exnihilo then return exnihilo end

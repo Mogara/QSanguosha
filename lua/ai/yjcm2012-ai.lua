@@ -287,7 +287,7 @@ sgs.ai_skill_choice.jiangchi = function(self, choices)
 	if self:needBear() then return "jiang" end
 	
 	for _,enemy in ipairs(self.enemies) do
-		local def = sgs.getDefense(enemy)
+		local def = sgs.getDefenseSlash(enemy, self)
 		local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
 		local eff = self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
 
