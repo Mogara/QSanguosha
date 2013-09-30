@@ -893,11 +893,13 @@ QStringList Engine::getLimitedGeneralNames() const{
         }
     }
 
+/*
     if (!getBanPackages().contains("sp") && !getBanPackages().contains("assassins")) {
         general_names.removeOne("liuxie");
         general_names.removeOne("lingju");
         general_names.removeOne("fuwan");
     }
+*/
 
     return general_names;
 }
