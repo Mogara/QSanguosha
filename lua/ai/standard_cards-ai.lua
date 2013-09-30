@@ -104,7 +104,7 @@ function sgs.isGoodTarget(player, targets, self, isSlash)
 	end 	
 end
 
-function sgs.getDefenseSlash(player)
+function sgs.getDefenseSlash(player, self)
 	if not player then return 0 end
 	local attacker = global_room:getCurrent()
 	local defense = getCardsNum("Jink", player)
