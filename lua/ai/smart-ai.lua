@@ -3525,6 +3525,17 @@ function SmartAI:askForPindian(requestor, reason)
 	maxcard = maxcard or minusecard
 	mincard = mincard or minusecard
 	local callback = sgs.ai_skill_pindian[reason]
+	
+	local sameclass, c1 = true
+	for _, c2 in ipairs(cards) do
+		if not c1 then c1 = c2
+		elseif c1:getClassName() ~= c2:getClassName() then sameclass = false end
+	end
+	if sameclass then
+		if self:isFriend(requestor) and self.player:objectName() ~= requestor:objectName() then return self:getMinCard()
+		else return self:getMaxCard() end
+	end
+	
 	if type(callback) == "function" then
 		local ret = callback(minusecard, self, requestor, maxcard, mincard)
 		if ret then return ret end
