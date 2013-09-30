@@ -828,7 +828,7 @@ QString Player::getSkillDescription(bool yellow) const{
     QString color = yellow ? "#FFFF33" : "#FF0080";
 
     foreach (const Skill *skill, getVisibleSkillList()) {
-        if (skill->inherits("SPConvertSkill") || skill->isAttachedLordSkill() || !hasSkill(skill->objectName()))
+        if (skill->isAttachedLordSkill() || !hasSkill(skill->objectName()))
             continue;
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription(yellow);

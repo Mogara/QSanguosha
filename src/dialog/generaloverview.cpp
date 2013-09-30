@@ -474,10 +474,6 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
     ui->changeHeroSkinButton->setVisible(hasSkin(general_name));
 
     QList<const Skill *> skills = general->getVisibleSkillList();
-    foreach (const Skill *skill, skills) {
-        if (skill->inherits("SPConvertSkill")) skills.removeOne(skill);
-    }
-
     foreach (QString skill_name, general->getRelatedSkillNames()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill && skill->isVisible()) skills << skill;

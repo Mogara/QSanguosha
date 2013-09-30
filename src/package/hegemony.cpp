@@ -580,7 +580,7 @@ void QingchengCard::onUse(Room *room, const CardUseStruct &use) const{
 
     QStringList skill_list;
     foreach (const Skill *skill, to->getVisibleSkillList()) {
-        if (!skill_list.contains(skill->objectName()) && !skill->inherits("SPConvertSkill") && !skill->isAttachedLordSkill()) {
+        if (!skill_list.contains(skill->objectName()) && !skill->isAttachedLordSkill()) {
             skill_list << skill->objectName();
         }
     }

@@ -48,7 +48,7 @@ QString Skill::getNotice(int index) const{
 }
 
 bool Skill::isVisible() const{
-    return !objectName().startsWith("#");
+    return !objectName().startsWith("#") || inherits("SPConvertSkill");
 }
 
 QString Skill::getDefaultChoice(ServerPlayer *) const{

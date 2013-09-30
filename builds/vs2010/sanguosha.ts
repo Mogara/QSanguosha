@@ -1852,7 +1852,7 @@
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.ui" line="257"/>
-        <location filename="../../src/dialog/generaloverview.cpp" line="655"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="651"/>
         <source>Search...</source>
         <translation>搜索...</translation>
     </message>
@@ -1867,8 +1867,8 @@
         <translation>配音</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="535"/>
-        <location filename="../../src/dialog/generaloverview.cpp" line="543"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="531"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="539"/>
         <source>Official</source>
         <translation>官方</translation>
     </message>
@@ -1917,37 +1917,37 @@
         <translation>复制台词</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="498"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="494"/>
         <source>Death</source>
         <translation>阵亡</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="507"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="503"/>
         <source>Victory</source>
         <translation>胜利</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="508"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="504"/>
         <source>Six dragons lead my chariot, I will ride the wind with the greatest speed.With all of the feudal lords under my command,to rule the world with one name!</source>
         <translation>驾六龙，乘风而行，九合诸侯，一匡天下!</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="521"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="517"/>
         <source>Stage Change</source>
         <translation>变身</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="522"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="518"/>
         <source>Trashes, the real fun is just beginning!</source>
         <translation>杂鱼们，好戏才刚刚开始！</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="651"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="647"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="651"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="647"/>
         <source>No generals are found</source>
         <translation>未找到符合要求的武将</translation>
     </message>
@@ -3432,7 +3432,7 @@
  %1</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="5538"/>
+        <location filename="../../src/server/room.cpp" line="5721"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
