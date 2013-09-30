@@ -2203,7 +2203,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 	end
 	
 	for _, enemy in ipairs(enemies) do
-		if self:slashIsAvailable() then
+		if self:slashIsAvailable() and (self:hasTrickEffective(card, enemy) or isYinling) then
 			for _, slash in ipairs(self:getCards("Slash")) do
 				if not self:slashProhibit(slash, enemy) and enemy:getHandcardNum() == 1 and enemy:getHp() == 1 and self:hasLoseHandcardEffective(enemy)
 					and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and not enemy:hasSkills("kongcheng|tianming") and self.player:canSlash(enemy, slash)
