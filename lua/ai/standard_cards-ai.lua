@@ -184,7 +184,7 @@ function sgs.getDefenseSlash(player, self)
 	end
 	
 	if defense > 0 and attacker:objectName() ~= player:objectName() then
-		local jiangqin = self.room:findPlayerBySkillName("niaoxiang")
+		local jiangqin = global_room:findPlayerBySkillName("niaoxiang")
 		local need_double_jink = attacker:hasSkills("wushuang|drwushuang")
 					or (attacker:hasSkill("roulin") and player:isFemale())
 					or (player:hasSkill("roulin") and attacker:isFemale())
