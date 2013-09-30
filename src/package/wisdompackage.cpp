@@ -504,7 +504,7 @@ class FuzuoViewAsSkill: public OneCardViewAsSkill {
 public:
     FuzuoViewAsSkill(): OneCardViewAsSkill("fuzuo") {
         response_pattern = "@@fuzuo";
-        filter_pattern = ".|.|-8|hand!";
+        filter_pattern = ".|.|~8|hand!";
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
