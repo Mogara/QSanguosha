@@ -929,7 +929,6 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 				elseif ((self:getCardsNum("Jink") <= getCardsNum("Slash", target) or self.player:hasSkill("qingnang")) and self.player:getHp() > 1)
 						or (self.player:hasSkill("jijiu") and self:getSuitNum("red", true) > 0)
 						or self:canUseJieyuanDecrease(target) then
-					then
 					return "."
 				end
 			end
