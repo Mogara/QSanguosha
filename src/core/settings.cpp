@@ -129,6 +129,7 @@ void Settings::init() {
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
 
     BackgroundImage = value("BackgroundImage", "backdrop/new-version.jpg").toString();
+    TableBgImage = value("TableBgImage", "backdrop/default.jpg").toString();
 
     lua_State *lua = Sanguosha->getLuaState();
     QStringList roles_ban, kof_ban, hulao_ban, xmode_ban, basara_ban, hegemony_ban, pairs_ban;
