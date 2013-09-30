@@ -36,19 +36,6 @@ function sgs.CreateTriggerSkill(spec)
 	return skill
 end
 
-function sgs.CreateGameStartSkill(spec)
-	assert(type(spec.on_gamestart) == "function")
-
-	spec.events = sgs.GameStart
-
-	function spec.on_trigger(skill, event, player, data)
-		spec.on_gamestart(skill, player)
-		return false
-	end
-
-	return sgs.CreateTriggerSkill(spec)
-end
-
 function sgs.CreateProhibitSkill(spec)
 	assert(type(spec.name) == "string")
 	assert(type(spec.is_prohibited) == "function")
@@ -117,9 +104,7 @@ function sgs.CreateMasochismSkill(spec)
 	
 	function spec.on_trigger(skill, event, player, data)
 		local damage = data:toDamage()
-		if player:isAlive() then
-			spec.on_damaged(skill, player, damage)
-		end
+		spec.on_damaged(skill, player, damage)
 		return false
 	end
 	
@@ -129,10 +114,10 @@ end
 function sgs.CreatePhaseChangeSkill(spec)
 	assert(type(spec.on_phasechange) == "function")
 	
-	spec.events = {sgs.EventPhaseStart}
+	spec.events = sgs.EventPhaseStart
 	
-	function spec.on_trigger(self, event, player, data)
-		return spec.on_phasechange(self, player)
+	function spec.on_trigger(skill, event, player, data)
+		return spec.on_phasechange(skill, player)
 	end
 	
 	return sgs.CreateTriggerSkill(spec)
@@ -141,14 +126,28 @@ end
 function sgs.CreateDrawCardsSkill(spec)
 	assert(type(spec.draw_num_func) == "function")
 	
-	spec.events = {sgs.DrawNCards}
+	spec.events = sgs.DrawNCards
 	
-	function spec.on_trigger(self, event, player, data)
+	function spec.on_trigger(skill, event, player, data)
 		local n = data:toInt()
-		data:setValue(spec.draw_num_func(self, player, n))
+		local nn = spec.draw_num_func(skill, player, n)
+		data:setValue(nn)
 		return false
 	end
 	
+	return sgs.CreateTriggerSkill(spec)
+end
+
+function sgs.CreateGameStartSkill(spec)
+	assert(type(spec.on_gamestart) == "function")
+
+	spec.events = sgs.GameStart
+
+	function spec.on_trigger(skill, event, player, data)
+		spec.on_gamestart(skill, player)
+		return false
+	end
+
 	return sgs.CreateTriggerSkill(spec)
 end
 
