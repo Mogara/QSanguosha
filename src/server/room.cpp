@@ -3338,7 +3338,7 @@ void Room::marshal(ServerPlayer *player) {
         p->marshal(player);
 
     notifyProperty(player, player, "flags", "-marshalling");
-    player->invoke("setPileNumber", QString::number(m_drawPile->length()));
+    doNotify(player, S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
 }
 
 void Room::startGame() {
