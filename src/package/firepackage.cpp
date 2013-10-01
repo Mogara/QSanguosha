@@ -16,8 +16,6 @@ bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *
 void QuhuCard::use(Room *room, ServerPlayer *xunyu, QList<ServerPlayer *> &targets) const{
     ServerPlayer *tiger = targets.first();
 
-    room->broadcastSkillInvoke("quhu");
-
     bool success = xunyu->pindian(tiger, "quhu", NULL);
     if (success) {
         QList<ServerPlayer *> players = room->getOtherPlayers(tiger), wolves;
