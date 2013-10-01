@@ -2150,11 +2150,12 @@ public:
             QString choice = "discard";
             if (!xin->isKongcheng())
                 choice = room->askForChoice(xin, objectName(), "discard+put", _data);
-            if (choice == "discard")
+            if (choice == "discard"){
                 if (room->askForDiscard(xin, objectName() + "-discard", 1, 1, true, true, "@mingjian-discard")){
                     room->broadcastSkillInvoke(objectName(), 1);
                     player->skip(Player::Judge);
                 }
+            }
             else if (choice == "put"){
                 const Card *c = room->askForExchange(xin, objectName() + "-put", 1, false, "@mingjian-put", true);
                 if (c != NULL){
