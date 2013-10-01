@@ -921,31 +921,49 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
     if (isChained())
         room->notifyProperty(player, this, "chained");
 
+    QList<ServerPlayer*> players;
+    players << player;
+
     if (!isKongcheng()) {
+        QList<CardsMoveStruct> moves;
+
         CardsMoveStruct move;
         foreach (const Card *card, handcards)
             move.card_ids << card->getId();
         move.to_player_name = objectName();
         move.to_place = PlaceHand;
-        room->updateCardsOnGet(move);
+
+        moves << move;
+
+        room->notifyMoveCards(false, moves, false, players);
     }
 
     if (hasEquip()) {
+        QList<CardsMoveStruct> moves;
+
         CardsMoveStruct move;
         foreach (const Card *card, getEquips())
             move.card_ids << card->getId();
         move.to_player_name = objectName();
         move.to_place = PlaceEquip;
-        room->updateCardsOnGet(move);
+
+        moves << move;
+
+        room->notifyMoveCards(false, moves, false, players);
     }
 
     if (!getJudgingArea().isEmpty()) {
+        QList<CardsMoveStruct> moves;
+
         CardsMoveStruct move;
         foreach (const Card *card, getJudgingArea())
             move.card_ids << card->getId();
         move.to_player_name = objectName();
         move.to_place = PlaceDelayedTrick;
-        room->updateCardsOnGet(move);
+
+        moves << move;
+
+        room->notifyMoveCards(false, moves, false, players);
     }
 
     foreach (QString mark_name, marks.keys()) {
