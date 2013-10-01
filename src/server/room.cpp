@@ -3309,9 +3309,9 @@ void Room::reconnect(ServerPlayer *player, ClientSocket *socket) {
 }
 
 void Room::marshal(ServerPlayer *player) {
-    /*notifyProperty(player, player, "objectName");
+    notifyProperty(player, player, "objectName");
     notifyProperty(player, player, "role");
-    player->unicast(".flags marshalling");
+    notifyProperty(player, player, "flags", "marshalling");
 
     foreach (ServerPlayer *p, m_players) {
         if (p != player)
@@ -3332,13 +3332,13 @@ void Room::marshal(ServerPlayer *player) {
             notifyProperty(player, p, "general2");
     }
 
-    player->invoke("startGame");
+    doNotify(player, S_COMMAND_GAME_START, Json::Value::null);
 
     foreach (ServerPlayer *p, m_players)
         p->marshal(player);
 
-    player->unicast(".flags -marshalling");
-    player->invoke("setPileNumber", QString::number(m_drawPile->length()));*/
+    notifyProperty(player, player, "flags", "-marshalling");
+    player->invoke("setPileNumber", QString::number(m_drawPile->length()));
 }
 
 void Room::startGame() {

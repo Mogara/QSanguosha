@@ -923,7 +923,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
 
     if (!isKongcheng()) {
         if (player != this) {
-            player->invoke("drawNCards", QString("%1:%2").arg(objectName()).arg(getHandcardNum()));
+            room->doNotify(player, S_COMMAND_GET_CARD, QString("%1:%2").arg(objectName()).arg(getHandcardNum()));
         } else {
             QStringList card_str;
             foreach (const Card *card, handcards)
