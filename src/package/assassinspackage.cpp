@@ -429,13 +429,19 @@ DuyiCard::DuyiCard(){
 }
 
 void DuyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
-    QList<int> card_ids = room->getNCards(1);
-    int id = card_ids.first();
-    room->fillAG(card_ids, NULL);
+    int id = room->drawCard();
+
+    CardsMoveStruct move(id, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_TURNOVER, source->objectName(), objectName(), QString()));
+    room->moveCardsAtomic(move, true);
     room->getThread()->delay();
+    room->getThread()->delay();
+
+    source->tag["DuyiCardId"] = id;
     ServerPlayer *target = room->askForPlayerChosen(source, room->getAlivePlayers(), "duyi");
+    source->tag.remove("DuyiCardId");
+
     const Card *card = Sanguosha->getCard(id);
-    target->obtainCard(card);
+    room->obtainCard(target, card, CardMoveReason(CardMoveReason::S_REASON_GOTBACK, source->objectName()));
     if (card->isBlack()) {
         room->setPlayerCardLimitation(target, "use,response", ".|.|.|hand", false);
         room->setPlayerMark(target, "duyi_target", 1);
@@ -449,9 +455,6 @@ void DuyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) co
     }
     else
         room->broadcastSkillInvoke("duyi", 2);
-
-    room->getThread()->delay();
-    room->clearAG();
 }
 
 class DuyiViewAsSkill:public ZeroCardViewAsSkill{
