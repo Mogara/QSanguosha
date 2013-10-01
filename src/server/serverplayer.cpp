@@ -935,6 +935,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
 
         moves << move;
 
+        room->notifyMoveCards(true, moves, false, players);
         room->notifyMoveCards(false, moves, false, players);
     }
 
@@ -949,6 +950,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
 
         moves << move;
 
+        room->notifyMoveCards(true, moves, false, players);
         room->notifyMoveCards(false, moves, false, players);
     }
 
@@ -963,6 +965,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
 
         moves << move;
 
+        room->notifyMoveCards(true, moves, false, players);
         room->notifyMoveCards(false, moves, false, players);
     }
 
