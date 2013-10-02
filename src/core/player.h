@@ -145,6 +145,7 @@ public:
     bool hasEquip() const;
 
     QList<const Card *> getJudgingArea() const;
+    QList<int> getJudgingAreaID() const; //for marshal
     void addDelayedTrick(const Card *trick);
     void removeDelayedTrick(const Card *trick);
     bool containsTrick(const QString &trick_name) const;
