@@ -935,7 +935,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
         move.to_place = PlaceHand;
 
         if (player == this)
-            move.open = true;
+            move.to = player;
 
         moves << move;
     }
@@ -992,9 +992,25 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
         }
     }
 
-    Json::Value args;
-    args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-    room->doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
+    foreach(const QString skill_name, skills) {
+        if (Sanguosha->getSkill(skill_name)->isVisible()) {
+            Json::Value args1;
+            args1[0] = S_GAME_EVENT_ACQUIRE_SKILL;
+            args1[1] = toJsonString(objectName());
+            args1[2] = toJsonString(skill_name);
+            room->doNotify(player, S_COMMAND_LOG_EVENT, args1);
+        }
+
+        foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
+            if (!related_skill->isVisible()) {
+                Json::Value args2;
+                args2[0] = S_GAME_EVENT_ACQUIRE_SKILL;
+                args2[1] = toJsonString(objectName());
+                args2[2] = toJsonString(skill_name);
+                room->doNotify(player, S_COMMAND_LOG_EVENT, args2);
+            }
+        }
+    }
 
     foreach (QString flag, flags)
         room->notifyProperty(player, this, "flags", flag);
