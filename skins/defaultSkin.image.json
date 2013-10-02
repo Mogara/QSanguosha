@@ -139,7 +139,6 @@
 // icons
 "saveMe": "image/system/death/save-me.png",
 "playerActioned": "image/system/3v3/actioned.png",
-"playerReady": "image/system/ready.png",
 // card relevant
 "handCardBack": "image/system/card-back.png",
 "generalCardBack": "image/system/unknown.png",

@@ -49,7 +49,6 @@ const char *QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK = "kingdomColorMask-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_VOTES_NUMBER = "votesNum-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_SAVE_ME_ICON = "saveMe";
 const char *QSanRoomSkin::S_SKIN_KEY_ACTIONED_ICON = "playerActioned";
-const char *QSanRoomSkin::S_SKIN_KEY_READY_ICON = "playerReady";
 const char *QSanRoomSkin::S_SKIN_KEY_HAND_CARD_BACK = "handCardBack";
 const char *QSanRoomSkin::S_SKIN_KEY_HAND_CARD_SUIT = "handCardSuit-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_JUDGE_CARD_ICON = "judgeCardIcon-%1";
@@ -858,7 +857,6 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         tryParse(playerConfig["actionedIconRegion"], layout->m_actionedIconRegion);
         tryParse(playerConfig["saveMeIconRegion"], layout->m_saveMeIconRegion);
         tryParse(playerConfig["chainedIconRegion"], layout->m_chainedIconRegion);
-        tryParse(playerConfig["readyIconRegion"], layout->m_readyIconRegion);
         layout->m_deathIconRegion.tryParse(playerConfig["deathIconRegion"]);
         tryParse(playerConfig["votesIconRegion"], layout->m_votesIconRegion);
         tryParse(playerConfig["drankMaskColor"], layout->m_drankMaskColor);

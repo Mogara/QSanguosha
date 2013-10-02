@@ -65,7 +65,6 @@ protected:
 
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
-    bool _m_isReadyIconVisible;
     FrameType _m_frameType;
     QGraphicsPixmapItem *_m_mainFrame;
     Sprite *emotion_item;
