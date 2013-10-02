@@ -44,6 +44,7 @@ config = {
 		"HegemonySP",
 		"Ling",
 		"Ling2013" ,
+		"TigerFly" ,
 		"NostalStandard",
 		"NostalWind",
 		"NostalYJCM",
@@ -51,9 +52,7 @@ config = {
 		"Yitian",
 		"Wisdom",
 		"Chaos",
-		"Test",
-		
-		"TigerFly"
+		"Test"
 	},
 
 	hulao_packages = {
