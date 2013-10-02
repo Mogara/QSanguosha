@@ -35,6 +35,7 @@ class Player: public QObject {
     Q_PROPERTY(QString flags READ getFlags WRITE setFlags)
     Q_PROPERTY(bool chained READ isChained WRITE setChained)
     Q_PROPERTY(bool owner READ isOwner WRITE setOwner)
+    Q_PROPERTY(bool role_shown READ hasShownRole WRITE setShownRole)
 
     Q_PROPERTY(bool kongcheng READ isKongcheng)
     Q_PROPERTY(bool nude READ isNude)
@@ -71,6 +72,9 @@ public:
 
     bool isOwner() const;
     void setOwner(bool owner);
+
+    bool hasShownRole() const;
+    void setShownRole(bool shown);
 
     int getMaxCards() const;
 
@@ -240,6 +244,7 @@ private:
     int hp, max_hp;
     QString kingdom;
     QString role;
+    bool role_shown;
     QString state;
     int seat;
     bool alive;

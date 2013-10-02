@@ -3411,6 +3411,10 @@ bool Room::broadcastProperty(ServerPlayer *player, const char *property_name, co
     if (player == NULL) return false;
     QString real_value = value;
     if (real_value.isNull()) real_value = player->property(property_name).toString();
+
+    if (property_name == "role")
+        player->setShownRole(true);
+
     Json::Value arg(Json::arrayValue);
     arg[0] = toJsonString(player->objectName());
     arg[1] = property_name;
