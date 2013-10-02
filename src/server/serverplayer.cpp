@@ -893,9 +893,6 @@ void ServerPlayer::introduceTo(ServerPlayer *player) {
         player->invoke("addPlayer", introduce_str);
     else
         room->broadcastInvoke("addPlayer", introduce_str, this);
-
-    if (isReady())
-        room->broadcastProperty(this, "ready");
 }
 
 void ServerPlayer::marshal(ServerPlayer *player) const{
@@ -1033,6 +1030,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
             room->doNotify(player, S_COMMAND_ADD_HISTORY, arg);
         }
     }
+
+    if (hasShownRole())
+        room->notifyProperty(player, this, "role");
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open) {

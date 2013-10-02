@@ -2300,22 +2300,8 @@ void Room::toggleReadyCommand(ServerPlayer *player, const QString &) {
     if (game_started)
         return;
 
-    setPlayerProperty(player, "ready", !player->isReady());
-
-    if (player->isReady() && isFull()) {
-        bool allReady = true;
-        foreach (ServerPlayer *player, m_players) {
-            if (!player->isReady()) {
-                allReady = false;
-                break;
-            }
-        }
-
-        if (allReady) {
-            foreach (ServerPlayer *player, m_players)
-                setPlayerProperty(player, "ready", false);
-            start();
-        }
+    if (isFull()) {
+        start();
     }
 }
 
@@ -3432,6 +3418,10 @@ bool Room::broadcastProperty(ServerPlayer *player, const char *property_name, co
     if (player == NULL) return false;
     QString real_value = value;
     if (real_value.isNull()) real_value = player->property(property_name).toString();
+
+    if (property_name == "role")
+        player->setShownRole(true);
+
     Json::Value arg(Json::arrayValue);
     arg[0] = toJsonString(player->objectName());
     arg[1] = property_name;

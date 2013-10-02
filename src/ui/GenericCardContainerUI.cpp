@@ -263,10 +263,6 @@ void PlayerCardContainer::updateSmallAvatar() {
     _adjustComponentZValues();
 }
 
-void PlayerCardContainer::updateReadyItem(bool visible) {
-    _m_readyIcon->setVisible(visible);
-}
-
 void PlayerCardContainer::updatePhase() {
     if (!m_player || !m_player->isAlive())
         _clearPixmap(_m_phaseIcon);
@@ -435,8 +431,6 @@ void PlayerCardContainer::repaintAll() {
 
     _paintPixmap(_m_faceTurnedIcon, _m_layout->m_avatarArea, QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK,
                  _getAvatarParent());
-    _paintPixmap(_m_readyIcon, _m_layout->m_readyIconRegion, QSanRoomSkin::S_SKIN_KEY_READY_ICON,
-                 _getAvatarParent());
     _paintPixmap(_m_chainIcon, _m_layout->m_chainedIconRegion, QSanRoomSkin::S_SKIN_KEY_CHAIN,
                  _getAvatarParent());
     _paintPixmap(_m_saveMeIcon, _m_layout->m_saveMeIconRegion, QSanRoomSkin::S_SKIN_KEY_SAVE_ME_ICON,
@@ -468,7 +462,6 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player) {
         connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
         connect(player, SIGNAL(general2_changed()), this, SLOT(updateSmallAvatar()));
         connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
-        connect(player, SIGNAL(ready_changed(bool)), this, SLOT(updateReadyItem(bool)));
         connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
         connect(player, SIGNAL(phase_changed()), this, SLOT(updatePhase()));
         connect(player, SIGNAL(drank_changed()), this, SLOT(updateDrankState()));
@@ -720,7 +713,7 @@ PlayerCardContainer::PlayerCardContainer() {
     _m_chainIcon = _m_faceTurnedIcon = NULL;
     _m_handCardBg = _m_handCardNumText = NULL;
     _m_kingdomColorMaskIcon = _m_deathIcon = NULL;
-    _m_readyIcon = _m_actionIcon = NULL;
+    _m_actionIcon = NULL;
     _m_kingdomIcon = NULL;
     _m_saveMeIcon = NULL;
     _m_phaseIcon = NULL;
@@ -804,7 +797,6 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_hpBox);
     _layUnder(_m_handCardNumText);
     _layUnder(_m_handCardBg);
-    _layUnder(_m_readyIcon);
     _layUnder(_m_actionIcon);
     _layUnder(_m_saveMeIcon);
     _layUnder(_m_phaseIcon);

@@ -6,11 +6,12 @@
 #include "settings.h"
 
 Player::Player(QObject *parent)
-    : QObject(parent), owner(false), ready(false), general(NULL), general2(NULL),
+    : QObject(parent), owner(false), general(NULL), general2(NULL),
       m_gender(General::Sexless), hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
       phase(NotActive),
       weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
-      face_up(true), chained(false)
+      face_up(true), chained(false),
+      role_shown(false)
 {
 }
 
@@ -33,15 +34,12 @@ void Player::setOwner(bool owner) {
     }
 }
 
-bool Player::isReady() const{
-    return ready;
+bool Player::hasShownRole() const {
+    return role_shown;
 }
 
-void Player::setReady(bool ready) {
-    if (this->ready != ready) {
-        this->ready = ready;
-        emit ready_changed(ready);
-    }
+void Player::setShownRole(bool shown) {
+    this->role_shown = shown;
 }
 
 void Player::setHp(int hp) {
