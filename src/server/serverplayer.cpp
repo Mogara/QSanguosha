@@ -962,21 +962,28 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
         moves << move;
     }
 
+    if (!moves.isEmpty()) {
+        room->notifyMoveCards(true, moves, false, players);
+        room->notifyMoveCards(false, moves, false, players);
+    }
+
     if (!getPileNames().isEmpty()) {
+        QMap<QString, QVariant> pileopen = property("pile_open").toMap();
         CardsMoveStruct move;
         move.from_place = DrawPile;
         move.to_player_name = objectName();
         move.to_place = PlaceSpecial;
         foreach(QString pile, piles.keys()) {
+            move.card_ids.clear();
             move.card_ids.append(piles[pile]);
             move.to_pile_name = pile;
-            moves << move;
-        }
-    }
 
-    if (!moves.isEmpty()) {
-        room->notifyMoveCards(true, moves, false, players);
-        room->notifyMoveCards(false, moves, false, players);
+            QList<CardsMoveStruct> moves2;
+            moves2 << move;
+
+            room->notifyMoveCards(true, moves2, pileopen[pile].toBool(), players);
+            room->notifyMoveCards(false, moves2, pileopen[pile].toBool(), players);
+        }
     }
 
     foreach (QString mark_name, marks.keys()) {
@@ -1056,6 +1063,11 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
     move.to_place = Player::PlaceSpecial;
     move.reason = reason;
     room->moveCardsAtomic(move, open);
+
+    QMap<QString, QVariant> pileopen = property("pile_open").toMap();
+    pileopen[pile_name] = open;
+    QVariant pileopenvar = QVariant::fromValue(pileopen);
+    room->setPlayerProperty(this, "pile_open", pileopenvar);
 }
 
 void ServerPlayer::exchangeFreelyFromPrivatePile(const QString &skill_name, const QString &pile_name, int upperlimit, bool include_equip) {
