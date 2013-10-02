@@ -924,47 +924,57 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
     QList<ServerPlayer*> players;
     players << player;
 
-    if (!isKongcheng()) {
-        QList<CardsMoveStruct> moves;
+    QList<CardsMoveStruct> moves;
 
+    if (!isKongcheng()) {
         CardsMoveStruct move;
         foreach (const Card *card, handcards)
             move.card_ids << card->getId();
+        move.from_place = DrawPile;
         move.to_player_name = objectName();
         move.to_place = PlaceHand;
 
-        moves << move;
+        if (player == this)
+            move.open = true;
 
-        room->notifyMoveCards(true, moves, false, players);
-        room->notifyMoveCards(false, moves, false, players);
+        moves << move;
     }
 
     if (hasEquip()) {
-        QList<CardsMoveStruct> moves;
-
         CardsMoveStruct move;
         foreach (const Card *card, getEquips())
             move.card_ids << card->getId();
+        move.from_place = DrawPile;
         move.to_player_name = objectName();
         move.to_place = PlaceEquip;
 
         moves << move;
-
-        room->notifyMoveCards(true, moves, false, players);
-        room->notifyMoveCards(false, moves, false, players);
     }
 
     if (!getJudgingArea().isEmpty()) {
-        QList<CardsMoveStruct> moves;
-
         CardsMoveStruct move;
         foreach (const Card *card, getJudgingArea())
             move.card_ids << card->getId();
+        move.from_place = DrawPile;
         move.to_player_name = objectName();
         move.to_place = PlaceDelayedTrick;
 
         moves << move;
+    }
 
+    if (!getPileNames().isEmpty()) {
+        CardsMoveStruct move;
+        move.from_place = DrawPile;
+        move.to_player_name = objectName();
+        move.to_place = PlaceSpecial;
+        foreach(QString pile, piles.keys()) {
+            move.card_ids.append(piles[pile]);
+            move.to_pile_name = pile;
+            moves << move;
+        }
+    }
+
+    if (!moves.isEmpty()) {
         room->notifyMoveCards(true, moves, false, players);
         room->notifyMoveCards(false, moves, false, players);
     }
