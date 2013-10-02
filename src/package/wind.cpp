@@ -515,13 +515,8 @@ public:
         if (move.from && move.from->isAlive() && move.from_places.contains(Player::PlaceHand)
             && ((move.reason.m_reason == CardMoveReason::S_REASON_DISMANTLE
                  && move.reason.m_playerId != move.reason.m_targetId)
-                || (((move.to_place == Player::PlaceTable && move.origin_to && move.origin_to != move.from && move.origin_to_place == Player::PlaceHand)
-                    || (move.to && move.to != move.from && move.to_place == Player::PlaceHand))
-                    && (move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON == CardMoveReason::S_REASON_GOTCARD
-                        || move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON == CardMoveReason::S_REASON_TRANSFER )))){
-
-            //I think using a bool flag can make the code easier to read, the code here is too complicated
-
+                || ((move.to_place == Player::PlaceTable && move.origin_to && move.origin_to != move.from && move.origin_to_place == Player::PlaceHand)
+                    || (move.to && move.to != move.from && move.to_place == Player::PlaceHand)))) {
             if (room->askForSkillInvoke(player, objectName(), data)) {
                 room->loseHp(player);
                 if (move.from->isAlive())
