@@ -951,10 +951,10 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
         moves << move;
     }
 
-    if (!getJudgingAreaID().isEmpty()) {
+    if (!getJudgingArea().isEmpty()) {
         CardsMoveStruct move;
-        foreach (int card_id, getJudgingAreaID())
-            move.card_ids << card_id;
+        foreach (const Card *card, getJudgingArea())
+            move.card_ids << card->getId();
         move.from_place = DrawPile;
         move.to_player_name = objectName();
         move.to_place = PlaceDelayedTrick;
@@ -1026,6 +1026,9 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
             room->doNotify(player, S_COMMAND_ADD_HISTORY, arg);
         }
     }
+
+    if (isNormalGameMode(Config.GameMode) && getRole() == "lord")
+        room->notifyProperty(player, this, "role");
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open) {
