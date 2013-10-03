@@ -426,24 +426,33 @@ public:
             DeathStruct death = data.value<DeathStruct>();
             if (death.who != player)
                 return false;
-            ServerPlayer *killer = death.damage ? death.damage->from : NULL;
-            ServerPlayer *current = room->getCurrent();
 
-            if (killer && current && (current->isAlive() || death.who == current)
-                    && current->getPhase() != Player::NotActive)
-                killer->addMark(objectName());
+            ServerPlayer *current = room->getCurrent();
+            if (current && (current->isAlive() || death.who == current) && current->getPhase() != Player::NotActive){
+                foreach(ServerPlayer *p, room->getAllPlayers())
+                    if (TriggerSkill::triggerable(p))
+                        room->setPlayerMark(p, objectName(), 1);
+            }
+
         } else {
             if (player->getPhase() == Player::NotActive) {
                 QList<ServerPlayer *> hetaihous;
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark(objectName()) > 0 && TriggerSkill::triggerable(p))
                         hetaihous << p;
-                    p->setMark(objectName(), 0);
+                    room->setPlayerMark(p, objectName(), 0);
                 }
 
                 foreach (ServerPlayer *p, hetaihous) {
-                    if (p->isAlive() && room->askForSkillInvoke(p, objectName()))
-                        p->drawCards(3);
+                    if (p->isAlive() && room->askForSkillInvoke(p, objectName())){
+                        QStringList kingdoms;
+                        ServerPlayer *lord = room->getLord();
+                        foreach (ServerPlayer *other, room->getAlivePlayers()){
+                            if (!kingdoms.contains(other->getKingdom()) && other->getKingdom() != lord->getKingdom())
+                                kingdoms << other->getKingdom();
+                        }
+                        p->drawCards(kingdoms.length());
+                    }
                 }
             }
         }
