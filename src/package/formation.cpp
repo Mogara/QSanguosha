@@ -301,9 +301,9 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == Damaged) {
+        if (triggerEvent == Damaged && player->isAlive()) {
             ServerPlayer *yuji = room->findPlayerBySkillName(objectName());
-            if (player->isAlive() && yuji && room->askForSkillInvoke(player, objectName(), "choice:" + yuji->objectName())) {
+            if (yuji && room->askForSkillInvoke(player, objectName(), "choice:" + yuji->objectName())) {
                 room->broadcastSkillInvoke(objectName());
                 if (yuji != player) {
                     room->notifySkillInvoked(yuji, objectName());
