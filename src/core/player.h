@@ -189,6 +189,8 @@ public:
     QList<int> getPile(const QString &pile_name) const;
     QStringList getPileNames() const;
     QString getPileName(int card_id) const;
+    bool pileOpen(const QString &pile_name) const;
+    void setPileOpen(const QString &pile_name, bool open);
 
     void addHistory(const QString &name, int times = 1);
     void clearHistory();
@@ -231,6 +233,7 @@ public:
 protected:
     QMap<QString, int> marks;
     QMap<QString, QList<int> > piles;
+    QMap<QString, bool> pile_open;
     QSet<QString> acquired_skills;
     QStringList skills;
     QSet<QString> flags;
