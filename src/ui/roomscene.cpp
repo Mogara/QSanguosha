@@ -722,27 +722,26 @@ void RoomScene::adjustItems() {
     dashboard->setY(displayRegion.height() - dashboard->boundingRect().height());
 
     // set infoplane
-    QRectF infoPlane;
-    infoPlane.setWidth(displayRegion.width() * _m_roomLayout->m_infoPlaneWidthPercentage);
-    infoPlane.moveRight(displayRegion.right());
-    infoPlane.setTop(displayRegion.top() + _m_roomLayout->m_roleBoxHeight);
-    infoPlane.setBottom(dashboard->y() - _m_roomLayout->m_chatTextBoxHeight);
-    m_rolesBoxBackground = m_rolesBoxBackground.scaled(infoPlane.width(), _m_roomLayout->m_roleBoxHeight);
+    _m_infoPlane.setWidth(displayRegion.width() * _m_roomLayout->m_infoPlaneWidthPercentage);
+    _m_infoPlane.moveRight(displayRegion.right());
+    _m_infoPlane.setTop(displayRegion.top() + _m_roomLayout->m_roleBoxHeight);
+    _m_infoPlane.setBottom(dashboard->y() - _m_roomLayout->m_chatTextBoxHeight);
+    m_rolesBoxBackground = m_rolesBoxBackground.scaled(_m_infoPlane.width(), _m_roomLayout->m_roleBoxHeight);
     m_rolesBox->setPixmap(m_rolesBoxBackground);
-    m_rolesBox->setPos(infoPlane.left(), displayRegion.top());
+    m_rolesBox->setPos(_m_infoPlane.left(), displayRegion.top());
 
-    log_box_widget->setPos(infoPlane.topLeft());
-    log_box->resize(infoPlane.width(), infoPlane.height() * _m_roomLayout->m_logBoxHeightPercentage);
-    chat_box_widget->setPos(infoPlane.left(), infoPlane.bottom() - infoPlane.height() * _m_roomLayout->m_chatBoxHeightPercentage);
-    chat_box->resize(infoPlane.width(), infoPlane.bottom() - chat_box_widget->y());
-    chat_edit_widget->setPos(infoPlane.left(), infoPlane.bottom());
-    chat_edit->resize(infoPlane.width() - chat_widget->boundingRect().width(), _m_roomLayout->m_chatTextBoxHeight);
-    chat_widget->setPos(infoPlane.right() - chat_widget->boundingRect().width(),
+    log_box_widget->setPos(_m_infoPlane.topLeft());
+    log_box->resize(_m_infoPlane.width(), _m_infoPlane.height() * _m_roomLayout->m_logBoxHeightPercentage);
+    chat_box_widget->setPos(_m_infoPlane.left(), _m_infoPlane.bottom() - _m_infoPlane.height() * _m_roomLayout->m_chatBoxHeightPercentage);
+    chat_box->resize(_m_infoPlane.width(), _m_infoPlane.bottom() - chat_box_widget->y());
+    chat_edit_widget->setPos(_m_infoPlane.left(), _m_infoPlane.bottom());
+    chat_edit->resize(_m_infoPlane.width() - chat_widget->boundingRect().width(), _m_roomLayout->m_chatTextBoxHeight);
+    chat_widget->setPos(_m_infoPlane.right() - chat_widget->boundingRect().width(),
                         chat_edit_widget->y() + (_m_roomLayout->m_chatTextBoxHeight - chat_widget->boundingRect().height()) / 2);
 
     padding += _m_roomLayout->m_photoRoomPadding;
     if (self_box)
-        self_box->setPos(infoPlane.left() - padding - self_box->boundingRect().width(),
+        self_box->setPos(_m_infoPlane.left() - padding - self_box->boundingRect().width(),
                          sceneRect().height() - padding - self_box->boundingRect().height()
                          - G_DASHBOARD_LAYOUT.m_normalHeight - G_DASHBOARD_LAYOUT.m_floatingAreaHeight);
     if (enemy_box)
@@ -1015,6 +1014,25 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats) {
             connect(photo, SIGNAL(targets_confirmed()), this, SLOT(onSelectChange()));
         }
     }
+
+    bool all_robot = true;
+    foreach (const ClientPlayer *p, ClientInstance->getPlayers()) {
+        if (p != Self && p->getState() != "robot") {
+            all_robot = false;
+            break;
+        }
+    }
+    if (all_robot) {
+        if (chat_box_widget->isVisible()) {
+            chat_box_widget->hide();
+            chat_edit->hide();
+            chat_widget->hide();
+            log_box->resize(_m_infoPlane.width(),
+                            _m_infoPlane.height() * (_m_roomLayout->m_logBoxHeightPercentage
+                                                     + _m_roomLayout->m_chatBoxHeightPercentage)
+                            + _m_roomLayout->m_chatTextBoxHeight);
+        }
+    }
 }
 
 // @todo: The following 3 fuctions are for drag & use feature. Currently they are very buggy and
@@ -1278,6 +1296,24 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
                     ClientInstance->addRobot();
             } else if (fill_robots && fill_robots->isVisible())
                 ClientInstance->fillRobots();
+            break;
+        }
+    case Qt::Key_F8: {
+            if (chat_box_widget->isVisible()) {
+                chat_box_widget->hide();
+                chat_edit->hide();
+                chat_widget->hide();
+                log_box->resize(_m_infoPlane.width(),
+                                _m_infoPlane.height() * (_m_roomLayout->m_logBoxHeightPercentage
+                                                         + _m_roomLayout->m_chatBoxHeightPercentage)
+                                + _m_roomLayout->m_chatTextBoxHeight);
+            } else {
+                chat_box_widget->show();
+                chat_edit->show();
+                chat_widget->hide();
+                log_box->resize(_m_infoPlane.width(),
+                                _m_infoPlane.height() * _m_roomLayout->m_logBoxHeightPercentage);
+            }
             break;
         }
     case Qt::Key_F12: {

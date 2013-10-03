@@ -315,6 +315,8 @@ private:
     // for miniscenes
     int _m_currentStage;
 
+    QRectF _m_infoPlane;
+
 private slots:
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>());
     void updateSkillButtons();
