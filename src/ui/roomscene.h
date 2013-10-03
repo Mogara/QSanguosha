@@ -323,7 +323,6 @@ private slots:
     void updateSkillButtons();
     void acquireSkill(const ClientPlayer *player, const QString &skill_name);
     void updateSelectedTargets();
-    void updateSelectedTargetsAndUseCard();
     void updateTrustButton();
     void onSkillActivated();
     void onSkillDeactivated();

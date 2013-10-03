@@ -969,7 +969,9 @@ void PlayerCardContainer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
         else if (event->button() == Qt::LeftButton) {
             _m_votesGot++;
             setSelected(_m_votesGot <= _m_maxVotes);
+            if (_m_votesGot > 1) emit selected_changed();
         }
+        updateVotes();
     }
 }
 
