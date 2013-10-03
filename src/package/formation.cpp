@@ -77,8 +77,8 @@ void HuyuanCard::onEffect(const CardEffectStruct &effect) const{
 class HuyuanViewAsSkill: public OneCardViewAsSkill {
 public:
     HuyuanViewAsSkill(): OneCardViewAsSkill("huyuan") {
-        response_pattern == "@@huyuan";
-        filter_pattern == "EquipCard";
+        response_pattern = "@@huyuan";
+        filter_pattern = "EquipCard";
     }
 
     virtual const Card *viewAs(const Card *originalcard) const{

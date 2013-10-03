@@ -1504,8 +1504,8 @@ void TouduCard::onEffect(const CardEffectStruct &effect) const{
 class TouduViewAsSkill: public OneCardViewAsSkill{
 public:
     TouduViewAsSkill(): OneCardViewAsSkill("toudu"){
-        response_pattern == "@@toudu";
-        filter_pattern == ".|.|.|hand!";
+        response_pattern = "@@toudu";
+        filter_pattern = ".|.|.|hand!";
     }
 
     const Card *viewAs(const Card *card) const{
