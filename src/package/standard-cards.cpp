@@ -810,8 +810,10 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const{
     if (slash) {
         if (slash->getSkillName() == "spear") room->setEmotion(effect.to, "weapon/spear");
         room->setEmotion(effect.to, "killer");
-    } else
+    } else{
         room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to));
+        room->getThread()->delay();
+    }
 }
 
 ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
@@ -831,8 +833,10 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
     if (jink && jink->getSkillName() != "eight_diagram" && jink->getSkillName() != "bazhen")
         room->setEmotion(effect.to, "jink");
 
-    if (!jink)
+    if (!jink){
         room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to));
+        room->getThread()->delay();
+    }
 }
 
 Collateral::Collateral(Card::Suit suit, int number)

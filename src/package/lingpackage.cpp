@@ -1496,12 +1496,15 @@ NeoDrowning::NeoDrowning(Card::Suit suit, int number): AOE(suit, number){
 void NeoDrowning::onEffect(const CardEffectStruct &effect) const{
     QVariant data = QVariant::fromValue(effect);
     Room *room = effect.to->getRoom();
-    if (!effect.to->getEquips().isEmpty() && room->askForChoice(effect.to, objectName(), "throw+damage", data) == "throw")
+    QString choice = "";
+    if (!effect.to->getEquips().isEmpty() && (choice = room->askForChoice(effect.to, objectName(), "throw+damage", data)) == "throw")
         effect.to->throwAllEquips();
     else{
         ServerPlayer *source = NULL;
         if (effect.from->isAlive())
             source = effect.from;
+        if (choice == "")
+            room->getThread()->delay();
         room->damage(DamageStruct(this, source, effect.to));
     }
 }
