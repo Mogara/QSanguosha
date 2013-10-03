@@ -421,7 +421,7 @@ void NosJiefanCard::use(Room *room, ServerPlayer *handang, QList<ServerPlayer *>
 
     handang->setFlags("NosJiefanUsed");
     room->setTag("NosJiefanTarget", QVariant::fromValue((PlayerStar)who));
-    bool use_slash = room->askForUseSlashTo(handang, current, "jiefan-slash:" + current->objectName(), false);
+    bool use_slash = room->askForUseSlashTo(handang, current, "nosjiefan-slash:" + current->objectName(), false);
     if (!use_slash) {
         handang->setFlags("-NosJiefanUsed");
         room->removeTag("NosJiefanTarget");

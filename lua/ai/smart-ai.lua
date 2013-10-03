@@ -3006,13 +3006,13 @@ function sgs.ai_cardneed.weapon(to, card, self)
 	end
 end
 
-function SmartAI:getEnemyNumBySeat(from, to, target)
+function SmartAI:getEnemyNumBySeat(from, to, target, include_neutral)
 	target = target or from
 	local players = sgs.QList2Table(self.room:getAllPlayers())
 	local to_seat = (to:getSeat() - from:getSeat()) % #players
 	local enemynum = 0
 	for _, p in ipairs(players) do
-		if self:isEnemy(target, p) and ((p:getSeat() - from:getSeat()) % #players) < to_seat then
+		if (self:isEnemy(target, p) or (include_neutral and not self:isFriend(target, p))) and ((p:getSeat() - from:getSeat()) % #players) < to_seat then
 			enemynum = enemynum + 1
 		end
 	end

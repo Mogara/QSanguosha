@@ -769,7 +769,7 @@ sgs.ai_choicemade_filter.pindian.zhiba_pindian = function(from, promptlist, self
 end
 
 sgs.ai_need_damaged.hunzi = function(self, attacker, player)
-	if player:hasSkill("hunzi") and player:getMark("hunzi") == 0 and self:getEnemyNumBySeat(self.room:getCurrent(), player, player) < player:getHp()
+	if player:hasSkill("hunzi") and player:getMark("hunzi") == 0 and self:getEnemyNumBySeat(self.room:getCurrent(), player, player, true) < player:getHp()
 		and (player:getHp() > 2 or player:getHp() == 2 and (player:faceUp() or player:hasSkill("guixin") or player:hasSkill("toudu") and not player:isKongcheng())) then
 		return true
 	end

@@ -817,7 +817,7 @@ public:
         if(triggerEvent == EventPhaseStart && caizhaoji->getPhase() == Player::Finish){
             int times = 0;
             Room *room = caizhaoji->getRoom();
-            while(caizhaoji->askForSkillInvoke(objectName())){
+            while(caizhaoji->askForSkillInvoke(objectName(), times)){
                 caizhaoji->setFlags("caizhaoji_hujia");
 
                 room->broadcastSkillInvoke(objectName());
@@ -1236,10 +1236,8 @@ XunzhiCard::XunzhiCard(){
 }
 
 void XunzhiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
-    int index = qrand() % 2 + 1;
-    room->broadcastSkillInvoke("xunzhi", index);
+    room->broadcastSkillInvoke("xunzhi");
     room->doLightbox("$XunzhiAnimate");
-    //room->getThread()->delay(2000);
     source->drawCards(3);
 
     QList<ServerPlayer *> players = room->getAlivePlayers();
@@ -1537,19 +1535,21 @@ YisheCard::YisheCard(){
     target_fixed = true;
     will_throw = false;
     handling_method = Card::MethodNone;
+    mute = true;
 }
 
 void YisheCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     const QList<int> rice = source->getPile("rice");
 
     if(subcards.isEmpty()){
-        foreach(int card_id, rice){
+        foreach(int card_id, rice)
             room->obtainCard(source, card_id);
-        }
+        
     }else{
-        foreach(int card_id, subcards){
+        foreach(int card_id, subcards)
             source->addToPile("rice", card_id);
-        }
+        
+        room->broadcastSkillInvoke("yishe", 1);
     }
 }
 
@@ -1609,8 +1609,11 @@ void YisheAskCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
 
     if(room->askForChoice(zhanglu, "yisheask", "allow+disallow") == "allow"){
         source->obtainCard(Sanguosha->getCard(card_id));
-        room->showCard(source, card_id);
+        //room->showCard(source, card_id);
+        room->broadcastSkillInvoke("yishe", 2);
     }
+    else
+        room->broadcastSkillInvoke("yishe", 3);
 }
 
 class YisheAsk: public ZeroCardViewAsSkill{
@@ -1694,8 +1697,10 @@ public:
         bool can_put = 5 - zhanglu->getPile("rice").length() >= dummy->subcardsLength();
         if(can_put && room->askForChoice(zhanglu, objectName(), "put+obtain") == "put"){
             zhanglu->addToPile("rice", dummy);
+            room->broadcastSkillInvoke(objectName(), 2);
         }else{
             zhanglu->obtainCard(dummy);
+            room->broadcastSkillInvoke(objectName(), 1);
         }
 
         return false;
@@ -1712,9 +1717,12 @@ public:
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
 
         if(effect.jink && player->getRoom()->getCardPlace(effect.jink->getEffectiveId()) == Player::DiscardPile
-            && player->askForSkillInvoke(objectName(), data))
+            && player->askForSkillInvoke(objectName(), data)){
+                player->obtainCard(effect.jink);
+                player->getRoom()->broadcastSkillInvoke(objectName());
+        }
 
-            player->obtainCard(effect.jink);
+
 
         return false;
     }
@@ -1736,6 +1744,8 @@ public:
             log.arg = QString::number(damage.damage);
             log.arg2 = QString::number(-- damage.damage);
             room->sendLog(log);
+            
+            room->broadcastSkillInvoke(objectName());
 
             if (damage.damage <= 0)
                 return true;

@@ -1152,7 +1152,7 @@ public:
 class Neo2013Huoshui: public TriggerSkill{
 public:
     Neo2013Huoshui(): TriggerSkill("neo2013huoshui") {
-        events << EventPhaseStart << EventPhaseChanging << Death
+        events << EventPhaseStart << Death
             << EventLoseSkill << EventAcquireSkill
             << CardsMoveOneTime;
         frequency = Compulsory;
@@ -1168,10 +1168,8 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == EventPhaseStart) {
-            if (!TriggerSkill::triggerable(player) || player->getPhase() != Player::RoundStart) return false;
-        } else if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (!TriggerSkill::triggerable(player) || change.to != Player::NotActive) return false;
+            if (!TriggerSkill::triggerable(player) 
+                || (player->getPhase() != Player::RoundStart || player->getPhase() != Player::NotActive)) return false;
         } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
             if (death.who != player || !player->hasSkill(objectName())) return false;
@@ -1184,9 +1182,9 @@ public:
             if (!room->getCurrent() || !room->getCurrent()->hasSkill(objectName())) return false;
         }
 
-        if (triggerEvent == EventPhaseStart || triggerEvent == EventAcquireSkill)
+        if (player->getPhase() == Player::RoundStart || triggerEvent == EventAcquireSkill)
             room->broadcastSkillInvoke(objectName(), 1);
-        else if (triggerEvent == EventPhaseChanging || (triggerEvent == EventLoseSkill && player->isAlive()))
+        else if (player->getPhase() == Player::NotActive || triggerEvent == EventLoseSkill)
             room->broadcastSkillInvoke(objectName(), 2);
 
         foreach (ServerPlayer *p, room->getAllPlayers())
@@ -1498,12 +1496,15 @@ NeoDrowning::NeoDrowning(Card::Suit suit, int number): AOE(suit, number){
 void NeoDrowning::onEffect(const CardEffectStruct &effect) const{
     QVariant data = QVariant::fromValue(effect);
     Room *room = effect.to->getRoom();
-    if (!effect.to->getEquips().isEmpty() && room->askForChoice(effect.to, objectName(), "throw+damage", data) == "throw")
+    QString choice = "";
+    if (!effect.to->getEquips().isEmpty() && (choice = room->askForChoice(effect.to, objectName(), "throw+damage", data)) == "throw")
         effect.to->throwAllEquips();
     else{
         ServerPlayer *source = NULL;
         if (effect.from->isAlive())
             source = effect.from;
+        if (choice == "")
+            room->getThread()->delay();
         room->damage(DamageStruct(this, source, effect.to));
     }
 }
