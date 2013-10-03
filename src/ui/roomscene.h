@@ -294,6 +294,7 @@ private:
     void fillGenerals3v3(const QStringList &names);
 
     void showPindianBox(const QString &from_name, int from_id, const QString &to_name, int to_id, const QString &reason);
+    void setChatBoxVisible(bool show);
 
     // animation related functions
     typedef void (RoomScene::*AnimationFunc)(const QString &, const QStringList &);

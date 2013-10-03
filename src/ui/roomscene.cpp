@@ -1022,17 +1022,8 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats) {
             break;
         }
     }
-    if (all_robot) {
-        if (chat_box_widget->isVisible()) {
-            chat_box_widget->hide();
-            chat_edit->hide();
-            chat_widget->hide();
-            log_box->resize(_m_infoPlane.width(),
-                            _m_infoPlane.height() * (_m_roomLayout->m_logBoxHeightPercentage
-                                                     + _m_roomLayout->m_chatBoxHeightPercentage)
-                            + _m_roomLayout->m_chatTextBoxHeight);
-        }
-    }
+    if (all_robot)
+        setChatBoxVisible(false);
 }
 
 // @todo: The following 3 fuctions are for drag & use feature. Currently they are very buggy and
@@ -1299,21 +1290,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
             break;
         }
     case Qt::Key_F8: {
-            if (chat_box_widget->isVisible()) {
-                chat_box_widget->hide();
-                chat_edit->hide();
-                chat_widget->hide();
-                log_box->resize(_m_infoPlane.width(),
-                                _m_infoPlane.height() * (_m_roomLayout->m_logBoxHeightPercentage
-                                                         + _m_roomLayout->m_chatBoxHeightPercentage)
-                                + _m_roomLayout->m_chatTextBoxHeight);
-            } else {
-                chat_box_widget->show();
-                chat_edit->show();
-                chat_widget->hide();
-                log_box->resize(_m_infoPlane.width(),
-                                _m_infoPlane.height() * _m_roomLayout->m_logBoxHeightPercentage);
-            }
+            setChatBoxVisible(!chat_box_widget->isVisible());
             break;
         }
     case Qt::Key_F12: {
@@ -4330,5 +4307,23 @@ void RoomScene::appendChatBox(QString txt) {
     QString suffix = ".png'></img>";
     txt = txt.replace("<#", prefix).replace("#>", suffix);
     chat_box->append(txt);
+}
+
+void RoomScene::setChatBoxVisible(bool show) {
+    if (!show && chat_box_widget->isVisible()) {
+        chat_box_widget->hide();
+        chat_edit->hide();
+        chat_widget->hide();
+        log_box->resize(_m_infoPlane.width(),
+                        _m_infoPlane.height() * (_m_roomLayout->m_logBoxHeightPercentage
+                                                 + _m_roomLayout->m_chatBoxHeightPercentage)
+                        + _m_roomLayout->m_chatTextBoxHeight);
+    } else if (show && !chat_box_widget->isVisible()) {
+        chat_box_widget->show();
+        chat_edit->show();
+        chat_widget->hide();
+        log_box->resize(_m_infoPlane.width(),
+                        _m_infoPlane.height() * _m_roomLayout->m_logBoxHeightPercentage);
+    }
 }
 

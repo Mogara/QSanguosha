@@ -515,11 +515,7 @@ sgs.ai_skill_invoke.luoyi = function(self,data)
 			end
 		end
 	end		
-	if (slashtarget+dueltarget) > 0 then
-		self:speak("luoyi")
-		return true
-	end
-	return false
+	return slashtarget + dueltarget > 0
 end
 
 function sgs.ai_cardneed.luoyi(to, card, self)
@@ -1686,7 +1682,6 @@ kurou_skill.getTurnUseCard=function(self,inclusive)
 end
 
 sgs.ai_skill_use_func.KurouCard=function(card,use,self)
-	if not use.isDummy then self:speak("kurou") end
 	use.card=card
 end
 

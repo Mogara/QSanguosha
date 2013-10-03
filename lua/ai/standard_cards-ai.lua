@@ -535,7 +535,6 @@ function SmartAI:useCardSlash(card, use)
 				use.card = card
 				if use.to and canAppendTarget(friend) then
 					use.to:append(friend)
-					if not use.isDummy and use.to:length() == 1 then self:speak("hostile", self.player:isFemale()) end
 				end
 				if not use.to or self.slash_targets <= use.to:length() then return end
 			end
@@ -634,7 +633,6 @@ function SmartAI:useCardSlash(card, use)
 			use.card = use.card or usecard
 			if use.to and not use.to:contains(target) and canAppendTarget(target) then
 				use.to:append(target)
-				if not use.isDummy and use.to:length() == 1 then self:speak("hostile", self.player:isFemale()) end
 			end
 			if not use.isDummy then
 				local anal = self:searchForAnaleptic(use, target, use.card)
@@ -664,7 +662,6 @@ function SmartAI:useCardSlash(card, use)
 					use.card = card
 					if use.to and canAppendTarget(friend) then
 						use.to:append(friend)
-						if not use.isDummy and use.to:length() == 1 then self:speak("hostile", self.player:isFemale()) end
 					end
 					if not use.to or self.slash_targets <= use.to:length() then return end
 				end
@@ -1943,7 +1940,6 @@ function SmartAI:useCardDuel(duel, use)
 			if use.to then
 				if i == 1 and not use.current_targets then
 					use.to:append(targets[i])
-					if not use.isDummy then self:speak("duel", self.player:isFemale()) end
 				elseif n1 >= enemySlash and not targets[i]:hasSkill("danlao") and not (lx and self:isEnemy(lx) and lx:getHp() > targets_num / 2) then
 					use.to:append(targets[i])
 				end
@@ -2006,9 +2002,6 @@ function SmartAI:useCardExNihilo(card, use)
 	if xiahou and self:isEnemy(xiahou) and xiahou:getMark("YanyuDiscard2") > 0 then return end
 	
 	use.card = card
-	if not use.isDummy then
-		self:speak("lucky")
-	end
 end
 
 sgs.ai_card_intention.ExNihilo = -80
@@ -2154,7 +2147,6 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 				use.to:append(player)
 				if not use.isDummy then
 					sgs.Sanguosha:getCard(cardid):setFlags("AIGlobal_SDCardChosen_" .. name)
-					if use.to:length() == 1 then self:speak("hostile", self.player:isFemale()) end
 				end
 			end
 			if #targets == targets_num then return true end
@@ -2698,7 +2690,6 @@ sgs.ai_skill_cardask["collateral-slash"] = function(self, data, pattern, target2
 			if self:needToLoseHp(target2, self.player) then return slash:toString() end
 		end
 	end
-	self:speak("collateral", self.player:isFemale())
 	return "."
 end
 
