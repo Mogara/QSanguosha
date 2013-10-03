@@ -2297,12 +2297,8 @@ ServerPlayer *Room::getOwner() const{
 }
 
 void Room::toggleReadyCommand(ServerPlayer *player, const QString &) {
-    if (game_started)
-        return;
-
-    if (isFull()) {
+    if (!game_started && isFull())
         start();
-    }
 }
 
 void Room::signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot) {
