@@ -103,7 +103,7 @@ function table.copyFrom(list)
 end
 
 function table:indexOf(value, from)
-	if not from then from = 1 end
+	from = from or 1
 	for i = from, #self do
 		if self[i] == value then return i end
 	end
@@ -124,11 +124,6 @@ function string:endsWith(substr)
 	local len = string.len(substr)
 	if len == 0 or len > string.len(self) then return false end
 	return string.sub(self, -len, -1) == substr
-end
-
-function string:chop(n)
-	if n >= string.len(self) then return "" end
-	return string.sub(self, 1, string.len(self) - n)
 end
 
 function math:mod(num)
