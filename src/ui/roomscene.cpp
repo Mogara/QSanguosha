@@ -1004,11 +1004,15 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats) {
         item2player.insert(dashboard, Self);
         connect(dashboard, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
         connect(dashboard, SIGNAL(selected_changed()), this, SLOT(onSelectChange()));
+        connect(dashboard, SIGNAL(targets_confirmed()), this, SLOT(updateSelectedTargetsAndUseCard()));
+        connect(dashboard, SIGNAL(targets_confirmed()), this, SLOT(onSelectChange()));
         foreach (Photo *photo, photos) {
             item2player.insert(photo, photo->getPlayer());
             connect(photo, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
             connect(photo, SIGNAL(selected_changed()), this, SLOT(onSelectChange()));
             connect(photo, SIGNAL(enable_changed()), this, SLOT(onEnabledChange()));
+            connect(photo, SIGNAL(targets_confirmed()), this, SLOT(updateSelectedTargetsAndUseCard()));
+            connect(photo, SIGNAL(targets_confirmed()), this, SLOT(onSelectChange()));
         }
     }
 }
@@ -1232,6 +1236,11 @@ void RoomScene::updateSelectedTargets() {
     }
 
     updateTargetsEnablity(card);
+}
+
+void RoomScene::updateSelectedTargetsAndUseCard() {
+    updateSelectedTargets();
+    doOkButton();
 }
 
 void RoomScene::keyReleaseEvent(QKeyEvent *event) {

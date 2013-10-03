@@ -11,6 +11,7 @@
 #include "engine.h"
 #include "standard.h"
 #include "clientplayer.h"
+#include "roomscene.h"
 
 using namespace QSanProtocol;
 
@@ -967,12 +968,13 @@ void PlayerCardContainer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
             setSelected(false);
         else if (event->button() == Qt::LeftButton) {
             _m_votesGot++;
-            if (_m_votesGot > _m_maxVotes) setSelected(false);
-            else setSelected(true);
-            if (_m_votesGot > 1) emit selected_changed();
+            setSelected(_m_votesGot <= _m_maxVotes);
         }
-        updateVotes();
     }
+}
+
+void PlayerCardContainer::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+    RoomSceneInstance->doOkButton();
 }
 
 QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVariant &value) {

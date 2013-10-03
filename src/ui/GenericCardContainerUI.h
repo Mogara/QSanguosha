@@ -103,6 +103,7 @@ protected:
     // overrider parent functions
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
     // initialization of _m_layout is compulsory for children classes.
@@ -226,6 +227,7 @@ private:
 
 signals:
     void selected_changed();
+    void targets_confirmed();
     void enable_changed();
     void add_equip_skill(const Skill *skill, bool from_left);
     void remove_equip_skill(const QString &skill_name);
