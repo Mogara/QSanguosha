@@ -1002,11 +1002,9 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats) {
     if (item2player.isEmpty()) {
         item2player.insert(dashboard, Self);
         connect(dashboard, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
-        connect(dashboard, SIGNAL(selected_changed()), this, SLOT(onSelectChange()));
         foreach (Photo *photo, photos) {
             item2player.insert(photo, photo->getPlayer());
             connect(photo, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
-            connect(photo, SIGNAL(selected_changed()), this, SLOT(onSelectChange()));
             connect(photo, SIGNAL(enable_changed()), this, SLOT(onEnabledChange()));
         }
     }
@@ -2133,9 +2131,6 @@ void RoomScene::useSelectedCard() {
 
     const ViewAsSkill *skill = dashboard->currentSkill();
     if (skill) dashboard->stopPending();
-}
-
-void RoomScene::onSelectChange() {
 }
 
 void RoomScene::onEnabledChange() {

@@ -358,7 +358,6 @@ private slots:
     void appendChatBox(QString txt);
 
     //animations
-    void onSelectChange();
     void onEnabledChange();
 
     void takeAmazingGrace(ClientPlayer *taker, int card_id, bool move_cards);

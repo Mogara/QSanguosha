@@ -517,9 +517,6 @@ void Dashboard::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 }
 
-void Dashboard::mousePressEvent(QGraphicsSceneMouseEvent *) {
-}
-
 void Dashboard::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent) {
     PlayerCardContainer::mouseReleaseEvent(mouseEvent);
 
