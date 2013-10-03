@@ -977,8 +977,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
             QList<CardsMoveStruct> moves2;
             moves2 << move;
 
-            bool open = pileOpen(pile) || this == player;
-
+            bool open = pileOpen(pile, player->objectName());
             room->notifyMoveCards(true, moves2, open, players);
             room->notifyMoveCards(false, moves2, open, players);
         }
@@ -1056,6 +1055,12 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason) {
+    foreach(int id, card_ids) {
+        ServerPlayer *owner = room->getCardOwner(id);
+        if (owner == NULL) continue;
+        setPileOpen(pile_name, owner->objectName());
+    }
+
     piles[pile_name].append(card_ids);
 
     CardsMoveStruct move;
@@ -1065,7 +1070,10 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
     move.reason = reason;
     room->moveCardsAtomic(move, open);
 
-    setPileOpen(pile_name, open);
+    if (open) {
+        foreach (ServerPlayer *p, room->getAllPlayers())
+            setPileOpen(pile_name, p->objectName());
+    }
 }
 
 void ServerPlayer::exchangeFreelyFromPrivatePile(const QString &skill_name, const QString &pile_name, int upperlimit, bool include_equip) {

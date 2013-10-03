@@ -11,7 +11,7 @@ Player::Player(QObject *parent)
       phase(NotActive),
       weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
       face_up(true), chained(false),
-      role_shown(false), pile_open(QMap<QString, bool>())
+      role_shown(false), pile_open(QMap<QString, QStringList>())
 {
 }
 
@@ -747,12 +747,13 @@ QString Player::getPileName(int card_id) const {
     return QString();
 }
 
-bool Player::pileOpen(const QString &pile_name) const {
-    return pile_open[pile_name];
+bool Player::pileOpen(const QString &pile_name, const QString &player) const {
+    return pile_open[pile_name].contains(player);
 }
 
-void Player::setPileOpen(const QString &pile_name, bool open) {
-    this->pile_open[pile_name] = open;
+void Player::setPileOpen(const QString &pile_name, const QString &player) {
+    if (pileOpen(pile_name, player)) return;
+     this->pile_open[pile_name] << player;
 }
 
 void Player::addHistory(const QString &name, int times) {
