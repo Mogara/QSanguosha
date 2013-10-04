@@ -30,6 +30,7 @@ Json::Value QSanProtocol::Utils::toJsonArray(const QList<int> &arg) {
 }
 
 bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QList<int> &result) {
+    result = QList<int>();
     if (!arg.isArray()) return false;
     for (unsigned int i = 0; i < arg.size(); i++)
         if (!arg[i].isInt()) return false;
@@ -53,12 +54,14 @@ Json::Value QSanProtocol::Utils::toJsonArray(const QStringList &arg) {
 }
 
 bool QSanProtocol::Utils::tryParse(const Json::Value &arg, int &result) {
+    result = 0;
     if (!arg.isInt()) return false;
     result = arg.asInt();
     return true;
 }
 
 bool QSanProtocol::Utils::tryParse(const Json::Value &arg, double &result) {
+    result = 0.0;
     if (arg.isDouble())
         result = arg.asDouble();
     else if (arg.isInt())
@@ -69,12 +72,14 @@ bool QSanProtocol::Utils::tryParse(const Json::Value &arg, double &result) {
 }
 
 bool QSanProtocol::Utils::tryParse(const Json::Value &arg, bool &result) {
+    result = false;
     if (!arg.isBool()) return false;
     result = arg.asBool();
     return true;
 }
 
 bool QSanProtocol::Utils::tryParse(const Json::Value &arg, Qt::Alignment &align) {
+    align = 0x0000;
     if (!arg.isString()) return false;
     QString alignStr = toQString(arg).toLower();
     if (alignStr.contains("left"))
@@ -95,12 +100,14 @@ bool QSanProtocol::Utils::tryParse(const Json::Value &arg, Qt::Alignment &align)
 }
 
 bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QString &result) {
+    result = QString();
     if (!arg.isString()) return false;
     result = toQString(arg);
     return true;
 }
 
 bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QStringList &result) {
+    result = QStringList();
     if (!arg.isArray()) return false;
     for (unsigned int i = 0; i < arg.size(); i++)
         if (!arg[i].isString()) return false;
@@ -109,8 +116,8 @@ bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QStringList &result) 
     return true;
 }
 
-bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QRect &result)
-{
+bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QRect &result) {
+    result = QRect();
     if (!arg.isArray() || arg.size() != 4) return false;
     result.setLeft(arg[0].asInt());
     result.setTop(arg[1].asInt());
@@ -119,8 +126,8 @@ bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QRect &result)
     return true;
 }
 
-bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QSize &result)
-{
+bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QSize &result) {
+    result = QSize();
     if (!arg.isArray() || arg.size() != 2) return false;
     result.setWidth(arg[0].asInt());
     result.setHeight(arg[1].asInt());
@@ -128,6 +135,7 @@ bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QSize &result)
 }
 
 bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QPoint &result) {
+    result = QPoint();
     if (!arg.isArray() || arg.size() != 2) return false;
     result.setX(arg[0].asInt());
     result.setY(arg[1].asInt());
@@ -135,6 +143,7 @@ bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QPoint &result) {
 }
 
 bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QColor &color) {
+    color = QColor();
     if (!arg.isArray() && arg.size() < 3) return false;
     color.setRed(arg[0].asInt());
     color.setGreen(arg[1].asInt());
