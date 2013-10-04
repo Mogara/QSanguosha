@@ -347,7 +347,6 @@ function SmartAI:useCardBefriendAttacking(card, use)
 	if target:length() > 0 then
 		use.card = card
 		if use.to then use.to = target end
-		if not use.isDummy then self:speak("lucky") end
 		return
 	end
 end
@@ -369,7 +368,7 @@ end
 end
 sgs.ai_use_priority.KnownBoth = 8
 sgs.ai_use_value.KnownBoth = sgs.ai_use_value.AmazingGrace - 1
-sgs.ai_card_intention.KnownBoth = 50
+sgs.ai_card_intention.KnownBoth = 70
 
 sgs.weapon_range.SixSwords = 2
 sgs.weapon_range.Triblade = 3
