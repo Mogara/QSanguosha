@@ -1710,6 +1710,44 @@ public:
     }
 };
 
+class Jingao: public ProhibitSkill{
+public:
+    Jingao(): ProhibitSkill("jingao"){
+
+    }
+
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const{
+        return to->hasSkill(objectName()) && from->getEquips().length() < to->getEquips().length() && card->isKindOf("BasicCard");
+    }
+};
+
+class Dangliang: public TriggerSkill{
+public:
+    Dangliang(): TriggerSkill("dangliang"){
+        events << EventPhaseStart;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::RoundStart){
+            ServerPlayer *liyan = room->findPlayerBySkillName(objectName());
+            if (liyan == NULL || liyan->isNude())
+                return;
+
+            if (room->askForCard(liyan, "^BasicCard", "@dangliang-discard", QVariant::fromValue(player))){
+                QString choice = room->askForChoice(liyan, objectName(), "d2p+d2f", QVariant::fromValue(player));
+                room->setPlayerFlag(player, objectName());
+                room->setPlayerFlag(player, objectName() + "_" + choice);
+            }
+        }
+    }
+};
+
+
+
 TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
     General *caorui = new General(this, "caorui$", "wei", 3);
     caorui->addSkill(new Shemi);
@@ -1774,6 +1812,10 @@ TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
     bian->addSkill(new Shangjian);
     bian->addSkill(new Manwu);
     bian->addSkill(new Annei);
+
+    General *liyan = new General(this, "liyan", "shu");
+    liyan->addSkill(new Jingao);
+    liyan->addSkill(new Dangliang);
 
     addMetaObject<PozhenCard>();
     addMetaObject<TushouGiveCard>();
