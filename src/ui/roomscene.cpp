@@ -3490,7 +3490,8 @@ void RoomScene::onGameStart() {
     if (control_panel)
         control_panel->hide();
 
-    log_box->append(QString(tr("<font color='%1'>---------- Game Start ----------</font>").arg(Config.TextEditColor.name())));
+    if (!Self->hasFlag("marshalling"))
+        log_box->append(QString(tr("<font color='%1'>---------- Game Start ----------</font>").arg(Config.TextEditColor.name())));
 
     connect(Self, SIGNAL(skill_state_changed(QString)), this, SLOT(skillStateChange(QString)));
     trust_button->setEnabled(true);

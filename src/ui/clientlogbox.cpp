@@ -15,6 +15,8 @@ ClientLogBox::ClientLogBox(QWidget *parent)
 
 void ClientLogBox::appendLog(const QString &type, const QString &from_general, const QStringList &tos,
                              QString card_str, QString arg, QString arg2) {
+    if (Self->hasFlag("marshalling")) return;
+
     if (type == "$AppendSeparator") {
         append(QString(tr("<font color='%1'>------------------------------</font>")).arg(Config.TextEditColor.name()));
         return;

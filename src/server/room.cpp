@@ -99,7 +99,7 @@ int Room::alivePlayerCount() const{
 bool Room::notifyUpdateCard(ServerPlayer *player, int cardId, const Card *newCard) {
     Json::Value val(Json::arrayValue);
     Q_ASSERT(newCard);
-    QString className = Sanguosha->getWrappedCard(newCard->getId())->getClassName();
+    QString className = newCard->getClassName();
     val[0] = cardId;
     val[1] = (int)newCard->getSuit();
     val[2] = newCard->getNumber();
@@ -2068,6 +2068,7 @@ void Room::reportDisconnection() {
 
         if (!someone_is_online) {
             game_finished = true;
+            emit game_over(QString());
             return;
         }
     }
@@ -3315,6 +3316,9 @@ void Room::marshal(ServerPlayer *player) {
     }
 
     doNotify(player, S_COMMAND_GAME_START, Json::Value::null);
+
+    QList<int> drawPile = Sanguosha->getRandomCards();
+    doNotify(player, S_COMMAND_AVAILABLE_CARDS, toJsonArray(drawPile));
 
     foreach (ServerPlayer *p, m_players)
         p->marshal(player);
