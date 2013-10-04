@@ -200,7 +200,7 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
 
     client->disconnectFromHost();
 
-    static QString link = "http://github.com/gaodayihao/QSanguosha";
+    static QString link = "http://github.com/YanGuam/QSanguoshaForDadao";
     QString text = tr("Server version is %1, client version is %2 <br/>").arg(server_version).arg(client_version);
     if (server_version > client_version)
         text.append(tr("Your client version is older than the server's, please update it <br/>"));
