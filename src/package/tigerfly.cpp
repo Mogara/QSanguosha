@@ -562,17 +562,6 @@ public:
     }
 };
 
-class Qiangbian: public TriggerSkill{ //the realization of this skill is in ServerPlayer::pindian()
-public:
-    Qiangbian(): TriggerSkill("qiangbian"){
-        frequency = Compulsory;
-    }
-
-    virtual bool trigger(TriggerEvent, Room *, ServerPlayer *, QVariant &) const{
-        return false;
-    }
-};
-
 class Xiongjie: public TriggerSkill{
 public:
     Xiongjie(): TriggerSkill("xiongjie"){
@@ -1568,7 +1557,7 @@ TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
 
     General *neo_zhugeke = new General(this, "neo_zhugeke", "wu", 4);
     neo_zhugeke->addSkill(new Jisi);
-    neo_zhugeke->addSkill(new Qiangbian);
+    neo_zhugeke->addSkill(new Skill("qiangbian", Skill::Compulsory));
     neo_zhugeke->addSkill(new NeoAocai);
     neo_zhugeke->addRelateSkill("zhuanquan");
 
