@@ -705,17 +705,19 @@ QList<Player::Phase> &ServerPlayer::getPhases() {
     return phases;
 }
 
-void ServerPlayer::skip() {
+void ServerPlayer::skip(bool sendLog) {
     for (int i = 0; i < _m_phases_state.size(); i++)
         _m_phases_state[i].finished = true;
 
-    LogMessage log;
-    log.type = "#SkipAllPhase";
-    log.from = this;
-    room->sendLog(log);
+    if (sendLog) {
+        LogMessage log;
+        log.type = "#SkipAllPhase";
+        log.from = this;
+        room->sendLog(log);
+    }
 }
 
-void ServerPlayer::skip(Player::Phase phase) {
+void ServerPlayer::skip(Player::Phase phase, bool sendLog) {
     for (int i = _m_phases_index; i < _m_phases_state.size(); i++) {
         if (_m_phases_state[i].phase == phase) {
             if (_m_phases_state[i].finished) return;
@@ -730,11 +732,13 @@ void ServerPlayer::skip(Player::Phase phase) {
                       << "play" << "discard" << "finish" << "not_active";
     int index = static_cast<int>(phase);
 
-    LogMessage log;
-    log.type = "#SkipPhase";
-    log.from = this;
-    log.arg = phase_strings.at(index);
-    room->sendLog(log);
+    if (sendLog){
+        LogMessage log;
+        log.type = "#SkipPhase";
+        log.from = this;
+        log.arg = phase_strings.at(index);
+        room->sendLog(log);
+    }
 }
 
 void ServerPlayer::insertPhase(Player::Phase phase) {
