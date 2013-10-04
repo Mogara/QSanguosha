@@ -332,7 +332,8 @@ public:
             }
         } else if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("EquipCard") || use.card->isKindOf("SkillCard")) return false;
+            if (!use.card || use.card->getTypeId() == Card::TypeEquip || use.card->getTypeId() == Card::TypeSkill)
+                return false;
             if (use.to.length() != 1) return false;
             ServerPlayer *yuji = room->findPlayerBySkillName(objectName());
             if (!yuji || yuji->getPile("sorcery").isEmpty()) return false;
