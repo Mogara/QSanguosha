@@ -42,16 +42,14 @@
 #include <QMovie>
 #include <QGraphicsDropShadowEffect>
 #include <qmath.h>
-
+#include <algorithm>
 
 #ifdef CHAT_VOICE
 #include <QAxObject>
 #endif
 
 #ifdef JOYSTICK_SUPPORT
-
 #include "joystick.h"
-
 #endif
 
 struct RoomLayout {
