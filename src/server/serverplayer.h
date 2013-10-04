@@ -57,8 +57,8 @@ public:
     bool changePhase(Player::Phase from, Player::Phase to);
 
     QList<Player::Phase> &getPhases();
-    void skip(Player::Phase phase);
-    void skip();
+    void skip(Player::Phase phase, bool sendLog = true);
+    void skip(bool sendLog = true);
     void insertPhase(Player::Phase phase);
     bool isSkipped(Player::Phase phase);
 
