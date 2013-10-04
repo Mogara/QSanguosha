@@ -475,11 +475,11 @@ public:
                         if (victim->getCardCount(true) >= 2)
                             choice = room->askForChoice(victim, objectName(), "discard+give", QVariant());
                         if (choice == "give"){  //change this skill according to Ling Tianyi
-                            const Card *card = room->askForCard(victim, "..!", "@neoaocaigive", QVariant(), Card::MethodNone);
+                            const Card *card = room->askForExchange(victim, objectName() + "-give", 1, true, "@neoaocaigive");
                             room->obtainCard(player, card, false);
                         }
                         else {
-                            room->askForDiscard(victim, objectName(), 2, 2, false, true, "@neoaocaidiscard");
+                            room->askForDiscard(victim, objectName() + "-discard", 2, 2, false, true, "@neoaocaidiscard");
                         }
                     }
                     room->acquireSkill(player, "zhuanquan");
@@ -503,7 +503,7 @@ const Card *JisiCard::validateInResponse(ServerPlayer *player) const{
     Room *room = player->getRoom();
     room->setPlayerMark(player, "jisiused", 1);
     ServerPlayer *current = room->getCurrent();
-    if (!current || current->isDead() || current->getPhase() == Player::NotActive)
+    if (!current || current->isDead() || current->getPhase() == Player::NotActive || current == player)
         return NULL;
 
     if (player->pindian(current, "jisi")){
@@ -525,7 +525,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return (player->getMark("jisiused") == 0 && pattern == "nullification");
+        return player->getMark("jisiused") == 0 && pattern == "nullification" && player->getPhase() == Player::NotActive;
     }
 
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
@@ -1600,6 +1600,7 @@ TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
     addMetaObject<TushouGiveCard>();
     addMetaObject<ChouduCard>();
     addMetaObject<GudanCard>();
+    addMetaObject<JisiCard>();
 
     skills << new Zhuanquan;
 };
