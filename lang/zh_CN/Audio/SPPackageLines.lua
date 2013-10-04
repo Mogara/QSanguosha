@@ -103,4 +103,6 @@ return {
 	["$shuiyong"] = "谁也伤不了我。" ,
 	["~yeshiwen"] = "怎么这样啦！" ,
 	
+	["~zhangbao"] = " " ,
+	
 }
