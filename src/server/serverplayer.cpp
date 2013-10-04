@@ -501,7 +501,7 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         room->sendLog(l);
 
         if (card1 == NULL)
-            card1 = room->askForPindian(target, this, target, reason);
+            card1 = room->askForPindian(this, this, target, reason);
     }
     else {
         if (card1 == NULL) {
