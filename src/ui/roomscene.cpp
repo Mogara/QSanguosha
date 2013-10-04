@@ -758,6 +758,7 @@ void RoomScene::adjustItems() {
     m_tableBg->setPixmap(tableBg);
     updateTable();
     updateRolesBox();
+    setChatBoxVisible(chat_box_widget->isVisible());
 }
 
 void RoomScene::_dispersePhotos(QList<Photo *> &photos, QRectF fillRegion,
@@ -1254,9 +1255,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_F3: dashboard->beginSorting(); break;
     case Qt::Key_F4: dashboard->reverseSelection(); break;
     case Qt::Key_F5: {
-            foreach (Photo *photo, photos)
-                photo->repaintAll();
-            dashboard->repaintAll();
+            adjustItems();
             break;
         }
     case Qt::Key_F6: {
@@ -4297,7 +4296,7 @@ void RoomScene::appendChatBox(QString txt) {
 }
 
 void RoomScene::setChatBoxVisible(bool show) {
-    if (!show && chat_box_widget->isVisible()) {
+    if (!show) {
         chat_box_widget->hide();
         chat_edit->hide();
         chat_widget->hide();
@@ -4305,10 +4304,10 @@ void RoomScene::setChatBoxVisible(bool show) {
                         _m_infoPlane.height() * (_m_roomLayout->m_logBoxHeightPercentage
                                                  + _m_roomLayout->m_chatBoxHeightPercentage)
                         + _m_roomLayout->m_chatTextBoxHeight);
-    } else if (show && !chat_box_widget->isVisible()) {
+    } else {
         chat_box_widget->show();
         chat_edit->show();
-        chat_widget->hide();
+        chat_widget->show();
         log_box->resize(_m_infoPlane.width(),
                         _m_infoPlane.height() * _m_roomLayout->m_logBoxHeightPercentage);
     }
