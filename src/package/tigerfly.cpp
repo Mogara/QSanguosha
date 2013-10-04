@@ -1545,6 +1545,171 @@ public:
     }
 };
 
+ShangjianCard::ShangjianCard(): SkillCard(){
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
+
+void ShangjianCard::onEffect(const CardEffectStruct &effect) const{
+    effect.to->obtainCard(this);
+}
+
+class ShangjianVS: public ViewAsSkill{
+public:
+    ShangjianVS(): ViewAsSkill("shangjian"){
+        response_pattern = "@@shangjian";
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
+        return !to_select->isEquipped();
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+        if (cards.isEmpty())
+            return NULL;
+
+        ShangjianCard *card = new ShangjianCard;
+        card->addSubcards(cards);
+        return card;
+    }
+};
+
+class Shangjian: public PhaseChangeSkill{
+public:
+    Shangjian(): PhaseChangeSkill("shangjian"){
+        view_as_skill = new ShangjianVS;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if (target->getPhase() == Player::Discard)
+            target->getRoom()->askForUseCard(target, "@@shangjian", "@shangjian-give", -1, Card::MethodNone, false);
+        return false;
+    }
+};
+
+class Manwu: public TriggerSkill{
+public:
+    Manwu(): TriggerSkill("manwu"){
+        events << EventPhaseChanging << FinishJudge;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == EventPhaseChanging){
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::Judge && !player->isSkipped(Player::Judge) && !player->isSkipped(Player::Play)
+                    && player->askForSkillInvoke(objectName())){
+                player->skip(Player::Judge);
+                player->skip(Player::Play);
+
+                JudgeStruct judge;
+                judge.reason = objectName();
+                judge.good = true;
+                judge.pattern = ".";
+                judge.play_animation = false;
+                room->judge(judge);
+
+                bool red = (judge.pattern == "red");
+                QList<ServerPlayer *> invoke_players;
+                foreach (ServerPlayer *p, room->getAlivePlayers()){
+                    QList<const Card *> field_cards = p->getCards("ej");
+                    bool can_invoke = false;
+                    foreach (const Card *c, field_cards)
+                        if (c->isRed() == red){
+                            can_invoke = true;
+                            break;
+                        }
+                    if (can_invoke)
+                        invoke_players << p;
+                }
+
+                if (invoke_players.isEmpty())
+                    return false;
+
+                ServerPlayer *victim = room->askForPlayerChosen(player, invoke_players, objectName(), "@manwu", true);
+
+                if (victim == NULL)
+                    return false;
+
+                QList<int> ids;
+                QList<const Card *> cards = victim->getCards("ej");
+                foreach(const Card *c, cards)
+                    if (c->isRed() == red)
+                        ids << c->getId();
+
+                if (ids.isEmpty())
+                    return false;
+
+                int aidelay = Config.AIDelay;
+                Config.AIDelay = 0;
+
+                room->fillAG(ids, player);
+                int id = room->askForAG(player, ids, true, objectName());
+                room->clearAG(player);
+
+                Config.AIDelay = aidelay;
+
+                if (id == -1)
+                    return false;
+
+                player->addToPile("ci", id, true);
+
+            }
+        }
+        else if (triggerEvent == FinishJudge){
+            JudgeStruct *judge = data.value<JudgeStruct *>();
+            if (judge->reason == objectName())
+                judge->pattern = judge->card->isRed() ? "red" : "black";
+        }
+        return false;
+    }
+};
+
+class Annei: public MasochismSkill{
+public:
+    Annei(): MasochismSkill("annei"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->isAlive();
+    }
+
+    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const{
+        if (damage.from == NULL)
+            return;
+
+        Room *room = target->getRoom();
+
+        QList<ServerPlayer *> bians = room->findPlayersBySkillName(objectName());
+
+        foreach(ServerPlayer *bian, bians){
+            if (bian->getPile("ci").isEmpty())
+                continue;
+
+            if (bian->askForSkillInvoke(objectName(), QVariant::fromValue(damage))){
+                int aidelay = Config.AIDelay;
+                Config.AIDelay = 0;
+
+                QList<int> ci = bian->getPile("ci");
+                room->fillAG(ci, bian);
+                int id = room->askForAG(bian, ci, true, objectName());
+                room->clearAG(bian);
+
+                Config.AIDelay = aidelay;
+
+                if (id == -1)
+                    continue;
+
+                damage.from->obtainCard(Sanguosha->getCard(id), false);
+
+                RecoverStruct recover;
+                recover.who = bian;
+                room->recover(target, recover);
+            }
+        }
+    }
+};
+
 TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
     General *caorui = new General(this, "caorui$", "wei", 3);
     caorui->addSkill(new Shemi);
@@ -1605,11 +1770,17 @@ TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
     wenyang->addSkill(new Tuwei);
     wenyang->addSkill(new Gudan);
 
+    General *bian = new General(this, "bianfuren", "wei", 3, false);
+    bian->addSkill(new Shangjian);
+    bian->addSkill(new Manwu);
+    bian->addSkill(new Annei);
+
     addMetaObject<PozhenCard>();
     addMetaObject<TushouGiveCard>();
     addMetaObject<ChouduCard>();
     addMetaObject<GudanCard>();
     addMetaObject<JisiCard>();
+    addMetaObject<ShangjianCard>();
 
     skills << new Zhuanquan;
 };

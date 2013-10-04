@@ -58,6 +58,15 @@ public:
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
+class ShangjianCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ShangjianCard();
+    virtual void onEffect(const CardEffectStruct &effect) const;
+
+};
+
 class TigerFlyPackage: public Package {
     Q_OBJECT
 
