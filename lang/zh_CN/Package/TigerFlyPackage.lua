@@ -114,7 +114,7 @@ return {
 	[":choudu"]= "弃牌阶段开始时，你可以获得至多X名有手牌的其他角色的各一张手牌（X为你于此回合内使用过的牌的数量），然后你可以将至少一张牌交给这些角色，最后你失去等同于其中未获得你手牌的角色数量的体力。",
 	["designer:yangyi"] = "凌天翼",
 	["illustrator:yangyi"] = "G.G.G.",
-	["cv:yangyi"] = "白水",
+	["cv:yangyi"] = "逍遥小鱼儿",
 	["@choudu"]="你可以选择并获取至多%src名角色的手牌",
 	["~choudu"]="点击选择目标角色，然后依次获得他们的各一张手牌",
 
@@ -128,7 +128,7 @@ return {
 	[":zhanji"]= "<b>觉醒技</b>，结束阶段开始时，若你于此回合内已造成的伤害点数不小于3，你加1点体力上限，回复1点体力，然后失去技能“断魂”。",
 	["designer:zhangxingcai"] = "凌天翼",
 	["illustrator:zhangxingcai"] = "地狱许",
-	--["cv:zhangxingcai"] = "白水",
+	--["cv:zhangxingcai"] = "啦啦SLG", --娱乐，娱乐。
 	["@xuedian"]="你可以用一张红色牌替换牌堆顶的%src张牌",
 	
 	["#wenyang"] = "单骑退雄兵" ,
