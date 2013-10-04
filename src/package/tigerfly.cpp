@@ -380,6 +380,9 @@ public:
     }
 };
 
+//-----------------old zhugeke skills ------------------
+/*
+
 class Jisi: public TriggerSkill{
 public:
     Jisi(): TriggerSkill("jisi"){
@@ -412,6 +415,9 @@ public:
         return target != NULL && target->isAlive();
     }
 };
+*/
+
+//-----------------old zhugeke skills end ------------------
 
 class Zhuanquan: public PhaseChangeSkill{
 public:
@@ -465,11 +471,16 @@ public:
                     room->doLightbox("$neoaocai", 5000); //ToAsk: 这里没有Animate的翻译和图像文件，这里只能显示大黑框
                     player->loseMark("@neoaocai");
                     foreach(ServerPlayer *victim, count){
-                        const Card *card = room->askForCard(victim, ".|.|.|.|.", "@neoaocaigive", QVariant(), Card::MethodNone);
-                        if (card != NULL)
+                        QString choice = "give";
+                        if (victim->getCardCount(true) >= 2)
+                            choice = room->askForChoice(victim, objectName(), "discard+give", QVariant());
+                        if (choice == "give"){  //change this skill according to Ling Tianyi
+                            const Card *card = room->askForCard(victim, "..!", "@neoaocaigive", QVariant(), Card::MethodNone);
                             room->obtainCard(player, card, false);
-                        else
-                            room->damage(DamageStruct(objectName(), player, victim));
+                        }
+                        else {
+                            room->askForDiscard(victim, objectName(), 2, 2, false, true, "@neoaocaidiscard");
+                        }
                     }
                     room->acquireSkill(player, "zhuanquan");
                 }
@@ -480,6 +491,85 @@ public:
 
     virtual bool triggerable(const ServerPlayer *target) const{
         return TriggerSkill::triggerable(target) && target->getMark("@neoaocai") > 0;
+    }
+};
+
+
+JisiCard::JisiCard(): SkillCard(){
+    target_fixed = true;
+}
+
+const Card *JisiCard::validateInResponse(ServerPlayer *player) const{
+    Room *room = player->getRoom();
+    room->setPlayerMark(player, "jisiused", 1);
+    ServerPlayer *current = room->getCurrent();
+    if (!current || current->isDead() || current->getPhase() == Player::NotActive)
+        return NULL;
+
+    if (player->pindian(current, "jisi")){
+        Nullification *nul = new Nullification(Card::NoSuit, 0);
+        nul->setSkillName("jisi");
+        return nul;
+    }
+
+    return NULL;
+}
+
+class JisiVS: public ZeroCardViewAsSkill{
+public:
+    JisiVS(): ZeroCardViewAsSkill("jisi"){
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return (player->getMark("jisiused") == 0 && pattern == "nullification");
+    }
+
+    virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
+        return (player->getMark("jisiused") == 0 && !player->isKongcheng());
+    }
+
+    virtual const Card *viewAs() const{
+        return new JisiCard;
+    }
+};
+
+class Jisi: public PhaseChangeSkill{
+public:
+    Jisi(): PhaseChangeSkill("jisi"){
+        view_as_skill = new JisiVS;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        if (!target->getPhase() != Player::RoundStart)
+            return false;
+
+        Room *room = target->getRoom();
+        QList<ServerPlayer *> zhugekes = room->findPlayersBySkillName(objectName());
+        foreach(ServerPlayer *zhugeke, zhugekes){
+            if (zhugeke->getMark("jisiused") != 0)
+                room->setPlayerMark(zhugeke, "jisiused", 0);
+        }
+
+        return false;
+    }
+};
+
+class Qiangbian: public TriggerSkill{ //the realization of this skill is in ServerPlayer::pindian()
+public:
+    Qiangbian(): TriggerSkill("qiangbian"){
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *, ServerPlayer *, QVariant &) const{
+        return false;
     }
 };
 
@@ -1478,6 +1568,7 @@ TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
 
     General *neo_zhugeke = new General(this, "neo_zhugeke", "wu", 4);
     neo_zhugeke->addSkill(new Jisi);
+    neo_zhugeke->addSkill(new Qiangbian);
     neo_zhugeke->addSkill(new NeoAocai);
     neo_zhugeke->addRelateSkill("zhuanquan");
 

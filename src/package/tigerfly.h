@@ -50,6 +50,14 @@ public:
     virtual const Card *validateInResponse(ServerPlayer *user) const;
 };
 
+class JisiCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE JisiCard();
+    virtual const Card *validateInResponse(ServerPlayer *user) const;
+};
+
 class TigerFlyPackage: public Package {
     Q_OBJECT
 

@@ -485,16 +485,36 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     room->sendLog(log);
 
     const Card *card2;
-    if (card1 == NULL) {
-        QList<const Card *> cards = room->askForPindianRace(this, target, reason);
-        card1 = cards.first();
-        card2 = cards.last();
-    } else {
-        if (card1->isVirtualCard()) {
-            int card_id = card1->getEffectiveId();
-            card1 = Sanguosha->getCard(card_id);
+
+    //for tigerfly qiangbian
+
+    if (hasSkill("qiangbian")){
+        room->notifySkillInvoked(this, "qiangbian");
+        room->broadcastSkillInvoke("qiangbian");
+        card2 = Sanguosha->getCard(room->askForCardChosen(this, target, "h", "qiangbian"));
+        
+        LogMessage l;
+        l.type = "$qiangbianpd";
+        l.card_str = QString::number(card2->getId());
+        l.from = this;
+        l.to << target;
+        room->sendLog(l);
+
+        if (card1 == NULL)
+            card1 = room->askForPindian(target, this, target, reason);
+    }
+    else {
+        if (card1 == NULL) {
+            QList<const Card *> cards = room->askForPindianRace(this, target, reason);
+            card1 = cards.first();
+            card2 = cards.last();
+        } else {
+            if (card1->isVirtualCard()) {
+                int card_id = card1->getEffectiveId();
+                card1 = Sanguosha->getCard(card_id);
+            }
+            card2 = room->askForPindian(target, this, target, reason);
         }
-        card2 = room->askForPindian(target, this, target, reason);
     }
 
     if (card1 == NULL || card2 == NULL) return false;
