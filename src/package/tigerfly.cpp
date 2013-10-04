@@ -497,6 +497,7 @@ public:
 
 JisiCard::JisiCard(): SkillCard(){
     target_fixed = true;
+    mute = true;
 }
 
 const Card *JisiCard::validateInResponse(ServerPlayer *player) const{
@@ -505,12 +506,16 @@ const Card *JisiCard::validateInResponse(ServerPlayer *player) const{
     ServerPlayer *current = room->getCurrent();
     if (!current || current->isDead() || current->getPhase() == Player::NotActive || current == player)
         return NULL;
+    
+    room->broadcastSkillInvoke("jisi", 1);
 
     if (player->pindian(current, "jisi")){
         Nullification *nul = new Nullification(Card::NoSuit, 0);
-        nul->setSkillName("jisi");
+        nul->setSkillName("_jisi");
         return nul;
     }
+    else
+        room->broadcastSkillInvoke("jisi", 4);
 
     return NULL;
 }
@@ -559,6 +564,10 @@ public:
         }
 
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+        return qrand() % 2 + 2;
     }
 };
 
