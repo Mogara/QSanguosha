@@ -511,6 +511,14 @@ VSCrossbow::VSCrossbow(Suit suit, int number)
     setObjectName("VSCrossbow");
 }
 
+bool VSCrossbow::match(const QString &pattern) const{
+    QStringList patterns = pattern.split("+");
+    if (patterns.contains("crossbow"))
+        return true;
+    else
+        return Crossbow::match(pattern);
+}
+
 New3v3CardPackage::New3v3CardPackage()
     : Package("New3v3Card")
 {
