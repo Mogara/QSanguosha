@@ -176,7 +176,6 @@ public:
     void daemonize();
     Room *createNewRoom();
     void signupPlayer(ServerPlayer *player);
-    void gamesOver();
 
 private:
     ServerSocket *server;

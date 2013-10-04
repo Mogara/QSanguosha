@@ -50,6 +50,8 @@ class VSCrossbow: public Crossbow {
 
 public:
     Q_INVOKABLE VSCrossbow(Card::Suit suit, int number = 1);
+
+    virtual bool match(const QString &pattern) const;
 };
 
 class Special3v3Package: public Package {

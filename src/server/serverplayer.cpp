@@ -925,8 +925,14 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
 
     if (!isKongcheng()) {
         CardsMoveStruct move;
-        foreach (const Card *card, handcards)
+        foreach (const Card *card, handcards) {
             move.card_ids << card->getId();
+            if (player == this) {
+                WrappedCard *wrapped = qobject_cast<WrappedCard *>(room->getCard(card->getId()));
+                if (wrapped->isModified())
+                    room->notifyUpdateCard(player, card->getId(), wrapped);
+            }
+        }
         move.from_place = DrawPile;
         move.to_player_name = objectName();
         move.to_place = PlaceHand;
@@ -939,8 +945,12 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
 
     if (hasEquip()) {
         CardsMoveStruct move;
-        foreach (const Card *card, getEquips())
+        foreach (const Card *card, getEquips()) {
             move.card_ids << card->getId();
+            WrappedCard *wrapped = qobject_cast<WrappedCard *>(room->getCard(card->getId()));
+            if (wrapped->isModified())
+                room->notifyUpdateCard(player, card->getId(), wrapped);
+        }
         move.from_place = DrawPile;
         move.to_player_name = objectName();
         move.to_place = PlaceEquip;
@@ -978,6 +988,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
             moves2 << move;
 
             bool open = pileOpen(pile, player->objectName());
+
             room->notifyMoveCards(true, moves2, open, players);
             room->notifyMoveCards(false, moves2, open, players);
         }
@@ -1055,12 +1066,18 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason) {
-    foreach(int id, card_ids) {
-        ServerPlayer *owner = room->getCardOwner(id);
-        if (owner == NULL) continue;
-        setPileOpen(pile_name, owner->objectName());
+    QList<ServerPlayer *> open_players;
+    if (!open) {
+        foreach(int id, card_ids) {
+            ServerPlayer *owner = room->getCardOwner(id);
+            if (owner && !open_players.contains(owner))
+                open_players << owner;
+        }
+    } else {
+        open_players = room->getAllPlayers();
     }
-
+    foreach (ServerPlayer *p, open_players)
+        setPileOpen(pile_name, p->objectName());
     piles[pile_name].append(card_ids);
 
     CardsMoveStruct move;
@@ -1069,11 +1086,6 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
     move.to_place = Player::PlaceSpecial;
     move.reason = reason;
     room->moveCardsAtomic(move, open);
-
-    if (open) {
-        foreach (ServerPlayer *p, room->getAllPlayers())
-            setPileOpen(pile_name, p->objectName());
-    }
 }
 
 void ServerPlayer::exchangeFreelyFromPrivatePile(const QString &skill_name, const QString &pile_name, int upperlimit, bool include_equip) {

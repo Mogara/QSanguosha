@@ -11,7 +11,8 @@ NatureSlash::NatureSlash(Suit suit, int number, DamageStruct::Nature nature)
 }
 
 bool NatureSlash::match(const QString &pattern) const{
-    if (pattern == "slash")
+    QStringList patterns = pattern.split("+");
+    if (patterns.contains("slash"))
         return true;
     else
         return Slash::match(pattern);

@@ -752,8 +752,8 @@ bool Player::pileOpen(const QString &pile_name, const QString &player) const {
 }
 
 void Player::setPileOpen(const QString &pile_name, const QString &player) {
-    if (pileOpen(pile_name, player)) return;
-     this->pile_open[pile_name] << player;
+    if (pile_open[pile_name].contains(player)) return;
+    pile_open[pile_name].append(player);
 }
 
 void Player::addHistory(const QString &name, int times) {
