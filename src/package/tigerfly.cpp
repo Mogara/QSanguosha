@@ -1735,7 +1735,7 @@ public:
         if (triggerEvent == EventPhaseStart && player->getPhase() == Player::RoundStart){
             ServerPlayer *liyan = room->findPlayerBySkillName(objectName());
             if (liyan == NULL || liyan->isNude())
-                return false;
+                return;
 
             if (room->askForCard(liyan, "^BasicCard", "@dangliang-discard", QVariant::fromValue(player))){
                 QString choice = room->askForChoice(liyan, objectName(), "d2p+d2f", QVariant::fromValue(player));
