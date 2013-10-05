@@ -493,12 +493,19 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         room->broadcastSkillInvoke("qiangbian");
         card2 = Sanguosha->getCard(room->askForCardChosen(this, target, "h", "qiangbian"));
         
+        LogMessage l2;
+        l2.type = "#qiangbianpd";
+        l2.from = this;
+        l2.to << target;
+        foreach(ServerPlayer *p, room->getOtherPlayers(target))
+            room->doNotify(p, S_COMMAND_LOG_SKILL, l2.toJsonValue());
+
         LogMessage l;
         l.type = "$qiangbianpd";
         l.card_str = QString::number(card2->getId());
         l.from = this;
         l.to << target;
-        room->sendLog(l);
+        room->doNotify(target, S_COMMAND_LOG_SKILL, l.toJsonValue());
 
         if (card1 == NULL)
             card1 = room->askForPindian(this, this, target, reason);
