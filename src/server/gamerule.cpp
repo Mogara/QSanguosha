@@ -79,6 +79,13 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
         }
     case Player::Play: {
             room->addPlayerHistory(player, ".");
+            
+            //for formation zhendu
+            if (player->hasFlag("zhendu_used")){
+                room->setPlayerFlag(player, "-zhendu_used");
+                room->addPlayerHistory(player, "analeptic");
+            }
+
             while (player->isAlive()) {
                 CardUseStruct card_use;
                 room->activate(player, card_use);

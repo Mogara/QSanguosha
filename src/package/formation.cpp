@@ -400,6 +400,7 @@ public:
             if (!hetaihou->isAlive() || !hetaihou->canDiscard(hetaihou, "h") || hetaihou->getPhase() == Player::Play)
                 continue;
             if (room->askForCard(hetaihou, ".", "@zhendu-discard", QVariant(), objectName())) {
+                room->setPlayerFlag(player, "zhendu_used");
                 Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
                 analeptic->setSkillName("_zhendu");
                 room->useCard(CardUseStruct(analeptic, player, QList<ServerPlayer *>(), true));
