@@ -255,7 +255,7 @@ bool JuejiCard::targetFilter(const QList<const Player *> &targets, const Player 
 void JuejiCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *to = effect.to;
     QVariant data = QVariant::fromValue(to);
-    while (effect.from->pindian(effect.to, "jueji", this)){
+    while (effect.from->pindian(effect.to, "jueji", NULL)){
         if (!(effect.from->isKongcheng() || effect.to->isKongcheng()) || !effect.from->askForSkillInvoke("jueji", data))
             break;
     }
