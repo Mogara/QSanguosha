@@ -701,30 +701,10 @@ void ServerPlayer::play(QList<Player::Phase> set_phases) {
             if (getPhase() != NotActive)
                 thread->trigger(EventPhaseProceeding, room, this);
         }
-
-        //for Tigerfly Dangliang
-
-        if (hasFlag("dangliang")){
-            room->setPlayerFlag(this, "-dangliang");
-            for (i = 0; i < _m_phases_state.length(); i++){
-                if (_m_phases_state[i].phase == Player::Draw){
-                    if (hasFlag("dangliang_d2f"))
-                        _m_phases_state[i].phase = Player::Finish;
-                    else if (hasFlag("dangliang_d2p"))
-                        _m_phases_state[i].phase = Player::Play;
-                }
-                else if (_m_phases_state[i].phase == Player::Play && hasFlag("dangliang_d2p"))
-                    _m_phases_state[i].phase = Player::Draw;
-                else if (_m_phases_state[i].phase == Player::Finish && hasFlag("dangliang_d2f"))
-                    _m_phases_state[i].phase = Player::Draw;
-            }
-        }
-
         if (getPhase() != NotActive)
             thread->trigger(EventPhaseEnd, room, this);
         else
             break;
-
     }
 }
 
