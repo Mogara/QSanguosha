@@ -1743,7 +1743,6 @@ public:
                 room->setPlayerFlag(player, objectName() + "_" + choice);
             }
         }
-        return false;
     }
 };
 
