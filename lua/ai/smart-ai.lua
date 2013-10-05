@@ -4543,7 +4543,7 @@ function SmartAI:getCardsNum(class_name, player, flag, selfonly)
 	card_str = cardsView(self, class_name, player)
 	if card_str then
 		card_str = sgs.Card_Parse(card_str)
-		if card_str:getSkillName() == "spear" or card_str:getSkillName() == "fuhun" then
+		if card_str:getSkillName() == "Spear" or card_str:getSkillName() == "fuhun" then
 			n = n + math.floor(player:getHandcardNum() / 2) - 1
 		elseif card_str:getSkillName() == "jiuzhu" then
 			n = math.max(n, math.max(0, math.min(player:getCardCount(true), player:getHp() - 1)))
