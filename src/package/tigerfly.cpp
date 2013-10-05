@@ -1710,6 +1710,20 @@ public:
     }
 };
 
+//for tigerfly liyan. Liyan's Dangliang is complicated
+class Jingao: public ProhibitSkill{
+public:
+    Jingao(): ProhibitSkill("jingao"){
+
+    }
+
+    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const{
+        return to->hasSkill(objectName()) && from->getEquips().length() < to->getEquips().length() && card->isKindOf("BasicCard");
+    }
+};
+
+
+
 TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
     General *caorui = new General(this, "caorui$", "wei", 3);
     caorui->addSkill(new Shemi);
