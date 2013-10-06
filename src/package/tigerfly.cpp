@@ -944,7 +944,7 @@ public:
             QList<int> watchlist;
             for (int i = 0; i < qMin(drawpile.length(), 4); i++)
                 watchlist << drawpile[i];
-/*
+
             Json::Value gongxinArgs(Json::arrayValue);
 
             gongxinArgs[0] = QSanProtocol::Utils::toJsonString(QString());
@@ -952,8 +952,7 @@ public:
             gongxinArgs[2] = QSanProtocol::Utils::toJsonArray(watchlist);
 
             room->doNotify(player, QSanProtocol::S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
-*/
-            //我在想这段代码应该怎么加……
+
 
             LogMessage l;
             l.type = "$xiangshudrawpile";
@@ -1607,7 +1606,7 @@ public:
                 judge.reason = objectName();
                 judge.good = true;
                 judge.pattern = ".";
-                judge.play_animation = false;
+                //judge.play_animation = false;
                 room->judge(judge);
 
                 bool red = (judge.pattern == "red");
