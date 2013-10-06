@@ -1038,7 +1038,7 @@ public:
                     ServerPlayer *p = room->getTag("bushi_invoker").value<ServerPlayer *>();
                     room->removeTag("bushi_invoker");
 
-                    if (!p->isAlive())
+                    if (p == NULL || !p->isAlive())
                         return false;
 
                     if (!player->hasFlag("bushi_candraw")){
