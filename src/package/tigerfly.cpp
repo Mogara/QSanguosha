@@ -534,7 +534,7 @@ public:
     }
 
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
-        return (player->getMark("jisiused") == 0 && !player->isKongcheng());
+        return (player->getMark("jisiused") == 0 && !player->isKongcheng() && player->getPhase() == Player::NotActive);
     }
 
     virtual const Card *viewAs() const{
@@ -844,27 +844,29 @@ public:
                             break;
                     }
                     ServerPlayer *from = (ServerPlayer *)move.from;
-                    QList<const Card *> cards = player->getEquips();
-                    foreach(const Card *card, from->getEquips()){
-                        foreach(const Card *cd, cards){
-                            if (equip_type(card->getId()) == equip_type(cd->getId()))
-                                cards.removeOne(cd);
+                    if (from->isAlive()){
+                        QList<const Card *> cards = player->getEquips();
+                        foreach(const Card *card, from->getEquips()){
+                            foreach(const Card *cd, cards){
+                                if (equip_type(card->getId()) == equip_type(cd->getId()))
+                                    cards.removeOne(cd);
+                            }
                         }
-                    }
-                    if (cards.isEmpty())
-                        return false;
-                    QList<int> cardids;
-                    foreach(const Card *cd, cards)
-                        cardids.append(cd->getId());
-                    if (room->askForChoice(from, objectName(), "kangdaogain+kangdaocancel") == "kangdaogain"){
-                        room->fillAG(cardids);
-                        int cid = room->askForAG(from, cardids, true, objectName() + "Chosen");
-                        room->clearAG();
-                        if (cid != -1){
-                            room->broadcastSkillInvoke(objectName(), 2);
-                            CardMoveReason reason(CardMoveReason::S_REASON_PUT, player->objectName());
-                            room->moveCardTo(Sanguosha->getCard(cid), player, from, Player::PlaceEquip, reason, true);
-                            room->drawCards(player, 1);
+                        if (cards.isEmpty())
+                            return false;
+                        QList<int> cardids;
+                        foreach(const Card *cd, cards)
+                            cardids.append(cd->getId());
+                        if (room->askForChoice(from, objectName(), "kangdaogain+kangdaocancel") == "kangdaogain"){
+                            room->fillAG(cardids);
+                            int cid = room->askForAG(from, cardids, true, objectName() + "Chosen");
+                            room->clearAG();
+                            if (cid != -1){
+                                room->broadcastSkillInvoke(objectName(), 2);
+                                CardMoveReason reason(CardMoveReason::S_REASON_PUT, player->objectName());
+                                room->moveCardTo(Sanguosha->getCard(cid), player, from, Player::PlaceEquip, reason, true);
+                                room->drawCards(player, 1);
+                            }
                         }
                     }
                 }
@@ -1038,7 +1040,7 @@ public:
                     ServerPlayer *p = room->getTag("bushi_invoker").value<ServerPlayer *>();
                     room->removeTag("bushi_invoker");
 
-                    if (!p->isAlive())
+                    if (p == NULL || !p->isAlive())
                         return false;
 
                     if (!player->hasFlag("bushi_candraw")){
@@ -1710,6 +1712,7 @@ public:
     }
 };
 
+//for tigerfly liyan. Liyan's Dangliang is complicated
 class Jingao: public ProhibitSkill{
 public:
     Jingao(): ProhibitSkill("jingao"){
@@ -1721,10 +1724,70 @@ public:
     }
 };
 
-class Dangliang: public TriggerSkill{
+JingshangCard::JingshangCard(): SkillCard(){
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
+
+bool JingshangCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.length() < 2 && to_select != Self && !to_select->isKongcheng();
+}
+
+bool JingshangCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    return targets.length() == 2;
+}
+
+void JingshangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    const Card *showcard;
+
+    if (subcards.length() == 0){
+        int aidelay = Config.AIDelay;
+        Config.AIDelay = 0;
+
+        room->fillAG(source->getPile("zi"), source);
+        int showcard_id = room->askForAG(source, source->getPile("zi"), false, objectName());
+        room->clearAG(source);
+
+        Config.AIDelay = aidelay;
+
+        showcard = Sanguosha->getCard(showcard_id);
+    }
+    else
+        showcard = Sanguosha->getCard(subcards.first());
+
+    room->showCard(source, showcard->getId());
+
+    source->tag["jingshang_card"] = QVariant::fromValue(showcard);
+    source->tag["jingshang_using"] = true;
+
+    targets.first()->pindian(targets.last(), objectName());
+
+    source->tag["jingshang_using"] = false;
+    source->tag.remove("jingshang_card");
+}
+
+class JingshangVS: public ViewAsSkill{
 public:
-    Dangliang(): TriggerSkill("dangliang"){
-        events << EventPhaseStart;
+    JingshangVS(): ViewAsSkill("jingshang"){
+
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
+        return selected.isEmpty();
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+        JingshangCard *card = new JingshangCard;
+        card->addSubcards(cards);
+        return card;
+    }
+};
+
+class Jingshang: public TriggerSkill{
+public:
+    Jingshang(): TriggerSkill("jingshang"){
+        events << Pindian;
+        view_as_skill = new JingshangVS;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1732,21 +1795,86 @@ public:
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::RoundStart){
-            ServerPlayer *liyan = room->findPlayerBySkillName(objectName());
-            if (liyan == NULL || liyan->isNude())
-                return false;
+        PindianStruct *pindian = data.value<PindianStruct *>();
+        if (pindian->reason != objectName())
+            return false;
 
-            if (room->askForCard(liyan, "^BasicCard", "@dangliang-discard", QVariant::fromValue(player))){
-                QString choice = room->askForChoice(liyan, objectName(), "d2p+d2f", QVariant::fromValue(player));
-                room->setPlayerFlag(player, objectName());
-                room->setPlayerFlag(player, objectName() + "_" + choice);
+        ServerPlayer *mizhu = NULL;
+        const Card *showcard = NULL;
+        foreach (ServerPlayer *p, room->getAlivePlayers())
+            if (p->tag["jingshang_using"].toBool() == true){
+                mizhu = p;
+                showcard = p->tag["jingshang_card"].value<const Card *>();
             }
+
+        if (mizhu != NULL){
+            ServerPlayer *winner = NULL;
+            if (pindian->success)
+                winner = pindian->from;
+            else if (pindian->from_number < pindian->to_number)
+                winner = pindian->to;
+
+            if (winner != NULL){
+                /*CardMoveReason reason;
+                if (room->getCardPlace(showcard->getId()) == Player::PlaceSpecial)
+                    reason = CardMoveReason(CardMoveReason::S_REASON_EXCHANGE_FROM_PILE, mizhu->objectName());*/
+                winner->obtainCard(showcard);
+            }
+
+            QList<int> to_addtopile;
+            to_addtopile << pindian->from_card->getEffectiveId() << pindian->to_card->getEffectiveId();
+
+            mizhu->addToPile("zi", to_addtopile, true);
         }
+
         return false;
     }
 };
 
+class Zijun: public PhaseChangeSkill{
+public:
+    Zijun(): PhaseChangeSkill("zijun"){
+
+    }
+    
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->isAlive() && !target->hasSkill(objectName()) && target->getHandcardNum() < target->getHp();
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        Room *room = target->getRoom();
+        QList<ServerPlayer *> mizhus = room->findPlayersBySkillName(objectName());
+
+        foreach(ServerPlayer *mizhu, mizhus){
+            QList<int> zi = mizhu->getPile("zi");
+            if (zi.length() > 0){
+                QList<int> to_give;
+                while (room->askForChoice(mizhu, objectName(), "dismiss+give" + QString(to_give.isEmpty()? "": "continue"), QVariant::fromValue(target)).startsWith("give")){
+                    room->fillAG(mizhu->getPile("zi"), mizhu, to_give);
+                    int card_id = room->askForAG(mizhu, zi, false, objectName());
+                    room->clearAG(mizhu);
+                    zi.removeOne(card_id);
+                    to_give << card_id;
+                    if (zi.isEmpty())
+                        break;
+                }
+
+                CardsMoveStruct move(to_give, target, Player::PlaceHand, 
+                    CardMoveReason(CardMoveReason::S_REASON_GOTCARD, mizhu->objectName(), objectName(), QString()));
+
+                room->moveCards(move, true);
+
+                if (to_give.length() >= 2){
+                    RecoverStruct recover;
+                    recover.who = mizhu;
+                    room->recover(mizhu, recover);
+                }
+            }
+        }
+
+        return false;
+    }
+};
 
 
 TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
@@ -1814,9 +1942,9 @@ TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
     bian->addSkill(new Manwu);
     bian->addSkill(new Annei);
 
-    General *liyan = new General(this, "liyan", "shu");
-    liyan->addSkill(new Jingao);
-    liyan->addSkill(new Dangliang);
+    General *mizhu = new General(this, "mizhu", "shu", 3);
+    mizhu->addSkill(new Jingshang);
+    mizhu->addSkill(new Zijun);
 
     addMetaObject<PozhenCard>();
     addMetaObject<TushouGiveCard>();
@@ -1824,6 +1952,7 @@ TigerFlyPackage::TigerFlyPackage(): Package("tigerfly") {
     addMetaObject<GudanCard>();
     addMetaObject<JisiCard>();
     addMetaObject<ShangjianCard>();
+    addMetaObject<JingshangCard>();
 
     skills << new Zhuanquan;
 };
