@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGame">
@@ -59,13 +59,14 @@
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
+    <addaction name="actionAbout_Us"/>
     <addaction name="actionAbout_Qt"/>
     <addaction name="actionAbout_GPLv3"/>
     <addaction name="actionAbout_Lua"/>
     <addaction name="actionAbout_fmod"/>
     <addaction name="separator"/>
-	<addaction name="actionAcknowledgement_2"/>
-	<addaction name="separator"/>
+    <addaction name="actionAcknowledgement_2"/>
+    <addaction name="separator"/>
     <addaction name="actionRole_assign_table"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -377,7 +378,12 @@
   </action>
   <action name="actionAcknowledgement_2">
    <property name="text">
-	<string>Acknowledgement</string>
+    <string>Acknowledgement</string>
+   </property>
+  </action>
+  <action name="actionAbout_Us">
+   <property name="text">
+    <string>About Us</string>
    </property>
   </action>
  </widget>
