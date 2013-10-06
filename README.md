@@ -1,2 +1,0 @@
-QSanguosha-For-Hegemony
-=======================
