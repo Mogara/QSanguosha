@@ -27,7 +27,7 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
     setLayout(layout);
 
     QStringList developers;
-    developers << tr("QSanguosha-Rara") << tr("YanGuam") << tr("Fsu0413") << tr("0147certainly");
+    developers << tr("QSanguosha-Rara") << "YanGuam" << "Fsu0413" << "0147certainly";
     foreach (QString name, developers) {
         QListWidgetItem *item = new QListWidgetItem(name, list);
         item->setData(Qt::UserRole, name);
