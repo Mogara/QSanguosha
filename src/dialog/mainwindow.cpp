@@ -10,6 +10,7 @@
 #include "window.h"
 #include "pixmapanimation.h"
 #include "record-analysis.h"
+#include "AboutUs.h"
 
 #include <qmath.h>
 #include <QGraphicsView>
@@ -94,7 +95,7 @@ MainWindow::MainWindow(QWidget *parent)
             << ui->actionCard_Overview
             << ui->actionScenario_Overview
             << ui->actionAbout
-            << ui->actionAcknowledgement;
+            << ui->actionAbout_Us;
 
     foreach (QAction *action, actions)
         start_scene->addButton(action);
@@ -324,7 +325,7 @@ void MainWindow::gotoStartScene() {
             << ui->actionCard_Overview
             << ui->actionScenario_Overview
             << ui->actionAbout
-            << ui->actionAcknowledgement;
+            << ui->actionAbout_Us;
 
     foreach (QAction *action, actions)
         start_scene->addButton(action);
@@ -430,6 +431,11 @@ void MainWindow::on_actionAbout_triggered() {
                   scene->inherits("RoomScene") ? scene->height() : 0);
 
     window->appear();
+}
+
+void MainWindow::on_actionAbout_Us_triggered() {
+    AboutUsDialog *dialog = new AboutUsDialog(this);
+    dialog->show();
 }
 
 void MainWindow::setBackgroundBrush(bool centerAsOrigin) {

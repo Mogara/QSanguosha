@@ -492,6 +492,15 @@
     <ClCompile Include="Release\moc_formation.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="Debug\moc_AboutUs.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_AboutUs.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\AboutUs.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -778,6 +787,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\package\formation.h">
       <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\AboutUs.h">
+      <Filter>dialog</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
