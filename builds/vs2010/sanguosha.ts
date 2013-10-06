@@ -14,19 +14,12 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../src/dialog/AboutUs.cpp" line="30"/>
         <source>YanGuam</source>
-        <translation>啦啦SLG</translation>
+        <translation type="obsolete">啦啦SLG</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/AboutUs.cpp" line="30"/>
-        <source>Fsu0413</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/AboutUs.cpp" line="30"/>
         <source>0147certainly</source>
-        <translation>元嘉体</translation>
+        <translation type="obsolete">元嘉体</translation>
     </message>
 </context>
 <context>
