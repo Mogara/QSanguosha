@@ -844,27 +844,29 @@ public:
                             break;
                     }
                     ServerPlayer *from = (ServerPlayer *)move.from;
-                    QList<const Card *> cards = player->getEquips();
-                    foreach(const Card *card, from->getEquips()){
-                        foreach(const Card *cd, cards){
-                            if (equip_type(card->getId()) == equip_type(cd->getId()))
-                                cards.removeOne(cd);
+                    if (from->isAlive()){
+                        QList<const Card *> cards = player->getEquips();
+                        foreach(const Card *card, from->getEquips()){
+                            foreach(const Card *cd, cards){
+                                if (equip_type(card->getId()) == equip_type(cd->getId()))
+                                    cards.removeOne(cd);
+                            }
                         }
-                    }
-                    if (cards.isEmpty())
-                        return false;
-                    QList<int> cardids;
-                    foreach(const Card *cd, cards)
-                        cardids.append(cd->getId());
-                    if (room->askForChoice(from, objectName(), "kangdaogain+kangdaocancel") == "kangdaogain"){
-                        room->fillAG(cardids);
-                        int cid = room->askForAG(from, cardids, true, objectName() + "Chosen");
-                        room->clearAG();
-                        if (cid != -1){
-                            room->broadcastSkillInvoke(objectName(), 2);
-                            CardMoveReason reason(CardMoveReason::S_REASON_PUT, player->objectName());
-                            room->moveCardTo(Sanguosha->getCard(cid), player, from, Player::PlaceEquip, reason, true);
-                            room->drawCards(player, 1);
+                        if (cards.isEmpty())
+                            return false;
+                        QList<int> cardids;
+                        foreach(const Card *cd, cards)
+                            cardids.append(cd->getId());
+                        if (room->askForChoice(from, objectName(), "kangdaogain+kangdaocancel") == "kangdaogain"){
+                            room->fillAG(cardids);
+                            int cid = room->askForAG(from, cardids, true, objectName() + "Chosen");
+                            room->clearAG();
+                            if (cid != -1){
+                                room->broadcastSkillInvoke(objectName(), 2);
+                                CardMoveReason reason(CardMoveReason::S_REASON_PUT, player->objectName());
+                                room->moveCardTo(Sanguosha->getCard(cid), player, from, Player::PlaceEquip, reason, true);
+                                room->drawCards(player, 1);
+                            }
                         }
                     }
                 }
