@@ -534,7 +534,7 @@ public:
     }
 
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
-        return (player->getMark("jisiused") == 0 && !player->isKongcheng());
+        return (player->getMark("jisiused") == 0 && !player->isKongcheng() && player->getPhase() == Player::NotActive);
     }
 
     virtual const Card *viewAs() const{
