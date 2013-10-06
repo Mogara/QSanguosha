@@ -174,9 +174,6 @@
     <ClCompile Include="..\..\src\package\special3v3-package.cpp">
       <Filter>package</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\package\sp-package.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\standard-cards.cpp">
       <Filter>package</Filter>
     </ClCompile>
@@ -414,15 +411,6 @@
     <ClCompile Include="Release\moc_record-analysis.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\package\assassinspackage.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_assassinspackage.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_assassinspackage.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\core\record-analysis.cpp">
       <Filter>core</Filter>
     </ClCompile>
@@ -653,9 +641,6 @@
     <CustomBuild Include="..\..\src\package\firepackage.h">
       <Filter>package</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\package\sp-package.h">
-      <Filter>package</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\package\package.h">
       <Filter>package</Filter>
     </CustomBuild>
@@ -760,9 +745,6 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\scenario\zombie-scenario.h">
       <Filter>scenario</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\assassinspackage.h">
-      <Filter>package</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\core\record-analysis.h">
       <Filter>core</Filter>
@@ -1169,12 +1151,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_socket.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_sp-package.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_sp-package.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_special3v3-package.cpp">

@@ -1602,17 +1602,7 @@ public:
     }
 };
 
-#include "sp-package.h"
-class SuperYongsi: public Yongsi {
-public:
-    SuperYongsi(): Yongsi() {
-        setObjectName("super_yongsi");
-    }
 
-    virtual int getKingdoms(ServerPlayer *yuanshu) const{
-        return yuanshu->getMark("@yongsi_test");
-    }
-};
 
 #include "wind.h"
 class SuperJushou: public Jushou {
@@ -1756,11 +1746,7 @@ TestPackage::TestPackage()
     wuxing_zhuge->addSkill(new SuperGuanxing);
     wuxing_zhuge->addSkill("kongcheng");
 
-    General *super_yuanshu = new General(this, "super_yuanshu", "qun", 4, true, true, true);
-    super_yuanshu->addSkill(new SuperYongsi);
-    super_yuanshu->addSkill(new MarkAssignSkill("@yongsi_test", 4));
-    related_skills.insertMulti("super_yongsi", "#@yongsi_test-4");
-    super_yuanshu->addSkill("weidi");
+
 
     General *super_caoren = new General(this, "super_caoren", "wei", 4, true, true, true);
     super_caoren->addSkill(new SuperJushou);
