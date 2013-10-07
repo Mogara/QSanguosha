@@ -40,6 +40,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->neverNullifyMyTrickCheckBox->setChecked(Config.NeverNullifyMyTrick);
     ui->autoTargetCheckBox->setChecked(Config.EnableAutoTarget);
     ui->intellectualSelectionCheckBox->setChecked(Config.EnableIntellectualSelection);
+    ui->doubleClickCheckBox->setChecked(Config.EnableDoubleClick);
 
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
 
@@ -149,6 +150,9 @@ void ConfigDialog::saveConfig() {
 
     Config.EnableIntellectualSelection = ui->intellectualSelectionCheckBox->isChecked();
     Config.setValue("EnableIntellectualSelection", Config.EnableIntellectualSelection);
+
+    Config.EnableDoubleClick = ui->doubleClickCheckBox->isChecked();
+    Config.setValue("EnableDoubleClick", Config.EnableDoubleClick);
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked() {

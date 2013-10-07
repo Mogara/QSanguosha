@@ -78,14 +78,6 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
             break;
         }
     case Player::Play: {
-            room->addPlayerHistory(player, ".");
-            
-            //for formation zhendu
-            if (player->hasFlag("zhendu_used")){
-                room->setPlayerFlag(player, "-zhendu_used");
-                room->addPlayerHistory(player, "analeptic");
-            }
-
             while (player->isAlive()) {
                 CardUseStruct card_use;
                 room->activate(player, card_use);
@@ -203,6 +195,8 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
             if (change.to == Player::NotActive) {
                 room->setPlayerFlag(player, ".");
                 room->clearPlayerCardLimitation(player, true);
+            } else if (change.to == Player::Play) {
+                room->addPlayerHistory(player, ".");
             }
             break;
         }

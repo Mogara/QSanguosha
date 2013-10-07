@@ -71,6 +71,7 @@ public:
     bool NeverNullifyMyTrick;
     bool EnableAutoTarget;
     bool EnableIntellectualSelection;
+    bool EnableDoubleClick;
     int OperationTimeout;
     bool OperationNoLimit;
     bool EnableEffects;

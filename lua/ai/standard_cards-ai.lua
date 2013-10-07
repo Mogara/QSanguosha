@@ -945,14 +945,14 @@ function SmartAI:canHit(to, from, conservative)
 	if self:canLiegong(to, from) then return true end
 	if not self:isFriend(to, from) then
 		if from:hasWeapon("Axe") and from:getCards("he"):length() > 2 then return true end
-		if from:hasWeapon("Blade") and getCardsNum("Jink", to, self) <= getCardsNum("Slash", from, self) then return true end
+		if from:hasWeapon("Blade") and getCardsNum("Jink", to) <= getCardsNum("Slash", from) then return true end
 		if from:hasSkill("mengjin") and not (from:hasSkill("nosqianxi") and not from:hasSkill("jueqing") and from:distanceTo(to) == 1)
 			and not self:hasHeavySlashDamage(from, nil, to) and not self:needLeiji(to, from) then
 				if self:doNotDiscard(to, "he", true) then
 				elseif to:getCards("he"):length() == 1 and not to:getArmor() then
 				elseif self:canUseJieyuanDecrease(from, to) then return false
 				elseif self:willSkipPlayPhase() then
-				elseif (getCardsNum("Peach", to, self) > 0 or getCardsNum("Analeptic", to, self) > 0) then return true
+				elseif (getCardsNum("Peach", to) > 0 or getCardsNum("Analeptic", to) > 0) then return true
 				elseif not self:isWeak(to) and to:getArmor() and not self:needToThrowArmor() then return true
 				elseif not self:isWeak(to) and to:getDefensiveHorse() then return true
 				end

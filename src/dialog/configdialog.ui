@@ -155,7 +155,7 @@
         <x>10</x>
         <y>130</y>
         <width>411</width>
-        <height>23</height>
+        <height>24</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -190,7 +190,7 @@
         <x>10</x>
         <y>160</y>
         <width>411</width>
-        <height>23</height>
+        <height>24</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -557,6 +557,25 @@
      </property>
      <property name="text">
       <string>Enable intellectual selection</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="doubleClickCheckBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>70</y>
+       <width>241</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Enable double-click</string>
      </property>
      <property name="checked">
       <bool>false</bool>
