@@ -240,6 +240,18 @@ bool TriggerSkill::triggerable(const ServerPlayer *target) const{
     return target != NULL && target->isAlive() && target->hasSkill(objectName());
 }
 
+bool TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    return player != NULL && player->isAlive() && player->hasSkill(objectName());
+}
+
+bool TriggerSkill::cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    return true;
+}
+
+bool TriggerSkill::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    return false;
+}
+
 ScenarioRule::ScenarioRule(Scenario *scenario)
     :TriggerSkill(scenario->objectName())
 {

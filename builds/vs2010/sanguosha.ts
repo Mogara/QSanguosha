@@ -912,6 +912,11 @@
         <translation>游戏</translation>
     </message>
     <message>
+        <location filename="../../src/dialog/configdialog.ui" line="578"/>
+        <source>Enable double-click</source>
+        <translation>双击牌或头像使用牌</translation>
+    </message>
+    <message>
         <source>Nullification count down</source>
         <translation type="obsolete">无懈可击时间</translation>
     </message>
@@ -991,28 +996,28 @@
         <translation type="obsolete">仅保存主公的重放记录</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.cpp" line="71"/>
+        <location filename="../../src/dialog/configdialog.cpp" line="72"/>
         <source>Select a background image</source>
         <translation>请选择一张背景图片</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.cpp" line="73"/>
-        <location filename="../../src/dialog/configdialog.cpp" line="99"/>
+        <location filename="../../src/dialog/configdialog.cpp" line="74"/>
+        <location filename="../../src/dialog/configdialog.cpp" line="100"/>
         <source>Images (*.png *.bmp *.jpg)</source>
         <translation>图片 (*.png *.bmp *.jpg)</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.cpp" line="97"/>
+        <location filename="../../src/dialog/configdialog.cpp" line="98"/>
         <source>Select a tableBg image</source>
         <translation>请选择一张游戏时背景图片</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.cpp" line="156"/>
+        <location filename="../../src/dialog/configdialog.cpp" line="160"/>
         <source>Select a background music</source>
         <translation>请选择背景音乐文件</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.cpp" line="158"/>
+        <location filename="../../src/dialog/configdialog.cpp" line="162"/>
         <source>Audio files (*.wav *.mp3 *.ogg)</source>
         <translation>音频文件 (*.wav *.mp3 *.ogg)</translation>
     </message>

@@ -618,6 +618,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
     event_stack.push_back(triplet);
 
     bool broken = false;
+    QList<const TriggerSkill *> will_trigger;
 
     try {
         QList<const TriggerSkill *> triggered;
@@ -637,16 +638,53 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
         }
         qStableSort(skills.begin(), skills.end(), CompareByPriority);
 
-        for (int i = 0; i < skills.size(); i++) {
-            const TriggerSkill *skill = skills[i];
-            if (!triggered.contains(skill) && skill->triggerable(target)) {
-                while (room->isPaused()) {}
-                triggered.append(skill);
-                broken = skill->trigger(triggerEvent, room, target, data);
-                if (broken) break;
-                i = 0;
+        do {
+            QList<const TriggerSkill *> transit = skills;
+            for (int i = 0; i < skills.size(); i++) {
+                const TriggerSkill *skill = skills[i];
+                transit.removeAt(i);
+                if (!triggered.contains(skill) && skill->triggerable(triggerEvent, room, target, data)) {
+                    while (room->isPaused()) {}
+                    triggered.append(skill);
+
+                    if (will_trigger.isEmpty() 
+                        || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority())
+                        will_trigger.append(skill);
+                    else if(skill->getDynamicPriority() != will_trigger.last()->getDynamicPriority())
+                        break;
+                }
             }
-        }
+
+            skills = transit;
+
+            if (!will_trigger.isEmpty()) {
+                if (will_trigger.length() > 1) {
+                    QStringList names;
+                    foreach(const TriggerSkill *skill, will_trigger)
+                        names << skill->objectName();
+                    will_trigger.clear();
+                    names << "trigger_none";
+                    do {
+                        QString name = room->askForChoice(target, "TriggerOrder", names.join("+"), data);
+                        if (name == "trigger_none") break;
+                        const TriggerSkill *skill = Sanguosha->getTriggerSkill(name);
+                        if (skill->cost(triggerEvent, room, target, data))
+                            will_trigger.prepend(skill);
+                        names.removeOne(name);
+                    } while (names.length() > 1);
+                } else {
+                    if (!will_trigger.first()->cost(triggerEvent, room, target, data))
+                        will_trigger.clear();
+                }
+            }
+
+            if (!will_trigger.isEmpty()) {
+                foreach(const TriggerSkill *skill, will_trigger) {
+                    broken = skill->effect(triggerEvent, room, target, data);
+                    if (broken) break;
+                }
+            }
+        } while (!skills.isEmpty());
 
         if (target) {
             foreach (AI *ai, room->ais)
