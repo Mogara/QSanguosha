@@ -241,10 +241,18 @@ bool TriggerSkill::triggerable(const ServerPlayer *target) const{
 }
 
 bool TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-    return player != NULL && player->isAlive() && player->hasSkill(objectName());
+    return triggerable(player); //temp way
+}
+
+bool TriggerSkill::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    return effect(triggerEvent, room, player, data); //also temp way
 }
 
 bool TriggerSkill::cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    /*if (frequency != Skill::Compulsory)
+        return player->askForSkillInvoke(objectName(), data);
+    else
+        return true;*/
     return true;
 }
 
@@ -272,7 +280,7 @@ MasochismSkill::MasochismSkill(const QString &name)
     events << Damaged;
 }
 
-bool MasochismSkill::trigger(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
+bool MasochismSkill::effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
     DamageStruct damage = data.value<DamageStruct>();
     onDamaged(player, damage);
 
@@ -285,7 +293,7 @@ PhaseChangeSkill::PhaseChangeSkill(const QString &name)
     events << EventPhaseStart;
 }
 
-bool PhaseChangeSkill::trigger(TriggerEvent, Room *, ServerPlayer *player, QVariant &) const{
+bool PhaseChangeSkill::effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &) const{
     return onPhaseChange(player);
 }
 
@@ -295,7 +303,7 @@ DrawCardsSkill::DrawCardsSkill(const QString &name)
     events << DrawNCards;
 }
 
-bool DrawCardsSkill::trigger(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
+bool DrawCardsSkill::effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
     int n = data.toInt();
     data = getDrawNum(player, n);
     return false;
@@ -307,7 +315,7 @@ GameStartSkill::GameStartSkill(const QString &name)
     events << GameStart;
 }
 
-bool GameStartSkill::trigger(TriggerEvent, Room *, ServerPlayer *player, QVariant &) const{
+bool GameStartSkill::effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &) const{
     onGameStart(player);
     return false;
 }
@@ -318,7 +326,7 @@ SPConvertSkill::SPConvertSkill(const QString &from, const QString &to)
     to_list = to.split("+");
 }
 
-bool SPConvertSkill::triggerable(const ServerPlayer *target) const{
+bool SPConvertSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data) const{
     if (target == NULL) return false;
     if (!Config.value("EnableSPConvert", true).toBool()) return false;
     if (Config.EnableHegemony) return false;
@@ -439,11 +447,11 @@ int FakeMoveSkill::getPriority() const{
     return 10;
 }
 
-bool FakeMoveSkill::triggerable(const ServerPlayer *target) const{
+bool FakeMoveSkill::triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &) const{
     return target != NULL;
 }
 
-bool FakeMoveSkill::trigger(TriggerEvent, Room *room, ServerPlayer *, QVariant &) const{
+bool FakeMoveSkill::effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &) const{
     QString flag = QString("%1_InTempMoving").arg(name);
 
     foreach (ServerPlayer *p, room->getAllPlayers())
@@ -458,11 +466,11 @@ DetachEffectSkill::DetachEffectSkill(const QString &skillname, const QString &pi
     events << EventLoseSkill;
 }
 
-bool DetachEffectSkill::triggerable(const ServerPlayer *target) const{
+bool DetachEffectSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data) const{
     return target != NULL;
 }
 
-bool DetachEffectSkill::trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+bool DetachEffectSkill::effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
     if (data.toString() == name) {
         if (!pile_name.isEmpty())
             player->clearOnePrivatePile(pile_name);

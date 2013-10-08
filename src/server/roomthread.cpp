@@ -451,7 +451,7 @@ void RoomThread::actionHulaoPass(ServerPlayer *shenlvbu, QList<ServerPlayer *> l
                         room->setPlayerFlag(player, "-actioned");
 
                     if (player->getPhase() != Player::NotActive) {
-                        game_rule->trigger(EventPhaseEnd, room, player);
+                        game_rule->effect(EventPhaseEnd, room, player);
                         player->changePhase(player->getPhase(), Player::NotActive);
                     }
                 }

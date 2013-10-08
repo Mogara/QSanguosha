@@ -29,7 +29,7 @@ GameRule::GameRule(QObject *)
            << ChoiceMade;
 }
 
-bool GameRule::triggerable(const ServerPlayer *target) const{
+bool GameRule::triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &) const{
     return true;
 }
 
@@ -108,7 +108,7 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
     }
 }
 
-bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
     if (room->getTag("SkipGameRule").toBool()) {
         room->removeTag("SkipGameRule");
         return false;

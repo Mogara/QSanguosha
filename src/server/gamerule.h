@@ -10,9 +10,9 @@ class GameRule: public TriggerSkill {
 
 public:
     GameRule(QObject *parent);
-    virtual bool triggerable(const ServerPlayer *target) const;
+    virtual bool triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &) const;
     virtual int getPriority() const;
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data = _dummy_variant) const;
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data = _dummy_variant) const;
 
 private:
     void onPhaseProceed(ServerPlayer *player) const;
