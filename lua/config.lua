@@ -15,7 +15,6 @@ config = {
 		"StandardCard",
 		"StandardExCard",
 		"Maneuvering",
-		"LingCards" ,
 		"New3v3Card",
 		"New3v3_2013Card",
 		"New1v1Card",
@@ -39,8 +38,6 @@ config = {
 		"NostalWind",
 		"NostalYJCM",
 		"NostalYJCM2012",
-		"Yitian",
-		"Wisdom",
 		"Test"
 	},
 
@@ -226,33 +223,5 @@ config = {
 		"sunquan+bulianshi",
 		"diy_simazhao+diy_wangyuanji",
 		"liuxie|diy_liuxie+fuhuanghou|as_fuhuanghou"
-	},
-	
-	convert_pairs = {
-		"caiwenji->sp_caiwenji",
-		"caopi->heg_caopi",
-		"daqiao->wz_daqiao|tw_daqiao",
-		"diaochan->sp_diaochan|heg_diaochan|tw_diaochan",
-		"ganning->tw_ganning",
-		"guojia->tw_guojia",
-		"huanggai->tw_huanggai",
-		"jiaxu->sp_jiaxu",
-		"luxun->tw_luxun",
-		"lvbu->heg_lvbu|tw_lvbu",
-		"machao->sp_machao|tw_machao",
-		"nos_huangyueying->heg_huangyueying|tw_huangyueying",
-		"pangde->sp_pangde",
-		"shenlvbu->sp_shenlvbu",
-		"sunshangxiang->sp_sunshangxiang",
-		"xiaoqiao->wz_xiaoqiao|heg_xiaoqiao",
-		"yuanshu->tw_yuanshu",
-		"yuejin->heg_yuejin",
-		"zhangliao->tw_zhangliao",
-		"zhaoyun->tw_zhaoyun",
-		"zhenji->sp_zhenji|heg_zhenji|tw_zhenji",
-		"zhouyu->heg_zhouyu|sp_heg_zhouyu",
-		"zhugeke->diy_zhugeke",
-		"zhugeliang->heg_zhugeliang|tw_zhugeliang" ,
-		"fuwan->as_mushun" ,
 	}
 }

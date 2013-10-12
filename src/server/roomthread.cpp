@@ -639,10 +639,8 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
         qStableSort(skills.begin(), skills.end(), CompareByPriority);
 
         do {
-            QList<const TriggerSkill *> transit = skills;
             for (int i = 0; i < skills.size(); i++) {
                 const TriggerSkill *skill = skills[i];
-                transit.removeAt(i);
                 if (!triggered.contains(skill) && skill->triggerable(triggerEvent, room, target, data)) {
                     while (room->isPaused()) {}
                     triggered.append(skill);
@@ -655,7 +653,6 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                 }
             }
 
-            skills = transit;
 
             if (!will_trigger.isEmpty()) {
                 if (will_trigger.length() > 1) {
@@ -684,7 +681,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                     if (broken) break;
                 }
             }
-        } while (!skills.isEmpty());
+        } while (skills.length() != triggered.length());
 
         if (target) {
             foreach (AI *ai, room->ais)
