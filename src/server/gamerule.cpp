@@ -131,8 +131,13 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                 }
                 foreach (const Skill *skill, player->getVisibleSkillList()) {
                     if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
-                        && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName())))
-                        room->addPlayerMark(player, skill->getLimitMark());
+                        && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName()))) {
+                            Json::Value arg(Json::arrayValue);
+                            arg[0] = QSanProtocol::Utils::toJsonString(player->objectName());
+                            arg[1] = QSanProtocol::Utils::toJsonString(skill->getLimitMark());
+                            arg[2] = 1;
+                            room->doNotify(player, QSanProtocol::S_COMMAND_SET_MARK, arg);
+                    }
                 }
             }
             room->setTag("FirstRound", true);

@@ -641,9 +641,9 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
         do {
             for (int i = 0; i < skills.size(); i++) {
                 const TriggerSkill *skill = skills[i];
+                triggered.append(skill);
                 if (!triggered.contains(skill) && skill->triggerable(triggerEvent, room, target, data)) {
                     while (room->isPaused()) {}
-                    triggered.append(skill);
 
                     if (will_trigger.isEmpty() 
                         || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority())

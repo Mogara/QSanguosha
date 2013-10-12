@@ -2477,13 +2477,17 @@ void Room::chooseGenerals() {
                 QString name = player->getGeneralName();
                 names.append(name);
                 player->setGeneralName("anjiang");
-                notifyProperty(player, player, "general");
+                foreach (ServerPlayer *p, getOtherPlayers(player))
+                    notifyProperty(p, player, "general");
+                notifyProperty(player, player, "general", name);
             }
             if (player->getGeneral2() && Config.Enable2ndGeneral) {
                 QString name = player->getGeneral2Name();
                 names.append(name);
                 player->setGeneral2Name("anjiang");
-                notifyProperty(player, player, "general2");
+                foreach (ServerPlayer *p, getOtherPlayers(player))
+                    notifyProperty(p, player, "general2");
+                notifyProperty(player, player, "general2", name);
             }
             this->setTag(player->objectName(), QVariant::fromValue(names));
         }
@@ -4155,20 +4159,20 @@ void Room::doAnimate(QSanProtocol::AnimateType type, const QString &arg1, const 
 
 void Room::preparePlayers() {
     foreach (ServerPlayer *player, m_players) {
-        QList<const Skill *> skills = player->getGeneral()->getSkillList();
-        foreach (const Skill *skill, skills)
+        QString general1_name = tag[player->objectName()].toStringList().at(0);
+        foreach(const Skill *skill, Sanguosha->getGeneral(general1_name)->getVisibleSkillList())
             player->addSkill(skill->objectName());
-        if (player->getGeneral2()) {
-            skills = player->getGeneral2()->getSkillList();
-            foreach (const Skill *skill, skills)
-                player->addSkill(skill->objectName());
-        }
-        player->setGender(player->getGeneral()->getGender());
-    }
 
-    Json::Value args;
-    args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+        QString general2_name = tag[player->objectName()].toStringList().at(1);
+        foreach(const Skill *skill, Sanguosha->getGeneral(general2_name)->getVisibleSkillList())
+            player->addSkill(skill->objectName(), false);
+
+            Json::Value args;
+            args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+            doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
+
+        player->setGender(General::Sexless);
+    }
 }
 
 void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general) {

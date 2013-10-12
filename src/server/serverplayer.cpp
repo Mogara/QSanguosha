@@ -795,8 +795,8 @@ void ServerPlayer::loseAllMarks(const QString &mark_name) {
     loseMark(mark_name, getMark(mark_name));
 }
 
-void ServerPlayer::addSkill(const QString &skill_name) {
-    Player::addSkill(skill_name);
+void ServerPlayer::addSkill(const QString &skill_name, bool head_skill) {
+    Player::addSkill(skill_name, head_skill);
     Json::Value args;
     args[0] = QSanProtocol::S_GAME_EVENT_ADD_SKILL;
     args[1] = toJsonString(objectName());
@@ -1038,7 +1038,8 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
         }
     }
 
-    foreach(const QString skill_name, skills) {
+    foreach(const QString skill_name, head_skills.keys()) {
+        if (!head_skills.value(skill_name, false)) continue;
         if (Sanguosha->getSkill(skill_name)->isVisible()) {
             Json::Value args1;
             args1[0] = S_GAME_EVENT_ACQUIRE_SKILL;

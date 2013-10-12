@@ -53,6 +53,7 @@ protected:
     QString limit_mark;
     QString default_choice;
     bool attached_lord_skill;
+    bool can_preshow;
 
 private:
     bool lord_skill;

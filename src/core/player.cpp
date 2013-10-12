@@ -320,7 +320,8 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
                 return false;
         } 
     }
-    return skills.contains(skill_name)
+    return head_skills.value(skill_name, false)
+           || deputy_skills.value(skill_name, false)
            || acquired_skills.contains(skill_name);
 }
 
@@ -365,7 +366,8 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
         return false;
 
     if (isLord())
-        return skills.contains(skill_name);
+        return head_skills.value(skill_name, false)
+               || deputy_skills.value(skill_name, false);
 
     if (hasSkill("weidi")) {
         foreach (const Player *player, getAliveSiblings()) {
@@ -389,12 +391,16 @@ void Player::detachAllSkills() {
     acquired_skills.clear();
 }
 
-void Player::addSkill(const QString &skill_name) {
-    skills << skill_name;
+void Player::addSkill(const QString &skill_name, bool head_skill) {
+    if (head_skill)
+        head_skills[skill_name] = false;
+    else
+        deputy_skills[skill_name] = false;
 }
 
 void Player::loseSkill(const QString &skill_name) {
-    skills.removeOne(skill_name);
+    head_skills.remove(skill_name);
+    deputy_skills.remove(skill_name);
 }
 
 QString Player::getPhaseString() const{
@@ -795,7 +801,7 @@ bool Player::hasEquipSkill(const QString &skill_name) const{
 QSet<const TriggerSkill *> Player::getTriggerSkills() const{
     QSet<const TriggerSkill *> skillList;
 
-    foreach (QString skill_name, skills + acquired_skills.toList()) {
+    foreach (QString skill_name, head_skills.keys() + deputy_skills.keys() + acquired_skills.toList()) {
         const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
         if (skill && !hasEquipSkill(skill->objectName()))
             skillList << skill;
@@ -811,7 +817,7 @@ QSet<const Skill *> Player::getSkills(bool include_equip, bool visible_only) con
 QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only) const{
     QList<const Skill *> skillList;
 
-    foreach (QString skill_name, skills + acquired_skills.toList()) {
+    foreach (QString skill_name, head_skills.keys() + deputy_skills.keys() + acquired_skills.toList()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill
             && (include_equip || !hasEquipSkill(skill->objectName()))

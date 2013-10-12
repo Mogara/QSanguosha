@@ -131,7 +131,7 @@ public:
     void acquireSkill(const QString &skill_name);
     void detachSkill(const QString &skill_name);
     void detachAllSkills();
-    virtual void addSkill(const QString &skill_name);
+    virtual void addSkill(const QString &skill_name, bool head_skill = true);
     virtual void loseSkill(const QString &skill_name);
     bool hasSkill(const QString &skill_name, bool include_lose = false) const;
     bool hasSkills(const QString &skill_name, bool include_lose = false) const;
@@ -236,7 +236,8 @@ protected:
     QMap<QString, QList<int> > piles;
     QMap<QString, QStringList> pile_open;
     QSet<QString> acquired_skills;
-    QStringList skills;
+    QMap<QString, bool> head_skills;
+    QMap<QString, bool> deputy_skills;
     QSet<QString> flags;
     QHash<QString, int> history;
 
