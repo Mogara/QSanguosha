@@ -616,10 +616,16 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         if (skill->cost(triggerEvent, room, target, data))
                             will_trigger.prepend(skill);
                         names.removeOne(name);
+                        if (target && !target->hasShownSkill(Sanguosha->getSkill(name)))
+                            target->showGeneral(target->inHeadSkills(name));
                     } while (names.length() > 1);
                 } else {
                     if (!will_trigger.first()->cost(triggerEvent, room, target, data))
                         will_trigger.clear();
+                    else {
+                        if (target && !target->hasShownSkill(will_trigger.first()))
+                            target->showGeneral(target->inHeadSkills(will_trigger.first()->objectName()));
+                    }
                 }
             }
 

@@ -12,7 +12,8 @@ Player::Player(QObject *parent)
       weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
       face_up(true), chained(false),
       role_shown(false), pile_open(QMap<QString, QStringList>()),
-      general1_showed(false), general2_showed(false)
+      general1_showed(false), general2_showed(false),
+      head_skills(QMap<QString, bool>()),deputy_skills(QMap<QString, bool>())
 {
 }
 
@@ -1019,3 +1020,18 @@ void Player::preshowSkill(const QString skill_name) {
         deputy_skills[skill_name] = !deputy_skills.value(skill_name);
 }
 
+bool Player::inHeadSkills(const QString skill_name) const {
+    return head_skills.keys().contains(skill_name);
+}
+
+void Player::setGeneral1Showed(bool showed) {
+    this->general1_showed = showed;
+    foreach (QString skill, head_skills.keys())
+        head_skills[skill] = true;
+}
+
+void Player::setGeneral2Showed(bool showed) {
+    this->general2_showed = showed;
+    foreach (QString skill, deputy_skills.keys())
+        deputy_skills[skill] = true;
+}

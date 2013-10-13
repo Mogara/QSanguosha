@@ -152,6 +152,8 @@ public:
     // @@Compatibility
     inline void removePileByName(QString pile_name) { clearOnePrivatePile(pile_name); }
 
+    void showGeneral(bool head_general = true);
+
 protected:
     //Synchronization helpers
     QSemaphore **semas;

@@ -1234,3 +1234,118 @@ bool ServerPlayer::CompareByActionOrder(ServerPlayer *a, ServerPlayer *b) {
     return room->getFront(a, b) == a;
 }
 
+void ServerPlayer::showGeneral(bool head_general) {
+    Room *room = getRoom();
+    QStringList names = room->getTag(objectName()).toStringList();
+    if (names.isEmpty()) return;
+    QString general_name;
+
+    if (head_general) {
+        if (getGeneralName() != "anjiang") return;
+        general_name = names.first();
+
+        Json::Value arg(Json::arrayValue);
+        arg[0] = S_GAME_EVENT_CHANGE_HERO;
+        arg[1] = toJsonString(objectName());
+        arg[2] = toJsonString(general_name);
+        arg[3] = false;
+        arg[4] = false;
+        room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
+        room->changePlayerGeneral(this, general_name);
+
+        foreach(const QString skill_name, head_skills.keys()) {
+            if (!head_skills.value(skill_name, false)) continue;
+            if (Sanguosha->getSkill(skill_name)->isVisible()) {
+                Json::Value args1;
+                args1[0] = S_GAME_EVENT_ACQUIRE_SKILL;
+                args1[1] = toJsonString(objectName());
+                args1[2] = toJsonString(skill_name);
+                room->doBroadcastNotify(S_COMMAND_LOG_EVENT, args1);
+            }
+
+            foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
+                if (!related_skill->isVisible()) {
+                    Json::Value args2;
+                    args2[0] = S_GAME_EVENT_ACQUIRE_SKILL;
+                    args2[1] = toJsonString(objectName());
+                    args2[2] = toJsonString(skill_name);
+                    room->doBroadcastNotify(S_COMMAND_LOG_EVENT, args2);
+                }
+            }
+        }
+
+        foreach (const Skill *skill, getVisibleSkillList()) {
+            if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
+                && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
+                && hasShownSkill(skill)) {
+                    Json::Value arg(Json::arrayValue);
+                    arg[0] = toJsonString(objectName());
+                    arg[1] = toJsonString(skill->getLimitMark());
+                    arg[2] = 1;
+                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
+            }
+        }
+
+        room->setPlayerProperty(this, "kingdom", getGeneral()->getKingdom());
+
+        room->setPlayerProperty(this, "role", BasaraMode::getMappedRole(getKingdom()));
+        room->setPlayerProperty(this, "general1_showed", true);
+    } else {
+        if (getGeneral2Name() != "anjiang") return;
+        general_name = names.at(1);
+        Json::Value arg(Json::arrayValue);
+        arg[0] = S_GAME_EVENT_CHANGE_HERO;
+        arg[1] = toJsonString(objectName());
+        arg[2] = toJsonString(general_name);
+        arg[3] = true;
+        arg[4] = false;
+        room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
+        room->changePlayerGeneral2(this, general_name);
+
+        foreach(const QString skill_name, deputy_skills.keys()) {
+            if (!deputy_skills.value(skill_name, false)) continue;
+            if (Sanguosha->getSkill(skill_name)->isVisible()) {
+                Json::Value args1;
+                args1[0] = S_GAME_EVENT_ACQUIRE_SKILL;
+                args1[1] = toJsonString(objectName());
+                args1[2] = toJsonString(skill_name);
+                room->doBroadcastNotify(S_COMMAND_LOG_EVENT, args1);
+            }
+
+            foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
+                if (!related_skill->isVisible()) {
+                    Json::Value args2;
+                    args2[0] = S_GAME_EVENT_ACQUIRE_SKILL;
+                    args2[1] = toJsonString(objectName());
+                    args2[2] = toJsonString(skill_name);
+                    room->doBroadcastNotify(S_COMMAND_LOG_EVENT, args2);
+                }
+            }
+        }
+
+        foreach (const Skill *skill, getVisibleSkillList()) {
+            if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
+                && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
+                && hasShownSkill(skill)) {
+                    Json::Value arg(Json::arrayValue);
+                    arg[0] = toJsonString(objectName());
+                    arg[1] = toJsonString(skill->getLimitMark());
+                    arg[2] = 1;
+                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
+            }
+        }
+
+        room->setPlayerProperty(this, "general2_showed", true);
+    }
+
+    Q_ASSERT(room->getThread() != NULL);
+    room->getThread()->addPlayerSkills(this);
+
+    LogMessage log;
+    log.type = "#BasaraReveal";
+    log.from = this;
+    log.arg  = getGeneralName();
+    log.arg2 = getGeneral2Name();
+    room->sendLog(log);
+}
+

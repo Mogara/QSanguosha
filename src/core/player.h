@@ -41,6 +41,9 @@ class Player: public QObject {
     Q_PROPERTY(bool nude READ isNude)
     Q_PROPERTY(bool all_nude READ isAllNude)
 
+    Q_PROPERTY(bool general1_showed READ hasShownGeneral1 WRITE setGeneral1Showed)
+    Q_PROPERTY(bool general2_showed READ hasShownGeneral2 WRITE setGeneral2Showed)
+
     Q_ENUMS(Phase)
     Q_ENUMS(Place)
     Q_ENUMS(Role)
@@ -231,6 +234,11 @@ public:
 
     bool hasShownSkill(const Skill *skill) const;
     void preshowSkill(const QString skill_name);
+    bool inHeadSkills(const QString skill_name) const;
+    inline bool hasShownGeneral1() {    return general1_showed;    }
+    inline bool hasShownGeneral2() {    return general2_showed;    }
+    void setGeneral1Showed(bool showed);
+    void setGeneral2Showed(bool showed);
 
     QVariantMap tag;
 

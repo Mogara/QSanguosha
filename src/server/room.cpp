@@ -4206,6 +4206,8 @@ void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general
     }
     setPlayerProperty(player, "general2", new_general);
     Q_ASSERT(player->getGeneral2() != NULL);
+    if (!player->hasShownGeneral2())
+        player->setGender(player->getGeneral2()->getGender());
     if (player->getGeneral2()) {
         foreach (const Skill *skill, player->getGeneral2()->getSkillList())
             player->addSkill(skill->objectName());
