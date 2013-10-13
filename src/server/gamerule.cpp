@@ -1080,15 +1080,13 @@ void BasaraMode::generalShowed(ServerPlayer *player, QString general_name) const
 
 }
 
-bool BasaraMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+bool BasaraMode::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
     // Handle global events
     if (player == NULL) {
         if (triggerEvent == GameStart) {
             if (Config.EnableHegemony)
                 room->setTag("SkipNormalDeathProcess", true);
             foreach (ServerPlayer *sp, room->getAlivePlayers()) {
-                room->setPlayerProperty(sp, "general", "anjiang");
-                sp->setGender(General::Sexless);
                 room->setPlayerProperty(sp, "kingdom", "god");
 
                 LogMessage log;
@@ -1096,7 +1094,6 @@ bool BasaraMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *pl
                 log.arg = room->getTag(sp->objectName()).toStringList().at(0);
 
                 if (Config.Enable2ndGeneral) {
-                    room->setPlayerProperty(sp, "general2", "anjiang");
                     log.type = "#BasaraGeneralChosenDual";
                     log.arg2 = room->getTag(sp->objectName()).toStringList().at(1);
                 }

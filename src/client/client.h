@@ -209,6 +209,7 @@ public slots:
     void onPlayerChooseCard(int card_id = -2);
     void onPlayerChooseAG(int card_id);
     void onPlayerChoosePlayer(const Player *player);
+    void preshow(QString skill_name);
     void trust();
     void addRobot();
     void fillRobots();

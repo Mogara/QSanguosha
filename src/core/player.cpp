@@ -11,7 +11,8 @@ Player::Player(QObject *parent)
       phase(NotActive),
       weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
       face_up(true), chained(false),
-      role_shown(false), pile_open(QMap<QString, QStringList>())
+      role_shown(false), pile_open(QMap<QString, QStringList>()),
+      general1_showed(false), general2_showed(false)
 {
 }
 
@@ -998,5 +999,23 @@ QList<const Player *> Player::getAliveSiblings() const{
             siblings.removeOne(p);
     }
     return siblings;
+}
+
+bool Player::hasShownSkill(const Skill *skill) const{
+    if (general1_showed && head_skills.keys().contains(skill->objectName()))
+        return true;
+    else if (general2_showed && deputy_skills.keys().contains(skill->objectName()))
+        return true;
+    return false;
+}
+
+void Player::preshowSkill(const QString skill_name) {
+    if (hasShownSkill(Sanguosha->getSkill(skill_name)))
+        return;
+
+    if (head_skills.keys().contains(skill_name))
+        head_skills[skill_name] = !head_skills.value(skill_name);
+    if (deputy_skills.keys().contains(skill_name))
+        deputy_skills[skill_name] = !deputy_skills.value(skill_name);
 }
 

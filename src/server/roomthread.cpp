@@ -530,71 +530,17 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule) {
 void RoomThread::run() {
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
     Sanguosha->registerRoom(room);
-    GameRule *game_rule;
-    if (room->getMode() == "04_1v3")
-        game_rule = new HulaoPassMode(this);
-    else if (Config.EnableScene)    //changjing
-        game_rule = new SceneRule(this);    //changjing
-    else
-        game_rule = new GameRule(this);
+    GameRule *game_rule = new GameRule(this);
 
     addTriggerSkill(game_rule);
     foreach (const TriggerSkill *triggerSkill, Sanguosha->getGlobalTriggerSkills())
         addTriggerSkill(triggerSkill);
-    if (Config.EnableBasara) addTriggerSkill(new BasaraMode(this));
-
-    if (room->getScenario() != NULL) {
-        const ScenarioRule *rule = room->getScenario()->getRule();
-        if (rule) addTriggerSkill(rule);
-    }
 
     // start game
     try {
-        QString order;
-        QList<ServerPlayer *> warm, cool;
-        QList<ServerPlayer *> first, second;
-        if (room->getMode() == "06_3v3") {
-            foreach (ServerPlayer *player, room->m_players) {
-                switch (player->getRoleEnum()) {
-                case Player::Lord: warm.prepend(player); break;
-                case Player::Loyalist: warm.append(player); break;
-                case Player::Renegade: cool.prepend(player); break;
-                case Player::Rebel: cool.append(player); break;
-                }
-            }
-            order = room->askForOrder(cool.first());
-            if (order == "warm") {
-                first = warm;
-                second = cool;
-            } else {
-                first = cool;
-                second = warm;
-            }
-        }
         trigger(GameStart, (Room *)room, NULL);
         constructTriggerTable();
-        if (room->getMode() == "06_3v3") {
-            run3v3(first, second, game_rule, first.first());
-        } else if (room->getMode() == "04_1v3") {
-            ServerPlayer *shenlvbu = room->getLord();
-            QList<ServerPlayer *> league = room->getPlayers();
-            league.removeOne(shenlvbu);
-
-            room->setCurrent(league.first());
-            actionHulaoPass(shenlvbu, league, game_rule, 1);
-        } else {
-            if (room->getMode() == "02_1v1") {
-                ServerPlayer *first = room->getPlayers().first();
-                if (first->getRole() != "renegade")
-                    first = room->getPlayers().at(1);
-                ServerPlayer *second = first->getNext();
-                trigger(Debut, (Room *)room, first);
-                trigger(Debut, (Room *)room, second);
-                room->setCurrent(first);
-            }
-
-            actionNormal(game_rule);
-        }
+        actionNormal(game_rule);
     }
     catch (TriggerEvent triggerEvent) {
         if (triggerEvent == GameFinished) {
@@ -619,6 +565,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
     bool broken = false;
     QList<const TriggerSkill *> will_trigger;
+    QList<const TriggerSkill *> triggerable_tested;
 
     try {
         QList<const TriggerSkill *> triggered;
@@ -641,9 +588,10 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
         do {
             for (int i = 0; i < skills.size(); i++) {
                 const TriggerSkill *skill = skills[i];
-                triggered.append(skill);
+                triggerable_tested.append(skill);
                 if (!triggered.contains(skill) && skill->triggerable(triggerEvent, room, target, data)) {
                     while (room->isPaused()) {}
+                    triggered.append(skill);
 
                     if (will_trigger.isEmpty() 
                         || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority())
@@ -681,7 +629,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                     if (broken) break;
                 }
             }
-        } while (skills.length() != triggered.length());
+        } while (skills.length() != triggerable_tested.length());
 
         if (target) {
             foreach (AI *ai, room->ais)

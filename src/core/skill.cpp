@@ -120,6 +120,15 @@ QDialog *Skill::getDialog() const{
     return NULL;
 }
 
+bool Skill::canPreshow() const{
+    if (inherits("TriggerSkill")) {
+        const TriggerSkill *triskill = qobject_cast<const TriggerSkill *>(this);
+        return triskill->getViewAsSkill() == NULL;
+    }
+
+    return false;
+}
+
 ViewAsSkill::ViewAsSkill(const QString &name)
     : Skill(name), response_pattern(QString())
 {

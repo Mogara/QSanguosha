@@ -515,6 +515,7 @@ private:
     //process client requests
     bool processRequestCheat(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
     bool processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
+    bool processRequestPreshow(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
 
     bool makeSurrender(ServerPlayer *player);
     bool makeCheat(ServerPlayer *player);

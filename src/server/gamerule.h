@@ -36,7 +36,7 @@ class BasaraMode: public GameRule {
 public:
     BasaraMode(QObject *parent);
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data = _dummy_variant) const;
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data = _dummy_variant) const;
     virtual int getPriority() const;
     void playerShowed(ServerPlayer *player) const;
     void generalShowed(ServerPlayer *player, QString general_name) const;

@@ -948,6 +948,10 @@ void Client::trust() {
     setStatus(NotActive);
 }
 
+void Client::preshow(QString skill_name) {
+    requestToServer(S_COMMAND_PRESHOW, toJsonString(skill_name));
+}
+
 void Client::requestSurrender() {
     requestToServer(S_COMMAND_SURRENDER);
     setStatus(NotActive);

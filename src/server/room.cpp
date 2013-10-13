@@ -70,6 +70,7 @@ void Room::initCallbacks() {
     // client request handlers
     m_callbacks[S_COMMAND_SURRENDER] = &Room::processRequestSurrender;
     m_callbacks[S_COMMAND_CHEAT] = &Room::processRequestCheat;
+    m_callbacks[S_COMMAND_PRESHOW] = &Room::processRequestPreshow;
 
     // Client notifications
     callbacks["toggleReadyCommand"] = &Room::toggleReadyCommand;
@@ -2206,6 +2207,16 @@ bool Room::processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSa
     _m_timeSinceLastSurrenderRequest.restart();
     m_surrenderRequestReceived = true;
     player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
+    return true;
+}
+
+bool Room::processRequestPreshow(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet) {
+    if (player == NULL)
+        return false;
+    player->acquireLock(ServerPlayer::SEMA_MUTEX);
+    QString skill_name = toQString(packet->getMessageBody());
+    player->preshowSkill(skill_name);
+    player->releaseLock(ServerPlayer::SEMA_MUTEX);
     return true;
 }
 

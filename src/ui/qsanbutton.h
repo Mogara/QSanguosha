@@ -14,7 +14,7 @@ class QSanButton: public QGraphicsObject{
 public:
     QSanButton(QGraphicsItem *parent);
     QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent);
-    enum ButtonState { S_STATE_UP, S_STATE_HOVER, S_STATE_DOWN,
+    enum ButtonState { S_STATE_UP, S_STATE_HOVER, S_STATE_DOWN, S_STATE_CANPRESHOW,
                        S_STATE_DISABLED, S_NUM_BUTTON_STATES };
     enum ButtonStyle { S_STYLE_PUSH, S_STYLE_TOGGLE };
     void setSize(QSize size);
@@ -42,6 +42,7 @@ protected:
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void _onMouseClick(bool inside);
     ButtonState _m_state;
+    ButtonState former_state;
     ButtonStyle _m_style;
     QString _m_groupName;
     QString _m_buttonName;
@@ -85,6 +86,9 @@ public:
     inline const ViewAsSkill *getViewAsSkill() const{ return _m_viewAsSkill; }
 
 protected:
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void onDoubleClick();
+
     virtual void _setSkillType(SkillType type);
     virtual void _repaint() = 0;
     const ViewAsSkill *_parseViewAsSkill() const;

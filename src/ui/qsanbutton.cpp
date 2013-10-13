@@ -7,6 +7,7 @@
 #include <qbitmap.h>
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
+#include "client.h"
 
 QSanButton::QSanButton(QGraphicsItem *parent): QGraphicsObject(parent)
 {
@@ -22,6 +23,7 @@ QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGra
     : QGraphicsObject(parent)
 {
     _m_state = S_STATE_UP;
+    former_state = S_STATE_UP;
     _m_style = S_STYLE_PUSH;
     _m_groupName = groupName;
     _m_buttonName = buttonName;
@@ -83,6 +85,7 @@ void QSanButton::setEnabled(bool enabled) {
 
 void QSanButton::setState(QSanButton::ButtonState state) {
     if (this->_m_state != state) {
+        this->former_state = _m_state;
         this->_m_state = state;
         update();
     }
@@ -93,7 +96,7 @@ bool QSanButton::insideButton(QPointF pos) const{
 }
 
 void QSanButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
-    if (_m_state == S_STATE_DISABLED) return;
+    if (_m_state == S_STATE_DISABLED || _m_state == S_STATE_CANPRESHOW) return;
     QPointF point = event->pos();
     if (_m_mouseEntered || !insideButton(point)) return; // fake event;
 
@@ -104,10 +107,10 @@ void QSanButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
 }
 
 void QSanButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *event) {
-    if (_m_state == S_STATE_DISABLED) return;
+    if (_m_state == S_STATE_DISABLED || _m_state == S_STATE_CANPRESHOW) return;
     if (!_m_mouseEntered) return;
 
-    Q_ASSERT(_m_state != S_STATE_DISABLED);
+    Q_ASSERT(_m_state != S_STATE_DISABLED && _m_state != S_STATE_CANPRESHOW);
     if (_m_state == S_STATE_HOVER)
         setState(S_STATE_UP);
     _m_mouseEntered = false;
@@ -173,6 +176,12 @@ QSanSkillButton::QSanSkillButton(QGraphicsItem *parent)
     _m_skill = NULL;
 }
 
+void QSanSkillButton::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+    QPointF point = event->pos();
+    if (insideButton(point))
+        onDoubleClick();
+}
+
 void QSanSkillButton::_setSkillType(SkillType type) {
     _m_skillType = type;
 }
@@ -186,6 +195,17 @@ void QSanSkillButton::onMouseClick() {
         emit skill_deactivated();
         emit skill_deactivated(_m_skill);
     }
+}
+
+void QSanSkillButton::onDoubleClick() {
+    if (_m_state == QSanButton::S_STATE_CANPRESHOW)
+        setState(former_state);
+    else if (_m_skill->canPreshow() && !Self->hasShownSkill(_m_skill))
+        setState(S_STATE_CANPRESHOW);
+
+    ClientInstance->preshow(_m_skill->objectName());
+
+    update();
 }
 
 void QSanSkillButton::setSkill(const Skill *skill) {
@@ -242,7 +262,10 @@ void QSanSkillButton::setSkill(const Skill *skill) {
      } else Q_ASSERT(false);
      setToolTip(skill->getDescription());
 
-     Q_ASSERT((int)_m_skillType <= 5 && _m_state <= 3);
+     if (skill->canPreshow())
+         setState(QSanButton::S_STATE_CANPRESHOW);
+
+     Q_ASSERT((int)_m_skillType <= 5 && _m_state <= 4);
      _repaint();
 }
 

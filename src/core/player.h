@@ -229,6 +229,9 @@ public:
     QList<const Player *> getSiblings() const;
     QList<const Player *> getAliveSiblings() const;
 
+    bool hasShownSkill(const Skill *skill) const;
+    void preshowSkill(const QString skill_name);
+
     QVariantMap tag;
 
 protected:
@@ -253,6 +256,9 @@ private:
     QString state;
     int seat;
     bool alive;
+
+    bool general1_showed;
+    bool general2_showed;
 
     Phase phase;
     WrappedCard *weapon, *armor, *defensive_horse, *offensive_horse;
