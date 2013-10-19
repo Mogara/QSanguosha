@@ -4187,31 +4187,17 @@ void Room::preparePlayers() {
 }
 
 void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general) {
-    if (player->getGeneral() != NULL) {
-        foreach (const Skill *skill, player->getGeneral()->getSkillList())
-            player->loseSkill(skill->objectName());
-    }
     setPlayerProperty(player, "general", new_general);
     Q_ASSERT(player->getGeneral() != NULL);
     player->setGender(player->getGeneral()->getGender());
-    foreach (const Skill *skill, player->getGeneral()->getSkillList())
-        player->addSkill(skill->objectName());
     filterCards(player, player->getCards("he"), true);
 }
 
 void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general) {
-    if (player->getGeneral2() != NULL) {
-        foreach (const Skill *skill, player->getGeneral2()->getSkillList())
-            player->loseSkill(skill->objectName());
-    }
     setPlayerProperty(player, "general2", new_general);
     Q_ASSERT(player->getGeneral2() != NULL);
     if (!player->hasShownGeneral2())
         player->setGender(player->getGeneral2()->getGender());
-    if (player->getGeneral2()) {
-        foreach (const Skill *skill, player->getGeneral2()->getSkillList())
-            player->addSkill(skill->objectName());
-    }
     filterCards(player, player->getCards("he"), true);
 }
 

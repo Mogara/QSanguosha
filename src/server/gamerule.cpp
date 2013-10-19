@@ -137,6 +137,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                             arg[1] = QSanProtocol::Utils::toJsonString(skill->getLimitMark());
                             arg[2] = 1;
                             room->doNotify(player, QSanProtocol::S_COMMAND_SET_MARK, arg);
+                            player->addMark(skill->getLimitMark());
                     }
                 }
             }

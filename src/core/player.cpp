@@ -1035,3 +1035,7 @@ void Player::setGeneral2Showed(bool showed) {
     foreach (QString skill, deputy_skills.keys())
         deputy_skills[skill] = true;
 }
+
+bool Player::ownSkill(const QString skill_name) {
+    return (head_skills.keys() + deputy_skills.keys()).contains(skill_name);
+}

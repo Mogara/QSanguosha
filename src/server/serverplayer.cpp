@@ -801,6 +801,7 @@ void ServerPlayer::addSkill(const QString &skill_name, bool head_skill) {
     args[0] = QSanProtocol::S_GAME_EVENT_ADD_SKILL;
     args[1] = toJsonString(objectName());
     args[2] = toJsonString(skill_name);
+    args[3] = head_skill;
     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
@@ -1242,6 +1243,7 @@ void ServerPlayer::showGeneral(bool head_general) {
 
     if (head_general) {
         if (getGeneralName() != "anjiang") return;
+        room->setPlayerProperty(this, "general1_showed", true);
         general_name = names.first();
 
         Json::Value arg(Json::arrayValue);
@@ -1252,27 +1254,6 @@ void ServerPlayer::showGeneral(bool head_general) {
         arg[4] = false;
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral(this, general_name);
-
-        foreach(const QString skill_name, head_skills.keys()) {
-            if (!head_skills.value(skill_name, false)) continue;
-            if (Sanguosha->getSkill(skill_name)->isVisible()) {
-                Json::Value args1;
-                args1[0] = S_GAME_EVENT_ACQUIRE_SKILL;
-                args1[1] = toJsonString(objectName());
-                args1[2] = toJsonString(skill_name);
-                room->doBroadcastNotify(S_COMMAND_LOG_EVENT, args1);
-            }
-
-            foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
-                if (!related_skill->isVisible()) {
-                    Json::Value args2;
-                    args2[0] = S_GAME_EVENT_ACQUIRE_SKILL;
-                    args2[1] = toJsonString(objectName());
-                    args2[2] = toJsonString(skill_name);
-                    room->doBroadcastNotify(S_COMMAND_LOG_EVENT, args2);
-                }
-            }
-        }
 
         foreach (const Skill *skill, getVisibleSkillList()) {
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
@@ -1289,9 +1270,9 @@ void ServerPlayer::showGeneral(bool head_general) {
         room->setPlayerProperty(this, "kingdom", getGeneral()->getKingdom());
 
         room->setPlayerProperty(this, "role", BasaraMode::getMappedRole(getKingdom()));
-        room->setPlayerProperty(this, "general1_showed", true);
     } else {
         if (getGeneral2Name() != "anjiang") return;
+        room->setPlayerProperty(this, "general2_showed", true);
         general_name = names.at(1);
         Json::Value arg(Json::arrayValue);
         arg[0] = S_GAME_EVENT_CHANGE_HERO;
@@ -1301,27 +1282,6 @@ void ServerPlayer::showGeneral(bool head_general) {
         arg[4] = false;
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral2(this, general_name);
-
-        foreach(const QString skill_name, deputy_skills.keys()) {
-            if (!deputy_skills.value(skill_name, false)) continue;
-            if (Sanguosha->getSkill(skill_name)->isVisible()) {
-                Json::Value args1;
-                args1[0] = S_GAME_EVENT_ACQUIRE_SKILL;
-                args1[1] = toJsonString(objectName());
-                args1[2] = toJsonString(skill_name);
-                room->doBroadcastNotify(S_COMMAND_LOG_EVENT, args1);
-            }
-
-            foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
-                if (!related_skill->isVisible()) {
-                    Json::Value args2;
-                    args2[0] = S_GAME_EVENT_ACQUIRE_SKILL;
-                    args2[1] = toJsonString(objectName());
-                    args2[2] = toJsonString(skill_name);
-                    room->doBroadcastNotify(S_COMMAND_LOG_EVENT, args2);
-                }
-            }
-        }
 
         foreach (const Skill *skill, getVisibleSkillList()) {
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
@@ -1334,8 +1294,6 @@ void ServerPlayer::showGeneral(bool head_general) {
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
             }
         }
-
-        room->setPlayerProperty(this, "general2_showed", true);
     }
 
     Q_ASSERT(room->getThread() != NULL);

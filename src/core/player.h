@@ -240,6 +240,8 @@ public:
     void setGeneral1Showed(bool showed);
     void setGeneral2Showed(bool showed);
 
+    bool ownSkill(const QString skill_name);
+
     QVariantMap tag;
 
 protected:
