@@ -363,6 +363,33 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     return true;
 }
 
+NatureSlash::NatureSlash(Suit suit, int number, DamageStruct::Nature nature)
+    : Slash(suit, number)
+{
+    this->nature = nature;
+}
+
+bool NatureSlash::match(const QString &pattern) const{
+    QStringList patterns = pattern.split("+");
+    if (patterns.contains("slash"))
+        return true;
+    else
+        return Slash::match(pattern);
+}
+
+ThunderSlash::ThunderSlash(Suit suit, int number)
+    : NatureSlash(suit, number, DamageStruct::Thunder)
+{
+    setObjectName("thunder_slash");
+}
+
+FireSlash::FireSlash(Suit suit, int number)
+    : NatureSlash(suit, number, DamageStruct::Fire)
+{
+    setObjectName("fire_slash");
+    nature = DamageStruct::Fire;
+}
+
 Jink::Jink(Suit suit, int number): BasicCard(suit, number)
 {
     setObjectName("jink");
@@ -406,6 +433,60 @@ void Peach::onEffect(const CardEffectStruct &effect) const{
 
 bool Peach::isAvailable(const Player *player) const{
     return player->isWounded() && !player->isProhibited(player, this) && BasicCard::isAvailable(player);
+}
+
+Analeptic::Analeptic(Card::Suit suit, int number)
+    : BasicCard(suit, number)
+{
+    setObjectName("analeptic");
+    target_fixed = true;
+}
+
+QString Analeptic::getSubtype() const{
+    return "buff_card";
+}
+
+bool Analeptic::IsAvailable(const Player *player, const Card *analeptic) {
+    Analeptic *newanal = new Analeptic(Card::NoSuit, 0);
+    newanal->deleteLater();
+#define THIS_ANAL (analeptic == NULL ? newanal : analeptic)
+    if (player->isCardLimited(THIS_ANAL, Card::MethodUse) || player->isProhibited(player, THIS_ANAL))
+        return false;
+
+    return player->usedTimes("Analeptic") <= Sanguosha->correctCardTarget(TargetModSkill::Residue, player, THIS_ANAL);
+#undef THIS_ANAL
+}
+
+bool Analeptic::isAvailable(const Player *player) const{
+    return IsAvailable(player, this) && BasicCard::isAvailable(player);
+}
+
+void Analeptic::onUse(Room *room, const CardUseStruct &card_use) const{
+    CardUseStruct use = card_use;
+    if (use.to.isEmpty())
+        use.to << use.from;
+    BasicCard::onUse(room, use);
+}
+
+void Analeptic::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    BasicCard::use(room, source, targets);
+    if (targets.isEmpty())
+        room->cardEffect(this, source, source);
+}
+
+void Analeptic::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    room->setEmotion(effect.to, "analeptic");
+
+    if (effect.to->hasFlag("Global_Dying") && Sanguosha->getCurrentCardUseReason() != CardUseStruct::CARD_USE_REASON_PLAY) {
+        // recover hp
+        RecoverStruct recover;
+        recover.card = this;
+        recover.who = effect.from;
+        room->recover(effect.to, recover);
+    } else {
+        room->addPlayerMark(effect.to, "drank");
+    }
 }
 
 Crossbow::Crossbow(Suit suit, int number)
@@ -953,6 +1034,13 @@ bool Nullification::isAvailable(const Player *) const{
     return false;
 }
 
+HegNullification::HegNullification(Suit suit, int number)
+    : Nullification(suit, number)
+{
+    target_fixed = true;
+    setObjectName("heg_nullification");
+}
+
 ExNihilo::ExNihilo(Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
@@ -1152,6 +1240,108 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
     room->throwCard(card_id, room->getCardPlace(card_id) == Player::PlaceDelayedTrick ? NULL : effect.to, effect.from);
 }
 
+IronChain::IronChain(Card::Suit suit, int number)
+    : TrickCard(suit, number)
+{
+    setObjectName("iron_chain");
+    can_recast = true;
+}
+
+QString IronChain::getSubtype() const{
+    return "damage_spread";
+}
+
+bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *, const Player *Self) const{
+    int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num)
+        return false;
+    if (Self->isCardLimited(this, Card::MethodUse))
+        return false;
+
+    return true;
+}
+
+bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    if (Self->isCardLimited(this, Card::MethodUse))
+        return targets.length() == 0;
+    int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (getSkillName().contains("guhuo") || getSkillName() == "qice")
+        return targets.length() > 0 && targets.length() <= total_num;
+    else
+        return targets.length() <= total_num;
+}
+
+void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
+    if (card_use.to.isEmpty()) {
+        CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
+        reason.m_skillName = this->getSkillName();
+        room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason);
+        card_use.from->broadcastSkillInvoke("@recast");
+
+        LogMessage log;
+        log.type = "#Card_Recast";
+        log.from = card_use.from;
+        log.card_str = card_use.card->toString();
+        room->sendLog(log);
+
+        card_use.from->drawCards(1);
+    } else
+        TrickCard::onUse(room, card_use);
+}
+
+void IronChain::onEffect(const CardEffectStruct &effect) const{
+    effect.to->setChained(!effect.to->isChained());
+
+    Room *room = effect.to->getRoom();
+
+    room->broadcastProperty(effect.to, "chained");
+    room->setEmotion(effect.to, "chain");
+    room->getThread()->trigger(ChainStateChanged, room, effect.to);
+}
+
+FireAttack::FireAttack(Card::Suit suit, int number)
+    : SingleTargetTrick(suit, number)
+{
+    setObjectName("fire_attack");
+}
+
+bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num)
+        return false;
+
+    if (to_select->isKongcheng())
+        return false;
+
+    if (to_select == Self)
+        return !Self->isLastHandCard(this, true);
+    else
+        return true;
+}
+
+void FireAttack::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+    if (effect.to->isKongcheng())
+        return;
+
+    const Card *card = room->askForCardShow(effect.to, effect.from, objectName());
+    room->showCard(effect.to, card->getEffectiveId());
+
+    QString suit_str = card->getSuitString();
+    QString pattern = QString(".%1").arg(suit_str.at(0).toUpper());
+    QString prompt = QString("@fire-attack:%1::%2").arg(effect.to->objectName()).arg(suit_str);
+    if (effect.from->isAlive()) {
+        const Card *card_to_throw = room->askForCard(effect.from, pattern, prompt);
+        if (card_to_throw)
+            room->damage(DamageStruct(this, effect.from, effect.to, 1, DamageStruct::Fire));
+        else
+            effect.from->setFlags("FireAttackFailed_" + effect.to->objectName()); // For AI
+    }
+
+    if (card->isVirtualCard())
+        delete card;
+}
+
 Indulgence::Indulgence(Suit suit, int number)
     : DelayedTrick(suit, number)
 {
@@ -1296,66 +1486,74 @@ StandardCardPackage::StandardCardPackage()
 {
     QList<Card *> cards;
 
-    cards << new Slash(Card::Spade, 7)
+    cards << new Slash(Card::Spade, 5)
+          << new Slash(Card::Spade, 7)
           << new Slash(Card::Spade, 8)
           << new Slash(Card::Spade, 8)
           << new Slash(Card::Spade, 9)
-          << new Slash(Card::Spade, 9)
           << new Slash(Card::Spade, 10)
-          << new Slash(Card::Spade, 10)
+          << new Slash(Card::Spade, 11)
 
           << new Slash(Card::Club, 2)
           << new Slash(Card::Club, 3)
           << new Slash(Card::Club, 4)
           << new Slash(Card::Club, 5)
-          << new Slash(Card::Club, 6)
-          << new Slash(Card::Club, 7)
-          << new Slash(Card::Club, 8)
           << new Slash(Card::Club, 8)
           << new Slash(Card::Club, 9)
-          << new Slash(Card::Club, 9)
-          << new Slash(Card::Club, 10)
           << new Slash(Card::Club, 10)
           << new Slash(Card::Club, 11)
           << new Slash(Card::Club, 11)
 
           << new Slash(Card::Heart, 10)
-          << new Slash(Card::Heart, 10)
-          << new Slash(Card::Heart, 11)
+          << new Slash(Card::Heart, 12)
 
-          << new Slash(Card::Diamond, 6)
-          << new Slash(Card::Diamond, 7)
-          << new Slash(Card::Diamond, 8)
-          << new Slash(Card::Diamond, 9)
           << new Slash(Card::Diamond, 10)
-          << new Slash(Card::Diamond, 13)
+          << new Slash(Card::Diamond, 11)
+          << new Slash(Card::Diamond, 12)
+
+          << new FireSlash(Card::Heart, 4)
+
+          << new FireSlash(Card::Diamond, 4)
+          << new FireSlash(Card::Diamond, 5)
+
+          << new ThunderSlash(Card::Spade, 6)
+          << new ThunderSlash(Card::Spade, 7)
+
+          << new ThunderSlash(Card::Club, 6)
+          << new ThunderSlash(Card::Club, 7)
+          << new ThunderSlash(Card::Club, 8)
 
           << new Jink(Card::Heart, 2)
-          << new Jink(Card::Heart, 2)
+          << new Jink(Card::Heart, 11)
           << new Jink(Card::Heart, 13)
 
           << new Jink(Card::Diamond, 2)
-          << new Jink(Card::Diamond, 2)
           << new Jink(Card::Diamond, 3)
-          << new Jink(Card::Diamond, 4)
-          << new Jink(Card::Diamond, 5)
           << new Jink(Card::Diamond, 6)
           << new Jink(Card::Diamond, 7)
+          << new Jink(Card::Diamond, 7)
+          << new Jink(Card::Diamond, 8)
           << new Jink(Card::Diamond, 8)
           << new Jink(Card::Diamond, 9)
           << new Jink(Card::Diamond, 10)
           << new Jink(Card::Diamond, 11)
-          << new Jink(Card::Diamond, 11)
+          << new Jink(Card::Diamond, 13)
 
-          << new Peach(Card::Heart, 3)
           << new Peach(Card::Heart, 4)
           << new Peach(Card::Heart, 6)
           << new Peach(Card::Heart, 7)
           << new Peach(Card::Heart, 8)
           << new Peach(Card::Heart, 9)
+          << new Peach(Card::Heart, 10)
           << new Peach(Card::Heart, 12)
 
-          << new Peach(Card::Diamond, 12)
+          << new Peach(Card::Diamond, 2)
+
+          << new Analeptic(Card::Spade, 9)
+
+          << new Analeptic(Card::Club, 9)
+
+          << new Analeptic(Card::Diamond, 9)
 
           << new Crossbow(Card::Club)
           << new Crossbow(Card::Diamond)
@@ -1394,36 +1592,30 @@ StandardCardPackage::StandardCardPackage()
 
     skills << new HorseSkill;
 
-    cards << new AmazingGrace(Card::Heart, 3)
-          << new AmazingGrace(Card::Heart, 4)
+    cards << new AmazingGrace
           << new GodSalvation
-          << new SavageAssault(Card::Spade, 7)
           << new SavageAssault(Card::Spade, 13)
           << new SavageAssault(Card::Club, 7)
           << new ArcheryAttack
           << new Duel(Card::Spade, 1)
           << new Duel(Card::Club, 1)
-          << new Duel(Card::Diamond, 1)
           << new ExNihilo(Card::Heart, 7)
           << new ExNihilo(Card::Heart, 8)
-          << new ExNihilo(Card::Heart, 9)
-          << new ExNihilo(Card::Heart, 11)
           << new Snatch(Card::Spade, 3)
           << new Snatch(Card::Spade, 4)
-          << new Snatch(Card::Spade, 11)
           << new Snatch(Card::Diamond, 3)
-          << new Snatch(Card::Diamond, 4)
           << new Dismantlement(Card::Spade, 3)
           << new Dismantlement(Card::Spade, 4)
-          << new Dismantlement(Card::Spade, 12)
-          << new Dismantlement(Card::Club, 3)
-          << new Dismantlement(Card::Club, 4)
           << new Dismantlement(Card::Heart, 12)
-          << new Collateral(Card::Club, 12)
-          << new Collateral(Card::Club, 13)
-          << new Nullification(Card::Spade, 11)
-          << new Nullification(Card::Club, 12)
-          << new Nullification(Card::Club, 13)
+          << new IronChain(Card::Spade, 12)
+          << new IronChain(Card::Club, 12)
+          << new IronChain(Card::Club, 13)
+          << new FireAttack(Card::Heart, 2)
+          << new FireAttack(Card::Heart, 3)
+          << new Collateral
+          << new Nullification
+          << new HegNullification(Card::Club, 13)
+          << new HegNullification(Card::Diamond, 12)
           << new Indulgence(Card::Spade, 6)
           << new Indulgence(Card::Club, 6)
           << new Indulgence(Card::Heart, 6)

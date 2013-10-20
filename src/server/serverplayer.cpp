@@ -457,7 +457,7 @@ DummyCard *ServerPlayer::wholeHandCards() const{
 
 bool ServerPlayer::hasNullification() const{
     foreach (const Card *card, handcards) {
-        if (card->objectName() == "nullification")
+        if (card->isKindOf("Nullification"))
             return true;
     }
 

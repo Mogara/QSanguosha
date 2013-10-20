@@ -1036,6 +1036,15 @@ void Player::setGeneral2Showed(bool showed) {
         deputy_skills[skill] = true;
 }
 
-bool Player::ownSkill(const QString skill_name) {
+bool Player::ownSkill(const QString skill_name) const {
     return (head_skills.keys() + deputy_skills.keys()).contains(skill_name);
+}
+
+bool Player::isFriendWith(const Player *player) const {
+    if (!hasShownGeneral() || !player->hasShownGeneral())
+        return false;
+
+    //the careerist should to be considered later
+
+    return getKingdom() == player->getKingdom();
 }

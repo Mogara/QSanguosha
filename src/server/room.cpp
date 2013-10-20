@@ -992,6 +992,14 @@ bool Room::isCanceled(const CardEffectStruct &effect) {
     if (!effect.card->isCancelable(effect))
         return false;
 
+    QStringList targets = getTag(effect.card->toString() + "HegNullificationTargets").toStringList();
+    if (!targets.isEmpty()) {
+        if (targets.contains(effect.to->objectName()))
+            return true;
+    }
+
+    setTag("HegNullificationValid", false);
+
     QVariant decisionData = QVariant::fromValue(effect.to);
     setTag("NullifyingTarget", decisionData);
     decisionData = QVariant::fromValue(effect.from);
@@ -999,7 +1007,16 @@ bool Room::isCanceled(const CardEffectStruct &effect) {
     decisionData = QVariant::fromValue(effect.card);
     setTag("NullifyingCard", decisionData);
     setTag("NullifyingTimes", 0);
-    return askForNullification(effect.card, effect.from, effect.to, true);
+    bool result = askForNullification(effect.card, effect.from, effect.to, true);
+    if (getTag("HegNullificationValid").toBool()) {
+        QStringList targets;
+        foreach(ServerPlayer *p, m_players) {
+            if (p->isAlive() && p->isFriendWith(effect.to))
+                targets << p->objectName();
+        }
+        setTag(effect.card->toString() + "HegNullificationTargets", targets);
+    }
+    return result;
 }
 
 bool Room::verifyNullificationResponse(ServerPlayer *player, const Json::Value &response, void *) {
@@ -1089,6 +1106,12 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     doAnimate(S_ANIMATE_NULLIFICATION, repliedPlayer->objectName(), to->objectName());
     useCard(CardUseStruct(card, repliedPlayer, QList<ServerPlayer *>()));
 
+    if ((to && to->hasShownGeneral() && card->isKindOf("HegNullification") 
+         && askForChoice(from, "heg_nullification", "single+all", data) == "heg_nullification")
+        || trick->isKindOf("HegNullification")) {
+        setTag("HegNullificationValid", !getTag("HegNullificationValid").toBool());
+    }
+
     LogMessage log;
     log.type = "#NullificationDetails";
     log.from = from;
@@ -1108,6 +1131,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     effect.to = repliedPlayer;
     if (card->isCancelable(effect))
         result = !_askForNullification(card, repliedPlayer, to, !positive, aiHelper);
+
     return result;
 }
 

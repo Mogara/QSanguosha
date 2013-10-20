@@ -271,6 +271,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             CardUseStruct use = data.value<CardUseStruct>();
             room->clearCardFlag(use.card);
 
+            room->removeTag(use.card->toString() + "HegNullificationTargets");
+
             if (use.card->isKindOf("AOE") || use.card->isKindOf("GlobalEffect")) {
                 foreach (ServerPlayer *p, room->getAlivePlayers())
                     room->doNotify(p, QSanProtocol::S_COMMAND_NULLIFICATION_ASKED, QSanProtocol::Utils::toJsonString("."));
