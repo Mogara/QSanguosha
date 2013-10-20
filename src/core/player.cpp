@@ -159,7 +159,6 @@ void Player::clearFlags() {
 
 int Player::getAttackRange(bool include_weapon) const{
     int original_range = 1;
-    if (hasSkill("zhengfeng") && !weapon && hp > 1) original_range = hp; // @todo_P: new way to remove coupling or just put it into TargetModSkill
     if (hasFlag("InfinityAttackRange") || getMark("InfinityAttackRange") > 0) original_range = 10000; // Actually infinity
     int weapon_range = 0;
     if (include_weapon && weapon != NULL) {
@@ -167,7 +166,14 @@ int Player::getAttackRange(bool include_weapon) const{
         Q_ASSERT(card);
         weapon_range = card->getRange();
     }
-    return qMax(original_range, weapon_range) + (hasSkill("fentian") ? getPile("burn").length() : 0) + (getMark("@SixSwordsBuff") > 0 ? 1 : 0);
+
+    bool six_swords_effect = false;
+    foreach(const Player *p, getAliveSiblings()) {
+        if (p->hasWeapon("SixSwords") && isFriendWith(p))
+            six_swords_effect = true;
+    }
+
+    return qMax(original_range, weapon_range) + (six_swords_effect ? 1 : 0);
 }
 
 bool Player::inMyAttackRange(const Player *other) const{

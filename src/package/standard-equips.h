@@ -7,7 +7,7 @@ class Crossbow: public Weapon {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE Crossbow(Card::Suit suit, int number = 1);
+    Q_INVOKABLE Crossbow(Card::Suit suit = Diamond, int number = 1);
 };
 
 class DoubleSword: public Weapon {
@@ -70,7 +70,7 @@ class IceSword: public Weapon {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE IceSword(Card::Suit suit, int number);
+    Q_INVOKABLE IceSword(Card::Suit suit = Spade, int number = 2);
 };
 
 class RenwangShield: public Armor {
@@ -78,6 +78,20 @@ class RenwangShield: public Armor {
 
 public:
     Q_INVOKABLE RenwangShield(Card::Suit suit, int number);
+};
+
+class Fan: public Weapon {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Fan(Card::Suit suit = Diamond, int number = 1);
+};
+
+class SixSwords: public Weapon {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SixSwords(Card::Suit suit = Diamond, int number = 6);
 };
 
 class StandardCardPackage: public Package {

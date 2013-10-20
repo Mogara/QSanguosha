@@ -4,35 +4,6 @@
 #include "general.h"
 #include "room.h"
 
-class FanSkill: public OneCardViewAsSkill {
-public:
-    FanSkill(): OneCardViewAsSkill("Fan") {
-        filter_pattern = "%slash";
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return Slash::IsAvailable(player) && player->getMark("Equips_Nullified_to_Yourself") == 0;
-    }
-
-    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
-               && pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0;
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const{
-        Card *acard = new FireSlash(originalCard->getSuit(), originalCard->getNumber());
-        acard->addSubcard(originalCard->getId());
-        acard->setSkillName(objectName());
-        return acard;
-    }
-};
-
-Fan::Fan(Suit suit, int number)
-    : Weapon(suit, number, 4)
-{
-    setObjectName("Fan");
-}
-
 class GudingBladeSkill: public WeaponSkill {
 public:
     GudingBladeSkill(): WeaponSkill("GudingBlade") {
@@ -187,35 +158,6 @@ void SilverLion::onUninstall(ServerPlayer *player) const{
         player->setFlags("SilverLionRecover");
 }
 
-SupplyShortage::SupplyShortage(Card::Suit suit, int number)
-    : DelayedTrick(suit, number)
-{
-    setObjectName("supply_shortage");
-
-    judge.pattern = ".|club";
-    judge.good = true;
-    judge.reason = objectName();
-}
-
-bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if (!targets.isEmpty() || to_select->containsTrick(objectName()) || to_select == Self)
-        return false;
-
-    int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
-    int rangefix = 0;
-    if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
-        rangefix += 1;
-
-    if (Self->distanceTo(to_select, rangefix) > distance_limit)
-        return false;
-
-    return true;
-}
-
-void SupplyShortage::takeEffect(ServerPlayer *target) const{
-    target->skip(Player::Draw);
-}
-
 ManeuveringPackage::ManeuveringPackage()
     : Package("maneuvering", Package::CardPack)
 {
@@ -223,12 +165,10 @@ ManeuveringPackage::ManeuveringPackage()
 
     // spade
     cards << new GudingBlade(Card::Spade, 1)
-          << new Vine(Card::Spade, 2)
-          << new SupplyShortage(Card::Spade, 10);
+          << new Vine(Card::Spade, 2);
    // club
     cards << new SilverLion(Card::Club, 1)
-          << new Vine(Card::Club, 2)
-          << new SupplyShortage(Card::Club, 4);
+          << new Vine(Card::Club, 2);
 
     // diamond
     cards << new Fan(Card::Diamond, 1);

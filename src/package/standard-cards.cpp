@@ -1521,6 +1521,35 @@ void Indulgence::takeEffect(ServerPlayer *target) const{
     target->skip(Player::Play);
 }
 
+SupplyShortage::SupplyShortage(Card::Suit suit, int number)
+    : DelayedTrick(suit, number)
+{
+    setObjectName("supply_shortage");
+
+    judge.pattern = ".|club";
+    judge.good = true;
+    judge.reason = objectName();
+}
+
+bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if (!targets.isEmpty() || to_select->containsTrick(objectName()) || to_select == Self)
+        return false;
+
+    int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
+    int rangefix = 0;
+    if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
+        rangefix += 1;
+
+    if (Self->distanceTo(to_select, rangefix) > distance_limit)
+        return false;
+
+    return true;
+}
+
+void SupplyShortage::takeEffect(ServerPlayer *target) const{
+    target->skip(Player::Draw);
+}
+
 Disaster::Disaster(Card::Suit suit, int number)
     : DelayedTrick(suit, number, true)
 {
@@ -1620,6 +1649,41 @@ RenwangShield::RenwangShield(Suit suit, int number)
     setObjectName("RenwangShield");
 }
 
+class FanSkill: public OneCardViewAsSkill {
+public:
+    FanSkill(): OneCardViewAsSkill("Fan") {
+        filter_pattern = "%slash";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return Slash::IsAvailable(player) && player->getMark("Equips_Nullified_to_Yourself") == 0;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        return Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE
+            && pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0;
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        Card *acard = new FireSlash(originalCard->getSuit(), originalCard->getNumber());
+        acard->addSubcard(originalCard->getId());
+        acard->setSkillName(objectName());
+        return acard;
+    }
+};
+
+Fan::Fan(Suit suit, int number)
+    : Weapon(suit, number, 4)
+{
+    setObjectName("Fan");
+}
+
+SixSwords::SixSwords(Suit suit, int number)
+    : Weapon(suit, number, 2)
+{
+    setObjectName("SixSwords");
+}
+
 class HorseSkill: public DistanceSkill {
 public:
     HorseSkill():DistanceSkill("Horse"){
@@ -1715,12 +1779,13 @@ StandardCardPackage::StandardCardPackage()
 
           << new Analeptic(Card::Diamond, 9)
 
-          << new Crossbow(Card::Club)
-          << new Crossbow(Card::Diamond)
+          << new Crossbow
           << new DoubleSword
           << new QinggangSword
+          << new IceSword
           << new Blade
           << new Spear
+          << new Fan
           << new Axe
           << new Halberd
           << new KylinBow
@@ -1728,8 +1793,8 @@ StandardCardPackage::StandardCardPackage()
           << new EightDiagram(Card::Spade)
           << new EightDiagram(Card::Club);
 
-    skills << new DoubleSwordSkill << new QinggangSwordSkill
-           << new BladeSkill << new SpearSkill << new AxeSkill
+    skills << new DoubleSwordSkill << new QinggangSwordSkill << new IceSwordSkill
+           << new BladeSkill << new SpearSkill << new FanSkill << new AxeSkill
            << new KylinBowSkill << new EightDiagramSkill
            << new HalberdSkill;
 
@@ -1781,10 +1846,11 @@ StandardCardPackage::StandardCardPackage()
           << new KnownBoth(Card::Club, 3)
           << new KnownBoth(Card::Club, 4)
           << new BefriendAttacking
-          << new Indulgence(Card::Spade, 6)
           << new Indulgence(Card::Club, 6)
           << new Indulgence(Card::Heart, 6)
-          << new Lightning(Card::Spade, 1);
+          << new SupplyShortage(Card::Spade, 10)
+          << new SupplyShortage(Card::Club, 10)
+          << new Lightning;
 
     foreach (Card *card, cards)
         card->setParent(this);

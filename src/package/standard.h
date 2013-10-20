@@ -204,6 +204,16 @@ public:
     virtual void takeEffect(ServerPlayer *target) const;
 };
 
+class SupplyShortage: public DelayedTrick {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SupplyShortage(Card::Suit suit, int number);
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void takeEffect(ServerPlayer *target) const;
+};
+
 class Disaster: public DelayedTrick {
     Q_OBJECT
 
@@ -217,7 +227,7 @@ class Lightning: public Disaster {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE Lightning(Card::Suit suit, int number);
+    Q_INVOKABLE Lightning(Card::Suit suit = Spade, int number = 1);
 
     virtual void takeEffect(ServerPlayer *target) const;
 };
