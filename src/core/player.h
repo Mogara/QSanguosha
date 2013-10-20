@@ -240,6 +240,7 @@ public:
     void setGeneral1Showed(bool showed);
     void setGeneral2Showed(bool showed);
     inline bool hasShownGeneral() const {    return general1_showed || general2_showed;    }
+    inline bool hasShownAllGenerals() const {    return general1_showed && general2_showed;    }
 
     bool ownSkill(const QString skill_name) const;
     bool isFriendWith(const Player *player) const;

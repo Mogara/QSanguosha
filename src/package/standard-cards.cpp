@@ -5,6 +5,8 @@
 #include "engine.h"
 #include "client.h"
 #include "room.h"
+#include "jsonutils.h"
+#include "protocol.h"
 
 Slash::Slash(Suit suit, int number): BasicCard(suit, number)
 {
@@ -1355,6 +1357,86 @@ bool AwaitExhausted::isAvailable(const Player *player) const {
     return player->hasShownGeneral() && !player->isProhibited(player, this);
 }
 
+KnownBoth::KnownBoth(Card::Suit suit, int number): SingleTargetTrick(suit, number){
+    setObjectName("known_both");
+    can_recast = true;
+}
+
+bool KnownBoth::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if (Self->isCardLimited(this, Card::MethodUse))
+        return false;
+
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num || to_select == Self)
+        return false;
+
+    return !to_select->isKongcheng() || !to_select->hasShownAllGenerals();
+}
+
+bool KnownBoth::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
+    if (Self->isCardLimited(this, Card::MethodUse))
+        return targets.length() == 0;
+
+    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
+        return targets.length() != 0;
+
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    return targets.length() <= total_num;
+}
+
+void KnownBoth::onUse(Room *room, const CardUseStruct &card_use) const{
+    if (card_use.to.isEmpty()){
+        CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
+        reason.m_skillName = this->getSkillName();
+        room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason);
+        card_use.from->broadcastSkillInvoke("@recast");
+
+        LogMessage log;
+        log.type = "#Card_Recast";
+        log.from = card_use.from;
+        log.card_str = card_use.card->toString();
+        room->sendLog(log);
+
+        card_use.from->drawCards(1);
+    }
+    else
+        SingleTargetTrick::onUse(room, card_use);
+}
+
+void KnownBoth::onEffect(const CardEffectStruct &effect) const {
+    QStringList choices;
+    if (!effect.to->isKongcheng())
+        choices << "handcards";
+    if (!effect.to->hasShownGeneral1())
+        choices << "head_general";
+    if (!effect.to->hasShownGeneral2())
+        choices << "deputy_general";
+
+    Room *room = effect.from->getRoom();
+
+    QString choice = room->askForChoice(effect.from, objectName(), 
+                                        choices.join("+"), QVariant::fromValue(effect.to));
+
+    if (choice == "handcards")
+        room->showAllCards(effect.to, effect.from);
+    else {
+        QStringList list = room->getTag(effect.to->objectName()).toStringList();
+        list.removeAt(choice == "head_general"? 1 : 0);
+        foreach (QString name, list) {
+            LogMessage log;
+            log.type = "$KnownBothViewGeneral";
+            log.from = effect.from;
+            log.to << effect.to;
+            log.arg = name;
+            room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        }
+        Json::Value arg(Json::arrayValue);
+        arg[0] = QSanProtocol::Utils::toJsonString(objectName());
+        arg[1] = QSanProtocol::Utils::toJsonArray(list);
+        room->doNotify(effect.from, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
+    }
+}
+
 FireAttack::FireAttack(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
@@ -1674,6 +1756,8 @@ StandardCardPackage::StandardCardPackage()
           << new HegNullification(Card::Diamond, 12)
           << new AwaitExhausted(Card::Heart, 11)
           << new AwaitExhausted(Card::Diamond, 4)
+          << new KnownBoth(Card::Club, 3)
+          << new KnownBoth(Card::Club, 4)
           << new Indulgence(Card::Spade, 6)
           << new Indulgence(Card::Club, 6)
           << new Indulgence(Card::Heart, 6)
