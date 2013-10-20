@@ -24,13 +24,6 @@ public:
     Q_INVOKABLE QinggangSword(Card::Suit suit = Spade, int number = 6);
 };
 
-class Blade: public Weapon {
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE Blade(Card::Suit suit = Spade, int number = 5);
-};
-
 class Spear: public Weapon {
     Q_OBJECT
 
@@ -63,7 +56,7 @@ class EightDiagram: public Armor {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE EightDiagram(Card::Suit suit, int number = 2);
+    Q_INVOKABLE EightDiagram(Card::Suit suit = Spade, int number = 2);
 };
 
 class IceSword: public Weapon {
@@ -77,7 +70,7 @@ class RenwangShield: public Armor {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE RenwangShield(Card::Suit suit, int number);
+    Q_INVOKABLE RenwangShield(Card::Suit suit = Club, int number = 2);
 };
 
 class Fan: public Weapon {
@@ -92,6 +85,38 @@ class SixSwords: public Weapon {
 
 public:
     Q_INVOKABLE SixSwords(Card::Suit suit = Diamond, int number = 6);
+};
+
+class Triblade: public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Triblade(Card::Suit suit = Diamond, int number = 12);
+};
+
+class TribladeSkillCard: public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE TribladeSkillCard();
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+class Vine: public Armor {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Vine(Card::Suit suit = Club, int number = 2);
+};
+
+class SilverLion: public Armor {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE SilverLion(Card::Suit suit = Club, int number = 1);
+
+    virtual void onUninstall(ServerPlayer *player) const;
 };
 
 class StandardCardPackage: public Package {

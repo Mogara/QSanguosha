@@ -571,37 +571,6 @@ QinggangSword::QinggangSword(Suit suit, int number)
     setObjectName("QinggangSword");
 }
 
-class BladeSkill: public WeaponSkill {
-public:
-    BladeSkill(): WeaponSkill("Blade") {
-        events << SlashMissed;
-    }
-
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (!effect.to->isAlive() || effect.to->getMark("Equips_of_Others_Nullified_to_You") > 0)
-            return false;
-        if (!effect.from->canSlash(effect.to, NULL, false))
-            return false;
-
-        int weapon_id = player->getWeapon()->getId();
-        room->setCardFlag(weapon_id, "using");
-        effect.from->setFlags("BladeUse");
-        if (!room->askForUseSlashTo(effect.from, effect.to, QString("blade-slash:%1").arg(effect.to->objectName()), false, true))
-            effect.from->setFlags("-BladeUse");
-
-        room->setCardFlag(weapon_id, "-using");
-
-        return false;
-    }
-};
-
-Blade::Blade(Suit suit, int number)
-    : Weapon(suit, number, 3)
-{
-    setObjectName("Blade");
-}
-
 class SpearSkill: public ViewAsSkill {
 public:
     SpearSkill(): ViewAsSkill("Spear") {
@@ -1684,6 +1653,186 @@ SixSwords::SixSwords(Suit suit, int number)
     setObjectName("SixSwords");
 }
 
+Triblade::Triblade(Card::Suit suit, int number): Weapon(suit, number, 3){
+    setObjectName("Triblade");
+}
+
+TribladeSkillCard::TribladeSkillCard(): SkillCard(){
+    setObjectName("Triblade");
+}
+
+bool TribladeSkillCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.length() == 0 && to_select->hasFlag("TribladeCanBeSelected");
+}
+
+void TribladeSkillCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    room->damage(DamageStruct("Triblade", source, targets[0]));
+}
+
+class TribladeSkillVS: public OneCardViewAsSkill{
+public:
+    TribladeSkillVS(): OneCardViewAsSkill("Triblade"){
+        response_pattern = "@@Triblade";
+        filter_pattern = ".|.|.|hand!";
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        TribladeSkillCard *c = new TribladeSkillCard;
+        c->addSubcard(originalCard);
+        return c;
+    }
+};
+
+class TribladeSkill: public WeaponSkill{
+public:
+    TribladeSkill(): WeaponSkill("Triblade"){
+        events << Damage;
+        view_as_skill = new TribladeSkillVS;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.to && damage.to->isAlive() && damage.card && damage.card->isKindOf("Slash")
+            && damage.by_user && !damage.chain && !damage.transfer){
+                QList<ServerPlayer *> players;
+                foreach(ServerPlayer *p, room->getOtherPlayers(damage.to))
+                    if (damage.to->distanceTo(p) == 1){
+                        players << p;
+                        room->setPlayerFlag(p, "TribladeCanBeSelected");
+                    }
+                    if (players.isEmpty())
+                        return false;
+                    room->askForUseCard(player, "@@Triblade", "@triblade");
+        }
+
+        foreach(ServerPlayer *p, room->getAllPlayers())
+            if (p->hasFlag("TribladeCanBeSelected"))
+                room->setPlayerFlag(p, "TribladeCanBeSelected");
+
+        return false;
+    }
+};
+
+class VineSkill: public ArmorSkill {
+public:
+    VineSkill(): ArmorSkill("Vine") {
+        events << DamageInflicted << SlashEffected << CardEffected;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == SlashEffected) {
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            if (effect.nature == DamageStruct::Normal) {
+                room->setEmotion(player, "armor/vine");
+                LogMessage log;
+                log.from = player;
+                log.type = "#ArmorNullify";
+                log.arg = objectName();
+                log.arg2 = effect.slash->objectName();
+                room->sendLog(log);
+
+                effect.to->setFlags("Global_NonSkillNullify");
+                return true;
+            }
+        } else if (triggerEvent == CardEffected) {
+            CardEffectStruct effect = data.value<CardEffectStruct>();
+            if (effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack")) {
+                room->setEmotion(player, "armor/vine");
+                LogMessage log;
+                log.from = player;
+                log.type = "#ArmorNullify";
+                log.arg = objectName();
+                log.arg2 = effect.card->objectName();
+                room->sendLog(log);
+
+                effect.to->setFlags("Global_NonSkillNullify");
+                return true;
+            }
+        } else if (triggerEvent == DamageInflicted) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.nature == DamageStruct::Fire) {
+                room->setEmotion(player, "armor/vineburn");
+                LogMessage log;
+                log.type = "#VineDamage";
+                log.from = player;
+                log.arg = QString::number(damage.damage);
+                log.arg2 = QString::number(++ damage.damage);
+                room->sendLog(log);
+
+                data = QVariant::fromValue(damage);
+            }
+        }
+
+        return false;
+    }
+};
+
+Vine::Vine(Suit suit, int number)
+    : Armor(suit, number)
+{
+    setObjectName("Vine");
+}
+
+class SilverLionSkill: public ArmorSkill {
+public:
+    SilverLionSkill(): ArmorSkill("SilverLion") {
+        events << DamageInflicted << CardsMoveOneTime;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->isAlive();
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == DamageInflicted && ArmorSkill::triggerable(player)) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.damage > 1) {
+                room->setEmotion(player, "armor/silver_lion");
+                LogMessage log;
+                log.type = "#SilverLion";
+                log.from = player;
+                log.arg = QString::number(damage.damage);
+                log.arg2 = objectName();
+                room->sendLog(log);
+
+                damage.damage = 1;
+                data = QVariant::fromValue(damage);
+            }
+        } else if (player->hasFlag("SilverLionRecover")) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from != player || !move.from_places.contains(Player::PlaceEquip))
+                return false;
+            for (int i = 0; i < move.card_ids.size(); i++) {
+                if (move.from_places[i] != Player::PlaceEquip) continue;
+                const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
+                if (card->objectName() == objectName()) {
+                    player->setFlags("-SilverLionRecover");
+                    if (player->isWounded()) {
+                        room->setEmotion(player, "armor/silver_lion");
+                        RecoverStruct recover;
+                        recover.card = card;
+                        room->recover(player, recover);
+                    }
+                    return false;
+                }
+            }
+
+        }
+        return false;
+    }
+};
+
+SilverLion::SilverLion(Suit suit, int number)
+    : Armor(suit, number)
+{
+    setObjectName("SilverLion");
+}
+
+void SilverLion::onUninstall(ServerPlayer *player) const{
+    if (player->isAlive() && player->hasArmorEffect(objectName()))
+        player->setFlags("SilverLionRecover");
+}
+
 class HorseSkill: public DistanceSkill {
 public:
     HorseSkill():DistanceSkill("Horse"){
@@ -1783,20 +1932,23 @@ StandardCardPackage::StandardCardPackage()
           << new DoubleSword
           << new QinggangSword
           << new IceSword
-          << new Blade
           << new Spear
           << new Fan
           << new Axe
           << new Halberd
           << new KylinBow
+          << new SixSwords
+          << new Triblade
 
-          << new EightDiagram(Card::Spade)
-          << new EightDiagram(Card::Club);
+          << new EightDiagram
+          << new RenwangShield
+          << new Vine
+          << new SilverLion;
 
     skills << new DoubleSwordSkill << new QinggangSwordSkill << new IceSwordSkill
-           << new BladeSkill << new SpearSkill << new FanSkill << new AxeSkill
-           << new KylinBowSkill << new EightDiagramSkill
-           << new HalberdSkill;
+           << new SpearSkill << new FanSkill << new AxeSkill << new KylinBowSkill 
+           << new TribladeSkill << new HalberdSkill << new EightDiagramSkill
+           << new RenwangShieldSkill << new VineSkill << new SilverLionSkill;
 
     QList<Card *> horses;
     horses << new DefensiveHorse(Card::Spade, 5)
