@@ -1353,10 +1353,6 @@ void AwaitExhausted::onEffect(const CardEffectStruct &effect) const {
     effect.to->getRoom()->setPlayerFlag(effect.to, "AwaitExhaustedEffected");
 }
 
-bool AwaitExhausted::isAvailable(const Player *player) const {
-    return player->hasShownGeneral() && !player->isProhibited(player, this);
-}
-
 KnownBoth::KnownBoth(Card::Suit suit, int number): SingleTargetTrick(suit, number){
     setObjectName("known_both");
     can_recast = true;
