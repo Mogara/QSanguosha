@@ -1299,6 +1299,62 @@ void IronChain::onEffect(const CardEffectStruct &effect) const{
     room->getThread()->trigger(ChainStateChanged, room, effect.to);
 }
 
+AwaitExhausted::AwaitExhausted(Card::Suit suit, int number): TrickCard(suit, number){
+    setObjectName("await_exhausted");
+    target_fixed = true;
+}
+
+
+QString AwaitExhausted::getSubtype() const{
+    return "await_exhausted";
+}
+
+void AwaitExhausted::onUse(Room *room, const CardUseStruct &card_use) const{
+    CardUseStruct new_use = card_use;
+    foreach (ServerPlayer *p, room->getAlivePlayers()) {
+        if (p->isFriendWith(new_use.from))
+            new_use.to.append(p);
+    }
+
+    if (getSkillName() == "neo2013duoshi")
+        room->addPlayerHistory(card_use.from, "NeoDuoshiAE", 1);
+
+    TrickCard::onUse(room, new_use);
+}
+
+void AwaitExhausted::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    foreach (ServerPlayer *target, targets) {
+        CardEffectStruct effect;
+        effect.card = this;
+        effect.from = source;
+        effect.to = target;
+
+        room->cardEffect(effect);
+    }
+
+    foreach (ServerPlayer *target, targets) {
+        if (target->hasFlag("AwaitExhaustedEffected")) {
+            room->setPlayerFlag(target, "-AwaitExhaustedEffected");
+            room->askForDiscard(target, objectName(), 2, 2, false, true);
+        }
+    }
+
+    if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
+        if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
+        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+    }
+}
+
+void AwaitExhausted::onEffect(const CardEffectStruct &effect) const {
+    effect.to->drawCards(2);
+    effect.to->getRoom()->setPlayerFlag(effect.to, "AwaitExhaustedEffected");
+}
+
+bool AwaitExhausted::isAvailable(const Player *player) const {
+    return player->hasShownGeneral() && !player->isProhibited(player, this);
+}
+
 FireAttack::FireAttack(Card::Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
@@ -1616,6 +1672,8 @@ StandardCardPackage::StandardCardPackage()
           << new Nullification
           << new HegNullification(Card::Club, 13)
           << new HegNullification(Card::Diamond, 12)
+          << new AwaitExhausted(Card::Heart, 11)
+          << new AwaitExhausted(Card::Diamond, 4)
           << new Indulgence(Card::Spade, 6)
           << new Indulgence(Card::Club, 6)
           << new Indulgence(Card::Heart, 6)

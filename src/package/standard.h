@@ -187,8 +187,6 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual void takeEffect(ServerPlayer *target) const = 0;
 
-    virtual bool isMovable() const;
-
 protected:
     JudgeStruct judge;
 
@@ -429,6 +427,20 @@ public:
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class AwaitExhausted: public TrickCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE AwaitExhausted(Card::Suit suit, int number);
+
+    virtual QString getSubtype() const;
+
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+    virtual bool isAvailable(const Player *player) const;
 };
 
 #endif
