@@ -334,6 +334,10 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
     }
 }
 
+bool DelayedTrick::isMovable() const {
+    return movable;
+}
+
 Weapon::Weapon(Suit suit, int number, int range)
     : EquipCard(suit, number), range(range)
 {

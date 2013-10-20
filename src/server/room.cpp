@@ -1009,6 +1009,8 @@ bool Room::isCanceled(const CardEffectStruct &effect) {
     setTag("NullifyingTimes", 0);
     bool result = askForNullification(effect.card, effect.from, effect.to, true);
     if (getTag("HegNullificationValid").toBool()) {
+        if (effect.card->isKindOf("Disaster"))
+            return result;
         QStringList targets;
         foreach(ServerPlayer *p, m_players) {
             if (p->isAlive() && p->isFriendWith(effect.to))

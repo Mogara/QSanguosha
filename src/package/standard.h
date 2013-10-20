@@ -187,6 +187,8 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual void takeEffect(ServerPlayer *target) const = 0;
 
+    virtual bool isMovable() const;
+
 protected:
     JudgeStruct judge;
 
