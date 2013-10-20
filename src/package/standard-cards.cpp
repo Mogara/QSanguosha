@@ -2017,8 +2017,6 @@ StandardExCardPackage::StandardExCardPackage()
           << new Lightning(Card::Heart, 12)
           << new Nullification(Card::Diamond, 12);
 
-    skills << new RenwangShieldSkill << new IceSwordSkill;
-
     foreach (Card *card, cards)
         card->setParent(this);
 }
