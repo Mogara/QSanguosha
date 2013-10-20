@@ -1313,7 +1313,8 @@ QString AwaitExhausted::getSubtype() const{
 
 void AwaitExhausted::onUse(Room *room, const CardUseStruct &card_use) const{
     CardUseStruct new_use = card_use;
-    foreach (ServerPlayer *p, room->getAlivePlayers()) {
+    new_use.to.append(new_use.from);
+    foreach (ServerPlayer *p, room->getOtherPlayers(new_use.from)) {
         if (p->isFriendWith(new_use.from))
             new_use.to.append(p);
     }
@@ -1431,6 +1432,31 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const {
         arg[1] = QSanProtocol::Utils::toJsonArray(list);
         room->doNotify(effect.from, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
     }
+}
+
+BefriendAttacking::BefriendAttacking(Card::Suit suit, int number): SingleTargetTrick(suit, number) {
+    setObjectName("befriend_attacking");
+}
+
+bool BefriendAttacking::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const {
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num)
+        return false;
+
+    return to_select->hasShownGeneral() && !Self->isFriendWith(to_select);
+}
+
+bool BefriendAttacking::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const {
+    return targets.length() > 0;
+}
+
+void BefriendAttacking::onEffect(const CardEffectStruct &effect) const {
+    effect.to->drawCards(1);
+    effect.from->drawCards(3);
+}
+
+bool BefriendAttacking::isAvailable(const Player *player) const {
+    return player->hasShownGeneral();
 }
 
 FireAttack::FireAttack(Card::Suit suit, int number)
@@ -1754,6 +1780,7 @@ StandardCardPackage::StandardCardPackage()
           << new AwaitExhausted(Card::Diamond, 4)
           << new KnownBoth(Card::Club, 3)
           << new KnownBoth(Card::Club, 4)
+          << new BefriendAttacking
           << new Indulgence(Card::Spade, 6)
           << new Indulgence(Card::Club, 6)
           << new Indulgence(Card::Heart, 6)
