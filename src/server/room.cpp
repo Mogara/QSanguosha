@@ -1108,7 +1108,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     doAnimate(S_ANIMATE_NULLIFICATION, repliedPlayer->objectName(), to->objectName());
     useCard(CardUseStruct(card, repliedPlayer, QList<ServerPlayer *>()));
 
-    if ((to && to->hasShownGeneral() && card->isKindOf("HegNullification") 
+    if ((to && to->hasShownOneGeneral() && card->isKindOf("HegNullification") 
          && askForChoice(repliedPlayer, "heg_nullification", "single+all", data) == "all")
         || trick->isKindOf("HegNullification")) {
         setTag("HegNullificationValid", !getTag("HegNullificationValid").toBool());

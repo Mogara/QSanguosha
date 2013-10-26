@@ -1030,6 +1030,22 @@ bool Player::inHeadSkills(const QString skill_name) const {
     return head_skills.keys().contains(skill_name);
 }
 
+bool Player::hasShownGeneral1() const {
+    return general1_showed;
+}
+
+bool Player::hasShownGeneral2() const {
+    return general2_showed;
+}
+
+bool Player::hasShownOneGeneral() const {
+    return general1_showed || general2_showed;
+}
+
+bool Player::hasShownAllGenerals() const {
+    return general1_showed && general2_showed;
+}
+
 void Player::setGeneral1Showed(bool showed) {
     this->general1_showed = showed;
     foreach (QString skill, head_skills.keys())
@@ -1047,7 +1063,7 @@ bool Player::ownSkill(const QString skill_name) const {
 }
 
 bool Player::isFriendWith(const Player *player) const {
-    if (!hasShownGeneral() || !player->hasShownGeneral())
+    if (!hasShownOneGeneral() || !player->hasShownOneGeneral())
         return false;
 
     //the careerist should to be considered later

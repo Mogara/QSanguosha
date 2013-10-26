@@ -235,12 +235,12 @@ public:
     bool hasShownSkill(const Skill *skill) const;
     void preshowSkill(const QString skill_name);
     bool inHeadSkills(const QString skill_name) const;
-    inline bool hasShownGeneral1() const {    return general1_showed;    }
-    inline bool hasShownGeneral2() const {    return general2_showed;    }
+    bool hasShownGeneral1() const;
+    bool hasShownGeneral2() const;
     void setGeneral1Showed(bool showed);
     void setGeneral2Showed(bool showed);
-    inline bool hasShownGeneral() const {    return general1_showed || general2_showed;    }
-    inline bool hasShownAllGenerals() const {    return general1_showed && general2_showed;    }
+    bool hasShownOneGeneral() const;
+    bool hasShownAllGenerals() const;
 
     bool ownSkill(const QString skill_name) const;
     bool isFriendWith(const Player *player) const;

@@ -1412,7 +1412,7 @@ bool BefriendAttacking::targetFilter(const QList<const Player *> &targets, const
     if (targets.length() >= total_num)
         return false;
 
-    return to_select->hasShownGeneral() && !Self->isFriendWith(to_select);
+    return to_select->hasShownOneGeneral() && !Self->isFriendWith(to_select);
 }
 
 bool BefriendAttacking::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const {
@@ -1425,7 +1425,7 @@ void BefriendAttacking::onEffect(const CardEffectStruct &effect) const {
 }
 
 bool BefriendAttacking::isAvailable(const Player *player) const {
-    return player->hasShownGeneral();
+    return player->hasShownOneGeneral();
 }
 
 FireAttack::FireAttack(Card::Suit suit, int number)
