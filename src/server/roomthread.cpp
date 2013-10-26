@@ -566,6 +566,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
     bool broken = false;
     QList<const TriggerSkill *> will_trigger;
     QList<const TriggerSkill *> triggerable_tested;
+    auto trigger_who = QMap<ServerPlayer *, QList<const TriggerSkill *>>();
 
     try {
         QList<const TriggerSkill *> triggered;
@@ -589,44 +590,45 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
             for (int i = 0; i < skills.size(); i++) {
                 const TriggerSkill *skill = skills[i];
                 triggerable_tested.append(skill);
-                if (!triggered.contains(skill) && skill->triggerable(triggerEvent, room, target, data)) {
+                ServerPlayer *ask_who = target;
+                if (!triggered.contains(skill) && skill->triggerable(triggerEvent, room, target, data, ask_who)) {
                     while (room->isPaused()) {}
                     triggered.append(skill);
 
                     if (will_trigger.isEmpty() 
-                        || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority())
+                        || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority()) {
                         will_trigger.append(skill);
-                    else if(skill->getDynamicPriority() != will_trigger.last()->getDynamicPriority())
+                        trigger_who[ask_who].append(skill);
+                    } else if(skill->getDynamicPriority() != will_trigger.last()->getDynamicPriority())
                         break;
                 }
             }
 
-
             if (!will_trigger.isEmpty()) {
-                if (will_trigger.length() > 1) {
+                will_trigger.clear();
+                foreach(auto p, trigger_who.keys()) {
+                    QList<const TriggerSkill *> skills = trigger_who.value(p);
+                    if (skills.isEmpty()) continue;
                     QStringList names;
-                    foreach(const TriggerSkill *skill, will_trigger)
+                    foreach (auto skill, skills)
                         names << skill->objectName();
-                    will_trigger.clear();
-                    names << "trigger_none";
+                    if (names.length() > 1)
+                        names << "trigger_none";
                     do {
-                        QString name = room->askForChoice(target, "TriggerOrder", names.join("+"), data);
+                        QString name;
+                        if (p != NULL)
+                            name = room->askForChoice(p, "TriggerOrder", names.join("+"), data);
+                        else
+                            name = names.first();
                         if (name == "trigger_none") break;
-                        const TriggerSkill *skill = Sanguosha->getTriggerSkill(name);
+                        const TriggerSkill *skill = skills.at(names.indexOf(name));
                         if (skill->cost(triggerEvent, room, target, data))
                             will_trigger.prepend(skill);
                         names.removeOne(name);
-                        if (target && target->ownSkill(name) && !target->hasShownSkill(Sanguosha->getSkill(name)))
-                            target->showGeneral(target->inHeadSkills(name));
+                        skills.removeOne(skill);
+                        if (p && p->ownSkill(name) && !p->hasShownSkill(Sanguosha->getSkill(name)))
+                            p->showGeneral(p->inHeadSkills(name));
                     } while (names.length() > 1);
-                } else {
-                    if (!will_trigger.first()->cost(triggerEvent, room, target, data))
-                        will_trigger.clear();
-                    else {
-                        if (target && target->ownSkill(will_trigger.first()->objectName()) 
-                            && !target->hasShownSkill(will_trigger.first()))
-                            target->showGeneral(target->inHeadSkills(will_trigger.first()->objectName()));
-                    }
                 }
             }
 

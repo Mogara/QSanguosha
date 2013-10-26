@@ -126,7 +126,7 @@ public:
     virtual bool triggerable(const ServerPlayer *target) const;
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
 
@@ -202,7 +202,7 @@ class SPConvertSkill: public GameStartSkill {
 public:
     SPConvertSkill(const QString &from, const QString &to);
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
     virtual void onGameStart(ServerPlayer *player) const;
 
 private:
@@ -280,7 +280,7 @@ public:
     FakeMoveSkill(const QString &skillname);
 
     virtual int getPriority() const;
-    virtual bool triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &) const;
+    virtual bool triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &, ServerPlayer *ask_who = NULL) const;
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
 
 private:
@@ -293,7 +293,7 @@ class DetachEffectSkill: public TriggerSkill {
 public:
     DetachEffectSkill(const QString &skillname, const QString &pilename = QString());
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual void onSkillDetached(Room *room, ServerPlayer *player) const;
 

@@ -249,7 +249,7 @@ bool TriggerSkill::triggerable(const ServerPlayer *target) const{
     return target != NULL && target->isAlive() && target->hasSkill(objectName());
 }
 
-bool TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+bool TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
     return triggerable(player); //temp way
 }
 
@@ -335,7 +335,7 @@ SPConvertSkill::SPConvertSkill(const QString &from, const QString &to)
     to_list = to.split("+");
 }
 
-bool SPConvertSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data) const{
+bool SPConvertSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *ask_who) const{
     if (target == NULL) return false;
     if (!Config.value("EnableSPConvert", true).toBool()) return false;
     if (Config.EnableHegemony) return false;
@@ -456,7 +456,7 @@ int FakeMoveSkill::getPriority() const{
     return 10;
 }
 
-bool FakeMoveSkill::triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &) const{
+bool FakeMoveSkill::triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &, ServerPlayer *ask_who) const{
     return target != NULL;
 }
 
@@ -475,7 +475,7 @@ DetachEffectSkill::DetachEffectSkill(const QString &skillname, const QString &pi
     events << EventLoseSkill;
 }
 
-bool DetachEffectSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data) const{
+bool DetachEffectSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *ask_who) const{
     return target != NULL;
 }
 

@@ -29,7 +29,7 @@ GameRule::GameRule(QObject *)
            << ChoiceMade;
 }
 
-bool GameRule::triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &) const{
+bool GameRule::triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *) const{
     return true;
 }
 

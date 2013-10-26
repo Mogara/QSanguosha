@@ -968,8 +968,11 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
     if (!validChoices.contains(answer))
         answer = validChoices[0];
 
-    QVariant decisionData = QVariant::fromValue("skillChoice:" + skill_name + ":" + answer);
-    thread->trigger(ChoiceMade, this, player, decisionData);
+    // To avoid infinite recursion
+    if (skill_name != "TriggerOrder") {
+        QVariant decisionData = QVariant::fromValue("skillChoice:" + skill_name + ":" + answer);
+        thread->trigger(ChoiceMade, this, player, decisionData);
+    }
     return answer;
 }
 
