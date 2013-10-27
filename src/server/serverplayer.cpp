@@ -1267,9 +1267,20 @@ void ServerPlayer::showGeneral(bool head_general) {
             }
         }
 
-        room->setPlayerProperty(this, "kingdom", getGeneral()->getKingdom());
+        QString kingdom = getGeneral()->getKingdom();
+        room->setPlayerProperty(this, "kingdom", kingdom);
 
-        room->setPlayerProperty(this, "role", BasaraMode::getMappedRole(getKingdom()));
+        QString role = BasaraMode::getMappedRole(kingdom);
+        int i = 1;
+        foreach(auto p, room->getOtherPlayers(this, true)) {
+            if (p->hasShownOneGeneral() && p->getRole() != "careerist" && p->getKingdom() == kingdom)
+                ++ i;
+        }
+
+        if (i > (room->getPlayers().length() / 2))
+            role = "careerist";
+        
+        room->setPlayerProperty(this, "role", role);
     } else {
         if (getGeneral2Name() != "anjiang") return;
         room->setPlayerProperty(this, "general2_showed", true);

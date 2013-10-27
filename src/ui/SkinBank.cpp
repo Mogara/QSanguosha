@@ -199,21 +199,26 @@ QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName,
 
     QString stateKey;
     switch (state) {
-    case QSanButton::S_STATE_DISABLED :
-        stateKey = "disabled";
-        break;
-    case QSanButton::S_STATE_DOWN :
-        stateKey = "down";
-        break;
-    case QSanButton::S_STATE_HOVER :
-        stateKey = "hover";
-        break;
-    case QSanButton::S_STATE_UP :
-        stateKey = "normal";
-        break;
-    case QSanButton::S_STATE_CANPRESHOW :
-        stateKey = "preshow";
-        break;
+    case QSanButton::S_STATE_DISABLED :{
+            stateKey = "disabled";
+            break;
+        }
+    case QSanButton::S_STATE_DOWN :{
+            stateKey = "down";
+            break;
+        }
+    case QSanButton::S_STATE_HOVER :{
+            stateKey = "hover";
+            break;
+        }
+    case QSanButton::S_STATE_UP :{
+            stateKey = "normal";
+            break;
+        }
+    case QSanButton::S_STATE_CANPRESHOW :{
+            stateKey = "preshow";
+            break;
+        }
 
     default :
         return QString();

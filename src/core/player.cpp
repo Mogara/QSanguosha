@@ -1065,8 +1065,9 @@ bool Player::ownSkill(const QString skill_name) const {
 bool Player::isFriendWith(const Player *player) const {
     if (!hasShownOneGeneral() || !player->hasShownOneGeneral())
         return false;
-
-    //the careerist should to be considered later
+    
+    if (role == "careerist" || player->role == "careerist")
+        return false;
 
     return getKingdom() == player->getKingdom();
 }
