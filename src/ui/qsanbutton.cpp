@@ -209,8 +209,9 @@ void QSanSkillButton::setSkill(const Skill *skill) {
      if (skill == NULL) skill = _m_skill;
 
      Skill::Frequency freq = skill->getFrequency();
-     if (skill->inherits("TriggerSkill") && !skill->inherits("WeaponSkill")
-             && !skill->inherits("ArmorSkill") && _m_viewAsSkill == NULL) {
+     if ((freq == Skill::Frequent || freq == Skill::NotFrequent) 
+         && skill->inherits("TriggerSkill") && !skill->inherits("WeaponSkill")
+         && !skill->inherits("ArmorSkill") && _m_viewAsSkill == NULL) {
          setStyle(QSanButton::S_STYLE_TOGGLE);
          setState(QSanButton::S_STATE_DISABLED);
          _setSkillType(QSanInvokeSkillButton::S_SKILL_PROACTIVE);

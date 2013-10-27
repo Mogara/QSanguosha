@@ -783,32 +783,34 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
                 winner = "renegade+rebel";
         }
     } else if (Config.EnableHegemony) {
+        QStringList winners;
         auto players = room->getAlivePlayers();
-        if (players.length() == 1)
-            return players.first()->objectName();
-
-        bool has_anjiang = false, has_diff_kingdoms = false;
-        foreach(auto p, players) {
-            if (!p->hasShownOneGeneral()) {
-                has_anjiang = true;
-                break;
+        auto win_player = players.first();
+        if (players.length() == 1) {
+            foreach (auto p, room->getPlayers()) {
+                if (win_player->isFriendWith(p))
+                    winners << p->objectName();
             }
-            bool all_friends = true;
-            foreach (auto player, room->getOtherPlayers(p)) {
-                if (!p->isFriendWith(player)) {
-                    all_friends = false;
+        } else {
+            bool has_anjiang = false, has_diff_kingdoms = false;
+            foreach(auto p, players) {
+                if (!p->hasShownOneGeneral()) {
+                    has_anjiang = true;
                     break;
                 }
+                foreach (auto player, players) {
+                    if (!p->isFriendWith(player)) {
+                        has_diff_kingdoms = true;
+                        break;
+                    }
+                }
             }
-            if (!all_friends) has_diff_kingdoms = true;
-        }
-        if (has_anjiang || has_diff_kingdoms) return QString();
+            if (has_anjiang || has_diff_kingdoms) return QString();
 
-        QStringList winners;
-        auto win_player = players.first();
-        foreach (auto p, room->getPlayers()) {
-            if (win_player->isFriendWith(p))
-                winners << p->objectName();
+            foreach (auto p, room->getPlayers()) {
+                if (win_player->isFriendWith(p))
+                    winners << p->objectName();
+            }
         }
         winner = winners.join("+");
     } else {

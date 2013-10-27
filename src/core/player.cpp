@@ -400,10 +400,12 @@ void Player::detachAllSkills() {
 }
 
 void Player::addSkill(const QString &skill_name, bool head_skill) {
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    Q_ASSERT(skill);
     if (head_skill)
-        head_skills[skill_name] = false;
+        head_skills[skill_name] = !skill->canPreshow();
     else
-        deputy_skills[skill_name] = false;
+        deputy_skills[skill_name] = !skill->canPreshow();
 }
 
 void Player::loseSkill(const QString &skill_name) {
@@ -1063,11 +1065,14 @@ bool Player::ownSkill(const QString skill_name) const {
 }
 
 bool Player::isFriendWith(const Player *player) const {
+    if (this == player)
+        return true;
+
     if (!hasShownOneGeneral() || !player->hasShownOneGeneral())
         return false;
     
     if (role == "careerist" || player->role == "careerist")
         return false;
 
-    return getKingdom() == player->getKingdom();
+    return kingdom == player->kingdom;
 }
