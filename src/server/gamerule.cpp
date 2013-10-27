@@ -26,7 +26,7 @@ GameRule::GameRule(QObject *)
            << SlashHit << SlashEffected << SlashProceed
            << ConfirmDamage << DamageDone << DamageComplete
            << StartJudge << FinishRetrial << FinishJudge
-           << ChoiceMade;
+           << ChoiceMade << GeneralShown;
 }
 
 bool GameRule::triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *) const{
@@ -593,6 +593,13 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             }
             break;
         }
+    case GeneralShown: {
+            if (player->hasShownAllGenerals() && player->getMark("HalfMaxHpLeft") > 0 
+                && player->askForSkillInvoke("userdefine:halfmaxhp")) {
+                player->drawCards(1);
+                room->removePlayerMark(player, "HalfMaxHpLeft");
+            }
+         }
     default:
             break;
     }

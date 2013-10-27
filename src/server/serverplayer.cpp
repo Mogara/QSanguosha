@@ -876,10 +876,10 @@ int ServerPlayer::getGeneralMaxHp() const{
     int max_hp = 0;
 
     if (getGeneral2() == NULL)
-        max_hp = getGeneral()->getMaxHp();
+        max_hp = getGeneral()->getDoubleMaxHp();
     else {
-        int first = getGeneral()->getMaxHp();
-        int second = getGeneral2()->getMaxHp();
+        int first = getGeneral()->getDoubleMaxHp();
+        int second = getGeneral2()->getDoubleMaxHp();
 
         int plan = Config.MaxHpScheme;
         if (Config.GameMode.contains("_mini_") || Config.GameMode == "custom_scenario") plan = 1;
@@ -1243,7 +1243,7 @@ void ServerPlayer::showGeneral(bool head_general) {
 
     if (head_general) {
         if (getGeneralName() != "anjiang") return;
-        room->setPlayerProperty(this, "general1_showed", true);
+
         general_name = names.first();
 
         Json::Value arg(Json::arrayValue);
@@ -1267,23 +1267,25 @@ void ServerPlayer::showGeneral(bool head_general) {
             }
         }
 
-        QString kingdom = getGeneral()->getKingdom();
-        room->setPlayerProperty(this, "kingdom", kingdom);
+        if (!hasShownOneGeneral()) {
+            QString kingdom = getGeneral()->getKingdom();
+            room->setPlayerProperty(this, "kingdom", kingdom);
 
-        QString role = BasaraMode::getMappedRole(kingdom);
-        int i = 1;
-        foreach(auto p, room->getOtherPlayers(this, true)) {
-            if (p->hasShownOneGeneral() && p->getRole() != "careerist" && p->getKingdom() == kingdom)
-                ++ i;
+            QString role = BasaraMode::getMappedRole(kingdom);
+            int i = 1;
+            foreach(auto p, room->getOtherPlayers(this, true)) {
+                if (p->hasShownOneGeneral() && p->getRole() != "careerist" && p->getKingdom() == kingdom)
+                    ++ i;
+            }
+
+            if (i > (room->getPlayers().length() / 2))
+                role = "careerist";
+
+            room->setPlayerProperty(this, "role", role);
         }
-
-        if (i > (room->getPlayers().length() / 2))
-            role = "careerist";
-        
-        room->setPlayerProperty(this, "role", role);
+        room->setPlayerProperty(this, "general1_showed", true);
     } else {
         if (getGeneral2Name() != "anjiang") return;
-        room->setPlayerProperty(this, "general2_showed", true);
         general_name = names.at(1);
         Json::Value arg(Json::arrayValue);
         arg[0] = S_GAME_EVENT_CHANGE_HERO;
@@ -1305,10 +1307,29 @@ void ServerPlayer::showGeneral(bool head_general) {
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
             }
         }
+
+        if (!hasShownOneGeneral()) {
+            QString kingdom = getGeneral2()->getKingdom();
+            room->setPlayerProperty(this, "kingdom", kingdom);
+
+            QString role = BasaraMode::getMappedRole(kingdom);
+            int i = 1;
+            foreach(auto p, room->getOtherPlayers(this, true)) {
+                if (p->hasShownOneGeneral() && p->getRole() != "careerist" && p->getKingdom() == kingdom)
+                    ++ i;
+            }
+
+            if (i > (room->getPlayers().length() / 2))
+                role = "careerist";
+
+            room->setPlayerProperty(this, "role", role);
+        }
+        room->setPlayerProperty(this, "general2_showed", true);
     }
 
     Q_ASSERT(room->getThread() != NULL);
     room->getThread()->addPlayerSkills(this);
+    room->getThread()->trigger(GeneralShown, room, this);
 
     LogMessage log;
     log.type = "#BasaraReveal";

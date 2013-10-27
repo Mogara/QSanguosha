@@ -595,7 +595,7 @@ int Player::getMaxCards() const{
         origin = qMax(hp, 0);
     int rule = 0, total = 0, extra = 0;
     if (Config.MaxHpScheme == 3 && general2) {
-        total = general->getMaxHp() + general2->getMaxHp();
+        total = general->getDoubleMaxHp() + general2->getDoubleMaxHp();
         if (total % 2 != 0 && getMark("AwakenLostMaxHp") == 0)
             rule = 1;
     }

@@ -483,6 +483,8 @@ enum TriggerEvent {
 
     TurnBroken, // For the skill 'DanShou'. Do not use it to trigger events
 
+    GeneralShown, // For Official Hegemony mode
+
     NumOfEvents
 };
 

@@ -829,7 +829,10 @@ void Client::askForSkillInvoke(const Json::Value &arg) {
     skill_to_invoke = skill_name;
 
     QString text;
-    if (data.isEmpty()) {
+    if (skill_name.startsWith("userdefine:")) {
+        QString name = skill_name.mid(4);
+        prompt_doc->setHtml(Sanguosha->translate("@" + name));
+    } else if (data.isEmpty()) {
         text = tr("Do you want to invoke skill [%1] ?").arg(Sanguosha->translate(skill_name));
         prompt_doc->setHtml(text);
     } else if (data.startsWith("playerdata:")) {

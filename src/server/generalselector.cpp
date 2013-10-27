@@ -140,7 +140,7 @@ static bool CompareByMaxHp(const QString &a, const QString &b) {
     const General *g1 = Sanguosha->getGeneral(a);
     const General *g2 = Sanguosha->getGeneral(b);
 
-    return g1->getMaxHp() < g2->getMaxHp();
+    return g1->getDoubleMaxHp() < g2->getDoubleMaxHp();
 }
 
 QStringList GeneralSelector::arrange3v3(ServerPlayer *player) {

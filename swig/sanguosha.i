@@ -33,7 +33,7 @@ public:
     explicit General(Package *package, const char *name, const char *kingdom, int max_hp = 4, bool male = true, bool hidden = false, bool never_shown = false);
 
     // property getters/setters
-    int getMaxHp() const;
+    int getDoubleMaxHp() const;
     QString getKingdom() const;
     bool isMale() const;
     bool isFemale() const;

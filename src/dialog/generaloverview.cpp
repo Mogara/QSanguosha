@@ -303,7 +303,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         name = Sanguosha->translate(general_name);
         kingdom = Sanguosha->translate(general->getKingdom());
         gender = general->isMale() ? tr("Male") : (general->isFemale() ? tr("Female") : tr("NoGender"));
-        max_hp = QString::number(general->getMaxHp());
+        max_hp = QString::number((float)general->getDoubleMaxHp() / 2);
         package = Sanguosha->translate(general->getPackage());
 
         QString nickname = Sanguosha->translate("#" + general_name);
@@ -637,7 +637,7 @@ void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, 
         }
         if (!kingdoms.isEmpty() && !kingdoms.contains(general->getKingdom()))
             continue;
-        if (!(lower == 0 && upper == 0) && (general->getMaxHp() < lower || general->getMaxHp() > upper))
+        if (!(lower == 0 && upper == 0) && (general->getDoubleMaxHp() < lower || general->getDoubleMaxHp() > upper))
             continue;
         if (!packages.isEmpty() && !packages.contains(general->getPackage()))
             continue;

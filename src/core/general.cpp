@@ -8,8 +8,8 @@
 #include <QFile>
 
 General::General(Package *package, const QString &name, const QString &kingdom,
-                 int max_hp, bool male, bool hidden, bool never_shown)
-    : QObject(package), kingdom(kingdom), max_hp(max_hp), gender(male ? Male : Female),
+                 int double_max_hp, bool male, bool hidden, bool never_shown)
+    : QObject(package), kingdom(kingdom), double_max_hp(double_max_hp), gender(male ? Male : Female),
       hidden(hidden), never_shown(never_shown)
 {
     static QChar lord_symbol('$');
@@ -24,8 +24,8 @@ General::General(Package *package, const QString &name, const QString &kingdom,
     }
 }
 
-int General::getMaxHp() const{
-    return max_hp;
+int General::getDoubleMaxHp() const{
+    return double_max_hp;
 }
 
 QString General::getKingdom() const{
@@ -62,6 +62,14 @@ bool General::isHidden() const{
 
 bool General::isTotallyHidden() const{
     return never_shown;
+}
+
+int General::getMaxHpHead() const {
+    return double_max_hp;
+}
+
+int General::getMaxHpDeputy() const {
+    return double_max_hp;
 }
 
 void General::addSkill(Skill *skill) {
@@ -146,7 +154,7 @@ QString General::getSkillDescription(bool include_name, bool yellow) const{
         QString color_str = Sanguosha->getKingdomColor(kingdom).name();
         QString name = QString("<font color=%1><b>%2</b></font>     ").arg(color_str).arg(Sanguosha->translate(objectName()));
         name.prepend(QString("<img src='image/kingdom/icon/%1.png'/>    ").arg(kingdom));
-        for (int i = 0; i < max_hp; i++)
+        for (int i = 0; i < double_max_hp; i++)
             name.append("<img src='image/system/magatamas/5.png' height = 12/>");
         name.append("<br/> <br/>");
         description.prepend(name);

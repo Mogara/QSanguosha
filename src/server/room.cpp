@@ -3384,8 +3384,17 @@ void Room::startGame() {
     m_players.last()->setNext(m_players.first());
 
     foreach (ServerPlayer *player, m_players) {
-        Q_ASSERT(player->getGeneral());
-        player->setMaxHp(player->getGeneralMaxHp());
+        QStringList generals = getTag(player->objectName()).toStringList();
+        const General *general1 = Sanguosha->getGeneral(generals.first());
+        const General *general2 = Sanguosha->getGeneral(generals.last());
+        Q_ASSERT(general1 && general2);
+
+        int max_hp = general1->getMaxHpHead() 
+                     + general2->getMaxHpDeputy();
+        if (max_hp % 2 == 1)
+            addPlayerMark(player, "HalfMaxHpLeft");
+
+        player->setMaxHp(max_hp / 2);
         player->setHp(player->getMaxHp());
         // setup AI
         AI *ai = cloneAI(player);
