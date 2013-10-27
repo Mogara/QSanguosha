@@ -176,12 +176,6 @@ QSanSkillButton::QSanSkillButton(QGraphicsItem *parent)
     _m_skill = NULL;
 }
 
-void QSanSkillButton::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
-    QPointF point = event->pos();
-    if (insideButton(point))
-        onDoubleClick();
-}
-
 void QSanSkillButton::_setSkillType(SkillType type) {
     _m_skillType = type;
 }
@@ -195,17 +189,14 @@ void QSanSkillButton::onMouseClick() {
         emit skill_deactivated();
         emit skill_deactivated(_m_skill);
     }
-}
 
-void QSanSkillButton::onDoubleClick() {
     if (_m_state == QSanButton::S_STATE_CANPRESHOW)
         setState(former_state);
-    else if (_m_skill->canPreshow() && !Self->hasShownSkill(_m_skill))
-        setState(S_STATE_CANPRESHOW);
+    else if (_m_state == QSanButton::S_STATE_DISABLED && _m_skill->canPreshow() 
+        && !Self->hasShownSkill(_m_skill))
+        setState(QSanButton::S_STATE_CANPRESHOW);
 
     ClientInstance->preshow(_m_skill->objectName());
-
-    update();
 }
 
 void QSanSkillButton::setSkill(const Skill *skill) {
@@ -218,12 +209,11 @@ void QSanSkillButton::setSkill(const Skill *skill) {
      if (skill == NULL) skill = _m_skill;
 
      Skill::Frequency freq = skill->getFrequency();
-     if (freq == Skill::Frequent
-         || (freq == Skill::NotFrequent && skill->inherits("TriggerSkill") && !skill->inherits("WeaponSkill")
-             && !skill->inherits("ArmorSkill") && _m_viewAsSkill == NULL)) {
+     if (skill->inherits("TriggerSkill") && !skill->inherits("WeaponSkill")
+             && !skill->inherits("ArmorSkill") && _m_viewAsSkill == NULL) {
          setStyle(QSanButton::S_STYLE_TOGGLE);
-         setState(freq == Skill::Frequent ? QSanButton::S_STATE_DOWN : QSanButton::S_STATE_UP);
-         _setSkillType(QSanInvokeSkillButton::S_SKILL_FREQUENT);
+         setState(QSanButton::S_STATE_DISABLED);
+         _setSkillType(QSanInvokeSkillButton::S_SKILL_PROACTIVE);
          _m_emitActivateSignal = false;
          _m_emitDeactivateSignal = false;
          _m_canEnable = true;

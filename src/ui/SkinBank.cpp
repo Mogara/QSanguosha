@@ -196,17 +196,28 @@ QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName,
     key = arr.constData();
     if (!isImageKeyDefined(key)) return QString();
     QString path = toQString(_m_imageConfig[key]);
+
     QString stateKey;
-    if (state == QSanButton::S_STATE_DISABLED)
+    switch (state) {
+    case QSanButton::S_STATE_DISABLED :
         stateKey = "disabled";
-    else if (state == QSanButton::S_STATE_DOWN)
+        break;
+    case QSanButton::S_STATE_DOWN :
         stateKey = "down";
-    else if (state == QSanButton::S_STATE_HOVER)
+        break;
+    case QSanButton::S_STATE_HOVER :
         stateKey = "hover";
-    else if (state == QSanButton::S_STATE_UP)
+        break;
+    case QSanButton::S_STATE_UP :
         stateKey = "normal";
-    else
+        break;
+    case QSanButton::S_STATE_CANPRESHOW :
+        stateKey = "preshow";
+        break;
+
+    default :
         return QString();
+    }
     return path.arg(buttonName).arg(stateKey);
 }
 
@@ -920,7 +931,6 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         switch ((QSanInvokeSkillButton::SkillType)i) {
         case QSanInvokeSkillButton::S_SKILL_AWAKEN: key = "awakenFontColor"; break;
         case QSanInvokeSkillButton::S_SKILL_COMPULSORY: key = "compulsoryFontColor"; break;
-        case QSanInvokeSkillButton::S_SKILL_FREQUENT: key = "frequentFontColor"; break;
         case QSanInvokeSkillButton::S_SKILL_ONEOFF_SPELL: key = "oneoffFontColor"; break;
         case QSanInvokeSkillButton::S_SKILL_PROACTIVE: key = "proactiveFontColor"; break;
         case QSanInvokeSkillButton::S_SKILL_ATTACHEDLORD: key = "attachedlordFontColor"; break;

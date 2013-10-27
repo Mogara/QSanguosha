@@ -62,14 +62,13 @@ class QSanSkillButton: public QSanButton {
     Q_OBJECT
 
 public:
-    enum SkillType { S_SKILL_ATTACHEDLORD, S_SKILL_PROACTIVE, S_SKILL_FREQUENT, S_SKILL_COMPULSORY,
+    enum SkillType { S_SKILL_ATTACHEDLORD, S_SKILL_PROACTIVE, S_SKILL_COMPULSORY,
                      S_SKILL_AWAKEN, S_SKILL_ONEOFF_SPELL, S_NUM_SKILL_TYPES };
 
     inline static QString getSkillTypeString(SkillType type) {
         QString arg1;
         if (type == QSanSkillButton::S_SKILL_AWAKEN) arg1 = "awaken";
         else if (type == QSanSkillButton::S_SKILL_COMPULSORY) arg1 = "compulsory";
-        else if (type == QSanSkillButton::S_SKILL_FREQUENT) arg1 = "frequent";
         else if (type == QSanSkillButton::S_SKILL_ONEOFF_SPELL) arg1 = "oneoff";
         else if (type == QSanSkillButton::S_SKILL_PROACTIVE) arg1 = "proactive";
         else if (type == QSanSkillButton::S_SKILL_ATTACHEDLORD) arg1 = "attachedlord";
@@ -86,8 +85,6 @@ public:
     inline const ViewAsSkill *getViewAsSkill() const{ return _m_viewAsSkill; }
 
 protected:
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void onDoubleClick();
 
     virtual void _setSkillType(SkillType type);
     virtual void _repaint() = 0;
