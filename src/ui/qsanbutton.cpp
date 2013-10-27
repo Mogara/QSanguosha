@@ -255,7 +255,7 @@ void QSanSkillButton::setSkill(const Skill *skill) {
      if (!Self->hasShownSkill(skill) && skill->canPreshow())
          setState(QSanButton::S_STATE_CANPRESHOW);
 
-     Q_ASSERT((int)_m_skillType <= 5 && _m_state <= 4);
+     Q_ASSERT((int)_m_skillType <= 4 && _m_state <= 4);
      _repaint();
 }
 
