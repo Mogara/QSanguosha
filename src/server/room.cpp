@@ -2980,6 +2980,12 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
                 else
                     broadcastResetCard(getPlayers(), card_use.card->getEffectiveId());
             }
+
+            QString skill_name = card_use.card->showSkill();
+            if (!skill_name.isNull() && card_use.from->ownSkill(skill_name)
+                && !card_use.from->hasShownSkill(Sanguosha->getSkill(skill_name)))
+                card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+
             card_use.card->onUse(this, card_use);
         } else if (card) {
             CardUseStruct new_use = card_use;

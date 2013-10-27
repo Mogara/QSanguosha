@@ -123,6 +123,9 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
+    virtual QString showSkill() const;
+    virtual void setShowSkill(const QString &skill_name);
+
     inline virtual bool isKindOf(const char *cardType) const{ Q_ASSERT(cardType); return inherits(cardType); }
     inline virtual QStringList getFlags() const{ return flags; }
 
@@ -154,6 +157,8 @@ protected:
     int m_id;
     QString m_skillName;
     Card::HandlingMethod handling_method;
+
+    QString show_skill;
 
     mutable QStringList flags;
 };

@@ -20,7 +20,8 @@ const Card::Suit Card::AllSuits[4] = {
 Card::Card(Suit suit, int number, bool target_fixed)
     :target_fixed(target_fixed), mute(false),
      will_throw(true), has_preact(false), can_recast(false),
-     m_suit(suit), m_number(number), m_id(-1)
+     m_suit(suit), m_number(number), m_id(-1),
+     show_skill(QString())
 {
     handling_method = will_throw ? Card::MethodDiscard : Card::MethodUse;
 }
@@ -661,6 +662,14 @@ void Card::onEffect(const CardEffectStruct &) const{
 
 bool Card::isCancelable(const CardEffectStruct &) const{
     return false;
+}
+
+QString Card::showSkill() const {
+    return show_skill;
+}
+
+void Card::setShowSkill(const QString &skill_name) {
+    this->show_skill = skill_name;
 }
 
 void Card::addSubcard(int card_id) {
