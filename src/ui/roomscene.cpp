@@ -1170,7 +1170,6 @@ void RoomScene::enableTargets(const Card *card) {
     ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
 }
 
-#include "yjcm2012-package.h"
 void RoomScene::updateTargetsEnablity(const Card *card) {
     QMapIterator<PlayerCardContainer *, const ClientPlayer *> itor(item2player);
     while (itor.hasNext()) {
@@ -1192,10 +1191,6 @@ void RoomScene::updateTargetsEnablity(const Card *card) {
         if (card) {
             if (card->isKindOf("Collateral"))
                 isCollateral = true;
-            else if (card->isKindOf("QiceCard")) {
-                const QiceCard *qice_card = qobject_cast<const QiceCard *>(card);
-                isCollateral = (qice_card->getUserString() == "collateral");
-            }
         }
         bool weimuFailure = isCollateral && selected_targets.length() == 1;
         //=====================================

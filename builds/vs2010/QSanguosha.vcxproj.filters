@@ -150,12 +150,6 @@
     <ClCompile Include="..\..\src\package\firepackage.cpp">
       <Filter>package</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\package\god.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\joypackage.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\mountainpackage.cpp">
       <Filter>package</Filter>
     </ClCompile>
@@ -163,9 +157,6 @@
       <Filter>package</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\package\package.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\special3v3-package.cpp">
       <Filter>package</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\package\standard-cards.cpp">
@@ -184,12 +175,6 @@
       <Filter>package</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\package\wind.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\yjcm-package.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\yjcm2012-package.cpp">
       <Filter>package</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\package\exppattern.cpp">
@@ -420,9 +405,6 @@
     <ClCompile Include="Release\moc_fancheng-scenario.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\package\bgm-package.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\server\roomthreadxmode.cpp">
       <Filter>server</Filter>
     </ClCompile>
@@ -430,24 +412,6 @@
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Release\moc_roomthreadxmode.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\yjcm2013-package.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_yjcm2013-package.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_yjcm2013-package.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\package\special1v1-package.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_special1v1-package.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_special1v1-package.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\package\formation.cpp">
@@ -578,12 +542,6 @@
     <CustomBuild Include="..\..\src\dialog\scenario-overview.h">
       <Filter>dialog</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\package\bgm-package.h">
-      <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\special3v3-package.h">
-      <Filter>package</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\package\standard-equips.h">
       <Filter>package</Filter>
     </CustomBuild>
@@ -596,22 +554,10 @@
     <CustomBuild Include="..\..\src\package\wind.h">
       <Filter>package</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\package\yjcm-package.h">
-      <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\yjcm2012-package.h">
-      <Filter>package</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\package\thicket.h">
       <Filter>package</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\package\mountainpackage.h">
-      <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\joypackage.h">
-      <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\god.h">
       <Filter>package</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\package\firepackage.h">
@@ -734,12 +680,6 @@
     <CustomBuild Include="..\..\src\server\roomthreadxmode.h">
       <Filter>server</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\package\yjcm2013-package.h">
-      <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\special1v1-package.h">
-      <Filter>package</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\package\formation.h">
       <Filter>package</Filter>
     </CustomBuild>
@@ -761,12 +701,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_aux-skills.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_bgm-package.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_bgm-package.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_boss-mode-scenario.cpp">
@@ -931,12 +865,6 @@
     <ClCompile Include="release\moc_generalselector.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="debug\moc_god.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_god.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="debug\moc_guandu-scenario.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -947,12 +875,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_indicatoritem.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_joypackage.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_joypackage.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_lua-wrapper.cpp">
@@ -1117,12 +1039,6 @@
     <ClCompile Include="release\moc_socket.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="debug\moc_special3v3-package.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_special3v3-package.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
     <ClCompile Include="debug\moc_sprite.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -1169,18 +1085,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_window.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_yjcm-package.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_yjcm-package.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_yjcm2012-package.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_yjcm2012-package.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>

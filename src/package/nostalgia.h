@@ -34,48 +34,6 @@ public:
     NostalWindPackage();
 };
 
-class NostalYJCMPackage: public Package {
-    Q_OBJECT
-
-public:
-    NostalYJCMPackage();
-};
-
-class NostalYJCM2012Package: public Package {
-    Q_OBJECT
-
-public:
-    NostalYJCM2012Package();
-};
-
-class NosJujianCard: public SkillCard {
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE NosJujianCard();
-
-    virtual void onEffect(const CardEffectStruct &effect) const;
-};
-
-class NosXuanhuoCard: public SkillCard {
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE NosXuanhuoCard();
-
-    virtual void onEffect(const CardEffectStruct &effect) const;
-};
-
-class NosJiefanCard: public SkillCard {
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE NosJiefanCard();
-
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-};
-
-
 class NosRendeCard: public SkillCard {
     Q_OBJECT
 
