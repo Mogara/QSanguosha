@@ -880,7 +880,7 @@ int ServerPlayer::getGeneralMaxHp() const{
     else {
         int first = getGeneral()->getDoubleMaxHp();
         int second = getGeneral2()->getDoubleMaxHp();
-
+        /*
         int plan = Config.MaxHpScheme;
         if (Config.GameMode.contains("_mini_") || Config.GameMode == "custom_scenario") plan = 1;
 
@@ -891,8 +891,8 @@ int ServerPlayer::getGeneralMaxHp() const{
         default:
                 max_hp = first + second - Config.Scheme0Subtraction; break;
         }
-
-        max_hp = qMax(max_hp, 1);
+        */
+        max_hp = (first + second) / 2;
     }
 
     if (room->hasWelfare(this))
