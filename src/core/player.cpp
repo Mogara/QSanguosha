@@ -1050,14 +1050,10 @@ bool Player::hasShownAllGenerals() const {
 
 void Player::setGeneral1Showed(bool showed) {
     this->general1_showed = showed;
-    foreach (QString skill, head_skills.keys())
-        head_skills[skill] = true;
 }
 
 void Player::setGeneral2Showed(bool showed) {
     this->general2_showed = showed;
-    foreach (QString skill, deputy_skills.keys())
-        deputy_skills[skill] = true;
 }
 
 bool Player::ownSkill(const QString skill_name) const {

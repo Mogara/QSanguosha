@@ -1244,6 +1244,8 @@ void ServerPlayer::showGeneral(bool head_general) {
     if (head_general) {
         if (getGeneralName() != "anjiang") return;
 
+        room->setPlayerProperty(this, "general1_showed", true);
+
         general_name = names.first();
 
         Json::Value arg(Json::arrayValue);
@@ -1267,7 +1269,7 @@ void ServerPlayer::showGeneral(bool head_general) {
             }
         }
 
-        if (!hasShownOneGeneral()) {
+        if (!hasShownGeneral2()) {
             QString kingdom = getGeneral()->getKingdom();
             room->setPlayerProperty(this, "kingdom", kingdom);
 
@@ -1283,9 +1285,11 @@ void ServerPlayer::showGeneral(bool head_general) {
 
             room->setPlayerProperty(this, "role", role);
         }
-        room->setPlayerProperty(this, "general1_showed", true);
     } else {
         if (getGeneral2Name() != "anjiang") return;
+
+        room->setPlayerProperty(this, "general2_showed", true);
+
         general_name = names.at(1);
         Json::Value arg(Json::arrayValue);
         arg[0] = S_GAME_EVENT_CHANGE_HERO;
@@ -1308,7 +1312,7 @@ void ServerPlayer::showGeneral(bool head_general) {
             }
         }
 
-        if (!hasShownOneGeneral()) {
+        if (!hasShownGeneral1()) {
             QString kingdom = getGeneral2()->getKingdom();
             room->setPlayerProperty(this, "kingdom", kingdom);
 
@@ -1324,7 +1328,6 @@ void ServerPlayer::showGeneral(bool head_general) {
 
             room->setPlayerProperty(this, "role", role);
         }
-        room->setPlayerProperty(this, "general2_showed", true);
     }
 
     Q_ASSERT(room->getThread() != NULL);
