@@ -7,14 +7,9 @@
 
 ZhihengCard::ZhihengCard() {
     target_fixed = true;
-    mute = true;
 }
 
 void ZhihengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
-    if (source->hasInnateSkill("zhiheng") || !source->hasSkill("jilve"))
-        room->broadcastSkillInvoke("zhiheng");
-    else
-        room->broadcastSkillInvoke("jilve", 4);
     if (source->isAlive())
         room->drawCards(source, subcards.length());
 }

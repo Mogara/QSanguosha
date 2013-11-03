@@ -3388,6 +3388,8 @@ void Room::startGame() {
         const General *general1 = Sanguosha->getGeneral(generals.first());
         const General *general2 = Sanguosha->getGeneral(generals.last());
         Q_ASSERT(general1 && general2);
+        if (general1->isCompanionWith(generals.last()))
+            addPlayerMark(player, "CompanionEffect");
 
         int max_hp = general1->getMaxHpHead() 
                      + general2->getMaxHpDeputy();
