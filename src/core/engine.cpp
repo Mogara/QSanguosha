@@ -13,7 +13,6 @@
 #include "lua-wrapper.h"
 #include "RoomState.h"
 
-#include "guandu-scenario.h"
 #include "couple-scenario.h"
 #include "boss-mode-scenario.h"
 #include "zombie-scenario.h"
@@ -51,7 +50,6 @@ void Engine::_loadMiniScenarios() {
 }
 
 void Engine::_loadModScenarios() {
-    addScenario(new GuanduScenario());
     addScenario(new CoupleScenario());
     addScenario(new FanchengScenario());
     addScenario(new ZombieScenario());

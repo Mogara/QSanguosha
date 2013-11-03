@@ -186,9 +186,6 @@
     <ClCompile Include="..\..\src\scenario\couple-scenario.cpp">
       <Filter>scenario</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\scenario\guandu-scenario.cpp">
-      <Filter>scenario</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\scenario\miniscenarios.cpp">
       <Filter>scenario</Filter>
     </ClCompile>
@@ -578,9 +575,6 @@
     <CustomBuild Include="..\..\src\scenario\miniscenarios.h">
       <Filter>scenario</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\scenario\guandu-scenario.h">
-      <Filter>scenario</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\ui\button.h">
       <Filter>ui</Filter>
     </CustomBuild>
@@ -863,12 +857,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_generalselector.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_guandu-scenario.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_guandu-scenario.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_indicatoritem.cpp">

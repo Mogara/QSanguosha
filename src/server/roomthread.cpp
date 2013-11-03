@@ -622,12 +622,13 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                             name = names.first();
                         if (name == "trigger_none") break;
                         const TriggerSkill *skill = skills.at(names.indexOf(name));
-                        if (skill->cost(triggerEvent, room, target, data))
+                        if (skill->cost(triggerEvent, room, target, data)) {
                             will_trigger.prepend(skill);
+                            if (p && p->ownSkill(name) && !p->hasShownSkill(Sanguosha->getSkill(name)))
+                                p->showGeneral(p->inHeadSkills(name));
+                        }
                         names.removeOne(name);
                         skills.removeOne(skill);
-                        if (p && p->ownSkill(name) && !p->hasShownSkill(Sanguosha->getSkill(name)))
-                            p->showGeneral(p->inHeadSkills(name));
                     } while (names.length() > 1);
                 }
             }

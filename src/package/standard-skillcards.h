@@ -122,10 +122,9 @@ class Yiji: public MasochismSkill {
 
 public:
     Yiji();
-    virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const;
-
-protected:
-    int n;
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *guojia, QVariant &data) const;
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *guojia, QVariant &data) const;
+    virtual void onDamaged(ServerPlayer *target, const DamageStruct &) const;
 };
 
 #endif

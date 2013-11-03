@@ -129,60 +129,77 @@ public:
 };
 
 Yiji::Yiji(): MasochismSkill("yiji") {
-    frequency = Frequent;
-    n = 2;
 }
 
-void Yiji::onDamaged(ServerPlayer *guojia, const DamageStruct &damage) const{
-    Room *room = guojia->getRoom();
+bool Yiji::cost(TriggerEvent, Room *room, ServerPlayer *guojia, QVariant &data) const {
+    if (guojia->isAlive() && guojia->askForSkillInvoke(objectName(), data)) {
+        room->broadcastSkillInvoke(objectName());
+        return true;
+    }
+
+    return false;
+}
+
+bool Yiji::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *guojia, QVariant &data) const {
+    DamageStruct damage = data.value<DamageStruct>();
+    onDamaged(guojia, damage);
     int x = damage.damage;
-    for (int i = 0; i < x; i++) {
-        if (!guojia->isAlive() || !room->askForSkillInvoke(guojia, objectName()))
+    for (int i = 1; i < x; i++) {
+        if (cost(triggerEvent, room, guojia, data)) {
+            if (!guojia->hasShownSkill(this))
+                guojia->showGeneral(guojia->inHeadSkills(objectName()));
+            onDamaged(guojia, damage);
+        } else
+            break;
+    }
+
+    return false;
+}
+
+void Yiji::onDamaged(ServerPlayer *guojia, const DamageStruct &) const {
+    Room *room = guojia->getRoom();
+
+    QList<ServerPlayer *> _guojia;
+    _guojia.append(guojia);
+    QList<int> yiji_cards = room->getNCards(2, false);
+
+    CardsMoveStruct move(yiji_cards, NULL, guojia, Player::PlaceTable, Player::PlaceHand,
+        CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
+    QList<CardsMoveStruct> moves;
+    moves.append(move);
+    room->notifyMoveCards(true, moves, false, _guojia);
+    room->notifyMoveCards(false, moves, false, _guojia);
+
+    QList<int> origin_yiji = yiji_cards;
+    while (room->askForYiji(guojia, yiji_cards, objectName(), true, false, true, -1, room->getAlivePlayers())) {
+        CardsMoveStruct move(QList<int>(), guojia, NULL, Player::PlaceHand, Player::PlaceTable,
+            CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
+        foreach (int id, origin_yiji) {
+            if (room->getCardPlace(id) != Player::DrawPile) {
+                move.card_ids << id;
+                yiji_cards.removeOne(id);
+            }
+        }
+        origin_yiji = yiji_cards;
+        QList<CardsMoveStruct> moves;
+        moves.append(move);
+        room->notifyMoveCards(true, moves, false, _guojia);
+        room->notifyMoveCards(false, moves, false, _guojia);
+        if (!guojia->isAlive())
             return;
-        room->broadcastSkillInvoke("yiji");
+    }
 
-        QList<ServerPlayer *> _guojia;
-        _guojia.append(guojia);
-        QList<int> yiji_cards = room->getNCards(n, false);
-
-        CardsMoveStruct move(yiji_cards, NULL, guojia, Player::PlaceTable, Player::PlaceHand,
-                             CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
+    if (!yiji_cards.isEmpty()) {
+        CardsMoveStruct move(yiji_cards, guojia, NULL, Player::PlaceHand, Player::PlaceTable,
+            CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
         QList<CardsMoveStruct> moves;
         moves.append(move);
         room->notifyMoveCards(true, moves, false, _guojia);
         room->notifyMoveCards(false, moves, false, _guojia);
 
-        QList<int> origin_yiji = yiji_cards;
-        while (room->askForYiji(guojia, yiji_cards, objectName(), true, false, true, -1, room->getAlivePlayers())) {
-            CardsMoveStruct move(QList<int>(), guojia, NULL, Player::PlaceHand, Player::PlaceTable,
-                                 CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
-            foreach (int id, origin_yiji) {
-                if (room->getCardPlace(id) != Player::DrawPile) {
-                    move.card_ids << id;
-                    yiji_cards.removeOne(id);
-                }
-            }
-            origin_yiji = yiji_cards;
-            QList<CardsMoveStruct> moves;
-            moves.append(move);
-            room->notifyMoveCards(true, moves, false, _guojia);
-            room->notifyMoveCards(false, moves, false, _guojia);
-            if (!guojia->isAlive())
-                return;
-        }
-
-        if (!yiji_cards.isEmpty()) {
-            CardsMoveStruct move(yiji_cards, guojia, NULL, Player::PlaceHand, Player::PlaceTable,
-                                 CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
-            QList<CardsMoveStruct> moves;
-            moves.append(move);
-            room->notifyMoveCards(true, moves, false, _guojia);
-            room->notifyMoveCards(false, moves, false, _guojia);
-
-            DummyCard *dummy = new DummyCard(yiji_cards);
-            guojia->obtainCard(dummy, false);
-            delete dummy;
-        }
+        DummyCard *dummy = new DummyCard(yiji_cards);
+        guojia->obtainCard(dummy, false);
+        delete dummy;
     }
 }
 
