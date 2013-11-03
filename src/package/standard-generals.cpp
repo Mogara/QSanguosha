@@ -1112,6 +1112,7 @@ public:
 class Qixi: public OneCardViewAsSkill {
 public:
     Qixi(): OneCardViewAsSkill("qixi") {
+        filter_pattern = ".|black";
     }
 
     virtual bool viewFilter(const Card *to_select) const{
@@ -1122,6 +1123,7 @@ public:
         Dismantlement *dismantlement = new Dismantlement(originalCard->getSuit(), originalCard->getNumber());
         dismantlement->addSubcard(originalCard->getId());
         dismantlement->setSkillName(objectName());
+        dismantlement->setShowSkill(objectName());
         return dismantlement;
     }
 };
