@@ -434,7 +434,9 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             bool head_skill = arg[3].asBool();
 
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
-            player->addSkill(skill_name,head_skill);
+            player->addSkill(skill_name, head_skill);
+
+            player->setSkillsPreshowed(head_skill ? "h" : "d");
 
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
             container->updateAvatarTooltip();

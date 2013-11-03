@@ -1056,6 +1056,17 @@ void Player::setGeneral2Showed(bool showed) {
     this->general2_showed = showed;
 }
 
+void Player::setSkillsPreshowed(const QString &flags) {
+    if (flags.contains("h")) {
+        foreach (QString skill, head_skills.keys())
+            head_skills[skill] = true;
+    }
+    if (flags.contains("d")) {
+        foreach (QString skill, deputy_skills.keys())
+            deputy_skills[skill] = true;
+    }
+}
+
 bool Player::ownSkill(const QString skill_name) const {
     return (head_skills.keys() + deputy_skills.keys()).contains(skill_name);
 }

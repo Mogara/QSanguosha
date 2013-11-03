@@ -802,7 +802,7 @@ void ServerPlayer::addSkill(const QString &skill_name, bool head_skill) {
     args[1] = toJsonString(objectName());
     args[2] = toJsonString(skill_name);
     args[3] = head_skill;
-    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+    room->doNotify(this, QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
 void ServerPlayer::loseSkill(const QString &skill_name) {
@@ -880,18 +880,7 @@ int ServerPlayer::getGeneralMaxHp() const{
     else {
         int first = getGeneral()->getDoubleMaxHp();
         int second = getGeneral2()->getDoubleMaxHp();
-        /*
-        int plan = Config.MaxHpScheme;
-        if (Config.GameMode.contains("_mini_") || Config.GameMode == "custom_scenario") plan = 1;
 
-        switch (plan) {
-        case 3: max_hp = (first + second) / 2; break;
-        case 2: max_hp = qMax(first, second); break;
-        case 1: max_hp = qMin(first, second); break;
-        default:
-                max_hp = first + second - Config.Scheme0Subtraction; break;
-        }
-        */
         max_hp = (first + second) / 2;
     }
 
@@ -1236,7 +1225,6 @@ bool ServerPlayer::CompareByActionOrder(ServerPlayer *a, ServerPlayer *b) {
 }
 
 void ServerPlayer::showGeneral(bool head_general) {
-    Room *room = getRoom();
     QStringList names = room->getTag(objectName()).toStringList();
     if (names.isEmpty()) return;
     QString general_name;
@@ -1256,6 +1244,9 @@ void ServerPlayer::showGeneral(bool head_general) {
         arg[4] = false;
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral(this, general_name);
+
+        setSkillsPreshowed("h");
+        sendSkillsToOthers();
 
         foreach (const Skill *skill, getVisibleSkillList()) {
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
@@ -1300,6 +1291,9 @@ void ServerPlayer::showGeneral(bool head_general) {
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral2(this, general_name);
 
+        setSkillsPreshowed("d");
+        sendSkillsToOthers(false);
+
         foreach (const Skill *skill, getVisibleSkillList()) {
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
                 && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
@@ -1331,7 +1325,6 @@ void ServerPlayer::showGeneral(bool head_general) {
     }
 
     Q_ASSERT(room->getThread() != NULL);
-    room->getThread()->addPlayerSkills(this);
     room->getThread()->trigger(GeneralShown, room, this);
 
     LogMessage log;
@@ -1340,5 +1333,21 @@ void ServerPlayer::showGeneral(bool head_general) {
     log.arg  = getGeneralName();
     log.arg2 = getGeneral2Name();
     room->sendLog(log);
+}
+
+void ServerPlayer::sendSkillsToOthers(bool head_skill /* = true */) {
+    QStringList names = room->getTag(objectName()).toStringList();
+    if (names.isEmpty()) return;
+
+    QString general = head_skill ? names.first() : names.last();
+    foreach(auto skill, Sanguosha->getGeneral(general)->getSkillList()) {
+        Json::Value args;
+        args[0] = QSanProtocol::S_GAME_EVENT_ADD_SKILL;
+        args[1] = toJsonString(objectName());
+        args[2] = toJsonString(skill->objectName());
+        args[3] = head_skill;
+        foreach(auto p, room->getOtherPlayers(this, true))
+            room->doNotify(p, QSanProtocol::S_COMMAND_LOG_EVENT, args);
+    }
 }
 

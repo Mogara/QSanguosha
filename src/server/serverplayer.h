@@ -153,6 +153,7 @@ public:
     inline void removePileByName(QString pile_name) { clearOnePrivatePile(pile_name); }
 
     void showGeneral(bool head_general = true);
+    void sendSkillsToOthers(bool head_skill = true);
 
 protected:
     //Synchronization helpers
