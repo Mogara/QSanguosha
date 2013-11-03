@@ -1112,7 +1112,6 @@ public:
 class Qixi: public OneCardViewAsSkill {
 public:
     Qixi(): OneCardViewAsSkill("qixi") {
-        filter_pattern = ".|black";
     }
 
     virtual bool viewFilter(const Card *to_select) const{
