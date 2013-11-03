@@ -324,9 +324,10 @@ QString Card::toString(bool hidden) const{
     if (!isVirtualCard())
         return QString::number(m_id);
     else
-        return QString("%1:%2[%3:%4]=%5")
+        return QString("%1:%2[%3:%4]=%5&%6")
                        .arg(objectName()).arg(m_skillName)
-                       .arg(getSuitString()).arg(getNumberString()).arg(subcardString());
+                       .arg(getSuitString()).arg(getNumberString()).arg(subcardString())
+                       .arg(show_skill);
 }
 
 QString Card::getEffectName() const{
@@ -386,12 +387,13 @@ const Card *Card::Parse(const QString &str) {
     if (str.startsWith(QChar('@'))) {
         // skill card
         QRegExp pattern("@(\\w+)=([^:]+)(:.+)?");
-        QRegExp ex_pattern("@(\\w*)\\[(\\w+):(.+)\\]=([^:]+)(:.+)?");
+        QRegExp ex_pattern("@(\\w*)\\[(\\w+):(.+)\\]=([^:]+)&(.*)(:.+)?");
 
         QStringList texts;
         QString card_name, card_suit, card_number;
         QStringList subcard_ids;
         QString subcard_str;
+        QString show_skill;
         QString user_string;
 
         if (pattern.exactMatch(str)) {
@@ -405,7 +407,8 @@ const Card *Card::Parse(const QString &str) {
             card_suit = texts.at(2);
             card_number = texts.at(3);
             subcard_str = texts.at(4);
-            user_string = texts.at(5);
+            show_skill = texts.at(5);
+            user_string = texts.at(6);
         } else
             return NULL;
 
@@ -445,6 +448,9 @@ const Card *Card::Parse(const QString &str) {
             card->setNumber(number);
         }
 
+        if (!show_skill.isEmpty())
+            card->setShowSkill(show_skill);
+
         if (!user_string.isEmpty()) {
             user_string.remove(0, 1);
             card->setUserString(user_string);
@@ -463,7 +469,7 @@ const Card *Card::Parse(const QString &str) {
         new_card->deleteLater();
         return new_card;
     } else if (str.contains(QChar('='))) {
-        QRegExp pattern("(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)");
+        QRegExp pattern("(\\w+):(\\w*)\\[(\\w+):(.+)\\]=(.+)&(.*)");
         if (!pattern.exactMatch(str))
             return NULL;
 
@@ -473,6 +479,7 @@ const Card *Card::Parse(const QString &str) {
         QString suit_string = texts.at(3);
         QString number_string = texts.at(4);
         QString subcard_str = texts.at(5);
+        QString show_skill = texts.at(6);
         QStringList subcard_ids;
         if (subcard_str != ".")
             subcard_ids = subcard_str.split("+");
@@ -503,6 +510,7 @@ const Card *Card::Parse(const QString &str) {
 
         card->addSubcards(StringList2IntList(subcard_ids));
         card->setSkillName(m_skillName);
+        card->setShowSkill(show_skill);
         card->deleteLater();
         return card;
     } else {
@@ -775,11 +783,11 @@ Card::CardType SkillCard::getTypeId() const{
 QString SkillCard::toString(bool hidden) const{
     QString str;
     if (!hidden)
-        str = QString("@%1[%2:%3]=%4")
+        str = QString("@%1[%2:%3]=%4&%5")
                       .arg(metaObject()->className()).arg(getSuitString())
-                      .arg(getNumberString()).arg(subcardString());
+                      .arg(getNumberString()).arg(subcardString()).arg(show_skill);
     else
-        str = QString("@%1[no_suit:-]=.").arg(metaObject()->className());
+        str = QString("@%1[no_suit:-]=.&%2").arg(metaObject()->className()).arg(show_skill);
 
     if (!user_string.isEmpty())
         return QString("%1:%2").arg(str).arg(user_string);

@@ -148,8 +148,6 @@ public:
         int x = damage.damage;
         for (int i = 1; i < x; i++) {
             if (cost(triggerEvent, room, guojia, data)) {
-                if (!guojia->hasShownSkill(this))
-                    guojia->showGeneral(guojia->inHeadSkills(objectName()));
                 onDamaged(guojia, damage);
             } else
                 break;
@@ -682,9 +680,6 @@ public:
             else {
                 player->tag["TiejiCurrentTarget"] = QVariant::fromValue(p);
                 if (cost(TriggerEvent, room, player, data)) {
-                    if (!player->hasShownSkill(this))
-                        player->showGeneral(player->inHeadSkills(objectName()));
-
                     doTieji(p, player, use, jink_list);
                 }
             }
@@ -906,9 +901,6 @@ public:
                 if (player->getHp() <= handcardnum || player->getAttackRange() >= handcardnum) {
                     player->tag["LiegongCurrentTarget"] = QVariant::fromValue(p);
                     if (cost(TriggerEvent, room, player, data)) {
-                        if (!player->hasShownSkill(this))
-                            player->showGeneral(player->inHeadSkills(objectName()));
-
                         doLiegong(p, use, jink_list);
                     }
                 }
@@ -937,8 +929,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
-        if (Self->getMark("ZhihengInLatestKOF") > 0 && selected.length() >= 2) return false;
-        return !Self->isJilei(to_select);
+        return !Self->isJilei(to_select) && selected.length() < Self->getMaxHp();
     }
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
@@ -948,27 +939,12 @@ public:
         ZhihengCard *zhiheng_card = new ZhihengCard;
         zhiheng_card->addSubcards(cards);
         zhiheng_card->setSkillName(objectName());
+        zhiheng_card->setShowSkill(objectName());
         return zhiheng_card;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->canDiscard(player, "he") && !player->hasUsed("ZhihengCard");
-    }
-
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@zhiheng";
-    }
-};
-
-class ZhihengForKOF: public GameStartSkill {
-public:
-    ZhihengForKOF(): GameStartSkill("#zhiheng-for-kof") {
-    }
-
-    virtual void onGameStart(ServerPlayer *player) const{
-        Room *room = player->getRoom();
-        if (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() != "Classical")
-            room->setPlayerMark(player, "ZhihengInLatestKOF", 1);
     }
 };
 
@@ -1625,9 +1601,7 @@ void StandardPackage::addGenerals() {
     // Wu
     General *sunquan = new General(this, "sunquan$", "wu"); // WU 001
     sunquan->addSkill(new Zhiheng);
-    sunquan->addSkill(new ZhihengForKOF);
     sunquan->addSkill(new Jiuyuan);
-    related_skills.insertMulti("zhiheng", "#zhiheng-for-kof");
 
     General *ganning = new General(this, "ganning", "wu"); // WU 002
     ganning->addSkill(new Qixi);
