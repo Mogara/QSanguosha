@@ -301,24 +301,56 @@ public:
     }
 };
 
-class LuoyiBuff: public TriggerSkill {
+class Luoyi: public TriggerSkill {
 public:
-    LuoyiBuff(): TriggerSkill("#luoyi") {
-        events << DamageCaused;
+    Luoyi(): TriggerSkill("luoyi") {
+        events << DrawNCards << DamageCaused << PreCardUsed;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->hasFlag("luoyi") && target->isAlive();
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+        if (triggerEvent == DrawNCards)
+            return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who);
+        else if (triggerEvent == PreCardUsed){
+            if (player != NULL && player->isAlive() && player->hasFlag("luoyi")){
+                CardUseStruct use = data.value<CardUseStruct>();
+                return use.card != NULL && (use.card->isKindOf("Slash") || use.card->isKindOf("Duel"));
+            }
+            return false;
+        }
+        else if (triggerEvent == DamageCaused){
+            if (player != NULL && player->isAlive() && player->hasFlag("luoyi")){
+                DamageStruct damage = data.value<DamageStruct>();
+                return damage.card != NULL && damage.card->hasFlag("luoyi") && !damage.chain && !damage.transfer && damage.by_user;
+            }
+        }
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *xuchu, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        if (damage.chain || damage.transfer || !damage.by_user) return false;
-        const Card *reason = damage.card;
-        if (reason && (reason->isKindOf("Slash") || reason->isKindOf("Duel"))) {
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == DrawNCards){
+            if (player->askForSkillInvoke(objectName())){
+                room->broadcastSkillInvoke(objectName());
+                return true;
+            }
+        }
+        else 
+            return true;
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == DrawNCards){
+            player->setFlags(objectName());
+            data = data.toInt() - 1;
+        }
+        else if (triggerEvent == PreCardUsed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            room->setCardFlag(use.card, objectName());
+        }
+        else if (triggerEvent == DamageCaused){
+            DamageStruct damage = data.value<DamageStruct>();
             LogMessage log;
             log.type = "#LuoyiBuff";
-            log.from = xuchu;
+            log.from = player;
             log.to << damage.to;
             log.arg = QString::number(damage.damage);
             log.arg2 = QString::number(++damage.damage);
@@ -326,24 +358,6 @@ public:
 
             data = QVariant::fromValue(damage);
         }
-
-        return false;
-    }
-};
-
-class Luoyi: public DrawCardsSkill {
-public:
-    Luoyi(): DrawCardsSkill("luoyi") {
-    }
-
-    virtual int getDrawNum(ServerPlayer *xuchu, int n) const{
-        Room *room = xuchu->getRoom();
-        if (room->askForSkillInvoke(xuchu, objectName())) {
-            room->broadcastSkillInvoke(objectName());
-            xuchu->setFlags(objectName());
-            return n - 1;
-        } else
-            return n;
     }
 };
 
@@ -354,7 +368,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
         if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start)
             return TriggerSkill::triggerable(triggerEvent, room, player, data);
         else if (triggerEvent == FinishJudge)
@@ -1558,6 +1572,8 @@ public:
 void StandardPackage::addGenerals() {
     // Wei
     General *caocao = new General(this, "caocao$", "wei"); // WEI 001
+    caocao->addCompanion("xuchu");
+    caocao->addCompanion("dianwei");
     caocao->addSkill(new Jianxiong);
     caocao->addSkill(new Hujia);
 
@@ -1574,8 +1590,6 @@ void StandardPackage::addGenerals() {
 
     General *xuchu = new General(this, "xuchu", "wei"); // WEI 005
     xuchu->addSkill(new Luoyi);
-    xuchu->addSkill(new LuoyiBuff);
-    related_skills.insertMulti("luoyi", "#luoyi");
 
     General *guojia = new General(this, "guojia", "wei", 3); // WEI 006
     guojia->addSkill(new Tiandu);
