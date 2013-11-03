@@ -1590,7 +1590,7 @@ void StandardPackage::addGenerals() {
     liubei->addSkill(new Rende);
     liubei->addSkill(new Jijiang);
 
-    General *guanyu = new General(this, "guanyu", "shu"); // SHU 002
+    General *guanyu = new General(this, "guanyu", "shu", 5); // SHU 002
     guanyu->addSkill(new Wusheng);
 
     General *zhangfei = new General(this, "zhangfei", "shu"); // SHU 003
@@ -1653,7 +1653,7 @@ void StandardPackage::addGenerals() {
     huatuo->addSkill(new Qingnang);
     huatuo->addSkill(new Jijiu);
 
-    General *lvbu = new General(this, "lvbu", "qun"); // QUN 002
+    General *lvbu = new General(this, "lvbu", "qun", 5); // QUN 002
     lvbu->addSkill(new Wushuang);
 
     General *diaochan = new General(this, "diaochan", "qun", 3, false); // QUN 003
