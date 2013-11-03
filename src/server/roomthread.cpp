@@ -615,6 +615,9 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                     if (names.length() > 1)
                         names << "trigger_none";
                     do {
+                        if (names.length() == 2)
+                            names.removeLast();
+
                         QString name;
                         if (p != NULL)
                             name = room->askForChoice(p, "TriggerOrder", names.join("+"), data);

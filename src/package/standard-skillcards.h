@@ -117,14 +117,4 @@ private:
     static bool hasShuGenerals(const Player *player);
 };
 
-class Yiji: public MasochismSkill {
-    Q_OBJECT
-
-public:
-    Yiji();
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *guojia, QVariant &data) const;
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *guojia, QVariant &data) const;
-    virtual void onDamaged(ServerPlayer *target, const DamageStruct &) const;
-};
-
 #endif

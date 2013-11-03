@@ -289,6 +289,14 @@ MasochismSkill::MasochismSkill(const QString &name)
     events << Damaged;
 }
 
+bool MasochismSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const {
+    return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who);
+}
+
+bool MasochismSkill::cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+    return TriggerSkill::cost(triggerEvent, room, player, data);
+}
+
 bool MasochismSkill::effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
     DamageStruct damage = data.value<DamageStruct>();
     onDamaged(player, damage);

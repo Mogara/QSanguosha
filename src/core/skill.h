@@ -162,6 +162,8 @@ class MasochismSkill: public TriggerSkill {
 public:
     MasochismSkill(const QString &name);
 
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const = 0;
 };
