@@ -616,7 +616,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             break;
         }
     case GeneralShown: {
-            if (player->hasShownAllGenerals() && player->getMark("HalfMaxHpLeft") > 0 
+            if (player->isAlive() && player->hasShownAllGenerals() && player->getMark("HalfMaxHpLeft") > 0 
                 && player->askForSkillInvoke("userdefine:halfmaxhp")) {
                 player->drawCards(1);
                 room->removePlayerMark(player, "HalfMaxHpLeft");
@@ -743,52 +743,21 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const{
 }
 
 void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const{
-    Q_ASSERT(killer->getRoom() != NULL);
-    Room *room = killer->getRoom();
-    if (killer->isDead() || room->getMode() == "06_XMode")
+    if (killer->isDead() || !killer->hasShownOneGeneral())
         return;
 
-    if (killer->getRoom()->getMode() == "06_3v3") {
-        if (Config.value("3v3/OfficialRule", "2013").toString().startsWith("201"))
-            killer->drawCards(2);
-        else
-            killer->drawCards(3);
-    } else {
-        ServerPlayer *hmkiller = room->getTag("huamingkiller").value<ServerPlayer *>();
-        ServerPlayer *shanfu = room->getTag("shanfu").value<ServerPlayer *>();
-        if (hmkiller == killer && shanfu == victim){
-            if (killer == victim) return;
-            if (shanfu->askForSkillInvoke("huaming", QVariant::fromValue(killer))){
-                QString role = room->askForChoice(shanfu, "huaming", "loyalist+renegade+rebel", QVariant::fromValue(killer));
-                LogMessage log;
-                log.type = "#huaming";
-                log.from = shanfu;
-                log.to.append(killer);
-                log.arg = "huaming";
-                log.arg2 = role;
-                room->sendLog(log);
-                if (role == "loyalist"){
-                    if (killer->isLord())
-                        killer->throwAllHandCardsAndEquips();
-                    room->broadcastSkillInvoke("huaming", 1);
-                }
-                else if (role == "renegade")
-                    room->broadcastSkillInvoke("huaming", 2);
-                else if (role == "rebel"){
-                    killer->drawCards(3);
-                    room->broadcastSkillInvoke("huaming", 3);
-                }
-                room->removeTag("huamingkiller");
-                room->removeTag("shanfu");
-                room->getThread()->delay(2000);
-            }
+    Q_ASSERT(killer->getRoom() != NULL);
+    Room *room = killer->getRoom();
+
+    if (!killer->isFriendWith(victim)) {
+        int n = 1;
+        foreach(auto p, room->getOtherPlayers(killer)) {
+            if (victim->isFriendWith(p))
+                ++ n;
         }
-        else
-            if (victim->getRole() == "rebel" && killer != victim)
-                killer->drawCards(3);
-            else if (victim->getRole() == "loyalist" && killer->getRole() == "lord")
-                killer->throwAllHandCardsAndEquips();
-    }
+        killer->drawCards(n);
+    } else
+        killer->throwAllHandCardsAndEquips();
 }
 
 QString GameRule::getWinner(ServerPlayer *victim) const{
