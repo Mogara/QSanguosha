@@ -356,12 +356,30 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhenji, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart && zhenji->getPhase() == Player::Start) {
-            while (zhenji->askForSkillInvoke("luoshen")) {
-                room->broadcastSkillInvoke(objectName());
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start)
+            return TriggerSkill::triggerable(triggerEvent, room, player, data);
+        else if (triggerEvent == FinishJudge)
+            return player != NULL && data.value<JudgeStruct *>()->reason == objectName();
+        return false;
+    }
 
-                JudgeStruct judge;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == EventPhaseStart)
+            if (player->askForSkillInvoke(objectName())){
+                room->broadcastSkillInvoke(objectName());
+                return true;
+            }
+        else 
+            return true;
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhenji, QVariant &data) const{
+        if (triggerEvent == EventPhaseStart) {
+            
+            JudgeStruct judge;
+            do {
                 judge.pattern = ".|black";
                 judge.good = true;
                 judge.reason = objectName();
@@ -370,31 +388,29 @@ public:
                 judge.time_consuming = true;
 
                 room->judge(judge);
-                if (judge.isBad())
-                    break;
             }
+            while (judge.isGood() && cost(triggerEvent, room, zhenji, data));
+
+            if (zhenji->tag[objectName()].toList().length() != 0){
+                DummyCard dummy(VariantList2IntList(zhenji->tag[objectName()].toList()));
+                zhenji->obtainCard(&dummy);
+                zhenji->tag.remove(objectName());
+            }
+
         } else if (triggerEvent == FinishJudge) {
             JudgeStar judge = data.value<JudgeStar>();
             if (judge->reason == objectName()) {
-                bool isHegVer = zhenji->getGeneralName() != "zhenji"
-                                && (zhenji->getGeneralName() == "heg_zhenji" || zhenji->getGeneral2Name() == "heg_zhenji");
                 if (judge->card->isBlack()) {
-                    if (isHegVer && zhenji->hasSkills("guicai|guidao|huanshi")) {
-                        CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, zhenji->objectName(), QString(), judge->reason);
-                        room->moveCardTo(judge->card, zhenji, NULL, Player::PlaceTable, reason, true);
-                        QVariantList luoshen_list = zhenji->tag[objectName()].toList();
-                        luoshen_list << judge->card->getEffectiveId();
-                        zhenji->tag[objectName()] = luoshen_list;
-                    } else {
-                        zhenji->obtainCard(judge->card);
-                    }
-                } else {
-                    if (isHegVer && zhenji->hasSkills("guicai|guidao|huanshi")) {
-                        DummyCard *dummy = new DummyCard(VariantList2IntList(zhenji->tag[objectName()].toList()));
-                        zhenji->obtainCard(dummy);
-                        zhenji->tag.remove(objectName());
-                        delete dummy;
-                    }
+                    CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, zhenji->objectName(), QString(), judge->reason);
+                    room->moveCardTo(judge->card, zhenji, NULL, Player::PlaceTable, reason, true);
+                    QVariantList luoshen_list = zhenji->tag[objectName()].toList();
+                    luoshen_list << judge->card->getEffectiveId();
+                    zhenji->tag[objectName()] = luoshen_list;
+                }
+                else {
+                    DummyCard dummy(VariantList2IntList(zhenji->tag[objectName()].toList()));
+                    zhenji->obtainCard(&dummy);
+                    zhenji->tag.remove(objectName());
                 }
             }
         }
