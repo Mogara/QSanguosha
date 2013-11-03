@@ -616,10 +616,27 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             break;
         }
     case GeneralShown: {
-            if (player->isAlive() && player->hasShownAllGenerals() && player->getMark("HalfMaxHpLeft") > 0 
-                && player->askForSkillInvoke("userdefine:halfmaxhp")) {
-                player->drawCards(1);
-                room->removePlayerMark(player, "HalfMaxHpLeft");
+            if (player->isAlive() && player->hasShownAllGenerals()) {
+                if (player->getMark("CompanionEffect") > 0) {
+                    QStringList choices;
+                    if (player->isWounded())
+                        choices << "recover";
+                    choices << "draw" << "cancel";
+                    QString choice = room->askForChoice(player, "CompanionEffect", choices.join("+"));
+                    if (choice == "recover") {
+                        RecoverStruct recover;
+                        recover.who = player;
+                        recover.recover = 1;
+                        room->recover(player, recover);
+                    } else if (choice == "draw")
+                        player->drawCards(2);
+                    room->removePlayerMark(player, "CompanionEffect");
+                }
+                if (player->getMark("HalfMaxHpLeft") > 0) {
+                    if (player->askForSkillInvoke("userdefine:halfmaxhp"))
+                        player->drawCards(1);
+                    room->removePlayerMark(player, "HalfMaxHpLeft");
+                }
             }
          }
     default:

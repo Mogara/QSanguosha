@@ -1550,6 +1550,7 @@ void StandardPackage::addGenerals() {
     simayi->addSkill(new Guicai);
 
     General *xiahoudun = new General(this, "xiahoudun", "wei"); // WEI 003
+    xiahoudun->addCompanion("xiahouyuan");
     xiahoudun->addSkill(new Ganglie);
 
     General *zhangliao = new General(this, "zhangliao", "wei"); // WEI 004

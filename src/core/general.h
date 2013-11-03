@@ -59,6 +59,9 @@ public:
 
     inline QSet<QString> getExtraSkillSet() const{ return extra_set; }
 
+    void addCompanion(const QString &name);
+    bool isCompanionWith(const QString &name) const;
+
 public slots:
     void lastWord() const;
 
@@ -73,6 +76,7 @@ private:
     QStringList related_skills;
     bool hidden;
     bool never_shown;
+    QStringList companions;
 };
 
 #endif

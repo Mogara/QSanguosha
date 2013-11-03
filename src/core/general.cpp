@@ -156,6 +156,12 @@ QString General::getSkillDescription(bool include_name, bool yellow) const{
         name.prepend(QString("<img src='image/kingdom/icon/%1.png'/>    ").arg(kingdom));
         for (int i = 0; i < double_max_hp; i++)
             name.append("<img src='image/system/magatamas/5.png' height = 12/>");
+        if (!companions.isEmpty()) {
+            name.append("<br/> <br/>");
+            name.append(QString("<font color=%1><b>%2</b></font>     ").arg(color_str).arg(tr("Companions:")));
+            foreach (QString general, companions)
+                name.append(QString("<font color=%1>%2</font> ").arg(color_str).arg(Sanguosha->translate(general)));
+        }
         name.append("<br/> <br/>");
         description.prepend(name);
     }
@@ -172,5 +178,14 @@ void General::lastWord() const{
             filename = QString("audio/death/%1.ogg").arg(origin_generals.last());
     }
     Sanguosha->playAudioEffect(filename);
+}
+
+void General::addCompanion(const QString &name) {
+    this->companions << name;
+}
+
+bool General::isCompanionWith(const QString &name) const {
+    return companions.contains(name) 
+           || Sanguosha->getGeneral(name)->companions.contains(objectName());
 }
 
