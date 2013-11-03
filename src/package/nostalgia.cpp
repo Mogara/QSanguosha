@@ -691,9 +691,8 @@ public:
 NostalStandardPackage::NostalStandardPackage()
     : Package("nostal_standard")
 {
-    General *nos_liubei = new General(this, "nos_liubei$", "shu");
+    General *nos_liubei = new General(this, "nos_liubei", "shu");
     nos_liubei->addSkill(new NosRende);
-    nos_liubei->addSkill("jijiang");
 
     General *huangyueying = new General(this, "nos_huangyueying", "shu", 3, false);
     huangyueying->addSkill(new NosJizhi);

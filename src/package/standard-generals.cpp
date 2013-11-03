@@ -323,6 +323,7 @@ public:
                 return damage.card != NULL && damage.card->hasFlag("luoyi") && !damage.chain && !damage.transfer && damage.by_user;
             }
         }
+        return false;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -358,6 +359,7 @@ public:
 
             data = QVariant::fromValue(damage);
         }
+        return false;
     }
 };
 
@@ -1468,114 +1470,14 @@ public:
     }
 };
 
-class Wangzun: public PhaseChangeSkill {
-public:
-    Wangzun(): PhaseChangeSkill("wangzun") {
-    }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        Room *room = target->getRoom();
-        if (!isNormalGameMode(room->getMode()))
-            return false;
-        if (target->isLord() && target->getPhase() == Player::Start) {
-            ServerPlayer *yuanshu = room->findPlayerBySkillName(objectName());
-            if (yuanshu && room->askForSkillInvoke(yuanshu, objectName())) {
-                room->broadcastSkillInvoke(objectName());
-                yuanshu->drawCards(1);
-                room->setPlayerFlag(target, "WangzunDecMaxCards");
-            }
-        }
-        return false;
-    }
-};
-
-class WangzunMaxCards: public MaxCardsSkill {
-public:
-    WangzunMaxCards(): MaxCardsSkill("#wangzun-maxcard") {
-    }
-
-    virtual int getExtra(const Player *target) const{
-        if (target->hasFlag("WangzunDecMaxCards"))
-            return -1;
-        else
-            return 0;
-    }
-};
-
-class Tongji: public ProhibitSkill {
-public:
-    Tongji(): ProhibitSkill("tongji") {
-    }
-
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &) const{
-        if (card->isKindOf("Slash")) {
-            // get rangefix
-            int rangefix = 0;
-            if (card->isVirtualCard()) {
-                QList<int> subcards = card->getSubcards();
-                if (from->getWeapon() && subcards.contains(from->getWeapon()->getId())) {
-                    const Weapon *weapon = qobject_cast<const Weapon *>(from->getWeapon()->getRealCard());
-                    rangefix += weapon->getRange() - from->getAttackRange(false);
-                }
-
-                if (from->getOffensiveHorse() && subcards.contains(from->getOffensiveHorse()->getId()))
-                    rangefix += 1;
-            }
-            // find yuanshu
-            foreach (const Player *p, from->getAliveSiblings()) {
-                if (p->hasSkill(objectName()) && p != to && p->getHandcardNum() > p->getHp()
-                    && from->distanceTo(p, rangefix) <= from->getAttackRange()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-};
-
-class Yaowu: public TriggerSkill {
-public:
-    Yaowu(): TriggerSkill("yaowu") {
-        events << DamageInflicted;
-        frequency = Compulsory;
-    }
-
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        if (damage.card && damage.card->isKindOf("Slash") && damage.card->isRed()
-            && damage.from && damage.from->isAlive()) {
-            room->broadcastSkillInvoke(objectName());
-            room->notifySkillInvoked(damage.to, objectName());
-
-            LogMessage log;
-            log.type = "#TriggerSkill";
-            log.from = damage.to;
-            log.arg = objectName();
-            room->sendLog(log);
-
-            if (damage.from->isWounded() && room->askForChoice(damage.from, objectName(), "recover+draw", data) == "recover") {
-                RecoverStruct recover;
-                recover.who = damage.to;
-                room->recover(damage.from, recover);
-            } else {
-                damage.from->drawCards(1);
-            }
-        }
-        return false;
-    }
-};
 
 void StandardPackage::addGenerals() {
     // Wei
-    General *caocao = new General(this, "caocao$", "wei"); // WEI 001
+    General *caocao = new General(this, "caocao", "wei"); // WEI 001
     caocao->addCompanion("xuchu");
     caocao->addCompanion("dianwei");
     caocao->addSkill(new Jianxiong);
-    caocao->addSkill(new Hujia);
 
     General *simayi = new General(this, "simayi", "wei", 3); // WEI 002
     simayi->addSkill(new Fankui);
@@ -1600,9 +1502,11 @@ void StandardPackage::addGenerals() {
     zhenji->addSkill(new Luoshen);
 
     // Shu
-    General *liubei = new General(this, "liubei$", "shu"); // SHU 001
+    General *liubei = new General(this, "liubei", "shu"); // SHU 001
+    liubei->addCompanion("guanyu");
+    liubei->addCompanion("zhangfei");
+    liubei->addCompanion("ganfuren");
     liubei->addSkill(new Rende);
-    liubei->addSkill(new Jijiang);
 
     General *guanyu = new General(this, "guanyu", "shu", 5); // SHU 002
     guanyu->addSkill(new Wusheng);
@@ -1611,12 +1515,14 @@ void StandardPackage::addGenerals() {
     zhangfei->addSkill(new Paoxiao);
 
     General *zhugeliang = new General(this, "zhugeliang", "shu", 3); // SHU 004
+    zhugeliang->addCompanion("huangyueying");
     zhugeliang->addSkill(new Guanxing);
     zhugeliang->addSkill(new Kongcheng);
     zhugeliang->addSkill(new KongchengEffect);
     related_skills.insertMulti("kongcheng", "#kongcheng-effect");
 
     General *zhaoyun = new General(this, "zhaoyun", "shu"); // SHU 005
+    zhaoyun->addCompanion("liushan");
     zhaoyun->addSkill(new Longdan);
 
     General *machao = new General(this, "machao", "shu"); // SHU 006
@@ -1628,12 +1534,13 @@ void StandardPackage::addGenerals() {
     huangyueying->addSkill(new Qicai);
 
     General *huangzhong = new General(this, "huangzhong", "shu"); // SHU 008
+    huangzhong->addCompanion("weiyan");
     huangzhong->addSkill(new Liegong);
 
     // Wu
-    General *sunquan = new General(this, "sunquan$", "wu"); // WU 001
+    General *sunquan = new General(this, "sunquan", "wu"); // WU 001
+    sunquan->addCompanion("zhoutai");
     sunquan->addSkill(new Zhiheng);
-    sunquan->addSkill(new Jiuyuan);
 
     General *ganning = new General(this, "ganning", "wu"); // WU 002
     ganning->addSkill(new Qixi);
@@ -1645,10 +1552,13 @@ void StandardPackage::addGenerals() {
     huanggai->addSkill(new Kurou);
 
     General *zhouyu = new General(this, "zhouyu", "wu", 3); // WU 005
+    zhouyu->addCompanion("huanggai");
+    zhouyu->addCompanion("xiaoqiao");
     zhouyu->addSkill(new Yingzi);
     zhouyu->addSkill(new Fanjian);
 
     General *daqiao = new General(this, "daqiao", "wu", 3, false); // WU 006
+    daqiao->addCompanion("xiaoqiao");
     daqiao->addSkill(new Guose);
     daqiao->addSkill(new Liuli);
 
@@ -1668,20 +1578,12 @@ void StandardPackage::addGenerals() {
     huatuo->addSkill(new Jijiu);
 
     General *lvbu = new General(this, "lvbu", "qun", 5); // QUN 002
+    lvbu->addCompanion("diaochan");
     lvbu->addSkill(new Wushuang);
 
     General *diaochan = new General(this, "diaochan", "qun", 3, false); // QUN 003
     diaochan->addSkill(new Lijian);
     diaochan->addSkill(new Biyue);
-
-    General *st_yuanshu = new General(this, "st_yuanshu", "qun", 4);
-    st_yuanshu->addSkill(new Wangzun);
-    st_yuanshu->addSkill(new WangzunMaxCards);
-    related_skills.insertMulti("wangzun", "#wangzun-maxcard");
-    st_yuanshu->addSkill(new Tongji);
-
-    General *st_huaxiong = new General(this, "st_huaxiong", "qun", 6);
-    st_huaxiong->addSkill(new Yaowu);
 
     // for skill cards
     addMetaObject<ZhihengCard>();
@@ -1776,7 +1678,6 @@ TestPackage::TestPackage()
     // for test only
     General *zhiba_sunquan = new General(this, "zhiba_sunquan$", "wu", 4, true, true);
     zhiba_sunquan->addSkill(new SuperZhiheng);
-    zhiba_sunquan->addSkill("jiuyuan");
 
     General *wuxing_zhuge = new General(this, "wuxing_zhugeliang", "shu", 3, true, true);
     wuxing_zhuge->addSkill(new SuperGuanxing);

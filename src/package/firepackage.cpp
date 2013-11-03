@@ -512,6 +512,8 @@ FirePackage::FirePackage()
     pangtong->addSkill(new Niepan);
 
     General *wolong = new General(this, "wolong", "shu", 3); // SHU 011
+    wolong->addCompanion("huangyueying");
+    wolong->addCompanion("pangtong");
     wolong->addSkill(new Huoji);
     wolong->addSkill(new Kanpo);
     wolong->addSkill(new Bazhen);
@@ -522,6 +524,7 @@ FirePackage::FirePackage()
     related_skills.insertMulti("tianyi", "#tianyi-target");
 
     General *yuanshao = new General(this, "yuanshao$", "qun"); // QUN 004
+    yuanshao->addCompanion("yanliangwenchou");
     yuanshao->addSkill(new Luanji);
     yuanshao->addSkill(new Xueyi);
 

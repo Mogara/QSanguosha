@@ -897,6 +897,7 @@ ThicketPackage::ThicketPackage()
     related_skills.insertMulti("duanliang", "#duanliang-target");
 
     General *caopi = new General(this, "caopi$", "wei", 3); // WEI 014
+    caopi->addCompanion("zhenji");
     caopi->addSkill(new Xingshang);
     caopi->addSkill(new Fangzhu);
     caopi->addSkill(new Songwei);
