@@ -691,6 +691,7 @@ public:
         }
 
         player->tag["Jink_" + use.card->toString()] = QVariant::fromValue(jink_list);
+        player->tag.remove("TiejiCurrentTarget");
         return false;
     }
 
@@ -851,6 +852,82 @@ public:
             return 1000;
         else
             return 0;
+    }
+};
+
+class Liegong: public TriggerSkill {
+public:
+    Liegong(): TriggerSkill("liegong") {
+        events << TargetConfirmed;
+    }
+
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const {
+        if (!TriggerSkill::triggerable(player))
+            return false;
+
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (player != use.from || player->getPhase() != Player::Play || !use.card->isKindOf("Slash"))
+            return false;
+
+        ServerPlayer *first;
+        foreach (ServerPlayer *p, use.to) {
+            int handcardnum = p->getHandcardNum();
+            if (player->getHp() <= handcardnum || player->getAttackRange() >= handcardnum) {
+                first = p;
+                break;
+            }
+        }
+
+        if (first != NULL) {
+            player->tag["LiegongCurrentTarget"] = QVariant::fromValue(use.to.first());
+            return true;
+        }
+
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+        if (player->askForSkillInvoke(objectName(), player->tag.value("LiegongCurrentTarget"))) {
+            room->broadcastSkillInvoke(objectName());
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<ServerPlayer *> targets = use.to;
+        QVariantList jink_list = player->tag["Jink_" + use.card->toString()].toList();
+        foreach (ServerPlayer *p, targets) {
+            if (targets.indexOf(p) == 0)
+                doLiegong(p, use, jink_list);
+            else {
+                int handcardnum = p->getHandcardNum();
+                if (player->getHp() <= handcardnum || player->getAttackRange() >= handcardnum) {
+                    player->tag["LiegongCurrentTarget"] = QVariant::fromValue(p);
+                    if (cost(TriggerEvent, room, player, data)) {
+                        if (!player->hasShownSkill(this))
+                            player->showGeneral(player->inHeadSkills(objectName()));
+
+                        doLiegong(p, use, jink_list);
+                    }
+                }
+            }
+        }
+
+        player->tag["Jink_" + use.card->toString()] = QVariant::fromValue(jink_list);
+        player->tag.remove("LiegongCurrentTarget");
+        return false;
+    }
+
+private:
+    void doLiegong(ServerPlayer *target, CardUseStruct use, QVariantList &jink_list) const {
+        int index = use.to.indexOf(target);
+        LogMessage log;
+        log.type = "#NoJink";
+        log.from = target;
+        target->getRoom()->sendLog(log);
+        jink_list.replace(index, QVariant(0));
     }
 };
 
@@ -1541,6 +1618,9 @@ void StandardPackage::addGenerals() {
     General *huangyueying = new General(this, "huangyueying", "shu", 3, false); // SHU 007
     huangyueying->addSkill(new Jizhi);
     huangyueying->addSkill(new Qicai);
+
+    General *huangzhong = new General(this, "huangzhong", "shu"); // SHU 008
+    huangzhong->addSkill(new Liegong);
 
     // Wu
     General *sunquan = new General(this, "sunquan$", "wu"); // WU 001
