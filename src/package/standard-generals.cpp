@@ -652,47 +652,80 @@ public:
         events << TargetConfirmed;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const {
+        if (!TriggerSkill::triggerable(player))
+            return false;
+
         CardUseStruct use = data.value<CardUseStruct>();
         if (player != use.from || !use.card->isKindOf("Slash"))
             return false;
-        QVariantList jink_list = player->tag["Jink_" + use.card->toString()].toList();
-        int index = 0;
-        foreach (ServerPlayer *p, use.to) {
-            if (player->askForSkillInvoke(objectName(), QVariant::fromValue(p))) {
-                room->broadcastSkillInvoke(objectName());
 
-                p->setFlags("TiejiTarget"); // For AI
+        player->tag["TiejiCurrentTarget"] = QVariant::fromValue(use.to.first());
+        return true;
+    }
 
-                JudgeStruct judge;
-                judge.pattern = ".|red";
-                judge.good = true;
-                judge.reason = objectName();
-                judge.who = player;
-
-                try {
-                    room->judge(judge);
-                }
-                catch (TriggerEvent triggerEvent) {
-                    if (triggerEvent == TurnBroken || triggerEvent == StageChange)
-                        p->setFlags("-TiejiTarget");
-                    throw triggerEvent;
-                }
-
-                if (judge.isGood()) {
-                    LogMessage log;
-                    log.type = "#NoJink";
-                    log.from = p;
-                    room->sendLog(log);
-                    jink_list.replace(index, QVariant(0));
-                }
-
-                p->setFlags("-TiejiTarget");
-            }
-            index++;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+        if (player->askForSkillInvoke(objectName(), player->tag.value("TiejiCurrentTarget"))) {
+            room->broadcastSkillInvoke(objectName());
+            return true;
         }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<ServerPlayer *> targets = use.to;
+        QVariantList jink_list = player->tag["Jink_" + use.card->toString()].toList();
+        foreach (ServerPlayer *p, targets) {
+            if (targets.indexOf(p) == 0)
+                doTieji(p, player, use, jink_list);
+            else {
+                player->tag["TiejiCurrentTarget"] = QVariant::fromValue(p);
+                if (cost(TriggerEvent, room, player, data)) {
+                    if (!player->hasShownSkill(this))
+                        player->showGeneral(player->inHeadSkills(objectName()));
+
+                    doTieji(p, player, use, jink_list);
+                }
+            }
+        }
+
         player->tag["Jink_" + use.card->toString()] = QVariant::fromValue(jink_list);
         return false;
+    }
+
+private:
+    void doTieji(ServerPlayer *target, ServerPlayer *source, CardUseStruct use, QVariantList &jink_list) const {
+        Room *room = target->getRoom();
+        target->setFlags("TiejiTarget"); // For AI
+
+        int index = use.to.indexOf(target);
+
+        JudgeStruct judge;
+        judge.pattern = ".|red";
+        judge.good = true;
+        judge.reason = objectName();
+        judge.who = source;
+
+        try {
+            room->judge(judge);
+        }
+        catch (TriggerEvent triggerEvent) {
+            if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+                target->setFlags("-TiejiTarget");
+            throw triggerEvent;
+        }
+
+        if (judge.isGood()) {
+            LogMessage log;
+            log.type = "#NoJink";
+            log.from = target;
+            room->sendLog(log);
+
+            jink_list.replace(index, QVariant(0));
+        }
+
+        target->setFlags("-TiejiTarget");
     }
 };
 
