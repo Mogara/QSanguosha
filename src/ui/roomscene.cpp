@@ -496,8 +496,10 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             const General* oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
             const General* newHero = Sanguosha->getGeneral(newHeroName);
             if (oldHero) {
-                foreach (const Skill *skill, oldHero->getVisibleSkills())
+                foreach (const Skill *skill, oldHero->getVisibleSkills()) {
                     detachSkill(skill->objectName());
+                    attachSkill(skill->objectName(), true); //add skills again to initialize can_preshow state
+                }
                 if (oldHero->hasSkill("huashen")) {
                     PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
                     container->stopHuaShen();

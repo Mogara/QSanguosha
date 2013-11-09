@@ -1335,6 +1335,85 @@ void ServerPlayer::showGeneral(bool head_general) {
     room->sendLog(log);
 }
 
+void ServerPlayer::hideGeneral(bool head_general) {
+    if (head_general) {
+        if (getGeneralName() == "anjiang") return;
+
+        room->setPlayerProperty(this, "general1_showed", false);
+
+        Json::Value arg(Json::arrayValue);
+        arg[0] = S_GAME_EVENT_CHANGE_HERO;
+        arg[1] = toJsonString(objectName());
+        arg[2] = toJsonString("anjiang");
+        arg[3] = false;
+        arg[4] = false;
+        room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
+        room->changePlayerGeneral(this, "anjiang");
+
+        setSkillsPreshowed("h", false);
+        disconnectSkillsFromOthers();
+
+        foreach (const Skill *skill, getVisibleSkillList()) {
+            if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
+                && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
+                && !hasShownSkill(skill) && getMark(skill->getLimitMark()) > 0) {
+                    Json::Value arg(Json::arrayValue);
+                    arg[0] = toJsonString(objectName());
+                    arg[1] = toJsonString(skill->getLimitMark());
+                    arg[2] = 0;
+                    foreach(auto p, room->getOtherPlayers(this, true))
+                        room->doNotify(p, QSanProtocol::S_COMMAND_SET_MARK, arg);
+            }
+        }
+
+        if (!hasShownGeneral2()) {
+            room->setPlayerProperty(this, "kingdom", "god");
+            room->setPlayerProperty(this, "role", BasaraMode::getMappedRole("god"));
+        }
+    } else {
+        if (getGeneral2Name() == "anjiang") return;
+
+        room->setPlayerProperty(this, "general2_showed", false);
+
+        Json::Value arg(Json::arrayValue);
+        arg[0] = S_GAME_EVENT_CHANGE_HERO;
+        arg[1] = toJsonString(objectName());
+        arg[2] = toJsonString("anjiang");
+        arg[3] = true;
+        arg[4] = false;
+        room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
+        room->changePlayerGeneral2(this, "anjiang");
+
+        setSkillsPreshowed("d", false);
+        disconnectSkillsFromOthers(false);
+
+        foreach (const Skill *skill, getVisibleSkillList()) {
+            if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
+                && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
+                && !hasShownSkill(skill) && getMark(skill->getLimitMark()) > 0) {
+                    Json::Value arg(Json::arrayValue);
+                    arg[0] = toJsonString(objectName());
+                    arg[1] = toJsonString(skill->getLimitMark());
+                    arg[2] = 0;
+                    foreach(auto p, room->getOtherPlayers(this, true))
+                        room->doNotify(p, QSanProtocol::S_COMMAND_SET_MARK, arg);
+            }
+        }
+
+        if (!hasShownGeneral1()) {
+            room->setPlayerProperty(this, "kingdom", "god");
+            room->setPlayerProperty(this, "role", BasaraMode::getMappedRole("god"));
+        }
+    }
+
+    LogMessage log;
+    log.type = "#BasaraConceal";
+    log.from = this;
+    log.arg  = getGeneralName();
+    log.arg2 = getGeneral2Name();
+    room->sendLog(log);
+}
+
 void ServerPlayer::sendSkillsToOthers(bool head_skill /* = true */) {
     QStringList names = room->getTag(objectName()).toStringList();
     if (names.isEmpty()) return;
@@ -1351,3 +1430,14 @@ void ServerPlayer::sendSkillsToOthers(bool head_skill /* = true */) {
     }
 }
 
+void ServerPlayer::disconnectSkillsFromOthers(bool head_skill /* = true */) {
+    foreach(auto skill, head_skill ? head_skills.keys() : deputy_skills.keys()) {
+        Json::Value args;
+        args[0] = QSanProtocol::S_GAME_EVENT_DETACH_SKILL;
+        args[1] = toJsonString(objectName());
+        args[2] = toJsonString(skill);
+        foreach(auto p, room->getOtherPlayers(this, true))
+            room->doNotify(p, QSanProtocol::S_COMMAND_LOG_EVENT, args);
+    }
+
+}

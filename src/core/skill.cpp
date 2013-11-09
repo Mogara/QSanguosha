@@ -258,10 +258,6 @@ bool TriggerSkill::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *
 }
 
 bool TriggerSkill::cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-    /*if (frequency != Skill::Compulsory)
-        return player->askForSkillInvoke(objectName(), data);
-    else
-        return true;*/
     return true;
 }
 

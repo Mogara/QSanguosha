@@ -4235,15 +4235,22 @@ void Room::preparePlayers() {
 void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general) {
     setPlayerProperty(player, "general", new_general);
     Q_ASSERT(player->getGeneral() != NULL);
-    player->setGender(player->getGeneral()->getGender());
+    if (new_general != "anjiang")
+        player->setGender(player->getGeneral()->getGender());
+    else if (!player->hasShownGeneral2())
+        player->setGender(General::Sexless);
     filterCards(player, player->getCards("he"), true);
 }
 
 void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general) {
     setPlayerProperty(player, "general2", new_general);
     Q_ASSERT(player->getGeneral2() != NULL);
-    if (!player->hasShownGeneral2())
-        player->setGender(player->getGeneral2()->getGender());
+    if (!player->hasShownGeneral1()) {
+        if (new_general != "anjiang")
+            player->setGender(player->getGeneral2()->getGender());
+        else
+            player->setGender(General::Sexless);
+    }
     filterCards(player, player->getCards("he"), true);
 }
 
