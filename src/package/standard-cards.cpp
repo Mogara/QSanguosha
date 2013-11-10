@@ -941,22 +941,8 @@ bool ExNihilo::isAvailable(const Player *player) const{
     return !player->isProhibited(player, this) && TrickCard::isAvailable(player);
 }
 
-#include "ai.h"
-#include "settings.h"
 void ExNihilo::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.to->getRoom();
-    int extra = 0;
-    if (room->getMode() == "06_3v3" && Config.value("3v3/OfficialRule", "2013").toString() == "2013") {
-        int friend_num = 0, enemy_num = 0;
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (AI::GetRelation3v3(effect.to, p) == AI::Friend)
-                friend_num++;
-            else
-                enemy_num++;
-        }
-        if (friend_num < enemy_num) extra = 1;
-    }
-    effect.to->drawCards(2 + extra);
+    effect.to->drawCards(2);
 }
 
 Duel::Duel(Suit suit, int number)
