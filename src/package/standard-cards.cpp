@@ -576,19 +576,6 @@ Axe::Axe(Suit suit, int number)
     setObjectName("Axe");
 }
 
-class HalberdSkill: public TargetModSkill {
-public:
-    HalberdSkill(): TargetModSkill("Halberd") {
-    }
-
-    virtual int getExtraTargetNum(const Player *from, const Card *card) const{
-        if (from->hasWeapon("Halberd") && from->isLastHandCard(card))
-            return 2;
-        else
-            return 0;
-    }
-};
-
 class KylinBowSkill: public WeaponSkill {
 public:
     KylinBowSkill(): WeaponSkill("KylinBow") {
@@ -1367,7 +1354,7 @@ bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Pl
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
     int rangefix = 0;
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
-        rangefix += 1;
+        ++ rangefix;
 
     if (Self->distanceTo(to_select, rangefix) > distance_limit)
         return false;
@@ -1410,8 +1397,6 @@ Lightning::Lightning(Suit suit, int number):Disaster(suit, number) {
 void Lightning::takeEffect(ServerPlayer *target) const{
     target->getRoom()->damage(DamageStruct(this, NULL, target, 3, DamageStruct::Thunder));
 }
-
-// EX cards
 
 class IceSwordSkill: public WeaponSkill {
 public:
@@ -1806,8 +1791,8 @@ StandardCardPackage::StandardCardPackage()
 
     skills << new DoubleSwordSkill << new QinggangSwordSkill << new IceSwordSkill
            << new SpearSkill << new FanSkill << new AxeSkill << new KylinBowSkill 
-           << new TribladeSkill << new HalberdSkill << new EightDiagramSkill
-           << new RenwangShieldSkill << new VineSkill << new SilverLionSkill;
+           << new TribladeSkill << new EightDiagramSkill << new RenwangShieldSkill 
+           << new VineSkill << new SilverLionSkill;
 
     QList<Card *> horses;
     horses << new DefensiveHorse(Card::Spade, 5)
