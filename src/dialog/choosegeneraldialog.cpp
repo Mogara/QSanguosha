@@ -105,15 +105,27 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         int index = 0;
         foreach (const General *general, generals) {
             int party = 0;
-            foreach (const General *other, generals)
-                if (other->getKingdom() == general->getKingdom())
+            bool has_lord = false;
+            foreach (const General *other, generals) {
+                if (other->getKingdom() == general->getKingdom()) {
                     party++;
-            if (party < 2)
+                    if (other != general && other->isLord())
+                        has_lord = true;
+                }
+            }
+            if (party < 2 || (!Self->getGeneral() && has_lord && party == 2))
                 buttons.at(index)->setEnabled(false);
-            if (Self->getGeneral())
+
+            if (Self->getGeneral()) {
+                if (Self->getGeneral()->getKingdom() == general->getKingdom()
+                    && Self->getGeneralName() != general->objectName()
+                    && !general->isLord() && !buttons.at(index)->isEnabled())
+                    buttons.at(index)->setEnabled(true);
                 if (Self->getGeneral()->getKingdom() != general->getKingdom()
-                    || Self->getGeneralName() == general->objectName())
+                    || Self->getGeneralName() == general->objectName()
+                    || general->isLord())
                     buttons.at(index)->setEnabled(false);
+            }
             index++;
         }
     }
