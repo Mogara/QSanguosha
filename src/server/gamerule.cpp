@@ -2,7 +2,6 @@
 #include "serverplayer.h"
 #include "room.h"
 #include "standard.h"
-#include "maneuvering.h"
 #include "engine.h"
 #include "settings.h"
 #include "jsonutils.h"
@@ -22,7 +21,8 @@ GameRule::GameRule(QObject *)
            << PreCardUsed << CardUsed << CardFinished << CardEffected
            << PostHpReduced
            << EventLoseSkill << EventAcquireSkill
-           << AskForPeaches << AskForPeachesDone << BuryVictim << BeforeGameOverJudge << GameOverJudge
+           << AskForPeaches << AskForPeachesDone << Death << BuryVictim 
+           << BeforeGameOverJudge << GameOverJudge
            << SlashHit << SlashEffected << SlashProceed
            << ConfirmDamage << DamageDone << DamageComplete
            << StartJudge << FinishRetrial << FinishJudge
@@ -225,6 +225,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                 room->clearPlayerCardLimitation(player, true);
             } else if (change.to == Player::Play) {
                 room->addPlayerHistory(player, ".");
+            } else if (change.to == Player::Start) {
+                if (!player->hasShownGeneral1() 
+                    && Sanguosha->getGeneral(room->getTag(player->objectName()).toStringList().first())->isLord())
+                    player->showGeneral();
             }
             break;
         }
@@ -521,6 +525,16 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
 
             break;
         }
+    case Death: {
+            if (player == data.value<DeathStruct>().who) {
+                foreach(ServerPlayer *p, room->getOtherPlayers(player, true)) {
+                    if (p->getKingdom() == player->getKingdom())
+                        room->setPlayerProperty(p, "role", "careerist");
+                }
+            }
+
+            break;
+        }
     case BuryVictim: {
             DeathStruct death = data.value<DeathStruct>();
             player->bury();
@@ -636,6 +650,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                     if (player->askForSkillInvoke("userdefine:halfmaxhp"))
                         player->drawCards(1);
                     room->removePlayerMark(player, "HalfMaxHpLeft");
+                }
+            }
+            if (data.toBool()) {
+                if (player->getGeneral()->isLord()) {
+                    QString kingdom = player->getGeneral()->getKingdom();
+                    foreach(auto p, room->getPlayers()) {
+                        if (p->getKingdom() == kingdom && p->getRole() == "careerist")
+                            room->setPlayerProperty(p, "role", BasaraMode::getMappedRole(kingdom));
+                    }
                 }
             }
          }

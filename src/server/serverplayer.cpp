@@ -1266,12 +1266,21 @@ void ServerPlayer::showGeneral(bool head_general) {
 
             QString role = BasaraMode::getMappedRole(kingdom);
             int i = 1;
-            foreach(auto p, room->getOtherPlayers(this, true)) {
-                if (p->hasShownOneGeneral() && p->getRole() != "careerist" && p->getKingdom() == kingdom)
-                    ++ i;
+            bool has_lord = isAlive() && getGeneral()->isLord();
+            if (!has_lord) {
+                foreach(auto p, room->getOtherPlayers(this, true)) {
+                    if (p->getKingdom() == kingdom) {
+                        if (p->isAlive() && p->getGeneral()->isLord()) {
+                            has_lord = true;
+                            break;
+                        }
+                        if (p->hasShownOneGeneral() && p->getRole() != "careerist")
+                            ++ i;
+                    }
+                }
             }
 
-            if (i > (room->getPlayers().length() / 2))
+            if (!has_lord && i > (room->getPlayers().length() / 2))
                 role = "careerist";
 
             room->setPlayerProperty(this, "role", role);
@@ -1312,12 +1321,21 @@ void ServerPlayer::showGeneral(bool head_general) {
 
             QString role = BasaraMode::getMappedRole(kingdom);
             int i = 1;
-            foreach(auto p, room->getOtherPlayers(this, true)) {
-                if (p->hasShownOneGeneral() && p->getRole() != "careerist" && p->getKingdom() == kingdom)
-                    ++ i;
+            bool has_lord = isAlive() && getGeneral()->isLord();
+            if (!has_lord) {
+                foreach(auto p, room->getOtherPlayers(this, true)) {
+                    if (p->getKingdom() == kingdom) {
+                        if (p->isAlive() && p->getGeneral()->isLord()) {
+                            has_lord = true;
+                            break;
+                        }
+                        if (p->hasShownOneGeneral() && p->getRole() != "careerist")
+                            ++ i;
+                    }
+                }
             }
 
-            if (i > (room->getPlayers().length() / 2))
+            if (!has_lord && i > (room->getPlayers().length() / 2))
                 role = "careerist";
 
             room->setPlayerProperty(this, "role", role);
@@ -1325,7 +1343,7 @@ void ServerPlayer::showGeneral(bool head_general) {
     }
 
     Q_ASSERT(room->getThread() != NULL);
-    room->getThread()->trigger(GeneralShown, room, this);
+    room->getThread()->trigger(GeneralShown, room, this, QVariant(head_general));
 
     LogMessage log;
     log.type = "#BasaraReveal";
