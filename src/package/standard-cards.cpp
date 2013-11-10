@@ -40,13 +40,11 @@ bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSp
                 ids << slash->getEffectiveId();
             }
         }
-        bool has_weapon = (player->hasWeapon("Crossbow") || player->hasWeapon("VSCrossbow")) && ids.contains(player->getWeapon()->getEffectiveId());
+        bool has_weapon = player->hasWeapon("Crossbow") && ids.contains(player->getWeapon()->getEffectiveId());
         if ((!has_weapon && player->hasWeapon("Crossbow")) || player->canSlashWithoutCrossbow(THIS_SLASH))
             return true;
         int used = player->getSlashCount();
         int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
-        if ((!has_weapon && player->hasWeapon("VSCrossbow")) && used < valid + 3)
-            return true;
 
         if (considerSpecificAssignee) {
             QStringList assignee_list = player->property("extra_slash_specific_assignee").toString().split("+");
@@ -104,28 +102,11 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         QString skill_name = getSkillName();
         if (!skill_name.isEmpty()) {
             const Skill *skill = Sanguosha->getSkill(skill_name);
-            if (skill && !skill->inherits("FilterSkill") && !skill->objectName().contains("guhuo"))
+            if (skill && !skill->inherits("FilterSkill"))
                 has_changed = true;
         }
         if (!has_changed || subcardsLength() == 0) {
             QVariant data = QVariant::fromValue(use);
-            if (player->hasSkill("lihuo")) {
-                FireSlash *fire_slash = new FireSlash(getSuit(), getNumber());
-                if (!isVirtualCard() || subcardsLength() > 0)
-                    fire_slash->addSubcard(this);
-                fire_slash->setSkillName("lihuo");
-                bool can_use = true;
-                foreach (ServerPlayer *p, use.to) {
-                    if (!player->canSlash(p, fire_slash, false)) {
-                        can_use = false;
-                        break;
-                    }
-                }
-                if (can_use && room->askForSkillInvoke(player, "lihuo", data))
-                    use.card = fire_slash;
-                else
-                    delete fire_slash;
-            }
             if (use.card->objectName() == "slash" && player->hasWeapon("Fan")) {
                 FireSlash *fire_slash = new FireSlash(getSuit(), getNumber());
                 if (!isVirtualCard() || subcardsLength() > 0)
@@ -145,7 +126,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             }
         }
     }
-    if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || (getSkillName().contains("guhuo") && use.card != this))
+    if (use.card->isVirtualCard() && use.card->subcardsLength() == 0
         && !player->hasFlag("slashDisableExtraTarget")) {
         QList<ServerPlayer *> targets_ts;
         while (true) {
@@ -175,89 +156,28 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         room->setPlayerFlag(player, "-slashDisableExtraTarget");
 
     if (player->getPhase() == Player::Play && player->hasFlag("Global_MoreSlashInOneTurn")) {
-        QString name;
-        if (player->hasSkill("paoxiao"))
-            name = "paoxiao";
-        else if (player->hasSkill("huxiao") && player->getMark("huxiao") > 0)
-            name = "huxiao";
-        else if (player->hasFlag("XianzhenSuccess")){
-            QStringList l = player->property("extra_slash_specific_assignee").toString().split("+");
-            foreach(ServerPlayer *p, use.to)
-                if (l.contains(p->objectName())){
-                    name = "xianzhen";
-                    break;
-                }
-        }
-        if (!name.isEmpty()) {
+        if (player->hasSkill("paoxiao")) {
             player->setFlags("-Global_MoreSlashInOneTurn");
-            int index = qrand() % 2 + 1;
-            if (name == "paoxiao" && !player->hasInnateSkill("paoxiao") && player->hasSkill("baobian"))
-                index += 2;
-            if (name == "xianzhen")
-                index = 2;
-            room->broadcastSkillInvoke(name, index);
-            room->notifySkillInvoked(player, name);
+            room->broadcastSkillInvoke("paoxiao");
+            room->notifySkillInvoked(player, "paoxiao");
         }
     }
-    if (use.to.size() > 1 && player->hasSkill("shenji")) {
-        room->broadcastSkillInvoke("shenji");
-        room->notifySkillInvoked(player, "shenji");
-    } else if (use.to.size() > 1 && player->hasSkill("lihuo") && use.card->isKindOf("FireSlash") && use.card->getSkillName() != "lihuo") {
-        room->broadcastSkillInvoke("lihuo", 1);
-        room->notifySkillInvoked(player, "lihuo");
-    } else if (use.to.size() > 1 && player->hasSkill("duanbing")) {
+    if (use.to.size() > 1 && player->hasSkill("duanbing")) {
         room->broadcastSkillInvoke("duanbing");
         room->notifySkillInvoked(player, "duanbing");
     }
 
-    int rangefix = 0;
     if (use.card->isVirtualCard()) {
-        if (use.from->getWeapon() && use.card->getSubcards().contains(use.from->getWeapon()->getId())) {
-            const Weapon *weapon = qobject_cast<const Weapon *>(use.from->getWeapon()->getRealCard());
-            rangefix += weapon->getRange() - Self->getAttackRange(false);
-        }
-        if (use.from->getOffensiveHorse() && use.card->getSubcards().contains(use.from->getOffensiveHorse()->getId()))
-            rangefix += 1;
+        if (use.card->getSkillName() == "spear")
+            room->setEmotion(player, "weapon/spear");
+        else if (use.card->getSkillName() == "fan")
+            room->setEmotion(player, "weapon/fan");
     }
-    foreach (ServerPlayer *p, use.to) {
-        if (p->hasSkill("tongji") && p->getHandcardNum() > p->getHp()
-            && use.from->distanceTo(p, rangefix) <= use.from->getAttackRange()) {
-            room->broadcastSkillInvoke("tongji");
-            room->notifySkillInvoked(p, "tongji");
-            break;
-        }
-    }
-
-    if (use.from->hasFlag("BladeUse")) {
-        use.from->setFlags("-BladeUse");
-        room->setEmotion(player, "weapon/blade");
-
-        LogMessage log;
-        log.type = "#BladeUse";
-        log.from = use.from;
-        log.to << use.to;
-        room->sendLog(log);
-    } else if (use.from->hasFlag("MoonspearUse")) {
-        use.from->setFlags("-MoonspearUse");
-        room->setEmotion(player, "weapon/moonspear");
-
-        LogMessage log;
-        log.type = "#InvokeSkill";
-        log.from = use.from;
-        log.arg = "moon_spear";
-        room->sendLog(log);
-    } else if (use.card->isVirtualCard() && use.card->getSkillName() == "spear")
-        room->setEmotion(player, "weapon/spear");
-    else if (use.to.size() > 1 && player->hasWeapon("Halberd") && player->isLastHandCard(this))
-        room->setEmotion(player, "weapon/halberd");
-    else if (use.card->isVirtualCard() && use.card->getSkillName() == "fan")
-        room->setEmotion(player, "weapon/fan");
 
     if (player->getPhase() == Player::Play
         && player->hasFlag("Global_MoreSlashInOneTurn")
         && player->hasWeapon("Crossbow")
-        && !player->hasSkill("paoxiao")
-        && !(player->hasSkill("huxiao") && player->getMark("huxiao") > 0)) {
+        && !player->hasSkill("paoxiao")) {
         player->setFlags("-Global_MoreSlashInOneTurn");
         room->setEmotion(player, "weapon/crossbow");
     }
@@ -318,7 +238,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     }
 
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
-        rangefix += 1;
+        ++rangefix;
 
     bool has_specific_assignee = false;
     foreach (const Player *p, Self->getAliveSiblings()) {
@@ -671,12 +591,6 @@ public:
             return 0;
     }
 };
-
-Halberd::Halberd(Suit suit, int number)
-    : Weapon(suit, number, 4)
-{
-    setObjectName("Halberd");
-}
 
 class KylinBowSkill: public WeaponSkill {
 public:
@@ -1935,7 +1849,6 @@ StandardCardPackage::StandardCardPackage()
           << new Spear
           << new Fan
           << new Axe
-          << new Halberd
           << new KylinBow
           << new SixSwords
           << new Triblade

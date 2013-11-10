@@ -498,7 +498,8 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             if (oldHero) {
                 foreach (const Skill *skill, oldHero->getVisibleSkills()) {
                     detachSkill(skill->objectName());
-                    attachSkill(skill->objectName(), true); //add skills again to initialize can_preshow state
+                    attachSkill(skill->objectName(), true); 
+                    //dirty hack here!! add skills again to initialize can_preshow state
                 }
                 if (oldHero->hasSkill("huashen")) {
                     PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);

@@ -38,13 +38,6 @@ public:
     Q_INVOKABLE Axe(Card::Suit suit = Diamond, int number = 5);
 };
 
-class Halberd: public Weapon {
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE Halberd(Card::Suit suit = Diamond, int number = 12);
-};
-
 class KylinBow: public Weapon {
     Q_OBJECT
 
