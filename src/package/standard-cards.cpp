@@ -43,8 +43,6 @@ bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSp
         bool has_weapon = player->hasWeapon("Crossbow") && ids.contains(player->getWeapon()->getEffectiveId());
         if ((!has_weapon && player->hasWeapon("Crossbow")) || player->canSlashWithoutCrossbow(THIS_SLASH))
             return true;
-        int used = player->getSlashCount();
-        int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
 
         if (considerSpecificAssignee) {
             QStringList assignee_list = player->property("extra_slash_specific_assignee").toString().split("+");
@@ -1098,29 +1096,10 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
         return;
 
     Room *room = effect.to->getRoom();
-    bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() != "Classical");
-    QString flag = using_2013 ? "he" : "hej";
-    if (!effect.from->canDiscard(effect.to, flag))
+    if (!effect.from->canDiscard(effect.to, "hej"))
         return;
 
-    int card_id = -1;
-    AI *ai = effect.from->getAI();
-    if (!using_2013 || ai)
-        card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodDiscard);
-    else {
-        if (!effect.to->getEquips().isEmpty())
-            card_id = room->askForCardChosen(effect.from, effect.to, "he", objectName(), false, Card::MethodDiscard);
-        if (card_id == -1 || (!effect.to->isKongcheng() && effect.to->handCards().contains(card_id))) {
-            LogMessage log;
-            log.type = "$ViewAllCards";
-            log.from = effect.from;
-            log.to << effect.to;
-            log.card_str = IntList2StringList(effect.to->handCards()).join("+");
-            room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
-
-            card_id = room->askForCardChosen(effect.from, effect.to, "h", objectName(), true, Card::MethodDiscard);
-        }
-    }
+    int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName(), false, Card::MethodDiscard);
     room->throwCard(card_id, room->getCardPlace(card_id) == Player::PlaceDelayedTrick ? NULL : effect.to, effect.from);
 }
 
