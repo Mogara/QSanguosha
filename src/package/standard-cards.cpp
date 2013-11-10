@@ -1852,19 +1852,5 @@ StandardCardPackage::StandardCardPackage()
         card->setParent(this);
 }
 
-StandardExCardPackage::StandardExCardPackage()
-    : Package("standard_ex_cards", Package::CardPack)
-{
-    QList<Card *> cards;
-    cards << new IceSword(Card::Spade, 2)
-          << new RenwangShield(Card::Club, 2)
-          << new Lightning(Card::Heart, 12)
-          << new Nullification(Card::Diamond, 12);
-
-    foreach (Card *card, cards)
-        card->setParent(this);
-}
-
 ADD_PACKAGE(StandardCard)
-ADD_PACKAGE(StandardExCard)
 
