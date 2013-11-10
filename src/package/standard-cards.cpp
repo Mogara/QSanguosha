@@ -1148,8 +1148,8 @@ void AwaitExhausted::onUse(Room *room, const CardUseStruct &card_use) const{
             new_use.to.append(p);
     }
 
-    if (getSkillName() == "neo2013duoshi")
-        room->addPlayerHistory(card_use.from, "NeoDuoshiAE", 1);
+    if (getSkillName() == "duoshi")
+        room->addPlayerHistory(card_use.from, "DuoshiAE", 1);
 
     TrickCard::onUse(room, new_use);
 }
