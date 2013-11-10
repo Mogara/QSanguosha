@@ -826,17 +826,12 @@ bool Collateral::targetFilter(const QList<const Player *> &targets,
         Q_ASSERT(targets.length() <= 2);
         if (targets.length() == 2) return false;
         const Player *slashFrom = targets[0];
-        /* @todo: develop a new mechanism of filtering targets
-                    to remove the coupling here and to fix the similar bugs caused by TongJi */
-        if (to_select == Self && to_select->hasSkill("kongcheng") && Self->isLastHandCard(this, true))
-            return false;
         return slashFrom->canSlash(to_select);
     } else {
         if (!to_select->getWeapon() || to_select == Self)
             return false;
         foreach (const Player *p, to_select->getAliveSiblings()) {
-            if (to_select->canSlash(p)
-                && (!(p == Self && p->hasSkill("kongcheng") && Self->isLastHandCard(this, true))))
+            if (to_select->canSlash(p))
                 return true;
         }
     }
