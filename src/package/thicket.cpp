@@ -903,6 +903,7 @@ ThicketPackage::ThicketPackage()
     caopi->addSkill(new Songwei);
 
     General *menghuo = new General(this, "menghuo", "shu"); // SHU 014
+    menghuo->addCompanion("zhurong");
     menghuo->addSkill(new SavageAssaultAvoid("huoshou"));
     menghuo->addSkill(new Huoshou);
     menghuo->addSkill(new Zaiqi);
