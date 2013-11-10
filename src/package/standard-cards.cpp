@@ -236,7 +236,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     }
 
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
-        ++rangefix;
+        ++ rangefix;
 
     bool has_specific_assignee = false;
     foreach (const Player *p, Self->getAliveSiblings()) {
@@ -1046,10 +1046,7 @@ bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
     int rangefix = 0;
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
-        rangefix += 1;
-
-    if (getSkillName() == "jixi")
-        rangefix += 1;
+        ++ rangefix;
 
     if (Self->distanceTo(to_select, rangefix) > distance_limit)
         return false;
@@ -1064,9 +1061,7 @@ void Snatch::onEffect(const CardEffectStruct &effect) const{
         return;
 
     Room *room = effect.to->getRoom();
-    bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() != "Classical");
-    QString flag = using_2013 ? "he" : "hej";
-    int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName());
+    int card_id = room->askForCardChosen(effect.from, effect.to, "hej", objectName());
     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
     room->obtainCard(effect.from, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
 }
