@@ -448,6 +448,71 @@ public:
     }
 };
 
+class ShensuViewAsSkill: public ViewAsSkill {
+public:
+    ShensuViewAsSkill(): ViewAsSkill("shensu") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *) const{
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern.startsWith("@@shensu");
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
+        if (Sanguosha->currentRoomState()->getCurrentCardUsePattern().endsWith("1"))
+            return false;
+        else
+            return selected.isEmpty() && to_select->isKindOf("EquipCard") && !Self->isJilei(to_select);
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+        if (Sanguosha->currentRoomState()->getCurrentCardUsePattern().endsWith("1")) {
+            return cards.isEmpty() ? new ShensuCard : NULL;
+        } else {
+            if (cards.length() != 1)
+                return NULL;
+
+            ShensuCard *card = new ShensuCard;
+            card->addSubcards(cards);
+
+            return card;
+        }
+    }
+};
+
+class Shensu: public TriggerSkill {
+public:
+    Shensu(): TriggerSkill("shensu") {
+        events << EventPhaseChanging;
+        view_as_skill = new ShensuViewAsSkill;
+    }
+
+    virtual bool trigger(TriggerEvent , Room *room, ServerPlayer *xiahouyuan, QVariant &data) const{
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::Judge && !xiahouyuan->isSkipped(Player::Judge)
+            && !xiahouyuan->isSkipped(Player::Draw)) {
+                if (Slash::IsAvailable(xiahouyuan) && room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1", 1)) {
+                    xiahouyuan->skip(Player::Judge);
+                    xiahouyuan->skip(Player::Draw);
+                }
+        } else if (Slash::IsAvailable(xiahouyuan) && change.to == Player::Play && !xiahouyuan->isSkipped(Player::Play)) {
+            if (xiahouyuan->canDiscard(xiahouyuan, "he") && room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2, Card::MethodDiscard))
+                xiahouyuan->skip(Player::Play);
+        }
+        return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+        int index = qrand() % 2 + 1;
+        if (!player->hasInnateSkill(objectName()) && player->hasSkill("baobian"))
+            index += 2;
+        return index;
+    }
+};
+
 class RendeViewAsSkill: public ViewAsSkill {
 public:
     RendeViewAsSkill(): ViewAsSkill("rende") {
@@ -1500,6 +1565,11 @@ void StandardPackage::addGenerals() {
     General *zhenji = new General(this, "zhenji", "wei", 3, false); // WEI 007
     zhenji->addSkill(new Qingguo);
     zhenji->addSkill(new Luoshen);
+
+    General *xiahouyuan = new General(this, "xiahouyuan", "wei"); // WEI 008
+    xiahouyuan->addSkill(new Shensu);
+    xiahouyuan->addSkill(new SlashNoDistanceLimitSkill("shensu"));
+    related_skills.insertMulti("shensu", "#shensu-slash-ndl");
 
     // Shu
     General *liubei = new General(this, "liubei", "shu"); // SHU 001
