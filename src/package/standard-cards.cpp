@@ -309,7 +309,6 @@ FireSlash::FireSlash(Suit suit, int number)
     : NatureSlash(suit, number, DamageStruct::Fire)
 {
     setObjectName("fire_slash");
-    nature = DamageStruct::Fire;
 }
 
 Jink::Jink(Suit suit, int number): BasicCard(suit, number)
