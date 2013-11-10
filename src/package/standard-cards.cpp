@@ -746,8 +746,7 @@ bool GodSalvation::isCancelable(const CardEffectStruct &effect) const{
 
 void GodSalvation::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
-    if (!effect.to->isWounded())
-        ;//room->setEmotion(effect.to, "skill_nullify");
+    if (!effect.to->isWounded());
     else {
         RecoverStruct recover;
         recover.card = this;
