@@ -10,7 +10,7 @@
 General::General(Package *package, const QString &name, const QString &kingdom,
                  int double_max_hp, bool male, bool hidden, bool never_shown)
     : QObject(package), kingdom(kingdom), double_max_hp(double_max_hp), gender(male ? Male : Female),
-      hidden(hidden), never_shown(never_shown)
+      hidden(hidden), never_shown(never_shown), head_max_hp_adjusted_value(0), deputy_max_hp_adjusted_value(0)
 {
     static QChar lord_symbol('$');
     if (name.endsWith(lord_symbol)) {
@@ -65,11 +65,11 @@ bool General::isTotallyHidden() const{
 }
 
 int General::getMaxHpHead() const {
-    return double_max_hp;
+    return double_max_hp + head_max_hp_adjusted_value;
 }
 
 int General::getMaxHpDeputy() const {
-    return double_max_hp;
+    return double_max_hp + deputy_max_hp_adjusted_value;
 }
 
 void General::addSkill(Skill *skill) {
@@ -191,5 +191,13 @@ bool General::isCompanionWith(const QString &name) const {
         return false;
     return lord || other->lord || companions.contains(name) 
            || other->companions.contains(objectName());
+}
+
+void General::setHeadMaxHpAdjustedValue(const int adjusted_value /* = -1 */) {
+    this->head_max_hp_adjusted_value = adjusted_value;
+}
+
+void General::setDeputyMaxHpAdjustedValue(const int adjusted_value /* = -1 */) {
+    this->deputy_max_hp_adjusted_value = adjusted_value;
 }
 

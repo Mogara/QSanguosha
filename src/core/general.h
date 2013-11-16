@@ -36,8 +36,8 @@ public:
     bool isHidden() const;
     bool isTotallyHidden() const;
 
-    virtual int getMaxHpHead() const;
-    virtual int getMaxHpDeputy() const;
+    int getMaxHpHead() const;
+    int getMaxHpDeputy() const;
 
     enum Gender { Sexless, Male, Female, Neuter };
     Gender getGender() const;
@@ -62,6 +62,9 @@ public:
     void addCompanion(const QString &name);
     bool isCompanionWith(const QString &name) const;
 
+    void setHeadMaxHpAdjustedValue(const int adjusted_value = -1);
+    void setDeputyMaxHpAdjustedValue(const int adjusted_value = -1);
+
 public slots:
     void lastWord() const;
 
@@ -77,6 +80,8 @@ private:
     bool hidden;
     bool never_shown;
     QStringList companions;
+    int head_max_hp_adjusted_value;
+    int deputy_max_hp_adjusted_value;
 };
 
 #endif

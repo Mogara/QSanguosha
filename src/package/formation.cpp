@@ -534,16 +534,19 @@ FormationPackage::FormationPackage()
     : Package("formation")
 {
     General *heg_jiangwei = new General(this, "heg_jiangwei", "shu"); // SHU 012 G
+    heg_jiangwei->setDeputyMaxHpAdjustedValue();
     heg_jiangwei->addSkill("tiaoxin");
     heg_jiangwei->addSkill(new Tianfu);
 
     General *heg_dengai = new General(this, "heg_dengai", "wei"); // WEI 015 G
+    heg_dengai->setHeadMaxHpAdjustedValue();
     heg_dengai->addSkill("tuntian");
     heg_dengai->addSkill(new Ziliang); 
 
-    General *heg_caohong = new General(this, "heg_caohong", "wei"); // WEI 018
-    heg_caohong->addSkill(new Huyuan);
-    heg_caohong->addSkill(new Heyi);
+    General *caohong = new General(this, "caohong", "wei"); // WEI 018
+    caohong->addCompanion("caoren");
+    caohong->addSkill(new Huyuan);
+    caohong->addSkill(new Heyi);
 
     General *jiangwanfeiyi = new General(this, "jiangwanfeiyi", "shu", 3); // SHU 018 
     //ToDo: Add skin for jiangwanfeiyi @@Yan Guam
@@ -551,9 +554,12 @@ FormationPackage::FormationPackage()
     jiangwanfeiyi->addSkill(new Shoucheng);
 
     //ToDo: Jiang Qin(I don't understand the skill)
+    General *jiangqin = new General(this, "jiangqin", "wu", 3);
+    jiangqin->addCompanion("zhoutai");
 
-    General *heg_xusheng = new General(this, "heg_xusheng", "wu"); // WU 020
-    heg_xusheng->addSkill(new Yicheng);
+    General *xusheng = new General(this, "xusheng", "wu"); // WU 020
+    xusheng->addCompanion("dingfeng");
+    xusheng->addSkill(new Yicheng);
 
     General *heg_yuji = new General(this, "heg_yuji", "qun", 3); // QUN 011 G
     heg_yuji->addSkill(new Qianhuan);

@@ -824,3 +824,70 @@ QString DummyCard::toString(bool hidden) const{
     return "$" + subcardString();
 }
 
+// ---------- Formation Call Card      -------------------
+
+
+FormationCallCard::FormationCallCard(const QString &name, const FormationCallSkill::AskMethod &ask_method)
+    : SkillCard(), ask_method(ask_method)
+{
+    target_fixed = true;
+    handling_method = Card::MethodNone;
+    setObjectName(name);
+}
+
+void FormationCallCard::onUse(Room *room, const CardUseStruct &card_use) const {
+    CardUseStruct use = card_use;
+    if (use.to.isEmpty()) {
+        switch(ask_method) {
+        case FormationCallSkill::Queue: {
+            break;
+        }
+        case FormationCallSkill::Besiegement: {
+            break;
+        }
+        default:
+            break;
+        }
+        //@@todo: finish it later
+    }
+    SkillCard::onUse(room, use);
+}
+
+void FormationCallCard::onEffect(const CardEffectStruct &effect) const {
+    ServerPlayer *source = effect.from;
+    ServerPlayer *target = effect.to;
+    Room *room = target->getRoom();
+
+    QStringList names = room->getTag(target->objectName()).toStringList();
+    if (names.isEmpty()) return;
+    const General *general = Sanguosha->getGeneral(names.first());
+    QString kingdom = general->getKingdom();
+
+    int i = 1;
+    bool has_lord = target->isAlive() && general->isLord();
+    if (!has_lord) {
+        foreach(auto p, room->getOtherPlayers(target, true)) {
+            if (p->getKingdom() == kingdom) {
+                if (p->isAlive() && p->getGeneral()->isLord()) {
+                    has_lord = true;
+                    break;
+                }
+                if (p->hasShownOneGeneral() && p->getRole() != "careerist")
+                    ++ i;
+            }
+        }
+    }
+
+    bool cannot_show = source->getKingdom() == kingdom 
+            && !has_lord && i > (room->getPlayers().length() / 2);
+    if (cannot_show) {
+        room->askForSkillInvoke(target, "userdefine:fa_ask_for_show!");
+    } else {
+        QString choice = room->askForChoice(target, getSkillName(), 
+            "head+deputy+cancel", QVariant::fromValue(source));
+
+        if (choice != "cancel") {
+            target->showGeneral(choice == "head");
+        }
+    }
+}

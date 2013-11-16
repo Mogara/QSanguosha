@@ -103,9 +103,23 @@ public:
     virtual bool viewFilter(const Card *to_select) const;
     virtual const Card *viewAs(const Card *originalCard) const = 0;
 
-    protected:
+protected:
         QString filter_pattern;
 };
+
+class FormationCallSkill: public ZeroCardViewAsSkill {
+    Q_OBJECT
+
+public:
+    enum AskMethod {Queue, Besiegement};
+
+    FormationCallSkill(const QString &name, const AskMethod &ask_method);
+
+    virtual const Card *viewAs() const;
+
+protected:
+    AskMethod ask_method;
+}
 
 class FilterSkill: public OneCardViewAsSkill {
     Q_OBJECT

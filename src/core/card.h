@@ -5,13 +5,15 @@
 #include <QMap>
 #include <QIcon>
 #include "json/json.h"
+#include "skill.h"
 
 class Room;
 class Player;
 class ServerPlayer;
 class Client;
 class ClientPlayer;
-class CardItem;
+class CardItem
+class FormationCallSkill;
 
 struct CardEffectStruct;
 struct CardUseStruct;
@@ -190,6 +192,19 @@ public:
     virtual QString getSubtype() const;
     virtual QString getType() const;
     virtual QString toString(bool hidden = false) const;
+};
+
+class FormationCallCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    FormationCallCard(const QString &name, const FormationCallSkill::AskMethod &ask_method);
+
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+
+protected:
+    FormationCallSkill::AskMethod ask_method;
 };
 
 #endif
