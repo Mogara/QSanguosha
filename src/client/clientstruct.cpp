@@ -33,9 +33,7 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
 bool ServerInfoStruct::parse(const QString &str) {
     QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSTBHAMN123a-r]*)");
     if (!rx.exactMatch(str)) {
-        // older version, just take the player count
-        int count = str.split(":").at(1).toInt();
-        GameMode = QString("%1p").arg(count, 2, 10, QChar('0'));
+        qWarning("%s", qPrintable("Setup string error!"));
         return false;
     }
 
@@ -49,6 +47,10 @@ bool ServerInfoStruct::parse(const QString &str) {
         Name = QString::fromUtf8(QByteArray::fromBase64(server_name.toAscii()));
 
         GameMode = texts.at(2);
+        if (GameMode.startsWith("02_1v1") || GameMode.startsWith("06_3v3")) {
+            GameRuleMode = GameMode.mid(6);
+            GameMode = GameMode.mid(0, 6);
+        }
         OperationTimeout = texts.at(3).toInt();
         NullificationCountDown = texts.at(4).toInt();
 

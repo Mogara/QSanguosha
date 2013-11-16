@@ -291,6 +291,7 @@ private:
     void fillGenerals3v3(const QStringList &names);
 
     void showPindianBox(const QString &from_name, int from_id, const QString &to_name, int to_id, const QString &reason);
+    void setChatBoxVisible(bool show);
 
     // animation related functions
     typedef void (RoomScene::*AnimationFunc)(const QString &, const QStringList &);
@@ -311,6 +312,8 @@ private:
     void _cancelAllFocus();
     // for miniscenes
     int _m_currentStage;
+
+    QRectF _m_infoPlane;
 
 private slots:
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>());
@@ -352,7 +355,6 @@ private slots:
     void appendChatBox(QString txt);
 
     //animations
-    void onSelectChange();
     void onEnabledChange();
 
     void takeAmazingGrace(ClientPlayer *taker, int card_id, bool move_cards);

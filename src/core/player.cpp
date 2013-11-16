@@ -6,11 +6,12 @@
 #include "settings.h"
 
 Player::Player(QObject *parent)
-    : QObject(parent), owner(false), ready(false), general(NULL), general2(NULL),
+    : QObject(parent), owner(false), general(NULL), general2(NULL),
       m_gender(General::Sexless), hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
       phase(NotActive),
       weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
-      face_up(true), chained(false)
+      face_up(true), chained(false),
+      role_shown(false), pile_open(QMap<QString, QStringList>())
 {
 }
 
@@ -33,15 +34,12 @@ void Player::setOwner(bool owner) {
     }
 }
 
-bool Player::isReady() const{
-    return ready;
+bool Player::hasShownRole() const {
+    return role_shown;
 }
 
-void Player::setReady(bool ready) {
-    if (this->ready != ready) {
-        this->ready = ready;
-        emit ready_changed(ready);
-    }
+void Player::setShownRole(bool shown) {
+    this->role_shown = shown;
 }
 
 void Player::setHp(int hp) {
@@ -300,9 +298,24 @@ bool Player::isLord() const{
 
 bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
     if (!include_lose) {
-        if (!hasEquipSkill(skill_name) && ((hasFlag("huoshui") && getHp() >= (getMaxHp() + 1) / 2)
-                                           || getMark("Qingcheng" + skill_name) > 0))
-            return false;
+        if (!hasEquipSkill(skill_name)) {
+            const Skill *skill = Sanguosha->getSkill(skill_name);
+            if (phase == Player::NotActive) {
+                const Player *current = NULL;
+                foreach (const Player *p, getAliveSiblings()) {
+                    if (p->getPhase() != Player::NotActive) {
+                        current = p;
+                        break;
+                    }
+                }
+                if (current && current->hasSkill("huoshui") && hp >= (max_hp + 1) / 2 && (!skill || !skill->isAttachedLordSkill()))
+                    return false;
+            }
+            if (getMark("Qingcheng" + skill_name) > 0)
+                return false;
+            if (skill_name != "chanyuan" && hasSkill("chanyuan") && hp == 1 && (!skill || !skill->isAttachedLordSkill()))
+                return false;
+        }
     }
     return skills.contains(skill_name)
            || acquired_skills.contains(skill_name);
@@ -534,6 +547,10 @@ QList<const Card *> Player::getJudgingArea() const{
     return cards;
 }
 
+QList<int> Player::getJudgingAreaID() const{
+    return judging_area;
+}
+
 Player::Phase Player::getPhase() const{
     return phase;
 }
@@ -695,7 +712,7 @@ bool Player::canSlash(const Player *other, bool distance_limit, int rangefix, co
     return canSlash(other, NULL, distance_limit, rangefix, others);
 }
 
-int Player::getCardCount(bool include_equip) const{
+int Player::getCardCount(bool include_equip, bool include_judging) const{
     int count = getHandcardNum();
     if (include_equip) {
         if (weapon != NULL) count++;
@@ -703,6 +720,8 @@ int Player::getCardCount(bool include_equip) const{
         if (defensive_horse != NULL) count++;
         if (offensive_horse != NULL) count++;
     }
+    if (include_judging)
+        count += judging_area.length();
     return count;
 }
 
@@ -725,6 +744,15 @@ QString Player::getPileName(int card_id) const{
     }
 
     return QString();
+}
+
+bool Player::pileOpen(const QString &pile_name, const QString &player) const {
+    return pile_open[pile_name].contains(player);
+}
+
+void Player::setPileOpen(const QString &pile_name, const QString &player) {
+    if (pile_open[pile_name].contains(player)) return;
+    pile_open[pile_name].append(player);
 }
 
 void Player::addHistory(const QString &name, int times) {
@@ -809,7 +837,7 @@ QString Player::getSkillDescription() const{
     QString description = QString();
 
     foreach (const Skill *skill, getVisibleSkillList()) {
-        if (skill->inherits("SPConvertSkill") || skill->isAttachedLordSkill() || !hasSkill(skill->objectName()))
+        if (skill->isAttachedLordSkill() || !hasSkill(skill->objectName()))
             continue;
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription();

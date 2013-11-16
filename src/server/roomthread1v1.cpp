@@ -19,7 +19,7 @@ RoomThread1v1::RoomThread1v1(Room *room)
 void RoomThread1v1::run() {
     // initialize the random seed for this thread
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
-    QString rule = Config.value("1v1/Rule", "Classical").toString();
+    QString rule = Config.value("1v1/Rule", "2013").toString();
     int total_num = rule != "Classical" ? 12 : 10;
 
     if (!Config.value("1v1/UsingExtension", false).toBool()) {
@@ -36,14 +36,15 @@ void RoomThread1v1::run() {
             candidates << "caocao" << "simayi" << "xiahoudun" << "kof_zhangliao"
                        << "kof_xuchu" << "guojia" << "kof_zhenji" << "kof_xiahouyuan"
                        << "nos_caoren" << "dianwei" << "kof_guanyu" << "zhangfei"
-                       << "zhugeliang" << "zhaoyun" << "kof_machao" << "kof_nos_huangyueying"
+                       << "zhugeliang" << "zhaoyun" << "machao" << "kof_nos_huangyueying"
                        << "kof_huangzhong" << "kof_jiangwei" << "kof_menghuo" << "kof_zhurong"
                        << "sunquan" << "ganning" << "huanggai" << "zhouyu"
                        << "luxun" << "kof_sunshangxiang" << "sunjian" << "xiaoqiao"
                        << "lvbu" << "kof_nos_diaochan" << "yanliangwenchou" << "hejin";
             if (rule == "OL") {
                 candidates << "kof_liubei" << "kof_weiyan" << "kof_lvmeng" << "kof_daqiao"
-                           << "nos_zhoutai" << "kof_huatuo" << "nos_zhangjiao" << "kof_pangde";
+                           << "nos_zhoutai" << "kof_huatuo" << "nos_zhangjiao" << "pangde"
+                           << "niujin" << "hansui";
             }
         }
         qShuffle(candidates);
@@ -138,7 +139,7 @@ void RoomThread1v1::askForTakeGeneral(ServerPlayer *player) {
 }
 
 void RoomThread1v1::takeGeneral(ServerPlayer *player, const QString &name) {
-    QString rule = Config.value("1v1/Rule", "Classical").toString();
+    QString rule = Config.value("1v1/Rule", "2013").toString();
     QString group = player->isLord() ? "warm" : "cool";
     room->doBroadcastNotify(room->getOtherPlayers(player, true), S_COMMAND_TAKE_GENERAL, toJsonArray(group, name, rule));
 
@@ -240,7 +241,7 @@ void RoomThread1v1::askForFirstGeneral(QList<ServerPlayer *> players) {
 }
 
 void RoomThread1v1::arrange(ServerPlayer *player, const QStringList &arranged) {
-    QString rule = Config.value("1v1/Rule", "Classical").toString();
+    QString rule = Config.value("1v1/Rule", "2013").toString();
     Q_ASSERT(arranged.length() == ((rule == "OL") ? 6 : 3));
 
     QStringList left = arranged.mid(1);

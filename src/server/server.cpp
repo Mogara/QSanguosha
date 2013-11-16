@@ -384,9 +384,6 @@ QWidget *ServerDialog::createMiscTab() {
     ai_enable_checkbox->setChecked(Config.EnableAI);
     ai_enable_checkbox->setEnabled(false); // Force to enable AI for disabling it causes crashes!!
 
-    ai_chat_checkbox = new QCheckBox(tr("AI Chat"));
-    ai_chat_checkbox->setChecked(Config.value("AIChat", true).toBool());
-
     ai_delay_spinbox = new QSpinBox;
     ai_delay_spinbox->setMinimum(0);
     ai_delay_spinbox->setMaximum(5000);
@@ -405,7 +402,6 @@ QWidget *ServerDialog::createMiscTab() {
     connect(ai_delay_altered_checkbox, SIGNAL(toggled(bool)), ai_delay_ad_spinbox, SLOT(setEnabled(bool)));
 
     layout->addWidget(ai_enable_checkbox);
-    layout->addWidget(ai_chat_checkbox);
     layout->addLayout(HLay(new QLabel(tr("AI delay")), ai_delay_spinbox));
     layout->addWidget(ai_delay_altered_checkbox);
     layout->addLayout(HLay(new QLabel(tr("AI delay After Death")), ai_delay_ad_spinbox));
@@ -628,7 +624,7 @@ QGroupBox *ServerDialog::create1v1Box() {
 
     official_1v1_ComboBox = officialComboBox;
 
-    QString rule = Config.value("1v1/Rule", "Classical").toString();
+    QString rule = Config.value("1v1/Rule", "2013").toString();
     if (rule == "2013")
         officialComboBox->setCurrentIndex(1);
     else if (rule == "OL")
@@ -1103,7 +1099,6 @@ bool ServerDialog::config() {
     Config.setValue("NullificationCountDown", nullification_spinbox->value());
     Config.setValue("EnableMinimizeDialog", Config.EnableMinimizeDialog);
     Config.setValue("EnableAI", Config.EnableAI);
-    Config.setValue("AIChat", ai_chat_checkbox->isChecked());
     Config.setValue("OriginAIDelay", Config.OriginAIDelay);
     Config.setValue("AlterAIDelayAD", ai_delay_altered_checkbox->isChecked());
     Config.setValue("AIDelayAD", Config.AIDelayAD);
@@ -1154,12 +1149,12 @@ Server::Server(QObject *parent)
 
     //synchronize ServerInfo on the server side to avoid ambiguous usage of Config and ServerInfo
     ServerInfo.parse(Sanguosha->getSetupString());
+
+    current = NULL;
     createNewRoom();
 
     connect(server, SIGNAL(new_connection(ClientSocket *)), this, SLOT(processNewConnection(ClientSocket *)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
-
-    current = NULL;
 }
 
 void Server::broadcast(const QString &msg) {
@@ -1232,15 +1227,14 @@ void Server::processRequest(const char *request) {
     if (command == "signupr") {
         foreach (QString objname, name2objname.values(screen_name)) {
             ServerPlayer *player = players.value(objname);
-            if (player && player->getState() == "offline") {
-                Q_ASSERT(player->getRoom());
+            if (player && player->getState() == "offline" && !player->getRoom()->isFinished()) {
                 player->getRoom()->reconnect(player, socket);
                 return;
             }
         }
     }
 
-    if (current == NULL || current->isFull())
+    if (current == NULL || current->isFull() || current->isFinished())
         createNewRoom();
 
     ServerPlayer *player = current->addSocket(socket);
@@ -1267,10 +1261,3 @@ void Server::gameOver() {
         players.remove(player->objectName());
     }
 }
-
-void Server::gamesOver() {
-    name2objname.clear();
-    players.clear();
-    rooms.clear();
-}
-

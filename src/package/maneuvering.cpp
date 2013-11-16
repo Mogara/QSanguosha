@@ -11,7 +11,8 @@ NatureSlash::NatureSlash(Suit suit, int number, DamageStruct::Nature nature)
 }
 
 bool NatureSlash::match(const QString &pattern) const{
-    if (pattern == "slash")
+    QStringList patterns = pattern.split("+");
+    if (patterns.contains("slash"))
         return true;
     else
         return Slash::match(pattern);
@@ -275,16 +276,7 @@ FireAttack::FireAttack(Card::Suit suit, int number)
 
 bool FireAttack::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    if (targets.length() >= total_num)
-        return false;
-
-    if (to_select->isKongcheng())
-        return false;
-
-    if (to_select == Self)
-        return !Self->isLastHandCard(this, true);
-    else
-        return true;
+    return targets.length() < total_num && !to_select->isKongcheng() && (to_select != Self || !Self->isLastHandCard(this, true));
 }
 
 void FireAttack::onEffect(const CardEffectStruct &effect) const{
@@ -323,12 +315,7 @@ QString IronChain::getSubtype() const{
 
 bool IronChain::targetFilter(const QList<const Player *> &targets, const Player *, const Player *Self) const{
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    if (targets.length() >= total_num)
-        return false;
-    if (Self->isCardLimited(this, Card::MethodUse))
-        return false;
-
-    return true;
+    return targets.length() < total_num && !Self->isCardLimited(this, Card::MethodUse);
 }
 
 bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{

@@ -48,7 +48,7 @@ QString Skill::getNotice(int index) const{
 }
 
 bool Skill::isVisible() const{
-    return !objectName().startsWith("#");
+    return !objectName().startsWith("#") && !inherits("SPConvertSkill");
 }
 
 QString Skill::getDefaultChoice(ServerPlayer *) const{
@@ -262,9 +262,7 @@ MasochismSkill::MasochismSkill(const QString &name)
 
 bool MasochismSkill::trigger(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
     DamageStruct damage = data.value<DamageStruct>();
-
-    if (player->isAlive())
-        onDamaged(player, damage);
+    onDamaged(player, damage);
 
     return false;
 }
@@ -279,10 +277,13 @@ bool PhaseChangeSkill::trigger(TriggerEvent, Room *, ServerPlayer *player, QVari
     return onPhaseChange(player);
 }
 
-DrawCardsSkill::DrawCardsSkill(const QString &name)
-    : TriggerSkill(name)
+DrawCardsSkill::DrawCardsSkill(const QString &name, bool is_initial)
+    : TriggerSkill(name), is_initial(is_initial)
 {
-    events << DrawNCards;
+    if (is_initial)
+        events << DrawInitialCards;
+    else
+        events << DrawNCards;
 }
 
 bool DrawCardsSkill::trigger(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{

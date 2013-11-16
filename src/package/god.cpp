@@ -726,36 +726,29 @@ public:
     }
 };
 
-class QixingStart: public GameStartSkill {
+class QixingStart: public TriggerSkill {
 public:
-    QixingStart(): GameStartSkill("#qixing") {
+    QixingStart(): TriggerSkill("#qixing") {
+        events << DrawInitialCards << AfterDrawInitialCards;
     }
 
-    virtual void onGameStart(ServerPlayer *shenzhuge) const{
-        Room *room = shenzhuge->getRoom();
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *shenzhuge, QVariant &data) const{
+        if (triggerEvent == DrawInitialCards) {
+            LogMessage log;
+            log.type = "#TriggerSkill";
+            log.from = shenzhuge;
+            log.arg = "qixing";
+            room->sendLog(log);
+            room->notifySkillInvoked(shenzhuge, "qixing");
 
-        LogMessage log;
-        log.type = "#TriggerSkill";
-        log.from = shenzhuge;
-        log.arg = "qixing";
-        room->sendLog(log);
-        room->notifySkillInvoked(shenzhuge, "qixing");
-
-        room->setTag("FirstRound", true); //For Manjuan
-        try {
-            shenzhuge->drawCards(7);
-            room->setTag("FirstRound", false);
+            data = data.toInt() + 7;
+        } else if (triggerEvent == AfterDrawInitialCards) {
+            room->broadcastSkillInvoke("qixing");
+            const Card *exchange_card = room->askForExchange(shenzhuge, "qixing", 7);
+            shenzhuge->addToPile("stars", exchange_card->getSubcards(), false);
+            delete exchange_card;
         }
-        catch (TriggerEvent triggerEvent) {
-            if (triggerEvent == TurnBroken || triggerEvent == StageChange)
-                room->setTag("FirstRound", false);
-            throw triggerEvent;
-        }
-
-        room->broadcastSkillInvoke("qixing");
-        const Card *exchange_card = room->askForExchange(shenzhuge, "qixing", 7);
-        shenzhuge->addToPile("stars", exchange_card->getSubcards(), false);
-        delete exchange_card;
+        return false;
     }
 };
 
@@ -1284,18 +1277,12 @@ bool Longhun::viewFilter(const QList<const Card *> &selected, const Card *card) 
     case CardUseStruct::CARD_USE_REASON_PLAY: {
             if (Self->isWounded() && card->getSuit() == Card::Heart)
                 return true;
-            else if (Slash::IsAvailable(Self) && card->getSuit() == Card::Diamond) {
-                if (Self->getWeapon() && card->getEffectiveId() == Self->getWeapon()->getId()
-                    && card->isKindOf("Crossbow")) {
-                    int number = card->getNumber();
-                    foreach (const Card *c, selected)
-                        number += c->getNumber();
-                    FireSlash *slash = new FireSlash(card->getSuit(), number);
-                    slash->deleteLater();
-                    return Self->canSlashWithoutCrossbow(slash);
-                } else {
-                    return true;
-                }
+            else if (card->getSuit() == Card::Diamond) {
+                FireSlash *slash = new FireSlash(Card::SuitToBeDecided, -1);
+                slash->addSubcards(selected);
+                slash->addSubcard(card->getEffectiveId());
+                slash->deleteLater();
+                return slash->isAvailable(Self);
             } else
                 return false;
         }

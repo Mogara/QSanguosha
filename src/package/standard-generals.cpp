@@ -526,14 +526,13 @@ public:
         if (!card->isRed())
             return false;
 
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
-            && Self->getWeapon() && card->getEffectiveId() == Self->getWeapon()->getId() && card->isKindOf("Crossbow")) {
-            Slash *slash = new Slash(card->getSuit(), card->getNumber());
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+            slash->addSubcard(card->getEffectiveId());
             slash->deleteLater();
-            return Self->canSlashWithoutCrossbow(slash);
-        } else {
-            return true;
+            return slash->isAvailable(Self);
         }
+        return true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -787,7 +786,7 @@ public:
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
-        if (Self->getMark("ZhihengInLatestKOF") > 0 && selected.length() >= 2) return false;
+        if (ServerInfo.GameMode == "02_1v1" && ServerInfo.GameRuleMode != "Classical" && selected.length() >= 2) return false;
         return !Self->isJilei(to_select);
     }
 
@@ -807,18 +806,6 @@ public:
 
     virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@zhiheng";
-    }
-};
-
-class ZhihengForKOF: public GameStartSkill {
-public:
-    ZhihengForKOF(): GameStartSkill("#zhiheng-for-kof") {
-    }
-
-    virtual void onGameStart(ServerPlayer *player) const{
-        Room *room = player->getRoom();
-        if (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() != "Classical")
-            room->setPlayerMark(player, "ZhihengInLatestKOF", 1);
     }
 };
 
@@ -1398,6 +1385,28 @@ public:
     }
 };
 
+class Xiaoxi: public TriggerSkill {
+public:
+    Xiaoxi(): TriggerSkill("xiaoxi") {
+        events << Debut;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+        ServerPlayer *opponent = player->getNext();
+        if (!opponent->isAlive())
+            return false;
+        Slash *slash = new Slash(Card::NoSuit, 0);
+        slash->setSkillName("_xiaoxi");
+        if (player->isLocked(slash) || !player->canSlash(opponent, slash, false)) {
+            delete slash;
+            return false;
+        }
+        if (room->askForSkillInvoke(player, objectName()))
+            room->useCard(CardUseStruct(slash, player, opponent), false);
+        return false;
+    }
+};
+
 void StandardPackage::addGenerals() {
     // Wei
     General *caocao = new General(this, "caocao$", "wei"); // WEI 001
@@ -1458,9 +1467,7 @@ void StandardPackage::addGenerals() {
     // Wu
     General *sunquan = new General(this, "sunquan$", "wu"); // WU 001
     sunquan->addSkill(new Zhiheng);
-    sunquan->addSkill(new ZhihengForKOF);
     sunquan->addSkill(new Jiuyuan);
-    related_skills.insertMulti("zhiheng", "#zhiheng-for-kof");
 
     General *ganning = new General(this, "ganning", "wu"); // WU 002
     ganning->addSkill(new Qixi);
@@ -1521,6 +1528,8 @@ void StandardPackage::addGenerals() {
     addMetaObject<QingnangCard>();
     addMetaObject<LiuliCard>();
     addMetaObject<JijiangCard>();
+
+    skills << new Xiaoxi;
 }
 
 class SuperZhiheng: public Zhiheng {

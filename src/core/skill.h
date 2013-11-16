@@ -174,10 +174,13 @@ class DrawCardsSkill: public TriggerSkill {
     Q_OBJECT
 
 public:
-    DrawCardsSkill(const QString &name);
+    DrawCardsSkill(const QString &name, bool is_initial = false);
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual int getDrawNum(ServerPlayer *player, int n) const = 0;
+
+protected:
+    bool is_initial;
 };
 
 class GameStartSkill: public TriggerSkill {

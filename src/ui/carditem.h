@@ -45,7 +45,7 @@ public:
     void changeGeneral(const QString &general_name);
     void setFootnote(const QString &desc);
 
-    bool isSelected() const{ return m_isSelected; }
+    inline bool isSelected() const{ return m_isSelected; }
     inline void setSelected(bool selected) { m_isSelected = selected; }
     bool isEquipped() const;
 

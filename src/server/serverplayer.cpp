@@ -98,7 +98,7 @@ void ServerPlayer::throwAllHandCards() {
 }
 
 void ServerPlayer::throwAllHandCardsAndEquips() {
-    int card_length = getCardCount(true);
+    int card_length = getCardCount();
     room->askForDiscard(this, QString(), card_length, card_length, false, true);
 }
 
@@ -889,9 +889,6 @@ void ServerPlayer::introduceTo(ServerPlayer *player) {
         player->invoke("addPlayer", introduce_str);
     else
         room->broadcastInvoke("addPlayer", introduce_str, this);
-
-    if (isReady())
-        room->broadcastProperty(this, "ready");
 }
 
 void ServerPlayer::marshal(ServerPlayer *player) const{
@@ -908,7 +905,7 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
     } else {
         room->notifyProperty(player, this, "alive");
         room->notifyProperty(player, this, "role");
-        player->invoke("killPlayer", objectName());
+        room->doNotify(player, S_COMMAND_KILL_PLAYER, toJsonString(objectName()));
     }
 
     if (!faceUp())
@@ -917,42 +914,132 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
     if (isChained())
         room->notifyProperty(player, this, "chained");
 
-    if (!isKongcheng()) {
-        if (player != this) {
-            player->invoke("drawNCards", QString("%1:%2").arg(objectName()).arg(getHandcardNum()));
-        } else {
-            QStringList card_str;
-            foreach (const Card *card, handcards)
-                card_str << QString::number(card->getId());
+    QList<ServerPlayer*> players;
+    players << player;
 
-            player->invoke("drawCards", card_str.join("+"));
+    QList<CardsMoveStruct> moves;
+
+    if (!isKongcheng()) {
+        CardsMoveStruct move;
+        foreach (const Card *card, handcards) {
+            move.card_ids << card->getId();
+            if (player == this) {
+                WrappedCard *wrapped = qobject_cast<WrappedCard *>(room->getCard(card->getId()));
+                if (wrapped->isModified())
+                    room->notifyUpdateCard(player, card->getId(), wrapped);
+            }
         }
+        move.from_place = DrawPile;
+        move.to_player_name = objectName();
+        move.to_place = PlaceHand;
+
+        if (player == this)
+            move.to = player;
+
+        moves << move;
     }
 
-    foreach (const Card *equip, getEquips())
-        player->invoke("moveCard", QString("%1:_@=->%2@equip").arg(equip->getId()).arg(objectName()));
-    foreach (const Card *card, getJudgingArea())
-        player->invoke("moveCard", QString("%1:_@=->%2@judging").arg(card->getId()).arg(objectName()));
+    if (hasEquip()) {
+        CardsMoveStruct move;
+        foreach (const Card *card, getEquips()) {
+            move.card_ids << card->getId();
+            WrappedCard *wrapped = qobject_cast<WrappedCard *>(room->getCard(card->getId()));
+            if (wrapped->isModified())
+                room->notifyUpdateCard(player, card->getId(), wrapped);
+        }
+        move.from_place = DrawPile;
+        move.to_player_name = objectName();
+        move.to_place = PlaceEquip;
+
+        moves << move;
+    }
+
+    if (!getJudgingAreaID().isEmpty()) {
+        CardsMoveStruct move;
+        foreach (int card_id, getJudgingAreaID())
+            move.card_ids << card_id;
+        move.from_place = DrawPile;
+        move.to_player_name = objectName();
+        move.to_place = PlaceDelayedTrick;
+
+        moves << move;
+    }
+
+    if (!moves.isEmpty()) {
+        room->notifyMoveCards(true, moves, false, players);
+        room->notifyMoveCards(false, moves, false, players);
+    }
+
+    if (!getPileNames().isEmpty()) {
+        CardsMoveStruct move;
+        move.from_place = DrawPile;
+        move.to_player_name = objectName();
+        move.to_place = PlaceSpecial;
+        foreach(QString pile, piles.keys()) {
+            move.card_ids.clear();
+            move.card_ids.append(piles[pile]);
+            move.to_pile_name = pile;
+
+            QList<CardsMoveStruct> moves2;
+            moves2 << move;
+
+            bool open = pileOpen(pile, player->objectName());
+
+            room->notifyMoveCards(true, moves2, open, players);
+            room->notifyMoveCards(false, moves2, open, players);
+        }
+    }
 
     foreach (QString mark_name, marks.keys()) {
         if (mark_name.startsWith("@")) {
             int value = getMark(mark_name);
-            if (value > 0)
-                player->invoke("setMark", QString("%1.%2=%3").arg(objectName()).arg(mark_name).arg(value));
+            if (value > 0) {
+                Json::Value arg(Json::arrayValue);
+                arg[0] = toJsonString(objectName());
+                arg[1] = toJsonString(mark_name);
+                arg[2] = value;
+                room->doNotify(player, S_COMMAND_SET_MARK, arg);
+            }
         }
     }
 
-    foreach (QString skill_name, acquired_skills)
-        player->invoke("acquireSkill", QString("%1:%2").arg(objectName()).arg(skill_name));
+    foreach(const QString skill_name, skills) {
+        if (Sanguosha->getSkill(skill_name)->isVisible()) {
+            Json::Value args1;
+            args1[0] = S_GAME_EVENT_ACQUIRE_SKILL;
+            args1[1] = toJsonString(objectName());
+            args1[2] = toJsonString(skill_name);
+            room->doNotify(player, S_COMMAND_LOG_EVENT, args1);
+        }
+
+        foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
+            if (!related_skill->isVisible()) {
+                Json::Value args2;
+                args2[0] = S_GAME_EVENT_ACQUIRE_SKILL;
+                args2[1] = toJsonString(objectName());
+                args2[2] = toJsonString(skill_name);
+                room->doNotify(player, S_COMMAND_LOG_EVENT, args2);
+            }
+        }
+    }
 
     foreach (QString flag, flags)
-        player->unicast(QString("#%1 flags %2").arg(objectName()).arg(flag));
+        room->notifyProperty(player, this, "flags", flag);
 
     foreach (QString item, history.keys()) {
         int value = history.value(item);
-        if (value > 0)
-            player->invoke("addHistory", QString("%1:%2").arg(item).arg(value));
+        if (value > 0) {
+
+            Json::Value arg(Json::arrayValue);
+            arg[0] = toJsonString(item);
+            arg[1] = value;
+
+            room->doNotify(player, S_COMMAND_ADD_HISTORY, arg);
+        }
     }
+
+    if (hasShownRole())
+        room->notifyProperty(player, this, "role");
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open) {
@@ -975,6 +1062,18 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids, bool open, CardMoveReason reason) {
+    QList<ServerPlayer *> open_players;
+    if (!open) {
+        foreach(int id, card_ids) {
+            ServerPlayer *owner = room->getCardOwner(id);
+            if (owner && !open_players.contains(owner))
+                open_players << owner;
+        }
+    } else {
+        open_players = room->getAllPlayers();
+    }
+    foreach (ServerPlayer *p, open_players)
+        setPileOpen(pile_name, p->objectName());
     piles[pile_name].append(card_ids);
 
     CardsMoveStruct move;

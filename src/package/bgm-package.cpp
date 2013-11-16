@@ -118,7 +118,7 @@ public:
             else
                 room->broadcastSkillInvoke(objectName(), 2);
             DummyCard *to_goback;
-            if (diaochan->getCardCount(true) <= target->getHp()) {
+            if (diaochan->getCardCount() <= target->getHp()) {
                 to_goback = diaochan->isKongcheng() ? new DummyCard : diaochan->wholeHandCards();
                 for (int i = 0; i < 4; i++)
                     if (diaochan->getEquip(i))
@@ -847,7 +847,8 @@ public:
                 victim->obtainCard(dummy);
             }
         } else {
-            if (room->askForDiscard(victim, "zhaolie", no_basic, no_basic, true, true, "@zhaolie-discard:" + liubei->objectName())) {
+            if (victim->getCardCount() >= no_basic
+                && room->askForDiscard(victim, "zhaolie", no_basic, no_basic, true, true, "@zhaolie-discard:" + liubei->objectName())) {
                 room->broadcastSkillInvoke("zhaolie", 2);
                 if (dummy->subcardsLength() > 0) {
                     if (liubei->isAlive())
@@ -1288,6 +1289,7 @@ class Fenyong: public TriggerSkill {
 public:
     Fenyong(): TriggerSkill("fenyong") {
         events << Damaged << DamageInflicted;
+        frequency = Frequent;
     }
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
@@ -1678,7 +1680,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getCardCount(true) >= 3 && !player->hasUsed("FuluanCard") && !player->hasFlag("ForbidFuluan");
+        return player->getCardCount() >= 3 && !player->hasUsed("FuluanCard") && !player->hasFlag("ForbidFuluan");
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *card) const{

@@ -377,14 +377,13 @@ public:
         if (to_select->getTypeId() != Card::TypeEquip)
             return false;
 
-        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
-            && Self->getWeapon() && to_select->getEffectiveId() == Self->getWeapon()->getId() && to_select->isKindOf("Crossbow")) {
-            Slash *slash = new Slash(to_select->getSuit(), to_select->getNumber());
+        if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+            Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+            slash->addSubcard(to_select->getEffectiveId());
             slash->deleteLater();
-            return Self->canSlashWithoutCrossbow(slash);
-        } else {
-            return true;
+            return slash->isAvailable(Self);
         }
+        return true;
     }
 
     const Card *viewAs(const Card *originalCard) const{
@@ -422,7 +421,7 @@ void NosJiefanCard::use(Room *room, ServerPlayer *handang, QList<ServerPlayer *>
 
     handang->setFlags("NosJiefanUsed");
     room->setTag("NosJiefanTarget", QVariant::fromValue((PlayerStar)who));
-    bool use_slash = room->askForUseSlashTo(handang, current, "jiefan-slash:" + current->objectName(), false);
+    bool use_slash = room->askForUseSlashTo(handang, current, "nosjiefan-slash:" + current->objectName(), false);
     if (!use_slash) {
         handang->setFlags("-NosJiefanUsed");
         room->removeTag("NosJiefanTarget");

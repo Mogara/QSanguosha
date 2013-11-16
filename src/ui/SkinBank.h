@@ -192,7 +192,6 @@ public:
         QRect m_actionedIconRegion;
         QRect m_saveMeIconRegion;
         QRect m_chainedIconRegion;
-        QRect m_readyIconRegion;        
         AnchoredRect m_deathIconRegion;
         QRect m_votesIconRegion;
         QColor m_drankMaskColor;
@@ -361,9 +360,6 @@ public:
 
     // Animations
     static const char *S_SKIN_KEY_ANIMATIONS;
-
-    // The following ones are to be moved to lobby skin later
-    static const char *S_SKIN_KEY_READY_ICON;
 
 protected:
     RoomLayout _m_roomLayout;

@@ -102,6 +102,7 @@ class Xiechan: public ZeroCardViewAsSkill {
 public:
     Xiechan(): ZeroCardViewAsSkill("xiechan") {
         frequency = Limited;
+        limit_mark = "@twine";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -195,28 +196,6 @@ public:
         }
         if (room->askForSkillInvoke(player, objectName()))
             room->useCard(CardUseStruct(drowning, player, opponent), false);
-        return false;
-    }
-};
-
-class Xiaoxi: public TriggerSkill {
-public:
-    Xiaoxi(): TriggerSkill("xiaoxi") {
-        events << Debut;
-    }
-
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
-        ServerPlayer *opponent = player->getNext();
-        if (!opponent->isAlive())
-            return false;
-        Slash *slash = new Slash(Card::NoSuit, 0);
-        slash->setSkillName("_huwei");
-        if (player->isLocked(slash) || !player->canSlash(opponent, slash, false)) {
-            delete slash;
-            return false;
-        }
-        if (room->askForSkillInvoke(player, objectName()))
-            room->useCard(CardUseStruct(slash, player, opponent), false);
         return false;
     }
 };
@@ -649,7 +628,7 @@ public:
 
     virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == BeforeGameOverJudge) {
-            player->setMark(objectName(), player->getCardCount(true));
+            player->setMark(objectName(), player->getCardCount());
         } else {
             int n = player->getMark(objectName());
             if (n == 0) return false;
@@ -686,7 +665,7 @@ public:
 class Renwang: public TriggerSkill {
 public:
     Renwang(): TriggerSkill("renwang") {
-        events << CardUsed << CardEffected << SlashEffected << EventPhaseChanging;
+        events << CardUsed << EventPhaseChanging;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -697,49 +676,19 @@ public:
         if (triggerEvent == CardUsed && player->getPhase() == Player::Play) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (!use.card->isKindOf("Slash") && !use.card->isNDTrick()) return false;
-            QList<ServerPlayer *> liubeis;
-            foreach (ServerPlayer *to, use.to.toSet()) {
-                if (to != use.from && TriggerSkill::triggerable(to)) {
-                    if (to->hasFlag("RenwangEffect"))
-                        liubeis << to;
-                    else
-                        to->setFlags("RenwangEffect");
+            QList<ServerPlayer *> first;
+            foreach (ServerPlayer *to, use.to) {
+                if (to != player && !to->hasFlag("RenwangEffect")) {
+                    first << to;
+                    to->setFlags("RenwangEffect");
                 }
             }
-            if (liubeis.isEmpty()) return false;
-            foreach (ServerPlayer *to, use.to) {
-                if (room->askForSkillInvoke(to, objectName(), data)
-                    && (!use.from->canDiscard(use.from, "he")
-                        || !room->askForDiscard(use.from, objectName(), 1, 1, true, true)))
-                    to->addMark(objectName());
-            }
-        } else if (triggerEvent == CardEffected) {
-            CardEffectStruct effect = data.value<CardEffectStruct>();
-            if (effect.card->isNDTrick() && player->getMark(objectName()) > 0) {
-                player->removeMark(objectName());
-
-                LogMessage log;
-                log.type = "#DanlaoAvoid";
-                log.from = player;
-                log.arg = effect.card->objectName();
-                log.arg2 = objectName();
-                room->sendLog(log);
-
-                return true;
-            }
-        } else if (triggerEvent == SlashEffected) {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (player->getMark(objectName()) > 0) {
-                player->removeMark(objectName());
-
-                LogMessage log;
-                log.type = "#DanlaoAvoid";
-                log.from = player;
-                log.arg = effect.slash->objectName();
-                log.arg2 = objectName();
-                room->sendLog(log);
-
-                return true;
+            foreach (ServerPlayer *p, room->getOtherPlayers(use.from)) {
+                if (use.to.contains(p) && !first.contains(p) && p->canDiscard(use.from, "he")
+                    && p->hasFlag("RenwangEffect") && TriggerSkill::triggerable(p)
+                    && room->askForSkillInvoke(p, objectName(), data)) {
+                    room->throwCard(room->askForCardChosen(p, use.from, "he", objectName(), false, Card::MethodDiscard), use.from, p);
+                }
             }
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -749,26 +698,6 @@ public:
                         to->setFlags("-RenwangEffect");
                 }
             }
-        }
-        return false;
-    }
-};
-
-class RenwangRemoveMark: public TriggerSkill {
-public:
-    RenwangRemoveMark(): TriggerSkill("#renwang") {
-        events << CardFinished;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual bool trigger(TriggerEvent, Room *, ServerPlayer *, QVariant &data) const{
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("Slash") || use.card->isNDTrick()) {
-            foreach (ServerPlayer *to, use.to)
-                to->setMark("renwang", 0);
         }
         return false;
     }
@@ -885,6 +814,166 @@ public:
     }
 };
 
+class Cuorui: public TriggerSkill {
+public:
+    Cuorui(): TriggerSkill("cuorui") {
+        events << DrawInitialCards << EventPhaseChanging;
+        frequency = Compulsory;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == DrawInitialCards) {
+            int n = 3;
+            if (room->getMode() == "02_1v1") {
+                n = player->tag["1v1Arrange"].toStringList().length();
+                if (Config.value("1v1/Rule", "2013").toString() != "OL")
+                    n += 3;
+            }
+
+            LogMessage log;
+            log.type = "#TriggerSkill";
+            log.from = player;
+            log.arg = "cuorui";
+            room->sendLog(log);
+            room->broadcastSkillInvoke("cuorui");
+            room->notifySkillInvoked(player, "cuorui");
+
+            data = data.toInt() + n;
+        } else if (triggerEvent == EventPhaseChanging) {
+            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+            if (change.to == Player::Judge && player->getMark("CuoruiSkipJudge") == 0) {
+                LogMessage log;
+                log.type = "#TriggerSkill";
+                log.from = player;
+                log.arg = "cuorui";
+                room->sendLog(log);
+                room->broadcastSkillInvoke("cuorui");
+                room->notifySkillInvoked(player, "cuorui");
+
+                player->skip(Player::Judge);
+                player->addMark("CuoruiSkipJudge");
+            }
+        }
+        return false;
+    }
+};
+
+class Liewei: public TriggerSkill {
+public:
+    Liewei(): TriggerSkill("liewei") {
+        events << BuryVictim;
+        frequency = Frequent;
+    }
+
+    virtual int getPriority() const{
+        return -2;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
+        DeathStruct death = data.value<DeathStruct>();
+        if (death.damage && death.damage->from && TriggerSkill::triggerable(death.damage->from)
+            && room->askForSkillInvoke(death.damage->from, objectName(), data))
+            death.damage->from->drawCards(3, objectName());
+        return false;
+    }
+};
+
+class NiluanViewAsSkill: public OneCardViewAsSkill {
+public:
+    NiluanViewAsSkill(): OneCardViewAsSkill("niluan") {
+        filter_pattern = ".|black";
+        response_pattern = "@@niluan";
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+        slash->addSubcard(originalCard);
+        slash->setSkillName("niluan");
+        return slash;
+    }
+};
+
+class Niluan: public TriggerSkill {
+public:
+    Niluan(): TriggerSkill("niluan") {
+        events << EventPhaseStart;
+        view_as_skill = new NiluanViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+        if (player->getPhase() == Player::Finish) {
+            ServerPlayer *hansui = room->findPlayerBySkillName(objectName());
+            if (hansui && hansui != player && hansui->canSlash(player, false)
+                && (player->getHp() > hansui->getHp() || hansui->hasFlag("NiluanSlashTarget"))) {
+                if (hansui->isKongcheng()) {
+                    bool has_black = false;
+                    for (int i = 0; i < 4; i++) {
+                        const EquipCard *equip = hansui->getEquip(i);
+                        if (equip && equip->isBlack()) {
+                            has_black = true;
+                            break;
+                        }
+                    }
+                    if (!has_black) return false;
+                }
+
+                room->setPlayerFlag(hansui, "slashTargetFix");
+                room->setPlayerFlag(hansui, "slashNoDistanceLimit");
+                room->setPlayerFlag(hansui, "slashTargetFixToOne");
+                room->setPlayerFlag(player, "SlashAssignee");
+
+                const Card *slash = room->askForUseCard(hansui, "@@niluan", "@niluan-slash:" + player->objectName());
+                if (slash == NULL) {
+                    room->setPlayerFlag(hansui, "-slashTargetFix");
+                    room->setPlayerFlag(hansui, "-slashNoDistanceLimit");
+                    room->setPlayerFlag(hansui, "-slashTargetFixToOne");
+                    room->setPlayerFlag(player, "-SlashAssignee");
+                }
+            }
+        }
+        return false;
+    }
+};
+
+class NiluanRecord: public TriggerSkill {
+public:
+    NiluanRecord(): TriggerSkill("#niluan-record") {
+        events << TargetConfirmed << EventPhaseStart;
+    }
+
+    virtual int getPriority() const{
+        return 4;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == TargetConfirmed) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from && use.from == player && use.card->isKindOf("Slash")) {
+                foreach (ServerPlayer *to, use.to) {
+                    if (!to->hasFlag("NiluanSlashTarget"))
+                        to->setFlags("NiluanSlashTarget");
+                }
+            }
+        } else if (player->getPhase() == Player::RoundStart) {
+            foreach (ServerPlayer *p, room->getAlivePlayers())
+                p->setFlags("-NiluanSlashTarget");
+        }
+        return false;
+    }
+};
+
 Drowning::Drowning(Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
@@ -893,13 +982,7 @@ Drowning::Drowning(Suit suit, int number)
 
 bool Drowning::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    if (targets.length() >= total_num)
-        return false;
-
-    if (to_select == Self)
-        return false;
-
-    return true;
+    return targets.length() < total_num && to_select != Self;
 }
 
 void Drowning::onEffect(const CardEffectStruct &effect) const{
@@ -922,8 +1005,6 @@ Special1v1Package::Special1v1Package()
     General *kof_xuchu = new General(this, "kof_xuchu", "wei");
     kof_xuchu->addSkill("luoyi");
     kof_xuchu->addSkill(new Xiechan);
-    kof_xuchu->addSkill(new MarkAssignSkill("@twine", 1));
-    related_skills.insertMulti("xiechan", "#@twine-1");
 
     General *kof_zhenji = new General(this, "kof_zhenji", "wei", 3, false);
     kof_zhenji->addSkill(new KOFQingguo);
@@ -936,10 +1017,6 @@ Special1v1Package::Special1v1Package()
     General *kof_guanyu = new General(this, "kof_guanyu", "shu");
     kof_guanyu->addSkill("wusheng");
     kof_guanyu->addSkill(new Huwei);
-
-    General *kof_machao = new General(this, "kof_machao", "shu");
-    kof_machao->addSkill("tieji");
-    kof_machao->addSkill(new Xiaoxi);
 
     General *kof_nos_huangyueying = new General(this, "kof_nos_huangyueying", "shu", 3, false);
     kof_nos_huangyueying->addSkill("nosjizhi");
@@ -987,9 +1064,7 @@ Special1v1OLPackage::Special1v1OLPackage()
 {
     General *kof_liubei = new General(this, "kof_liubei$", "shu");
     kof_liubei->addSkill(new Renwang);
-    kof_liubei->addSkill(new RenwangRemoveMark);
     kof_liubei->addSkill("jijiang");
-    related_skills.insertMulti("renwang", "#renwang");
 
     General *kof_weiyan = new General(this, "kof_weiyan", "shu");
     kof_weiyan->addSkill(new KOFKuanggu);
@@ -1007,14 +1082,26 @@ Special1v1OLPackage::Special1v1OLPackage()
     kof_huatuo->addSkill("jijiu");
     kof_huatuo->addSkill(new Puji);
 
-    General *kof_pangde = new General(this, "kof_pangde", "qun", 4);
-    kof_pangde->addSkill("mengjin");
-    kof_pangde->addSkill("xiaoxi");
-
     addMetaObject<PujiCard>();
 }
 
 ADD_PACKAGE(Special1v1OL)
+
+Special1v1ExtPackage::Special1v1ExtPackage()
+    : Package("Special1v1Ext")
+{
+    General *niujin = new General(this, "niujin", "wei"); // WEI 025
+    niujin->addSkill(new Cuorui);
+    niujin->addSkill(new Liewei);
+
+    General *hansui = new General(this, "hansui", "qun"); // QUN 027
+    hansui->addSkill("mashu");
+    hansui->addSkill(new Niluan);
+    hansui->addSkill(new NiluanRecord);
+    related_skills.insertMulti("niluan", "#niluan-record");
+}
+
+ADD_PACKAGE(Special1v1Ext)
 
 #include "maneuvering.h"
 New1v1CardPackage::New1v1CardPackage()

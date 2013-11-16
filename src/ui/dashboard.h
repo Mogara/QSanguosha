@@ -127,7 +127,6 @@ protected:
     
     bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void _addHandCard(CardItem *card_item);    
     void _adjustCards();
@@ -190,6 +189,7 @@ protected slots:
     
 private slots:
     void onCardItemClicked();
+    void onCardItemDoubleClicked();
     void onCardItemThrown();
     void onCardItemHover();
     void onCardItemLeaveHover();

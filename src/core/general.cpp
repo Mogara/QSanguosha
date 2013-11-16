@@ -85,6 +85,9 @@ bool General::hasSkill(const QString &skill_name) const{
 QList<const Skill *> General::getSkillList() const{
     QList<const Skill *> skills;
     foreach (QString skill_name, skillname_list) {
+        if (skill_name == "mashu" && ServerInfo.DuringGame
+            && ServerInfo.GameMode == "02_1v1" && ServerInfo.GameRuleMode != "Classical")
+            skill_name = "xiaoxi";
         const Skill *skill = Sanguosha->getSkill(skill_name);
         Q_ASSERT(skill != NULL);
         skills << skill;
@@ -136,8 +139,6 @@ QString General::getSkillDescription(bool include_name) const{
     QString description;
 
     foreach (const Skill *skill, getVisibleSkillList()) {
-        if (skill->inherits("SPConvertSkill"))
-            continue;
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription();
         desc.replace("\n", "<br/>");

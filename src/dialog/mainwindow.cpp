@@ -149,6 +149,7 @@ void MainWindow::on_actionExit_triggered() {
                                    tr("Are you sure to exit?"),
                                    QMessageBox::Ok | QMessageBox::Cancel);
     if (result == QMessageBox::Ok) {
+        delete systray;
         systray = NULL;
         close();
     }
@@ -284,14 +285,12 @@ void MainWindow::enterRoom() {
     if (ServerInfo.EnableCheat) {
         ui->menuCheat->setEnabled(true);
 
-        connect(ui->actionGet_card, SIGNAL(triggered()), ui->actionCard_Overview, SLOT(trigger()));
         connect(ui->actionDeath_note, SIGNAL(triggered()), room_scene, SLOT(makeKilling()));
         connect(ui->actionDamage_maker, SIGNAL(triggered()), room_scene, SLOT(makeDamage()));
         connect(ui->actionRevive_wand, SIGNAL(triggered()), room_scene, SLOT(makeReviving()));
         connect(ui->actionExecute_script_at_server_side, SIGNAL(triggered()), room_scene, SLOT(doScript()));
     } else {
         ui->menuCheat->setEnabled(false);
-        ui->actionGet_card->disconnect();
         ui->actionDeath_note->disconnect();
         ui->actionDamage_maker->disconnect();
         ui->actionRevive_wand->disconnect();
@@ -330,7 +329,6 @@ void MainWindow::gotoStartScene() {
     setCentralWidget(view);
 
     ui->menuCheat->setEnabled(false);
-    ui->actionGet_card->disconnect();
     ui->actionDeath_note->disconnect();
     ui->actionDamage_maker->disconnect();
     ui->actionRevive_wand->disconnect();
@@ -341,6 +339,7 @@ void MainWindow::gotoStartScene() {
     addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);
 
+    delete systray;
     systray = NULL;
     if (ClientInstance)
         delete ClientInstance;

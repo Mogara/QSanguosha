@@ -86,7 +86,6 @@ public:
 public slots:
     void updateAvatar();
     void updateSmallAvatar();
-    void updateReadyItem(bool visible);
     void updatePhase();
     void updateHp();
     void updateHandcardNum();
@@ -104,6 +103,7 @@ protected:
     // overrider parent functions
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
     // initialization of _m_layout is compulsory for children classes.
@@ -164,7 +164,7 @@ protected:
     QGraphicsPixmapItem *_m_handCardBg, *_m_handCardNumText;
     QGraphicsPixmapItem *_m_kingdomColorMaskIcon;
     QGraphicsPixmapItem *_m_deathIcon;
-    QGraphicsPixmapItem *_m_readyIcon, *_m_actionIcon;
+    QGraphicsPixmapItem *_m_actionIcon;
     QGraphicsPixmapItem *_m_kingdomIcon;
     QGraphicsPixmapItem *_m_saveMeIcon;
     QGraphicsPixmapItem *_m_phaseIcon;

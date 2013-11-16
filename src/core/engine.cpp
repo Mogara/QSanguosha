@@ -562,7 +562,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersionNumber() const{
-    return "20130920";
+    return "20131130";
 }
 
 QString Engine::getVersion() const{
@@ -668,8 +668,13 @@ QString Engine::getSetupString() const{
 
     QString server_name = Config.ServerName.toUtf8().toBase64();
     QStringList setup_items;
+    QString mode = Config.GameMode;
+    if (mode == "02_1v1")
+        mode = mode + Config.value("1v1/Rule", "2013").toString();
+    else if (mode == "06_3v3")
+        mode = mode + Config.value("3v3/OfficialRule", "2013").toString();
     setup_items << server_name
-                << Config.GameMode
+                << mode
                 << QString::number(timeout)
                 << QString::number(Config.NullificationCountDown)
                 << Sanguosha->getBanPackages().join("+")

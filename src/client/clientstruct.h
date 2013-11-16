@@ -16,6 +16,7 @@ struct ServerInfoStruct {
     
     QString Name;
     QString GameMode;
+    QString GameRuleMode;
     int OperationTimeout;
     int NullificationCountDown;
     QStringList Extensions;

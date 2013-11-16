@@ -245,7 +245,7 @@ public:
             QList<const Skill *> skills = death.damage->from->getVisibleSkillList();
             QStringList detachList;
             foreach (const Skill *skill, skills) {
-                if (skill->getLocation() == Skill::Right && !skill->inherits("SPConvertSkill") && !skill->isAttachedLordSkill())
+                if (skill->getLocation() == Skill::Right && !skill->isAttachedLordSkill())
                     detachList.append("-" + skill->objectName());
             }
             room->handleAcquireDetachSkills(death.damage->from, detachList);
@@ -1230,7 +1230,7 @@ public:
             foreach (QString general_name, huashen_generals) {
                 const General *general = Sanguosha->getGeneral(general_name);
                 foreach (const Skill *skill, general->getVisibleSkillList()) {
-                    if (skill->isLordSkill() || skill->inherits("SPConvertSkill")
+                    if (skill->isLordSkill()
                         || skill->getFrequency() == Skill::Limited
                         || skill->getFrequency() == Skill::Wake)
                         continue;
@@ -1250,7 +1250,7 @@ public:
             general = Sanguosha->getGeneral(general_name);
 
             foreach (const Skill *skill, general->getVisibleSkillList()) {
-                if (skill->isLordSkill() || skill->inherits("SPConvertSkill")
+                if (skill->isLordSkill()
                     || skill->getFrequency() == Skill::Limited
                     || skill->getFrequency() == Skill::Wake)
                     continue;

@@ -473,7 +473,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             bool isSecondaryHero = arg[3].asBool();
             bool sendLog = arg[4].asBool();
             ClientPlayer *player = ClientInstance->getPlayer(playerName);
-            if (sendLog) {
+            if (Sanguosha->getGeneral(newHeroName) && sendLog) {
                 QString type = "#Transfigure";
                 QString arg2 = QString();
                 if (player->getGeneral2() && !isSecondaryHero) {
@@ -668,30 +668,36 @@ void RoomScene::adjustItems() {
 
     // switch between default & compact skin depending on scene size
     QSanSkinFactory &factory = QSanSkinFactory::getInstance();
+
+    bool use_full = Config.value("UseFullSkin", false).toBool();
+    QString suf = use_full ? "full" : QString();
+    factory.S_DEFAULT_SKIN_NAME = suf + "default";
+    factory.S_COMPACT_SKIN_NAME = suf + "compact";
+
     QString skinName = factory.getCurrentSkinName();
 
     QSize minSize, maxSize;
     _getSceneSizes(minSize, maxSize);
-    if (skinName == factory.S_DEFAULT_SKIN_NAME) {
-        if (displayRegion.width() < minSize.width() || displayRegion.height() < minSize.height()) {
-            QThread *thread = QCoreApplication::instance()->thread();
-            thread->blockSignals(true);
-            factory.switchSkin(factory.S_COMPACT_SKIN_NAME);
-            thread->blockSignals(false);
-            foreach (Photo *photo, photos)
-                photo->repaintAll();
-            dashboard->repaintAll();
-        }
+    QString to_switch;
+    if (skinName.contains("default")) {
+        if (displayRegion.width() < minSize.width() || displayRegion.height() < minSize.height())
+            to_switch = factory.S_COMPACT_SKIN_NAME;
+        else if (skinName != factory.S_DEFAULT_SKIN_NAME)
+            to_switch = factory.S_DEFAULT_SKIN_NAME;
     } else if (skinName == factory.S_COMPACT_SKIN_NAME) {
-        if (displayRegion.width() > maxSize.width() && displayRegion.height() > maxSize.height()) {
-            QThread *thread = QCoreApplication::instance()->thread();
-            thread->blockSignals(true);
-            factory.switchSkin(factory.S_DEFAULT_SKIN_NAME);
-            thread->blockSignals(false);
-            foreach (Photo *photo, photos)
-                photo->repaintAll();
-            dashboard->repaintAll();
-        }
+        if (displayRegion.width() > maxSize.width() && displayRegion.height() > maxSize.height())
+            to_switch = factory.S_DEFAULT_SKIN_NAME;
+        else if (skinName != factory.S_COMPACT_SKIN_NAME)
+            to_switch = factory.S_COMPACT_SKIN_NAME;
+    }
+    if (!to_switch.isEmpty()) {
+        QThread *thread = QCoreApplication::instance()->thread();
+        thread->blockSignals(true);
+        factory.switchSkin(to_switch);
+        thread->blockSignals(false);
+        foreach (Photo *photo, photos)
+            photo->repaintAll();
+        dashboard->repaintAll();
     }
 
     // update the sizes since we have reloaded the skin.
@@ -721,27 +727,26 @@ void RoomScene::adjustItems() {
     dashboard->setY(displayRegion.height() - dashboard->boundingRect().height());
 
     // set infoplane
-    QRectF infoPlane;
-    infoPlane.setWidth(displayRegion.width() * _m_roomLayout->m_infoPlaneWidthPercentage);
-    infoPlane.moveRight(displayRegion.right());
-    infoPlane.setTop(displayRegion.top() + _m_roomLayout->m_roleBoxHeight);
-    infoPlane.setBottom(dashboard->y() - _m_roomLayout->m_chatTextBoxHeight);
-    m_rolesBoxBackground = m_rolesBoxBackground.scaled(infoPlane.width(), _m_roomLayout->m_roleBoxHeight);
+    _m_infoPlane.setWidth(displayRegion.width() * _m_roomLayout->m_infoPlaneWidthPercentage);
+    _m_infoPlane.moveRight(displayRegion.right());
+    _m_infoPlane.setTop(displayRegion.top() + _m_roomLayout->m_roleBoxHeight);
+    _m_infoPlane.setBottom(dashboard->y() - _m_roomLayout->m_chatTextBoxHeight);
+    m_rolesBoxBackground = m_rolesBoxBackground.scaled(_m_infoPlane.width(), _m_roomLayout->m_roleBoxHeight);
     m_rolesBox->setPixmap(m_rolesBoxBackground);
-    m_rolesBox->setPos(infoPlane.left(), displayRegion.top());
+    m_rolesBox->setPos(_m_infoPlane.left(), displayRegion.top());
 
-    log_box_widget->setPos(infoPlane.topLeft());
-    log_box->resize(infoPlane.width(), infoPlane.height() * _m_roomLayout->m_logBoxHeightPercentage);
-    chat_box_widget->setPos(infoPlane.left(), infoPlane.bottom() - infoPlane.height() * _m_roomLayout->m_chatBoxHeightPercentage);
-    chat_box->resize(infoPlane.width(), infoPlane.bottom() - chat_box_widget->y());
-    chat_edit_widget->setPos(infoPlane.left(), infoPlane.bottom());
-    chat_edit->resize(infoPlane.width() - chat_widget->boundingRect().width(), _m_roomLayout->m_chatTextBoxHeight);
-    chat_widget->setPos(infoPlane.right() - chat_widget->boundingRect().width(),
+    log_box_widget->setPos(_m_infoPlane.topLeft());
+    log_box->resize(_m_infoPlane.width(), _m_infoPlane.height() * _m_roomLayout->m_logBoxHeightPercentage);
+    chat_box_widget->setPos(_m_infoPlane.left(), _m_infoPlane.bottom() - _m_infoPlane.height() * _m_roomLayout->m_chatBoxHeightPercentage);
+    chat_box->resize(_m_infoPlane.width(), _m_infoPlane.bottom() - chat_box_widget->y());
+    chat_edit_widget->setPos(_m_infoPlane.left(), _m_infoPlane.bottom());
+    chat_edit->resize(_m_infoPlane.width() - chat_widget->boundingRect().width(), _m_roomLayout->m_chatTextBoxHeight);
+    chat_widget->setPos(_m_infoPlane.right() - chat_widget->boundingRect().width(),
                         chat_edit_widget->y() + (_m_roomLayout->m_chatTextBoxHeight - chat_widget->boundingRect().height()) / 2);
 
     padding += _m_roomLayout->m_photoRoomPadding;
     if (self_box)
-        self_box->setPos(infoPlane.left() - padding - self_box->boundingRect().width(),
+        self_box->setPos(_m_infoPlane.left() - padding - self_box->boundingRect().width(),
                          sceneRect().height() - padding - self_box->boundingRect().height()
                          - G_DASHBOARD_LAYOUT.m_normalHeight - G_DASHBOARD_LAYOUT.m_floatingAreaHeight);
     if (enemy_box)
@@ -757,6 +762,7 @@ void RoomScene::adjustItems() {
     m_tableBg->setPixmap(tableBg);
     updateTable();
     updateRolesBox();
+    setChatBoxVisible(chat_box_widget->isVisible());
 }
 
 void RoomScene::_dispersePhotos(QList<Photo *> &photos, QRectF fillRegion,
@@ -1001,14 +1007,22 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats) {
     if (item2player.isEmpty()) {
         item2player.insert(dashboard, Self);
         connect(dashboard, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
-        connect(dashboard, SIGNAL(selected_changed()), this, SLOT(onSelectChange()));
         foreach (Photo *photo, photos) {
             item2player.insert(photo, photo->getPlayer());
             connect(photo, SIGNAL(selected_changed()), this, SLOT(updateSelectedTargets()));
-            connect(photo, SIGNAL(selected_changed()), this, SLOT(onSelectChange()));
             connect(photo, SIGNAL(enable_changed()), this, SLOT(onEnabledChange()));
         }
     }
+
+    bool all_robot = true;
+    foreach (const ClientPlayer *p, ClientInstance->getPlayers()) {
+        if (p != Self && p->getState() != "robot") {
+            all_robot = false;
+            break;
+        }
+    }
+    if (all_robot)
+        setChatBoxVisible(false);
 }
 
 // @todo: The following 3 fuctions are for drag & use feature. Currently they are very buggy and
@@ -1245,9 +1259,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_F3: dashboard->beginSorting(); break;
     case Qt::Key_F4: dashboard->reverseSelection(); break;
     case Qt::Key_F5: {
-            foreach (Photo *photo, photos)
-                photo->repaintAll();
-            dashboard->repaintAll();
+            adjustItems();
             break;
         }
     case Qt::Key_F6: {
@@ -1267,6 +1279,10 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
                     ClientInstance->addRobot();
             } else if (fill_robots && fill_robots->isVisible())
                 ClientInstance->fillRobots();
+            break;
+        }
+    case Qt::Key_F8: {
+            setChatBoxVisible(!chat_box_widget->isVisible());
             break;
         }
     case Qt::Key_F12: {
@@ -2120,9 +2136,6 @@ void RoomScene::useSelectedCard() {
     if (skill) dashboard->stopPending();
 }
 
-void RoomScene::onSelectChange() {
-}
-
 void RoomScene::onEnabledChange() {
     QGraphicsItem *photo = qobject_cast<QGraphicsItem *>(sender());
     if (!photo) return;
@@ -2922,7 +2935,7 @@ DamageMakerDialog::DamageMakerDialog(QWidget *parent)
     damage_nature->addItem(tr("Reset Max HP"), S_CHEAT_MAX_HP_RESET);
 
     damage_point = new QSpinBox;
-    damage_point->setRange(1, 1000);
+    damage_point->setRange(1, INT_MAX);
     damage_point->setValue(1);
 
     QPushButton *ok_button = new QPushButton(tr("OK"));
@@ -3450,7 +3463,6 @@ void RoomScene::onGameStart() {
         id.replace("_mini_", "");
         _m_currentStage = id.toInt();
     } else if (ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode" || ServerInfo.GameMode == "02_1v1") {
-        chat_widget->show();
         log_box->show();
 
         if (self_box && enemy_box) {
@@ -3462,7 +3474,8 @@ void RoomScene::onGameStart() {
     if (control_panel)
         control_panel->hide();
 
-    log_box->append(QString(tr("<font color='%1'>---------- Game Start ----------</font>").arg(Config.TextEditColor.name())));
+    if (!Self->hasFlag("marshalling"))
+        log_box->append(QString(tr("<font color='%1'>---------- Game Start ----------</font>").arg(Config.TextEditColor.name())));
 
     connect(Self, SIGNAL(skill_state_changed(QString)), this, SLOT(skillStateChange(QString)));
     trust_button->setEnabled(true);
@@ -4001,7 +4014,7 @@ void RoomScene::revealGeneral(bool self, const QString &general) {
 void RoomScene::skillStateChange(const QString &skill_name) {
     static QStringList button_remain;
     if (button_remain.isEmpty())
-        button_remain << "shuangxiong" << "xianzhen";
+        button_remain << "shuangxiong";
     if (button_remain.contains(skill_name)) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         addSkillButton(skill);
@@ -4267,3 +4280,20 @@ void RoomScene::appendChatBox(QString txt) {
     chat_box->append(txt);
 }
 
+void RoomScene::setChatBoxVisible(bool show) {
+    if (!show) {
+        chat_box_widget->hide();
+        chat_edit->hide();
+        chat_widget->hide();
+        log_box->resize(_m_infoPlane.width(),
+                        _m_infoPlane.height() * (_m_roomLayout->m_logBoxHeightPercentage
+                                                 + _m_roomLayout->m_chatBoxHeightPercentage)
+                        + _m_roomLayout->m_chatTextBoxHeight);
+    } else {
+        chat_box_widget->show();
+        chat_edit->show();
+        chat_widget->show();
+        log_box->resize(_m_infoPlane.width(),
+                        _m_infoPlane.height() * _m_roomLayout->m_logBoxHeightPercentage);
+    }
+}

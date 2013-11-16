@@ -68,6 +68,13 @@ public:
     Special1v1OLPackage();
 };
 
+class Special1v1ExtPackage: public Package {
+    Q_OBJECT
+
+public:
+    Special1v1ExtPackage();
+};
+
 class New1v1CardPackage: public Package {
     Q_OBJECT
 

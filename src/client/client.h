@@ -8,7 +8,6 @@
 #include "clientstruct.h"
 #include "protocol.h"
 
-class NullificationDialog;
 class Recorder;
 class Replayer;
 class QTextDocument;

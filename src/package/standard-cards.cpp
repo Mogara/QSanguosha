@@ -21,21 +21,56 @@ void Slash::setNature(DamageStruct::Nature nature) {
     this->nature = nature;
 }
 
-bool Slash::IsAvailable(const Player *player, const Card *slash) {
+bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSpecificAssignee) {
     Slash *newslash = new Slash(Card::NoSuit, 0);
     newslash->deleteLater();
 #define THIS_SLASH (slash == NULL ? newslash : slash)
     if (player->isCardLimited(THIS_SLASH, Card::MethodUse))
        return false;
 
-    if (player->hasWeapon("Crossbow") || player->canSlashWithoutCrossbow(THIS_SLASH))
+    if (player->getPhase() == Player::Play && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
+        QList<int> ids;
+        if (slash) {
+            if (slash->isVirtualCard()) {
+                if (slash->subcardsLength() > 0)
+                    ids = slash->getSubcards();
+            } else {
+                ids << slash->getEffectiveId();
+            }
+        }
+        bool has_weapon = (player->hasWeapon("Crossbow") || player->hasWeapon("VSCrossbow")) && ids.contains(player->getWeapon()->getEffectiveId());
+        if ((!has_weapon && player->hasWeapon("Crossbow")) || player->canSlashWithoutCrossbow(THIS_SLASH))
+            return true;
+        int used = player->getSlashCount();
+        int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
+        if ((!has_weapon && player->hasWeapon("VSCrossbow")) && used < valid + 3)
+            return true;
+
+        if (considerSpecificAssignee) {
+            QStringList assignee_list = player->property("extra_slash_specific_assignee").toString().split("+");
+            if (!assignee_list.isEmpty()) {
+                foreach (const Player *p, player->getAliveSiblings()) {
+                    if (assignee_list.contains(p->objectName()) && player->canSlash(p, THIS_SLASH))
+                        return true;
+                }
+            }
+        }
+        return false;
+    } else {
         return true;
-    int used = player->getSlashCount();
-    int valid = 1 + Sanguosha->correctCardTarget(TargetModSkill::Residue, player, newslash);
-    if (player->hasWeapon("VSCrossbow") && used < valid + 3)
-        return true;
-    return false;
+    }
 #undef THIS_SLASH
+}
+
+bool Slash::IsSpecificAssignee(const Player *player, const Player *from, const Card *slash) {
+    if (from->hasFlag("slashTargetFix") && player->hasFlag("SlashAssignee"))
+        return true;
+    else if (from->getPhase() == Player::Play && Sanguosha->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY
+             && !Slash::IsAvailable(from, slash, false)) {
+        QStringList assignee_list = from->property("extra_slash_specific_assignee").toString().split("+");
+        if (assignee_list.contains(player->objectName())) return true;
+    }
+    return false;
 }
 
 bool Slash::isAvailable(const Player *player) const{
@@ -166,7 +201,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
     if (use.card->isVirtualCard()) {
         if (use.from->getWeapon() && use.card->getSubcards().contains(use.from->getWeapon()->getId())) {
             const Weapon *weapon = qobject_cast<const Weapon *>(use.from->getWeapon()->getRealCard());
-            rangefix += weapon->getRange() - Self->getAttackRange(false);
+            rangefix += weapon->getRange() - use.from->getAttackRange(false);
         }
         if (use.from->getOffensiveHorse() && use.card->getSubcards().contains(use.from->getOffensiveHorse()->getId()))
             rangefix += 1;
@@ -271,14 +306,22 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
         rangefix += 1;
 
-    if (Self->hasFlag("slashTargetFix")) {
+    bool has_specific_assignee = false;
+    foreach (const Player *p, Self->getAliveSiblings()) {
+        if (Slash::IsSpecificAssignee(p, Self, this)) {
+            has_specific_assignee = true;
+            break;
+        }
+    }
+
+    if (has_specific_assignee) {
         if (targets.isEmpty())
-            return to_select->hasFlag("SlashAssignee") && Self->canSlash(to_select, this, distance_limit, rangefix);
+            return Slash::IsSpecificAssignee(to_select, Self, this) && Self->canSlash(to_select, this, distance_limit, rangefix);
         else {
             if (Self->hasFlag("slashDisableExtraTarget")) return false;
             bool canSelect = false;
             foreach (const Player *p, targets) {
-                if (p->hasFlag("SlashAssignee")) {
+                if (Slash::IsSpecificAssignee(p, Self, this)) {
                     canSelect = true;
                     break;
                 }
@@ -295,11 +338,11 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
             foreach (const Player *p, targets) {
                 if (Self->distanceTo(p, rangefix) == 1)
                     duanbing_targets << p;
-                else if (no_other_assignee && p->hasFlag("SlashAssignee"))
+                else if (no_other_assignee && Slash::IsSpecificAssignee(p, Self, this))
                     no_other_assignee = false;
             }
-            if (no_other_assignee && duanbing_targets.length() == 1 && duanbing_targets.first()->hasFlag("SlashAssignee"))
-                return false;
+            if (no_other_assignee && duanbing_targets.length() == 1 && Slash::IsSpecificAssignee(duanbing_targets.first(), Self, this))
+                return Self->distanceTo(to_select, rangefix) == 1;
             return !duanbing_targets.isEmpty() || Self->distanceTo(to_select, rangefix) == 1;
         } else
             return false;
@@ -535,7 +578,7 @@ public:
             return false;
 
         const Card *card = NULL;
-        if (player->getCardCount(true) >= 3) // Need 2 more cards except from the weapon itself
+        if (player->getCardCount() >= 3) // Need 2 more cards except from the weapon itself
             card = room->askForCard(player, "@Axe", "@Axe:" + effect.to->objectName(), data, objectName());
         if (card) {
             room->setEmotion(player, "weapon/axe");
@@ -933,12 +976,7 @@ Duel::Duel(Suit suit, int number)
 
 bool Duel::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    if (targets.length() >= total_num)
-        return false;
-    if (to_select == Self)
-        return false;
-
-    return true;
+    return targets.length() < total_num && to_select != Self;
 }
 
 void Duel::onEffect(const CardEffectStruct &effect) const{
@@ -1000,20 +1038,14 @@ Snatch::Snatch(Suit suit, int number)
 
 bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    if (targets.length() >= total_num)
-        return false;
-
-    if (to_select->isAllNude())
-        return false;
-
-    if (to_select == Self)
+    bool include_judging = !(ServerInfo.GameMode == "02_1v1" && ServerInfo.GameRuleMode != "Classical");
+    if (targets.length() >= total_num || to_select->getCardCount(true, include_judging) == 0 || to_select == Self)
         return false;
 
     int distance_limit = 1 + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, Self, this);
     int rangefix = 0;
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
         rangefix += 1;
-
     if (getSkillName() == "jixi")
         rangefix += 1;
 
@@ -1030,7 +1062,7 @@ void Snatch::onEffect(const CardEffectStruct &effect) const{
         return;
 
     Room *room = effect.to->getRoom();
-    bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() != "Classical");
+    bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical");
     QString flag = using_2013 ? "he" : "hej";
     int card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName());
     CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, effect.from->objectName());
@@ -1045,16 +1077,8 @@ Dismantlement::Dismantlement(Suit suit, int number)
 
 bool Dismantlement::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    if (targets.length() >= total_num)
-        return false;
-
-    if (to_select->isAllNude())
-        return false;
-
-    if (to_select == Self)
-        return false;
-
-    return true;
+    bool include_judging = !(ServerInfo.GameMode == "02_1v1" && ServerInfo.GameRuleMode != "Classical");
+    return targets.length() < total_num && to_select->getCardCount(true, include_judging) > 0 && to_select != Self;
 }
 
 void Dismantlement::onEffect(const CardEffectStruct &effect) const{
@@ -1062,7 +1086,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
         return;
 
     Room *room = effect.to->getRoom();
-    bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "Classical").toString() != "Classical");
+    bool using_2013 = (room->getMode() == "02_1v1" && Config.value("1v1/Rule", "2013").toString() != "Classical");
     QString flag = using_2013 ? "he" : "hej";
     if (!effect.from->canDiscard(effect.to, flag))
         return;

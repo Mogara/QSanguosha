@@ -97,7 +97,7 @@ int Room::alivePlayerCount() const{
 bool Room::notifyUpdateCard(ServerPlayer *player, int cardId, const Card *newCard) {
     Json::Value val(Json::arrayValue);
     Q_ASSERT(newCard);
-    QString className = Sanguosha->getWrappedCard(newCard->getId())->getClassName();
+    QString className = newCard->getClassName();
     val[0] = cardId;
     val[1] = (int)newCard->getSuit();
     val[2] = newCard->getNumber();
@@ -537,7 +537,7 @@ void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name
         return;
 
     const Skill *skill = Sanguosha->getSkill(skill_name);
-    if (skill && skill->isVisible() && !skill->inherits("SPConvertSkill")) {
+    if (skill && skill->isVisible()) {
         Json::Value args;
         args[0] = QSanProtocol::S_GAME_EVENT_DETACH_SKILL;
         args[1] = toJsonString(player->objectName());
@@ -577,7 +577,7 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
             else
                 continue;
             const Skill *skill = Sanguosha->getSkill(actual_skill);
-            if (skill && skill->isVisible() && !skill->inherits("SPConvertSkill")) {
+            if (skill && skill->isVisible()) {
                 Json::Value args;
                 args[0] = QSanProtocol::S_GAME_EVENT_DETACH_SKILL;
                 args[1] = toJsonString(player->objectName());
@@ -1107,7 +1107,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
 }
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason,
-                           bool handcard_visible, Card::HandlingMethod method, QList<int> &disabled_ids) {
+                           bool handcard_visible, Card::HandlingMethod method, const QList<int> &disabled_ids) {
     while (isPaused()) {}
     notifyMoveFocus(player, S_COMMAND_CHOOSE_CARD);
 
@@ -2058,6 +2058,7 @@ void Room::reportDisconnection() {
 
         if (!someone_is_online) {
             game_finished = true;
+            emit game_over(QString());
             return;
         }
     }
@@ -2278,27 +2279,9 @@ ServerPlayer *Room::getOwner() const{
     return NULL;
 }
 
-void Room::toggleReadyCommand(ServerPlayer *player, const QString &) {
-    if (game_started)
-        return;
-
-    setPlayerProperty(player, "ready", !player->isReady());
-
-    if (player->isReady() && isFull()) {
-        bool allReady = true;
-        foreach (ServerPlayer *player, m_players) {
-            if (!player->isReady()) {
-                allReady = false;
-                break;
-            }
-        }
-
-        if (allReady) {
-            foreach (ServerPlayer *player, m_players)
-                setPlayerProperty(player, "ready", false);
-            start();
-        }
-    }
+void Room::toggleReadyCommand(ServerPlayer *, const QString &) {
+    if (!game_started && isFull())
+        start();
 }
 
 void Room::signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot) {
@@ -3266,19 +3249,18 @@ ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const{
 }
 
 void Room::reconnect(ServerPlayer *player, ClientSocket *socket) {
-    /*
     player->setSocket(socket);
     player->setState("online");
 
     marshal(player);
 
-    broadcastProperty(player, "state"); */
+    broadcastProperty(player, "state");
 }
 
 void Room::marshal(ServerPlayer *player) {
     notifyProperty(player, player, "objectName");
     notifyProperty(player, player, "role");
-    player->unicast(".flags marshalling");
+    notifyProperty(player, player, "flags", "marshalling");
 
     foreach (ServerPlayer *p, m_players) {
         if (p != player)
@@ -3299,13 +3281,16 @@ void Room::marshal(ServerPlayer *player) {
             notifyProperty(player, p, "general2");
     }
 
-    player->invoke("startGame");
+    doNotify(player, S_COMMAND_GAME_START, Json::Value::null);
+
+    QList<int> drawPile = Sanguosha->getRandomCards();
+    doNotify(player, S_COMMAND_AVAILABLE_CARDS, toJsonArray(drawPile));
 
     foreach (ServerPlayer *p, m_players)
         p->marshal(player);
 
-    player->unicast(".flags -marshalling");
-    player->invoke("setPileNumber", QString::number(m_drawPile->length()));
+    notifyProperty(player, player, "flags", "-marshalling");
+    doNotify(player, S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
 }
 
 void Room::startGame() {
@@ -3392,6 +3377,10 @@ bool Room::broadcastProperty(ServerPlayer *player, const char *property_name, co
     if (player == NULL) return false;
     QString real_value = value;
     if (real_value.isNull()) real_value = player->property(property_name).toString();
+
+    if (property_name == "role")
+        player->setShownRole(true);
+
     Json::Value arg(Json::arrayValue);
     arg[0] = toJsonString(player->objectName());
     arg[1] = property_name;
@@ -3832,7 +3821,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     }
 
     for (int i = 0; i < cards_moves.size(); i++) {
-		CardsMoveStruct &cards_move = cards_moves[i];
+        CardsMoveStruct &cards_move = cards_moves[i];
         for (int j = 0; j < cards_move.card_ids.size(); j++) {
             int card_id = cards_move.card_ids[j];
             const Card *card = Sanguosha->getCard(card_id);
@@ -4147,8 +4136,10 @@ void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general
             player->loseSkill(skill->objectName());
     }
     setPlayerProperty(player, "general2", new_general);
-    foreach (const Skill *skill, player->getGeneral2()->getSkillList())
-        player->addSkill(skill->objectName());
+    if (player->getGeneral2()) {
+        foreach (const Skill *skill, player->getGeneral2()->getSkillList())
+            player->addSkill(skill->objectName());
+    }
     filterCards(player, player->getCards("he"), true);
 }
 

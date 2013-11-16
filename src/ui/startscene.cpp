@@ -148,9 +148,6 @@ void StartScene::printServerInfo() {
 
     if (Config.EnableAI) {
         server_log->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
-        server_log->append(Config.value("AIChat", true).toBool() ?
-                               tr("This server is AI chat enabled") :
-                               tr("This server is AI chat disabled"));
     } else
         server_log->append(tr("This server is AI disabled"));
 }
