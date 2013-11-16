@@ -2453,8 +2453,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             }
 
             showPromptBox();
-            ok_button->setEnabled(!skill_name.contains("!"));
-            cancel_button->setEnabled(!skill_name.contains("?"));
+            ok_button->setEnabled(true);
+            cancel_button->setEnabled(true);
             discard_button->setEnabled(false);
             break;
         }

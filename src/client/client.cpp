@@ -829,12 +829,6 @@ void Client::askForSkillInvoke(const Json::Value &arg) {
     skill_to_invoke = skill_name;
 
     QString text;
-
-    if (skill_name.contains("!"))
-        skill_name.remove("!");
-    if (skill_name.contains("?"))
-        skill_name.remove("?");
-
     if (skill_name.startsWith("userdefine:")) {
         QString name = skill_name.mid(4);
         prompt_doc->setHtml(Sanguosha->translate("@" + name));

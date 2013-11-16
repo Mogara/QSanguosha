@@ -200,4 +200,3 @@ void General::setHeadMaxHpAdjustedValue(const int adjusted_value /* = -1 */) {
 void General::setDeputyMaxHpAdjustedValue(const int adjusted_value /* = -1 */) {
     this->deputy_max_hp_adjusted_value = adjusted_value;
 }
-

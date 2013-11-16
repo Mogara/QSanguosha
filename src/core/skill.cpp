@@ -222,18 +222,6 @@ const Card *OneCardViewAsSkill::viewAs(const QList<const Card *> &cards) const{
         return viewAs(cards.first());
 }
 
-FormationCallSkill::FormationCallSkill(const QString &name, const AskMethod &ask_method)
-    : ZeroCardViewAsSkill(name), ask_method(ask_method)
-{
-}
-
-const Card *FormationCallSkill::viewAs() const {
-    Card *card = new FormationCallCard(objectName() + "-FCCard", ask_method);
-    card->setSkillName(objectName());
-    card->setShowSkill(objectName());
-    return card;
-}
-
 FilterSkill::FilterSkill(const QString &name)
     : OneCardViewAsSkill(name)
 {
