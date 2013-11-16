@@ -1,7 +1,6 @@
 %{
 
 #include "standard.h"
-#include "maneuvering.h"
 
 %}
 

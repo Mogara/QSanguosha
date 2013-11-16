@@ -4,7 +4,6 @@
 #include "standard.h"
 #include "client.h"
 #include "engine.h"
-#include "maneuvering.h"
 
 QuhuCard::QuhuCard() {
 }

@@ -1,6 +1,5 @@
 #include "standard.h"
 #include "standard-equips.h"
-#include "maneuvering.h"
 #include "general.h"
 #include "engine.h"
 #include "client.h"

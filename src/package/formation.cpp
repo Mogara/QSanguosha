@@ -9,7 +9,6 @@
 #include "room.h"
 #include "ai.h"
 #include "settings.h"
-#include "maneuvering.h"
 
 class Ziliang: public TriggerSkill {
 public:

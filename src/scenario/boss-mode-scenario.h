@@ -2,7 +2,6 @@
 #define BOSSCHALLENGE_H
 
 #include "scenario.h"
-#include "maneuvering.h"
 
 class ImpasseScenario : public Scenario{
     Q_OBJECT

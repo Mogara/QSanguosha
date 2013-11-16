@@ -1080,7 +1080,6 @@ WindPackage::WindPackage()
     yuji->addSkill(new GuhuoClear);
     related_skills.insertMulti("guhuo", "#guhuo-clear");
 
-    addMetaObject<ShensuCard>();
     addMetaObject<TianxiangCard>();
     addMetaObject<HuangtianCard>();
     addMetaObject<GuhuoCard>();

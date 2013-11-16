@@ -2,11 +2,11 @@
 #include "general.h"
 #include "skill.h"
 #include "room.h"
-#include "maneuvering.h"
 #include "clientplayer.h"
 #include "client.h"
 #include "engine.h"
 #include "general.h"
+#include "standard.h"
 
 class Xingshang: public TriggerSkill {
 public:

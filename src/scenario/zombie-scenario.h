@@ -3,7 +3,7 @@
 
 #include "scenario.h"
 #include "standard-skillcards.h"
-#include "maneuvering.h"
+#include "standard.h"
 
 class ZombieScenario : public Scenario{
     Q_OBJECT
