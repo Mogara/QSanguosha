@@ -296,7 +296,7 @@ sgs.ai_skill_use_func.MixinCard = function(card, use, self)
 		end
 		table.sort(self.friends_noself, compare_more_slash)
 		for _, friend in ipairs(self.friends_noself) do
-			if not friend:hasSkill("manjuan") and getCardsNum("Slash", friend) >= 1 then
+			if not friend:hasSkill("manjuan") and self:getCardsNum("Slash", friend) >= 1 then
 				use.card = sgs.Card_Parse("@MixinCard="..cards[1]:getEffectiveId())
 				if use.to then use.to:append(friend) end
 				return

@@ -487,7 +487,7 @@ sgs.ai_skill_use["@@fuzuo"] = function(self, prompt, method)
 			return "@FuzuoCard="..card:getEffectiveId().."->"..to:objectName()
 		end
 		
-	elseif reason == " lieren" or reason == "tanlan"  or reason == "jueji" then
+	elseif reason == "lieren" or reason == "tanlan"  or reason == "jueji" then
 		if Valuable or not onlyone_Jink_Peach or self:getOverflow() > 0 and self:willSkipPlayPhase() then
 			if self:isFriend(from) and not self:isFriend(to) and from_num < to_num then
 				return "@FuzuoCard="..card:getEffectiveId().."->"..from:objectName() 
@@ -672,7 +672,7 @@ sgs.ai_choicemade_filter.skillInvoke.shipo = function(player, promptlist, self)
 end
 
 sgs.ai_cardneed.gushou = function(to, card)
-	return to:getHandcardNum() < 3 and card:getTypeId() == sgs.Card_Basic
+	return to:getHandcardNum() < 3 and card:getTypeId() == sgs.Card_TypeBasic
 end
 
 sgs.ai_chaofeng.tianfeng = -1

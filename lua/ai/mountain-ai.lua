@@ -167,7 +167,7 @@ sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, i
 				end
 			elseif self.player:containsTrick("indulgence") then 
 				if self.player:getHandcardNum() > 3 or self.player:getHandcardNum() > self.player:getHp() - 1 then return to_discard end
-				for _, frined in ipairs(self.friends_noself) do
+				for _, friend in ipairs(self.friends_noself) do
 					if not friend:containsTrick("YanxiaoCard") and (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) then
 						return to_discard
 					end
@@ -236,7 +236,7 @@ sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, i
 		self:sortByKeepValue(cards)
 		table.remove(to_discard)
 		table.insert(to_discard, cards[1]:getEffectiveId())
-		if self:needBear() then return end
+		if self:needBear() then return {} end
 		if self.player:getHandcardNum()-1 > self.player:getHp() then
 			return to_discard
 		end
@@ -586,9 +586,10 @@ tiaoxin_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_use_func.TiaoxinCard = function(card,use,self)
+	local distance = use.DefHorse and 1 or 0
 	local targets = {}
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:inMyAttackRange(self.player) and not self:doNotDiscard(enemy) and self:isTiaoxinTarget(enemy) then
+		if enemy:distanceTo(self.player, distance) <= enemy:getAttackRange() and not self:doNotDiscard(enemy) and self:isTiaoxinTarget(enemy) then
 			table.insert(targets, enemy)
 		end
 	end
@@ -768,7 +769,7 @@ sgs.ai_choicemade_filter.pindian.zhiba_pindian = function(from, promptlist, self
 end
 
 sgs.ai_need_damaged.hunzi = function(self, attacker, player)
-	if player:hasSkill("hunzi") and player:getMark("hunzi") == 0 and self:getEnemyNumBySeat(self.room:getCurrent(), player, player) < player:getHp()
+	if player:hasSkill("hunzi") and player:getMark("hunzi") == 0 and self:getEnemyNumBySeat(self.room:getCurrent(), player, player, true) < player:getHp()
 		and (player:getHp() > 2 or player:getHp() == 2 and (player:faceUp() or player:hasSkill("guixin") or player:hasSkill("toudu") and not player:isKongcheng())) then
 		return true
 	end

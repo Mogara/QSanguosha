@@ -690,7 +690,7 @@ sgs.ai_skill_invoke.gongmou = function(self)
 	sgs.gongmou_target = nil
 	if self.player:hasSkill("manjuan") then return false end
 	self:sort(self.friends_noself, "defense")
-	for _, friend in ipairs(self, friends_noself) do
+	for _, friend in ipairs(self.friends_noself) do
 		if friend:hasSkill("enyuan") then
 			sgs.gongmou_target = friend
 		elseif friend:hasSkill("manjuan") then
@@ -801,7 +801,7 @@ sgs.ai_skill_use_func.LexueCard = function(card, use, self)
 		if #self.enemies > 0 then
 			local target
 			self:sort(self.enemies, "hp")
-			enemy = self.enemies[1]
+			local enemy = self.enemies[1]
 			if self:isWeak(enemy) and not enemy:isKongcheng() then
 				target = enemy
 			else
@@ -921,7 +921,7 @@ sgs.ai_need_damaged.toudu = function(self, attacker, player)
 		local slash = sgs.Sanguosha:cloneCard("Slash", sgs.Card_NoSuit, 0)
 		for _, target in ipairs(self.enemies) do
 			if self:isEnemy(target) and self:slashIsEffective(slash, target) and not self:getDamagedEffects(target, self.player, true)
-				and getCardsNum("Jink", target) < 1 and (target:getHp() == 1 or self:hasHeavySlashDamage(player, nil, tareget) and target:getHp() == 2) then
+				and getCardsNum("Jink", target) < 1 and (target:getHp() == 1 or self:hasHeavySlashDamage(player, nil, target) and target:getHp() == 2) then
 				return true
 			end
 		end

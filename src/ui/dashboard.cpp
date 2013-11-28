@@ -970,6 +970,16 @@ void Dashboard::updatePending() {
     }
 }
 
+void Dashboard::onCardItemDoubleClicked() {
+    if (!Config.EnableDoubleClick) return;
+    CardItem *card_item = qobject_cast<CardItem *>(sender());
+    if (card_item) {
+        if (!view_as_skill) selected = card_item;
+        animations->effectOut(card_item);
+        emit card_to_use();
+    }
+}
+
 void Dashboard::onCardItemThrown() {
     CardItem *card_item = qobject_cast<CardItem *>(sender());
     if (card_item) {

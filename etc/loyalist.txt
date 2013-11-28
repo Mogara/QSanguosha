@@ -1,113 +1,125 @@
-bgm_caoren          6.00      6.00      6.00      6.00      6.00      6.00      6.00      
-bgm_daqiao          5.38      5.38      5.38      5.38      5.38      5.38      5.38      
-bgm_diaochan        5.00      5.00      5.00      5.00      5.00      5.00      5.00      
-bgm_ganning         3.13      3.13      3.48      3.54      3.66      3.45      3.61      
-bgm_liubei          5.26      3.85      3.85      3.85      3.85      3.85      5.52      
-bgm_lvmeng          5.83      5.65      5.46      5.65      5.92      5.40      5.15      
-bgm_pangtong        1.70      1.70      1.70      1.70      1.70      1.70      1.70      
-bgm_xiaohoudun      4.13      4.13      5.84      5.88      5.83      4.13      4.13      
-bgm_zhangfei        5.00      5.00      5.00      5.00      5.00      5.00      5.00      
-bgm_zhaoyun         6.55      6.84      6.65      6.55      6.32      6.43      6.31      
-bulianshi           6.64      6.42      6.13      6.09      6.14      6.34      6.66      
-caiwenji            5.47      6.41      6.75      7.00      6.90      6.73      6.46      
-caocao              4.00      4.00      4.00      4.00      4.00      4.00      4.00      
-caohong             3.65      3.44      3.34      3.27      3.36      3.52      3.18      
-caopi               4.90      4.70      4.20      4.00      4.00      4.00      4.00      
-caoren              4.00      4.00      4.00      4.00      4.00      4.00      4.00      
-caozhang            6.85      5.00      5.00      5.00      5.00      5.00      6.88      
-caozhi              5.54      6.32      6.54      6.32      6.34      6.33      4.54      
-chengong            6.34      6.86      6.15      6.18      5.97      6.10      6.46      
-chengpu             6.89      6.00      6.00      6.00      6.00      6.00      6.94      
-chenlin             4.39      4.39      3.39      3.39      3.39      3.39      4.13      
-daqiao              4.09      4.84      4.32      4.34      4.46      4.40      4.86      
-dengai              7.12      7.32      7.44      7.45      7.47      7.31      7.11      
-dianwei             2.11      4.38      5.56      6.74      5.99      4.27      2.40      
-diaochan            6.12      6.11      5.48      5.23      5.45      6.48      7.68      
-dongzhuo            6.00      5.89      5.64      5.23      5.31      5.34      5.98      
-erzhang             5.60      5.34      5.40      5.60      5.60      5.83      5.10      
-fazheng             5.77      5.81      5.95      5.59      5.74      5.46      5.38      
-ganning             5.16      4.43      4.36      4.22      4.38      5.54      6.82      
-gaoshun             3.25      3.40      3.56      3.50      3.36      3.21      4.39      
-gongsunzan          5.63      5.75      5.38      5.36      5.57      5.63      5.97      
-guanxingzhangbao    5.38      5.89      5.52      5.43      5.52      5.67      6.62      
-guanyinping         3.13      3.13      3.13      3.13      3.13      3.13      3.13      
-guanyu              3.73      2.19      2.16      2.50      2.22      2.10      3.73      
-guojia              5.13      4.00      5.87      6.12      5.43      4.00      5.13      
-handang             5.43      5.33      5.09      5.00      5.11      5.27      5.54      
-huanggai            2.80      4.13      5.06      5.27      5.18      4.97      2.38      
-huangyueying        3.19      3.59      3.28      3.53      3.64      3.07      3.55      
-huangzhong          3.44      3.27      3.25      3.96      3.14      3.15      3.15      
-huatuo              3.90      3.60      3.93      3.88      3.98      3.31      3.34      
-huaxiong            4.00      4.00      4.00      4.00      4.00      4.00      4.00      
-jiangwei            4.00      5.10      5.20      4.70      5.20      5.10      4.00      
-jiaxu               3.00      3.00      3.00      3.00      3.00      3.00      3.00      
-liaohua             4.00      4.00      4.00      4.00      4.00      4.00      4.00      
-lingtong            6.97      5.03      5.54      5.36      5.38      5.63      6.92      
-liubei              4.98      4.59      3.30      3.66      3.50      4.90      5.59      
-liubiao             4.00      6.31      6.54      6.55      4.00      4.00      6.23      
-liushan             4.00      4.30      4.00      4.00      4.00      4.30      4.00      
-lusu                5.41      4.08      4.35      4.91      4.06      4.96      5.08      
-luxun               4.32      4.28      4.84      4.78      4.71      4.16      4.34      
-lvbu                3.31      3.19      3.43      3.18      3.44      3.24      3.03      
-lvmeng              5.83      5.65      5.46      5.65      5.92      5.40      5.15      
-machao              3.44      4.04      4.32      4.23      4.27      4.13      3.93      
-madai               1.38      1.40      1.52      1.43      1.52      1.67      1.62      
-masu                5.38      5.40      5.52      5.43      5.52      5.67      5.62      
-menghuo             4.98      4.74      5.45      5.54      5.37      4.47      4.13      
-pangde              4.00      4.00      4.00      4.00      4.00      4.00      4.00      
-pangtong            4.44      4.37      4.84      4.83      4.09      4.43      4.48      
-shencaocao          8.13      8.42      8.55      8.64      8.42      8.55      8.43      
-shenguanyu          6.90      7.23      7.43      7.83      7.12      6.37      6.90      
-shenlvbu            7.00      7.00      7.00      7.00      7.00      7.00      7.00      
-shenlvmeng          6.83      6.65      6.46      6.65      6.92      6.40      6.15      
-shensimayi          7.74      7.63      7.12      7.11      7.21      7.64      7.88      
-shenzhaoyun         6.80      6.80      6.80      6.80      6.80      6.80      6.80      
-shenzhouyu          6.83      6.65      6.46      6.65      6.92      6.40      6.15      
-shenzhugeliang      7.00      7.00      7.00      7.00      7.00      7.00      7.00      
-simayi              4.00      4.00      4.00      4.00      4.00      4.00      4.00      
-sp_guanyu           4.00      4.00      4.00      4.00      4.00      4.00      6.00      
-sunce               4.00      4.04      5.37      5.44      5.33      4.00      4.00      
-sunjian             6.38      6.34      6.35      5.78      6.37      6.32      6.39      
-sunquan             7.50      7.43      7.14      7.11      7.23      7.89      7.64      
-sunshangxiang       6.12      5.24      3.22      3.85      3.89      4.71      5.95      
-taishici            6.40      6.36      6.02      6.25      6.27      6.24      6.36      
-wangyi              6.34      6.00      6.00      6.00      6.00      6.00      6.55      
-weiyan              4.49      4.13      4.60      4.12      4.58      4.43      4.87      
-wolong              4.32      4.11      3.73      3.46      3.52      4.15      4.88      
-wuguotai            7.33      7.04      6.84      6.33      6.52      6.82      7.45      
-xiahouba            5.28      5.18      5.26      5.38      5.26      4.13      4.13      
-xiahoudun           4.80      4.72      4.53      4.26      4.00      4.00      4.00      
-xiahouyuan          4.00      4.00      4.00      5.10      5.40      5.80      5.92      
-xiaoqiao            5.39      5.15      5.80      5.56      5.97      5.24      5.97      
-xuchu               3.00      3.00      3.00      3.00      3.00      3.00      3.00      
-xuhuang             3.00      3.00      4.34      4.23      4.00      3.00      3.00      
-xunyou              7.12      6.65      5.89      5.68      6.13      6.98      7.84      
-xunyu               6.79      6.89      6.71      6.03      6.75      6.79      6.94      
-xusheng             5.56      6.21      6.70      6.61      6.02      6.00      5.07      
-xushu               6.84      7.25      6.74      6.71      6.71      6.74      7.23      
-yangxiu             5.00      5.00      5.00      5.00      5.00      5.00      5.00      
-yanliangwenchou     3.94      5.57      5.66      4.76      5.57      5.22      6.18      
-yuanshao            6.89      6.32      6.09      6.12      6.00      7.14      7.32      
-yuanshu             7.82      7.99      7.78      7.65      7.73      7.81      8.55      
-yuji                4.82      3.13      3.13      3.13      3.13      3.13      5.12      
-yujin               3.00      3.00      3.00      3.00      3.00      3.00      3.00      
-zhangchunhua        4.53      4.26      3.13      3.13      3.13      4.24      4.25      
-zhangfei            3.43      3.83      3.54      3.86      3.53      3.72      3.49      
-zhanghe             7.84      7.65      7.33      7.04      7.12      7.55      7.83      
-zhangjiao           5.62      4.83      4.54      4.53      4.33      4.49      5.45      
-zhangliao           7.65      7.54      7.43      7.14      7.48      7.51      7.64      
-zhaoyun             4.07      4.13      3.86      3.45      3.82      4.27      4.17      
-zhenji              4.00      5.00      5.00      5.00      5.00      5.00      5.00      
-zhonghui            7.74      7.73      7.94      8.01      7.85      7.63      7.80      
-zhoutai             4.66      4.82      4.83      4.90      4.69      4.53      4.80      
-zhouyu              4.71      4.64      5.05      5.00      5.13      4.82      5.13      
-zhugejin            7.50      7.50      7.50      7.50      7.50      7.50      7.50      
-zhugeliang          6.67      5.85      5.70      5.40      5.61      6.63      7.12      
-zhurong             5.40      5.22      5.24      5.33      5.27      5.13      5.40      
-zuoci               9.00      9.00      9.00      9.00      9.00      9.00      9.00
-weiwudi     	    5.50      5.50      5.50      5.50      5.50      5.50      5.50
-xiahoujuan     	    6.50      6.50      6.00      5.50      5.00      4.50      4.00
-jiawenhe     	    2.99      2.99      1.50      1.50      1.50      2.99      2.99
-zhanggongqi	    5.60      5.34      5.40      5.60      5.60      5.83      5.10
-wis_jiangwan	    4.00      4.50      5.00      5.50      5.00      4.50      4.00
-wis_shuijing	    2.50      3.00      4.50      5.50      6.00      6.00      5.50
+_						guojia					0.2
+_						liubei					0.2
+_						lusu					0.1
+_						zuoci					1.0
+_						huaxiong				-1.0
+_						bgm_pangtong			0.5
+_						kongrong				0.1
+_						nos_liubei				0.3
+bgm_liubei				liubei					1.2
+bgm_liubei				weiyan					1.1
+bgm_liubei				menghuo					1.1
+bgm_liubei				shenguanyu				3.0
+bgm_liubei				shencaocao				0.9
+bgm_liubei				shenlvbu				0.8
+bgm_liubei				shensimayi				0.9
+bgm_liubei				ganfuren				1.0
+caocao					zhurong					0.5
+caocao					xiaoqiao				1.0
+caocao					erqiao					0.7
+caopi					xiahoudun				1.0
+caopi					zhenji					2.5
+caopi					caoren					1.6
+caopi					dengai					1.1
+caopi					caozhi					0.9
+caopi					caochong				0.9
+caopi					bgm_diaochan			0.9
+caopi					bgm_caoren				1.5
+caopi					heg_dengai				1.1
+caopi					vs_xiahoudun			1.1
+caopi					nos_caoren				1.5
+caopi					nos_wangyi				2.5
+dongzhuo				zhoutai					-2.0
+dongzhuo				lvbu					1.0
+dongzhuo				yuanshao				2.0
+dongzhuo				yanliangwenchou			0.7
+dongzhuo				zhangjiao				1.5
+dongzhuo				shenlvbu				1.8
+dongzhuo				vs_lvbu					1.1
+dongzhuo				nos_zhoutai				-3.0
+dongzhuo				nos_zhangjiao			1.4
+liubei					xuchu					0.5
+liubei					zhanghe					0.8
+liubei					xuhuang					0.7
+liubei					xunyu					1.5
+liubei					zhangfei				0.5
+liubei					zhugeliang				-1.0
+liubei					huangyueying			1.0
+liubei					wolong					0.9
+liubei					ganning					0.8
+liubei					daqiao					0.9
+liubei					luxun					-0.5
+liubei					sunshangxiang			0.9
+liubei					zhoutai					1.0
+liubei					lusu					1.5
+liubei					huatuo					1.1
+liubei					yuanshao				0.7
+liubei					yanliangwenchou			0.7
+liubei					zhangjiao				0.9
+liubei					fazheng					1.2
+liubei					guanxingzhangbao		0.8
+liubei					bgm_pangtong			-1.5
+liubei					bgm_ganning				0.8
+liubei					kongrong				1.1
+liubei					tianfeng				-0.5
+liubei					nos_huangyueying		1.0
+liubei					nos_zhangjiao			0.9
+liubei					nos_guanxingzhangbao	0.9
+liushan					shenzhugeliang			-0.6
+nos_liubei				xuchu					0.5
+nos_liubei				zhanghe					0.8
+nos_liubei				xuhuang					0.7
+nos_liubei				xunyu					1.5
+nos_liubei				zhangfei				0.5
+nos_liubei				zhugeliang				-1.0
+nos_liubei				huangyueying			1.0
+nos_liubei				wolong					0.9
+nos_liubei				ganning					0.8
+nos_liubei				daqiao					0.9
+nos_liubei				luxun					-0.5
+nos_liubei				sunshangxiang			0.9
+nos_liubei				zhoutai					1.0
+nos_liubei				lusu					1.5
+nos_liubei				huatuo					1.1
+nos_liubei				yuanshao				0.7
+nos_liubei				yanliangwenchou			0.7
+nos_liubei				zhangjiao				0.9
+nos_liubei				fazheng					1.2
+nos_liubei				guanxingzhangbao		0.8
+nos_liubei				bgm_pangtong			-1.5
+nos_liubei				bgm_ganning				0.8
+nos_liubei				kongrong				1.1
+nos_liubei				tianfeng				-0.5
+nos_liubei				nos_huangyueying		1.0
+nos_liubei				nos_zhangjiao			0.9
+nos_liubei				nos_guanxingzhangbao	0.9
+nos_zhangjiao			zhenji					0.7
+nos_zhangjiao			liubei					0.9
+nos_zhangjiao			bgm_ganning				1.0
+nos_zhangjiao			kongrong				0.5
+nos_zhangjiao			nos_liubei				0.9
+sunce					diaochan				0.8
+sunce					nos_diaochan			0.8
+sunquan					zhoutai					0.5
+yuanshao				guojia					0.7
+yuanshao				xunyu					0.7
+yuanshao				caopi					0.5
+yuanshao				liubei					1.0
+yuanshao				wolong					0.2
+yuanshao				lusu					0.7
+yuanshao				jiaxu					0.3
+yuanshao				zhangjiao				0.7
+yuanshao				caiwenji				-0.5
+yuanshao				xushu					1.3
+yuanshao				yangxiu					1.5
+yuanshao				bgm_pangtong			0.8
+yuanshao				diy_liuxie				2.5
+yuanshao				nos_liubei				1.0
+yuanshao				nos_zhangjiao			0.6
+yuanshao				nos_fazheng				-2.0
+yuanshao				nos_xushu				1.3
+zhangjiao				zhenji					0.7
+zhangjiao				liubei					0.9
+zhangjiao				bgm_ganning				0.4
+zhangjiao				kongrong				0.5
+zhangjiao				nos_liubei				0.9

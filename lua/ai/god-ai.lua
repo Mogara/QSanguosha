@@ -1,5 +1,42 @@
+wushen_skill={}
+wushen_skill.name="wushen"
+table.insert(sgs.ai_skills,wushen_skill)
+wushen_skill.getTurnUseCard=function(self)
+	local cards = self.player:getCards("he")
+	cards=sgs.QList2Table(cards)
+
+	local red_card
+	self:sortByUseValue(cards,true)
+
+	for _,card in ipairs(cards)  do
+		if card:getSuit() == sgs.Card_Heart then
+			red_card = card
+			break
+		end
+	end
+
+	if red_card then
+		local suit = red_card:getSuitString()
+		local number = red_card:getNumberString()
+		local card_id = red_card:getEffectiveId()
+		local card_str = ("slash:wushen[%s:%s]=%d"):format(suit, number, card_id)
+		local slash = sgs.Card_Parse(card_str)
+
+		assert(slash)
+
+		return slash
+	end
+end
+
+sgs.ai_filterskill_filter.wushen = function(card, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card:getSuit() == sgs.Card_Heart then return ("slash:wushen[%s:%s]=%d"):format(suit, number, card_id) end
+end
+
 sgs.ai_skill_playerchosen.wuhun = function(self, targets)
-	local targetlist = sgs.QList2Table(targets)
+	local targetlist=sgs.QList2Table(targets)
 	local target
 	local lord
 	for _, player in ipairs(targetlist) do
@@ -71,11 +108,11 @@ function SmartAI:cantbeHurt(player, damageNum, from)
 			if enemymark > maxenemymark and enemy:objectName() ~= player:objectName() then maxenemymark = enemymark end
 		end
 		if self:isEnemy(player, from) then
-			if maxfriendmark + damageNum >= maxenemymark and not (#(self:getEnemies(from)) == 1 and #(self:getFriends(from)) + #(self:getEnemies(from)) == self.room:alivePlayerCount())
+			if maxfriendmark + damageNum - player:getHp() >= maxenemymark and not (#(self:getEnemies(from)) == 1 and #(self:getFriends(from)) + #(self:getEnemies(from)) == self.room:alivePlayerCount())
 				and not (from:getMark("@nightmare") == maxfriendmark and from:getRole() == "loyalist") then
 				return true
 			end
-		elseif maxfriendmark + damageNum > maxenemymark then
+		elseif maxfriendmark + damageNum - player:getHp() >= maxenemymark then
 			return true
 		end
 	end
@@ -95,12 +132,6 @@ function SmartAI:cantbeHurt(player, damageNum, from)
 		if dyingfriend > 0 and player:getHandcardNum() > 0 then
 			return true
 		end
-	end
-	if from:objectName() ~= player:objectName() then
-		if player:hasSkill("enyuan") and (player:getHp() > 1 or self:getAllPeachNum(player) >= 1) and (from:getHp() == 1 and getCardsNum("Peach", from))
-			and from:getHandcardNum() <= 1 then return true end
-		if player:hasSkill("nosenyuan") and (player:getHp() > 1 or self:getAllPeachNum(player) >= 1) and (from:getHp() == 1 and getCardsNum("Peach", from))
-			and not self:hasSuit("heart", false, from) then return true end
 	end
 	return false
 end
@@ -432,7 +463,7 @@ yeyan_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_use_func.GreatYeyanCard = function(card, use, self)
-	if self.role == "lord" and (sgs.turncount <= 1 or sgs.current_mode_players["rebel"] > #self:getChainedEnemies() or self:getAllPeachNum() < 3 - self.player:getHp()) then
+	if self.role == "lord" and (sgs.turncount <= 1 or sgs.current_mode_players["rebel"] > #self:getChainedEnemies() or self:getAllPeachNum() < 4 - self.player:getHp()) then
 		return
 	end
 	if self.role == "renegade" and self.player:aliveCount() > 2 and self:getCardsNum("Peach") < 3 - self.player:getHp() then return end
@@ -514,7 +545,7 @@ sgs.ai_skill_use_func.SmallYeyanCard = function(card, use, self)
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do
 		if not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and self:damageIsEffective(enemy, sgs.DamageStruct_Fire)
-			and enemy:isChained() and self:isGoodChainTarget(enemy) and enemy:hasArmorEffect("Vine") then
+			and enemy:isChained() and self:isGoodChainTarget(enemy) and enemy:hasArmorEffect("Vine") and not targets:contains(enemy) then
 			targets:append(enemy)
 			if targets:length() >= 3 then break end
 		end
@@ -522,7 +553,7 @@ sgs.ai_skill_use_func.SmallYeyanCard = function(card, use, self)
 	if targets:length() < 3 then
 		for _, enemy in ipairs(self.enemies) do
 			if not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and self:damageIsEffective(enemy, sgs.DamageStruct_Fire)
-				and enemy:isChained() and self:isGoodChainTarget(enemy) then
+				and enemy:isChained() and self:isGoodChainTarget(enemy) and not targets:contains(enemy) then
 				targets:append(enemy)
 				if targets:length() >= 3 then break end
 			end
@@ -531,7 +562,7 @@ sgs.ai_skill_use_func.SmallYeyanCard = function(card, use, self)
 	if targets:length() < 3 then
 		for _, enemy in ipairs(self.enemies) do
 			if not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and self:damageIsEffective(enemy, sgs.DamageStruct_Fire)
-				and not enemy:isChained() and enemy:hasArmorEffect("Vine") then
+				and not enemy:isChained() and enemy:hasArmorEffect("Vine") and not targets:contains(enemy) then
 				targets:append(enemy)
 				if targets:length() >= 3 then break end
 			end
@@ -540,7 +571,7 @@ sgs.ai_skill_use_func.SmallYeyanCard = function(card, use, self)
 	if targets:length() < 3 then
 		for _, enemy in ipairs(self.enemies) do
 			if not (enemy:hasSkill("tianxiang") and enemy:getHandcardNum() > 0) and self:damageIsEffective(enemy, sgs.DamageStruct_Fire)
-				and not enemy:isChained() then
+				and not enemy:isChained() and not targets:contains(enemy) then
 				targets:append(enemy)
 				if targets:length() >= 3 then break end
 			end
@@ -574,7 +605,7 @@ sgs.ai_skill_use["@@kuangfeng"] = function(self,prompt)
 	local friendly_fire
 	for _, friend in ipairs(self.friends_noself) do
 		if friend:getMark("@gale") == 0 and self:damageIsEffective(friend, sgs.DamageStruct_Fire) and friend:faceUp() and not self:willSkipPlayPhase(friend)
-			and (friend:hasSkill("huoji") or friend:hasWeapon("fan") or (friend:hasSkill("yeyan") and friend:getMark("@flame") > 0)) then
+			and (friend:hasSkill("huoji") or friend:hasWeapon("Fan") or (friend:hasSkill("yeyan") and friend:getMark("@flame") > 0)) then
 			friendly_fire = true
 			break
 		end

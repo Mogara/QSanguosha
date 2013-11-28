@@ -650,11 +650,11 @@ public:
         if (death.who == player)
             return false;
 
-        room->setPlayerProperty(splayer, "maxhp", splayer->getMaxHp() + 1);
+        room->setPlayerProperty(player, "maxhp", player->getMaxHp() + 1);
         // @todo_P: log message here
         LogMessage log;
         log.type = "#TriggerSkill";
-        log.from = splayer;
+        log.from = player;
         log.arg = "chizhong";
         room->sendLog(log);
         room->broadcastSkillInvoke("chizhong", 2);

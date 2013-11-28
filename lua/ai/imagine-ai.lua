@@ -876,7 +876,7 @@ function SmartAI:ImitateResult_DrawNCards(player, skills, overall)
 			elseif skillname == "yingzi" then --英姿，多摸一张牌
 				count = count + 1
 			elseif skillname == "haoshi" then --好施，多摸两张牌
-				count = count + 1
+				count = count + 2
 			elseif skillname == "juejing" then --绝境，多摸已损失体力值数目的牌
 				count = count + lost
 			elseif skillname == "yongsi" then --庸肆，多摸现存势力数目的牌

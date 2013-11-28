@@ -747,7 +747,9 @@ sgs.ai_skill_invoke.danshou = function(self, data)
 	if phase < sgs.Player_Play then
 		return self:willSkipPlayPhase()
 	elseif phase == sgs.Player_Play then
-		if self:getOverflow() >= 2 then
+		if self.player:isChained() and (damage.chain or self.room:getTag("is_chained"):toInt() > 0) and self:isGoodChainTarget(self.player) then
+			return false
+		elseif self:getOverflow() >= 2 then
 			return true
 		else
 			if damage.chain or self.room:getTag("is_chained"):toInt() > 0 then
@@ -790,7 +792,7 @@ sgs.ai_skill_invoke.danshou = function(self, data)
 		return true
 	elseif phase == sgs.Player_NotActive then
 		local current = self.room:getCurrent()
-		if not current or not current:isAlive() or current:getPhase() == sgs.Player_NotActive() then return true end
+		if not current or not current:isAlive() or current:getPhase() == sgs.Player_NotActive then return true end
 		if self:isFriend(current) then
 			return self:getOverflow(current) >= 2
 		else
@@ -875,7 +877,7 @@ sgs.ai_skill_invoke.juece = function(self, data)
 	local move = data:toMoveOneTime()
 	if not move.from then return false end
 	local from = findPlayerByObjectName(self.room, move.from:objectName())
-	return from and ((self:isFriend(from) and self:getDamagedEffects(from, self.player)) or self:canAttack(from))
+	return from and (self:isFriend(from) and self:getDamagedEffects(from, self.player) or self:canAttack(from))
 end
 
 sgs.ai_skill_playerchosen.mieji = function(self, targets) -- extra target for Ex Nihilo
@@ -992,7 +994,7 @@ sgs.ai_skill_discard.fencheng = function(self, discard_num, min_num, optional, i
 				if self:isWeak() then table.insert(to_discard, def_id)
 				else return {} end
 			elseif self.player:getArmor() and not table.contains(to_discard, arm_id) then
-				if self:isWeak() or (not liru:hasSkill("jueqing") and self.player:hasArmorEffect("vine")) then table.insert(to_discard, arm_id)
+				if self:isWeak() then table.insert(to_discard, arm_id)
 				else return {} end
 			end
 			if #to_discard == discard_num + 1 then table.removeOne(to_discard, cards[1]:getEffectiveId()) end

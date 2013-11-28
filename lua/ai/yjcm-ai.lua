@@ -222,14 +222,28 @@ sgs.ai_skill_discard.enyuan = function(self, discard_num, min_num, optional, inc
 end
 
 function sgs.ai_slash_prohibit.enyuan(self, to, card, from)
-	if self:isFriend(to) then return false end
+	if self:isFriend(to, from) then return false end
 	if from:hasSkill("jueqing") then return false end
 	if from:hasSkill("nosqianxi") and from:distanceTo(to) == 1 then return false end
 	if from:hasFlag("nosjiefanUsed") then return false end
 	if self:needToLoseHp(from) and not self:hasSkills(sgs.masochism_skill, from) then return false end
 	local num = from:getHandcardNum()
-	if num >= 3 or self:hasSkills("lianying|shangshi|nosshangshi", from) or (from:hasSkill("kongcheng") and num == 2) then return false end
-	return true
+	if num >= 3 or from:hasSkills("lianying|shangshi|nosshangshi") or (self:needKongcheng(from, true) and num == 2) then return false end
+	local role = from:objectName() == self.player:objectName() and from:getRole() or sgs.ai_role[from:objectName()]
+	if (role == "loyalist" or role == "lord") and sgs.current_mode_players.rebel + sgs.current_mode_players.renegade == 1
+		and to:getHp() == 1 and getCardsNum("Peach", to) < 1 and getCardsNum("Analeptic", to) < 1
+		and (from:getHp() > 1 or getCardsNum("Peach", from) >= 1 and getCardsNum("Analeptic", from) >= 1) then
+		return false
+	end
+	if role == "rebel" and isLord(to) and self:getAllPeachNum(player) < 1 and to:getHp() == 1
+		and (from:getHp() > 1 or getCardsNum("Peach", from) >= 1 and getCardsNum("Analeptic", from) >= 1) then
+		return false
+	end
+	if role == "renegade" and from:aliveCount() == 2 and to:getHp() == 1 and getCardsNum("Peach", to) < 1 and getCardsNum("Analeptic", to) < 1
+		and (from:getHp() > 1 or getCardsNum("Peach", from) >= 1 and getCardsNum("Analeptic", from) >= 1) then
+		return false
+	end
+	return #self.enemies > 1
 end
 
 sgs.ai_need_damaged.enyuan = function (self, attacker, player)
@@ -378,8 +392,8 @@ sgs.ai_skill_use["@@xuanfeng"] = function(self, prompt)
 end
 
 sgs.ai_card_intention.XuanfengCard = function(self, card, from, tos)
-	local intention = 80
 	for i=1, #tos do
+		local intention = 80
 		local to = tos[i]
 		if to:hasSkill("kongcheng") and to:getHandcardNum() == 1 and to:getHp() <= 2 then
 			intention = 0

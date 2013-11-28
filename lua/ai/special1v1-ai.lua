@@ -85,9 +85,9 @@ sgs.ai_skill_use_func.MouzhuCard = function(card, use, self)
 		canleiji = true
 		self:sort(self.friends_noself, "handcard")
 		sgs.reverse(self.friends_noself)
-		for _, friend in ipairs(self.friend_noself) do
+		for _, friend in ipairs(self.friends_noself) do
 			if not friend:isKongcheng() and friend:getHandcardNum() < self.player:getHandcardNum() + 2
-				and (self.player:getCardsNum("Jink") > 0 or not IgnoreArmor(friend, to) and not self:isWeak() and self:hasEightDiagramEffect()) then
+				and (self:getCardsNum("Jink") > 0 or not IgnoreArmor(friend, self.player) and not self:isWeak() and self:hasEightDiagramEffect()) then
 				use.card = card
 				if use.to then use.to:append(friend) end
 				return

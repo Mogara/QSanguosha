@@ -438,6 +438,7 @@ sgs.ai_skill_use["@@shuangren"] = function(self, prompt)
 			end
 		end
 
+		local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
 		if zhugeliang and self:isFriend(zhugeliang) and zhugeliang:getHandcardNum() == 1 and zhugeliang:objectName() ~= self.player:objectName() then
 			if max_point >= 7 then
 				self.shuangren_card = max_card:getEffectiveId()

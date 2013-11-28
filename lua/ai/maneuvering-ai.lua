@@ -286,14 +286,7 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 	source = source or self.player
 	nature = nature or sgs.DamageStruct_Fire
 	
-	if source:hasSkill("jueqing") then return true end
-	
-	-- if not sgs.GetConfig("EnableHegemony", false) then
-		-- local lord = self.room:getLord()
-		-- if lord and self:isWeak(lord) and lord:isChained() and not self:isEnemy(lord, source) then
-			-- return false
-		-- end
-	-- end
+	if source:hasSkill("jueqing") then return false end
 	
 	damagecount = damagecount or 1
 	if slash then
@@ -317,8 +310,8 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 
 	if who:hasArmorEffect("SilverLion") then damagecount = 1 end
 	
-	local kills, killlord = 0
-	local good, bad = 0, 0
+	local kills, killlord, the_enemy = 0
+	local good, bad, F_count, E_count = 0, 0, 0, 0
 	local peach_num = self.player:objectName() == source:objectName() and self:getCardsNum("Peach") or getCardsNum("Peach", source)
 	
 	local function getChainedPlayerValue(target, dmg)
@@ -358,24 +351,44 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 	
 
 	local value = getChainedPlayerValue(who)
-	if self:isFriend(who) then good = value
-	elseif self:isEnemy(who) then bad = value end
+	if self:isFriend(who) then
+		good = value
+		F_count = F_count + 1
+	elseif self:isEnemy(who) then
+		bad = value
+		E_count = E_count + 1
+	end
 	
 	if nature == sgs.DamageStruct_Normal then return good >= bad end
 	
 	for _, player in sgs.qlist(self.room:getAllPlayers()) do
 		if player:objectName() ~= who:objectName() and player:isChained() and self:damageIsEffective(player, nature, source) then
 			local getvalue = getChainedPlayerValue(player, 0)
-			if kills == #self:getEnemies(source) and not killlord then 
-				if slash then self.room:setCardFlag(slash, "AIGlobal_killoff") end 
+			if kills == #self:getEnemies(source) and not killlord then
+				if slash then self.room:setCardFlag(slash, "AIGlobal_killoff") end
 				return true
 			end
-			if self:isFriend(player) then good = good + getvalue
-			elseif self:isEnemy(player) then bad = bad + getvalue end
+			if self:isFriend(player) then
+				good = good + getvalue
+				F_count = F_count + 1
+			elseif self:isEnemy(player) then
+				bad = bad + getvalue
+				E_count = E_count + 1
+				the_enemy = player
+			end
 		end
 	end
 	
 	if killlord and sgs.evaluatePlayerRole(source) == "rebel" then return true end
+
+	if slash and F_count == 1 and E_count == 1 and the_enemy and the_enemy:isKongcheng() and the_enemy:getHp() == 1 then
+		for _, c in ipairs(self:getCards("Slash")) do
+			if not c:isKindOf("NatureSlash") and self:slashProhibit(slash, the_enemy, source) then return end
+		end
+	end
+	
+	if F_count > 0 and E_count <= 0 then return end
+	
 	return good >= bad
 end
 
@@ -420,7 +433,7 @@ function SmartAI:useCardIronChain(card, use)
 						and (self:needToLoseHp(self.player) or self:getDamagedEffects(self.player)) and not self.player:isChained()
 						and not self.player:hasSkill("jueqing")
 						and (self:getCardId("FireSlash") or self:getCardId("ThunderSlash") or 
-							(self:getCardId("Slash") and (self.player:hasWeapon("fan") or self.player:hasSkill("lihuo")))
+							(self:getCardId("Slash") and (self.player:hasWeapon("Fan") or self.player:hasSkill("lihuo")))
 						or (self:getCardId("FireAttack") and self.player:getHandcardNum() > 2))
 
 	local targets_num = 2 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
