@@ -48,6 +48,10 @@ return {
 	["&sp_yuejin"] = "乐进",
 	["illustrator:sp_yuejin"] = "巴萨小马",
 
+	["sp_zhugejin"] = "SP诸葛瑾",
+	["&sp_zhugejin"] = "诸葛瑾",
+	["illustrator:sp_zhugejin"] = "G.G.G.",
+
 	["tw_diaochan"] = "台版貂蝉",
 	["&tw_diaochan"] = "貂蝉",
 	["illustrator:tw_diaochan"] = "陳俊佐",

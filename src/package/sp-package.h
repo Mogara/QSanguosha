@@ -5,6 +5,12 @@
 #include "card.h"
 #include "standard.h"
 
+#include <QGroupBox>
+#include <QAbstractButton>
+#include <QButtonGroup>
+#include <QDialog>
+#include <QVBoxLayout>
+
 class SPPackage: public Package {
     Q_OBJECT
 
@@ -44,13 +50,25 @@ protected:
     virtual int getKingdoms(ServerPlayer *yuanshu) const;
 };
 
-class WeidiCard: public SkillCard {
+class WeidiDialog: public QDialog {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE WeidiCard();
+    static WeidiDialog *getInstance();
 
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+public slots:
+    void popup();
+    void selectSkill(QAbstractButton *button);
+
+private:
+    explicit WeidiDialog();
+
+    QAbstractButton *createSkillButton(const QString &skill_name);
+    QButtonGroup *group;
+    QVBoxLayout *button_layout;
+
+signals:
+    void onButtonClick();
 };
 
 class YuanhuCard: public SkillCard {

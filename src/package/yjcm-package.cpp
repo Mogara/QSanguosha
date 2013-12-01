@@ -1224,6 +1224,7 @@ YJCMPackage::YJCMPackage()
     addMetaObject<XinzhanCard>();
     addMetaObject<JujianCard>();
     addMetaObject<PaiyiCard>();
+    addMetaObject<XuanfengCard>();
 
     skills << new Paiyi;
 }

@@ -19,7 +19,7 @@ return {
 	["xuhuang"] = "徐晃",
 	["illustrator:xuhuang"] = "Tuu.",
 	["duanliang"] = "断粮",
-	[":duanliang"] = "你可以将一张黑色的基本牌或黑色的装备牌当【兵粮寸断】使用。<font color=\"blue\"><b>锁定技，</b></font>你可以对距离2以内的其他角色使用【兵粮寸断】。",
+	[":duanliang"] = "你可以将一张黑色的基本牌或黑色的装备牌当【兵粮寸断】使用。<font color=\"blue\"><b>锁定技，</b></font>你可以对距离2的角色使用【兵粮寸断】。",
 
 	["#menghuo"] = "南蛮王",
 	["menghuo"] = "孟获",

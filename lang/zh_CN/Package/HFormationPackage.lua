@@ -3,14 +3,14 @@
 return {
 	["h_formation"] = "国战-阵包",
 
-	["heg_dengai"] = "邓艾-国",
+	["heg_dengai"] = "国战邓艾",
 	["&heg_dengai"] = "邓艾",
 	["illustrator:heg_dengai"] = "Amo",
 	["ziliang"] = "资粮",
 	[":ziliang"] = "每当一名角色受到伤害后，你可以将一张“田”交给该角色。",
 
 	["#heg_caohong"] = "魏之福将",
-	["heg_caohong"] = "曹洪-国",
+	["heg_caohong"] = "国战曹洪",
 	["&heg_caohong"] = "曹洪",
 	["illustrator:heg_caohong"] = "YellowKiss",
 	["huyuan"] = "护援",
@@ -23,7 +23,7 @@ return {
 	["@heyi"] = "你可以发动“鹤翼”",
 	["~heyi"] = "选择队首和队尾的角色（若其中包括你则先选择的角色为队首，后选择的角色为队尾）→点击确定",
 
-	["heg_jiangwei"] = "姜维-国",
+	["heg_jiangwei"] = "国战姜维",
 	["&heg_jiangwei"] = "姜维",
 	["illustrator:heg_jiangwei"] = "木美人",
 	["tianfu"] = "天覆",
@@ -44,7 +44,7 @@ return {
 	["jiangqin"] = "蒋钦",
 	["illustrator:jiangqin"] = "天空之城",
 	["shangyi"] = "尚义",
-	[":shangyi"] = "<font color=\"green\"><b>阶段技。</b></font>你可以令一名其他角色观看你的手牌，然后你选择一项：1.观看其手牌，然后你可以弃置其中一张黑色牌。2.观看其身份牌。",
+	[":shangyi"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以令一名其他角色观看你的手牌，然后你选择一项：1.观看其手牌，然后你可以弃置其中一张黑色牌。2.观看其身份牌。",
 	["shangyi:handcards"] = "手牌",
 	["shangyi:role"] = "身份牌",
 	["shangyi:remainedgenerals"] = "备选武将",
@@ -55,14 +55,14 @@ return {
 	["$ShangyiViewRemained"] = "%from 观看了 %to 的备选武将 %arg",
 	["$ShangyiViewUnknown"] = "%from 观看了 %to 的暗将 %arg",
 
-	["heg_xusheng"] = "徐盛-国",
+	["heg_xusheng"] = "国战徐盛",
 	["&heg_xusheng"] = "徐盛",
 	["illustrator:heg_xusheng"] = "XXX",
 	["yicheng"] = "疑城",
 	[":yicheng"] = "每当一名角色被指定为【杀】的目标后，你可以令该角色摸一张牌，然后弃置一张牌。",
 
 	["#heg_yuji"] = "魂绕左右",
-	["heg_yuji"] = "于吉-国",
+	["heg_yuji"] = "国战于吉",
 	["&heg_yuji"] = "于吉",
 	["illustrator:heg_yuji"] = "G.G.G.",
 	["qianhuan"] = "千幻",

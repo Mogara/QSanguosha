@@ -46,6 +46,10 @@
 "playerGeneralIcon-erqiao-4": ["image/generals/big/erqiao.png",[23, 7, 88, 120], [44, 60]],
 "playerGeneralIcon-erqiao-6": "image/compact/generals/small/erqiao.png",
 
+"playerGeneralIcon-jiangwanfeiyi-1": "image/compact/generals/small/jiangwanfeiyi.png",
+"playerGeneralIcon-jiangwanfeiyi-4": ["image/generals/big/jiangwanfeiyi.png",[23, 7, 88, 120], [44, 60]],
+"playerGeneralIcon-jiangwanfeiyi-6": "image/compact/generals/small/jiangwanfeiyi.png",
+
 "playerGeneralIcon-nos_guanxingzhangbao-1": "image/compact/generals/small/nos_guanxingzhangbao.png",
 "playerGeneralIcon-nos_guanxingzhangbao-4": ["image/generals/big/nos_guanxingzhangbao.png",[23, 7, 88, 120], [44, 60]],
 "playerGeneralIcon-nos_guanxingzhangbao-6": "image/compact/generals/small/nos_guanxingzhangbao.png"

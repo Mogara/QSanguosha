@@ -97,32 +97,39 @@ public:
 
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
+        const Card *card = NULL;
+        if (room->getMode().startsWith("06_") && AI::GetRelation3v3(player, judge->who) == AI::Friend) {
+            QStringList prompt_list;
+            prompt_list << "@huanshi-card" << judge->who->objectName()
+                        << objectName() << judge->reason << QString::number(judge->card->getEffectiveId());
+            QString prompt = prompt_list.join(":");
 
-        bool can_invoke = false;
-        if (room->getMode().startsWith("06_")) {
-            can_invoke = (AI::GetRelation3v3(player, judge->who) == AI::Friend);
-        } else if (!player->isNude())
-            can_invoke = (judge->who == player || room->askForChoice(judge->who, "huanshi", "accept+reject") == "accept");
-
-        if (!can_invoke) {
-            if (!room->getMode().startsWith("06_")) {
-                LogMessage log;
-                log.type = "#ZhibaReject";
-                log.from = judge->who;
-                log.to << player;
-                log.arg = objectName();
-                room->sendLog(log);
+            card = room->askForCard(player, "..", prompt, data, Card::MethodResponse, judge->who, true);
+        } else if (!player->isKongcheng()) {
+            QList<int> ids, disabled_ids;
+            foreach (const Card *card, player->getHandcards()) {
+                if (player->isCardLimited(card, Card::MethodResponse))
+                    disabled_ids << card->getEffectiveId();
+                else
+                    ids << card->getEffectiveId();
             }
-
-            return false;
+            if (!ids.isEmpty() && room->askForSkillInvoke(player, objectName(), data)) {
+                if (judge->who != player) {
+                    LogMessage log;
+                    log.type = "$ViewAllCards";
+                    log.from = judge->who;
+                    log.to << player;
+                    log.card_str = IntList2StringList(player->handCards()).join("+");
+                    room->doNotify(judge->who, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+                }
+                judge->who->tag["HuanshiJudge"] = data;
+                room->fillAG(player->handCards(), judge->who, disabled_ids);
+                int card_id = room->askForAG(judge->who, ids, false, objectName());
+                room->clearAG(judge->who);
+                judge->who->tag.remove("HuanshiJudge");
+                card = Sanguosha->getCard(card_id);
+            }
         }
-
-        QStringList prompt_list;
-        prompt_list << "@huanshi-card" << judge->who->objectName()
-                    << objectName() << judge->reason << QString::number(judge->card->getEffectiveId());
-        QString prompt = prompt_list.join(":");
-
-        const Card *card = room->askForCard(player, "..", prompt, data, Card::MethodResponse, judge->who, true);
         if (card != NULL) {
             room->broadcastSkillInvoke(objectName());
             room->retrial(card, player, judge, objectName());

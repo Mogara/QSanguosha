@@ -34,8 +34,12 @@ bool Skill::isAttachedLordSkill() const{
 }
 
 QString Skill::getDescription() const{
-    QString des_src = Sanguosha->translate(":" + objectName());
-    if (des_src == ":" + objectName())
+    bool normal_game = ServerInfo.DuringGame && isNormalGameMode(ServerInfo.GameMode);
+    QString name = QString("%1%2").arg(objectName()).arg(normal_game ? "_p" : "");
+    QString des_src = Sanguosha->translate(":" + name);
+    if (normal_game && des_src.startsWith(":"))
+        des_src = Sanguosha->translate(":" + objectName());
+    if (des_src.startsWith(":"))
         return QString();
     return des_src;
 }
@@ -128,7 +132,8 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 bool ViewAsSkill::isAvailable(const Player *invoker,
                               CardUseStruct::CardUseReason reason, 
                               const QString &pattern) const{
-    if (!invoker->hasSkill(objectName()) && !invoker->hasFlag(objectName())) // For Shuangxiong
+    if (!invoker->hasSkill(objectName()) && !invoker->hasLordSkill(objectName())
+        && !invoker->hasFlag(objectName())) // For Shuangxiong
         return false;
     switch (reason) {
     case CardUseStruct::CARD_USE_REASON_PLAY: return isEnabledAtPlay(invoker);

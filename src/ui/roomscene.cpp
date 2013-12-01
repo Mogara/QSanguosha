@@ -2012,6 +2012,8 @@ void RoomScene::addSkillButton(const Skill *skill, bool) {
         dialog->setParent(main_window, Qt::Dialog);
         connect(btn, SIGNAL(skill_activated()), dialog, SLOT(popup()));
         connect(btn, SIGNAL(skill_deactivated()), dialog, SLOT(reject()));
+        disconnect(btn, SIGNAL(skill_activated()), this, SLOT(onSkillActivated()));
+        connect(dialog, SIGNAL(onButtonClick()), this, SLOT(onSkillActivated()));
         if (dialog->objectName() == "qice")
             connect(dialog, SIGNAL(onButtonClick()), dashboard, SLOT(selectAll()));
     }
@@ -2543,7 +2545,14 @@ void RoomScene::onSkillDeactivated() {
 
 void RoomScene::onSkillActivated() {
     QSanSkillButton *button = qobject_cast<QSanSkillButton *>(sender());
-    const ViewAsSkill *skill = button->getViewAsSkill();
+    const ViewAsSkill *skill = NULL;
+    if (button)
+        skill = button->getViewAsSkill();
+    else {
+        QDialog *dialog = qobject_cast<QDialog *>(sender());
+        if (dialog)
+            skill = Sanguosha->getViewAsSkill(dialog->objectName());
+    }
 
     if (skill) {
         dashboard->startPending(skill);

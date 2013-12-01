@@ -3279,6 +3279,8 @@ void Room::marshal(ServerPlayer *player) {
 
         if (p->getGeneral2())
             notifyProperty(player, p, "general2");
+
+        notifyProperty(player, p, "state");
     }
 
     doNotify(player, S_COMMAND_GAME_START, Json::Value::null);
