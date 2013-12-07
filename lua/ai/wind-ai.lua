@@ -268,7 +268,7 @@ function SmartAI:findLeijiTarget(player, leiji_value, slasher, latest_version)
 	end
 	if not player:hasSkill(latest_version == 1 and "leiji" or "nosleiji") then return nil end
 	if slasher then
-		if not self:slashIsEffective(sgs.Sanguosha:cloneCard("slash"), player, slasher, slasher:hasWeapon("qinggang_sword")) then return nil end
+		if not self:slashIsEffective(sgs.Sanguosha:cloneCard("slash"), player, slasher, slasher:hasWeapon("QinggangSword")) then return nil end
 		if slasher:hasSkill("liegong") and slasher:getPhase() == sgs.Player_Play and self:isEnemy(player, slasher)
 			and (player:getHandcardNum() >= slasher:getHp() or player:getHandcardNum() <= slasher:getAttackRange()) then
 			return nil
@@ -283,7 +283,7 @@ function SmartAI:findLeijiTarget(player, leiji_value, slasher, latest_version)
 			if not self:hasSuit("black", true, player) and player:getHandcardNum() < 2 then return nil end
 		end
 		if not (getKnownCard(player, "Jink", true) > 0 or getCardsNum("Jink", player) >= 1
-				or (not self:isWeak(player) and self:hasEightDiagramEffect(player) and not slasher:hasWeapon("qinggang_sword"))) then
+				or (not self:isWeak(player) and self:hasEightDiagramEffect(player) and not slasher:hasWeapon("QinggangSword"))) then
 			return nil
 		end
 	end
@@ -343,7 +343,7 @@ sgs.ai_playerchosen_intention.leiji = 80
 
 function sgs.ai_slash_prohibit.leiji(self, from, to, card) -- @todo: Qianxi flag name
 	if self:isFriend(to) then return false end
-	if to:hasFlag("QianxiTarget") and (not self:hasEightDiagramEffect(to) or self.player:hasWeapon("qinggang_sword")) then return false end
+	if to:hasFlag("QianxiTarget") and (not self:hasEightDiagramEffect(to) or self.player:hasWeapon("QinggangSword")) then return false end
 	local hcard = to:getHandcardNum()
 	if self:canLiegong(to, from) then return false end
 	if from:getRole() == "rebel" and to:isLord() then

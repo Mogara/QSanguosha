@@ -105,6 +105,42 @@ function sgs.ai_armor_value.Vine(player, self)
 	return -1
 end
 
+function SmartAI:shouldUseAnaleptic(target, slash)
+	if sgs.turncount <= 1 and self.role == "renegade" and sgs.isLordHealthy() and self:getOverflow() < 2 then return false end
+	if target:hasArmorEffect("SilverLion") and not (self.player:hasWeapon("QinggangSword") or self.player:hasSkill("jueqing")) then
+		return
+	end
+	if target:hasSkill("zhenlie") then return false end
+	if target:hasSkill("xiangle") then
+		local basicnum = 0
+		for _, acard in sgs.qlist(self.player:getHandcards()) do
+			if acard:getTypeId() == sgs.Card_TypeBasic and not acard:isKindOf("Peach") then basicnum = basicnum + 1 end
+		end
+		if basicnum < 3 then return false end
+	end
+
+	if self:hasSkills(sgs.masochism_skill .. "|longhun|buqu|nosbuqu|" .. sgs.recover_skill, target)
+		and self.player:hasSkill("nosqianxi") and self.player:distanceTo(target) == 1 then
+		return
+	end
+
+	local hcard = target:getHandcardNum()
+	if self.player:hasSkill("liegong") and self.player:getPhase() == sgs.Player_Play and (hcard >= self.player:getHp() or hcard <= self.player:getAttackRange()) then return true end
+	if self.player:hasSkill("kofliegong") and self.player:getPhase() == sgs.Player_Play and hcard >= self.player:getHp() then return true end
+	if self.player:hasSkill("tieji") then return true end
+
+	if self.player:hasWeapon("axe") and self.player:getCards("he"):length() > 4 then return true end
+	if target:hasFlag("dahe") then return true end
+
+	if ((self.player:hasSkill("roulin") and target:isFemale()) or (self.player:isFemale() and target:hasSkill("roulin"))) or self.player:hasSkill("wushuang") then
+		if getKnownCard(target, "Jink", true, "he") >= 2 then return false end
+		return getCardsNum("Jink", target) < 2
+	end
+
+	if getKnownCard(target, "Jink", true, "he") >= 1 and not (self:getOverflow() > 0 and self:getCardsNum("Analeptic") > 1) then return false end
+	return self:getCardsNum("Analeptic") > 1 or getCardsNum("Jink", target) < 1 or sgs.card_lack[target:objectName()]["Jink"] == 1
+end
+
 function SmartAI:useCardAnaleptic(card, use)
 	if not self.player:hasEquip(card) and not self:hasLoseHandcardEffective() and not self:isWeak()
 		and sgs.Analeptic_IsAvailable(self.player, card) then
@@ -327,7 +363,7 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 		if self:isGoodChainPartner(target) then newvalue = newvalue + 1 end
 		if self:isWeak(target) then newvalue = newvalue - 1 end
 		if dmg and nature == sgs.DamageStruct_Fire then
-			if target:hasArmorEffect("vine") then dmg = dmg + 1 end
+			if target:hasArmorEffect("Vine") then dmg = dmg + 1 end
 			if target:getMark("@gale") > 0 then dmg = dmg + 1 end
 		end
 		if self:cantbeHurt(target, source, damagecount) then newvalue = newvalue - 100 end

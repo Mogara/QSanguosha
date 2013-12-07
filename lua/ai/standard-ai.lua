@@ -948,6 +948,7 @@ end
 
 table.insert(sgs.ai_global_flags, "jijiangsource")
 local jijiang_filter = function(self, player, carduse)
+	if not carduse then self.room:writeToConsole(debug.traceback()) end
 	if carduse.card:isKindOf("JijiangCard") then
 		sgs.jijiangsource = player
 	else
@@ -2492,7 +2493,7 @@ end
 sgs.ai_use_value.LijianCard = 8.5
 sgs.ai_use_priority.LijianCard = 4
 
-lijian_filter = function(player, carduse)
+lijian_filter = function(self, player, carduse)
 	if carduse.card:isKindOf("LijianCard") then
 		sgs.ai_lijian_effect = true
 	end

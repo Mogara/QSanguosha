@@ -62,7 +62,7 @@ sgs.ai_skill_use_func.QuhuCard = function(card, use, self)
 		end
 	end
 end
-local quhu_filter = function(player, carduse)
+local quhu_filter = function(self, player, carduse)
 	if carduse.card:isKindOf("QuhuCard") then
 		sgs.ai_quhu_effect = true
 	end

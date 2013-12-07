@@ -81,7 +81,7 @@ sgs.ai_skill_use["@@huyuan"] = function(self, prompt)
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
 	self:sortByKeepValue(cards)
-	if self.player:hasArmorEffect("silver_lion") then
+	if self.player:hasArmorEffect("SilverLion") then
 		local player = huyuan_validate(self, "SilverLion", false)
 		if player then return "@HuyuanCard=" .. self.player:getArmor():getEffectiveId() .. "->" .. player:objectName() end
 	end

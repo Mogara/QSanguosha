@@ -1,5 +1,5 @@
 function speak(to,type)
-	if not sgs.GetConfig("AIChat", true) then return end
+	if not sgs.GetConfig("AIChat", false) then return end
 	if to:getState() ~= "robot" then return end
 	
 	local i =math.random(1,#sgs.ai_chat[type])
@@ -121,7 +121,7 @@ end
 
 
 function SmartAI:speak(type, isFemale)
-	if not sgs.GetConfig("AIChat", true) then return end
+	if not sgs.GetConfig("AIChat", false) then return end
 	if self.player:getState() ~= "robot" then return end	
 	
 	if sgs.ai_chat[type] then

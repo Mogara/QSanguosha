@@ -1556,10 +1556,6 @@
         <translation>8 人局 [无内奸]</translation>
     </message>
     <message>
-        <source>NewQSanguosha</source>
-        <translation type="obsolete">太阳神三国杀 - 20130610</translation>
-    </message>
-    <message>
         <location filename="../../src/core/engine.cpp" line="110"/>
         <source>9 players</source>
         <translation>9 人局</translation>
@@ -1912,7 +1908,7 @@
         <location filename="../../src/dialog/mainwindow.ui" line="14"/>
         <location filename="../../src/dialog/mainwindow.cpp" line="148"/>
         <source>Sanguosha</source>
-        <translation>太阳神三国杀 - 20130610</translation>
+        <translation>太阳神三国杀 - 20131210</translation>
     </message>
     <message>
         <location filename="../../src/dialog/mainwindow.ui" line="28"/>

@@ -981,8 +981,8 @@ function getNextJudgeReason(self, player)
 		if player:hasSkills("ganglie|vsganglie") then return end
 		local caiwenji = self.room:findPlayerBySkillName("beige")
 		if caiwenji and caiwenji:canDiscard(caiwenji, "he") and self:isFriend(caiwenji, player) then return end
-		if player:hasArmorEffect("eight_diagram") or player:hasSkill("bazhen") then
-			if self:playerGetRound(player) > 3 and self:isEnemy(player) then return "eight_diagram"
+		if player:hasArmorEffect("EightDiagram") or player:hasSkill("bazhen") then
+			if self:playerGetRound(player) > 3 and self:isEnemy(player) then return "EightDiagram"
 			else return end
 		end
 	end

@@ -152,7 +152,7 @@ function sgs.getDefenseSlash(player, self)
 		for _, liege in sgs.qlist(lieges) do
 			if sgs.compareRoleEvaluation(liege,"rebel","loyalist") == sgs.compareRoleEvaluation(player,"rebel","loyalist") then
 				hujiaJink = hujiaJink + getCardsNum("Jink",liege)
-				if liege:hasArmorEffect("EightDiagram")目前单属性完全改属性的只有皮皮一家和布鲁一家then hujiaJink = hujiaJink + 0.8 end
+				if liege:hasArmorEffect("EightDiagram") then hujiaJink = hujiaJink + 0.8 end
 			end
 		end
 		defense = defense + hujiaJink
@@ -299,7 +299,7 @@ function SmartAI:slashProhibit(card, enemy, from)
 					or card:isKindOf("ThunderSlash") and sgs.DamageStruct_Thunder
 	for _, askill in sgs.qlist(enemy:getVisibleSkillList()) do
 		local filter = sgs.ai_slash_prohibit[askill:objectName()]
-		if filter and type(filter) == "function" and filter(self, enemy, card, from) then return true end
+		if filter and type(filter) == "function" and filter(self, from, enemy, card) then return true end
 	end
 
 	if self:isFriend(enemy, from) then
@@ -511,7 +511,7 @@ function SmartAI:useCardSlash(card, use)
 			-- fill the card use struct
 			local usecard = card
 			if not use.to or use.to:isEmpty() then
-				if self.player:hasWeapon("Spear") and card:getSkillName() == "spear" then
+				if self.player:hasWeapon("Spear") and card:getSkillName() == "Spear" then
 				elseif self.player:hasWeapon("Crossbow") and self:getCardsNum("Slash") > 1 then
 				elseif not use.isDummy then
 					local Weapons = {}
@@ -1431,7 +1431,7 @@ function sgs.ai_slash_weaponfilter.KylinBow(self, to)
 end
 
 function sgs.ai_weapon_value.KylinBow(self, enemy)
-	if enemy:getOffensiveHorse() or enemy:getDefensiveHorse() then return 1 end
+	if enemy and (enemy:getOffensiveHorse() or enemy:getDefensiveHorse()) then return 1 end
 end
 
 sgs.ai_skill_invoke.EightDiagram = function(self, data)

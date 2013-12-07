@@ -239,7 +239,7 @@ function sgs.getDefense(player, gameProcess)
 	local defense = math.min(sgs.getValue(player), player:getHp() * 3)
 	local attacker = global_room:getCurrent()
 	local hasEightDiagram = false
-	if (player:hasArmorEffect("EightDiagram") or player:hasArmorEffect("bazhen") then
+	if player:hasArmorEffect("EightDiagram") or player:hasArmorEffect("bazhen") then
 		hasEightDiagram = true
 	end
 	
@@ -1674,7 +1674,7 @@ function SmartAI:filterEvent(event, player, data)
 				if type(callback)=="function" then callback(self,player,data) end
 			end
 		end
-		if type(sgs.ai_chat_func[event])=="table" and sgs.GetConfig("AIChat", true) and player:getState() == "robot" then
+		if type(sgs.ai_chat_func[event])=="table" and sgs.GetConfig("AIChat", false) and player:getState() == "robot" then
 			for _,callback in pairs(sgs.ai_chat_func[event]) do
 				if type(callback)=="function" then callback(self,player,data) end
 			end
@@ -1698,7 +1698,7 @@ function SmartAI:filterEvent(event, player, data)
 			end
 			for _, callback in ipairs(sgs.ai_choicemade_filter.cardUsed) do
 				if type(callback) == "function" then
-					callback(player, carduse)
+					callback(self, player, carduse)
 				end
 			end
 		elseif data:toString() then
@@ -1742,7 +1742,7 @@ function SmartAI:filterEvent(event, player, data)
 		end
 	elseif event == sgs.CardUsed or event == sgs.CardEffect or event == sgs.GameStart or event == sgs.EventPhaseStart then
 		self:updatePlayers()
-	elseif event == sgs.BuryVictim or event == sgs.HpChanged or event == sgs.MaxHpChangedthen
+	elseif event == sgs.BuryVictim or event == sgs.HpChanged or event == sgs.MaxHpChanged then
 		self:updatePlayers(false)
 	end
 	
@@ -3515,7 +3515,7 @@ function SmartAI:willUsePeachTo(dying)
 
 		local allcards = 0
 		for _, p in ipairs(self.friends) do
-			if sgs.card_lack[p:objectName()]["Peach"] == 0 then allcards = allpeaches + p:getHandcardNum() end
+			if sgs.card_lack[p:objectName()]["Peach"] == 0 then allcards = allcards + p:getHandcardNum() end
 		end
 		if allcards < 1 - dying:getHp() then return "." end
 		
@@ -4525,7 +4525,7 @@ function SmartAI:getCardsNum(class_name, flag, selfonly)
 	card_str = cardsView(self, class_name, player)
 	if card_str then
 		card_str = sgs.Card_Parse(card_str)
-		if card_str:getSkillName() == "spear" or card_str:getSkillName() == "fuhun" then
+		if card_str:getSkillName() == "Spear" or card_str:getSkillName() == "fuhun" then
 			n = n + math.floor(player:getHandcardNum() / 2) - 1
 		elseif card_str:getSkillName() == "jiuzhu" then
 			n = math.max(n, math.max(0, math.min(player:getCardCount(), player:getHp() - 1)))
@@ -5355,7 +5355,7 @@ function SmartAI:useEquipCard(card, use)
 	elseif card:isKindOf("Armor") then
 		if self:needBear() and self.player:getLostHp() == 0 then return end
 		local lion = self:getCard("SilverLion")
-		if lion and self.player:isWounded() and not self.player:hasArmorEffect("silver_lion") and not card:isKindOf("SilverLion")
+		if lion and self.player:isWounded() and not self.player:hasArmorEffect("SilverLion") and not card:isKindOf("SilverLion")
 			and not (self:hasSkills("bazhen|yizhong") and not self.player:getArmor()) then
 			use.card = lion
 			return
@@ -5613,7 +5613,7 @@ function SmartAI:findPlayerToDiscard(flags, include_self, isDiscard, players, re
 			end
 		end
 		for _, enemy in ipairs(enemies) do
-			if enemy:hasArmorEffect("eight_diagram") and not self:needToThrowArmor(enemy) and self.player:canDiscard(enemy, enemy:getArmor():getEffectiveId()) then
+			if enemy:hasArmorEffect("EightDiagram") and not self:needToThrowArmor(enemy) and self.player:canDiscard(enemy, enemy:getArmor():getEffectiveId()) then
 				table.insert(player_table, enemy)
 			end
 		end
@@ -5844,6 +5844,10 @@ function SmartAI:findFriendsByType(prompt, player)
 		return
 	end
 	return false
+end
+
+function hasBuquEffect(player)
+	return (player:hasSkill("buqu") and player:getPile("buqu"):length() <= 4) or (player:hasSkill("nosbuqu") and player:getPile("nosbuqu"):length() <= 4)
 end
 
 dofile "lua/ai/debug-ai.lua"

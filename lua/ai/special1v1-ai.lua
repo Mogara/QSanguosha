@@ -480,7 +480,7 @@ sgs.ai_skill_cardask["@niluan-slash"] = function(self, data, pattern, target, ta
 	if not self.player:canSlash(target, false) then return "." end
 
 	local black_card
-	if not target:hasSkill("yizhong") and not target:hasArmorEffect("renwang_shield") and not target:hasArmorEffect("vine") then
+	if not target:hasSkill("yizhong") and not target:hasArmorEffect("RenwangShield") and not target:hasArmorEffect("Vine") then
 		local cards = sgs.QList2Table(self.player:getHandcards())
 		self:sortByKeepValue(cards)
 		local slash = sgs.Sanguosha:cloneCard("slash")

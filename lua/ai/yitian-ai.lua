@@ -488,7 +488,7 @@ sgs.ai_skill_use_func.LianliSlashCard = function(card, use, self)
 	end
 end
 
-local lianli_slash_filter = function(player, carduse)
+local lianli_slash_filter = function(self, player, carduse)
 	if carduse.card:isKindOf("LianliSlashCard") then
 		sgs.lianlislash = false
 	end
