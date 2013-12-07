@@ -242,15 +242,15 @@ void ChooseGeneralDialog::freeChoose() {
     dialog->exec();
 }
 
-FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
-    : QDialog(parent), pair_choose(pair_choose)
+FreeChooseDialog::FreeChooseDialog(QWidget *parent, ButtonGroupType type)
+    : QDialog(parent), type(type)
 {
     setWindowTitle(tr("Free choose generals"));
 
     QTabWidget *tab_widget = new QTabWidget;
 
     group = new QButtonGroup(this);
-    group->setExclusive(!pair_choose);
+    group->setExclusive(type == Exclusive);
 
     QList<const General *> all_generals = Sanguosha->findChildren<const General *>();
     QMap<QString, QList<const General *> > map;
@@ -291,12 +291,12 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
 
     setLayout(layout);
 
-    if (!pair_choose)
+    if (type == Exclusive)
         group->buttons().first()->click();
 }
 
 void FreeChooseDialog::chooseGeneral() {
-    if (pair_choose) {
+    if (type == Pair) {
         QList<QAbstractButton *> buttons = group->buttons();
         QString first, second;
         foreach (QAbstractButton *button, buttons) {
@@ -312,6 +312,13 @@ void FreeChooseDialog::chooseGeneral() {
             }
         }
         if (second.isEmpty()) emit general_chosen(first);
+    } else if (type == Multi) {
+        QStringList general_names;
+        foreach (QAbstractButton *button, group->buttons()) {
+            if (button->isChecked())
+                general_names << button->objectName();
+        }
+        if (!general_names.isEmpty()) emit general_chosen(general_names.join("+"));
     } else {
         QAbstractButton *button = group->checkedButton();
         if (button) emit general_chosen(button->objectName());
@@ -337,10 +344,10 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals) {
                                .arg(Sanguosha->translate(general->getPackage()));
 
         QAbstractButton *button;
-        if (pair_choose)
-            button = new QCheckBox(text);
-        else
+        if (type == Exclusive)
             button = new QRadioButton(text);
+        else
+            button = new QCheckBox(text);
         button->setObjectName(general_name);
         button->setToolTip(general->getSkillDescription(true));
         if (general->isLord())
@@ -362,7 +369,7 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals) {
 
     tab->setLayout(tablayout);
 
-    if (pair_choose) {
+    if (type == Pair) {
         connect(group, SIGNAL(buttonClicked(QAbstractButton *)),
                 this, SLOT(uncheckExtraButton(QAbstractButton *)));
     }

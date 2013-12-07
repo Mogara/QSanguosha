@@ -20,7 +20,7 @@ neoluoyi_skill.getTurnUseCard = function(self)
 	local noHorseTargets = 0
 	self:sort(self.enemies,"hp")
 	for _, card in sgs.qlist(self.player:getCards("he")) do
-		if card:isKindOf("EquipCard") and not (card:isKindOf("Weapon") and self:hasEquip(card)) then
+		if card:isKindOf("EquipCard") and not (card:isKindOf("Weapon") and self.player:hasEquip(card)) then
 			equipnum = equipnum + 1
 		end
 	end
@@ -28,7 +28,7 @@ neoluoyi_skill.getTurnUseCard = function(self)
 		if card:isKindOf("Slash") then
 			for _,enemy in ipairs(self.enemies) do
 				if self.player:canSlash(enemy, card) and self:slashIsEffective(card, enemy) and self:objectiveLevel(enemy) > 3 and sgs.isGoodTarget(enemy, self.enemies, self) then
-					if getCardsNum("Jink", enemy) < 1 or (self:isEquip("Axe") and self.player:getCards("he"):length() > 4) then
+					if getCardsNum("Jink", enemy) < 1 or (self.player:hasWeapon("Axe") and self.player:getCards("he"):length() > 4) then
 						slashtarget = slashtarget + 1
 						if offhorse and self.player:distanceTo(enemy, 1)<=self.player:getAttackRange() then
 							noHorseTargets = noHorseTargets + 1
@@ -40,7 +40,7 @@ neoluoyi_skill.getTurnUseCard = function(self)
 		if card:isKindOf("Duel") then
 			for _, enemy in ipairs(self.enemies) do
 				if self:getCardsNum("Slash") >= getCardsNum("Slash", enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
-				and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy, 2) and self:damageIsEffective(enemy) and enemy:getMark("@late") == 0 then
+				and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy, self.player, 2) and self:damageIsEffective(enemy) and enemy:getMark("@late") == 0 then
 					dueltarget = dueltarget + 1 
 				end
 			end
@@ -240,7 +240,7 @@ sgs.ai_skill_invoke.neoganglie = function(self, data)
 	return not self:isFriend(who)
 end
 
-sgs.ai_choicemade_filter.skillInvoke.neoganglie = function(player, promptlist, self)
+sgs.ai_choicemade_filter.skillInvoke.neoganglie = function(self, player, promptlist)
 	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
 	if damage.from then
 		local target = damage.from

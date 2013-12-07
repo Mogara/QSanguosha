@@ -8,9 +8,7 @@ table.insert(sgs.ai_global_flags, "hujiasource")
 sgs.ai_skill_invoke.hujia = function(self, data)
 	local asked = data:toStringList()
 	local prompt = asked[2]
-	if not self.player:hasFlag("ai_hantong") then
-		if self:askForCard("jink", prompt, 1) == "." then return false end
-	end
+	if self:askForCard("jink", prompt, 1) == "." then return false end
 
 	local cards = self.player:getHandcards()
 	if sgs.hujiasource then return false end
@@ -40,19 +38,19 @@ sgs.ai_skill_invoke.hujia = function(self, data)
 	return has_friend
 end
 
-sgs.ai_choicemade_filter.skillInvoke.hujia = function(player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.hujia = function(self, player, promptlist)
 	if promptlist[#promptlist] == "yes" then
 		sgs.hujiasource = player
 	end
 end
 
-function sgs.ai_slash_prohibit.hujia(self, to, card, from)
-	if self:isFriend(to) then return false end
+function sgs.ai_slash_prohibit.hujia(self, from, to)
+	if self:isFriend(to, from) then return false end
 	local guojia = self.room:findPlayerBySkillName("tiandu")
-	if guojia and guojia:getKingdom() == "wei" and self:isFriend(to, guojia) then return sgs.ai_slash_prohibit.tiandu(self, guojia, card, from) end
+	if guojia and guojia:getKingdom() == "wei" and self:isFriend(to, guojia) then return sgs.ai_slash_prohibit.tiandu(self, from, guojia) end
 end
 
-sgs.ai_choicemade_filter.cardResponded["@hujia-jink"] = function(player, promptlist)
+sgs.ai_choicemade_filter.cardResponded["@hujia-jink"] = function(self, player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then
 		sgs.updateIntention(player, sgs.hujiasource, -80)
 		sgs.hujiasource = nil
@@ -77,7 +75,7 @@ sgs.ai_skill_cardask["@hujia-jink"] = function(self)
 	if bgm_zhangfei and bgm_zhangfei:isAlive() and sgs.hujiasource:hasFlag("dahe") then
 		for _, card in ipairs(self:getCards("Jink")) do
 			if card:getSuit() == sgs.Card_Heart then
-				return card:getId()
+				return card:toString()
 			end
 		end
 		return "."
@@ -245,7 +243,7 @@ sgs.ai_skill_invoke.ganglie = function(self, data)
 	local damage = data:toDamage()
 	if not damage.from then
 		local zhangjiao = self.room:findPlayerBySkillName("guidao")
-		return zhangjiao and self:isFriend(zhangjiao)
+		return zhangjiao and self:isFriend(zhangjiao) and not zhangjiao:isNude()
 	end
 	if self:getDamagedEffects(damage.from, self.player) then
 		if self:isFriend(damage.from) then
@@ -302,14 +300,14 @@ sgs.ai_skill_discard.ganglie = function(self, discard_num, min_num, optional, in
 	return ganglie_discard(self, discard_num, min_num, optional, include_equip, "ganglie")
 end
 
-function sgs.ai_slash_prohibit.ganglie(self, to, card, from)
+function sgs.ai_slash_prohibit.ganglie(self, from, to)
 	if self:isFriend(from, to) then return false end
 	if from:hasSkill("jueqing") or (from:hasSkill("nosqianxi") and from:distanceTo(to) == 1) then return false end
 	if from:hasFlag("NosJiefanUsed") then return false end
 	return from:getHandcardNum() + from:getHp() < 4
 end
 
-sgs.ai_choicemade_filter.skillInvoke.ganglie = function(player, promptlist, self)
+sgs.ai_choicemade_filter.skillInvoke.ganglie = function(self, player, promptlist)
 	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
 	if damage.from and damage.to then
 		if promptlist[#promptlist] == "yes" then
@@ -499,7 +497,7 @@ sgs.ai_skill_invoke.luoyi = function(self,data)
 		if card:isKindOf("Slash") then
 			for _,enemy in ipairs(self.enemies) do
 				if self.player:canSlash(enemy, card, true) and self:slashIsEffective(card, enemy) and self:objectiveLevel(enemy) > 3 and sgs.isGoodTarget(enemy, self.enemies, self) then
-					if getCardsNum("Jink", enemy) < 1 or (self:isEquip("Axe") and self.player:getCards("he"):length() > 4) then
+					if getCardsNum("Jink", enemy) < 1 or (self.player:hasWeapon("Axe") and self.player:getCards("he"):length() > 4) then
 						slashtarget = slashtarget + 1
 					end
 				end
@@ -508,7 +506,7 @@ sgs.ai_skill_invoke.luoyi = function(self,data)
 		if card:isKindOf("Duel") then
 			for _, enemy in ipairs(self.enemies) do
 				if self:getCardsNum("Slash") >= getCardsNum("Slash", enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
-				and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy, 2)
+				and self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy, self.player, 2)
 				and self:damageIsEffective(enemy) and enemy:getMark("@late") < 1 then
 					dueltarget = dueltarget + 1 
 				end
@@ -525,8 +523,8 @@ end
 function sgs.ai_cardneed.luoyi(to, card, self)
 	local slash_num = 0
 	local target
-	local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
-	
+	local slash = sgs.Sanguosha:cloneCard("slash")
+
 	local cards = to:getHandcards()
 	local need_slash = true
 	for _, c in sgs.qlist(cards) do
@@ -574,44 +572,9 @@ sgs.ai_chaofeng.xuchu = 3
 
 sgs.ai_skill_invoke.tiandu = sgs.ai_skill_invoke.jianxiong
 
-function sgs.ai_slash_prohibit.tiandu(self, to, card, from)
+function sgs.ai_slash_prohibit.tiandu(self, from, to)
 	if self:canLiegong(to, from) then return false end
 	if self:isEnemy(to) and self:hasEightDiagramEffect(to) and not IgnoreArmor(from, to) and #self.enemies > 1 then return true end
-end
-
-function SmartAI:IsLihunTarget(player, DrawCardNum)
-	player = player or self.player
-	DrawCardNum = DrawCardNum or 1
-	
-	if type(player) == "table" then
-		if #player == 0 then return false end
-		local found
-		for _, ap in ipairs(player) do
-			if self:IsLihunTarget(ap, DrawCardNum) then found = true break end
-		end
-		if found then return true
-		else return false
-		end
-	end
-	
-	local HandCardNum = player:getHandcardNum() + DrawCardNum
-	local sb_diaochan = self.room:findPlayerBySkillName("lihun")
-	if not sb_diaochan then return false end
-	if not player:isMale() or self:isFriend(player, sb_diaochan) or sb_diaochan:hasUsed("LihunCard") then return false end
-	
-	if sb_diaochan:getPhase() == sgs.Player_Play then
-		if HandCardNum - player:getHp() >= 2 and sb_diaochan:faceUp() or 
-			HandCardNum > 0 and HandCardNum - player:getHp() >= -1 and not sb_diaochan:faceUp() then
-			return true
-		end
-	else
-		if sb_diaochan:faceUp() and not self:willSkipPlayPhase(sb_diaochan) and 
-		self:playerGetRound(player) > self:playerGetRound(sb_diaochan) and HandCardNum >= player:getHp() + 2 then
-			return true
-		end
-	end
-	
-	return false
 end
 
 sgs.ai_skill_invoke.yiji = function(self)
@@ -719,7 +682,7 @@ sgs.ai_need_damaged.yiji = function (self, attacker, player)
 	if not player:hasSkill("yiji") then return end
 	local need_card = false
 	local current = self.room:getCurrent()
-	if self:isEquip("Crossbow", current) or current:hasSkill("paoxiao") or current:hasFlag("shuangxiong") then need_card = true end
+	if self:hasCrossbowEffect(current) or current:hasSkill("paoxiao") or current:hasFlag("shuangxiong") then need_card = true end
 	if self:hasSkills("jieyin|jijiu",current) and self:getOverflow(current) <= 0 then need_card = true end
 	if self:isFriend(current, player) and need_card then return true end
 	
@@ -731,7 +694,7 @@ sgs.ai_need_damaged.yiji = function (self, attacker, player)
 	end
 	self:sort(friends, "hp")
 
-	if #friends > 0 and friends[1]:objectName() == player:objectName() and self:isWeak(player) and self:getCardsNum("Peach", player) == 0 then return false end
+	if #friends > 0 and friends[1]:objectName() == player:objectName() and self:isWeak(player) and getCardsNum("Peach", player) == 0 then return false end
 	if #friends > 1 and self:isWeak(friends[2]) then return true end	
 	
 	return player:getHp() > 2 and sgs.turncount > 2 and #friends > 1
@@ -821,8 +784,22 @@ sgs.ai_skill_invoke.luoshen = function(self, data)
  	if self:willSkipPlayPhase() then
 		local erzhang = self.room:findPlayerBySkillName("guzheng")
 		if erzhang and self:isEnemy(erzhang) then return false end
-	end
-	return true
+		if self.player:getPile("incantation"):length() > 0 then
+			local card = sgs.Sanguosha:getCard(self.player:getPile("incantation"):first())
+			if not self.player:getJudgingArea():isEmpty() and not self.player:containsTrick("YanxiaoCard") and not self:hasWizard(self.enemies, true) then
+				local trick = self.player:getJudgingArea():last()
+				if trick:isKindOf("Indulgence") then
+					if card:getSuit() == sgs.Card_Heart or (self.player:hasSkill("hongyan") and card:getSuit() == sgs.Card_Spade) then return false end
+				elseif trick:isKindOf("SupplyShortage") then
+					if card:getSuit() == sgs.Card_Club then return false end
+				end
+			end
+			local zhangbao = self.room:findPlayerBySkillName("yingbing")
+			if zhangbao and self:isEnemy(zhangbao) and not zhangbao:hasSkill("manjuan")
+				and (card:isRed() or (self.player:hasSkill("hongyan") and card:getSuit() == sgs.Card_Spade)) then return false end
+		end
+ 	end
+ 	return true
 end
 
 sgs.qingguo_suit_value = {
@@ -834,14 +811,13 @@ function SmartAI:shouldUseRende()
 	if (self:hasCrossbowEffect() or self:getCardsNum("Crossbow") > 0) and self:getCardsNum("Slash") > 0 then
 		self:sort(self.enemies, "defense")
 		for _, enemy in ipairs(self.enemies) do
-			local inAttackRange = self.player:distanceTo(enemy) == 1
-						or self.player:distanceTo(enemy) == 2 and self:getCardsNum("OffensiveHorse") > 0 and not self.player:getOffensiveHorse()
-			if inAttackRange and (enemy:getHp() == 1 and getCardsNum("Peach", enemy) < 1
-					or not enemy:hasSkills("fenyong|zhichi|fankui|neoganglie|ganglie|enyuan|nosenyuan|langgu|guixin")) then
+			local inAttackRange = self.player:distanceTo(enemy) == 1 or self.player:distanceTo(enemy) == 2
+									and self:getCardsNum("OffensiveHorse") > 0 and not self.player:getOffensiveHorse()
+			if inAttackRange and sgs.isGoodTarget(enemy, self.enemies, self) then
 				local slashs = self:getCards("Slash")
 				local slash_count = 0
 				for _, slash in ipairs(slashs) do
-					if not self:slashProhibit(slash, enemy) then
+					if not self:slashProhibit(slash, enemy) and self:slashIsEffective(slash, enemy) then
 						slash_count = slash_count + 1
 					end
 				end
@@ -851,9 +827,9 @@ function SmartAI:shouldUseRende()
 	end
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:canSlash(self.player) and not self:slashProhibit(nil, self.player, enemy) then
-			if self:isEquip("GudingBlade", enemy) and self.player:getHandcardNum() == 1 and getCardsNum("Slash", enemy) >= 1 then
+			if enemy:hasWeapon("GudingBlade") and self.player:getHandcardNum() == 1 and getCardsNum("Slash", enemy) >= 1 then
 				return
-			elseif self:isEquip("Crossbow", enemy) and not (self:getOverflow() > 0) then
+			elseif self:hasCrossbowEffect(enemy) and getCardsNum("Slash", enemy) > 1 and self:getOverflow() <= 0 then
 				return
 			end
 		end
@@ -863,7 +839,9 @@ function SmartAI:shouldUseRende()
 			return true
 		end
 	end
-	if (self.player:usedTimes("RendeCard") < 2 or self:getOverflow() > 0) then
+	if ((self.player:hasSkill("rende") and self.player:getMark("rende") < 2)
+		or (self.player:hasSkill("nosrende") and self.player:getMark("nosrende") < 2)
+		or self:getOverflow() > 0) then
 		return true
 	end
 	if self.player:getLostHp() < 2 then
@@ -890,9 +868,9 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 	local name = self.player:objectName()
 	local card, friend = self:getCardNeedPlayer(cards)
 	if card and friend then
-		if friend:objectName()==self.player:objectName() or not self.player:getHandcards():contains(card) then return end
-		if friend:hasSkill("enyuan") and #cards>=2 then
-			self:sortByUseValue(cards,true)
+		if friend:objectName() == self.player:objectName() or not self.player:getHandcards():contains(card) then return end
+		if friend:hasSkill("enyuan") and #cards >= 2 and not (self.room:getMode() == "04_1v3" and self.player:getMark("rende") == 1) then
+			self:sortByUseValue(cards, true)
 			for i = 1, #cards, 1 do
 				if cards[i]:getId()~=card:getId() then
 					use.card = sgs.Card_Parse("@RendeCard=" .. card:getId() .. "+" .. cards[i]:getId())
@@ -907,17 +885,16 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 	else
 		local pangtong = self.room:findPlayerBySkillName("manjuan")
 		if not pangtong then return end
-		if self.player:isWounded() and self.player:getHandcardNum() >= 3 and self.player:usedTimes("RendeCard") < 2 then
+		if self.player:isWounded() and self.player:getHandcardNum() > 3 and self.player:getMark("rende") < 2 then
 			self:sortByUseValue(cards, true)
 			local to_give = {}
 			for _, card in ipairs(cards) do
-				if not card:isKindOf("Peach") and not card:isKindOf("ExNihilo") then table.insert(to_give, card:getId()) end
-				if #to_give == 2 - self.player:usedTimes("RendeCard") then break end
+				if not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player) then table.insert(to_give, card:getId()) end
+				if #to_give == 2 - self.player:getMark("rende") then break end
 			end
 			if #to_give > 0 then
 				use.card = sgs.Card_Parse("@RendeCard=" .. table.concat(to_give, "+"))
 				if use.to then use.to:append(pangtong) end
-				return
 			end
 		end
 	end
@@ -929,7 +906,7 @@ sgs.ai_use_priority.RendeCard = 8.8
 sgs.ai_card_intention.RendeCard = function(self,card, from, tos)
 	local to = tos[1]
 	local intention = -70
-	if to:hasSkill("manjuan") and to:getPhase() == sgs.Player_NotActive then
+	if hasManjuanEffect(to) then
 		intention = 0
 	elseif to:hasSkill("kongcheng") and to:isKongcheng() then
 		intention = 30
@@ -970,7 +947,7 @@ sgs.ai_skill_use["@@rende"] = function(self, prompt)
 end
 
 table.insert(sgs.ai_global_flags, "jijiangsource")
-local jijiang_filter = function(player, carduse)
+local jijiang_filter = function(self, player, carduse)
 	if carduse.card:isKindOf("JijiangCard") then
 		sgs.jijiangsource = player
 	else
@@ -985,13 +962,10 @@ sgs.ai_skill_invoke.jijiang = function(self, data)
 	if sgs.jijiangsource then return false end
 	local asked = data:toStringList()
 	local prompt = asked[2]
-	
-	if not self.player:hasFlag("ai_hantong") then
-		if self:askForCard("slash", prompt, 1) == "." then return false end
-	end
+	if self:askForCard("slash", prompt, 1) == "." then return false end
 	
 	local current = self.room:getCurrent()
-	if self:isFriend(current) and current:getKingdom() == "shu" and self:getOverflow(current) > 2 and not self:isEquip("Crossbow", current) then
+	if self:isFriend(current) and current:getKingdom() == "shu" and self:getOverflow(current) > 2 and not self:hasCrossbowEffect(current) then
 		return true
 	end
 
@@ -1006,7 +980,7 @@ sgs.ai_skill_invoke.jijiang = function(self, data)
 	if lieges:isEmpty() then return false end
 	local has_friend = false
 	for _, p in sgs.qlist(lieges) do
-		if self:isFriend(p) then
+		if not self:isEnemy(p) then
 			has_friend = true
 			break
 		end
@@ -1014,7 +988,7 @@ sgs.ai_skill_invoke.jijiang = function(self, data)
 	return has_friend
 end
 
-sgs.ai_choicemade_filter.skillInvoke.jijiang = function(player, promptlist)
+sgs.ai_choicemade_filter.skillInvoke.jijiang = function(self, player, promptlist)
 	if promptlist[#promptlist] == "yes" then
 		sgs.jijiangsource = player
 	end
@@ -1076,7 +1050,7 @@ sgs.ai_card_intention.JijiangCard = function(self, card, from, tos)
 	end
 end
 
-sgs.ai_choicemade_filter.cardResponded["@jijiang-slash"] = function(player, promptlist, self)
+sgs.ai_choicemade_filter.cardResponded["@jijiang-slash"] = function(self, player, promptlist)
 	if promptlist[#promptlist] ~= "_nil_" then
 		sgs.updateIntention(player, sgs.jijiangsource, -40)
 		sgs.jijiangsource = nil
@@ -1218,7 +1192,7 @@ function sgs.ai_cardneed.paoxiao(to, card, self)
 	if not has_weapon then
 		return card:isKindOf("Weapon") and not card:isKindOf("Crossbow")
 	else
-		return self:isEquip("Spear", to) or card:isKindOf("Slash") or (slash_num>1 and card:isKindOf("Analeptic"))
+		return to:hasWeapon("Spear") or card:isKindOf("Slash") or (slash_num > 1 and card:isKindOf("Analeptic"))
 	end
 end
 
@@ -1279,8 +1253,6 @@ sgs.ai_view_as.longdan = function(card, player, card_place)
 	end
 end
 
-sgs.ai_use_priority.longdan = 9
-
 sgs.longdan_keep_value = {
 	Peach = 6,
 	Analeptic = 5.8,
@@ -1323,13 +1295,17 @@ function SmartAI:isValuableCard(card, player)
 		or (player:getPhase() == sgs.Player_Play and isCard("ExNihilo", card, player) and not player:isLocked(card)) then
 		return true
 	end
+	local dangerous = self:getDangerousCard(player)
+	if dangerous and card:getEffectiveId() == dangerous then return true end
+	local valuable = self:getValuableCard(player)
+	if valuable and card:getEffectiveId() == valuable then return true end
 end
 
 sgs.ai_skill_cardask["@jizhi-exchange"] = function(self, data)
 	local card = data:toCard()
 	local handcards = sgs.QList2Table(self.player:getHandcards())
 	if self.player:getPhase() ~= sgs.Player_Play then
-		if self.player:hasSkill("manjuan") and self.player:getPhase() == sgs.Player_NotActive then return "." end
+		if hasManjuanEffect(self.player) then return "." end
 		self:sortByKeepValue(handcards)
 		for _, card_ex in ipairs(handcards) do
 			if self:getKeepValue(card_ex) < self:getKeepValue(card) and not self:isValuableCard(card_ex) then
@@ -1349,7 +1325,7 @@ sgs.ai_skill_cardask["@jizhi-exchange"] = function(self, data)
 end
 
 function sgs.ai_cardneed.jizhi(to, card)
-	return card:isNDTrick()
+	return card:getTypeId() == sgs.Card_TypeTrick
 end
 
 sgs.jizhi_keep_value = {
@@ -1385,7 +1361,7 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 
 	if self.player:getHp() < 3 then
 		local zcards = self.player:getCards("he")
-		local use_slash, keep_jink, keep_anal, keep_weapon = false, false, false, false
+		local use_slash, keep_jink, keep_analeptic, keep_weapon = false, false, false
 		local keep_slash = self.player:getTag("JilveWansha"):toBool()
 		for _, zcard in sgs.qlist(zcards) do
 			if not isCard("Peach", zcard, self.player) and not isCard("ExNihilo", zcard, self.player) then
@@ -1426,8 +1402,8 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 					keep_jink = true
 					shouldUse = false
 				end
-				if self.player:getHp() == 1 and isCard("Analeptic", zcard, self.player) and not keep_anal then
-					keep_anal = true
+				if self.player:getHp() == 1 and isCard("Analeptic", zcard, self.player) and not keep_analeptic then
+					keep_analeptic = true
 					shouldUse = false
 				end
 				if shouldUse then table.insert(unpreferedCards, zcard:getId()) end
@@ -1493,8 +1469,15 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 	end
 
 	if #use_cards > 0 then
-		use.card = sgs.Card_Parse("@ZhihengCard=" .. table.concat(use_cards, "+"))
-		return
+		if self.room:getMode() == "02_1v1" and sgs.GetConfig("1v1/Rule", "Classical") ~= "Classical" then
+			local use_cards_kof = { use_cards[1] }
+			if #use_cards > 1 then table.insert(use_cards_kof, use_cards[2]) end
+			use.card = sgs.Card_Parse("@ZhihengCard=" .. table.concat(use_cards_kof, "+"))
+			return
+		else
+			use.card = sgs.Card_Parse("@ZhihengCard=" .. table.concat(use_cards, "+"))
+			return
+		end
 	end
 end
 
@@ -1529,14 +1512,14 @@ qixi_skill.getTurnUseCard = function(self,inclusive)
 			local shouldUse = true
 
 			if card:isKindOf("Armor") then
-				if not self.player:getArmor() then shouldUse = false 
-				elseif self:hasEquip(card) and not not self:needToThrowArmor() then shouldUse = false
+				if not self.player:getArmor() then shouldUse = false
+				elseif self.player:hasEquip(card) and not self:needToThrowArmor() then shouldUse = false
 				end
 			end
 
 			if card:isKindOf("Weapon") then
-				if not self.player:getWeapon() then shouldUse=false
-				elseif self:hasEquip(card) and not has_weapon then shouldUse=false
+				if not self.player:getWeapon() then shouldUse = false
+				elseif self.player:hasEquip(card) and not has_weapon then shouldUse = false
 				end
 			end
 			
@@ -1779,14 +1762,14 @@ guose_skill.getTurnUseCard=function(self,inclusive)
 			local shouldUse=true
 			
 			if acard:isKindOf("Armor") then
-				if not self.player:getArmor() then shouldUse=false 
-				elseif self:hasEquip(acard) and not has_armor and self:evaluateArmor()>0 then shouldUse=false
+				if not self.player:getArmor() then shouldUse = false
+				elseif self.player:hasEquip(acard) and not has_armor and self:evaluateArmor() > 0 then shouldUse = false
 				end
 			end
 			
 			if acard:isKindOf("Weapon") then
-				if not self.player:getWeapon() then shouldUse=false
-				elseif self:hasEquip(acard) and not has_weapon then shouldUse=false
+				if not self.player:getWeapon() then shouldUse = false
+				elseif self.player:hasEquip(acard) and not has_weapon then shouldUse = false
 				end
 			end
 			
@@ -1810,7 +1793,7 @@ function sgs.ai_cardneed.guose(to, card)
 	return card:getSuit() == sgs.Card_Diamond
 end
 
-sgs.ai_skill_use["@@liuli"] = function(self, prompt)
+sgs.ai_skill_use["@@liuli"] = function(self, prompt, method)
 	local others = self.room:getOtherPlayers(self.player)
 	local slash = self.player:getTag("liuli-card"):toCard()
 	others = sgs.QList2Table(others)
@@ -1824,17 +1807,17 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 	self:sort(self.enemies, "defense")
 	
 	local doLiuli = function(who)
-		if not self:isFriend(who) and who:hasSkill("leiji") 
-			and ( self:hasSuit("spade", true, who) or who:getHandcardNum() >= 3)
-			and (getKnownCard(who, "Jink", true) >= 1 or (not self:isEquip("QinggangSword", source) and self:hasEightDiagramEffect(who) )) then
+		if not self:isFriend(who) and who:hasSkill("leiji")
+			and (self:hasSuit("spade", true, who) or who:getHandcardNum() >= 3)
+			and (getKnownCard(who, "Jink", true) >= 1 or self:hasEightDiagramEffect(who)) then
 			return "."
 		end
 
 		local cards = self.player:getCards("h")
 		cards = sgs.QList2Table(cards)
 		self:sortByKeepValue(cards)
-		for _,card in ipairs(cards) do
-			if self.player:distanceTo(who) <= self.player:getAttackRange() and not (who:hasSkill("kongcheng") and who:isKongcheng()) then
+		for _, card in ipairs(cards) do
+			if not self.player:isCardLimited(card, method) and self.player:canSlash(who) then
 				if self:isFriend(who) and not (isCard("Peach", card, self.player) or isCard("Analeptic", card, self.player)) then
 					return "@LiuliCard="..card:getEffectiveId().."->"..who:objectName()
 				else
@@ -1846,25 +1829,26 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 		local cards = self.player:getCards("e")
 		cards=sgs.QList2Table(cards)
 		self:sortByKeepValue(cards)
-		for _,card in ipairs(cards) do
-			if (self.player:getWeapon() and card:getId() == self.player:getWeapon():getId()) and self.player:distanceTo(who)>1 then				
-			elseif card:isKindOf("OffensiveHorse") and self.player:getAttackRange()==self.player:distanceTo(who) and self.player:distanceTo(who,1)>1 then
-			elseif self.player:inMyAttackRange(who) and not (who:hasSkill("kongcheng") and who:isKongcheng()) then
-				return "@LiuliCard="..card:getEffectiveId().."->"..who:objectName()
+		for _, card in ipairs(cards) do
+			local range_fix = 0
+			if card:isKindOf("Weapon") then range_fix = range_fix + sgs.weapon_range[card:getClassName()] - self.player:getAttackRange(false) end
+			if card:isKindOf("OffensiveHorse") then range_fix = range_fix + 1 end
+			if not self.player:isCardLimited(card, method) and self.player:canSlash(who, nil, true, range_fix) then
+				return "@LiuliCard=" .. card:getEffectiveId() .. "->" .. who:objectName()
 			end
 		end
 		return "."
 	end
 
 	for _, enemy in ipairs(self.enemies) do
-		if not (source and (source:objectName() == enemy:objectName())) then
+		if not (source and source:objectName() == enemy:objectName()) then
 			local ret = doLiuli(enemy)
 			if ret ~= "." then return ret end
 		end
 	end
 
 	for _, player in ipairs(others) do
-		if self:objectiveLevel(player) == 0 and not (source and (source:objectName() == player:objectName())) then
+		if self:objectiveLevel(player) == 0 and not (source and source:objectName() == player:objectName()) then
 			local ret = doLiuli(player)
 			if ret ~= "." then return ret end
 		end
@@ -1876,8 +1860,8 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 
 
 	for _, friend in ipairs(self.friends_noself) do
-		if not self:slashIsEffective(slash, friend) or self:needLeiji(friend, source) then
-			if not (source and (source:objectName() == friend:objectName())) then
+		if not self:slashIsEffective(slash, friend) or self:findLeijiTarget(friend, 50, source) then
+			if not (source and source:objectName() == friend:objectName()) then
 				local ret = doLiuli(friend)
 				if ret ~= "." then return ret end
 			end
@@ -1886,7 +1870,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 
 	for _, friend in ipairs(self.friends_noself) do
 		if self:needToLoseHp(friend, source, true) or self:getDamagedEffects(friend, source, true) then
-			if not (source and (source:objectName() == friend:objectName())) then
+			if not (source and source:objectName() == friend:objectName()) then
 				local ret = doLiuli(friend)
 				if ret ~= "." then return ret end
 			end
@@ -1897,7 +1881,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 	  and not self:getCardId("Peach") and not self:getCardId("Analeptic") then
 		for _, friend in ipairs(self.friends_noself) do
 			if not self:isWeak(friend) then
-				if not (source and (source:objectName() == friend:objectName())) then
+				if not (source and source:objectName() == friend:objectName()) then
 					local ret = doLiuli(friend)
 					if ret ~= "." then return ret end
 				end
@@ -1908,7 +1892,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt)
 	if (self:isWeak() or self:hasHeavySlashDamage(source, slash)) and not self:getCardId("Jink") then
 		for _, friend in ipairs(self.friends_noself) do
 			if not self:isWeak(friend) or (self:hasEightDiagramEffect(friend) and getCardsNum("Jink", friend) >= 1) then
-				if not (source and (source:objectName() == friend:objectName())) then
+				if not (source and source:objectName() == friend:objectName()) then
 					local ret = doLiuli(friend)
 					if ret ~= "." then return ret end
 				end
@@ -1922,8 +1906,8 @@ sgs.ai_card_intention.LiuliCard = function(self, card, from, to)
 	sgs.ai_liuli_effect = true
 end
 
-function sgs.ai_slash_prohibit.liuli(self, to, card, from)
-	if self:isFriend(to) then return false end
+function sgs.ai_slash_prohibit.liuli(self, from, to, card)
+	if self:isFriend(to, from) then return false end
 	if from:hasFlag("NosJiefanUsed") then return false end
 	if to:isNude() then return false end
 	for _, friend in ipairs(self:getFriendsNoself(from)) do
@@ -1932,7 +1916,7 @@ function sgs.ai_slash_prohibit.liuli(self, to, card, from)
 end
 
 function sgs.ai_cardneed.liuli(to, card)
-	return to:getCards("he"):length() <= 2 and not card:isKindOf("Jink")
+	return to:getCards("he"):length() <= 2
 end
 
 sgs.guose_suit_value = {
@@ -1970,7 +1954,7 @@ jieyin_skill.getTurnUseCard=function(self)
 	end
 	
 	for _, card in ipairs(cards) do
-		if card:getTypeId() ~= sgs.Card_Equip then
+		if card:getTypeId() ~= sgs.Card_TypeEquip then
 			if not first then first = card:getEffectiveId()
 			elseif first and first ~= card:getEffectiveId() and not second then second = card:getEffectiveId()
 			end
@@ -1999,8 +1983,9 @@ function SmartAI:getWoundedFriend(maleOnly)
 		local hp = p:getHp()
 		if p:isLord() and self:isWeak(p) then hp = hp - 10 end
 		if p:objectName() == self.player:objectName() and self:isWeak(p) and p:hasSkill("qingnang") then hp = hp - 5 end
-		if p:hasSkill("buqu") and p:getPile("buqu"):length()<=2 then hp = hp + 5 end
-		if self:hasSkills("nosrende|rende|kuanggu|zaiqi", p) and p:getHp() >= 2 then hp = hp + 5 end
+		if p:hasSkill("buqu") and p:getPile("buqu"):length() > 0 then hp = hp + math.max(0, 5 - p:getPile("buqu"):length()) end
+		if p:hasSkill("nosbuqu") and p:getPile("nosbuqu"):length() > 0 then hp = hp + math.max(0, 5 - p:getPile("nosbuqu"):length()) end
+		if p:hasSkills("nosrende|rende|kuanggu|kofkuanggu|zaiqi") and p:getHp() >= 2 then hp = hp + 5 end
 		return hp
 	end
 
@@ -2036,8 +2021,10 @@ function SmartAI:getWoundedFriend(maleOnly)
 	return list1, list2
 end
 
-sgs.ai_skill_use_func.JieyinCard=function(card,use,self)
-	local arr1,arr2 = self:getWoundedFriend(true)
+sgs.ai_skill_use_func.JieyinCard = function(card, use, self)
+	local arr1, arr2 = self:getWoundedFriend(true)
+	table.removeOne(arr1, self.player)
+	table.removeOne(arr2, self.player)
 	local target = nil
 	
 	repeat
@@ -2115,8 +2102,9 @@ end
 
 sgs.ai_skill_use_func.QingnangCard = function(card, use, self)
 	local arr1, arr2 = self:getWoundedFriend()
-	local target = nil	
-	if #arr1 > 0 and (self:isWeak(arr1[1]) or self:getOverflow() >= 1) and not self:needToLoseHp(arr1[1], nil, nil, nil, true) then target = arr1[1] end
+	local target = nil
+
+	if #arr1 > 0 and (self:isWeak(arr1[1]) or self:getOverflow() >= 1) and arr1[1]:getHp() < getBestHp(arr1[1]) then target = arr1[1] end
 	if target then
 		use.card = card
 		if use.to then use.to:append(target) end 
@@ -2144,7 +2132,9 @@ sgs.jijiu_suit_value = {
 	diamond = 6
 }
 
-sgs.ai_cardneed.jijiu = sgs.ai_cardneed.wusheng
+sgs.ai_cardneed.jijiu = function(to, card)
+	return card:isRed()
+end
 
 sgs.ai_chaofeng.huatuo = 6
 
@@ -2513,6 +2503,7 @@ table.insert(sgs.ai_choicemade_filter.cardUsed, lijian_filter)
 sgs.ai_card_intention.LijianCard = function(self, card, from, to)
 	if sgs.evaluatePlayerRole(to[1]) == sgs.evaluatePlayerRole(to[2]) then
 		if sgs.evaluatePlayerRole(from) == "rebel" and sgs.evaluatePlayerRole(to[1]) == sgs.evaluatePlayerRole(from) and to[1]:getHp() == 1 then
+		elseif to[1]:hasSkill("hunzi") and to[1]:getHp() == 2 and to[1]:getMark("hunzi") == 0 then
 		else
 			sgs.updateIntentions(from, to, 40)
 		end
@@ -2536,12 +2527,15 @@ sgs.ai_suit_priority.qixi= "diamond|heart|club|spade"
 sgs.ai_suit_priority.qingguo= "diamond|heart|club|spade"
 sgs.ai_suit_priority.wusheng= "club|spade|diamond|heart"
 
-function SmartAI:canUseJieyuanDecrease(from, to)
-	local to = to or self.player
-	if not from then return false end
-	if to:hasSkill("jieyuan") and from:getHp() >= to:getHp() then
-		for _, card in sgs.qlist(to:getHandcards()) do
-			if card:isRed() and not isCard("Peach", card, to) and not isCard("ExNihilo", card, to) then return true end
+function SmartAI:canUseJieyuanDecrease(damage_from, player)
+	if not damage_from then return false end
+	local player = player or self.player
+	if player:hasSkill("jieyuan") and damage_from:getHp() >= player:getHp() then
+		for _, card in sgs.qlist(player:getHandcards()) do
+			local flag = string.format("%s_%s_%s", "visible", self.room:getCurrent():objectName(), player:objectName())
+			if player:objectName() == self.player:objectName() or card:hasFlag("visible") or card:hasFlag(flag) then
+				if card:isRed() and not isCard("Peach", card, player) then return true end
+			end
 		end
 	end
 	return false

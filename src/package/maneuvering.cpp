@@ -125,7 +125,7 @@ public:
         if (damage.card && damage.card->isKindOf("Slash")
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
             && damage.to->isKongcheng() && damage.by_user && !damage.chain && !damage.transfer) {
-            room->setEmotion(player, "weapon/guding_blade");
+            room->setEmotion(player, "weapon/GudingBlade");
 
             LogMessage log;
             log.type = "#GudingBladeEffect";
@@ -158,7 +158,7 @@ public:
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (effect.nature == DamageStruct::Normal) {
-                room->setEmotion(player, "armor/vine");
+                room->setEmotion(player, "armor/Vine");
                 LogMessage log;
                 log.from = player;
                 log.type = "#ArmorNullify";
@@ -172,7 +172,7 @@ public:
         } else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (effect.card->isKindOf("AOE")) {
-                room->setEmotion(player, "armor/vine");
+                room->setEmotion(player, "armor/Vine");
                 LogMessage log;
                 log.from = player;
                 log.type = "#ArmorNullify";
@@ -186,7 +186,7 @@ public:
         } else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.nature == DamageStruct::Fire) {
-                room->setEmotion(player, "armor/vineburn");
+                room->setEmotion(player, "armor/VineBurn");
                 LogMessage log;
                 log.type = "#VineDamage";
                 log.from = player;
@@ -222,7 +222,7 @@ public:
         if (triggerEvent == DamageInflicted && ArmorSkill::triggerable(player)) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.damage > 1) {
-                room->setEmotion(player, "armor/silver_lion");
+                room->setEmotion(player, "armor/SilverLion");
                 LogMessage log;
                 log.type = "#SilverLion";
                 log.from = player;
@@ -243,7 +243,7 @@ public:
                 if (card->objectName() == objectName()) {
                     player->setFlags("-SilverLionRecover");
                     if (player->isWounded()) {
-                        room->setEmotion(player, "armor/silver_lion");
+                        room->setEmotion(player, "armor/SilverLion");
                         RecoverStruct recover;
                         recover.card = card;
                         room->recover(player, recover);

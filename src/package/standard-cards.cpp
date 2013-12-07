@@ -217,7 +217,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
 
     if (use.from->hasFlag("BladeUse")) {
         use.from->setFlags("-BladeUse");
-        room->setEmotion(player, "weapon/blade");
+        room->setEmotion(player, "weapon/Blade");
 
         LogMessage log;
         log.type = "#BladeUse";
@@ -226,7 +226,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         room->sendLog(log);
     } else if (use.from->hasFlag("MoonspearUse")) {
         use.from->setFlags("-MoonspearUse");
-        room->setEmotion(player, "weapon/moonspear");
+        room->setEmotion(player, "weapon/MoonSpear");
 
         LogMessage log;
         log.type = "#InvokeSkill";
@@ -234,18 +234,18 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         log.arg = "moon_spear";
         room->sendLog(log);
     } else if (use.card->isVirtualCard() && use.card->getSkillName() == "spear")
-        room->setEmotion(player, "weapon/spear");
+        room->setEmotion(player, "weapon/Spear");
     else if (use.to.size() > 1 && player->hasWeapon("halberd") && player->isLastHandCard(this))
-        room->setEmotion(player, "weapon/halberd");
+        room->setEmotion(player, "weapon/Halberd");
     else if (use.card->isVirtualCard() && use.card->getSkillName() == "fan")
-        room->setEmotion(player, "weapon/fan");
+        room->setEmotion(player, "weapon/Fan");
     if (player->getPhase() == Player::Play
         && player->hasFlag("Global_MoreSlashInOneTurn")
         && (player->hasWeapon("Crossbow") || player->hasWeapon("VSCrossbow"))
         && !player->hasSkill("paoxiao")
         && !(player->hasSkill("huxiao") && player->getMark("huxiao") > 0)) {
         player->setFlags("-Global_MoreSlashInOneTurn");
-        room->setEmotion(player, "weapon/crossbow");
+        room->setEmotion(player, "weapon/Crossbow");
     }
     if (use.card->isKindOf("ThunderSlash"))
         room->setEmotion(player, "thunder_slash");
@@ -421,7 +421,7 @@ public:
             if (((use.from->isMale() && to->isFemale()) || (use.from->isFemale() && to->isMale()))
                 && use.card->isKindOf("Slash")) {
                 if (use.from->askForSkillInvoke(objectName())) {
-                    to->getRoom()->setEmotion(use.from, "weapon/double_sword");
+                    to->getRoom()->setEmotion(use.from, "weapon/DoubleSword");
 
                     bool draw_card = false;
                     if (!to->canDiscard(to, "h"))
@@ -464,7 +464,7 @@ public:
                 }
             }
             if (do_anim)
-                room->setEmotion(use.from, "weapon/qinggang_sword");
+                room->setEmotion(use.from, "weapon/QinggangSword");
         }
         return false;
     }
@@ -581,7 +581,7 @@ public:
         if (player->getCardCount() >= 3) // Need 2 more cards except from the weapon itself
             card = room->askForCard(player, "@Axe", "@Axe:" + effect.to->objectName(), data, objectName());
         if (card) {
-            room->setEmotion(player, "weapon/axe");
+            room->setEmotion(player, "weapon/Axe");
             room->slashResult(effect, NULL);
         }
 
@@ -638,7 +638,7 @@ public:
             if (!player->askForSkillInvoke(objectName(), data))
                 return false;
 
-            room->setEmotion(player, "weapon/kylin_bow");
+            room->setEmotion(player, "weapon/KylinBow");
 
             QString horse_type = room->askForChoice(player, objectName(), horses.join("+"));
 
@@ -670,7 +670,7 @@ public:
             if (room->askForSkillInvoke(player, "EightDiagram")) {
                 int armor_id = player->getArmor()->getId();
                 room->setCardFlag(armor_id, "using");
-                room->setEmotion(player, "armor/eight_diagram"); // @todo_P: rename emotions
+                room->setEmotion(player, "armor/EightDiagram");
                 JudgeStruct judge;
                 judge.pattern = ".|red";
                 judge.good = true;
@@ -791,7 +791,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const{
                                          Card::MethodResponse,
                                          effect.from->isAlive() ? effect.from : NULL);
     if (slash) {
-        if (slash->getSkillName() == "spear") room->setEmotion(effect.to, "weapon/spear");
+        if (slash->getSkillName() == "spear") room->setEmotion(effect.to, "weapon/Spear");
         room->setEmotion(effect.to, "killer");
     } else
         room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to));
@@ -1178,7 +1178,7 @@ public:
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
             && !damage.to->isNude() && damage.by_user
             && !damage.chain && !damage.transfer && player->askForSkillInvoke("IceSword", data)) {
-                room->setEmotion(player, "weapon/ice_sword");
+                room->setEmotion(player, "weapon/IceSword");
                 if (damage.from->canDiscard(damage.to, "he")) {
                     int card_id = room->askForCardChosen(player, damage.to, "he", "IceSword", false, Card::MethodDiscard);
                     room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
@@ -1216,7 +1216,7 @@ public:
             log.arg2 = effect.slash->objectName();
             player->getRoom()->sendLog(log);
 
-            room->setEmotion(player, "armor/renwang_shield");
+            room->setEmotion(player, "armor/RenwangShield");
             effect.to->setFlags("Global_NonSkillNullify");
             return true;
         } else

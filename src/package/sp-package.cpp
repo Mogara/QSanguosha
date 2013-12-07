@@ -37,7 +37,7 @@ public:
 
         ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@sp_moonspear", true, true);
         if (!target) return false;
-        room->setEmotion(player, "weapon/moonspear");
+        room->setEmotion(player, "weapon/MoonSpear");
         if (!room->askForCard(target, "jink", "@moon-spear-jink", QVariant(), Card::MethodResponse, player))
             room->damage(DamageStruct(objectName(), player, target));
         return false;

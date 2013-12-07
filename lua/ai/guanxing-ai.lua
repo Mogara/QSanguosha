@@ -333,8 +333,7 @@ local function XinZhan(self, cards)
 		local index = 1
 		local lightning_flag = false
 		local judge_str = sgs.ai_judgestring[need_judge:objectName()] or sgs.ai_judgestring[need_judge:getSuitString()]
-		self:log("------------------>"..judge_str ..":")
-		
+
 		for _, for_judge in ipairs(bottom) do
 			if judge_str == "spade" and not lightning_flag then
 				has_lightning = need_judge

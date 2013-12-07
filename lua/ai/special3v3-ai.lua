@@ -18,12 +18,66 @@ sgs.ai_skill_cardask["@huanshi-card"] = function(self, data)
 	return "."
 end
 
-sgs.ai_skill_invoke.huanshi = true
+sgs.ai_skill_invoke.huanshi = function(self, data)
+	local judge = data:toJudge()
 
-sgs.ai_skill_choice.huanshi = function(self, choices)
+	if self:needRetrial(judge) then
+		local cards = sgs.QList2Table(self.player:getCards("he"))
+		if self:isFriend(judge.who) then
+			local card_id = self:getRetrialCardId(cards, judge)
+			if card_id ~= -1 then return true end
+		elseif self:isEnemy(judge.who) then
+			for _, card in ipairs(cards) do
+				if judge:isGood(card) or self:isValuableCard(card) then return false end
+			end
+			return true
+		end
+	end
+	return false
+end
+
+sgs.ai_skill_askforag.huanshi = function(self, card_ids)
+	local cards = {}
+	for _, id in ipairs(card_ids) do
+		table.insert(cards, sgs.Sanguosha:getCard(id))
+	end
+	local judge = self.player:getTag("HuanshiJudge"):toJudge()
 	local zhugejin = self.room:findPlayerBySkillName("huanshi")
-	if zhugejin and self:isEnemy(zhugejin) then return "reject" end
-	return "accept"
+
+	local cmp = function(a, b)
+		local a_keep_value, b_keep_value = sgs.ai_keep_value[a:getClassName()], sgs.ai_keep_value[b:getClassName()]
+		a_keep_value = a_keep_value + a:getNumber() / 100
+		b_keep_value = b_keep_value + b:getNumber() / 100
+		if zhugejin and zhugejin:hasSkill("mingzhe") then
+			if a:isRed() then a_keep_value = a_keep_value - 0.3 end
+			if b:isRed() then b_keep_value = b_keep_value - 0.3 end
+		end
+		return a_keep_value < b_keep_value
+	end
+
+	local card_id = self:getRetrialCardId(cards, judge, false)
+	if card_id ~= -1 then return card_id end
+	if zhugejin and not self:isEnemy(zhugejin) then
+		local valueless = {}
+		for _, card in ipairs(cards) do
+			if not self:isValuableCard(card, zhugejin) then table.insert(valueless, card) end
+		end
+		if #valueless == 0 then valueless = cards end
+		table.sort(valueless, cmp)
+		return valueless[1]:getEffectiveId()
+	else
+		for _, card in ipairs(cards) do
+			if judge:isGood(card) then return card:getEffectiveId() end
+		end
+		local valuable = {}
+		for _, card in ipairs(cards) do
+			if self:isValuableCard(card, zhugejin) then table.insert(valuable, card) end
+		end
+		if #valuable == 0 then valuable = cards end
+		table.sort(valuable, cmp)
+		return valuable[#valuable]:getEffectiveId()
+	end
+	return -1
 end
 
 function sgs.ai_cardneed.huanshi(to, card, self)
@@ -36,13 +90,6 @@ function sgs.ai_cardneed.huanshi(to, card, self)
 				return card:getSuit() == sgs.Card_Heart and not self:hasSuit("heart", true, to)
 			end
 		end
-	end
-end
-
-sgs.ai_choicemade_filter.skillChoice.huanshi = function(player, promptlist, self)
-	if promptlist[#promptlist] == "reject" then
-		local zhugejin = self.room:findPlayerBySkillName("huanshi")
-		if zhugejin then sgs.updateIntention(player, zhugejin, 60) end
 	end
 end
 
@@ -128,7 +175,7 @@ sgs.ai_skill_playerchosen.vsganglie = function(self, targets)
 	end
 	if self.room:getMode() == "06_3v3" or self.room:getMode() == "06_XMode" then return nil end
 	for _, friend in ipairs(self.friends_noself) do
-		if self:damageIsEffective(friend, sgs.DamageStruct_Normal, friend) and not self:cantBeHurt(friend) and self:getDamagedEffects(damage.from, self.player) then
+		if self:damageIsEffective(friend, sgs.DamageStruct_Normal, friend) and not self:cantbeHurt(friend) and self:getDamagedEffects(damage.from, self.player) then
 			sgs.ai_ganglie_effect = string.format("%s_%s_%d", self.player:objectName(), friend:objectName(), sgs.turncount)
 			return friend
 		end
@@ -150,7 +197,7 @@ end
 sgs.ai_need_damaged.vsganglie = function(self, attacker, player)
 	for _, enemy in ipairs(self.enemies) do
 		if self:isEnemy(enemy, player) and enemy:getHp() + enemy:getHandcardNum() <= 3
-			and not (self:hasSkills(sgs.need_kongcheng .. "|buqu", enemy) and attacker:getHandcardNum() > 1) and sgs.isGoodTarget(enemy, self.enemies, self) then
+			and not (enemy:hasSkills(sgs.need_kongcheng) and not hasBuquEffect(enemy) and attacker:getHandcardNum() > 1) and sgs.isGoodTarget(enemy, self.enemies, self) then
 			return true
 		end
 	end
@@ -161,7 +208,7 @@ sgs.ai_skill_discard.vsganglie = function(self, discard_num, min_num, optional, 
 	return ganglie_discard(self, discard_num, min_num, optional, include_equip, "vsganglie")
 end
 
-function sgs.ai_slash_prohibit.vsganglie(self, to, card, from)
+function sgs.ai_slash_prohibit.vsganglie(self, from, to)
 	if self:isFriend(from, to) then return false end
 	if from:hasSkill("jueqing") or (from:hasSkill("nosqianxi") and from:distanceTo(to) == 1) then return false end
 	if from:hasFlag("NosJiefanUsed") then return false end
@@ -239,7 +286,7 @@ end
 
 function sgs.ai_cardsview.jiuzhu(self, class_name, player)
 	if class_name == "Peach" and player:getHp() > 1 and not player:isNude() then
-		local dying = player:getRoom():getCurrentDyingPlayer()
+		local dying = self.room:getCurrentDyingPlayer()
 		if not dying then return nil end
 		if (self.room:getMode() == "06_3v3" or self.room:getMode() == "06_XMode") and not self:isFriend(dying) then return nil end
 		local must_save = false
@@ -248,7 +295,7 @@ function sgs.ai_cardsview.jiuzhu(self, class_name, player)
 		elseif dying:isLord() and (self.role == "loyalist" or (self.role == "renegade" and room:alivePlayerCount() > 2)) then
 			must_save = true
 		end
-		if not must_save and self:isWeak() and not self.player:hasArmorEffect("SilverLion") then return nil end
+		if not must_save and self:isWeak(player) and not player:hasArmorEffect("silver_lion") then return nil end
 		local to_discard = self:askForDiscard(player, "dummyreason", 1, 1, false, true)
 		if #to_discard == 1 then return "@JiuzhuCard=" .. to_discard[1] .. "->." end
 		return nil

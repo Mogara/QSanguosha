@@ -39,7 +39,7 @@ sgs.ai_chat_func[sgs.SlashEffected].blindness=function(self, player, data)
 				"再杀我一下，老子和你拼命了"}
 	if not effect.from then return end
 
-	if self:isEquip("Crossbow",effect.from) then
+	if self:hasCrossbowEffect(effect.from) then
 		table.insert(chat, "快闪，药家鑫来了。")
 		table.insert(chat, "果然是连弩降智商呀。")
 		table.insert(chat, "杀死我也没牌拿，真2")

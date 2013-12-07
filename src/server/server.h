@@ -54,6 +54,7 @@ private:
     int item;
     QStringList ban_list;
     QPushButton *add2nd;
+    QMap<QString, QStringList> banned_items;
 
 private slots:
     void addGeneral(const QString &name);

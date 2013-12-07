@@ -378,7 +378,7 @@ public:
             judge.reason = objectName();
             judge.who = wolong;
 
-            room->setEmotion(wolong, "armor/eight_diagram");
+            room->setEmotion(wolong, "armor/EightDiagram");
             room->judge(judge);
 
             if (judge.isGood()) {

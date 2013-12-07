@@ -105,16 +105,16 @@ public:
             QString prompt = prompt_list.join(":");
 
             card = room->askForCard(player, "..", prompt, data, Card::MethodResponse, judge->who, true);
-        } else if (!player->isKongcheng()) {
+        } else if (!player->isNude()) {
             QList<int> ids, disabled_ids;
-            foreach (const Card *card, player->getHandcards()) {
+            foreach (const Card *card, player->getCards("he")) {
                 if (player->isCardLimited(card, Card::MethodResponse))
                     disabled_ids << card->getEffectiveId();
                 else
                     ids << card->getEffectiveId();
             }
             if (!ids.isEmpty() && room->askForSkillInvoke(player, objectName(), data)) {
-                if (judge->who != player) {
+                if (judge->who != player && !player->isKongcheng()) {
                     LogMessage log;
                     log.type = "$ViewAllCards";
                     log.from = judge->who;
@@ -123,7 +123,7 @@ public:
                     room->doNotify(judge->who, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
                 }
                 judge->who->tag["HuanshiJudge"] = data;
-                room->fillAG(player->handCards(), judge->who, disabled_ids);
+                room->fillAG(ids + disabled_ids, judge->who, disabled_ids);
                 int card_id = room->askForAG(judge->who, ids, false, objectName());
                 room->clearAG(judge->who);
                 judge->who->tag.remove("HuanshiJudge");
