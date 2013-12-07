@@ -691,18 +691,18 @@ public:
 NostalStandardPackage::NostalStandardPackage()
     : Package("nostal_standard")
 {
-    General *nos_liubei = new General(this, "nos_liubei", "shu");
+    General *nos_liubei = new General(this, "nos_liubei", "shu", 4, true, true, true);
     nos_liubei->addSkill(new NosRende);
 
-    General *huangyueying = new General(this, "nos_huangyueying", "shu", 3, false);
+    General *huangyueying = new General(this, "nos_huangyueying", "shu", 3, false, true, true);
     huangyueying->addSkill(new NosJizhi);
     huangyueying->addSkill(new NosQicai);
 
-    General *nos_diaochan = new General(this, "nos_diaochan", "qun", 3, false);
+    General *nos_diaochan = new General(this, "nos_diaochan", "qun", 3, false, true, true);
     nos_diaochan->addSkill(new NosLijian);
     nos_diaochan->addSkill("biyue");
 
-    addMetaObject<NosRendeCard>();
+    addMetaObject<NosRendeCard>(); //nosrende不能随便换位置，会出错，不知道什么情况
     addMetaObject<NosLijianCard>();
 }
 
