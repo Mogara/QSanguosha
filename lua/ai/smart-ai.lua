@@ -3843,7 +3843,7 @@ function SmartAI:needRetrial(judge)
 			if (who:hasSkill("shenfen") and who:getMark("@wrath") >= 6)
 				or (who:hasSkill("kurou") and who:getHp() >= 3) 
 				or (who:hasSkill("jixi") and who:getPile("field"):length() > 2)
-				or (who:hasSkill("lihun") and self:IsLihunTarget(self:getEnemies(who), 0))
+				or (who:hasSkill("lihun") and self:isLihunTarget(self:getEnemies(who), 0))
 				or (who:hasSkill("xiongyi") and who:getMark("@arise") > 0) then
 				if self:isFriend(who) then
 					return not judge:isGood()
@@ -5750,7 +5750,7 @@ function SmartAI:findPlayerToDraw(include_self, drawnum)
 	return nil
 end
 
-function SmartAI:DontRespondPeach(judge)
+function SmartAI:dontRespondPeachInJudge(judge)
 	if not judge or type(judge) ~= "userdata" then self.room:writeToConsole(debug.traceback()) return end
 	local peach_num = self:getCardsNum("Peach")
 	if peach_num == 0 then return false end	

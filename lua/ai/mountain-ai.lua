@@ -846,7 +846,7 @@ sgs.ai_use_priority.ZhijianCard = sgs.ai_use_priority.RendeCard + 0.1  -- 刘备
 sgs.ai_cardneed.zhijian = sgs.ai_cardneed.equip
 
 sgs.ai_skill_invoke.guzheng = function(self, data)
-	if self:IsLihunTarget(self.player, data:toInt() - 1) then return false end
+	if self:isLihunTarget(self.player, data:toInt() - 1) then return false end
 	local player = self.room:getCurrent()
 	local invoke = (self:isFriend(player) and not (player:hasSkill("kongcheng") and player:isKongcheng())) 
 					or (data:toInt() >= 3 and not self.player:hasSkill("manjuan"))

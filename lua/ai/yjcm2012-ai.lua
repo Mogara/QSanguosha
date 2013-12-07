@@ -202,7 +202,7 @@ end
 sgs.ai_skill_invoke.miji = function(self, data)
 	if #self.friends_noself == 0 then return false end
 	for _, friend in ipairs(self.friends_noself) do
-		if not friend:hasSkill("manjuan") and not self:IsLihunTarget(friend) then return true end
+		if not friend:hasSkill("manjuan") and not self:isLihunTarget(friend) then return true end
 	end
 	return false
 end
@@ -210,7 +210,7 @@ end
 sgs.ai_skill_askforyiji.miji = function(self, card_ids)
 	local available_friends = {}
 	for _, friend in ipairs(self.friends_noself) do
-		if not friend:hasSkill("manjuan") and not self:IsLihunTarget(friend) then table.insert(available_friends, friend) end
+		if not friend:hasSkill("manjuan") and not self:isLihunTarget(friend) then table.insert(available_friends, friend) end
 	end
 
 	local toGive, allcards = {}, {}

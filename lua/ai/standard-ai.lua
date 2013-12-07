@@ -589,7 +589,7 @@ sgs.ai_skill_invoke.yiji = function(self)
 	local invoke
 	for _, friend in ipairs(self.friends) do
 		if not (friend:hasSkill("manjuan") and friend:getPhase() == sgs.Player_NotActive) and 
-			not self:needKongcheng(friend, true) and not self:IsLihunTarget(friend) and 
+			not self:needKongcheng(friend, true) and not self:isLihunTarget(friend) and 
 			(not Shenfen_user or Shenfen_user:objectName() == friend:objectName() or friend:getHandcardNum() >= 4) then
 				invoke = true
 			break
@@ -640,7 +640,7 @@ sgs.ai_skill_askforyiji.yiji = function(self, card_ids)
 	local CanKeep
 	for _, friend in ipairs(self.friends) do
 		if not (friend:hasSkill("manjuan") and friend:getPhase() == sgs.Player_NotActive) and 
-		not self:needKongcheng(friend, true) and not self:IsLihunTarget(friend) and 
+		not self:needKongcheng(friend, true) and not self:isLihunTarget(friend) and 
 		(not Shenfen_user or friend:objectName() == Shenfen_user:objectName() or friend:getHandcardNum() >= 4) then
 			if friend:objectName() == self.player:objectName() then CanKeep = true
 			else 
@@ -669,7 +669,7 @@ sgs.ai_skill_askforyiji.yiji = function(self, card_ids)
 	else
 		local other = {}
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-			if not (self:IsLihunTarget(player) and self:isFriend(player)) and (self:isFriend(player) or not player:hasSkill("lihun")) then
+			if not (self:isLihunTarget(player) and self:isFriend(player)) and (self:isFriend(player) or not player:hasSkill("lihun")) then
 				table.insert(other, player)
 			end
 		end
