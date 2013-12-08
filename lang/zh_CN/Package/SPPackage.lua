@@ -117,6 +117,14 @@ return {
 	[":yingbing"] = "每当一张“咒缚牌”成为判定牌后，你可以摸两张牌。",
 	["$ZhoufuJudge"] = "%from 的判定牌为 %arg 牌 %card",
 
+	["#caoang"] = "取义成仁",
+	["caoang"] = "曹昂",
+	["illustrator:caoang"] = "MSNZero",
+	["kangkai"] = "慷忾",
+	[":kangkai"] = "每当一名距离1以内的角色成为【杀】的目标后，你可以摸一张牌，然后正面朝上交给该角色一张牌：若该牌为装备牌，该角色可以使用之。",
+	["@kangkai-give"] = "请交给 %src 一张牌",
+	["kangkai_use:use"] = "你可以使用该装备牌",
+
 	["OL"] = "OL专属",
 
 	["#zhugeke"] = "兴家赤族",
