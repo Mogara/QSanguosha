@@ -523,7 +523,7 @@ public:
         room->sendLog(log);
         room->notifySkillInvoked(player, objectName());
 
-        player->gainMark("@wrath", damage.damage);
+        room->addPlayerMark(player, "@wrath", damage.damage);
         room->broadcastSkillInvoke(objectName());
         return false;
     }

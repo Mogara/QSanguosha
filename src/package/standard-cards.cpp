@@ -990,7 +990,7 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
     forever {
         if (!first->isAlive())
             break;
-        if (second->getMark("WushuangTarget") > 0) {
+        if (second->tag["Wushuang_" + toString()].toStringList().contains(first->objectName())) {
             const Card *slash = room->askForCard(first,
                                                  "slash",
                                                  "@wushuang-slash-1:" + second->objectName(),
@@ -1020,9 +1020,6 @@ void Duel::onEffect(const CardEffectStruct &effect) const{
 
         qSwap(first, second);
     }
-
-    room->setPlayerMark(first, "WushuangTarget", 0);
-    room->setPlayerMark(second, "WushuangTarget", 0);
 
     DamageStruct damage(this, second->isAlive() ? second : NULL, first);
     if (second != effect.from)
