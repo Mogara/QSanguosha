@@ -14,7 +14,7 @@ return {
 	["~hongyuan"] = "选择 0-2 名其他角色→点击确定",
 	["huanshi"] = "缓释",
 	[":huanshi"] = "每当己方角色的判定牌生效前，你可以打出一张牌代替之。",
-	[":huanshi_p"] = "每当一名角色的判定牌生效前，你可以令该角色观看你的手牌并选择一张，然后你打出该牌代替之。",
+	[":huanshi_p"] = "每当一名角色的判定牌生效前，你可以令该角色观看你的手牌并选择你的一张牌，然后你打出该牌代替之。",
 	["@huanshi-card"] = CommonTranslationTable["@askforretrial"],
 	["~huanshi"] = "选择一张牌→点击确定",
 	["huanshi:accept"] = "接受改判",

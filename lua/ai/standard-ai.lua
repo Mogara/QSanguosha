@@ -202,6 +202,7 @@ end
 sgs.ai_skill_cardask["@guicai-card"]=function(self, data)
 	local judge = data:toJudge()
 
+	if self.room:getMode():find("_mini_46") then return "$" .. self.player:handCards():first() end
 	if self:needRetrial(judge) then
 		local cards = sgs.QList2Table(self.player:getHandcards())
 		local card_id = self:getRetrialCardId(cards, judge)
@@ -239,7 +240,7 @@ sgs.ai_chaofeng.simayi = -2
 
 sgs.ai_skill_invoke.ganglie = function(self, data)
 	local mode = self.room:getMode()
-	if mode:find("_mini_41") then return true end
+	if mode:find("_mini_41") or mode:find("_mini_46") then return true end
 	local damage = data:toDamage()
 	if not damage.from then
 		local zhangjiao = self.room:findPlayerBySkillName("guidao")
