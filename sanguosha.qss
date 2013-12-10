@@ -1,195 +1,40 @@
-QProgressBar{
-    color : solid gray;
+QProgressBar {
+    color: solid gray;
     border: 2px solid gray;
     border-radius: 5px;
     background: transparent;
     padding: 0px;
-    text-align : center ;
-}
-QProgressBar::chunk{
-    background: #B22222;
+    text-align: center;
 }
 
-QTextEdit{
+QTextEdit {
     border: 10px;
-    border-image: url(image/system/border.png)10 10 10 10 ;
-    background-color: rgba(43,45,31,255);
+    border-image: url(image/system/border.png) 10 10 10 10;
+    background-color: rgba(43, 45, 31, 120);
 }
 
-QTextEdit[description="true"]{
+QTextEdit[description = "true"] {
     border: 10px;
     border-image: none;
-    background-color: rgba(255,255,255,255);
+    background-color: rgba(255, 255, 255, 255);
 }
 
-QTextEdit QScrollBar:vertical  {
-     margin: 22px 0 22px 0;
-}
-
-QScrollBar:add-page
-{
-     background-color: rgba(0,0,0,255);
-}
-
-QScrollBar:sub-page
-{
-     background-color: rgba(0,0,0,255);
-}
-
- QScrollBar::add-line:vertical  {
-
-     background-color: rgba(43,45,31,255);
-     height: 15px;
-     subcontrol-position: bottom;
-     subcontrol-origin: margin;
- }
-
- QScrollBar::sub-line:vertical  {
-
-     background-color: rgba(43,45,31,255);
-     height: 15px;
-     subcontrol-position: top;
-     subcontrol-origin: margin;
- }
-
-QScrollBar::handle:vertical    {    
-    border : 2px solid gray;
-    border-radius: 6px;
-    background-color: solid gray;
-    min-height : 12px;
-}
-
-QScrollBar::up-arrow:vertical
-{
-    border-image: url(image/system/button/scroll-up-arrow.png);
-}
-
-QScrollBar::down-arrow:vertical
-{
-    border-image: url(image/system/button/scroll-down-arrow.png);
-}
-
- QLineEdit#chat_edit{
-    background-color: rgba(20,20,20,255);
+QLineEdit#chat_edit {
+    background-color: rgba(20, 20, 20, 200);
     color: white;
     border: 10px transparent;
     height: 20px;
-    border-image: url(image/system/border.png)10 10 10 10 ;
- }
-
-QStatusBar::item {
-     border: 0px solid grey;
- }
- 
-QStatusBar{
-    background-image: url(image/system/skill-dock.png);
-    color:white;
+    border-image: url(image/system/border.png) 10 10 10 10;
 }
 
-QMenu[private_pile="true"]{
-    background-color: rgba(43,63,53,200);
-    border-radius: 1px;
-    color: white;
-}
-
-QPushButton[private_pile="true"]{
-    background-color: rgba(43,63,53,200);
-    border-radius: 1px;
-    color: white;
-}
-
-QPushButton[game_control="true"]{
-    border: 0px solid gray;
-    font: 12px;
+QMenu[private_pile = "true"] {
+    background-color: rgba(43, 63, 53, 200);
     border-radius: 5px;
-    padding: 6px 12px 6px 12px;
-}
-
-QPushButton#pause{
-    background-image: url(image/system/button/pause.png);
-}
-
-QPushButton#play{
-    background-image: url(image/system/button/play.png);
-}
-
-QPushButton#slow-down{
-    background-image: url(image/system/button/slow-down.png);
-}
-
-QPushButton#speed-up{
-    background-image: url(image/system/button/speed-up.png);
-}
-
-QPushButton#uniform{
-    background-image: url(image/system/button/uniform.png);
-}
-
-#skill_bar_container QPushButton{
-    background-image: url(image/system/button/back.png);
-        border: 1px solid gray;
-        border-radius: 4px;
-    color: yellow;
-    font: 12px;
-    padding: 6px 12px 6px 12px;
-}
-#skill_bar_container QPushButton:disabled{
-    background-image: url(image/system/button/back_shade.png);
-        border-radius: 4px;
     color: white;
-    font: 12px;
 }
-#skill_bar_container QCheckBox{
-    border: 1px solid gray;
-        border-radius: 4px;
-    color: yellow;
-    font: 12px;
-    padding: 1px 12px 1px 8px;
-}
-#skill_bar_container QCheckBox::indicator{
-    height: 0px;
-    width: 0px;
-}
-#skill_bar_container QCheckBox:unchecked{
-    background-image: url(image/system/button/frequent_checkbox/unchecked.png);
-}
-#skill_bar_container QCheckBox:unchecked:hover{
-    background-image: url(image/system/button/frequent_checkbox/unchecked_hover.png);
-}
-#skill_bar_container QCheckBox:unchecked:pressed{
-    background-image: url(image/system/button/frequent_checkbox/unchecked_press.png);
-}
-#skill_bar_container QCheckBox:checked{
-    background-image: url(image/system/button/frequent_checkbox/checked.png);
-}
-#skill_bar_container QCheckBox:checked:hover{
-    background-image: url(image/system/button/frequent_checkbox/checked_hover.png);
-}
-#skill_bar_container QCheckBox:checked:pressed{
-    background-image: url(image/system/button/frequent_checkbox/checked_press.png);
-}
-#skill_bar_container QComboBox{
-    background-image: url(image/system/button/back2.png);
-    border: 1px solid gray;
-    border-radius: 3px;
+
+QPushButton[private_pile = "true"] {
+    background-color: rgba(43, 63, 53, 200);
+    border-radius: 5px;
     color: white;
-    padding: 1px 18px 1px 3px;
-}
-#skill_bar_container QComboBox:on{
-    padding-left: 4px;
-    padding-top: 3px;
-}
-#skill_bar_container QComboBox::drop-down{
-    border-bottom-right-radius: 3px;
-    border-left-color: darkgray;
-    border-left-style: solid;
-    border-left-width: 1px;
-    border-top-right-radius: 3px;
-    subcontrol-origin: padding;
-    subcontrol-position: top right;
-    width: 15px;
-}
-#skill_bar_container QComboBox::down-arrow:on{
-    left: 1px;
-    top: 1px;
 }
