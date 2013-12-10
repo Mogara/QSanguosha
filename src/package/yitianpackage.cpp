@@ -1371,8 +1371,16 @@ public:
                 Room *room = player->getRoom();
                 QList<ServerPlayer *> players = room->getOtherPlayers(player);
                 ServerPlayer *dongchaee;
-                if (dongchaee = room->askForPlayerChosen(player, players, objectName(), "@dongcha", true, true)){
+                if (dongchaee = room->askForPlayerChosen(player, players, objectName(), "@dongcha", true)){
+                    room->notifySkillInvoked(player, objectName());
                     room->broadcastSkillInvoke(objectName());
+
+                    LogMessage log;
+                    log.type = "#ChoosePlayerWithSkill";
+                    log.from = player;
+                    log.to << dongchaee;
+                    log.arg = objectName();
+                    room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
 
                     room->setPlayerFlag(dongchaee, "dongchaee");
                     room->setTag("Dongchaee", dongchaee->objectName());

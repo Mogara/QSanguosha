@@ -1111,6 +1111,11 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     while (isPaused()) {}
     notifyMoveFocus(player, S_COMMAND_CHOOSE_CARD);
 
+    // process dongcha
+    if (who->objectName() == tag.value("Dongchaee").toString()
+        && player->objectName() == tag.value("Dongchaer").toString())
+        handcard_visible = true;
+
     if (handcard_visible && !who->isKongcheng()) {
         QList<int> handcards = who->handCards();
         Json::Value arg(Json::arrayValue);
