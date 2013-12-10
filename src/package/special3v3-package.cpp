@@ -98,7 +98,8 @@ public:
     virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
         const Card *card = NULL;
-        if (room->getMode().startsWith("06_") && AI::GetRelation3v3(player, judge->who) == AI::Friend) {
+        if (room->getMode().startsWith("06_")) {
+            if (AI::GetRelation3v3(player, judge->who) != AI::Friend) return false;
             QStringList prompt_list;
             prompt_list << "@huanshi-card" << judge->who->objectName()
                         << objectName() << judge->reason << QString::number(judge->card->getEffectiveId());

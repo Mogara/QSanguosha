@@ -202,7 +202,7 @@ end
 sgs.ai_skill_cardask["@guicai-card"]=function(self, data)
 	local judge = data:toJudge()
 
-	if self.room:getMode():find("_mini_46") then return "$" .. self.player:handCards():first() end
+	if self.room:getMode():find("_mini_46") and not judge:isGood() then return "$" .. self.player:handCards():first() end
 	if self:needRetrial(judge) then
 		local cards = sgs.QList2Table(self.player:getHandcards())
 		local card_id = self:getRetrialCardId(cards, judge)
