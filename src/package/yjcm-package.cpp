@@ -404,10 +404,7 @@ XuanfengCard::XuanfengCard(){
 }
 
 bool XuanfengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if(targets.length() >= 2)
-        return false;
-
-    if(to_select == Self)
+    if (targets.length() >= 2 || to_select == Self)
         return false;
 
     return Self->canDiscard(to_select, "he");
@@ -419,15 +416,10 @@ void XuanfengCard::use(Room *room, ServerPlayer *lingtong, QList<ServerPlayer *>
     int totaltarget = 0;
     foreach(ServerPlayer* sp, targets)
         map[sp]++;
-    for (int i = 0; i < map.keys().size(); i++) {
-        totaltarget++;
-    }
+    totaltarget = map.keys().size();
     // only chose one and throw only one card of him is forbiden
-    if(totaltarget == 1){
-        foreach(ServerPlayer* sp,map.keys()){
-            map[sp]++;
-        }
-    }
+    if(totaltarget == 1) map[targets.first()] = 2;
+
     foreach(ServerPlayer* sp, targets){
         while(map[sp] > 0){
             if(lingtong->isAlive() && sp->isAlive() && lingtong->canDiscard(sp, "he")){
@@ -454,6 +446,7 @@ class Xuanfeng: public TriggerSkill {
 public:
     Xuanfeng(): TriggerSkill("xuanfeng") {
         events << CardsMoveOneTime << EventPhaseChanging;
+        view_as_skill = new XuanfengViewAsSkill;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
