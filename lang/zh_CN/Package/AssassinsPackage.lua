@@ -48,7 +48,8 @@ return {
 	["duanzhi:cancel"] = "弃够了",
 
 	["#as_fuhuanghou"] = "与世不侵",
-	["as_fuhuanghou"] = "伏皇后",
+	["as_fuhuanghou"] = "伏皇后-铜雀",
+	["&as_fuhuanghou"] = "伏皇后",
 	["designer:as_fuhuanghou"] = "凌天翼",
 	["illustrator:as_fuhuanghou"] = "G.G.G.",
 	["cangni"] = "藏匿",
@@ -73,7 +74,7 @@ return {
 	["~fengyin"] = "选择一张【杀】→点击确定",
 	["chizhong"] = "持重",
 	[":chizhong"] = "<font color=\"blue\"><b>锁定技，</b></font>你的手牌上限等于你的体力上限；其他角色死亡时，你加1点体力上限。",
-	["#Chizhong"] = " %from 受到【%arg】的影响，偷偷藏下了更多的手牌！",
+	["#Chizhong"] = " %from 受到“%arg”的影响，偷偷藏下了更多的手牌！",
 
 	["as_liuxie"] = "刘协",
 	["as_lingju"] = "灵雎",
