@@ -101,7 +101,7 @@ sgs.ai_skill_invoke.fankui = function(self, data)
 	return true
 end
 
-sgs.ai_choicemade_filter.cardChosen.fankui = function(player, promptlist, self)
+sgs.ai_choicemade_filter.cardChosen.fankui = function(self, player, promptlist)
 	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
 	if damage.from then
 		local intention = 10

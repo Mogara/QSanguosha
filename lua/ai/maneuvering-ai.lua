@@ -5,7 +5,7 @@ end
 sgs.ai_card_intention.ThunderSlash = sgs.ai_card_intention.Slash
 
 sgs.ai_use_value.ThunderSlash = 4.55
-sgs.ai_keep_value.ThunderSlash = 2.5
+sgs.ai_keep_value.ThunderSlash = 3.66
 sgs.ai_use_priority.ThunderSlash = 2.5
 
 function SmartAI:useCardFireSlash(...)
@@ -15,16 +15,15 @@ end
 sgs.ai_card_intention.FireSlash = sgs.ai_card_intention.Slash
 
 sgs.ai_use_value.FireSlash = 4.6
-sgs.ai_keep_value.FireSlash = 2.6
+sgs.ai_keep_value.FireSlash = 3.63
 sgs.ai_use_priority.FireSlash = 2.5
 
 sgs.weapon_range.Fan = 4
 sgs.ai_use_priority.Fan = 2.655
 sgs.ai_use_priority.Vine = 0.95
-sgs.ai_use_priority.SilverLion = 1.0
 
 sgs.ai_skill_invoke.Fan = function(self, data)
-	local use = data:toCardUse()	
+	local use = data:toCardUse()
 	local jinxuandi = self.room:findPlayerBySkillName("wuling")
 	
 	for _, target in sgs.qlist(use.to) do
@@ -217,7 +216,7 @@ end
 sgs.dynamic_value.benefit.Analeptic = true
 
 sgs.ai_use_value.Analeptic = 5.98
-sgs.ai_keep_value.Analeptic = 4.5
+sgs.ai_keep_value.Analeptic = 4.1
 sgs.ai_use_priority.Analeptic = 3.0
 
 local function handcard_subtract_hp(a, b)
@@ -284,11 +283,12 @@ function SmartAI:useCardSupplyShortage(card, use)
 	if getvalue(target) > -100 then
 		use.card = card
 		if use.to then use.to:append(target) end
-		return		
+		return
 	end
 end
 
 sgs.ai_use_value.SupplyShortage = 7
+sgs.ai_keep_value.SupplyShortage = 3.48
 sgs.ai_use_priority.SupplyShortage = 0.5
 sgs.ai_card_intention.SupplyShortage = 120
 
@@ -350,7 +350,7 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 		elseif not slash and jxd:getMark("@thunder") > 0 and nature == sgs.DamageStruct_Thunder then damagecount = damagecount + 1
 		elseif not slash and jxd:getMark("@wind") > 0 and nature == sgs.DamageStruct_Fire then damagecount = damagecount + 1 end
 	end
-	if not self:damageIsEffective(who, nature, source) then return end	
+	if not self:damageIsEffective(who, nature, source) then return end
 
 	if who:hasArmorEffect("SilverLion") then damagecount = 1 end
 	
@@ -372,7 +372,7 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 			if target:isLord() and not self:isEnemy(target, source) then killlord = true end
 			if self:isEnemy(target, source) then kills = kills + 1 end
 		else
-			if self:isEnemy(target, source) and source:getHandcardNum() < 2 and target:hasSkills("ganglie|neoganglie|vsganglie") and source:getHp() == 1
+			if self:isEnemy(target, source) and source:getHandcardNum() < 2 and target:hasSkills("ganglie|neoganglie") and source:getHp() == 1
 				and self:damageIsEffective(source, nil, target) and peach_num < 1 then newvalue = newvalue - 100 end
 			if target:hasSkill("vsganglie") then
 				local can
@@ -575,6 +575,7 @@ sgs.ai_card_intention.IronChain = function(self, card, from, tos)
 end
 
 sgs.ai_use_value.IronChain = 5.4
+sgs.ai_keep_value.IronChain = 3.34
 sgs.ai_use_priority.IronChain = 9.1
 
 sgs.ai_skill_cardask["@fire-attack"] = function(self, data, pattern, target)
@@ -775,6 +776,7 @@ sgs.ai_cardshow.fire_attack = function(self, requestor)
 end
 
 sgs.ai_use_value.FireAttack = 4.8
+sgs.ai_keep_value.FireAttack = 3.3
 sgs.ai_use_priority.FireAttack = sgs.ai_use_priority.Dismantlement + 0.1
 
 sgs.dynamic_value.damage_card.FireAttack = true

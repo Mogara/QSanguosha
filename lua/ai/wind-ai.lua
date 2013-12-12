@@ -162,7 +162,7 @@ sgs.ai_skill_invoke.jiewei = true
 sgs.ai_skill_use["TrickCard+^Nullification,EquipCard|.|.|hand"] = function(self, prompt, method)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(cards)
-	for _, cards in ipairs(cards) do
+	for _, card in ipairs(cards) do
 		if card:getTypeId() == sgs.Card_TypeTrick and not card:isKindOf("Nullification") then
 			local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 			self:useTrickCard(card, dummy_use)
@@ -484,6 +484,7 @@ sgs.ai_skill_invoke.fenji = function(self, data)
 end
 
 sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
+	if not method then method = sgs.Card_MethodDiscard end
 	local friend_lost_hp = 10
 	local friend_hp = 0
 	local card_id

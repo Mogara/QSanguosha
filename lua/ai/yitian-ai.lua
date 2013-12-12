@@ -910,7 +910,7 @@ sgs.ai_skill_use["@@toudu"] = function(self, prompt)
 	self:sortByKeepValue(cards)
 	for _, card in ipairs(cards) do
 		if not (isCard("Peach", card, self.player) and self:isFriend(toudu_target)) then
-			return "@TouduCard=" .. card:getEffectiveId() .. "->" .. toutu_target:objectName()
+			return "@TouduCard=" .. card:getEffectiveId() .. "->" .. toudu_target:objectName()
 		end
 	end
 	return "."
