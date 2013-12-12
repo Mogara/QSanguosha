@@ -19,6 +19,11 @@ QTextEdit[description = "true"] {
     background-color: rgba(255, 255, 255, 255);
 }
 
+QLabel#guhuo_text {
+    background-color: rgba(43, 45, 31, 220);
+    border-radius: 5px;
+}
+
 QLineEdit#chat_edit {
     background-color: rgba(20, 20, 20, 200);
     color: white;
