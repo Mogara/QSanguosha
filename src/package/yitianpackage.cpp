@@ -264,7 +264,7 @@ void JuejiCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *to = effect.to;
     QVariant data = QVariant::fromValue(to);
     while (effect.from->pindian(effect.to, "jueji", NULL)){
-        if (!(effect.from->isKongcheng() || effect.to->isKongcheng()) || !effect.from->askForSkillInvoke("jueji", data))
+        if (effect.from->isKongcheng() || effect.to->isKongcheng() || !effect.from->askForSkillInvoke("jueji", data))
             break;
     }
 }
@@ -1391,7 +1391,7 @@ public:
                 break;
             }
 
-            case Player::Finish:{
+            case Player::NotActive:{
                 Room *room = player->getRoom();
                 QString dongchaee_name = room->getTag("Dongchaee").toString();
                 if(!dongchaee_name.isEmpty()){

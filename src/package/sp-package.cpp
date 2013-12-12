@@ -35,7 +35,7 @@ public:
         }
         if (targets.isEmpty()) return false;
 
-        ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@sp_moonspear", true, true);
+        ServerPlayer *target = room->askForPlayerChosen(player, targets, objectName(), "@SPMoonSpear", true, true);
         if (!target) return false;
         room->setEmotion(player, "weapon/MoonSpear");
         if (!room->askForCard(target, "jink", "@moon-spear-jink", QVariant(), Card::MethodResponse, player))

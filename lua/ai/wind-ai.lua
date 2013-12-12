@@ -753,7 +753,7 @@ function SmartAI:getGuhuoViewCard(class_name, latest_version)
 			index = #card_use
 		end
 		local card = sgs.Sanguosha:cloneCard(classname2objectname[class_name])
-		if self.player:isCardLimited(card, sgs.Card_MethodUse, true) then return end
+		if not card or self.player:isCardLimited(card, sgs.Card_MethodUse, true) then return end
 		local card_class = latest_version == 1 and "@GuhuoCard=" or "@NosGuhuoCard="
 		return card_class .. card_use[index]:getEffectiveId() .. ":" .. classname2objectname[class_name]
 	end

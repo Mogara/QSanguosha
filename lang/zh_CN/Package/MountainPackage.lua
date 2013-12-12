@@ -54,6 +54,8 @@ return {
 	["@xiangle-discard"] = "你须再弃置一张基本牌使此【杀】生效",
 	["fangquan"] = "放权",
 	[":fangquan"] = "你可以跳过你的出牌阶段，若如此做，此回合结束时，你可以弃置一张手牌并选择一名其他角色，令其获得一个额外的回合。",
+	["@fangquan-give"] = "你可以弃置一张手牌令一名其他角色进行一个额外的回合",
+	["~fangquan"] = "选择一张手牌→选择一名其他角色→点击确定",
 	["ruoyu"] = "若愚",
 	[":ruoyu"] = "<font color=\"orange\"><b>主公技，</b></font><font color=\"purple\"><b>觉醒技，</b></font>准备阶段开始时，若你是当前的体力值最小的角色（或之一），你加1点体力上限，回复1点体力，然后获得技能“激将”。",
 	["$RuoyuAnimate"] = "image=image/animate/ruoyu.png",
