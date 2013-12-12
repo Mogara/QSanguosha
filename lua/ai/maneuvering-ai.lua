@@ -369,7 +369,7 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 		if self:cantbeHurt(target, source, damagecount) then newvalue = newvalue - 100 end
 		if damagecount + (dmg or 0) >= target:getHp() then
 			newvalue = newvalue - 2
-			if target:isLord() and not self:isEnemy(target, source) then kill_lord = true end
+			if target:isLord() and not self:isEnemy(target, source) then killlord = true end
 			if self:isEnemy(target, source) then kills = kills + 1 end
 		else
 			if self:isEnemy(target, source) and source:getHandcardNum() < 2 and target:hasSkills("ganglie|neoganglie|vsganglie") and source:getHp() == 1
@@ -408,7 +408,7 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 	for _, player in sgs.qlist(self.room:getAllPlayers()) do
 		if player:objectName() ~= who:objectName() and player:isChained() and self:damageIsEffective(player, nature, source) then
 			local getvalue = getChainedPlayerValue(player, 0)
-			if kills == #self:getEnemies(source) and not killlord then
+			if kills == #self:getEnemies(source) and not killlord and sgs.getDefenseSlash(player, self) < 2 then
 				if slash then self.room:setCardFlag(slash, "AIGlobal_KillOff") end
 				return true
 			end

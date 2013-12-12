@@ -349,12 +349,17 @@ ServerPlayer *TrustAI::askForYiji(const QList<int> &, const QString &, int &) {
     return NULL;
 }
 
-void TrustAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, bool up_only) {
+void TrustAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, int guanxing_type) {
     Q_UNUSED(bottom);
-    Q_UNUSED(up_only);
+    Q_UNUSED(guanxing_type);
 
-    up = cards;
-    bottom.clear();
+    if (guanxing_type == Room::GuanxingDownOnly) {
+        bottom = cards;
+        up.clear();
+    } else {
+        up = cards;
+        bottom.clear();
+    }
 }
 
 LuaAI::LuaAI(ServerPlayer *player)
@@ -474,17 +479,17 @@ void LuaAI::reportError(lua_State *L) {
     lua_pop(L, 1);
 }
 
-void LuaAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, bool up_only) {
+void LuaAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, int guanxing_type) {
     lua_State *L = room->getLuaState();
 
     pushCallback(L, __FUNCTION__);
     pushQIntList(L, cards);
-    lua_pushboolean(L, up_only);
+    lua_pushinteger(L, guanxing_type);
 
     int error = lua_pcall(L, 3, 2, 0);
     if (error) {
         reportError(L);
-        return TrustAI::askForGuanxing(cards, up, bottom, up_only);
+        return TrustAI::askForGuanxing(cards, up, bottom, guanxing_type);
     }
 
     getTable(L, bottom);

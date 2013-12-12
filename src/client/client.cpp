@@ -1456,11 +1456,11 @@ void Client::onPlayerAssignRole(const QList<QString> &names, const QList<QString
 
 void Client::askForGuanxing(const Json::Value &arg) {
     Json::Value deck = arg[0];
-    bool up_only = arg[1].asBool();
+    bool single_side = arg[1].asBool();
     QList<int> card_ids;
     tryParse(deck, card_ids);
     
-    emit guanxing(card_ids, up_only);
+    emit guanxing(card_ids, single_side);
     setStatus(AskForGuanxing);
 }
 

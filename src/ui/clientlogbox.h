@@ -18,7 +18,7 @@ private:
 
 public slots:
     void appendLog(const QStringList &log_str);
-    void append(const QString &text);
+    QString append(const QString &text);
 };
 
 #endif

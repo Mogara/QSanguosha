@@ -21,8 +21,11 @@ struct LogMessage;
 
 class Room: public QThread {
     Q_OBJECT
+    Q_ENUMS(GuanxingType)
 
 public:
+    enum GuanxingType { GuanxingUpOnly = 1, GuanxingBothSides = 0, GuanxingDownOnly = -1 };
+
     friend class RoomThread;
     friend class RoomThread3v3;
     friend class RoomThreadXMode;
@@ -93,7 +96,7 @@ public:
     void sendJudgeResult(const JudgeStar judge);
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord() const;
-    void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only);
+    void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides);
     int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids = QList<int>(), QString skill_name = "gongxin");
     int drawCard();
     void fillAG(const QList<int> &card_ids, ServerPlayer *who = NULL, const QList<int> &disabled_ids = QList<int>());

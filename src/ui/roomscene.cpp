@@ -71,6 +71,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     _m_commonLayout = &(G_ROOM_SKIN.getCommonLayout());
 
     m_skillButtonSank = false;
+    guhuo_log = QString();
 
     // create photos
     for (int i = 0; i < player_count - 1;i++) {
@@ -1530,6 +1531,16 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
     QVBoxLayout *layout = new QVBoxLayout;
     QString title = Sanguosha->translate(skillName);
     dialog->setWindowTitle(title);
+
+    if (skillName.contains("guhuo") && !guhuo_log.isEmpty()) {
+        QLabel *guhuo_text = new QLabel(guhuo_log, dialog);
+        guhuo_text->setObjectName("guhuo_text");
+        guhuo_text->setMaximumWidth(240);
+        guhuo_text->setWordWrap(true);
+        layout->addWidget(guhuo_text);
+
+        guhuo_log = QString();
+    }
     layout->addWidget(new QLabel(tr("Please choose:")));
 
     foreach (QString option, options) {
@@ -1941,8 +1952,9 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move) {
         QString card_str = IntList2StringList(move.card_ids).join("+");
         log_box->appendLog("$RecycleCard", to_general, QStringList(), card_str);
     }
-    if (move.from && move.from_place != Player::PlaceHand && move.to_place != Player::PlaceDelayedTrick
-        && move.from_place != Player::PlaceJudge && move.to && move.from != move.to) {
+    if (move.from && move.from_place != Player::PlaceHand
+        && move.to_place != Player::PlaceDelayedTrick && move.to_place != Player::PlaceJudge
+        && move.to && move.from != move.to) {
         QString from_general = move.from->objectName();
         QStringList tos;
         tos << move.to->objectName();

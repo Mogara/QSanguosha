@@ -69,7 +69,7 @@ void Settings::init() {
                        << "sp_cards" << "ling" << "Special1v1OL"
                        << "New3v3Card" << "New3v3_2013Card" << "New1v1Card"
                        << "yitian" << "wisdom" << "BGM" << "BGMDIY"
-                       << "hegemony" << "h_formation";
+                       << "hegemony" << "h_formation" << "h_momentum";
     }
     setValue("BanPackages", banpackagelist);
 

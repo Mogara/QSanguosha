@@ -676,7 +676,7 @@ public:
             log.card_str = IntList2StringList(guanxing).join("+");
             room->doNotify(zhuge, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
 
-            room->askForGuanxing(zhuge, guanxing, false);
+            room->askForGuanxing(zhuge, guanxing);
         }
 
         return false;

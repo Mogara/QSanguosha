@@ -1094,7 +1094,7 @@ void Dismantlement::onEffect(const CardEffectStruct &effect) const{
         card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodDiscard);
     else {
         if (!effect.to->getEquips().isEmpty())
-            card_id = room->askForCardChosen(effect.from, effect.to, "he", objectName(), false, Card::MethodDiscard);
+            card_id = room->askForCardChosen(effect.from, effect.to, flag, objectName(), false, Card::MethodDiscard);
         if (card_id == -1 || (!effect.to->isKongcheng() && effect.to->handCards().contains(card_id))) {
             LogMessage log;
             log.type = "$ViewAllCards";
