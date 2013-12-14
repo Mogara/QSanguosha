@@ -4928,8 +4928,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
     if (targets.isEmpty()) {
         Q_ASSERT(optional);
         return NULL;
-    }
-    else if (targets.length() == 1 && !optional) {
+    } else if (targets.length() == 1 && !optional) {
         QVariant data = QString("%1:%2:%3").arg("playerChosen").arg(skillName).arg(targets.first()->objectName());
         thread->trigger(ChoiceMade, this, player, data);
         return targets.first();
@@ -5447,17 +5446,19 @@ QString Room::generatePlayerName() {
     return QString("sgs%1").arg(id);
 }
 
-QString Room::askForOrder(ServerPlayer *player) {
+QString Room::askForOrder(ServerPlayer *player, const QString &default_choice) {
     while (isPaused()) {}
     notifyMoveFocus(player, S_COMMAND_CHOOSE_ORDER);
 
+    if (player->getAI())
+        return default_choice;
+
     bool success = doRequest(player, S_COMMAND_CHOOSE_ORDER, (int)S_REASON_CHOOSE_ORDER_TURN, true);
 
-    Game3v3Camp result = qrand() % 2 == 0 ? S_CAMP_WARM : S_CAMP_COOL;
     Json::Value clientReply = player->getClientReply();
     if (success && clientReply.isInt())
-        result = (Game3v3Camp)clientReply.asInt();
-    return (result == S_CAMP_WARM) ? "warm" : "cool";
+        return ((Game3v3Camp)clientReply.asInt() == S_CAMP_WARM) ? "warm" : "cool";
+    return default_choice;
 }
 
 QString Room::askForRole(ServerPlayer *player, const QStringList &roles, const QString &scheme) {

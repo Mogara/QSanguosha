@@ -28,7 +28,9 @@ public:
             if (!player->isAlive()) break;
             if (dengai->getPile("field").isEmpty()) continue;
             if (!room->askForSkillInvoke(dengai, objectName(), data)) continue;
+            room->fillAG(dengai->getPile("field"), dengai);
             int id = room->askForAG(dengai, dengai->getPile("field"), false, objectName());
+            room->clearAG(dengai);
             if (player == dengai) {
                 LogMessage log;
                 log.type = "$MoveCard";
@@ -110,6 +112,13 @@ public:
         if (target->getPhase() == Player::Finish && !target->isNude())
             room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
+        const Card *rcard = Sanguosha->getCard(card->getEffectiveId());
+        if (rcard->isKindOf("Weapon")) return 1;
+        else if (rcard->isKindOf("Armor")) return 2;
+        else return 3;
     }
 };
 

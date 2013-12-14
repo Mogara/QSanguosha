@@ -147,6 +147,9 @@ jiangqin				83
 heg_xusheng				56					
 heg_yuji				61					
 hetaihou				45					
+lidian					68					
+zangba					58					
+mifuren					10					
 zhugejin				60					
 vs_xiahoudun			62					
 vs_guanyu				58					
@@ -159,13 +162,13 @@ kof_zhenji				71
 kof_xiahouyuan			56					
 kof_guanyu				60					
 kof_machao				67					
-kof_huangyueying		67					
+kof_nos_huangyueying		67					
 kof_huangzhong			68					
 kof_jiangwei			74					
 kof_menghuo				65					
 kof_zhurong				47					
 kof_sunshangxiang		72					
-kof_diaochan			78					
+kof_nos_diaochan		78					
 hejin					80					
 kof_liubei				41					
 kof_weiyan				71					

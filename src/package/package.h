@@ -23,7 +23,7 @@ class Package: public QObject {
     Q_ENUMS(Type)
 
 public:
-    enum Type { GeneralPack, CardPack, MixedPack, SpecialPack };
+    enum Type { GeneralPack, CardPack, SpecialPack };
 
     Package(const QString &name, Type pack_type = GeneralPack) {
         setObjectName(name);

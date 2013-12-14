@@ -83,6 +83,7 @@ sgs.ai_chat_func =			{}
 sgs.ai_event_callback =		{}
 sgs.explicit_renegade =     false 
 sgs.ai_NeedPeach =			{}
+sgs.ai_defense = 			{}
 
 
 for i=sgs.NonTrigger, sgs.NumOfEvents, 1 do
@@ -235,6 +236,9 @@ function sgs.getValue(player)
 end
 
 function sgs.getDefense(player, gameProcess)
+	if not sgs.ai_updateDefense and global_room:getCurrent() then
+		return sgs.ai_defense[player:objectName()]
+	end
 	if not player then return 0 end
 	local defense = math.min(sgs.getValue(player), player:getHp() * 3)
 	local attacker = global_room:getCurrent()
@@ -314,6 +318,8 @@ function sgs.getDefense(player, gameProcess)
 		if player:hasSkill("xiliang") and getKnownCard(player, "Jink", true) == 0 then defense = defense - 2 end
 		if player:hasSkill("shouye") then defense = defense - 2 end
 	end
+	
+	sgs.ai_defense[player:objectName()] = defense
 	return defense
 end
 
@@ -1195,6 +1201,7 @@ function sgs.gameProcess(room, arg)
 	local loyal_value, rebel_value = 0, 0, 0
 	local health = sgs.isLordHealthy()
 	local danger = sgs.isLordInDanger()
+	local lord = room:getLord()
 	local currentplayer = room:getCurrent()
 	for _, aplayer in sgs.qlist(room:getAlivePlayers()) do
 		local role=aplayer:getRole()
@@ -1205,8 +1212,12 @@ function sgs.gameProcess(room, arg)
 			if aplayer:getMaxHp() == 3 then rebel_value = rebel_value + 0.5 end
 			rebel_value = rebel_value + rebel_hp + math.max(sgs.getDefense(aplayer, true) - rebel_hp * 2, 0) * 0.7
 			if aplayer:getDefensiveHorse() then
-				rebel_value = rebel_value + 0.5
+				rebel_value = rebel_value + 0.3
 			end
+			if lord and aplayer:inMyAttackRange(lord) then
+				rebel_value = rebel_value + 0.4
+			end
+			if apl
 			if aplayer:getMark("@duanchang") > 0 and aplayer:getMaxHp() <= 3 then rebel_value = rebel_value - 1 end
 		elseif role == "loyalist" or role == "lord" then
 			local loyal_hp
@@ -1331,32 +1342,38 @@ function SmartAI:objectiveLevel(player)
 				end
 			end
 		end
-		local gameProcess = sgs.gameProcess(self.room)
-		if gameProcess == "neutral" or (sgs.turncount <= 1 and sgs.isLordHealthy()) then
+		local process = sgs.gameProcess(self.room)
+		if process == "neutral" or (sgs.turncount <= 1 and sgs.isLordHealthy()) then
 			if sgs.turncount <= 1 and sgs.isLordHealthy() then
 				if self:getOverflow() <= 0 then return 0 end
-				local rebelish = (loyal_num + 1 < rebel_num)
+				local rebelish = (sgs.current_mode_players["loyalist"] + 1 < sgs.current_mode_players["rebel"])
 				if player:isLord() then return rebelish and -1 or 0 end
-				if sgs.ai_role[player:objectName()] == "loyalist" then return rebelish and 0 or 3.5
-				elseif sgs.ai_role[player:objectName()] == "rebel" then return rebelish and 3.5 or 0
-				else return 0
+				if target_role == "loyalist" then return rebelish and 0 or 3.5
+				elseif target_role == "rebel" then return rebelish and 3.5 or 0
+				else return 5
 				end
 			end
 			if player:isLord() then return -1 end
-
-			local renegade_attack_skill = string.format("buqu|%s|%s|%s|%s",sgs.priority_skill,sgs.save_skill,sgs.recover_skill,sgs.drawpeach_skill)
-			for i=1, #players, 1 do
-				if not players[i]:isLord() and players[i]:hasSkills(renegade_attack_skill) then return 5 end
-				if not players[i]:isLord() and math.abs(sgs.ai_chaofeng[players[i]:getGeneralName()] or 0) >3 then return 5 end
+			local renegade_attack_skill = string.format("buqu|nosbuqu|%s|%s|%s|%s", sgs.priority_skill, sgs.save_skill, sgs.recover_skill, sgs.drawpeach_skill)
+			for i = 1, #players, 1 do
+				if not players[i]:isLord() and self:hasSkills(renegade_attack_skill, players[i]) then return 5 end
+				if not players[i]:isLord() and math.abs(sgs.ai_chaofeng[players[i]:getGeneralName()] or 0) > 3 then return 5 end
 			end
 			return 3
-		elseif gameProcess:match("rebel") then
+		elseif process:match("rebel") then
 			return target_role == "rebel" and 5 or -1
-		elseif gameProcess:match("dilemma") then
+		elseif process:match("dilemma") then
 			if target_role == "rebel" then return 5
+			elseif target_role == "loyalist" or target_role == "renegade" then return 0
 			elseif player:isLord() then return -2
-			elseif target_role == "renegade" then return 0
 			else return 5 end
+		elseif process == "loyalish" then
+			if player:isLord() or target_role == "renegade" then return 0 end
+			local rebelish = (sgs.current_mode_players["loyalist"] + 1 < sgs.current_mode_players["rebel"])
+			if target_role == "loyalist" then return rebelish and 0 or 3.5
+			elseif target_role == "rebel" then return rebelish and 3.5 or 0
+			else return 0
+			end
 		else
 			if player:isLord() or target_role == "renegade" then return 0 end
 			return target_role == "rebel" and -2 or 5
@@ -1388,9 +1405,9 @@ function SmartAI:objectiveLevel(player)
 				elseif current_enemy_num >= rebel_num and loyal_num + renegade_num + 1 <= rebel_num then
 					return -1
 				end
-			elseif sgs.explicit_renegade and renegade_num == 1 then return -1 
+			elseif sgs.explicit_renegade and renegade_num == 1 then return -1
+			else return 0
 			end
-			return 0
 		end
 		
 		if rebel_num == 0 then
@@ -1577,7 +1594,13 @@ function SmartAI:updatePlayers(clear_flags)
 			sgs[aflag] = nil
 		end
 	end
-
+	
+	sgs.ai_updateDefense = true
+	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+		sgs.getDefense(p, true)
+	end
+	sgs.ai_updateDefense = false
+	
 	if sgs.isRolePredictable(true) then
 		self.friends = {}
 		self.friends_noself = {}
@@ -2385,42 +2408,25 @@ function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_e
 end
 
 sgs.ai_skill_discard.gamerule = function(self, discard_num, min_num)
-	local test2 = false
-	if test2 then
-		local cards = sgs.QList2Table(self.player:getHandcards())
-		self:sortByKeepValue(cards)
-		local to_discard = {}
-		local debugprint = true
-		if debugprint then
-			logmsg("discard.html", "<meta charset='utf-8'/><pre>")
-			logmsg("discard.html", "================="..self.player:getGeneralName() .. sgs.turncount .."====================")
-		end
-		
-		for i, card in ipairs(cards) do
-			if i <= discard_num then
-				if debugprint then logmsg("discard.html", "dis :  " .. card:getLogName().. self:getKeepValue(card)) end
-			else
-				if debugprint then logmsg("discard.html", "keep :  " .. card:getLogName()..self:getKeepValue(card)) end
-			end
-		end
-		
-		local least = min_num
-		if discard_num - min_num > 1 then least = discard_num - 1 end
-		
-		logmsg("discard.html", "::::")
-		
-		for _, card in ipairs(cards) do
-			if not self.player:isCardLimited(card, sgs.Card_MethodDiscard, true) then
-				table.insert(to_discard, card:getId())
-				if debugprint then logmsg("discard.html", "discard :  "  .. card:getLogName()) end
-			end
-			if (self.player:hasSkill("qinyin") and #to_discard >= least) or #to_discard >= discard_num or self.player:isKongcheng() then break end
-		end
-		
-		return to_discard
-	end
-
 	
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(cards)
+	local to_discard = {}
+
+	local least = min_num
+	if discard_num - min_num > 1 then least = discard_num - 1 end
+		
+	for _, card in ipairs(cards) do
+		if not self.player:isCardLimited(card, sgs.Card_MethodDiscard, true) then
+			table.insert(to_discard, card:getId())
+		end
+		if (self.player:hasSkill("qinyin") and #to_discard >= least) or #to_discard >= discard_num or self.player:isKongcheng() then break end
+	end
+		
+	return to_discard
+	
+
+	--[[
 	local cards = sgs.QList2Table(self.player:getCards("h"))
 	local to_discard = {}
 	local peaches, jinks, analeptics, nullifications, slashes = {}, {}, {}, {}, {}
@@ -2534,6 +2540,7 @@ sgs.ai_skill_discard.gamerule = function(self, discard_num, min_num)
 		if (self.player:hasSkill("qinyin") and #to_discard >= least) or #to_discard >= discard_num or self.player:isKongcheng() then break end
 	end
 	return to_discard
+	]]
 end
 
 

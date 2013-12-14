@@ -847,7 +847,7 @@ public:
 
 class Package: public QObject {
 public:
-    enum Type { GeneralPack, CardPack, MixedPack, SpecialPack };
+    enum Type { GeneralPack, CardPack, SpecialPack };
 
     Package(const char *name, Type pack_type = GeneralPack);
     void insertRelatedSkills(const char *main_skill, const char *related_skill);

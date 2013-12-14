@@ -934,18 +934,13 @@ Select3v3GeneralDialog::Select3v3GeneralDialog(QDialog *parent)
 void Select3v3GeneralDialog::fillTabWidget() {
     QList<const Package *> packages = Sanguosha->findChildren<const Package *>();
     foreach (const Package *package, packages) {
-        switch (package->getType()) {
-        case Package::GeneralPack:
-        case Package::MixedPack: {
-                QListWidget *list = new QListWidget;
-                list->setViewMode(QListView::IconMode);
-                list->setDragDropMode(QListView::NoDragDrop);
-                fillListWidget(list, package);
+        if (package->getType() == Package::GeneralPack) {
+            QListWidget *list = new QListWidget;
+            list->setViewMode(QListView::IconMode);
+            list->setDragDropMode(QListView::NoDragDrop);
+            fillListWidget(list, package);
 
-                tab_widget->addTab(list, Sanguosha->translate(package->objectName()));
-            }
-        default:
-                break;
+            tab_widget->addTab(list, Sanguosha->translate(package->objectName()));
         }
     }
 }

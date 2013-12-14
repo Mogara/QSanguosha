@@ -676,11 +676,14 @@ void PlayerCardContainer::startHuaShen(QString generalName, QString skillName) {
     _m_huashenAnimation = G_ROOM_SKIN.createHuaShenAnimation(pixmap, animRect.topLeft(), _getAvatarParent(), _m_huashenItem);
     _m_huashenAnimation->start();
     _paintPixmap(_m_extraSkillBg, _m_layout->m_extraSkillArea, QSanRoomSkin::S_SKIN_KEY_EXTRA_SKILL_BG, _getAvatarParent());
-    _m_extraSkillBg->show();
+    if (!skillName.isEmpty())
+        _m_extraSkillBg->show();
     _m_layout->m_extraSkillFont.paintText(_m_extraSkillText, _m_layout->m_extraSkillTextArea, Qt::AlignCenter,
                                           Sanguosha->translate(skillName).left(2));
-    _m_extraSkillText->show();
-    _m_extraSkillBg->setToolTip(Sanguosha->getSkill(skillName)->getDescription());
+    if (!skillName.isEmpty()) {
+        _m_extraSkillText->show();
+        _m_extraSkillBg->setToolTip(Sanguosha->getSkill(skillName)->getDescription());
+	}
     _adjustComponentZValues();
 }
 

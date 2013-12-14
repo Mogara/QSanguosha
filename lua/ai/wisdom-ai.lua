@@ -36,7 +36,7 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 		end
 		if friend:hasSkill("nosjizhi") then --队友有集智
 			for _, hcard in sgs.qlist(cards) do
-				if hcard:isKindOf("TrickCard") and not hcard:isKindOf("DelayedTrick") then
+				if hcard:isKindOf("TrickCard") and not hcard:isKindOf("DelayedTrick") and not table.contains(givecard, hcard:getId()) then
 					table.insert(givecard, hcard:getId())
 				end
 				if #givecard == 1 and givecard[1] ~= hcard:getId() then
@@ -50,7 +50,7 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 		end
 		if friend:hasSkill("jizhi") then --队友有集智
 			for _, hcard in sgs.qlist(cards) do
-				if hcard:isKindOf("TrickCard") then
+				if hcard:isKindOf("TrickCard") and not table.contains(givecard, hcard:getId()) then
 					table.insert(givecard, hcard:getId())
 				end
 				if #givecard == 1 and givecard[1] ~= hcard:getId() then
@@ -64,7 +64,26 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 		end
 		if friend:hasSkill("leiji") then --队友有雷击
 			for _, hcard in sgs.qlist(cards) do
-				if hcard:getSuit() == sgs.Card_Spade or hcard:isKindOf("Jink") then
+				if ((friend:hasSkill("guidao") and hcard:getSuit() == sgs.Card_Spade) or hcard:isKindOf("Jink"))
+					and not table.contains(givecard, hcard:getId()) then
+					table.insert(givecard, hcard:getId())
+				end
+				if #givecard == 1 and givecard[1] ~= hcard:getId() then
+					table.insert(givecard, hcard:getId())
+				elseif #givecard == 2 then
+					use.card = sgs.Card_Parse("@JuaoCard=" .. table.concat(givecard, "+"))
+					if use.to then 
+						use.to:append(friend) 
+						self:speak("我知道你有什么牌，哼哼。")
+					end
+					return
+				end
+			end
+		end
+		if friend:hasSkill("nosleiji") then --队友有雷击
+			for _, hcard in sgs.qlist(cards) do
+				if ((friend:hasSkill("guidao") and hcard:isBlack()) or hcard:isKindOf("Jink"))
+					and not table.contains(givecard, hcard:getId()) then
 					table.insert(givecard, hcard:getId())
 				end
 				if #givecard == 1 and givecard[1] ~= hcard:getId() then
@@ -81,7 +100,7 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 		end
 		if friend:hasSkill("xiaoji") or friend:hasSkill("xuanfeng") then --队友有枭姬（旋风）
 			for _, hcard in sgs.qlist(cards) do
-				if hcard:isKindOf("EquipCard") then
+				if hcard:isKindOf("EquipCard") and not table.contains(givecard, hcard:getId()) then
 					table.insert(givecard, hcard:getId())
 				end
 				if #givecard == 1 and givecard[1] ~= hcard:getId() then
@@ -123,7 +142,7 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 			local extra = self:KingdomsCount(players) --额外摸牌的数目
 			if enemy:getCardCount(true) <= extra then --如果敌人快裸奔了
 				for _,hcard in sgs.qlist(cards) do
-					if hcard:isKindOf("Disaster") then
+					if hcard:isKindOf("Disaster") and not table.contains(givecard, hcard:getId()) then
 						table.insert(givecard, hcard:getId())
 					end
 					if #givecard == 1 and givecard[1] ~= hcard:getId() then
@@ -149,7 +168,7 @@ sgs.ai_skill_use_func.JuaoCard = function(card, use, self)
 	end
 	if #givecard < 2 then
 		for _, hcard in sgs.qlist(cards) do
-			if hcard:isKindOf("Disaster") then
+			if hcard:isKindOf("Disaster") and not table.contains(givecard, hcard:getId()) then
 				table.insert(givecard, hcard:getId())
 			end
 			if #givecard == 2 then

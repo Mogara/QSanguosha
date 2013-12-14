@@ -95,7 +95,7 @@ void RoomThread3v3::run() {
 
     room->doBroadcastNotify(S_COMMAND_FILL_GENERAL, toJsonArray(general_names));
 
-    QString order = room->askForOrder(warm_leader);
+    QString order = room->askForOrder(warm_leader, "warm");
     ServerPlayer *first, *next;
     if (order == "warm") {
         first = warm_leader;

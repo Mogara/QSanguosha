@@ -105,8 +105,10 @@ public:
             PindianStar pindian = data.value<PindianStar>();
             if(pindian->reason == objectName())
                 if (pindian->success){
-                    xuyou->obtainCard(pindian->to_card);
-                    xuyou->obtainCard(pindian->from_card);
+                    if (room->getCardPlace(pindian->to_card->getEffectiveId()) == Player::PlaceTable)
+                        xuyou->obtainCard(pindian->to_card);
+                    if (room->getCardPlace(pindian->from_card->getEffectiveId()) == Player::PlaceTable)
+                        xuyou->obtainCard(pindian->from_card);
                 }
                 else
                     xuyou->getRoom()->broadcastSkillInvoke(objectName(), 2);

@@ -784,7 +784,6 @@ private:
 };
 
 BifaCard::BifaCard() {
-    mute = true;
     will_throw = false;
     handling_method = Card::MethodNone;
 }
@@ -796,7 +795,6 @@ bool BifaCard::targetFilter(const QList<const Player *> &targets, const Player *
 void BifaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.first();
     target->tag["BifaSource" + QString::number(getEffectiveId())] = QVariant::fromValue((PlayerStar)source);
-    room->broadcastSkillInvoke("bifa", 1);
     target->addToPile("bifa", this, false);
 }
 
@@ -859,11 +857,9 @@ public:
                 if (!player->isKongcheng() && chenlin && chenlin->isAlive())
                     to_give = room->askForCard(player, pattern, "@bifa-give", data_for_ai, Card::MethodNone, chenlin);
                 if (chenlin && to_give) {
-                    room->broadcastSkillInvoke(objectName(), 2);
                     chenlin->obtainCard(to_give, false);
                     player->obtainCard(cd, false);
                 } else {
-                    room->broadcastSkillInvoke(objectName(), 3);
                     CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), objectName(), QString());
                     room->throwCard(cd, reason, NULL);
                     room->loseHp(player);
@@ -1268,12 +1264,10 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *, QVariant &) const{
         ServerPlayer *xiahoushi = room->findPlayerBySkillName(objectName());
         if (!xiahoushi || !xiahoushi->tag["XiaodeSkill"].toString().isEmpty()) return false;
-        QStringList skill_list;
-        skill_list.append(addSkillList(player->getGeneral()));
-        skill_list.append(addSkillList(player->getGeneral2()));
+        QStringList skill_list = xiahoushi->tag["XiaodeVictimSkills"].toStringList();
         if (skill_list.isEmpty()) return false;
         if (!room->askForSkillInvoke(xiahoushi, objectName(), QVariant::fromValue(skill_list))) return false;
         QString skill_name = room->askForChoice(xiahoushi, objectName(), skill_list.join("+"));
@@ -1281,23 +1275,12 @@ public:
         room->acquireSkill(xiahoushi, skill_name);
         return false;
     }
-
-private:
-    QStringList addSkillList(const General *general) const{
-        if (!general) return QStringList();
-        QStringList skill_list;
-        foreach (const Skill *skill, general->getSkillList()) {
-            if (skill->isVisible() && !skill->isLordSkill() && skill->getFrequency() != Skill::Wake)
-                skill_list.append(skill->objectName());
-        }
-        return skill_list;
-    }
 };
 
 class XiaodeEx: public TriggerSkill {
 public:
     XiaodeEx(): TriggerSkill("#xiaode") {
-        events << EventPhaseChanging << EventLoseSkill;
+        events << EventPhaseChanging << EventLoseSkill << Death;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1320,8 +1303,25 @@ public:
                 room->detachSkillFromPlayer(player, skill_name, false, true);
                 player->tag.remove("XiaodeSkill");
             }
+        } else if (triggerEvent == Death && TriggerSkill::triggerable(player)) {
+            DeathStruct death = data.value<DeathStruct>();
+            QStringList skill_list;
+            skill_list.append(addSkillList(death.who->getGeneral()));
+            skill_list.append(addSkillList(death.who->getGeneral2()));
+            player->tag["XiaodeVictimSkills"] = QVariant::fromValue(skill_list);
         }
         return false;
+    }
+
+private:
+    QStringList addSkillList(const General *general) const{
+        if (!general) return QStringList();
+        QStringList skill_list;
+        foreach (const Skill *skill, general->getSkillList()) {
+            if (skill->isVisible() && !skill->isLordSkill() && skill->getFrequency() != Skill::Wake)
+                skill_list.append(skill->objectName());
+        }
+        return skill_list;
     }
 };
 

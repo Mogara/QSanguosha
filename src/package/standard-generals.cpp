@@ -114,7 +114,8 @@ public:
         CardStar card = judge->card;
 
         QVariant data_card = QVariant::fromValue(card);
-        if (guojia->askForSkillInvoke(objectName(), data_card)) {
+        if (room->getCardPlace(card->getEffectiveId()) == Player::PlaceJudge
+            && guojia->askForSkillInvoke(objectName(), data_card)) {
             room->broadcastSkillInvoke(objectName());
             guojia->obtainCard(judge->card);
             return false;
@@ -339,7 +340,7 @@ public:
             if (judge->reason == objectName()) {
                 bool isHegVer = zhenji->getGeneralName() != "zhenji"
                                 && (zhenji->getGeneralName() == "heg_zhenji" || zhenji->getGeneral2Name() == "heg_zhenji");
-                if (judge->card->isBlack()) {
+                if (judge->card->isBlack() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
                     if (isHegVer && zhenji->hasSkills("guicai|guidao|huanshi")) {
                         CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, zhenji->objectName(), QString(), judge->reason);
                         room->moveCardTo(judge->card, zhenji, NULL, Player::PlaceTable, reason, true);

@@ -187,7 +187,7 @@ public:
         QVariant data = QVariant::fromValue(damage);
         const Card *card = room->askForCard(target, ".", "@yuce-show", data, Card::MethodNone);
         if (card) {
-            room->broadcastSkillInvoke(objectName(), 1);
+            room->broadcastSkillInvoke(objectName());
             room->notifySkillInvoked(target, objectName());
             LogMessage log;
             log.from = target;
@@ -208,7 +208,6 @@ public:
                                              .arg(target->objectName())
                                              .arg(types.first()).arg(types.last()),
                                      data)) {
-                room->broadcastSkillInvoke(objectName(), 2);
                 RecoverStruct recover;
                 recover.who = target;
                 room->recover(target, recover);
