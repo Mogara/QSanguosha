@@ -248,6 +248,7 @@ end
 
 sgs.ai_need_damaged.enyuan = function (self, attacker, player)
 	if not player:hasSkill("enyuan") then return false end
+	if not attacker then return end
 	if self:isEnemy(attacker, player) and self:isWeak(attacker) and attacker:getHandcardNum() < 3 
 	  and not self:hasSkills("lianying|shangshi|nosshangshi", attacker)
 	  and not (attacker:hasSkill("kongcheng") and attacker:getHandcardNum() > 0)

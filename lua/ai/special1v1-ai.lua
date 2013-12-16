@@ -450,7 +450,9 @@ sgs.ai_skill_use_func.PujiCard = function(card, use, self)
 	local players = self:findPlayerToDiscard("he", false, true, nil, true)
 	for _, p in ipairs(players) do
 		local id = self:askForCardChosen(p, "he", "dummyreason", sgs.Card_MethodDiscard)
-		if id and (self:isFriend(p) or not p:hasEquip(sgs.Sanguosha:getCard(id)) or sgs.Sanguosha:getCard(id):getSuit() ~= sgs.Card_Spade) then
+		local chosen_card
+		if id then chosen_card = sgs.Sanguosha:getCard(id) end
+		if id and chosen_card and (self:isFriend(p) or not p:hasEquip(chosen_card) or sgs.Sanguosha:getCard(id):getSuit() ~= sgs.Card_Spade) then
 			self.puji_id_choice = id
 			use.card = card
 			if use.to then use.to:append(p) end

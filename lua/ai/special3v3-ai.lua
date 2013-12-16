@@ -197,7 +197,7 @@ end
 sgs.ai_need_damaged.vsganglie = function(self, attacker, player)
 	for _, enemy in ipairs(self.enemies) do
 		if self:isEnemy(enemy, player) and enemy:getHp() + enemy:getHandcardNum() <= 3
-			and not (enemy:hasSkills(sgs.need_kongcheng) and not hasBuquEffect(enemy) and attacker:getHandcardNum() > 1) and sgs.isGoodTarget(enemy, self.enemies, self) then
+			and not (enemy:hasSkills(sgs.need_kongcheng) and not hasBuquEffect(enemy) and enemy:getHandcardNum() > 1) and sgs.isGoodTarget(enemy, self.enemies, self) then
 			return true
 		end
 	end
@@ -292,7 +292,7 @@ function sgs.ai_cardsview.jiuzhu(self, class_name, player)
 		local must_save = false
 		if self.room:getMode() == "06_3v3" then
 			if dying:getRole() == "renegade" or dying:getRole() == "lord" then must_save = true end
-		elseif dying:isLord() and (self.role == "loyalist" or (self.role == "renegade" and room:alivePlayerCount() > 2)) then
+		elseif dying:isLord() and (self.role == "loyalist" or (self.role == "renegade" and self.room:alivePlayerCount() > 2)) then
 			must_save = true
 		end
 		if not must_save and self:isWeak(player) and not player:hasArmorEffect("SilverLion") then return nil end

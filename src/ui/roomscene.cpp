@@ -2566,7 +2566,7 @@ void RoomScene::onSkillActivated() {
             skill = Sanguosha->getViewAsSkill(dialog->objectName());
     }
 
-    if (skill) {
+    if (skill && !skill->inherits("FilterSkill")) {
         dashboard->startPending(skill);
         //ok_button->setEnabled(false);
         cancel_button->setEnabled(true);

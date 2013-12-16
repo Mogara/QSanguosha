@@ -423,7 +423,8 @@ sgs.ai_skill_use["@@fengyin"] = function(self, data)
 	if self:isFriend(target) and self:willSkipPlayPhase(target) and target:getHandcardNum() + 2 > target:getHp() and target:getHp() >= self.player:getHp() then
 		return "@FengyinCard="..card_id
 	end
-	if self:isEnemy(target) and not self:willSkipPlayPhase(target) and target:getHandcardNum() >= target:getHp() and target:getHp() >= self.player:getHp() then
+	if self:isEnemy(target) and not target:hasSkill("yongsi") and not self:willSkipPlayPhase(target) and target:getHandcardNum() >= target:getHp()
+		and target:getHp() >= self.player:getHp() then
 		return "@FengyinCard="..card_id
 	end
 	return "."

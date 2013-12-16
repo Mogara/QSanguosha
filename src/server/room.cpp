@@ -4791,7 +4791,7 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> e
             shenlvmeng->tag.remove(skill_name);
             return -1;
         }
-        card_id = ai->askForAG(enabled_ids, true, objectName());
+        card_id = ai->askForAG(enabled_ids, true, skill_name);
         if (card_id == -1) {
             shenlvmeng->tag.remove(skill_name);
             return -1;

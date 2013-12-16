@@ -140,7 +140,8 @@ end
 
 
 sgs.ai_need_damaged.fankui = function (self, attacker, player)
-	if not player:hasSkill("guicai") or not player:hasSkill("fankui") then return false end
+	if not player:hasSkill("guicai+fankui") then return false end
+	if not attacker then return end
 	local need_retrial = function(target)
 		local alive_num = self.room:alivePlayerCount()
 		return alive_num + target:getSeat() % alive_num > self.room:getCurrent():getSeat() 
@@ -257,6 +258,7 @@ sgs.ai_skill_invoke.ganglie = function(self, data)
 end
 
 sgs.ai_need_damaged.ganglie = function(self, attacker, player)
+	if not attacker then return end
 	if not attacker:hasSkill("ganglie") and self:getDamagedEffects(attacker, player) then return self:isFriend(attacker, player) end
 	if self:isEnemy(attacker) and attacker:getHp() + attacker:getHandcardNum() <= 3
 		and not (self:hasSkills(sgs.need_kongcheng .. "|buqu", attacker) and attacker:getHandcardNum() > 1) and sgs.isGoodTarget(attacker, self:getEnemies(attacker), self) then
@@ -1093,7 +1095,7 @@ end
 
 function sgs.ai_cardsview_valuable.jijiang(self, class_name, player, need_lord)
 	if class_name == "Slash" and sgs.Sanguosha:getCurrentCardUseReason() == sgs.CardUseStruct_CARD_USE_REASON_RESPONSE_USE
-		and not player:hasFlag("Global_JijiangFailed") and (need_lord ~= false or player:hasLordSkill("jijiang")) then
+		and not player:hasFlag("Global_JijiangFailed") and (need_lord == false or player:hasLordSkill("jijiang")) then
 		local current = self.room:getCurrent()
 		if current:getKingdom() == "shu" and self:getOverflow(current) > 2 and not self:hasCrossbowEffect(current) then
 			self.player:setFlags("stack_overflow_jijiang")
@@ -1700,21 +1702,34 @@ sgs.ai_skill_use_func.FanjianCard=function(card,use,self)
 	
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(cards, true)
+	if #cards == 1 and cards[1]:getSuit() == sgs.Card_Diamond then return end
+	if #cards <= 4 and (self:getCardsNum("Peach") > 0 or self:getCardsNum("Analeptic") > 0) then return end
 	self:sort(self.enemies, "hp")
+	
+	local suits = {}
+	local suits_num = 0
+	for _, c in ipairs(cards) do
+		if not suits[c:getSuitString()] then
+			suits[c:getSuitString()] = true
+			suits_num = suits_num + 1
+		end
+	end
 	
 	local wgt = self.room:findPlayerBySkillName("buyi")
 	if wgt and self:isFriend(wgt) then wgt = nil end
-	for _, card in ipairs(cards) do
-		if not (card:getSuit() == sgs.Card_Diamond and self.player:getHandcardNum() == 1)
-			and not (#cards <= 4 and (card:isKindOf("Peach") or card:isKindOf("Analeptic"))) then
-			for _, enemy in ipairs(self.enemies) do
-				if self:canAttack(enemy) and not enemy:hasSkills("qingnang|jijiu|tianxiang")
-					and not (wgt and card:getTypeId() ~= sgs.Card_Basic and (enemy:isKongcheng() or enemy:objectName() == wgt:objectName())) then
-					use.card = sgs.Card_Parse("@FanjianCard=.")
-					if use.to then use.to:append(enemy) end
-					return
-				end
-			end
+
+	for _, enemy in ipairs(self.enemies) do
+		local visible = 0
+		for _, card in ipairs(cards) do
+			local flag = string.format("%s_%s_%s", "visible", enemy:objectName(), self.player:objectName())
+			if card:hasFlag("visible") or card:hasFlag(flag) then visible = visible + 1 end
+		end
+		if visible > 0 and (#cards <= 2 or suits_num <= 2) then continue end
+		if self:canAttack(enemy) and not enemy:hasSkills("qingnang|jijiu|tianxiang")
+			and not (wgt and card:getTypeId() ~= sgs.Card_Basic and (enemy:isKongcheng() or enemy:objectName() == wgt:objectName())) then
+			use.card = sgs.Card_Parse("@FanjianCard=.")
+			if use.to then use.to:append(enemy) end
+			return
 		end
 	end
 end
@@ -1724,7 +1739,29 @@ sgs.ai_card_intention.FanjianCard = 70
 function sgs.ai_skill_suit.fanjian(self)
 	local map = {0, 0, 1, 2, 2, 3, 3, 3}
 	local suit = map[math.random(1, 8)]
-	if self.player:hasSkill("hongyan") and suit == sgs.Card_Spade then return sgs.Card_Heart else return suit end
+	local tg = self.room:getCurrent()
+	local suits = {}
+	local maxnum, maxsuit = 0
+	for _, c in sgs.qlist(tg:getHandcards()) do
+		local flag = string.format("%s_%s_%s", "visible", self.player:objectName(), tg:objectName())
+		if c:hasFlag(flag) or c:hasFlag("visible") then
+			if not suits[c:getSuitString()] then suits[c:getSuitString()] = 1 else suits[c:getSuitString()] = suits[c:getSuitString()] + 1 end
+			if suits[c:getSuitString()] > maxnum then
+				maxnum = suits[c:getSuitString()]
+				maxsuit = c:getSuit()
+			end
+		end
+	end
+	if self.player:hasSkill("hongyan") and (maxsuit == sgs.Card_Spade or suit == sgs.Card_Spade) then
+		return sgs.Card_Heart
+	end
+	if maxsuit then
+		if self.player:hasSkill("hongyan") and maxsuit == sgs.Card_Spade then return sgs.Card_Heart end
+		return maxsuit
+	else
+		if self.player:hasSkill("hongyan") and suit == sgs.Card_Spade then return sgs.Card_Heart end
+		return suit
+	end
 end
 
 sgs.dynamic_value.damage_card.FanjianCard = true

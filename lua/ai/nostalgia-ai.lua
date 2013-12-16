@@ -178,8 +178,8 @@ function sgs.ai_slash_prohibit.nosenyuan(self, from, to, card)
 	return self:isWeak(from)
 end
 
-sgs.ai_need_damaged.nosenyuan = function (self, attacker, player)	
-	if player:hasSkill("nosenyuan") and self:isEnemy(attacker, player) and self:isWeak(attacker)
+sgs.ai_need_damaged.nosenyuan = function (self, attacker, player)
+	if player:hasSkill("nosenyuan") and attacker and self:isEnemy(attacker, player) and self:isWeak(attacker)
 		and not (self:needToLoseHp(attacker) and not self:hasSkills(sgs.masochism_skill, attacker)) then
 			return true
 	end
@@ -644,7 +644,8 @@ function sgs.ai_slash_prohibit.nosleiji(self, from, to, card)
 		end
 	end
 
-	if getKnownCard(to, "Jink", true) >= 1 or (self:hasSuit("spade", true, to) and hcard >= 2) then return true end
+	if sgs.card_lack[to:objectName()]["Jink"] == 2 then return true end
+	if getKnownCard(to, "Jink", true) >= 1 or (self:hasSuit("spade", true, to) and hcard >= 2) or hcard >= 4 then return true end
 	if self:hasEightDiagramEffect(to) then return true end
 end
 
@@ -850,6 +851,16 @@ nosguhuo_skill.getTurnUseCard = function(self)
 		end
 	end
 
+	if self:isWeak() then
+		local peach_str = self:getGuhuoCard("Peach", true, -1)
+		if peach_str then
+			local card = sgs.Card_Parse(peach_str)
+			local peach = sgs.Sanguosha:cloneCard("peach", card:getSuit(), card:getNumber())
+			local dummy_use = { isDummy = true }
+			self:useBasicCard(peach, dummy_use)
+			if dummy_use.card then return card end
+		end
+	end
 	local slash_str = self:getGuhuoCard("Slash", true, -1)
 	if slash_str and self:slashIsAvailable() then
 		local card = sgs.Card_Parse(slash_str)
