@@ -14,7 +14,7 @@ sgs.ai_skill_cardask["@xiaoguo"] = function(self, data)
 	if has_slash then card = has_slash
 	elseif has_jink then card = has_jink
 	elseif has_analeptic then
-		if (getCardsNum("EquipCard", currentplayer) == 0 and not self:isWeak()) or self:getCardsNum("Analeptic") > 1 then
+		if (getCardsNum("EquipCard", currentplayer, self.player) == 0 and not self:isWeak()) or self:getCardsNum("Analeptic") > 1 then
 			card = has_analeptic
 		end
 	end

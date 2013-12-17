@@ -416,8 +416,8 @@ function sgs.CreateTrickCard(spec)
 			if not spec.about_to_use then spec.about_to_use = onUse_AOE end
 			if not spec.target_fixed then card:setTargetFixed(true) end
 		elseif spec.subclass == sgs.LuaTrickCard_TypeGlobalEffect then
-			if not spec.available then spec.available = isAvailable_AOE end
-			if not spec.about_to_use then spec.about_to_use = onUse_AOE end
+			if not spec.available then spec.available = isAvailable_GlobalEffect end
+			if not spec.about_to_use then spec.about_to_use = onUse_GlobalEffect end
 			if not spec.target_fixed then card:setTargetFixed(true) end
 		end
 	end

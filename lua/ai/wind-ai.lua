@@ -282,7 +282,7 @@ function SmartAI:findLeijiTarget(player, leiji_value, slasher, latest_version)
 		else
 			if not self:hasSuit("black", true, player) and player:getHandcardNum() < 2 then return nil end
 		end
-		if not (getKnownCard(player, "Jink", true) > 0 or (getCardsNum("Jink", player) >= 1 and sgs.card_lack[player:objectName()]["Jink"] ~= 1)
+		if not (getKnownCard(player, "Jink", true) > 0 or (getCardsNum("Jink", player, self.player) >= 1 and sgs.card_lack[player:objectName()]["Jink"] ~= 1)
 				or (not self:isWeak(player) and self:hasEightDiagramEffect(player) and not slasher:hasWeapon("QinggangSword"))) then
 			return nil
 		end

@@ -513,9 +513,9 @@ sgs.ai_skill_use["@@fuzuo"] = function(self, prompt, method)
 		end
 		
 	elseif reason == "tianyi" or reason == "xianzhen" then		
-		if self:isFriend(from) and from_num < to_num and getCardsNum("Slash", from) >= 1 then			
+		if self:isFriend(from) and from_num < to_num and getCardsNum("Slash", from, self.player) >= 1 then			
 			return "@FuzuoCard="..card:getEffectiveId().."->"..from:objectName()
-		elseif not self:isFriend(from) and self:isFriend(to) and from_num > to_num and getCardsNum("Slash", from) >= 1 then
+		elseif not self:isFriend(from) and self:isFriend(to) and from_num > to_num and getCardsNum("Slash", from, self.player) >= 1 then
 			return "@FuzuoCard="..card:getEffectiveId().."->"..to:objectName()
 		end
 		
@@ -600,7 +600,7 @@ sgs.ai_slash_prohibit.wenjiu = function(self, from, to, card)
 	if self:isFriend(to) then
 		return card:isRed() and (has_black_slash or self:isWeak(to))
 	else		
-		if has_red_slash and getCardsNum("Jink", to) > 0 then return not card:isRed() end
+		if has_red_slash and getCardsNum("Jink", to, self.player) > 0 then return not card:isRed() end
 	end
 end
 

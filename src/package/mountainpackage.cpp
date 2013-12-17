@@ -1258,7 +1258,7 @@ public:
                 skill_names << skill->objectName();
             }
 
-            if (skill_names.isEmpty())
+            if (!skill_names.isEmpty())
                 skill_name = room->askForChoice(zuoci, "huashen", skill_names.join("+"));
         }
         //Q_ASSERT(!skill_name.isNull() && !skill_name.isEmpty());

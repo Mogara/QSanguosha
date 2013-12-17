@@ -352,7 +352,7 @@ sgs.ai_slash_prohibit.tuntian = function(self, from, to, card)
 	end
 	local enemies = self:getEnemies(to)
 	if #enemies == 1 and self.room:alivePlayerCount() == 2 and self:hasSkills("noswuyan|qianxun|weimu", enemies[1]) then return false end
-	if getCardsNum("Jink", to) < 1 or sgs.card_lack[to:objectName()]["Jink"] == 1 or self:isWeak(to) then return false end
+	if getCardsNum("Jink", to, from) < 1 or sgs.card_lack[to:objectName()]["Jink"] == 1 or self:isWeak(to) then return false end
 	if to:getHandcardNum() >= 3 and to:hasSkill("zaoxian") then return true end	
 	return false	
 end
@@ -412,7 +412,7 @@ sgs.ai_skill_cardask["@xiangle-discard"] = function(self, data)
 	if has_slash then return "$" .. has_slash:getEffectiveId()
 	elseif has_jink then return "$" .. has_jink:getEffectiveId()
 	elseif has_analeptic or has_peach then
-		if getCardsNum("Jink", target) == 0 and self.player:getMark("drank") > 0 and self:getAllPeachNum(target) == 0 then
+		if getCardsNum("Jink", target, self.player) == 0 and self.player:getMark("drank") > 0 and self:getAllPeachNum(target) == 0 then
 			if has_analeptic then return "$" .. has_analeptic:getEffectiveId()
 			else return "$" .. has_peach:getEffectiveId()
 			end
@@ -429,9 +429,9 @@ function sgs.ai_slash_prohibit.xiangle(self, from, to)
 		analeptic_num = self:getCardsNum("Analeptic")
 		jink_num = self:getCardsNum("Jink")
 	else
-		slash_num = getCardsNum("Slash", from)
-		analeptic_num = getCardsNum("Analpetic", from)
-		jink_num = getCardsNum("Jink", from)
+		slash_num = getCardsNum("Slash", from, self.player)
+		analeptic_num = getCardsNum("Analpetic", from, self.player)
+		jink_num = getCardsNum("Jink", from, self.player)
 	end
 	if self.player:getHandcardNum() == 2 then
 		if self.player:hasSkill("beifa") then self.player:setFlags("stack_overflow_xiangle") end

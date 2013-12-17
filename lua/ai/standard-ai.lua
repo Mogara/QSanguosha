@@ -697,7 +697,7 @@ sgs.ai_need_damaged.yiji = function (self, attacker, player)
 	end
 	self:sort(friends, "hp")
 
-	if #friends > 0 and friends[1]:objectName() == player:objectName() and self:isWeak(player) and getCardsNum("Peach", player) == 0 then return false end
+	if #friends > 0 and friends[1]:objectName() == player:objectName() and self:isWeak(player) and getCardsNum("Peach", player, (attacker or self.player)) == 0 then return false end
 	if #friends > 1 and self:isWeak(friends[2]) then return true end	
 	
 	return player:getHp() > 2 and sgs.turncount > 2 and #friends > 1
@@ -744,8 +744,8 @@ function SmartAI:willSkipPlayPhase(player, NotContains_Null)
 	end
 	if not NotContains_Null then
 		for _, p in sgs.qlist(self.room:getAllPlayers()) do
-			if self:isFriend(p, player) then friend_null = friend_null + getCardsNum("Nullification", p) end
-			if self:isEnemy(p, player) then friend_null = friend_null - getCardsNum("Nullification", p) end
+			if self:isFriend(p, player) then friend_null = friend_null + getCardsNum("Nullification", p, self.player) end
+			if self:isEnemy(p, player) then friend_null = friend_null - getCardsNum("Nullification", p, self.player) end
 		end
 	end
 	if player:containsTrick("indulgence") then
@@ -763,8 +763,8 @@ function SmartAI:willSkipDrawPhase(player, NotContains_Null)
 	local cp = self.room:getCurrent()
 	if not NotContains_Null then
 		for _, p in sgs.qlist(self.room:getAllPlayers()) do
-			if self:isFriend(p, player) then friend_null = friend_null + getCardsNum("Nullification", p) end
-			if self:isEnemy(p, player) then friend_null = friend_null - getCardsNum("Nullification", p) end
+			if self:isFriend(p, player) then friend_null = friend_null + getCardsNum("Nullification", p, self.player) end
+			if self:isEnemy(p, player) then friend_null = friend_null - getCardsNum("Nullification", p, self.player) end
 		end
 	end
 	if self.player:objectName() == cp:objectName() and self.player:objectName() ~= player:objectName() and self:isFriend(player) then
@@ -1130,7 +1130,7 @@ function SmartAI:getJijiangSlashNum(player)
 	local slashs = 0
 	for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
 		if p:getKingdom() == "shu" and ((sgs.turncount <= 1 and sgs.ai_role[p:objectName()] == "neutral") or self:isFriend(player, p)) then
-			slashs = slashs + getCardsNum("Slash", p)
+			slashs = slashs + getCardsNum("Slash", p, self.player)
 		end
 	end
 	return slashs
@@ -1291,11 +1291,11 @@ sgs.ai_chaofeng.machao = 1
 
 function SmartAI:isValuableCard(card, player)
 	player = player or self.player
-	if (isCard("Peach", card, player) and getCardsNum("Peach", player) <= 2)
+	if (isCard("Peach", card, player) and getCardsNum("Peach", player, self.player) <= 2)
 		or (self:isWeak(player) and isCard("Analeptic", card, player))
 		or (player:getPhase() ~= sgs.Player_Play
-			and ((isCard("Nullification", card, player) and getCardsNum("Nullification", player) < 2 and player:hasSkills("jizhi|nosjizhi|jilve"))
-				or (isCard("Jink", card, player) and getCardsNum("Jink", player) < 2)))
+			and ((isCard("Nullification", card, player) and getCardsNum("Nullification", player, self.player) < 2 and player:hasSkills("jizhi|nosjizhi|jilve"))
+				or (isCard("Jink", card, player) and getCardsNum("Jink", player, self.player) < 2)))
 		or (player:getPhase() == sgs.Player_Play and isCard("ExNihilo", card, player) and not player:isLocked(card)) then
 		return true
 	end
@@ -1993,7 +1993,7 @@ jieyin_skill.getTurnUseCard=function(self)
 	end
 	
 	for _, card in ipairs(cards) do
-		if card:getTypeId() ~= sgs.Card_TypeEquip then
+		if card:getTypeId() ~= sgs.Card_TypeEquip and (not self:isValuableCard(card) or self.player:isWounded()) then
 			if not first then first = card:getEffectiveId()
 			elseif first and first ~= card:getEffectiveId() and not second then second = card:getEffectiveId()
 			end

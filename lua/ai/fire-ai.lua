@@ -106,13 +106,13 @@ sgs.ai_skill_playerchosen.jieming = function(self, targets)
 			end
 			
 			if self:playerGetRound(friend, Shenfen_user) > self:playerGetRound(self.player, Shenfen_user) and x >= y
-				and friend:getHp() == 1 and getCardsNum("Peach", friend) < 1 then
+				and friend:getHp() == 1 and getCardsNum("Peach", friend, self.player) < 1 then
 				y = x
 				weak_friend = friend
 			end
 		end
 		
-		if weak_friend and ((getCardsNum("Peach", Shenfen_user) < 1) or (math.min(Shenfen_user:getMaxHp(), 5) - Shenfen_user:getHandcardNum() <= 1)) then
+		if weak_friend and ((getCardsNum("Peach", Shenfen_user, self.player) < 1) or (math.min(Shenfen_user:getMaxHp(), 5) - Shenfen_user:getHandcardNum() <= 1)) then
 			return weak_friend
 		end
 		if self:isFriend(Shenfen_user) and math.min(Shenfen_user:getMaxHp(), 5) > Shenfen_user:getHandcardNum() then

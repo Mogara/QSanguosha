@@ -31,7 +31,7 @@ return {
 	[":yongjue"] = "若一名角色于出牌阶段内使用的第一张牌为【杀】，此【杀】结算完毕后置入弃牌堆时，你可以令其获得之。",
 	["$CunsiAnimate"] = "image=image/animate/cunsi.png",
 
-	["heg_madai"] = "马岱-国",
+	["heg_madai"] = "国战马岱",
 	["&heg_madai"] = "马岱",
 	["illustrator:heg_madai"] = "Thinking",
 }

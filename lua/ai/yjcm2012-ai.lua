@@ -148,8 +148,8 @@ function sgs.ai_skill_invoke.zhenlie(self, data)
 
 			local friend_null = 0
 			for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-				if self:isFriend(p) then friend_null = friend_null + getCardsNum("Nullification", p) end
-				if self:isEnemy(p) then friend_null = friend_null - getCardsNum("Nullification", p) end
+				if self:isFriend(p) then friend_null = friend_null + getCardsNum("Nullification", p, self.player) end
+				if self:isEnemy(p) then friend_null = friend_null - getCardsNum("Nullification", p, self.player) end
 			end
 			friend_null = friend_null + self:getCardsNum("Nullification")
 			local sj_num = self:getCardsNum(use.card:isKindOf("SavageAssault") and "Slash" or "Jink")
@@ -180,7 +180,7 @@ function sgs.ai_skill_invoke.zhenlie(self, data)
 				if not self:hasTrickEffective(use.card, self.player) then return false end
 				return not self:doNotDiscard(use.from)
 			elseif use.card:isKindOf("Duel") then
-				if self:getCardsNum("Slash") == 0 or self:getCardsNum("Slash") < getCardsNum("Slash", use.from) then
+				if self:getCardsNum("Slash") == 0 or self:getCardsNum("Slash") < getCardsNum("Slash", use.from, self.player) then
 					if not self:hasTrickEffective(use.card, self.player) then return false end
 					if not self:damageIsEffective(self.player, sgs.DamageStruct_Normal, use.from) then return false end
 					return not self:doNotDiscard(use.from)

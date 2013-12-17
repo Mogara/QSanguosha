@@ -194,7 +194,7 @@ sgs.ai_skill_use["@@cangji"] = function(self, prompt)
 		if i == 0 then
 			if equip:isKindOf("Crossbow") or equip:isKindOf("Blade") then
 				for _, friend in ipairs(self.friends_noself) do
-					if not self:getSameEquip(equip) and not self:hasCrossbowEffect(friend) and getCardsNum("Slash", friend) > 1 then
+					if not self:getSameEquip(equip) and not self:hasCrossbowEffect(friend) and getCardsNum("Slash", friend, self.player) > 1 then
 						return "@CangjiCard=" .. equip:getEffectiveId() .. "->" .. friend:objectName()
 					end
 				end
