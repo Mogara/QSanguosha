@@ -70,10 +70,14 @@ end
 
 function sgs.CreateMaxCardsSkill(spec)
 	assert(type(spec.name) == "string")
-	assert(type(spec.extra_func) == "function")
+	assert((type(spec.extra_func) == "function") or (type(spec.fixed_func) == "function"))
 
 	local skill = sgs.LuaMaxCardsSkill(spec.name)
-	skill.extra_func = spec.extra_func
+	if skill.extra_func then
+		skill.extra_func = spec.extra_func
+	elseif skill.fixed_func then
+		skill.fixed_func = spec.fixed_func
+	end
 
 	return skill
 end
@@ -478,7 +482,7 @@ function sgs.CreateOneCardViewAsSkill(spec)
 			local pat = spec.filter_pattern
 			if string.endsWith(pat, "!") then
 				if sgs.Self:isJilei(to_select) then return false end
-				pat = string.sub(pat, 1, -1)
+				pat = string.sub(pat, 1, -2)
 			end
 			return sgs.Sanguosha:matchExpPattern(pat, sgs.Self, to_select)
 		end
