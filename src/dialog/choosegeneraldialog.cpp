@@ -72,6 +72,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     QSanRoomSkin::GeneralIconSize icon_type;
     if (tooManyManyGenerals) {
         no_icon = true;
+        icon_type = QSanRoomSkin::S_GENERAL_ICON_SIZE_CARD;
     } else {
         if (tooManyGenerals) {
             icon_type = QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE;

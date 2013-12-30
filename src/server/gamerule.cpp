@@ -71,7 +71,8 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
             int n = data.toInt();
             if (n > 0)
                 player->drawCards(n);
-            room->getThread()->trigger(AfterDrawNCards, room, player, QVariant::fromValue(n));
+            data = QVariant::fromValue(n);
+            room->getThread()->trigger(AfterDrawNCards, room, player, data);
             break;
         }
     case Player::Play: {
@@ -145,7 +146,8 @@ bool GameRule::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *play
                 room->askForLuckCard();
             int i = 0;
             foreach (ServerPlayer *p, room->getPlayers()) {
-                room->getThread()->trigger(AfterDrawInitialCards, room, p, QVariant::fromValue(n_list.at(i)));
+                QVariant vdata = QVariant::fromValue(n_list.at(i));
+                room->getThread()->trigger(AfterDrawInitialCards, room, p, vdata);
                 i++;
             }
         }
@@ -650,7 +652,8 @@ void GameRule::changeGeneral1v1(ServerPlayer *player) const{
             room->setTag("FirstRound", false);
         throw triggerEvent;
     }
-    room->getThread()->trigger(AfterDrawInitialCards, room, player, QVariant::fromValue(draw_num));
+    data = QVariant::fromValue(draw_num);
+    room->getThread()->trigger(AfterDrawInitialCards, room, player, data);
 }
 
 void GameRule::changeGeneralXMode(ServerPlayer *player) const{
@@ -702,7 +705,8 @@ void GameRule::changeGeneralXMode(ServerPlayer *player) const{
             room->setTag("FirstRound", false);
         throw triggerEvent;
     }
-    room->getThread()->trigger(AfterDrawInitialCards, room, player, QVariant::fromValue(num));
+    data = QVariant::fromValue(num);
+    room->getThread()->trigger(AfterDrawInitialCards, room, player, data);
 }
 
 void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const{

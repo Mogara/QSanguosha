@@ -271,7 +271,7 @@ void GuanxingBox::adjust() {
     up_items.removeOne(item);
     down_items.removeOne(item);
 
-    QList<CardItem *> *items = (up_only || item->y() <= middle_y) ? &up_items : items = &down_items;
+    QList<CardItem *> *items = (up_only || item->y() <= middle_y) ? &up_items : &down_items;
     int c = (item->x() + item->boundingRect().width() / 2 - start_x) / G_COMMON_LAYOUT.m_cardNormalWidth;
     c = qBound(0, c, items->length());
     items->insert(c, item);

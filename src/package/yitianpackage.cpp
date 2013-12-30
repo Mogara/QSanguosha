@@ -293,12 +293,13 @@ public:
 
     virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         PindianStar pindian = data.value<PindianStar>();
-        if(pindian->reason == "jueji")
+        if(pindian->reason == "jueji") {
             if (pindian->isSuccess()){
                 player->obtainCard(pindian->to_card);
             }
             else
                 room->broadcastSkillInvoke(objectName(), 2);
+        }
 
         return false;
     }
@@ -1273,7 +1274,7 @@ public:
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if(Self->hasUsed("LexueCard")){
             if(!Self->hasFlag("lexue"))
-                return false;
+                return 0;
 
             if(cards.length() != 1)
                 return NULL;
