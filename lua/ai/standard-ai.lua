@@ -1724,13 +1724,16 @@ sgs.ai_skill_use_func.FanjianCard=function(card,use,self)
 			local flag = string.format("%s_%s_%s", "visible", enemy:objectName(), self.player:objectName())
 			if card:hasFlag("visible") or card:hasFlag(flag) then visible = visible + 1 end
 		end
-		if visible > 0 and (#cards <= 2 or suits_num <= 2) then continue end
-		if self:canAttack(enemy) and not enemy:hasSkills("qingnang|jijiu|tianxiang")
-			and not (wgt and card:getTypeId() ~= sgs.Card_Basic and (enemy:isKongcheng() or enemy:objectName() == wgt:objectName())) then
-			use.card = sgs.Card_Parse("@FanjianCard=.")
-			if use.to then use.to:append(enemy) end
-			return
-		end
+        if visible > 0 and (#cards <= 2 or suits_num <= 2) then
+            -- continue
+        else
+            if self:canAttack(enemy) and not enemy:hasSkills("qingnang|jijiu|tianxiang")
+                and not (wgt and card:getTypeId() ~= sgs.Card_Basic and (enemy:isKongcheng() or enemy:objectName() == wgt:objectName())) then
+                use.card = sgs.Card_Parse("@FanjianCard=.")
+                if use.to then use.to:append(enemy) end
+                return
+            end
+        end
 	end
 end
 

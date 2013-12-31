@@ -189,37 +189,40 @@ sgs.ai_skill_invoke.cangji = true
 sgs.ai_skill_use["@@cangji"] = function(self, prompt)
 	for i = 0, 3, 1 do
 		local equip = self.player:getEquip(i)
-		if not equip then continue end
-		self:sort(self.friends_noself)
-		if i == 0 then
-			if equip:isKindOf("Crossbow") or equip:isKindOf("Blade") then
-				for _, friend in ipairs(self.friends_noself) do
-					if not self:getSameEquip(equip) and not self:hasCrossbowEffect(friend) and getCardsNum("Slash", friend, self.player) > 1 then
-						return "@CangjiCard=" .. equip:getEffectiveId() .. "->" .. friend:objectName()
-					end
-				end
-			elseif equip:isKindOf("Axe") then
-				for _, friend in ipairs(self.friends_noself) do
-					if not self:getSameEquip(equip)
-						and (friend:getCardCount() >= 4
-							or (friend:getCardCount() >= 2 and self:hasHeavySlashDamage(friend))) then
-						return "@CangjiCard=" .. equip:getEffectiveId() .. "->" .. friend:objectName()
-					end
-				end
-			end
-		end
-		for _, friend in ipairs(self.friends_noself) do
-			if not self:getSameEquip(equip, friend) and not (i == 1 and (self:evaluateArmor(equip, friend) <= 0 or friend:hasSkills("bazhen|yizhong"))) then
-				return "@CangjiCard=" .. equip:getEffectiveId() .. "->" .. friend:objectName()
-			end
-		end
-		if equip:isKindOf("SilverLion") then
-			for _, enemy in ipairs(self.enemies) do
-				if not enemy:getArmor() and enemy:hasSkills("bazhen|yizhong") then
-					return "@CangjiCard=" .. equip:getEffectiveId() .. "->" .. enemy:objectName()
-				end
-			end
-		end
+        if not equip then
+            -- continue
+        else
+            self:sort(self.friends_noself)
+            if i == 0 then
+                if equip:isKindOf("Crossbow") or equip:isKindOf("Blade") then
+                    for _, friend in ipairs(self.friends_noself) do
+                        if not self:getSameEquip(equip) and not self:hasCrossbowEffect(friend) and getCardsNum("Slash", friend, self.player) > 1 then
+                            return "@CangjiCard=" .. equip:getEffectiveId() .. "->" .. friend:objectName()
+                        end
+                    end
+                elseif equip:isKindOf("Axe") then
+                    for _, friend in ipairs(self.friends_noself) do
+                        if not self:getSameEquip(equip)
+                            and (friend:getCardCount() >= 4
+                            or (friend:getCardCount() >= 2 and self:hasHeavySlashDamage(friend))) then
+                            return "@CangjiCard=" .. equip:getEffectiveId() .. "->" .. friend:objectName()
+                        end
+                    end
+                end
+            end
+            for _, friend in ipairs(self.friends_noself) do
+                if not self:getSameEquip(equip, friend) and not (i == 1 and (self:evaluateArmor(equip, friend) <= 0 or friend:hasSkills("bazhen|yizhong"))) then
+                    return "@CangjiCard=" .. equip:getEffectiveId() .. "->" .. friend:objectName()
+                end
+            end
+            if equip:isKindOf("SilverLion") then
+                for _, enemy in ipairs(self.enemies) do
+                    if not enemy:getArmor() and enemy:hasSkills("bazhen|yizhong") then
+                        return "@CangjiCard=" .. equip:getEffectiveId() .. "->" .. enemy:objectName()
+                    end
+                end
+            end
+        end
 	end
 	return "."
 end
