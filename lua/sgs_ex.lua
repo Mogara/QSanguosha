@@ -222,10 +222,13 @@ function isAvailable_AOE(self, player)
 	local canUse = false
 	local players = player:getSiblings()
 	for _, p in sgs.qlist(players) do
-		if p:isDead() or player:isProhibited(p, self) then continue end
-		canUse = true
-		break
-	end
+        if p:isDead() or player:isProhibited(p, self) then
+            -- continue
+        else
+            canUse = true
+            break
+        end
+    end
 	return canUse and self:cardIsAvailable(player)
 end
 
@@ -256,10 +259,13 @@ function isAvailable_GlobalEffect(self, player)
 	local canUse = false
 	local players = player:getSiblings()
 	players:append(player)
-	for _, p in sgs.qlist(players) do
-		if p:isDead() or player:isProhibited(p, self) then continue end
-		canUse = true
-		break
+    for _, p in sgs.qlist(players) do
+        if p:isDead() or player:isProhibited(p, self) then
+            -- continue
+        else
+            canUse = true
+            break
+        end
 	end
 	return canUse and self:cardIsAvailable(player)
 end
@@ -326,41 +332,48 @@ function onNullified_DelayedTrick_movable(self, target)
 	local p = nil
 
 	for _, player in sgs.qlist(players) do
-		if player:containsTrick(self:objectName()) then continue end
+        local cont = false
+        if player:containsTrick(self:objectName()) then
+            cont = true
+        end
 
-		local skill = room:isProhibited(target, player, self)
-		if skill then
-			local logm = sgs.LogMessage()
-			logm.type = "#SkillAvoid"
-			logm.from = player
-			logm.arg = skill:objectName()
-			logm.arg2 = self:objectName()
-			room:sendLog(logm)
+        if not cont then
+            local skill = room:isProhibited(target, player, self)
+            if skill then
+                local logm = sgs.LogMessage()
+                logm.type = "#SkillAvoid"
+                logm.from = player
+                logm.arg = skill:objectName()
+                logm.arg2 = self:objectName()
+                room:sendLog(logm)
 
-			room:broadcastSkillInvoke(skill:objectName())
-			continue
-		end
+                room:broadcastSkillInvoke(skill:objectName())
+                cont = true
+            end
+        end
 
-		local reason = sgs.CardMoveReason(sgs.CardMoveReason_S_REASON_TRANSFER, target:objectName(), "", self:getSkillName(), "")
-		room:moveCardTo(self, target, player, sgs.Player_PlaceDelayedTrick, reason, true)
-		if target:objectName() == player:objectName() then break end
+        if not cont then
+            local reason = sgs.CardMoveReason(sgs.CardMoveReason_S_REASON_TRANSFER, target:objectName(), "", self:getSkillName(), "")
+            room:moveCardTo(self, target, player, sgs.Player_PlaceDelayedTrick, reason, true)
+            if target:objectName() == player:objectName() then break end
 
-		local use = sgs.CardUseStruct()
-		use.from = nil
-		use.to:append(player)
-		use.card = self
-		local data = sgs.QVariant()
-		data:setValue(use)
-		thread:trigger(sgs.TargetConfirming, room, player, data)
-		local new_use = data:toCardUse()
-		if new_use.to:isEmpty() then
-			p = player
-			break
-		end
-		for _, ps in sgs.qlist(room:getAllPlayers()) do
-			thread:trigger(sgs.TargetConfirmed, room, ps, data)
-		end
-		break
+            local use = sgs.CardUseStruct()
+            use.from = nil
+            use.to:append(player)
+            use.card = self
+            local data = sgs.QVariant()
+            data:setValue(use)
+            thread:trigger(sgs.TargetConfirming, room, player, data)
+            local new_use = data:toCardUse()
+            if new_use.to:isEmpty() then
+                p = player
+                break
+            end
+            for _, ps in sgs.qlist(room:getAllPlayers()) do
+                thread:trigger(sgs.TargetConfirmed, room, ps, data)
+            end
+            break
+        end
 	end
 	if p then self:on_nullified(p) end
 end
