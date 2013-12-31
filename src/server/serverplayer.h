@@ -9,6 +9,7 @@ class CardMoveReason;
 struct PhaseStruct;
 
 #include "player.h"
+#include "structs.h"
 #include "socket.h"
 #include "protocol.h"
 
