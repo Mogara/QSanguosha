@@ -15,13 +15,13 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
+		if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who)) {
         DamageStruct damage = data.value<DamageStruct>();
         const Card *card = damage.card;
-        if (card && room->getCardPlace(card->getEffectiveId()) == Player::PlaceTable)
-            return true;
+        return (card && room->getCardPlace(card->getEffectiveId()) == Player::PlaceTable);
+		}
         return false;
     }
-
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (player->askForSkillInvoke(objectName(), data)){
             room->broadcastSkillInvoke(objectName());
