@@ -15,6 +15,9 @@ unix {
 #    CONFIG += luajit
 }
 
+# include sqlite3 in main program
+CONFIG += luasqlite3
+
 # If you want to enable joystick support, please uncomment the following line:
 # CONFIG += joystick
 # However, joystick is not supported under Mac OS X temporarily
@@ -297,6 +300,15 @@ CONFIG(chatvoice){
         CONFIG += qaxcontainer
         DEFINES += CHAT_VOICE
     }
+}
+
+CONFIG(luasqlite3){
+    SOURCES += \
+        src/sqlite3/libluasqlite3.c \
+        src/sqlite3/sqlite3.c
+    HEADERS += \
+        src/sqlite3/sqlite3.h \
+        src/sqlite3/sqlite3ext.h
 }
 
 CONFIG(lua){
