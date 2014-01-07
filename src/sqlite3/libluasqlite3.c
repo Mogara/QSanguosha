@@ -29,7 +29,7 @@
 
 
 #include <stdio.h>
-#include <sqlite3.h>
+#include "sqlite3.h"
 #include <lua.h>
 #include <lauxlib.h>
 

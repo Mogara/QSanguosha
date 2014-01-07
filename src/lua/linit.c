@@ -21,6 +21,7 @@
 #include "lualib.h"
 #include "lauxlib.h"
 
+int luaopen_sqlite3_core(lua_State * L);
 
 /*
 ** these libs are loaded by lua.c and are readily available to any Lua
@@ -37,6 +38,7 @@ static const luaL_Reg loadedlibs[] = {
   {LUA_BITLIBNAME, luaopen_bit32},
   {LUA_MATHLIBNAME, luaopen_math},
   {LUA_DBLIBNAME, luaopen_debug},
+  {"sqlite3_core", luaopen_sqlite3_core},
   {NULL, NULL}
 };
 
