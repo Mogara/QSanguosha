@@ -12,9 +12,9 @@ win32 {
     CONFIG += luasqlite3
 }
 unix {
-    CONFIG += lua51
+    CONFIG += lua
+    CONFIG += luasqlite3
 #    CONFIG += luajit
-#    CONFIG += luasqlite3
 }
 
 # If you want to enable joystick support, please uncomment the following line:
@@ -126,7 +126,6 @@ SOURCES += \
     src/jsoncpp/src/json_reader.cpp \
     src/jsoncpp/src/json_internalmap.inl \
     src/jsoncpp/src/json_internalarray.inl \
-    swig/sanguosha_wrap.cxx \
     src/core/RoomState.cpp \
     src/core/WrappedCard.cpp \
     src/core/record-analysis.cpp \
@@ -256,7 +255,15 @@ FORMS += \
     src/dialog/connectiondialog.ui \
     src/dialog/generaloverview.ui \
     src/dialog/mainwindow.ui 
-    
+
+win32 {
+    SOURCES += swig/sanguosha_wrap.cxx
+}
+
+unix {
+    SOURCES += swig/pregen_sanguosha_wrap.cxx
+}
+
 INCLUDEPATH += include
 INCLUDEPATH += src/client
 INCLUDEPATH += src/core
