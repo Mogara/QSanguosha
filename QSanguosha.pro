@@ -9,14 +9,13 @@ CONFIG += warn_on audio
 # choose luajit if you like it, the default is to use lua.
 win32 {
     CONFIG += lua
+    CONFIG += luasqlite3
 }
 unix {
     CONFIG += lua51
 #    CONFIG += luajit
+#    CONFIG += luasqlite3
 }
-
-# include sqlite3 in main program
-CONFIG += luasqlite3
 
 # If you want to enable joystick support, please uncomment the following line:
 # CONFIG += joystick

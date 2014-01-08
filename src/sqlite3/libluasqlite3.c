@@ -30,8 +30,8 @@
 
 #include <stdio.h>
 #include "sqlite3.h"
-#include <lua.h>
-#include <lauxlib.h>
+#include "../lua/lua.h"
+#include "../lua/lauxlib.h"
 
 
 /*
@@ -54,12 +54,14 @@ int luaL_typerror (lua_State *L, int narg, const char *tname) {
   return luaL_argerror(L, narg, msg);
 }
 
+#if 0
 void luaL_register (lua_State *L, const char *libname, const luaL_Reg *l){
   if(libname) lua_newtable(L);
   luaL_setfuncs(L, l, 0);
 }
+#endif
 
-#define lua_strlen lua_rawlen
+// #define lua_strlen lua_rawlen
 
 #endif 
 
