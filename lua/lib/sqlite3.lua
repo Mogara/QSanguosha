@@ -41,6 +41,25 @@ TODO:
 --]]
 
 
+--[[
+
+DEMO:
+
+module("extensions.dbtest", package.seeall)
+extension = sgs.Package("dbtest")
+
+require "sqlite3"
+local db = sqlite3.open("./dbtest.sqlite3")
+db:exec("create table tbltest([id] int(11) not null,[value] int(11) not null, primary key(id) on conflict ignore);")
+db:exec("insert into tbltest values(1, 100);")	
+
+sgs.LoadTranslationTable {
+	["dbtest"] ="数据库",	
+}
+
+]]
+
+
 
 local core = require "sqlite3_core"
 local api, ERR, TYPE, AUTH = core.api, core.errors, core.types, core.auth
@@ -151,7 +170,7 @@ end
 -- sqlite3 --
 -------------
 
-local sqlite3 = { }
+sqlite3 = { }
 
 function sqlite3.open(filename)
   check_string(filename, "Filename as string expected")
