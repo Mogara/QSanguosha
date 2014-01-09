@@ -9,11 +9,13 @@ CONFIG += warn_on audio
 # choose luajit if you like it, the default is to use lua.
 win32 {
     CONFIG += lua
+    CONFIG += libsqlite3
     CONFIG += luasqlite3
 }
 unix {
     CONFIG += lua
     CONFIG += luasqlite3
+    LIBS += -lsqlite3
 #    CONFIG += luajit
 }
 
@@ -311,6 +313,10 @@ CONFIG(chatvoice){
 CONFIG(luasqlite3){
     SOURCES += \
         src/sqlite3/libluasqlite3.c \
+}
+
+CONFIG(libsqlite3){
+    SOURCES += \
         src/sqlite3/sqlite3.c
     HEADERS += \
         src/sqlite3/sqlite3.h \
