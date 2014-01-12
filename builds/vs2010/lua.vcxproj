@@ -103,6 +103,8 @@
     <ClInclude Include="..\..\src\lua\lundump.h" />
     <ClInclude Include="..\..\src\lua\lvm.h" />
     <ClInclude Include="..\..\src\lua\lzio.h" />
+    <ClInclude Include="..\..\src\sqlite3\sqlite3.h" />
+    <ClInclude Include="..\..\src\sqlite3\sqlite3ext.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\lua\lapi.c" />
@@ -138,6 +140,8 @@
     <ClCompile Include="..\..\src\lua\lundump.c" />
     <ClCompile Include="..\..\src\lua\lvm.c" />
     <ClCompile Include="..\..\src\lua\lzio.c" />
+    <ClCompile Include="..\..\src\sqlite3\libluasqlite3.c" />
+    <ClCompile Include="..\..\src\sqlite3\sqlite3.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

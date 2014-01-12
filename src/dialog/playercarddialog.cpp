@@ -15,6 +15,8 @@ PlayerCardButton::PlayerCardButton(const QString &name)
 {
 }
 
+QList<int> PlayerCardDialog::dummy_list = QList<int>();
+
 PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &flags,
                                    bool handcard_visible, Card::HandlingMethod method, QList<int> &disabled_ids)
     : player(player), handcard_visible(handcard_visible), method(method), disabled_ids(disabled_ids)

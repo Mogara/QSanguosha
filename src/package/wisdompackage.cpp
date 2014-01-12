@@ -103,7 +103,7 @@ public:
         }
         else {
             PindianStar pindian = data.value<PindianStar>();
-            if(pindian->reason == objectName())
+            if(pindian->reason == objectName()) {
                 if (pindian->success){
                     if (room->getCardPlace(pindian->to_card->getEffectiveId()) == Player::PlaceTable)
                         xuyou->obtainCard(pindian->to_card);
@@ -112,6 +112,7 @@ public:
                 }
                 else
                     xuyou->getRoom()->broadcastSkillInvoke(objectName(), 2);
+            }
         }
         return false;
     }

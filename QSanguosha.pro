@@ -9,9 +9,13 @@ CONFIG += warn_on audio
 # choose luajit if you like it, the default is to use lua.
 win32 {
     CONFIG += lua
+    CONFIG += libsqlite3
+    CONFIG += luasqlite3
 }
 unix {
-    CONFIG += lua51
+    CONFIG += lua
+    CONFIG += luasqlite3
+    LIBS += -lsqlite3
 #    CONFIG += luajit
 }
 
@@ -124,7 +128,6 @@ SOURCES += \
     src/jsoncpp/src/json_reader.cpp \
     src/jsoncpp/src/json_internalmap.inl \
     src/jsoncpp/src/json_internalarray.inl \
-    swig/sanguosha_wrap.cxx \
     src/core/RoomState.cpp \
     src/core/WrappedCard.cpp \
     src/core/record-analysis.cpp \
@@ -254,7 +257,15 @@ FORMS += \
     src/dialog/connectiondialog.ui \
     src/dialog/generaloverview.ui \
     src/dialog/mainwindow.ui 
-    
+
+win32 {
+    SOURCES += swig/sanguosha_wrap.cxx
+}
+
+unix {
+    SOURCES += swig/pregen_sanguosha_wrap.cxx
+}
+
 INCLUDEPATH += include
 INCLUDEPATH += src/client
 INCLUDEPATH += src/core
@@ -297,6 +308,19 @@ CONFIG(chatvoice){
         CONFIG += qaxcontainer
         DEFINES += CHAT_VOICE
     }
+}
+
+CONFIG(luasqlite3){
+    SOURCES += \
+        src/sqlite3/libluasqlite3.c \
+}
+
+CONFIG(libsqlite3){
+    SOURCES += \
+        src/sqlite3/sqlite3.c
+    HEADERS += \
+        src/sqlite3/sqlite3.h \
+        src/sqlite3/sqlite3ext.h
 }
 
 CONFIG(lua){
