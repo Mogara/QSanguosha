@@ -5309,7 +5309,12 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStar judge, cons
                           QString()));
 
     move1.card_ids.append(card->getEffectiveId());
-    int reasonType = exchange ? CardMoveReason::S_REASON_OVERRIDE : CardMoveReason::S_REASON_JUDGEDONE;
+    int reasonType;
+    if (exchange) {
+        reasonType = CardMoveReason::S_REASON_OVERRIDE;
+    } else {
+        reasonType = CardMoveReason::S_REASON_JUDGEDONE;
+    }
     CardMoveReason reason(reasonType,
                           player->objectName(),
                           exchange ? skill_name : QString(),
