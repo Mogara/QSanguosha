@@ -670,7 +670,7 @@ void StandardPackage::addQunGenerals()
     jiaxu->addSkill(new Weimu);
 
     General *pangde = new General(this, "pangde", "qun"); // QUN 008
-    pangde->addSkill("mashu");
+    pangde->addSkill(new Mashu("pangde"));
     pangde->addSkill(new Mengjin);
 
     General *zhangjiao = new General(this, "zhangjiao", "qun", 3); // QUN 010

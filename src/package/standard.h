@@ -6,6 +6,15 @@
 #include "roomthread.h"
 #include "skill.h"
 
+class Mashu: public DistanceSkill {
+public:
+    Mashu(const QString &);
+
+    virtual int getCorrect(const Player *from, const Player *) const;
+private:
+    QString owner;
+};
+
 class TuxiCard: public SkillCard {
     Q_OBJECT
 

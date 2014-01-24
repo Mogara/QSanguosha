@@ -246,18 +246,15 @@ public:
     }
 };
 
-class Mashu: public DistanceSkill {
-public:
-    Mashu(): DistanceSkill("mashu") {
-    }
+Mashu::Mashu(const QString &owner): DistanceSkill("mashu_" + owner), owner(owner) {
+}
 
-    virtual int getCorrect(const Player *from, const Player *) const{
+int Mashu::getCorrect(const Player *from, const Player *) const{
         if (from->hasSkill(objectName()) && from->hasShownSkill(this))
             return -1;
         else
             return 0;
-    }
-};
+}
 
 class Tieji: public TriggerSkill {
 public:
@@ -490,7 +487,7 @@ void StandardPackage::addShuGenerals()
 
     General *machao = new General(this, "machao", "shu"); // SHU 006
     machao->addSkill(new Tieji);
-    machao->addSkill(new Mashu);
+    machao->addSkill(new Mashu("machao"));
 
     General *huangyueying = new General(this, "huangyueying", "shu", 3, false); // SHU 007
     huangyueying->addSkill(new Jizhi);
