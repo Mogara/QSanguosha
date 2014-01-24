@@ -7,83 +7,6 @@
 #include "ai.h"
 #include "general.h"
 
-class Guidao: public TriggerSkill {
-public:
-    Guidao(): TriggerSkill("guidao") {
-        events << AskForRetrial;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        if (!TriggerSkill::triggerable(target))
-            return false;
-
-        if (target->isKongcheng()) {
-            bool has_black = false;
-            for (int i = 0; i < 4; i++) {
-                const EquipCard *equip = target->getEquip(i);
-                if (equip && equip->isBlack()) {
-                    has_black = true;
-                    break;
-                }
-            }
-            return has_black;
-        } else
-            return true;
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        JudgeStar judge = data.value<JudgeStar>();
-
-        QStringList prompt_list;
-        prompt_list << "@guidao-card" << judge->who->objectName()
-                    << objectName() << judge->reason << QString::number(judge->card->getEffectiveId());
-        QString prompt = prompt_list.join(":");
-        const Card *card = room->askForCard(player, ".|black", prompt, data, Card::MethodResponse, judge->who, true);
-
-        if (card != NULL) {
-            room->broadcastSkillInvoke(objectName());
-            room->retrial(card, player, judge, objectName(), true);
-        }
-        return false;
-    }
-};
-
-class Leiji: public TriggerSkill {
-public:
-    Leiji(): TriggerSkill("leiji") {
-        events << CardResponded;
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhangjiao, QVariant &data) const{
-        CardStar card_star = data.value<CardResponseStruct>().m_card;
-        if (card_star->isKindOf("Jink")) {
-            ServerPlayer *target = room->askForPlayerChosen(zhangjiao, room->getAlivePlayers(), objectName(), "leiji-invoke", true, true);
-            if (target) {
-                room->broadcastSkillInvoke(objectName());
-
-                JudgeStruct judge;
-                judge.pattern = ".|black";
-                judge.good = false;
-                judge.negative = true;
-                judge.reason = objectName();
-                judge.who = target;
-
-                room->judge(judge);
-
-                if (judge.isBad()) {
-                    room->damage(DamageStruct(objectName(), zhangjiao, target, 1, DamageStruct::Thunder));
-                    if (zhangjiao->isAlive()) {
-                        RecoverStruct recover;
-                        recover.who = zhangjiao;
-                        room->recover(zhangjiao, recover);
-                    }
-                }
-            }
-        }
-        return false;
-    }
-};
-
 Jushou::Jushou(): PhaseChangeSkill("jushou") {
 }
 
@@ -559,10 +482,6 @@ WindPackage::WindPackage()
     zhoutai->addSkill(new BuquMaxCards);
     zhoutai->addSkill(new Fenji);
     related_skills.insertMulti("buqu", "#buqu");
-
-    General *zhangjiao = new General(this, "zhangjiao$", "qun", 3); // QUN 010
-    zhangjiao->addSkill(new Leiji);
-    zhangjiao->addSkill(new Guidao);
 
     addMetaObject<TianxiangCard>();
 }

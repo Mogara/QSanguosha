@@ -252,7 +252,7 @@ public:
     }
 
     virtual int getCorrect(const Player *from, const Player *) const{
-        if (from->hasSkill(objectName()))
+        if (from->hasSkill(objectName()) && from->hasShownSkill(this))
             return -1;
         else
             return 0;

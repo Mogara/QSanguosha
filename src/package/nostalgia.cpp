@@ -91,36 +91,6 @@ public:
 
 // old wind generals
 
-class NosLeiji: public TriggerSkill {
-public:
-    NosLeiji(): TriggerSkill("nosleiji") {
-        events << CardResponded;
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhangjiao, QVariant &data) const{
-        CardStar card_star = data.value<CardResponseStruct>().m_card;
-        if (card_star->isKindOf("Jink")) {
-            ServerPlayer *target = room->askForPlayerChosen(zhangjiao, room->getAlivePlayers(), objectName(), "leiji-invoke", true, true);
-            if (target) {
-                room->broadcastSkillInvoke("leiji");
-
-                JudgeStruct judge;
-                judge.pattern = ".|spade";
-                judge.good = false;
-                judge.negative = true;
-                judge.reason = objectName();
-                judge.who = target;
-
-                room->judge(judge);
-
-                if (judge.isBad())
-                    room->damage(DamageStruct(objectName(), zhangjiao, target, 2, DamageStruct::Thunder));
-            }
-        }
-        return false;
-    }
-};
-
 #include "wind.h"
 class NosJushou: public Jushou {
 public:
@@ -317,11 +287,6 @@ NostalWindPackage::NostalWindPackage()
     nos_zhoutai->addSkill(new NosBuquClear);
     related_skills.insertMulti("nosbuqu", "#nosbuqu-remove");
     related_skills.insertMulti("nosbuqu", "#nosbuqu-clear");
-
-    General *nos_zhangjiao = new General(this, "nos_zhangjiao$", "qun", 3);
-    nos_zhangjiao->addSkill(new NosLeiji);
-    nos_zhangjiao->addSkill("guidao");
-
 }
 
 

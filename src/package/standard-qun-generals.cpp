@@ -520,6 +520,129 @@ public:
     }
 };
 
+class Mengjin: public TriggerSkill {
+public:
+    Mengjin():TriggerSkill("mengjin") {
+        events << SlashMissed;
+    }
+
+	virtual bool cost(TriggerEvent, Room *room, ServerPlayer *pangde, QVariant &data) const{
+		SlashEffectStruct effect = data.value<SlashEffectStruct>();
+		if (effect.to->isAlive() && pangde->canDiscard(effect.to, "he"))
+            return pangde->askForSkillInvoke(objectName(), data);
+		return false;
+	}
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *pangde, QVariant &data) const{
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        room->broadcastSkillInvoke(objectName());
+        int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName(), false, Card::MethodDiscard);
+        room->throwCard(Sanguosha->getCard(to_throw), effect.to, pangde);
+
+        return false;
+    }
+};
+
+class Leiji: public TriggerSkill {
+public:
+    Leiji(): TriggerSkill("leiji") {
+        events << CardResponded;
+    }
+
+	virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        CardStar card_star = data.value<CardResponseStruct>().m_card;
+        if (card_star->isKindOf("Jink")) {
+            ServerPlayer *target = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName(), "leiji-invoke", true, true);
+            if (target) {
+				player->tag["leiji-target"] = QVariant::fromValue(target);
+				return true;
+			} else {
+				player->tag.remove("leiji-target");
+				return false;
+			}
+		}
+		return false;
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhangjiao, QVariant &data) const{
+        CardStar card_star = data.value<CardResponseStruct>().m_card;
+        if (card_star->isKindOf("Jink")) {
+            PlayerStar target = zhangjiao->tag["leiji-target"].value<PlayerStar>();
+            if (target) {
+                room->broadcastSkillInvoke(objectName());
+
+                JudgeStruct judge;
+                judge.pattern = ".|spade";
+                judge.good = false;
+                judge.negative = true;
+                judge.reason = objectName();
+                judge.who = target;
+
+                room->judge(judge);
+
+                if (judge.isBad())
+                    room->damage(DamageStruct(objectName(), zhangjiao, target, 2, DamageStruct::Thunder));
+            }
+			zhangjiao->tag.remove("leiji-target");
+        }
+        return false;
+    }
+};
+
+class Guidao: public TriggerSkill {
+public:
+    Guidao(): TriggerSkill("guidao") {
+        events << AskForRetrial;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *ask_who) const{
+        if (!TriggerSkill::triggerable(target))
+            return false;
+
+        if (target->isKongcheng()) {
+            bool has_black = false;
+            for (int i = 0; i < 4; i++) {
+                const EquipCard *equip = target->getEquip(i);
+                if (equip && equip->isBlack()) {
+                    has_black = true;
+                    break;
+                }
+            }
+            return has_black;
+        } else
+            return true;
+    }
+
+	virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        JudgeStar judge = data.value<JudgeStar>();
+
+        QStringList prompt_list;
+        prompt_list << "@guidao-card" << judge->who->objectName()
+                    << objectName() << judge->reason << QString::number(judge->card->getEffectiveId());
+        QString prompt = prompt_list.join(":");
+
+        const Card *card = room->askForCard(player, ".|black", prompt, data, Card::MethodResponse, judge->who, true);
+
+        if (card) {
+            room->broadcastSkillInvoke(objectName());
+            player->tag["guidao_card"] = QVariant::fromValue(card);
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        JudgeStruct *judge = data.value<JudgeStruct *>();
+        const Card *card = player->tag["guidao_card"].value<const Card *>();
+
+        if (card != NULL) {
+            room->broadcastSkillInvoke(objectName());
+            room->retrial(card, player, judge, objectName(), true);
+        }
+        return false;
+    }
+};
+
 void StandardPackage::addQunGenerals()
 {
 	General *huatuo = new General(this, "huatuo", "qun", 3); // QUN 001
@@ -545,6 +668,14 @@ void StandardPackage::addQunGenerals()
     jiaxu->addSkill(new Wansha);
     jiaxu->addSkill(new Luanwu);
     jiaxu->addSkill(new Weimu);
+
+    General *pangde = new General(this, "pangde", "qun"); // QUN 008
+    pangde->addSkill("mashu");
+    pangde->addSkill(new Mengjin);
+
+    General *zhangjiao = new General(this, "zhangjiao", "qun", 3); // QUN 010
+    zhangjiao->addSkill(new Leiji);
+    zhangjiao->addSkill(new Guidao);
 
     addMetaObject<QingnangCard>();
     addMetaObject<LijianCard>();
