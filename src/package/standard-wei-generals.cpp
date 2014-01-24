@@ -177,7 +177,9 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        return new TuxiCard;
+        TuxiCard *tuxi = new TuxiCard;
+        tuxi->setShowSkill("tuxi");
+        return tuxi;
     }
 };
 
@@ -187,11 +189,13 @@ public:
         view_as_skill = new TuxiViewAsSkill;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *zhangliao) const{
-        if (zhangliao->getPhase() == Player::Draw) {
-            Room *room = zhangliao->getRoom();
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+        if (!PhaseChangeSkill::triggerable(triggerEvent, room, player, data, ask_who))
+            return false;
+
+        if (player->getPhase() == Player::Draw){
             bool can_invoke = false;
-            QList<ServerPlayer *> other_players = room->getOtherPlayers(zhangliao);
+            QList<ServerPlayer *> other_players = room->getOtherPlayers(player);
             foreach (ServerPlayer *player, other_players) {
                 if (!player->isKongcheng()) {
                     can_invoke = true;
@@ -199,11 +203,17 @@ public:
                 }
             }
 
-            if (can_invoke && room->askForUseCard(zhangliao, "@@tuxi", "@tuxi-card"))
-                return true;
+            return can_invoke;
         }
-
         return false;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        return room->askForUseCard(player, "@@tuxi", "@tuxi-card");
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *zhangliao) const{
+        return true;
     }
 };
 
