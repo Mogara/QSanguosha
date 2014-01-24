@@ -133,26 +133,6 @@ public:
     }
 };
 
-class Mengjin: public TriggerSkill {
-public:
-    Mengjin():TriggerSkill("mengjin") {
-        events << SlashMissed;
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *pangde, QVariant &data) const{
-        SlashEffectStruct effect = data.value<SlashEffectStruct>();
-        if (effect.to->isAlive() && pangde->canDiscard(effect.to, "he")) {
-            if (pangde->askForSkillInvoke(objectName(), data)) {
-                room->broadcastSkillInvoke(objectName());
-                int to_throw = room->askForCardChosen(pangde, effect.to, "he", objectName(), false, Card::MethodDiscard);
-                room->throwCard(Sanguosha->getCard(to_throw), effect.to, pangde);
-            }
-        }
-
-        return false;
-    }
-};
-
 class Lianhuan: public OneCardViewAsSkill {
 public:
     Lianhuan(): OneCardViewAsSkill("lianhuan") {
@@ -393,10 +373,6 @@ FirePackage::FirePackage()
     taishici->addSkill(new Tianyi);
     taishici->addSkill(new TianyiTargetMod);
     related_skills.insertMulti("tianyi", "#tianyi-target");
-
-    General *pangde = new General(this, "pangde", "qun"); // QUN 008
-    pangde->addSkill("mashu");
-    pangde->addSkill(new Mengjin);
 
     addMetaObject<QuhuCard>();
     addMetaObject<QiangxiCard>();
