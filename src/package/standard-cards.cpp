@@ -774,7 +774,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
                                         QVariant::fromValue(effect),
                                         Card::MethodResponse,
                                         effect.from->isAlive() ? effect.from : NULL);
-    if (jink && jink->getSkillName() != "eight_diagram" && jink->getSkillName() != "bazhen")
+    if (jink && jink->getSkillName() != "EightDiagram")
         room->setEmotion(effect.to, "jink");
 
     if (!jink){

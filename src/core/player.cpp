@@ -547,14 +547,14 @@ bool Player::hasArmorEffect(const QString &armor_name) const{
     if (!tag["Qinggang"].toStringList().isEmpty() || getMark("Armor_Nullified") > 0
         || getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
-    if (armor_name == "bazhen")
-        return armor == NULL && alive && hasSkill("bazhen");
-    else {
+    /*if (armor_name == "bazhen")
+        return armor == NULL && alive && hasShownSkill(Sanguosha->getSkill("bazhen"));
+    else {*/
         if (!armor) return false;
         if (armor->objectName() == armor_name || armor->isKindOf(armor_name.toStdString().c_str())) return true;
         const Card *real_armor = Sanguosha->getEngineCard(armor->getEffectiveId());
         return real_armor->objectName() == armor_name || real_armor->isKindOf(armor_name.toStdString().c_str());
-    }
+    //}
     return false;
 }
 
