@@ -50,7 +50,7 @@ public:
         if (round>2&&!hasZombie) room->gameOver("lord+loyalist");
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+    virtual bool effect(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
         switch(triggerEvent){
         case GameStart:{
                 if (!player){
@@ -227,7 +227,7 @@ public:
             return x;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room* room, ServerPlayer *zombie, QVariant &) const{
+    virtual bool effect(TriggerEvent triggerEvent, Room* room, ServerPlayer *zombie, QVariant &) const{
         if(triggerEvent == EventPhaseStart && zombie->getPhase() == Player::Play){
         int x = getNumDiff(zombie);
         if(x > 0){
@@ -254,7 +254,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool trigger(TriggerEvent, Room* room, ServerPlayer *zombie, QVariant &data) const{
+    virtual bool effect(TriggerEvent, Room* room, ServerPlayer *zombie, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
 
         const Card *reason = damage.card;

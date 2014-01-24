@@ -12,7 +12,7 @@ public:
         events << CardUsed << CardResponded;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (player->getPhase() != Player::NotActive)
             return false;
 
@@ -63,7 +63,7 @@ public:
         events << CardUsed;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *yueying, QVariant &data) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *yueying, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
 
         if (use.card->isNDTrick() && room->askForSkillInvoke(yueying, objectName())) {
@@ -89,31 +89,6 @@ public:
     }
 };
 
-NosLijianCard::NosLijianCard(): LijianCard(false) {
-}
-
-class NosLijian: public OneCardViewAsSkill {
-public:
-    NosLijian(): OneCardViewAsSkill("noslijian") {
-        filter_pattern = ".!";
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getAliveSiblings().length() > 1
-               && player->canDiscard(player, "he") && !player->hasUsed("NosLijianCard");
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const{
-        NosLijianCard *lijian_card = new NosLijianCard;
-        lijian_card->addSubcard(originalCard->getId());
-        return lijian_card;
-    }
-
-    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
-        return card->isKindOf("Duel") ? 0 : -1;
-    }
-};
-
 // old wind generals
 
 class NosLeiji: public TriggerSkill {
@@ -122,7 +97,7 @@ public:
         events << CardResponded;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *zhangjiao, QVariant &data) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhangjiao, QVariant &data) const{
         CardStar card_star = data.value<CardResponseStruct>().m_card;
         if (card_star->isKindOf("Jink")) {
             ServerPlayer *target = room->askForPlayerChosen(zhangjiao, room->getAlivePlayers(), objectName(), "leiji-invoke", true, true);
@@ -200,7 +175,7 @@ public:
         }
     }
 
-    virtual bool trigger(TriggerEvent, Room *, ServerPlayer *zhoutai, QVariant &) const{
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *zhoutai, QVariant &) const{
         if (zhoutai->getPile("nosbuqu").length() > 0)
             Remove(zhoutai);
 
@@ -214,7 +189,7 @@ public:
         events << PostHpReduced << AskForPeachesDone;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &data) const{
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &data) const{
         if (triggerEvent == PostHpReduced && zhoutai->getHp() < 1) {
             if (room->askForSkillInvoke(zhoutai, objectName(), data)) {
                 room->setTag("NosBuqu", zhoutai->objectName());
@@ -621,12 +596,6 @@ NostalStandardPackage::NostalStandardPackage()
     General *huangyueying = new General(this, "nos_huangyueying", "shu", 3, false, true, true);
     huangyueying->addSkill(new NosJizhi);
     huangyueying->addSkill(new NosQicai);
-
-    General *nos_diaochan = new General(this, "nos_diaochan", "qun", 3, false, true, true);
-    nos_diaochan->addSkill(new NosLijian);
-    nos_diaochan->addSkill("biyue");
-
-    addMetaObject<NosLijianCard>();
 }
 
 NostalWindPackage::NostalWindPackage()

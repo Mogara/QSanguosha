@@ -34,13 +34,6 @@ public:
     NostalWindPackage();
 };
 
-class NosLijianCard: public LijianCard {
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE NosLijianCard();
-};
-
 class NosGuhuoCard: public SkillCard {
     Q_OBJECT
 

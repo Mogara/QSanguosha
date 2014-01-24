@@ -14,7 +14,7 @@ public:
         events << Death;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *caopi, QVariant &data) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *caopi, QVariant &data) const{
         DeathStruct death = data.value<DeathStruct>();
         ServerPlayer *player = death.who;
         if (player->isNude() || caopi == player)
@@ -69,7 +69,7 @@ public:
         return target != NULL && target->getKingdom() == "wei";
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
         CardStar card = judge->card;
 
@@ -142,7 +142,7 @@ SavageAssaultAvoid::SavageAssaultAvoid(const QString &avoid_skill): TriggerSkill
     events << CardEffected;
 }
 
-bool SavageAssaultAvoid::trigger(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
+bool SavageAssaultAvoid::effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
     CardEffectStruct effect = data.value<CardEffectStruct>();
     if (effect.card->isKindOf("SavageAssault")) {
         room->broadcastSkillInvoke(avoid_skill);
@@ -172,7 +172,7 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == TargetConfirmed && TriggerSkill::triggerable(player)) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("SavageAssault") && use.from != player) {
@@ -204,7 +204,7 @@ public:
         events << Damage;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *zhurong, QVariant &data) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhurong, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *target = damage.to;
         if (damage.card && damage.card->isKindOf("Slash") && !zhurong->isKongcheng()
@@ -298,7 +298,7 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("SavageAssault")) {
@@ -430,7 +430,7 @@ public:
         events << AfterDrawNCards;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *lusu, QVariant &) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *lusu, QVariant &) const{
         if (lusu->hasFlag("haoshi")) {
             lusu->setFlags("-haoshi");
 
@@ -584,7 +584,7 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == AskForPeaches) {
             DyingStruct dying = data.value<DyingStruct>();
             ServerPlayer *jiaxu = room->getCurrent();
@@ -731,7 +731,7 @@ public:
         return target != NULL && (target->hasSkill(objectName()) || target->isFemale());
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Slash") && player == use.from) {
             QVariantList jink_list = use.from->tag["Jink_" + use.card->toString()].toList();
@@ -838,7 +838,7 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if (triggerEvent == PreDamageDone && damage.from)
             damage.from->tag["InvokeBaonue"] = damage.from->getKingdom() == "qun";
