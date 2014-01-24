@@ -522,6 +522,7 @@ public:
 
             ShensuCard *card = new ShensuCard;
             card->addSubcards(cards);
+            card->setShowSkill(objectName());
 
             return card;
         }
@@ -535,17 +536,37 @@ public:
         view_as_skill = new ShensuViewAsSkill;
     }
 
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+        if (!(TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who)))
+            return false;
+
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+
+        if (change.to == Player::Judge && !player->isSkipped(Player::Judge) && !player->isSkipped(Player::Draw) && Slash::IsAvailable(player))
+            return true;
+        else if (Slash::IsAvailable(player) && change.to == Player::Play && !player->isSkipped(Player::Play) && player->canDiscard(player, "he"))
+            return true;
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::Judge){
+            return room->askForUseCard(player, "@@shensu1", "@shensu1", 1);
+        }
+        else if (change.to == Player::Play){
+            return room->askForUseCard(player, "@@shensu2", "@shensu2", 2, Card::MethodDiscard);
+        }
+        return false;
+    }
+
     virtual bool effect(TriggerEvent , Room *room, ServerPlayer *xiahouyuan, QVariant &data) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.to == Player::Judge && !xiahouyuan->isSkipped(Player::Judge)
-            && !xiahouyuan->isSkipped(Player::Draw)) {
-                if (Slash::IsAvailable(xiahouyuan) && room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1", 1)) {
-                    xiahouyuan->skip(Player::Judge);
-                    xiahouyuan->skip(Player::Draw);
-                }
-        } else if (Slash::IsAvailable(xiahouyuan) && change.to == Player::Play && !xiahouyuan->isSkipped(Player::Play)) {
-            if (xiahouyuan->canDiscard(xiahouyuan, "he") && room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2, Card::MethodDiscard))
-                xiahouyuan->skip(Player::Play);
+        if (change.to == Player::Judge){
+            xiahouyuan->skip(Player::Judge);
+            xiahouyuan->skip(Player::Draw);
+        } else if (change.to == Player::Play ) {
+            xiahouyuan->skip(Player::Play);
         }
         return false;
     }

@@ -44,18 +44,6 @@ signals:
     void onButtonClick();
 };
 
-#include "skill.h"
-class Jushou: public PhaseChangeSkill {
-    Q_OBJECT
-
-public:
-    Jushou();
-    virtual bool onPhaseChange(ServerPlayer *target) const;
-
-protected:
-    virtual int getJushouDrawNum(ServerPlayer *caoren) const;
-};
-
 class WindPackage: public Package {
     Q_OBJECT
 
