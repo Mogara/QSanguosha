@@ -147,116 +147,6 @@ public:
     }
 };
 
-class Beige: public TriggerSkill {
-public:
-    Beige(): TriggerSkill("beige") {
-        events << Damaged << FinishJudge;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == Damaged) {
-            DamageStruct damage = data.value<DamageStruct>();
-            if (damage.card == NULL || !damage.card->isKindOf("Slash") || damage.to->isDead())
-                return false;
-
-            QList<ServerPlayer *> cais = room->findPlayersBySkillName(objectName());
-            foreach (ServerPlayer *caiwenji, cais) {
-                if (caiwenji->canDiscard(caiwenji, "he") && room->askForCard(caiwenji, "..", "@beige", data, objectName())) {
-
-                    room->broadcastSkillInvoke(objectName());
-
-                    JudgeStruct judge;
-                    judge.good = true;
-                    judge.play_animation = false;
-                    judge.who = player;
-                    judge.reason = objectName();
-
-                    room->judge(judge);
-
-                    Card::Suit suit = (Card::Suit)(judge.pattern.toInt());
-                    switch (suit) {
-                    case Card::Heart: {
-                            RecoverStruct recover;
-                            recover.who = caiwenji;
-                            room->recover(player, recover);
-
-                            break;
-                        }
-                    case Card::Diamond: {
-                            player->drawCards(2);
-                            break;
-                        }
-                    case Card::Club: {
-                            if (damage.from && damage.from->isAlive())
-                                room->askForDiscard(damage.from, "beige", 2, 2, false, true);
-
-                            break;
-                        }
-                    case Card::Spade: {
-                            if (damage.from && damage.from->isAlive())
-                                damage.from->turnOver();
-
-                            break;
-                        }
-                    default:
-                            break;
-                    }
-                }
-            }
-        } else {
-            JudgeStar judge = data.value<JudgeStar>();
-            if (judge->reason != objectName()) return false;
-            judge->pattern = QString::number(int(judge->card->getSuit()));
-        }
-        return false;
-    }
-};
-
-class Duanchang: public TriggerSkill {
-public:
-    Duanchang(): TriggerSkill("duanchang") {
-        events << Death;
-        frequency = Compulsory;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->hasSkill(objectName());
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        DeathStruct death = data.value<DeathStruct>();
-        if (death.who != player)
-            return false;
-
-        if (death.damage && death.damage->from) {
-            LogMessage log;
-            log.type = "#DuanchangLoseSkills";
-            log.from = player;
-            log.to << death.damage->from;
-            log.arg = objectName();
-            room->sendLog(log);
-            room->broadcastSkillInvoke(objectName());
-            room->notifySkillInvoked(player, objectName());
-
-            QList<const Skill *> skills = death.damage->from->getVisibleSkillList();
-            QStringList detachList;
-            foreach (const Skill *skill, skills) {
-                if (skill->getLocation() == Skill::Right && !skill->isAttachedLordSkill())
-                    detachList.append("-" + skill->objectName());
-            }
-            room->handleAcquireDetachSkills(death.damage->from, detachList);
-            if (death.damage->from->isAlive())
-                death.damage->from->gainMark("@duanchang");
-        }
-
-        return false;
-    }
-};
-
 class Tuntian: public TriggerSkill {
 public:
     Tuntian(): TriggerSkill("tuntian") {
@@ -957,10 +847,6 @@ MountainPackage::MountainPackage()
     erzhang->addSkill(new Guzheng);
     erzhang->addSkill(new GuzhengGet);
     related_skills.insertMulti("guzheng", "#guzheng-get");
-
-    General *caiwenji = new General(this, "caiwenji", "qun", 3, false); // QUN 012
-    caiwenji->addSkill(new Beige);
-    caiwenji->addSkill(new Duanchang);
 
     addMetaObject<QiaobianCard>();
     addMetaObject<TiaoxinCard>();

@@ -842,6 +842,34 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
     return skillList;
 }
 
+QList<const Skill *> Player::getHeadSkillList(bool visible_only) const{
+    QList<const Skill *> skillList;
+
+    foreach (QString skill_name, head_skills.keys()) {
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        if (skill
+            && (!hasEquipSkill(skill->objectName()))
+            && (!visible_only || skill->isVisible()))
+            skillList << skill;
+    }
+
+    return skillList;
+}
+
+QList<const Skill *> Player::getDeputySkillList(bool visible_only) const{
+    QList<const Skill *> skillList;
+
+    foreach (QString skill_name, deputy_skills.keys()) {
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        if (skill
+            && (!hasEquipSkill(skill->objectName()))
+            && (!visible_only || skill->isVisible()))
+            skillList << skill;
+    }
+
+    return skillList;
+}
+
 QSet<const Skill *> Player::getVisibleSkills(bool include_equip) const{
     return getVisibleSkillList(include_equip).toSet();
 }
