@@ -59,53 +59,6 @@ public:
     }
 };
 
-class Songwei: public TriggerSkill {
-public:
-    Songwei(): TriggerSkill("songwei$") {
-        events << FinishJudge;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->getKingdom() == "wei";
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        JudgeStar judge = data.value<JudgeStar>();
-        CardStar card = judge->card;
-
-        if (card->isBlack()) {
-            QList<ServerPlayer *> caopis;
-            foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-                if (p->hasLordSkill(objectName()))
-                    caopis << p;
-            }
-
-            while (!caopis.isEmpty()) {
-                ServerPlayer *caopi = room->askForPlayerChosen(player, caopis, objectName(), "@songwei-to", true);
-                if (caopi) {
-                    if (!caopi->isLord() && caopi->hasSkill("weidi"))
-                        room->broadcastSkillInvoke("weidi");
-                    else
-                        room->broadcastSkillInvoke(objectName());
-
-                    room->notifySkillInvoked(caopi, objectName());
-                    LogMessage log;
-                    log.type = "#InvokeOthersSkill";
-                    log.from = player;
-                    log.to << caopi;
-                    log.arg = objectName();
-                    room->sendLog(log);
-
-                    caopi->drawCards(1);
-                    caopis.removeOne(caopi);
-                } else
-                    break;
-            }
-        }
-
-        return false;
-    }
-};
 
 class Duanliang: public OneCardViewAsSkill {
 public:
@@ -828,66 +781,6 @@ public:
     }
 };
 
-class Baonue: public TriggerSkill {
-public:
-    Baonue(): TriggerSkill("baonue$") {
-        events << Damage << PreDamageDone;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        if (triggerEvent == PreDamageDone && damage.from)
-            damage.from->tag["InvokeBaonue"] = damage.from->getKingdom() == "qun";
-        else if (triggerEvent == Damage && player->tag.value("InvokeBaonue", false).toBool() && player->isAlive()) {
-            QList<ServerPlayer *> dongzhuos;
-            foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-                if (p->hasLordSkill(objectName()))
-                    dongzhuos << p;
-            }
-
-            while (!dongzhuos.isEmpty()) {
-                ServerPlayer *dongzhuo = room->askForPlayerChosen(player, dongzhuos, objectName(), "@baonue-to", true);
-                if (dongzhuo) {
-                    dongzhuos.removeOne(dongzhuo);
-
-                    LogMessage log;
-                    log.type = "#InvokeOthersSkill";
-                    log.from = player;
-                    log.to << dongzhuo;
-                    log.arg = objectName();
-                    room->sendLog(log);
-                    room->notifySkillInvoked(dongzhuo, objectName());
-
-                    JudgeStruct judge;
-                    judge.pattern = ".|spade";
-                    judge.good = true;
-                    judge.reason = objectName();
-                    judge.who = player;
-
-                    room->judge(judge);
-
-                    if (judge.isGood()) {
-                        if (!dongzhuo->isLord() && dongzhuo->hasSkill("weidi"))
-                            room->broadcastSkillInvoke("weidi");
-                        else
-                            room->broadcastSkillInvoke(objectName());
-
-                        RecoverStruct recover;
-                        recover.who = player;
-                        room->recover(dongzhuo, recover);
-                    }
-                } else
-                    break;
-            }
-        }
-        return false;
-    }
-};
-
 ThicketPackage::ThicketPackage()
     : Package("thicket")
 {
@@ -900,7 +793,6 @@ ThicketPackage::ThicketPackage()
     caopi->addCompanion("zhenji");
     caopi->addSkill(new Xingshang);
     caopi->addSkill(new Fangzhu);
-    caopi->addSkill(new Songwei);
 
     General *menghuo = new General(this, "menghuo", "shu"); // SHU 014
     menghuo->addCompanion("zhurong");
@@ -930,7 +822,6 @@ ThicketPackage::ThicketPackage()
     dongzhuo->addSkill(new Jiuchi);
     dongzhuo->addSkill(new Roulin);
     dongzhuo->addSkill(new Benghuai);
-    dongzhuo->addSkill(new Baonue);
 
     General *jiaxu = new General(this, "jiaxu", "qun", 3); // QUN 007
     jiaxu->addSkill(new Wansha);

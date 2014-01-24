@@ -300,9 +300,6 @@ public:
     QString getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index = -1) const;
     QPixmap getProgressBarPixmap(int percentile) const;
 
-    // Animations
-    QAbstractAnimation *createHuaShenAnimation(QPixmap &huashenAvatar, QPoint topLeft, QGraphicsItem *parent,
-                                               QGraphicsItem *&huashenItemCreated) const;
 
     // static consts
     // main keys

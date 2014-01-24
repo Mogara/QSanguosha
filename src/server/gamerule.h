@@ -27,7 +27,7 @@ class HulaoPassMode: public GameRule {
 
 public:
     HulaoPassMode(QObject *parent);
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data = _dummy_variant) const;
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data = _dummy_variant) const;
 };
 
 class BasaraMode: public GameRule {

@@ -886,7 +886,7 @@ HulaoPassMode::HulaoPassMode(QObject *parent)
     default_choice = "recover";
 }
 
-bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+bool HulaoPassMode::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
     switch (triggerEvent) {
     case StageChange: {
             ServerPlayer *lord = room->getLord();
@@ -1017,7 +1017,7 @@ bool HulaoPassMode::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer 
             break;
     }
 
-    return GameRule::trigger(triggerEvent, room, player, data);
+    return GameRule::effect(triggerEvent, room, player, data);
 }
 
 BasaraMode::BasaraMode(QObject *parent)

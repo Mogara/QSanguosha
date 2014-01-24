@@ -6,7 +6,7 @@ public:
     void setGlobal(bool global);
 
     virtual bool triggerable(const ServerPlayer *target) const;
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
+
 
     LuaFunction on_trigger;
     LuaFunction can_trigger;
@@ -17,7 +17,7 @@ class GameStartSkill: public TriggerSkill {
 public:
     GameStartSkill(const QString &name);
 
-    virtual bool trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool effect(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual void onGameStart(ServerPlayer *player) const = 0;
 };
 
@@ -299,7 +299,7 @@ bool LuaTriggerSkill::triggerable(const ServerPlayer *target) const{
     }
 }
 
-bool LuaTriggerSkill::trigger(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const{
+bool LuaTriggerSkill::effect(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const{
     if (on_trigger == 0)
         return false;
 

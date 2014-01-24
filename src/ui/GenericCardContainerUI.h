@@ -75,8 +75,6 @@ public:
     virtual void killPlayer();
     virtual void revivePlayer();
     virtual QGraphicsItem *getMouseClickReceiver() = 0;
-    virtual void startHuaShen(QString generalName, QString skillName);
-    virtual void stopHuaShen();
     virtual void updateAvatarTooltip();
 
     inline void hookMouseEvents();
@@ -209,12 +207,6 @@ protected:
 
     // The following stuffs for showing distance
     QGraphicsPixmapItem *_m_distanceItem;
-
-    // animations
-    QAbstractAnimation *_m_huashenAnimation;
-    QGraphicsItem *_m_huashenItem;
-    QString _m_huashenGeneralName;
-    QString _m_huashenSkillName;
 
 protected slots:
     virtual void _onEquipSelectChanged();

@@ -17,7 +17,9 @@ public:
 
     virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
 
     LuaFunction on_trigger;
     LuaFunction can_trigger;

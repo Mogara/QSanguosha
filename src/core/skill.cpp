@@ -253,10 +253,6 @@ bool TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlay
     return triggerable(player); //temp way
 }
 
-bool TriggerSkill::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-    return effect(triggerEvent, room, player, data); //also temp way
-}
-
 bool TriggerSkill::cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
     return true;
 }

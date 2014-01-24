@@ -1198,7 +1198,7 @@ void ServerPlayer::gainAnExtraTurn() {
                 else
                     game_rule = qobject_cast<const GameRule *>(Sanguosha->getTriggerSkill("game_rule"));
                 if (game_rule)
-                    game_rule->trigger(EventPhaseEnd, room, this, QVariant());
+                    game_rule->effect(EventPhaseEnd, room, this, QVariant());
                 changePhase(getPhase(), Player::NotActive);
             }
             room->setCurrent(current);

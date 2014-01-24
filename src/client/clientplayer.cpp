@@ -176,7 +176,6 @@ void ClientPlayer::setMark(const QString &mark, int value) {
     // set mark doc
     QString text = "";
     QMapIterator<QString, int> itor(marks);
-    int huashen_mark = 0;
     int yongsi_test_mark = 0, jushou_test_mark = 0;
     int max_cards_test_mark = 0, offensive_distance_test_mark = 0, defensive_distance_test_mark = 0;
     while (itor.hasNext()) {
@@ -190,7 +189,6 @@ void ClientPlayer::setMark(const QString &mark, int value) {
                                     }\
                                 }
 
-            _EXCLUDE_MARK(huashen)
             _EXCLUDE_MARK(yongsi_test)
             _EXCLUDE_MARK(jushou_test)
             _EXCLUDE_MARK(max_cards_test)
@@ -222,7 +220,6 @@ void ClientPlayer::setMark(const QString &mark, int value) {
                                 }\
                             }
 
-    _SET_MARK(huashen)
     _SET_MARK(yongsi_test)
     _SET_MARK(jushou_test)
     _SET_MARK(max_cards_test)

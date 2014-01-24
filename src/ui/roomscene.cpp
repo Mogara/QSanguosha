@@ -375,14 +375,6 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             if (photo) photo->setFrame(Photo::S_FRAME_NO_FRAME);
             break;
         }
-    case S_GAME_EVENT_HUASHEN: {
-            ClientPlayer *player = ClientInstance->getPlayer(arg[1].asCString());
-            QString huashenGeneral = arg[2].asCString();
-            QString huashenSkill = arg[3].asCString();
-            PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            container->startHuaShen(huashenGeneral, huashenSkill);
-            break;
-        }
     case S_GAME_EVENT_PLAY_EFFECT: {
             QString skillName = arg[1].asCString();
             QString category;
@@ -409,11 +401,6 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             player->detachSkill(skill_name);
             if (player == Self) detachSkill(skill_name);
 
-            // stop huashen animation
-            PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            if (!player->hasSkill("huashen"))
-                container->stopHuaShen();
-            container->updateAvatarTooltip();
             break;
         }
     case S_GAME_EVENT_ACQUIRE_SKILL: {
@@ -500,10 +487,6 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
                     detachSkill(skill->objectName());
                     attachSkill(skill->objectName(), true); 
                     //dirty hack here!! add skills again to initialize can_preshow state
-                }
-                if (oldHero->hasSkill("huashen")) {
-                    PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-                    container->stopHuaShen();
                 }
             }
 
@@ -1280,16 +1263,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
         }
     case Qt::Key_F8: {
             setChatBoxVisible(!chat_box_widget->isVisible());
-            break;
-        }
-    case Qt::Key_F12: {
-            if (Self->hasSkill("huashen")) {
-                const Skill *huashen_skill = Sanguosha->getSkill("huashen");
-                if (huashen_skill) {
-                    HuashenDialog *dialog = qobject_cast<HuashenDialog *>(huashen_skill->getDialog());
-                    if (dialog) dialog->popup();
-                }
-            }
             break;
         }
 
@@ -3190,12 +3163,6 @@ void RoomScene::killPlayer(const QString &who) {
         if (ServerInfo.GameMode == "02_1v1") enemy_box->killPlayer(general->objectName());
     }
 
-    ClientPlayer *player = ClientInstance->getPlayer(who);
-    if (player) {
-        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->stopHuaShen();
-    }
-
     if (Config.EnableEffects && Config.EnableLastWord && !Self->hasFlag("marshalling"))
         general->lastWord();
     m_roomMutex.unlock();
@@ -3509,10 +3476,8 @@ void RoomScene::onGameStart() {
 
 void RoomScene::freeze() {
     dashboard->setEnabled(false);
-    dashboard->stopHuaShen();
     foreach (Photo *photo, photos) {
         photo->hideProgressBar();
-        photo->stopHuaShen();
         photo->setEnabled(false);
     }
     item2player.clear();
@@ -3717,41 +3682,6 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
     }
 }
 
-void RoomScene::doHuashen(const QString &, const QStringList &args) {
-    Q_ASSERT(args.length() >= 2);
-
-    QStringList hargs = args;
-    QString name = hargs.first();
-    hargs.removeOne(name);
-    hargs = hargs.first().split(":");
-    ClientPlayer *player = ClientInstance->getPlayer(name);
-    bool owner = (hargs.first() != "unknown");
-
-    QVariantList huashen_list;
-    if (owner)
-        huashen_list = Self->tag["Huashens"].toList();
-    QList<CardItem *> generals;
-
-    foreach (QString arg, hargs) {
-        if (owner) huashen_list << arg;
-        CardItem *item = new CardItem(arg);
-        item->setPos(this->m_tableCenterPos);
-        addItem(item);
-        generals.append(item);
-    }
-    CardsMoveStruct move;
-    move.to = player;
-    move.from_place = Player::DrawPile;
-    move.to_place = Player::PlaceSpecial;
-    move.to_pile_name = "huashen";
-
-    GenericCardContainer *container = _getGenericCardContainer(Player::PlaceHand, player);
-    container->addCardItems(generals, move);
-
-    if (owner)
-        Self->tag["Huashens"] = huashen_list;
-}
-
 void RoomScene::showIndicator(const QString &from, const QString &to) {
     if (Config.value("NoIndicator", false).toBool())
         return;
@@ -3789,7 +3719,6 @@ void RoomScene::doAnimation(int name, const QStringList &args) {
         map[S_ANIMATE_LIGHTNING] = &RoomScene::doAppearingAnimation;
 
         map[S_ANIMATE_LIGHTBOX] = &RoomScene::doLightboxAnimation;
-        map[S_ANIMATE_HUASHEN] = &RoomScene::doHuashen;
         map[S_ANIMATE_INDICATE] = &RoomScene::doIndicate;
     }
 
@@ -3801,7 +3730,6 @@ void RoomScene::doAnimation(int name, const QStringList &args) {
         anim_name[S_ANIMATE_LIGHTNING] = "lightning";
 
         anim_name[S_ANIMATE_LIGHTBOX] = "lightbox";
-        anim_name[S_ANIMATE_HUASHEN] = "huashen";
         anim_name[S_ANIMATE_INDICATE] = "indicate";
     }
 

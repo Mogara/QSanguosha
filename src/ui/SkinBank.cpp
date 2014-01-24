@@ -707,35 +707,6 @@ bool QSanRoomSkin::_loadAnimationConfig(const Json::Value &animationConfig) {
     return true;
 }
 
-QAbstractAnimation *QSanRoomSkin::createHuaShenAnimation(QPixmap &huashenAvatar, QPoint topLeft, QGraphicsItem *parent,
-                                                         QGraphicsItem *&huashenAvatarCreated) const{
-    QLabel *avatar = new QLabel;
-    avatar->setStyleSheet("QLabel { background-color: transparent; }");
-    avatar->setPixmap(huashenAvatar);
-    QGraphicsProxyWidget *widget = new QGraphicsProxyWidget(parent);
-    widget->setWidget(avatar);
-    widget->setPos(topLeft);
-
-    QPropertyAnimation *animation = new QPropertyAnimation(widget, "opacity");
-    animation->setLoopCount(2000);
-    Json::Value huashenConfig = _m_animationConfig["huashen"];
-    int duration;
-    if (tryParse(huashenConfig[0], duration) && huashenConfig[1].isArray()) {
-        animation->setDuration(duration);
-        Json::Value keyValues = huashenConfig[1];
-        for (unsigned int i = 0; i < keyValues.size(); i++) {
-            Json::Value keyValue = keyValues[i];
-            if (!keyValue.isArray() || keyValue.size() != 2) continue;
-            double step;
-            double val;
-            if (!tryParse(keyValue[0], step) || !tryParse(keyValue[1], val)) continue;
-            animation->setKeyValueAt(step, val);
-        }
-    }
-    huashenAvatarCreated = widget;
-    return animation;
-}
-
 const QSanRoomSkin::RoomLayout &QSanRoomSkin::getRoomLayout() const{
     return this->_m_roomLayout;
 }

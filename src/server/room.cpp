@@ -1883,7 +1883,7 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
     }
     if (invokeStart) {
         foreach (const TriggerSkill *skill, game_start)
-            skill->trigger(GameStart, this, player, void_data);
+            skill->effect(GameStart, this, player, void_data); //temp change for this
     }
     resetAI(player);
 }
@@ -2838,19 +2838,6 @@ void Room::speakCommand(ServerPlayer *player, const QString &arg) {
                         break;
                     }
                 }
-            }
-        } else if (sentence == ".ShowHuashen") {
-            _NO_BROADCAST_SPEAKING
-            QList<ServerPlayer *> zuocis = findPlayersBySkillName("huashen");
-            QStringList huashen_name;
-            foreach (ServerPlayer *zuoci, zuocis) {
-                QVariantList huashens = zuoci->tag["Huashens"].toList();
-                huashen_name.clear();
-                foreach (QVariant name, huashens)
-                    huashen_name << QString("<b>%1</b>").arg(Sanguosha->translate(name.toString()));
-                QString huashen = huashen_name.join(", ");
-                huashen = huashen.toUtf8().toBase64();
-                player->invoke("speak", QString("%1:%2").arg(zuoci->objectName()).arg(huashen));
             }
         } else if (sentence.startsWith(".SetAIDelay=")) {
             _NO_BROADCAST_SPEAKING
