@@ -7,35 +7,6 @@
 #include "ai.h"
 #include "general.h"
 
-            player->tag["guidao_retrial"] = card->getEffectiveId();
-        }
-        return false;
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        bool ok;
-        int card_id = player->tag["guidao_retrial"].toInt(&ok);
-        player->tag.remove("guidao_retrial");
-
-        if (ok && (card_id != -1)){
-            room->retrial(Sanguosha->getCard(card_id), player, data.value<JudgeStruct *>(), objectName(), true);
-        else
-            Q_ASSERT(false);
-
-        return card_star->isKindOf("Jink");
-    }
-
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data){
-        ServerPlayer *target = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName(), "leiji-invoke", true, true);
-        if (target != NULL){
-            player->tag["leiji_invoke"] = QVariant::fromValue(target);
-            return true;
-        }
-        return false;
-    }
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhangjiao, QVariant &data) const{
-        ServerPlayer *target = zhangjiao->tag["leiji_invoke"].value<ServerPlayer *>();
-        if (target != NULL){
 class Jushou: public PhaseChangeSkill {
 public:
     Jushou(): PhaseChangeSkill("jushou"){
