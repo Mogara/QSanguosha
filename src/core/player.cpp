@@ -301,10 +301,11 @@ const General *Player::getGeneral() const{
 }
 
 bool Player::isLord() const{
-    return getRole() == "lord";
+    return getRole() == "lord"; //to be fixed
 }
 
 bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
+    /*
     if (!include_lose) {
         if (!hasEquipSkill(skill_name)) {
             const Skill *skill = Sanguosha->getSkill(skill_name);
@@ -328,6 +329,7 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
                 return false;
         } 
     }
+    */
     return head_skills.value(skill_name, false)
            || deputy_skills.value(skill_name, false)
            || acquired_skills.contains(skill_name);
@@ -358,7 +360,7 @@ bool Player::hasInnateSkill(const QString &skill_name) const{
 }
 
 bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
-    if (!include_lose) {
+    /*if (!include_lose) {
         if (!hasEquipSkill(skill_name) && ((hasFlag("huoshui") && getHp() >= (getMaxHp() + 1) / 2)
                                            || getMark("Qingcheng" + skill_name) > 0))
             return false;
@@ -384,7 +386,9 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
         }
     }
 
-    return false;
+    return false;*/
+
+    return Sanguosha->getSkill(skill_name)->isLordSkill() && isLord() && hasSkill(skill_name);
 }
 
 void Player::acquireSkill(const QString &skill_name) {
@@ -547,14 +551,14 @@ bool Player::hasArmorEffect(const QString &armor_name) const{
     if (!tag["Qinggang"].toStringList().isEmpty() || getMark("Armor_Nullified") > 0
         || getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
-    /*if (armor_name == "bazhen")
+    if (armor_name == "bazhen")
         return armor == NULL && alive && hasShownSkill(Sanguosha->getSkill("bazhen"));
-    else {*/
+    else {
         if (!armor) return false;
         if (armor->objectName() == armor_name || armor->isKindOf(armor_name.toStdString().c_str())) return true;
         const Card *real_armor = Sanguosha->getEngineCard(armor->getEffectiveId());
         return real_armor->objectName() == armor_name || real_armor->isKindOf(armor_name.toStdString().c_str());
-    //}
+    }
     return false;
 }
 
