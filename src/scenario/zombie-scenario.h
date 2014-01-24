@@ -2,7 +2,6 @@
 #define ZOMBIE_MODE_H
 
 #include "scenario.h"
-#include "standard-skillcards.h"
 #include "standard.h"
 
 class ZombieScenario : public Scenario{

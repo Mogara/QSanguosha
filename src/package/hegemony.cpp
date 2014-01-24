@@ -4,7 +4,7 @@
 #include "engine.h"
 #include "general.h"
 #include "room.h"
-#include "standard-skillcards.h"
+#include "standard.h"
 
 class Xiaoguo: public TriggerSkill {
 public:

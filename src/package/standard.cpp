@@ -445,7 +445,10 @@ EquipCard::Location Horse::location() const{
 StandardPackage::StandardPackage()
     : Package("standard")
 {
-    addGenerals();
+    addWeiGenerals();
+    addShuGenerals();
+    addWuGenerals();
+    addQunGenerals();
 
     patterns["."] = new ExpPattern(".|.|.|hand");
     patterns[".S"] = new ExpPattern(".|spade|.|hand");

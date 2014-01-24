@@ -4,7 +4,7 @@
 #include "package.h"
 #include "card.h"
 #include "standard.h"
-#include "standard-skillcards.h"
+#include "standard.h"
 
 class NostalgiaPackage: public Package {
     Q_OBJECT

@@ -1,7 +1,7 @@
 #include "aux-skills.h"
 #include "client.h"
 #include "standard.h"
-#include "standard-skillcards.h"
+#include "standard.h"
 #include "clientplayer.h"
 #include "engine.h"
 
