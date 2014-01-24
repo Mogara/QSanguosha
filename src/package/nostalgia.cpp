@@ -56,79 +56,6 @@ NostalgiaPackage::NostalgiaPackage()
 
 // old stantard generals
 
-NosRendeCard::NosRendeCard() {
-    mute = true;
-    will_throw = false;
-    handling_method = Card::MethodNone;
-}
-
-void NosRendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    ServerPlayer *target = targets.first();
-
-    room->broadcastSkillInvoke("rende");
-    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "nosrende", QString());
-    room->obtainCard(target, this, reason, false);
-
-    int old_value = source->getMark("nosrende");
-    int new_value = old_value + subcards.length();
-    room->setPlayerMark(source, "nosrende", new_value);
-
-    if (old_value < 2 && new_value >= 2) {
-        RecoverStruct recover;
-        recover.card = this;
-        recover.who = source;
-        room->recover(source, recover);
-    }
-}
-
-class NosRendeViewAsSkill: public ViewAsSkill {
-public:
-    NosRendeViewAsSkill(): ViewAsSkill("nosrende") {
-    }
-
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
-        if (ServerInfo.GameMode == "04_1v3" && selected.length() + Self->getMark("nosrende") >= 2)
-            return false;
-        else
-            return !to_select->isEquipped();
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        if (ServerInfo.GameMode == "04_1v3" && player->getMark("nosrende") >= 2)
-           return false;
-        return !player->isKongcheng();
-    }
-
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
-        if (cards.isEmpty())
-            return NULL;
-
-        NosRendeCard *rende_card = new NosRendeCard;
-        rende_card->addSubcards(cards);
-        return rende_card;
-    }
-};
-
-class NosRende: public TriggerSkill {
-public:
-    NosRende(): TriggerSkill("nosrende") {
-        events << EventPhaseChanging;
-        view_as_skill = new NosRendeViewAsSkill;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->getMark("nosrende") > 0;
-    }
-
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.to != Player::NotActive)
-            return false;
-        room->setPlayerMark(player, "nosrende", 0);
-        return false;
-    }
-};
-
 class NosJizhi: public TriggerSkill {
 public:
     NosJizhi(): TriggerSkill("nosjizhi") {
@@ -691,9 +618,6 @@ public:
 NostalStandardPackage::NostalStandardPackage()
     : Package("nostal_standard")
 {
-    General *nos_liubei = new General(this, "nos_liubei", "shu", 4, true, true, true);
-    nos_liubei->addSkill(new NosRende);
-
     General *huangyueying = new General(this, "nos_huangyueying", "shu", 3, false, true, true);
     huangyueying->addSkill(new NosJizhi);
     huangyueying->addSkill(new NosQicai);
@@ -702,7 +626,6 @@ NostalStandardPackage::NostalStandardPackage()
     nos_diaochan->addSkill(new NosLijian);
     nos_diaochan->addSkill("biyue");
 
-    addMetaObject<NosRendeCard>(); //nosrende不能随便换位置，会出错，不知道什么情况
     addMetaObject<NosLijianCard>();
 }
 

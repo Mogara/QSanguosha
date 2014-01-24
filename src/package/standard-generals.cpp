@@ -15,10 +15,10 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
-		if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who)) {
-        DamageStruct damage = data.value<DamageStruct>();
-        const Card *card = damage.card;
-        return (card && room->getCardPlace(card->getEffectiveId()) == Player::PlaceTable);
+        if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who)) {
+            DamageStruct damage = data.value<DamageStruct>();
+            const Card *card = damage.card;
+            return (card && room->getCardPlace(card->getEffectiveId()) == Player::PlaceTable);
 		}
         return false;
     }
@@ -487,6 +487,54 @@ public:
             if (xiahouyuan->canDiscard(xiahouyuan, "he") && room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2, Card::MethodDiscard))
                 xiahouyuan->skip(Player::Play);
         }
+        return false;
+    }
+};
+
+class RendeViewAsSkill: public ViewAsSkill {
+public:
+    RendeViewAsSkill(): ViewAsSkill("rende") {
+    }
+
+    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
+        if (ServerInfo.GameMode == "04_1v3" && selected.length() + Self->getMark("rende") >= 2)
+            return false;
+        else
+            return !to_select->isEquipped();
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        if (ServerInfo.GameMode == "04_1v3" && player->getMark("rende") >= 2)
+           return false;
+        return !player->isKongcheng();
+    }
+
+    virtual const Card *viewAs(const QList<const Card *> &cards) const{
+        if (cards.isEmpty())
+            return NULL;
+
+        RendeCard *rende_card = new RendeCard;
+        rende_card->addSubcards(cards);
+        return rende_card;
+    }
+};
+
+class Rende: public TriggerSkill {
+public:
+    Rende(): TriggerSkill("rende") {
+        events << EventPhaseChanging;
+        view_as_skill = new RendeViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->getMark("rende") > 0;
+    }
+
+    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to != Player::NotActive)
+            return false;
+        room->setPlayerMark(player, "rende", 0);
         return false;
     }
 };
@@ -1387,7 +1435,7 @@ void StandardPackage::addGenerals() {
     liubei->addCompanion("guanyu");
     liubei->addCompanion("zhangfei");
     liubei->addCompanion("ganfuren");
-    liubei->addSkill("nosrende");
+    liubei->addSkill(new Rende);
 
     General *guanyu = new General(this, "guanyu", "shu", 5); // SHU 002
     guanyu->addSkill(new Wusheng);

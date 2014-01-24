@@ -39,6 +39,7 @@ void ZhihengCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &)
 }
 
 RendeCard::RendeCard() {
+    mute = true;
     will_throw = false;
     handling_method = Card::MethodNone;
 }
@@ -46,19 +47,11 @@ RendeCard::RendeCard() {
 void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     ServerPlayer *target = targets.first();
 
-    int old_value = source->getMark("rende");
-    QList<int> rende_list;
-    if (old_value > 0)
-        rende_list = StringList2IntList(source->property("rende").toString().split("+"));
-    else
-        rende_list = source->handCards();
-    foreach (int id, this->subcards)
-        rende_list.removeOne(id);
-    room->setPlayerProperty(source, "rende", IntList2StringList(rende_list).join("+"));
-
+    room->broadcastSkillInvoke("rende");
     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "rende", QString());
     room->obtainCard(target, this, reason, false);
 
+    int old_value = source->getMark("rende");
     int new_value = old_value + subcards.length();
     room->setPlayerMark(source, "rende", new_value);
 
@@ -68,12 +61,6 @@ void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         recover.who = source;
         room->recover(source, recover);
     }
-
-    if (room->getMode() == "04_1v3" && source->getMark("rende") >= 2) return;
-    if (source->isKongcheng() || source->isDead() || rende_list.isEmpty()) return;
-    room->addPlayerHistory(source, "RendeCard", -1);
-    if (!room->askForUseCard(source, "@@rende", "@rende-give", -1, Card::MethodNone))
-        room->addPlayerHistory(source, "RendeCard");
 }
 
 JieyinCard::JieyinCard() {

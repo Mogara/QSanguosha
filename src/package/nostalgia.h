@@ -34,14 +34,6 @@ public:
     NostalWindPackage();
 };
 
-class NosRendeCard: public SkillCard {
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE NosRendeCard();
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
-};
-
 class NosLijianCard: public LijianCard {
     Q_OBJECT
 
