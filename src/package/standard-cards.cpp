@@ -263,7 +263,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
 
     if (!Self->canSlash(to_select, this, distance_limit, rangefix, targets)) return false;
     if (targets.length() >= slash_targets) {
-        if (Self->hasSkill("duanbing") && targets.length() == slash_targets) {
+        if (Self->hasShownSkill(Sanguosha->getSkill("duanbing")) && targets.length() == slash_targets) {
             QList<const Player *> duanbing_targets;
             bool no_other_assignee = true;
             foreach (const Player *p, targets) {
