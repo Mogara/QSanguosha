@@ -845,8 +845,10 @@ public:
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.from && !damage.from->hasShownAllGenerals())
+        {
             if (player->hasShownSkill(this)) return true;
             return player->askForSkillInvoke(objectName());
+        }
         return false;
     }
 
@@ -992,6 +994,7 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *jiling, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+        if (!TriggerSkill::triggerable(triggerEvent, room, jiling, data, ask_who)) return false;
         if (jiling->getPhase() == Player::Play && !jiling->isKongcheng()) {
             Room *room = jiling->getRoom();
             bool can_invoke = false;

@@ -262,116 +262,6 @@ public:
 };
 
 
-class Hongyan: public FilterSkill {
-public:
-    Hongyan(): FilterSkill("hongyan") {
-    }
-
-    static WrappedCard *changeToHeart(int cardId) {
-        WrappedCard *new_card = Sanguosha->getWrappedCard(cardId);
-        new_card->setSkillName("hongyan");
-        new_card->setSuit(Card::Heart);
-        new_card->setModified(true);
-        return new_card;
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->getSuit() == Card::Spade;
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const{
-        return changeToHeart(originalCard->getEffectiveId());
-    }
-
-    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
-        return -2;
-    }
-};
-
-TianxiangCard::TianxiangCard() {
-}
-
-void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.to->getRoom();
-
-    effect.to->addMark("TianxiangTarget");
-    DamageStruct damage = effect.from->tag.value("TianxiangDamage").value<DamageStruct>();
-
-    if (damage.card && damage.card->isKindOf("Slash"))
-        effect.from->removeQinggangTag(damage.card);
-
-    damage.to = effect.to;
-    damage.transfer = true;
-    try {
-        room->damage(damage);
-    }
-    catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken || triggerEvent == StageChange)
-            effect.to->removeMark("TianxiangTarget");
-        throw triggerEvent;
-    }
-}
-
-class TianxiangViewAsSkill: public OneCardViewAsSkill {
-public:
-    TianxiangViewAsSkill(): OneCardViewAsSkill("tianxiang") {
-        filter_pattern = ".|heart|.|hand!";
-        response_pattern = "@@tianxiang";
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const{
-        TianxiangCard *tianxiangCard = new TianxiangCard;
-        tianxiangCard->addSubcard(originalCard);
-        tianxiangCard->setShowSkill(objectName());
-        return tianxiangCard;
-    }
-};
-
-class Tianxiang: public TriggerSkill {
-public:
-    Tianxiang(): TriggerSkill("tianxiang") {
-        events << DamageInflicted;
-        view_as_skill = new TianxiangViewAsSkill;
-    }
-
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *xiaoqiao, QVariant &data) const{
-        if (xiaoqiao->canDiscard(xiaoqiao, "h")) {
-            xiaoqiao->tag["TianxiangDamage"] = data;
-            return room->askForUseCard(xiaoqiao, "@@tianxiang", "@tianxiang-card", -1, Card::MethodDiscard);
-        }
-        return false;
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *xiaoqiao, QVariant &data) const{
-        return true;
-    }
-};
-
-class TianxiangDraw: public TriggerSkill {
-public:
-    TianxiangDraw(): TriggerSkill("#tianxiang") {
-        events << DamageComplete;
-    }
-
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
-        return player != NULL;
-    }
-
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        if (player->isAlive() && player->getMark("TianxiangTarget") > 0 && damage.transfer) {
-            player->drawCards(player->getLostHp());
-            player->removeMark("TianxiangTarget");
-        }
-
-        return false;
-    }
-
-    virtual bool effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
-        return false;
-    }
-};
-
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QCommandLinkButton>
@@ -519,12 +409,6 @@ WindPackage::WindPackage()
     General *weiyan = new General(this, "weiyan", "shu"); // SHU 009
     weiyan->addSkill(new Kuanggu);
 
-    General *xiaoqiao = new General(this, "xiaoqiao", "wu", 3, false); // WU 011
-    xiaoqiao->addSkill(new Tianxiang);
-    xiaoqiao->addSkill(new TianxiangDraw);
-    xiaoqiao->addSkill(new Hongyan);
-    related_skills.insertMulti("tianxiang", "#tianxiang");
-
     General *nos_zhoutai = new General(this, "nos_zhoutai", "wu");
     nos_zhoutai->addSkill(new NosBuqu);
     nos_zhoutai->addSkill(new NosBuquRemove);
@@ -532,7 +416,6 @@ WindPackage::WindPackage()
     related_skills.insertMulti("nosbuqu", "#nosbuqu-remove");
     related_skills.insertMulti("nosbuqu", "#nosbuqu-clear");
 
-    addMetaObject<TianxiangCard>();
 
     skills << new KuangguGlobal;
 }

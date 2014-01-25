@@ -316,7 +316,7 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
                         break;
                     }
                 }
-                if (current && current->hasSkill("huoshui") && (!skill || !skill->isAttachedLordSkill() || !hasShownSkill(skill)))
+                if (current && current->hasShownSkill(Sanguosha->getSkill("huoshui")) && (!skill || !skill->isAttachedLordSkill() || !hasShownSkill(skill)))
                     return false;
                 /*if (current && current->hasSkill("neo2013huoshui") && current->getEquips().length() >= getEquips().length()
                     && (!skill || !skill->isAttachedLordSkill()))

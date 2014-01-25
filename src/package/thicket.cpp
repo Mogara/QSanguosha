@@ -286,53 +286,6 @@ public:
     }
 };
 
-class Yinghun: public PhaseChangeSkill {
-public:
-    Yinghun(): PhaseChangeSkill("yinghun") {
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
-               && target->getPhase() == Player::Start
-               && target->isWounded();
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *sunjian) const{
-        Room *room = sunjian->getRoom();
-        ServerPlayer *to = room->askForPlayerChosen(sunjian, room->getOtherPlayers(sunjian), objectName(), "yinghun-invoke", true, true);
-        if (to) {
-            int x = sunjian->getLostHp();
-
-            int index = 1;
-            if (!sunjian->hasInnateSkill("yinghun") && sunjian->hasSkill("hunzi"))
-                index += 2;
-
-            if (x == 1) {
-                room->broadcastSkillInvoke(objectName(), index);
-
-                to->drawCards(1);
-                room->askForDiscard(to, objectName(), 1, 1, false, true);
-            } else {
-                to->setFlags("YinghunTarget");
-                QString choice = room->askForChoice(sunjian, objectName(), "d1tx+dxt1");
-                to->setFlags("-YinghunTarget");
-                if (choice == "d1tx") {
-                    room->broadcastSkillInvoke(objectName(), index + 1);
-
-                    to->drawCards(1);
-                    room->askForDiscard(to, objectName(), x, x, false, true);
-                } else {
-                    room->broadcastSkillInvoke(objectName(), index);
-
-                    to->drawCards(x);
-                    room->askForDiscard(to, objectName(), 1, 1, false, true);
-                }
-            }
-        }
-        return false;
-    }
-};
-
 HaoshiCard::HaoshiCard() {
     will_throw = false;
     mute = true;
@@ -681,9 +634,6 @@ ThicketPackage::ThicketPackage()
     zhurong->addSkill(new Juxiang);
     zhurong->addSkill(new Lieren);
     related_skills.insertMulti("juxiang", "#sa_avoid_juxiang");
-
-    General *sunjian = new General(this, "sunjian", "wu"); // WU 009
-    sunjian->addSkill(new Yinghun);
 
     General *lusu = new General(this, "lusu", "wu", 3); // WU 014
     lusu->addSkill(new Haoshi);

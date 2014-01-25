@@ -494,6 +494,176 @@ public:
     }
 };
 
+class Yinghun: public PhaseChangeSkill {
+public:
+    Yinghun(): PhaseChangeSkill("yinghun") {
+    }
+
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *ask_who) const{
+        return PhaseChangeSkill::triggerable(target)
+               && target->getPhase() == Player::Start
+               && target->isWounded();
+    }
+	
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *to = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "yinghun-invoke", true, true);
+        if (to) {
+            player->tag["yinghun_target"] = QVariant::fromValue(to);
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *sunjian) const{
+        Room *room = sunjian->getRoom();
+        PlayerStar to = sunjian->tag["yinghun_target"].value<PlayerStar>();
+        if (to) {
+            int x = sunjian->getLostHp();
+
+            int index = 1;
+            if (!sunjian->hasInnateSkill("yinghun") && sunjian->hasSkill("hunzi"))
+                index += 2;
+
+            if (x == 1) {
+                room->broadcastSkillInvoke(objectName(), index);
+
+                to->drawCards(1);
+                room->askForDiscard(to, objectName(), 1, 1, false, true);
+            } else {
+                to->setFlags("YinghunTarget");
+                QString choice = room->askForChoice(sunjian, objectName(), "d1tx+dxt1");
+                to->setFlags("-YinghunTarget");
+                if (choice == "d1tx") {
+                    room->broadcastSkillInvoke(objectName(), index + 1);
+
+                    to->drawCards(1);
+                    room->askForDiscard(to, objectName(), x, x, false, true);
+                } else {
+                    room->broadcastSkillInvoke(objectName(), index);
+
+                    to->drawCards(x);
+                    room->askForDiscard(to, objectName(), 1, 1, false, true);
+                }
+            }
+        }
+        return false;
+    }
+};
+
+TianxiangCard::TianxiangCard() {
+}
+
+void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+
+    effect.to->addMark("TianxiangTarget");
+    DamageStruct damage = effect.from->tag.value("TianxiangDamage").value<DamageStruct>();
+
+    if (damage.card && damage.card->isKindOf("Slash"))
+        effect.from->removeQinggangTag(damage.card);
+
+    damage.to = effect.to;
+    damage.transfer = true;
+    try {
+        room->damage(damage);
+    }
+    catch (TriggerEvent triggerEvent) {
+        if (triggerEvent == TurnBroken || triggerEvent == StageChange)
+            effect.to->removeMark("TianxiangTarget");
+        throw triggerEvent;
+    }
+}
+
+class TianxiangViewAsSkill: public OneCardViewAsSkill {
+public:
+    TianxiangViewAsSkill(): OneCardViewAsSkill("tianxiang") {
+        filter_pattern = ".|heart,spade|.|hand!"; // for hidden Xiaoqiao(temp way)
+        response_pattern = "@@tianxiang";
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        TianxiangCard *tianxiangCard = new TianxiangCard;
+        tianxiangCard->addSubcard(originalCard);
+        tianxiangCard->setShowSkill(objectName());
+        return tianxiangCard;
+    }
+};
+
+class Tianxiang: public TriggerSkill {
+public:
+    Tianxiang(): TriggerSkill("tianxiang") {
+        events << DamageInflicted;
+        view_as_skill = new TianxiangViewAsSkill;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *xiaoqiao, QVariant &data) const{
+        if (xiaoqiao->canDiscard(xiaoqiao, "h")) {
+            xiaoqiao->tag["TianxiangDamage"] = data;
+            return room->askForUseCard(xiaoqiao, "@@tianxiang", "@tianxiang-card", -1, Card::MethodDiscard);
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *xiaoqiao, QVariant &data) const{
+        return true;
+    }
+};
+
+class TianxiangDraw: public TriggerSkill {
+public:
+    TianxiangDraw(): TriggerSkill("#tianxiang") {
+        events << DamageComplete;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+        return player != NULL;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if (player->isAlive() && player->getMark("TianxiangTarget") > 0 && damage.transfer) {
+            player->drawCards(player->getLostHp());
+            player->removeMark("TianxiangTarget");
+        }
+
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
+        return false;
+    }
+};
+
+class Hongyan: public FilterSkill {
+public:
+    Hongyan(): FilterSkill("hongyan") {
+    }
+
+    static WrappedCard *changeToHeart(int cardId) {
+        WrappedCard *new_card = Sanguosha->getWrappedCard(cardId);
+        new_card->setSkillName("hongyan");
+        new_card->setSuit(Card::Heart);
+        new_card->setModified(true);
+        return new_card;
+    }
+
+    virtual bool viewFilter(const Card *to_select) const{
+        Room *room = Sanguosha->currentRoom();
+        foreach (ServerPlayer *p, room->getPlayers())
+            if (p->ownSkill(objectName()) && p->hasShownSkill(this))
+                return to_select->getSuit() == Card::Spade;
+        return false;
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        return changeToHeart(originalCard->getEffectiveId());
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
+        return -2;
+    }
+};
+
 void StandardPackage::addWuGenerals()
 {
     General *sunquan = new General(this, "sunquan", "wu"); // WU 001
@@ -528,11 +698,21 @@ void StandardPackage::addWuGenerals()
     sunshangxiang->addSkill(new Jieyin);
     sunshangxiang->addSkill(new Xiaoji);
 
+    General *sunjian = new General(this, "sunjian", "wu"); // WU 009
+    sunjian->addSkill(new Yinghun);
+
+    General *xiaoqiao = new General(this, "xiaoqiao", "wu", 3, false); // WU 011
+    xiaoqiao->addSkill(new Tianxiang);
+    xiaoqiao->addSkill(new TianxiangDraw);
+    xiaoqiao->addSkill(new Hongyan);
+    related_skills.insertMulti("tianxiang", "#tianxiang");
+
     addMetaObject<ZhihengCard>();
-    addMetaObject<JieyinCard>();
     addMetaObject<KurouCard>();
     addMetaObject<FanjianCard>();
     addMetaObject<LiuliCard>();
+    addMetaObject<JieyinCard>();
+    addMetaObject<TianxiangCard>();
 
     skills << new KejiGlobal;
 }
