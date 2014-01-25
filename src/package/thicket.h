@@ -13,14 +13,5 @@ public:
     ThicketPackage();
 };
 
-class SavageAssaultAvoid: public TriggerSkill {
-public:
-    SavageAssaultAvoid(const QString &);
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
-private:
-    QString avoid_skill;
-};
-
 #endif
 

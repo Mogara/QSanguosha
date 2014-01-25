@@ -378,168 +378,6 @@ public:
     }
 };
 
-class Xiangle: public TriggerSkill {
-public:
-    Xiangle(): TriggerSkill("xiangle") {
-        events << SlashEffected << TargetConfirming;
-        frequency = Compulsory;
-    }
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *liushan, QVariant &data) const{
-        if (triggerEvent == TargetConfirming) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Slash")) {
-                room->broadcastSkillInvoke(objectName());
-                room->notifySkillInvoked(liushan, objectName());
-
-                LogMessage log;
-                log.type = "#TriggerSkill";
-                log.from = liushan;
-                log.arg = objectName();
-                room->sendLog(log);
-
-                QVariant dataforai = QVariant::fromValue(liushan);
-                if (!room->askForCard(use.from, ".Basic", "@xiangle-discard", dataforai))
-                    liushan->addMark("xiangle");
-            }
-        } else {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            if (liushan->getMark("xiangle") > 0) {
-                LogMessage log;
-                log.type = "#XiangleAvoid";
-                log.from = effect.from;
-                log.to << liushan;
-                log.arg = objectName();
-                room->sendLog(log);
-                liushan->removeMark("xiangle");
-                return true;
-            }
-        }
-
-        return false;
-    }
-};
-
-class XiangleRemoveMark: public TriggerSkill {
-public:
-    XiangleRemoveMark(): TriggerSkill("#xiangle") {
-        events << CardFinished;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &data) const{
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("Slash")) {
-            foreach (ServerPlayer *to, use.to)
-                to->setMark("xiangle", 0);
-        }
-        return false;
-    }
-};
-
-FangquanCard::FangquanCard() {
-}
-
-bool FangquanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select != Self;
-}
-
-void FangquanCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.from->getRoom();
-    ServerPlayer *liushan = effect.from, *player = effect.to;
-
-    LogMessage log;
-    log.type = "#Fangquan";
-    log.from = liushan;
-    log.to << player;
-    room->sendLog(log);
-
-    room->setTag("FangquanTarget", QVariant::fromValue((PlayerStar)player));
-}
-
-class FangquanViewAsSkill: public OneCardViewAsSkill {
-public:
-    FangquanViewAsSkill(): OneCardViewAsSkill("fangquan") {
-        filter_pattern = ".|.|.|hand!";
-        response_pattern = "@@fangquan";
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const{
-        FangquanCard *fangquan = new FangquanCard;
-        fangquan->addSubcard(originalCard);
-        return fangquan;
-    }
-};
-
-class Fangquan: public TriggerSkill {
-public:
-    Fangquan(): TriggerSkill("fangquan") {
-        events << EventPhaseChanging;
-        view_as_skill = new FangquanViewAsSkill;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *liushan, QVariant &data) const{
-        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        switch (change.to) {
-        case Player::Play: {
-                bool invoked = false;
-                if (!TriggerSkill::triggerable(liushan) || liushan->isSkipped(Player::Play))
-                    return false;
-                invoked = liushan->askForSkillInvoke(objectName());
-                if (invoked) {
-                    liushan->setFlags(objectName());
-                    liushan->skip(Player::Play);
-                }
-                break;
-            }
-        case Player::NotActive: {
-                if (liushan->hasFlag(objectName())) {
-                    if (!liushan->canDiscard(liushan, "h"))
-                        return false;
-                    room->askForUseCard(liushan, "@@fangquan", "@fangquan-give", -1, Card::MethodDiscard);
-                }
-                break;
-            }
-        default:
-                break;
-        }
-        return false;
-    }
-};
-
-class FangquanGive: public PhaseChangeSkill {
-public:
-    FangquanGive(): PhaseChangeSkill("#fangquan-give") {
-    }
-
-    virtual int getPriority() const{
-        return 1;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->getPhase() == Player::NotActive;
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *liushan) const{
-        Room *room = liushan->getRoom();
-        if (!room->getTag("FangquanTarget").isNull()) {
-            PlayerStar target = room->getTag("FangquanTarget").value<PlayerStar>();
-            room->removeTag("FangquanTarget");
-            if (target->isAlive())
-                target->gainAnExtraTurn();
-        }
-        return false;
-    }
-};
-
-
 MountainPackage::MountainPackage()
     : Package("mountain")
 {
@@ -555,13 +393,7 @@ MountainPackage::MountainPackage()
     jiangwei->addSkill(new Tiaoxin);
     jiangwei->addSkill(new Zhiji);
 
-    General *liushan = new General(this, "liushan$", "shu", 3); // SHU 013
-    liushan->addSkill(new Xiangle);
-    liushan->addSkill(new XiangleRemoveMark);
-    liushan->addSkill(new Fangquan);
-    liushan->addSkill(new FangquanGive);
-    related_skills.insertMulti("xiangle", "#xiangle");
-    related_skills.insertMulti("fangquan", "#fangquan-give");
+
 
     General *sunce = new General(this, "sunce$", "wu"); // WU 010
     sunce->addSkill(new Jiang);
@@ -570,7 +402,7 @@ MountainPackage::MountainPackage()
     addMetaObject<TiaoxinCard>();
     addMetaObject<JixiCard>();
     addMetaObject<JixiSnatchCard>();
-    addMetaObject<FangquanCard>();
+
 
     skills << new Jixi;
 }
