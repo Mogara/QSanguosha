@@ -1439,7 +1439,7 @@ void ServerPlayer::sendSkillsToOthers(bool head_skill /* = true */) {
     if (names.isEmpty()) return;
 
     QString general = head_skill ? names.first() : names.last();
-    foreach(auto skill, Sanguosha->getGeneral(general)->getSkillList()) {
+    foreach(auto skill, Sanguosha->getGeneral(general)->getSkillList(true, head_skill)) {
         Json::Value args;
         args[0] = QSanProtocol::S_GAME_EVENT_ADD_SKILL;
         args[1] = toJsonString(objectName());

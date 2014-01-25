@@ -48,7 +48,7 @@ public:
     bool hasSkill(const QString &skill_name) const;
     QList<const Skill *> getSkillList(bool relate_to_place = false, bool head_only = true) const;
     QList<const Skill *> getVisibleSkillList(bool relate_to_place = false, bool head_only = true) const;
-    QSet<const Skill *> getVisibleSkills() const;
+    QSet<const Skill *> getVisibleSkills(bool relate_to_place = false, bool head_only = true) const;
     QSet<const TriggerSkill *> getTriggerSkills() const;
 
     void addRelateSkill(const QString &skill_name);

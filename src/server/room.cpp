@@ -1870,7 +1870,7 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
     QList<const TriggerSkill *> game_start;
     const General *gen = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
     if (gen) {
-        foreach (const Skill *skill, gen->getSkillList()) {
+        foreach (const Skill *skill, gen->getSkillList(true, !isSecondaryHero)) {
             if (skill->inherits("TriggerSkill")) {
                  const TriggerSkill *trigger = qobject_cast<const TriggerSkill *>(skill);
                  thread->addTriggerSkill(trigger);

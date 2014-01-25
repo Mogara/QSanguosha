@@ -483,7 +483,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             const General* oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
             const General* newHero = Sanguosha->getGeneral(newHeroName);
             if (oldHero) {
-                foreach (const Skill *skill, oldHero->getVisibleSkills()) {
+                foreach (const Skill *skill, oldHero->getVisibleSkills(true, !isSecondaryHero)) {
                     detachSkill(skill->objectName());
                     attachSkill(skill->objectName(), true); 
                     //dirty hack here!! add skills again to initialize can_preshow state
@@ -491,7 +491,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             }
 
             if (newHero) {
-                foreach (const Skill *skill, newHero->getVisibleSkills())
+                foreach (const Skill *skill, newHero->getVisibleSkills(true, !isSecondaryHero))
                     attachSkill(skill->objectName(), false);
             }
             break;
