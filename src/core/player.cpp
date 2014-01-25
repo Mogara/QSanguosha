@@ -1114,3 +1114,30 @@ bool Player::isFriendWith(const Player *player) const {
 
     return kingdom == player->kingdom;
 }
+
+bool Player::willBeFriendWith(const Player *player) const {
+    if (!hasShownOneGeneral()) {
+        QString kingdom = getGeneral()->getKingdom();
+        int i = 1;
+        bool has_lord = isAlive() && getGeneral()->isLord();
+
+        if (!has_lord) {
+            foreach(auto p, getSiblings()) {
+                if (p->getKingdom() == kingdom) {
+                    if (p->isAlive() && p->getGeneral()->isLord()) {
+                        has_lord = true;
+                        break;
+                    }
+                    if (p->hasShownOneGeneral() && p->getRole() != "careerist")
+                        ++ i;
+                }
+            }
+        }
+
+        if (!has_lord && i > (parent()->findChildren<const Player *>().length() / 2))
+            return false;
+        else if (kingdom == player->getKingdom())
+            return true;
+    }
+    return false;
+}

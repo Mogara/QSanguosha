@@ -247,6 +247,7 @@ public:
 
     bool ownSkill(const QString skill_name) const;
     bool isFriendWith(const Player *player) const;
+    bool willBeFriendWith(const Player *player) const;
 
     QVariantMap tag;
 
