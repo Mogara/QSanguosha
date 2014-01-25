@@ -718,6 +718,196 @@ public:
 };
 
 
+class Xiangle: public TriggerSkill {
+public:
+    Xiangle(): TriggerSkill("xiangle") {
+        events << SlashEffected << TargetConfirming << CardFinished;
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        if (triggerEvent == TargetConfirming){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("Slash"))
+                return true;
+        }
+        else if (triggerEvent == SlashEffected){
+            if (!player->hasShownSkill(this))
+                return false;
+            return player->getMark("xiangle") > 0;
+        }
+        else if (triggerEvent == CardFinished){
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == TargetConfirming){
+            if (player->hasShownSkill(this)){
+                room->broadcastSkillInvoke(objectName());
+                return true;
+            }
+            else {
+                if (player->askForSkillInvoke(objectName(), data)){
+                    room->broadcastSkillInvoke(objectName());
+                    return true;
+                }
+            }
+        }
+        else if (triggerEvent == SlashEffected)
+            return true;
+        else if (triggerEvent == CardFinished){
+            CardUseStruct use = data.value<CardUseStruct>();
+            foreach (ServerPlayer *p, use.to){
+                p->setMark("xiangle", 0);
+            }
+            return false;
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *liushan, QVariant &data) const{
+        if (triggerEvent == TargetConfirming) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            room->notifySkillInvoked(liushan, objectName());
+
+            LogMessage log;
+            log.type = "#TriggerSkill";
+            log.from = liushan;
+            log.arg = objectName();
+            room->sendLog(log);
+
+            QVariant dataforai = QVariant::fromValue(liushan);
+            if (!room->askForCard(use.from, ".Basic", "@xiangle-discard", dataforai))
+                liushan->addMark("xiangle");
+
+        } else {
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            LogMessage log;
+            log.type = "#XiangleAvoid";
+            log.from = effect.from;
+            log.to << liushan;
+            log.arg = objectName();
+            room->sendLog(log);
+            liushan->removeMark("xiangle");
+            return true;
+        }
+
+        return false;
+    }
+};
+
+FangquanCard::FangquanCard() {
+}
+
+bool FangquanCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && to_select != Self;
+}
+
+void FangquanCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+    ServerPlayer *liushan = effect.from, *player = effect.to;
+
+    LogMessage log;
+    log.type = "#Fangquan";
+    log.from = liushan;
+    log.to << player;
+    room->sendLog(log);
+
+    room->setTag("FangquanTarget", QVariant::fromValue((PlayerStar)player));
+}
+
+class FangquanViewAsSkill: public OneCardViewAsSkill {
+public:
+    FangquanViewAsSkill(): OneCardViewAsSkill("fangquan") {
+        filter_pattern = ".|.|.|hand!";
+        response_pattern = "@@fangquan";
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        FangquanCard *fangquan = new FangquanCard;
+        fangquan->addSubcard(originalCard);
+        fangquan->setShowSkill(objectName());
+        return fangquan;
+    }
+};
+
+class Fangquan: public TriggerSkill {
+public:
+    Fangquan(): TriggerSkill("fangquan") {
+        events << EventPhaseChanging;
+        view_as_skill = new FangquanViewAsSkill;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        if (!TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who))
+            return false;
+
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::Play){
+            return !player->isSkipped(Player::Play);
+        }
+        else if (change.to == Player::NotActive){
+            return player->hasFlag(objectName()) && player->canDiscard(player, "h");
+        }
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::Play)
+            return player->askForSkillInvoke(objectName());
+        else if (change.to == Player::NotActive)
+            return room->askForUseCard(player, "@@fangquan", "@fangquan-discard", -1, Card::MethodDiscard);
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *liushan, QVariant &data) const{
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        if (change.to == Player::Play){
+            liushan->setFlags(objectName());
+            liushan->skip(Player::Play);
+
+        }
+        return false;
+    }
+};
+
+class FangquanGive: public PhaseChangeSkill {
+public:
+    FangquanGive(): PhaseChangeSkill("fangquan-give") {
+        global = true;
+    }
+
+    virtual int getPriority() const{
+        return 1;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        if (player != NULL && player->isAlive() && player->hasSkill("fangquan")){
+            if (!room->getTag("FangquanTarget").isNull()){
+                ServerPlayer *target = room->getTag("FangquanTarget").value<ServerPlayer *>();
+                ask_who = target;
+                return target->isAlive();
+            }
+        }
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        return true;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *liushan) const{
+        Room *room = liushan->getRoom();
+        PlayerStar target = room->getTag("FangquanTarget").value<PlayerStar>();
+        room->removeTag("FangquanTarget");
+        target->gainAnExtraTurn();
+        return false;
+    }
+};
+
 class Shushen: public TriggerSkill {
 public:
     Shushen(): TriggerSkill("shushen") {
@@ -835,6 +1025,7 @@ void StandardPackage::addShuGenerals()
 
     General *weiyan = new General(this, "weiyan", "shu"); // SHU 009
     weiyan->addSkill(new Kuanggu);
+    skills << new KuangguGlobal;
 
     General *pangtong = new General(this, "pangtong", "shu", 3); // SHU 010
     pangtong->addSkill(new Lianhuan);
@@ -847,13 +1038,17 @@ void StandardPackage::addShuGenerals()
     wolong->addSkill(new Kanpo);
     wolong->addSkill(new Bazhen);
 
+    General *liushan = new General(this, "liushan", "shu", 3); // SHU 013
+    liushan->addSkill(new Xiangle);
+    liushan->addSkill(new Fangquan);
+    skills << new FangquanGive;
+
     General *ganfuren = new General(this, "ganfuren", "shu", 3, false); // SHU 016
     ganfuren->addSkill(new Shushen);
     ganfuren->addSkill(new Shenzhi);
 
-    skills << new KuangguGlobal;
-
     addMetaObject<RendeCard>();
+    addMetaObject<FangquanCard>();
 
     skills << new Qicai;
 }
