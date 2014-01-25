@@ -1000,13 +1000,13 @@ public:
         events << EventPhaseStart;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+	if (player != NULL && player->getPhase() == Player::Finish)
+		ask_who = room->findPlayerBySkillName(objectName());
+        return (player != ask_who && ask_who->canDiscard(ask_who,"h"));
     }
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *yuejin = room->findPlayerBySkillName(objectName());
-        if (!yuejin || yuejin == player || player->getPhase() != Player::Finish)
-            return false;
+		ServerPlayer *yuejin = room->findPlayerBySkillName(objectName());
         if (yuejin->canDiscard(yuejin, "h") && room->askForCard(yuejin, ".Basic", "@xiaoguo", QVariant(), objectName())) {
             room->broadcastSkillInvoke(objectName(),1);
             return true;
