@@ -1248,18 +1248,18 @@ void ServerPlayer::showGeneral(bool head_general) {
         setSkillsPreshowed("h");
         sendSkillsToOthers();
 
-		if (getMark("@duanchang") < 1 || tag["Duanchang"].toString() == "deputy")
-			foreach (const Skill *skill, getVisibleSkillList()) {
-				if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
-					&& (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
-					&& hasShownSkill(skill)) {
-						Json::Value arg(Json::arrayValue);
-						arg[0] = toJsonString(objectName());
-						arg[1] = toJsonString(skill->getLimitMark());
-						arg[2] = 1;
-						room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
-				}
-			}
+        if (getMark("@duanchang") < 1 || tag["Duanchang"].toString() == "deputy")
+            foreach (const Skill *skill, getVisibleSkillList()) {
+                if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
+                    && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
+                    && hasShownSkill(skill)) {
+                        Json::Value arg(Json::arrayValue);
+                        arg[0] = toJsonString(objectName());
+                        arg[1] = toJsonString(skill->getLimitMark());
+                        arg[2] = 1;
+                        room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
+                }
+            }
 
         if (!hasShownGeneral2()) {
             QString kingdom = getGeneral()->getKingdom();
@@ -1304,18 +1304,18 @@ void ServerPlayer::showGeneral(bool head_general) {
         setSkillsPreshowed("d");
         sendSkillsToOthers(false);
 
-		if (getMark("@duanchang") < 1 || tag["Duanchang"].toString() == "head")
-			foreach (const Skill *skill, getVisibleSkillList()) {
-				if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
-					&& (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
-					&& hasShownSkill(skill)) {
-						Json::Value arg(Json::arrayValue);
-						arg[0] = toJsonString(objectName());
-						arg[1] = toJsonString(skill->getLimitMark());
-						arg[2] = 1;
-						room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
-				}
-			}
+        if (getMark("@duanchang") < 1 || tag["Duanchang"].toString() == "head")
+            foreach (const Skill *skill, getVisibleSkillList()) {
+                if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
+                    && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
+                    && hasShownSkill(skill)) {
+                        Json::Value arg(Json::arrayValue);
+                        arg[0] = toJsonString(objectName());
+                        arg[1] = toJsonString(skill->getLimitMark());
+                        arg[2] = 1;
+                        room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
+                }
+            }
 
         if (!hasShownGeneral1()) {
             QString kingdom = getGeneral2()->getKingdom();

@@ -145,13 +145,13 @@
         </item>
         <item>
          <widget class="QPushButton" name="playAudioEffectButton">
-		   <property name="text">
-		     <string>Play audio effect</string>
+           <property name="text">
+             <string>Play audio effect</string>
            </property>
-		 </widget>
+         </widget>
         </item>
-		<item>
-		 <widget class="QPushButton" name="getCardButton">
+        <item>
+         <widget class="QPushButton" name="getCardButton">
           <property name="maximumSize">
            <size>
             <width>217</width>

@@ -18,7 +18,7 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             const Card *card = damage.card;
             return (card && room->getCardPlace(card->getEffectiveId()) == Player::PlaceTable);
-		}
+        }
         return false;
     }
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -605,7 +605,7 @@ void StandardPackage::addWeiGenerals()
     xiahouyuan->addSkill(new Shensu);
     xiahouyuan->addSkill(new SlashNoDistanceLimitSkill("shensu"));
     related_skills.insertMulti("shensu", "#shensu-slash-ndl");
-	
+    
     addMetaObject<TuxiCard>();
     addMetaObject<ShensuCard>();
 }
