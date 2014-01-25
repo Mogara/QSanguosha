@@ -5,42 +5,6 @@
 #include "client.h"
 #include "engine.h"
 
-QuhuCard::QuhuCard() {
-}
-
-bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select->getHp() > Self->getHp() && !to_select->isKongcheng();
-}
-
-void QuhuCard::use(Room *room, ServerPlayer *xunyu, QList<ServerPlayer *> &targets) const{
-    ServerPlayer *tiger = targets.first();
-
-    bool success = xunyu->pindian(tiger, "quhu", NULL);
-    if (success) {
-        QList<ServerPlayer *> players = room->getOtherPlayers(tiger), wolves;
-        foreach (ServerPlayer *player, players) {
-            if (tiger->inMyAttackRange(player))
-                wolves << player;
-        }
-
-        if (wolves.isEmpty()) {
-            LogMessage log;
-            log.type = "#QuhuNoWolf";
-            log.from = xunyu;
-            log.to << tiger;
-            room->sendLog(log);
-
-            return;
-        }
-
-        room->broadcastSkillInvoke("#tunlang");
-        ServerPlayer *wolf = room->askForPlayerChosen(xunyu, wolves, "quhu", QString("@quhu-damage:%1").arg(tiger->objectName()));
-        room->damage(DamageStruct("quhu", tiger, wolf));
-    } else {
-        room->damage(DamageStruct("quhu", tiger, xunyu));
-    }
-}
-
 class Jieming: public MasochismSkill {
 public:
     Jieming(): MasochismSkill("jieming") {
@@ -61,75 +25,6 @@ public:
             if (!xunyu->isAlive())
                 break;
         }
-    }
-};
-
-class Quhu: public ZeroCardViewAsSkill {
-public:
-    Quhu(): ZeroCardViewAsSkill("quhu") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasUsed("QuhuCard") && !player->isKongcheng();
-    }
-
-    virtual const Card *viewAs() const{
-        return new QuhuCard;
-    }
-};
-
-QiangxiCard::QiangxiCard() {
-}
-
-bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if (!targets.isEmpty() || to_select == Self)
-        return false;
-
-    int rangefix = 0;
-    if (!subcards.isEmpty() && Self->getWeapon() && Self->getWeapon()->getId() == subcards.first()) {
-        const Weapon *card = qobject_cast<const Weapon *>(Self->getWeapon()->getRealCard());
-        rangefix += card->getRange() - 1;
-    }
-
-    return Self->distanceTo(to_select, rangefix) <= Self->getAttackRange();
-}
-
-void QiangxiCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.to->getRoom();
-
-    if (subcards.isEmpty())
-        room->loseHp(effect.from);
-
-    room->damage(DamageStruct("qiangxi", effect.from, effect.to));
-}
-
-class Qiangxi: public ViewAsSkill {
-public:
-    Qiangxi(): ViewAsSkill("qiangxi") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasUsed("QiangxiCard");
-    }
-
-    virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
-        return selected.isEmpty() && to_select->isKindOf("Weapon") && !Self->isJilei(to_select);
-    }
-
-    virtual const Card *viewAs(const QList<const Card *> &cards) const{
-        if (cards.isEmpty())
-            return new QiangxiCard;
-        else if (cards.length() == 1) {
-            QiangxiCard *card = new QiangxiCard;
-            card->addSubcards(cards);
-
-            return card;
-        } else
-            return NULL;
-    }
-
-    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
-        return 2 - card->subcardsLength();
     }
 };
 
@@ -304,12 +199,6 @@ public:
 FirePackage::FirePackage()
     : Package("fire")
 {
-    General *dianwei = new General(this, "dianwei", "wei"); // WEI 012
-    dianwei->addSkill(new Qiangxi);
-
-    General *xunyu = new General(this, "xunyu", "wei", 3); // WEI 013
-    xunyu->addSkill(new Quhu);
-    xunyu->addSkill(new Jieming);
 
     General *pangtong = new General(this, "pangtong", "shu", 3); // SHU 010
     pangtong->addSkill(new Lianhuan);
@@ -321,9 +210,6 @@ FirePackage::FirePackage()
     wolong->addSkill(new Huoji);
     wolong->addSkill(new Kanpo);
     wolong->addSkill(new Bazhen);
-
-    addMetaObject<QuhuCard>();
-    addMetaObject<QiangxiCard>();
 }
 
 ADD_PACKAGE(Fire)

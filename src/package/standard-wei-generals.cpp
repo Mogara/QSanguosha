@@ -535,7 +535,7 @@ public:
         view_as_skill = new ShensuViewAsSkill;
     }
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *xiahouyuan, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
-        if (!PhaseChangeSkill::triggerable(triggerEvent, room, player, data, ask_who))
+        if (!TriggerSkill::triggerable(triggerEvent, room, xiahouyuan, data, ask_who))
             return false;
 		if (!Slash::IsAvailable(xiahouyuan))
 			return false;
@@ -551,7 +551,7 @@ public:
             xiahouyuan->skip(Player::Judge);
             xiahouyuan->skip(Player::Draw);
 			return true;
-		} else if (change.to == Player::Play && room->askForUseCard(xiahouyuan,"@@shensu2","@shensu2",2,Card::MethodDiscard) {
+		} else if (change.to == Player::Play && room->askForUseCard(xiahouyuan,"@@shensu2","@shensu2",2,Card::MethodDiscard)) {
 			xiahouyuan->skip(Player::Play);
 			return true;
 		}
@@ -680,7 +680,7 @@ public:
         case Player::PhaseNone: Q_ASSERT(false);
         }
         return (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who) && player->isAlive() && index > 0
-			&& player->canDiscard(target, "h"));
+			&& player->canDiscard(player, "h"));
     }
 	virtual bool cost(TriggerEvent triggerEvent,Room *room, ServerPlayer *zhanghe, QVariant &data) const{
 		PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -699,7 +699,7 @@ public:
         }
         QString discard_prompt = QString("#qiaobian-%1").arg(index);
         QString use_prompt = QString("@qiaobian-%1").arg(index);
-		if room->askForDiscard(zhanghe, objectName(), 1, 1, true, false, discard_prompt) {
+		if (room->askForDiscard(zhanghe, objectName(), 1, 1, true, false, discard_prompt)) {
             room->broadcastSkillInvoke("qiaobian");
             if (!zhanghe->isAlive()) return false;
             if (!zhanghe->isSkipped(change.to) && (index == 2 || index == 3))
@@ -1062,7 +1062,7 @@ void StandardPackage::addWeiGenerals()
 
     addMetaObject<TuxiCard>();
     addMetaObject<ShensuCard>();
+	addMetaObject<QiaobianCard>();
 	addMetaObject<QiangxiCard>();
 	addMetaObject<QuhuCard>();
-	addMetaObject<QiaobianCard>();
 }
