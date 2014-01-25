@@ -504,7 +504,7 @@ public:
                && target->getPhase() == Player::Start
                && target->isWounded();
     }
-	
+    
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *to = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "yinghun-invoke", true, true);
         if (to) {
