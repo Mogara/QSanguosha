@@ -862,14 +862,17 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!TriggerSkill::triggerable(player)) return false;
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.from && !damage.from->hasShownAllGenerals())
-        {
-            if (player->hasShownSkill(this)) return true;
-            return player->askForSkillInvoke(objectName());
-        }
+            return true;
         return false;
+    }
+
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
+        if (player->hasShownSkill(this)) return true;
+        return player->askForSkillInvoke(objectName());
     }
 
     virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
@@ -898,8 +901,8 @@ public:
         events << BeforeCardsMove;
     }
 
-    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->hasShownSkill(this)) return true;
+    virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!TriggerSkill::triggerable(player)) return false;
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.from != player)
             return false;
@@ -918,8 +921,14 @@ public:
             if (lirang_card.isEmpty())
                 return false;
 
-            return player->askForSkillInvoke(objectName());
+            return true;
         }
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
+        if (player->hasShownSkill(this)) return true;
+        return player->askForSkillInvoke(objectName());
 
         return false;
     }
@@ -1056,26 +1065,33 @@ public:
         events << CardsMoveOneTime;
     }
 
-    virtual bool canPreshow() const {
-        return true;
-    }
-
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *tianfeng, QVariant &data) const{
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *tianfeng, QVariant &data, ServerPlayer *ask_who) const{
+        if (!TriggerSkill::triggerable(tianfeng)) return false;
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.from == tianfeng && move.from_places.contains(Player::PlaceHand) && move.is_last_handcard) {
             QList<ServerPlayer *> other_players = room->getOtherPlayers(tianfeng);
             QList<ServerPlayer *> targets;
             foreach (ServerPlayer *p, other_players) {
                 if (tianfeng->canDiscard(p, "he"))
-                    targets << p;
+                    return true;
             }
-            if (targets.isEmpty()) return false;
-            ServerPlayer *to = room->askForPlayerChosen(tianfeng, targets, objectName(), "sijian-invoke", true, true);
-            if (to) {
-                tianfeng->tag["sijian_target"] = QVariant::fromValue(to);
-                return true;
-            } else tianfeng->tag.remove("sijian_target");
         }
+
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *tianfeng, QVariant &data) const{
+        QList<ServerPlayer *> other_players = room->getOtherPlayers(tianfeng);
+        QList<ServerPlayer *> targets;
+        foreach (ServerPlayer *p, other_players) {
+            if (tianfeng->canDiscard(p, "he"))
+                targets << p;
+        }
+        ServerPlayer *to = room->askForPlayerChosen(tianfeng, targets, objectName(), "sijian-invoke", true, true);
+        if (to) {
+            tianfeng->tag["sijian_target"] = QVariant::fromValue(to);
+            return true;
+        } else tianfeng->tag.remove("sijian_target");
         return false;
     }
 
@@ -1098,25 +1114,27 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!TriggerSkill::triggerable(player)) return false;
         ServerPlayer *target = NULL;
         if (triggerEvent == Dying) {
             DyingStruct dying = data.value<DyingStruct>();
             if (dying.damage && dying.damage->from)
                 target = dying.damage->from;
-            if (dying.who != player && target && target->isFriendWith(player)) {
-                if (player->hasShownSkill(this)) return true;
-                return room->askForSkillInvoke(player, objectName());
-            }
+            if (dying.who != player && target && target->isFriendWith(player))
+                return true;
         } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
             target = death.who;
-            if (target && target->isFriendWith(player)) {
-                if (player->hasShownSkill(this)) return true;
-                return room->askForSkillInvoke(player, objectName());
-            }
+            if (target && target->isFriendWith(player))
+                return true;
         }
         return false;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (player->hasShownSkill(this)) return true;
+        return room->askForSkillInvoke(player, objectName());
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -1137,7 +1155,7 @@ public:
         events << Damage;
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *panfeng, QVariant &data) const{
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *panfeng, QVariant &data, ServerPlayer* &ask_who) const{
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *target = damage.to;
         if (damage.card && damage.card->isKindOf("Slash") && target->hasEquip() && !damage.chain && !damage.transfer) {
@@ -1145,11 +1163,14 @@ public:
             for (int i = 0; i <= 3; i++) {
                 if (!target->getEquip(i)) continue;
                 if (panfeng->canDiscard(target, target->getEquip(i)->getEffectiveId()) || panfeng->getEquip(i) == NULL)
-                    return panfeng->askForSkillInvoke(objectName(), data);
+                    return true;
             }
         }
-
         return false;
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *panfeng, QVariant &data) const{
+        return panfeng->askForSkillInvoke(objectName(), data);
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *panfeng, QVariant &data) const{

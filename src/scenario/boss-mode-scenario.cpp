@@ -44,6 +44,10 @@ public:
         frequency = Frequent;
     }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target);
+    }
+
     virtual void onDamaged(ServerPlayer *player, const DamageStruct &damage) const{
         Room *room = player->getRoom();
         QList<ServerPlayer *> players = room->getAlivePlayers();
