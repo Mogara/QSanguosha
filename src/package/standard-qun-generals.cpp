@@ -1168,9 +1168,9 @@ HuoshuiCard::HuoshuiCard() {
 	target_fixed = true;
 }
 
-class HuoshuiViewAsSkill: public ZeroCardViewAsSkill {
+class Huoshui: public ZeroCardViewAsSkill {
 public:
-    HuoshuiViewAsSkill(): ZeroCardViewAsSkill("huoshui") {
+    Huoshui(): ZeroCardViewAsSkill("huoshui") {
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -1181,54 +1181,6 @@ public:
         Card *card = new HuoshuiCard;
 		card->setShowSkill(objectName());
 		return card;
-    }
-};
-
-class Huoshui: public TriggerSkill {
-public:
-    Huoshui(): TriggerSkill("huoshui") {
-        events << EventPhaseStart << Death
-            << EventLoseSkill << EventAcquireSkill;
-        frequency = Compulsory;
-		view_as_skill = new HuoshuiViewAsSkill;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual int getPriority() const{
-        return 5;
-    }
-
-	virtual bool canPreshow() const {
-		return false;
-	}
-
-	virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        return player->hasShownSkill(this);
-	}
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart) {
-            if (!TriggerSkill::triggerable(player) 
-                || (player->getPhase() != Player::RoundStart || player->getPhase() != Player::NotActive)) return false;
-        } else if (triggerEvent == Death) {
-            DeathStruct death = data.value<DeathStruct>();
-            if (death.who != player || !player->hasSkill(objectName())) return false;
-        } else if (triggerEvent == EventLoseSkill) {
-            if (data.toString() != objectName() || player->getPhase() == Player::NotActive) return false;
-        } else if (triggerEvent == EventAcquireSkill) {
-            if (data.toString() != objectName() || !player->hasSkill(objectName()) || player->getPhase() == Player::NotActive)
-                return false;
-		}
-
-        if (player->getPhase() == Player::RoundStart || triggerEvent == EventAcquireSkill)
-            room->broadcastSkillInvoke(objectName(), 1);
-        else if (player->getPhase() == Player::NotActive || triggerEvent == EventLoseSkill)
-            room->broadcastSkillInvoke(objectName(), 2);
-
-        return false;
     }
 };
 
