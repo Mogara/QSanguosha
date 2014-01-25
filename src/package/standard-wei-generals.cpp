@@ -699,18 +699,31 @@ public:
         }
         QString discard_prompt = QString("#qiaobian-%1").arg(index);
         QString use_prompt = QString("@qiaobian-%1").arg(index);
-		if (room->askForDiscard(zhanghe, objectName(), 1, 1, true, false, discard_prompt)) {
+		if room->askForDiscard(zhanghe, objectName(), 1, 1, true, false, discard_prompt) {
             room->broadcastSkillInvoke("qiaobian");
             if (!zhanghe->isAlive()) return false;
             if (!zhanghe->isSkipped(change.to) && (index == 2 || index == 3))
-                room->askForUseCard(zhanghe, "@@qiaobian", use_prompt, index);
-            zhanghe->skip(change.to);
 			return true;
 		}
 		return false;
 	}	
     virtual bool effect(TriggerEvent , Room *room, ServerPlayer *zhanghe, QVariant &data) const{
-        return false;
+		PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        int index = 0;
+        switch (change.to) {
+        case Player::RoundStart:
+        case Player::Start:
+        case Player::Finish:
+        case Player::NotActive: return false;
+
+        case Player::Judge: index = 1 ;break;
+        case Player::Draw: index = 2; break;
+        case Player::Play: index = 3; break;
+        case Player::Discard: index = 4; break;
+        case Player::PhaseNone: Q_ASSERT(false);
+        }
+		room->askForUseCard(zhanghe, "@@qiaobian", use_prompt, index);
+        zhanghe->skip(change.to);
 	}
 };
 
