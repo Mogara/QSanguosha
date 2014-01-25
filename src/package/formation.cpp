@@ -699,15 +699,12 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!TriggerSkill::triggerable(player)) return false;
         if (triggerEvent == EventPhaseEnd) {
             if (TriggerSkill::triggerable(player) && player->getPhase() == Player::Play) {
-                if (!player->hasFlag("ShengxiDamageInPlayPhase") && player->askForSkillInvoke(objectName()))
-                    player->drawCards(2);
+                if (!player->hasFlag("ShengxiDamageInPlayPhase"))
+                    return true;
             }
             if (player->hasFlag("ShengxiDamageInPlayPhase"))
                 player->setFlags("-ShengxiDamageInPlayPhase");
@@ -718,6 +715,16 @@ public:
         }
         return false;
     }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
+        return player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
+        player->drawCards(2);
+        
+        return false;
+    }
 };
 
 class Shoucheng: public TriggerSkill {
@@ -726,30 +733,30 @@ public:
         events << CardsMoveOneTime;
         frequency = Frequent;
     }
+    
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!TriggerSkill::triggerable(player)) return false;
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        if (move.from && move.from->isAlive() && move.from->getPhase() == Player::NotActive && move.from->isFriendWith(player)
+                && move.from_places.contains(Player::PlaceHand) && move.is_last_handcard)
+            return true;
+
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        return player->askForSkillInvoke(objectName());
+    }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.from && move.from->isAlive() && move.from->getPhase() == Player::NotActive
-            && move.from_places.contains(Player::PlaceHand) && move.is_last_handcard) {
-            if (room->askForSkillInvoke(player, objectName(), data)) {
-                if (move.from == player || room->askForChoice(player, objectName(), "accept+reject") == "accept") {
-                    room->broadcastSkillInvoke(objectName());
-                    ServerPlayer *from = (ServerPlayer *)move.from;
-                    from->drawCards(1);
-                } else {
-                    LogMessage log;
-                    log.type = "#ZhibaReject";
-                    log.from = (ServerPlayer *)move.from;
-                    log.to << player;
-                    log.arg = objectName();
-                    room->sendLog(log);
-                }
-            }
-        }
+        room->broadcastSkillInvoke(objectName());
+        ServerPlayer *from = (ServerPlayer *)move.from;
+        from->drawCards(1);
         return false;
     }
 };
- 
+
 
 FormationPackage::FormationPackage()
     : Package("formation")
@@ -773,7 +780,6 @@ FormationPackage::FormationPackage()
     jiangwei->addSkill(new Tianfu);
 
     General *jiangwanfeiyi = new General(this, "jiangwanfeiyi", "shu", 3); // SHU 018 
-    //ToDo: Add skin for jiangwanfeiyi @@Yan Guam
     jiangwanfeiyi->addSkill(new Shengxi);
     jiangwanfeiyi->addSkill(new Shoucheng);
 
