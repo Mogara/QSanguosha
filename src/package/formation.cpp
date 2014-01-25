@@ -10,33 +10,234 @@
 #include "ai.h"
 #include "settings.h"
 
+class Tuntian: public TriggerSkill {
+public:
+    Tuntian(): TriggerSkill("tuntian") {
+        events << CardsMoveOneTime << FinishJudge;
+        frequency = Frequent;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!TriggerSkill::triggerable(player) || player->getPhase() != Player::NotActive) return false;
+        if (triggerEvent == CardsMoveOneTime) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from == player && (move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip))
+                && !(move.to == player && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip)))
+                return true;
+        } else if (triggerEvent == FinishJudge) {
+            JudgeStar judge = data.value<JudgeStar>();
+            if (judge->reason == "tuntian" && judge->isGood())
+                player->addToPile("field", judge->card->getEffectiveId());
+        }
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        return player->askForSkillInvoke("tuntian", data);
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        room->broadcastSkillInvoke("tuntian");
+        JudgeStruct judge;
+        judge.pattern = ".|heart";
+        judge.good = false;
+        judge.reason = "tuntian";
+        judge.who = player;
+        room->judge(judge);
+       
+        return false;
+    }
+};
+
+class TuntianDistance: public DistanceSkill {
+public:
+    TuntianDistance(): DistanceSkill("#tuntian-dist") {
+    }
+
+    virtual int getCorrect(const Player *from, const Player *) const{
+        if (from->hasShownSkill(Sanguosha->getSkill("tuntian")))
+            return -from->getPile("field").length();
+        else
+            return 0;
+    }
+};
+
+JixiCard::JixiCard() {
+    target_fixed = true;
+}
+
+void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *dengai = card_use.from;
+
+    QList<int> fields;
+    QList<int> total = dengai->getPile("field");
+    foreach (int id, total) {
+        Snatch *snatch = new Snatch(Card::SuitToBeDecided, -1);
+        snatch->addSubcard(id);
+        if (!snatch->isAvailable(dengai))
+            continue;
+        foreach (ServerPlayer *p, room->getAlivePlayers()) {
+            if (!snatch->targetFilter(QList<const Player *>(), p, dengai))
+                continue;
+            if (dengai->isProhibited(p, snatch))
+                continue;
+            fields << id;
+            break;
+        }
+        delete snatch;
+        snatch = NULL;
+    }
+
+    if (fields.isEmpty())
+        return;
+
+    QList<int> disabled;
+    foreach (int id, total) {
+        if (!fields.contains(id))
+            disabled << id;
+    }
+
+    int card_id;
+    if (fields.length() == 1)
+        card_id = fields.first();
+    else {
+        room->fillAG(total, dengai, disabled);
+        card_id = room->askForAG(dengai, fields, false, "jixi");
+        room->clearAG(dengai);
+
+        if (card_id == -1)
+            return;
+    }
+
+    Snatch *snatch = new Snatch(Card::SuitToBeDecided, -1);
+    snatch->setSkillName("jixi");
+    snatch->addSubcard(card_id);
+
+    QList<ServerPlayer *> targets;
+    foreach (ServerPlayer *p, room->getAlivePlayers()) {
+        if (!snatch->targetFilter(QList<const Player *>(), p, dengai))
+            continue;
+        if (dengai->isProhibited(p, snatch))
+            continue;
+
+        targets << p;
+    }
+    if (targets.isEmpty())
+        return;
+
+    room->setPlayerProperty(dengai, "jixi_snatch", snatch->toString());
+
+    CardUseStruct use;
+    use.card = snatch;
+    use.from = dengai;
+
+    if (room->askForUseCard(dengai, "@@jixi!", "@jixi-target")) {
+        foreach (ServerPlayer *p, room->getAlivePlayers()) {
+            if (p->hasFlag("JixiSnatchTarget")) {
+                room->setPlayerFlag(p, "-JixiSnatchTarget");
+                use.to << p;
+            }
+        }
+    } else {
+        use.to << targets.at(qrand() % targets.length());
+    }
+    room->setPlayerProperty(dengai, "jixi_snatch", QString());
+    room->useCard(use);
+}
+
+JixiSnatchCard::JixiSnatchCard() {
+}
+
+bool JixiSnatchCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    const Card *card = Card::Parse(Self->property("jixi_snatch").toString());
+    if (card == NULL)
+        return false;
+    else {
+        const Snatch *snatch = qobject_cast<const Snatch *>(card);
+        return !Self->isProhibited(to_select, snatch, targets) && snatch->targetFilter(targets, to_select, Self);
+    }
+}
+
+void JixiSnatchCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    foreach (ServerPlayer *to, card_use.to)
+        room->setPlayerFlag(to, "JixiSnatchTarget");
+}
+
+class Jixi: public ZeroCardViewAsSkill {
+public:
+    Jixi(): ZeroCardViewAsSkill("jixi") {
+        relate_to_place = "head";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        if (player->getPile("field").isEmpty())
+            return false;
+        foreach (int id, player->getPile("field")) {
+            Snatch *snatch = new Snatch(Card::SuitToBeDecided, -1);
+            snatch->setSkillName("jixi");
+            snatch->addSubcard(id);
+            snatch->deleteLater();
+            if (!snatch->isAvailable(player))
+                continue;
+            foreach (const Player *p, player->getAliveSiblings()) {
+                if (!snatch->targetFilter(QList<const Player *>(), p, player))
+                    continue;
+                if (player->isProhibited(p, snatch))
+                    continue;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+        return pattern == "@@jixi!";
+    }
+
+    virtual const Card *viewAs() const{
+        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+        if (pattern == "@@jixi!")
+            return new JixiSnatchCard;
+        else
+            return new JixiCard;
+    }
+};
+
 class Ziliang: public TriggerSkill {
 public:
     Ziliang(): TriggerSkill("ziliang") {
         events << Damaged;
+        relate_to_place = "deputy";
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (player == NULL) return false;
+        ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
+        if (!player->isAlive()) return false;
+        if (!dengai || dengai->getPile("field").isEmpty()) return false;
+        ask_who = dengai;
+        return true;
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
+        return room->askForSkillInvoke(dengai, objectName(), data);
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        QList<ServerPlayer *> dengais = room->findPlayersBySkillName(objectName());
-        foreach (ServerPlayer *dengai, dengais) {
-            if (!player->isAlive()) break;
-            if (dengai->getPile("field").isEmpty()) continue;
-            if (!room->askForSkillInvoke(dengai, objectName(), data)) continue;
-            int id = room->askForAG(dengai, dengai->getPile("field"), false, objectName());
-            if (player == dengai) {
-                LogMessage log;
-                log.type = "$MoveCard";
-                log.from = player;
-                log.to << player;
-                log.card_str = QString::number(id);
-                room->sendLog(log);
-            }
-            room->obtainCard(player, id);
+        ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
+        
+        int id = room->askForAG(dengai, dengai->getPile("field"), false, objectName());
+        if (player == dengai) {
+            LogMessage log;
+            log.type = "$MoveCard";
+            log.from = player;
+            log.to << player;
+            log.card_str = QString::number(id);
+            room->sendLog(log);
         }
+        room->obtainCard(player, id);
+
         return false;
     }
 }; 
@@ -532,13 +733,17 @@ public:
 FormationPackage::FormationPackage()
     : Package("formation")
 {
+    General *dengai = new General(this, "dengai", "wei"); // WEI 015
+    dengai->addSkill(new Tuntian);
+    dengai->addSkill(new TuntianDistance);
+    dengai->addSkill(new Jixi);
+    dengai->setHeadMaxHpAdjustedValue(-1);
+    dengai->addSkill(new Ziliang); 
+    related_skills.insertMulti("tuntian", "#tuntian-dist");
+
     General *heg_jiangwei = new General(this, "heg_jiangwei", "shu"); // SHU 012 G
     heg_jiangwei->addSkill("tiaoxin");
     heg_jiangwei->addSkill(new Tianfu);
-
-    General *heg_dengai = new General(this, "heg_dengai", "wei"); // WEI 015 G
-    heg_dengai->addSkill("tuntian");
-    heg_dengai->addSkill(new Ziliang); 
 
     General *heg_caohong = new General(this, "heg_caohong", "wei"); // WEI 018
     heg_caohong->addSkill(new Huyuan);
@@ -560,7 +765,9 @@ FormationPackage::FormationPackage()
     General *hetaihou = new General(this, "hetaihou", "qun", 3, false); // QUN 020
     hetaihou->addSkill(new Zhendu);
     hetaihou->addSkill(new Qiluan); 
-
+    
+    addMetaObject<JixiCard>();
+    addMetaObject<JixiSnatchCard>();
     addMetaObject<HuyuanCard>();
     addMetaObject<HeyiCard>();
 }

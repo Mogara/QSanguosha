@@ -90,19 +90,21 @@ bool General::hasSkill(const QString &skill_name) const{
     return skill_set.contains(skill_name) || extra_set.contains(skill_name);
 }
 
-QList<const Skill *> General::getSkillList() const{
+QList<const Skill *> General::getSkillList(bool relate_to_place, bool head_only) const{
     QList<const Skill *> skills;
     foreach (QString skill_name, skillname_list) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         Q_ASSERT(skill != NULL);
-        skills << skill;
+        if (relate_to_place && skill->relateToPlace(head_only))
+            skills << skill;
+        else if (!relate_to_place) skills << skill;
     }
     return skills;
 }
 
-QList<const Skill *> General::getVisibleSkillList() const{
+QList<const Skill *> General::getVisibleSkillList(bool relate_to_place, bool head_only) const{
     QList<const Skill *> skills;
-    foreach (const Skill *skill, getSkillList()) {
+    foreach (const Skill *skill, getSkillList(relate_to_place, head_only)) {
         if (skill->isVisible())
             skills << skill;
     }

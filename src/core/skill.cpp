@@ -10,7 +10,7 @@
 #include <QFile>
 
 Skill::Skill(const QString &name, Frequency frequency)
-    : frequency(frequency), limit_mark(QString()), default_choice("no"), attached_lord_skill(false)
+    : frequency(frequency), limit_mark(QString()), default_choice("no"), relate_to_place(QString()), attached_lord_skill(false)
 {
     static QChar lord_symbol('$');
 
@@ -126,6 +126,14 @@ bool Skill::canPreshow() const{
         return triskill->getViewAsSkill() == NULL;
     }
 
+    return false;
+}
+
+bool Skill::relateToPlace(bool head) const{
+    if (head)
+        return relate_to_place == "head";
+    else
+        return relate_to_place == "deputy";
     return false;
 }
 
