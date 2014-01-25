@@ -704,8 +704,8 @@ public:
         case Player::PhaseNone: Q_ASSERT(false);
         }
         QString discard_prompt = QString("#qiaobian-%1").arg(index);
-        QString use_prompt = QString("@qiaobian-%1").arg(index);
-		if room->askForDiscard(zhanghe, objectName(), 1, 1, true, false, discard_prompt) {
+        
+		if (room->askForDiscard(zhanghe, objectName(), 1, 1, true, false, discard_prompt)) {
             room->broadcastSkillInvoke("qiaobian");
             if (!zhanghe->isAlive()) return false;
             if (!zhanghe->isSkipped(change.to) && (index == 2 || index == 3))
@@ -728,6 +728,7 @@ public:
         case Player::Discard: index = 4; break;
         case Player::PhaseNone: Q_ASSERT(false);
         }
+        QString use_prompt = QString("@qiaobian-%1").arg(index);
 		room->askForUseCard(zhanghe, "@@qiaobian", use_prompt, index);
         zhanghe->skip(change.to);
 	}
