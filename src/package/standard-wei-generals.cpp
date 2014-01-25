@@ -538,7 +538,7 @@ public:
         events << EventPhaseChanging;
         view_as_skill = new ShensuViewAsSkill;
     }
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *xiahouyuan, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *xiahouyuan, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (!TriggerSkill::triggerable(triggerEvent, room, xiahouyuan, data, ask_who))
             return false;
 		if (!Slash::IsAvailable(xiahouyuan))
@@ -669,7 +669,7 @@ public:
         view_as_skill = new QiaobianViewAsSkill;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
 		PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         room->setPlayerMark(player, "qiaobianPhase", (int)change.to);
         int index = 0;
@@ -770,7 +770,7 @@ public:
         frequency = NotFrequent;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who) && player->getPhase() == Player::Finish;
     }
 
@@ -903,7 +903,7 @@ class Jieming: public MasochismSkill {
 public:
     Jieming(): MasochismSkill("jieming") {
     }
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who);
     }
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -933,7 +933,7 @@ public:
     Xingshang(): TriggerSkill("xingshang") {
         events << Death;
     }
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
 	    DeathStruct death = data.value<DeathStruct>();
         ServerPlayer *dead = death.who;
 		if (player->isNude() || player == dead )
