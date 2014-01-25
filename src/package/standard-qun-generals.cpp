@@ -89,8 +89,19 @@ public:
     }
 
 	virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-		if (player->hasShownSkill(this)) return true;
-		if (player->askForSkillInvoke(objectName())) return true;
+		if (triggerEvent == TargetConfirmed) {
+			if (player->hasShownSkill(this)) return true;
+			CardUseStruct use = data.value<CardUseStruct>();
+			if ((use.card->isKindOf("Slash") || use.card->isKindOf("Duel")) && TriggerSkill::triggerable(use.from))
+				return player->askForSkillInvoke(objectName());
+		} else if (triggerEvent == CardFinished) {
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("Duel")) {
+                foreach (ServerPlayer *lvbu, room->getAllPlayers())
+                    if (lvbu->getMark("WushuangTarget") > 0) room->setPlayerMark(lvbu, "WushuangTarget", 0);
+            }
+			return false;
+		}
 		return false;
 	}
 
@@ -125,12 +136,6 @@ public:
             room->broadcastSkillInvoke(objectName());
             if (use.card->isKindOf("Duel"))
                 room->setPlayerMark(player, "WushuangTarget", 1);
-        } else if (triggerEvent == CardFinished) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Duel")) {
-                foreach (ServerPlayer *lvbu, room->getAllPlayers())
-                    if (lvbu->getMark("WushuangTarget") > 0) room->setPlayerMark(lvbu, "WushuangTarget", 0);
-            }
         }
 
         return false;
@@ -772,6 +777,64 @@ public:
     }
 };
 
+XiongyiCard::XiongyiCard() {
+    mute = true;
+	target_fixed = true;
+}
+
+void XiongyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    CardUseStruct use = card_use;
+    QList<ServerPlayer *> targets;
+	targets << use.from;
+	foreach(ServerPlayer *p, room->getOtherPlayers(use.from))
+		if (!targets.contains(p) && p->isFriendWith(use.from))
+			targets << p;
+	use.to = targets;
+    room->removePlayerMark(use.from, "@arise");
+    room->broadcastSkillInvoke("xiongyi");
+    room->doLightbox("$XiongyiAnimate", 4500);
+    SkillCard::onUse(room, use);
+}
+
+void XiongyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    foreach (ServerPlayer *p, targets)
+        p->drawCards(3);
+	QList<QString> kingdom_list = Sanguosha->getKingdoms();
+	bool invoke = true;
+	int n = room->getLieges(source->getKingdom(), NULL).length();
+	foreach (QString kingdom, Sanguosha->getKingdoms()) {
+		if (kingdom == "god") continue;
+		int x = room->getLieges(kingdom, NULL).length();
+		if (x && x < n) {
+			invoke = false;
+			break;
+		}
+	}
+    if (invoke && source->isWounded()) {
+        RecoverStruct recover;
+        recover.who = source;
+        room->recover(source, recover);
+    }
+}
+
+class Xiongyi: public ZeroCardViewAsSkill {
+public:
+    Xiongyi(): ZeroCardViewAsSkill("xiongyi") {
+        frequency = Limited;
+        limit_mark = "@arise";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->getMark("@arise") >= 1;
+    }
+
+    virtual const Card *viewAs() const{
+        Card *card = new XiongyiCard;
+		card->setShowSkill(objectName());
+		return card;
+    }
+};
+
 void StandardPackage::addQunGenerals()
 {
 	General *huatuo = new General(this, "huatuo", "qun", 3); // QUN 001
@@ -810,7 +873,12 @@ void StandardPackage::addQunGenerals()
     caiwenji->addSkill(new Beige);
     caiwenji->addSkill(new Duanchang);
 
+    General *mateng = new General(this, "mateng", "qun"); // QUN 013
+    mateng->addSkill(new Mashu("mateng"));
+    mateng->addSkill(new Xiongyi);
+
     addMetaObject<QingnangCard>();
     addMetaObject<LijianCard>();
     addMetaObject<LuanwuCard>();
+    addMetaObject<XiongyiCard>();
 }

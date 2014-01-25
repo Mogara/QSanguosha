@@ -388,7 +388,7 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
 
     return false;*/
 
-    return Sanguosha->getSkill(skill_name)->isLordSkill() && isLord() && hasSkill(skill_name);
+    return Sanguosha->getSkill(skill_name)->isLordSkill() && isLord() && hasSkill(skill_name, include_lose);
 }
 
 void Player::acquireSkill(const QString &skill_name) {

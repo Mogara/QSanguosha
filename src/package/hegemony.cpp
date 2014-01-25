@@ -422,54 +422,6 @@ public:
     }
 };
 
-XiongyiCard::XiongyiCard() {
-    mute = true;
-}
-
-bool XiongyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return true;
-}
-
-bool XiongyiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
-    return true;
-}
-
-void XiongyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
-    CardUseStruct use = card_use;
-    if (!use.to.contains(use.from))
-        use.to << use.from;
-    room->removePlayerMark(use.from, "@arise");
-    room->broadcastSkillInvoke("xiongyi");
-    room->doLightbox("$XiongyiAnimate", 4500);
-    SkillCard::onUse(room, use);
-}
-
-void XiongyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    foreach (ServerPlayer *p, targets)
-        p->drawCards(3);
-    if (targets.length() <= room->getAlivePlayers().length() / 2 && source->isWounded()) {
-        RecoverStruct recover;
-        recover.who = source;
-        room->recover(source, recover);
-    }
-}
-
-class Xiongyi: public ZeroCardViewAsSkill {
-public:
-    Xiongyi(): ZeroCardViewAsSkill("xiongyi") {
-        frequency = Limited;
-        limit_mark = "@arise";
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getMark("@arise") >= 1;
-    }
-
-    virtual const Card *viewAs() const{
-        return new XiongyiCard;
-    }
-};
-
 class Kuangfu: public TriggerSkill {
 public:
     Kuangfu(): TriggerSkill("kuangfu") {
@@ -703,10 +655,6 @@ HegemonyPackage::HegemonyPackage()
     dingfeng->addSkill(new Skill("duanbing", Skill::Compulsory));
     dingfeng->addSkill(new Fenxun);
 
-    General *mateng = new General(this, "mateng", "qun"); // QUN 013
-    mateng->addSkill(new Mashu("mateng"));
-    mateng->addSkill(new Xiongyi);
-
     General *kongrong = new General(this, "kongrong", "qun", 3); // QUN 014
     kongrong->addSkill(new Mingshi);
     kongrong->addSkill(new Lirang);
@@ -761,7 +709,6 @@ HegemonyPackage::HegemonyPackage()
     addMetaObject<DuoshiCard>();
     addMetaObject<FenxunCard>();
     addMetaObject<ShuangrenCard>();
-    addMetaObject<XiongyiCard>();
     addMetaObject<QingchengCard>();
 }
 
