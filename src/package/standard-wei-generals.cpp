@@ -731,6 +731,8 @@ public:
         QString use_prompt = QString("@qiaobian-%1").arg(index);
 		room->askForUseCard(zhanghe, "@@qiaobian", use_prompt, index);
         zhanghe->skip(change.to);
+
+        return false;
 	}
 };
 
