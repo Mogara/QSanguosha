@@ -233,6 +233,7 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!PhaseChangeSkill::triggerable(player)) return false;
         if (player->getPhase() == Player::Finish) return true;
         return false;
     }

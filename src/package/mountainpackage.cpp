@@ -108,96 +108,14 @@ public:
     }
 };
 
-TiaoxinCard::TiaoxinCard() {
-}
-
-bool TiaoxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select->inMyAttackRange(Self) && to_select != Self;
-}
-
-void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.from->getRoom();
-    bool use_slash = false;
-    if (effect.to->canSlash(effect.from, NULL, false))
-        use_slash = room->askForUseSlashTo(effect.to, effect.from, "@tiaoxin-slash:" + effect.from->objectName());
-    if (!use_slash && effect.from->canDiscard(effect.to, "he"))
-        room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "tiaoxin", false, Card::MethodDiscard), effect.to, effect.from);
-}
-
-class Tiaoxin: public ZeroCardViewAsSkill {
-public:
-    Tiaoxin(): ZeroCardViewAsSkill("tiaoxin") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasUsed("TiaoxinCard");
-    }
-
-    virtual const Card *viewAs() const{
-        return new TiaoxinCard;
-    }
-
-    virtual int getEffectIndex(const ServerPlayer *player, const Card *) const{
-        int index = qrand() % 2 + 1;
-        if (!player->hasInnateSkill(objectName()) && player->hasSkill("baobian"))
-            index += 2;
-        return index;
-    }
-};
-
-class Zhiji: public PhaseChangeSkill {
-public:
-    Zhiji(): PhaseChangeSkill("zhiji") {
-        frequency = Wake;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target)
-               && target->getMark("zhiji") == 0
-               && target->getPhase() == Player::Start
-               && target->isKongcheng();
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *jiangwei) const{
-        Room *room = jiangwei->getRoom();
-        room->notifySkillInvoked(jiangwei, objectName());
-
-        LogMessage log;
-        log.type = "#ZhijiWake";
-        log.from = jiangwei;
-        log.arg = objectName();
-        room->sendLog(log);
-
-        room->broadcastSkillInvoke(objectName());
-        room->doLightbox("$ZhijiAnimate", 4000);
-
-        if (jiangwei->isWounded() && room->askForChoice(jiangwei, objectName(), "recover+draw") == "recover") {
-            RecoverStruct recover;
-            recover.who = jiangwei;
-            room->recover(jiangwei, recover);
-        } else {
-            room->drawCards(jiangwei, 2);
-        }
-        room->addPlayerMark(jiangwei, "zhiji");
-        if (room->changeMaxHpForAwakenSkill(jiangwei))
-            room->acquireSkill(jiangwei, "guanxing");
-
-        return false;
-    }
-};
-
 MountainPackage::MountainPackage()
     : Package("mountain")
 {
-    General *jiangwei = new General(this, "jiangwei", "shu"); // SHU 012
-    jiangwei->addSkill(new Tiaoxin);
-    jiangwei->addSkill(new Zhiji);
 
     General *sunce = new General(this, "sunce$", "wu"); // WU 010
     sunce->addSkill(new Jiang);
     sunce->addSkill(new Hunzi);
 
-    addMetaObject<TiaoxinCard>();
 
 }
 

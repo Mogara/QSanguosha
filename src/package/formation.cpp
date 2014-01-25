@@ -326,6 +326,10 @@ public:
         frequency = Compulsory;
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (player == NULL) return false;
         if (triggerEvent == Death) {
@@ -358,7 +362,7 @@ public:
         next_p = caohong;
         while (next) {
             foreach (ServerPlayer *p, room->getAllPlayers())
-                if (p->getNextAlive() == caohong) {
+                if (p->getNextAlive() == next_p) {
                     next_p = p;
                     break;
                 }
@@ -369,7 +373,7 @@ public:
         }
         if (teammates.isEmpty()) return false;
         foreach(ServerPlayer *p, teammates)
-            room->acquireSkill(p, "feiying");
+            room->acquireSkill(p, "feiying", false);
 
         return false;
     }
@@ -388,49 +392,108 @@ public:
     }
 };
 
+TiaoxinCard::TiaoxinCard() {
+}
+
+bool TiaoxinCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && to_select->inMyAttackRange(Self) && to_select != Self;
+}
+
+void TiaoxinCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+    bool use_slash = false;
+    if (effect.to->canSlash(effect.from, NULL, false))
+        use_slash = room->askForUseSlashTo(effect.to, effect.from, "@tiaoxin-slash:" + effect.from->objectName());
+    if (!use_slash && effect.from->canDiscard(effect.to, "he"))
+        room->throwCard(room->askForCardChosen(effect.from, effect.to, "he", "tiaoxin", false, Card::MethodDiscard), effect.to, effect.from);
+}
+
+class Tiaoxin: public ZeroCardViewAsSkill {
+public:
+    Tiaoxin(): ZeroCardViewAsSkill("tiaoxin") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("TiaoxinCard");
+    }
+
+    virtual const Card *viewAs() const{
+        Card *card = new TiaoxinCard;
+        card->setShowSkill(objectName());
+        return card;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *) const{
+        int index = qrand() % 2 + 1;
+        if (!player->hasInnateSkill(objectName()) && player->hasSkill("baobian"))
+            index += 2;
+        return index;
+    }
+};
+
+class YiZhi: public TriggerSkill {
+public:
+    YiZhi(): TriggerSkill("yizhi") {
+        relate_to_place = "deputy";
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
+        return false;
+    }
+};
+
 class Tianfu: public TriggerSkill {
 public:
     Tianfu(): TriggerSkill("tianfu") {
-        events << EventPhaseStart << EventPhaseChanging;
+        events << EventPhaseStart << Death;
+        relate_to_place = "head";
     }
 
-    virtual int getPriority() const{
-        return 4;
+    virtual bool canPreshow() const{
+        return false;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (player == NULL) return false;
+        
+        ServerPlayer *jiangwei = room->findPlayerBySkillName(objectName());
+        if (!jiangwei) return false;
+        if (jiangwei->hasSkill("kanpo") && !jiangwei->ownSkill("kanpo"))
+            room->detachSkillFromPlayer(jiangwei, "kanpo", true);
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::RoundStart) {
-            QList<ServerPlayer *> jiangweis = room->findPlayersBySkillName(objectName());
-            foreach (ServerPlayer *jiangwei, jiangweis) {
-                if (jiangwei->isAlive() && (player == jiangwei || player->isAdjacentTo(jiangwei))
-                    && room->askForSkillInvoke(player, objectName(), QVariant::fromValue((PlayerStar)jiangwei))) {
-                    if (player != jiangwei) {
-                        room->notifySkillInvoked(jiangwei, objectName());
-                        LogMessage log;
-                        log.type = "#InvokeOthersSkill";
-                        log.from = player;
-                        log.to << jiangwei;
-                        log.arg = objectName();
-                        room->sendLog(log);
-                    }
-                    jiangwei->addMark(objectName());
-                    room->acquireSkill(jiangwei, "kanpo");
-                }
-            }
-        } else if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to != Player::NotActive) return false;
-            foreach (ServerPlayer *p, room->getAllPlayers()) {
-                if (p->getMark(objectName()) > 0) {
-                    p->setMark(objectName(), 0);
-                    room->detachSkillFromPlayer(p, "kanpo", false, true);
-                }
-            }
+        if (room->alivePlayerCount() < 4 || !jiangwei->hasShownSkill(this)) return false;
+        QList<ServerPlayer *> teammates;
+        bool next = true;
+        ServerPlayer *next_p = jiangwei;
+        while (next) {
+            next_p = next_p->getNextAlive();
+            if (next_p->isFriendWith(jiangwei) && !teammates.contains(next_p))
+                teammates << next_p;
+            else
+                next = false;
         }
+        next = true;
+        next_p = jiangwei;
+        while (next) {
+            foreach (ServerPlayer *p, room->getAllPlayers())
+                if (p->getNextAlive() == next_p) {
+                    next_p = p;
+                    break;
+                }
+            if (next_p->isFriendWith(jiangwei) && !teammates.contains(next_p))
+                teammates << next_p;
+            else
+                next = false;
+        }
+        teammates << jiangwei;
+        if (teammates.isEmpty()) return false;
+        foreach(ServerPlayer *p, teammates)
+            if (p->getPhase() != Player::NotActive) {
+                room->attachSkillToPlayer(jiangwei, "kanpo");
+                break;
+            }
+
         return false;
     }
 };
@@ -703,9 +766,11 @@ FormationPackage::FormationPackage()
     caohong->addSkill(new Huyuan);
     caohong->addSkill(new Heyi);
 
-    General *heg_jiangwei = new General(this, "heg_jiangwei", "shu"); // SHU 012 G
-    heg_jiangwei->addSkill("tiaoxin");
-    heg_jiangwei->addSkill(new Tianfu);
+    General *jiangwei = new General(this, "jiangwei", "shu"); // SHU 012 G
+    jiangwei->addSkill(new Tiaoxin);
+    jiangwei->addSkill(new YiZhi);
+    jiangwei->setDeputyMaxHpAdjustedValue(-1);
+    jiangwei->addSkill(new Tianfu);
 
     General *jiangwanfeiyi = new General(this, "jiangwanfeiyi", "shu", 3); // SHU 018 
     //ToDo: Add skin for jiangwanfeiyi @@Yan Guam
@@ -727,6 +792,7 @@ FormationPackage::FormationPackage()
     addMetaObject<JixiCard>();
     addMetaObject<JixiSnatchCard>();
     addMetaObject<HuyuanCard>();
+    addMetaObject<TiaoxinCard>();
 
     skills << new Feiying;
 }

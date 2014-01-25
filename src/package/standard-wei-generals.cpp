@@ -1001,13 +1001,19 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
-	if (player != NULL && player->getPhase() == Player::Finish)
-		ask_who = room->findPlayerBySkillName(objectName());
-        return (player != ask_who && ask_who->canDiscard(ask_who,"h"));
+	    if (player != NULL && player->getPhase() == Player::Finish) {
+            ServerPlayer *yuejin = room->findPlayerBySkillName(objectName());
+            if (yuejin && player != yuejin && yuejin->canDiscard(yuejin, "h")) {
+		        ask_who = yuejin;
+                return true;
+            }
+        }
+        return false;
     }
+
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
 		ServerPlayer *yuejin = room->findPlayerBySkillName(objectName());
-        if (yuejin->canDiscard(yuejin, "h") && room->askForCard(yuejin, ".Basic", "@xiaoguo", QVariant(), objectName())) {
+        if (room->askForCard(yuejin, ".Basic", "@xiaoguo", QVariant(), objectName())) {
             room->broadcastSkillInvoke(objectName(),1);
             return true;
         }

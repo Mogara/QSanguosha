@@ -34,6 +34,16 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class TiaoxinCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE TiaoxinCard();
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 class FormationPackage: public Package {
     Q_OBJECT
 
