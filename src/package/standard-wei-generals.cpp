@@ -657,7 +657,6 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        
         return new QiaobianCard;
     }
 };
@@ -731,7 +730,6 @@ public:
         QString use_prompt = QString("@qiaobian-%1").arg(index);
         room->askForUseCard(zhanghe, "@@qiaobian", use_prompt, index);
         zhanghe->skip(change.to);
-
         return false;
     }
 };
@@ -906,28 +904,34 @@ class Jieming: public MasochismSkill {
 public:
     Jieming(): MasochismSkill("jieming") {
     }
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
-        return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who);
-    }
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->askForSkillInvoke(objectName(), data)){
+        if (player->isAlive() && player->askForSkillInvoke(objectName(), data)){
             room->broadcastSkillInvoke(objectName());
             return true;
         }
         return false;
     }
-    virtual void onDamaged(ServerPlayer *xunyu, const DamageStruct &damage) const{
-        Room *room = xunyu->getRoom();
-        for (int i = 0; i < damage.damage; i++) {
-            ServerPlayer *to = room->askForPlayerChosen(xunyu, room->getAlivePlayers(), objectName(), "jieming-invoke", true, true);
-            if (!to) break;
-            int upper = qMin(5, to->getMaxHp());
-            int x = upper - to->getHandcardNum();
-            if (x <= 0) continue;
-            to->drawCards(x);
-            if (!xunyu->isAlive())
+	virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *xunyu, QVariant &data) const {
+        DamageStruct damage = data.value<DamageStruct>();
+        onDamaged(xunyu, damage);
+        int x = damage.damage;
+        for (int i = 1; i < x; i++) {
+            if (cost(triggerEvent, room, xunyu, data)) {
+                onDamaged(xunyu, damage);
+            } else
                 break;
         }
+        return false;
+    }
+    virtual void onDamaged(ServerPlayer *xunyu, const DamageStruct &damage) const{
+        Room *room = xunyu->getRoom();
+        ServerPlayer *to = room->askForPlayerChosen(xunyu, room->getAlivePlayers(), objectName(), "jieming-invoke", true, true);
+        if to {
+			int upper = qMin(5, to->getMaxHp());
+			int x = upper - to->getHandcardNum();
+			if (x > 0)
+				to->drawCards(x);
+		}
     }
 };
 
