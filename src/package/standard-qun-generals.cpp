@@ -669,20 +669,18 @@ public:
         events << Damaged << FinishJudge;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer* &ask_who) const{
-        if (triggerEvent == Damaged) ask_who = room->findPlayerBySkillName(objectName());
-        return target != NULL;
-    }
-
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (player == NULL) return false;
         if (triggerEvent == Damaged) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.card == NULL || !damage.card->isKindOf("Slash") || damage.to->isDead())
                 return false;
 
             ServerPlayer * caiwenji = ask_who;
-            if (caiwenji->canDiscard(caiwenji, "he") && room->askForCard(caiwenji, "..", "@beige", data, objectName()))
+            if (caiwenji->canDiscard(caiwenji, "he")) {
+                ask_who = room->findPlayerBySkillName(objectName());
                 return true;
+            }
         } else {
             JudgeStar judge = data.value<JudgeStar>();
             if (judge->reason != objectName()) return false;
@@ -692,8 +690,14 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
-        ServerPlayer *caiwenji = ask_who;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *caiwenji = room->findPlayerBySkillName(objectName());
+        return caiwenji && room->askForCard(caiwenji, "..", "@beige", data, objectName());
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *caiwenji = room->findPlayerBySkillName(objectName());
+        if (caiwenji == NULL) return false;
         DamageStruct damage = data.value<DamageStruct>();
 
         room->broadcastSkillInvoke(objectName());
