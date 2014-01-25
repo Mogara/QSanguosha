@@ -7,32 +7,6 @@
 #include "ai.h"
 #include "general.h"
 
-class Jushou: public PhaseChangeSkill {
-public:
-    Jushou(): PhaseChangeSkill("jushou"){
-
-    }
-
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
-        return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who) && player->getPhase() == Player::Finish;
-    }
-
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->askForSkillInvoke(objectName())){
-            room->broadcastSkillInvoke(objectName());
-            return true;
-        }
-        return false;
-    }
-    
-    virtual bool onPhaseChange(ServerPlayer *target) const{
-        target->drawCards(3);
-        target->turnOver();
-
-        return false;
-    }
-};
-
 class KuangguGlobal: public TriggerSkill{
 public:
     KuangguGlobal(): TriggerSkill("KuangguGlobal"){
@@ -240,8 +214,6 @@ QAbstractButton *GuhuoDialog::createButton(const Card *card) {
 WindPackage::WindPackage()
     :Package("wind")
 {
-    General *caoren = new General(this, "caoren", "wei"); // WEI 011
-    caoren->addSkill(new Jushou);
 
     General *weiyan = new General(this, "weiyan", "shu"); // SHU 009
     weiyan->addSkill(new Kuanggu);

@@ -8,89 +8,6 @@
 #include "general.h"
 #include "standard.h"
 
-class Xingshang: public TriggerSkill {
-public:
-    Xingshang(): TriggerSkill("xingshang") {
-        events << Death;
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *caopi, QVariant &data) const{
-        DeathStruct death = data.value<DeathStruct>();
-        ServerPlayer *player = death.who;
-        if (player->isNude() || caopi == player)
-            return false;
-        if (caopi->isAlive() && room->askForSkillInvoke(caopi, objectName(), data)) {
-            room->broadcastSkillInvoke(objectName());
-
-            DummyCard *dummy = new DummyCard(player->handCards());
-            QList <const Card *> equips = player->getEquips();
-            foreach (const Card *card, equips)
-                dummy->addSubcard(card);
-
-            if (dummy->subcardsLength() > 0) {
-                CardMoveReason reason(CardMoveReason::S_REASON_RECYCLE, caopi->objectName());
-                room->obtainCard(caopi, dummy, reason, false);
-            }
-            delete dummy;
-        }
-
-        return false;
-    }
-};
-
-class Fangzhu: public MasochismSkill {
-public:
-    Fangzhu(): MasochismSkill("fangzhu") {
-    }
-
-    virtual void onDamaged(ServerPlayer *caopi, const DamageStruct &) const{
-        Room *room = caopi->getRoom();
-        ServerPlayer *to = room->askForPlayerChosen(caopi, room->getOtherPlayers(caopi), objectName(),
-                                                    "fangzhu-invoke", caopi->getMark("JilveEvent") != int(Damaged), true);
-        if (to) {
-            if (caopi->hasInnateSkill("fangzhu") || !caopi->hasSkill("jilve"))
-                room->broadcastSkillInvoke("fangzhu", to->faceUp() ? 1 : 2);
-            else
-                room->broadcastSkillInvoke("jilve", 2);
-
-            to->drawCards(caopi->getLostHp());
-            to->turnOver();
-        }
-    }
-};
-
-
-class Duanliang: public OneCardViewAsSkill {
-public:
-    Duanliang(): OneCardViewAsSkill("duanliang") {
-        filter_pattern = "BasicCard,EquipCard|black";
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const{
-        SupplyShortage *shortage = new SupplyShortage(originalCard->getSuit(), originalCard->getNumber());
-        shortage->setSkillName(objectName());
-        shortage->addSubcard(originalCard);
-
-        return shortage;
-    }
-};
-
-class DuanliangTargetMod: public TargetModSkill {
-public:
-    DuanliangTargetMod(): TargetModSkill("#duanliang-target") {
-        frequency = NotFrequent;
-        pattern = "SupplyShortage";
-    }
-
-    virtual int getDistanceLimit(const Player *from, const Card *) const{
-        if (from->hasSkill("duanliang"))
-            return 1;
-        else
-            return 0;
-    }
-};
-
-
 SavageAssaultAvoid::SavageAssaultAvoid(const QString &avoid_skill): TriggerSkill("#sa_avoid_" + avoid_skill), avoid_skill(avoid_skill){
     events << CardEffected;
 }
@@ -419,16 +336,6 @@ public:
 ThicketPackage::ThicketPackage()
     : Package("thicket")
 {
-    General *xuhuang = new General(this, "xuhuang", "wei"); // WEI 010
-    xuhuang->addSkill(new Duanliang);
-    xuhuang->addSkill(new DuanliangTargetMod);
-    related_skills.insertMulti("duanliang", "#duanliang-target");
-
-    General *caopi = new General(this, "caopi$", "wei", 3); // WEI 014
-    caopi->addCompanion("zhenji");
-    caopi->addSkill(new Xingshang);
-    caopi->addSkill(new Fangzhu);
-
     General *menghuo = new General(this, "menghuo", "shu"); // SHU 014
     menghuo->addCompanion("zhurong");
     menghuo->addSkill(new SavageAssaultAvoid("huoshou"));
