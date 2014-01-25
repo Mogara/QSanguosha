@@ -5,29 +5,6 @@
 #include "client.h"
 #include "engine.h"
 
-class Jieming: public MasochismSkill {
-public:
-    Jieming(): MasochismSkill("jieming") {
-    }
-
-    virtual void onDamaged(ServerPlayer *xunyu, const DamageStruct &damage) const{
-        Room *room = xunyu->getRoom();
-        for (int i = 0; i < damage.damage; i++) {
-            ServerPlayer *to = room->askForPlayerChosen(xunyu, room->getAlivePlayers(), objectName(), "jieming-invoke", true, true);
-            if (!to) break;
-
-            int upper = qMin(5, to->getMaxHp());
-            int x = upper - to->getHandcardNum();
-            if (x <= 0) continue;
-
-            room->broadcastSkillInvoke(objectName());
-            to->drawCards(x);
-            if (!xunyu->isAlive())
-                break;
-        }
-    }
-};
-
 class Lianhuan: public OneCardViewAsSkill {
 public:
     Lianhuan(): OneCardViewAsSkill("lianhuan") {

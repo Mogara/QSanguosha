@@ -6,37 +6,6 @@
 #include "room.h"
 #include "standard.h"
 
-class Xiaoguo: public TriggerSkill {
-public:
-    Xiaoguo(): TriggerSkill("xiaoguo") {
-        events << EventPhaseStart;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const{
-        if (player->getPhase() != Player::Finish)
-            return false;
-        ServerPlayer *yuejin = room->findPlayerBySkillName(objectName());
-        if (!yuejin || yuejin == player)
-            return false;
-        if (yuejin->canDiscard(yuejin, "h") && room->askForCard(yuejin, ".Basic", "@xiaoguo", QVariant(), objectName())) {
-            room->broadcastSkillInvoke(objectName(), 1);
-            if (!room->askForCard(player, ".Equip", "@xiaoguo-discard", QVariant())) {
-                room->broadcastSkillInvoke(objectName(), 2);
-                room->damage(DamageStruct("xiaoguo", yuejin, player));
-            } else {
-                room->broadcastSkillInvoke(objectName(), 3);
-                if (yuejin->isAlive())
-                    yuejin->drawCards(1);
-            }
-        }
-        return false;
-    }
-};
-
 class Shushen: public TriggerSkill {
 public:
     Shushen(): TriggerSkill("shushen") {
@@ -92,9 +61,6 @@ public:
 HegemonyPackage::HegemonyPackage()
     : Package("hegemony")
 {
-    General *yuejin = new General(this, "heg_yuejin", "wei", 4, true, true); // WEI 016
-    yuejin->addSkill(new Xiaoguo);
-
     General *ganfuren = new General(this, "ganfuren", "shu", 3, false); // SHU 016
     ganfuren->addSkill(new Shushen);
     ganfuren->addSkill(new Shenzhi);

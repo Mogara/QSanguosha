@@ -544,6 +544,8 @@ public:
 			return true;
 		if (change.to == Player::Play && xiahouyuan->canDiscard(xiahouyuan,"he") && !xiahouyuan->isSkipped(Player::Play))
 			return true;
+
+        return false;
     }
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *xiahouyuan, QVariant &data) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -726,7 +728,6 @@ public:
         zhanghe->skip(change.to);
 	}
 };
-
 
 class Duanliang: public OneCardViewAsSkill {
 public:

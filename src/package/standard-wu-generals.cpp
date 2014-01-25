@@ -1236,6 +1236,8 @@ public:
             erzhang->tag.remove("GuzhengToGet");
             erzhang->tag.remove("GuzhengOther");
         }
+
+        return false;
     }
 
     virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const{
