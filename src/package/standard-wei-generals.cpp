@@ -1088,7 +1088,7 @@ void StandardPackage::addWeiGenerals()
     caopi->addSkill(new Xingshang);
     caopi->addSkill(new Fangzhu);
     
-    General *yuejin = new General(this, "heg_yuejin", "wei", 4); // WEI 016
+    General *yuejin = new General(this, "yuejin", "wei", 4); // WEI 016
     yuejin->addSkill(new Xiaoguo);
 
     addMetaObject<TuxiCard>();

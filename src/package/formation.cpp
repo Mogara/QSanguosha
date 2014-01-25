@@ -785,11 +785,11 @@ FormationPackage::FormationPackage()
 
     //ToDo: Jiang Qin(I don't understand the skill)
 
-    General *heg_xusheng = new General(this, "heg_xusheng", "wu"); // WU 020
-    heg_xusheng->addSkill(new Yicheng);
+    General *xusheng = new General(this, "xusheng", "wu"); // WU 020
+    xusheng->addSkill(new Yicheng);
 
-    General *heg_yuji = new General(this, "heg_yuji", "qun", 3); // QUN 011 G
-    heg_yuji->addSkill(new Qianhuan);
+    General *yuji = new General(this, "yuji", "qun", 3); // QUN 011 G
+    yuji->addSkill(new Qianhuan);
 
     General *hetaihou = new General(this, "hetaihou", "qun", 3, false); // QUN 020
     hetaihou->addSkill(new Zhendu);
