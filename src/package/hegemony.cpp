@@ -193,177 +193,6 @@ public:
     }
 };
 
-class Huoshui: public TriggerSkill {
-public:
-    Huoshui(): TriggerSkill("huoshui") {
-        events << EventPhaseStart << Death
-            << EventLoseSkill << EventAcquireSkill
-            << HpChanged << MaxHpChanged;
-        frequency = Compulsory;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual int getPriority() const{
-        return 5;
-    }
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart) {
-            if (!TriggerSkill::triggerable(player) 
-                || (player->getPhase() != Player::RoundStart || player->getPhase() != Player::NotActive)) return false;
-        } else if (triggerEvent == Death) {
-            DeathStruct death = data.value<DeathStruct>();
-            if (death.who != player || !player->hasSkill(objectName())) return false;
-        } else if (triggerEvent == EventLoseSkill) {
-            if (data.toString() != objectName() || player->getPhase() == Player::NotActive) return false;
-        } else if (triggerEvent == EventAcquireSkill) {
-            if (data.toString() != objectName() || !player->hasSkill(objectName()) || player->getPhase() == Player::NotActive)
-                return false;
-        } else if (triggerEvent == MaxHpChanged || triggerEvent == HpChanged) {
-            if (!room->getCurrent() || !room->getCurrent()->hasSkill(objectName())) return false;
-        }
-
-        if (player->getPhase() == Player::RoundStart || triggerEvent == EventAcquireSkill)
-            room->broadcastSkillInvoke(objectName(), 1);
-        else if (player->getPhase() == Player::NotActive || triggerEvent == EventLoseSkill)
-            room->broadcastSkillInvoke(objectName(), 2);
-
-        foreach (ServerPlayer *p, room->getAllPlayers())
-            room->filterCards(p, p->getCards("he"), true);
-        Json::Value args;
-        args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-
-        return false;
-    }
-};
-
-QingchengCard::QingchengCard() {
-    handling_method = Card::MethodDiscard;
-}
-
-void QingchengCard::onUse(Room *room, const CardUseStruct &use) const{
-    CardUseStruct card_use = use;
-    ServerPlayer *player = card_use.from, *to = card_use.to.first();
-
-    LogMessage log;
-    log.from = player;
-    log.to = card_use.to;
-    log.type = "#UseCard";
-    log.card_str = card_use.card->toString();
-    room->sendLog(log);
-
-    QStringList skill_list;
-    foreach (const Skill *skill, to->getVisibleSkillList()) {
-        if (!skill_list.contains(skill->objectName()) && !skill->isAttachedLordSkill()) {
-            skill_list << skill->objectName();
-        }
-    }
-    QString skill_qc;
-    if (!skill_list.isEmpty()) {
-        QVariant data_for_ai = QVariant::fromValue((PlayerStar)to);
-        skill_qc = room->askForChoice(player, "qingcheng", skill_list.join("+"), data_for_ai);
-    }
-
-    if (!skill_qc.isEmpty()) {
-        LogMessage log;
-        log.type = "$QingchengNullify";
-        log.from = player;
-        log.to << to;
-        log.arg = skill_qc;
-        room->sendLog(log);
-
-        QStringList Qingchenglist = to->tag["Qingcheng"].toStringList();
-        Qingchenglist << skill_qc;
-        to->tag["Qingcheng"] = QVariant::fromValue(Qingchenglist);
-        room->addPlayerMark(to, "Qingcheng" + skill_qc);
-
-        foreach (ServerPlayer *p, room->getAllPlayers())
-            room->filterCards(p, p->getCards("he"), true);
-
-        Json::Value args;
-        args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-        room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-    }
-
-    QVariant data = QVariant::fromValue(card_use);
-    RoomThread *thread = room->getThread();
-    thread->trigger(PreCardUsed, room, player, data);
-    card_use = data.value<CardUseStruct>();
-
-    CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->getSkillName(), QString());
-    room->moveCardTo(this, player, NULL, Player::DiscardPile, reason, true);
-
-    thread->trigger(CardUsed, room, player, data);
-    thread->trigger(CardFinished, room, player, data);
-}
-
-bool QingchengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && to_select != Self;
-}
-
-class QingchengViewAsSkill: public OneCardViewAsSkill {
-public:
-    QingchengViewAsSkill(): OneCardViewAsSkill("qingcheng") {
-        filter_pattern = "EquipCard!";
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->canDiscard(player, "he");
-    }
-
-    virtual const Card *viewAs(const Card *originalcard) const{
-        QingchengCard *first = new QingchengCard;
-        first->addSubcard(originalcard->getId());
-        first->setSkillName(objectName());
-        return first;
-    }
-};
-
-class Qingcheng: public TriggerSkill {
-public:
-    Qingcheng(): TriggerSkill("qingcheng") {
-        events << EventPhaseStart;
-        view_as_skill = new QingchengViewAsSkill;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual int getPriority() const{
-        return 6;
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
-        if (player->getPhase() == Player::RoundStart) {
-            QStringList Qingchenglist = player->tag["Qingcheng"].toStringList();
-            if (Qingchenglist.isEmpty()) return false;
-            foreach (QString skill_name, Qingchenglist) {
-                room->setPlayerMark(player, "Qingcheng" + skill_name, 0);
-                if (player->hasSkill(skill_name)) {
-                    LogMessage log;
-                    log.type = "$QingchengReset";
-                    log.from = player;
-                    log.arg = skill_name;
-                    room->sendLog(log);
-                }
-            }
-            player->tag.remove("Qingcheng");
-            foreach (ServerPlayer *p, room->getAllPlayers())
-                room->filterCards(p, p->getCards("he"), true);
-
-            Json::Value args;
-            args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-            room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-        }
-        return false;
-    }
-};
-
 
 HegemonyPackage::HegemonyPackage()
     : Package("hegemony")
@@ -382,10 +211,6 @@ HegemonyPackage::HegemonyPackage()
     General *dingfeng = new General(this, "dingfeng", "wu"); // WU 016
     dingfeng->addSkill(new Skill("duanbing", Skill::Compulsory));
     dingfeng->addSkill(new Fenxun);
-
-    General *zoushi = new General(this, "zoushi", "qun", 3, false); // QUN 018
-    zoushi->addSkill(new Huoshui);
-    zoushi->addSkill(new Qingcheng);
 
     General *heg_caopi = new General(this, "heg_caopi$", "wei", 3, true, true); // WEI 014 G
     heg_caopi->addSkill("fangzhu");
@@ -420,7 +245,6 @@ HegemonyPackage::HegemonyPackage()
 
     addMetaObject<DuoshiCard>();
     addMetaObject<FenxunCard>();
-    addMetaObject<QingchengCard>();
 }
 
 ADD_PACKAGE(Hegemony)

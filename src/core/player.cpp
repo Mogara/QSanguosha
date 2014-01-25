@@ -305,7 +305,6 @@ bool Player::isLord() const{
 }
 
 bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
-    /*
     if (!include_lose) {
         if (!hasEquipSkill(skill_name)) {
             const Skill *skill = Sanguosha->getSkill(skill_name);
@@ -317,19 +316,18 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
                         break;
                     }
                 }
-                if (current && current->hasSkill("huoshui") && hp >= (max_hp + 1) / 2 && (!skill || !skill->isAttachedLordSkill()))
+                if (current && current->hasSkill("huoshui") && (!skill || !skill->isAttachedLordSkill()) && !hasShownSkill(skill))
                     return false;
-                if (current && current->hasSkill("neo2013huoshui") && current->getEquips().length() >= getEquips().length()
+                /*if (current && current->hasSkill("neo2013huoshui") && current->getEquips().length() >= getEquips().length()
                     && (!skill || !skill->isAttachedLordSkill()))
-                    return false;
+                    return false;*/
             }
-            if (getMark("Qingcheng" + skill_name) > 0)
+            /*if (getMark("Qingcheng" + skill_name) > 0)
                 return false;
             if (skill_name != "chanyuan" && hasSkill("chanyuan") && hp == 1 && (!skill || !skill->isAttachedLordSkill()))
-                return false;
+                return false;*/
         } 
     }
-    */
     return head_skills.value(skill_name, false)
            || deputy_skills.value(skill_name, false)
            || acquired_skills.contains(skill_name);
@@ -387,8 +385,9 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
     }
 
     return false;*/
+	const Skill *skill = Sanguosha->getSkill(skill_name);
 
-    return Sanguosha->getSkill(skill_name)->isLordSkill() && isLord() && hasSkill(skill_name, include_lose);
+    return skill && skill->isLordSkill() && isLord() && hasSkill(skill_name, include_lose);
 }
 
 void Player::acquireSkill(const QString &skill_name) {

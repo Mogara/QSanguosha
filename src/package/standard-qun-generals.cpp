@@ -1033,6 +1033,10 @@ public:
         events << CardsMoveOneTime;
     }
 
+	virtual bool canPreshow() const {
+		return true;
+	}
+
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *tianfeng, QVariant &data) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.from == tianfeng && move.from_places.contains(Player::PlaceHand) && move.is_last_handcard) {
@@ -1160,6 +1164,108 @@ public:
     }
 };
 
+HuoshuiCard::HuoshuiCard() {
+	target_fixed = true;
+}
+
+class HuoshuiViewAsSkill: public ZeroCardViewAsSkill {
+public:
+    HuoshuiViewAsSkill(): ZeroCardViewAsSkill("huoshui") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasShownSkill(Sanguosha->getSkill(objectName()));
+    }
+
+    virtual const Card *viewAs() const{
+        Card *card = new HuoshuiCard;
+		card->setShowSkill(objectName());
+		return card;
+    }
+};
+
+class Huoshui: public TriggerSkill {
+public:
+    Huoshui(): TriggerSkill("huoshui") {
+        events << EventPhaseStart << Death
+            << EventLoseSkill << EventAcquireSkill;
+        frequency = Compulsory;
+		view_as_skill = new HuoshuiViewAsSkill;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual int getPriority() const{
+        return 5;
+    }
+
+	virtual bool canPreshow() const {
+		return false;
+	}
+
+	virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        return player->hasShownSkill(this);
+	}
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == EventPhaseStart) {
+            if (!TriggerSkill::triggerable(player) 
+                || (player->getPhase() != Player::RoundStart || player->getPhase() != Player::NotActive)) return false;
+        } else if (triggerEvent == Death) {
+            DeathStruct death = data.value<DeathStruct>();
+            if (death.who != player || !player->hasSkill(objectName())) return false;
+        } else if (triggerEvent == EventLoseSkill) {
+            if (data.toString() != objectName() || player->getPhase() == Player::NotActive) return false;
+        } else if (triggerEvent == EventAcquireSkill) {
+            if (data.toString() != objectName() || !player->hasSkill(objectName()) || player->getPhase() == Player::NotActive)
+                return false;
+		}
+
+        if (player->getPhase() == Player::RoundStart || triggerEvent == EventAcquireSkill)
+            room->broadcastSkillInvoke(objectName(), 1);
+        else if (player->getPhase() == Player::NotActive || triggerEvent == EventLoseSkill)
+            room->broadcastSkillInvoke(objectName(), 2);
+
+        return false;
+    }
+};
+
+QingchengCard::QingchengCard() {
+    handling_method = Card::MethodDiscard;
+}
+
+bool QingchengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && to_select != Self && to_select->hasShownAllGenerals();
+}
+
+void QingchengCard::onEffect(const CardEffectStruct &effect) const{
+    ServerPlayer *player = effect.from, *to = effect.to;
+	Room *room = player->getRoom();
+
+    QString choice = room->askForChoice(player, objectName(), "head_general+deputy_general", "qingcheng");
+	to->hideGeneral(choice == "head_general");
+}
+
+class Qingcheng: public OneCardViewAsSkill {
+public:
+    Qingcheng(): OneCardViewAsSkill("qingcheng") {
+        filter_pattern = "EquipCard!";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return player->canDiscard(player, "he");
+    }
+
+    virtual const Card *viewAs(const Card *originalcard) const{
+        QingchengCard *first = new QingchengCard;
+        first->addSubcard(originalcard->getId());
+        first->setShowSkill(objectName());
+        return first;
+    }
+};
+
 void StandardPackage::addQunGenerals()
 {
 	General *huatuo = new General(this, "huatuo", "qun", 3); // QUN 001
@@ -1218,9 +1324,15 @@ void StandardPackage::addQunGenerals()
     General *panfeng = new General(this, "panfeng", "qun"); // QUN 017
     panfeng->addSkill(new Kuangfu);
 
+    General *zoushi = new General(this, "zoushi", "qun", 3, false); // QUN 018
+    zoushi->addSkill(new Huoshui);
+    zoushi->addSkill(new Qingcheng);
+
     addMetaObject<QingnangCard>();
     addMetaObject<LijianCard>();
     addMetaObject<LuanwuCard>();
     addMetaObject<XiongyiCard>();
     addMetaObject<ShuangrenCard>();
+    addMetaObject<HuoshuiCard>();
+    addMetaObject<QingchengCard>();
 }
