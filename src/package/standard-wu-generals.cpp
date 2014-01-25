@@ -67,7 +67,7 @@ public:
         events << PreCardUsed << CardResponded;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         return player != NULL && player->isAlive();
     }
 
@@ -95,7 +95,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who)){
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (player->hasFlag("KejiSlashInPlayPhase") && change.to == Player::Discard)
@@ -283,7 +283,7 @@ public:
         view_as_skill = new LiuliViewAsSkill;
     }
 
-    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *daqiao, QVariant &data, ServerPlayer *ask_who) const {
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *daqiao, QVariant &data, ServerPlayer * &ask_who) const {
         CardUseStruct use = data.value<CardUseStruct>();
 
         if (use.card->isKindOf("Slash") && use.to.contains(daqiao) && daqiao->canDiscard(daqiao, "he")) {
@@ -407,7 +407,7 @@ public:
         view_as_skill = new DuoshiViewAsSkill;
     }
 
-    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const {
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const {
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card && use.card->isKindOf("AwaitExhausted") && use.card->getSkillName() == "duoshi")
             room->addPlayerMark(player, "duoshi");
@@ -469,7 +469,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *sunshangxiang, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *sunshangxiang, QVariant &data, ServerPlayer * &ask_who) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.from == sunshangxiang && move.from_places.contains(Player::PlaceEquip)) {
             for (int i = 0; i < move.card_ids.size(); i++) {
@@ -499,7 +499,7 @@ public:
     Yinghun(): PhaseChangeSkill("yinghun") {
     }
 
-    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who) const{
         return PhaseChangeSkill::triggerable(target)
                && target->getPhase() == Player::Start
                && target->isWounded();
@@ -615,7 +615,7 @@ public:
         events << DamageComplete;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         return player != NULL;
     }
 
@@ -702,7 +702,7 @@ public:
         view_as_skill = new TianyiViewAsSkill;
     }
 
-    virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who) const{
         if (target && target->hasFlag("TianyiSuccess") && data.toString() == objectName())
             room->setPlayerFlag(target, "-TianyiSuccess");
 
@@ -780,7 +780,7 @@ public:
         }
     }
 
-    virtual bool triggerable(TriggerEvent tr, Room *r, ServerPlayer *zhoutai, QVariant &d, ServerPlayer *a) const{
+    virtual bool triggerable(TriggerEvent tr, Room *r, ServerPlayer *zhoutai, QVariant &d, ServerPlayer * &a) const{
         if (!TriggerSkill::triggerable(tr, r, zhoutai, d, a)) return false;
         if (zhoutai->getPile("buqu").length() > 0)
             Remove(zhoutai);
@@ -1154,7 +1154,7 @@ public:
         events << CardsMoveOneTime;
     }
 
-    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *erzhang, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *erzhang, QVariant &data, ServerPlayer * &ask_who) const{
         ServerPlayer *current = room->getCurrent();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
 
@@ -1188,7 +1188,7 @@ public:
         events << EventPhaseEnd;
     }
 
-    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who) const{
         ask_who = room->findPlayerBySkillName(objectName());
         return target != NULL && target->getPhase() == Player::Discard;
     }
@@ -1236,6 +1236,7 @@ public:
             erzhang->tag.remove("GuzhengToGet");
             erzhang->tag.remove("GuzhengOther");
         }
+        return false;
     }
 
     virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const{

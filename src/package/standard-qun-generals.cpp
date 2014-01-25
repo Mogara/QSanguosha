@@ -84,8 +84,8 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        return player != NULL;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -600,7 +600,7 @@ public:
         events << AskForRetrial;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who) const{
         if (!TriggerSkill::triggerable(target))
             return false;
 
@@ -993,7 +993,7 @@ public:
         view_as_skill = new ShuangrenViewAsSkill;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *jiling, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *jiling, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (!TriggerSkill::triggerable(triggerEvent, room, jiling, data, ask_who)) return false;
         if (jiling->getPhase() == Player::Play && !jiling->isKongcheng()) {
             Room *room = jiling->getRoom();

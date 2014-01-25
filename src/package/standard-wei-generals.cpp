@@ -13,7 +13,7 @@ public:
     Jianxiong(): MasochismSkill("jianxiong") {
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who)) {
             DamageStruct damage = data.value<DamageStruct>();
             const Card *card = damage.card;
@@ -39,7 +39,7 @@ public:
     Fankui(): MasochismSkill("fankui") {
     }
 
-    virtual bool triggerable(TriggerEvent, Room *, ServerPlayer *simayi, QVariant &data, ServerPlayer *) const {
+    virtual bool triggerable(TriggerEvent, Room *, ServerPlayer *simayi, QVariant &data, ServerPlayer * &) const {
         if (TriggerSkill::triggerable(simayi)) {
             ServerPlayer *from = data.value<DamageStruct>().from;
             return from && !from->isNude();
@@ -74,7 +74,7 @@ public:
         events << AskForRetrial;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who) && !player->isKongcheng();
     }
 
@@ -189,7 +189,7 @@ public:
         view_as_skill = new TuxiViewAsSkill;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (!PhaseChangeSkill::triggerable(triggerEvent, room, player, data, ask_who))
             return false;
 
@@ -223,7 +223,7 @@ public:
         events << DrawNCards << DamageCaused << PreCardUsed;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (triggerEvent == DrawNCards)
             return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who);
         else if (triggerEvent == PreCardUsed){
@@ -286,7 +286,7 @@ public:
         events << FinishJudge;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         JudgeStruct *judge = data.value<JudgeStruct *>();
         return (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who) && judge->who == player);
     }
@@ -390,9 +390,9 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start)
-            return TriggerSkill::triggerable(triggerEvent, room, player, data);
+            return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who);
         else if (triggerEvent == FinishJudge)
             return player != NULL && data.value<JudgeStruct *>()->reason == objectName();
         return false;
@@ -424,13 +424,13 @@ public:
                 room->judge(judge);
             }
             while (judge.isGood() && cost(triggerEvent, room, zhenji, data));
-
+            /*
             if (zhenji->tag[objectName()].toList().length() != 0){
                 DummyCard dummy(VariantList2IntList(zhenji->tag[objectName()].toList()));
                 zhenji->obtainCard(&dummy);
                 zhenji->tag.remove(objectName());
             }
-
+            */
         } else if (triggerEvent == FinishJudge) {
             JudgeStar judge = data.value<JudgeStar>();
             if (judge->reason == objectName()) {
@@ -515,17 +515,21 @@ public:
 
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if (Sanguosha->currentRoomState()->getCurrentCardUsePattern().endsWith("1")) {
-            return cards.isEmpty() ? new ShensuCard : NULL;
+            if (cards.isEmpty()){
+                ShensuCard *shensu = new ShensuCard;
+                shensu->setShowSkill(objectName());
+                return shensu;
+            }
         } else {
-            if (cards.length() != 1)
-                return NULL;
+            if (cards.length() == 1){
+                ShensuCard *card = new ShensuCard;
+                card->addSubcards(cards);
+                card->setShowSkill(objectName());
 
-            ShensuCard *card = new ShensuCard;
-            card->addSubcards(cards);
-            card->setShowSkill(objectName());
-
-            return card;
+                return card;
+            }
         }
+        return NULL;
     }
 };
 
@@ -536,7 +540,7 @@ public:
         view_as_skill = new ShensuViewAsSkill;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (!(TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who)))
             return false;
 

@@ -57,6 +57,7 @@ public:
 
         RendeCard *rende_card = new RendeCard;
         rende_card->addSubcards(cards);
+        rende_card->setShowSkill(objectName());
         return rende_card;
     }
 };
@@ -68,15 +69,19 @@ public:
         view_as_skill = new RendeViewAsSkill;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->getMark("rende") > 0;
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who) const{
+        return target != NULL && target->getMark("rende") > 0 && target->hasShownSkill(this);
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to != Player::NotActive)
             return false;
         room->setPlayerMark(player, "rende", 0);
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         return false;
     }
 };
@@ -135,7 +140,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who) && player->getPhase() == Player::Start;
     }
 
@@ -168,32 +173,35 @@ public:
     }
 };
 
-class Kongcheng: public ProhibitSkill {
+class Kongcheng: public TriggerSkill{
 public:
-    Kongcheng(): ProhibitSkill("kongcheng") {
+    Kongcheng(): TriggerSkill("kongcheng"){
+        events << TargetConfirming;
+        frequency = Compulsory;
     }
 
-    virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const{
-        return to->hasSkill(objectName()) && (card->isKindOf("Slash") || card->isKindOf("Duel")) && to->isKongcheng();
-    }
-};
-
-class KongchengEffect: public TriggerSkill {
-public:
-    KongchengEffect() :TriggerSkill("#kongcheng-effect") {
-        events << CardsMoveOneTime;
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->isKongcheng()) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from == player && move.from_places.contains(Player::PlaceHand))
-                room->broadcastSkillInvoke("kongcheng");
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
+        if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who) && player->isKongcheng()){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card != NULL && (use.card->isKindOf("Slash") || use.card->isKindOf("Duel")) && use.to.contains(player)){
+                return true;
+            }
         }
+        return false;
+    }
 
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        return player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        use.to.removeOne(player);
+        data = QVariant::fromValue(use);
         return false;
     }
 };
+
 
 class Longdan: public OneCardViewAsSkill {
 public:
@@ -262,7 +270,7 @@ public:
         events << TargetConfirmed;
     }
 
-    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const {
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const {
         if (!TriggerSkill::triggerable(player))
             return false;
 
@@ -344,7 +352,7 @@ public:
         events << CardUsed;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (!TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who))
             return false;
         CardUseStruct use = data.value<CardUseStruct>();
@@ -393,7 +401,7 @@ public:
         events << TargetConfirmed;
     }
 
-    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const {
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const {
         if (!TriggerSkill::triggerable(player))
             return false;
 
@@ -478,8 +486,6 @@ void StandardPackage::addShuGenerals()
     zhugeliang->addCompanion("huangyueying");
     zhugeliang->addSkill(new Guanxing);
     zhugeliang->addSkill(new Kongcheng);
-    zhugeliang->addSkill(new KongchengEffect);
-    related_skills.insertMulti("kongcheng", "#kongcheng-effect");
 
     General *zhaoyun = new General(this, "zhaoyun", "shu"); // SHU 005
     zhaoyun->addCompanion("liushan");

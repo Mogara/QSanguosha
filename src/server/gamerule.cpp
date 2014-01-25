@@ -29,7 +29,8 @@ GameRule::GameRule(QObject *)
            << ChoiceMade << GeneralShown;
 }
 
-bool GameRule::triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *) const{
+bool GameRule::triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer * &ask_who) const{
+    ask_who = NULL;
     return true;
 }
 
