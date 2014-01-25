@@ -577,7 +577,7 @@ void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
 class TianxiangViewAsSkill: public OneCardViewAsSkill {
 public:
     TianxiangViewAsSkill(): OneCardViewAsSkill("tianxiang") {
-        filter_pattern = ".|heart,spade|.|hand!"; // for hidden Xiaoqiao(temp way)
+        filter_pattern = ".|heart|.|hand!";
         response_pattern = "@@tianxiang";
     }
 
