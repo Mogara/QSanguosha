@@ -372,15 +372,6 @@
     <ClCompile Include="..\..\src\core\record-analysis.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\package\hegemony.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_hegemony.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_hegemony.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\scenario\fancheng-scenario.cpp">
       <Filter>scenario</Filter>
     </ClCompile>
@@ -649,9 +640,6 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\core\record-analysis.h">
       <Filter>core</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\package\hegemony.h">
-      <Filter>package</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\scenario\fancheng-scenario.h">
       <Filter>scenario</Filter>

@@ -718,6 +718,86 @@ public:
 };
 
 
+class Shushen: public TriggerSkill {
+public:
+    Shushen(): TriggerSkill("shushen") {
+        events << HpRecover;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "shushen-invoke", true, true);
+        if (target != NULL){
+            player->tag["shushen_invoke"] = QVariant::fromValue(target);
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        RecoverStruct recover_struct = data.value<RecoverStruct>();
+
+        doShushen(player);
+        int recover = recover_struct.recover;
+        for (int i = 1; i < recover; i++) {
+            if (cost(triggerEvent, room, player, data)){
+                doShushen(player);
+            }
+            else
+                break;
+        }
+        return false;
+    }
+
+private:
+    void doShushen(ServerPlayer *ganfuren) const{
+        ServerPlayer *target = ganfuren->tag["shushen_invoke"].value<ServerPlayer *>();
+        if (target != NULL)
+            target->drawCards(1);
+        ganfuren->tag.remove("shushen_invoke");
+    }
+};
+
+class Shenzhi: public PhaseChangeSkill {
+public:
+    Shenzhi(): PhaseChangeSkill("shenzhi") {
+
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        if (!PhaseChangeSkill::triggerable(triggerEvent, room, player, data, ask_who))
+            return false;
+        if (player->getPhase() != Player::Start || player->isKongcheng())
+            return false;
+
+        foreach (const Card *card, player->getHandcards()){
+            if (player->isJilei(card))
+                return false;
+        }
+        return true;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (player->askForSkillInvoke(objectName())){
+            int handcard_num = player->getHandcardNum();
+            player->tag["shenzhi_num"] = handcard_num;
+            player->throwAllHandCards();
+            return true;
+        }
+
+        return false;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *ganfuren) const{
+        int handcard_num = ganfuren->tag["shenzhi_num"].toInt();
+        if (handcard_num >= ganfuren->getHp()) {
+            RecoverStruct recover;
+            recover.who = ganfuren;
+            ganfuren->getRoom()->recover(ganfuren, recover);
+        }
+        return false;
+    }
+};
+
 void StandardPackage::addShuGenerals()
 {
     General *liubei = new General(this, "liubei", "shu"); // SHU 001
@@ -766,6 +846,10 @@ void StandardPackage::addShuGenerals()
     wolong->addSkill(new Huoji);
     wolong->addSkill(new Kanpo);
     wolong->addSkill(new Bazhen);
+
+    General *ganfuren = new General(this, "ganfuren", "shu", 3, false); // SHU 016
+    ganfuren->addSkill(new Shushen);
+    ganfuren->addSkill(new Shenzhi);
 
     skills << new KuangguGlobal;
 
