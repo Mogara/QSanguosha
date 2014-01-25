@@ -926,7 +926,7 @@ public:
     virtual void onDamaged(ServerPlayer *xunyu, const DamageStruct &damage) const{
         Room *room = xunyu->getRoom();
         ServerPlayer *to = room->askForPlayerChosen(xunyu, room->getAlivePlayers(), objectName(), "jieming-invoke", true, true);
-        if to {
+        if (to) {
 			int upper = qMin(5, to->getMaxHp());
 			int x = upper - to->getHandcardNum();
 			if (x > 0)

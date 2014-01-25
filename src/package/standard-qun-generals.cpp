@@ -499,7 +499,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+    virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (!TriggerSkill::triggerable(player)) return false;
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card || use.card->getTypeId() != Card::TypeTrick)
@@ -541,7 +541,7 @@ public:
         events << SlashMissed;
     }
     
-    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+    virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (effect.to->isAlive() && player->canDiscard(effect.to, "he")) return true;
         return false;
@@ -567,7 +567,7 @@ public:
         events << CardResponded;
     }
 
-    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+    virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         CardStar card_star = data.value<CardResponseStruct>().m_card;
         if (card_star->isKindOf("Jink")) return true;
         return false;
@@ -753,45 +753,46 @@ public:
         return false;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->hasSkill(objectName());
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (player == NULL || !player->hasSkill(objectName())) return false;
         DeathStruct death = data.value<DeathStruct>();
         if (death.who != player)
             return false;
 
-        if (death.damage && death.damage->from) {
-            ServerPlayer *target = death.damage->from;
-            QString choice = room->askForChoice(player, objectName(), "head_general+deputy_general", data);
-            LogMessage log;
-            log.type = choice == "head_general" ? "#DuanchangLoseHeadSkills" : "#DuanchangLoseDeputySkills";
-            log.from = player;
-            log.to << target;
-            log.arg = objectName();
-            room->sendLog(log);
-            room->broadcastSkillInvoke(objectName());
-            room->notifySkillInvoked(player, objectName());
+        if (death.damage && death.damage->from) return true;
+        return false;
+    }
 
-            if (choice == "head_general")
-                target->tag["Duanchang"] = QString("head");
-            else
-                target->tag["Duanchang"] = QString("deputy");
-            
-            QList<const Skill *> skills = choice == "head_general" ? target->getHeadSkillList()
-                                                                   : target->getDeputySkillList();
-            QStringList detachList;
-            foreach (const Skill *skill, skills) {
-                if (skill->getLocation() == Skill::Right && !skill->isAttachedLordSkill())
-                    detachList.append("-" + skill->objectName());
-            }
-            room->handleAcquireDetachSkills(death.damage->from, detachList);
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        DeathStruct death = data.value<DeathStruct>();
+        ServerPlayer *target = death.damage->from;
+        QString choice = room->askForChoice(player, objectName(), "head_general+deputy_general", data);
+        LogMessage log;
+        log.type = choice == "head_general" ? "#DuanchangLoseHeadSkills" : "#DuanchangLoseDeputySkills";
+        log.from = player;
+        log.to << target;
+        log.arg = objectName();
+        room->sendLog(log);
+        room->broadcastSkillInvoke(objectName());
+        room->notifySkillInvoked(player, objectName());
 
-            if (death.damage->from->isAlive())
-                death.damage->from->gainMark("@duanchang");
+        if (choice == "head_general")
+            target->tag["Duanchang"] = QString("head");
+        else
+            target->tag["Duanchang"] = QString("deputy");
+        
+        QList<const Skill *> skills = choice == "head_general" ? target->getHeadSkillList()
+                                                               : target->getDeputySkillList();
+        QStringList detachList;
+        foreach (const Skill *skill, skills) {
+            if (skill->getLocation() == Skill::Right && !skill->isAttachedLordSkill())
+                detachList.append("-" + skill->objectName());
         }
+        room->handleAcquireDetachSkills(death.damage->from, detachList);
 
+        if (death.damage->from->isAlive())
+            death.damage->from->gainMark("@duanchang");
+        
         return false;
     }
 };
