@@ -294,6 +294,7 @@ public:
         HuyuanCard *first = new HuyuanCard;
         first->addSubcard(originalcard->getId());
         first->setSkillName(objectName());
+        first->setShowSkill(objectName());
         return first;
     }
 };
@@ -304,129 +305,86 @@ public:
         view_as_skill = new HuyuanViewAsSkill;
     }
 
+    virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *target, QVariant &data, ServerPlayer* &ask_who) const {
+        if (!PhaseChangeSkill::triggerable(target)) return false;
+        return (target->getPhase() == Player::Finish && !target->isNude());
+    }
+
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *target, QVariant &data) const {
+        return room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
+    }
+
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        Room *room = target->getRoom();
-        if (target->getPhase() == Player::Finish && !target->isNude())
-            room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
         return false;
     }
 }; 
 
-
-HeyiCard::HeyiCard() {
-}
-
-bool HeyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.length() < 2;
-}
-
-bool HeyiCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
-    return targets.length() == 2;
-}
-
-void HeyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
-    ServerPlayer *caohong = card_use.from;
-
-    LogMessage log;
-    log.from = caohong;
-    log.to << card_use.to;
-    log.type = "#UseCard";
-    log.card_str = toString();
-    room->sendLog(log);
-
-    QVariant data = QVariant::fromValue(card_use);
-    RoomThread *thread = room->getThread();
-
-    thread->trigger(PreCardUsed, room, caohong, data);
-    thread->trigger(CardUsed, room, caohong, data);
-    thread->trigger(CardFinished, room, caohong, data);
-}
-
-void HeyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    room->setTag("HeyiSource", QVariant::fromValue((PlayerStar)source)); 
-    QList<ServerPlayer *> players = room->getAllPlayers();
-    int index1 = players.indexOf(targets.first()), index2 = players.indexOf(targets.last());
-    int index_self = players.indexOf(source);
-    QList<ServerPlayer *> cont_targets;
-    if (index1 == index_self || index2 == index_self) {
-        forever {
-            cont_targets.append(players.at(index1));
-            if (index1 == index2) break;
-            index1++;
-            if (index1 >= players.length())
-                index1 -= players.length();
-        }
-    } else {
-        if (index1 > index2)
-            qSwap(index1, index2);
-        if (index_self > index1 && index_self < index2) {
-            for (int i = index1; i <= index2; i++)
-                cont_targets.append(players.at(i));
-        } else {
-            forever {
-                cont_targets.append(players.at(index2));
-                if (index1 == index2) break;
-                index2++;
-                if (index2 >= players.length())
-                    index2 -= players.length();
-            }
-        }
-    }
-    cont_targets.removeOne(source);
-    QStringList list;
-    foreach(ServerPlayer *p, cont_targets) {
-        if (!p->isAlive()) continue;
-        list.append(p->objectName());
-        source->tag["heyi"] = QVariant::fromValue(list);
-        room->acquireSkill(p, "feiying");
-    }
-}
-
-class HeyiViewAsSkill: public ZeroCardViewAsSkill {
-public:
-    HeyiViewAsSkill(): ZeroCardViewAsSkill("heyi") {
-        response_pattern = "@@heyi";
-    }
-
-    virtual const Card *viewAs() const{
-        return new HeyiCard;
-    }
-};
-
 class Heyi: public TriggerSkill {
 public:
     Heyi(): TriggerSkill("heyi") {
-        events << EventPhaseChanging << Death;
-        view_as_skill = new HeyiViewAsSkill;
+        events << GeneralShown << GeneralHidden << Death;
         frequency = Compulsory;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
-    }
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (player == NULL) return false;
         if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
-            if (death.who != player)
+            if (death.who->hasSkill(objectName())) {
+                foreach (ServerPlayer *p, room->getAllPlayers())
+                    if (p->hasSkill("feiying"))
+                        room->detachSkillFromPlayer(p, "feiying", true);
                 return false;
-        } else if (triggerEvent == EventPhaseChanging) {
-            PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to != Player::NotActive)
-                return false;
+            }
         }
-        if (room->getTag("HeyiSource").value<PlayerStar>() == player) {
-            room->removeTag("HeyiSource");
-            QStringList list = player->tag[objectName()].toStringList();
-            player->tag.remove(objectName());
-            foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
-                if (list.contains(p->objectName()))
-                    room->detachSkillFromPlayer(p, "feiying", false, true);
-            } 
+        foreach (ServerPlayer *p, room->getAllPlayers())
+            if (p->hasSkill("feiying"))
+                room->detachSkillFromPlayer(p, "feiying", true);
+
+        if (room->alivePlayerCount() < 4) return false;
+        ServerPlayer *caohong = room->findPlayerBySkillName(objectName());
+        if (!caohong) return false;
+        QList<ServerPlayer *> teammates;
+        bool next = true;
+        ServerPlayer *next_p = caohong;
+        while (next) {
+            next_p = next_p->getNextAlive();
+            if (next_p->isFriendWith(caohong) && !teammates.contains(next_p))
+                teammates << next_p;
+            else
+                next = false;
         }
-        if (TriggerSkill::triggerable(player) && triggerEvent == EventPhaseChanging)
-            room->askForUseCard(player, "@@heyi", "@heyi");
+        next = true;
+        next_p = caohong;
+        while (next) {
+            foreach (ServerPlayer *p, room->getAllPlayers())
+                if (p->getNextAlive() == caohong) {
+                    next_p = p;
+                    break;
+                }
+            if (next_p->isFriendWith(caohong) && !teammates.contains(next_p))
+                teammates << next_p;
+            else
+                next = false;
+        }
+        if (teammates.isEmpty()) return false;
+        foreach(ServerPlayer *p, teammates)
+            room->acquireSkill(p, "feiying");
+
         return false;
+    }
+};
+
+class Feiying: public DistanceSkill {
+public:
+    Feiying(): DistanceSkill("feiying") {
+    }
+
+    virtual int getCorrect(const Player *, const Player *to) const{
+        if (to->hasSkill(objectName()))
+            return 1;
+        else
+            return 0;
     }
 };
 
@@ -741,13 +699,13 @@ FormationPackage::FormationPackage()
     dengai->addSkill(new Ziliang); 
     related_skills.insertMulti("tuntian", "#tuntian-dist");
 
+    General *caohong = new General(this, "caohong", "wei"); // WEI 018
+    caohong->addSkill(new Huyuan);
+    caohong->addSkill(new Heyi);
+
     General *heg_jiangwei = new General(this, "heg_jiangwei", "shu"); // SHU 012 G
     heg_jiangwei->addSkill("tiaoxin");
     heg_jiangwei->addSkill(new Tianfu);
-
-    General *heg_caohong = new General(this, "heg_caohong", "wei"); // WEI 018
-    heg_caohong->addSkill(new Huyuan);
-    heg_caohong->addSkill(new Heyi);
 
     General *jiangwanfeiyi = new General(this, "jiangwanfeiyi", "shu", 3); // SHU 018 
     //ToDo: Add skin for jiangwanfeiyi @@Yan Guam
@@ -769,7 +727,8 @@ FormationPackage::FormationPackage()
     addMetaObject<JixiCard>();
     addMetaObject<JixiSnatchCard>();
     addMetaObject<HuyuanCard>();
-    addMetaObject<HeyiCard>();
+
+    skills << new Feiying;
 }
 
 ADD_PACKAGE(Formation)

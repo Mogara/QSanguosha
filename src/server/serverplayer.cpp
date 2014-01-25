@@ -1426,6 +1426,9 @@ void ServerPlayer::hideGeneral(bool head_general) {
         }
     }
 
+    Q_ASSERT(room->getThread() != NULL);
+    room->getThread()->trigger(GeneralHidden, room, this, QVariant(head_general));
+
     LogMessage log;
     log.type = "#BasaraConceal";
     log.from = this;
