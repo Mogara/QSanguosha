@@ -395,6 +395,20 @@ public:
     }
 };
 
+class NosQicai: public TargetModSkill {
+public:
+    NosQicai(): TargetModSkill("nosqicai") {
+        pattern = "TrickCard";
+    }
+
+    virtual int getDistanceLimit(const Player *from, const Card *) const{
+        if (from->hasSkill(objectName()))
+            return 1000;
+        else
+            return 0;
+    }
+};
+
 class Liegong: public TriggerSkill {
 public:
     Liegong(): TriggerSkill("liegong") {
@@ -468,6 +482,72 @@ private:
     }
 };
 
+
+class KuangguGlobal: public TriggerSkill{
+public:
+    KuangguGlobal(): TriggerSkill("KuangguGlobal"){
+        global = true;
+        events << PreDamageDone;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
+        return player != NULL;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        return true;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        ServerPlayer *weiyan = damage.from;
+        weiyan->tag["InvokeKuanggu"] = weiyan->distanceTo(damage.to) <= 1;
+
+        return false;
+    }
+};
+
+class Kuanggu: public TriggerSkill {
+public:
+    Kuanggu(): TriggerSkill("kuanggu") {
+        frequency = Compulsory;
+        events << Damage;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
+        if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who)){
+            bool invoke = player->tag.value("InvokeKuanggu", false).toBool();
+            player->tag["InvokeKuanggu"] = false;
+            return invoke && player->isWounded();
+        }
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        return player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        DamageStruct damage = data.value<DamageStruct>();
+
+        room->broadcastSkillInvoke(objectName());
+
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = player;
+        log.arg = objectName();
+        room->sendLog(log);
+        room->notifySkillInvoked(player, objectName());
+
+        RecoverStruct recover;
+        recover.who = player;
+        recover.recover = damage.damage;
+        room->recover(player, recover);
+
+        return false;
+    }
+};
+
 void StandardPackage::addShuGenerals()
 {
     General *liubei = new General(this, "liubei", "shu"); // SHU 001
@@ -497,11 +577,17 @@ void StandardPackage::addShuGenerals()
 
     General *huangyueying = new General(this, "huangyueying", "shu", 3, false); // SHU 007
     huangyueying->addSkill(new Jizhi);
-    huangyueying->addSkill("nosqicai");
+    huangyueying->addSkill(new NosQicai);
 
     General *huangzhong = new General(this, "huangzhong", "shu"); // SHU 008
     huangzhong->addCompanion("weiyan");
     huangzhong->addSkill(new Liegong);
+
+    General *weiyan = new General(this, "weiyan", "shu"); // SHU 009
+    weiyan->addSkill(new Kuanggu);
+
+
+    skills << new KuangguGlobal;
 
     addMetaObject<RendeCard>();
 

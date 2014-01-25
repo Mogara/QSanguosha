@@ -153,9 +153,6 @@
     <ClCompile Include="..\..\src\package\mountainpackage.cpp">
       <Filter>package</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\package\nostalgia.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\package.cpp">
       <Filter>package</Filter>
     </ClCompile>
@@ -611,9 +608,6 @@
     <CustomBuild Include="..\..\src\ui\window.h">
       <Filter>ui</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\package\nostalgia.h">
-      <Filter>package</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\util\socket.h">
       <Filter>util</Filter>
     </CustomBuild>
@@ -887,12 +881,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_nativesocket.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_nostalgia.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_nostalgia.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_package.cpp">
