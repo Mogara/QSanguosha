@@ -301,82 +301,6 @@ public:
     }
 };
 
-TianyiCard::TianyiCard() {
-}
-
-bool TianyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
-}
-
-void TianyiCard::use(Room *room, ServerPlayer *taishici, QList<ServerPlayer *> &targets) const{
-    bool success = taishici->pindian(targets.first(), "tianyi", NULL);
-    if (success)
-        room->setPlayerFlag(taishici, "TianyiSuccess");
-    else
-        room->setPlayerCardLimitation(taishici, "use", "Slash", true);
-}
-
-class TianyiViewAsSkill: public ZeroCardViewAsSkill {
-public:
-    TianyiViewAsSkill(): ZeroCardViewAsSkill("tianyi") {
-    }
-
-    virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasUsed("TianyiCard") && !player->isKongcheng();
-    }
-
-    virtual const Card *viewAs() const{
-        return new TianyiCard;
-    }
-};
-
-class Tianyi: public TriggerSkill {
-public:
-    Tianyi(): TriggerSkill("tianyi") {
-        events << EventLoseSkill;
-        view_as_skill = new TianyiViewAsSkill;
-    }
-
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target && target->hasFlag("TianyiSuccess");
-    }
-
-    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *taishici, QVariant &data) const{
-        if (data.toString() == objectName())
-            room->setPlayerFlag(taishici, "-TianyiSuccess");
-
-        return false;
-    }
-};
-
-class TianyiTargetMod: public TargetModSkill {
-public:
-    TianyiTargetMod(): TargetModSkill("#tianyi-target") {
-        frequency = NotFrequent;
-    }
-
-    virtual int getResidueNum(const Player *from, const Card *) const{
-        if (from->hasFlag("TianyiSuccess"))
-            return 1;
-        else
-            return 0;
-    }
-
-    virtual int getDistanceLimit(const Player *from, const Card *) const{
-        if (from->hasFlag("TianyiSuccess"))
-            return 1000;
-        else
-            return 0;
-    }
-
-    virtual int getExtraTargetNum(const Player *from, const Card *) const{
-        if (from->hasFlag("TianyiSuccess"))
-            return 1;
-        else
-            return 0;
-    }
-};
-
 FirePackage::FirePackage()
     : Package("fire")
 {
@@ -398,14 +322,8 @@ FirePackage::FirePackage()
     wolong->addSkill(new Kanpo);
     wolong->addSkill(new Bazhen);
 
-    General *taishici = new General(this, "taishici", "wu"); // WU 012
-    taishici->addSkill(new Tianyi);
-    taishici->addSkill(new TianyiTargetMod);
-    related_skills.insertMulti("tianyi", "#tianyi-target");
-
     addMetaObject<QuhuCard>();
     addMetaObject<QiangxiCard>();
-    addMetaObject<TianyiCard>();
 }
 
 ADD_PACKAGE(Fire)
