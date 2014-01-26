@@ -685,9 +685,9 @@ public:
             if (damage.card == NULL || !damage.card->isKindOf("Slash") || damage.to->isDead())
                 return false;
 
-            ServerPlayer * caiwenji = ask_who;
-            if (caiwenji->canDiscard(caiwenji, "he")) {
-                ask_who = room->findPlayerBySkillName(objectName());
+            ServerPlayer * caiwenji = room->findPlayerBySkillName(objectName());
+            if (caiwenji && caiwenji->canDiscard(caiwenji, "he")) {
+                ask_who = caiwenji;
                 return true;
             }
         } else {
