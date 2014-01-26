@@ -284,6 +284,7 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *daqiao, QVariant &data, ServerPlayer * &ask_who) const {
+        if (!TriggerSkill::triggerable(daqiao)) return false;
         CardUseStruct use = data.value<CardUseStruct>();
 
         if (use.card->isKindOf("Slash") && use.to.contains(daqiao) && daqiao->canDiscard(daqiao, "he")) {

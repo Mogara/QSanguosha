@@ -549,6 +549,7 @@ public:
     }
     
     virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!TriggerSkill::triggerable(player)) return false;
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (effect.to->isAlive() && player->canDiscard(effect.to, "he")) return true;
         return false;
