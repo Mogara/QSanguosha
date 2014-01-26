@@ -1871,7 +1871,7 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
     QList<const TriggerSkill *> game_start;
     const General *gen = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
     if (gen) {
-        foreach (const Skill *skill, gen->getSkillList()) {
+        foreach (const Skill *skill, gen->getSkillList(true, !isSecondaryHero)) {
             if (skill->inherits("TriggerSkill")) {
                  const TriggerSkill *trigger = qobject_cast<const TriggerSkill *>(skill);
                  thread->addTriggerSkill(trigger);
@@ -4205,12 +4205,14 @@ void Room::doAnimate(QSanProtocol::AnimateType type, const QString &arg1, const 
 void Room::preparePlayers() {
     foreach (ServerPlayer *player, m_players) {
         QString general1_name = tag[player->objectName()].toStringList().at(0);
-        foreach(const Skill *skill, Sanguosha->getGeneral(general1_name)->getVisibleSkillList())
-            player->addSkill(skill->objectName());
+        if (player->getMark("@duanchang") < 1 || player->tag["Duanchang"].toString() == "deputy")
+            foreach(const Skill *skill, Sanguosha->getGeneral(general1_name)->getVisibleSkillList(true, true))
+                player->addSkill(skill->objectName());
 
         QString general2_name = tag[player->objectName()].toStringList().at(1);
-        foreach(const Skill *skill, Sanguosha->getGeneral(general2_name)->getVisibleSkillList())
-            player->addSkill(skill->objectName(), false);
+        if (player->getMark("@duanchang") < 1 || player->tag["Duanchang"].toString() == "head")
+            foreach(const Skill *skill, Sanguosha->getGeneral(general2_name)->getVisibleSkillList(true, false))
+                player->addSkill(skill->objectName(), false);
 
             Json::Value args;
             args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;

@@ -127,7 +127,7 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
                 QStringList available;
                 for (int k = 0; k < 5; k++) {
                     if (sp->getGeneral()) {
-                        foreach (const Skill *skill, sp->getGeneral()->getSkillList())
+                        foreach (const Skill *skill, sp->getGeneral()->getSkillList(true, true))
                             sp->loseSkill(skill->objectName());
                     }
                     sp->setGeneral(NULL);
@@ -148,7 +148,7 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
                     QStringList available;
                     for (int k = 0; k < 5; k++) {
                         if (sp->getGeneral2()) {
-                            foreach (const Skill *skill, sp->getGeneral2()->getSkillList())
+                            foreach (const Skill *skill, sp->getGeneral2()->getSkillList(true, false))
                                 sp->loseSkill(skill->objectName());
                         }
                         room->setPlayerProperty(sp, "general2", QVariant());

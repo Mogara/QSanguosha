@@ -50,11 +50,13 @@ public:
     QStringList getSources() const;
 
     virtual bool canPreshow() const;
+    virtual bool relateToPlace(bool head = true) const;
 
 protected:
     Frequency frequency;
     QString limit_mark;
     QString default_choice;
+    QString relate_to_place;
     bool attached_lord_skill;
 
 private:

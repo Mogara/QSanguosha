@@ -141,7 +141,11 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
-        return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who) && player->getPhase() == Player::Start;
+        if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who)
+                || (player && player->isAlive() && player->hasShownSkill(Sanguosha->getSkill("yizhi"))))
+            return player->getPhase() == Player::Start;
+
+        return false;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -154,7 +158,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *zhuge) const{
         Room *room = zhuge->getRoom();
-        QList<int> guanxing = room->getNCards(getGuanxingNum(room));
+        QList<int> guanxing = room->getNCards(getGuanxingNum(zhuge));
 
         LogMessage log;
         log.type = "$ViewDrawPile";
@@ -168,8 +172,9 @@ public:
         return false;
     }
 
-    virtual int getGuanxingNum(Room *room) const{
-        return qMin(5, room->alivePlayerCount()); //consider jiangwei's yizhi
+    virtual int getGuanxingNum(ServerPlayer *zhuge) const{
+        if (zhuge->inHeadSkills(objectName()) && zhuge->hasShownSkill(Sanguosha->getSkill("yizhi"))) return 5;
+        return qMin(5, zhuge->aliveCount());
     }
 };
 
