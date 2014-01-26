@@ -140,19 +140,70 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
-        if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who)
-                || (player && player->isAlive() && player->hasShownSkill(Sanguosha->getSkill("yizhi"))))
-            return player->getPhase() == Player::Start;
-
-        return false;
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        return (TriggerSkill::triggerable(player) && player->getPhase() == Player::Start);
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->askForSkillInvoke(objectName(), data)){
-            room->broadcastSkillInvoke(objectName());
-            return true;
-        }
+        if (!player->hasSkill("yizhi")) return player->askForSkillInvoke(objectName());
+        bool show1 = player->hasShownSkill(this);
+        bool show2 = player->hasShownSkill(Sanguosha->getSkill("yizhi"));
+        if (!show1 && !show2) {
+            if (player->askForSkillInvoke(objectName())) {
+                QStringList choices;
+                choices << "show_head_general" << "show_deputy_general" << "show_both_generals";
+                QString choice = room->askForChoice(player, "GuanxingShowGeneral", choices.join("+"));
+                if (choice == "show_deputy_general") {
+                    player->showGeneral(false);
+                    QList<int> guanxing = room->getNCards(qMin(5, player->aliveCount()));
+
+                    LogMessage log;
+                    log.type = "$ViewDrawPile";
+                    log.from = player;
+                    log.card_str = IntList2StringList(guanxing).join("+");
+                    room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+
+                    room->askForGuanxing(player, guanxing, false);
+
+                    return false;
+                } else if (choice == "show_both_generals") {
+                    player->showGeneral(false);
+                    return true;
+                } else return true;
+            }
+        } else if (!show1 && show2) {
+            if (player->askForSkillInvoke(objectName())) {
+                QStringList choices;
+                choices << "show_head_general" << "cancel";
+                QString choice = room->askForChoice(player, "GuanxingShowGeneral", choices.join("+"));
+                if (choice == "cancel") {
+                    player->showGeneral(false);
+                    QList<int> guanxing = room->getNCards(qMin(5, player->aliveCount()));
+
+                    LogMessage log;
+                    log.type = "$ViewDrawPile";
+                    log.from = player;
+                    log.card_str = IntList2StringList(guanxing).join("+");
+                    room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+
+                    room->askForGuanxing(player, guanxing, false);
+
+                    return false;
+                } else return true;
+            }
+        } else if (show1 && !show2) {
+            if (player->askForSkillInvoke(objectName())) {
+                QStringList choices;
+                choices << "show_deputy_general" << "cancel";
+                QString choice = room->askForChoice(player, "GuanxingShowGeneral", choices.join("+"));
+                if (choice == "show_deputy_general")
+                    player->showGeneral(false);
+                return true;
+            }
+        } else if (show1 && show2)
+            if (player->askForSkillInvoke(objectName()))
+                return true;
+            
         return false;
     }
 
@@ -173,7 +224,7 @@ public:
     }
 
     virtual int getGuanxingNum(ServerPlayer *zhuge) const{
-        if (zhuge->inHeadSkills(objectName()) && zhuge->hasShownSkill(Sanguosha->getSkill("yizhi"))) return 5;
+        if (zhuge->hasShownSkill(Sanguosha->getSkill("yizhi"))) return 5;
         return qMin(5, zhuge->aliveCount());
     }
 };
