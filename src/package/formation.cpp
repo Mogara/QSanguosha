@@ -447,17 +447,43 @@ public:
     YiZhi(): TriggerSkill("yizhi") {
         relate_to_place = "deputy";
         frequency = Compulsory;
-        events << GameStart;
+        events << GameStart << EventPhaseStart;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        if (!TriggerSkill::triggerable(player)) return false;
+        if (triggerEvent == GameStart) return true;
+        else if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start)
+            return (!player->hasSkill("guanxing"));
+        return false;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        const Skill *guanxing = Sanguosha->getSkill("guanxing");
-        if (guanxing != NULL && guanxing->inherits("TriggerSkill")){
-            const TriggerSkill *guanxing_trigger = qobject_cast<const TriggerSkill *>(guanxing);
-            room->getThread()->addTriggerSkill(guanxing_trigger);
+        if (triggerEvent == EventPhaseStart)
+            return player->askForSkillInvoke(objectName());
+        else {
+            const Skill *guanxing = Sanguosha->getSkill("guanxing");
+            if (guanxing != NULL && guanxing->inherits("TriggerSkill")){
+                const TriggerSkill *guanxing_trigger = qobject_cast<const TriggerSkill *>(guanxing);
+                room->getThread()->addTriggerSkill(guanxing_trigger);
+            }
         }
 
         return false;   //skill is written in Guanxing actrually
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        QList<int> guanxing = room->getNCards(qMin(5, player->aliveCount()));
+
+        LogMessage log;
+        log.type = "$ViewDrawPile";
+        log.from = player;
+        log.card_str = IntList2StringList(guanxing).join("+");
+        room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+
+        room->askForGuanxing(player, guanxing, false);
+
+        return false;
     }
 };
 
@@ -904,15 +930,12 @@ public:
                 ServerPlayer *hetaihou;
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark(objectName()) > 0 && TriggerSkill::triggerable(p)) {
-                        hetaihou = p;
                         room->setPlayerMark(p, objectName(), 0);
-                        break;
+                        if (p->isAlive()) {
+                            ask_who = p;
+                            return true;
+                        }
                     }
-                }
-
-                if (hetaihou && hetaihou->isAlive()) {
-                    ask_who = hetaihou;
-                    return true;
                 }
             }
         }

@@ -319,6 +319,10 @@ return {
 	["zhoutai"] = "周泰",
 	["buqu"] = "不屈",
 	[":buqu"] = "每当你扣减1点体力后，若你的体力值为0，你可以将牌堆顶的一张牌置于武将牌上，称为“创”，若所有“创”的点数均不同，你不进入濒死状态。",
+	["#BuquDuplicate"] = "%from 发动“<font color=\"yellow\"><b>不屈</b></font>”失败，其“创”中有 %arg 组重复点数",
+	["#BuquDuplicateGroup"] = "第 %arg 组重复点数为 %arg2",
+	["$BuquDuplicateItem"] = "重复“创”: %card",
+	["$BuquRemove"] = "%from 移除了“创”：%card",
 
 	["#lusu"] = "独断的外交家",
 	["lusu"] = "鲁肃",

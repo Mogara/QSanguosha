@@ -787,8 +787,8 @@ public:
         }
     }
 
-    virtual bool triggerable(TriggerEvent tr, Room *r, ServerPlayer *zhoutai, QVariant &d, ServerPlayer * &a) const{
-        if (!TriggerSkill::triggerable(tr, r, zhoutai, d, a)) return false;
+    virtual bool triggerable(TriggerEvent , Room *, ServerPlayer *zhoutai, QVariant &, ServerPlayer* &) const{
+        if (!zhoutai || !zhoutai->isAlive() || !zhoutai->hasSkill("buqu")) return false;
         if (zhoutai->getPile("buqu").length() > 0)
             Remove(zhoutai);
 
@@ -801,7 +801,8 @@ public:
     Buqu(): TriggerSkill("buqu") {
         events << PostHpReduced << AskForPeachesDone;
     }
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &data) const{
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &data, ServerPlayer* &ask_who) const{
         if (!TriggerSkill::triggerable(zhoutai)) return false;
         if (triggerEvent == PostHpReduced && zhoutai->getHp() < 1)
             return true;
@@ -870,6 +871,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &data) const{
+        if (triggerEvent == AskForPeachesDone) return true;
         return room->askForSkillInvoke(zhoutai, objectName(), data);
     }
 
@@ -903,7 +905,7 @@ public:
                 room->setTag("Buqu", QVariant());
                 return true;
             }
-        }
+        } else if (triggerEvent == AskForPeachesDone) return true;
         return false;
     }
 };
