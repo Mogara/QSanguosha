@@ -351,6 +351,7 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!TriggerSkill::triggerable(player)) return false;
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card || use.card->getTypeId() != Card::TypeTrick)
             return false;
