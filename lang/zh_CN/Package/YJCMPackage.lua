@@ -78,13 +78,6 @@ return {
 	[":buyi"] = "每当一名角色进入濒死状态时，你可以展示该角色的一张手牌，若该牌为非基本牌，该角色弃置该牌，然后回复1点体力。",
 	["#GanluSwap"] = "%from 交换了 %to 的装备",
 
-	["#xusheng"] = "江东的铁壁",
-	["xusheng"] = "徐盛",
-	["designer:xusheng"] = "阿江",
-	["illustrator:xusheng"] = "天空之城",
-	["pojun"] = "破军",
-	[":pojun"] = "每当你使用【杀】对目标角色造成一次伤害后，你可以令其摸X张牌，然后将其武将牌翻面。（X为该角色的体力值且至多为5）",
-
 	["#gaoshun"] = "攻无不克",
 	["gaoshun"] = "高顺",
 	["designer:gaoshun"] = "羽柴文理",

@@ -46,15 +46,6 @@ return {
 	["$DanjiAnimate"] = "image=image/animate/danji.png",
 	["#DanjiWake"] = "%from 的手牌数 %arg 大于体力值 %arg2 ，且本局游戏主公为曹操，触发“<font color=\"yellow\"><b>单骑</b></font>”觉醒",
 
-	["#caohong"] = "福将",
-	["caohong"] = "曹洪",
-	["illustrator:caohong"] = "LiuHeng",
-	["yuanhu"] = "援护",
-	[":yuanhu"] = "结束阶段开始时，你可以将一张装备牌置于一名角色的装备区里，根据此牌的类别执行相应效果：武器牌—你弃置该角色距离为1的一名角色的区域里的一张牌；防具牌—该角色摸一张牌；坐骑牌—该角色回复1点体力。",
-	["@yuanhu-equip"] = "你可以发动“援护”",
-	["@yuanhu-discard"] = "请选择 %src 距离1的一名角色",
-	["~yuanhu"] = "选择一张装备牌→选择一名角色→点击确定",
-
 	["#guanyinping"] = "武姬",
 	["guanyinping"] = "关银屏",
 	["illustrator:guanyinping"] = "木美人",
