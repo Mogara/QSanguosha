@@ -324,13 +324,19 @@ public:
     }
 }; 
 
-class Heyi: public TriggerSkill {
+HeyiSummon::HeyiSummon() 
+    : ArraySummonCard("heyi")
+{
+
+}
+
+class Heyi: public BattleArraySkill {
 public:
-    Heyi(): TriggerSkill("heyi") {
+    Heyi(): BattleArraySkill("heyi", BattleArrayType::Formation) {
         events << GeneralShown << GeneralHidden << Death;
         frequency = Compulsory;
     }
-
+    
     virtual bool canPreshow() const{
         return false;
     }
@@ -455,9 +461,15 @@ public:
     }
 };
 
-class Tianfu: public TriggerSkill {
+TianfuSummon::TianfuSummon()
+    : ArraySummonCard("tianfu")
+{
+
+}
+
+class Tianfu: public BattleArraySkill {
 public:
-    Tianfu(): TriggerSkill("tianfu") {
+    Tianfu(): BattleArraySkill("tianfu", BattleArrayType::Formation) {
         events << EventPhaseStart << Death;
         relate_to_place = "head";
     }
@@ -954,6 +966,8 @@ FormationPackage::FormationPackage()
     addMetaObject<HuyuanCard>();
     addMetaObject<TiaoxinCard>();
     addMetaObject<ShangyiCard>();
+    addMetaObject<HeyiSummon>();
+    addMetaObject<TianfuSummon>();
     addMetaObject<NiaoxiangSummon>();
 
     skills << new Feiying;

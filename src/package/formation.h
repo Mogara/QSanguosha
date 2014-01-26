@@ -34,6 +34,13 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class HeyiSummon: public ArraySummonCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE HeyiSummon();
+};
+
 class TiaoxinCard: public SkillCard {
     Q_OBJECT
 
@@ -43,6 +50,13 @@ public:
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
+
+class TianfuSummon: public ArraySummonCard {
+    Q_OBJECT
+        
+public:
+    Q_INVOKABLE TianfuCard();
+}
 
 class ShangyiCard: public SkillCard {
     Q_OBJECT
