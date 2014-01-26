@@ -481,7 +481,7 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *sunshangxiang, QVariant &data, ServerPlayer * &ask_who) const{
-        if (!TriggerSkill::triggerable(player)) return false;
+        if (!TriggerSkill::triggerable(sunshangxiang)) return false;
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.from == sunshangxiang && move.from_places.contains(Player::PlaceEquip)) {
             for (int i = 0; i < move.card_ids.size(); i++) {
