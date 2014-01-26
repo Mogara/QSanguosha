@@ -802,6 +802,7 @@ public:
         events << PostHpReduced << AskForPeachesDone;
     }
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &data) const{
+        if (!TriggerSkill::triggerable(zhoutai)) return false;
         if (triggerEvent == PostHpReduced && zhoutai->getHp() < 1)
             return true;
         else if (triggerEvent == AskForPeachesDone) {
@@ -988,6 +989,7 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *lusu, QVariant &, ServerPlayer *) const{
+        if (!TriggerSkill::triggerable(lusu)) return false;
         if (lusu->hasFlag("haoshi")) {
             lusu->setFlags("-haoshi");
 
@@ -1165,6 +1167,7 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *erzhang, QVariant &data, ServerPlayer * &ask_who) const{
+        if (!TriggerSkill::triggerable(erzhang)) return false;
         ServerPlayer *current = room->getCurrent();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
 
