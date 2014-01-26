@@ -12,6 +12,7 @@ struct PhaseStruct;
 #include "player.h"
 #include "socket.h"
 #include "protocol.h"
+#include "BattleArraySkill.h"
 
 #include <QSemaphore>
 #include <QDateTime>
@@ -91,7 +92,9 @@ public:
 
     void setNext(ServerPlayer *next);
     ServerPlayer *getNext() const;
+    ServerPlayer *getLast() const;
     ServerPlayer *getNextAlive(int n = 1) const;
+    ServerPlayer *getLastAlive(int n = 1) const;
 
     // 3v3 methods
     void addToSelected(const QString &general);
@@ -156,6 +159,9 @@ public:
     void hideGeneral(bool head_general = true);
     void sendSkillsToOthers(bool head_skill = true);
     void disconnectSkillsFromOthers(bool head_skill = true);
+    bool askForGeneralShow(bool one = true);
+
+    void summonFriends(const BattleArraySkill::ArrayType type) const;
 
 protected:
     //Synchronization helpers

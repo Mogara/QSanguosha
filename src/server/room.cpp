@@ -917,7 +917,8 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
             skillCommand = toJsonArray(skill_name, data_str);
         }
 
-        if (!doRequest(player, S_COMMAND_INVOKE_SKILL, skillCommand, true)) {
+        if (!doRequest(player, S_COMMAND_INVOKE_SKILL, skillCommand, true) 
+            || skill_name.endsWith("!")) {
             invoked = false;
         } else {
             Json::Value clientReply = player->getClientReply();

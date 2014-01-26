@@ -2426,7 +2426,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             }
 
             showPromptBox();
-            ok_button->setEnabled(true);
+            ok_button->setEnabled(!ClientInstance->getSkillNameToInvoke().endsWith("!"));
             cancel_button->setEnabled(true);
             discard_button->setEnabled(false);
             break;

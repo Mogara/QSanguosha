@@ -179,25 +179,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             break;
         }
     case EventPhaseStart: {
-            if (player->getPhase() == Player::Start && !player->hasShownAllGenerals()) {
-                QStringList choices;
-
-                if (!player->hasShownGeneral1())
-                    choices << "show_head_general";
-                if (!player->hasShownGeneral2())
-                    choices << "show_deputy_general";
-
-                if (choices.length() == 2)
-                    choices << "show_both_generals";
-                choices << "cancel";
-
-                QString choice = room->askForChoice(player, "TurnStartShowGeneral", choices.join("+"));
-
-                if (choice == "show_head_general" || choice == "show_both_generals")
-                    player->showGeneral();
-                if (choice == "show_deputy_general" || choice == "show_both_generals")
-                    player->showGeneral(false);
-            }
+        if (player->getPhase() == Player::Start && !player->hasShownAllGenerals())
+            player->askForGeneralShow(false);
             break;
         }
     case EventPhaseProceeding: {

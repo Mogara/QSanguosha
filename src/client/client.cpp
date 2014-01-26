@@ -828,6 +828,9 @@ void Client::askForSkillInvoke(const Json::Value &arg) {
 
     skill_to_invoke = skill_name;
 
+    if (skill_name.endsWith("!"))
+        skill_name.chop(1);
+
     QString text;
     if (skill_name.startsWith("userdefine:")) {
         QString name = skill_name.mid(4);

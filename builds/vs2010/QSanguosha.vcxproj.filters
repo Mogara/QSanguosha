@@ -423,6 +423,15 @@
     <ClCompile Include="..\..\src\package\standard-wu-generals.cpp">
       <Filter>package</Filter>
     </ClCompile>
+    <ClCompile Include="Debug\moc_BattleArraySkill.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_BattleArraySkill.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\core\BattleArraySkill.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -652,6 +661,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\AboutUs.h">
       <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\core\BattleArraySkill.h">
+      <Filter>core</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

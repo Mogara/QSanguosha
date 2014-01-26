@@ -6,6 +6,7 @@
 #include "client.h"
 #include "standard.h"
 #include "scenario.h"
+#include "serverplayer.h"
 
 #include <QFile>
 
@@ -327,6 +328,16 @@ GameStartSkill::GameStartSkill(const QString &name)
 bool GameStartSkill::effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &) const{
     onGameStart(player);
     return false;
+}
+
+BattleArraySkill::BattleArraySkill(const QString &name, const ArrayType type)
+    : TriggerSkill(name), array_type(type)
+{
+
+}
+
+void BattleArraySkill::summonFriends(const ServerPlayer *player) const {
+    player->summonFriends(array_type);
 }
 
 SPConvertSkill::SPConvertSkill(const QString &from, const QString &to)

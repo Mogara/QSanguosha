@@ -1,5 +1,4 @@
 #include "serverplayer.h"
-#include "skill.h"
 #include "engine.h"
 #include "standard.h"
 #include "ai.h"
@@ -8,6 +7,7 @@
 #include "banpair.h"
 #include "lua-wrapper.h"
 #include "jsonutils.h"
+#include "skill.h"
 
 using namespace QSanProtocol;
 using namespace QSanProtocol::Utils;
@@ -862,6 +862,13 @@ ServerPlayer *ServerPlayer::getNext() const{
     return next;
 }
 
+ServerPlayer *ServerPlayer::getLast() const {
+    foreach(ServerPlayer *p, room->getPlayers())
+        if (p->next == this)
+            return p;
+    return NULL;
+}
+
 ServerPlayer *ServerPlayer::getNextAlive(int n) const{
     bool hasAlive = (room->getAlivePlayers().length() > 0);
     ServerPlayer *next = const_cast<ServerPlayer *>(this);
@@ -871,6 +878,11 @@ ServerPlayer *ServerPlayer::getNextAlive(int n) const{
     }
     return next;
 }
+
+ServerPlayer *ServerPlayer::getLastAlive(int n) const {
+   return getNextAlive(aliveCount() - n);
+}
+
 
 int ServerPlayer::getGeneralMaxHp() const{
     int max_hp = 0;
@@ -1461,3 +1473,94 @@ void ServerPlayer::disconnectSkillsFromOthers(bool head_skill /* = true */) {
     }
 
 }
+
+bool ServerPlayer::askForGeneralShow(bool one) {
+    QStringList choices;
+
+    if (!hasShownGeneral1())
+        choices << "show_head_general";
+    if (!hasShownGeneral2())
+        choices << "show_deputy_general";
+
+    if (!one && choices.length() == 2)
+        choices << "show_both_generals";
+    choices << "cancel";
+
+    QString choice = room->askForChoice(this, "TurnStartShowGeneral", choices.join("+"));
+
+    if (choice == "show_head_general" || choice == "show_both_generals")
+        showGeneral();
+    if (choice == "show_deputy_general" || choice == "show_both_generals")
+        showGeneral(false);
+
+    return choice.startsWith("s");
+}
+
+void ServerPlayer::summonFriends(const BattleArraySkill::ArrayType type) const {
+    if (aliveCount() < 4) return;
+    switch (type) {
+    case BattleArraySkill::Siege: {
+        if (isFriendWith(getNextAlive()) || isFriendWith(getLastAlive())) return;
+        QString prompt = "SiegeSummon";
+        if (!isFriendWith(getNextAlive())) {
+            ServerPlayer *target = getNextAlive(2);
+            if (!target->hasShownOneGeneral()) {
+                if (!target->willBeFriendWith(this))
+                    prompt += "!";
+                if (room->askForSkillInvoke(target, prompt))
+                    target->askForGeneralShow();
+            }
+        }
+        if (!isFriendWith(getLastAlive())) {
+            ServerPlayer *target = getLastAlive(2);
+            if (!target->hasShownOneGeneral()) {
+                if (!target->willBeFriendWith(this))
+                    prompt += "!";
+                if (room->askForSkillInvoke(target, prompt))
+                    target->askForGeneralShow();
+            }
+        }
+        break;
+    } case BattleArraySkill::Formation: {
+        int n = aliveCount();
+        int asked = n;
+        for (int i = 1; i < n; ++ i) {
+            ServerPlayer *target = getNextAlive(i);
+            if (isFriendWith(target))
+                continue;
+            else if (target->willBeFriendWith(this)) {
+                QString prompt = "SiegeSummon";
+                if (!target->willBeFriendWith(this))
+                    prompt += "!";
+                if(!room->askForSkillInvoke(target, prompt) 
+                   || !target->askForGeneralShow()) {
+                   asked = i;
+                   break;
+                }
+            } else {
+                asked = i;
+                break;
+            }
+        }
+
+        n -= asked;
+        for(int i = 1; i < n; ++ i) {
+            ServerPlayer *target = getLastAlive(i);
+            if (isFriendWith(target))
+                continue;
+            else {
+                if (target->willBeFriendWith(this)) {
+                    QString prompt = "SiegeSummon";
+                    if (!target->willBeFriendWith(this))
+                        prompt += "!";
+                    if(room->askForSkillInvoke(target, prompt))
+                        target->askForGeneralShow();
+                }
+                break;
+            }
+        }
+        break;
+                                  }
+    }
+}
+

@@ -1090,11 +1090,11 @@ void Player::setGeneral2Showed(bool showed) {
 void Player::setSkillsPreshowed(const QString &flags, const bool preshowed) {
     if (flags.contains("h")) {
         foreach (QString skill, head_skills.keys())
-            head_skills[skill] = preshowed || Sanguosha->getSkill(skill)->canPreshow();
+            head_skills[skill] = preshowed;
     }
     if (flags.contains("d")) {
         foreach (QString skill, deputy_skills.keys())
-            deputy_skills[skill] = preshowed || Sanguosha->getSkill(skill)->canPreshow();
+            deputy_skills[skill] = preshowed;
     }
 }
 

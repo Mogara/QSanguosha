@@ -2,8 +2,8 @@
 #define _SKILL_H
 
 class Player;
-class Card;
 class ServerPlayer;
+class Card;
 class QDialog;
 
 #include "room.h"
@@ -195,6 +195,24 @@ public:
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual void onGameStart(ServerPlayer *player) const = 0;
+};
+
+class BattleArraySkill: public TriggerSkill {
+    Q_OBJECT
+
+public:
+    enum ArrayType {
+        Siege,
+        Formation
+    };
+
+    BattleArraySkill(const QString &name,const ArrayType type);
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const = 0;
+    virtual void summonFriends(const ServerPlayer *player) const;
+
+private:
+    ArrayType array_type;
 };
 
 class SPConvertSkill: public GameStartSkill {
