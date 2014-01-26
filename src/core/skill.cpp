@@ -330,7 +330,7 @@ bool GameStartSkill::effect(TriggerEvent, Room *, ServerPlayer *player, QVariant
     return false;
 }
 
-BattleArraySkill::BattleArraySkill(const QString &name, const ArrayType type)
+BattleArraySkill::BattleArraySkill(const QString &name, const BattleArrayType::ArrayType type)
     : TriggerSkill(name), array_type(type)
 {
 

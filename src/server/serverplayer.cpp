@@ -1496,10 +1496,12 @@ bool ServerPlayer::askForGeneralShow(bool one) {
     return choice.startsWith("s");
 }
 
-void ServerPlayer::summonFriends(const BattleArraySkill::ArrayType type) const {
+using namespace BattleArrayType;
+
+void ServerPlayer::summonFriends(const ArrayType type) const {
     if (aliveCount() < 4) return;
     switch (type) {
-    case BattleArraySkill::Siege: {
+    case Siege: {
         if (isFriendWith(getNextAlive()) || isFriendWith(getLastAlive())) return;
         QString prompt = "SiegeSummon";
         if (!isFriendWith(getNextAlive())) {
@@ -1521,7 +1523,7 @@ void ServerPlayer::summonFriends(const BattleArraySkill::ArrayType type) const {
             }
         }
         break;
-    } case BattleArraySkill::Formation: {
+    } case Formation: {
         int n = aliveCount();
         int asked = n;
         for (int i = 1; i < n; ++ i) {

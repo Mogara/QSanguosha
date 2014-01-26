@@ -12,7 +12,7 @@ struct PhaseStruct;
 #include "player.h"
 #include "socket.h"
 #include "protocol.h"
-#include "BattleArraySkill.h"
+#include "namespace.h"
 
 #include <QSemaphore>
 #include <QDateTime>
@@ -161,7 +161,7 @@ public:
     void disconnectSkillsFromOthers(bool head_skill = true);
     bool askForGeneralShow(bool one = true);
 
-    void summonFriends(const BattleArraySkill::ArrayType type) const;
+    void summonFriends(const BattleArrayType::ArrayType type) const;
 
 protected:
     //Synchronization helpers
