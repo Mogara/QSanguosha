@@ -450,19 +450,28 @@ public:
         events << GameStart << EventPhaseStart;
     }
 
+    virtual bool canPreshow() const {
+        return true;
+    }
+
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
-        if (!TriggerSkill::triggerable(player)) return false;
+        if (!player || !player->isAlive() || !player->ownSkill(objectName())) return false;
         if (triggerEvent == GameStart) return true;
         else if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start)
-            return (!player->hasSkill("guanxing"));
+            return (!player->ownSkill("guanxing"));
         return false;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == EventPhaseStart) {
-            if (player->askForSkillInvoke("guanxing"))
+            if (player->hasSkill(objectName()) && player->askForSkillInvoke("guanxing")) {
+                LogMessage log;
+                log.from = player;
+                log.arg = "guanxing";
+                room->sendLog(log);
                 return true;
-        }else {
+            }
+        } else {
             const Skill *guanxing = Sanguosha->getSkill("guanxing");
             if (guanxing != NULL && guanxing->inherits("TriggerSkill")){
                 const TriggerSkill *guanxing_trigger = qobject_cast<const TriggerSkill *>(guanxing);
@@ -928,7 +937,6 @@ public:
             return false;
         } else {
             if (player->getPhase() == Player::NotActive) {
-                ServerPlayer *hetaihou;
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark(objectName()) > 0 && TriggerSkill::triggerable(p)) {
                         room->setPlayerMark(p, objectName(), 0);
