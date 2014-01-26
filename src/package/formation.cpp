@@ -459,9 +459,10 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart)
-            return player->askForSkillInvoke(objectName());
-        else {
+        if (triggerEvent == EventPhaseStart) {
+            if (player->askForSkillInvoke("guanxing"))
+                return true;
+        }else {
             const Skill *guanxing = Sanguosha->getSkill("guanxing");
             if (guanxing != NULL && guanxing->inherits("TriggerSkill")){
                 const TriggerSkill *guanxing_trigger = qobject_cast<const TriggerSkill *>(guanxing);

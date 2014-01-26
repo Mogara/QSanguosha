@@ -647,11 +647,7 @@ bool Player::canDiscard(const Player *to, const QString &flags) const{
 }
 
 bool Player::canDiscard(const Player *to, int card_id) const{
-    if (to->hasSkill("qicai") && this != to) {
-        if ((to->getWeapon() && card_id == to->getWeapon()->getEffectiveId())
-            || (to->getArmor() && card_id == to->getArmor()->getEffectiveId()))
-            return false;
-    } else if (this == to) {
+    if (this == to) {
         if (isJilei(Sanguosha->getCard(card_id)))
             return false;
     }

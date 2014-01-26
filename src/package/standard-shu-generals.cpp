@@ -145,7 +145,8 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (!player->hasSkill("yizhi")) return player->askForSkillInvoke(objectName());
+        if (!player->hasSkill("yizhi"))
+            return player->askForSkillInvoke(objectName());
         bool show1 = player->hasShownSkill(this);
         bool show2 = player->hasShownSkill(Sanguosha->getSkill("yizhi"));
         if (!show1 && !show2) {
