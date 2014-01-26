@@ -1291,21 +1291,19 @@ public:
 
         QList<int> cards = cardsToGet + cardsOther;
 
-        if (erzhang->askForSkillInvoke("guzheng", cards.length())) {
-            room->fillAG(cards, erzhang, cardsOther);
+        room->fillAG(cards, erzhang, cardsOther);
 
-            int to_back = room->askForAG(erzhang, cardsToGet, false, "guzheng");
-            player->obtainCard(Sanguosha->getCard(to_back));
+        int to_back = room->askForAG(erzhang, cardsToGet, false, "guzheng");
+        player->obtainCard(Sanguosha->getCard(to_back));
 
-            cards.removeOne(to_back);
+        cards.removeOne(to_back);
 
-            room->clearAG(erzhang);
+        room->clearAG(erzhang);
 
-            DummyCard *dummy = new DummyCard(cards);
-            room->obtainCard(erzhang, dummy);
-            delete dummy;
-            room->broadcastSkillInvoke("guzheng");
-        }
+        DummyCard *dummy = new DummyCard(cards);
+        room->obtainCard(erzhang, dummy);
+        delete dummy;
+        room->broadcastSkillInvoke("guzheng");
 
         return false;
     }
