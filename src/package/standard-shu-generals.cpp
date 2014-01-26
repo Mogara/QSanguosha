@@ -920,6 +920,7 @@ public:
     }
     
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhurong, QVariant &data, ServerPlayer* &ask_who) const{
+		if (!TriggerSkill::triggerable(zhurong)) return false;
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.card && damage.card->isKindOf("Slash") && !zhurong->isKongcheng()
             && !damage.to->isKongcheng() && damage.to != zhurong && !damage.chain && !damage.transfer)
