@@ -55,8 +55,8 @@ class TianfuSummon: public ArraySummonCard {
     Q_OBJECT
         
 public:
-    Q_INVOKABLE TianfuCard();
-}
+    Q_INVOKABLE TianfuSummon();
+};
 
 class ShangyiCard: public SkillCard {
     Q_OBJECT

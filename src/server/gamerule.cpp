@@ -8,6 +8,23 @@
 
 #include <QTime>
 
+class GameRule_AskForGeneralShow: public TriggerSkill {
+public:
+    GameRule_AskForGeneralShow(): TriggerSkill("GameRule_AskForGeneralShow") {
+        events << EventPhaseStart;
+        global = true;
+    }
+
+    virtual bool cost(TriggerEvent , Room *, ServerPlayer *player, QVariant &) const{
+        player->askForGeneralShow(false);
+        return false;
+    }
+
+    virtual bool triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
+        return player->getPhase() == Player::Start && !player->hasShownAllGenerals();
+    }
+};
+
 GameRule::GameRule(QObject *)
     : TriggerSkill("game_rule")
 {
@@ -27,6 +44,11 @@ GameRule::GameRule(QObject *)
            << ConfirmDamage << DamageDone << DamageComplete
            << StartJudge << FinishRetrial << FinishJudge
            << ChoiceMade << GeneralShown;
+
+    const Skill *skill = new GameRule_AskForGeneralShow;
+    QList<const Skill *> list;
+    list << skill;
+    Sanguosha->addSkills(list);
 }
 
 bool GameRule::triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer * &ask_who) const{
@@ -176,11 +198,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             } else if (player->isAlive())
                 player->play();
 
-            break;
-        }
-    case EventPhaseStart: {
-        if (player->getPhase() == Player::Start && !player->hasShownAllGenerals())
-            player->askForGeneralShow(false);
             break;
         }
     case EventPhaseProceeding: {

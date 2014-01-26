@@ -305,6 +305,8 @@ bool Player::isLord() const{
 }
 
 bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
+    const TriggerSkill *trigger = Sanguosha->getTriggerSkill(skill_name);
+    if (trigger && trigger->isGlobal()) return true;
     if (!include_lose) {
         if (!hasEquipSkill(skill_name)) {
             const Skill *skill = Sanguosha->getSkill(skill_name);
