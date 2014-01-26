@@ -1074,7 +1074,7 @@ public:
         events << CardsMoveOneTime;
     }
 
-    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *tianfeng, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *tianfeng, QVariant &data, ServerPlayer * &ask_who) const{
         if (!TriggerSkill::triggerable(tianfeng)) return false;
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.from == tianfeng && move.from_places.contains(Player::PlaceHand) && move.is_last_handcard) {
