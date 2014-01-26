@@ -875,9 +875,9 @@ public:
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark(objectName()) > 0 && TriggerSkill::triggerable(p)) {
                         hetaihou = p;
+                        room->setPlayerMark(p, objectName(), 0);
                         break;
                     }
-                    room->setPlayerMark(p, objectName(), 0);
                 }
 
                 if (hetaihou && hetaihou->isAlive()) {

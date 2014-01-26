@@ -1013,7 +1013,7 @@ public:
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
 		ServerPlayer *yuejin = room->findPlayerBySkillName(objectName());
-        if (room->askForCard(yuejin, ".Basic", "@xiaoguo", QVariant(), objectName())) {
+        if (yuejin && room->askForCard(yuejin, ".Basic", "@xiaoguo", QVariant(), objectName())) {
             room->broadcastSkillInvoke(objectName(),1);
             return true;
         }
@@ -1021,7 +1021,7 @@ public:
     }
     virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *yuejin = room->findPlayerBySkillName(objectName());
-        if (!room->askForCard(player, ".Equip", "@xiaoguo-discard", QVariant())) {
+        if (yuejin && !room->askForCard(player, ".Equip", "@xiaoguo-discard", QVariant())) {
             room->broadcastSkillInvoke(objectName(), 2);
             room->damage(DamageStruct("xiaoguo", yuejin, player));
         } else {
