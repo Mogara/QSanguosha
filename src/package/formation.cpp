@@ -196,9 +196,11 @@ public:
 
     virtual const Card *viewAs() const{
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-        if (pattern == "@@jixi!")
-            return new JixiSnatchCard;
-        else
+        if (pattern == "@@jixi!") {
+            Card *card = new JixiSnatchCard;
+            card->setShowSkill(objectName());
+            return card;
+        } else
             return new JixiCard;
     }
 };
