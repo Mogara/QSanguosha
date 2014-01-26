@@ -13,29 +13,9 @@ config = {
 	
 	package_names = {
 		"StandardCard",
-		"New3v3Card",
-		"New3v3_2013Card",
-		"New1v1Card",
 
 		"Standard",
-		"Wind",
-		"Fire",
-		"Thicket",
-		"Mountain",
-		"God",
-		"YJCM",
-		"YJCM2012",
-		"YJCM2013",
-		"Special3v3",
-		"Special1v1",
-		"Special1v1OL",
-		"BGM",
-		"Hegemony",
 		"Formation",
-		"NostalStandard",
-		"NostalWind",
-		"NostalYJCM",
-		"NostalYJCM2012",
 		"Test"
 	},
 
@@ -136,20 +116,13 @@ config = {
 	},
 
 	basara_ban = {
-		"dongzhuo",
-		"zuoci",
-		"shenzhugeliang",
-		"shenlvbu",
-		"bgm_lvmeng",
-		"zhanggongqi"
 	},
 	
 	hegemony_ban = {
-		"xiahoujuan"
 	},
 
 	pairs_ban = {
-		"huatuo", "zhoutai", "zuoci", "bgm_pangtong", "shencaocao", "liaohua", "nos_zhoutai",
+		--[["huatuo", "zhoutai", "zuoci", "bgm_pangtong", "shencaocao", "liaohua", "nos_zhoutai",
 		"+luboyan",
 		"simayi+zhenji", "simayi+dengai",
 		"caoren+shenlvbu", "caoren+caozhi", "caoren+bgm_diaochan", "caoren+bgm_caoren", "caoren+neo_caoren", "caoren+nos_caoren",
@@ -203,7 +176,7 @@ config = {
 		"lukang+nos_liubei", "lukang+wolong", "lukang+yuji", "jiangboyue+lukang", "lukang+yanliangwenchou", "lukang+guanxingzhangbao", "lukang+heg_luxun",
 		"caoren+caizhaoji", "nos_caoren+caizhaoji", "bgm_caoren+caizhaoji", "neo_caoren+caizhaoji", "dengshizai+caizhaoji",
 		"zhugejin+caizhaoji", "simayi+caizhaoji", "shensimayi+caizhaoji", "caozhi+caizhaoji", "shenlvbu+caizhaoji", "bgm_diaochan+caizhaoji",
-		"wis_jiangwei+zhanggongqi", "luxun+zhanggongqi"
+		"wis_jiangwei+zhanggongqi", "luxun+zhanggongqi"]]
 	},
 	
 	couple_lord = "caocao",
