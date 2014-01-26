@@ -383,9 +383,13 @@ public:
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (player == NULL) return false;
-        if (triggerEvent == AskForPeaches)
+        if (triggerEvent == AskForPeaches) {
+            ServerPlayer *jiaxu = room->getCurrent();
+            if (!jiaxu || !TriggerSkill::triggerable(jiaxu) || jiaxu->getPhase() == Player::NotActive)
+                return false;
+            ask_who = jiaxu;
             return true;
-        else {
+        } else {
             if (triggerEvent == EventPhaseChanging) {
                 PhaseChangeStruct change = data.value<PhaseChangeStruct>();
                 if (change.to != Player::NotActive) return false;
@@ -402,21 +406,17 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->hasShownSkill(this)) return true;
-        return player->askForSkillInvoke(objectName());
+        ServerPlayer *jiaxu = room->getCurrent();
+        if (jiaxu && jiaxu->hasShownSkill(this)) return true;
+        return jiaxu->askForSkillInvoke(objectName());
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == AskForPeaches) {
             DyingStruct dying = data.value<DyingStruct>();
             ServerPlayer *jiaxu = room->getCurrent();
-            if (!jiaxu || !TriggerSkill::triggerable(jiaxu) || jiaxu->getPhase() == Player::NotActive)
-                return false;
             if (player == room->getAllPlayers().first()) {
-                if (jiaxu->hasInnateSkill("wansha") || !jiaxu->hasSkill("jilve"))
-                    room->broadcastSkillInvoke(objectName());
-                else
-                    room->broadcastSkillInvoke("jilve", 3);
+                room->broadcastSkillInvoke(objectName());
 
                 room->notifySkillInvoked(jiaxu, objectName());
 
