@@ -1490,7 +1490,7 @@ QList<const ServerPlayer *> ServerPlayer::getFormation() const {
     int n = aliveCount();
     int num = n;
     for (int i = 1; i < n; ++ i) {
-        ServerPlayer *target = getNextAlive(i);
+        ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(i));
         if (isFriendWith(target))
             teammates << target;
         else {
@@ -1501,7 +1501,7 @@ QList<const ServerPlayer *> ServerPlayer::getFormation() const {
 
     n -= num;
     for (int i = 1; i < n; ++ i) {
-        ServerPlayer *target = getLastAlive(i);
+        ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(i));
         if (isFriendWith(target))
             teammates << target;
         else break;
