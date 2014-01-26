@@ -384,7 +384,7 @@ public:
         }
         if (teammates.isEmpty()) return false;
         foreach(ServerPlayer *p, teammates)
-            room->acquireSkill(p, "feiying", false);
+            room->attachSkillToPlayer(p, "feiying");
 
         return false;
     }
@@ -610,6 +610,18 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
 
     if (choice == "handcards") {
         room->showAllCards(effect.to, effect.from);
+        QList<int> blacks, reds;
+        foreach (int card_id, effect.to->handCards())
+            if (Sanguosha->getCard(card_id)->isBlack())
+                blacks << card_id;
+            else if (Sanguosha->getCard(card_id)->isRed())
+                reds << card_id;
+        room->fillAG(effect.to->handCards(), effect.from, reds);
+
+        int to_discard = -1;
+        to_discard = room->askForAG(effect.from, blacks, true, "shangyi");
+        if (to_discard == -1) return;
+        room->throwCard(to_discard, effect.to, effect.from);
     } else {
         QStringList list = room->getTag(effect.to->objectName()).toStringList();
         foreach (QString name, list) {
