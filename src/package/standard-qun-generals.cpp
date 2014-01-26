@@ -576,6 +576,7 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!TriggerSkill::triggerable(player)) return false;
         CardStar card_star = data.value<CardResponseStruct>().m_card;
         if (card_star->isKindOf("Jink")) return true;
         return false;
@@ -1164,6 +1165,7 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *panfeng, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!TriggerSkill::triggerable(panfeng)) return false;
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *target = damage.to;
         if (damage.card && damage.card->isKindOf("Slash") && target->hasEquip() && !damage.chain && !damage.transfer) {
