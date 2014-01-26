@@ -441,10 +441,17 @@ public:
     YiZhi(): TriggerSkill("yizhi") {
         relate_to_place = "deputy";
         frequency = Compulsory;
+        events << GameStart;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
-        return false;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        const Skill *guanxing = Sanguosha->getSkill("guanxing");
+        if (guanxing != NULL && guanxing->inherits("TriggerSkill")){
+            const TriggerSkill *guanxing_trigger = qobject_cast<const TriggerSkill *>(guanxing);
+            room->getThread()->addTriggerSkill(guanxing_trigger);
+        }
+
+        return false;   //skill is written in Guanxing actrually
     }
 };
 
