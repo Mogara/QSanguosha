@@ -348,14 +348,17 @@ void BattleArraySkill::summonFriends(ServerPlayer *player) const {
     player->summonFriends(array_type);
 }
 
-ArraySummonSkill::ArraySummonSkill(const QString &name, Card *card) 
-    : ZeroCardViewAsSkill(name), card(card)
+ArraySummonSkill::ArraySummonSkill(const QString &name) 
+    : ZeroCardViewAsSkill(name)
 {
 
 }
 
 const Card *ArraySummonSkill::viewAs() const {
-    return ArraySummonCard::Clone(card);
+    QString name = objectName();
+    name[0] = name[0].toUpper();
+    name += "Summon";
+    return Sanguosha->cloneSkillCard(name);
 }
 
 using namespace BattleArrayType;

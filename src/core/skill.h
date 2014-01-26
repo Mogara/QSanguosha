@@ -219,12 +219,10 @@ class ArraySummonSkill: public ZeroCardViewAsSkill {
 
 public:
 
-    ArraySummonSkill(const QString &name, Card *card);
+    ArraySummonSkill(const QString &name);
 
     const Card *viewAs() const;
     virtual bool isEnabledAtPlay(const Player *player) const;
-private:
-    Card *card;
 };
 
 class SPConvertSkill: public GameStartSkill {
