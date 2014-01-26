@@ -25,6 +25,35 @@ public:
     }
 };
 
+class GameRule_AskForArraySummon: public TriggerSkill {
+public:
+    GameRule_AskForArraySummon(): TriggerSkill("GameRule_AskForArraySummon") {
+        events << EventPhaseStart;
+        global = true;
+    }
+
+    virtual bool cost(TriggerEvent , Room *, ServerPlayer *player, QVariant &) const{
+        foreach(const Skill *skill, player->getVisibleSkillList()) {
+            if (!skill->inherits("BattleArraySkill")) continue;
+            const BattleArraySkill *baskill = qobject_cast<const BattleArraySkill *>(skill);
+            if (!player->askForSkillInvoke(objectName())) return false;
+            baskill->summonFriends(player);
+            player->showGeneral(player->inHeadSkills(skill->objectName()));
+            break;
+        }
+        return false;
+    }
+
+    virtual bool triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
+        if (player->getPhase() != Player::Start) return false;
+        foreach(const Skill *skill, player->getVisibleSkillList()) {
+            if (!skill->inherits("BattleArraySkill")) continue;
+            return qobject_cast<const BattleArraySkill *>(skill)->getViewAsSkill()->isEnabledAtPlay(player);
+        }
+        return false;
+    }
+};
+
 GameRule::GameRule(QObject *)
     : TriggerSkill("game_rule")
 {
@@ -45,9 +74,12 @@ GameRule::GameRule(QObject *)
            << StartJudge << FinishRetrial << FinishJudge
            << ChoiceMade << GeneralShown;
 
-    const Skill *skill = new GameRule_AskForGeneralShow;
     QList<const Skill *> list;
-    list << skill;
+    list << new GameRule_AskForGeneralShow;
+    list << new GameRule_AskForArraySummon;
+    foreach(const Skill *skill, list)
+        if (Sanguosha->getSkill(skill->objectName()))
+            list.removeOne(skill);
     Sanguosha->addSkills(list);
 }
 

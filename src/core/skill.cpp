@@ -341,7 +341,7 @@ bool GameStartSkill::effect(TriggerEvent, Room *, ServerPlayer *player, QVariant
 BattleArraySkill::BattleArraySkill(const QString &name, const BattleArrayType::ArrayType type)
     : TriggerSkill(name), array_type(type)
 {
-
+    view_as_skill = new ArraySummonSkill(objectName());
 }
 
 void BattleArraySkill::summonFriends(ServerPlayer *player) const {
@@ -358,7 +358,9 @@ const Card *ArraySummonSkill::viewAs() const {
     QString name = objectName();
     name[0] = name[0].toUpper();
     name += "Summon";
-    return Sanguosha->cloneSkillCard(name);
+    Card *card = Sanguosha->cloneSkillCard(name);
+    card->setShowSkill(objectName());
+    return card;
 }
 
 using namespace BattleArrayType;

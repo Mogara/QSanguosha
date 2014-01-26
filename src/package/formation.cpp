@@ -665,7 +665,6 @@ class Niaoxiang: public BattleArraySkill {
 public:
     Niaoxiang(): BattleArraySkill("niaoxiang", BattleArrayType::Siege) {
         events << TargetConfirmed;
-        view_as_skill = new ArraySummonSkill(objectName());
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
