@@ -527,7 +527,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             break;
         }
     case Death: {
-            if (player == data.value<DeathStruct>().who) {
+            if (player->getGeneral()->isLord() && player == data.value<DeathStruct>().who) {
                 foreach(ServerPlayer *p, room->getOtherPlayers(player, true)) {
                     if (p->getKingdom() == player->getKingdom())
                         room->setPlayerProperty(p, "role", "careerist");
@@ -792,7 +792,7 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
 
     if (!killer->isFriendWith(victim)) {
         int n = 1;
-        foreach(auto p, room->getOtherPlayers(killer)) {
+        foreach(ServerPlayer *p, room->getOtherPlayers(victim)) {
             if (victim->isFriendWith(p))
                 ++ n;
         }

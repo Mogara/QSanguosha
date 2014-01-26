@@ -506,7 +506,8 @@ public:
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *weiyan = damage.from;
-        weiyan->tag["InvokeKuanggu"] = weiyan->distanceTo(damage.to) <= 1;
+        if (weiyan)
+            weiyan->tag["InvokeKuanggu"] = weiyan->distanceTo(damage.to) <= 1;
 
         return false;
     }

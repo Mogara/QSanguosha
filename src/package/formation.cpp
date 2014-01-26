@@ -905,15 +905,12 @@ public:
                 ServerPlayer *hetaihou;
                 foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark(objectName()) > 0 && TriggerSkill::triggerable(p)) {
-                        hetaihou = p;
                         room->setPlayerMark(p, objectName(), 0);
-                        break;
+                        if (p->isAlive()) {
+                            ask_who = p;
+                            return true;
+                        }
                     }
-                }
-
-                if (hetaihou && hetaihou->isAlive()) {
-                    ask_who = hetaihou;
-                    return true;
                 }
             }
         }
