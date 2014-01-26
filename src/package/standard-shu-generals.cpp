@@ -782,7 +782,7 @@ SavageAssaultAvoid::SavageAssaultAvoid(const QString &avoid_skill): TriggerSkill
 }
 
 bool SavageAssaultAvoid::triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
-    if (!TriggerSkill::triggerable(player)) return false;
+    if (!player || !player->isAlive() || !player->hasSkill(avoid_skill)) return false;
     CardEffectStruct effect = data.value<CardEffectStruct>();
     if (effect.card->isKindOf("SavageAssault"))
         return true;
