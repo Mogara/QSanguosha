@@ -17,7 +17,7 @@ return {
 	["ziliang"] = "资粮",
 	[":ziliang"] = "<font color=\"aqua\"><b>副将技，</b></font>每当与你势力相同的一名角色受到伤害后，你可以将一张“田”交给该角色。",
 	
-	["#hcaohong"] = "魏之福将",
+	["#caohong"] = "魏之福将",
 	["caohong"] = "曹洪",
 	["illustrator:caohong"] = "YellowKiss", 
 	["huyuan"] = "护援",
@@ -59,7 +59,7 @@ return {
 	[":niaoxiang"] = "<font color=\"purple\"><b>阵法技，</b></font>在你为围攻角色的围攻关系中，每当围攻角色使用【杀】指定被围攻角色为目标后，该围攻角色将抵消此【杀】需使用的【闪】的数量改为2。",
 	
 	["#xusheng"] = "江东的铁壁",
-	["hxusheng"] = "徐盛",
+	["xusheng"] = "徐盛",
 	["illustrator:xusheng"] = "天信", 
 	["yicheng"] = "疑城",
 	[":yicheng"] = "每当与你势力相同的一名角色成为【杀】的目标后，你可以令该角色摸一张牌，然后其弃置一张牌。",
