@@ -1499,6 +1499,47 @@ bool ServerPlayer::askForGeneralShow(bool one) {
     return choice.startsWith("s");
 }
 
+bool ServerPlayer::inSiegeRelation(const ServerPlayer *teammate, const ServerPlayer *victim) const {
+    if (isFriendWith(victim) || !isFriendWith(teammate)) return false;
+    if (getNextAlive(2) == teammate && getNextAlive() == victim)
+        return true;
+    else if (getLastAlive(2) == teammate && getLastAlive() == victim)
+        return true;
+    else
+        return false;
+}
+
+QList<const ServerPlayer *> ServerPlayer::getFormation() const {
+    QList<const ServerPlayer *> teammates;
+    teammates << this;
+    int n = aliveCount();
+    int num = n;
+    for (int i = 1; i < n; ++ i) {
+        ServerPlayer *target = getNextAlive(i);
+        if (isFriendWith(target))
+            teammates << target;
+        else {
+            num = i;
+            break;
+        }
+    }
+
+    n -= num;
+    for (int i = 1; i < n; ++ i) {
+        ServerPlayer *target = getLastAlive(i);
+        if (isFriendWith(target))
+            teammates << target;
+        else break;
+    }
+
+    return teammates;
+}
+
+bool ServerPlayer::inFormationRalation(const ServerPlayer *teammate) const {
+    QList<const ServerPlayer *> teammates = getFormation();
+    return teammates.contains(teammate);
+}
+
 using namespace BattleArrayType;
 
 void ServerPlayer::summonFriends(const ArrayType type) const {
