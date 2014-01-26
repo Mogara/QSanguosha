@@ -90,8 +90,14 @@ public:
         if (player == NULL) return false;
         if (triggerEvent == TargetConfirmed) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if ((use.card->isKindOf("Slash") || use.card->isKindOf("Duel")) && TriggerSkill::triggerable(use.from))
+            if (use.card->isKindOf("Slash") && TriggerSkill::triggerable(use.from) && use.from == player)
                 return true;
+            if (use.card->isKindOf("Duel")) {
+                if (TriggerSkill::triggerable(use.from) && use.from == player)
+                    return true;
+                if (TriggerSkill::triggerable(player) && use.to.contains(player))
+                    return true;
+            }
         } else if (triggerEvent == CardFinished) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Duel")) {
