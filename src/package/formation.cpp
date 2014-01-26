@@ -355,7 +355,7 @@ public:
         bool next = true;
         ServerPlayer *next_p = caohong;
         while (next) {
-            next_p = next_p->getNextAlive();
+            next_p = qobject_cast<ServerPlayer *>(next_p->getNextAlive());
             if (next_p->isFriendWith(caohong) && !teammates.contains(next_p))
                 teammates << next_p;
             else
@@ -470,7 +470,7 @@ public:
         bool next = true;
         ServerPlayer *next_p = jiangwei;
         while (next) {
-            next_p = next_p->getNextAlive();
+            next_p = qobject_cast<ServerPlayer *>(next_p->getNextAlive());
             if (next_p->isFriendWith(jiangwei) && !teammates.contains(next_p))
                 teammates << next_p;
             else
@@ -622,10 +622,17 @@ public:
     }
 };
 
-class Niaoxiang: public TriggerSkill {
+NiaoxiangSummon::NiaoxiangSummon()
+    : ArraySummonCard("niaoxiang")
+{
+
+}
+
+class Niaoxiang: public BattleArraySkill {
 public:
-    Niaoxiang(): TriggerSkill("niaoxiang") {
+    Niaoxiang(): BattleArraySkill("niaoxiang", BattleArrayType::Siege) {
         events << TargetConfirmed;
+        view_as_skill = new ArraySummonSkill(objectName(), new NiaoxiangSummon);
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
@@ -634,7 +641,8 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Slash")) {
             if (!player->getNextAlive()->isFriendWith(player) && player->getNextAlive(2)->isFriendWith(player)) {
-                if ((use.from == player || use.from == player->getNextAlive(2)) && use.to.contains(player->getNext())) {
+                if ((use.from == player || use.from == qobject_cast<ServerPlayer *>(player->getNextAlive(2)))
+                    && use.to.contains(qobject_cast<ServerPlayer *>(player->getNext()))) {
                     QVariantList jink_list = use.from->tag["Jink_" + use.card->toString()].toList();
                     for (int i = 0; i < use.to.length(); i++) {
                         if (use.to.at(i) == player->getNext())
@@ -907,6 +915,7 @@ FormationPackage::FormationPackage()
     addMetaObject<HuyuanCard>();
     addMetaObject<TiaoxinCard>();
     addMetaObject<ShangyiCard>();
+    addMetaObject<NiaoxiangSummon>();
 
     skills << new Feiying;
 }

@@ -18,7 +18,7 @@ ServerPlayer::ServerPlayer(Room *room)
     : Player(room), m_isClientResponseReady(false), m_isWaitingReply(false),
       socket(NULL), room(room),
       ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL),
-      _m_phases_index(0), next(NULL), _m_clientResponse(Json::nullValue)
+      _m_phases_index(0), _m_clientResponse(Json::nullValue)
 {
     semas = new QSemaphore *[S_NUM_SEMAPHORES];
     for (int i = 0; i < S_NUM_SEMAPHORES; i++)
@@ -855,34 +855,9 @@ QList<ServerPlayer *> ServerPlayer::getVictims() const{
 }
 
 void ServerPlayer::setNext(ServerPlayer *next) {
-    this->next = next;
+    Player::setNext(next);
+    room->broadcastProperty(this, "next");
 }
-
-ServerPlayer *ServerPlayer::getNext() const{
-    return next;
-}
-
-ServerPlayer *ServerPlayer::getLast() const {
-    foreach(ServerPlayer *p, room->getPlayers())
-        if (p->next == this)
-            return p;
-    return NULL;
-}
-
-ServerPlayer *ServerPlayer::getNextAlive(int n) const{
-    bool hasAlive = (room->getAlivePlayers().length() > 0);
-    ServerPlayer *next = const_cast<ServerPlayer *>(this);
-    if (!hasAlive) return next;
-    for (int i = 0; i < n; i++) {
-        do next = next->next; while (next->isDead());
-    }
-    return next;
-}
-
-ServerPlayer *ServerPlayer::getLastAlive(int n) const {
-   return getNextAlive(aliveCount() - n);
-}
-
 
 int ServerPlayer::getGeneralMaxHp() const{
     int max_hp = 0;
@@ -1501,36 +1476,40 @@ bool ServerPlayer::askForGeneralShow(bool one) {
 
 using namespace BattleArrayType;
 
-void ServerPlayer::summonFriends(const ArrayType type) const {
+void ServerPlayer::summonFriends(const ArrayType type) {
     if (aliveCount() < 4) return;
     switch (type) {
     case Siege: {
-        if (isFriendWith(getNextAlive()) || isFriendWith(getLastAlive())) return;
+        if (isFriendWith(getNextAlive()) && isFriendWith(getLastAlive())) return;
         QString prompt = "SiegeSummon";
+        bool failed = true;
         if (!isFriendWith(getNextAlive())) {
-            ServerPlayer *target = getNextAlive(2);
+            ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(2));
             if (!target->hasShownOneGeneral()) {
                 if (!target->willBeFriendWith(this))
                     prompt += "!";
-                if (room->askForSkillInvoke(target, prompt))
-                    target->askForGeneralShow();
+                if (room->askForSkillInvoke(target, prompt) && target->askForGeneralShow())
+                    failed = false;
             }
         }
         if (!isFriendWith(getLastAlive())) {
-            ServerPlayer *target = getLastAlive(2);
+            ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(2));
             if (!target->hasShownOneGeneral()) {
                 if (!target->willBeFriendWith(this))
                     prompt += "!";
-                if (room->askForSkillInvoke(target, prompt))
-                    target->askForGeneralShow();
+                if (room->askForSkillInvoke(target, prompt) && target->askForGeneralShow() && failed)
+                    failed = false;
             }
         }
+        if (failed)
+            room->setPlayerFlag(this, "Global_SummonFailed");
         break;
     } case Formation: {
         int n = aliveCount();
         int asked = n;
+        bool failed = true;
         for (int i = 1; i < n; ++ i) {
-            ServerPlayer *target = getNextAlive(i);
+            ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(i));
             if (isFriendWith(target))
                 continue;
             else if (target->willBeFriendWith(this)) {
@@ -1541,7 +1520,7 @@ void ServerPlayer::summonFriends(const ArrayType type) const {
                    || !target->askForGeneralShow()) {
                    asked = i;
                    break;
-                }
+                } else if (failed) failed = false;
             } else {
                 asked = i;
                 break;
@@ -1550,7 +1529,7 @@ void ServerPlayer::summonFriends(const ArrayType type) const {
 
         n -= asked;
         for(int i = 1; i < n; ++ i) {
-            ServerPlayer *target = getLastAlive(i);
+            ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(i));
             if (isFriendWith(target))
                 continue;
             else {
@@ -1558,12 +1537,15 @@ void ServerPlayer::summonFriends(const ArrayType type) const {
                     QString prompt = "SiegeSummon";
                     if (!target->willBeFriendWith(this))
                         prompt += "!";
-                    if(room->askForSkillInvoke(target, prompt))
-                        target->askForGeneralShow();
+                    if(room->askForSkillInvoke(target, prompt) 
+                        && target->askForGeneralShow() && failed)
+                        failed = false;
                 }
                 break;
             }
         }
+        if (failed)
+            room->setPlayerFlag(this, "Global_SummonFailed");
         break;
                                   }
     }

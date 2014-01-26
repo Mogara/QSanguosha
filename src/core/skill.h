@@ -207,11 +207,24 @@ public:
 
     BattleArraySkill(const QString &name,const BattleArrayType::ArrayType type);
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const = 0;
-    virtual void summonFriends(const ServerPlayer *player) const;
+    virtual void summonFriends(ServerPlayer *player) const;
 
+    inline BattleArrayType::ArrayType getArrayType() const { return array_type; }
 private:
     BattleArrayType::ArrayType array_type;
+};
+
+class ArraySummonSkill: public ZeroCardViewAsSkill {
+    Q_OBJECT
+
+public:
+
+    ArraySummonSkill(const QString &name, Card *card);
+
+    const Card *viewAs() const;
+    virtual bool isEnabledAtPlay(const Player *player) const;
+private:
+    Card *card;
 };
 
 class SPConvertSkill: public GameStartSkill {

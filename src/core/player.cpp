@@ -1100,6 +1100,7 @@ bool Player::ownSkill(const QString skill_name) const {
 }
 
 bool Player::isFriendWith(const Player *player) const {
+    Q_ASSERT(player);
     if (this == player)
         return true;
 
@@ -1137,4 +1138,42 @@ bool Player::willBeFriendWith(const Player *player) const {
             return true;
     }
     return false;
+}
+
+void Player::setNext(Player *next) {
+    this->next = next->objectName();
+}
+
+void Player::setNext(QString next) {
+    this->next = next;
+}
+
+Player *Player::getNext() const {
+    return parent()->findChild<Player *>(next);
+}
+
+QString Player::getNextName() const {
+    return next;
+}
+
+Player *Player::getLast() const {
+    foreach(Player *p, parent()->findChildren<Player *>())
+        if (p->next == objectName())
+            return p;
+    return NULL;
+}
+
+Player *Player::getNextAlive(int n) const{
+    bool hasAlive = (aliveCount() > 0);
+    Player *next = const_cast<Player *>(this);
+    if (!hasAlive) return next;
+    for (int i = 0; i < n; i++) {
+        do next = parent()->findChild<Player *>(next->next); 
+        while (next->isDead());
+    }
+    return next;
+}
+
+Player *Player::getLastAlive(int n) const {
+   return getNextAlive(aliveCount() - n);
 }

@@ -54,6 +54,13 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class NiaoxiangSummon: public ArraySummonCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE NiaoxiangSummon();
+};
+
 class FormationPackage: public Package {
     Q_OBJECT
 

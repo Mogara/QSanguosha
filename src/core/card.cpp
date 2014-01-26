@@ -824,3 +824,16 @@ QString DummyCard::toString(bool hidden) const{
     return "$" + subcardString();
 }
 
+ArraySummonCard::ArraySummonCard(const QString &name) 
+    : SkillCard() 
+{
+    setObjectName(name);
+    target_fixed = true;
+    handling_method = Card::MethodNone;
+}
+
+void ArraySummonCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const{
+    const BattleArraySkill *skill = qobject_cast<const BattleArraySkill *>(Sanguosha->getTriggerSkill(objectName()));
+    if (skill) skill->summonFriends(source);
+}
+

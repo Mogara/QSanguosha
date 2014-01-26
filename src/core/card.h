@@ -180,6 +180,15 @@ protected:
     QString user_string;
 };
 
+class ArraySummonCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ArraySummonCard(const QString &name);
+    
+    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
 class DummyCard: public SkillCard {
     Q_OBJECT
 

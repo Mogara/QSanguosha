@@ -1206,7 +1206,7 @@ public:
 
 %extend Room {
     ServerPlayer *nextPlayer() const{
-        return $self->getCurrent()->getNextAlive();
+        return qobject_cast<ServerPlayer *>($self->getCurrent()->getNextAlive());
     }
     void output(const char *msg) {
         if(Config.value("DebugOutput", false).toBool())

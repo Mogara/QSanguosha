@@ -44,6 +44,8 @@ class Player: public QObject {
     Q_PROPERTY(bool general1_showed READ hasShownGeneral1 WRITE setGeneral1Showed)
     Q_PROPERTY(bool general2_showed READ hasShownGeneral2 WRITE setGeneral2Showed)
 
+    Q_PROPERTY(QString next READ getNextName WRITE setNext)
+
     Q_ENUMS(Phase)
     Q_ENUMS(Place)
     Q_ENUMS(Role)
@@ -249,6 +251,14 @@ public:
     bool isFriendWith(const Player *player) const;
     bool willBeFriendWith(const Player *player) const;
 
+    void setNext(Player *next);
+    void setNext(QString next);
+    Player *getNext() const;
+    QString getNextName() const;
+    Player *getLast() const;
+    Player *getNextAlive(int n = 1) const;
+    Player *getLastAlive(int n = 1) const;
+
     QVariantMap tag;
 
 protected:
@@ -283,6 +293,7 @@ private:
     bool chained;
     QList<int> judging_area;
     QHash<const Player *, int> fixed_distance;
+    QString next;
 
     QMap<Card::HandlingMethod, QStringList> card_limitation;
 

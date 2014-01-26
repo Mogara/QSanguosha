@@ -344,8 +344,64 @@ BattleArraySkill::BattleArraySkill(const QString &name, const BattleArrayType::A
 
 }
 
-void BattleArraySkill::summonFriends(const ServerPlayer *player) const {
+void BattleArraySkill::summonFriends(ServerPlayer *player) const {
     player->summonFriends(array_type);
+}
+
+ArraySummonSkill::ArraySummonSkill(const QString &name, Card *card) 
+    : ZeroCardViewAsSkill(name), card(card)
+{
+
+}
+
+const Card *ArraySummonSkill::viewAs() const {
+    return ArraySummonCard::Clone(card);
+}
+
+using namespace BattleArrayType;
+bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const {
+    if (player->hasFlag("Global_SummonFailed")) return false;
+    const BattleArraySkill *skill = qobject_cast<const BattleArraySkill *>(Sanguosha->getTriggerSkill(objectName()));
+    if (skill) {
+        ArrayType type = skill->getArrayType();
+        switch (type) {
+        case Siege: {
+            if (player->isFriendWith(player->getNextAlive()) 
+                && player->isFriendWith(player->getLastAlive())) 
+                return false;
+            if (!player->isFriendWith(player->getNextAlive()))
+                if (!player->getNextAlive(2)->hasShownOneGeneral())
+                    return true;
+            if (!player->isFriendWith(player->getLastAlive()))
+                return !player->getLastAlive(2)->hasShownOneGeneral();
+                    }
+                    break;
+        case Formation: {
+            int n = player->aliveCount();
+            int asked = n;
+            for (int i = 1; i < n; ++ i) {
+                Player *target = player->getNextAlive(i);
+                if (player->isFriendWith(target))
+                    continue;
+                else if (!target->hasShownOneGeneral())
+                    return true;
+                else {
+                    asked = i;
+                    break;
+                }
+            }
+            n -= asked;
+            for(int i = 1; i < n; ++ i) {
+                Player *target = player->getLastAlive(i);
+                if (player->isFriendWith(target))
+                    continue;
+                else return !target->hasShownOneGeneral();
+            }
+        }
+                        break;
+        }
+    }
+        return false;
 }
 
 SPConvertSkill::SPConvertSkill(const QString &from, const QString &to)

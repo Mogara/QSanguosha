@@ -91,10 +91,6 @@ public:
     void saveRecord(const QString &filename);
 
     void setNext(ServerPlayer *next);
-    ServerPlayer *getNext() const;
-    ServerPlayer *getLast() const;
-    ServerPlayer *getNextAlive(int n = 1) const;
-    ServerPlayer *getLastAlive(int n = 1) const;
 
     // 3v3 methods
     void addToSelected(const QString &general);
@@ -161,7 +157,7 @@ public:
     void disconnectSkillsFromOthers(bool head_skill = true);
     bool askForGeneralShow(bool one = true);
 
-    void summonFriends(const BattleArrayType::ArrayType type) const;
+    void summonFriends(const BattleArrayType::ArrayType type);
 
 protected:
     //Synchronization helpers
@@ -179,7 +175,6 @@ private:
     QList<Phase> phases;
     int _m_phases_index;
     QList<PhaseStruct> _m_phases_state;
-    ServerPlayer *next;
     QStringList selected; // 3v3 mode use only
     QDateTime test_time;
     QString m_clientResponseString;
