@@ -983,6 +983,21 @@ public:
     }
 };
 
+class Shouyue: public TriggerSkill{
+public:
+    Shouyue(): TriggerSkill("shouyue$"){
+        frequency = Compulsory;
+    }
+
+    virtual bool canPreshow() const {
+        return false;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        return false;
+    }
+};
+
 class Jizhao: public TriggerSkill{
 public:
     Jizhao(): TriggerSkill("jizhao"){
@@ -992,7 +1007,7 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
-        if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who))
+        if (!TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who))
             return false;
 
         if (player->getMark("@jizhao") == 0)
@@ -1073,7 +1088,7 @@ FormationPackage::FormationPackage()
 
     General *liubei = new General(this, "lord_liubei$", "shu", 4);
     liubei->addSkill(new Zhangwu);
-    liubei->addSkill(new Skill("shouyue$", Skill::Compulsory));
+    liubei->addSkill(new Shouyue);
     liubei->addSkill(new Jizhao);
     
     addMetaObject<JixiCard>();
