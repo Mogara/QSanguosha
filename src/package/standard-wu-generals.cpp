@@ -387,14 +387,14 @@ public:
     }
 };
 
-class DuoshiViewAsSkill: public OneCardViewAsSkill {
+class Duoshi: public OneCardViewAsSkill {
 public:
-    DuoshiViewAsSkill(): OneCardViewAsSkill("duoshi") {
+    Duoshi(): OneCardViewAsSkill("duoshi") {
         filter_pattern = ".|red|.|hand!";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getMark("duoshi") < 4;
+        return player->hasUsed("DuoshiAE") < 4;
     }
 
     virtual const Card *viewAs(const Card *originalcard) const{
@@ -403,26 +403,6 @@ public:
         await->setSkillName("duoshi");
         await->setShowSkill(objectName());
         return await;
-    }
-};
-
-class Duoshi: public TriggerSkill {
-public:
-    Duoshi():TriggerSkill("duoshi") {
-        events << CardUsed << EventPhaseStart;
-        view_as_skill = new DuoshiViewAsSkill;
-    }
-
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const {
-        if (!TriggerSkill::triggerable(player)) return false;
-        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Play)
-            room->setPlayerMark(player, "duoshi", 0);
-        else if (triggerEvent == CardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card && use.card->isKindOf("AwaitExhausted") && use.card->getSkillName() == "duoshi")
-                room->addPlayerMark(player, "duoshi");
-        }
-        return false;
     }
 };
 
