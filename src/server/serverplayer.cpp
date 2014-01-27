@@ -484,42 +484,16 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     const Card *card2;
 
-    //for tigerfly qiangbian
-
-    if (hasSkill("qiangbian")){
-        room->notifySkillInvoked(this, "qiangbian");
-        room->broadcastSkillInvoke("qiangbian");
-        card2 = Sanguosha->getCard(room->askForCardChosen(this, target, "h", "qiangbian"));
-        
-        LogMessage l2;
-        l2.type = "#qiangbianpd";
-        l2.from = this;
-        l2.to << target;
-        foreach(ServerPlayer *p, room->getOtherPlayers(target))
-            room->doNotify(p, S_COMMAND_LOG_SKILL, l2.toJsonValue());
-
-        LogMessage l;
-        l.type = "$qiangbianpd";
-        l.card_str = QString::number(card2->getId());
-        l.from = this;
-        l.to << target;
-        room->doNotify(target, S_COMMAND_LOG_SKILL, l.toJsonValue());
-
-        if (card1 == NULL)
-            card1 = room->askForPindian(this, this, target, reason);
-    }
-    else {
-        if (card1 == NULL) {
-            QList<const Card *> cards = room->askForPindianRace(this, target, reason);
-            card1 = cards.first();
-            card2 = cards.last();
-        } else {
-            if (card1->isVirtualCard()) {
-                int card_id = card1->getEffectiveId();
-                card1 = Sanguosha->getCard(card_id);
-            }
-            card2 = room->askForPindian(target, this, target, reason);
+    if (card1 == NULL) {
+        QList<const Card *> cards = room->askForPindianRace(this, target, reason);
+        card1 = cards.first();
+        card2 = cards.last();
+    } else {
+        if (card1->isVirtualCard()) {
+            int card_id = card1->getEffectiveId();
+            card1 = Sanguosha->getCard(card_id);
         }
+        card2 = room->askForPindian(target, this, target, reason);
     }
 
     if (card1 == NULL || card2 == NULL) return false;

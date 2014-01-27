@@ -16,7 +16,6 @@
 #include "SkinBank.h"
 #include "wind.h"
 #include "record-analysis.h"
-#include "mountainpackage.h"
 #include "jsonutils.h"
 
 #include <QPropertyAnimation>

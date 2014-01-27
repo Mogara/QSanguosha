@@ -986,7 +986,6 @@ public:
     }
 
     virtual void onDamaged(ServerPlayer *caopi, const DamageStruct &) const{
-        Room *room = caopi->getRoom();
         ServerPlayer *to = caopi->tag["fangzhu_invoke"].value<ServerPlayer *>();
         caopi->tag.remove("fangzhu_invoke");
         if (to) {
