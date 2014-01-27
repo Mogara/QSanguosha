@@ -1153,7 +1153,7 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *erzhang, QVariant &data, ServerPlayer * &ask_who) const{
-        if (!TriggerSkill::triggerable(erzhang)) return false;
+        if (!erzhang || !erzhang->isAlive() || !erzhang->hasSkill("guzheng")) return false;
         ServerPlayer *current = room->getCurrent();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
 
@@ -1239,7 +1239,7 @@ public:
         }
 
         QList<int> cards = cardsToGet + cardsOther;
-        if (erzhang->askForSkillInvoke("guzheng", cards.length()))
+        if (erzhang->askForSkillInvoke(objectName(), cards.length()))
             return true;
         else {
             erzhang->tag.remove("GuzhengToGet");
@@ -1279,7 +1279,7 @@ public:
 
         room->fillAG(cards, erzhang, cardsOther);
 
-        int to_back = room->askForAG(erzhang, cardsToGet, false, "guzheng");
+        int to_back = room->askForAG(erzhang, cardsToGet, false, objectName());
         player->obtainCard(Sanguosha->getCard(to_back));
 
         cards.removeOne(to_back);
@@ -1288,7 +1288,7 @@ public:
 
         DummyCard dummy(cards);
         room->obtainCard(erzhang, &dummy);
-        room->broadcastSkillInvoke("guzheng");
+        room->broadcastSkillInvoke(objectName());
 
         return false;
     }
