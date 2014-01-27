@@ -562,6 +562,8 @@ public:
                 }
         } else if (triggerEvent == DrawNCards)
             return player->getMark("hunshang_invoke") > 0;
+        else
+            return false;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
