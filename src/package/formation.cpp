@@ -500,7 +500,7 @@ public:
         log.card_str = IntList2StringList(guanxing).join("+");
         room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
 
-        room->askForGuanxing(player, guanxing, false);
+        room->askForGuanxing(player, guanxing, Room::GuanxingBothSides);
 
         return false;
     }

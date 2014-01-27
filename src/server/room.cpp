@@ -4876,41 +4876,56 @@ ServerPlayer *Room::getLord(const QString &kingdom /* = QString() */) const{
     return NULL;
 }
 
-void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only) {
+void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type) {
     QList<int> top_cards, bottom_cards;
     while (isPaused()) {}
     notifyMoveFocus(zhuge, S_COMMAND_SKILL_GUANXING);
 
     AI *ai = zhuge->getAI();
     if (ai) {
-        ai->askForGuanxing(cards, top_cards, bottom_cards, up_only);
-    } else if (up_only && cards.length() == 1) {
+        ai->askForGuanxing(cards, top_cards, bottom_cards, (int)guanxing_type);
+    } else if (guanxing_type == GuanxingUpOnly && cards.length() == 1) {
         top_cards = cards;
+    } else if (guanxing_type == GuanxingDownOnly && cards.length() == 1) {
+        bottom_cards = cards;
     } else {
         Json::Value guanxingArgs(Json::arrayValue);
         guanxingArgs[0] = toJsonArray(cards);
-        guanxingArgs[1] = up_only;
+        guanxingArgs[1] = (guanxing_type != GuanxingBothSides);
         bool success = doRequest(zhuge, S_COMMAND_SKILL_GUANXING, guanxingArgs, true);
         if (!success) {
-            foreach (int card_id, cards)
-                m_drawPile->prepend(card_id);
+            foreach (int card_id, cards) {
+                if (guanxing_type == GuanxingDownOnly)
+                    m_drawPile->append(card_id);
+                else
+                    m_drawPile->prepend(card_id);
+            }
             return;
         }
         Json::Value clientReply = zhuge->getClientReply();
         if (clientReply.isArray() && clientReply.size() == 2) {
             success &= tryParse(clientReply[0], top_cards);
             success &= tryParse(clientReply[1], bottom_cards);
+            if (guanxing_type == GuanxingDownOnly) {
+                bottom_cards = top_cards;
+                top_cards.clear();
+            }
         }
     }
 
     bool length_equal = top_cards.length() + bottom_cards.length() == cards.length();
     bool result_equal = top_cards.toSet() + bottom_cards.toSet() == cards.toSet();
     if (!length_equal || !result_equal) {
-        top_cards = cards;
-        bottom_cards.clear();
+        if (guanxing_type == GuanxingDownOnly) {
+            bottom_cards = cards;
+            top_cards.clear();
+        } else {
+            top_cards = cards;
+            bottom_cards.clear();
+        }
     }
 
-    if (!up_only) {
+    if (guanxing_type == GuanxingBothSides) {
         LogMessage log;
         log.type = "#GuanxingResult";
         log.from = zhuge;

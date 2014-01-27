@@ -212,7 +212,7 @@ public:
                     log.card_str = IntList2StringList(guanxing).join("+");
                     room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
 
-                    room->askForGuanxing(player, guanxing, false);
+                    room->askForGuanxing(player, guanxing, Room::GuanxingBothSides);
 
                     return false;
                 } else if (choice == "show_both_generals") {
@@ -235,7 +235,7 @@ public:
                     log.card_str = IntList2StringList(guanxing).join("+");
                     room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
 
-                    room->askForGuanxing(player, guanxing, false);
+                    room->askForGuanxing(player, guanxing, Room::GuanxingBothSides);
 
                     return false;
                 } else return true;
@@ -266,7 +266,7 @@ public:
         log.card_str = IntList2StringList(guanxing).join("+");
         room->doNotify(zhuge, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
 
-        room->askForGuanxing(zhuge, guanxing, false);
+        room->askForGuanxing(zhuge, guanxing, Room::GuanxingBothSides);
 
 
         return false;
