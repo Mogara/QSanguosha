@@ -39,7 +39,8 @@ RoleComboBox::RoleComboBox(QGraphicsItem *parent)
         items << new RoleComboBoxItem("lord", index, size);
     items << new RoleComboBoxItem("loyalist", index, size)
           << new RoleComboBoxItem("rebel", index, size)
-          << new RoleComboBoxItem("renegade", index, size);
+          << new RoleComboBoxItem("renegade", index, size)
+          << new RoleComboBoxItem("careerist", index, size);
     for (int i = 0; i < items.length(); i++) {
         RoleComboBoxItem *item = items.at(i);
         item->setPos(0, (i + 1) * (S_ROLE_COMBO_BOX_HEIGHT + S_ROLE_COMBO_BOX_GAP));
