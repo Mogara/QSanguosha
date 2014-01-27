@@ -1436,7 +1436,7 @@ void StandardPackage::addWuGenerals()
     erzhang->addSkill(new Zhijian);
     erzhang->addSkill(new GuzhengRecord);
     erzhang->addSkill(new Guzheng);
-    related_skills.insertMulti("#guzheng-record", "guzheng");
+    related_skills.insertMulti("guzheng", "#guzheng-record");
 
     General *dingfeng = new General(this, "dingfeng", "wu"); // WU 016
     dingfeng->addSkill(new Duanbing);
