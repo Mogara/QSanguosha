@@ -373,9 +373,9 @@ public:
     }
 };
 
-class Feiying: public DistanceSkill {
+class HeyiFeiying: public DistanceSkill {
 public:
-    Feiying(): DistanceSkill("feiying") {
+    HeyiFeiying(): DistanceSkill("#heyi_feiying") {
     }
 
     virtual int getCorrect(const Player *, const Player *to) const{
@@ -383,6 +383,17 @@ public:
             return 1;
         else
             return 0;
+    }
+};
+
+class Feiying: public TriggerSkill {
+public:
+    Feiying(): TriggerSkill("feiying") {
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(TriggerEvent , Room *, ServerPlayer *, QVariant &, ServerPlayer* &) const {
+        return false;
     }
 };
 
@@ -1029,6 +1040,8 @@ FormationPackage::FormationPackage()
     General *caohong = new General(this, "caohong", "wei"); // WEI 018
     caohong->addSkill(new Huyuan);
     caohong->addSkill(new Heyi);
+    caohong->addSkill(new HeyiFeiying);
+    related_skills.insertMulti("heyi", "#heyi_feiying");
 
     General *jiangwei = new General(this, "jiangwei", "shu"); // SHU 012 G
     jiangwei->addSkill(new Tiaoxin);

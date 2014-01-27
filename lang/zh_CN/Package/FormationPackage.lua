@@ -27,6 +27,7 @@ return {
 	["~huyuan"] = "选择一张装备牌→选择一名角色→点击确定",
 	["heyi"] = "鹤翼",
 	[":heyi"] = "<font color=\"purple\"><b>阵法技，</b></font>与你处于同一队列的其他角色视为拥有“飞影”。",
+	["#heyi_feiying"] = "飞影",
 	["feiying"] = "飞影",
 	[":feiying"] = "<font color=\"blue\"><b>锁定技，</b></font>其他角色与你的距离+1",
 	
