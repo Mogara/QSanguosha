@@ -41,6 +41,8 @@ class Player: public QObject {
     Q_PROPERTY(bool nude READ isNude)
     Q_PROPERTY(bool all_nude READ isAllNude)
 
+    Q_PROPERTY(QString actual_general1 READ getActualGeneral1Name WRITE setActualGeneral1Name)
+    Q_PROPERTY(QString actual_general2 READ getActualGeneral2Name WRITE setActualGeneral2Name)
     Q_PROPERTY(bool general1_showed READ hasShownGeneral1 WRITE setGeneral1Showed)
     Q_PROPERTY(bool general2_showed READ hasShownGeneral2 WRITE setGeneral2Showed)
 
@@ -240,6 +242,14 @@ public:
     bool hasShownSkill(const Skill *skill) const;
     void preshowSkill(const QString skill_name);
     bool inHeadSkills(const QString skill_name) const;
+    const General *getActualGeneral1() const;
+    const General *getActualGeneral2() const;
+    QString getActualGeneral1Name() const;
+    QString getActualGeneral2Name() const;
+    void setActualGeneral1(const General *general);
+    void setActualGeneral2(const General *general);
+    void setActualGeneral1Name(const QString &name);
+    void setActualGeneral2Name(const QString &name);
     bool hasShownGeneral1() const;
     bool hasShownGeneral2() const;
     void setGeneral1Showed(bool showed);
@@ -284,6 +294,8 @@ private:
     QString state;
     int seat;
     bool alive;
+
+    const General *actual_general1, *actual_general2;
 
     bool general1_showed;
     bool general2_showed;

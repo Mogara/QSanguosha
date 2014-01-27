@@ -1295,6 +1295,21 @@ public:
     }
 };
 
+class Duanbing: public TriggerSkill {
+public:
+    Duanbing(): TriggerSkill("duanbing") {
+        frequency = Compulsory;
+    }
+
+    virtual bool canPreshow() const {
+        return false;
+    }
+
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        return false;
+    }
+};
+
 FenxunCard::FenxunCard() {
 }
 
@@ -1425,7 +1440,7 @@ void StandardPackage::addWuGenerals()
     related_skills.insertMulti("#guzheng-record", "guzheng");
 
     General *dingfeng = new General(this, "dingfeng", "wu"); // WU 016
-    dingfeng->addSkill(new Skill("duanbing", Skill::Compulsory));
+    dingfeng->addSkill(new Duanbing);
     dingfeng->addSkill(new Fenxun);
 
     addMetaObject<ZhihengCard>();

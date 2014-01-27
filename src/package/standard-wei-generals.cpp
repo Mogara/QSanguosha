@@ -753,7 +753,7 @@ public:
     }
 
     virtual int getDistanceLimit(const Player *from, const Card *) const{
-        if (from->hasSkill("duanliang"))
+        if (from->hasShownSkill(Sanguosha->getSkill("duanliang")))
             return 1;
         else
             return 0;

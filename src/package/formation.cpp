@@ -334,7 +334,6 @@ class Heyi: public BattleArraySkill {
 public:
     Heyi(): BattleArraySkill("heyi", BattleArrayType::Formation) {
         events << GeneralShown << GeneralHidden << Death;
-        frequency = Compulsory;
     }
     
     virtual bool canPreshow() const{
@@ -347,37 +346,54 @@ public:
             DeathStruct death = data.value<DeathStruct>();
             if (death.who->hasSkill(objectName())) {
                 foreach (ServerPlayer *p, room->getAllPlayers())
-                    if (p->hasSkill("feiying"))
+                    if (p->getMark("feiying") > 0) {
+                        room->setPlayerMark(p, "feiying", 1);
                         room->detachSkillFromPlayer(p, "feiying", true);
+                    }
                 return false;
             }
         }
         foreach (ServerPlayer *p, room->getAllPlayers())
-            if (p->hasSkill("feiying"))
+            if (p->getMark("feiying") > 0) {
+                room->setPlayerMark(p, "feiying", 1);
                 room->detachSkillFromPlayer(p, "feiying", true);
+            }
 
         if (room->alivePlayerCount() < 4) return false;
         ServerPlayer *caohong = room->findPlayerBySkillName(objectName());
         if (!caohong) return false;
         QList<const ServerPlayer *> teammates = caohong->getFormation();
         foreach (ServerPlayer *p, room->getOtherPlayers(caohong))
-            if (teammates.contains(p))
+            if (teammates.contains(p)) {
+                room->setPlayerMark(p, "feiying", 1);
                 room->attachSkillToPlayer(p, "feiying");
+            }
 
         return false;
     }
 };
 
-class Feiying: public DistanceSkill {
+class HeyiFeiying: public DistanceSkill {
 public:
-    Feiying(): DistanceSkill("feiying") {
+    HeyiFeiying(): DistanceSkill("#heyi_feiying") {
     }
 
     virtual int getCorrect(const Player *, const Player *to) const{
-        if (to->hasSkill(objectName()))
+        if (to->getMark(objectName()) > 0)
             return 1;
         else
             return 0;
+    }
+};
+
+class Feiying: public TriggerSkill {
+public:
+    Feiying(): TriggerSkill("feiying") {
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(TriggerEvent , Room *, ServerPlayer *, QVariant &, ServerPlayer* &) const {
+        return false;
     }
 };
 
@@ -448,6 +464,7 @@ public:
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (player->askForSkillInvoke("guanxing")) {
             LogMessage log;
+            log.type = "#InvokeSkill";
             log.from = player;
             log.arg = "guanxing";
             room->sendLog(log);
@@ -1023,6 +1040,8 @@ FormationPackage::FormationPackage()
     General *caohong = new General(this, "caohong", "wei"); // WEI 018
     caohong->addSkill(new Huyuan);
     caohong->addSkill(new Heyi);
+    caohong->addSkill(new HeyiFeiying);
+    related_skills.insertMulti("heyi", "#heyi_feiying");
 
     General *jiangwei = new General(this, "jiangwei", "shu"); // SHU 012 G
     jiangwei->addSkill(new Tiaoxin);

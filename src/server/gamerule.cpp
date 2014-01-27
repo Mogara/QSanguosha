@@ -37,8 +37,8 @@ public:
             if (!skill->inherits("BattleArraySkill")) continue;
             const BattleArraySkill *baskill = qobject_cast<const BattleArraySkill *>(skill);
             if (!player->askForSkillInvoke(objectName())) return false;
-            baskill->summonFriends(player);
             player->showGeneral(player->inHeadSkills(skill->objectName()));
+            baskill->summonFriends(player);
             break;
         }
         return false;

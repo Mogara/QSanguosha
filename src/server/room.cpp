@@ -2517,7 +2517,10 @@ void Room::chooseGenerals() {
             if (player->getGeneral()) {
                 QString name = player->getGeneralName();
                 names.append(name);
+                player->setActualGeneral1Name(name);
                 player->setGeneralName("anjiang");
+                foreach (ServerPlayer *p, getPlayers())
+                    notifyProperty(p, player, "actual_general1", name);
                 foreach (ServerPlayer *p, getOtherPlayers(player))
                     notifyProperty(p, player, "general");
                 notifyProperty(player, player, "general", name);
@@ -2525,7 +2528,10 @@ void Room::chooseGenerals() {
             if (player->getGeneral2() && Config.Enable2ndGeneral) {
                 QString name = player->getGeneral2Name();
                 names.append(name);
+                player->setActualGeneral2Name(name);
                 player->setGeneral2Name("anjiang");
+                foreach (ServerPlayer *p, getPlayers())
+                    notifyProperty(p, player, "actual_general1", name);
                 foreach (ServerPlayer *p, getOtherPlayers(player))
                     notifyProperty(p, player, "general2");
                 notifyProperty(player, player, "general2", name);

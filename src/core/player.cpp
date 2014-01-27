@@ -12,6 +12,7 @@ Player::Player(QObject *parent)
       weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
       face_up(true), chained(false),
       role_shown(false), pile_open(QMap<QString, QStringList>()),
+      actual_general1(NULL), actual_general2(NULL),
       general1_showed(false), general2_showed(false),
       head_skills(QMap<QString, bool>()),deputy_skills(QMap<QString, bool>())
 {
@@ -1076,6 +1077,48 @@ bool Player::inHeadSkills(const QString skill_name) const {
     return head_skills.keys().contains(skill_name);
 }
 
+const General *Player::getActualGeneral1() const {
+    return actual_general1;
+}
+
+const General *Player::getActualGeneral2() const {
+    return actual_general2;
+}
+
+QString Player::getActualGeneral1Name() const {
+    if (actual_general1)
+        return actual_general1->objectName();
+    else
+        return QString();
+}
+
+QString Player::getActualGeneral2Name() const {
+    if (actual_general2)
+        return actual_general2->objectName();
+    else
+        return QString();
+}
+
+void Player::setActualGeneral1(const General *general) {
+    actual_general1 = general;
+}
+
+void Player::setActualGeneral2(const General *general) {
+    actual_general2 = general;
+}
+
+void Player::setActualGeneral1Name(const QString &name) {
+    const General *general = Sanguosha->getGeneral(name);
+    Q_ASSERT(general_name.isNull() || general_name.isEmpty() || general != NULL);
+    setActualGeneral1(general);
+}
+
+void Player::setActualGeneral2Name(const QString &name) {
+    const General *general = Sanguosha->getGeneral(name);
+    Q_ASSERT(general_name.isNull() || general_name.isEmpty() || general != NULL);
+    setActualGeneral2(general);
+}
+
 bool Player::hasShownGeneral1() const {
     return general1_showed;
 }
@@ -1131,14 +1174,14 @@ bool Player::isFriendWith(const Player *player) const {
 
 bool Player::willBeFriendWith(const Player *player) const {
     if (!hasShownOneGeneral()) {
-        QString kingdom = getGeneral()->getKingdom();
+        QString kingdom = getActualGeneral1()->getKingdom();
         int i = 1;
-        bool has_lord = isAlive() && getGeneral()->isLord();
+        bool has_lord = isAlive() && isLord();
 
         if (!has_lord) {
             foreach(auto p, getSiblings()) {
                 if (p->getKingdom() == kingdom) {
-                    if (p->isAlive() && p->getGeneral()->isLord()) {
+                    if (p->isAlive() && p->isLord()) {
                         has_lord = true;
                         break;
                     }
