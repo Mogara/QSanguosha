@@ -996,6 +996,21 @@ public:
     }
 };
 
+class Shouyue: public TriggerSkill{
+public:
+    Shouyue(): TriggerSkill("shouyue$"){
+        frequency = Compulsory;
+    }
+
+    virtual bool canPreshow() const {
+        return false;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        return false;
+    }
+};
+
 class Jizhao: public TriggerSkill{
 public:
     Jizhao(): TriggerSkill("jizhao"){
@@ -1005,7 +1020,7 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
-        if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who))
+        if (!TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who))
             return false;
 
         if (player->getMark("@jizhao") == 0)
@@ -1086,7 +1101,7 @@ FormationPackage::FormationPackage()
 
     General *liubei = new General(this, "lord_liubei$", "shu", 4);
     liubei->addSkill(new Zhangwu);
-    liubei->addSkill(new Skill("shouyue$", Skill::Compulsory));
+    liubei->addSkill(new Shouyue);
     liubei->addSkill(new Jizhao);
     
     addMetaObject<JixiCard>();
@@ -1105,6 +1120,7 @@ ADD_PACKAGE(Formation)
 
 
 DragonPhoenix::DragonPhoenix(): Weapon(Card::Spade, 2, 2){
+    setObjectName("DragonPhoenix");
 }
 
 class DragonPhoenixSkill: public WeaponSkill{
@@ -1117,7 +1133,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from == player && use.card->isKindOf("Slash")){
             foreach (ServerPlayer *to, use.to){
-                if (!to->isNude() && player->askForSkillInvoke(objectName(), QVariant::fromValue(to)))
+                if (to->canDiscard(to, "he") && player->askForSkillInvoke(objectName(), QVariant::fromValue(to)))
                     room->askForDiscard(to, objectName(), 1, 1, false, true, "@dragonphoenix-discard");
             }
         }
@@ -1149,6 +1165,11 @@ public:
         }
         if (dfowner == NULL)
             return false;
+
+        DeathStruct death = data.value<DeathStruct>();
+        DamageStruct *damage = death.damage;
+        if (!damage || !damage->from || damage->from != dfowner) return false;
+        if (!damage->card || !damage->card->isKindOf("Slash")) return false;
 
         QMap<QString, int> kingdoms;
         kingdoms["wei"] = 0;
