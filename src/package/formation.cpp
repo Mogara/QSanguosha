@@ -451,32 +451,29 @@ public:
     }
 
     virtual bool canPreshow() const {
-        return true;
-    }
-
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
-        if (!player || !player->isAlive() || !player->ownSkill(objectName())) return false;
-        if (triggerEvent == GameStart) return true;
-        else if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start)
-            return (!player->ownSkill("guanxing"));
         return false;
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart) {
-            if (player->hasSkill(objectName()) && player->askForSkillInvoke("guanxing")) {
-                LogMessage log;
-                log.from = player;
-                log.arg = "guanxing";
-                room->sendLog(log);
-                return true;
-            }
-        } else {
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        if (!TriggerSkill::triggerable(player)) return false;
+        if (triggerEvent == GameStart) {
             const Skill *guanxing = Sanguosha->getSkill("guanxing");
             if (guanxing != NULL && guanxing->inherits("TriggerSkill")){
                 const TriggerSkill *guanxing_trigger = qobject_cast<const TriggerSkill *>(guanxing);
                 room->getThread()->addTriggerSkill(guanxing_trigger);
             }
+        } else if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start)
+            return (!player->hasSkill("guanxing"));
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (player->askForSkillInvoke("guanxing")) {
+            LogMessage log;
+            log.from = player;
+            log.arg = "guanxing";
+            room->sendLog(log);
+            return true;
         }
 
         return false;   //skill is written in Guanxing actrually

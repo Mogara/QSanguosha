@@ -140,15 +140,18 @@ public:
         frequency = Frequent;
     }
 
+    virtual bool canPreshow() const {
+        return false;
+    }
+
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
-        return player && player->isAlive() && player->ownSkill(objectName()) && player->getPhase() == Player::Start;
+        return TriggerSkill::triggerable(player) && player->getPhase() == Player::Start;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (!player->ownSkill("yizhi"))
-            return player->hasSkill(objectName()) && player->askForSkillInvoke(objectName());
+        if (!player->hasSkill("yizhi"))
+            return player->askForSkillInvoke(objectName());
         // if it runs to here, it means player own both two skill;
-        if (!player->hasSkill("guanxing") && !player->hasSkill("yizhi")) return false;
         bool show1 = player->hasShownSkill(this);
         bool show2 = player->hasShownSkill(Sanguosha->getSkill("yizhi"));
         if (!show1 && !show2) {
@@ -1240,6 +1243,10 @@ class Shenzhi: public PhaseChangeSkill {
 public:
     Shenzhi(): PhaseChangeSkill("shenzhi") {
 
+    }
+
+    virtual bool canPreshow() const {
+        return false;
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{

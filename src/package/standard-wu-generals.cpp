@@ -394,7 +394,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->hasUsed("DuoshiAE") < 4;
+        return player->usedTimes("DuoshiAE") < 4;
     }
 
     virtual const Card *viewAs(const Card *originalcard) const{
@@ -489,6 +489,10 @@ public:
 class Yinghun: public PhaseChangeSkill {
 public:
     Yinghun(): PhaseChangeSkill("yinghun") {
+    }
+
+    virtual bool canPreshow() const {
+        return false;
     }
 
     virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who) const{
