@@ -1550,8 +1550,8 @@ void ServerPlayer::summonFriends(const ArrayType type) {
             ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(i));
             if (isFriendWith(target))
                 continue;
-            else if (target->willBeFriendWith(this)) {
-                QString prompt = "SiegeSummon";
+            else if (!target->hasShownOneGeneral()) {
+                QString prompt = "FormationSummon";
                 if (!target->willBeFriendWith(this))
                     prompt += "!";
                 if(!room->askForSkillInvoke(target, prompt) 

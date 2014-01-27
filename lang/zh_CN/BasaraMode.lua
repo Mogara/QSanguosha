@@ -7,6 +7,8 @@ return
 	["#BasaraConceal"] = "%from 暗置了武将，主将为 %arg，副将为 %arg2",
 	["GameRule_AskForGeneralShow"] = "展示武将",
 	["GameRule_AskForArraySummon"] = "阵法召唤",
+	["SiegeSummon"] = "响应围攻",
+	["FormationSummon"] = "响应队列",
 	["TriggerOrder"] = "触发顺序",
 	["trigger_none"] = "不发动",
 	["anjiang"] = "暗将",

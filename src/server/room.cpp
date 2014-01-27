@@ -2522,14 +2522,17 @@ void Room::chooseGenerals() {
             QStringList names;
             if (player->getGeneral()) {
                 QString name = player->getGeneralName();
+                QString role = BasaraMode::getMappedRole(player->getGeneral()->getKingdom());
                 names.append(name);
                 player->setActualGeneral1Name(name);
+                player->setRole(role);
                 player->setGeneralName("anjiang");
                 foreach (ServerPlayer *p, getPlayers())
                     notifyProperty(p, player, "actual_general1", name);
                 foreach (ServerPlayer *p, getOtherPlayers(player))
                     notifyProperty(p, player, "general");
                 notifyProperty(player, player, "general", name);
+                notifyProperty(player, player, "role", role);
             }
             if (player->getGeneral2() && Config.Enable2ndGeneral) {
                 QString name = player->getGeneral2Name();
