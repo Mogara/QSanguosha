@@ -565,7 +565,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
     bool broken = false;
     QList<const TriggerSkill *> will_trigger;
-    QList<const TriggerSkill *> triggerable_tested;
+    QSet<const TriggerSkill *> triggerable_tested;
     auto trigger_who = QMap<ServerPlayer *, QList<const TriggerSkill *>>();
 
     try {
@@ -587,21 +587,22 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
         qStableSort(skills.begin(), skills.end(), CompareByPriority);
 
         do {
+            trigger_who.clear();
             for (int i = 0; i < skills.size(); i++) {
                 const TriggerSkill *skill = skills[i];
-                triggerable_tested.append(skill);
                 ServerPlayer *ask_who = target;
                 if (!triggered.contains(skill) && skill->triggerable(triggerEvent, room, target, data, ask_who)) {
                     while (room->isPaused()) {}
-                    triggered.append(skill);
-
                     if (will_trigger.isEmpty() 
                         || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority()) {
                         will_trigger.append(skill);
                         trigger_who[ask_who].append(skill);
                     } else if(skill->getDynamicPriority() != will_trigger.last()->getDynamicPriority())
                         break;
+
+                    triggered.append(skill);
                 }
+                triggerable_tested << skill;
             }
 
             if (!will_trigger.isEmpty()) {
@@ -642,7 +643,9 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                     if (broken) break;
                 }
             }
-        } while (skills.length() != triggerable_tested.length());
+            if (broken) break;
+            
+        } while (skills.length() != triggerable_tested.size());
 
         if (target) {
             foreach (AI *ai, room->ais)
