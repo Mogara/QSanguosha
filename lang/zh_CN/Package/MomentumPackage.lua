@@ -18,7 +18,7 @@ return {
 	[":hengjiang"] = "每当你受到1点伤害后，你可以将“威”标记补至1个，然后当前回合角色于此回合内手牌上限-1，若如此做，此回合结束时，若你有“威”标记且该角色未于此回合的弃牌阶段内弃置过牌，你弃此标记，然后摸一张牌。",
 
 	["#madai"] = "临危受命",
-	["madai"] = "马岱"
+	["madai"] = "马岱",
 	["illustrator:madai"] = "Thinking",
 	["mashu_madai"] = "马术",
 	[":mashu_madai"] = "<font color=\"blue\"><b>锁定技，</b></font>你与其他角色的距离-1。",
@@ -68,7 +68,7 @@ return {
 	["benghuai"] = "崩坏",
 	[":benghuai"] = "<font color=\"blue\"><b>锁定技，</b></font>结束阶段开始时，若你不是体力值最小的角色，你选择一项：1.失去1点体力；2.减1点体力上限。",
 
-	["#zhangren"] = "张任",
+	["#zhangren"] = "索命神射",
 	["zhangren"] = "张任",
 	["illustrator:zhangren"] = "DH",
 	["chuanxin"] = "穿心",
