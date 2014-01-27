@@ -255,7 +255,7 @@ void QSanSkillButton::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     QPointF point = event->pos();
     if (!insideButton(point)) return;
 
-    if (_m_skillType = S_SKILL_COMPULSORY)
+    if (_m_skillType == S_SKILL_COMPULSORY)
         return;
     else
         QSanButton::mousePressEvent(event);
