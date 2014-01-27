@@ -927,6 +927,8 @@ public:
                     && (move.to != player || (move.to_place != Player::PlaceHand && move.to_place != Player::PlaceEquip && move.to_place != Player::DrawPile)))
                 return true;
         }
+
+        return false;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -978,6 +980,8 @@ public:
         DyingStruct dying = data.value<DyingStruct>();
         if (dying.who != player)
             return false;
+
+        return true;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
