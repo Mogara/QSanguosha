@@ -1550,7 +1550,7 @@ public:
                     }
                 if (players.isEmpty())
                     return false;
-                room->askForUseCard(player, "@@Triblade", "@triblade");
+                room->askForUseCard(player, "@@Triblade", "@Triblade");
         }
 
         foreach(ServerPlayer *p, room->getAllPlayers())
