@@ -1014,6 +1014,7 @@ public:
 
 class Room: public QThread {
 public:
+    enum GuanxingType { GuanxingUpOnly = 1, GuanxingBothSides = 0, GuanxingDownOnly = -1 };
     explicit Room(QObject *parent, const char *mode);
     ServerPlayer *addSocket(ClientSocket *socket);
     bool isFull() const;
@@ -1068,7 +1069,7 @@ public:
     void sendJudgeResult(const JudgeStar judge);
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord() const;
-    void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, bool up_only);
+    void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides);
     int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids = QList<int>(), const char *skill_name = "gongxin");
     int drawCard();
     void fillAG(const QList<int> &card_ids, ServerPlayer *who = NULL, const QList<int> &disabled_ids = QList<int>());
