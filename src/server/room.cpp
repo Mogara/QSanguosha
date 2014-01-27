@@ -1303,6 +1303,11 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             else
                 broadcastResetCard(getPlayers(), card->getEffectiveId());
         }
+        
+        QString skill_name = card->showSkill();
+        if (!skill_name.isNull() && player->ownSkill(skill_name)
+            && !player->hasShownSkill(Sanguosha->getSkill(skill_name)))
+            player->showGeneral(player->inHeadSkills(skill_name));
 
         if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {
             LogMessage log;

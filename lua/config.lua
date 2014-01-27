@@ -17,6 +17,7 @@ config = {
 
 		"Standard",
 		"Formation",
+		"Momentum",
 		"Test"
 	},
 

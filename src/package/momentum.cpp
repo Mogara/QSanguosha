@@ -201,7 +201,7 @@ public:
         return room->askForSkillInvoke(target, objectName());
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data) const{
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data) const{
         room->broadcastSkillInvoke(objectName());
 
         JudgeStruct judge;
@@ -299,7 +299,7 @@ public:
         view_as_skill = new GuixiuViewAsSkill;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         if (player->getMark("guixiu") >= 1 && player->getPhase() == Player::Start
             && room->askForSkillInvoke(player, objectName())) {
             room->broadcastSkillInvoke(objectName(), 1);
@@ -364,7 +364,7 @@ public:
         events << GameStart << EventAcquireSkill;
     }
 
-    virtual bool trigger(TriggerEvent, Room *room, ServerPlayer *, QVariant &) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &) const{
         room->getThread()->addTriggerSkill(Sanguosha->getTriggerSkill("yongjue"));
         return false;
     }
@@ -380,7 +380,7 @@ public:
         return target != NULL;
     }
 
-    virtual bool trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from->getPhase() == Player::Play && use.from->getMark(objectName()) == 0) {
