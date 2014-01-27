@@ -965,6 +965,119 @@ public:
     }
 };
 
+
+class Zhangwu: public TriggerSkill{
+public:
+    Zhangwu(): TriggerSkill("zhangwu"){
+        events << CardsMoveOneTime << BeforeCardsMove;
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        if (!TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who))
+            return false;
+
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        if (move.to_place == Player::DrawPile)
+            return false;
+        int fldfid = -1;
+        foreach (int id, move.card_ids){
+            if (Sanguosha->getCard(id)->isKindOf("DragonPhoenix")){
+                fldfid = id;
+                break;
+            }
+        }
+
+        if (fldfid == -1)
+            return false;
+
+        if (triggerEvent == CardsMoveOneTime){
+            if (move.to_place == Player::DiscardPile || (move.to_place == Player::PlaceEquip && move.to != player))
+                return true;
+        }
+        else if (triggerEvent == BeforeCardsMove){
+            if ((move.from == player && (move.from_places[move.card_ids.indexOf(fldfid)] == Player::PlaceHand || move.from_places[move.card_ids.indexOf(fldfid)] == Player::PlaceEquip))
+                    && (move.to != player || (move.to_place != Player::PlaceHand && move.to_place != Player::PlaceEquip && move.to_place != Player::DrawPile)))
+                return true;
+        }
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        return player->hasShownSkill(this) ? true : player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        int fldfid = -1;
+        foreach (int id, move.card_ids){
+            if (Sanguosha->getCard(id)->isKindOf("DragonPhoenix")){
+                fldfid = id;
+                break;
+            }
+        }
+
+        if (triggerEvent == CardsMoveOneTime){
+            player->obtainCard(Sanguosha->getCard(fldfid));
+        }
+        else {
+            room->showCard(player, fldfid);
+            move.from_places.removeAt(move.card_ids.indexOf(fldfid));
+            move.card_ids.removeOne(fldfid);
+            data = QVariant::fromValue(move);
+            QList<int> to_move;
+            to_move << fldfid;
+            room->moveCardsToEndOfDrawpile(to_move);
+            room->drawCards(player, 2);
+        }
+        return false;
+    }
+};
+
+class Jizhao: public TriggerSkill{
+public:
+    Jizhao(): TriggerSkill("jizhao"){
+        events << AskForPeaches;
+        frequency = Limited;
+        limit_mark = "@jizhao";
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who))
+            return false;
+
+        if (player->getMark("@jizhao") == 0)
+            return false;
+
+        DyingStruct dying = data.value<DyingStruct>();
+        if (dying.who != player)
+            return false;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (player->askForSkillInvoke(objectName(), data)){
+            player->loseMark(limit_mark);
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
+        if (player->getHandcardNum() < player->getMaxHp())
+            room->drawCards(player, player->getMaxHp() - player->getHandcardNum());
+
+        if (player->getHp() < 2){
+            RecoverStruct rec;
+            rec.recover = 2 - player->getHp();
+            rec.who = player;
+            room->recover(player, rec);
+        }
+
+        room->handleAcquireDetachSkills(player, "-shouyue|rende");
+        return false;
+    }
+};
+
+
 FormationPackage::FormationPackage()
     : Package("formation")
 {
@@ -1003,6 +1116,11 @@ FormationPackage::FormationPackage()
     General *hetaihou = new General(this, "hetaihou", "qun", 3, false); // QUN 020
     hetaihou->addSkill(new Zhendu);
     hetaihou->addSkill(new Qiluan); 
+
+    General *liubei = new General(this, "lord_liubei$", "shu", 4);
+    liubei->addSkill(new Zhangwu);
+    liubei->addSkill(new Skill("shouyue$", Skill::Compulsory));
+    liubei->addSkill(new Jizhao);
     
     addMetaObject<JixiCard>();
     addMetaObject<JixiSnatchCard>();
@@ -1017,3 +1135,144 @@ FormationPackage::FormationPackage()
 }
 
 ADD_PACKAGE(Formation)
+
+
+DragonPhoenix::DragonPhoenix(): Weapon(Card::Spade, 2, 2){
+}
+
+class DragonPhoenixSkill: public WeaponSkill{
+public:
+    DragonPhoenixSkill(): WeaponSkill("DragonPhoenix"){
+        events << TargetConfirmed;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from == player && use.card->isKindOf("Slash")){
+            foreach (ServerPlayer *to, use.to){
+                if (!to->isNude() && player->askForSkillInvoke(objectName(), QVariant::fromValue(to)))
+                    room->askForDiscard(to, objectName(), 1, 1, false, true, "@dragonphoenix-discard");
+            }
+        }
+        return false;
+    }
+};
+
+class DragonPhoenixSkill2: public WeaponSkill{
+public:
+    DragonPhoenixSkill2(): WeaponSkill("#DragonPhoenix"){
+        events << BuryVictim;
+    }
+
+    virtual int getPriority() const{
+        return -4;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *dfowner = NULL;
+        foreach (ServerPlayer *p, room->getAlivePlayers()){
+            if (WeaponSkill::triggerable(p)){
+                dfowner = p;
+                break;
+            }
+        }
+        if (dfowner == NULL)
+            return false;
+
+        QMap<QString, int> kingdoms;
+        kingdoms["wei"] = 0;
+        kingdoms["shu"] = 0;
+        kingdoms["wu"] = 0;
+        kingdoms["qun"] = 0;
+        kingdoms["god"] = 0;
+
+        foreach (ServerPlayer *p, room->getPlayers()){
+            kingdoms[p->getKingdom()] += 1;
+        }
+
+        kingdoms["god"] = 2147483647;
+
+        QString kingdom_least = "god";
+
+        foreach (QString kingdom, kingdoms.keys()){
+            if (kingdom == "god")
+                continue;
+
+            if (kingdoms[kingdom] < kingdoms[kingdom_least])
+                kingdom_least = kingdom;
+        }
+
+        if (dfowner->getKingdom() != kingdom_least)
+            return false;
+
+        QStringList generals = Sanguosha->getLimitedGeneralNames();
+        QStringList avaliable_generals;
+
+        foreach (QString general, generals){
+            if (Sanguosha->getGeneral(general)->getKingdom() != dfowner->getKingdom())
+                continue;
+
+            bool continue_flag = false;
+            foreach (ServerPlayer *p, room->getAlivePlayers()){
+                QStringList generals_of_player = room->getTag(p->objectName()).toStringList();
+                if (generals_of_player.contains(general)){
+                    continue_flag = true;
+                    break;
+                }
+            }
+
+            if (continue_flag)
+                continue;
+
+            avaliable_generals << general;
+        }
+
+        if (avaliable_generals.isEmpty())
+            return false;
+
+
+        if (room->askForSkillInvoke(dfowner, objectName(), data) && room->askForSkillInvoke(player, objectName(), "revive")){
+            QString to_change;
+            AI *ai = player->getAI();
+            if (ai)
+                to_change = room->askForChoice(player, objectName(), avaliable_generals.join("+"));
+            else
+                to_change = room->askForGeneral(player, avaliable_generals);
+
+            if (!to_change.isEmpty()){
+                QStringList change_list;
+                change_list << to_change;
+                if (Sanguosha->getGeneral(room->getTag(player->objectName()).toStringList()[1])->isMale())
+                    change_list << "sujiang";
+                else
+                    change_list << "sujiangf";
+
+                int maxhp = player->getMaxHp();
+                room->changeHero(player, to_change, false, false, false, true);
+                room->changeHero(player, change_list[1], false, false, true, false);
+                room->setPlayerProperty(player, "maxhp", maxhp);
+
+                room->revivePlayer(player);
+                room->setPlayerProperty(player, "hp", 2);
+                room->setTag(player->objectName(), change_list);
+            }
+        }
+        return false;
+    }
+};
+
+
+FormationEquipPackage::FormationEquipPackage(): Package("formation_equip", CardPack){
+    DragonPhoenix *dp = new DragonPhoenix();
+    dp->setParent(this);
+
+    skills << new DragonPhoenixSkill << new DragonPhoenixSkill2;
+    related_skills.insertMulti("DragonPhoenix", "#DragonPhoenix");
+}
+
+ADD_PACKAGE(FormationEquip)
+

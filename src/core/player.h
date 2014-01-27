@@ -230,6 +230,7 @@ public:
     // just for convenience
     void addQinggangTag(const Card *card);
     void removeQinggangTag(const Card *card);
+    const Player *getLord() const; // a small function put here, simple but useful
 
     void copyFrom(Player *p);
 

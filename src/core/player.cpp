@@ -173,7 +173,14 @@ int Player::getAttackRange(bool include_weapon) const{
             six_swords_effect = true;
     }
 
-    return qMax(original_range, weapon_range) + (six_swords_effect ? 1 : 0);
+    bool liegong_lord_effect = false;
+    if (hasSkill("liegong")){
+        const Player *lord = getLord();
+        if (lord != NULL && lord->hasSkill("shouyue"))
+            liegong_lord_effect = true;
+    }
+
+    return qMax(original_range, weapon_range) + (six_swords_effect ? 1 : 0) + (liegong_lord_effect ? 1 : 0);
 }
 
 bool Player::inMyAttackRange(const Player *other) const{
@@ -301,7 +308,7 @@ const General *Player::getGeneral() const{
 }
 
 bool Player::isLord() const{
-    return getRole() == "lord"; //to be fixed
+    return getLord() == this;
 }
 
 bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
@@ -984,6 +991,17 @@ void Player::removeQinggangTag(const Card *card) {
         qinggang.removeOne(card->toString());
         this->tag["Qinggang"] = qinggang;
     }
+}
+
+const Player *Player::getLord() const{
+    QList<const Player *> sib = getAliveSiblings();
+    sib << this;
+    foreach(const Player *p, sib){
+        if (p->getGeneral()->isLord() && p->getKingdom() == kingdom)
+            return p;
+    }
+
+    return NULL;
 }
 
 void Player::copyFrom(Player *p) {

@@ -3848,6 +3848,89 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
     }
 }
 
+void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
+    QList<CardsMoveStruct> moves;
+    CardsMoveStruct move(card_ids, NULL, Player::DrawPile, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
+    moves << move;
+
+    QList<CardsMoveStruct> cards_moves = _breakDownCardMoves(moves);
+
+    QList<CardsMoveOneTimeStruct> moveOneTimes = _mergeMoves(cards_moves);
+    foreach (ServerPlayer *player, getAllPlayers()) {
+        int i = 0;
+        foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
+            if (moveOneTime.card_ids.size() == 0) continue;
+            QVariant data = QVariant::fromValue(moveOneTime);
+            thread->trigger(BeforeCardsMove, this, player, data);
+            moveOneTime = data.value<CardsMoveOneTimeStruct>();
+            moveOneTimes[i] = moveOneTime;
+            i++;
+        }
+    }
+    cards_moves = _separateMoves(moveOneTimes);
+
+    notifyMoveCards(true, cards_moves, false);
+    // First, process remove card
+    for (int i = 0; i < cards_moves.size(); i++) {
+        CardsMoveStruct &cards_move = cards_moves[i];
+        for (int j = 0; j < cards_move.card_ids.size(); j++) {
+            int card_id = cards_move.card_ids[j];
+            const Card *card = Sanguosha->getCard(card_id);
+
+            if (cards_move.from) // Hand/Equip/Judge
+                cards_move.from->removeCard(card, cards_move.from_place);
+
+            switch (cards_move.from_place) {
+            case Player::DiscardPile: m_discardPile->removeOne(card_id); break;
+            case Player::DrawPile: m_drawPile->removeOne(card_id); break;
+            case Player::PlaceSpecial: table_cards.removeOne(card_id); break;
+            default:
+                break;
+            }
+        }
+        if (cards_move.from_place == Player::DrawPile)
+            doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
+    }
+
+    foreach (CardsMoveStruct move, cards_moves)
+        updateCardsOnLose(move);
+
+    for (int i = 0; i < cards_moves.size(); i++) {
+        CardsMoveStruct &cards_move = cards_moves[i];
+        for (int j = 0; j < cards_move.card_ids.size(); j++) {
+            setCardMapping(cards_move.card_ids[j], (ServerPlayer *)cards_move.to, cards_move.to_place);
+        }
+    }
+    foreach (CardsMoveStruct move, cards_moves)
+        updateCardsOnGet(move);
+    notifyMoveCards(false, cards_moves, false);
+
+    // Now, process add cards
+    for (int i = 0; i < cards_moves.size(); i++) {
+        CardsMoveStruct &cards_move = cards_moves[i];
+        for (int j = 0; j < cards_move.card_ids.size(); j++) {
+            int card_id = cards_move.card_ids[j];
+            const Card *card = Sanguosha->getCard(card_id);
+            card->setFlags("-visible");
+            if (cards_move.to) // Hand/Equip/Judge
+                cards_move.to->addCard(card, cards_move.to_place);
+
+            m_drawPile->append(card_id);
+            doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
+        }
+    }
+
+    //trigger event
+    moveOneTimes = _mergeMoves(cards_moves);
+    foreach (ServerPlayer *player, getAllPlayers()) {
+        foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
+            if (moveOneTime.card_ids.size() == 0) continue;
+            QVariant data = QVariant::fromValue(moveOneTime);
+            thread->trigger(CardsMoveOneTime, this, player, data);
+        }
+    }
+}
+
 QList<CardsMoveStruct> Room::_breakDownCardMoves(QList<CardsMoveStruct> &cards_moves) {
     QList<CardsMoveStruct> all_sub_moves;
     for (int i = 0; i < cards_moves.size(); i++) {
@@ -4767,15 +4850,15 @@ Player::Place Room::getCardPlace(int card_id) const{
     return place_map.value(card_id);
 }
 
-ServerPlayer *Room::getLord() const{
-    ServerPlayer *the_lord = m_players.first();
-    if (the_lord->getRole() == "lord")
-        return the_lord;
+ServerPlayer *Room::getLord(const QString &kingdom /* = QString() */) const{
+    if (kingdom.isEmpty())
+        return NULL;
 
     foreach (ServerPlayer *player, m_players) {
-        if (player->getRole() == "lord")
+        if (player->getGeneral()->isLord() && player->isAlive() && player->getKingdom() == kingdom)
             return player;
     }
+
 
     return NULL;
 }

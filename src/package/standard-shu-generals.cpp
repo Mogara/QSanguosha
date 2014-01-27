@@ -100,8 +100,10 @@ public:
     }
 
     virtual bool viewFilter(const Card *card) const{
-        if (!card->isRed())
-            return false;
+        const Player *lord = Self->getLord();
+        if (lord == NULL || !lord->hasSkill("shouyue"))
+            if (!card->isRed())
+                return false;
 
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             Slash *slash = new Slash(Card::SuitToBeDecided, -1);
@@ -131,6 +133,52 @@ public:
             return 1000;
         else
             return 0;
+    }
+};
+
+class PaoxiaoArmorNullificaion: public TriggerSkill{
+public:
+    PaoxiaoArmorNullificaion(): TriggerSkill("#paoxiao"){
+        events << TargetConfirmed;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        if (!TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who))
+            return false;
+
+        ServerPlayer *lord = room->getLord(player->getKingdom());
+        if (lord != NULL && lord->hasSkill("shouyue")){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.card->isKindOf("Slash") && use.from == player){
+                foreach (ServerPlayer *p, use.to.toSet()){
+                    if (p->getMark("Equips_of_Others_Nullified_to_You") == 0)
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (player->hasShownSkill(this)) 
+            return true;
+        else {
+            player->tag["paoxiao_use"] = data;
+            bool invoke = player->askForSkillInvoke("paoxiao", "armor_nullify");
+            player->tag.remove("paoxiao_use");
+            return invoke;
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        foreach (ServerPlayer *p, use.to.toSet()){
+            if (p->getMark("Equips_of_Others_Nullified_to_You") == 0)
+                p->addQinggangTag(use.card);
+        }
+        return false;
     }
 };
 
@@ -262,9 +310,9 @@ public:
 };
 
 
-class Longdan: public OneCardViewAsSkill {
+class LongdanVS: public OneCardViewAsSkill {
 public:
-    Longdan(): OneCardViewAsSkill("longdan") {
+    LongdanVS(): OneCardViewAsSkill("longdan") {
     }
 
     virtual bool viewFilter(const Card *to_select) const{
@@ -310,6 +358,42 @@ public:
             return slash;
         } else
             return NULL;
+    }
+};
+
+class Longdan: public TriggerSkill{
+public:
+    Longdan(): TriggerSkill("longdan"){
+        view_as_skill = new LongdanVS;
+        events << CardUsed << CardResponded;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        if (!TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who))
+            return false;
+
+        ServerPlayer *lord = room->getLord(player->getKingdom());
+        if (lord != NULL && lord->hasSkill("shouyue")){
+            const Card *card = NULL;
+            if (triggerEvent == CardUsed)
+                card = data.value<CardUseStruct>().card;
+            else
+                card = data.value<CardResponseStruct>().m_card;
+
+            if (card != NULL && card->getSkillName() == "longdan")
+                return true;
+        }
+        
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        return true;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        player->drawCards(1);
+        return false;
     }
 };
 
@@ -377,8 +461,16 @@ private:
         int index = use.to.indexOf(target);
 
         JudgeStruct judge;
-        judge.pattern = ".|red";
-        judge.good = true;
+
+        ServerPlayer *lord = room->getLord(source->getKingdom());
+        if (lord != NULL && lord->hasSkill("shouyue")){
+            judge.pattern = ".|spade";
+            judge.good = false;
+        }
+        else {
+            judge.pattern = ".|red";
+            judge.good = true;
+        }
         judge.reason = objectName();
         judge.who = source;
 
@@ -857,6 +949,9 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *menghuo, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!PhaseChangeSkill::triggerable(triggerEvent, room, menghuo, data, ask_who))
+            return false;
+
         if (menghuo->getPhase() == Player::Draw && menghuo->isWounded())
             return true;
         return false;
@@ -1290,6 +1385,8 @@ void StandardPackage::addShuGenerals()
 
     General *zhangfei = new General(this, "zhangfei", "shu"); // SHU 003
     zhangfei->addSkill(new Paoxiao);
+    zhangfei->addSkill(new PaoxiaoArmorNullificaion);
+    related_skills.insertMulti("paoxiao", "#paoxiao");
 
     General *zhugeliang = new General(this, "zhugeliang", "shu", 3); // SHU 004
     zhugeliang->addCompanion("huangyueying");

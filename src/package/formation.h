@@ -4,6 +4,7 @@
 #include "package.h"
 #include "card.h"
 #include "skill.h"
+#include "standard.h"
 
 class JixiCard: public SkillCard {
     Q_OBJECT
@@ -80,6 +81,20 @@ class FormationPackage: public Package {
 
 public:
     FormationPackage();
+};
+
+class DragonPhoenix: public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE DragonPhoenix();
+};
+
+class FormationEquipPackage: public Package{
+    Q_OBJECT
+
+public:
+    FormationEquipPackage();
 };
 
 #endif
