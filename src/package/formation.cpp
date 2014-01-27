@@ -1070,6 +1070,7 @@ FormationPackage::FormationPackage()
     related_skills.insertMulti("tuntian", "#tuntian-dist");
 
     General *caohong = new General(this, "caohong", "wei"); // WEI 018
+    caohong->addCompanion("caoren");
     caohong->addSkill(new Huyuan);
     caohong->addSkill(new Heyi);
     caohong->addSkill(new HeyiFeiying);
@@ -1086,10 +1087,12 @@ FormationPackage::FormationPackage()
     jiangwanfeiyi->addSkill(new Shoucheng);
 
     General *jiangqin = new General(this, "jiangqin", "wu"); // WU 017
+    jiangqin->addCompanion("zhoutai");
     jiangqin->addSkill(new Shangyi);
     jiangqin->addSkill(new Niaoxiang);
 
     General *xusheng = new General(this, "xusheng", "wu"); // WU 020
+    xusheng->addCompanion("dingfeng");
     xusheng->addSkill(new Yicheng);
 
     General *yuji = new General(this, "yuji", "qun", 3); // QUN 011 G
