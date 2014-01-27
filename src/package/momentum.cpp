@@ -194,6 +194,7 @@ public:
             player->tag[objectName()] = QVariant::fromValue(color);
             judge->pattern = color;
         }
+        return false;
     }
     
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data) const{
