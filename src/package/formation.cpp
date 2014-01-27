@@ -625,6 +625,7 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
 
         int to_discard = -1;
         to_discard = room->askForAG(effect.from, blacks, true, "shangyi");
+        room->clearAG(effect.from);
         if (to_discard == -1) return;
         room->throwCard(to_discard, effect.to, effect.from);
     } else {
