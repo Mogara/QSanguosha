@@ -1128,12 +1128,12 @@ public:
             DyingStruct dying = data.value<DyingStruct>();
             if (dying.damage && dying.damage->from)
                 target = dying.damage->from;
-            if (dying.who != player && target && target->isFriendWith(player))
+            if (dying.who != player && target && (target->isFriendWith(player) || player->willBeFriendWith(target)))
                 return true;
         } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
             target = death.who;
-            if (target && target->isFriendWith(player))
+            if (target && (target->isFriendWith(player) || player->willBeFriendWith(target)))
                 return true;
         }
         return false;

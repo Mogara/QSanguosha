@@ -1173,6 +1173,7 @@ bool Player::isFriendWith(const Player *player) const {
 }
 
 bool Player::willBeFriendWith(const Player *player) const {
+    if (this == player) return true;
     if (!hasShownOneGeneral()) {
         QString kingdom = getActualGeneral1()->getKingdom();
         int i = 1;

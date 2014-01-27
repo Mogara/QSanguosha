@@ -22,8 +22,12 @@ public:
         if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.from == player && (move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip))
-                && !(move.to == player && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip)))
-                return true;
+                && !(move.to == player && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip))) {
+                if (room->getTag("judge").toInt() > 0) {
+                    room->addPlayerMark(player, "tuntian_postpone");
+                    return false;
+                } else return true;
+            }
         } else if (triggerEvent == FinishJudge) {
             JudgeStar judge = data.value<JudgeStar>();
             if (judge->reason == "tuntian" && judge->isGood())
@@ -42,10 +46,6 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == CardsMoveOneTime && room->getTag("judge").toInt() > 0){
-            player->addMark("tuntian_postpone");
-            return false;
-        }
         return player->askForSkillInvoke("tuntian", data);
     }
 
@@ -1122,7 +1122,9 @@ FormationPackage::FormationPackage()
 ADD_PACKAGE(Formation)
 
 
-DragonPhoenix::DragonPhoenix(): Weapon(Card::Spade, 2, 2){
+DragonPhoenix::DragonPhoenix(Suit suit, int number)
+    : Weapon(Card::Spade, 2, 2)
+{
     setObjectName("DragonPhoenix");
 }
 

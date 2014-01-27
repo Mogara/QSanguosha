@@ -515,7 +515,7 @@ public:
         } else {
             if (cards.length() == 1){
                 ShensuCard *card = new ShensuCard;
-            card->setShowSkill("shensu");
+                card->setShowSkill(objectName());
                 card->addSubcards(cards);
                 return card;
             }
@@ -530,6 +530,7 @@ public:
         events << EventPhaseChanging;
         view_as_skill = new ShensuViewAsSkill;
     }
+
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *xiahouyuan, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (!TriggerSkill::triggerable(triggerEvent, room, xiahouyuan, data, ask_who))
             return false;
@@ -549,12 +550,13 @@ public:
             xiahouyuan->skip(Player::Judge);
             xiahouyuan->skip(Player::Draw);
             return true;
-        } else if (change.to == Player::Play && room->askForUseCard(xiahouyuan,"@@shensu2","@shensu2",2,Card::MethodDiscard)) {
+        } else if (change.to == Player::Play && room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2, Card::MethodDiscard)) {
             xiahouyuan->skip(Player::Play);
             return true;
         }
         return false;
     }
+
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *xiahouyuan, QVariant &data) const{
         return false;
     }

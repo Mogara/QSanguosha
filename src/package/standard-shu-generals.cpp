@@ -25,7 +25,7 @@ void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     int new_value = old_value + subcards.length();
     room->setPlayerMark(source, "rende", new_value);
 
-    if (old_value < 2 && new_value >= 2) {
+    if (old_value < 3 && new_value >= 3 && source->isWounded()) {
         RecoverStruct recover;
         recover.card = this;
         recover.who = source;
@@ -39,15 +39,10 @@ public:
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
-        if (ServerInfo.GameMode == "04_1v3" && selected.length() + Self->getMark("rende") >= 2)
-            return false;
-        else
-            return !to_select->isEquipped();
+        return !to_select->isEquipped();
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        if (ServerInfo.GameMode == "04_1v3" && player->getMark("rende") >= 2)
-           return false;
         return !player->isKongcheng();
     }
 
@@ -887,7 +882,11 @@ bool SavageAssaultAvoid::triggerable(TriggerEvent , Room *room, ServerPlayer *pl
 
 bool SavageAssaultAvoid::cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
     if (player->hasShownSkill(Sanguosha->getSkill(avoid_skill))) return true;
-    return player->askForSkillInvoke(avoid_skill);
+    if (player->askForSkillInvoke(avoid_skill)) {
+        player->showGeneral(player->inHeadSkills(avoid_skill));
+        return true;
+    }
+    return false;
 }
 
 bool SavageAssaultAvoid::effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
@@ -1285,7 +1284,12 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *target = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "shushen-invoke", true, true);
+        QList<ServerPlayer *> friends;
+        foreach (ServerPlayer *p, room->getOtherPlayers(player))
+            if (player->isFriendWith(p) && player->willBeFriendWith(p))
+                friends << p;
+        if (friends.isEmpty()) return false;
+        ServerPlayer *target = room->askForPlayerChosen(player, friends, objectName(), "shushen-invoke", true, true);
         if (target != NULL){
             player->tag["shushen_invoke"] = QVariant::fromValue(target);
             return true;

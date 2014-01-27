@@ -13,7 +13,7 @@ config = {
 	
 	package_names = {
 		"StandardCard",
-		"formation_equip",
+		"FormationEquip",
 
 		"Standard",
 		"Formation",

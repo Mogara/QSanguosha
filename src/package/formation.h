@@ -87,7 +87,7 @@ class DragonPhoenix: public Weapon{
     Q_OBJECT
 
 public:
-    Q_INVOKABLE DragonPhoenix();
+    Q_INVOKABLE DragonPhoenix(Card::Suit suit = Spade, int number = 2);
 };
 
 class FormationEquipPackage: public Package{
