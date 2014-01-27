@@ -188,15 +188,18 @@ public:
         frequency = Frequent;
     }
 
+    virtual bool canPreshow() const {
+        return false;
+    }
+
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
-        return player && player->isAlive() && player->ownSkill(objectName()) && player->getPhase() == Player::Start;
+        return TriggerSkill::triggerable(player) && player->getPhase() == Player::Start;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (!player->ownSkill("yizhi"))
-            return player->hasSkill(objectName()) && player->askForSkillInvoke(objectName());
+        if (!player->hasSkill("yizhi"))
+            return player->askForSkillInvoke(objectName());
         // if it runs to here, it means player own both two skill;
-        if (!player->hasSkill("guanxing") && !player->hasSkill("yizhi")) return false;
         bool show1 = player->hasShownSkill(this);
         bool show2 = player->hasShownSkill(Sanguosha->getSkill("yizhi"));
         if (!show1 && !show2) {
@@ -1112,71 +1115,56 @@ public:
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         if (triggerEvent == TargetConfirming){
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Slash"))
+            if (use.card->isKindOf("Slash") && TriggerSkill::triggerable(player))
                 return true;
-        }
-        else if (triggerEvent == SlashEffected){
-            if (!player->hasShownSkill(this))
-                return false;
-            return player->getMark("xiangle") > 0;
-        }
-        else if (triggerEvent == CardFinished){
-            return true;
+        } else if (triggerEvent == SlashEffected){
+            if (!TriggerSkill::triggerable(player)) return false;
+            if (player->getMark("xiangle") > 0) {
+                player->removeMark("xiangle");
+                if (!player->hasShownSkill(this))
+                    return false;
+                SlashEffectStruct effect = data.value<SlashEffectStruct>();
+                LogMessage log;
+                log.type = "#XiangleAvoid";
+                log.from = effect.from;
+                log.to << player;
+                log.arg = objectName();
+                room->sendLog(log);
+                player->removeMark("xiangle");
+            }
+        } else if (triggerEvent == CardFinished){
+            CardUseStruct use = data.value<CardUseStruct>();
+            foreach (ServerPlayer *p, use.to){
+                p->setMark("xiangle", 0);
+            }
         }
         return false;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == TargetConfirming){
-            if (player->hasShownSkill(this)){
-                room->broadcastSkillInvoke(objectName());
-                return true;
-            }
-            else {
-                if (player->askForSkillInvoke(objectName(), data)){
-                    room->broadcastSkillInvoke(objectName());
-                    return true;
-                }
-            }
-        }
-        else if (triggerEvent == SlashEffected)
+        if (player->hasShownSkill(this)){
+            room->broadcastSkillInvoke(objectName());
             return true;
-        else if (triggerEvent == CardFinished){
-            CardUseStruct use = data.value<CardUseStruct>();
-            foreach (ServerPlayer *p, use.to){
-                p->setMark("xiangle", 0);
-            }
-            return false;
+        } else if (player->askForSkillInvoke(objectName(), data)){
+            room->broadcastSkillInvoke(objectName());
+            return true; 
         }
         return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *liushan, QVariant &data) const{
-        if (triggerEvent == TargetConfirming) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            room->notifySkillInvoked(liushan, objectName());
+        CardUseStruct use = data.value<CardUseStruct>();
+        room->notifySkillInvoked(liushan, objectName());
 
-            LogMessage log;
-            log.type = "#TriggerSkill";
-            log.from = liushan;
-            log.arg = objectName();
-            room->sendLog(log);
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = liushan;
+        log.arg = objectName();
+        room->sendLog(log);
 
-            QVariant dataforai = QVariant::fromValue(liushan);
-            if (!room->askForCard(use.from, ".Basic", "@xiangle-discard", dataforai))
-                liushan->addMark("xiangle");
-
-        } else {
-            SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            LogMessage log;
-            log.type = "#XiangleAvoid";
-            log.from = effect.from;
-            log.to << liushan;
-            log.arg = objectName();
-            room->sendLog(log);
-            liushan->removeMark("xiangle");
-            return true;
-        }
+        QVariant dataforai = QVariant::fromValue(liushan);
+        if (!room->askForCard(use.from, ".Basic", "@xiangle-discard", dataforai))
+            liushan->addMark("xiangle");
 
         return false;
     }
@@ -1335,6 +1323,10 @@ class Shenzhi: public PhaseChangeSkill {
 public:
     Shenzhi(): PhaseChangeSkill("shenzhi") {
 
+    }
+
+    virtual bool canPreshow() const {
+        return false;
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{

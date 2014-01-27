@@ -97,6 +97,7 @@ CommonTranslationTable = {
 	["shu"] = "蜀",
 	["wu"] = "吴",
 	["qun"] = "群",
+	["god"] = "神",
 
 	["#Murder"] = "%to【%arg】 阵亡，伤害来源为 %from",
 	["#Suicide"] = "%to【%arg】 自杀",

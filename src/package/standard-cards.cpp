@@ -1128,14 +1128,14 @@ QString AwaitExhausted::getSubtype() const{
 
 void AwaitExhausted::onUse(Room *room, const CardUseStruct &card_use) const{
     CardUseStruct new_use = card_use;
-    new_use.to.append(new_use.from);
+    new_use.to << new_use.from;
     foreach (ServerPlayer *p, room->getOtherPlayers(new_use.from)) {
         if (p->isFriendWith(new_use.from))
-            new_use.to.append(p);
+            new_use.to << p;
     }
 
     if (getSkillName() == "duoshi")
-        room->addPlayerHistory(card_use.from, "DuoshiAE", 1);
+        room->addPlayerHistory(new_use.from, "DuoshiAE", 1);
 
     TrickCard::onUse(room, new_use);
 }

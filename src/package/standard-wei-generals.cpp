@@ -390,63 +390,56 @@ public:
         frequency = Frequent;
     }
 
+    virtual bool canPreshow() const {
+        return false;
+    }
+
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start)
             return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who);
-        else if (triggerEvent == FinishJudge)
-            return player != NULL && data.value<JudgeStruct *>()->reason == objectName();
+        else if (triggerEvent == FinishJudge) {
+            if (player != NULL && data.value<JudgeStruct *>()->reason == objectName()) {
+                JudgeStar judge = data.value<JudgeStar>();
+                if (judge->reason == objectName()) {
+                    if (judge->isGood()) {
+                        CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, player->objectName(), QString(), judge->reason);
+                        room->moveCardTo(judge->card, player, NULL, Player::PlaceTable, reason, true);
+                        QVariantList luoshen_list = player->tag[objectName()].toList();
+                        luoshen_list << judge->card->getEffectiveId();
+                        player->tag[objectName()] = luoshen_list;
+                    }
+                }
+            }
+        }
         return false;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart)
-            if (player->askForSkillInvoke(objectName())){
-                room->broadcastSkillInvoke(objectName());
-                return true;
-            }
-        else 
+        if (player->askForSkillInvoke(objectName())){
+            room->broadcastSkillInvoke(objectName());
             return true;
+        }
         return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhenji, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart) {
-            
-            JudgeStruct judge;
-            do {
-                judge.pattern = ".|black";
-                judge.good = true;
-                judge.reason = objectName();
-                judge.play_animation = false;
-                judge.who = zhenji;
-                judge.time_consuming = true;
+        JudgeStruct judge;
+        forever {
+            judge.pattern = ".|black";
+            judge.good = true;
+            judge.reason = objectName();
+            judge.play_animation = false;
+            judge.who = zhenji;
+            judge.time_consuming = true;
 
-                room->judge(judge);
-            }
-            while (judge.isGood() && cost(triggerEvent, room, zhenji, data));
-            /*
-            if (zhenji->tag[objectName()].toList().length() != 0){
-                DummyCard dummy(VariantList2IntList(zhenji->tag[objectName()].toList()));
-                zhenji->obtainCard(&dummy);
-                zhenji->tag.remove(objectName());
-            }
-            */
-        } else if (triggerEvent == FinishJudge) {
-            JudgeStar judge = data.value<JudgeStar>();
-            if (judge->reason == objectName()) {
-                if (judge->card->isBlack()) {
-                    CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, zhenji->objectName(), QString(), judge->reason);
-                    room->moveCardTo(judge->card, zhenji, NULL, Player::PlaceTable, reason, true);
-                    QVariantList luoshen_list = zhenji->tag[objectName()].toList();
-                    luoshen_list << judge->card->getEffectiveId();
-                    zhenji->tag[objectName()] = luoshen_list;
-                }
-                else {
-                    DummyCard dummy(VariantList2IntList(zhenji->tag[objectName()].toList()));
-                    zhenji->obtainCard(&dummy);
-                    zhenji->tag.remove(objectName());
-                }
-            }
+            room->judge(judge);
+            if ((judge.isGood() && !zhenji->askForSkillInvoke(objectName())) || judge.isBad())
+                break;
+        }
+        if (zhenji->tag[objectName()].toList().length() != 0){
+            DummyCard dummy(VariantList2IntList(zhenji->tag[objectName()].toList()));
+            zhenji->obtainCard(&dummy);
+            zhenji->tag.remove(objectName());
         }
 
         return false;
@@ -684,7 +677,7 @@ public:
         case Player::Discard: index = 4; break;
         case Player::PhaseNone: Q_ASSERT(false);
         }
-        return (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who) && player->isAlive() && index > 0
+        return (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who) && index > 0
             && player->canDiscard(player, "h"));
     }
     virtual bool cost(TriggerEvent triggerEvent,Room *room, ServerPlayer *zhanghe, QVariant &data) const{
@@ -707,8 +700,8 @@ public:
         if (room->askForDiscard(zhanghe, objectName(), 1, 1, true, false, discard_prompt)) {
             room->broadcastSkillInvoke("qiaobian");
             if (!zhanghe->isAlive()) return false;
-            if (!zhanghe->isSkipped(change.to) && (index == 2 || index == 3))
-            return true;
+            if (!zhanghe->isSkipped(change.to))
+                return true;
         }
         return false;
     }    
@@ -727,8 +720,10 @@ public:
         case Player::Discard: index = 4; break;
         case Player::PhaseNone: Q_ASSERT(false);
         }
-        QString use_prompt = QString("@qiaobian-%1").arg(index);
-        room->askForUseCard(zhanghe, "@@qiaobian", use_prompt, index);
+        if (index == 2 || index == 3) {
+            QString use_prompt = QString("@qiaobian-%1").arg(index);
+            room->askForUseCard(zhanghe, "@@qiaobian", use_prompt, index);
+        }
         zhanghe->skip(change.to);
         return false;
     }
