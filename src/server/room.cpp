@@ -388,6 +388,9 @@ void Room::judge(JudgeStruct &judge_struct) {
 
     JudgeStar judge_star = &judge_struct;
     QVariant data = QVariant::fromValue(judge_star);
+
+    tag["judge"] = tag["judge"].toInt() + 1;
+
     thread->trigger(StartJudge, this, judge_star->who, data);
 
     QList<ServerPlayer *> players = getAllPlayers();
@@ -397,6 +400,9 @@ void Room::judge(JudgeStruct &judge_struct) {
     }
 
     thread->trigger(FinishRetrial, this, judge_star->who, data);
+
+    tag["judge"] = tag["judge"].toInt() - 1;
+
     thread->trigger(FinishJudge, this, judge_star->who, data);
 }
 

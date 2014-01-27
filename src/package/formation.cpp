@@ -28,11 +28,24 @@ public:
             JudgeStar judge = data.value<JudgeStar>();
             if (judge->reason == "tuntian" && judge->isGood())
                 player->addToPile("field", judge->card->getEffectiveId());
+
+            if (room->getTag("judge").toInt() == 0){
+                int postponed_tuntian = player->getMark("tuntian_postpone");
+
+                if (postponed_tuntian > 0){
+                    player->removeMark("tuntian_postpone");
+                    return true;
+                }
+            }
         }
         return false;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == CardsMoveOneTime && room->getTag("judge").toInt() > 0){
+            player->addMark("tuntian_postpone");
+            return false;
+        }
         return player->askForSkillInvoke("tuntian", data);
     }
 
