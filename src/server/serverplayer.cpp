@@ -1354,8 +1354,8 @@ void ServerPlayer::hideGeneral(bool head_general) {
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral(this, "anjiang");
 
-        setSkillsPreshowed("h", false);
         disconnectSkillsFromOthers();
+        setSkillsPreshowed("h", false);
 
         foreach (const Skill *skill, getVisibleSkillList()) {
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
@@ -1388,8 +1388,8 @@ void ServerPlayer::hideGeneral(bool head_general) {
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral2(this, "anjiang");
 
-        setSkillsPreshowed("d", false);
         disconnectSkillsFromOthers(false);
+        setSkillsPreshowed("d", false);
 
         foreach (const Skill *skill, getVisibleSkillList()) {
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()

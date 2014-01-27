@@ -28,6 +28,7 @@ return {
 	["~huyuan"] = "选择一张装备牌→选择一名角色→点击确定",
 	["heyi"] = "鹤翼",
 	[":heyi"] = "<font color=\"purple\"><b>阵法技，</b></font>与你处于同一队列的其他角色视为拥有“飞影”。",
+	["HeyiSummon"] = "鹤翼",
 	["#heyi_feiying"] = "飞影",
 	["feiying"] = "飞影",
 	[":feiying"] = "<font color=\"blue\"><b>锁定技，</b></font>其他角色与你的距离+1",
@@ -42,6 +43,7 @@ return {
 	[":yizhi"] = "<font color=\"aqua\"><b>副将技，</b></font><font color=\"blue\"><b>锁定技，</b></font>此武将牌上单独的阴阳鱼个数-1；<font color=\"aqua\"><b>副将技，</b></font><font color=\"blue\"><b>锁定技，</b></font>若你的主将有“观星”，此“观星”描述中的X视为5，否则你视为拥有“观星”。",
 	["tianfu"] = "天覆",
 	[":tianfu"] = "<font color=\"lime\"><b>主将技，</b></font><font color=\"purple\"><b>阵法技，</b></font>若当前回合角色为你所在队列里的角色，你视为拥有“看破”。",
+	["TianfuSummon"] = "天覆",
 	
 	["#jiangwanfeiyi"] = "社稷股肱",
 	["jiangwanfeiyi"] = "蒋琬＆费祎",
@@ -59,6 +61,7 @@ return {
 	[":shangyi"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以令一名其他角色观看你的手牌，你选择一项：1.观看其手牌，若如此做，你可以弃置其中一张黑色牌；2.观看其暗置的武将牌。",
 	["niaoxiang"] = "鸟翔",
 	[":niaoxiang"] = "<font color=\"purple\"><b>阵法技，</b></font>在你为围攻角色的围攻关系中，每当围攻角色使用【杀】指定被围攻角色为目标后，该围攻角色将抵消此【杀】需使用的【闪】的数量改为2。",
+	["NiaoxiangSummon"] = "鸟翔",
 	
 	["#xusheng"] = "江东的铁壁",
 	["xusheng"] = "徐盛",

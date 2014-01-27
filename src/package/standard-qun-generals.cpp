@@ -1248,7 +1248,9 @@ void QingchengCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *player = effect.from, *to = effect.to;
     Room *room = player->getRoom();
 
-    QString choice = room->askForChoice(player, objectName(), "head_general+deputy_general", "qingcheng");
+    QString choice = "deputy_general";
+    if (effect.to->isLord())
+        choice = room->askForChoice(player, objectName(), "head_general+deputy_general", "qingcheng");
     to->hideGeneral(choice == "head_general");
 }
 
