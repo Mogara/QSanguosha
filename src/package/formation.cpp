@@ -1092,6 +1092,7 @@ ADD_PACKAGE(Formation)
 
 
 DragonPhoenix::DragonPhoenix(): Weapon(Card::Spade, 2, 2){
+    setObjectName("DragonPhoenix");
 }
 
 class DragonPhoenixSkill: public WeaponSkill{
