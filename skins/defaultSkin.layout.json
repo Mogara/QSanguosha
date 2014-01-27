@@ -210,7 +210,7 @@
 
 // The following settings override the text color defined above
 // xxButtonColor = [normalColor, downColor, disabledColor, hoverColor]
-"awakenFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]], // normalColor = [penColor, shadowColor]
+"arrayFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]], // normalColor = [penColor, shadowColor]
                     [[255, 255, 255, 255], [0, 0, 0, 120]], // downColor = [penColor, shadowColor]
                     [[255, 255, 255, 255], [0, 0, 0, 120]], // disableColor = [penColor, shadowColor]
                     [[255, 255, 255, 255], [0, 0, 0, 120]]], // hoverColor = [penColor, shadowColor]
@@ -229,10 +229,6 @@
 "proactiveFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
                        [[255, 255, 255, 255], [0, 0, 0, 120]],
                        [[255, 255, 255, 255], [0, 0, 0, 120]],
-                       [[255, 255, 255, 255], [0, 0, 0, 120]]],
-"attachedlordFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
-                          [[255, 255, 255, 255], [0, 0, 0, 120]],
-                          [[255, 255, 255, 255], [0, 0, 0, 120]],
-                          [[255, 255, 255, 255], [0, 0, 0, 120]]]
+                       [[255, 255, 255, 255], [0, 0, 0, 120]]]
 }
 }

@@ -19,7 +19,7 @@ public:
     enum ButtonStyle { S_STYLE_PUSH, S_STYLE_TOGGLE };
     void setSize(QSize size);
     void setStyle(ButtonStyle style);
-    void setState(ButtonState state);
+    virtual void setState(ButtonState state);
     inline void setButtonName(QString buttonName) { _m_buttonName = buttonName; }
     inline QString getButtonName() { return _m_buttonName; }
     inline ButtonState getState() const{ return _m_state; }
@@ -42,7 +42,6 @@ protected:
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void _onMouseClick(bool inside);
     ButtonState _m_state;
-    ButtonState former_state;
     ButtonStyle _m_style;
     QString _m_groupName;
     QString _m_buttonName;
@@ -62,38 +61,33 @@ class QSanSkillButton: public QSanButton {
     Q_OBJECT
 
 public:
-    enum SkillType { S_SKILL_ATTACHEDLORD, S_SKILL_PROACTIVE, S_SKILL_COMPULSORY,
-                     S_SKILL_AWAKEN, S_SKILL_ONEOFF_SPELL, S_NUM_SKILL_TYPES };
+    enum SkillType { S_SKILL_PROACTIVE, S_SKILL_COMPULSORY,
+                     S_SKILL_ONEOFF_SPELL, S_SKILL_ARRAY, S_NUM_SKILL_TYPES };
 
     inline static QString getSkillTypeString(SkillType type) {
         QString arg1;
-        if (type == QSanSkillButton::S_SKILL_AWAKEN) arg1 = "awaken";
+        if (type == QSanSkillButton::S_SKILL_ARRAY) arg1 = "array";
         else if (type == QSanSkillButton::S_SKILL_COMPULSORY) arg1 = "compulsory";
         else if (type == QSanSkillButton::S_SKILL_ONEOFF_SPELL) arg1 = "oneoff";
         else if (type == QSanSkillButton::S_SKILL_PROACTIVE) arg1 = "proactive";
-        else if (type == QSanSkillButton::S_SKILL_ATTACHEDLORD) arg1 = "attachedlord";
         return arg1;
     }
     virtual void setSkill(const Skill *skill);
     inline virtual const Skill *getSkill() const{ return _m_skill; }
-    inline virtual void setEnabled(bool enabled) {
-        if (!_m_canEnable && enabled) return;
-        if (!_m_canDisable && !enabled) return;
-        QSanButton::setEnabled(enabled);
-    }
     QSanSkillButton(QGraphicsItem *parent = NULL);
     inline const ViewAsSkill *getViewAsSkill() const{ return _m_viewAsSkill; }
+    void setState(ButtonState state);
 
 protected:
-
+    //methods
     virtual void _setSkillType(SkillType type);
     virtual void _repaint() = 0;
     const ViewAsSkill *_parseViewAsSkill() const;
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    //properties
     SkillType _m_skillType;
     bool _m_emitActivateSignal;
     bool _m_emitDeactivateSignal;
-    bool _m_canEnable;
-    bool _m_canDisable;
     const Skill *_m_skill;
     const ViewAsSkill *_m_viewAsSkill;
 

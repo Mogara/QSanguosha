@@ -905,11 +905,10 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
     for (int i = 0; i < QSanInvokeSkillButton::S_NUM_SKILL_TYPES; i++) {
         QString key;
         switch ((QSanInvokeSkillButton::SkillType)i) {
-        case QSanInvokeSkillButton::S_SKILL_AWAKEN: key = "awakenFontColor"; break;
+        case QSanInvokeSkillButton::S_SKILL_ARRAY: key = "arrayFontColor"; break;
         case QSanInvokeSkillButton::S_SKILL_COMPULSORY: key = "compulsoryFontColor"; break;
         case QSanInvokeSkillButton::S_SKILL_ONEOFF_SPELL: key = "oneoffFontColor"; break;
         case QSanInvokeSkillButton::S_SKILL_PROACTIVE: key = "proactiveFontColor"; break;
-        case QSanInvokeSkillButton::S_SKILL_ATTACHEDLORD: key = "attachedlordFontColor"; break;
         default:
                 Q_ASSERT(false);
                 break;

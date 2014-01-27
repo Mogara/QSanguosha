@@ -1964,10 +1964,7 @@ void RoomScene::addSkillButton(const Skill *skill, bool) {
         connect(btn, SIGNAL(skill_activated()), this, SLOT(onSkillActivated()));
         connect(btn, SIGNAL(skill_deactivated()), dashboard, SLOT(skillButtonDeactivated()));
         connect(btn, SIGNAL(skill_deactivated()), this, SLOT(onSkillDeactivated()));
-        if (btn->getViewAsSkill()->objectName() == "mizhao")
-            connect(btn, SIGNAL(skill_activated()), dashboard, SLOT(selectAll()));
     }
-
     QDialog *dialog = skill->getDialog();
     if (dialog && !m_replayControl) {
         dialog->setParent(main_window, Qt::Dialog);
@@ -2002,9 +1999,13 @@ void RoomScene::updateSkillButtons() {
         addSkillButton(skill);
     }
 
-    // disable all skill buttons
+    // Do not disable all skill buttons for we need to preshow some skills
+    //foreach (QSanSkillButton *button, m_skillButtons)
+    //    button->setEnabled(false);
+
     foreach (QSanSkillButton *button, m_skillButtons)
-        button->setEnabled(false);
+        button->setEnabled(button->getSkill()->canPreshow()
+                           && !Self->hasShownSkill(button->getSkill()));
 }
 
 void RoomScene::useSelectedCard() {
@@ -2269,7 +2270,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             if (skill->getFrequency() == Skill::Wake)
                 button->setEnabled(Self->getMark(skill->objectName()) > 0);
             else
-                button->setEnabled(false);
+                button->setEnabled(button->getSkill()->canPreshow() 
+                                   && !Self->hasShownSkill(button->getSkill()));
         }
     }
 
