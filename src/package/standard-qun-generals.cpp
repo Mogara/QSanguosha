@@ -509,8 +509,7 @@ public:
     virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (!TriggerSkill::triggerable(player)) return false;
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!use.card || use.card->getTypeId() != Card::TypeTrick)
-            return false;
+        if (!use.card || use.card->getTypeId() != Card::TypeTrick) return false;
         if (!use.card->isBlack()) return false;
         return true;
     }
@@ -534,7 +533,6 @@ public:
         log.to = use.to;
         log.arg = use.card->objectName();
         room->sendLog(log);
-
 
         use.to.removeOne(player);
         data = QVariant::fromValue(use);

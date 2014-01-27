@@ -1626,8 +1626,10 @@ public:
         events << DamageInflicted << CardsMoveOneTime;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->isAlive();
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* ask_who) const{
+        if (triggerEvent == DamageInflicted && ArmorSkill::triggerable(player)) return true;
+        else if (player->hasFlag("SilverLionRecover")) return true;
+        return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
