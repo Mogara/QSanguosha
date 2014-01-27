@@ -359,32 +359,10 @@ public:
         if (room->alivePlayerCount() < 4) return false;
         ServerPlayer *caohong = room->findPlayerBySkillName(objectName());
         if (!caohong) return false;
-        QList<ServerPlayer *> teammates;
-        bool next = true;
-        ServerPlayer *next_p = caohong;
-        while (next) {
-            next_p = qobject_cast<ServerPlayer *>(next_p->getNextAlive());
-            if (next_p->isFriendWith(caohong) && !teammates.contains(next_p))
-                teammates << next_p;
-            else
-                next = false;
-        }
-        next = true;
-        next_p = caohong;
-        while (next) {
-            foreach (ServerPlayer *p, room->getAllPlayers())
-                if (p->getNextAlive() == next_p) {
-                    next_p = p;
-                    break;
-                }
-            if (next_p->isFriendWith(caohong) && !teammates.contains(next_p))
-                teammates << next_p;
-            else
-                next = false;
-        }
-        if (teammates.isEmpty()) return false;
-        foreach(ServerPlayer *p, teammates)
-            room->attachSkillToPlayer(p, "feiying");
+        QList<const ServerPlayer *> teammates = caohong->getFormation();
+        foreach (ServerPlayer *p, room->getOtherPlayers(caohong))
+            if (teammates.contains(p))
+                room->attachSkillToPlayer(p, "feiying");
 
         return false;
     }
@@ -520,36 +498,9 @@ public:
             room->detachSkillFromPlayer(jiangwei, "kanpo", true);
 
         if (room->alivePlayerCount() < 4 || !jiangwei->hasShownSkill(this)) return false;
-        QList<ServerPlayer *> teammates;
-        bool next = true;
-        ServerPlayer *next_p = jiangwei;
-        while (next) {
-            next_p = qobject_cast<ServerPlayer *>(next_p->getNextAlive());
-            if (next_p->isFriendWith(jiangwei) && !teammates.contains(next_p))
-                teammates << next_p;
-            else
-                next = false;
-        }
-        next = true;
-        next_p = jiangwei;
-        while (next) {
-            foreach (ServerPlayer *p, room->getAllPlayers())
-                if (p->getNextAlive() == next_p) {
-                    next_p = p;
-                    break;
-                }
-            if (next_p->isFriendWith(jiangwei) && !teammates.contains(next_p))
-                teammates << next_p;
-            else
-                next = false;
-        }
-        teammates << jiangwei;
-        if (teammates.isEmpty()) return false;
-        foreach(ServerPlayer *p, teammates)
-            if (p->getPhase() != Player::NotActive) {
-                room->attachSkillToPlayer(jiangwei, "kanpo");
-                break;
-            }
+        ServerPlayer *current = room->getCurrent();
+        if (current && current->isAlive() && jiangwei->inFormationRalation(current))
+            room->attachSkillToPlayer(jiangwei, "kanpo");
 
         return false;
     }
@@ -705,35 +656,14 @@ public:
         if (!player->hasShownSkill(this) || player->aliveCount() < 4) return false;
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card->isKindOf("Slash")) {
-            if (!player->getNextAlive()->isFriendWith(player) && player->getNextAlive(2)->isFriendWith(player)) {
-                if ((use.from == player || use.from == qobject_cast<ServerPlayer *>(player->getNextAlive(2)))
-                    && use.to.contains(qobject_cast<ServerPlayer *>(player->getNext()))) {
+            for (int i = 0; i < use.to.length(); i++) {
+                ServerPlayer *victim = use.to.at(i);
+                if (player->inSiegeRelation(use.from, victim)) {
                     QVariantList jink_list = use.from->tag["Jink_" + use.card->toString()].toList();
-                    for (int i = 0; i < use.to.length(); i++) {
-                        if (use.to.at(i) == player->getNext())
-                            if (jink_list.at(i).toInt() == 1)
-                                jink_list.replace(i, QVariant(2));
-                    }
+                    if (jink_list.at(i).toInt() == 1)
+                        jink_list.replace(i, QVariant(2));
                     use.from->tag["Jink_" + use.card->toString()] = QVariant::fromValue(jink_list);
                 }
-            }
-            for (int i = 0; i < use.to.length(); i++) {
-                ServerPlayer *victim = use.to.at(i), *teammate;
-                if (victim->getNextAlive() == player) {
-                    foreach (ServerPlayer *p, room->getOtherPlayers(victim))
-                        if (p->getNextAlive() == victim){
-                            teammate = p;
-                            break;
-                        }
-                } else continue;
-
-                if (teammate && teammate->isFriendWith(player) && !victim->isFriendWith(player))
-                    if ((use.from == player || use.from == teammate)) {
-                        QVariantList jink_list = use.from->tag["Jink_" + use.card->toString()].toList();
-                        if (jink_list.at(i).toInt() == 1)
-                            jink_list.replace(i, QVariant(2));
-                        use.from->tag["Jink_" + use.card->toString()] = QVariant::fromValue(jink_list);
-                    }
             }
         }
 
