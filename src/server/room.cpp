@@ -2955,6 +2955,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
 
     try {
         if (card_use.card->getRealCard() == card) {
+            QString skill_name = card_use.card->showSkill();
             if (card->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1) {
                 Card *trick = Sanguosha->cloneCard(card);
                 Q_ASSERT(trick != NULL);
