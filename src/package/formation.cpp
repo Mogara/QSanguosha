@@ -379,7 +379,7 @@ public:
     }
 
     virtual int getCorrect(const Player *, const Player *to) const{
-        if (to->getMark(objectName()) > 0)
+        if (to->getMark("feiying") > 0)
             return 1;
         else
             return 0;
@@ -390,6 +390,10 @@ class Feiying: public TriggerSkill {
 public:
     Feiying(): TriggerSkill("feiying") {
         frequency = Compulsory;
+    }
+
+    virtual bool canPreshow() const {
+        return false;
     }
 
     virtual bool triggerable(TriggerEvent , Room *, ServerPlayer *, QVariant &, ServerPlayer* &) const {
