@@ -154,12 +154,16 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
 
     if (player->getPhase() == Player::Play && player->hasFlag("Global_MoreSlashInOneTurn")) {
         if (player->hasSkill("paoxiao")) {
+            if (!player->hasShownSkill(Sanguosha->getSkill("paoxiao")))
+                player->showGeneral(player->inHeadSkills("paoxiao"));
             player->setFlags("-Global_MoreSlashInOneTurn");
             room->broadcastSkillInvoke("paoxiao");
             room->notifySkillInvoked(player, "paoxiao");
         }
     }
     if (use.to.size() > 1 && player->hasSkill("duanbing")) {
+        if (!player->hasShownSkill(Sanguosha->getSkill("duanbing")))
+            player->showGeneral(player->inHeadSkills("duanbing"));
         room->broadcastSkillInvoke("duanbing");
         room->notifySkillInvoked(player, "duanbing");
     }
