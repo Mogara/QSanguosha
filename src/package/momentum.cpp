@@ -182,6 +182,10 @@ public:
         events << EventPhaseStart << FinishJudge;
     }
 
+    virtual bool canPreshow() const {
+        return false;
+    }
+
     virtual bool triggerable(TriggerEvent triggerEvent, ServerPlayer *player, Room *room, QVariant &data, ServerPlayer* &ask_who) const {
         if (!player) return false;
         if (triggerEvent == EventPhaseStart && TriggerSkill::triggerable(player)
@@ -450,6 +454,184 @@ public:
     }
 };*/
 
+class Jiang: public TriggerSkill {
+public:
+    Jiang(): TriggerSkill("jiang") {
+        events << TargetConfirmed;
+        frequency = Frequent;
+    }
+
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *sunce, QVariant &data, ServerPlayer* &ask_who) const {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from == sunce || use.to.contains(sunce)) {
+            if (use.card->isKindOf("Duel") || (use.card->isKindOf("Slash") && use.card->isRed()))
+                return true;
+        }
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *sunce, QVariant &data) const {
+        return sunce->askForSkillInvoke(objectName());
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *sunce, QVariant &data) const {
+        CardUseStruct use = data.value<CardUseStruct>();
+        
+        int index = 1;
+        if (use.from != sunce)
+            index = 2;
+        room->broadcastSkillInvoke(objectName(), index);
+        sunce->drawCards(1);
+
+        return false;
+    }
+};
+
+class Yingyang: public TriggerSkill {
+public:
+    Yingyang(): TriggerSkill("yingyang") {
+        events << PindianVerifying;
+    }
+
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
+        if (player == NULL) return false;
+        ServerPlayer *sunce = room->findPlayerBySkillName(objectName());
+        if (!TriggerSkill::triggerable(sunce)) return false;
+        PindianStar pindian = data.value<PindianStar>();
+        if (pindian->from != sunce && pindian->to != sunce) return false;
+        ask_who = pindian->from == sunce ? player : sunce;
+        return true;
+    }
+
+    virtual bool cost(TriggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *sunce = room->findPlayerBySkillName(objectName());
+        return sunce && sunce->askForSkillInvoke(objectName());
+    }
+
+    virtual bool effect(TriggerEvent, Room* room, ServerPlayer *, QVariant &data) const{
+        ServerPlayer *sunce = room->findPlayerBySkillName(objectName());
+        if (!sunce) return false;
+        PindianStar pindian = data.value<PindianStar>();
+        bool isFrom = pindian->from == sunce;
+
+        QString choice = room->askForChoice(sunce, objectName(), "jia3+jian3", objectName());
+        int to_add = choice == "jia3" ? 3 : -3;
+        
+        LogMessage log;
+        log.type = "$Yingyang";
+        log.from = sunce;
+
+        if (isFrom) {
+            pindian->from_number += to_add;
+
+            log.arg = QString::number(pindian->from_number);
+        } else {
+            pindian->to_number += to_add;
+
+            log.arg = QString::number(pindian->to_number);
+        }
+
+        room->sendLog(log);
+
+        return false;
+    }
+};
+
+class Hunshang: public TriggerSkill {
+public:
+    Hunshang(): TriggerSkill("hunshang") {
+        events << EventPhaseStart << DrawNCards;
+        frequency = Compulsory;
+        relate_to_place = "deputy";
+    }
+
+    virtual bool canPreshow() const {
+        return false;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
+        if (!TriggerSkill::triggerable(player)) return false;
+        if (player->getMark("@waked") > 0) return false;
+        if (triggerEvent == EventPhaseStart) {
+            if (player->getPhase() == Player::Start)
+                return player->getHp() == 1;
+            else if (player->getPhase() == Player::NotActive)
+                if (player->getMark("hunshang_invoke") > 0) {
+                    room->setPlayerMark(player, "hunshang_invoke", 0);
+                    player->gainMark("@waked");
+                }
+        } else if (triggerEvent == DrawNCards)
+            return player->getMark("hunshang_invoke") > 0;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == EventPhaseStart) {
+            if (player->hasShownSkill(this)) return true;
+            return player->askForSkillInvoke(objectName());
+        } else {
+            if (player->askForSkillInvoke("yingzi")) {
+                LogMessage log;
+                log.type = "#InvokeSkill";
+                log.from = player;
+                log.arg = "yingzi";
+                room->sendLog(log);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room* room, ServerPlayer *sunce, QVariant &data) const{
+        if (triggerEvent == EventPhaseStart) {
+            room->notifySkillInvoked(sunce, objectName());
+            room->setPlayerMark(sunce, "hunshang_invoke", 1);
+
+            if (sunce->askForSkillInvoke("yinghun")) {
+                LogMessage log;
+                log.type = "#InvokeSkill";
+                log.from = sunce;
+                log.arg = "yinghun";
+                room->sendLog(log);
+
+                ServerPlayer *to = room->askForPlayerChosen(sunce, room->getOtherPlayers(sunce), "yinghun", "yinghun-invoke", false, true);
+                if (to) {
+                    int x = sunce->getLostHp();
+
+                    int index = 3;
+
+                    if (x == 1) {
+                        room->broadcastSkillInvoke("yihun", index);
+
+                        to->drawCards(1);
+                        room->askForDiscard(to, objectName(), 1, 1, false, true);
+                    } else {
+                        to->setFlags("YinghunTarget");
+                        QString choice = room->askForChoice(sunce, "yihun", "d1tx+dxt1");
+                        to->setFlags("-YinghunTarget");
+                        if (choice == "d1tx") {
+                            room->broadcastSkillInvoke("yihun", index + 1);
+
+                            to->drawCards(1);
+                            room->askForDiscard(to, "yihun", x, x, false, true);
+                        } else {
+                            room->broadcastSkillInvoke("yihun", index);
+
+                            to->drawCards(x);
+                            room->askForDiscard(to, "yihun", 1, 1, false, true);
+                        }
+                    }
+                }
+            }
+        } else {
+            int n = data.toInt();
+            data = n + 1;
+        }
+
+        return false;
+    }
+};
+
+
 MomentumPackage::MomentumPackage()
     : Package("momentum")
 {
@@ -480,11 +662,18 @@ MomentumPackage::MomentumPackage()
     mifuren->addSkill(new CunsiStart);
     related_skills.insertMulti("guixiu", "#guixiu-clear");
     related_skills.insertMulti("cunsi", "#cunsi-start");
-    mifuren->addRelateSkill("yongjue");
+    mifuren->addRelateSkill("yongjue");*/
 
-    /*General *sunce = new General(this, "sunce", "wu", 4); // WU 010 G
+    General *sunce = new General(this, "sunce", "wu", 4); // WU 010
+    sunce->addCompanion("zhouyu");
+    sunce->addCompanion("taishici");
+    sunce->addCompanion("daqiao");
+    sunce->addSkill(new Jiang);
+    sunce->addSkill(new Yingyang);
+    sunce->addSkill(new Hunshang);
+    sunce->setDeputyMaxHpAdjustedValue(-1);
 
-    General *chenwudongxi = new General(this, "chenwudongxi", "wu", 4);
+    /*General *chenwudongxi = new General(this, "chenwudongxi", "wu", 4);
 
     General *dongzhuo = new General(this, "dongzhuo", "qun", 4); // QUN 006 G
 
