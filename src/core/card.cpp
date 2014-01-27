@@ -677,7 +677,7 @@ QString Card::showSkill() const {
 }
 
 void Card::setShowSkill(const QString &skill_name) {
-    this->show_skill = skill_name;
+    show_skill = skill_name;
 }
 
 void Card::addSubcard(int card_id) {
