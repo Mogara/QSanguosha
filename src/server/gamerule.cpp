@@ -939,12 +939,11 @@ bool HulaoPassMode::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
 
             QList<const Card *> tricks = lord->getJudgingArea();
             if (!tricks.isEmpty()) {
-                DummyCard *dummy = new DummyCard;
+                DummyCard dummy;
                 foreach (const Card *trick, tricks)
-                    dummy->addSubcard(trick);
+                    dummy.addSubcard(trick);
                 CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
-                room->throwCard(dummy, reason, NULL);
-                delete dummy;
+                room->throwCard(&dummy, reason, NULL);
             }
             if (!lord->faceUp())
                 lord->turnOver();

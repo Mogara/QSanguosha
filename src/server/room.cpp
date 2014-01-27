@@ -4780,20 +4780,18 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
 
     if (to_discard.isEmpty()) return false;
 
-    DummyCard *dummy_card = new DummyCard(to_discard);
+    DummyCard dummy_card(to_discard);
     if (reason == "gamerule") {
-        CardMoveReason reason(CardMoveReason::S_REASON_RULEDISCARD, player->objectName(), QString(), dummy_card->getSkillName(), QString());
-        throwCard(dummy_card, reason, player);
+        CardMoveReason reason(CardMoveReason::S_REASON_RULEDISCARD, player->objectName(), QString(), dummy_card.getSkillName(), QString());
+        throwCard(&dummy_card, reason, player);
     } else {
-        CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), dummy_card->getSkillName(), QString());
-        throwCard(dummy_card, reason, player);
+        CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), dummy_card.getSkillName(), QString());
+        throwCard(&dummy_card, reason, player);
     }
 
     QVariant data;
-    data = QString("%1:%2").arg("cardDiscard").arg(dummy_card->toString());
+    data = QString("%1:%2").arg("cardDiscard").arg(dummy_card.toString());
     thread->trigger(ChoiceMade, this, player, data);
-
-    dummy_card->deleteLater();
 
     return true;
 }
@@ -5591,10 +5589,10 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
     }
     Q_ASSERT(target != NULL);
 
-    DummyCard *dummy_card = new DummyCard;
+    DummyCard dummy_card;
     foreach (int card_id, ids) {
         cards.removeOne(card_id);
-        dummy_card->addSubcard(card_id);
+        dummy_card.addSubcard(card_id);
     }
 
     QVariant decisionData = QVariant::fromValue(QString("Yiji:%1:%2:%3:%4")
@@ -5611,14 +5609,13 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
 
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill)
-            broadcastSkillInvoke(skill_name, skill->getEffectIndex(target, dummy_card));
+            broadcastSkillInvoke(skill_name, skill->getEffectIndex(target, &dummy_card));
         notifySkillInvoked(guojia, skill_name);
     }
 
     guojia->setFlags("Global_GongxinOperator");
-    moveCardTo(dummy_card, target, Player::PlaceHand, reason, visible);
+    moveCardTo(&dummy_card, target, Player::PlaceHand, reason, visible);
     guojia->setFlags("-Global_GongxinOperator");
-    delete dummy_card;
 
     return true;
 }

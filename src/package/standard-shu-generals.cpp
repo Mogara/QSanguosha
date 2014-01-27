@@ -987,7 +987,7 @@ public:
                 card_to_gotback << ids[i];
         }
         if (!card_to_throw.isEmpty()) {
-            DummyCard *dummy = new DummyCard(card_to_throw);
+            DummyCard dummy(card_to_throw);
 
             RecoverStruct recover;
             recover.who = menghuo;
@@ -995,15 +995,13 @@ public:
             room->recover(menghuo, recover);
 
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, menghuo->objectName(), "zaiqi", QString());
-            room->throwCard(dummy, reason, NULL);
-            dummy->deleteLater();
+            room->throwCard(&dummy, reason, NULL);
             has_heart = true;
         }
         if (!card_to_gotback.isEmpty()) {
-            DummyCard *dummy2 = new DummyCard(card_to_gotback);
+            DummyCard dummy2(card_to_gotback);
             CardMoveReason reason(CardMoveReason::S_REASON_GOTBACK, menghuo->objectName());
-            room->obtainCard(menghuo, dummy2, reason);
-            dummy2->deleteLater();
+            room->obtainCard(menghuo, &dummy2, reason);
         }
 
         if (has_heart)

@@ -1286,9 +1286,8 @@ public:
 
         room->clearAG(erzhang);
 
-        DummyCard *dummy = new DummyCard(cards);
-        room->obtainCard(erzhang, dummy);
-        delete dummy;
+        DummyCard dummy(cards);
+        room->obtainCard(erzhang, &dummy);
         room->broadcastSkillInvoke("guzheng");
 
         return false;

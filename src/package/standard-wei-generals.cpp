@@ -376,9 +376,8 @@ public:
             room->notifyMoveCards(true, moves, false, _guojia);
             room->notifyMoveCards(false, moves, false, _guojia);
 
-            DummyCard *dummy = new DummyCard(yiji_cards);
-            guojia->obtainCard(dummy, false);
-            delete dummy;
+            DummyCard dummy(yiji_cards);
+            guojia->obtainCard(&dummy, false);
         }
     }
 };
@@ -954,15 +953,14 @@ public:
         ServerPlayer *player = death.who;
         if (player->isNude() || caopi == player)
             return false;
-        DummyCard *dummy = new DummyCard(player->handCards());
+        DummyCard dummy(player->handCards());
         QList <const Card *> equips = player->getEquips();
         foreach (const Card *card, equips)
-            dummy->addSubcard(card);
-        if (dummy->subcardsLength() > 0) {
+            dummy.addSubcard(card);
+        if (dummy.subcardsLength() > 0) {
             CardMoveReason reason(CardMoveReason::S_REASON_RECYCLE, caopi->objectName());
-            room->obtainCard(caopi, dummy, reason, false);
+            room->obtainCard(caopi, &dummy, reason, false);
         }
-        delete dummy;
         return false;
     }
 };

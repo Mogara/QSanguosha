@@ -680,10 +680,9 @@ void AmazingGrace::clearRestCards(Room *room) const{
 
     QVariantList ag_list = room->getTag("AmazingGrace").toList();
     if (ag_list.isEmpty()) return;
-    DummyCard *dummy = new DummyCard(VariantList2IntList(ag_list));
+    DummyCard dummy(VariantList2IntList(ag_list));
     CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString(), "amazing_grace", QString());
-    room->throwCard(dummy, reason, NULL);
-    delete dummy;
+    room->throwCard(&dummy, reason, NULL);
 }
 
 void AmazingGrace::doPreAction(Room *room, const CardUseStruct &) const{

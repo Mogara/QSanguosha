@@ -94,13 +94,12 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
             room->addPlayerHistory(NULL, "pushPile");
         }
         if (m_fixedDrawCards.length() > 0 && ex_options.contains(S_EXTRA_OPTION_REST_IN_DISCARD_PILE)) {
-            DummyCard *dummy = new DummyCard;
+            DummyCard dummy;
             foreach (int id, drawPile) {
                 if (!m_fixedDrawCards.contains(id))
-                    dummy->addSubcard(id);
+                    dummy.addSubcard(id);
             }
-            room->moveCardTo(dummy, NULL, Player::DiscardPile);
-            delete dummy;
+            room->moveCardTo(&dummy, NULL, Player::DiscardPile);
         }
 
         QList<int> int_list;
@@ -208,9 +207,8 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
             str = this->players.at(i)["hand"];
             if (str != QString()) {
                 QStringList hands = str.split(",");
-                DummyCard *dummy = new DummyCard(StringList2IntList(hands));
-                room->obtainCard(sp, dummy);
-                dummy->deleteLater();
+                DummyCard dummy(StringList2IntList(hands));
+                room->obtainCard(sp, &dummy);
             }
             room->setTag("FirstRound", false);
 

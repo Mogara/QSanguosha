@@ -82,14 +82,13 @@ void ServerPlayer::throwAllEquips() {
 
     if (equips.isEmpty()) return;
 
-    DummyCard *card = new DummyCard;
+    DummyCard card;
     foreach (const Card *equip, equips) {
-        if (!isJilei(card))
-            card->addSubcard(equip);
+        if (!isJilei(&card))
+            card.addSubcard(equip);
     }
-    if (card->subcardsLength() > 0)
-        room->throwCard(card, this);
-    card->deleteLater();
+    if (card.subcardsLength() > 0)
+        room->throwCard(&card, this);
 }
 
 void ServerPlayer::throwAllHandCards() {
@@ -122,10 +121,9 @@ void ServerPlayer::clearOnePrivatePile(QString pile_name) {
         return;
     QList<int> &pile = piles[pile_name];
 
-    DummyCard *dummy = new DummyCard(pile);
+    DummyCard dummy(pile);
     CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, this->objectName());
-    room->throwCard(dummy, reason, NULL);
-    dummy->deleteLater();
+    room->throwCard(&dummy, reason, NULL);
     piles.remove(pile_name);
 }
 
@@ -1162,10 +1160,9 @@ void ServerPlayer::exchangeFreelyFromPrivatePile(const QString &skill_name, cons
     addToPile(pile_name, will_to_handcard_x, false);
     room->setPlayerFlag(this, "-" + tempMovingFlag);
 
-    DummyCard *dummy = new DummyCard(will_to_handcard_x);
+    DummyCard dummy(will_to_handcard_x);
     CardMoveReason reason(CardMoveReason::S_REASON_EXCHANGE_FROM_PILE, this->objectName());
-    room->obtainCard(this, dummy, reason, false);
-    delete dummy;
+    room->obtainCard(this, &dummy, reason, false);
 }
 
 #include "gamerule.h"
