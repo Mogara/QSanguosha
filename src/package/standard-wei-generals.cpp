@@ -936,13 +936,15 @@ public:
     Xingshang(): TriggerSkill("xingshang") {
         events << Death;
     }
+
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         DeathStruct death = data.value<DeathStruct>();
         ServerPlayer *dead = death.who;
-        if (player->isNude() || player == dead )
+        if (dead->isNude() || player == dead )
             return false;
         return (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who) && player->isAlive());
     }
+
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (player->askForSkillInvoke(objectName(), data)){
             room->broadcastSkillInvoke(objectName());
@@ -950,6 +952,7 @@ public:
         }
         return false;
     }
+
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *caopi, QVariant &data) const{
         DeathStruct death = data.value<DeathStruct>();
         ServerPlayer *player = death.who;
@@ -971,17 +974,21 @@ class Fangzhu: public MasochismSkill {
 public:
     Fangzhu(): MasochismSkill("fangzhu") {
     }
+
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->askForSkillInvoke(objectName(), data)){
+        ServerPlayer *to = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "fangzhu-invoke", true);
+        if (to != NULL){
             room->broadcastSkillInvoke(objectName());
+            player->tag["fangzhu_invoke"] = QVariant::fromValue(to);
             return true;
         }
         return false;
     }
+
     virtual void onDamaged(ServerPlayer *caopi, const DamageStruct &) const{
         Room *room = caopi->getRoom();
-        ServerPlayer *to = room->askForPlayerChosen(caopi, room->getOtherPlayers(caopi), objectName(),
-                                                    "fangzhu-invoke", caopi->getMark("JilveEvent") != int(Damaged), true);
+        ServerPlayer *to = caopi->tag["fangzhu_invoke"].value<ServerPlayer *>();
+        caopi->tag.remove("fangzhu_invoke");
         if (to) {
             to->drawCards(caopi->getLostHp());
             to->turnOver();
