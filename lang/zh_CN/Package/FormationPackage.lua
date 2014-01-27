@@ -2,6 +2,7 @@
 
 return {
 	["formation"] = "国战-阵包",
+	["formation_equip"] = "国战-阵包",
 	
 	["#dengai"] = "矫然的壮士",
 	["dengai"] = "邓艾",
