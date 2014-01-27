@@ -1543,14 +1543,14 @@ public:
         if (damage.to && damage.to->isAlive() && damage.card && damage.card->isKindOf("Slash")
             && damage.by_user && !damage.chain && !damage.transfer){
                 QList<ServerPlayer *> players;
-                foreach(ServerPlayer *p, room->getOtherPlayers(damage.to))
+                foreach(ServerPlayer *p, room->getOtherPlayers(player))
                     if (damage.to->distanceTo(p) == 1){
                         players << p;
                         room->setPlayerFlag(p, "TribladeCanBeSelected");
                     }
-                    if (players.isEmpty())
-                        return false;
-                    room->askForUseCard(player, "@@Triblade", "@triblade");
+                if (players.isEmpty())
+                    return false;
+                room->askForUseCard(player, "@@Triblade", "@triblade");
         }
 
         foreach(ServerPlayer *p, room->getAllPlayers())
@@ -1796,6 +1796,8 @@ StandardCardPackage::StandardCardPackage()
            << new SpearSkill << new FanSkill << new AxeSkill << new KylinBowSkill 
            << new TribladeSkill << new EightDiagramSkill << new RenwangShieldSkill 
            << new VineSkill << new SilverLionSkill;
+
+    addMetaObject<TribladeSkillCard>();
 
     QList<Card *> horses;
     horses << new DefensiveHorse(Card::Spade, 5)
