@@ -153,6 +153,7 @@ public:
 
     void showGeneral(bool head_general = true);
     void hideGeneral(bool head_general = true);
+    void removeGeneral(bool head_general = true);
     void sendSkillsToOthers(bool head_skill = true);
     void disconnectSkillsFromOthers(bool head_skill = true);
     bool askForGeneralShow(bool one = true);

@@ -17,11 +17,11 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool triggerable(TriggerEvent , ServerPlayer *lidian, Room *room, QVariant &, ServerPlayer* &ask_who) const {
+    virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *lidian, QVariant &, ServerPlayer* &ask_who) const {
         return (PhaseChangeSkill::triggerable(lidian) && lidian->getPhase() == Player::Draw);
     }
 
-    virtual bool cost(TriggerEvent , ServerPlayer *lidian, Room *room, QVariant &) const {
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *lidian, QVariant &) const {
         return lidian->askForSkillInvoke(objectName());
     }
 
@@ -55,7 +55,7 @@ public:
         events << Damage << Damaged;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, ServerPlayer *player, Room *room, QVariant &data, ServerPlayer* &ask_who) const {
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
         if (!TriggerSkill::triggerable(player)) return false;
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *target = NULL;
@@ -98,7 +98,7 @@ public:
     Hengjiang(): MasochismSkill("hengjiang") {
     }
     
-    virtual bool triggerable(TriggerEvent triggerEvent, ServerPlayer *player, Room *room, QVariant &data, ServerPlayer* &ask_who) const {
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
         if (!TriggerSkill::triggerable(player)) return false;
         ServerPlayer *current = room->getCurrent();
         if (!current || current->isDead() || current->getPhase() == Player::NotActive) return false;
@@ -131,7 +131,7 @@ public:
         events << TurnStart << CardsMoveOneTime << EventPhaseChanging;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, ServerPlayer *player, Room *room, QVariant &data, ServerPlayer* &ask_who) const {
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
         if (!player) return false;
         if (triggerEvent == TurnStart) {
             room->setPlayerMark(player, "@hengjiang", 0);
@@ -186,7 +186,7 @@ public:
         return false;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, ServerPlayer *player, Room *room, QVariant &data, ServerPlayer* &ask_who) const {
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
         if (!player) return false;
         if (triggerEvent == EventPhaseStart && TriggerSkill::triggerable(player)
             && player->getPhase() == Player::Start) return true;
@@ -248,7 +248,7 @@ public:
         events << EventPhaseChanging << Death;
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, ServerPlayer *player, Room *room, QVariant &data, ServerPlayer* &ask_who) const {
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
         if (player->tag["qianxi"].toString().isNull()) return false;
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -668,7 +668,7 @@ public:
     Fenming(): PhaseChangeSkill("fenming") {
     }
 
-    virtual bool triggerable(TriggerEvent , ServerPlayer *player, Room *room, QVariant &, ServerPlayer* &ask_who) const {
+    virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &ask_who) const {
         if (PhaseChangeSkill::triggerable(player) && player->getPhase() == Player::Finish && player->isChained())
             foreach (ServerPlayer *p, room->getAlivePlayers())
                 if (p->isChained() && player->canDiscard(p, "he"))
@@ -677,7 +677,7 @@ public:
         return false;
     }
 
-    virtual bool cost(TriggerEvent , ServerPlayer *player, Room *room, QVariant &) const {
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const {
         return player->askForSkillInvoke(objectName());
     }
 
@@ -698,7 +698,7 @@ public:
     Hengzheng(): PhaseChangeSkill("hengzheng") {
     }
 
-    virtual bool triggerable(TriggerEvent , ServerPlayer *player, Room *room, QVariant &, ServerPlayer* &ask_who) const {
+    virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &ask_who) const {
         if (PhaseChangeSkill::triggerable(player) && player->getPhase() == Player::Draw && (player->isKongcheng() || player->getHp() == 1))
             foreach (ServerPlayer *p, room->getOtherPlayers(player))
                 if (!p->isAllNude())
@@ -707,7 +707,7 @@ public:
         return false;
     }
 
-    virtual bool cost(TriggerEvent , ServerPlayer *player, Room *room, QVariant &) const {
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const {
         return player->askForSkillInvoke(objectName());
     }
 
@@ -730,20 +730,19 @@ public:
         relate_to_place = "head";
     }
 
-    virtual bool triggerable(TriggerEvent , ServerPlayer *player, Room *room, QVariant &, ServerPlayer* &ask_who) const {
+    virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &ask_who) const {
         if (TriggerSkill::triggerable(player) && player->getPhase() == Player::Play && player->hasShownSkill(this))
-            return true; // @todo: 有副将
+            return !player->getActualGeneral2Name().contains("sujiang");
 
         return false;
     }
 
-    virtual bool cost(TriggerEvent , ServerPlayer *player, Room *room, QVariant &) const {
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const {
         return true;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *player) const{
-        Room *room = player->getRoom();
-        //@todo: 移除副将的武将牌
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const {
+        player->removeGeneral(false);
         room->setPlayerProperty(player, "maxhp", player->getMaxHp() + 3);
 
         LogMessage log;
@@ -768,7 +767,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool triggerable(TriggerEvent , ServerPlayer *player, Room *room, QVariant &, ServerPlayer* &ask_who) const {
+    virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &ask_who) const {
         if (!PhaseChangeSkill::triggerable(player)) return false;
         if (player->getPhase() == Player::Finish) {
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
