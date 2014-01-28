@@ -693,6 +693,114 @@ public:
     }
 };
 
+class Hengzheng: public PhaseChangeSkill {
+public:
+    Hengzheng(): PhaseChangeSkill("hengzheng") {
+    }
+
+    virtual bool triggerable(TriggerEvent , ServerPlayer *player, Room *room, QVariant &, ServerPlayer* &ask_who) const {
+        if (PhaseChangeSkill::triggerable(player) && player->getPhase() == Player::Draw && (player->isKongcheng() || player->getHp() == 1))
+            foreach (ServerPlayer *p, room->getOtherPlayers(player))
+                if (!p->isAllNude())
+                    return true;
+
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent , ServerPlayer *player, Room *room, QVariant &) const {
+        return player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        room->broadcastSkillInvoke(objectName());
+        foreach (ServerPlayer *p, room->getAlivePlayers())
+            if (!p->isAllNude()) {
+                int card_id = room->askForCardChosen(player, p, "hej", objectName());
+                room->obtainCard(player, card_id, false);
+            }
+        return true;
+    }
+};
+
+class Baoling: public TriggerSkill {
+public:
+    Baoling(): TriggerSkill("baoling") {
+        events << EventPhaseEnd;
+        relate_to_place = "head";
+    }
+
+    virtual bool triggerable(TriggerEvent , ServerPlayer *player, Room *room, QVariant &, ServerPlayer* &ask_who) const {
+        if (TriggerSkill::triggerable(player) && player->getPhase() == Player::Play && player->hasShownSkill(this))
+            return true; // @todo: 有副将
+
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent , ServerPlayer *player, Room *room, QVariant &) const {
+        return true;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        //@todo: 移除副将的武将牌
+        room->setPlayerProperty(player, "maxhp", player->getMaxHp() + 3);
+
+        LogMessage log;
+        log.type = "#GainMaxHp";
+        log.from = player;
+        log.arg = QString::number(3);
+        room->sendLog(log);
+
+        RecoverStruct recover;
+        recover.recover = 3;
+        recover.who = player;
+        room->recover(player, recover);
+
+        room->handleAcquireDetachSkills(player, "benghuai");
+        return false;
+    }
+};
+
+class Benghuai: public PhaseChangeSkill {
+public:
+    Benghuai(): PhaseChangeSkill("benghuai") {
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(TriggerEvent , ServerPlayer *player, Room *room, QVariant &, ServerPlayer* &ask_who) const {
+        if (!PhaseChangeSkill::triggerable(player)) return false;
+        if (player->getPhase() == Player::Finish) {
+            QList<ServerPlayer *> players = room->getOtherPlayers(player);
+            foreach (ServerPlayer *p, players)
+                if (player->getHp() > p->getHp())
+                    return true;
+        }
+
+        return false;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *dongzhuo) const{
+        Room *room = dongzhuo->getRoom();
+        LogMessage log;
+        log.from = dongzhuo;
+        log.arg = objectName();
+        log.type = "#TriggerSkill";
+        room->sendLog(log);
+        room->notifySkillInvoked(dongzhuo, objectName());
+
+        QString result = room->askForChoice(dongzhuo, "benghuai", "hp+maxhp");
+        int index = (result == "hp") ? 2 : 1;
+        room->broadcastSkillInvoke(objectName(), index);
+        if (result == "hp")
+            room->loseHp(dongzhuo);
+        else
+            room->loseMaxHp(dongzhuo);
+
+        return false;
+    }
+};
+
 MomentumPackage::MomentumPackage()
     : Package("momentum")
 {
@@ -738,9 +846,11 @@ MomentumPackage::MomentumPackage()
     chenwudongxi->addSkill(new Duanxie);
     chenwudongxi->addSkill(new Fenming);
 
-    /*General *dongzhuo = new General(this, "dongzhuo", "qun", 4); // QUN 006 G
+    General *dongzhuo = new General(this, "dongzhuo", "qun", 4); // QUN 006
+    dongzhuo->addSkill(new Hengzheng);
+    dongzhuo->addSkill(new Baoling);
 
-    General *zhangren = new General(this, "zhangren", "qun", 3);
+    /*General *zhangren = new General(this, "zhangren", "qun", 3);
 
     skills << new Yongjue << new YongjueStart;
     related_skills.insertMulti("yongjue", "#yongjue-start");
@@ -748,6 +858,8 @@ MomentumPackage::MomentumPackage()
     addMetaObject<GuixiuCard>();
     addMetaObject<CunsiCard>();*/
     addMetaObject<DuanxieCard>();
+
+    skills << new Benghuai;
 }
 
 ADD_PACKAGE(Momentum)
