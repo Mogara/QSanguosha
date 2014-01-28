@@ -158,7 +158,7 @@ public:
     void disconnectSkillsFromOthers(bool head_skill = true);
     bool askForGeneralShow(bool one = true);
     
-    bool inSiegeRelation(const ServerPlayer *teammate, const ServerPlayer *victim) const;
+    bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
     QList<const ServerPlayer *> getFormation() const;
     bool inFormationRalation(const ServerPlayer *teammate) const;
     void summonFriends(const BattleArrayType::ArrayType type);

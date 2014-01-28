@@ -826,6 +826,88 @@ public:
     }
 };
 
+class Chuanxin: public TriggerSkill {
+public:
+    Chuanxin(): TriggerSkill("chuanxin") {
+        events << DamageCaused;
+    }
+
+    virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
+        if (!TriggerSkill::triggerable(player)) return false;
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!damage.to || !damage.to->hasShownOneGeneral()) return false;
+        if (!damage.card || !(damage.card->isKindOf("Slash") || damage.card->isKindOf("Duel"))) return false;
+        if (!player->hasShownOneGeneral()) return false;
+        if (player->isFriendWith(damage.to)) return false;
+        if (damage.to->getActualGeneral2Name().contains("sujiang")) return false;
+        return true;
+    }
+
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const {
+        return player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const {
+        DamageStruct damage = data.value<DamageStruct>();
+        QStringList choices;
+        if (damage.to->hasEquip())
+            choices << "discard";
+        choices << "remove";
+        QString choice = room->askForChoice(damage.to, objectName(), choices.join("+"));
+        if (choice == "discard") {
+            damage.to->throwAllEquips();
+            room->loseHp(damage.to);
+        } else
+            damage.to->removeGeneral(false);
+        
+        return true;
+    }
+};
+
+FengshiSummon::FengshiSummon() 
+    : ArraySummonCard("fengshi")
+{
+
+}
+
+class Fengshi: public BattleArraySkill {
+public:
+    Fengshi(): BattleArraySkill("fengshi", BattleArrayType::Siege) {
+        events << TargetConfirmed;
+    }
+    
+    virtual bool canPreshow() const{
+        return false;
+    }
+
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!TriggerSkill::triggerable(player)) return false;
+        if (!player->hasShownSkill(this) || player->aliveCount() < 4) return false;
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("Slash"))
+            foreach (ServerPlayer *to, use.to)
+                if (use.from->inSiegeRelation(player, to))
+                    if (to->canDiscard(to, "e")) {
+                        ask_who = player;
+                        return true;
+                    }
+
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card->isKindOf("Slash"))
+            foreach (ServerPlayer *to, use.to)
+                if (use.from->inSiegeRelation(player, to))
+                    if (to->canDiscard(to, "e")) {
+                        int card_id = room->askForCardChosen(to, to, "e", objectName(), true, Card::MethodDiscard);
+                        room->throwCard(card_id, to);
+                    }
+        return false;
+    }
+};
+
 MomentumPackage::MomentumPackage()
     : Package("momentum")
 {
@@ -873,15 +955,16 @@ MomentumPackage::MomentumPackage()
     dongzhuo->addSkill(new Hengzheng);
     dongzhuo->addSkill(new Baoling);
 
-    /*General *zhangren = new General(this, "zhangren", "qun", 3);*/
+    General *zhangren = new General(this, "zhangren", "qun", 3); // QUN 024
+    zhangren->addSkill(new Chuanxin);
+    zhangren->addSkill(new Fengshi);
 
-    skills << new Yongjue << new YongjueStart;
+    skills << new Yongjue << new YongjueStart << new Benghuai;
     related_skills.insertMulti("yongjue", "#yongjue-start");
 
     addMetaObject<CunsiCard>();
     addMetaObject<DuanxieCard>();
-
-    skills << new Benghuai;
+    addMetaObject<FengshiSummon>();
 }
 
 ADD_PACKAGE(Momentum)

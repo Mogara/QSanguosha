@@ -25,6 +25,13 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
+class FengshiSummon: public ArraySummonCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE FengshiSummon();
+};
+
 class MomentumPackage: public Package {
     Q_OBJECT
 

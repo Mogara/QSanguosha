@@ -692,7 +692,7 @@ public:
         if (use.card->isKindOf("Slash")) {
             for (int i = 0; i < use.to.length(); i++) {
                 ServerPlayer *victim = use.to.at(i);
-                if (player->inSiegeRelation(use.from, victim)) {
+                if (use.from->inSiegeRelation(player, victim)) {
                     QVariantList jink_list = use.from->tag["Jink_" + use.card->toString()].toList();
                     if (jink_list.at(i).toInt() == 1)
                         jink_list.replace(i, QVariant(2));

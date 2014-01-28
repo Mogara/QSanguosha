@@ -1561,14 +1561,14 @@ bool ServerPlayer::askForGeneralShow(bool one) {
     return choice.startsWith("s");
 }
 
-bool ServerPlayer::inSiegeRelation(const ServerPlayer *teammate, const ServerPlayer *victim) const {
-    if (isFriendWith(victim) || !isFriendWith(teammate)) return false;
-    if (getNextAlive(2) == teammate && getNextAlive() == victim)
-        return true;
-    else if (getLastAlive(2) == teammate && getLastAlive() == victim)
-        return true;
+bool ServerPlayer::inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const {
+    if (isFriendWith(victim) || !isFriendWith(skill_owner)) return false;
+    if (this == skill_owner)
+        return (getNextAlive() == victim && getNextAlive(2)->isFriendWith(this))
+            || (getLastAlive() == victim && getLastAlive(2)->isFriendWith(this));
     else
-        return false;
+        return (getNextAlive() == victim && getNextAlive(2) == skill_owner)
+            || (getLastAlive() == victim && getLastAlive(2) == skill_owner);
 }
 
 QList<const ServerPlayer *> ServerPlayer::getFormation() const {
