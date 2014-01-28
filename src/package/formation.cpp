@@ -346,7 +346,7 @@ HeyiSummon::HeyiSummon()
 class Heyi: public BattleArraySkill {
 public:
     Heyi(): BattleArraySkill("heyi", BattleArrayType::Formation) {
-        events << GeneralShown << GeneralHidden << Death;
+        events << GeneralShown << GeneralHidden << GeneralRemoved << Death;
     }
     
     virtual bool canPreshow() const{
@@ -934,6 +934,10 @@ public:
         frequency = Compulsory;
     }
 
+    virtual bool canPreshow() const {
+        return false;
+    }
+
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         if (!TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who))
             return false;
@@ -1017,6 +1021,10 @@ public:
         events << AskForPeaches;
         frequency = Limited;
         limit_mark = "@jizhao";
+    }
+
+    virtual bool canPreshow() const {
+        return false;
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{

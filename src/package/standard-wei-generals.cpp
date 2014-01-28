@@ -435,10 +435,14 @@ public:
             if ((judge.isGood() && !zhenji->askForSkillInvoke(objectName())) || judge.isBad())
                 break;
         }
-        if (zhenji->tag[objectName()].toList().length() != 0){
-            DummyCard dummy(VariantList2IntList(zhenji->tag[objectName()].toList()));
+        QList<int> card_list = VariantList2IntList(zhenji->tag[objectName()].toList());
+        zhenji->tag.remove(objectName());
+        foreach(int id, card_list)
+            if (room->getCardPlace(id) != Player::PlaceTable)
+                card_list.removeOne(id);
+        if (card_list.length() != 0){
+            DummyCard dummy(card_list);
             zhenji->obtainCard(&dummy);
-            zhenji->tag.remove(objectName());
         }
 
         return false;
