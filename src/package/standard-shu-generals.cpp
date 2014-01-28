@@ -1428,6 +1428,4 @@ void StandardPackage::addShuGenerals()
 
     addMetaObject<RendeCard>();
     addMetaObject<FangquanCard>();
-
-    skills << new Qicai;
 }
