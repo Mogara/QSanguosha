@@ -14,6 +14,7 @@ config = {
 	package_names = {
 		"StandardCard",
 		"FormationEquip",
+		"MomentumEquip" ,
 
 		"Standard",
 		"Formation",
