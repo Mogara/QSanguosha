@@ -1181,15 +1181,42 @@ public:
     }
 };
 
-WendaoCard::WendaoCard() {
+WendaoCard::WendaoCard(){
     target_fixed = true;
 }
 
-void WendaoCard::onUse(Room *room, const CardUseStruct &card_use) const{
-    Card *card = Sanguosha->getCard(109);
-    if (!card) return;
-    if (room->getCardPlace(109) == Player::PlaceTable || room->getCardPlace(109) == Player::PlaceEquip || room->getCardPlace(109) == Player::DiscardPile)
-        room->obtainCard(card_use.from, card);
+void WendaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
+    const Card *tpys = NULL;
+    foreach(ServerPlayer *p, room->getAlivePlayers()){
+        foreach(const Card *card, p->getEquips()){
+            if (Sanguosha->getEngineCard(card->getEffectiveId())->isKindOf("PeaceSpell")){
+                tpys = Sanguosha->getCard(card->getEffectiveId());
+                break;
+            }
+        }
+        if (tpys != NULL)
+            break;
+        foreach(const Card *card, p->getJudgingArea()){
+            if (Sanguosha->getEngineCard(card->getEffectiveId())->isKindOf("PeaceSpell")){
+                tpys = Sanguosha->getCard(card->getEffectiveId());
+                break;
+            }
+        }
+        if (tpys != NULL)
+            break;
+    }
+    if (tpys == NULL)
+        foreach(int id, room->getDiscardPile()){
+            if (Sanguosha->getEngineCard(id)->isKindOf("PeaceSpell")){
+                tpys = Sanguosha->getCard(id);
+                break;
+            }
+    }
+
+    if (tpys == NULL)
+        return;
+
+    source->obtainCard(tpys, true);
 }
 
 class Wendao: public OneCardViewAsSkill {
