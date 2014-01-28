@@ -1406,6 +1406,7 @@ void ServerPlayer::removeGeneral(bool head_general) {
         general_name = gender == General::Male ? "sujiang" : "sujiangf";
 
         room->setPlayerProperty(this, "actual_general1", general_name);
+        room->setPlayerProperty(this, "general1_showed", true);
 
         Json::Value arg(Json::arrayValue);
         arg[0] = S_GAME_EVENT_CHANGE_HERO;
@@ -1455,6 +1456,7 @@ void ServerPlayer::removeGeneral(bool head_general) {
         general_name = gender == General::Male ? "sujiang" : "sujiangf";
         
         room->setPlayerProperty(this, "actual_general2", general_name);
+        room->setPlayerProperty(this, "general2_showed", true);
 
         Json::Value arg(Json::arrayValue);
         arg[0] = S_GAME_EVENT_CHANGE_HERO;
@@ -1499,7 +1501,7 @@ void ServerPlayer::removeGeneral(bool head_general) {
     }
 
     Q_ASSERT(room->getThread() != NULL);
-    room->getThread()->trigger(GeneralRemoved, room, this, QVariant(general_name));
+    room->getThread()->trigger(GeneralRemoved, room, this, QVariant(from_general));
 
     LogMessage log;
     log.type = "#BasaraRemove";

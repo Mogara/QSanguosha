@@ -13,6 +13,8 @@ return
 	["show_both_generals"] = "展示双将",
 	["head"] = "主将",
 	["deputy"] = "副将",
+	["head_general"] = "主将",
+	["deputy_general"] = "副将",
 	["GameRule_AskForArraySummon"] = "阵法召唤",
 	["SiegeSummon"] = "响应围攻",
 	["FormationSummon"] = "响应队列",

@@ -1241,6 +1241,8 @@ QingchengCard::QingchengCard() {
 }
 
 bool QingchengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if (to_select->isLord() && to_select->getActualGeneral2Name().contains("sujiang")) return false;
+    if (to_select->getActualGeneral1Name().contains("sujiang") && to_select->getActualGeneral2Name().contains("sujiang")) return false;
     return targets.isEmpty() && to_select != Self && to_select->hasShownAllGenerals();
 }
 
@@ -1248,9 +1250,15 @@ void QingchengCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *player = effect.from, *to = effect.to;
     Room *room = player->getRoom();
 
-    QString choice = "deputy_general";
-    if (effect.to->isLord())
-        choice = room->askForChoice(player, objectName(), "head_general+deputy_general", "qingcheng");
+    QStringList choices;
+    if (!player->isLord() && !player->getActualGeneral1Name().contains("sujiang"))
+        choices << "head_general";
+    if (!player->getActualGeneral2Name().contains("sujiang"))
+        choices << "deputy_general";
+
+    QString choice;
+    if (!choices.isEmpty())
+        choice = room->askForChoice(player, objectName(), choices.join("+"), "qingcheng");
     to->hideGeneral(choice == "head_general");
 }
 
