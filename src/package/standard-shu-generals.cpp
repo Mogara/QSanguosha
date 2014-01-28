@@ -544,20 +544,6 @@ public:
     }
 };
 
-class NosQicai: public TargetModSkill {
-public:
-    NosQicai(): TargetModSkill("nosqicai") {
-        pattern = "TrickCard";
-    }
-
-    virtual int getDistanceLimit(const Player *from, const Card *) const{
-        if (from->hasSkill(objectName()))
-            return 1000;
-        else
-            return 0;
-    }
-};
-
 class Liegong: public TriggerSkill {
 public:
     Liegong(): TriggerSkill("liegong") {
@@ -1397,7 +1383,7 @@ void StandardPackage::addShuGenerals()
 
     General *huangyueying = new General(this, "huangyueying", "shu", 3, false); // SHU 007
     huangyueying->addSkill(new Jizhi);
-    huangyueying->addSkill(new NosQicai);
+    huangyueying->addSkill(new Qicai);
 
     General *huangzhong = new General(this, "huangzhong", "shu"); // SHU 008
     huangzhong->addCompanion("weiyan");
