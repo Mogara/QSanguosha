@@ -1282,7 +1282,7 @@ MomentumPackage::MomentumPackage()
     dongzhuo->addSkill(new Hengzheng);
     dongzhuo->addSkill(new Baoling);
 
-    General *zhangren = new General(this, "zhangren", "qun", 3); // QUN 024
+    General *zhangren = new General(this, "zhangren", "qun", 4); // QUN 024
     zhangren->addSkill(new Chuanxin);
     zhangren->addSkill(new Fengshi);
 
