@@ -839,6 +839,7 @@ public:
         if (!damage.card || !(damage.card->isKindOf("Slash") || damage.card->isKindOf("Duel"))) return false;
         if (!player->hasShownOneGeneral()) return false;
         if (player->isFriendWith(damage.to)) return false;
+		if (damage.transfer || damage.chain) return false;
         if (damage.to->getActualGeneral2Name().contains("sujiang")) return false;
         return true;
     }
