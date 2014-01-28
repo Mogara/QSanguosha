@@ -963,7 +963,7 @@ void HongfaCard::onUse(Room *room, const CardUseStruct &card_use) const{
     foreach (int id, total) {
         Slash *slash = new Slash(Card::SuitToBeDecided, -1);
         slash->addSubcard(id);
-        if (!slash->isAvailable(qunxiong))
+        if (!Slash::IsAvailable(qunxiong, slash))
             continue;
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
             if (!slash->targetFilter(QList<const Player *>(), p, qunxiong))
@@ -999,7 +999,7 @@ void HongfaCard::onUse(Room *room, const CardUseStruct &card_use) const{
     }
 
     Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-    slash->setSkillName("jixi");
+    slash->setSkillName("hongfa");
     slash->addSubcard(card_id);
 
     QList<ServerPlayer *> targets;
@@ -1035,6 +1035,7 @@ void HongfaCard::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 HongfaSlashCard::HongfaSlashCard() {
+    m_skillName = "hongfa_slash";
 }
 
 bool HongfaSlashCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -1055,24 +1056,25 @@ void HongfaSlashCard::onUse(Room *room, const CardUseStruct &card_use) const{
 class HongfaSlash: public ZeroCardViewAsSkill {
 public:
     HongfaSlash(): ZeroCardViewAsSkill("hongfa_slash") {
-        attached_lord_skill = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         const Player *zhangjiao;
-        foreach (const Player *p, player->getAliveSiblings())
+        QList<const Player *> ps = player->getAliveSiblings();
+        ps << player;
+        foreach (const Player *p, ps)
             if (p->hasSkill("hongfa")) {
                 zhangjiao = p;
                 break;
             }
         if (!zhangjiao || zhangjiao->getPile("heavenly_army").isEmpty() || !zhangjiao->isFriendWith(player))
             return false;
-        foreach (int id, zhangjiao->getPile("field")) {
+        foreach (int id, zhangjiao->getPile("heavenly_army")) {
             Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-            slash->setSkillName("jixi");
+            slash->setSkillName("hongfa");
             slash->addSubcard(id);
             slash->deleteLater();
-            if (!slash->isAvailable(player))
+            if (!Slash::IsAvailable(player, slash))
                 continue;
             foreach (const Player *p, player->getAliveSiblings()) {
                 if (!slash->targetFilter(QList<const Player *>(), p, player))
@@ -1137,24 +1139,42 @@ public:
                 }
 
                 ServerPlayer *zhangjiao = room->findPlayerBySkillName(objectName());
-                if (!zhangjiao) return false;
-                QList<ServerPlayer *> teammates = room->getLieges(zhangjiao->getKingdom(), NULL);
+                if (!zhangjiao || !zhangjiao->hasShownSkill(this)) return false;
                 foreach (ServerPlayer *p, room->getAllPlayers())
-                    if (p->hasSkill("hongfa_slash"))
+                    if (!p->hasSkill("hongfa_slash"))
                         room->attachSkillToPlayer(p, "hongfa_slash");
         }
         return true;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *player) const{
-        Room *room = player->getRoom();
-        int num = 0;
-        foreach (auto p, room->getAllPlayers())
-            if (p->hasShownOneGeneral() && p->getKingdom() == player->getKingdom())
-                num ++;
-        int num2 = player->getPile("heavenly_army").length();
-        QList<int> tianbing = room->getNCards(num + num2);
-        player->addToPile("heavenly_army", tianbing);
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+        if (triggerEvent == EventPhaseStart) return true;
+        if (triggerEvent == PreHpLost) return player->askForSkillInvoke(objectName());
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+        if (triggerEvent == EventPhaseStart) {
+            int num = 0;
+            foreach (auto p, room->getAllPlayers())
+                if (p->hasShownOneGeneral() && p->getKingdom() == player->getKingdom())
+                    num ++;
+            int num2 = player->getPile("heavenly_army").length();
+            QList<int> tianbing = room->getNCards(num + num2);
+            player->addToPile("heavenly_army", tianbing);
+            return false;
+        } else {
+            room->fillAG(player->getPile("heavenly_army"), player);
+            int card_id = room->askForAG(player, player->getPile("heavenly_army"), false, "hongfa");
+            room->clearAG(player);
+
+            if (card_id != -1) {
+                CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), objectName(), QString());
+                room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
+                return true;
+            }
+        }
+
         return false;
     }
 };
