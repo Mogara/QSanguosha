@@ -736,7 +736,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
         room->broadcastSkillInvoke(objectName());
-        foreach (ServerPlayer *p, room->getAlivePlayers())
+        foreach (ServerPlayer *p, room->getOtherPlayers(player))
             if (!p->isAllNude()) {
                 int card_id = room->askForCardChosen(player, p, "hej", objectName());
                 room->obtainCard(player, card_id, false);
