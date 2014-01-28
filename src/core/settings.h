@@ -42,6 +42,7 @@ public:
     bool EnableSame;
     bool EnableBasara;
     bool EnableHegemony;
+    bool EnableLordGeneralConvert;
     int MaxHpScheme;
     int Scheme0Subtraction;
     bool PreventAwakenBelow3;

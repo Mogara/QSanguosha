@@ -937,7 +937,6 @@ public:
     QString getCurrentCardUsePattern();
     CardUseStruct::CardUseReason getCurrentCardUseReason();
 
-    QString findConvertFrom(const char *general_name) const;
     bool isGeneralHidden(const char *general_name) const;
 };
 

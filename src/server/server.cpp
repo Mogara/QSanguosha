@@ -212,8 +212,8 @@ QWidget *ServerDialog::createAdvancedTab() {
     without_lordskill_checkbox = new QCheckBox(tr("Without Lordskill"));
     without_lordskill_checkbox->setChecked(Config.value("WithoutLordskill", false).toBool());
 
-    sp_convert_checkbox = new QCheckBox(tr("Enable SP Convert"));
-    sp_convert_checkbox->setChecked(Config.value("EnableSPConvert", true).toBool());
+    lord_convert_checkbox = new QCheckBox(tr("Enable Lord General Convert"));
+    lord_convert_checkbox->setChecked(Config.value("EnableLordGeneralConvert", true).toBool());
 
     maxchoice_spinbox = new QSpinBox;
     maxchoice_spinbox->setRange(3, 10);
@@ -312,7 +312,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     layout->addWidget(free_choose_checkbox);
     layout->addLayout(HLay(free_assign_checkbox, free_assign_self_checkbox));
     layout->addLayout(HLay(pile_swapping_label, pile_swapping_spinbox));
-    layout->addLayout(HLay(without_lordskill_checkbox, sp_convert_checkbox));
+    layout->addLayout(HLay(without_lordskill_checkbox, lord_convert_checkbox));
     layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
     layout->addLayout(HLay(godlimit_label, godlimit_spinbox));
     layout->addLayout(HLay(lord_maxchoice_label, lord_maxchoice_spinbox));
@@ -1044,6 +1044,7 @@ bool ServerDialog::config() {
     Config.EnableSame = same_checkbox->isChecked();
     Config.EnableBasara = basara_checkbox->isChecked() && basara_checkbox->isEnabled();
     Config.EnableHegemony = hegemony_checkbox->isChecked() && hegemony_checkbox->isEnabled();
+    Config.EnableLordGeneralConvert = lord_convert_checkbox->isChecked();
     Config.MaxHpScheme = max_hp_scheme_ComboBox->currentIndex();
     if (Config.MaxHpScheme == 0) {
         Config.Scheme0Subtraction = scheme0_subtraction_spinbox->value();
@@ -1089,7 +1090,7 @@ bool ServerDialog::config() {
     Config.setValue("FreeAssignSelf", Config.FreeAssignSelf);
     Config.setValue("PileSwappingLimitation", pile_swapping_spinbox->value());
     Config.setValue("WithoutLordskill", without_lordskill_checkbox->isChecked());
-    Config.setValue("EnableSPConvert", sp_convert_checkbox->isChecked());
+    Config.setValue("EnableLordGeneralConvert", lord_convert_checkbox->isChecked());
     Config.setValue("MaxChoice", maxchoice_spinbox->value());
     Config.setValue("GodLimit", godlimit_spinbox->value());
     Config.setValue("LordMaxChoice", lord_maxchoice_spinbox->value());
@@ -1101,6 +1102,7 @@ bool ServerDialog::config() {
     Config.setValue("EnableSame", Config.EnableSame);
     Config.setValue("EnableBasara", Config.EnableBasara);
     Config.setValue("EnableHegemony", Config.EnableHegemony);
+    Config.setValue("EnableLordGeneralConvert", Config.EnableLordGeneralConvert);
     Config.setValue("HegemonyMaxChoice", hegemony_maxchoice_spinbox->value());
     Config.setValue("HegemonyMaxShown", hegemony_maxshown_spinbox->value());
     Config.setValue("MaxHpScheme", Config.MaxHpScheme);

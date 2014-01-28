@@ -247,12 +247,6 @@ void Engine::addPackage(Package *package) {
             foreach (const Skill *related, getRelatedSkills(skill_name))
                 general->addSkill(related->objectName());
         }
-        if (sp_convert_pairs.keys().contains(general->objectName())) {
-            QStringList to_list(sp_convert_pairs.values(general->objectName()));
-            const Skill *skill = new SPConvertSkill(general->objectName(), to_list.join("+"));
-            addSkills(QList<const Skill *>() << skill);
-            general->addSkill(skill->objectName());
-        }
         generals.insert(general->objectName(), general);
         if (isGeneralHidden(general->objectName())) continue;
         if (general->isLord()) lord_list << general->objectName();
@@ -425,14 +419,6 @@ QString Engine::getCurrentCardUsePattern() {
 
 CardUseStruct::CardUseReason Engine::getCurrentCardUseReason() {
     return currentRoomState()->getCurrentCardUseReason();
-}
-
-QString Engine::findConvertFrom(const QString &general_name) const{
-    foreach (QString general, sp_convert_pairs.keys()) {
-        if (sp_convert_pairs.values(general).contains(general_name))
-            return general;
-    }
-    return QString();
 }
 
 bool Engine::isGeneralHidden(const QString &general_name) const{
@@ -870,24 +856,27 @@ QStringList Engine::getRandomLords() const{
 QStringList Engine::getLimitedGeneralNames() const{
     QStringList general_names;
     QHashIterator<QString, const General *> itor(generals);
-    if (ServerInfo.GameMode == "04_1v3") {
-        QList<const General *> hulao_generals = QList<const General *>();
-        foreach (QString pack_name, GetConfigFromLuaState(lua, "hulao_packages").toStringList()) {
-             const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
-             if (pack) hulao_generals << pack->findChildren<const General *>();
-        }
 
-        foreach (const General *general, hulao_generals) {
-            if (isGeneralHidden(general->objectName()) || general->isTotallyHidden()
-                || general->objectName() == "shenlvbu1" || general->objectName() == "shenlvbu2")
-                continue;
-            general_names << general->objectName();
+    while (itor.hasNext()) {
+        itor.next();
+        if (!isGeneralHidden(itor.value()->objectName()) && !getBanPackages().contains(itor.value()->getPackage()))
+            general_names << itor.key();
+    }
+
+
+    QStringList general_names_copy = general_names;
+    if (Config.EnableLordGeneralConvert){
+        foreach (QString name, general_names_copy){
+            if (name.startsWith("lord_")){
+                QString to_remove = name.right(name.length() - 5);
+                general_names.removeOne(to_remove);
+            }
         }
-    } else {
-        while (itor.hasNext()) {
-            itor.next();
-            if (!isGeneralHidden(itor.value()->objectName()) && !getBanPackages().contains(itor.value()->getPackage()))
-                general_names << itor.key();
+    }
+    else {
+        foreach (QString name, general_names_copy){
+            if (name.startsWith("lord_"))
+                general_names.removeOne(name);
         }
     }
 

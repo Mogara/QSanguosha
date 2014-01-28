@@ -225,20 +225,6 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const;
 };
 
-class SPConvertSkill: public GameStartSkill {
-    Q_OBJECT
-
-public:
-    SPConvertSkill(const QString &from, const QString &to);
-
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const;
-    virtual void onGameStart(ServerPlayer *player) const;
-
-private:
-    QString from, to;
-    QStringList to_list;
-};
-
 class ProhibitSkill: public Skill { //to be deleted
     Q_OBJECT
 

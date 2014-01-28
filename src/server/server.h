@@ -98,7 +98,7 @@ private:
     QLabel *pile_swapping_label;
     QSpinBox *pile_swapping_spinbox;
     QCheckBox *without_lordskill_checkbox;
-    QCheckBox *sp_convert_checkbox;
+    QCheckBox *lord_convert_checkbox;
     QSpinBox *maxchoice_spinbox;
     QSpinBox *godlimit_spinbox;
     QLabel *godlimit_label;

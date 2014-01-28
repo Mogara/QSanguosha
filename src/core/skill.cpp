@@ -409,66 +409,6 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const {
         return false;
 }
 
-SPConvertSkill::SPConvertSkill(const QString &from, const QString &to)
-    : GameStartSkill(QString("cv_%1").arg(from)), from(from), to(to)
-{
-    to_list = to.split("+");
-}
-
-bool SPConvertSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who) const{
-    if (target == NULL) return false;
-    if (!Config.value("EnableSPConvert", true).toBool()) return false;
-    if (Config.EnableHegemony) return false;
-    if (!isNormalGameMode(Config.GameMode)) return false;
-    bool available = false;
-    foreach (QString to_gen, to_list) {
-        const General *gen = Sanguosha->getGeneral(to_gen);
-        if (gen && !Config.value("Banlist/Roles", "").toStringList().contains(to_gen)
-            && !Sanguosha->getBanPackages().contains(gen->getPackage())) {
-            available = true;
-            break;
-        }
-    }
-    return GameStartSkill::triggerable(target)
-           && (target->getGeneralName() == from || target->getGeneral2Name() == from) && available;
-}
-
-void SPConvertSkill::onGameStart(ServerPlayer *player) const{
-    Room *room = player->getRoom();
-    QStringList choicelist;
-    foreach (QString to_gen, to_list) {
-        const General *gen = Sanguosha->getGeneral(to_gen);
-        if (gen && !Config.value("Banlist/Roles", "").toStringList().contains(to_gen)
-            && !Sanguosha->getBanPackages().contains(gen->getPackage()))
-            choicelist << to_gen;
-    }
-    QString data = choicelist.join("\\,\\");
-    if (choicelist.length() >= 2)
-        data.replace("\\,\\" + choicelist.last(), "\\or\\" + choicelist.last());
-    if (player->askForSkillInvoke(objectName(), data)) {
-        QString to_cv;
-        AI *ai = player->getAI();
-        if (ai)
-            to_cv = room->askForChoice(player, objectName(), choicelist.join("+"));
-        else
-            to_cv = choicelist.length() == 1 ? choicelist.first() : room->askForGeneral(player, choicelist.join("+"));
-        bool isSecondaryHero = (player->getGeneralName() != from && player->getGeneral2Name() == from);
-
-        LogMessage log;
-        log.type = player->getGeneral2() ? "#TransfigureDual" : "#Transfigure";
-        log.from = player;
-        log.arg = to_cv;
-        log.arg2 = player->getGeneral2() ? (isSecondaryHero ? "GeneralB" : "GeneralA") : QString();
-        room->sendLog(log);
-        room->setPlayerProperty(player, isSecondaryHero ? "general2" : "general", to_cv);
-
-        const General *general = Sanguosha->getGeneral(to_cv);
-        const QString kingdom = general->getKingdom();
-        if (!isSecondaryHero && kingdom != "god" && kingdom != player->getKingdom())
-            room->setPlayerProperty(player, "kingdom", kingdom);
-    }
-}
-
 int MaxCardsSkill::getExtra(const Player *) const{
     return 0;
 }
