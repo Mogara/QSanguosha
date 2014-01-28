@@ -1181,6 +1181,33 @@ public:
     }
 };
 
+WendaoCard::WendaoCard() {
+    target_fixed = true;
+}
+
+void WendaoCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    Card *card = Sanguosha->getCard(109);
+    if (!card) return;
+    if (room->getCardPlace(109) == Player::PlaceTable || room->getCardPlace(109) == Player::PlaceEquip || room->getCardPlace(109) == Player::DiscardPile)
+        room->obtainCard(card_use.from, card);
+}
+
+class Wendao: public OneCardViewAsSkill {
+public:
+    Wendao(): OneCardViewAsSkill("wendao") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("WendaoCard") && player->canDiscard(player, "he");
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        WendaoCard *card = new WendaoCard;
+        card->addSubcard(originalCard);
+        card->setShowSkill(objectName());
+        return card;
+    }
+};
 
 MomentumPackage::MomentumPackage()
     : Package("momentum")
@@ -1241,10 +1268,31 @@ MomentumPackage::MomentumPackage()
     addMetaObject<FengshiSummon>();
     addMetaObject<HongfaCard>();
     addMetaObject<HongfaSlashCard>();
+    addMetaObject<WendaoCard>();
 
-    General *lord_zhangjiao = new General(this, "lord_zhangjiao$", "qun");
+    General *lord_zhangjiao = new General(this, "lord_zhangjiao$", "qun", 4, true, true);
     lord_zhangjiao->addSkill(new Wuxin);
     lord_zhangjiao->addSkill(new Hongfa);
+    lord_zhangjiao->addSkill(new Wendao);
 }
 
 ADD_PACKAGE(Momentum)
+
+/*PeaceSpell::PeaceSpell(Suit suit, int number)
+    : Armor(Card::Heart, 3)
+{
+    setObjectName("PeaceSpell");
+}
+
+class PeaceSpellSkill: public ArmorSkill{
+public:
+    PeaceSpellSkill(): ArmorSkill("PeaceSpell") {
+        events << DamageInflicted;
+
+    
+MomentumEquipPackage::MomentumEquipPackage(): Package("momentum_equip", CardPack){
+    PeaceSpell *dp = new PeaceSpell();
+    dp->setParent(this);
+}
+
+ADD_PACKAGE(MomentumEquip)*/

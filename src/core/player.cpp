@@ -1171,11 +1171,11 @@ bool Player::ownSkill(const QString skill_name) const {
 
 bool Player::isFriendWith(const Player *player) const {
     Q_ASSERT(player);
+    if (!hasShownOneGeneral() || !player->hasShownOneGeneral())
+        return false;                // 若未亮将则不存在任何相同势力武将（自己也不是）
+
     if (this == player)
         return true;
-
-    if (!hasShownOneGeneral() || !player->hasShownOneGeneral())
-        return false;
     
     if (role == "careerist" || player->role == "careerist")
         return false;

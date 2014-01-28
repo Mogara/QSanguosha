@@ -97,6 +97,6 @@ return {
 	[":wendao"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张红色牌，获得弃牌堆里或场上的一张【太平要术】。",
 
 	["PeaceSpell"] = "太平要术",
-	[":PeaceSpell"] = "装备牌·防具<br />技能：<font color=\"blue\"><b>锁定技，</b></font>每当你受到属性伤害时，你防止此伤害；<font color=\"blue\"><b>锁定技，</b></font>与你势力相同的角色的手牌上限+X（X为与你势力相同的角色的数量）；<font color=\"blue\"><b>锁定技，</b></font>每当你失去装备区里的【太平要术】时，你失去1点体力，然后摸两张牌。",
+	[":PeaceSpell"] = "装备牌·防具<br/>技能：<font color=\"blue\"><b>锁定技，</b></font>每当你受到属性伤害时，你防止此伤害；<font color=\"blue\"><b>锁定技，</b></font>与你势力相同的角色的手牌上限+X（X为与你势力相同的角色的数量）；<font color=\"blue\"><b>锁定技，</b></font>每当你失去装备区里的【太平要术】时，你失去1点体力，然后摸两张牌。",
 	
 }

@@ -716,7 +716,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card->isKindOf("Slash")) return false;
         foreach (ServerPlayer *p, use.to) {
-            if ((p->hasShownOneGeneral() && player->willBeFriendWith(p)) || player->isFriendWith(p)) {
+            if (player->isFriendWith(p)) {
                 ask_who = player;
                 player->tag["yicheng_target"] = QVariant::fromValue(p);
                 return true;
@@ -758,7 +758,7 @@ public:
         if (player == NULL) return false;
         if (triggerEvent == Damaged && player->isAlive()) {
             ServerPlayer *yuji = room->findPlayerBySkillName(objectName());
-            if (yuji && ((player->hasShownOneGeneral() && yuji->willBeFriendWith(player)) || player->isFriendWith(yuji))) {
+            if (yuji && (player->isFriendWith(yuji))) {
                 ask_who = yuji;
                 return true;
             }
@@ -769,7 +769,7 @@ public:
             if (use.to.length() != 1) return false;
             ServerPlayer *yuji = room->findPlayerBySkillName(objectName());
             if (!yuji || yuji->getPile("sorcery").isEmpty()) return false;
-            if ((use.to.first()->hasShownOneGeneral() && yuji->willBeFriendWith(use.to.first())) || use.to.first()->isFriendWith(yuji)) {
+            if (use.to.first()->isFriendWith(yuji)) {
                 ask_who = yuji;
                 return true;
             }

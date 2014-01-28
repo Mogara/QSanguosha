@@ -4,6 +4,7 @@
 #include "package.h"
 #include "card.h"
 #include "skill.h"
+#include "standard.h"
 
 class CunsiCard: public SkillCard {
     Q_OBJECT
@@ -51,11 +52,34 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
+class WendaoCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE WendaoCard();
+
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+};
+
 class MomentumPackage: public Package {
     Q_OBJECT
 
 public:
     MomentumPackage();
 };
+
+/*class PeaceSpell: public Armor{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE PeaceSpell(Card::Suit suit = Heart, int number = 3);
+};
+
+class MomentumEquipPackage: public Package{
+    Q_OBJECT
+
+public:
+    MomentumEquipPackage();
+};*/
 
 #endif
