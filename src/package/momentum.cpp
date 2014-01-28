@@ -484,6 +484,7 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *sunce, QVariant &data, ServerPlayer* &ask_who) const {
+		if (!TriggerSkill::triggerable(sunce)) return false;
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from == sunce || use.to.contains(sunce)) {
             if (use.card->isKindOf("Duel") || (use.card->isKindOf("Slash") && use.card->isRed()))
