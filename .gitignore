@@ -63,3 +63,4 @@ ai.html
 /src/dialog/halldialog.*
 /Qt*.dll
 /dmp/*.dmp
+*Thumbs.db
