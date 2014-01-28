@@ -1206,9 +1206,7 @@ void WendaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
 class Wendao: public OneCardViewAsSkill {
 public:
     Wendao(): OneCardViewAsSkill("wendao") {
-    }
-    virtual bool viewFilter(const Card *to_select) const{
-        return to_select->isRed();
+        filter_pattern = ".|red!";
     }
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->hasUsed("WendaoCard") && player->canDiscard(player, "he");
