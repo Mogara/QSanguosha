@@ -538,18 +538,17 @@ public:
         bool isFrom = pindian->from == sunce;
 
         QString choice = room->askForChoice(sunce, objectName(), "jia3+jian3", objectName());
-        int to_add = choice == "jia3" ? 3 : -3;
-        
+
         LogMessage log;
         log.type = "$Yingyang";
         log.from = sunce;
 
         if (isFrom) {
-            pindian->from_number += to_add;
+            pindian->from_number = choice == "jia3" ? qMin(pindian->from_number + 3 , 13) : qMax(pindian->from_number - 3 , 1);
 
             log.arg = QString::number(pindian->from_number);
         } else {
-            pindian->to_number += to_add;
+            pindian->to_number = choice == "jia3" ? qMin(pindian->to_number + 3 , 13) : qMax(pindian->to_number - 3 , 1);
 
             log.arg = QString::number(pindian->to_number);
         }
