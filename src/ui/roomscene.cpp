@@ -422,8 +422,6 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
             player->addSkill(skill_name, head_skill);
 
-            player->setSkillsPreshowed(head_skill ? "h" : "d");
-
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
             container->updateAvatarTooltip();
             break;
@@ -444,6 +442,15 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
                 photo->updateAvatarTooltip();
             dashboard->updateAvatarTooltip();
             updateSkillButtons();
+            break;
+        }
+    case S_GAME_EVENT_UPDATE_PRESHOW: {
+            Q_ASSERT(arg[1].isObject());
+            Json::Value::Members keys = arg[1].getMemberNames();
+            for (unsigned int i = 0; i < keys.size(); i++) {
+                const char *skill = keys[i].c_str();
+                Self->setSkillPreshowed(skill, arg[1][skill].asBool());
+            }
             break;
         }
     case S_GAME_EVENT_CHANGE_GENDER: {
@@ -482,11 +489,8 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             const General* oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
             const General* newHero = Sanguosha->getGeneral(newHeroName);
             if (oldHero) {
-                foreach (const Skill *skill, oldHero->getVisibleSkills(true, !isSecondaryHero)) {
+                foreach (const Skill *skill, oldHero->getVisibleSkills(true, !isSecondaryHero))
                     detachSkill(skill->objectName());
-                    attachSkill(skill->objectName(), true); 
-                    //dirty hack here!! add skills again to initialize can_preshow state
-                }
             }
 
             if (newHero) {
@@ -2002,9 +2006,17 @@ void RoomScene::updateSkillButtons() {
     //foreach (QSanSkillButton *button, m_skillButtons)
     //    button->setEnabled(false);
 
-    foreach (QSanSkillButton *button, m_skillButtons)
-        button->setEnabled(button->getSkill()->canPreshow()
-                           && !Self->hasShownSkill(button->getSkill()));
+    foreach (QSanSkillButton *button, m_skillButtons) {
+        const Skill *skill = button->getSkill();
+        button->setEnabled(skill->canPreshow()
+                           && !Self->hasShownSkill(skill));
+        if (skill->canPreshow() && !Self->hasShownSkill(skill)) {
+            if (Self->hasPreshowedSkill(skill->objectName()))
+                button->setState(QSanButton::S_STATE_DISABLED);
+            else
+                button->setState(QSanButton::S_STATE_CANPRESHOW);
+        }
+    }
 }
 
 void RoomScene::useSelectedCard() {

@@ -2545,7 +2545,7 @@ void Room::chooseGenerals() {
                 player->setActualGeneral2Name(name);
                 player->setGeneral2Name("anjiang");
                 foreach (ServerPlayer *p, getPlayers())
-                    notifyProperty(p, player, "actual_general1", name);
+                    notifyProperty(p, player, "actual_general2", name);
                 foreach (ServerPlayer *p, getOtherPlayers(player))
                     notifyProperty(p, player, "general2");
                 notifyProperty(player, player, "general2", name);
@@ -3372,6 +3372,34 @@ void Room::marshal(ServerPlayer *player) {
         if (p->getGeneral2())
             notifyProperty(player, p, "general2");
     }
+    
+    notifyProperty(player, player, "actual_general1");
+    notifyProperty(player, player, "actual_general2");
+
+    notifyProperty(player, player, "general", player->getActualGeneral1Name());
+    notifyProperty(player, player, "general2", player->getActualGeneral2Name());
+
+    foreach(const Skill *skill, player->getVisibleSkillList()) {
+        Json::Value args1;
+        args1[0] = S_GAME_EVENT_ADD_SKILL;
+        args1[1] = toJsonString(player->objectName());
+        args1[2] = toJsonString(skill->objectName());
+        args1[3] = player->inHeadSkills(skill->objectName());
+        doNotify(player, S_COMMAND_LOG_EVENT, args1);
+
+        foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill->objectName())) {
+            if (!related_skill->isVisible()) {
+                Json::Value args2;
+                args2[0] = S_GAME_EVENT_ADD_SKILL;
+                args2[1] = toJsonString(player->objectName());
+                args2[2] = toJsonString(related_skill->objectName());
+                args2[3] = player->inHeadSkills(related_skill->objectName());;
+                doNotify(player, S_COMMAND_LOG_EVENT, args2);
+            }
+        }
+    }
+
+    player->notifyPreshow();
 
     doNotify(player, S_COMMAND_GAME_START, Json::Value::null);
 

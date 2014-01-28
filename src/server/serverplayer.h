@@ -157,6 +157,7 @@ public:
     void sendSkillsToOthers(bool head_skill = true);
     void disconnectSkillsFromOthers(bool head_skill = true);
     bool askForGeneralShow(bool one = true);
+    void notifyPreshow();
     
     bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
     QList<const ServerPlayer *> getFormation() const;

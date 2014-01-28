@@ -889,7 +889,7 @@ QString Player::getSkillDescription(bool yellow) const{
     QString color = yellow ? "#FFFF33" : "#FF0080";
 
     foreach (const Skill *skill, getVisibleSkillList()) {
-        if (skill->isAttachedLordSkill() || !hasSkill(skill->objectName()))
+        if (skill->isAttachedLordSkill() || !ownSkill(skill->objectName()))
             continue;
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription(yellow);
@@ -1143,6 +1143,13 @@ void Player::setGeneral2Showed(bool showed) {
     this->general2_showed = showed;
 }
 
+void Player::setSkillPreshowed(const QString &skill, const bool preshowed) {
+    if (head_skills.keys().contains(skill))
+        head_skills[skill] = preshowed;
+    else if (deputy_skills.keys().contains(skill))
+        deputy_skills[skill] = preshowed;
+}
+
 void Player::setSkillsPreshowed(const QString &flags, const bool preshowed) {
     if (flags.contains("h")) {
         foreach (QString skill, head_skills.keys())
@@ -1152,6 +1159,10 @@ void Player::setSkillsPreshowed(const QString &flags, const bool preshowed) {
         foreach (QString skill, deputy_skills.keys())
             deputy_skills[skill] = preshowed;
     }
+}
+
+bool Player::hasPreshowedSkill(const QString &name) const {
+    return head_skills.value(name, false) || deputy_skills.value(name, false);
 }
 
 bool Player::ownSkill(const QString skill_name) const {

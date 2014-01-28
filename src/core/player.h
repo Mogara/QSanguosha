@@ -256,7 +256,9 @@ public:
     void setGeneral2Showed(bool showed);
     bool hasShownOneGeneral() const;
     bool hasShownAllGenerals() const;
+    void setSkillPreshowed(const QString &skill, const bool preshowed = true);
     void setSkillsPreshowed(const QString &falgs = "hd", const bool preshowed = true);
+    bool hasPreshowedSkill(const QString &name) const;
 
     bool ownSkill(const QString skill_name) const;
     bool isFriendWith(const Player *player) const;

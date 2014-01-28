@@ -873,14 +873,63 @@ void ServerPlayer::introduceTo(ServerPlayer *player) {
         player->invoke("addPlayer", introduce_str);
     else
         room->broadcastInvoke("addPlayer", introduce_str, this);
+
+    if (hasShownGeneral1()) {
+        foreach(const QString skill_name, head_skills.keys()) {
+            if (Sanguosha->getSkill(skill_name)->isVisible()) {
+                Json::Value args1;
+                args1[0] = S_GAME_EVENT_ADD_SKILL;
+                args1[1] = toJsonString(objectName());
+                args1[2] = toJsonString(skill_name);
+                args1[3] = true;
+                room->doNotify(player, S_COMMAND_LOG_EVENT, args1);
+            }
+
+            foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
+                if (!related_skill->isVisible()) {
+                    Json::Value args2;
+                    args2[0] = S_GAME_EVENT_ADD_SKILL;
+                    args2[1] = toJsonString(objectName());
+                    args2[2] = toJsonString(related_skill->objectName());
+                    args2[3] = true;
+                    room->doNotify(player, S_COMMAND_LOG_EVENT, args2);
+                }
+            }
+        }
+    }
+
+    if (hasShownGeneral2()) {
+        foreach(const QString skill_name, deputy_skills.keys()) {
+            if (Sanguosha->getSkill(skill_name)->isVisible()) {
+                Json::Value args1;
+                args1[0] = S_GAME_EVENT_ADD_SKILL;
+                args1[1] = toJsonString(objectName());
+                args1[2] = toJsonString(skill_name);
+                args1[3] = false;
+                room->doNotify(player, S_COMMAND_LOG_EVENT, args1);
+            }
+
+            foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
+                if (!related_skill->isVisible()) {
+                    Json::Value args2;
+                    args2[0] = S_GAME_EVENT_ADD_SKILL;
+                    args2[1] = toJsonString(objectName());
+                    args2[2] = toJsonString(related_skill->objectName());
+                    args2[3] = false;
+                    room->doNotify(player, S_COMMAND_LOG_EVENT, args2);
+                }
+            }
+        }
+    }
 }
+
+#include "gamerule.h"
 
 void ServerPlayer::marshal(ServerPlayer *player) const{
     room->notifyProperty(player, this, "maxhp");
     room->notifyProperty(player, this, "hp");
-
-    if (getKingdom() != getGeneral()->getKingdom())
-        room->notifyProperty(player, this, "kingdom");
+    room->notifyProperty(player, this, "general1_showed");
+    room->notifyProperty(player, this, "general2_showed");
 
     if (isAlive()) {
         room->notifyProperty(player, this, "seat");
@@ -974,38 +1023,24 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
         }
     }
 
-    foreach (QString mark_name, marks.keys()) {
-        if (mark_name.startsWith("@")) {
-            int value = getMark(mark_name);
-            if (value > 0) {
-                Json::Value arg(Json::arrayValue);
-                arg[0] = toJsonString(objectName());
-                arg[1] = toJsonString(mark_name);
-                arg[2] = value;
-                room->doNotify(player, S_COMMAND_SET_MARK, arg);
+    if (player == this || hasShownOneGeneral()) {
+        foreach (QString mark_name, marks.keys()) {
+            if (mark_name.startsWith("@")) {
+                int value = getMark(mark_name);
+                if (value > 0) {
+                    Json::Value arg(Json::arrayValue);
+                    arg[0] = toJsonString(objectName());
+                    arg[1] = toJsonString(mark_name);
+                    arg[2] = value;
+                    room->doNotify(player, S_COMMAND_SET_MARK, arg);
+                }
             }
         }
-    }
-
-    foreach(const QString skill_name, head_skills.keys()) {
-        if (!head_skills.value(skill_name, false)) continue;
-        if (Sanguosha->getSkill(skill_name)->isVisible()) {
-            Json::Value args1;
-            args1[0] = S_GAME_EVENT_ACQUIRE_SKILL;
-            args1[1] = toJsonString(objectName());
-            args1[2] = toJsonString(skill_name);
-            room->doNotify(player, S_COMMAND_LOG_EVENT, args1);
-        }
-
-        foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
-            if (!related_skill->isVisible()) {
-                Json::Value args2;
-                args2[0] = S_GAME_EVENT_ACQUIRE_SKILL;
-                args2[1] = toJsonString(objectName());
-                args2[2] = toJsonString(skill_name);
-                room->doNotify(player, S_COMMAND_LOG_EVENT, args2);
-            }
-        }
+        room->notifyProperty(player, this, "kingdom");
+        room->notifyProperty(player, this, "role");
+    } else {
+        room->notifyProperty(player, this, "kingdom", "god");
+        room->notifyProperty(player, this, "role", BasaraMode::getMappedRole("god"));
     }
 
     foreach (QString flag, flags)
@@ -1022,9 +1057,6 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
             room->doNotify(player, S_COMMAND_ADD_HISTORY, arg);
         }
     }
-
-    if (hasShownRole())
-        room->notifyProperty(player, this, "role");
 }
 
 void ServerPlayer::addToPile(const QString &pile_name, const Card *card, bool open) {
@@ -1139,7 +1171,6 @@ void ServerPlayer::exchangeFreelyFromPrivatePile(const QString &skill_name, cons
     room->obtainCard(this, &dummy, reason, false);
 }
 
-#include "gamerule.h"
 void ServerPlayer::gainAnExtraTurn() {
     ServerPlayer *current = room->getCurrent();
     try {
@@ -1384,6 +1415,8 @@ void ServerPlayer::hideGeneral(bool head_general) {
         }
     }
 
+    notifyPreshow();
+
     Q_ASSERT(room->getThread() != NULL);
     room->getThread()->trigger(GeneralHidden, room, this, QVariant(head_general));
 
@@ -1559,6 +1592,22 @@ bool ServerPlayer::askForGeneralShow(bool one) {
         showGeneral(false);
 
     return choice.startsWith("s");
+}
+
+void ServerPlayer::notifyPreshow() {
+    Json::Value args;
+    args[0] = S_GAME_EVENT_UPDATE_PRESHOW;
+    Json::Value args1;
+    foreach(const QString skill, head_skills.keys() + deputy_skills.keys()) {
+        args1[skill.toAscii().constData()] = head_skills.value(skill, false) 
+            || deputy_skills.value(skill, false);
+    }
+    args[1] = args1;
+    room->doNotify(this, S_COMMAND_LOG_EVENT, args);
+
+    Json::Value args2;
+    args2[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+    room->doNotify(this, QSanProtocol::S_COMMAND_LOG_EVENT, args2);
 }
 
 bool ServerPlayer::inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const {
