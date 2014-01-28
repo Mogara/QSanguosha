@@ -562,8 +562,8 @@ public:
                 }
         } else if (triggerEvent == DrawNCards)
             return player->getMark("hunshang_invoke") > 0;
-        else
-            return false;
+
+        return false;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -633,6 +633,65 @@ public:
     }
 };
 
+DuanxieCard::DuanxieCard() {
+}
+
+bool DuanxieCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    return targets.isEmpty() && !to_select->isChained() && to_select != Self;
+}
+
+void DuanxieCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.from->getRoom();
+    room->setPlayerProperty(effect.to, "chained", true);
+    if (!effect.from->isChained())
+        room->setPlayerProperty(effect.from, "chained", true);
+}
+
+class Duanxie : public ZeroCardViewAsSkill {
+public:
+    Duanxie(): ZeroCardViewAsSkill("duanxie") {
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("DuanxieCard");
+    }
+
+    virtual const Card *viewAs() const{
+        Card *card = new DuanxieCard;
+        card->setShowSkill(objectName());
+        return card;
+    }
+};
+
+class Fenming: public PhaseChangeSkill {
+public:
+    Fenming(): PhaseChangeSkill("fenming") {
+    }
+
+    virtual bool triggerable(TriggerEvent , ServerPlayer *player, Room *room, QVariant &, ServerPlayer* &ask_who) const {
+        if (PhaseChangeSkill::triggerable(player) && player->getPhase() == Player::Finish && player->isChained())
+            foreach (ServerPlayer *p, room->getAlivePlayers())
+                if (p->isChained() && player->canDiscard(p, "he"))
+                    return true;
+
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent , ServerPlayer *player, Room *room, QVariant &) const {
+        return player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        room->broadcastSkillInvoke(objectName());
+        foreach (ServerPlayer *p, room->getAlivePlayers())
+            if (p->isChained() && player->canDiscard(p, "he")) {
+                int card_id = room->askForCardChosen(player, p, "he", objectName(), false, Card::MethodDiscard);
+                room->throwCard(card_id, p, player);
+            }
+        return false;
+    }
+};
 
 MomentumPackage::MomentumPackage()
     : Package("momentum")
@@ -675,9 +734,11 @@ MomentumPackage::MomentumPackage()
     sunce->addSkill(new Hunshang);
     sunce->setDeputyMaxHpAdjustedValue(-1);
 
-    /*General *chenwudongxi = new General(this, "chenwudongxi", "wu", 4);
+    General *chenwudongxi = new General(this, "chenwudongxi", "wu", 4); // WU 023
+    chenwudongxi->addSkill(new Duanxie);
+    chenwudongxi->addSkill(new Fenming);
 
-    General *dongzhuo = new General(this, "dongzhuo", "qun", 4); // QUN 006 G
+    /*General *dongzhuo = new General(this, "dongzhuo", "qun", 4); // QUN 006 G
 
     General *zhangren = new General(this, "zhangren", "qun", 3);
 
@@ -686,6 +747,7 @@ MomentumPackage::MomentumPackage()
 
     addMetaObject<GuixiuCard>();
     addMetaObject<CunsiCard>();*/
+    addMetaObject<DuanxieCard>();
 }
 
 ADD_PACKAGE(Momentum)
