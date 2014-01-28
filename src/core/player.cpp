@@ -1005,6 +1005,25 @@ const Player *Player::getLord() const{
     return NULL;
 }
 
+int Player::getPlayerNumWithSameKingdom(QString to_calculate /* = QString() */) const{
+    if (to_calculate.isEmpty())
+        to_calculate = kingdom;
+
+    QList<const Player *> players = getAliveSiblings();
+    players << this;
+
+    int num = 0;
+    foreach (const Player *p, players){
+        if (p->hasShownOneGeneral() && p->getKingdom() == to_calculate)
+            num += 1;
+    }
+
+    if (hasSkill("hongfa") && to_calculate == "qun")
+        num += getPile("heavenly_army").length();
+
+    return num;
+}
+
 void Player::copyFrom(Player *p) {
     Player *b = this;
     Player *a = p;

@@ -932,12 +932,9 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        int num = 0;
-        foreach (auto p, room->getAllPlayers())
-            if (p->hasShownOneGeneral() && p->getKingdom() == player->getKingdom())
-                num ++;
-        int num2 = player->getPile("heavenly_army").length();
-        QList<int> guanxing = room->getNCards(num + num2);
+        int num = player->getPlayerNumWithSameKingdom();
+        
+        QList<int> guanxing = room->getNCards(num);
 
         LogMessage log;
         log.type = "$ViewDrawPile";
@@ -1157,12 +1154,8 @@ public:
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
         if (triggerEvent == EventPhaseStart) {
-            int num = 0;
-            foreach (auto p, room->getAllPlayers())
-                if (p->hasShownOneGeneral() && p->getKingdom() == player->getKingdom())
-                    num ++;
-            int num2 = player->getPile("heavenly_army").length();
-            QList<int> tianbing = room->getNCards(num + num2);
+            int num = player->getPlayerNumWithSameKingdom();
+            QList<int> tianbing = room->getNCards(num);
             player->addToPile("heavenly_army", tianbing);
             return false;
         } else {
@@ -1189,15 +1182,7 @@ void WendaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
     const Card *tpys = NULL;
     foreach(ServerPlayer *p, room->getAlivePlayers()){
         foreach(const Card *card, p->getEquips()){
-            if (Sanguosha->getEngineCard(card->getEffectiveId())->isKindOf("PeaceSpell")){
-                tpys = Sanguosha->getCard(card->getEffectiveId());
-                break;
-            }
-        }
-        if (tpys != NULL)
-            break;
-        foreach(const Card *card, p->getJudgingArea()){
-            if (Sanguosha->getEngineCard(card->getEffectiveId())->isKindOf("PeaceSpell")){
+            if (Sanguosha->getCard(card->getEffectiveId())->isKindOf("PeaceSpell")){
                 tpys = Sanguosha->getCard(card->getEffectiveId());
                 break;
             }
@@ -1207,7 +1192,7 @@ void WendaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
     }
     if (tpys == NULL)
         foreach(int id, room->getDiscardPile()){
-            if (Sanguosha->getEngineCard(id)->isKindOf("PeaceSpell")){
+            if (Sanguosha->getCard(id)->isKindOf("PeaceSpell")){
                 tpys = Sanguosha->getCard(id);
                 break;
             }
@@ -1305,21 +1290,90 @@ MomentumPackage::MomentumPackage()
 
 ADD_PACKAGE(Momentum)
 
-/*PeaceSpell::PeaceSpell(Suit suit, int number)
+PeaceSpell::PeaceSpell(Suit suit, int number)
     : Armor(Card::Heart, 3)
 {
     setObjectName("PeaceSpell");
 }
 
+void PeaceSpell::onUninstall(ServerPlayer *player) const{
+    if (player->isAlive() && player->hasArmorEffect(objectName()))
+        player->setFlags("peacespell_throwing");
+
+    Armor::onUninstall(player);
+}
+
 class PeaceSpellSkill: public ArmorSkill{
 public:
     PeaceSpellSkill(): ArmorSkill("PeaceSpell") {
-        events << DamageInflicted;
+        events << DamageInflicted << CardsMoveOneTime;
+    }
 
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->isAlive();
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == DamageInflicted && ArmorSkill::triggerable(player)){
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.nature != DamageStruct::Normal){
+                //log etc
+                return true;
+            }
+        }
+        else if (triggerEvent == CardsMoveOneTime){
+            if (player->hasFlag("peacespell_throwing")){
+                CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+                if (move.from != NULL && move.from == player && move.from_places.contains(Player::PlaceEquip))
+                    foreach (int id, move.card_ids){
+                        const Card *card = Sanguosha->getEngineCard(id);
+                        if (card->getClassName() == "PeaceSpell"){
+                            room->loseHp(player);
+                            if (player->isAlive())
+                                player->drawCards(2);
+                            break;
+                        }
+                    }
+            }
+        }
+        return false;
+    }
+};
+
+class PeaceSpellSkillMaxCards: public MaxCardsSkill{
+public:
+    PeaceSpellSkillMaxCards(): MaxCardsSkill("#PeaceSpell-max"){
+
+    }
+
+    virtual int getExtra(const Player *target) const{
+        QList<const Player *> targets = target->getAliveSiblings();
+        targets << target;
+
+        const Player *ps_owner = NULL;
+        foreach (const Player *p, targets){
+            if (p->hasArmorEffect("PeaceSpell")){
+                ps_owner = p;
+                break;
+            }
+        }
+
+        if (ps_owner == NULL)
+            return 0;
+
+        if (target->getKingdom() == ps_owner->getKingdom())
+            return ps_owner->getPlayerNumWithSameKingdom();
+
+        return 0;
+    }
+};
     
 MomentumEquipPackage::MomentumEquipPackage(): Package("momentum_equip", CardPack){
-    PeaceSpell *dp = new PeaceSpell();
+    PeaceSpell *dp = new PeaceSpell;
     dp->setParent(this);
+
+    skills << new PeaceSpellSkill << new PeaceSpellSkillMaxCards;
+    related_skills.insertMulti("PeaceSpell", "#PeaceSpell-max");
 }
 
-ADD_PACKAGE(MomentumEquip)*/
+ADD_PACKAGE(MomentumEquip)

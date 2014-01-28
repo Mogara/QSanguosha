@@ -1185,16 +1185,10 @@ public:
         if (!damage->card || !damage->card->isKindOf("Slash")) return false;
 
         QMap<QString, int> kingdoms;
-        kingdoms["wei"] = 0;
-        kingdoms["shu"] = 0;
-        kingdoms["wu"] = 0;
-        kingdoms["qun"] = 0;
-        kingdoms["god"] = 0;
-
-        foreach (ServerPlayer *p, room->getPlayers()){
-            kingdoms[p->getKingdom()] += 1;
-        }
-
+        kingdoms["wei"] = dfowner->getPlayerNumWithSameKingdom("wei");
+        kingdoms["shu"] = dfowner->getPlayerNumWithSameKingdom("shu");
+        kingdoms["wu"] = dfowner->getPlayerNumWithSameKingdom("wu");
+        kingdoms["qun"] = dfowner->getPlayerNumWithSameKingdom("qun");
         kingdoms["god"] = 2147483647;
 
         QString kingdom_least = "god";

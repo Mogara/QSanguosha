@@ -68,11 +68,12 @@ public:
     MomentumPackage();
 };
 
-/*class PeaceSpell: public Armor{
+class PeaceSpell: public Armor{
     Q_OBJECT
 
 public:
     Q_INVOKABLE PeaceSpell(Card::Suit suit = Heart, int number = 3);
+    virtual void onUninstall(ServerPlayer *player) const;
 };
 
 class MomentumEquipPackage: public Package{
@@ -80,6 +81,6 @@ class MomentumEquipPackage: public Package{
 
 public:
     MomentumEquipPackage();
-};*/
+};
 
 #endif
