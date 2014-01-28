@@ -212,7 +212,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     without_lordskill_checkbox = new QCheckBox(tr("Without Lordskill"));
     without_lordskill_checkbox->setChecked(Config.value("WithoutLordskill", false).toBool());
 
-    lord_convert_checkbox = new QCheckBox(tr("Enable Lord General Convert"));
+    lord_convert_checkbox = new QCheckBox(tr("Enable Lord Rule"));
     lord_convert_checkbox->setChecked(Config.value("EnableLordGeneralConvert", true).toBool());
 
     maxchoice_spinbox = new QSpinBox;

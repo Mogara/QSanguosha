@@ -4030,6 +4030,11 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>&lt;font color=#FFFF33&gt;-1表示无次数限制（虎牢关模式不生效）&lt;/font&gt;</translation>
     </message>
     <message>
+        <location filename="../../src/server/server.cpp" line="215"/>
+        <source>Enable Lord Rule</source>
+        <translation type="unfinished">启用君主规则</translation>
+    </message>
+    <message>
         <location filename="../../src/server/server.cpp" line="222"/>
         <source>Upperlimit for gods</source>
         <translation>备选神将上限</translation>
@@ -4448,9 +4453,8 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>服务器名</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="215"/>
         <source>Enable Lord General Convert</source>
-        <translation>君主武将替换</translation>
+        <translation type="obsolete">君主武将替换</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="223"/>

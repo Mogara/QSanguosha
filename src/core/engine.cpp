@@ -989,6 +989,8 @@ QList<int> Engine::getRandomCards() const{
         if (!getBanPackages().contains(card->getPackage()))
             list << card->getId();
     }
+    if (Config.EnableLordGeneralConvert && !getBanPackages().contains("formation_equip"))
+        list.removeOne(55);
     if (using_2012_3v3 || using_2013_3v3)
         list.removeOne(98);
     if (using_2013_3v3) {
