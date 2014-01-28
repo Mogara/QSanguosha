@@ -216,7 +216,8 @@ QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName,
             break;
         }
     case QSanButton::S_STATE_CANPRESHOW :{
-            stateKey = "preshow";
+        //use codes to make button lighter than other states
+            stateKey = "disabled";
             break;
         }
 

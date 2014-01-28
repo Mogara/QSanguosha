@@ -271,6 +271,18 @@ void QSanInvokeSkillButton::_repaint() {
     for (int i = 0; i < (int)S_NUM_BUTTON_STATES; i++) {
         _m_bgPixmap[i] = G_ROOM_SKIN.getSkillButtonPixmap((ButtonState)i, _m_skillType, _m_enumWidth);
         Q_ASSERT(!_m_bgPixmap[i].isNull());
+
+        if (i == S_STATE_CANPRESHOW) {
+            QPixmap temp(_m_bgPixmap[i]);
+            temp.fill(Qt::transparent);
+            QPainter painter(&temp);
+            painter.setCompositionMode(QPainter::CompositionMode_Source);
+            painter.drawPixmap(0, 0, _m_bgPixmap[i]);
+            painter.setCompositionMode(QPainter::CompositionMode_DestinationIn);
+            painter.fillRect(temp.rect(), QColor(0, 0, 0, 160));
+            _m_bgPixmap[i] = temp;
+        }
+
         const IQSanComponentSkin::QSanShadowTextFont &font = G_DASHBOARD_LAYOUT.getSkillTextFont((ButtonState)i, _m_skillType, _m_enumWidth);
         QPainter painter(&_m_bgPixmap[i]);
         QString skillName = Sanguosha->translate(_m_skill->objectName());
