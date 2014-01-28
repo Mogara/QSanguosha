@@ -1207,7 +1207,9 @@ class Wendao: public OneCardViewAsSkill {
 public:
     Wendao(): OneCardViewAsSkill("wendao") {
     }
-
+    virtual bool viewFilter(const Card *to_select) const{
+        return to_select->isRed();
+    }
     virtual bool isEnabledAtPlay(const Player *player) const{
         return !player->hasUsed("WendaoCard") && player->canDiscard(player, "he");
     }
