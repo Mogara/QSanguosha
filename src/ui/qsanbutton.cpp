@@ -11,7 +11,7 @@
 
 QSanButton::QSanButton(QGraphicsItem *parent): QGraphicsObject(parent)
 {
-    _m_state = S_STATE_UP;
+    _m_state = S_STATE_DISABLED;
     _m_style = S_STYLE_PUSH;
     _m_mouseEntered = false;
     setSize(QSize(0, 0));
@@ -22,7 +22,7 @@ QSanButton::QSanButton(QGraphicsItem *parent): QGraphicsObject(parent)
 QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent)
     : QGraphicsObject(parent)
 {
-    _m_state = S_STATE_UP;
+    _m_state = S_STATE_DISABLED;
     _m_style = S_STYLE_PUSH;
     _m_groupName = groupName;
     _m_buttonName = buttonName;
@@ -270,7 +270,7 @@ void QSanSkillButton::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 void QSanInvokeSkillButton::_repaint() {
     for (int i = 0; i < (int)S_NUM_BUTTON_STATES; i++) {
         _m_bgPixmap[i] = G_ROOM_SKIN.getSkillButtonPixmap((ButtonState)i, _m_skillType, _m_enumWidth);
-        Q_ASSERT(!_m_bgPixmap[i].isNull());
+        if(_m_bgPixmap[i].isNull()) continue;
 
         if (i == S_STATE_CANPRESHOW) {
             QPixmap temp(_m_bgPixmap[i]);
