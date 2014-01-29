@@ -922,10 +922,13 @@ public:
             if (death.who != player)
                 return false;
 
+            if (!death.damage || !death.damage->from)
+                return false;
+
             ServerPlayer *current = room->getCurrent();
             if (current && (current->isAlive() || death.who == current) && current->getPhase() != Player::NotActive){
                 foreach(ServerPlayer *p, room->getAllPlayers())
-                    if (TriggerSkill::triggerable(p))
+                    if (TriggerSkill::triggerable(p) && death.damage->from == p)
                         room->setPlayerMark(p, objectName(), 1);
             }
 

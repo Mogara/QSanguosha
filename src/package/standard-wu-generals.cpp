@@ -98,7 +98,7 @@ public:
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who)){
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (player->hasFlag("KejiSlashInPlayPhase") && change.to == Player::Discard)
+            if (!player->hasFlag("KejiSlashInPlayPhase") && change.to == Player::Discard)
                 return true;
         }
         return false;
@@ -916,9 +916,14 @@ public:
     Haoshi(): DrawCardsSkill("#haoshi") {
     }
 
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        return player && player->isAlive() && player->hasSkill("haoshi");
+    }
+
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (player->askForSkillInvoke("haoshi")){
             room->broadcastSkillInvoke("haoshi");
+            player->showGeneral(player->inHeadSkills("haoshi"));
             return true;
         }
         return false;
@@ -981,7 +986,7 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *lusu, QVariant &, ServerPlayer * &) const{
-        if (!TriggerSkill::triggerable(lusu)) return false;
+        if (!lusu || !lusu->isAlive() || !lusu->hasShownSkill(Sanguosha->getSkill("haoshi"))) return false;
         if (lusu->hasFlag("haoshi")) {
             lusu->setFlags("-haoshi");
 
