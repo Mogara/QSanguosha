@@ -996,10 +996,10 @@ void ShuangrenCard::onEffect(const CardEffectStruct &effect) const{
             if (effect.from->canSlash(target, NULL, false) && target->isFriendWith(effect.to))
                 targets << target;
         }
+        ServerPlayer *target;
         if (targets.isEmpty())
-            return;
-
-        ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, "shuangren", "@dummy-slash");
+            target = effect.to;
+        else target = room->askForPlayerChosen(effect.from, targets, "shuangren", "@dummy-slash");
 
         Slash *slash = new Slash(Card::NoSuit, 0);
         slash->setSkillName("_shuangren");
