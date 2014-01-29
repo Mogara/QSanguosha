@@ -30,17 +30,11 @@
 "playerGeneralIcon-erzhang-4": ["image/fullskin/generals/fulldual/erzhang.png", [0, 0, 124, 291], [64, 150]],
 "playerGeneralIcon-erzhang-6": ["image/fullskin/generals/fulldual/erzhang.png", [0, 0, 250, 291], [129, 150]],
 
-"playerGeneralIcon-guanxingzhangbao-4": ["image/fullskin/generals/fulldual/guanxingzhangbao.png", [0, 0, 124, 291], [64, 150]],
-"playerGeneralIcon-guanxingzhangbao-6": ["image/fullskin/generals/fulldual/guanxingzhangbao.png", [0, 0, 250, 291], [129, 150]],
+"playerGeneralIcon-jiangwanfeiyi-4": ["image/fullskin/generals/fulldual/jiangwanfeiyi.png", [0, 0, 124, 291], [64, 150]],
+"playerGeneralIcon-jiangwanfeiyi-6": ["image/fullskin/generals/fulldual/jiangwanfeiyi.png", [0, 0, 250, 291], [129, 150]],
 
-"playerGeneralIcon-panzhangmazhong-4": ["image/fullskin/generals/fulldual/panzhangmazhong.png", [0, 0, 124, 291], [64, 150]],
-"playerGeneralIcon-panzhangmazhong-6": ["image/fullskin/generals/fulldual/panzhangmazhong.png", [0, 0, 250, 291], [129, 150]],
-
-"playerGeneralIcon-erqiao-4": ["image/fullskin/generals/fulldual/erqiao.png", [0, 0, 124, 291], [64, 150]],
-"playerGeneralIcon-erqiao-6": ["image/fullskin/generals/fulldual/erqiao.png", [0, 0, 250, 291], [129, 150]],
-
-"playerGeneralIcon-nos_guanxingzhangbao-4": ["image/fullskin/generals/fulldual/nos_guanxingzhangbao.png", [0, 0, 124, 291], [64, 150]],
-"playerGeneralIcon-nos_guanxingzhangbao-6": ["image/fullskin/generals/fulldual/nos_guanxingzhangbao.png", [0, 0, 250, 291], [129, 150]],
+"playerGeneralIcon-chenwudongxi-4": ["image/fullskin/generals/fulldual/chenwudongxi.png", [0, 0, 124, 291], [64, 150]],
+"playerGeneralIcon-chenwudongxi-6": ["image/fullskin/generals/fulldual/chenwudongxi.png", [0, 0, 250, 291], [129, 150]],
 
 "photoEquip-default": ["image/fullskin/small-equips/%1.png", [0, 0, 114, 19]]
 }
