@@ -711,6 +711,10 @@ public:
         events << TargetConfirmed;
     }
 
+    virtual bool canPreshow() const {
+        return false;
+    }
+
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (!TriggerSkill::triggerable(player)) return false;
         CardUseStruct use = data.value<CardUseStruct>();
@@ -752,6 +756,10 @@ class Qianhuan: public TriggerSkill {
 public:
     Qianhuan(): TriggerSkill("qianhuan") {
         events << Damaged << TargetConfirming;
+    }
+
+    virtual bool canPreshow() const {
+        return false;
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
