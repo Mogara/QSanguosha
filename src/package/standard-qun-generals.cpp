@@ -1022,13 +1022,13 @@ void ShuangrenCard::onEffect(const CardEffectStruct &effect) const{
     if (success) {
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *target, room->getAlivePlayers()) {
-            if (effect.from->canSlash(target, NULL, false) && target->isFriendWith(effect.to))
+            if (effect.from->canSlash(target, NULL, false) && (target->isFriendWith(effect.to) || effect.to == target))
                 targets << target;
         }
-        ServerPlayer *target;
         if (targets.isEmpty())
-            target = effect.to;
-        else target = room->askForPlayerChosen(effect.from, targets, "shuangren", "@dummy-slash");
+            return;
+
+        ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, "shuangren", "@dummy-slash");
 
         Slash *slash = new Slash(Card::NoSuit, 0);
         slash->setSkillName("_shuangren");
