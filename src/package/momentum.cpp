@@ -1308,32 +1308,35 @@ public:
         events << DamageInflicted << CardsMoveOneTime;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->isAlive();
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* ask_who) const{
+        if (triggerEvent == DamageInflicted) {
+            DamageStruct damage = data.value<DamageStruct>();
+            if (ArmorSkill::triggerable(player) && damage.nature != DamageStruct::Normal)
+                return true;
+        } else if (player->hasFlag("peacespell_throwing")) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from != player || !move.from_places.contains(Player::PlaceEquip))
+                return false;
+            for (int i = 0; i < move.card_ids.size(); i++) {
+                if (move.from_places[i] != Player::PlaceEquip) continue;
+                const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
+                if (card->objectName() == objectName()) {
+                    player->setFlags("-peacespell_throwing");
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == DamageInflicted && ArmorSkill::triggerable(player)){
-            DamageStruct damage = data.value<DamageStruct>();
-            if (damage.nature != DamageStruct::Normal){
-                //log etc
-                return true;
-            }
+        if (triggerEvent == DamageInflicted){
+            return true;
         }
-        else if (triggerEvent == CardsMoveOneTime){
-            if (player->hasFlag("peacespell_throwing")){
-                CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-                if (move.from != NULL && move.from == player && move.from_places.contains(Player::PlaceEquip))
-                    foreach (int id, move.card_ids){
-                        const Card *card = Sanguosha->getEngineCard(id);
-                        if (card->getClassName() == "PeaceSpell"){
-                            room->loseHp(player);
-                            if (player->isAlive())
-                                player->drawCards(2);
-                            break;
-                        }
-                    }
-            }
+        else {
+            room->loseHp(player);
+            if (player->isAlive())
+                player->drawCards(2);
         }
         return false;
     }
