@@ -2,6 +2,7 @@
 
 return {
 	["momentum"] = "国战-势包",
+	["momentum_equip"] = "国战-阵包",
 
 	["#lidian"] = "深明大义",
 	["lidian"] = "李典",
