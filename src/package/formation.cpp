@@ -934,10 +934,6 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool canPreshow() const {
-        return false;
-    }
-
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         if (!TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who))
             return false;

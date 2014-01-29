@@ -1503,7 +1503,7 @@ void ServerPlayer::removeGeneral(bool head_general) {
         room->changePlayerGeneral2(this, general_name);
         
         disconnectSkillsFromOthers();
-        setSkillsPreshowed("h", false);
+        setSkillsPreshowed("d", false);
 
         foreach (const Skill *skill, getDeputySkillList())
             if (skill)

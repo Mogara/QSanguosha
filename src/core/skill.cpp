@@ -251,7 +251,7 @@ QList<TriggerEvent> TriggerSkill::getTriggerEvents() const{
 }
 
 int TriggerSkill::getPriority() const{
-    return (frequency == 3) ? 3 : 2;
+    return (frequency == Limited) ? 3 : 2;
 }
 
 bool TriggerSkill::triggerable(const ServerPlayer *target) const{
