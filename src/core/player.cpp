@@ -882,8 +882,6 @@ QString Player::getSkillDescription(bool yellow) const{
     QString color = yellow ? "#FFFF33" : "#FF0080";
 
     foreach (const Skill *skill, getVisibleSkillList()) {
-        if (skill->isAttachedLordSkill() || !ownSkill(skill->objectName()))
-            continue;
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription(yellow);
         desc.replace("\n", "<br/>");
@@ -893,6 +891,29 @@ QString Player::getSkillDescription(bool yellow) const{
     if (description.isEmpty()) description = tr("<font color=%1>No skills</font>").arg(color);
     return description;
 }
+
+QString Player::getHeadSkillDescription() const {
+    QString description = QString();
+    foreach (const Skill *skill, getHeadSkillList()) {
+        QString skill_name = Sanguosha->translate(skill->objectName());
+        QString desc = skill->getDescription();
+        desc.replace("\n", "<br/>");
+        description.append(QString("<font color=#FFFF33><b>%1</b>:</font> %2 <br/> <br/>").arg(skill_name).arg(desc));
+    }
+    return description;
+}
+
+QString Player::getDeputySkillDescription() const {
+    QString description = QString();
+    foreach (const Skill *skill, getDeputySkillList()) {
+        QString skill_name = Sanguosha->translate(skill->objectName());
+        QString desc = skill->getDescription();
+        desc.replace("\n", "<br/>");
+        description.append(QString("<font color=#FFFF33><b>%1</b>:</font> %2 <br/> <br/>").arg(skill_name).arg(desc));
+    }
+    return description;
+}
+
 
 bool Player::isProhibited(const Player *to, const Card *card, const QList<const Player *> &others) const{
     return Sanguosha->isProhibited(this, to, card, others);

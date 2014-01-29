@@ -124,9 +124,10 @@
 "dashboard":
 {
     "leftWidth": 164,
-    "rightWidth": 171,
+    "rightWidth": 387,
+	"magatamasBaseWidth": 24,
 	"reverseSelectionWidth": 10,
-    "normalHeight": 170,
+    "normalHeight": 150,
     "floatingAreaHeight": 50,
     "handCardNumIconArea": [-109, 151, 30, 18],
     "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
@@ -151,12 +152,11 @@
     "secondaryAvatarImageType": 5,
     "primaryAvatarImageType": 7,
     "circleImageType": 1,
-    "avatarArea": [8, 10, 134, 134],
-    "secondaryAvatarArea": [81, 10, 70, 70],
+    "avatarArea": [231, -3, 132, 173],
     "circleArea": [8, 10, 134, 134],
     "avatarNameArea": [8, 28, 30, 89],
     "focusFrameArea": [8, 10, 134, 134],
-    "smallAvatarNameArea": [84, 36, 18, 36],
+    "secondaryAvatarNameArea": [84, 36, 18, 36],
     // "avatarNameFont": ["@simli", [12, 12, 1], 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
     // "smallAvatarNameFont": ["@simli", [12, 12, 1], 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
     // must be in one of the following format:
