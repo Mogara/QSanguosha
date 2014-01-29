@@ -536,6 +536,10 @@ public:
         view_as_skill = new ShensuViewAsSkill;
     }
 
+    virtual bool canPreshow() const {
+        return false;
+    }
+
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *xiahouyuan, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (!TriggerSkill::triggerable(triggerEvent, room, xiahouyuan, data, ask_who))
             return false;
@@ -665,6 +669,10 @@ public:
     Qiaobian(): TriggerSkill("qiaobian") {
         events << EventPhaseChanging;
         view_as_skill = new QiaobianViewAsSkill;
+    }
+
+    virtual bool canPreshow() const {
+        return true;
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{

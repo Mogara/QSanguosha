@@ -774,10 +774,6 @@ public:
         events << Damaged << TargetConfirming;
     }
 
-    virtual bool canPreshow() const {
-        return false;
-    }
-
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (player == NULL) return false;
         if (triggerEvent == Damaged && player->isAlive()) {

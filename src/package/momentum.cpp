@@ -374,13 +374,17 @@ public:
         events << CardUsed << BeforeCardsMove;
     }
 
+    virtual bool canPreshow() const {
+        return false;
+    }
+
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (player == NULL) return false;
         if (triggerEvent == CardUsed) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.from->getPhase() == Player::Play && use.from->getMark(objectName()) == 0) {
-                use.from->addMark(objectName());
                 if (use.card->isKindOf("Slash")) {
+                    use.from->addMark(objectName());
                     QList<int> ids;
                     if (!use.card->isVirtualCard())
                         ids << use.card->getEffectiveId();
