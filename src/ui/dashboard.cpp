@@ -126,11 +126,15 @@ void Dashboard::_adjustComponentZValues() {
     //rightFrameBase should always be under rightFrameBg
     //base -> top : frame base -> frame bg -> magatamas base and general frames
     qreal z = _m_rightFrameBg->zValue();
-    _m_rightFrameBase->setZValue(z - 1);
-
-    _m_magatamasBase->setZValue(z + 1);
-    _m_headGeneralFrame->setZValue(z + 1);
-    _m_deputyGeneralFrame->setZValue(z + 1);
+    //make sure right frame base is at the bottom in case avatars are hidden by it.
+    _m_rightFrameBase->setZValue(z - 100);
+    _m_avatarIcon->setZValue(z + 1);
+    //maybe secondary general avatar icon hasn't been created at this time
+    if (_m_smallAvatarIcon)
+        _m_smallAvatarIcon->setZValue(z + 1);
+    _m_magatamasBase->setZValue(z + 2);
+    _m_headGeneralFrame->setZValue(z + 2);
+    _m_deputyGeneralFrame->setZValue(z + 2);
 }
 
 int Dashboard::width() {
@@ -159,14 +163,14 @@ void Dashboard::_createRight() {
     QRect avatar1 = G_DASHBOARD_LAYOUT.m_avatarArea;
     _m_rightSkillDock = new QSanInvokeSkillDock(_m_rightFrame);
     _m_rightSkillDock->setPos(avatar1.left(), avatar1.bottom() -
-                         G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height());
+                         G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() / 1.3);
     _m_rightSkillDock->setWidth(avatar1.width());
 
     QRect avatar2 = G_DASHBOARD_LAYOUT.m_secondaryAvatarArea;
     _m_leftSkillDock = new QSanInvokeSkillDock(_m_rightFrame);
     _m_leftSkillDock->setPos(avatar2.left(), avatar2.bottom() -
-                         G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height());
-    _m_rightSkillDock->setWidth(avatar2.width());
+                         G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() / 1.3);
+    _m_leftSkillDock->setWidth(avatar2.width());
 }
 
 void Dashboard::_updateFrames() {

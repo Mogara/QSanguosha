@@ -188,10 +188,11 @@ void PlayerCardContainer::updateAvatar() {
     if (general != NULL) {
         _m_avatarArea->setToolTip(m_player->getHeadSkillDescription());
         QString name = general->objectName();
-        if (name == "luboyan" && m_player->isFemale())
-            name = "luboyanf";
         QPixmap avatarIcon = _getAvatarIcon(name);
-        _paintPixmap(_m_avatarIcon, _m_layout->m_avatarArea, avatarIcon, _getAvatarParent());
+        QRect area = _m_layout->m_avatarArea;
+        if (inherits("Dashboard"))
+            area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 3);
+        _paintPixmap(_m_avatarIcon, area, avatarIcon, _getAvatarParent());
         // this is just avatar general, perhaps game has not started yet.
         if (m_player->getGeneral() != NULL) {
             QString kingdom = m_player->getKingdom();
@@ -234,33 +235,31 @@ QPixmap PlayerCardContainer::paintByMask(QPixmap &source) {
 }
 
 void PlayerCardContainer::updateSmallAvatar() {
-    updateAvatar();
     const General *general = NULL;
     if (m_player) general = m_player->getGeneral2();
     if (general != NULL) {
-        QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
-        smallAvatarIcon = paintByMask(smallAvatarIcon);
-        _paintPixmap(_m_smallAvatarIcon, _m_layout->m_secondaryAvatarArea,
-                     smallAvatarIcon, _getAvatarParent());
-        _paintPixmap(_m_circleItem, _m_layout->m_circleArea,
-                     QString(QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE).arg(_m_layout->m_circleImageSize),
-                     _getAvatarParent());
         _m_secondaryAvatarArea->setToolTip(m_player->getDeputySkillDescription());
-        QString name = Sanguosha->translate("&" + general->objectName());
-        if (name.startsWith("&"))
-            name = Sanguosha->translate(general->objectName());
+        QString name = general->objectName();
+        QPixmap avatarIcon = _getAvatarIcon(name);
+        QRect area = _m_layout->m_secondaryAvatarArea;
+        if (inherits("Dashboard"))
+            area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 3);
+        _paintPixmap(_m_smallAvatarIcon, area, avatarIcon, _getAvatarParent());
+        QString kingdom = m_player->getKingdom();
+        QString show_name = Sanguosha->translate("&" + name);
+        if (show_name.startsWith("&"))
+            show_name = Sanguosha->translate(name);
         _m_layout->m_smallAvatarNameFont.paintText(_m_secondaryAvatarNameItem,
-                                                   _m_layout->m_secondaryAvatarNameArea,
-                                                   Qt::AlignLeft | Qt::AlignJustify, name);
-        _m_smallAvatarIcon->show();
+                                                       _m_layout->m_secondaryAvatarNameArea,
+                                                       Qt::AlignLeft | Qt::AlignJustify, name);
     } else {
-        _clearPixmap(_m_smallAvatarIcon);
-        _clearPixmap(_m_circleItem);
-        _m_layout->m_smallAvatarNameFont.paintText(_m_secondaryAvatarNameItem,
-                                                   _m_layout->m_secondaryAvatarNameArea,
-                                                   Qt::AlignLeft | Qt::AlignJustify, QString());
+        _paintPixmap(_m_smallAvatarIcon, _m_layout->m_secondaryAvatarArea,
+                     QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
+        _clearPixmap(_m_kingdomColorMaskIcon);
+        _clearPixmap(_m_kingdomIcon);
         _m_secondaryAvatarArea->setToolTip(QString());
     }
+    _m_smallAvatarIcon->show();
     _adjustComponentZValues();
 }
 
