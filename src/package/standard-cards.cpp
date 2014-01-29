@@ -633,6 +633,8 @@ public:
         if (!ArmorSkill::triggerable(player)) return false;
         QString asked = data.toStringList().first();
         if (asked == "jink") return true;
+
+        return false;
     }
     
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -1454,6 +1456,8 @@ public:
         if (!ArmorSkill::triggerable(player)) return false;
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (effect.slash->isBlack()) return true;
+
+        return false;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
