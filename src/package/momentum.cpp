@@ -575,10 +575,23 @@ public:
     }
 };
 
-class Hunshang: public TriggerSkill {
+class Sunce_Yinghun: public Yinghun{
 public:
-    Hunshang(): TriggerSkill("hunshang") {
-        events << EventPhaseStart << DrawNCards;
+    Sunce_Yinghun(): Yinghun(){
+        setObjectName("sunce_yinghun");
+    }
+};
+
+class Sunce_Yingzi: public Yingzi{
+public:
+    Sunce_Yingzi(): Yingzi(){
+        setObjectName("sunce_yingzi");
+    }
+};
+
+class Hunshang: public PhaseChangeSkill {
+public:
+    Hunshang(): PhaseChangeSkill("hunshang") {
         frequency = Compulsory;
         relate_to_place = "deputy";
     }
@@ -588,88 +601,31 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
-        if (!TriggerSkill::triggerable(player)) return false;
-        if (player->getMark("@waked") > 0) return false;
-        if (triggerEvent == EventPhaseStart) {
-            if (player->getPhase() == Player::Start)
-                return player->getHp() == 1;
-            else if (player->getPhase() == Player::NotActive)
-                if (player->getMark("hunshang_invoke") > 0) {
-                    room->setPlayerMark(player, "hunshang_invoke", 0);
-                    player->gainMark("@waked");
-                }
-        } else if (triggerEvent == DrawNCards)
-            return player->getMark("hunshang_invoke") > 0;
-
-        return false;
+        if (player != NULL && player->getPhase() == Player::NotActive && player->hasFlag("hunshang")){
+            room->handleAcquireDetachSkills(player, "-sunce_yinghun|-sunce_yingzi", true);
+            return false;
+        }
+        return PhaseChangeSkill::triggerable(triggerEvent, room, player, data, ask_who) 
+            && (player->getPhase() == Player::Start) && player->getHp() == 1;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart) {
-            if (player->hasShownSkill(this)) return true;
-            return player->askForSkillInvoke(objectName());
-        } else {
-            if (player->askForSkillInvoke("yingzi")) {
-                LogMessage log;
-                log.type = "#InvokeSkill";
-                log.from = player;
-                log.arg = "yingzi";
-                room->sendLog(log);
-
-                room->broadcastSkillInvoke("yingzi", qrand() % 2 + 3);
-                return true;
-            }
+        bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
+        if (invoke){
+            room->broadcastSkillInvoke(objectName());
+            return true;
         }
         return false;
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room* room, ServerPlayer *sunce, QVariant &data) const{
-        if (triggerEvent == EventPhaseStart) {
-            room->notifySkillInvoked(sunce, objectName());
-            room->setPlayerMark(sunce, "hunshang_invoke", 1);
-
-            if (sunce->askForSkillInvoke("yinghun")) {
-                LogMessage log;
-                log.type = "#InvokeSkill";
-                log.from = sunce;
-                log.arg = "yinghun";
-                room->sendLog(log);
-
-                ServerPlayer *to = room->askForPlayerChosen(sunce, room->getOtherPlayers(sunce), "yinghun", "yinghun-invoke", false, true);
-                if (to) {
-                    int x = sunce->getLostHp();
-
-                    int index = 3;
-
-                    if (x == 1) {
-                        room->broadcastSkillInvoke("yihun", index);
-
-                        to->drawCards(1);
-                        room->askForDiscard(to, objectName(), 1, 1, false, true);
-                    } else {
-                        to->setFlags("YinghunTarget");
-                        QString choice = room->askForChoice(sunce, "yihun", "d1tx+dxt1");
-                        to->setFlags("-YinghunTarget");
-                        if (choice == "d1tx") {
-                            room->broadcastSkillInvoke("yihun", index + 1);
-
-                            to->drawCards(1);
-                            room->askForDiscard(to, "yihun", x, x, false, true);
-                        } else {
-                            room->broadcastSkillInvoke("yihun", index);
-
-                            to->drawCards(x);
-                            room->askForDiscard(to, "yihun", 1, 1, false, true);
-                        }
-                    }
-                }
-            }
-        } else {
-            int n = data.toInt();
-            data = n + 1;
-        }
-
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        target->getRoom()->handleAcquireDetachSkills(target, "sunce_yinghun|sunce_yingzi");
+        target->setFlags("hunshang");
         return false;
+    }
+
+    virtual int getPriority() const{
+        return 3;
     }
 };
 
@@ -1294,6 +1250,8 @@ MomentumPackage::MomentumPackage()
     sunce->addSkill(new Yingyang);
     sunce->addSkill(new Hunshang);
     sunce->setDeputyMaxHpAdjustedValue(-1);
+    sunce->addRelateSkill("sunce_yinghun");
+    sunce->addRelateSkill("sunce_yingzi");
 
     General *chenwudongxi = new General(this, "chenwudongxi", "wu", 4); // WU 023
     chenwudongxi->addSkill(new Duanxie);
@@ -1308,7 +1266,7 @@ MomentumPackage::MomentumPackage()
     zhangren->addSkill(new Chuanxin);
     zhangren->addSkill(new Fengshi);
 
-    skills << new Yongjue << new YongjueStart << new Benghuai << new HongfaSlash;
+    skills << new Yongjue << new YongjueStart << new Benghuai << new HongfaSlash << new Sunce_Yinghun << new Sunce_Yingzi;
     related_skills.insertMulti("yongjue", "#yongjue-start");
 
     addMetaObject<CunsiCard>();

@@ -15,6 +15,24 @@ private:
     QString owner;
 };
 
+class Yingzi: public DrawCardsSkill {
+public:
+    Yingzi();
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual int getDrawNum(ServerPlayer *player, int n) const;
+};
+
+class Yinghun: public PhaseChangeSkill {
+public:
+    Yinghun();
+
+    virtual bool canPreshow() const;
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool onPhaseChange(ServerPlayer *target) const;
+};
+
 class TuxiCard: public SkillCard {
     Q_OBJECT
 

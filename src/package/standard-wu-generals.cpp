@@ -146,24 +146,21 @@ public:
     }
 };
 
-class Yingzi: public DrawCardsSkill {
-public:
-    Yingzi(): DrawCardsSkill("yingzi") {
-        frequency = Frequent;
-    }
+Yingzi::Yingzi(): DrawCardsSkill("yingzi") {
+    frequency = Frequent;
+}
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->askForSkillInvoke(objectName())){
-            room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
-            return true;
-        }
-        return false;
+bool Yingzi::cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    if (player->askForSkillInvoke(objectName())){
+        room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
+        return true;
     }
+    return false;
+}
 
-    virtual int getDrawNum(ServerPlayer *zhouyu, int n) const{
-        return n + 1;
-    }
-};
+int Yingzi::getDrawNum(ServerPlayer *zhouyu, int n) const{
+    return n + 1;
+}
 
 FanjianCard::FanjianCard() {
 }
@@ -493,63 +490,60 @@ public:
     }
 };
 
-class Yinghun: public PhaseChangeSkill {
-public:
-    Yinghun(): PhaseChangeSkill("yinghun") {
+
+Yinghun::Yinghun(): PhaseChangeSkill("yinghun") {
+}
+
+bool Yinghun::canPreshow() const {
+    return false;
+}
+
+bool Yinghun::triggerable(TriggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who) const{
+    return PhaseChangeSkill::triggerable(target)
+        && target->getPhase() == Player::Start
+        && target->isWounded();
+}
+
+bool Yinghun::cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    ServerPlayer *to = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "yinghun-invoke", true, true);
+    if (to) {
+        player->tag["yinghun_target"] = QVariant::fromValue(to);
+        return true;
     }
+    return false;
+}
 
-    virtual bool canPreshow() const {
-        return false;
-    }
+bool Yinghun::onPhaseChange(ServerPlayer *sunjian) const{
+    Room *room = sunjian->getRoom();
+    PlayerStar to = sunjian->tag["yinghun_target"].value<PlayerStar>();
+    if (to) {
+        int x = sunjian->getLostHp();
 
-    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who) const{
-        return PhaseChangeSkill::triggerable(target)
-               && target->getPhase() == Player::Start
-               && target->isWounded();
-    }
-    
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *to = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "yinghun-invoke", true, true);
-        if (to) {
-            player->tag["yinghun_target"] = QVariant::fromValue(to);
-            return true;
-        }
-        return false;
-    }
+        if (x == 1) {
+            room->broadcastSkillInvoke(objectName(), 1);
 
-    virtual bool onPhaseChange(ServerPlayer *sunjian) const{
-        Room *room = sunjian->getRoom();
-        PlayerStar to = sunjian->tag["yinghun_target"].value<PlayerStar>();
-        if (to) {
-            int x = sunjian->getLostHp();
-
-            int index = 1;
-
-            if (x == 1) {
-                room->broadcastSkillInvoke(objectName(), index);
+            to->drawCards(1);
+            room->askForDiscard(to, objectName(), 1, 1, false, true);
+        } else {
+            to->setFlags("YinghunTarget");
+            QString choice = room->askForChoice(sunjian, objectName(), "d1tx+dxt1");
+            to->setFlags("-YinghunTarget");
+            if (choice == "d1tx") {
+                room->broadcastSkillInvoke(objectName(), 2);
 
                 to->drawCards(1);
-                room->askForDiscard(to, objectName(), 1, 1, false, true);
+                room->askForDiscard(to, objectName(), x, x, false, true);
             } else {
-                to->setFlags("YinghunTarget");
-                QString choice = room->askForChoice(sunjian, objectName(), "d1tx+dxt1");
-                to->setFlags("-YinghunTarget");
-                if (choice == "d1tx") {
-                    room->broadcastSkillInvoke(objectName(), index + 1);
+                room->broadcastSkillInvoke(objectName(), 1);
 
-                    to->drawCards(1);
-                    room->askForDiscard(to, objectName(), x, x, false, true);
-                } else {
-                    room->broadcastSkillInvoke(objectName(), index);
-
-                    to->drawCards(x);
-                    room->askForDiscard(to, objectName(), 1, 1, false, true);
-                }
+                to->drawCards(x);
+                room->askForDiscard(to, objectName(), 1, 1, false, true);
             }
         }
-        return false;
     }
-};
+    return false;
+}
+
 
 TianxiangCard::TianxiangCard() {
 }
