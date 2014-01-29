@@ -739,7 +739,7 @@ public:
         limit_mark = "@nirvana";
     }
 
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who /* = NULL */){
+    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who) const {
         if (TriggerSkill::triggerable(target) && target->getMark("@nirvana") > 0){
             DyingStruct dying_data = data.value<DyingStruct>();
             if (dying_data.who != target)

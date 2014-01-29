@@ -34,7 +34,8 @@ public:
         int id1 = room->askForAG(lidian, card_ids, false, objectName());
         card_ids.removeOne(id1);
         obtained << id1;
-        room->takeAG(lidian, id1, false);
+        room->clearAG(lidian);
+        room->fillAG(card_ids, lidian);
         int id2 = room->askForAG(lidian, card_ids, false, objectName());
         card_ids.removeOne(id2);
         obtained << id2;
