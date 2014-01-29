@@ -23,15 +23,6 @@ void MagatamasBoxItem::setOrientation(Qt::Orientation orientation) {
 }
 
 void MagatamasBoxItem::_updateLayout() {
-    int xStep, yStep;
-    if (this->m_orientation == Qt::Horizontal) {
-        xStep = m_iconSize.width();
-        yStep = 0;
-    } else {
-        xStep = 0;
-        yStep = m_iconSize.height();
-    }
-
     for (int i = 0; i < 4; i++) {
         _icons[i] = G_ROOM_SKIN.getPixmap(QString(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS).arg(QString::number(i)))
                                           .scaled(m_iconSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -156,20 +147,20 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
 
     if (m_maxHp <= 4) {
         int i;
-        for (i = 0; i < m_hp; i++) {
-            QRect rect(xStep * i, - yStep * i, m_imageArea.width(), m_imageArea.height());
-            rect.translate(m_imageArea.bottomLeft());
-            painter->drawPixmap(rect, _icons[imageIndex]);
+        for (i = 0; i < m_maxHp - m_hp; i++) {
+            QRect rect(xStep * i,  yStep * i, m_imageArea.width(), m_imageArea.height());
+            rect.translate(m_imageArea.topLeft());
+            painter->drawPixmap(rect, _icons[0]);
         }
         for (; i < m_maxHp; i++) {
-            QRect rect(xStep * i, - yStep * i, m_imageArea.width(), m_imageArea.height());
-            rect.translate(m_imageArea.bottomLeft());
-            painter->drawPixmap(rect, _icons[0]);
+            QRect rect(xStep * i,  yStep * i, m_imageArea.width(), m_imageArea.height());
+            rect.translate(m_imageArea.topLeft());
+            painter->drawPixmap(rect, _icons[imageIndex]);
         }
     } else {
         painter->drawPixmap(m_imageArea, _icons[imageIndex]);
         QRect rect(xStep, - yStep, m_imageArea.width(), m_imageArea.height());
-        rect.translate(m_imageArea.bottomLeft());
+        rect.translate(m_imageArea.topLeft());
         if (this->m_orientation == Qt::Horizontal)
             rect.translate(xStep * 0.5, yStep * 0.5);
         G_COMMON_LAYOUT.m_hpFont[imageIndex].paintText(painter, rect, Qt::AlignCenter, QString::number(m_hp));

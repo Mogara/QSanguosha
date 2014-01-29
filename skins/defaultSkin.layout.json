@@ -37,7 +37,7 @@
     ],
     // I realized that some MOD might need a wider background area than the foreground magatamas in order
     // to draw certain effect. The following factor specifies the number of invisible magatama to be appended. 
-    "hpExtraSpaceHolder": 1
+    "hpExtraSpaceHolder": 0
 },
 "room":
 {
@@ -174,10 +174,10 @@
     "screenNameArea": [0, 7, 157, 25],
     "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 2, 10, [0, 0], [0, 0, 0, 224]],
     "magatamasHorizontal": false,
-    "magatamaSize": [23, 30],
-    "magatamaImageArea": [0, 3, 22, 26],
+    "magatamaSize": [23, 23],
+    "magatamaImageArea": [0, 3, 22, 22],
     "magatamasBgVisible": false,
-    "magatamasAnchor": ["rightTop", [165, 10]],
+    "magatamasAnchor": ["bottomRight", [386, 146]],
     "cardMoveArea": [-50, 65, 200, 130], 
     "progressBarArea": ["bottomCenter", "bottomCenter", [-8, 0], [300, 18]],
     "progressBarHorizontal": true,
