@@ -137,6 +137,7 @@ return {
 	["zhangfei"] = "张飞",
 	["paoxiao"] = "咆哮",
 	[":paoxiao"] = "<font color=\"blue\"><b>锁定技，</b></font>你使用【杀】无次数限制。",
+	["paoxiao:armor_nullify"] = "场上有君刘备，你现在可以亮将发动【杀】的无视防具效果。" ,
 
 	["#zhugeliang"] = "迟暮的丞相",
 	["zhugeliang"] = "诸葛亮",

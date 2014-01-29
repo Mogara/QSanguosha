@@ -245,7 +245,7 @@ public:
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == DrawNCards){
             if (player->askForSkillInvoke(objectName())){
-                room->broadcastSkillInvoke(objectName());
+                room->broadcastSkillInvoke(objectName(), 2);
                 return true;
             }
         }
@@ -273,6 +273,7 @@ public:
             log.arg2 = QString::number(++damage.damage);
             room->sendLog(log);
 
+            room->broadcastSkillInvoke(objectName(), 1);
             data = QVariant::fromValue(damage);
         }
         return false;
@@ -905,8 +906,13 @@ public:
     Jieming(): MasochismSkill("jieming") {
     }
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->isAlive() && player->askForSkillInvoke(objectName(), data)){
-            room->broadcastSkillInvoke(objectName());
+        if (!player->isAlive())
+            return false;
+
+        ServerPlayer *target = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName(), "jieming-invoke", true, true);
+        if (target != NULL){
+            room->broadcastSkillInvoke(objectName(), (target == player ? 2 : 1));
+            player->tag["jieming_target"] = QVariant::fromValue(target);
             return true;
         }
         return false;
@@ -923,9 +929,10 @@ public:
         }
         return false;
     }
+
     virtual void onDamaged(ServerPlayer *xunyu, const DamageStruct &damage) const{
-        Room *room = xunyu->getRoom();
-        ServerPlayer *to = room->askForPlayerChosen(xunyu, room->getAlivePlayers(), objectName(), "jieming-invoke", true, true);
+        ServerPlayer *to = xunyu->tag["jieming_target"].value<ServerPlayer *>();
+        xunyu->tag.remove("jieming_target");
         if (to) {
 			int upper = qMin(5, to->getMaxHp());
 			int x = upper - to->getHandcardNum();
@@ -982,7 +989,7 @@ public:
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *to = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "fangzhu-invoke", true);
         if (to != NULL){
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), (to->faceUp() ? 1: 2));
             player->tag["fangzhu_invoke"] = QVariant::fromValue(to);
             return true;
         }
@@ -1019,7 +1026,7 @@ public:
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
 		ServerPlayer *yuejin = room->findPlayerBySkillName(objectName());
         if (yuejin && room->askForCard(yuejin, ".Basic", "@xiaoguo", QVariant(), objectName())) {
-            room->broadcastSkillInvoke(objectName(),1);
+            room->broadcastSkillInvoke(objectName(), 1);
             return true;
         }
         return false;

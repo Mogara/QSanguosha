@@ -46,11 +46,15 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        return player->askForSkillInvoke("tuntian", data);
+        if (player->askForSkillInvoke("tuntian", data)){
+            room->broadcastSkillInvoke("tuntian");
+            return true;
+        }
+
+        return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        room->broadcastSkillInvoke("tuntian");
         JudgeStruct judge;
         judge.pattern = ".|heart";
         judge.good = false;
@@ -124,6 +128,7 @@ void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
     Snatch *snatch = new Snatch(Card::SuitToBeDecided, -1);
     snatch->setSkillName("jixi");
+    snatch->setShowSkill("jixi");
     snatch->addSubcard(card_id);
 
     QList<ServerPlayer *> targets;
@@ -188,6 +193,7 @@ public:
         foreach (int id, player->getPile("field")) {
             Snatch *snatch = new Snatch(Card::SuitToBeDecided, -1);
             snatch->setSkillName("jixi");
+            snatch->setShowSkill("jixi");
             snatch->addSubcard(id);
             snatch->deleteLater();
             if (!snatch->isAvailable(player))
@@ -211,7 +217,6 @@ public:
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
         if (pattern == "@@jixi!") {
             Card *card = new JixiSnatchCard;
-            card->setShowSkill(objectName());
             return card;
         } else
             return new JixiCard;
@@ -237,9 +242,14 @@ public:
         return false;
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
-        return room->askForSkillInvoke(dengai, objectName(), data);
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
+        ServerPlayer *player = room->findPlayerBySkillName(objectName());
+        if (room->askForSkillInvoke(player, objectName(), data)){
+            room->broadcastSkillInvoke(objectName());
+            return true;
+        }
+
+        return false;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -340,7 +350,7 @@ public:
 HeyiSummon::HeyiSummon() 
     : ArraySummonCard("heyi")
 {
-
+    m_skillName = "heyi";
 }
 
 class Heyi: public BattleArraySkill {
@@ -440,16 +450,9 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        Card *card = new TiaoxinCard;
+        TiaoxinCard *card = new TiaoxinCard;
         card->setShowSkill(objectName());
         return card;
-    }
-
-    virtual int getEffectIndex(const ServerPlayer *player, const Card *) const{
-        int index = qrand() % 2 + 1;
-        if (!player->hasInnateSkill(objectName()) && player->hasSkill("baobian"))
-            index += 2;
-        return index;
     }
 };
 
@@ -485,6 +488,8 @@ public:
             log.from = player;
             log.arg = "guanxing";
             room->sendLog(log);
+
+            room->broadcastSkillInvoke(objectName());
             return true;
         }
 
@@ -509,7 +514,7 @@ public:
 TianfuSummon::TianfuSummon()
     : ArraySummonCard("tianfu")
 {
-
+    m_skillName = "tianfu";
 }
 
 class Tianfu: public BattleArraySkill {
@@ -563,8 +568,13 @@ public:
         return false;
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
-        return player->askForSkillInvoke(objectName());
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (player->askForSkillInvoke(objectName())){
+            room->broadcastSkillInvoke(objectName());
+            return true;
+        }
+
+        return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
@@ -592,12 +602,16 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        return player->askForSkillInvoke(objectName());
+        if (player->askForSkillInvoke(objectName())){
+            room->broadcastSkillInvoke(objectName());
+            return true;
+        }
+
+        return false;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        room->broadcastSkillInvoke(objectName());
         ServerPlayer *from = (ServerPlayer *)move.from;
         from->drawCards(1);
         return false;
@@ -676,7 +690,7 @@ public:
 NiaoxiangSummon::NiaoxiangSummon()
     : ArraySummonCard("niaoxiang")
 {
-
+    m_skillName = "niaoxiang";
 }
 
 class Niaoxiang: public BattleArraySkill {
@@ -733,8 +747,10 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         PlayerStar p = player->tag["yicheng_target"].value<PlayerStar>();
-        if (room->askForSkillInvoke(player, objectName(), QVariant::fromValue(p)))
+        if (room->askForSkillInvoke(player, objectName(), QVariant::fromValue(p))){
+            room->broadcastSkillInvoke(objectName());
             return true;
+        }
         else
             player->tag.remove("yicheng_target");
         return false;
@@ -785,9 +801,14 @@ public:
         return false;
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *yuji = room->findPlayerBySkillName(objectName());
-        return yuji && room->askForSkillInvoke(yuji, objectName());
+        if (yuji && room->askForSkillInvoke(yuji, objectName())){
+            room->broadcastSkillInvoke(objectName());
+            return true;
+        }
+
+        return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -864,7 +885,12 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         ServerPlayer *hetaihou = room->findPlayerBySkillName(objectName());
-        return hetaihou && room->askForCard(hetaihou, ".", "@zhendu-discard", QVariant(), objectName());
+        if (hetaihou && room->askForDiscard(hetaihou, objectName(), 1, 1, true, false, "@zhendu-discard")){
+            room->broadcastSkillInvoke(objectName());
+            return true;
+        }
+
+        return false;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
@@ -922,7 +948,12 @@ public:
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *hetaihou = room->findPlayerBySkillName(objectName());
-        return hetaihou && hetaihou->askForSkillInvoke(objectName());
+        if (hetaihou && hetaihou->askForSkillInvoke(objectName())){
+            room->broadcastSkillInvoke(objectName());
+            return true;
+        }
+
+        return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -974,7 +1005,13 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        return player->hasShownSkill(this) ? true : player->askForSkillInvoke(objectName());
+        bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
+        if (invoke){
+            room->broadcastSkillInvoke(objectName(), 2);
+            return true;
+        }
+
+        return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -1047,6 +1084,8 @@ public:
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (player->askForSkillInvoke(objectName(), data)){
+            player->broadcastSkillInvoke(objectName());
+            room->doLightbox("$JizhaoAnimate", 3000);
             player->loseMark(limit_mark);
             return true;
         }

@@ -154,7 +154,7 @@ public:
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (player->askForSkillInvoke(objectName())){
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
             return true;
         }
         return false;
@@ -312,21 +312,18 @@ public:
         // a temp nasty trick
         daqiao->tag["liuli-card"] = QVariant::fromValue((CardStar)use.card); // for the server (AI)
         room->setPlayerProperty(daqiao, "liuli", use.card->toString()); // for the client (UI)
-        if (room->askForUseCard(daqiao, "@@liuli", prompt, -1, Card::MethodDiscard))
+        const Card *c = room->askForUseCard(daqiao, "@@liuli", prompt, -1, Card::MethodDiscard);
+        daqiao->tag.remove("liuli-card");
+        room->setPlayerProperty(daqiao, "liuli", QString());
+        room->setPlayerFlag(use.from, "-LiuliSlashSource");
+        if (c != NULL)
             return true;
-        else {
-            daqiao->tag.remove("liuli-card");
-            room->setPlayerProperty(daqiao, "liuli", QString());
-            room->setPlayerFlag(use.from, "-LiuliSlashSource");
-        }
+
         return false;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *daqiao, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        daqiao->tag.remove("liuli-card");
-        room->setPlayerProperty(daqiao, "liuli", QString());
-        room->setPlayerFlag(use.from, "-LiuliSlashSource");
         QList<ServerPlayer *> players = room->getOtherPlayers(daqiao);
         foreach (ServerPlayer *p, players) {
             if (p->hasFlag("LiuliTarget")) {
@@ -361,8 +358,13 @@ public:
     }
 
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->hasShownSkill(this)) return true;
-        return player->askForSkillInvoke(objectName());
+        bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
+        if (invoke){
+            room->broadcastSkillInvoke(objectName());
+            return true;
+        }
+
+        return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -475,7 +477,12 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *sunshangxiang, QVariant &data) const{
-        return room->askForSkillInvoke(sunshangxiang, objectName());
+        if (room->askForSkillInvoke(sunshangxiang, objectName())){
+            room->broadcastSkillInvoke(objectName());
+            return true;
+        }
+
+        return false;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *sunshangxiang, QVariant &data) const{
@@ -517,8 +524,6 @@ public:
             int x = sunjian->getLostHp();
 
             int index = 1;
-            if (!sunjian->hasInnateSkill("yinghun") && sunjian->hasSkill("hunzi"))
-                index += 2;
 
             if (x == 1) {
                 room->broadcastSkillInvoke(objectName(), index);
@@ -680,7 +685,7 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        Card *card = new TianyiCard;
+        TianyiCard *card = new TianyiCard;
         card->setShowSkill(objectName());
         return card;
     }
@@ -698,6 +703,10 @@ public:
             room->setPlayerFlag(target, "-TianyiSuccess");
 
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+        return 1;
     }
 };
 
@@ -856,13 +865,16 @@ public:
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &data) const{
         if (triggerEvent == AskForPeachesDone) return true;
-        return room->askForSkillInvoke(zhoutai, objectName(), data);
+        if (room->askForSkillInvoke(zhoutai, objectName(), data)){
+            room->broadcastSkillInvoke(objectName());
+            return true;
+        }
+        return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &data) const{
         if (triggerEvent == PostHpReduced && zhoutai->getHp() < 1) {
             room->setTag("Buqu", zhoutai->objectName());
-            room->broadcastSkillInvoke("buqu");
             const QList<int> &buqu = zhoutai->getPile("buqu");
 
             int need = 1 - zhoutai->getHp(); // the buqu cards that should be turned over
@@ -974,7 +986,7 @@ public:
         events << AfterDrawNCards;
     }
 
-    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *lusu, QVariant &, ServerPlayer *) const{
+    virtual bool triggerable(TriggerEvent, Room *room, ServerPlayer *lusu, QVariant &, ServerPlayer * &) const{
         if (!TriggerSkill::triggerable(lusu)) return false;
         if (lusu->hasFlag("haoshi")) {
             lusu->setFlags("-haoshi");
@@ -1001,12 +1013,11 @@ public:
 
                 int n = lusu->getHandcardNum() / 2;
                 QList<int> to_give = lusu->handCards().mid(0, n);
-                HaoshiCard *haoshi_card = new HaoshiCard;
-                haoshi_card->addSubcards(to_give);
+                HaoshiCard haoshi_card;
+                haoshi_card.addSubcards(to_give);
                 QList<ServerPlayer *> targets;
                 targets << beggar;
-                haoshi_card->use(room, lusu, targets);
-                delete haoshi_card;
+                haoshi_card.use(room, lusu, targets);
             }
         }
 
@@ -1239,9 +1250,10 @@ public:
         }
 
         QList<int> cards = cardsToGet + cardsOther;
-        if (erzhang->askForSkillInvoke(objectName(), cards.length()))
+        if (erzhang->askForSkillInvoke(objectName(), cards.length())){
+            room->broadcastSkillInvoke(objectName());
             return true;
-        else {
+        } else {
             erzhang->tag.remove("GuzhengToGet");
             erzhang->tag.remove("GuzhengOther");
         }
@@ -1288,7 +1300,6 @@ public:
 
         DummyCard dummy(cards);
         room->obtainCard(erzhang, &dummy);
-        room->broadcastSkillInvoke(objectName());
 
         return false;
     }
