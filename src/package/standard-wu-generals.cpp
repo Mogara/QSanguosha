@@ -700,7 +700,7 @@ public:
     }
 
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
-        return 1;
+        return 2;
     }
 };
 

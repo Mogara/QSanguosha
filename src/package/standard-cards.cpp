@@ -167,6 +167,9 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         room->broadcastSkillInvoke("duanbing");
         room->notifySkillInvoked(player, "duanbing");
     }
+    if ((use.to.size() > 1 || player->hasFlag("Global_MoreSlashInOneTurn")) && player->hasFlag("TianyiSuccess") && player->getPhase() == Player::Play){
+        room->broadcastSkillInvoke("tianyi", 1);
+    }
 
     if (use.card->isVirtualCard()) {
         if (use.card->getSkillName() == "spear")
