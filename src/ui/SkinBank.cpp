@@ -35,6 +35,9 @@ const char *QSanRoomSkin::S_SKIN_KEY_EQUIP_ICON = "%1Equip-%2";
 const char *QSanRoomSkin::S_SKIN_KEY_MAINFRAME = "%1MainFrame";
 const char *QSanRoomSkin::S_SKIN_KEY_LEFTFRAME = "%1LeftFrame";
 const char *QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME = "%1RightFrame";
+const char *QSanRoomSkin::S_SKIN_KEY_RIGHTBASE = "%1RightBase";
+const char *QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BASE = "%1MagatamasBase";
+const char *QSanRoomSkin::S_SKIN_KEY_AVATAR_FRAME = "%1AvatarFrame";
 const char *QSanRoomSkin::S_SKIN_KEY_MIDDLEFRAME = "%1MiddleFrame";
 const char *QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM = "%1HandCardNum-%2";
 const char *QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK = "%1FaceTurnedMask";
@@ -811,7 +814,12 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         tryParse(playerConfig["roleComboBoxPos"], layout->m_roleComboBoxPos);
 
         tryParse(playerConfig["avatarArea"], layout->m_avatarArea);
-        tryParse(playerConfig["secondaryAvatarArea"], layout->m_smallAvatarArea);
+        if (!tryParse(playerConfig["secondaryAvatarArea"], layout->m_secondaryAvatarArea)) {
+            QRect ava = layout->m_avatarArea;
+            layout->m_secondaryAvatarArea = QRect(ava.left() - 1 - ava.width(),
+                                                  ava.top(), ava.width(),
+                                                  ava.height());
+        }
         tryParse(playerConfig["circleArea"], layout->m_circleArea);
         tryParse(playerConfig["avatarImageType"], layout->m_avatarSize);
         tryParse(playerConfig["secondaryAvatarImageType"], layout->m_smallAvatarSize);
@@ -819,7 +827,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         tryParse(playerConfig["circleImageType"], layout->m_circleImageSize);
         tryParse(playerConfig["avatarNameArea"], layout->m_avatarNameArea);
         layout->m_avatarNameFont.tryParse(playerConfig["avatarNameFont"]);
-        tryParse(playerConfig["smallAvatarNameArea"], layout->m_smallAvatarNameArea);
+        tryParse(playerConfig["secondaryAvatarNameArea"], layout->m_secondaryAvatarNameArea);
         layout->m_smallAvatarNameFont.tryParse(playerConfig["smallAvatarNameFont"]);
         tryParse(playerConfig["kingdomMaskArea"], layout->m_kingdomMaskArea);
         tryParse(playerConfig["kingdomIconArea"], layout->m_kingdomIconArea);
@@ -879,6 +887,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
     config = layoutConfig[S_SKIN_KEY_DASHBOARD];
     tryParse(config["leftWidth"], _m_dashboardLayout.m_leftWidth);
     tryParse(config["rightWidth"], _m_dashboardLayout.m_rightWidth);
+    tryParse(config["magatamasBaseWidth"], _m_dashboardLayout.m_magatamasBaseWidth);
     tryParse(config["reverseSelectionWidth"], _m_dashboardLayout.m_rswidth);
     tryParse(config["floatingAreaHeight"], _m_dashboardLayout.m_floatingAreaHeight);
     tryParse(config["focusFrameArea"], _m_dashboardLayout.m_focusFrameArea);

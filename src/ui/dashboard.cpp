@@ -24,7 +24,8 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     _m_layout = _dlayout;
     m_player = Self;
     _m_leftFrame = _m_rightFrame = _m_middleFrame = NULL;
-    _m_rightFrameBg = NULL;
+    _m_rightFrameBg = _m_rightFrameBase = _m_magatamasBase =
+        _m_headGeneralFrame = _m_deputyGeneralFrame = NULL;
     animations = new EffectAnimation();
     pending_card = NULL;
     for (int i = 0; i < 4; i++) {
@@ -53,7 +54,7 @@ Dashboard::Dashboard(QGraphicsItem *widget)
 }
 
 bool Dashboard::isAvatarUnderMouse() {
-    return _m_avatarArea->isUnderMouse();
+    return _m_avatarArea->isUnderMouse() || _m_secondaryAvatarArea->isUnderMouse();
 }
 
 void Dashboard::hideControlButtons() {
@@ -74,6 +75,10 @@ void Dashboard::showProgressBar(QSanProtocol::Countdown countdown) {
 
 QGraphicsItem *Dashboard::getMouseClickReceiver() {
     return _m_avatarIcon;
+}
+
+QGraphicsItem *Dashboard::getMouseClickReceiver2() {
+    return _m_smallAvatarIcon;
 }
 
 void Dashboard::_createLeft() {
@@ -122,6 +127,18 @@ void Dashboard::_adjustComponentZValues() {
     _layUnder(_m_middleFrame);
     _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
     _layBetween(_m_rightFrameBg, _m_faceTurnedIcon, _m_equipRegions[3]);
+    //rightFrameBase should always be under rightFrameBg
+    //base -> top : frame base -> frame bg -> magatamas base and general frames
+    qreal z = _m_rightFrameBg->zValue();
+    //make sure right frame base is at the bottom in case avatars are hidden by it.
+    _m_rightFrameBase->setZValue(z - 100);
+    _m_avatarIcon->setZValue(z + 1);
+    //maybe secondary general avatar icon hasn't been created at this time
+    if (_m_smallAvatarIcon)
+        _m_smallAvatarIcon->setZValue(z + 1);
+    _m_magatamasBase->setZValue(z + 2);
+    _m_headGeneralFrame->setZValue(z + 2);
+    _m_deputyGeneralFrame->setZValue(z + 2);
 }
 
 int Dashboard::width() {
@@ -132,16 +149,34 @@ void Dashboard::_createRight() {
     QRect rect = QRect(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth, 0,
                        G_DASHBOARD_LAYOUT.m_rightWidth,
                        G_DASHBOARD_LAYOUT.m_normalHeight);
-    _paintPixmap(_m_rightFrame, rect, QPixmap(1, 1), _m_groupMain);
+    QPixmap pix = QPixmap(1, 1);
+    pix.fill(QColor(0, 0, 0, 0));
+    _paintPixmap(_m_rightFrame, rect, pix, _m_groupMain);
+    _paintPixmap(_m_rightFrameBase, QRect(0, 0, rect.width(), rect.height()),
+                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTBASE), _m_rightFrame);
     _paintPixmap(_m_rightFrameBg, QRect(0, 0, rect.width(), rect.height()),
                  _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME), _m_rightFrame);
+    _paintPixmap(_m_magatamasBase, 
+                 QRect(rect.width() - G_DASHBOARD_LAYOUT.m_magatamasBaseWidth, 
+                       0, rect.width(), rect.height()),
+                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BASE), _m_rightFrame);
+    _paintPixmap(_m_headGeneralFrame, G_DASHBOARD_LAYOUT.m_avatarArea,
+                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_AVATAR_FRAME), _m_rightFrame);
+    _paintPixmap(_m_deputyGeneralFrame, G_DASHBOARD_LAYOUT.m_secondaryAvatarArea,
+                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_AVATAR_FRAME), _m_rightFrame);
     _m_rightFrame->setZValue(-1000); // nobody should be under me.
 
-    _m_skillDock = new QSanInvokeSkillDock(_m_rightFrame);
-    QRect avatar = G_DASHBOARD_LAYOUT.m_avatarArea;
-    _m_skillDock->setPos(avatar.left(), avatar.bottom() +
-                         G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height());
-    _m_skillDock->setWidth(avatar.width());
+    QRect avatar1 = G_DASHBOARD_LAYOUT.m_avatarArea;
+    _m_rightSkillDock = new QSanInvokeSkillDock(_m_rightFrame);
+    _m_rightSkillDock->setPos(avatar1.left(), avatar1.bottom() -
+                         G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() / 1.3);
+    _m_rightSkillDock->setWidth(avatar1.width());
+
+    QRect avatar2 = G_DASHBOARD_LAYOUT.m_secondaryAvatarArea;
+    _m_leftSkillDock = new QSanInvokeSkillDock(_m_rightFrame);
+    _m_leftSkillDock->setPos(avatar2.left(), avatar2.bottom() -
+                         G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() / 1.3);
+    _m_leftSkillDock->setWidth(avatar2.width());
 }
 
 void Dashboard::_updateFrames() {
@@ -203,7 +238,7 @@ bool Dashboard::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
     if (place == Player::PlaceSpecial) {
         foreach (CardItem *card, card_items)
             card->setHomeOpacity(0.0);
-        QPointF center = mapFromItem(_getAvatarParent(), _dlayout->m_avatarArea.center());
+        QPointF center = mapFromItem(_getAvatarParent(), _dlayout->m_secondaryAvatarArea.center());
         QRectF rect = QRectF(0, 0, _dlayout->m_disperseWidth, 0);
         rect.moveCenter(center);
         _disperseCards(card_items, rect, Qt::AlignCenter, true, false);
@@ -409,11 +444,16 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName) {
     const Skill *skill = Sanguosha->getSkill(skillName);
     Q_ASSERT(skill && !skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill"));
 #endif
-    if (_m_skillDock->getSkillButtonByName(skillName) != NULL) {
-        _m_button_recycle.append(_m_skillDock->getSkillButtonByName(skillName));
+    if (_m_rightSkillDock->getSkillButtonByName(skillName)) {
+        _m_button_recycle.append(_m_rightSkillDock->getSkillButtonByName(skillName));
+        return NULL;
+    } else if (_m_leftSkillDock->getSkillButtonByName(skillName)) {
+        _m_button_recycle.append(_m_leftSkillDock->getSkillButtonByName(skillName));
         return NULL;
     }
-    return _m_skillDock->addSkillButtonByName(skillName);
+    QSanInvokeSkillDock *dock = Self->inHeadSkills(skillName) ? 
+                                _m_rightSkillDock :_m_leftSkillDock;
+    return dock->addSkillButtonByName(skillName);
 }
 
 QSanSkillButton *Dashboard::removeSkillButton(const QString &skillName) {
@@ -431,11 +471,16 @@ QSanSkillButton *Dashboard::removeSkillButton(const QString &skillName) {
     }
     _mutexEquipAnim.unlock();
     if (btn == NULL) {
-        QSanSkillButton *temp = _m_skillDock->getSkillButtonByName(skillName);
+        QSanInvokeSkillDock *dock = _m_rightSkillDock;
+        QSanSkillButton *temp = _m_rightSkillDock->getSkillButtonByName(skillName);
+        if (temp == NULL) {
+            temp = _m_leftSkillDock->getSkillButtonByName(skillName);
+            dock = _m_leftSkillDock;
+        }
         if (_m_button_recycle.contains(temp))
             _m_button_recycle.removeOne(temp);
         else
-            btn = _m_skillDock->removeSkillButtonByName(skillName);
+            btn = dock->removeSkillButtonByName(skillName);
     }
     return btn;
 }
@@ -471,7 +516,9 @@ void Dashboard::_createExtraButtons() {
 
 void Dashboard::skillButtonActivated() {
     QSanSkillButton *button = qobject_cast<QSanSkillButton *>(sender());
-    foreach (QSanSkillButton *btn, _m_skillDock->getAllSkillButtons()) {
+    QList<QSanInvokeSkillButton *> buttons = _m_rightSkillDock->getAllSkillButtons()
+                                             + _m_leftSkillDock->getAllSkillButtons();
+    foreach (QSanSkillButton *btn, buttons) {
         if (button == btn) continue;
 
         if (btn->getViewAsSkill() != NULL && btn->isDown())
@@ -487,7 +534,9 @@ void Dashboard::skillButtonActivated() {
 }
 
 void Dashboard::skillButtonDeactivated() {
-    foreach (QSanSkillButton *btn, _m_skillDock->getAllSkillButtons()) {
+    QList<QSanInvokeSkillButton *> buttons = _m_rightSkillDock->getAllSkillButtons()
+                                             + _m_leftSkillDock->getAllSkillButtons();
+    foreach (QSanSkillButton *btn, buttons) {
         if (btn->getViewAsSkill() != NULL && btn->isDown())
             btn->setState(QSanButton::S_STATE_UP);
     }
@@ -733,7 +782,7 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
                 center += result[i]->pos();
             center = 1.0 / result.length() * center;
         } else if (place == Player::PlaceSpecial)
-            center = mapFromItem(_getAvatarParent(), _dlayout->m_avatarArea.center());
+            center = mapFromItem(_getAvatarParent(), _dlayout->m_secondaryAvatarArea.center());
         else
             Q_ASSERT(false);
         rect.moveCenter(center.toPoint());

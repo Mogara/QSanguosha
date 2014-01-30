@@ -37,7 +37,7 @@
     ],
     // I realized that some MOD might need a wider background area than the foreground magatamas in order
     // to draw certain effect. The following factor specifies the number of invisible magatama to be appended. 
-    "hpExtraSpaceHolder": 1
+    "hpExtraSpaceHolder": 0
 },
 "room":
 {
@@ -93,8 +93,8 @@
     "screenNameArea": [0, 0, 157, 15],
     "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 0, 10, [0, 0], [20, 20, 20, 155]],
     "magatamasHorizontal": false,
-    "magatamaSize": [18, 17],
-    "magatamaImageArea": [2, 2, 14, 17],
+    "magatamaSize": [18, 18],
+    "magatamaImageArea": [1, -13, 17, 17],
     "magatamasBgVisible": true,
     "magatamasAnchor": ["bottomRight", [156, 194]],
     "cardMoveArea": [-15, 35, 200, 130],
@@ -124,11 +124,12 @@
 "dashboard":
 {
     "leftWidth": 164,
-    "rightWidth": 171,
+    "rightWidth": 282,
+	"magatamasBaseWidth": 24,
 	"reverseSelectionWidth": 10,
-    "normalHeight": 170,
+    "normalHeight": 150,
     "floatingAreaHeight": 50,
-    "handCardNumIconArea": [-109, 151, 30, 18],
+    "handCardNumIconArea": [-126, 126, 30, 18],
     "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
     "equipAreas": [[5, 44, 149, 25], [5, 75, 149, 25], [5, 107, 149, 25], [5, 137, 149, 25]],
     "equipBorderPos": [-6, -6],
@@ -145,18 +146,17 @@
     // the width of the region to disperse cards when the cards are to be moved to the special pile. 
     "disperseWidth": 250,
     "markTextArea": [0, 0, 50, 50],
-    "roleComboBoxPos": [-30, 5],
+    "roleComboBoxPos": [-30, 8],
     "borderWidth": 6,
     "avatarImageType": 2,
-    "secondaryAvatarImageType": 5,
-    "primaryAvatarImageType": 7,
+    "secondaryAvatarImageType": 2,
+    "primaryAvatarImageType": 2,
     "circleImageType": 1,
-    "avatarArea": [8, 10, 134, 134],
-    "secondaryAvatarArea": [81, 10, 70, 70],
+    "avatarArea": [129, -3, 128, 174],
     "circleArea": [8, 10, 134, 134],
     "avatarNameArea": [8, 28, 30, 89],
     "focusFrameArea": [8, 10, 134, 134],
-    "smallAvatarNameArea": [84, 36, 18, 36],
+    "secondaryAvatarNameArea": [84, 36, 18, 36],
     // "avatarNameFont": ["@simli", [12, 12, 1], 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
     // "smallAvatarNameFont": ["@simli", [12, 12, 1], 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
     // must be in one of the following format:
@@ -174,10 +174,10 @@
     "screenNameArea": [0, 7, 157, 25],
     "screenNameFont": ["SimSun", 12, 0, [255, 255, 255, 255], 2, 10, [0, 0], [0, 0, 0, 224]],
     "magatamasHorizontal": false,
-    "magatamaSize": [23, 30],
-    "magatamaImageArea": [0, 3, 22, 26],
+    "magatamaSize": [23, 23],
+    "magatamaImageArea": [0, 3, 22, 22],
     "magatamasBgVisible": false,
-    "magatamasAnchor": ["rightTop", [165, 10]],
+    "magatamasAnchor": ["bottomRight", [281, 146]],
     "cardMoveArea": [-50, 65, 200, 130], 
     "progressBarArea": ["bottomCenter", "bottomCenter", [-8, 0], [300, 18]],
     "progressBarHorizontal": true,
@@ -192,18 +192,18 @@
     "drankMaskColor": [250, 0, 0, 115],
     "duanchangMaskColor": [255, 255, 255, 128],
     "buttonSetSize": [106, 168],
-    "confirmButtonArea": [5, 3, 61, 75],
-    "cancelButtonArea": [5, 92, 61, 75],
-    "discardButtonArea": [70, 45, 33, 81],
-    "trustButtonArea": [69, 133, 36, 35],
+    "confirmButtonArea": [10, 4, 100, 160],
+    "cancelButtonArea": [6, 90, 72, 97],
+    "discardButtonArea": [70, 48, 33, 130],
+    "trustButtonArea": [69, 136, 36, 35],
     "trustEffectColor": [38, 26, 66]
 },
 "skillButton":
 {
 "height": 26,
-"width": [134, 67, 45], 
-"textArea": [[19, 2, 112, 20], [20, 2, 44, 20], [9, 2, 40, 20]],
-"textAreaDown": [[20, 3, 112, 20], [21, 3, 44, 20], [10, 3, 40, 20]],
+"width": [120, 58, 45], 
+"textArea": [[13, 2, 112, 20], [16, 2, 44, 20], [9, 2, 40, 20]],
+"textAreaDown": [[14, 3, 112, 20], [17, 3, 44, 20], [10, 3, 40, 20]],
 "textFont": [["simkai", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
              ["simkai", [13, 13, 1], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // medium
              ["simkai", [13, 13, 0], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]]],  // narrow

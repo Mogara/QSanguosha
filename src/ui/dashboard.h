@@ -31,10 +31,17 @@ public:
     virtual QRectF boundingRect() const;
     void setWidth(int width);
     int getMiddleWidth();
-    inline QRectF getAvatarArea() {
+    inline QRectF getRightAvatarArea() {
         QRectF rect;
         rect.setSize(_dlayout->m_avatarArea.size());
         QPointF topLeft = mapFromItem(_getAvatarParent(), _dlayout->m_avatarArea.topLeft());
+        rect.moveTopLeft(topLeft);
+        return rect;
+    }
+    inline QRectF getLeftAvatarArea() {
+        QRectF rect;
+        rect.setSize(_dlayout->m_secondaryAvatarArea.size());
+        QPointF topLeft = mapFromItem(_getAvatarParent(), _dlayout->m_secondaryAvatarArea.topLeft());
         rect.moveTopLeft(topLeft);
         return rect;
     }
@@ -68,6 +75,7 @@ public:
     void adjustCards(bool playAnimation = true);
 
     virtual QGraphicsItem *getMouseClickReceiver();
+    virtual QGraphicsItem *getMouseClickReceiver2();
 
     QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place);
     virtual QList<CardItem *> cloneCardItems(QList<int> card_ids);
@@ -93,8 +101,10 @@ public:
     static const int S_PENDING_OFFSET_Y = -25;
 
     inline void updateSkillButton() {
-        if (_m_skillDock)
-            _m_skillDock->update();
+        if (_m_rightSkillDock)
+            _m_rightSkillDock->update();
+        if (_m_leftSkillDock)
+            _m_leftSkillDock->update();
     }
 
 public slots:
@@ -144,7 +154,8 @@ protected:
     QGraphicsPixmapItem *_m_leftFrame, *_m_middleFrame, *_m_rightFrame;
     // we can not draw bg directly _m_rightFrame because then it will always be
     // under avatar (since it's avatar's parent).
-    QGraphicsPixmapItem *_m_rightFrameBg;
+    QGraphicsPixmapItem *_m_rightFrameBase, *_m_rightFrameBg, *_m_magatamasBase,
+                        *_m_headGeneralFrame, *_m_deputyGeneralFrame;
     QGraphicsItem *button_widget;
 
     CardItem *selected;
@@ -153,7 +164,7 @@ protected:
     QGraphicsRectItem *trusting_item;
     QGraphicsSimpleTextItem *trusting_text;
 
-    QSanInvokeSkillDock* _m_skillDock;
+    QSanInvokeSkillDock *_m_rightSkillDock, *_m_leftSkillDock;
     const QSanRoomSkin::DashboardLayout *_dlayout;
 
     //for animated effects

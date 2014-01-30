@@ -11,7 +11,7 @@
 
 QSanButton::QSanButton(QGraphicsItem *parent): QGraphicsObject(parent)
 {
-    _m_state = S_STATE_UP;
+    _m_state = S_STATE_DISABLED;
     _m_style = S_STYLE_PUSH;
     _m_mouseEntered = false;
     setSize(QSize(0, 0));
@@ -22,7 +22,7 @@ QSanButton::QSanButton(QGraphicsItem *parent): QGraphicsObject(parent)
 QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent)
     : QGraphicsObject(parent)
 {
-    _m_state = S_STATE_UP;
+    _m_state = S_STATE_DISABLED;
     _m_style = S_STYLE_PUSH;
     _m_groupName = groupName;
     _m_buttonName = buttonName;
@@ -270,7 +270,7 @@ void QSanSkillButton::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 void QSanInvokeSkillButton::_repaint() {
     for (int i = 0; i < (int)S_NUM_BUTTON_STATES; i++) {
         _m_bgPixmap[i] = G_ROOM_SKIN.getSkillButtonPixmap((ButtonState)i, _m_skillType, _m_enumWidth);
-        Q_ASSERT(!_m_bgPixmap[i].isNull());
+        if(_m_bgPixmap[i].isNull()) continue;
 
         if (i == S_STATE_CANPRESHOW) {
             QPixmap temp(_m_bgPixmap[i]);
@@ -317,7 +317,7 @@ int QSanInvokeSkillDock::width() const{
 }
 
 int QSanInvokeSkillDock::height() const{
-    return _m_buttons.length() / 3 * G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height();
+    return _m_buttons.length() / 2 * G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height();
 }
 
 void QSanInvokeSkillDock::setWidth(int width) {
@@ -327,37 +327,28 @@ void QSanInvokeSkillDock::setWidth(int width) {
 #include "roomscene.h"
 void QSanInvokeSkillDock::update() {
     int numButtons = _m_buttons.length();
-    int rows = (numButtons == 0) ? 0 : (numButtons - 1) / 3 + 1;
+    int rows = (numButtons == 0) ? 0 : (numButtons - 1) / 2 + 1;
     int rowH = G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height();
-    int *btnNum = new int[rows + 2 + 1]; // we allocate one more row in case we need it.
+    int *btnNum = new int[rows + 1]; // we allocate one more row in case we need it.
     int remainingBtns = numButtons;
     for (int i = 0; i < rows; i++) {
-        btnNum[i] = qMin(3, remainingBtns);
-        remainingBtns -= 3;
-    }
-
-    // If the buttons in rows are 3, 1, then balance them to 2, 2
-    if (rows >= 2) {
-        if (btnNum[rows - 1] == 1 && btnNum[rows - 2] == 3) {
-            btnNum[rows - 1] = 2;
-            btnNum[rows - 2] = 2;
-        }
-    } else if (rows == 1 && btnNum[0] == 3) {
-        btnNum[0] = 2;
-        btnNum[1] = 1;
-        rows = 2;
+        btnNum[i] = qMin(2, remainingBtns);
+        remainingBtns -= 2;
     }
 
     int m = 0;
-    int x_ls = 0;
-    for (int i = 0; i < rows + x_ls; i++) {
-        int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows + x_ls - i - 1)) :
-                                                              ((-rows - x_ls + i) * rowH);
+    for (int i = 0; i < rows; i++) {
+        int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows - i - 1)) :
+                                                              ((-rows + i) * rowH);
         int btnWidth = _m_width / btnNum[i];
+        int pix_wid = G_DASHBOARD_LAYOUT.m_skillButtonsSize[btnNum[i] - 1].width();
         for (int j = 0; j < btnNum[i]; j++) {
+            int adj_value = (btnWidth - pix_wid) / 2;
             QSanInvokeSkillButton *button = _m_buttons[m++];
             button->setButtonWidth((QSanInvokeSkillButton::SkillButtonWidth)(btnNum[i] - 1));
-            button->setPos(btnWidth * j, rowTop);
+            if (btnNum[i] == 2)
+                adj_value += (j ? -2 : 2);
+            button->setPos(btnWidth * j + adj_value, rowTop);
         }
     }
     delete btnNum;

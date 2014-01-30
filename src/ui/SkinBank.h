@@ -156,13 +156,13 @@ public:
         // photo area
         QRect m_avatarArea;
         int m_avatarSize;
-        QRect m_smallAvatarArea;
+        QRect m_secondaryAvatarArea;
         int m_smallAvatarSize;
         int m_primaryAvatarSize;
         QRect m_circleArea;
         int m_circleImageSize;
         QRect m_avatarNameArea;
-        QRect m_smallAvatarNameArea;
+        QRect m_secondaryAvatarNameArea;
         QSanShadowTextFont m_avatarNameFont;
         QSanShadowTextFont m_smallAvatarNameFont;
         QRect m_kingdomIconArea;
@@ -215,7 +215,7 @@ public:
     };
 
     struct DashboardLayout: public PlayerCardContainerLayout {
-        int m_leftWidth, m_rightWidth;
+        int m_leftWidth, m_rightWidth, m_magatamasBaseWidth;
         int m_floatingAreaHeight;
         int m_rswidth;
         QSize m_buttonSetSize;
@@ -325,6 +325,9 @@ public:
     static const char *S_SKIN_KEY_MAINFRAME;
     static const char *S_SKIN_KEY_LEFTFRAME;
     static const char *S_SKIN_KEY_RIGHTFRAME;
+    static const char *S_SKIN_KEY_RIGHTBASE;
+    static const char *S_SKIN_KEY_MAGATAMAS_BASE;
+    static const char *S_SKIN_KEY_AVATAR_FRAME;
     static const char *S_SKIN_KEY_MIDDLEFRAME;
     static const char *S_SKIN_KEY_HANDCARDNUM;
     static const char *S_SKIN_KEY_FACETURNEDMASK;

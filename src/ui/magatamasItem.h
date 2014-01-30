@@ -42,8 +42,7 @@ protected:
     bool m_showBackground;
     QSize m_iconSize;
     QRect m_imageArea;
-    QPixmap _icons[6];
-    QPixmap _bgImages[6];
+    QPixmap _icons[4];
 };
 #endif
 
