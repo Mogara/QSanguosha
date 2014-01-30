@@ -565,12 +565,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             break;
         }
     case Death: {
-            if (player->getGeneral()->isLord() && player == data.value<DeathStruct>().who) {
-                foreach(ServerPlayer *p, room->getOtherPlayers(player, true)) {
-                    if (p->getKingdom() == player->getKingdom())
-                        room->setPlayerProperty(p, "role", "careerist");
-                }
-            }
 
             break;
         }
@@ -584,6 +578,13 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             ServerPlayer *killer = death.damage ? death.damage->from : NULL;
             if (killer)
                 rewardAndPunish(killer, player);
+
+            if (player->getGeneral()->isLord() && player == data.value<DeathStruct>().who) {
+                foreach(ServerPlayer *p, room->getOtherPlayers(player, true)) {
+                    if (p->getKingdom() == player->getKingdom())
+                        room->setPlayerProperty(p, "role", "careerist");
+                }
+            }
 
             if (room->getMode() == "02_1v1") {
                 QStringList list = player->tag["1v1Arrange"].toStringList();
