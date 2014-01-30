@@ -1318,7 +1318,7 @@ public:
         if (ps_owner == NULL)
             return 0;
 
-        if (target->isFriendWith(ps_owner) || target == ps_owner)
+        if (target->isFriendWith(ps_owner))
             return ps_owner->getPlayerNumWithSameKingdom();
 
         return 0;
