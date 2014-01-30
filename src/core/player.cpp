@@ -326,7 +326,7 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
                         break;
                     }
                 }
-                if (current && current->hasShownSkill(Sanguosha->getSkill("huoshui")) && (!skill || !skill->isAttachedLordSkill() || !hasShownSkill(skill)))
+                if (current && current->hasShownSkill(Sanguosha->getSkill("huoshui")) && !(skill && (skill->isAttachedLordSkill() || hasShownSkill(skill))))
                     return false;
             }
         } 
