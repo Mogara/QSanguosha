@@ -1213,7 +1213,7 @@ public:
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *dfowner = NULL;
         foreach (ServerPlayer *p, room->getAlivePlayers()){
-            if (WeaponSkill::triggerable(p)){
+            if (p->hasWeapon("DragonPhoenix")){
                 dfowner = p;
                 break;
             }
