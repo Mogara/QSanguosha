@@ -1034,7 +1034,7 @@ void ShuangrenCard::onEffect(const CardEffectStruct &effect) const{
         slash->setSkillName("_shuangren");
         room->useCard(CardUseStruct(slash, effect.from, target), false);
     } else {
-        room->broadcastSkillInvoke("shuangren", 2);
+        room->broadcastSkillInvoke("shuangren", 3);
         room->setPlayerFlag(effect.from, "ShuangrenSkipPlay");
     }
 }
@@ -1093,7 +1093,7 @@ public:
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
         if (card->isKindOf("Slash"))
-            return -2;
+            return 2;
         else
             return 1;
     }
