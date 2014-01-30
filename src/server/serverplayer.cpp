@@ -1238,7 +1238,7 @@ void ServerPlayer::showGeneral(bool head_general) {
         sendSkillsToOthers();
 
         if (getMark("@duanchang") < 1 || tag["Duanchang"].toString() == "deputy")
-            foreach (const Skill *skill, getVisibleSkillList()) {
+            foreach (const Skill *skill, getHeadSkillList()) {
                 if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
                     && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
                     && hasShownSkill(skill)) {
@@ -1294,7 +1294,7 @@ void ServerPlayer::showGeneral(bool head_general) {
         sendSkillsToOthers(false);
 
         if (getMark("@duanchang") < 1 || tag["Duanchang"].toString() == "head")
-            foreach (const Skill *skill, getVisibleSkillList()) {
+            foreach (const Skill *skill, getDeputySkillList()) {
                 if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
                     && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
                     && hasShownSkill(skill)) {
