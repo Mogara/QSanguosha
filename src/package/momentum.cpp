@@ -906,7 +906,7 @@ HongfaCard::HongfaCard() {
 
 void HongfaCard::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *qunxiong = card_use.from;
-    ServerPlayer *zhangjiao = room->findPlayerBySkillName("hongfa");
+    const Player *zhangjiao = qunxiong->getLord();
     if (!zhangjiao || !zhangjiao->isFriendWith(qunxiong)) return;
     QList<int> tianbings;
     QList<int> total = zhangjiao->getPile("heavenly_army");
@@ -1016,14 +1016,7 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const{
         if (!player->hasShownOneGeneral())
             return false;
-        const Player *zhangjiao;
-        QList<const Player *> ps = player->getAliveSiblings();
-        ps << player;
-        foreach (const Player *p, ps)
-            if (p->hasSkill("hongfa")) {
-                zhangjiao = p;
-                break;
-            }
+        const Player *zhangjiao = player->getLord();
         if (!zhangjiao || zhangjiao->getPile("heavenly_army").isEmpty() || !zhangjiao->isFriendWith(player))
             return false;
         foreach (int id, zhangjiao->getPile("heavenly_army")) {
@@ -1064,6 +1057,10 @@ public:
     Hongfa(): TriggerSkill("hongfa$") {
         events << EventPhaseStart << PreHpLost << GeneralShown << GeneralHidden << GeneralRemoved << Death;
         frequency = Compulsory;
+    }
+
+    virtual bool canPreshow() const {
+        return false;
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
@@ -1247,7 +1244,7 @@ MomentumPackage::MomentumPackage()
     addMetaObject<HongfaSlashCard>();
     addMetaObject<WendaoCard>();
 
-    General *lord_zhangjiao = new General(this, "lord_zhangjiao$", "qun", 4, true, true);
+    General *lord_zhangjiao = new General(this, "lord_zhangjiao$", "qun");
     lord_zhangjiao->addSkill(new Wuxin);
     lord_zhangjiao->addSkill(new Hongfa);
     lord_zhangjiao->addSkill(new Wendao);

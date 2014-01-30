@@ -98,6 +98,8 @@ return {
 	[":hongfa"] = "<font color=\"orange\"><b>君主技，</b></font><font color=\"blue\"><b>锁定技，</b></font>当此武将牌明置时，你获得“黄巾天兵符”；<font color=\"orange\"><b>君主技，</b></font><font color=\"blue\"><b>锁定技，</b></font>准备阶段开始时，若没有“天兵”，你将牌堆顶的X张牌置于“黄巾天兵符”上，称为“天兵”（X为群势力角色的数量）。<br/><br/>“黄巾天兵符”<br/><font color=\"blue\"><b>锁定技，</b></font>你执行的效果中的“群势力角色的数量”+X（X为“天兵”数）；每当你因失去体力而扣减体力前，你可以将扣减体力改为将一张“天兵”置入弃牌堆；与你势力相同的角色可以将一张“天兵”当【杀】使用或打出。", 
 	["heavenly_army"] = "天兵",
 	["hongfa_slash"] = "弘法出杀",
+	["@hongfa-target"] = "请选择【杀】的目标",
+	["~hongfa_slash"] = "选择【杀】的目标→点击确定",
 	["wendao"] = "问道",
 	[":wendao"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以弃置一张红色牌，获得弃牌堆里或场上的一张【太平要术】。",
 
