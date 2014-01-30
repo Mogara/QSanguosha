@@ -911,30 +911,6 @@ public:
     }
 };
 
-class Haoshi: public DrawCardsSkill {
-public:
-    Haoshi(): DrawCardsSkill("#haoshi") {
-    }
-
-    virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
-        return player && player->isAlive() && player->hasSkill("haoshi");
-    }
-
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->askForSkillInvoke("haoshi")){
-            room->broadcastSkillInvoke("haoshi");
-            player->showGeneral(player->inHeadSkills("haoshi"));
-            return true;
-        }
-        return false;
-    }
-
-    virtual int getDrawNum(ServerPlayer *lusu, int n) const{
-        lusu->setFlags("haoshi");
-        return n + 2;
-    }
-};
-
 HaoshiCard::HaoshiCard() {
     will_throw = false;
     mute = true;
@@ -976,6 +952,26 @@ public:
         HaoshiCard *card = new HaoshiCard;
         card->addSubcards(cards);
         return card;
+    }
+};
+
+class Haoshi: public DrawCardsSkill {
+public:
+    Haoshi(): DrawCardsSkill("haoshi") {
+        view_as_skill = new HaoshiViewAsSkill;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (player->askForSkillInvoke("haoshi")){
+            room->broadcastSkillInvoke("haoshi");
+            return true;
+        }
+        return false;
+    }
+
+    virtual int getDrawNum(ServerPlayer *lusu, int n) const{
+        lusu->setFlags("haoshi");
+        return n + 2;
     }
 };
 
@@ -1436,10 +1432,8 @@ void StandardPackage::addWuGenerals()
 
     General *lusu = new General(this, "lusu", "wu", 3); // WU 014
     lusu->addSkill(new Haoshi);
-    lusu->addSkill(new HaoshiViewAsSkill);
     lusu->addSkill(new HaoshiGive);
     lusu->addSkill(new Dimeng);
-    related_skills.insertMulti("haoshi", "#haoshi");
     related_skills.insertMulti("haoshi", "#haoshi-give");
 
     General *erzhang = new General(this, "erzhang", "wu", 3); // WU 015
