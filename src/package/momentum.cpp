@@ -371,7 +371,7 @@ public:
 class Yongjue: public TriggerSkill {
 public:
     Yongjue(): TriggerSkill("yongjue") {
-        events << CardUsed << BeforeCardsMove;
+        events << CardUsed;
     }
 
     virtual bool canPreshow() const {
@@ -380,49 +380,18 @@ public:
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (player == NULL) return false;
-        if (triggerEvent == CardUsed) {
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from->getPhase() == Player::Play && use.from->getMark(objectName()) == 0) {
-                if (use.card->isKindOf("Slash")) {
-                    use.from->addMark(objectName());
-                    QList<int> ids;
-                    if (!use.card->isVirtualCard())
-                        ids << use.card->getEffectiveId();
-                    else if (use.card->subcardsLength() > 0)
-                        ids = use.card->getSubcards();
-                    if (!ids.isEmpty()) {
-                        room->setCardFlag(use.card, "yongjue");
-                        room->setTag("yongjue_user", QVariant::fromValue((PlayerStar)use.from));
-                        room->setTag("yongjue_card", QVariant::fromValue((CardStar)use.card));
-                    }
-                }
-            }
-            return false;
-        } else if (TriggerSkill::triggerable(player)) {
-            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            if (move.from_places.contains(Player::PlaceTable) && move.to_place == Player::DiscardPile
-                && move.reason.m_reason == CardMoveReason::S_REASON_USE) {
-                PlayerStar yongjue_user = room->getTag("yongjue_user").value<PlayerStar>();
-                CardStar yongjue_card = room->getTag("yongjue_card").value<CardStar>();
-                room->removeTag("yongjue_user");
-                room->removeTag("yongjue_card");
-                if (yongjue_user && player->isFriendWith(yongjue_user) && yongjue_card && yongjue_card->hasFlag("yongjue")) {
-                    QList<int> ids;
-                    if (!yongjue_card->isVirtualCard())
-                        ids << yongjue_card->getEffectiveId();
-                    else if (yongjue_card->subcardsLength() > 0)
-                        ids = yongjue_card->getSubcards();
-                    if (!ids.isEmpty()) {
-                        foreach (int id, ids) {
-                            if (!move.card_ids.contains(id)) return false;
-                        }
-                    } else {
-                        return false;
-                    }
-                    room->setTag("yongjue_user", QVariant::fromValue((PlayerStar)yongjue_user));
-                    room->setTag("yongjue_card", QVariant::fromValue((CardStar)yongjue_card));
-                    return true;
-                }
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.from->getPhase() == Player::Play && use.from->getMark(objectName()) == 0) {
+            if (use.card->isKindOf("Slash")) {
+                use.from->addMark(objectName());
+                QList<int> ids;
+                if (!use.card->isVirtualCard())
+                    ids << use.card->getEffectiveId();
+                else if (use.card->subcardsLength() > 0)
+                    ids = use.card->getSubcards();
+                if (!ids.isEmpty())
+                    if (player->isFriendWith(use.from))
+                        return true;
             }
         }
         return false;
@@ -432,37 +401,24 @@ public:
         if (room->askForSkillInvoke(player, objectName())) {
             room->broadcastSkillInvoke(objectName());
             return true;
-        } else {
-            room->removeTag("yongjue_user");
-            room->removeTag("yongjue_card");
         }
-
         return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        PlayerStar yongjue_user = room->getTag("yongjue_user").value<PlayerStar>();
-        CardStar yongjue_card = room->getTag("yongjue_card").value<CardStar>();
-        room->removeTag("yongjue_user");
-        room->removeTag("yongjue_card");
-        if (yongjue_user && yongjue_card && yongjue_card->hasFlag("yongjue")) {
-            QList<int> ids;
-            if (!yongjue_card->isVirtualCard())
-                ids << yongjue_card->getEffectiveId();
-            else if (yongjue_card->subcardsLength() > 0)
-                ids = yongjue_card->getSubcards();
-            if (!ids.isEmpty()) {
-                foreach (int id, ids) {
-                    if (!move.card_ids.contains(id)) return false;
-                }
-            } else {
-                return false;
-            }
+        CardUseStruct use = data.value<CardUseStruct>();
+        QList<int> ids;
+        if (!use.card->isVirtualCard())
+            ids << use.card->getEffectiveId();
+        else if (use.card->subcardsLength() > 0)
+            ids = use.card->getSubcards();
+        foreach (int id, ids) {
+            if (room->getCardPlace(id) != Player::PlaceTable)
+                ids.removeOne(id);
+        }
+        if (!ids.isEmpty()) {
             DummyCard dummy(ids);
-            yongjue_user->obtainCard(&dummy);
-            move.card_ids.clear();
-            data = QVariant::fromValue(move);
+            use.from->obtainCard(&dummy);
         }
 
         return false;
@@ -480,7 +436,7 @@ public:
     }
     
     virtual bool triggerable(TriggerEvent , Room *room, ServerPlayer *target, QVariant &data, ServerPlayer* &ask_who) const {
-        if (!TriggerSkill::triggerable(target)) return false;
+        if (!target && target->isAlive()) return false;
         if (target->getPhase() == Player::Play)
             target->setMark("yongjue", 0);
         return false;
