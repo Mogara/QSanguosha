@@ -1014,7 +1014,7 @@ void HongfaCard::onUse(Room *room, const CardUseStruct &card_use) const{
     use.card = slash;
     use.from = qunxiong;
 
-    if (room->askForUseCard(qunxiong, "@@hongfa!", "@hongfa-target")) {
+    if (room->askForUseCard(qunxiong, "@@hongfa_slash!", "@hongfa-target")) {
         foreach (ServerPlayer *p, room->getAlivePlayers()) {
             if (p->hasFlag("HongfaTarget")) {
                 room->setPlayerFlag(p, "-HongfaTarget");
@@ -1025,6 +1025,10 @@ void HongfaCard::onUse(Room *room, const CardUseStruct &card_use) const{
         use.to << targets.at(qrand() % targets.length());
     }
     room->setPlayerProperty(qunxiong, "hongfa_slash", QString());
+
+    room->moveCardTo(slash, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_USE, qunxiong->objectName())); 
+    //temp way to fix the card movement
+
     room->useCard(use);
 }
 
@@ -1044,15 +1048,18 @@ bool HongfaSlashCard::targetFilter(const QList<const Player *> &targets, const P
 
 void HongfaSlashCard::onUse(Room *room, const CardUseStruct &card_use) const{
     foreach (ServerPlayer *to, card_use.to)
-        room->setPlayerFlag(to, "HongfaSlashTarget");
+        room->setPlayerFlag(to, "HongfaTarget");
 }
 
 class HongfaSlash: public ZeroCardViewAsSkill {
 public:
     HongfaSlash(): ZeroCardViewAsSkill("hongfa_slash") {
+        attached_lord_skill = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
+        if (!player->hasShownOneGeneral())
+            return false;
         const Player *zhangjiao;
         QList<const Player *> ps = player->getAliveSiblings();
         ps << player;
@@ -1081,13 +1088,15 @@ public:
         return false;
     }
 
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
-        return pattern == "@@hongfa!";
+    virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
+        if (!player->hasShownOneGeneral())
+            return false;
+        return pattern == "@@hongfa_slash!";
     }
 
     virtual const Card *viewAs() const{
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-        if (pattern == "@@hongfa!")
+        if (pattern == "@@hongfa_slash!")
             return new HongfaSlashCard;
         else
             return new HongfaCard;
@@ -1116,29 +1125,35 @@ public:
             if (player->getPile("heavenly_army").isEmpty()) return false;
             return true;
         } else {
-            if (player == NULL) return false;
-            if (triggerEvent == Death) {
-                DeathStruct death = data.value<DeathStruct>();
-                if (death.who->hasSkill(objectName())) {
-                    foreach (ServerPlayer *p, room->getAllPlayers())
-                        if (p->hasSkill("hongfa_slash")) {
-                            room->detachSkillFromPlayer(p, "hongfa_slash", true);
-                        }
+            if (player == NULL)
                 return false;
+            if (triggerEvent == GeneralShown){
+                if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who)){
+                    foreach (ServerPlayer *p, room->getAlivePlayers()){
+                        if (p->willBeFriendWith(player) || p->getKingdom() == player->getKingdom()){
+                            room->attachSkillToPlayer(p, "hongfa_slash");
+                        }
+                    }
+                }
+                else {
+                    if (TriggerSkill::triggerable(triggerEvent, room, room->getLord(player->getKingdom()), data, player)){
+                        room->attachSkillToPlayer(player, "hongfa_slash");
+                    }
                 }
             }
-            foreach (ServerPlayer *p, room->getAllPlayers())
-                if (p->hasSkill("hongfa_slash")) {
-                    room->detachSkillFromPlayer(p, "hongfa_slash", true);
+            else if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who)){
+                if (triggerEvent == Death){
+                    DeathStruct death = data.value<DeathStruct>();
+                    if (death.who != player)
+                        return false;
                 }
-
-                ServerPlayer *zhangjiao = room->findPlayerBySkillName(objectName());
-                if (!zhangjiao || !zhangjiao->hasShownSkill(this)) return false;
-                foreach (ServerPlayer *p, room->getAllPlayers())
-                    if (!p->hasSkill("hongfa_slash"))
-                        room->attachSkillToPlayer(p, "hongfa_slash");
+                foreach (ServerPlayer *p, room->getAlivePlayers()){
+                    room->detachSkillFromPlayer(p, "hongfa_slash");
+                }
+            }
+            return false;
         }
-        return true;
+        return false;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {

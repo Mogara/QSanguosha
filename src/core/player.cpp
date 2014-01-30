@@ -326,16 +326,9 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
                         break;
                     }
                 }
-                if (current && current->hasShownSkill(Sanguosha->getSkill("huoshui")) && (!skill || !skill->isAttachedLordSkill() || !hasShownSkill(skill)))
+                if (current && current != this && current->hasShownSkill(Sanguosha->getSkill("huoshui")) && (!skill || !skill->isAttachedLordSkill() || !hasShownSkill(skill)))
                     return false;
-                /*if (current && current->hasSkill("neo2013huoshui") && current->getEquips().length() >= getEquips().length()
-                    && (!skill || !skill->isAttachedLordSkill()))
-                    return false;*/
             }
-            /*if (getMark("Qingcheng" + skill_name) > 0)
-                return false;
-            if (skill_name != "chanyuan" && hasSkill("chanyuan") && hp == 1 && (!skill || !skill->isAttachedLordSkill()))
-                return false;*/
         } 
     }
     return head_skills.value(skill_name, false)
