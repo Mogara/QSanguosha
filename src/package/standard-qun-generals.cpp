@@ -1058,6 +1058,10 @@ public:
         view_as_skill = new ShuangrenViewAsSkill;
     }
 
+    virtual bool canPreshow() const {
+        return true;
+    }
+
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *jiling, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (!TriggerSkill::triggerable(triggerEvent, room, jiling, data, ask_who)) return false;
         if (jiling->getPhase() == Player::Play && !jiling->isKongcheng()) {

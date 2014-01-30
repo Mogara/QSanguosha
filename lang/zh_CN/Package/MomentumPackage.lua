@@ -27,6 +27,9 @@ return {
 	[":mashu_madai"] = "<font color=\"blue\"><b>锁定技，</b></font>你与其他角色的距离-1。",
 	["qianxi"] = "潜袭",
 	[":qianxi"] = "准备阶段开始时，你可以进行判定，然后令一名距离为1的角色不能使用或打出与结果颜色相同的手牌，直到回合结束。",
+	["#Qianxi"] = "由于“<font color=\"yellow\"><b>潜袭</b></font>”效果，%from 本回合不能使用或打出 %arg 手牌",
+	["@qianxi_red"] = "潜袭（红色）",
+	["@qianxi_black"] = "潜袭（黑色）",
 
 	["#mifuren"] = "乱世沉香",
 	["mifuren"] = "糜夫人",
