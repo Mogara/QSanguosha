@@ -52,6 +52,16 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
 };
 
+class HongfaResponseCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE HongfaResponseCard();
+
+    virtual const Card *validate(CardUseStruct &card_use) const;
+    virtual const Card *validateInResponse(ServerPlayer *user) const;
+};
+
 class WendaoCard: public SkillCard {
     Q_OBJECT
 

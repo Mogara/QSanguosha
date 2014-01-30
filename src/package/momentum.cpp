@@ -1041,17 +1041,146 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
         if (!player->hasShownOneGeneral())
             return false;
+        if (pattern == "slash")
+            return true;
         return pattern == "@@hongfa_slash!";
     }
 
     virtual const Card *viewAs() const{
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-        if (pattern == "@@hongfa_slash!")
+        if (pattern == "slash")
+            return new HongfaResponseCard;
+        else if (pattern == "@@hongfa_slash!")
             return new HongfaSlashCard;
         else
             return new HongfaCard;
     }
 };
+
+HongfaResponseCard::HongfaResponseCard() {
+    will_throw = false;
+    handling_method = Card::MethodNone;
+    m_skillName = "hongfa_slash";
+    target_fixed = true;
+}
+
+const Card *HongfaResponseCard::validate(CardUseStruct &card_use) const{
+    ServerPlayer *qunxiong = card_use.from;
+    Room *room = qunxiong->getRoom();
+    room->broadcastSkillInvoke("hongfa");
+
+    const Player *zhangjiao = qunxiong->getLord();
+    if (!zhangjiao || !zhangjiao->isFriendWith(qunxiong)) return NULL;
+    QList<int> tianbings;
+    QList<int> total = zhangjiao->getPile("heavenly_army");
+    foreach (int id, total) {
+        Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+        slash->addSubcard(id);
+        if (!Slash::IsAvailable(qunxiong, slash))
+            continue;
+        foreach (ServerPlayer *p, room->getAlivePlayers()) {
+            if (!slash->targetFilter(QList<const Player *>(), p, qunxiong))
+                continue;
+            if (qunxiong->isProhibited(p, slash))
+                continue;
+            tianbings << id;
+            break;
+        }
+        delete slash;
+        slash = NULL;
+    }
+
+    if (tianbings.isEmpty())
+        return NULL;
+
+    QList<int> disabled;
+    foreach (int id, total) {
+        if (!tianbings.contains(id))
+            disabled << id;
+    }
+
+    int card_id;
+    if (tianbings.length() == 1)
+        card_id = tianbings.first();
+    else {
+        room->fillAG(total, qunxiong, disabled);
+        card_id = room->askForAG(qunxiong, tianbings, false, "hongfa");
+        room->clearAG(qunxiong);
+
+        if (card_id == -1)
+            return NULL;
+    }
+
+    Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+    slash->setSkillName("hongfa");
+    slash->addSubcard(card_id);
+
+    QList<ServerPlayer *> targets;
+    foreach (ServerPlayer *p, room->getAlivePlayers()) {
+        if (!slash->targetFilter(QList<const Player *>(), p, qunxiong))
+            continue;
+        if (qunxiong->isProhibited(p, slash))
+            continue;
+
+        targets << p;
+    }
+    if (targets.isEmpty())
+        return NULL;
+
+    room->setPlayerProperty(qunxiong, "hongfa_slash", slash->toString());
+
+    CardUseStruct use;
+    use.card = slash;
+    use.from = qunxiong;
+
+    if (room->askForUseCard(qunxiong, "@@hongfa_slash!", "@hongfa-target")) {
+        foreach (ServerPlayer *p, room->getAlivePlayers()) {
+            if (p->hasFlag("HongfaTarget")) {
+                room->setPlayerFlag(p, "-HongfaTarget");
+                use.to << p;
+            }
+        }
+    } else {
+        use.to << targets.at(qrand() % targets.length());
+    }
+    room->setPlayerProperty(qunxiong, "hongfa_slash", QString());
+    
+    room->moveCardTo(slash, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_USE, qunxiong->objectName())); 
+    //temp way to fix the card movement
+
+    card_use = use;
+    return slash;
+}
+
+const Card *HongfaResponseCard::validateInResponse(ServerPlayer *qunxiong) const{
+    Room *room = qunxiong->getRoom();
+    room->broadcastSkillInvoke("hongfa");
+
+    const Player *zhangjiao = qunxiong->getLord();
+    if (!zhangjiao || !zhangjiao->isFriendWith(qunxiong)) return NULL;
+    QList<int> tianbings = zhangjiao->getPile("heavenly_army");
+    if (tianbings.isEmpty())
+        return NULL;
+
+    int card_id;
+    if (tianbings.length() == 1)
+        card_id = tianbings.first();
+    else {
+        room->fillAG(tianbings, qunxiong);
+        card_id = room->askForAG(qunxiong, tianbings, false, "hongfa");
+        room->clearAG(qunxiong);
+
+        if (card_id == -1)
+            return NULL;
+    }
+
+    Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+    slash->setSkillName("hongfa");
+    slash->addSubcard(card_id);
+    slash->deleteLater();
+    room->moveCardTo(slash, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_USE, qunxiong->objectName()));
+    return slash;
+}
 
 class Hongfa: public TriggerSkill {
 public:
@@ -1243,6 +1372,7 @@ MomentumPackage::MomentumPackage()
     addMetaObject<FengshiSummon>();
     addMetaObject<HongfaCard>();
     addMetaObject<HongfaSlashCard>();
+    addMetaObject<HongfaResponseCard>();
     addMetaObject<WendaoCard>();
 
     General *lord_zhangjiao = new General(this, "lord_zhangjiao$", "qun");
