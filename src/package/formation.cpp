@@ -640,21 +640,25 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
                                         choices.join("+"), QVariant::fromValue(effect.to));
 
     if (choice == "handcards") {
-        room->showAllCards(effect.to, effect.from);
-        QList<int> blacks, reds;
-        foreach (int card_id, effect.to->handCards())
+        QList<int> blacks;
+        foreach (int card_id, effect.to->handCards()){
             if (Sanguosha->getCard(card_id)->isBlack())
                 blacks << card_id;
-            else if (Sanguosha->getCard(card_id)->isRed())
-                reds << card_id;
-        room->fillAG(effect.to->handCards(), effect.from, reds);
-
-        int to_discard = -1;
-        to_discard = room->askForAG(effect.from, blacks, true, "shangyi");
-        room->clearAG(effect.from);
+        }
+        int to_discard = room->doGongxin(effect.from, effect.to, blacks, "shangyi");
         if (to_discard == -1) return;
+
+        effect.from->tag.remove("shangyi");
         room->throwCard(to_discard, effect.to, effect.from);
     } else {
+        LogMessage log;
+        log.type = "#shangyiview";
+        log.from = effect.from;
+        log.to << effect.to;
+        foreach (ServerPlayer *p, room->getOtherPlayers(effect.from, true)){
+            room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        }
+
         QStringList list = room->getTag(effect.to->objectName()).toStringList();
         foreach (QString name, list) {
             LogMessage log;

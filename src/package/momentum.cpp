@@ -22,12 +22,18 @@ public:
     }
 
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *lidian, QVariant &) const {
-        return lidian->askForSkillInvoke(objectName());
+        if (lidian->askForSkillInvoke(objectName())){
+            room->broadcastSkillInvoke(objectName());
+            return true;
+        }
+
+        return false;
     }
 
     virtual bool onPhaseChange(ServerPlayer *lidian) const{
         Room *room = lidian->getRoom();
-        room->broadcastSkillInvoke(objectName());
+        room->notifySkillInvoked(lidian, objectName());
+
         QList<int> card_ids = room->getNCards(4);
         QList<int> obtained;
         room->fillAG(card_ids, lidian);

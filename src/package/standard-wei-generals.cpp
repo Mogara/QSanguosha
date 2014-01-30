@@ -338,6 +338,7 @@ public:
 
     virtual void onDamaged(ServerPlayer *guojia, const DamageStruct &) const {
         Room *room = guojia->getRoom();
+        room->notifySkillInvoked(guojia, objectName());
 
         QList<ServerPlayer *> _guojia;
         _guojia.append(guojia);
