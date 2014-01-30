@@ -561,7 +561,8 @@ public:
     }
 
     virtual bool triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
-        if (player != NULL && player->getPhase() == Player::NotActive && player->hasFlag("hunshang")){
+        if (player != NULL && player->getPhase() == Player::NotActive && player->getMark("hunshang") > 0){
+            player->setMark("hunshang",0);
             room->handleAcquireDetachSkills(player, "-sunce_yinghun|-sunce_yingzi", true);
             return false;
         }
@@ -580,7 +581,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         target->getRoom()->handleAcquireDetachSkills(target, "sunce_yinghun|sunce_yingzi");
-        target->setFlags("hunshang");
+        target->setMark("hunshang",1);
         return false;
     }
 
