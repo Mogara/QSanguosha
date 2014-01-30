@@ -77,6 +77,10 @@ QGraphicsItem *Dashboard::getMouseClickReceiver() {
     return _m_avatarIcon;
 }
 
+QGraphicsItem *Dashboard::getMouseClickReceiver2() {
+    return _m_smallAvatarIcon;
+}
+
 void Dashboard::_createLeft() {
     QRect rect = QRect(0, 0, G_DASHBOARD_LAYOUT.m_leftWidth, G_DASHBOARD_LAYOUT.m_normalHeight);
     _paintPixmap(_m_leftFrame, rect, _getPixmap(QSanRoomSkin::S_SKIN_KEY_LEFTFRAME), this);
@@ -145,7 +149,9 @@ void Dashboard::_createRight() {
     QRect rect = QRect(_m_width - G_DASHBOARD_LAYOUT.m_rightWidth, 0,
                        G_DASHBOARD_LAYOUT.m_rightWidth,
                        G_DASHBOARD_LAYOUT.m_normalHeight);
-    _paintPixmap(_m_rightFrame, rect, QPixmap(1, 1), _m_groupMain);
+    QPixmap pix = QPixmap(1, 1);
+    pix.fill(QColor(0, 0, 0, 0));
+    _paintPixmap(_m_rightFrame, rect, pix, _m_groupMain);
     _paintPixmap(_m_rightFrameBase, QRect(0, 0, rect.width(), rect.height()),
                  _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTBASE), _m_rightFrame);
     _paintPixmap(_m_rightFrameBg, QRect(0, 0, rect.width(), rect.height()),

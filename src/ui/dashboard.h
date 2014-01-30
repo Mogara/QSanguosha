@@ -75,6 +75,7 @@ public:
     void adjustCards(bool playAnimation = true);
 
     virtual QGraphicsItem *getMouseClickReceiver();
+    virtual QGraphicsItem *getMouseClickReceiver2();
 
     QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place);
     virtual QList<CardItem *> cloneCardItems(QList<int> card_ids);

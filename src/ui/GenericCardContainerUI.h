@@ -75,6 +75,7 @@ public:
     virtual void killPlayer();
     virtual void revivePlayer();
     virtual QGraphicsItem *getMouseClickReceiver() = 0;
+    inline virtual QGraphicsItem *getMouseClickReceiver2() {    return NULL;    };
     virtual void updateAvatarTooltip();
 
     inline void hookMouseEvents();
@@ -147,6 +148,8 @@ protected:
     void _layUnder(QGraphicsItem *item);
 
     QPixmap _getAvatarIcon(QString generalName);
+
+    bool _isSelected(QGraphicsItem *item) const;
 
     // layout
     const QSanRoomSkin::PlayerCardContainerLayout *_m_layout;

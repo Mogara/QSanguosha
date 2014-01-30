@@ -191,7 +191,7 @@ void PlayerCardContainer::updateAvatar() {
         QPixmap avatarIcon = _getAvatarIcon(name);
         QRect area = _m_layout->m_avatarArea;
         if (inherits("Dashboard"))
-            area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 3);
+            area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 5);
         _paintPixmap(_m_avatarIcon, area, avatarIcon, _getAvatarParent());
         // this is just avatar general, perhaps game has not started yet.
         if (m_player->getGeneral() != NULL) {
@@ -243,7 +243,7 @@ void PlayerCardContainer::updateSmallAvatar() {
         QPixmap avatarIcon = _getAvatarIcon(name);
         QRect area = _m_layout->m_secondaryAvatarArea;
         if (inherits("Dashboard"))
-            area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 3);
+            area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 5);
         _paintPixmap(_m_smallAvatarIcon, area, avatarIcon, _getAvatarParent());
         QString kingdom = m_player->getKingdom();
         QString show_name = Sanguosha->translate("&" + name);
@@ -907,9 +907,15 @@ void PlayerCardContainer::showDistance() {
         _m_distanceItem->show();
 }
 
+bool PlayerCardContainer::_isSelected(QGraphicsItem *item) const {
+    return item != NULL && item->isUnderMouse() && isEnabled() && 
+           (flags() & QGraphicsItem::ItemIsSelectable);
+}
+
 void PlayerCardContainer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
-    QGraphicsItem *item = getMouseClickReceiver();
-    if (item != NULL && item->isUnderMouse() && isEnabled() && (flags() & QGraphicsItem::ItemIsSelectable)) {
+    QGraphicsItem *item1 = getMouseClickReceiver();
+    QGraphicsItem *item2 = getMouseClickReceiver2();
+    if (_isSelected(item1) || _isSelected(item2)) {
         if (event->button() == Qt::RightButton)
             setSelected(false);
         else if (event->button() == Qt::LeftButton) {
