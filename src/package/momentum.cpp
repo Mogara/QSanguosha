@@ -70,11 +70,22 @@ public:
         else
             target = damage.from;
         if (!target || !target->isAlive() || target == player) return QStringList();
-        return QStringList(objectName());
+
+        QStringList trigger_list;
+
+        for (int i = 1; i <= damage.damage; i++)
+            trigger_list << objectName();
+
+        return trigger_list;
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        return player->askForSkillInvoke(objectName());
+        if (player->askForSkillInvoke(objectName())){
+            room->broadcastSkillInvoke(objectName());
+            return true;
+        }
+
+        return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -88,13 +99,8 @@ public:
         players << player << target;
         room->sortByActionOrder(players);
 
-        for (int i = 1; i <= damage.damage; i++) {
-            if (room->askForSkillInvoke(player, objectName(), QVariant::fromValue((PlayerStar)target))) {
-                room->broadcastSkillInvoke(objectName());
-                room->drawCards(players, 1, objectName());
-            }
-            else break;
-        }
+        room->drawCards(players, 1, objectName());
+
         return false;
     }
 };

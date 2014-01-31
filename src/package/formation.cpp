@@ -26,7 +26,7 @@ public:
                 if (room->getTag("judge").toInt() > 0) {
                     room->addPlayerMark(player, "tuntian_postpone");
                     return QStringList();
-                } else return QStringList();
+                } else return QStringList(objectName());
             }
         } else if (triggerEvent == FinishJudge) {
             JudgeStar judge = data.value<JudgeStar>();
