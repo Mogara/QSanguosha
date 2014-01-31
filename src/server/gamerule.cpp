@@ -676,6 +676,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                     if (player->isWounded())
                         choices << "recover";
                     choices << "draw" << "cancel";
+                    LogMessage log;
+                    log.type = "#CompanionEffect";
+                    log.from = player;
+                    room->sendLog(log);
                     QString choice = room->askForChoice(player, "CompanionEffect", choices.join("+"));
                     if (choice == "recover") {
                         RecoverStruct recover;
@@ -687,6 +691,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                     room->removePlayerMark(player, "CompanionEffect");
                 }
                 if (player->getMark("HalfMaxHpLeft") > 0) {
+                    LogMessage log;
+                    log.type = "#HalfMaxHpLeft";
+                    log.from = player;
+                    room->sendLog(log);
                     if (player->askForSkillInvoke("userdefine:halfmaxhp"))
                         player->drawCards(1);
                     room->removePlayerMark(player, "HalfMaxHpLeft");

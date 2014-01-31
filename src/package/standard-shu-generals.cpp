@@ -226,13 +226,14 @@ public:
                 }
             if (choice != "show_head_general")
                 player->showGeneral(false);
-            if (choice != "show_deputy_general") {
-                room->broadcastSkillInvoke(objectName());
-                return true;
-            } else {
+            if (choice == "show_deputy_general" && !show1){
                 room->broadcastSkillInvoke("yizhi");
+                player->showGeneral(false);
                 onPhaseChange(player);
                 return false;
+            } else {
+                room->broadcastSkillInvoke(objectName());
+                return true;
             }
         }
             
