@@ -978,7 +978,7 @@ public:
     QList<TriggerEvent> getTriggerEvents() const;
 
     virtual int getPriority() const;
-    virtual bool triggerable(const ServerPlayer *target) const;
+    virtual QStringList triggerable(const ServerPlayer *target) const;
 
     bool isGlobal() const;
 };

@@ -44,7 +44,7 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
+    virtual QStringList triggerable(const ServerPlayer *target) const{
         return TriggerSkill::triggerable(target);
     }
 
@@ -72,8 +72,10 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL && target->isLord();
+    virtual QStringList triggerable(const ServerPlayer *target) const{
+        if (target != NULL && target->isLord())
+            return QStringList(objectName());
+        return QStringList();
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
@@ -134,8 +136,8 @@ public:
         frequency = Compulsory;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return target != NULL;
+    virtual QStringList triggerable(const ServerPlayer *target) const{
+        return (target != NULL) ? QStringList(objectName()) : QStringList();
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const{
@@ -143,7 +145,7 @@ public:
         QList<ServerPlayer *> players = room->getAlivePlayers();
         bool has_frantic = player->getMark("@frantic")>0;
 
-        if(TriggerSkill::triggerable(player) && triggerEvent == EventPhaseStart && player->getPhase() == Player::Finish){
+        if(!TriggerSkill::triggerable(player).isEmpty() && triggerEvent == EventPhaseStart && player->getPhase() == Player::Finish){
             if(has_frantic)
                 player->drawCards(players.length());
             else
@@ -151,7 +153,7 @@ public:
         }
 
         if(has_frantic){
-            if(TriggerSkill::triggerable(player) && player->isWounded() && triggerEvent == TargetConfirmed){
+            if(!TriggerSkill::triggerable(player).isEmpty() && player->isWounded() && triggerEvent == TargetConfirmed){
                 CardUseStruct use = data.value<CardUseStruct>();
                 if (use.to.length() > 0 && player == use.to.first()) {
                     foreach (ServerPlayer *p, use.to) {
@@ -181,7 +183,7 @@ public:
             }
         }
 
-        if(TriggerSkill::triggerable(player) && triggerEvent == DamageInflicted){
+        if(!TriggerSkill::triggerable(player).isEmpty() && triggerEvent == DamageInflicted){
             DamageStruct damage = data.value<DamageStruct>();
             if(damage.damage > 1){
                 damage.damage = damage.damage-1;
