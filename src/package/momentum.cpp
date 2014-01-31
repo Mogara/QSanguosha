@@ -391,11 +391,12 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
-        if (player == NULL) return QStringList();
+        if (player == NULL || !player->isAlive() || TriggerSkill::triggerable(player).isEmpty() ) return QStringList();
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from->getPhase() == Player::Play && use.from->getMark(objectName()) == 0) {
-            if (use.card->isKindOf("Slash")) {
+            if (!use.card->isKindOf("SkillCard"))
                 use.from->addMark(objectName());
+            if (use.card->isKindOf("Slash")) {
                 QList<int> ids;
                 if (!use.card->isVirtualCard())
                     ids << use.card->getEffectiveId();
