@@ -592,22 +592,33 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                 const TriggerSkill *skill = skills[i];
                 ServerPlayer *ask_who = target;
                 if (!triggered.contains(skill)) {
-                    QStringList triggerSkillList = skill->triggerable(triggerEvent, room, target, data, ask_who);
-                    if (!triggerSkillList.isEmpty()) {
+                    if (skill->objectName() == "game_rule") {
                         while (room->isPaused()) {}
                         if (will_trigger.isEmpty() 
                                 || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority()) {
-                            foreach (QString skill_name, triggerSkillList) {
-                                const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
-                                if (skill) {
-                                    will_trigger.append(skill);
-                                    trigger_who[ask_who].append(skill);
-                                }
-                            }
+                            will_trigger.append(skill);
+                            trigger_who[ask_who].append(skill);
                         } else if(skill->getDynamicPriority() != will_trigger.last()->getDynamicPriority())
                             break;
-
                         triggered.append(skill);
+                    } else {
+                        QStringList triggerSkillList = skill->triggerable(triggerEvent, room, target, data, ask_who);
+                        if (!triggerSkillList.isEmpty()) {
+                            while (room->isPaused()) {}
+                            if (will_trigger.isEmpty() 
+                                    || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority()) {
+                                foreach (QString skill_name, triggerSkillList) {
+                                    const TriggerSkill *trskill = Sanguosha->getTriggerSkill(skill_name);
+                                    if (trskill) {
+                                        will_trigger.append(trskill);
+                                        trigger_who[ask_who].append(trskill);
+                                    }
+                                }
+                            } else if(skill->getDynamicPriority() != will_trigger.last()->getDynamicPriority())
+                                break;
+
+                            triggered.append(skill);
+                        }
                     }
                 }
                 triggerable_tested << skill;

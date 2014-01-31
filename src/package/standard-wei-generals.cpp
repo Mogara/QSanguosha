@@ -314,6 +314,15 @@ public:
     Yiji(): MasochismSkill("yiji") {
     }
 
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *guojia, QVariant &data, ServerPlayer* &ask_who) const {
+        if (TriggerSkill::triggerable(guojia).isEmpty()) return QStringList();
+        QStringList trigger_skill;
+        DamageStruct damage = data.value<DamageStruct>();
+        for (int i = 0; i < damage.damage; i++)
+            trigger_skill << objectName();
+        return trigger_skill;
+    }
+
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who).contains(objectName())){
             DamageStruct damage = data.value<DamageStruct>();
@@ -333,6 +342,13 @@ public:
             room->broadcastSkillInvoke(objectName());
             return true;
         }
+
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *guojia, QVariant &data) const {
+        DamageStruct damage = data.value<DamageStruct>();
+        onDamaged(guojia, damage);
 
         return false;
     }
