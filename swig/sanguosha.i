@@ -250,6 +250,11 @@ public:
     bool isJilei(const Card *card) const;
     bool isLocked(const Card *card) const;
 
+    void setCardLimitation(const QString &limit_list, const QString &pattern, bool single_turn = false);
+    void removeCardLimitation(const QString &limit_list, const QString &pattern);
+    void clearCardLimitation(bool single_turn = false);
+    bool isCardLimited(const Card *card, Card::HandlingMethod method, bool isHandcard = false) const;
+
     // just for convenience
     void addQinggangTag(const Card *card);
     void removeQinggangTag(const Card *card);
