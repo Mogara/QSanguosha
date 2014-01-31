@@ -114,10 +114,14 @@ public:
         if (TriggerSkill::triggerable(player).isEmpty()) return QStringList();
         ServerPlayer *current = room->getCurrent();
         if (!current || current->isDead() || current->getPhase() == Player::NotActive) return QStringList();
-        return QStringList(objectName());
+        DamageStruct damage = data.value<DamageStruct>();
+        QStringList trigger_skill;
+        for (int i = 1; i <= damage.damage; i++)
+            trigger_skill << objectName();
+        return trigger_skill;
     }
     
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
         ServerPlayer *current = room->getCurrent();
         if (current && player->askForSkillInvoke(objectName(), QVariant::fromValue((PlayerStar)current))){
             room->broadcastSkillInvoke(objectName());
@@ -131,11 +135,7 @@ public:
         Room *room = target->getRoom();
         ServerPlayer *current = room->getCurrent();
         if (!current) return;
-        for (int i = 1; i <= damage.damage; i++) {
-            room->addPlayerMark(current, "@hengjiang");
-            if (!room->askForSkillInvoke(target, objectName(), QVariant::fromValue((PlayerStar)current)))
-                break;
-        }
+        room->addPlayerMark(current, "@hengjiang");
 
         return;
     }
