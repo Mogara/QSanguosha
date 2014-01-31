@@ -859,6 +859,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         tryParse(playerConfig["drankMaskColor"], layout->m_drankMaskColor);
         tryParse(playerConfig["duanchangMaskColor"], layout->m_duanchangMaskColor);
         tryParse(playerConfig["deathEffectColor"], layout->m_deathEffectColor);
+        tryParse(playerConfig["generalShadowColor"], layout->m_generalShadowColor);
         tryParse(playerConfig["extraSkillArea"], layout->m_extraSkillArea);
         layout->m_extraSkillFont.tryParse(playerConfig["extraSkillFont"]);
         tryParse(playerConfig["extraSkillTextArea"], layout->m_extraSkillTextArea);
