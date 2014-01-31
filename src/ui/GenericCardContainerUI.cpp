@@ -674,7 +674,7 @@ PlayerCardContainer::PlayerCardContainer() {
     _m_markItem = NULL;
     _m_roleComboBox = NULL;
     m_player = NULL;
-    _m_selectedFrame = NULL;
+    _m_selectedFrame = _m_selectedFrame2 = NULL;
 
     for (int i = 0; i < 4; i++) {
         _m_equipCards[i] = NULL;
@@ -758,6 +758,7 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_screenNameItem);
     for (int i = 0; i < 4; i++)
         _layUnder(_m_equipRegions[i]);
+    _layUnder(_m_selectedFrame2);
     _layUnder(_m_selectedFrame);
     _layUnder(_m_extraSkillText);
     _layUnder(_m_extraSkillBg);
@@ -938,11 +939,21 @@ QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVaria
             _m_votesGot = 0;
             _clearPixmap(_m_selectedFrame);
             _m_selectedFrame->hide();
+            if (getMouseClickReceiver2()) {
+                _clearPixmap(_m_selectedFrame2);
+                _m_selectedFrame2->hide();
+            }
         } else {
              _paintPixmap(_m_selectedFrame, _m_layout->m_focusFrameArea,
                           _getPixmap(QSanRoomSkin::S_SKIN_KEY_SELECTED_FRAME),
                           _getFocusFrameParent());
              _m_selectedFrame->show();
+             if (getMouseClickReceiver2()) {
+                 _paintPixmap(_m_selectedFrame2, _m_layout->m_focusFrameArea2,
+                          _getPixmap(QSanRoomSkin::S_SKIN_KEY_SELECTED_FRAME),
+                          _getFocusFrameParent());
+                _m_selectedFrame2->show();
+             }
         }
         updateVotes();
         emit selected_changed();

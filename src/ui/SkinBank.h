@@ -134,6 +134,7 @@ public:
         int m_normalHeight;
         QRect m_boundingRect;
         QRect m_focusFrameArea;
+        QRect m_focusFrameArea2;
         QRect m_handCardArea;
 
         // equips
