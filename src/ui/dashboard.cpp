@@ -50,6 +50,8 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     _createControls();
     _createExtraButtons();
 
+
+
     _m_sort_menu = new QMenu(RoomSceneInstance->mainWindow());
 }
 
