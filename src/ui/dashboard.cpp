@@ -118,6 +118,8 @@ void Dashboard::_createMiddle() {
 }
 
 void Dashboard::_adjustComponentZValues() {
+    //codes of this method are extrmely dirty
+    //@@todo: clean it later
     PlayerCardContainer::_adjustComponentZValues();
     // make sure right frame is on top because we have a lot of stuffs
     // attached to it, such as the rolecomboBox, which should not be under
@@ -126,19 +128,18 @@ void Dashboard::_adjustComponentZValues() {
     _layUnder(_m_leftFrame);
     _layUnder(_m_middleFrame);
     _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
-    _layBetween(_m_rightFrameBg, _m_faceTurnedIcon, _m_equipRegions[3]);
-    //rightFrameBase should always be under rightFrameBg
-    //base -> top : frame base -> frame bg -> magatamas base and general frames
-    qreal z = _m_rightFrameBg->zValue();
-    //make sure right frame base is at the bottom in case avatars are hidden by it.
-    _m_rightFrameBase->setZValue(z - 100);
-    _m_avatarIcon->setZValue(z + 1);
-    //maybe secondary general avatar icon hasn't been created at this time
-    if (_m_smallAvatarIcon)
-        _m_smallAvatarIcon->setZValue(z + 1);
-    _m_magatamasBase->setZValue(z + 2);
-    _m_headGeneralFrame->setZValue(z + 2);
-    _m_deputyGeneralFrame->setZValue(z + 2);
+    _layUnder(_m_secondaryAvatarArea);
+    _layUnder(_m_avatarArea);
+    _layUnder(_m_faceTurnedIcon2);
+    _layUnder(_m_faceTurnedIcon);
+    _layUnder(_m_smallAvatarIcon);
+    _layUnder(_m_avatarIcon);
+    _layUnder(_m_rightFrameBg);
+    _layUnder(_m_magatamasBase);
+    _layUnder(_m_rightFrameBase);
+    //the following 2 items must be on top
+    _m_headGeneralFrame->setZValue(1000);
+    _m_deputyGeneralFrame->setZValue(1000);
 }
 
 int Dashboard::width() {

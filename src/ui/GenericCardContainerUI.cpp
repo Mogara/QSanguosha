@@ -355,13 +355,18 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
 }
 
 void PlayerCardContainer::updateDrankState() {
-    if (m_player->getMark("drank") > 0)
+    // we have two avatar areas
+    if (m_player->getMark("drank") > 0) {
         _m_avatarArea->setBrush(G_PHOTO_LAYOUT.m_drankMaskColor);
-    else
+        _m_secondaryAvatarArea->setBrush(G_PHOTO_LAYOUT.m_drankMaskColor);
+    } else {
         _m_avatarArea->setBrush(Qt::NoBrush);
+        _m_secondaryAvatarArea->setBrush(Qt::NoBrush);
+    }
 }
 
 void PlayerCardContainer::updateDuanchang() {
+    //@@todo: fix it.
     return;
 }
 
@@ -399,15 +404,21 @@ void PlayerCardContainer::_updateEquips() {
 void PlayerCardContainer::refresh() {
     if (!m_player || !m_player->getGeneral() || !m_player->isAlive()) {
         _m_faceTurnedIcon->setVisible(false);
-        _m_chainIcon->setVisible(false);
+        if (_m_faceTurnedIcon2)
+            _m_faceTurnedIcon2->setVisible(false);
+        if (_m_chainIcon)
+            _m_chainIcon->setVisible(false);
+        if (_m_chainIcon2)
+            _m_chainIcon2->setVisible(false);
         _m_actionIcon->setVisible(false);
         _m_saveMeIcon->setVisible(false);
     } else if (m_player) {
         if (_m_faceTurnedIcon) _m_faceTurnedIcon->setVisible(!m_player->faceUp());
+        if (_m_faceTurnedIcon2) _m_faceTurnedIcon2->setVisible(!m_player->faceUp());
         if (_m_chainIcon) _m_chainIcon->setVisible(m_player->isChained());
+        if (_m_chainIcon2) _m_chainIcon2->setVisible(m_player->isChained());
         if (_m_actionIcon) _m_actionIcon->setVisible(m_player->hasFlag("actioned"));
-        if (_m_deathIcon && !(ServerInfo.GameMode == "04_1v3" && m_player->getGeneralName() != "shenlvbu2"))
-            _m_deathIcon->setVisible(m_player->isDead());
+        if (_m_deathIcon) _m_deathIcon->setVisible(m_player->isDead());
     }
     updateHandcardNum();
     _adjustComponentZValues();
@@ -425,11 +436,14 @@ void PlayerCardContainer::repaintAll() {
     _updateDeathIcon();
     _updateEquips();
     updateDelayedTricks();
-
+    //we have two avatar areas now...
     _paintPixmap(_m_faceTurnedIcon, _m_layout->m_avatarArea, QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK,
+                 _getAvatarParent());
+    _paintPixmap(_m_faceTurnedIcon2, _m_layout->m_secondaryAvatarArea, QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK,
                  _getAvatarParent());
     _paintPixmap(_m_chainIcon, _m_layout->m_chainedIconRegion, QSanRoomSkin::S_SKIN_KEY_CHAIN,
                  _getAvatarParent());
+    _paintPixmap(_m_chainIcon2, _m_layout->m_chainedIconRegion2,                                    QSanRoomSkin::S_SKIN_KEY_CHAIN, _getAvatarParent());
     _paintPixmap(_m_saveMeIcon, _m_layout->m_saveMeIconRegion, QSanRoomSkin::S_SKIN_KEY_SAVE_ME_ICON,
                  _getAvatarParent());
     _paintPixmap(_m_actionIcon, _m_layout->m_actionedIconRegion, QSanRoomSkin::S_SKIN_KEY_ACTIONED_ICON,
@@ -664,7 +678,8 @@ PlayerCardContainer::PlayerCardContainer() {
     _m_avatarNameItem = _m_secondaryAvatarNameItem = NULL;
     _m_avatarIcon = _m_smallAvatarIcon = _m_circleItem = NULL;
     _m_screenNameItem = NULL;
-    _m_chainIcon = _m_faceTurnedIcon = NULL;
+    _m_chainIcon = _m_chainIcon2 = NULL;
+    _m_faceTurnedIcon = _m_faceTurnedIcon2 = NULL;
     _m_handCardBg = _m_handCardNumText = NULL;
     _m_kingdomColorMaskIcon = _m_deathIcon = NULL;
     _m_actionIcon = NULL;
@@ -744,6 +759,8 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_markItem);
     _layUnder(_m_progressBarItem);
     _layUnder(_m_roleComboBox);
+    //it's meaningless to judge which icon should be on top
+    _layUnder(_m_chainIcon2);
     _layUnder(_m_chainIcon);
     _layUnder(_m_hpBox);
     _layUnder(_m_handCardNumText);
@@ -762,6 +779,7 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_selectedFrame);
     _layUnder(_m_extraSkillText);
     _layUnder(_m_extraSkillBg);
+    _layUnder(_m_faceTurnedIcon2);
     _layUnder(_m_faceTurnedIcon);
     _layUnder(_m_secondaryAvatarArea);
     _layUnder(_m_avatarArea);

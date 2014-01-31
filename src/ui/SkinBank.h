@@ -192,7 +192,7 @@ public:
         // various icons
         QRect m_actionedIconRegion;
         QRect m_saveMeIconRegion;
-        QRect m_chainedIconRegion;
+        QRect m_chainedIconRegion, m_chainedIconRegion2;
         AnchoredRect m_deathIconRegion;
         QRect m_votesIconRegion;
         QColor m_drankMaskColor;
