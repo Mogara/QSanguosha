@@ -1089,14 +1089,14 @@ void Dashboard::onMarkChanged() {
 }
 
 void Dashboard::onHeadStateChanged() {
-    if (m_player && !m_player->hasShownGeneral1())
+    if (m_player && m_player->getGeneral() && !m_player->hasShownGeneral1())
         _m_shadow_layer1->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
     else
         _m_shadow_layer1->setBrush(Qt::NoBrush);
 }
 
 void Dashboard::onDeputyStateChanged() {
-    if (m_player && !m_player->hasShownGeneral2())
+    if (m_player && m_player->getGeneral2() && !m_player->hasShownGeneral2())
         _m_shadow_layer2->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
     else
         _m_shadow_layer2->setBrush(Qt::NoBrush);
