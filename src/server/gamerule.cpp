@@ -20,8 +20,8 @@ public:
         return false;
     }
 
-    virtual bool triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
-        return player->getPhase() == Player::Start && !player->hasShownAllGenerals();
+    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
+        return (player->getPhase() == Player::Start && !player->hasShownAllGenerals()) ? QStringList(objectName()) : QStringList();
     }
 };
 
@@ -44,13 +44,13 @@ public:
         return false;
     }
 
-    virtual bool triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
-        if (player->getPhase() != Player::Start) return false;
+    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
+        if (player->getPhase() != Player::Start) return QStringList();
         foreach(const Skill *skill, player->getVisibleSkillList()) {
             if (!skill->inherits("BattleArraySkill")) continue;
-            return qobject_cast<const BattleArraySkill *>(skill)->getViewAsSkill()->isEnabledAtPlay(player);
+            return (qobject_cast<const BattleArraySkill *>(skill)->getViewAsSkill()->isEnabledAtPlay(player)) ? QStringList(objectName()) : QStringList();
         }
-        return false;
+        return QStringList();
     }
 };
 
@@ -83,9 +83,9 @@ GameRule::GameRule(QObject *)
     Sanguosha->addSkills(list);
 }
 
-bool GameRule::triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer * &ask_who) const{
+QStringList GameRule::triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer * &ask_who) const{
     ask_who = NULL;
-    return true;
+    return QStringList(objectName());
 }
 
 int GameRule::getPriority() const{

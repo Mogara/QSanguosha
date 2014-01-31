@@ -254,11 +254,13 @@ int TriggerSkill::getPriority() const{
     return (frequency == Limited) ? 3 : 2;
 }
 
-bool TriggerSkill::triggerable(const ServerPlayer *target) const{
-    return target != NULL && target->isAlive() && target->hasSkill(objectName());
+QStringList TriggerSkill::triggerable(const ServerPlayer *target) const{
+    if (target != NULL && target->isAlive() && target->hasSkill(objectName()))
+        return QStringList(objectName());
+    return QStringList();
 }
 
-bool TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+QStringList TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
     return triggerable(player); //temp way
 }
 
@@ -280,8 +282,8 @@ int ScenarioRule::getPriority() const{
     return 0;
 }
 
-bool ScenarioRule::triggerable(const ServerPlayer *) const{
-    return true;
+QStringList ScenarioRule::triggerable(const ServerPlayer *) const{
+    return QStringList(objectName());
 }
 
 MasochismSkill::MasochismSkill(const QString &name)
@@ -290,7 +292,7 @@ MasochismSkill::MasochismSkill(const QString &name)
     events << Damaged;
 }
 
-bool MasochismSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const {
+QStringList MasochismSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const {
     return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who);
 }
 
@@ -476,8 +478,8 @@ int FakeMoveSkill::getPriority() const{
     return 10;
 }
 
-bool FakeMoveSkill::triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &, ServerPlayer * &ask_who) const{
-    return target != NULL;
+QStringList FakeMoveSkill::triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &, ServerPlayer * &ask_who) const{
+    return (target != NULL) ? QStringList(objectName()) : QStringList();
 }
 
 bool FakeMoveSkill::effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &) const{
@@ -495,8 +497,8 @@ DetachEffectSkill::DetachEffectSkill(const QString &skillname, const QString &pi
     events << EventLoseSkill;
 }
 
-bool DetachEffectSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who) const{
-    return target != NULL;
+QStringList DetachEffectSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who) const{
+    return (target != NULL) ? QStringList(objectName()) : QStringList();
 }
 
 bool DetachEffectSkill::effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -517,10 +519,10 @@ WeaponSkill::WeaponSkill(const QString &name)
 {
 }
 
-bool WeaponSkill::triggerable(const ServerPlayer *target) const{
-    if (target == NULL) return false;
-    if (target->getMark("Equips_Nullified_to_Yourself") > 0) return false;
-    return target->hasWeapon(objectName());
+QStringList WeaponSkill::triggerable(const ServerPlayer *target) const{
+    if (target == NULL) return QStringList();
+    if (target->getMark("Equips_Nullified_to_Yourself") > 0) return QStringList();
+    return (target->hasWeapon(objectName())) ? QStringList(objectName()) : QStringList();
 }
 
 ArmorSkill::ArmorSkill(const QString &name)
@@ -528,10 +530,10 @@ ArmorSkill::ArmorSkill(const QString &name)
 {
 }
 
-bool ArmorSkill::triggerable(const ServerPlayer *target) const{
+QStringList ArmorSkill::triggerable(const ServerPlayer *target) const{
     if (target == NULL || target->getArmor() == NULL)
-        return false;
-    return target->hasArmorEffect(objectName());
+        return QStringList();
+    return (target->hasArmorEffect(objectName())) ? QStringList(objectName()) : QStringList();
 }
 
 MarkAssignSkill::MarkAssignSkill(const QString &mark, int n)

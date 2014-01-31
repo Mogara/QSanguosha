@@ -74,8 +74,10 @@ public:
         view_as_skill = new DujiangViewAsSkill;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target) && target->getGeneralName() != "shenlvmeng";
+    virtual QStringList triggerable(const ServerPlayer *target) const{
+        if (!PhaseChangeSkill::triggerable(target).isEmpty() && target->getGeneralName() != "shenlvmeng")
+            return QStringList(objectName());
+        return QStringList();
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
@@ -191,8 +193,10 @@ public:
         frequency = Limited;
     }
 
-    virtual bool triggerable(const ServerPlayer *target) const{
-        return PhaseChangeSkill::triggerable(target) && target->getGeneralName() == "guanyu" && target->getHp() <= 2;
+    virtual QStringList triggerable(const ServerPlayer *target) const{
+        if (!PhaseChangeSkill::triggerable(target).isEmpty() && target->getGeneralName() == "guanyu" && target->getHp() <= 2)
+            return QStringList(objectName());
+        return QStringList();
     }
 
     virtual bool onPhaseChange(ServerPlayer *guanyu) const{

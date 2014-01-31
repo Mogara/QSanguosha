@@ -1886,7 +1886,7 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
             if (skill->inherits("TriggerSkill")) {
                  const TriggerSkill *trigger = qobject_cast<const TriggerSkill *>(skill);
                  thread->addTriggerSkill(trigger);
-                 if (invokeStart && trigger->getTriggerEvents().contains(GameStart) && trigger->triggerable(player))
+                 if (invokeStart && trigger->getTriggerEvents().contains(GameStart) && !trigger->triggerable(player).isEmpty())
                      game_start << trigger;
             }
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())

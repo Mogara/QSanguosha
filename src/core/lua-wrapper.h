@@ -16,7 +16,7 @@ public:
     inline void setGlobal(bool global) { this->global = global; }
 
     virtual int getPriority() const;
-    virtual bool triggerable(const ServerPlayer *target) const;
+    virtual QStringList triggerable(const ServerPlayer *target) const;
     
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
