@@ -107,6 +107,8 @@ public:
             _m_leftSkillDock->update();
     }
 
+    void setPlayer(ClientPlayer *player);
+
 public slots:
     void sortCards();
     void beginSorting();
@@ -170,6 +172,9 @@ protected:
     //for animated effects
     EffectAnimation *animations;
 
+    //for avatar shadow layer
+    QGraphicsRectItem *_m_shadow_layer1, *_m_shadow_layer2;
+
     // for parts creation
     void _createLeft();
     void _createRight();
@@ -206,6 +211,8 @@ private slots:
     void onCardItemHover();
     void onCardItemLeaveHover();
     void onMarkChanged();
+    void onHeadStateChanged();
+    void onDeputyStateChanged();
 
 signals:
     void card_selected(const Card *card);

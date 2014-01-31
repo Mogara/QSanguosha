@@ -198,6 +198,7 @@ public:
         QColor m_drankMaskColor;
         QColor m_duanchangMaskColor;
         QColor m_deathEffectColor;
+        QColor m_generalShadowColor;
 
         QRect m_extraSkillArea;
         QSanShadowTextFont m_extraSkillFont;

@@ -480,36 +480,11 @@ public:
             }
         } else if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start)
             if (!player->hasSkill("guanxing"))
-                return QStringList(objectName());
+                return QStringList("guanxing");
         return QStringList();
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->askForSkillInvoke("guanxing")) {
-            LogMessage log;
-            log.type = "#InvokeSkill";
-            log.from = player;
-            log.arg = "guanxing";
-            room->sendLog(log);
-
-            room->broadcastSkillInvoke(objectName());
-            return true;
-        }
-
-        return false;   //skill is written in Guanxing actrually
-    }
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        QList<int> guanxing = room->getNCards(qMin(5, player->aliveCount()));
-
-        LogMessage log;
-        log.type = "$ViewDrawPile";
-        log.from = player;
-        log.card_str = IntList2StringList(guanxing).join("+");
-        room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
-
-        room->askForGuanxing(player, guanxing, Room::GuanxingBothSides);
-
         return false;
     }
 };

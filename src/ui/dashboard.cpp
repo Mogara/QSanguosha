@@ -118,8 +118,6 @@ void Dashboard::_createMiddle() {
 }
 
 void Dashboard::_adjustComponentZValues() {
-    //codes of this method are extrmely dirty
-    //@@todo: clean it later
     PlayerCardContainer::_adjustComponentZValues();
     // make sure right frame is on top because we have a lot of stuffs
     // attached to it, such as the rolecomboBox, which should not be under
@@ -130,6 +128,8 @@ void Dashboard::_adjustComponentZValues() {
     _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
     _layUnder(_m_secondaryAvatarArea);
     _layUnder(_m_avatarArea);
+    _layUnder(_m_shadow_layer2);
+    _layUnder(_m_shadow_layer1);
     _layUnder(_m_faceTurnedIcon2);
     _layUnder(_m_faceTurnedIcon);
     _layUnder(_m_smallAvatarIcon);
@@ -178,6 +178,11 @@ void Dashboard::_createRight() {
     _m_leftSkillDock->setPos(avatar2.left(), avatar2.bottom() -
                          G_DASHBOARD_LAYOUT.m_skillButtonsSize[0].height() / 1.3);
     _m_leftSkillDock->setWidth(avatar2.width());
+
+    _m_shadow_layer1 = new QGraphicsRectItem(_m_rightFrame);
+    _m_shadow_layer1->setRect(G_DASHBOARD_LAYOUT.m_avatarArea);
+    _m_shadow_layer2 = new QGraphicsRectItem(_m_rightFrame);
+    _m_shadow_layer2->setRect(G_DASHBOARD_LAYOUT.m_secondaryAvatarArea);
 }
 
 void Dashboard::_updateFrames() {
@@ -194,6 +199,9 @@ void Dashboard::_updateFrames() {
     Q_ASSERT(button_widget);
     button_widget->setX(rect.width() - getButtonWidgetWidth());
     button_widget->setY(0);
+    //update shadow layer
+    onHeadStateChanged();
+    onDeputyStateChanged();
 }
 
 void Dashboard::setTrust(bool trust) {
@@ -495,6 +503,12 @@ void Dashboard::highlightEquip(QString skillName, bool highlight) {
     }
     if (i != 4)
         _setEquipBorderAnimation(i, highlight);
+}
+
+void Dashboard::setPlayer(ClientPlayer *player) {
+    PlayerCardContainer::setPlayer(player);
+    connect(player, SIGNAL(head_state_changed()), this, SLOT(onHeadStateChanged()));
+    connect(player, SIGNAL(deputy_state_changed()), this, SLOT(onDeputyStateChanged()));
 }
 
 void Dashboard::_createExtraButtons() {
@@ -1072,6 +1086,20 @@ void Dashboard::onMarkChanged() {
 
         updatePending();
     }
+}
+
+void Dashboard::onHeadStateChanged() {
+    if (m_player && m_player->getGeneral() && !m_player->hasShownGeneral1())
+        _m_shadow_layer1->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
+    else
+        _m_shadow_layer1->setBrush(Qt::NoBrush);
+}
+
+void Dashboard::onDeputyStateChanged() {
+    if (m_player && m_player->getGeneral2() && !m_player->hasShownGeneral2())
+        _m_shadow_layer2->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
+    else
+        _m_shadow_layer2->setBrush(Qt::NoBrush);
 }
 
 const ViewAsSkill *Dashboard::currentSkill() const{

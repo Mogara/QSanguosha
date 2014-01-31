@@ -1172,10 +1172,12 @@ bool Player::hasShownAllGenerals() const {
 
 void Player::setGeneral1Showed(bool showed) {
     this->general1_showed = showed;
+    emit head_state_changed();
 }
 
 void Player::setGeneral2Showed(bool showed) {
     this->general2_showed = showed;
+    emit deputy_state_changed();
 }
 
 void Player::setSkillPreshowed(const QString &skill, const bool preshowed) {

@@ -59,7 +59,7 @@ public:
     void hideProgressBar();
     void hideAvatars();
     const ClientPlayer *getPlayer() const;
-    void setPlayer(ClientPlayer *player);
+    virtual void setPlayer(ClientPlayer *player);
     inline int getVotes() { return _m_votesGot; }
     inline void setMaxVotes(int maxVotes) { _m_maxVotes = maxVotes; }
     // See _m_floatingArea for more information

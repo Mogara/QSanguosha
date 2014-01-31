@@ -324,6 +324,8 @@ signals:
     void kingdom_changed();
     void phase_changed();
     void owner_changed(bool owner);
+    void head_state_changed();
+    void deputy_state_changed();
 };
 
 #endif
