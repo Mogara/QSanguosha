@@ -323,20 +323,6 @@ public:
         return trigger_skill;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
-        if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who).contains(objectName())){
-            DamageStruct damage = data.value<DamageStruct>();
-            QStringList trigger_list;
-            for (int i = 1; i <= damage.damage; i++){
-                trigger_list << objectName();
-            }
-
-            return trigger_list;
-        }
-
-        return QStringList();
-    }
-
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *guojia, QVariant &data) const {
         if (guojia->isAlive() && guojia->askForSkillInvoke(objectName(), data)) {
             room->broadcastSkillInvoke(objectName());
