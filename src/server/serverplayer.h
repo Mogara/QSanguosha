@@ -148,9 +148,6 @@ public:
     // static function
     static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b);
 
-    // @@Compatibility
-    inline void removePileByName(QString pile_name) { clearOnePrivatePile(pile_name); }
-
     void showGeneral(bool head_general = true);
     void hideGeneral(bool head_general = true);
     void removeGeneral(bool head_general = true);

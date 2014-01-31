@@ -52,6 +52,9 @@ public:
     virtual bool canPreshow() const;
     virtual bool relateToPlace(bool head = true) const;
 
+    //for LUA
+    inline void setRelateToPlace(const char *rtp) { relate_to_place = rtp; }
+
 protected:
     Frequency frequency;
     QString limit_mark;

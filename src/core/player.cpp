@@ -1019,7 +1019,9 @@ const Player *Player::getLord() const{
     return NULL;
 }
 
-int Player::getPlayerNumWithSameKingdom(QString to_calculate /* = QString() */) const{
+int Player::getPlayerNumWithSameKingdom(const QString &_to_calculate /* = QString() */) const{
+    QString to_calculate = _to_calculate;
+
     if (to_calculate.isEmpty())
         to_calculate = kingdom;
 
@@ -1096,7 +1098,7 @@ bool Player::hasShownSkill(const Skill *skill) const{
     return false;
 }
 
-void Player::preshowSkill(const QString skill_name) {
+void Player::preshowSkill(const QString &skill_name) {
     if (hasShownSkill(Sanguosha->getSkill(skill_name)))
         return;
 
@@ -1106,7 +1108,7 @@ void Player::preshowSkill(const QString skill_name) {
         deputy_skills[skill_name] = !deputy_skills.value(skill_name);
 }
 
-bool Player::inHeadSkills(const QString skill_name) const {
+bool Player::inHeadSkills(const QString &skill_name) const {
     return head_skills.keys().contains(skill_name);
 }
 
@@ -1198,7 +1200,7 @@ bool Player::hasPreshowedSkill(const QString &name) const {
     return head_skills.value(name, false) || deputy_skills.value(name, false);
 }
 
-bool Player::ownSkill(const QString skill_name) const {
+bool Player::ownSkill(const QString &skill_name) const {
     return (head_skills.keys() + deputy_skills.keys()).contains(skill_name);
 }
 
@@ -1248,7 +1250,7 @@ void Player::setNext(Player *next) {
     this->next = next->objectName();
 }
 
-void Player::setNext(QString next) {
+void Player::setNext(const QString &next) {
     this->next = next;
 }
 

@@ -235,7 +235,7 @@ public:
     void addQinggangTag(const Card *card);
     void removeQinggangTag(const Card *card);
     const Player *getLord() const; // a small function put here, simple but useful
-    int getPlayerNumWithSameKingdom(QString to_calculate = QString()) const;
+    int getPlayerNumWithSameKingdom(const QString &_to_calculate = QString()) const;
 
     void copyFrom(Player *p);
 
@@ -243,8 +243,8 @@ public:
     QList<const Player *> getAliveSiblings() const;
 
     bool hasShownSkill(const Skill *skill) const;
-    void preshowSkill(const QString skill_name);
-    bool inHeadSkills(const QString skill_name) const;
+    void preshowSkill(const QString &skill_name);
+    bool inHeadSkills(const QString &skill_name) const;
     const General *getActualGeneral1() const;
     const General *getActualGeneral2() const;
     QString getActualGeneral1Name() const;
@@ -263,12 +263,12 @@ public:
     void setSkillsPreshowed(const QString &falgs = "hd", const bool preshowed = true);
     bool hasPreshowedSkill(const QString &name) const;
 
-    bool ownSkill(const QString skill_name) const;
+    bool ownSkill(const QString &skill_name) const;
     bool isFriendWith(const Player *player) const;
     bool willBeFriendWith(const Player *player) const;
 
     void setNext(Player *next);
-    void setNext(QString next);
+    void setNext(const QString &next);
     Player *getNext() const;
     QString getNextName() const;
     Player *getLast() const;

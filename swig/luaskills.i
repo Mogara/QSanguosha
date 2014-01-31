@@ -1,31 +1,49 @@
 class LuaTriggerSkill: public TriggerSkill {
 public:
     LuaTriggerSkill(const char *name, Frequency frequency, const char *limit_mark);
-    void addEvent(TriggerEvent event);
+    void addEvent(TriggerEvent triggerEvent);
     void setViewAsSkill(ViewAsSkill *view_as_skill);
     void setGlobal(bool global);
 
-    virtual QStringList triggerable(const ServerPlayer *target) const;
+    virtual int getPriority() const;
+    
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
 
-
-    LuaFunction on_trigger;
     LuaFunction can_trigger;
+    LuaFunction on_cost;
+    LuaFunction on_effect;
+
     int priority;
 };
 
-class GameStartSkill: public TriggerSkill {
+class BattleArraySkill: public TriggerSkill {
 public:
-    GameStartSkill(const QString &name);
+    BattleArraySkill(const QString &name,const BattleArrayType::ArrayType type);
 
-    virtual bool effect(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
-    virtual void onGameStart(ServerPlayer *player) const = 0;
+    virtual void summonFriends(ServerPlayer *player) const;
+
+    BattleArrayType::ArrayType getArrayType() const;
 };
 
-class ProhibitSkill: public Skill {
+class LuaBattleArraySkill: public BattleArraySkill {
 public:
-    ProhibitSkill(const QString &name);
+    LuaBattleArraySkill(const char *name, Frequency frequency, const char *limit_mark, BattleArrayType::ArrayType array_type);
+    void addEvent(TriggerEvent triggerEvent);
+    void setViewAsSkill(ViewAsSkill *view_as_skill);
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const = 0;
+    virtual int getPriority() const;
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+
+    LuaFunction can_trigger;
+    LuaFunction on_cost;
+    LuaFunction on_effect;
+
+    int priority;
 };
 
 class DistanceSkill: public Skill {
@@ -60,15 +78,6 @@ public:
 
 protected:
     QString pattern;
-};
-
-class LuaProhibitSkill: public ProhibitSkill {
-public:
-    LuaProhibitSkill(const char *name);
-
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
-
-    LuaFunction is_prohibited;
 };
 
 class ViewAsSkill: public Skill {
@@ -274,41 +283,56 @@ public:
 #include "lua-wrapper.h"
 #include "clientplayer.h"
 
-QStringList LuaTriggerSkill::triggerable(const ServerPlayer *target) const{
+QStringList LuaTriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
     if (can_trigger == 0)
-        return TriggerSkill::triggerable(target);
+        return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who);
 
-    Room *room = target->getRoom();
-    lua_State *L = room->getLuaState();
+    lua_State *l = room->getLuaState();
 
-    // the callback function
-    lua_rawgeti(L, LUA_REGISTRYINDEX, can_trigger);
-    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaTriggerSkill, 0);
-    SWIG_NewPointerObj(L, target, SWIGTYPE_p_ServerPlayer, 0);
+    lua_rawgeti(l, LUA_REGISTRYINDEX, can_trigger);
 
-    int error = lua_pcall(L, 2, 1, 0);
-    if (error) {
-        const char *error_msg = lua_tostring(L, -1);
-        lua_pop(L, 1);
-        room->output(error_msg);
-        return QStringList();
-    } else {
-        bool result = lua_toboolean(L, -1);
-        lua_pop(L, 1);
-        return result ? QStringList(objectName()) : QStringList();
+    LuaTriggerSkill *self = const_cast<LuaTriggerSkill *>(this);
+    SWIG_NewPointerObj(l, self, SWIGTYPE_p_LuaTriggerSkill, 0);
+
+    int e = static_cast<int>(triggerEvent);
+
+    lua_pushinteger(l, e);
+
+    SWIG_NewPointerObj(l, room, SWIGTYPE_p_Room, 0);
+
+    // the third argument: player
+    SWIG_NewPointerObj(l, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    // the last event: data
+    SWIG_NewPointerObj(l, &data, SWIGTYPE_p_QVariant, 0);
+
+    SWIG_NewPointerObj(l, ask_who, SWIGTYPE_p_ServerPlayer, 0);
+
+    int error = lua_pcall(l, 6, 1, 0);
+    if (error){
+        const char *msg = lua_tostring(l, -1);
+        lua_pop(l, 1);
+        room->output(msg);
+        return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who);
+    }
+    else {
+        QString trigger_str = lua_tostring(l, -1);
+        lua_pop(l, 1);
+        QStringList trigger_list = trigger_str.split("+");
+        return trigger_list;
     }
 }
 
-bool LuaTriggerSkill::effect(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const{
-    if (on_trigger == 0)
-        return false;
+bool LuaTriggerSkill::cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    if (on_cost == 0)
+        return TriggerSkill::cost(triggerEvent, room, player, data);
 
     lua_State *L = room->getLuaState();
 
-    int e = static_cast<int>(event);
+    int e = static_cast<int>(triggerEvent);
 
     // the callback
-    lua_rawgeti(L, LUA_REGISTRYINDEX, on_trigger);
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_cost);
 
     LuaTriggerSkill *self = const_cast<LuaTriggerSkill *>(this);
     SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaTriggerSkill, 0);
@@ -316,13 +340,169 @@ bool LuaTriggerSkill::effect(TriggerEvent event, Room *room, ServerPlayer *playe
     // the first argument: event
     lua_pushinteger(L, e);
 
-    // the second argument: player
+    SWIG_NewPointerObj(L, room, SWIGTYPE_p_Room, 0);
+
+    // the third argument: player
     SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
 
     // the last event: data
     SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
 
-    int error = lua_pcall(L, 4, 1, 0);
+    int error = lua_pcall(L, 5, 1, 0);
+    if (error) {
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+        return true;
+    } else {
+        bool result = lua_toboolean(L, -1);
+        lua_pop(L, 1);
+        return result;
+    }
+}
+
+bool LuaTriggerSkill::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    if (on_effect == 0)
+        return false;
+
+    lua_State *L = room->getLuaState();
+
+    int e = static_cast<int>(triggerEvent);
+
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_effect);
+
+    LuaTriggerSkill *self = const_cast<LuaTriggerSkill *>(this);
+    SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaTriggerSkill, 0);
+
+    // the first argument: event
+    lua_pushinteger(L, e);
+
+    SWIG_NewPointerObj(L, room, SWIGTYPE_p_Room, 0);
+
+    // the third argument: player
+    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    // the last event: data
+    SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
+
+    int error = lua_pcall(L, 5, 1, 0);
+    if (error) {
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+        return false;
+    } else {
+        bool result = lua_toboolean(L, -1);
+        lua_pop(L, 1);
+        return result;
+    }
+}
+
+QStringList LuaBattleArraySkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+    if (can_trigger == 0)
+        return BattleArraySkill::triggerable(triggerEvent, room, player, data, ask_who);
+
+    lua_State *l = room->getLuaState();
+
+    lua_rawgeti(l, LUA_REGISTRYINDEX, can_trigger);
+
+    LuaBattleArraySkill *self = const_cast<LuaBattleArraySkill *>(this);
+    SWIG_NewPointerObj(l, self, SWIGTYPE_p_LuaBattleArraySkill, 0);
+
+    int e = static_cast<int>(triggerEvent);
+
+    lua_pushinteger(l, e);
+
+    SWIG_NewPointerObj(l, room, SWIGTYPE_p_Room, 0);
+
+    // the third argument: player
+    SWIG_NewPointerObj(l, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    // the last event: data
+    SWIG_NewPointerObj(l, &data, SWIGTYPE_p_QVariant, 0);
+
+    SWIG_NewPointerObj(l, ask_who, SWIGTYPE_p_ServerPlayer, 0);
+
+    int error = lua_pcall(l, 6, 1, 0);
+    if (error){
+        const char *msg = lua_tostring(l, -1);
+        lua_pop(l, 1);
+        room->output(msg);
+        return BattleArraySkill::triggerable(triggerEvent, room, player, data, ask_who);
+    }
+    else {
+        QString trigger_str = lua_tostring(l, -1);
+        lua_pop(l, 1);
+        QStringList trigger_list = trigger_str.split("+");
+        return trigger_list;
+    }
+}
+
+bool LuaBattleArraySkill::cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    if (on_cost == 0)
+        return BattleArraySkill::cost(triggerEvent, room, player, data);
+
+    lua_State *L = room->getLuaState();
+
+    int e = static_cast<int>(triggerEvent);
+
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_cost);
+
+    LuaBattleArraySkill *self = const_cast<LuaBattleArraySkill *>(this);
+    SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaBattleArraySkill, 0);
+
+    // the first argument: event
+    lua_pushinteger(L, e);
+
+    SWIG_NewPointerObj(L, room, SWIGTYPE_p_Room, 0);
+
+    // the third argument: player
+    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    // the last event: data
+    SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
+
+    int error = lua_pcall(L, 5, 1, 0);
+    if (error) {
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+        return true;
+    } else {
+        bool result = lua_toboolean(L, -1);
+        lua_pop(L, 1);
+        return result;
+    }
+}
+
+bool LuaBattleArraySkill::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    if (on_effect == 0)
+        return false;
+
+    lua_State *L = room->getLuaState();
+
+    int e = static_cast<int>(triggerEvent);
+
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, on_effect);
+
+    LuaBattleArraySkill *self = const_cast<LuaBattleArraySkill *>(this);
+    SWIG_NewPointerObj(L, self, SWIGTYPE_p_LuaBattleArraySkill, 0);
+
+    // the first argument: event
+    lua_pushinteger(L, e);
+
+    SWIG_NewPointerObj(L, room, SWIGTYPE_p_Room, 0);
+
+    // the third argument: player
+    SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);
+
+    // the last event: data
+    SWIG_NewPointerObj(L, &data, SWIGTYPE_p_QVariant, 0);
+
+    int error = lua_pcall(L, 5, 1, 0);
     if (error) {
         const char *error_msg = lua_tostring(L, -1);
         lua_pop(L, 1);
@@ -341,37 +521,6 @@ static void Error(lua_State *L) {
     const char *error_string = lua_tostring(L, -1);
     lua_pop(L, 1);
     QMessageBox::warning(NULL, "Lua script error!", error_string);
-}
-
-bool LuaProhibitSkill::isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others) const{
-    if (is_prohibited == 0)
-        return false;
-
-    lua_State *L = Sanguosha->getLuaState();
-
-    lua_rawgeti(L, LUA_REGISTRYINDEX, is_prohibited);
-
-    SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaProhibitSkill, 0);
-    SWIG_NewPointerObj(L, from, SWIGTYPE_p_Player, 0);
-    SWIG_NewPointerObj(L, to, SWIGTYPE_p_Player, 0);
-    SWIG_NewPointerObj(L, card, SWIGTYPE_p_Card, 0);
-
-    lua_createtable(L, others.length(), 0);
-    for(int i = 0; i < others.length(); i++){
-        const Player *player = others[i];
-        SWIG_NewPointerObj(L, player, SWIGTYPE_p_Player, 0);
-        lua_rawseti(L, -2, i + 1);
-    }
-
-    int error = lua_pcall(L, 5, 1, 0);
-    if (error) {
-        Error(L);
-        return false;
-    }
-
-    bool result = lua_toboolean(L, -1);
-    lua_pop(L, 1);
-    return result;
 }
 
 int LuaDistanceSkill::getCorrect(const Player *from, const Player *to) const{

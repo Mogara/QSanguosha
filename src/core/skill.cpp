@@ -343,7 +343,8 @@ bool GameStartSkill::effect(TriggerEvent, Room *, ServerPlayer *player, QVariant
 BattleArraySkill::BattleArraySkill(const QString &name, const BattleArrayType::ArrayType type)
     : TriggerSkill(name), array_type(type)
 {
-    view_as_skill = new ArraySummonSkill(objectName());
+    if (!inherits("LuaBattleArraySkill")) //extremely dirty hack!!!
+        view_as_skill = new ArraySummonSkill(objectName());
 }
 
 void BattleArraySkill::summonFriends(ServerPlayer *player) const {
@@ -372,43 +373,43 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const {
     if (skill) {
         ArrayType type = skill->getArrayType();
         switch (type) {
-        case Siege: {
-            if (player->isFriendWith(player->getNextAlive()) 
-                && player->isFriendWith(player->getLastAlive())) 
-                return false;
-            if (!player->isFriendWith(player->getNextAlive()))
-                if (!player->getNextAlive(2)->hasShownOneGeneral())
-                    return true;
-            if (!player->isFriendWith(player->getLastAlive()))
-                return !player->getLastAlive(2)->hasShownOneGeneral();
+            case Siege: {
+                if (player->isFriendWith(player->getNextAlive()) 
+                        && player->isFriendWith(player->getLastAlive())) 
+                    return false;
+                if (!player->isFriendWith(player->getNextAlive()))
+                    if (!player->getNextAlive(2)->hasShownOneGeneral())
+                        return true;
+                if (!player->isFriendWith(player->getLastAlive()))
+                    return !player->getLastAlive(2)->hasShownOneGeneral();
+            }
+            break;
+            case Formation: {
+                int n = player->aliveCount();
+                int asked = n;
+                for (int i = 1; i < n; ++ i) {
+                    Player *target = player->getNextAlive(i);
+                    if (player->isFriendWith(target))
+                        continue;
+                    else if (!target->hasShownOneGeneral())
+                        return true;
+                    else {
+                        asked = i;
+                        break;
                     }
-                    break;
-        case Formation: {
-            int n = player->aliveCount();
-            int asked = n;
-            for (int i = 1; i < n; ++ i) {
-                Player *target = player->getNextAlive(i);
-                if (player->isFriendWith(target))
-                    continue;
-                else if (!target->hasShownOneGeneral())
-                    return true;
-                else {
-                    asked = i;
-                    break;
+                }
+                n -= asked;
+                for(int i = 1; i < n; ++ i) {
+                    Player *target = player->getLastAlive(i);
+                    if (player->isFriendWith(target))
+                        continue;
+                    else return !target->hasShownOneGeneral();
                 }
             }
-            n -= asked;
-            for(int i = 1; i < n; ++ i) {
-                Player *target = player->getLastAlive(i);
-                if (player->isFriendWith(target))
-                    continue;
-                else return !target->hasShownOneGeneral();
-            }
-        }
-                        break;
+            break;
         }
     }
-        return false;
+    return false;
 }
 
 int MaxCardsSkill::getExtra(const Player *) const{

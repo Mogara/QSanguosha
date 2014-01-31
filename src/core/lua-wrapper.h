@@ -16,25 +16,37 @@ public:
     inline void setGlobal(bool global) { this->global = global; }
 
     virtual int getPriority() const;
-    virtual QStringList triggerable(const ServerPlayer *target) const;
     
-
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
 
-    LuaFunction on_trigger;
     LuaFunction can_trigger;
+    LuaFunction on_cost;
+    LuaFunction on_effect;
+
     int priority;
 };
 
-class LuaProhibitSkill: public ProhibitSkill {
+class LuaBattleArraySkill: public BattleArraySkill {
     Q_OBJECT
 
 public:
-    LuaProhibitSkill(const char *name);
+    LuaBattleArraySkill(const char *name, Frequency frequency, const char *limit_mark, BattleArrayType::ArrayType array_type);
+    inline void addEvent(TriggerEvent triggerEvent) { events << triggerEvent; }
+    inline void setViewAsSkill(ViewAsSkill *view_as_skill) { this->view_as_skill = view_as_skill; }
+    
+    virtual int getPriority() const;
 
-    virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
 
-    LuaFunction is_prohibited;
+    LuaFunction can_trigger;
+    LuaFunction on_cost;
+    LuaFunction on_effect;
+
+    int priority;
 };
 
 class LuaViewAsSkill: public ViewAsSkill {

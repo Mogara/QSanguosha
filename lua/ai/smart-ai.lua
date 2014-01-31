@@ -5934,8 +5934,3 @@ for _, aextension in ipairs(sgs.Sanguosha:getExtensions()) do
 	end
 end
 
-for _, ascenario in ipairs(sgs.Sanguosha:getModScenarioNames()) do
-	if not loaded:match(ascenario) and files:match(string.lower(ascenario)) then
-		dofile("lua/ai/" .. string.lower(ascenario) .. "-ai.lua")
-	end
-end

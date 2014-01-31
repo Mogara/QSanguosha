@@ -2,7 +2,7 @@
 #include "util.h"
 
 LuaTriggerSkill::LuaTriggerSkill(const char *name, Frequency frequency, const char *limit_mark)
-    : TriggerSkill(name), on_trigger(0), can_trigger(0), priority(2)
+    : TriggerSkill(name), on_cost(0), can_trigger(0), on_effect(0), priority(2)
 {
     this->frequency = frequency;
     this->limit_mark = QString(limit_mark);
@@ -12,9 +12,15 @@ int LuaTriggerSkill::getPriority() const{
     return priority;
 }
 
-LuaProhibitSkill::LuaProhibitSkill(const char *name)
-    : ProhibitSkill(name), is_prohibited(0)
+LuaBattleArraySkill::LuaBattleArraySkill(const char *name, Frequency frequency, const char *limit_mark, BattleArrayType::ArrayType array_type)
+    : BattleArraySkill(name, array_type)
 {
+    this->frequency = frequency;
+    this->limit_mark = (QString)limit_mark;
+}
+
+int LuaBattleArraySkill::getPriority() const{
+    return priority;
 }
 
 LuaViewAsSkill::LuaViewAsSkill(const char *name, const char *response_pattern)
