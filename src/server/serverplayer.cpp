@@ -1360,8 +1360,8 @@ void ServerPlayer::hideGeneral(bool head_general) {
             room->doNotify(p, S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral(this, "anjiang");
 
-        disconnectSkillsFromOthers();
         setSkillsPreshowed("h", false);
+        disconnectSkillsFromOthers();
 
         foreach (const Skill *skill, getVisibleSkillList()) {
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
@@ -1395,8 +1395,8 @@ void ServerPlayer::hideGeneral(bool head_general) {
             room->doNotify(p, S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral2(this, "anjiang");
 
-        disconnectSkillsFromOthers(false);
         setSkillsPreshowed("d", false);
+        disconnectSkillsFromOthers(false);
 
         foreach (const Skill *skill, getVisibleSkillList()) {
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
@@ -1452,8 +1452,8 @@ void ServerPlayer::removeGeneral(bool head_general) {
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral(this, general_name);
 
-        disconnectSkillsFromOthers();
         setSkillsPreshowed("h", false);
+        disconnectSkillsFromOthers();
 
         foreach (const Skill *skill, getHeadSkillList())
             if (skill)
@@ -1502,8 +1502,8 @@ void ServerPlayer::removeGeneral(bool head_general) {
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral2(this, general_name);
         
-        disconnectSkillsFromOthers();
         setSkillsPreshowed("d", false);
+        disconnectSkillsFromOthers();
 
         foreach (const Skill *skill, getDeputySkillList())
             if (skill)
@@ -1564,6 +1564,7 @@ void ServerPlayer::sendSkillsToOthers(bool head_skill /* = true */) {
 
 void ServerPlayer::disconnectSkillsFromOthers(bool head_skill /* = true */) {
     foreach(auto skill, head_skill ? head_skills.keys() : deputy_skills.keys()) {
+        room->getThread()->trigger(EventLoseSkill, room, this, QVariant(skill));
         Json::Value args;
         args[0] = QSanProtocol::S_GAME_EVENT_DETACH_SKILL;
         args[1] = toJsonString(objectName());
