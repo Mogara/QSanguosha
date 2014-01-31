@@ -629,13 +629,18 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                 foreach(auto p, trigger_who.keys()) {
                     QList<const TriggerSkill *> skills = trigger_who.value(p);
                     if (skills.isEmpty()) continue;
-                    QStringList names;
-                    foreach (auto skill, skills)
-                        names << skill->objectName();
-                    if (names.length() > 1)
+                    QStringList names, back_up;
+                    foreach (auto skill, skills) {
+                        QString name = skill->objectName();
+                        if (names.contains(name))
+                            back_up << name;
+                        else
+                            names << name;
+                    }
+                    if (names.length() > 1 || !back_up.isEmpty())
                         names << "trigger_none";
                     do {
-                        if (names.length() == 2)
+                        if (names.length() == 2 && back_up.isEmpty())
                             names.removeLast();
 
                         QString name;
@@ -650,7 +655,10 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                             if (p && p->ownSkill(name) && !p->hasShownSkill(Sanguosha->getSkill(name)))
                                 p->showGeneral(p->inHeadSkills(name));
                         }
-                        names.removeOne(name);
+                        if (back_up.contains(name))
+                            back_up.removeOne(name);
+                        else
+                            names.removeOne(name);
                         skills.removeOne(skill);
                     } while (names.length() > 1);
                 }

@@ -190,79 +190,51 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (!player->hasSkill("guanxing"))
+            if (player->askForSkillInvoke(objectName())) {
+                room->broadcastSkillInvoke("yizhi");
+                player->showGeneral(false);
+                return true;
+            }
         if (!player->hasSkill("yizhi"))
-            return player->askForSkillInvoke(objectName());
+            if (player->askForSkillInvoke(objectName())) {
+                room->broadcastSkillInvoke(objectName());
+                return true;
+            }
         // if it runs to here, it means player own both two skill;
-        bool show1 = player->hasShownSkill(this);
-        bool show2 = player->hasShownSkill(Sanguosha->getSkill("yizhi"));
-        if (!show1 && !show2) {
-            if (player->askForSkillInvoke(objectName())) {
-                QStringList choices;
-                choices << "show_head_general" << "show_deputy_general" << "show_both_generals";
-                QString choice = room->askForChoice(player, "GuanxingShowGeneral", choices.join("+"));
-                if (choice == "show_deputy_general") {
-                    player->showGeneral(false);
-                    room->broadcastSkillInvoke("yizhi");
-
-                    QList<int> guanxing = room->getNCards(qMin(5, player->aliveCount()));
-
-                    LogMessage log;
-                    log.type = "$ViewDrawPile";
-                    log.from = player;
-                    log.card_str = IntList2StringList(guanxing).join("+");
-                    room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
-
-                    room->askForGuanxing(player, guanxing, Room::GuanxingBothSides);
-
-                    return false;
-                } else if (choice == "show_both_generals") {
-                    player->showGeneral(false);
+        if (player->askForSkillInvoke(objectName())) {
+            bool show1 = player->hasShownSkill(this);
+            bool show2 = player->hasShownSkill(Sanguosha->getSkill("yizhi"));
+            QStringList choices;
+            if (!show1)
+                choices << "show_head_general";
+            if (!show2)
+                choices << "show_deputy_general";
+            if (choices.length() == 2)
+                choices << "show_both_generals";
+            if (choices.length() != 3)
+                choices << "cancel";
+            QString choice = room->askForChoice(player, "GuanxingShowGeneral", choices.join("+"));
+            if (choice == "cancel")
+                if (show1) {
                     room->broadcastSkillInvoke(objectName());
                     return true;
                 } else {
-                    room->broadcastSkillInvoke(objectName());
-                    return true;
-                }
-            }
-        } else if (!show1 && show2) {
-            if (player->askForSkillInvoke(objectName())) {
-                QStringList choices;
-                choices << "show_head_general" << "cancel";
-                QString choice = room->askForChoice(player, "GuanxingShowGeneral", choices.join("+"));
-                if (choice == "cancel") {
                     room->broadcastSkillInvoke("yizhi");
-                    QList<int> guanxing = room->getNCards(qMin(5, player->aliveCount()));
-
-                    LogMessage log;
-                    log.type = "$ViewDrawPile";
-                    log.from = player;
-                    log.card_str = IntList2StringList(guanxing).join("+");
-                    room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
-
-                    room->askForGuanxing(player, guanxing, Room::GuanxingBothSides);
-
+                    onPhaseChange(player);
                     return false;
-                } else {
-                    room->broadcastSkillInvoke(objectName());
-                    return true;
                 }
-            }
-        } else if (show1 && !show2) {
-            if (player->askForSkillInvoke(objectName())) {
-                QStringList choices;
-                choices << "show_deputy_general" << "cancel";
-                QString choice = room->askForChoice(player, "GuanxingShowGeneral", choices.join("+"));
-                if (choice == "show_deputy_general")
-                    player->showGeneral(false);
+            if (choice != "show_head_general")
+                player->showGeneral(false);
+            if (choice != "show_deputy_general") {
                 room->broadcastSkillInvoke(objectName());
                 return true;
+            } else {
+                room->broadcastSkillInvoke("yizhi");
+                onPhaseChange(player);
+                return false;
             }
-        } else if (show1 && show2)
-            if (player->askForSkillInvoke(objectName())){
-                room->broadcastSkillInvoke(objectName());
-                return true;
-            }
-
+        }
             
         return false;
     }
@@ -284,7 +256,7 @@ public:
     }
 
     virtual int getGuanxingNum(ServerPlayer *zhuge) const{
-        if (zhuge->hasShownSkill(Sanguosha->getSkill("yizhi"))) return 5;
+        if (zhuge->hasShownSkill(this) && zhuge->hasShownSkill(Sanguosha->getSkill("yizhi"))) return 5;
         return qMin(5, zhuge->aliveCount());
     }
 };
