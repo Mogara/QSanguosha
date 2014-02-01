@@ -538,9 +538,6 @@ public:
         view_as_skill = new ShensuViewAsSkill;
     }
 
-    virtual bool canPreshow() const {
-        return false;
-    }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *xiahouyuan, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (TriggerSkill::triggerable(xiahouyuan).isEmpty())
