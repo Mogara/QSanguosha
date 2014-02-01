@@ -3471,6 +3471,7 @@ void RoomScene::onGameStart() {
     }
 #endif
     game_started = true;
+    dashboard->refresh();
 }
 
 void RoomScene::freeze() {

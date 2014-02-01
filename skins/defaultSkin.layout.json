@@ -199,7 +199,9 @@
     "discardButtonArea": [70, 48, 33, 130],
     "trustButtonArea": [69, 136, 36, 35],
     "trustEffectColor": [38, 26, 66],
-	"generalShadowColor": [0, 0, 0, 180]
+	"generalShadowColor": [0, 0, 0, 180],
+	"hiddenMarkRegion": [132, -3, 124, 146],
+	"hiddenMarkRegion2": [4, -3, 124, 146]
 },
 "skillButton":
 {

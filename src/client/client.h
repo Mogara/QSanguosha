@@ -334,6 +334,9 @@ signals:
 
     void assign_asked();
     void start_in_xs();
+
+    void head_preshowed();
+    void deputy_preshowed();
 };
 
 extern Client *ClientInstance;

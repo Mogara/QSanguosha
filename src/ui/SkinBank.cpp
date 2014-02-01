@@ -67,6 +67,7 @@ const char *QSanRoomSkin::S_SKIN_KEY_MAGATAMAS = "magatamas%1";
 const char *QSanRoomSkin::S_SKIN_KEY_PROGRESS_BAR_IMAGE = "progressBar";
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE = "generalCircleImage-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_MASK = "generalCircleMask-%1";
+const char *QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK = "hiddenMark";
 
 // Animations
 const char *QSanRoomSkin::S_SKIN_KEY_ANIMATIONS = "preloads";
@@ -854,6 +855,8 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         tryParse(playerConfig["saveMeIconRegion"], layout->m_saveMeIconRegion);
         tryParse(playerConfig["chainedIconRegion"], layout->m_chainedIconRegion);
         tryParse(playerConfig["chainedIconRegion2"], layout->m_chainedIconRegion2);
+        tryParse(playerConfig["hiddenMarkRegion"], layout->m_hiddenMarkRegion1);
+        tryParse(playerConfig["hiddenMarkRegion2"], layout->m_hiddenMarkRegion2);
         layout->m_deathIconRegion.tryParse(playerConfig["deathIconRegion"]);
         tryParse(playerConfig["votesIconRegion"], layout->m_votesIconRegion);
         tryParse(playerConfig["drankMaskColor"], layout->m_drankMaskColor);

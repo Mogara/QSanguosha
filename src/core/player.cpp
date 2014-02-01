@@ -1197,6 +1197,18 @@ bool Player::hasPreshowedSkill(const QString &name) const {
     return head_skills.value(name, false) || deputy_skills.value(name, false);
 }
 
+bool Player::isHidden(const bool &head_general) const {
+    const QList<const Skill *> skills = head_general ? getHeadSkillList() :                                                               getDeputySkillList();
+    unsigned int count = 0;
+    foreach(const Skill *skill, skills) {
+        if(skill->canPreshow() && hasPreshowedSkill(skill->objectName()))
+            return false;
+        else if (!skill->canPreshow())
+            ++ count;
+    }
+    return count != skills.length();
+}
+
 bool Player::ownSkill(const QString &skill_name) const {
     return (head_skills.keys() + deputy_skills.keys()).contains(skill_name);
 }
@@ -1208,7 +1220,7 @@ bool Player::isFriendWith(const Player *player) const {
 
     if (this == player)
         return true;
-
+    
     if (role == "careerist" || player->role == "careerist")
         return false;
 

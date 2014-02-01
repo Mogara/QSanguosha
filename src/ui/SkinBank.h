@@ -193,6 +193,7 @@ public:
         QRect m_actionedIconRegion;
         QRect m_saveMeIconRegion;
         QRect m_chainedIconRegion, m_chainedIconRegion2;
+        QRect m_hiddenMarkRegion1, m_hiddenMarkRegion2;
         AnchoredRect m_deathIconRegion;
         QRect m_votesIconRegion;
         QColor m_drankMaskColor;
@@ -360,6 +361,7 @@ public:
     static const char *S_SKIN_KEY_PROGRESS_BAR_IMAGE;
     static const char *S_SKIN_KEY_GENERAL_CIRCLE_IMAGE;
     static const char *S_SKIN_KEY_GENERAL_CIRCLE_MASK;
+    static const char *S_SKIN_KEY_HIDDEN_MARK;
 
     // Animations
     static const char *S_SKIN_KEY_ANIMATIONS;

@@ -956,6 +956,11 @@ void Client::trust() {
 
 void Client::preshow(QString skill_name) {
     requestToServer(S_COMMAND_PRESHOW, toJsonString(skill_name));
+    Self->setSkillPreshowed(skill_name, !Self->hasPreshowedSkill(skill_name));
+    if (Self->inHeadSkills(skill_name))
+        emit head_preshowed();
+    else
+        emit deputy_preshowed();
 }
 
 void Client::requestSurrender() {

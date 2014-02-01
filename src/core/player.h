@@ -262,6 +262,7 @@ public:
     void setSkillPreshowed(const QString &skill, const bool preshowed = true);
     void setSkillsPreshowed(const QString &falgs = "hd", const bool preshowed = true);
     bool hasPreshowedSkill(const QString &name) const;
+    bool isHidden(const bool &head_general) const;
 
     bool ownSkill(const QString &skill_name) const;
     bool isFriendWith(const Player *player) const;

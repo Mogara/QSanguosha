@@ -32,6 +32,7 @@ Dashboard::Dashboard(QGraphicsItem *widget)
         _m_equipSkillBtns[i] = NULL;
         _m_isEquipsAnimOn[i] = false;
     }
+    _m_hidden_mark1 = _m_hidden_mark2 = NULL;
     // At this stage, we cannot decide the dashboard size yet, the whole
     // point in creating them here is to allow PlayerCardContainer to
     // anchor all controls and widgets to the correct frame.
@@ -51,6 +52,21 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     _createExtraButtons();
 
     _m_sort_menu = new QMenu(RoomSceneInstance->mainWindow());
+}
+
+void Dashboard::refresh() {
+    PlayerCardContainer::refresh();
+    if (!m_player || !m_player->getGeneral() || !m_player->isAlive()) {
+        _m_shadow_layer1->setBrush(Qt::NoBrush);
+        _m_shadow_layer2->setBrush(Qt::NoBrush);
+        _m_hidden_mark1->setVisible(false);
+        _m_hidden_mark2->setVisible(false);
+    } else if (m_player) {
+        _m_shadow_layer1->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
+        _m_shadow_layer2->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
+        _m_hidden_mark1->setVisible(m_player->isHidden(true));
+        _m_hidden_mark2->setVisible(m_player->isHidden(false));
+    }
 }
 
 bool Dashboard::isAvatarUnderMouse() {
@@ -126,6 +142,8 @@ void Dashboard::_adjustComponentZValues() {
     _layUnder(_m_leftFrame);
     _layUnder(_m_middleFrame);
     _layBetween(button_widget, _m_middleFrame, _m_roleComboBox);
+    _layUnder(_m_hidden_mark2);
+    _layUnder(_m_hidden_mark1);
     _layUnder(_m_secondaryAvatarArea);
     _layUnder(_m_avatarArea);
     _layUnder(_m_shadow_layer2);
@@ -183,6 +201,14 @@ void Dashboard::_createRight() {
     _m_shadow_layer1->setRect(G_DASHBOARD_LAYOUT.m_avatarArea);
     _m_shadow_layer2 = new QGraphicsRectItem(_m_rightFrame);
     _m_shadow_layer2->setRect(G_DASHBOARD_LAYOUT.m_secondaryAvatarArea);
+
+    _paintPixmap(_m_hidden_mark1, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion1, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
+    _paintPixmap(_m_hidden_mark2, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion2, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
+
+    connect(ClientInstance, SIGNAL(head_preshowed()), this, 
+            SLOT(onHeadSkillPreshowed()));
+    connect(ClientInstance, SIGNAL(deputy_preshowed()), this, 
+            SLOT(onDeputySkillPreshowed()));
 }
 
 void Dashboard::_updateFrames() {
@@ -199,9 +225,6 @@ void Dashboard::_updateFrames() {
     Q_ASSERT(button_widget);
     button_widget->setX(rect.width() - getButtonWidgetWidth());
     button_widget->setY(0);
-    //update shadow layer
-    onHeadStateChanged();
-    onDeputyStateChanged();
 }
 
 void Dashboard::setTrust(bool trust) {
@@ -1089,17 +1112,31 @@ void Dashboard::onMarkChanged() {
 }
 
 void Dashboard::onHeadStateChanged() {
-    if (m_player && m_player->getGeneral() && !m_player->hasShownGeneral1())
+    if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral1())
         _m_shadow_layer1->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
     else
         _m_shadow_layer1->setBrush(Qt::NoBrush);
 }
 
 void Dashboard::onDeputyStateChanged() {
-    if (m_player && m_player->getGeneral2() && !m_player->hasShownGeneral2())
+    if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral2())
         _m_shadow_layer2->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
     else
         _m_shadow_layer2->setBrush(Qt::NoBrush);
+}
+
+void Dashboard::onHeadSkillPreshowed() {
+    if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral1())
+        _m_hidden_mark1->setVisible(m_player->isHidden(true));
+    else
+        _m_hidden_mark1->setVisible(false);
+}
+
+void Dashboard::onDeputySkillPreshowed() {
+    if (m_player && RoomSceneInstance->game_started && !m_player->hasShownGeneral2())
+        _m_hidden_mark2->setVisible(m_player->isHidden(false));
+    else
+        _m_hidden_mark2->setVisible(false);
 }
 
 const ViewAsSkill *Dashboard::currentSkill() const{

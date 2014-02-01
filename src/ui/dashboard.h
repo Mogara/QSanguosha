@@ -29,6 +29,7 @@ public:
 
     Dashboard(QGraphicsItem *button_widget);
     virtual QRectF boundingRect() const;
+    void refresh();
     void setWidth(int width);
     int getMiddleWidth();
     inline QRectF getRightAvatarArea() {
@@ -175,6 +176,8 @@ protected:
     //for avatar shadow layer
     QGraphicsRectItem *_m_shadow_layer1, *_m_shadow_layer2;
 
+    QGraphicsPixmapItem *_m_hidden_mark1, *_m_hidden_mark2;
+
     // for parts creation
     void _createLeft();
     void _createRight();
@@ -213,6 +216,8 @@ private slots:
     void onMarkChanged();
     void onHeadStateChanged();
     void onDeputyStateChanged();
+    void onHeadSkillPreshowed();
+    void onDeputySkillPreshowed();
 
 signals:
     void card_selected(const Card *card);

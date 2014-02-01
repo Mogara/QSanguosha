@@ -44,6 +44,7 @@
 "tableBg": "backdrop/default.jpg",
 "photoExtraSkillBg": "image/system/huashenSkillBg.png",
 "dashboardExtraSkillBg": "image/system/huashenSkillBg.png",
+"hiddenMark": "image/system/hidden-mark.png",
 
 // general default directories
 "playerGeneralIcon-default-0": ["image/generals/avatar/%1.png", [71, 28, 134, 134], [40, 40]],
