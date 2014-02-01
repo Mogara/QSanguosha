@@ -599,15 +599,10 @@ int Player::getMaxCards() const{
     int origin = Sanguosha->correctMaxCards(this, true);
     if (origin == 0)
         origin = qMax(hp, 0);
-    int rule = 0, total = 0, extra = 0;
-    if (Config.MaxHpScheme == 3 && general2) {
-        total = general->getDoubleMaxHp() + general2->getDoubleMaxHp();
-        if (total % 2 != 0 && getMark("AwakenLostMaxHp") == 0)
-            rule = 1;
-    }
-    extra += Sanguosha->correctMaxCards(this);
 
-    return qMax(origin + rule + extra, 0);
+    origin += Sanguosha->correctMaxCards(this);
+
+    return qMax(origin, 0);
 }
 
 QString Player::getKingdom() const{
