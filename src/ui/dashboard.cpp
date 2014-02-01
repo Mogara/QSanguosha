@@ -1116,6 +1116,7 @@ void Dashboard::onHeadStateChanged() {
         _m_shadow_layer1->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
     else
         _m_shadow_layer1->setBrush(Qt::NoBrush);
+    onHeadSkillPreshowed();
 }
 
 void Dashboard::onDeputyStateChanged() {
@@ -1123,6 +1124,7 @@ void Dashboard::onDeputyStateChanged() {
         _m_shadow_layer2->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
     else
         _m_shadow_layer2->setBrush(Qt::NoBrush);
+    onDeputySkillPreshowed();
 }
 
 void Dashboard::onHeadSkillPreshowed() {
