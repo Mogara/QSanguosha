@@ -397,8 +397,10 @@ public:
             ServerPlayer *jiaxu = room->getCurrent();
             if (!jiaxu || TriggerSkill::triggerable(jiaxu).isEmpty() || jiaxu->getPhase() == Player::NotActive)
                 return QStringList();
-            ask_who = jiaxu;
-            return QStringList(objectName());
+            if (player == room->getAllPlayers().first()) {
+                ask_who = jiaxu;
+                return QStringList(objectName());
+            }
         } else {
             if (triggerEvent == EventPhaseChanging) {
                 PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -417,7 +419,7 @@ public:
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *player = room->getCurrent();
-        if (player->askForSkillInvoke(objectName())){
+        if (player->hasShownSkill(this) || player->askForSkillInvoke(objectName())){
             room->broadcastSkillInvoke(objectName());
             return true;
         }
@@ -428,20 +430,19 @@ public:
         if (triggerEvent == AskForPeaches) {
             DyingStruct dying = data.value<DyingStruct>();
             ServerPlayer *jiaxu = room->getCurrent();
-            if (player == room->getAllPlayers().first()) {
-                room->notifySkillInvoked(jiaxu, objectName());
+            room->notifySkillInvoked(jiaxu, objectName());
 
-                LogMessage log;
-                log.from = jiaxu;
-                log.arg = objectName();
-                if (jiaxu != dying.who) {
-                    log.type = "#WanshaTwo";
-                    log.to << dying.who;
-                } else {
-                    log.type = "#WanshaOne";
-                }
-                room->sendLog(log);
+            LogMessage log;
+            log.from = jiaxu;
+            log.arg = objectName();
+            if (jiaxu != dying.who) {
+                log.type = "#WanshaTwo";
+                log.to << dying.who;
+            } else {
+                log.type = "#WanshaOne";
             }
+            room->sendLog(log);
+            
             if (dying.who != player && jiaxu != player)
                 room->setPlayerFlag(player, "Global_PreventPeach");
         }
