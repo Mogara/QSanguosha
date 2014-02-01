@@ -182,7 +182,7 @@ public:
     }
 
     virtual bool canPreshow() const {
-        return true;
+        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
