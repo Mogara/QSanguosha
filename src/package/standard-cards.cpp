@@ -51,7 +51,7 @@ bool Slash::IsAvailable(const Player *player, const Card *slash, bool considerSp
                         return true;
                 }
             }
-        } 
+        }
         return false;
     } else {
         return true;
@@ -252,7 +252,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
         }
     }
 
-    if (has_specific_assignee) { 
+    if (has_specific_assignee) {
         if (targets.isEmpty())
             return Slash::IsSpecificAssignee(to_select, Self, this) && Self->canSlash(to_select, this, distance_limit, rangefix);
         else {
@@ -639,7 +639,7 @@ public:
 
         return QStringList();
     }
-    
+
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         return (room->askForSkillInvoke(player, "EightDiagram"));
     }
@@ -664,8 +664,8 @@ public:
 
             return true;
         }
-        
-        
+
+
         return false;
     }
 
@@ -1243,7 +1243,7 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const {
 
     Room *room = effect.from->getRoom();
 
-    QString choice = room->askForChoice(effect.from, objectName(), 
+    QString choice = room->askForChoice(effect.from, objectName(),
                                         choices.join("+"), QVariant::fromValue(effect.to));
     LogMessage log;
     log.type = "#KnownBothView";
@@ -1615,7 +1615,7 @@ public:
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
-            
+
             room->setEmotion(player, "armor/vine");
             LogMessage log;
             log.from = player;
@@ -1635,7 +1635,7 @@ public:
             log.arg = objectName();
             log.arg2 = effect.card->objectName();
             room->sendLog(log);
-            
+
             effect.to->setFlags("Global_NonSkillNullify");
             return true;
         } else if (triggerEvent == DamageInflicted) {
@@ -1703,7 +1703,7 @@ public:
             data = QVariant::fromValue(damage);
         } else {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-            
+
             for (int i = 0; i < move.card_ids.size(); i++) {
                 if (move.from_places[i] != Player::PlaceEquip) continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
@@ -1845,8 +1845,8 @@ StandardCardPackage::StandardCardPackage()
           << new SilverLion;
 
     skills << new DoubleSwordSkill << new QinggangSwordSkill << new IceSwordSkill
-           << new SpearSkill << new FanSkill << new AxeSkill << new KylinBowSkill 
-           << new TribladeSkill << new EightDiagramSkill << new RenwangShieldSkill 
+           << new SpearSkill << new FanSkill << new AxeSkill << new KylinBowSkill
+           << new TribladeSkill << new EightDiagramSkill << new RenwangShieldSkill
            << new VineSkill << new SilverLionSkill;
 
     addMetaObject<TribladeSkillCard>();

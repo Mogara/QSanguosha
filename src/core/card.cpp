@@ -824,8 +824,8 @@ QString DummyCard::toString(bool hidden) const{
     return "$" + subcardString();
 }
 
-ArraySummonCard::ArraySummonCard(const QString &name) 
-    : SkillCard() 
+ArraySummonCard::ArraySummonCard(const QString &name)
+    : SkillCard()
 {
     setObjectName(name);
     target_fixed = true;

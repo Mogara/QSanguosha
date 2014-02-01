@@ -154,7 +154,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->hasShownSkill(this)) 
+        if (player->hasShownSkill(this))
             return true;
         else {
             player->tag["paoxiao_use"] = data;
@@ -236,7 +236,7 @@ public:
                 return true;
             }
         }
-            
+
         return false;
     }
 
@@ -370,7 +370,7 @@ public:
             if (card != NULL && card->getSkillName() == "longdan")
                 return QStringList(objectName());
         }
-        
+
         return QStringList();
     }
 
@@ -1079,7 +1079,7 @@ public:
     Lieren(): TriggerSkill("lieren") {
         events << Damage;
     }
-    
+
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhurong, QVariant &data, ServerPlayer* &ask_who) const{
         if (TriggerSkill::triggerable(zhurong).isEmpty()) return QStringList();
         DamageStruct damage = data.value<DamageStruct>();

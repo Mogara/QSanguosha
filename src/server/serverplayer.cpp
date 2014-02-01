@@ -1489,7 +1489,7 @@ void ServerPlayer::removeGeneral(bool head_general) {
         General::Gender gender = getActualGeneral2()->getGender();
         QString kingdom = getActualGeneral2()->getKingdom();
         general_name = gender == General::Male ? "sujiang" : "sujiangf";
-        
+
         room->setPlayerProperty(this, "actual_general2", general_name);
         room->setPlayerProperty(this, "general2_showed", true);
 
@@ -1501,7 +1501,7 @@ void ServerPlayer::removeGeneral(bool head_general) {
         arg[4] = false;
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral2(this, general_name);
-        
+
         setSkillsPreshowed("d", false);
         disconnectSkillsFromOthers();
 
@@ -1602,7 +1602,7 @@ void ServerPlayer::notifyPreshow() {
     args[0] = S_GAME_EVENT_UPDATE_PRESHOW;
     Json::Value args1;
     foreach(const QString skill, head_skills.keys() + deputy_skills.keys()) {
-        args1[skill.toAscii().constData()] = head_skills.value(skill, false) 
+        args1[skill.toAscii().constData()] = head_skills.value(skill, false)
             || deputy_skills.value(skill, false);
     }
     args[1] = args1;
@@ -1696,7 +1696,7 @@ void ServerPlayer::summonFriends(const ArrayType type) {
                 QString prompt = "FormationSummon";
                 if (!target->willBeFriendWith(this))
                     prompt += "!";
-                if(!room->askForSkillInvoke(target, prompt) 
+                if(!room->askForSkillInvoke(target, prompt)
                    || !target->askForGeneralShow()) {
                    asked = i;
                    break;
@@ -1717,7 +1717,7 @@ void ServerPlayer::summonFriends(const ArrayType type) {
                     QString prompt = "SiegeSummon";
                     if (!target->willBeFriendWith(this))
                         prompt += "!";
-                    if(room->askForSkillInvoke(target, prompt) 
+                    if(room->askForSkillInvoke(target, prompt)
                         && target->askForGeneralShow() && failed)
                         failed = false;
                 }

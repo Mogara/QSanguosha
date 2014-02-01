@@ -109,7 +109,7 @@ class Hengjiang: public MasochismSkill {
 public:
     Hengjiang(): MasochismSkill("hengjiang") {
     }
-    
+
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
         if (TriggerSkill::triggerable(player).isEmpty()) return QStringList();
         ServerPlayer *current = room->getCurrent();
@@ -120,7 +120,7 @@ public:
             trigger_skill << objectName();
         return trigger_skill;
     }
-    
+
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
         ServerPlayer *current = room->getCurrent();
         if (current && player->askForSkillInvoke(objectName(), QVariant::fromValue((PlayerStar)current))){
@@ -216,7 +216,7 @@ public:
         }
         return QStringList();
     }
-    
+
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data) const{
         return room->askForSkillInvoke(target, objectName());
     }
@@ -447,7 +447,7 @@ public:
     virtual int getPriority() const{
         return 10;
     }
-    
+
     virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *target, QVariant &data, ServerPlayer* &ask_who) const {
         if (!target && target->isAlive()) return QStringList();
         if (target->getPhase() == Player::Play)
@@ -464,7 +464,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *sunce, QVariant &data, ServerPlayer* &ask_who) const {
-		if (TriggerSkill::triggerable(sunce).isEmpty()) return QStringList();
+        if (TriggerSkill::triggerable(sunce).isEmpty()) return QStringList();
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from == sunce || use.to.contains(sunce)) {
             if (use.card->isKindOf("Duel") || (use.card->isKindOf("Slash") && use.card->isRed()))
@@ -800,7 +800,7 @@ public:
         if (!damage.card || !(damage.card->isKindOf("Slash") || damage.card->isKindOf("Duel"))) return QStringList();
         if (!player->hasShownOneGeneral()) return QStringList();
         if (player->isFriendWith(damage.to)) return QStringList();
-		if (damage.transfer || damage.chain) return QStringList();
+        if (damage.transfer || damage.chain) return QStringList();
         if (damage.to->getActualGeneral2Name().contains("sujiang")) return QStringList();
         return QStringList(objectName());
     }
@@ -820,17 +820,17 @@ public:
             room->broadcastSkillInvoke(objectName(), 1);
             damage.to->throwAllEquips();
             room->loseHp(damage.to);
-        } 
+        }
         else {
             room->broadcastSkillInvoke(objectName(), 2);
             damage.to->removeGeneral(false);
         }
-        
+
         return true;
     }
 };
 
-FengshiSummon::FengshiSummon() 
+FengshiSummon::FengshiSummon()
     : ArraySummonCard("fengshi")
 {
     m_skillName = "fengshi";
@@ -841,7 +841,7 @@ public:
     Fengshi(): BattleArraySkill("fengshi", BattleArrayType::Siege) {
         events << TargetConfirmed;
     }
-    
+
     virtual bool canPreshow() const{
         return false;
     }
@@ -902,7 +902,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
         int num = player->getPlayerNumWithSameKingdom();
-        
+
         QList<int> guanxing = room->getNCards(num);
 
         LogMessage log;
@@ -1000,7 +1000,7 @@ void HongfaCard::onUse(Room *room, const CardUseStruct &card_use) const{
     }
     room->setPlayerProperty(qunxiong, "hongfa_slash", QString());
 
-    room->moveCardTo(slash, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_USE, qunxiong->objectName())); 
+    room->moveCardTo(slash, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_USE, qunxiong->objectName()));
     //temp way to fix the card movement
 
     room->useCard(use);
@@ -1161,8 +1161,8 @@ const Card *HongfaResponseCard::validate(CardUseStruct &card_use) const{
         use.to << targets.at(qrand() % targets.length());
     }
     room->setPlayerProperty(qunxiong, "hongfa_slash", QString());
-    
-    room->moveCardTo(slash, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_USE, qunxiong->objectName())); 
+
+    room->moveCardTo(slash, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_USE, qunxiong->objectName()));
     //temp way to fix the card movement
 
     card_use = use;
@@ -1480,7 +1480,7 @@ public:
         return 0;
     }
 };
-    
+
 MomentumEquipPackage::MomentumEquipPackage(): Package("momentum_equip", CardPack){
     PeaceSpell *dp = new PeaceSpell;
     dp->setParent(this);

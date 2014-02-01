@@ -54,7 +54,7 @@ public:
 
 class TianfuSummon: public ArraySummonCard {
     Q_OBJECT
-        
+
 public:
     Q_INVOKABLE TianfuSummon();
 };

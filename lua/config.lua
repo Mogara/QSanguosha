@@ -10,7 +10,7 @@ config = {
 		qun = "#8A807A",
 		god = "#96943D",
 	},
-	
+
 	package_names = {
 		"StandardCard",
 		"FormationEquip",
@@ -47,7 +47,7 @@ config = {
 		"杀！神挡杀神！佛挡杀佛！",
 		"你也忒坏了吧？！"
 	},
-	
+
 	robot_names = {
 		"啦啦SLG",
 		"Fsu0413",
@@ -120,7 +120,7 @@ config = {
 
 	basara_ban = {
 	},
-	
+
 	hegemony_ban = {
 	},
 
@@ -181,7 +181,7 @@ config = {
 		"zhugejin+caizhaoji", "simayi+caizhaoji", "shensimayi+caizhaoji", "caozhi+caizhaoji", "shenlvbu+caizhaoji", "bgm_diaochan+caizhaoji",
 		"wis_jiangwei+zhanggongqi", "luxun+zhanggongqi"]]
 	},
-	
+
 	couple_lord = "caocao",
 	couple_couples = {
 		"caopi|caozhi+zhenji",

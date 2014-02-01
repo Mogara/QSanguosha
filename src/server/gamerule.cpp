@@ -67,7 +67,7 @@ GameRule::GameRule(QObject *)
            << PreCardUsed << CardUsed << CardFinished << CardEffected
            << PostHpReduced
            << EventLoseSkill << EventAcquireSkill
-           << AskForPeaches << AskForPeachesDone << Death << BuryVictim 
+           << AskForPeaches << AskForPeachesDone << Death << BuryVictim
            << BeforeGameOverJudge << GameOverJudge
            << SlashHit << SlashEffected << SlashProceed
            << ConfirmDamage << DamageDone << DamageComplete
@@ -259,7 +259,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             } else if (change.to == Player::Play) {
                 room->addPlayerHistory(player, ".");
             } else if (change.to == Player::Start) {
-                if (!player->hasShownGeneral1() 
+                if (!player->hasShownGeneral1()
                     && Sanguosha->getGeneral(room->getTag(player->objectName()).toStringList().first())->isLord())
                     player->showGeneral();
             }

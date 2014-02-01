@@ -12,7 +12,7 @@ function load_translation(file)
 	if type(t) ~= "table" then
 	    error(("file %s is should return a table!"):format(file))
 	end
-	
+
 	sgs.LoadTranslationTable(t)
 end
 

@@ -329,7 +329,7 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
                 if (current && current->hasShownSkill(Sanguosha->getSkill("huoshui")) && !(skill && (skill->isAttachedLordSkill() || hasShownSkill(skill))))
                     return false;
             }
-        } 
+        }
     }
     return head_skills.value(skill_name, false)
            || deputy_skills.value(skill_name, false)
@@ -1208,7 +1208,7 @@ bool Player::isFriendWith(const Player *player) const {
 
     if (this == player)
         return true;
-    
+
     if (role == "careerist" || player->role == "careerist")
         return false;
 
@@ -1271,7 +1271,7 @@ Player *Player::getNextAlive(int n) const{
     Player *next = const_cast<Player *>(this);
     if (!hasAlive) return next;
     for (int i = 0; i < n; i++) {
-        do next = parent()->findChild<Player *>(next->next); 
+        do next = parent()->findChild<Player *>(next->next);
         while (next->isDead());
     }
     return next;

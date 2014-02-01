@@ -61,7 +61,7 @@ public:
         judge.reason = "tuntian";
         judge.who = player;
         room->judge(judge);
-       
+
         return false;
     }
 };
@@ -254,7 +254,7 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
-        
+
         int id = room->askForAG(dengai, dengai->getPile("field"), false, objectName());
         if (player == dengai) {
             LogMessage log;
@@ -268,7 +268,7 @@ public:
 
         return false;
     }
-}; 
+};
 
 HuyuanCard::HuyuanCard() {
     will_throw = false;
@@ -347,9 +347,9 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const{
         return false;
     }
-}; 
+};
 
-HeyiSummon::HeyiSummon() 
+HeyiSummon::HeyiSummon()
     : ArraySummonCard("heyi")
 {
     m_skillName = "heyi";
@@ -360,7 +360,7 @@ public:
     Heyi(): BattleArraySkill("heyi", BattleArrayType::Formation) {
         events << GeneralShown << GeneralHidden << GeneralRemoved << Death;
     }
-    
+
     virtual bool canPreshow() const{
         return false;
     }
@@ -508,7 +508,7 @@ public:
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (player == NULL) return QStringList();
-        
+
         ServerPlayer *jiangwei = room->findPlayerBySkillName(objectName());
         if (!jiangwei) return QStringList();
         if (jiangwei->hasSkill("kanpo") && !jiangwei->ownSkill("kanpo"))
@@ -557,7 +557,7 @@ public:
 
     virtual bool effect(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data) const{
         player->drawCards(2);
-        
+
         return false;
     }
 };
@@ -568,7 +568,7 @@ public:
         events << CardsMoveOneTime;
         frequency = Frequent;
     }
-    
+
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (TriggerSkill::triggerable(player).isEmpty()) return QStringList();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
@@ -613,8 +613,8 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
         choices << "handcards";
     if (!effect.to->hasShownAllGenerals())
         choices << "hidden_general";
-    
-    QString choice = room->askForChoice(effect.from, "shangyi", 
+
+    QString choice = room->askForChoice(effect.from, "shangyi",
                                         choices.join("+"), QVariant::fromValue(effect.to));
 
     if (choice == "handcards") {
@@ -744,7 +744,7 @@ public:
         }
         return false;
     }
-}; 
+};
 
 class Qianhuan: public TriggerSkill {
 public:
@@ -869,7 +869,7 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         ServerPlayer *hetaihou = room->findPlayerBySkillName(objectName());
-            
+
         if (!hetaihou) return false;
 
         Analeptic *analeptic = new Analeptic(Card::NoSuit, 0);
@@ -1094,7 +1094,7 @@ FormationPackage::FormationPackage()
     dengai->addSkill(new TuntianDistance);
     dengai->addSkill(new Jixi);
     dengai->setHeadMaxHpAdjustedValue(-1);
-    dengai->addSkill(new Ziliang); 
+    dengai->addSkill(new Ziliang);
     related_skills.insertMulti("tuntian", "#tuntian-dist");
 
     General *caohong = new General(this, "caohong", "wei"); // WEI 018
@@ -1110,7 +1110,7 @@ FormationPackage::FormationPackage()
     jiangwei->setDeputyMaxHpAdjustedValue(-1);
     jiangwei->addSkill(new Tianfu);
 
-    General *jiangwanfeiyi = new General(this, "jiangwanfeiyi", "shu", 3); // SHU 018 
+    General *jiangwanfeiyi = new General(this, "jiangwanfeiyi", "shu", 3); // SHU 018
     jiangwanfeiyi->addSkill(new Shengxi);
     jiangwanfeiyi->addSkill(new Shoucheng);
 
@@ -1128,13 +1128,13 @@ FormationPackage::FormationPackage()
 
     General *hetaihou = new General(this, "hetaihou", "qun", 3, false); // QUN 020
     hetaihou->addSkill(new Zhendu);
-    hetaihou->addSkill(new Qiluan); 
+    hetaihou->addSkill(new Qiluan);
 
     General *liubei = new General(this, "lord_liubei$", "shu", 4);
     liubei->addSkill(new Zhangwu);
     liubei->addSkill(new Shouyue);
     liubei->addSkill(new Jizhao);
-    
+
     addMetaObject<JixiCard>();
     addMetaObject<JixiSnatchCard>();
     addMetaObject<HuyuanCard>();

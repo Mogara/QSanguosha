@@ -923,7 +923,7 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
             skillCommand = toJsonArray(skill_name, data_str);
         }
 
-        if (!doRequest(player, S_COMMAND_INVOKE_SKILL, skillCommand, true) 
+        if (!doRequest(player, S_COMMAND_INVOKE_SKILL, skillCommand, true)
             || skill_name.endsWith("!")) {
             invoked = false;
         } else {
@@ -1118,7 +1118,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     doAnimate(S_ANIMATE_NULLIFICATION, repliedPlayer->objectName(), to->objectName());
     useCard(CardUseStruct(card, repliedPlayer, QList<ServerPlayer *>()));
 
-    if ((to && to->hasShownOneGeneral() && card->isKindOf("HegNullification") 
+    if ((to && to->hasShownOneGeneral() && card->isKindOf("HegNullification")
          && askForChoice(repliedPlayer, "heg_nullification", "single+all", data) == "all")
         || trick->isKindOf("HegNullification")) {
         setTag("HegNullificationValid", !getTag("HegNullificationValid").toBool());
@@ -1303,7 +1303,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             else
                 broadcastResetCard(getPlayers(), card->getEffectiveId());
         }
-        
+
         QString skill_name = card->showSkill();
         if (!skill_name.isNull() && player->ownSkill(skill_name)
             && !player->hasShownSkill(Sanguosha->getSkill(skill_name)))
@@ -3378,7 +3378,7 @@ void Room::marshal(ServerPlayer *player) {
         if (p->getGeneral2())
             notifyProperty(player, p, "general2");
     }
-    
+
     notifyProperty(player, player, "actual_general1");
     notifyProperty(player, player, "actual_general2");
 
@@ -3433,7 +3433,7 @@ void Room::startGame() {
         if (general1->isCompanionWith(generals.last()))
             addPlayerMark(player, "CompanionEffect");
 
-        int max_hp = general1->getMaxHpHead() 
+        int max_hp = general1->getMaxHpHead()
                      + general2->getMaxHpDeputy();
         if (max_hp % 2 == 1)
             addPlayerMark(player, "HalfMaxHpLeft");

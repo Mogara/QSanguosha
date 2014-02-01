@@ -1037,7 +1037,7 @@ public:
     enum Frequency { Frequent, NotFrequent, Compulsory, Limited, Wake };
     enum Location { Left, Right };
 
-	explicit Skill(const char *name, Frequency frequent = NotFrequent);
+    explicit Skill(const char *name, Frequency frequent = NotFrequent);
 
     bool isLordSkill() const;
     bool isAttachedLordSkill() const;

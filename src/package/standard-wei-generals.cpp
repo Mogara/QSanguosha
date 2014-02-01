@@ -250,7 +250,7 @@ public:
                 return true;
             }
         }
-        else 
+        else
             return true;
         return false;
     }
@@ -684,7 +684,7 @@ public:
         case Player::Start:
         case Player::Finish:
         case Player::NotActive: return QStringList();
-        
+
         case Player::Judge: index = 1 ;break;
         case Player::Draw: index = 2; break;
         case Player::Play: index = 3; break;
@@ -710,7 +710,7 @@ public:
         case Player::PhaseNone: Q_ASSERT(false);
         }
         QString discard_prompt = QString("#qiaobian-%1").arg(index);
-        
+
         if (room->askForDiscard(zhanghe, objectName(), 1, 1, true, false, discard_prompt)) {
             room->broadcastSkillInvoke("qiaobian");
             if (!zhanghe->isAlive()) return false;
@@ -718,7 +718,7 @@ public:
                 return true;
         }
         return false;
-    }    
+    }
     virtual bool effect(TriggerEvent , Room *room, ServerPlayer *zhanghe, QVariant &data) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         int index = 0;
@@ -947,11 +947,11 @@ public:
         ServerPlayer *to = xunyu->tag["jieming_target"].value<ServerPlayer *>();
         xunyu->tag.remove("jieming_target");
         if (to) {
-			int upper = qMin(5, to->getMaxHp());
-			int x = upper - to->getHandcardNum();
-			if (x > 0)
-				to->drawCards(x);
-		}
+            int upper = qMin(5, to->getMaxHp());
+            int x = upper - to->getHandcardNum();
+            if (x > 0)
+                to->drawCards(x);
+        }
     }
 };
 
@@ -1026,10 +1026,10 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
-	    if (player != NULL && player->getPhase() == Player::Finish) {
+        if (player != NULL && player->getPhase() == Player::Finish) {
             ServerPlayer *yuejin = room->findPlayerBySkillName(objectName());
             if (yuejin && player != yuejin && yuejin->canDiscard(yuejin, "h")) {
-		        ask_who = yuejin;
+                ask_who = yuejin;
                 return QStringList(objectName());
             }
         }
@@ -1037,7 +1037,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-		ServerPlayer *yuejin = room->findPlayerBySkillName(objectName());
+        ServerPlayer *yuejin = room->findPlayerBySkillName(objectName());
         if (yuejin && room->askForCard(yuejin, ".Basic", "@xiaoguo", QVariant(), objectName())) {
             room->broadcastSkillInvoke(objectName(), 1);
             return true;
@@ -1089,10 +1089,10 @@ void StandardPackage::addWeiGenerals()
     xiahouyuan->addSkill(new Shensu);
     xiahouyuan->addSkill(new SlashNoDistanceLimitSkill("shensu"));
     related_skills.insertMulti("shensu", "#shensu-slash-ndl");
-    
+
     General *zhanghe = new General(this, "zhanghe", "wei"); // WEI 009
     zhanghe->addSkill(new Qiaobian);
-    
+
     General *xuhuang = new General(this, "xuhuang", "wei"); // WEI 010
     xuhuang->addSkill(new Duanliang);
     xuhuang->addSkill(new DuanliangTargetMod);
@@ -1106,13 +1106,13 @@ void StandardPackage::addWeiGenerals()
 
     General *xunyu = new General(this, "xunyu", "wei", 3); // WEI 013
     xunyu->addSkill(new Quhu);
-    xunyu->addSkill(new Jieming);    
-    
+    xunyu->addSkill(new Jieming);
+
     General *caopi = new General(this, "caopi", "wei", 3); // WEI 014
     caopi->addCompanion("zhenji");
     caopi->addSkill(new Xingshang);
     caopi->addSkill(new Fangzhu);
-    
+
     General *yuejin = new General(this, "yuejin", "wei", 4); // WEI 016
     yuejin->addSkill(new Xiaoguo);
 

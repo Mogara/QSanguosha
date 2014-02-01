@@ -351,7 +351,7 @@ void BattleArraySkill::summonFriends(ServerPlayer *player) const {
     player->summonFriends(array_type);
 }
 
-ArraySummonSkill::ArraySummonSkill(const QString &name) 
+ArraySummonSkill::ArraySummonSkill(const QString &name)
     : ZeroCardViewAsSkill(name)
 {
 
@@ -374,8 +374,8 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const {
         ArrayType type = skill->getArrayType();
         switch (type) {
             case Siege: {
-                if (player->isFriendWith(player->getNextAlive()) 
-                        && player->isFriendWith(player->getLastAlive())) 
+                if (player->isFriendWith(player->getNextAlive())
+                        && player->isFriendWith(player->getLastAlive()))
                     return false;
                 if (!player->isFriendWith(player->getNextAlive()))
                     if (!player->getNextAlive(2)->hasShownOneGeneral())

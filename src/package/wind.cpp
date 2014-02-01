@@ -125,7 +125,7 @@ QGroupBox *GuhuoDialog::createRight() {
 }
 
 QAbstractButton *GuhuoDialog::createButton(const Card *card) {
-    if (card->objectName() == "slash" && map.contains(card->objectName()) 
+    if (card->objectName() == "slash" && map.contains(card->objectName())
         && !map.contains("normal_slash") && objectName() != "gudan") {
         QCommandLinkButton *button = new QCommandLinkButton(Sanguosha->translate("normal_slash"));
         button->setObjectName("normal_slash");

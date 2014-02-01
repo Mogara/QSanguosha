@@ -4,10 +4,10 @@ public:
     void addEvent(TriggerEvent triggerEvent);
     void setViewAsSkill(ViewAsSkill *view_as_skill);
     void setGlobal(bool global);
-	void setCanPreshow(bool preshow);
+    void setCanPreshow(bool preshow);
 
     virtual int getPriority() const;
-    
+
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const;
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
@@ -17,7 +17,7 @@ public:
     LuaFunction on_effect;
 
     int priority;
-	bool can_preshow;
+    bool can_preshow;
 };
 
 class BattleArraySkill: public TriggerSkill {

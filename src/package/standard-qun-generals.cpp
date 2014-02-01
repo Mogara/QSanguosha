@@ -442,7 +442,7 @@ public:
                 log.type = "#WanshaOne";
             }
             room->sendLog(log);
-            
+
             if (dying.who != player && jiaxu != player)
                 room->setPlayerFlag(player, "Global_PreventPeach");
         }
@@ -555,7 +555,7 @@ public:
     Mengjin():TriggerSkill("mengjin") {
         events << SlashMissed;
     }
-    
+
     virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (TriggerSkill::triggerable(player).isEmpty()) return QStringList();
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -713,7 +713,7 @@ public:
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *caiwenji = room->findPlayerBySkillName(objectName());
-        
+
         if (caiwenji != NULL){
             caiwenji->tag["beige_data"] = data;
             bool invoke = room->askForDiscard(caiwenji, objectName(), 1, 1, true, true, "@beige");
@@ -812,7 +812,7 @@ public:
             target->tag["Duanchang"] = QString("head");
         else
             target->tag["Duanchang"] = QString("deputy");
-        
+
         QList<const Skill *> skills = choice == "head_general" ? target->getHeadSkillList()
                                                                : target->getDeputySkillList();
         QStringList detachList;
@@ -824,7 +824,7 @@ public:
 
         if (death.damage->from->isAlive())
             death.damage->from->gainMark("@duanchang");
-        
+
         return false;
     }
 };
@@ -1233,7 +1233,7 @@ public:
             if (panfeng->canDiscard(target, target->getEquip(i)->getEffectiveId()) || panfeng->getEquip(i) == NULL)
                 equiplist << QString::number(i);
         }
-        
+
         int equip_index = room->askForChoice(panfeng, "kuangfu_equip", equiplist.join("+"), QVariant::fromValue((PlayerStar)target)).toInt();
         const Card *card = target->getEquip(equip_index);
         int card_id = card->getEffectiveId();

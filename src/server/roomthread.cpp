@@ -594,7 +594,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                 if (!triggered.contains(skill)) {
                     if (skill->objectName() == "game_rule") {
                         while (room->isPaused()) {}
-                        if (will_trigger.isEmpty() 
+                        if (will_trigger.isEmpty()
                                 || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority()) {
                             will_trigger.append(skill);
                             trigger_who[ask_who].append(skill);
@@ -605,7 +605,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         QStringList triggerSkillList = skill->triggerable(triggerEvent, room, target, data, ask_who);
                         if (!triggerSkillList.isEmpty()) {
                             while (room->isPaused()) {}
-                            if (will_trigger.isEmpty() 
+                            if (will_trigger.isEmpty()
                                     || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority()) {
                                 foreach (QString skill_name, triggerSkillList) {
                                     const TriggerSkill *trskill = Sanguosha->getTriggerSkill(skill_name);
@@ -671,7 +671,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                 }
             }
             if (broken) break;
-            
+
         } while (skills.length() != triggerable_tested.size());
 
         if (target) {

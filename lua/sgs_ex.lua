@@ -9,7 +9,7 @@ function sgs.CreateTriggerSkill(spec)
 	local frequency = spec.frequency or sgs.Skill_NotFrequent
 	local limit_mark = spec.limit_mark or ""
 	local skill
-	
+
 	if spec.is_battle_array then
 		assert(type(spec.battle_array_type) == "number")
 		assert(spec.view_as_skill)
@@ -28,13 +28,13 @@ function sgs.CreateTriggerSkill(spec)
 			skill:addEvent(event)
 		end
 	end
-	
+
 	if spec.relate_to_place then
 		skill:setRelateToPlace(spec.relate_to_place)
 	end
-	
+
 	if (not spec.is_battle_array) and (type(spec.global) == "boolean") then skill:setGlobal(spec.global) end
-	
+
 	if spec.on_effect then
 		skill.on_effect = spec.on_effect
 	end
@@ -44,7 +44,7 @@ function sgs.CreateTriggerSkill(spec)
 	if spec.on_cost then
 		skill.on_cost = spec.on_cost
 	end
-	
+
 	if spec.view_as_skill then
 		skill:setViewAsSkill(spec.view_as_skill)
 	end
@@ -71,7 +71,7 @@ function sgs.CreateFilterSkill(spec)
 	assert(type(spec.view_as) == "function")
 
 	local skill = sgs.LuaFilterSkill(spec.name)
-	
+
 	if spec.relate_to_place then
 		skill:setRelateToPlace(spec.relate_to_place)
 	end
@@ -87,11 +87,11 @@ function sgs.CreateDistanceSkill(spec)
 	assert(type(spec.correct_func) == "function")
 
 	local skill = sgs.LuaDistanceSkill(spec.name)
-	
+
 	if spec.relate_to_place then
 		skill:setRelateToPlace(spec.relate_to_place)
 	end
-	
+
 	skill.correct_func = spec.correct_func
 
 	return skill
@@ -102,11 +102,11 @@ function sgs.CreateMaxCardsSkill(spec)
 	assert(type(spec.extra_func) == "function" or type(spec.fixed_func) == "function")
 
 	local skill = sgs.LuaMaxCardsSkill(spec.name)
-	
+
 	if spec.relate_to_place then
 		skill:setRelateToPlace(spec.relate_to_place)
 	end
-	
+
 	if spec.extra_func then
 		skill.extra_func = spec.extra_func
 	end
@@ -123,7 +123,7 @@ function sgs.CreateTargetModSkill(spec)
 	if spec.pattern then assert(type(spec.pattern) == "string") end
 
 	local skill = sgs.LuaTargetModSkill(spec.name, spec.pattern or "Slash")
-	
+
 	if spec.relate_to_place then
 		skill:setRelateToPlace(spec.relate_to_place)
 	end
@@ -143,42 +143,42 @@ end
 
 function sgs.CreateMasochismSkill(spec)
 	assert(type(spec.on_damaged) == "function")
-	
+
 	spec.events = sgs.Damaged
-	
+
 	function spec.on_effect(skill, event, room, player, data)
 		local damage = data:toDamage()
 		spec.on_damaged(skill, player, damage)
 		return false
 	end
-	
+
 	return sgs.CreateTriggerSkill(spec)
 end
 
 function sgs.CreatePhaseChangeSkill(spec)
 	assert(type(spec.on_phasechange) == "function")
-	
+
 	spec.events = sgs.EventPhaseStart
-	
+
 	function spec.on_effect(skill, event, room, player, data)
 		return spec.on_phasechange(skill, player)
 	end
-	
+
 	return sgs.CreateTriggerSkill(spec)
 end
 
 function sgs.CreateDrawCardsSkill(spec)
 	assert(type(spec.draw_num_func) == "function")
-	
+
 	spec.events = sgs.DrawNCards
-	
+
 	function spec.on_effect(skill, event, room, player, data)
 		local n = data:toInt()
 		local nn = spec.draw_num_func(skill, player, n)
 		data:setValue(nn)
 		return false
 	end
-	
+
 	return sgs.CreateTriggerSkill(spec)
 end
 
@@ -216,7 +216,7 @@ function sgs.CreateSkillCard(spec)
 	if type(spec.can_recast) == "boolean" then
 		card:setCanRecast(spec.can_recast)
 	end
-		
+
 	if type(spec.handling_method) == "number" then
 		card:setHandlingMethod(spec.handling_method)
 	end
@@ -234,16 +234,16 @@ end
 
 function sgs.CreateArraySummonCard(spec)
 	assert(type(spec.name) == "string")
-	
+
 	local card = sgs.LuaSkillCard(spec.name, spec.name)
-	
+
 	card:setTargetFixed(true)
 	card:setHandlingMethod(sgs.Card_MethodNone)
 	card.on_use = function(self, room, source)
 		local skill = sgs.Sanguosha:getTriggerSkill(self:objectName()):toBattleArraySkill()
 		if skill then skill:summonFriends(source) end
 	end
-	
+
 	return card
 end
 
@@ -255,7 +255,7 @@ function sgs.CreateBasicCard(spec)
 	if spec.number then assert(type(spec.number) == "number") end
 	if spec.subtype then assert(type(spec.subtype) == "string") end
 	local card = sgs.LuaBasicCard(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name, spec.subtype or "BasicCard")
-	
+
 	if type(spec.target_fixed) == "boolean" then
 		card:setTargetFixed(spec.target_fixed)
 	end
@@ -380,14 +380,14 @@ function sgs.CreateTrickCard(spec)
 	elseif not spec.class_name then spec.class_name = spec.name end
 	if spec.suit then assert(type(spec.suit) == "number") end
 	if spec.number then assert(type(spec.number) == "number") end
-	
+
 	if spec.subtype then
 		assert(type(spec.subtype) == "string")
 	else
 		local subtype_table = { "TrickCard", "single_target_trick", "delayed_trick", "aoe", "global_effect" }
 		spec.subtype = subtype_table[(spec.subclass or 0) + 1]
 	end
-	
+
 	local card = sgs.LuaTrickCard(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name, spec.subtype)
 
 	if type(spec.target_fixed) == "boolean" then
@@ -437,7 +437,7 @@ function sgs.CreateViewAsSkill(spec)
 	local response_pattern = spec.response_pattern or ""
 
 	local skill = sgs.LuaViewAsSkill(spec.name, response_pattern)
-	
+
 	if spec.relate_to_place then
 		skill:setRelateToPlace(spec.relate_to_place)
 	end
@@ -462,14 +462,14 @@ function sgs.CreateOneCardViewAsSkill(spec)
 	if spec.response_pattern then assert(type(spec.response_pattern) == "string") end
 	local response_pattern = spec.response_pattern or ""
 	if spec.filter_pattern then assert(type(spec.filter_pattern) == "string") end
-	
+
 	local skill = sgs.LuaViewAsSkill(spec.name, response_pattern)
-	
+
 	function skill:view_as(cards)
 		if #cards ~= 1 then return nil end
 		return spec.view_as(self, cards[1])
 	end
-	
+
 	function skill:view_filter(selected, to_select)
 		if #selected >= 1 or to_select:hasFlag("using") then return false end
 		if spec.view_filter then return spec.view_filter(self, to_select) end
@@ -482,11 +482,11 @@ function sgs.CreateOneCardViewAsSkill(spec)
 			return sgs.Sanguosha:matchExpPattern(pat, sgs.Self, to_select)
 		end
 	end
-	
+
 	skill.enabled_at_play = spec.enabled_at_play
 	skill.enabled_at_response = spec.enabled_at_response
 	skill.enabled_at_nullification = spec.enabled_at_nullification
-	
+
 	return skill
 end
 
@@ -494,42 +494,42 @@ function sgs.CreateZeroCardViewAsSkill(spec)
 	assert(type(spec.name) == "string")
 	if spec.response_pattern then assert(type(spec.response_pattern) == "string") end
 	local response_pattern = spec.response_pattern or ""
-	
+
 	local skill = sgs.LuaViewAsSkill(spec.name, response_pattern)
-	
+
 	function skill:view_as(cards)
 		if #cards > 0 then return nil end
 		return spec.view_as(self)
 	end
-	
+
 	function skill:view_filter(selected, to_select)
 		return false
 	end
-	
+
 	skill.enabled_at_play = spec.enabled_at_play
 	skill.enabled_at_response = spec.enabled_at_response
 	skill.enabled_at_nullification = spec.enabled_at_nullification
-	
+
 	return skill
 end
 
 function sgs.CreateArraySummonSkill(spec)
 	assert(type(spec.name) == "string")
 	assert(spec.array_summon_card)
-	
+
 	local skill = sgs.LuaViewAsSkill(spec.name, "")
-	
+
 	function skill:view_as(cards)
 		if #cards > 0 then return nil end
 		local summon = spec.array_summon_card:clone()
 		summon:setShowSkill(spec.name)
 		return summon
 	end
-	
+
 	function skill:view_filter(selected, to_select)
 		return false
 	end
-	
+
 	function skill:enabled_at_play(player)
 		if player:hasFlag("Global_SummonFailed") then return false end
 		local skill = sgs.Sanguosha:getTriggerSkill(self:objectName()):toBattleArraySkill()
@@ -574,7 +574,7 @@ function sgs.CreateArraySummonSkill(spec)
 		end
 		return false
 	end
-	
+
 	return skill
 end
 

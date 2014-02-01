@@ -191,7 +191,7 @@ bool General::isCompanionWith(const QString &name) const {
     Q_ASSERT(other);
     if (kingdom != other->kingdom)
         return false;
-    return lord || other->lord || companions.contains(name) 
+    return lord || other->lord || companions.contains(name)
            || other->companions.contains(objectName());
 }
 
