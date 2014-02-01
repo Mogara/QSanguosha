@@ -16,6 +16,9 @@ function sgs.CreateTriggerSkill(spec)
 		skill = sgs.LuaBattleArraySkill(spec.name, frequency, limit_mark, spec.battle_array_type)
 	else
 		skill = sgs.LuaTriggerSkill(spec.name, frequency, limit_mark)
+		if type(spec.can_preshow) == "boolean" then
+			skill:setCanPreshow(spec.can_preshow)
+		end
 	end
 
 	if type(spec.events) == "number" then

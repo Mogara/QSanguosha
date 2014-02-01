@@ -4,6 +4,7 @@ public:
     void addEvent(TriggerEvent triggerEvent);
     void setViewAsSkill(ViewAsSkill *view_as_skill);
     void setGlobal(bool global);
+	void setCanPreshow(bool preshow);
 
     virtual int getPriority() const;
     
@@ -16,6 +17,7 @@ public:
     LuaFunction on_effect;
 
     int priority;
+	bool can_preshow;
 };
 
 class BattleArraySkill: public TriggerSkill {

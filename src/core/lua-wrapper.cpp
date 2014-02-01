@@ -12,6 +12,13 @@ int LuaTriggerSkill::getPriority() const{
     return priority;
 }
 
+bool LuaTriggerSkill::canPreshow() const{
+    if (this->view_as_skill == NULL)
+        return can_preshow;
+    else
+        return false;
+}
+
 LuaBattleArraySkill::LuaBattleArraySkill(const char *name, Frequency frequency, const char *limit_mark, BattleArrayType::ArrayType array_type)
     : BattleArraySkill(name, array_type)
 {
