@@ -1040,7 +1040,6 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
         room->notifyProperty(player, this, "role");
     } else {
         room->notifyProperty(player, this, "kingdom", "god");
-        room->notifyProperty(player, this, "role", BasaraMode::getMappedRole("god"));
     }
 
     foreach (QString flag, flags)
