@@ -3040,7 +3040,7 @@
         <translation type="obsolete">无技能</translation>
     </message>
     <message>
-        <location filename="../../src/core/player.cpp" line="891"/>
+        <location filename="../../src/core/player.cpp" line="886"/>
         <source>&lt;font color=%1&gt;No skills&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;无技能&lt;/font&gt;</translation>
     </message>
