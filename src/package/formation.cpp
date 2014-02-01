@@ -9,6 +9,7 @@
 #include "room.h"
 #include "ai.h"
 #include "settings.h"
+#include "gamerule.h"
 
 class Tuntian: public TriggerSkill {
 public:
@@ -1226,7 +1227,7 @@ public:
                 kingdom_least = kingdom;
         }
 
-        if (kingdoms[dfowner->getKingdom()] == kingdoms[kingdom_least])
+        if (kingdoms[dfowner->getKingdom()] != kingdoms[kingdom_least])
             return false;
 
         QStringList generals = Sanguosha->getLimitedGeneralNames();
@@ -1255,7 +1256,7 @@ public:
             return false;
 
 
-        if (room->askForSkillInvoke(dfowner, objectName(), data) && room->askForSkillInvoke(player, objectName(), "revive")){
+        if (room->askForSkillInvoke(dfowner, "DragonPhoenix", data) && room->askForSkillInvoke(player, "DragonPhoenix", "revive")){
             QString to_change;
             AI *ai = player->getAI();
             if (ai)
@@ -1279,6 +1280,9 @@ public:
                 room->revivePlayer(player);
                 room->setPlayerProperty(player, "hp", 2);
                 room->setTag(player->objectName(), change_list);
+
+                room->setPlayerProperty(player, "kingdom", dfowner->getKingdom());
+                room->setPlayerProperty(player, "role", BasaraMode::getMappedRole(dfowner->getKingdom()));
             }
         }
         return false;
