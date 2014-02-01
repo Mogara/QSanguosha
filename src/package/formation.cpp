@@ -380,7 +380,7 @@ public:
         }
         foreach (ServerPlayer *p, room->getAllPlayers())
             if (p->getMark("feiying") > 0) {
-                room->setPlayerMark(p, "feiying", 1);
+                room->setPlayerMark(p, "feiying", 0);
                 room->detachSkillFromPlayer(p, "feiying", true);
             }
 

@@ -542,10 +542,10 @@ function sgs.CreateArraySummonSkill(spec)
 					end
 				end
 				if not player:isFriendWith(player:getLastAlive()) then
-					return not plyaer:getLastAlive(2):hasShownOneGeneral()
+					return not player:getLastAlive(2):hasShownOneGeneral()
 				end
 			elseif a_type == sgs.Formation then
-				local n = player:getAliveCount()
+				local n = player:aliveCount()
 				local asked = n
 				for i = 1, n - 1, 1 do
 					local target = player:getNextAlive(i)
@@ -569,8 +569,10 @@ function sgs.CreateArraySummonSkill(spec)
 				end
 			end
 		end
-		return false;
+		return false
 	end
+	
+	return skill
 end
 
 function sgs.CreateWeapon(spec)

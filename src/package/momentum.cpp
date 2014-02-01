@@ -607,7 +607,7 @@ DuanxieCard::DuanxieCard() {
 }
 
 bool DuanxieCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && !to_select->isChained() && to_select != Self;
+    return targets.isEmpty() && to_select != Self;
 }
 
 void DuanxieCard::onEffect(const CardEffectStruct &effect) const{

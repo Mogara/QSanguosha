@@ -128,7 +128,9 @@ local t = {
 
 	["heg_nullification"] = "无懈可击·国",
 	[":heg_nullification"] = "锦囊牌<br />使用时机：1、一张锦囊牌对一个目标生效前；2、一张锦囊牌对一名目标角色生效前。<br />使用目标：此牌。<br />作用效果：1、抵消此牌对该目标产生的效果；2、抵消此牌对该目标角色以及与其势力相同的所有尚未结算的目标角色产生的效果。",
-
+	["heg_nullification:single"] = "对自己使用" ,
+	["heg_nullification:all"] = "对本势力使用" ,
+	
 	["indulgence"] = "乐不思蜀",
 	[":indulgence"] = "延时锦囊牌<br />使用时机：出牌阶段。<br />使用目标：一名其他角色。<br />作用效果：目标角色进行判定，若结果不为<font color=\"red\">♥</font>，目标角色跳过出牌阶段。",
 
