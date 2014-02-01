@@ -750,6 +750,10 @@ public:
         frequency = Compulsory;
     }
 
+    virtual bool canPreshow() const {
+        return false;
+    }
+
     virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &ask_who) const {
         if (PhaseChangeSkill::triggerable(player).isEmpty()) return QStringList();
         if (player->getPhase() == Player::Finish) {

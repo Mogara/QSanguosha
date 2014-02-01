@@ -538,7 +538,7 @@ void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name) 
 }
 
 void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool is_equip, bool acquire_only) {
-    if (!player->hasSkill(skill_name, true)) return;
+    if (!(player->getAcquiredSkills().contains(skill_name) || player->ownSkill(skill_name))) return;
 
     if (player->getAcquiredSkills().contains(skill_name))
         player->detachSkill(skill_name);

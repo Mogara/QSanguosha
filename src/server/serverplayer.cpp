@@ -1507,7 +1507,7 @@ void ServerPlayer::removeGeneral(bool head_general) {
 
         foreach (const Skill *skill, getDeputySkillList())
             if (skill)
-                room->detachSkillFromPlayer(this, skill->objectName(), true);
+                room->detachSkillFromPlayer(this, skill->objectName());
 
         if (!hasShownGeneral1()) {
             room->setPlayerProperty(this, "kingdom", kingdom);
@@ -1563,13 +1563,13 @@ void ServerPlayer::sendSkillsToOthers(bool head_skill /* = true */) {
 }
 
 void ServerPlayer::disconnectSkillsFromOthers(bool head_skill /* = true */) {
-    foreach(auto skill, head_skill ? head_skills.keys() : deputy_skills.keys()) {
+    foreach(QString skill, head_skill ? head_skills.keys() : deputy_skills.keys()) {
         room->getThread()->trigger(EventLoseSkill, room, this, QVariant(skill));
         Json::Value args;
         args[0] = QSanProtocol::S_GAME_EVENT_DETACH_SKILL;
         args[1] = toJsonString(objectName());
         args[2] = toJsonString(skill);
-        foreach(auto p, room->getOtherPlayers(this, true))
+        foreach(ServerPlayer *p, room->getOtherPlayers(this, true))
             room->doNotify(p, QSanProtocol::S_COMMAND_LOG_EVENT, args);
     }
 
