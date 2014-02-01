@@ -201,7 +201,7 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
 
     client->disconnectFromHost();
 
-    static QString link = "http://github.com/YanGuam/QSanguoshaForDadao";
+    static QString link = "https://github.com/Fsu0413/QSanguosha-For-Hegemony";
     QString text = tr("Server version is %1, client version is %2 <br/>").arg(server_version).arg(client_version);
     if (server_version > client_version)
         text.append(tr("Your client version is older than the server's, please update it <br/>"));
@@ -415,7 +415,7 @@ void MainWindow::on_actionAbout_triggered() {
     const char *time = __TIME__;
     content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
 
-    QString project_url = "https://github.com/YanGuam/QSanguoshaForDadao";
+    QString project_url = "https://github.com/Fsu0413/QSanguosha-For-Hegemony";
     content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
     QString forum_url = "http://qsanguosha.org";
