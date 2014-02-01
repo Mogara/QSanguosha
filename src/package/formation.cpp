@@ -18,8 +18,9 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
-        if (TriggerSkill::triggerable(player).isEmpty() || player->getPhase() != Player::NotActive) return QStringList();
-        if (triggerEvent == CardsMoveOneTime) {
+        ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
+        if (!dengai || dengai->getPhase() != Player::NotActive) return QStringList();
+        if (triggerEvent == CardsMoveOneTime && !TriggerSkill::triggerable(player).isEmpty()) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.from == player && (move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip))
                 && !(move.to == player && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip))) {
@@ -34,10 +35,11 @@ public:
                 player->addToPile("field", judge->card->getEffectiveId());
 
             if (room->getTag("judge").toInt() == 0){
-                int postponed_tuntian = player->getMark("tuntian_postpone");
+                int postponed_tuntian = dengai->getMark("tuntian_postpone");
 
                 if (postponed_tuntian > 0){
-                    player->removeMark("tuntian_postpone");
+                    dengai->removeMark("tuntian_postpone");
+                    ask_who = dengai;
                     return QStringList(objectName());
                 }
             }
@@ -55,11 +57,13 @@ public:
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
+        if (!dengai) return false;
         JudgeStruct judge;
         judge.pattern = ".|heart";
         judge.good = false;
         judge.reason = "tuntian";
-        judge.who = player;
+        judge.who = dengai;
         room->judge(judge);
 
         return false;
@@ -1216,12 +1220,13 @@ public:
         foreach (QString kingdom, kingdoms.keys()){
             if (kingdom == "god")
                 continue;
-
+            if (kingdoms[kingdom] == 0)
+                continue;
             if (kingdoms[kingdom] < kingdoms[kingdom_least])
                 kingdom_least = kingdom;
         }
 
-        if (dfowner->getKingdom() != kingdom_least)
+        if (kingdoms[dfowner->getKingdom()] == kingdoms[kingdom_least])
             return false;
 
         QStringList generals = Sanguosha->getLimitedGeneralNames();
