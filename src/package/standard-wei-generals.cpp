@@ -937,16 +937,32 @@ public:
         ServerPlayer *target = room->askForPlayerChosen(player, room->getAlivePlayers(), objectName(), "jieming-invoke", true, true);
         if (target != NULL){
             room->broadcastSkillInvoke(objectName(), (target == player ? 2 : 1));
-            player->tag["jieming_target"] = QVariant::fromValue(target);
+
+            QStringList target_list = player->tag["jieming_target"].toStringList();
+            target_list.append(target->objectName());
+            player->tag["jieming_target"] = target_list;
+
             return true;
         }
         return false;
     }
 
     virtual void onDamaged(ServerPlayer *xunyu, const DamageStruct &damage) const{
-        ServerPlayer *to = xunyu->tag["jieming_target"].value<ServerPlayer *>();
-        xunyu->tag.remove("jieming_target");
-        if (to) {
+        QStringList target_list = xunyu->tag["jieming_target"].toStringList();
+        QString target_name = target_list.last();
+        target_list.removeLast();
+        xunyu->tag["jieming_target"] = target_list;
+
+        ServerPlayer *to = NULL;
+
+        foreach (ServerPlayer *p, xunyu->getRoom()->getPlayers()){
+            if (p->objectName() == target_name){
+                to = p;
+                break;
+            }
+        }
+
+        if (to != NULL) {
             int upper = qMin(5, to->getMaxHp());
             int x = upper - to->getHandcardNum();
             if (x > 0)

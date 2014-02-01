@@ -206,6 +206,7 @@ void LijianCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets)
 
     Duel *duel = new Duel(Card::NoSuit, 0);
     duel->setSkillName(QString("_%1").arg(getSkillName()));
+    duel->setCancelable(false);
     if (!from->isCardLimited(duel, Card::MethodUse) && !from->isProhibited(to, duel))
         room->useCard(CardUseStruct(duel, from, to));
     else

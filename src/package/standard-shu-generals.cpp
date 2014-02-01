@@ -1302,42 +1302,70 @@ public:
         events << HpRecover;
     }
 
+    virtual bool canPreshow() const{
+        return true;
+    }
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who).contains(objectName())){
+
+            QList<ServerPlayer *> friends;
+            foreach (ServerPlayer *p, room->getOtherPlayers(player)){
+                if (p->isFriendWith(player))
+                    friends << p;
+            }
+
+            if (friends.isEmpty()) return QStringList();
+
+            QStringList trigger_list;
+            RecoverStruct recover = data.value<RecoverStruct>();
+            for (int i = 1; i <= recover.recover; i++){
+                trigger_list << objectName();
+            }
+
+            return trigger_list;
+        }
+        return QStringList();
+    }
+
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         QList<ServerPlayer *> friends;
-        foreach (ServerPlayer *p, room->getOtherPlayers(player))
-            if (player->isFriendWith(p) && player->willBeFriendWith(p))
+        foreach (ServerPlayer *p, room->getOtherPlayers(player)){
+            if (p->isFriendWith(player))
                 friends << p;
+        }
+
         if (friends.isEmpty()) return false;
         ServerPlayer *target = room->askForPlayerChosen(player, friends, objectName(), "shushen-invoke", true, true);
         if (target != NULL){
             room->broadcastSkillInvoke(objectName());
-            player->tag["shushen_invoke"] = QVariant::fromValue(target);
+
+            QStringList target_list = player->tag["shushen_target"].toStringList();
+            target_list.append(target->objectName());
+            player->tag["shushen_target"] = target_list;
+
             return true;
         }
         return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        RecoverStruct recover_struct = data.value<RecoverStruct>();
+        QStringList target_list = player->tag["shushen_target"].toStringList();
+        QString target_name = target_list.last();
+        target_list.removeLast();
+        player->tag["shushen_target"] = target_list;
 
-        doShushen(player);
-        int recover = recover_struct.recover;
-        for (int i = 1; i < recover; i++) {
-            if (cost(triggerEvent, room, player, data)){
-                doShushen(player);
-            }
-            else
+        ServerPlayer *to = NULL;
+
+        foreach (ServerPlayer *p, player->getRoom()->getPlayers()){
+            if (p->objectName() == target_name){
+                to = p;
                 break;
+            }
         }
+        if (to != NULL)
+            to->drawCards(1);
         return false;
-    }
-
-private:
-    void doShushen(ServerPlayer *ganfuren) const{
-        ServerPlayer *target = ganfuren->tag["shushen_invoke"].value<ServerPlayer *>();
-        if (target != NULL)
-            target->drawCards(1);
-        ganfuren->tag.remove("shushen_invoke");
     }
 };
 

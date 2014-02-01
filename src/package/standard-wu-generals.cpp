@@ -961,6 +961,10 @@ public:
         view_as_skill = new HaoshiViewAsSkill;
     }
 
+    virtual bool canPreshow() const {
+        return true;
+    }
+
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (player->askForSkillInvoke("haoshi")){
             room->broadcastSkillInvoke("haoshi");
