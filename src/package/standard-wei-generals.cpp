@@ -392,10 +392,6 @@ public:
         frequency = Frequent;
     }
 
-    virtual bool canPreshow() const {
-        return false;
-    }
-
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start)
             return TriggerSkill::triggerable(player);

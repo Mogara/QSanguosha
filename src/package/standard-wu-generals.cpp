@@ -494,9 +494,6 @@ public:
 Yinghun::Yinghun(): PhaseChangeSkill("yinghun") {
 }
 
-bool Yinghun::canPreshow() const {
-    return false;
-}
 
 QStringList Yinghun::triggerable(TriggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who) const{
     return (!PhaseChangeSkill::triggerable(target).isEmpty()
@@ -906,7 +903,6 @@ public:
     }
 
     virtual void onSkillDetached(Room *room, ServerPlayer *player) const{
-        player->clearOnePrivatePile("buqu");
         if (player->getHp() <= 0)
             room->enterDying(player, NULL);
     }
