@@ -35,6 +35,7 @@ CommonTranslationTable = {
 	["EquipCard"] = "装备牌",
 	["ndtrick"] = "非延时锦囊",
 	["nothing"] = "不发动",
+	["handcards"] = "手牌",
 
 	["spade_char"] = "♠",
 	["club_char"] = "♣",

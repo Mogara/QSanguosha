@@ -1245,19 +1245,18 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const {
 
     QString choice = room->askForChoice(effect.from, objectName(), 
                                         choices.join("+"), QVariant::fromValue(effect.to));
+    LogMessage log;
+    log.type = "#KnownBothView";
+    log.from = effect.from;
+    log.to << effect.to;
+    log.arg = choice;
+    foreach (ServerPlayer *p, room->getOtherPlayers(effect.from, true)){
+        room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+    }
 
     if (choice == "handcards")
         room->showAllCards(effect.to, effect.from);
     else {
-        LogMessage log;
-        log.type = "#knownbothview";
-        log.from = effect.from;
-        log.to << effect.to;
-        log.arg = choice;
-        foreach (ServerPlayer *p, room->getOtherPlayers(effect.from, true)){
-            room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
-        }
-
         QStringList list = room->getTag(effect.to->objectName()).toStringList();
         list.removeAt(choice == "head_general"? 1 : 0);
         foreach (QString name, list) {
@@ -1266,6 +1265,7 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const {
             log.from = effect.from;
             log.to << effect.to;
             log.arg = name;
+            log.arg2 = choice;
             room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
         }
         Json::Value arg(Json::arrayValue);
