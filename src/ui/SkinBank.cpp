@@ -814,12 +814,14 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         layout->m_markTextArea.tryParse(playerConfig["markTextArea"]);
         tryParse(playerConfig["roleComboBoxPos"], layout->m_roleComboBoxPos);
 
-        tryParse(playerConfig["avatarArea"], layout->m_avatarArea);
-        if (!tryParse(playerConfig["secondaryAvatarArea"], layout->m_secondaryAvatarArea)) {
-            QRect ava = layout->m_avatarArea;
-            layout->m_secondaryAvatarArea = QRect(ava.left() - 1 - ava.width(),
-                                                  ava.top(), ava.width(),
-                                                  ava.height());
+        tryParse(playerConfig["secondaryAvatarArea"], layout->m_secondaryAvatarArea);
+        if (!tryParse(playerConfig["avatarArea"], layout->m_avatarArea)) {
+            if (i) {
+                QRect ava = layout->m_secondaryAvatarArea;
+                layout->m_avatarArea = QRect(ava.left() - 1 - ava.width(),
+                                                      ava.top(), ava.width(),
+                                                      ava.height());
+            }
         }
         tryParse(playerConfig["circleArea"], layout->m_circleArea);
         tryParse(playerConfig["avatarImageType"], layout->m_avatarSize);

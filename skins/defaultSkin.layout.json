@@ -152,11 +152,11 @@
     "secondaryAvatarImageType": 2,
     "primaryAvatarImageType": 2,
     "circleImageType": 1,
-    "avatarArea": [129, -3, 128, 174],
+    "secondaryAvatarArea": [129, -3, 128, 174],
     "circleArea": [8, 10, 134, 134],
     "avatarNameArea": [8, 28, 30, 89],
-    "focusFrameArea": [129, -3, 128, 174],
-	"focusFrameArea2": [0, -3, 128, 174],
+    "focusFrameArea": [0, -3, 128, 174],
+	"focusFrameArea2": [129, -3, 128, 174],
     "secondaryAvatarNameArea": [84, 36, 18, 36],
     // "avatarNameFont": ["@simli", [12, 12, 1], 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
     // "smallAvatarNameFont": ["@simli", [12, 12, 1], 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
@@ -188,8 +188,8 @@
     "actionedIconRegion": [80, 37, 52, 21],
     "saveMeIconRegion": [5, 15, 122, 50],
     "votesIconRegion": [50, 52, 50, 50],
-    "chainedIconRegion": [119, 77, 138, 19],
-	"chainedIconRegion2": [-12, 77, 138, 19],
+    "chainedIconRegion": [-12, 77, 138, 19],
+	"chainedIconRegion2": [119, 77, 138, 19],
     "deathIconRegion": ["center", "center", [0, 0], [157, 102]],
     "drankMaskColor": [250, 0, 0, 115],
     "duanchangMaskColor": [255, 255, 255, 128],
@@ -200,8 +200,8 @@
     "trustButtonArea": [69, 136, 36, 35],
     "trustEffectColor": [38, 26, 66],
 	"generalShadowColor": [0, 0, 0, 180],
-	"hiddenMarkRegion": [132, -3, 124, 146],
-	"hiddenMarkRegion2": [4, -3, 124, 146]
+	"hiddenMarkRegion": [4, -3, 124, 146],
+	"hiddenMarkRegion2": [132, -3, 124, 146]
 },
 "skillButton":
 {
