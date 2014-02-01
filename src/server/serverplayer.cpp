@@ -1623,9 +1623,9 @@ bool ServerPlayer::inSiegeRelation(const ServerPlayer *skill_owner, const Server
             || (getLastAlive() == victim && getLastAlive(2) == skill_owner);
 }
 
-QList<const ServerPlayer *> ServerPlayer::getFormation() const {
-    QList<const ServerPlayer *> teammates;
-    teammates << this;
+QList<ServerPlayer *> ServerPlayer::getFormation() const {
+    QList<ServerPlayer *> teammates;
+    teammates << const_cast<ServerPlayer *>(this);
     int n = aliveCount();
     int num = n;
     for (int i = 1; i < n; ++ i) {
@@ -1649,8 +1649,8 @@ QList<const ServerPlayer *> ServerPlayer::getFormation() const {
     return teammates;
 }
 
-bool ServerPlayer::inFormationRalation(const ServerPlayer *teammate) const {
-    QList<const ServerPlayer *> teammates = getFormation();
+bool ServerPlayer::inFormationRalation(ServerPlayer *teammate) const {
+    QList<ServerPlayer *> teammates = getFormation();
     return teammates.contains(teammate);
 }
 

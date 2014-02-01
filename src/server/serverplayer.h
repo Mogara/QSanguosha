@@ -157,8 +157,8 @@ public:
     void notifyPreshow();
     
     bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
-    QList<const ServerPlayer *> getFormation() const;
-    bool inFormationRalation(const ServerPlayer *teammate) const;
+    QList<ServerPlayer *> getFormation() const;
+    bool inFormationRalation(ServerPlayer *teammate) const;
     void summonFriends(const BattleArrayType::ArrayType type);
 
 protected:

@@ -387,7 +387,7 @@ public:
         if (room->alivePlayerCount() < 4) return QStringList();
         ServerPlayer *caohong = room->findPlayerBySkillName(objectName());
         if (!caohong) return QStringList();
-        QList<const ServerPlayer *> teammates = caohong->getFormation();
+        QList<ServerPlayer *> teammates = caohong->getFormation();
         foreach (ServerPlayer *p, room->getOtherPlayers(caohong))
             if (teammates.contains(p)) {
                 room->setPlayerMark(p, "feiying", 1);
