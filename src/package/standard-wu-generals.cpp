@@ -456,13 +456,7 @@ public:
         if (!TriggerSkill::triggerable(sunshangxiang).contains(objectName())) return QStringList();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.from == sunshangxiang && move.from_places.contains(Player::PlaceEquip)) {
-            QStringList trigger_list;
-            for (int i = 0; i < move.card_ids.size(); i++) {
-                if (move.from_places[i] == Player::PlaceEquip){
-                    trigger_list << objectName();
-                }
-            }
-            return trigger_list;
+            return QStringList(objectName());
         }
         return QStringList();
     }
