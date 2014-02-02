@@ -32,7 +32,7 @@ public:
             }
         } else if (triggerEvent == FinishJudge) {
             JudgeStar judge = data.value<JudgeStar>();
-            if (judge->reason == "tuntian" && judge->isGood())
+            if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceTable)
                 player->addToPile("field", judge->card->getEffectiveId());
 
             if (room->getTag("judge").toInt() == 0){

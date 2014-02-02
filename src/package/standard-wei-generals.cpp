@@ -297,7 +297,8 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *guojia, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
-        guojia->obtainCard(judge->card);
+        if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceTable)
+            guojia->obtainCard(judge->card);
         return false;
     }
 };

@@ -1123,7 +1123,7 @@ public:
         } else if (triggerEvent == SlashEffected){
             if (TriggerSkill::triggerable(player).isEmpty()) return QStringList();
             if (player->getMark("xiangle") > 0) {
-                player->removeMark("xiangle");
+                player->setMark("xiangle", 0);
                 if (!player->hasShownSkill(this))
                     return QStringList();
                 SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -1133,7 +1133,7 @@ public:
                 log.to << player;
                 log.arg = objectName();
                 room->sendLog(log);
-                player->removeMark("xiangle");
+                return QStringList(objectName());
             }
         } else if (triggerEvent == CardFinished){
             CardUseStruct use = data.value<CardUseStruct>();
@@ -1145,6 +1145,8 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (triggerEvent == SlashEffected)
+            return true;
         bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
         if (invoke){
             room->broadcastSkillInvoke(objectName());
@@ -1154,6 +1156,9 @@ public:
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *liushan, QVariant &data) const{
+        if (triggerEvent == SlashEffected)
+            return true;
+
         CardUseStruct use = data.value<CardUseStruct>();
         room->notifySkillInvoked(liushan, objectName());
 
