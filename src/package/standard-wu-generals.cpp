@@ -476,7 +476,6 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *sunshangxiang, QVariant &data) const{
-        room->broadcastSkillInvoke(objectName());
         sunshangxiang->drawCards(2);
 
         return false;
