@@ -327,6 +327,10 @@ public:
         view_as_skill = new ShuangxiongViewAsSkill;
     }
 
+    virtual bool canPreshow() const{
+        return true;
+    }
+
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (triggerEvent == EventPhaseStart) {
             if (player->getPhase() == Player::Start) {

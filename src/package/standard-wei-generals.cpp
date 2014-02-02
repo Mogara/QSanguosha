@@ -190,6 +190,10 @@ public:
         view_as_skill = new TuxiViewAsSkill;
     }
 
+    virtual bool canPreshow() const{
+        return true;
+    }
+
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (PhaseChangeSkill::triggerable(player).isEmpty())
             return QStringList();
@@ -527,6 +531,9 @@ public:
         view_as_skill = new ShensuViewAsSkill;
     }
 
+    virtual bool canPreshow() const{
+        return true;
+    }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *xiahouyuan, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (TriggerSkill::triggerable(xiahouyuan).isEmpty())

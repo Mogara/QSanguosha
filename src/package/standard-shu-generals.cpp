@@ -168,8 +168,7 @@ public:
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         foreach (ServerPlayer *p, use.to.toSet()){
-            if (p->getMark("Equips_of_Others_Nullified_to_You") == 0)
-                p->addQinggangTag(use.card);
+            p->addQinggangTag(use.card);
         }
         return false;
     }
@@ -625,20 +624,14 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
-        return (player != NULL) ? QStringList(objectName()) : QStringList();
-    }
+        if (player != NULL){
+            DamageStruct damage = data.value<DamageStruct>();
+            ServerPlayer *weiyan = damage.from;
+            if (weiyan)
+                weiyan->tag["InvokeKuanggu"] = weiyan->distanceTo(damage.to) <= 1;
+        }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        return true;
-    }
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        ServerPlayer *weiyan = damage.from;
-        if (weiyan)
-            weiyan->tag["InvokeKuanggu"] = weiyan->distanceTo(damage.to) <= 1;
-
-        return false;
+        return QStringList();
     }
 };
 
@@ -1218,6 +1211,10 @@ public:
     Fangquan(): TriggerSkill("fangquan") {
         events << EventPhaseChanging;
         view_as_skill = new FangquanViewAsSkill;
+    }
+
+    virtual bool canPreshow() const{
+        return true;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
