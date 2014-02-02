@@ -59,7 +59,6 @@ return {
 	["illustrator:jiangqin"] = "天空之城",
 	["shangyi"] = "尚义",
 	[":shangyi"] = "<font color=\"green\"><b>出牌阶段限一次，</b></font>你可以令一名其他角色观看你的手牌，你选择一项：1.观看其手牌，若如此做，你可以弃置其中一张黑色牌；2.观看其暗置的武将牌。",
-	["#shangyiview"] = "%from 观看了 %to 的武将牌。" ,
 	["niaoxiang"] = "鸟翔",
 	[":niaoxiang"] = "<font color=\"purple\"><b>阵法技，</b></font>在你为围攻角色的围攻关系中，每当围攻角色使用【杀】指定被围攻角色为目标后，该围攻角色将抵消此【杀】需使用的【闪】的数量改为2。",
 	["NiaoxiangSummon"] = "鸟翔",
