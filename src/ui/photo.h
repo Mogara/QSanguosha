@@ -30,6 +30,8 @@ public:
     void tremble();
     void showSkillName(const QString &skill_name);
 
+    void updateSmallAvatar();
+
     enum FrameType {
         S_FRAME_PLAYING,
         S_FRAME_RESPONDING,

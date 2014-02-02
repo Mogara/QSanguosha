@@ -179,6 +179,38 @@ const ClientPlayer *Photo::getPlayer() const{
 }
 
 void Photo::speak(const QString &content) {
+    //@@todo: complete it
+}
+
+void Photo::updateSmallAvatar() {
+    updateAvatar();
+    const General *general = NULL;
+    if (m_player) general = m_player->getGeneral2();
+    if (general != NULL) {
+        QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
+        smallAvatarIcon = paintByMask(smallAvatarIcon);
+        _paintPixmap(_m_smallAvatarIcon, _m_layout->m_secondaryAvatarArea,
+                     smallAvatarIcon, _getAvatarParent());
+        _paintPixmap(_m_circleItem, _m_layout->m_circleArea,
+                     QString(QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE).arg(_m_layout->m_circleImageSize),
+                     _getAvatarParent());
+        _m_secondaryAvatarArea->setToolTip(m_player->getDeputySkillDescription());
+        QString name = Sanguosha->translate("&" + general->objectName());
+        if (name.startsWith("&"))
+            name = Sanguosha->translate(general->objectName());
+        _m_layout->m_smallAvatarNameFont.paintText(_m_secondaryAvatarNameItem,
+                                                   _m_layout->m_secondaryAvatarNameArea,
+                                                   Qt::AlignLeft | Qt::AlignJustify, name);
+        _m_smallAvatarIcon->show();
+    } else {
+        _clearPixmap(_m_smallAvatarIcon);
+        _clearPixmap(_m_circleItem);
+        _m_layout->m_smallAvatarNameFont.paintText(_m_secondaryAvatarNameItem,
+                                                   _m_layout->m_secondaryAvatarNameArea,
+                                                   Qt::AlignLeft | Qt::AlignJustify, QString());
+        _m_secondaryAvatarArea->setToolTip(QString());
+    }
+    _adjustComponentZValues();
 }
 
 QList<CardItem *> Photo::removeCardItems(const QList<int> &card_ids, Player::Place place) {

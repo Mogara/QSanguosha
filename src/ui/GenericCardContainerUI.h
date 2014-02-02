@@ -84,7 +84,7 @@ public:
 
 public slots:
     void updateAvatar();
-    void updateSmallAvatar();
+    virtual void updateSmallAvatar();
     void updatePhase();
     void updateHp();
     void updateHandcardNum();
