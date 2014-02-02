@@ -684,6 +684,7 @@ public:
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const {
         if (player->askForSkillInvoke(objectName())){
             room->broadcastSkillInvoke(objectName());
+            room->doLightbox("$HengzhengAnimate", 4000);
             return true;
         }
 
@@ -721,6 +722,7 @@ public:
 
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const {
         room->broadcastSkillInvoke(objectName());
+        room->doLightbox("$BaolingAnimate", 3000);
         return true;
     }
 
