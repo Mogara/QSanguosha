@@ -68,23 +68,16 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
-        return (player != NULL && player->isAlive()) ? QStringList(objectName()) : QStringList();
-    }
-
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        return true;
-    }
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        CardStar card = NULL;
-        if (triggerEvent == PreCardUsed)
-            card = data.value<CardUseStruct>().card;
-        else
-            card = data.value<CardResponseStruct>().m_card;
-        if (card->isKindOf("Slash") && player->getPhase() == Player::Play)
-            player->setFlags("KejiSlashInPlayPhase");
-
-        return false;
+        if (player != NULL && player->isAlive()){
+            CardStar card = NULL;
+            if (triggerEvent == PreCardUsed)
+                card = data.value<CardUseStruct>().card;
+            else
+                card = data.value<CardResponseStruct>().m_card;
+            if (card->isKindOf("Slash") && player->getPhase() == Player::Play)
+                player->setFlags("KejiSlashInPlayPhase");
+        }
+        return QStringList();
     }
 };
 

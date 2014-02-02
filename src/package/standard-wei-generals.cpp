@@ -230,53 +230,42 @@ public:
         else if (triggerEvent == PreCardUsed){
             if (player != NULL && player->isAlive() && player->hasFlag("luoyi")){
                 CardUseStruct use = data.value<CardUseStruct>();
-                return (use.card != NULL && (use.card->isKindOf("Slash") || use.card->isKindOf("Duel"))) ? QStringList(objectName()) : QStringList();
+                if (use.card != NULL && (use.card->isKindOf("Slash") || use.card->isKindOf("Duel"))){
+                    room->setCardFlag(use.card, objectName());
+                }
             }
-            return QStringList();
         }
         else if (triggerEvent == DamageCaused){
             if (player != NULL && player->isAlive() && player->hasFlag("luoyi")){
                 DamageStruct damage = data.value<DamageStruct>();
-                return (damage.card != NULL && damage.card->hasFlag("luoyi") && !damage.chain && !damage.transfer && damage.by_user) ? QStringList(objectName()) : QStringList();
+                if(damage.card != NULL && damage.card->hasFlag("luoyi") && !damage.chain && !damage.transfer && damage.by_user){
+                    LogMessage log;
+                    log.type = "#LuoyiBuff";
+                    log.from = player;
+                    log.to << damage.to;
+                    log.arg = QString::number(damage.damage);
+                    log.arg2 = QString::number(++damage.damage);
+                    room->sendLog(log);
+
+                    room->broadcastSkillInvoke(objectName(), 1);
+                    data = QVariant::fromValue(damage);
+                }
             }
         }
         return QStringList();
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == DrawNCards){
-            if (player->askForSkillInvoke(objectName())){
-                room->broadcastSkillInvoke(objectName(), 2);
-                return true;
-            }
-        }
-        else
+        if (player->askForSkillInvoke(objectName())){
+            room->broadcastSkillInvoke(objectName(), 2);
             return true;
+        }
         return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == DrawNCards){
-            player->setFlags(objectName());
-            data = data.toInt() - 1;
-        }
-        else if (triggerEvent == PreCardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            room->setCardFlag(use.card, objectName());
-        }
-        else if (triggerEvent == DamageCaused){
-            DamageStruct damage = data.value<DamageStruct>();
-            LogMessage log;
-            log.type = "#LuoyiBuff";
-            log.from = player;
-            log.to << damage.to;
-            log.arg = QString::number(damage.damage);
-            log.arg2 = QString::number(++damage.damage);
-            room->sendLog(log);
-
-            room->broadcastSkillInvoke(objectName(), 1);
-            data = QVariant::fromValue(damage);
-        }
+        player->setFlags(objectName());
+        data = data.toInt() - 1;
         return false;
     }
 };
