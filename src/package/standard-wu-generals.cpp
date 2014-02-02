@@ -453,15 +453,16 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *sunshangxiang, QVariant &data, ServerPlayer * &ask_who) const{
-        if (TriggerSkill::triggerable(sunshangxiang).isEmpty()) return QStringList();
+        if (!TriggerSkill::triggerable(sunshangxiang).contains(objectName())) return QStringList();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.from == sunshangxiang && move.from_places.contains(Player::PlaceEquip)) {
+            QStringList trigger_list;
             for (int i = 0; i < move.card_ids.size(); i++) {
-                if (!sunshangxiang->isAlive())
-                    return QStringList();
-                if (move.from_places[i] == Player::PlaceEquip)
-                    return QStringList(objectName());
+                if (move.from_places[i] == Player::PlaceEquip){
+                    trigger_list << objectName();
+                }
             }
+            return trigger_list;
         }
         return QStringList();
     }
