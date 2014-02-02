@@ -2270,7 +2270,12 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                     reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
             } else if (newStatus == Client::Playing)
                 reason = CardUseStruct::CARD_USE_REASON_PLAY;
-            button->setEnabled(vsSkill->isAvailable(Self, reason, pattern) && !pattern.endsWith("!"));
+            if (vsSkill->isAvailable(Self, reason, pattern) && !pattern.endsWith("!"))
+                button->setEnabled(true);
+            else if(!Sanguosha->getTriggerSkill(vsSkill->objectName()))
+                button->setEnabled(false);
+            else if(button->isDown() || button->getState() == QSanButton::S_STATE_UP)
+                button->setState(QSanButton::S_STATE_DISABLED);
         } else {
             const Skill *skill = button->getSkill();
             if (skill->getFrequency() == Skill::Wake)
@@ -2339,7 +2344,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                             const ViewAsSkill *vsSkill = button->getViewAsSkill();
                             if (vsSkill != NULL && vsSkill->objectName() == skill_name
                                 && vsSkill->isAvailable(Self, reason, pattern))
-                                button->click();
+                                button->setState(QSanButton::S_STATE_DOWN);
                                 break;
                         }
                     }
