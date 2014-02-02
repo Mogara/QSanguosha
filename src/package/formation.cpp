@@ -621,6 +621,14 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
 
     QString choice = room->askForChoice(effect.from, "shangyi",
                                         choices.join("+"), QVariant::fromValue(effect.to));
+    LogMessage log;
+    log.type = "#KnownBothView";
+    log.from = effect.from;
+    log.to << effect.to;
+    log.arg = choice;
+    foreach (ServerPlayer *p, room->getOtherPlayers(effect.from, true)){
+        room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+    }
 
     if (choice == "handcards") {
         QList<int> blacks;
@@ -634,14 +642,6 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
         effect.from->tag.remove("shangyi");
         room->throwCard(to_discard, effect.to, effect.from);
     } else {
-        LogMessage log;
-        log.type = "#shangyiview";
-        log.from = effect.from;
-        log.to << effect.to;
-        foreach (ServerPlayer *p, room->getOtherPlayers(effect.from, true)){
-            room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
-        }
-
         QStringList list = room->getTag(effect.to->objectName()).toStringList();
         foreach (QString name, list) {
             LogMessage log;

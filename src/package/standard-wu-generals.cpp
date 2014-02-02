@@ -68,23 +68,16 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
-        return (player != NULL && player->isAlive()) ? QStringList(objectName()) : QStringList();
-    }
-
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        return true;
-    }
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        CardStar card = NULL;
-        if (triggerEvent == PreCardUsed)
-            card = data.value<CardUseStruct>().card;
-        else
-            card = data.value<CardResponseStruct>().m_card;
-        if (card->isKindOf("Slash") && player->getPhase() == Player::Play)
-            player->setFlags("KejiSlashInPlayPhase");
-
-        return false;
+        if (player != NULL && player->isAlive()){
+            CardStar card = NULL;
+            if (triggerEvent == PreCardUsed)
+                card = data.value<CardUseStruct>().card;
+            else
+                card = data.value<CardResponseStruct>().m_card;
+            if (card->isKindOf("Slash") && player->getPhase() == Player::Play)
+                player->setFlags("KejiSlashInPlayPhase");
+        }
+        return QStringList();
     }
 };
 
@@ -460,15 +453,10 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *sunshangxiang, QVariant &data, ServerPlayer * &ask_who) const{
-        if (TriggerSkill::triggerable(sunshangxiang).isEmpty()) return QStringList();
+        if (!TriggerSkill::triggerable(sunshangxiang).contains(objectName())) return QStringList();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.from == sunshangxiang && move.from_places.contains(Player::PlaceEquip)) {
-            for (int i = 0; i < move.card_ids.size(); i++) {
-                if (!sunshangxiang->isAlive())
-                    return QStringList();
-                if (move.from_places[i] == Player::PlaceEquip)
-                    return QStringList(objectName());
-            }
+            return QStringList(objectName());
         }
         return QStringList();
     }
@@ -483,7 +471,6 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *sunshangxiang, QVariant &data) const{
-        room->broadcastSkillInvoke(objectName());
         sunshangxiang->drawCards(2);
 
         return false;

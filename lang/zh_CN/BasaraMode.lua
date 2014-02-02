@@ -11,6 +11,7 @@ return
 	["show_head_general"] = "展示主将",
 	["show_deputy_general"] = "展示副将",
 	["show_both_generals"] = "展示双将",
+	["hidden_general"] = "暗将",
 	["head"] = "主将",
 	["deputy"] = "副将",
 	["head_general"] = "主将",
