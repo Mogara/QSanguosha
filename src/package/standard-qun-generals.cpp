@@ -342,7 +342,7 @@ public:
             if (triggerEvent == FinishJudge) {
                 JudgeStar judge = data.value<JudgeStar>();
                 if (judge->reason == "shuangxiong"){
-                    if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceTable)
+                    if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
                         player->obtainCard(judge->card);
                     judge->pattern = judge->card->isRed() ? "red" : "black";
                 }
