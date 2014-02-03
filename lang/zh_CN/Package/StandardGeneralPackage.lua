@@ -6,12 +6,11 @@ return {
 	-- Test
 	["test"] = "测试",
 	
-	["#sujiang"] = "金童",
-	["sujiang"] = "素将",
-	["illustrator:sujiang"] = "巴萨小马",
-	["#sujiangf"] = "玉女",
-	["sujiangf"] = "素将(女)",
-	["&sujiangf"] = "素将",
-	["illustrator:sujiangf"] = "巴萨小马",
+	["#sujiang"] = "我是男的",
+	["sujiang"] = "士兵",
+	["illustrator:sujiang"] = "官方",
+	["#sujiangf"] = "我是女的",
+	["sujiangf"] = "士兵",
+	["illustrator:sujiangf"] = "官方",
 }
 
