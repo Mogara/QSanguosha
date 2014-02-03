@@ -327,6 +327,10 @@ public:
         view_as_skill = new ShuangxiongViewAsSkill;
     }
 
+    virtual bool canPreshow() const{
+        return true;
+    }
+
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (triggerEvent == EventPhaseStart) {
             if (player->getPhase() == Player::Start) {
@@ -338,7 +342,8 @@ public:
             if (triggerEvent == FinishJudge) {
                 JudgeStar judge = data.value<JudgeStar>();
                 if (judge->reason == "shuangxiong"){
-                    player->obtainCard(judge->card);
+                    if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
+                        player->obtainCard(judge->card);
                     judge->pattern = judge->card->isRed() ? "red" : "black";
                 }
                 return QStringList();
@@ -388,38 +393,20 @@ public:
 class Wansha: public TriggerSkill {
 public:
     Wansha(): TriggerSkill("wansha") {
-        events << AskForPeaches << EventPhaseChanging << Death;
+        events << Dying;
         frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
-        if (player == NULL) return QStringList();
-        if (triggerEvent == AskForPeaches) {
-            ServerPlayer *jiaxu = room->getCurrent();
-            if (!jiaxu || TriggerSkill::triggerable(jiaxu).isEmpty() || jiaxu->getPhase() == Player::NotActive)
-                return QStringList();
-            if (player == room->getAllPlayers().first()) {
-                ask_who = jiaxu;
+        if (TriggerSkill::triggerable(player).contains(objectName())){
+            if (room->getCurrent() == player && player->isAlive() && player->getPhase() != Player::NotActive){
                 return QStringList(objectName());
-            }
-        } else {
-            if (triggerEvent == EventPhaseChanging) {
-                PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-                if (change.to != Player::NotActive) return QStringList();
-            } else if (triggerEvent == Death) {
-                DeathStruct death = data.value<DeathStruct>();
-                if (death.who != player || death.who->getPhase() == Player::NotActive) return QStringList();
-            }
-            foreach (ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->hasFlag("Global_PreventPeach"))
-                    room->setPlayerFlag(p, "-Global_PreventPeach");
             }
         }
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
-        ServerPlayer *player = room->getCurrent();
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (player->hasShownSkill(this) || player->askForSkillInvoke(objectName())){
             room->broadcastSkillInvoke(objectName());
             return true;
@@ -427,10 +414,9 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == AskForPeaches) {
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *jiaxu, QVariant &data) const{
+        if (triggerEvent == Dying) {
             DyingStruct dying = data.value<DyingStruct>();
-            ServerPlayer *jiaxu = room->getCurrent();
             room->notifySkillInvoked(jiaxu, objectName());
 
             LogMessage log;
@@ -443,9 +429,6 @@ public:
                 log.type = "#WanshaOne";
             }
             room->sendLog(log);
-
-            if (dying.who != player && jiaxu != player)
-                room->setPlayerFlag(player, "Global_PreventPeach");
         }
         return false;
     }

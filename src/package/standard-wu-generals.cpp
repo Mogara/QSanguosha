@@ -273,6 +273,10 @@ public:
         view_as_skill = new LiuliViewAsSkill;
     }
 
+    virtual bool canPreshow() const{
+        return true;
+    }
+
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *daqiao, QVariant &data, ServerPlayer * &ask_who) const {
         if (TriggerSkill::triggerable(daqiao).isEmpty()) return QStringList();
         CardUseStruct use = data.value<CardUseStruct>();
@@ -576,6 +580,10 @@ public:
     Tianxiang(): TriggerSkill("tianxiang") {
         events << DamageInflicted;
         view_as_skill = new TianxiangViewAsSkill;
+    }
+
+    virtual bool canPreshow() const{
+        return true;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *xiaoqiao, QVariant &data, ServerPlayer* &ask_who) const{

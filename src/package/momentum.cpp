@@ -684,6 +684,7 @@ public:
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const {
         if (player->askForSkillInvoke(objectName())){
             room->broadcastSkillInvoke(objectName());
+            room->doLightbox("$HengzhengAnimate", 4000);
             return true;
         }
 
@@ -721,6 +722,7 @@ public:
 
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const {
         room->broadcastSkillInvoke(objectName());
+        room->doLightbox("$BaolingAnimate", 3000);
         return true;
     }
 
@@ -798,7 +800,7 @@ public:
         DamageStruct damage = data.value<DamageStruct>();
         if (!damage.to || !damage.to->hasShownOneGeneral()) return QStringList();
         if (!damage.card || !(damage.card->isKindOf("Slash") || damage.card->isKindOf("Duel"))) return QStringList();
-        if (!player->hasShownOneGeneral()) return QStringList();
+        if (!player->hasShownOneGeneral() || player->getPhase() != Player::Play) return QStringList();
         if (player->isFriendWith(damage.to)) return QStringList();
         if (damage.transfer || damage.chain) return QStringList();
         if (damage.to->getActualGeneral2Name().contains("sujiang")) return QStringList();

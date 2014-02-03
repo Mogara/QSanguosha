@@ -283,7 +283,20 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
     Room *room = target->getRoom();
     RoomThread *thread = room->getThread();
     if (movable) {
-        QList<ServerPlayer *> players = room->getOtherPlayers(target);
+        QList<ServerPlayer *> players;
+        QList<ServerPlayer *> count_players = room->getPlayers();
+        ServerPlayer *starter = target;
+        int index = count_players.indexOf(starter);
+        for (int i = index; i < count_players.length(); i++) {
+            if (count_players[i]->isAlive())
+                players << count_players[i];
+        }
+        
+        for (int i = 0; i < index; i++) {
+            if (count_players[i]->isAlive())
+                players << count_players[i];
+        }
+        
         players << target;
         ServerPlayer *p = NULL;
 

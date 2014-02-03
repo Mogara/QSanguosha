@@ -73,8 +73,10 @@ return {
 	["illustrator:dongzhuo"] = "巴萨小马",
 	["hengzheng"] = "横征",
 	[":hengzheng"] = "摸牌阶段开始时，若你的体力值为1或你没有手牌，你可以放弃摸牌，获得每名其他角色区域里的一张牌。",
+	["$HengzhengAnimate"] = "image=image/animate/hengzheng.png" ,
 	["baoling"] = "暴凌",
 	[":baoling"] = "<font color=\"lime\"><b>主将技，</b></font><font color=\"blue\"><b>锁定技，</b></font>出牌阶段结束时，若此武将牌已明置且你有副将，你移除副将的武将牌，然后加3点体力上限，再回复3点体力，最后获得“崩坏”。",
+	["$BaolingAnimate"] = "image=image/animate/baoling.png" ,
 	["benghuai"] = "崩坏",
 	[":benghuai"] = "<font color=\"blue\"><b>锁定技，</b></font>结束阶段开始时，若你不是体力值最小的角色，你选择一项：1.失去1点体力；2.减1点体力上限。",
 

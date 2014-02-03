@@ -374,6 +374,13 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             const Card *peach = NULL;
 
             try {
+                ServerPlayer *jiayu = room->getCurrent();
+                if (jiayu->hasSkill("wansha") && jiayu->hasShownSkill(Sanguosha->getSkill("wansha")) 
+                        && jiayu->isAlive() && jiayu->getPhase() != Player::NotActive){
+                    if (player != dying.who && player != jiayu)
+                        room->setPlayerFlag(player, "Global_PreventPeach");
+                }
+
                 while (dying.who->getHp() <= 0) {
                     peach = NULL;
                     if (dying.who->isAlive())
@@ -709,6 +716,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                     }
                 }
             }
+            if (!getWinner(player).isNull())
+                room->getThread()->trigger(GameOverJudge, room, player);
          }
     default:
             break;

@@ -190,6 +190,10 @@ public:
         view_as_skill = new TuxiViewAsSkill;
     }
 
+    virtual bool canPreshow() const{
+        return true;
+    }
+
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (PhaseChangeSkill::triggerable(player).isEmpty())
             return QStringList();
@@ -293,7 +297,8 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *guojia, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
-        guojia->obtainCard(judge->card);
+        if (room->getCardPlace(judge->card->getEffectiveId()) != Player::PlaceHand)
+            guojia->obtainCard(judge->card);
         return false;
     }
 };
@@ -527,6 +532,9 @@ public:
         view_as_skill = new ShensuViewAsSkill;
     }
 
+    virtual bool canPreshow() const{
+        return true;
+    }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *xiahouyuan, QVariant &data, ServerPlayer * &ask_who /* = NULL */) const{
         if (TriggerSkill::triggerable(xiahouyuan).isEmpty())
