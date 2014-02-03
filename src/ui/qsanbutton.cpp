@@ -267,6 +267,14 @@ void QSanSkillButton::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         QSanButton::mousePressEvent(event);
 }
 
+void QSanSkillButton::setEnabled(bool enabled) {
+    if (!enabled && _m_skill->canPreshow() && _m_skill->inherits("TriggerSkill") && _m_viewAsSkill) {
+        setState(S_STATE_DISABLED);
+        update();
+    } else
+        QSanButton::setEnabled(enabled);
+}
+
 void QSanInvokeSkillButton::_repaint() {
     for (int i = 0; i < (int)S_NUM_BUTTON_STATES; i++) {
         _m_bgPixmap[i] = G_ROOM_SKIN.getSkillButtonPixmap((ButtonState)i, _m_skillType, _m_enumWidth);

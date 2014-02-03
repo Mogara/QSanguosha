@@ -27,7 +27,7 @@ public:
     void setRect(QRect rect);
     virtual QRectF boundingRect() const;
     bool insideButton(QPointF pos) const;
-    void setEnabled(bool enabled);
+    virtual void setEnabled(bool enabled);
     bool isDown();
 
 public slots:
@@ -77,6 +77,7 @@ public:
     QSanSkillButton(QGraphicsItem *parent = NULL);
     inline const ViewAsSkill *getViewAsSkill() const{ return _m_viewAsSkill; }
     void setState(ButtonState state);
+    void setEnabled(bool enabled);
 
 protected:
     //methods

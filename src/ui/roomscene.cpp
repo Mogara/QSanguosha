@@ -2270,12 +2270,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                     reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
             } else if (newStatus == Client::Playing)
                 reason = CardUseStruct::CARD_USE_REASON_PLAY;
-            if (vsSkill->isAvailable(Self, reason, pattern) && !pattern.endsWith("!"))
-                button->setEnabled(true);
-            else if(!Sanguosha->getTriggerSkill(vsSkill->objectName()))
-                button->setEnabled(false);
-            else if(button->isDown() || button->getState() == QSanButton::S_STATE_UP)
-                button->setState(QSanButton::S_STATE_DISABLED);
+            button->setEnabled(vsSkill->isAvailable(Self, reason, pattern) && !pattern.endsWith("!"));
         } else {
             const Skill *skill = button->getSkill();
             if (skill->getFrequency() == Skill::Wake)
