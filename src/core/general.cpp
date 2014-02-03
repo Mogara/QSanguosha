@@ -156,8 +156,10 @@ QString General::getSkillDescription(bool include_name, bool yellow) const{
         QString color_str = Sanguosha->getKingdomColor(kingdom).name();
         QString name = QString("<font color=%1><b>%2</b></font>     ").arg(color_str).arg(Sanguosha->translate(objectName()));
         name.prepend(QString("<img src='image/kingdom/icon/%1.png'/>    ").arg(kingdom));
-        for (int i = 0; i < double_max_hp; i++)
-            name.append("<img src='image/system/magatamas/5.png' height = 12/>");
+        for (int i = 1; i < double_max_hp; i += 2)
+            name.append("<img src='image/system/magatamas/3.png' height = 12/>");
+        if (double_max_hp % 2)
+            name.append("<img src='image/system/magatamas/half.png' height = 12/>");
         if (!companions.isEmpty()) {
             name.append("<br/> <br/>");
             name.append(QString("<font color=%1><b>%2</b></font>     ").arg(color_str).arg(tr("Companions:")));
