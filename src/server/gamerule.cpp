@@ -716,6 +716,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                     }
                 }
             }
+            if (!getWinner(player).isNull())
+                room->getThread()->trigger(GameOverJudge, room, player);
          }
     default:
             break;
