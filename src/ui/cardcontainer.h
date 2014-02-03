@@ -52,11 +52,13 @@ protected:
 private:
     QList<CardItem *> items;
     CloseButton *close_button;
-    QPixmap _m_background;
+    QPixmap _m_background_top, _m_background_middle, _m_background_bottom;
+    QGraphicsPixmapItem *_m_background, *_m_background_seat;
     QStack<QList<CardItem *> > items_stack;
     QStack<bool> retained_stack;
 
     void _addCardItem(int card_id, const QPointF &pos);
+    void _repaint();
 
 private slots:
     void grabItem();

@@ -11,7 +11,7 @@
 
 QSanButton::QSanButton(QGraphicsItem *parent): QGraphicsObject(parent)
 {
-    _m_state = S_STATE_DISABLED;
+    _m_state = S_STATE_UP;
     _m_style = S_STYLE_PUSH;
     _m_mouseEntered = false;
     setSize(QSize(0, 0));
@@ -22,7 +22,7 @@ QSanButton::QSanButton(QGraphicsItem *parent): QGraphicsObject(parent)
 QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent)
     : QGraphicsObject(parent)
 {
-    _m_state = S_STATE_DISABLED;
+    _m_state = S_STATE_UP;
     _m_style = S_STYLE_PUSH;
     _m_groupName = groupName;
     _m_buttonName = buttonName;

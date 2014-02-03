@@ -69,6 +69,12 @@ const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE = "generalCircleImage-
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_MASK = "generalCircleMask-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK = "hiddenMark";
 
+//CardContainer
+const char *QSanRoomSkin::S_SKIN_KEY_CARD_CONTAINER_TOP = "cardContainerTop";
+const char *QSanRoomSkin::S_SKIN_KEY_CARD_CONTAINER_MIDDLE = "cardContainerMiddle";
+const char *QSanRoomSkin::S_SKIN_KEY_CARD_CONTAINER_BOTTOM = "cardContainerBottom";
+const char *QSanRoomSkin::S_SKIN_KEY_CARD_CONTAINER_FRAME = "cardContainerFrame";
+
 // Animations
 const char *QSanRoomSkin::S_SKIN_KEY_ANIMATIONS = "preloads";
 

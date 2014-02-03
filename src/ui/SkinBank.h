@@ -363,6 +363,13 @@ public:
     static const char *S_SKIN_KEY_GENERAL_CIRCLE_MASK;
     static const char *S_SKIN_KEY_HIDDEN_MARK;
 
+    //CardContainer
+
+    static const char *S_SKIN_KEY_CARD_CONTAINER_TOP;
+    static const char *S_SKIN_KEY_CARD_CONTAINER_MIDDLE;
+    static const char *S_SKIN_KEY_CARD_CONTAINER_BOTTOM;
+    static const char *S_SKIN_KEY_CARD_CONTAINER_FRAME;
+
     // Animations
     static const char *S_SKIN_KEY_ANIMATIONS;
 

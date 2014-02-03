@@ -900,7 +900,7 @@ void RoomScene::updateTable() {
     m_tablePile->setSize(qMax((int)tableRect.width() - _m_roomLayout->m_discardPilePadding * 2,
                          _m_roomLayout->m_discardPileMinWidth), _m_commonLayout->m_cardNormalHeight);
     m_tablePile->adjustCards();
-    card_container->setPos(m_tableCenterPos);
+    card_container->setPos(m_tableCenterPos - QPointF(card_container->boundingRect().width() / 2, card_container->boundingRect().height() / 2));
     guanxing_box->setPos(m_tableCenterPos);
     prompt_box->setPos(m_tableCenterPos);
     pausing_text->setPos(m_tableCenterPos - pausing_text->boundingRect().center());
@@ -3345,6 +3345,7 @@ void RoomScene::speak() {
 void RoomScene::fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids) {
     bringToFront(card_container);
     card_container->fillCards(card_ids, disabled_ids);
+    card_container->setPos(m_tableCenterPos - QPointF(card_container->boundingRect().width() / 2, card_container->boundingRect().height() / 2));
     card_container->show();
 }
 
