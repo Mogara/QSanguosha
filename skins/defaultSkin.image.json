@@ -45,6 +45,10 @@
 "photoExtraSkillBg": "image/system/huashenSkillBg.png",
 "dashboardExtraSkillBg": "image/system/huashenSkillBg.png",
 "hiddenMark": "image/system/hidden-mark.png",
+"cardContainerTop": "image/system/card-container/top.png",
+"cardContainerMiddle": "image/system/card-container/middle.jpg",
+"cardContainerBottom": "image/system/card-container/bottom.jpg",
+"cardContainerFrame": "image/system/card-container/frame.jpg",
 
 // general default directories
 "playerGeneralIcon-default-0": ["image/generals/avatar/%1.png", [71, 28, 134, 134], [40, 40]],

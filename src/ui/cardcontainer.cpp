@@ -3,30 +3,89 @@
 #include "carditem.h"
 #include "engine.h"
 #include "client.h"
+#include "roomscene.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 
 CardContainer::CardContainer()
-    : _m_background("image/system/card-container.png")
+    : _m_background_top(G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_CARD_CONTAINER_TOP)),
+      _m_background_middle(G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_CARD_CONTAINER_MIDDLE)),
+      _m_background_bottom(G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_CARD_CONTAINER_BOTTOM))
 {
-    setTransform(QTransform::fromTranslate(-_m_background.width() / 2, -_m_background.height() / 2), true);
-    _m_boundingRect = QRectF(QPoint(0, 0), _m_background.size());
+    _m_background = NULL;
+    _m_background_seat = NULL;
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
     close_button = new CloseButton;
     close_button->setParentItem(this);
-    close_button->setPos(517, 21);
     close_button->hide();
     connect(close_button, SIGNAL(clicked()), this, SLOT(clear()));
 }
 
 void CardContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
-    painter->drawPixmap(0, 0, _m_background);
+    
 }
 
 QRectF CardContainer::boundingRect() const{
     return _m_boundingRect;
+}
+
+void CardContainer::_repaint() {
+    int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
+    int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
+    bool one_row = true;
+    const int blank = 3;
+    int width = (card_width + blank) * items.length() - blank + 50;
+    if (width * 1.2 > RoomSceneInstance->sceneRect().width()) {
+        width = (card_width + blank) * (items.length() + 1) - blank + 50;
+        one_row = false;
+    }
+    int middle_height = qMax((one_row ? 1 : 2) * card_height
+        + 70 - _m_background_top.height() - _m_background_bottom.height(), 0);
+
+    _m_boundingRect = QRectF(0, 0, width, _m_background_top.height() + middle_height + _m_background_bottom.height());
+
+    QPixmap pix(width, _m_background_top.height() + middle_height + _m_background_bottom.height());
+    pix.fill(QColor(0, 0, 0, 0));
+    QPainter *painter = new QPainter(&pix);
+    painter->drawPixmap(0, 0, width, _m_background_top.height(), _m_background_top);
+    painter->drawPixmap(0, _m_background_top.height(), width, middle_height, _m_background_middle);
+    painter->drawPixmap(0, _m_background_top.height() + middle_height, width, _m_background_bottom.height(), _m_background_bottom);
+    _m_background = new QGraphicsPixmapItem(this);
+    _m_background->setTransformationMode(Qt::SmoothTransformation);
+    _m_background->setPixmap(pix);
+    _m_background->setParentItem(this);
+
+    int first_row = one_row ? items.length() : (items.length() + 1) / 2;
+
+    _m_background_seat = new QGraphicsPixmapItem(this);
+    _m_background_seat->setTransformationMode(Qt::SmoothTransformation);
+    QPixmap pixmap(width, _m_background_top.height() + middle_height + _m_background_bottom.height());
+    pixmap.fill(QColor(0, 0, 0, 0));
+    QPainter *painter2 = new QPainter(&pixmap);
+
+    for (int i = 0; i < items.length(); ++ i) {
+        int x, y = 0;
+        if (i < first_row) {
+            x = 25 + (card_width + blank) * i;
+            y = 45;
+        } else {
+            if (i % 2 == 1)
+                x = 25 + card_width / 2 + blank / 2 
+                    + (card_width + blank) * (i - first_row);
+            else
+                x = 25 + (card_width + blank) * (i - first_row);
+            y = 45 + card_height + blank;
+        }
+        painter2->drawPixmap(x, y, card_width, card_height, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_CARD_CONTAINER_FRAME));
+    }
+    _m_background_seat->setPixmap(pixmap);
+    _m_background_seat->setParentItem(this);
+    _m_background_seat->setZValue(-999);
+    _m_background->setZValue(-1000);
+    close_button->setPos(width - 30, 0);
+    update();
 }
 
 void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids) {
@@ -48,37 +107,36 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
     if (card_items.isEmpty())
         card_items = _createCards(card_ids);
 
-    int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
-    QPointF pos1(30 + card_width / 2, 40 + G_COMMON_LAYOUT.m_cardNormalHeight / 2);
-    QPointF pos2(30 + card_width / 2, 184 + G_COMMON_LAYOUT.m_cardNormalHeight / 2);
-    int skip = 102;
-    qreal whole_width = skip * 4;
     items.append(card_items);
+    _repaint();
     int n = items.length();
+
+    const int blank = 3;
+    int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
+    int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
+    bool one_row = true;
+    int width = (card_width + blank) * items.length() - blank + 50;
+    if (width * 1.2 > RoomSceneInstance->sceneRect().width()) {
+        width = (card_width + blank) * (items.length() + 1) - blank + 50;
+        one_row = false;
+    }
+    int first_row = one_row ? items.length() : (items.length() + 1) / 2;
 
     for (int i = 0; i < n; i++) {
         QPointF pos;
-        if (n <= 10) {
-            if (i < 5) {
-                pos = pos1;
-                pos.setX(pos.x() + i * skip);
-            } else {
-                pos = pos2;
-                pos.setX(pos.x() + (i - 5) * skip);
-            }
+        if (i < first_row) {
+            pos.setX(25 + (card_width + blank) * i);
+            pos.setY(45);
         } else {
-            int half = (n + 1) / 2;
-            qreal real_skip = whole_width / (half - 1);
-
-            if (i < half) {
-                pos = pos1;
-                pos.setX(pos.x() + i * real_skip);
-            } else {
-                pos = pos2;
-                pos.setX(pos.x() + (i - half) * real_skip);
-            }
+            if (i % 2 == 1)
+                pos.setX(25 + card_width / 2 + blank / 2 
+                    + (card_width + blank) * (i - first_row));
+            else
+                pos.setX(25 + (card_width + blank) * (i - first_row));
+            pos.setY(45 + card_height + blank);
         }
         CardItem *item = items[i];
+        item->resetTransform();
         item->setPos(pos);
         item->setHomePos(pos);
         item->setOpacity(1.0);
@@ -112,6 +170,9 @@ void CardContainer::clear() {
         if (retained && close_button)
             close_button->show();
     } else {
+        //reset pixmap
+        _m_background->setPixmap(QPixmap());
+        _m_background_seat->setPixmap(QPixmap());
         close_button->hide();
         hide();
     }
@@ -159,7 +220,7 @@ void CardContainer::startChoose() {
     close_button->hide();
     foreach (CardItem *item, items) {
         connect(item, SIGNAL(leave_hover()), this, SLOT(grabItem()));
-        connect(item, SIGNAL(double_clicked()), this, SLOT(chooseItem()));
+        connect(item, SIGNAL(clicked()), this, SLOT(chooseItem()));
     }
 }
 
