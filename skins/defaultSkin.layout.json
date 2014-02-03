@@ -131,7 +131,7 @@
     "floatingAreaHeight": 50,
     "handCardNumIconArea": [-126, 126, 30, 18],
     "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
-    "equipAreas": [[5, 44, 149, 25], [5, 75, 149, 25], [5, 107, 149, 25], [5, 137, 149, 25]],
+    "equipAreas": [[5, 14, 147, 24], [5, 48, 147, 24], [5, 83, 147, 24], [5, 116, 147, 24]],
     "equipBorderPos": [-6, -6],
     "equipSelectedOffset": [10, 0],
     "equipImageArea": [0, 0, 149, 25],
