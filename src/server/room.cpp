@@ -5431,9 +5431,10 @@ void Room::provide(const Card *card) {
 }
 
 QList<ServerPlayer *> Room::getLieges(const QString &kingdom, ServerPlayer *lord) const{
+    if (lord && lord->getRole() == "careerist") return QList<ServerPlayer *>();
     QList<ServerPlayer *> lieges;
     foreach (ServerPlayer *player, getAllPlayers()) {
-        if (player != lord && player->getKingdom() == kingdom)
+        if (player != lord && player->getKingdom() == kingdom && player->getRole() != "careerist")
             lieges << player;
     }
 

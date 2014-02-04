@@ -116,7 +116,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
             if (party < 2 || (!Self->getGeneral() && has_lord && party == 2))
                 buttons.at(index)->setEnabled(false);
 
-            if (Self->getGeneral()) {
+            if (!Self->isDead() && Self->getGeneral()) {
                 if (Self->getGeneral()->getKingdom() == general->getKingdom()
                     && Self->getGeneralName() != general->objectName()
                     && !general->isLord() && !buttons.at(index)->isEnabled())
@@ -126,6 +126,9 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
                     || general->isLord())
                     buttons.at(index)->setEnabled(false);
             }
+
+            if (Self->isDead())
+                buttons.at(index)->setEnabled(true);
             index++;
         }
     }

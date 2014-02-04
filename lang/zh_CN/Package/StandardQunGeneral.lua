@@ -79,7 +79,8 @@ return {
 	["duanchang"] = "断肠",
 	[":duanchang"] = "<font color=\"blue\"><b>锁定技，</b></font>当你死亡时，你令杀死你的角色失去你选择的其一张武将牌的技能。",
 	["@duanchang"] = "断肠",
-	["#DuanchangLoseSkills"] = "%from 的“%arg”被触发， %to 失去所有武将技能",
+	["#DuanchangLoseHeadSkills"] = "%from 的“%arg”被触发， %to 失去所有主将技能",
+	["#DuanchangLoseDeputySkills"] = "%from 的“%arg”被触发， %to 失去所有副将技能",
 
 	["#mateng"] = "驰骋西陲",
 	["mateng"] = "马腾",

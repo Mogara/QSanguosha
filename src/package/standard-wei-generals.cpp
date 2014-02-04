@@ -397,9 +397,11 @@ public:
             if (player != NULL && data.value<JudgeStruct *>()->reason == objectName()) {
                 JudgeStar judge = data.value<JudgeStar>();
                 if (judge->reason == objectName()) {
-                    if (judge->isGood()) {
-                        CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, player->objectName(), QString(), judge->reason);
-                        room->moveCardTo(judge->card, player, NULL, Player::PlaceTable, reason, true);
+                    if (judge->isGood()){
+                        if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
+                            CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, player->objectName(), QString(), judge->reason);
+                            room->moveCardTo(judge->card, player, NULL, Player::PlaceTable, reason, true);
+                        }
                         QVariantList luoshen_list = player->tag[objectName()].toList();
                         luoshen_list << judge->card->getEffectiveId();
                         player->tag[objectName()] = luoshen_list;
