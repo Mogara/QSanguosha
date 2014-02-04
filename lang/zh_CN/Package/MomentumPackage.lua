@@ -58,6 +58,9 @@ return {
 	[":sunce_yingzi"] = "摸牌阶段，你可以额外摸一张牌。",
 	["sunce_yinghun"] = "英魂",
 	[":sunce_yinghun"] = "准备阶段开始时，若你已受伤，你可以选择一项：1.令一名其他角色摸X张牌，然后该角色弃置一张牌；2.令一名其他角色摸一张牌，然后该角色弃置X张牌。（X为你已损失的体力值）",
+	["sunce_yinghun-invoke"] = "你可以发动“英魂”<br/> <b>操作提示</b>: 选择一名其他角色→点击确定<br/>",
+	["sunce_yinghun:d1tx"] = "摸一张牌，然后弃置X张牌",
+	["sunce_yinghun:dxt1"] = "摸X张牌，然后弃置一张牌",
 
 	["#chenwudongxi"] = "壮怀激烈",
 	["chenwudongxi"] = "陈武＆董袭",
