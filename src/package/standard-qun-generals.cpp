@@ -837,13 +837,15 @@ void XiongyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
         p->drawCards(3);
     QList<QString> kingdom_list = Sanguosha->getKingdoms();
     bool invoke = true;
-    int n = room->getLieges(source->getKingdom(), NULL).length();
-    foreach (QString kingdom, Sanguosha->getKingdoms()) {
-        if (kingdom == "god") continue;
-        int x = room->getLieges(kingdom, NULL).length();
-        if (x && x < n) {
-            invoke = false;
-            break;
+    if (source->getRole() != "careerist") {
+        int n = room->getLieges(source->getKingdom(), NULL).length();
+        foreach (QString kingdom, Sanguosha->getKingdoms()) {
+            if (kingdom == "god") continue;
+            int x = room->getLieges(kingdom, NULL).length();
+            if (x && x < n) {
+                invoke = false;
+                break;
+            }
         }
     }
     if (invoke && source->isWounded()) {
