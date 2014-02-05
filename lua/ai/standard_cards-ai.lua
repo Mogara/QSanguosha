@@ -970,6 +970,9 @@ sgs.weapon_range.Blade = 3
 sgs.weapon_range.Spear = 3
 sgs.weapon_range.Halberd = 4
 sgs.weapon_range.KylinBow = 5
+sgs.weapon_range.SixSwords = 2
+sgs.weapon_range.DragonPhoenix = 2
+sgs.weapon_range.Triblade = 3
 
 sgs.ai_skill_invoke.DoubleSword = function(self, data)
 	return not self:needKongcheng(self.player, true)

@@ -1,3 +1,45 @@
+
+local jixi_skill = {}
+jixi_skill.name = "jixi"
+table.insert(sgs.ai_skills, jixi_skill)
+jixi_skill.getTurnUseCard = function(self)
+	if self.player:getPile("field"):isEmpty()
+		or (self.player:getHandcardNum() >= self.player:getHp() + 2
+			and self.player:getPile("field"):length() <= self.room:getAlivePlayers():length() / 2 - 1) then
+		return
+	end
+	local can_use = false
+	for i = 0, self.player:getPile("field"):length() - 1, 1 do
+		local snatch = sgs.Sanguosha:getCard(self.player:getPile("field"):at(i))
+		local snatch_str = ("snatch:jixi[%s:%s]=%d"):format(snatch:getSuitString(), snatch:getNumberString(), self.player:getPile("field"):at(i))
+		local jixisnatch = sgs.Card_Parse(snatch_str)
+		assert(jixisnatch)
+
+		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if (self.player:distanceTo(player, 1) <= 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, jixisnatch))
+				and not self.room:isProhibited(self.player, player, jixisnatch) and self:hasTrickEffective(jixisnatch, player) then
+
+				local suit = snatch:getSuitString()
+				local number = snatch:getNumberString()
+				local card_id = snatch:getEffectiveId()
+				local card_str = ("snatch:jixi[%s:%s]=%d%s"):format(suit, number, card_id, "&jixi")
+				local snatch = sgs.Card_Parse(card_str)
+				assert(snatch)
+				return snatch
+			end
+		end
+	end
+end
+
+sgs.ai_view_as.jixi = function(card, player, card_place)
+	local suit = card:getSuitString()
+	local number = card:getNumberString()
+	local card_id = card:getEffectiveId()
+	if card_place == sgs.Player_PlaceSpecial and player:getPileName(card_id) == "field" then
+		return ("snatch:jixi[%s:%s]=%d%s"):format(suit, number, card_id, "&jixi")
+	end
+end
+
 function sgs.ai_skill_invoke.ziliang(self, data)
 	self.ziliang_id = nil
 	local damage = data:toDamage()
@@ -198,6 +240,81 @@ sgs.ai_card_intention.HeyiCard = function(self, card, from, tos)
 	end
 end
 
+function SmartAI:isTiaoxinTarget(enemy)
+	if not enemy then self.room:writeToConsole(debug.traceback()) return end
+	if getCardsNum("Slash", enemy) < 1 and self.player:getHp() > 1 and not self:canHit(self.player, enemy)
+		and not (enemy:hasWeapon("DoubleSword") and self.player:getGender() ~= enemy:getGender())
+		then return true end
+	if sgs.card_lack[enemy:objectName()]["Slash"] == 1
+		or self:needLeiji(self.player, enemy) 
+		or self:getDamagedEffects(self.player, enemy, true)
+		or self:needToLoseHp(self.player, enemy, true)
+		then return true end
+	return false
+end
+
+local tiaoxin_skill = {}
+tiaoxin_skill.name = "tiaoxin"
+table.insert(sgs.ai_skills, tiaoxin_skill)
+tiaoxin_skill.getTurnUseCard = function(self)
+	if self.player:hasUsed("TiaoxinCard") then return end
+	return sgs.Card_Parse("@TiaoxinCard=.&tiaoxin")
+end
+
+sgs.ai_skill_use_func.TiaoxinCard = function(TXCard, use, self)
+	local distance = use.defHorse and 1 or 0
+	local targets = {}
+	for _, enemy in ipairs(self.enemies) do
+		if enemy:distanceTo(self.player, distance) <= enemy:getAttackRange() and not self:doNotDiscard(enemy) and self:isTiaoxinTarget(enemy) then
+			table.insert(targets, enemy)
+		end
+	end
+
+	if #targets == 0 then return end
+
+	sgs.ai_use_priority.TiaoxinCard = 8
+	if not self.player:getArmor() and not self.player:isKongcheng() then
+		for _, card in sgs.qlist(self.player:getCards("h")) do
+			if card:isKindOf("Armor") and self:evaluateArmor(card) > 3 then
+				sgs.ai_use_priority.TiaoxinCard = 5.9
+				break
+			end
+		end
+	end
+
+	if use.to then
+		self:sort(targets, "defenseSlash")
+		use.to:append(targets[1])
+	end
+	use.card = TXCard
+end
+
+sgs.ai_skill_cardask["@tiaoxin-slash"] = function(self, data, pattern, target)
+	if target then
+		for _, slash in ipairs(self:getCards("Slash")) do
+			if self:isFriend(target) and self:slashIsEffective(slash, target) then
+				if self:needLeiji(target, self.player) then return slash:toString() end
+				if self:getDamagedEffects(target, self.player) then return slash:toString() end
+				if self:needToLoseHp(target, self.player, nil, true) then return slash:toString() end
+			end
+			if not self:isFriend(target) and self:slashIsEffective(slash, target)
+				and not self:getDamagedEffects(target, self.player, true) and not self:needLeiji(target, self.player) then
+					return slash:toString()
+			end
+		end
+		for _, slash in ipairs(self:getCards("Slash")) do
+			if not self:isFriend(target) then
+				if not self:needLeiji(target, self.player) and not self:getDamagedEffects(target, self.player, true) then return slash:toString() end
+				if not self:slashIsEffective(slash, target) then return slash:toString() end
+			end
+		end
+	end
+	return "."
+end
+
+sgs.ai_card_intention.TiaoxinCard = 80
+sgs.ai_use_priority.TiaoxinCard = 4
+
 sgs.ai_skill_invoke.tianfu = function(self, data)
 	local jiangwei = data:toPlayer()
 	return jiangwei and self:isFriend(jiangwei)
@@ -359,15 +476,15 @@ local function will_discard_zhendu(self)
 	return -1
 end
 
-sgs.ai_skill_cardask["@zhendu-discard"] = function(self, data)
+sgs.ai_skill_discard.zhendu = function(self)
 	local discard_trend = will_discard_zhendu(self)
 	if discard_trend <= 0 then return "." end
 	if self.player:getHandcardNum() + math.random(1, 100) / 100 >= discard_trend then
 		local cards = sgs.QList2Table(self.player:getHandcards())
 		self:sortByKeepValue(cards)
 		for _, card in ipairs(cards) do
-			if not self:isValuableCard(card, self.player) then return "$" .. card:getEffectiveId() end
+			if not self:isValuableCard(card, self.player) then return {card:getEffectiveId()} end
 		end
 	end
-	return "."
+	return {}
 end

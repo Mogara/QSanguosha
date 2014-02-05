@@ -89,6 +89,14 @@ sgs.ai_use_value.CunsiCard = 10
 sgs.ai_use_priority.CunsiCard = 10.1
 sgs.ai_use_priority.GuixiuCard = sgs.ai_use_priority.CunsiCard
 
+sgs.ai_cardneed.jiang = function(to, card, self)
+	return isCard("Duel", card, to) or (isCard("Slash", card, to) and card:isRed())
+end
+
+sgs.ai_suit_priority.jiang = function(self, card)
+	return (card:isKindOf("Slash") or card:isKindOf("Duel")) and "diamond|heart|club|spade" or "club|spade|diamond|heart"
+end
+
 sgs.ai_skill_choice.yingyang = function(self, choices, data)
 	local pindian = data:toPindian()
 	local reason = pindian.reason
@@ -203,6 +211,31 @@ sgs.ai_skill_invoke.hengzheng = function(self, data)
 		value = value + self:getGuixinValue(player)
 	end
 	return value >= 1.3
+end
+
+sgs.ai_skill_choice.benghuai = function(self, choices, data)
+	for _, friend in ipairs(self.friends) do
+		if friend:hasSkill("tianxiang") and (self.player:getHp() >= 3 or (self:getCardsNum("Peach") + self:getCardsNum("Analeptic") > 0 and self.player:getHp() > 1)) then
+			return "hp"
+		end
+	end
+	if self.player:getMaxHp() >= self.player:getHp() + 2 then
+		if self.player:getMaxHp() > 5 and (self.player:hasSkills("nosmiji|yinghun|juejing|zaiqi|nosshangshi") or self.player:hasSkill("miji") and self:findPlayerToDraw(false)) then
+			local enemy_num = 0
+			for _, p in ipairs(self.enemies) do
+				if p:inMyAttackRange(self.player) and not self:willSkipPlayPhase(p) then enemy_num = enemy_num + 1 end
+			end
+			local ls = sgs.fangquan_effect and self.room:findPlayerBySkillName("fangquan")
+			if ls then
+				sgs.fangquan_effect = false
+				enemy_num = self:getEnemyNumBySeat(ls, self.player, self.player)
+			end
+			if (self:getCardsNum("Peach") + self:getCardsNum("Analeptic") + self.player:getHp() > 1) then return "hp" end
+		end
+		return "maxhp"
+	else
+		return "hp"
+	end
 end
 
 sgs.ai_skill_invoke.chuanxin = function(self, data)
@@ -323,7 +356,3 @@ sgs.ai_choicemade_filter.skillInvoke.fengshi = function(self, player, promptlist
 		end
 	end
 end
-
-sgs.weapon_range.SixSwords = 2
-sgs.weapon_range.DragonPhoenix = 2
-sgs.weapon_range.Triblade = 3
