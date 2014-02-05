@@ -594,7 +594,7 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        target->getRoom()->handleAcquireDetachSkills(target, "sunce_yinghun|sunce_yingzi");
+        target->getRoom()->handleAcquireDetachSkills(target, "sunce_yinghun!|sunce_yingzi!");
         target->setMark("hunshang",1);
         return false;
     }

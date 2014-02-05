@@ -151,7 +151,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(focus_moved(QStringList, QSanProtocol::Countdown)), this, SLOT(moveFocus(QStringList, QSanProtocol::Countdown)));
     connect(ClientInstance, SIGNAL(emotion_set(QString, QString)), this, SLOT(setEmotion(QString, QString)));
     connect(ClientInstance, SIGNAL(skill_invoked(QString, QString)), this, SLOT(showSkillInvocation(QString, QString)));
-    connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer *, QString)), this, SLOT(acquireSkill(const ClientPlayer *, QString)));
+    connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer *, QString, const bool &)), this, SLOT(acquireSkill(const ClientPlayer *, QString, const bool &)));
     connect(ClientInstance, SIGNAL(animated(int, QStringList)), this, SLOT(doAnimation(int, QStringList)));
     connect(ClientInstance, SIGNAL(role_state_changed(QString)), this, SLOT(updateRoles(QString)));
     connect(ClientInstance, SIGNAL(event_received(const Json::Value)), this, SLOT(handleGameEvent(const Json::Value)));
@@ -405,10 +405,11 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
     case S_GAME_EVENT_ACQUIRE_SKILL: {
             QString player_name = arg[1].asCString();
             QString skill_name =  arg[2].asCString();
+            bool head_skill = arg[3].asBool();
 
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
-            player->acquireSkill(skill_name);
-            acquireSkill(player, skill_name);
+            player->acquireSkill(skill_name, head_skill);
+            acquireSkill(player, skill_name, head_skill);
 
             PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
             container->updateAvatarTooltip();
@@ -1951,8 +1952,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move) {
         log_box->appendLog("$TurnOver", move.reason.m_playerId, QStringList(), IntList2StringList(move.card_ids).join("+"));
 }
 
-void RoomScene::addSkillButton(const Skill *skill, bool) {
-    if (skill->inherits("SPConvertSkill")) return;
+void RoomScene::addSkillButton(const Skill *skill, const bool &head) {
     // check duplication
     QSanSkillButton *btn = dashboard->addSkillButton(skill->objectName());
     if (btn == NULL) return;
@@ -1968,20 +1968,19 @@ void RoomScene::addSkillButton(const Skill *skill, bool) {
         dialog->setParent(main_window, Qt::Dialog);
         connect(btn, SIGNAL(skill_activated()), dialog, SLOT(popup()));
         connect(btn, SIGNAL(skill_deactivated()), dialog, SLOT(reject()));
-        if (dialog->objectName() == "qice")
-            connect(dialog, SIGNAL(onButtonClick()), dashboard, SLOT(selectAll()));
+        // design for guhuo and qice. now it is just for DIY.
     }
 
     m_skillButtons.append(btn);
 }
 
-void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_name) {
+void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_name, const bool &head) {
     QString type = "#AcquireSkill";
     QString from_general = player->objectName();
     QString arg = skill_name;
     log_box->appendLog(type, from_general, QStringList(), QString(), arg);
 
-    if (player == Self) addSkillButton(Sanguosha->getSkill(skill_name));
+    if (player == Self) addSkillButton(Sanguosha->getSkill(skill_name), head);
 }
 
 void RoomScene::updateSkillButtons() {

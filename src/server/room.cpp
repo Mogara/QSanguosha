@@ -610,10 +610,15 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 }
             }
         } else {
+            bool head = true;
+            if (skill_name.endsWith("!")) {
+                skill_name.chop(1);
+                head = false;
+            }
             const Skill *skill = Sanguosha->getSkill(skill_name);
             if (!skill) continue;
             if (player->getAcquiredSkills().contains(skill_name)) continue;
-            player->acquireSkill(skill_name);
+            player->acquireSkill(skill_name, head);
 
             if (skill->inherits("TriggerSkill")) {
                 const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
@@ -627,11 +632,12 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QStringList &sk
                 args[0] = QSanProtocol::S_GAME_EVENT_ACQUIRE_SKILL;
                 args[1] = toJsonString(player->objectName());
                 args[2] = toJsonString(skill_name);
+                args[3] = head;
                 doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
                 foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
                     if (!related_skill->isVisible())
-                        acquireSkill(player, related_skill);
+                        acquireSkill(player, related_skill, true, head);
                 }
 
                 triggerList << skill_name;
@@ -4452,11 +4458,11 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
     delete cardChanged;
 }
 
-void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open) {
+void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, const bool &head) {
     QString skill_name = skill->objectName();
     if (player->getAcquiredSkills().contains(skill_name))
         return;
-    player->acquireSkill(skill_name);
+    player->acquireSkill(skill_name, head);
 
     if (skill->inherits("TriggerSkill")) {
         const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
@@ -4471,12 +4477,13 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open) {
             args[0] = QSanProtocol::S_GAME_EVENT_ACQUIRE_SKILL;
             args[1] = toJsonString(player->objectName());
             args[2] = toJsonString(skill_name);
+            args[3] = head;
             doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
         }
 
         foreach (const Skill *related_skill, Sanguosha->getRelatedSkills(skill_name)) {
             if (!related_skill->isVisible())
-                acquireSkill(player, related_skill);
+                acquireSkill(player, related_skill, true, head);
         }
 
         QVariant data = skill_name;
@@ -4484,9 +4491,9 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open) {
     }
 }
 
-void Room::acquireSkill(ServerPlayer *player, const QString &skill_name, bool open) {
+void Room::acquireSkill(ServerPlayer *player, const QString &skill_name, bool open, const bool &head) {
     const Skill *skill = Sanguosha->getSkill(skill_name);
-    if (skill) acquireSkill(player, skill, open);
+    if (skill) acquireSkill(player, skill, open, head);
 }
 
 void Room::setTag(const QString &key, const QVariant &value) {

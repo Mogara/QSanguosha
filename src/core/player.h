@@ -135,7 +135,7 @@ public:
 
     bool isLord() const;
 
-    void acquireSkill(const QString &skill_name);
+    void acquireSkill(const QString &skill_name, const bool &head = true);
     void detachSkill(const QString &skill_name);
     void detachAllSkills();
     virtual void addSkill(const QString &skill_name, bool head_skill = true);
@@ -282,7 +282,7 @@ protected:
     QMap<QString, int> marks;
     QMap<QString, QList<int> > piles;
     QMap<QString, QStringList> pile_open;
-    QSet<QString> acquired_skills;
+    QSet<QString> head_acquired_skills, deputy_acquired_skills;
     QMap<QString, bool> head_skills;
     QMap<QString, bool> deputy_skills;
     QSet<QString> flags;
