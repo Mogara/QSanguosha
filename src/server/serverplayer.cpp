@@ -1332,15 +1332,15 @@ void ServerPlayer::showGeneral(bool head_general) {
         }
     }
 
-    Q_ASSERT(room->getThread() != NULL);
-    room->getThread()->trigger(GeneralShown, room, this, QVariant(head_general));
-
     LogMessage log;
     log.type = "#BasaraReveal";
     log.from = this;
     log.arg  = getGeneralName();
     log.arg2 = getGeneral2Name();
     room->sendLog(log);
+
+    Q_ASSERT(room->getThread() != NULL);
+    room->getThread()->trigger(GeneralShown, room, this, QVariant(head_general));
 }
 
 void ServerPlayer::hideGeneral(bool head_general) {
