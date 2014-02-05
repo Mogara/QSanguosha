@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20140204 (V0.20 Alpha)"
+version = "QSanguosha AI 20140206 (V0.21 Alpha)"
 
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
