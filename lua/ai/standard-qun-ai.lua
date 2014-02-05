@@ -540,7 +540,7 @@ luanwu_skill.name = "luanwu"
 table.insert(sgs.ai_skills, luanwu_skill)
 luanwu_skill.getTurnUseCard = function(self)
 	if self.player:getMark("@chaos") <= 0 then return end
-	if self.room:getMode() == "_mini_13" then return sgs.Card_Parse("@LuanwuCard=.&luanwu") end
+	--if self.room:getMode() == "_mini_13" then return sgs.Card_Parse("@LuanwuCard=.&luanwu") end
 	local good, bad = 0, 0
 	local lord = self.room:getLord()
 	if lord and self.role ~= "rebel" and self:isWeak(lord) then return end
@@ -714,6 +714,9 @@ luanji_skill.getTurnUseCard = function(self)
 
 						local card_str = ("archery_attack:luanji[%s:%s]=%d+%d&luanji"):format("to_be_decided", 0, first_card:getId(), scard:getId())
 						local archeryattack = sgs.Card_Parse(card_str)
+						
+						assert(archeryattack)
+						
 						local dummy_use = { isDummy = true }
 						self:useTrickCard(archeryattack, dummy_use)
 						if dummy_use.card then

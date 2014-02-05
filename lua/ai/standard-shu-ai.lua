@@ -117,6 +117,7 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 			end
 			if #to_give > 0 then
 				use.card = sgs.Card_Parse("@RendeCard=" .. table.concat(to_give, "+"))
+				assert(use.card)
 				if use.to then use.to:append(pangtong) end
 			end
 		end

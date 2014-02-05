@@ -561,6 +561,7 @@ sgs.ai_skill_use.slash = function(self, prompt)
 		local ret = callback(self, nil, nil, target, target2, prompt)
 		if ret == nil or ret == "." then return "." end
 		slash = sgs.Card_Parse(ret)
+		assert(slash)
 		local no_distance = sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, slash) > 50 or self.player:hasFlag("slashNoDistanceLimit")
 		local targets = {}
 		local use = { to = sgs.SPlayerList() }
@@ -1330,6 +1331,7 @@ function turnUse_spear(self, inclusive, skill_name)
 
 	local card_str = ("slash:%s[%s:%s]=%d+%d%s"):format(skill_name, "to_be_decided", 0, card_id1, card_id2, "&Spear")
 	local slash = sgs.Card_Parse(card_str)
+	assert(slash)
 	return slash
 end
 
@@ -1752,6 +1754,7 @@ function SmartAI:useCardDuel(duel, use)
 			if not use.isDummy and self.player:hasSkill("duyi") and targets[i]:getHp() == 1 and self.room:getDrawPile():length() > 0 and not self.player:hasUsed("DuyiCard") then
 				sgs.ai_duyi = { id = self.room:getDrawPile():first(), tg = targets[i] }
 				use.card = sgs.Card_Parse("@DuyiCard=.")
+				assert(use.card) --assertion failed
 				if use.to then use.to = sgs.SPlayerList() end
 				return
 			end

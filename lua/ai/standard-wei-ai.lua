@@ -1183,6 +1183,7 @@ jixi_skill.getTurnUseCard = function(self)
 		local snatch = sgs.Sanguosha:getCard(self.player:getPile("field"):at(i))
 		local snatch_str = ("snatch:jixi[%s:%s]=%d"):format(snatch:getSuitString(), snatch:getNumberString(), self.player:getPile("field"):at(i))
 		local jixisnatch = sgs.Card_Parse(snatch_str)
+		assert(jixisnatch)
 
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 			if (self.player:distanceTo(player, 1) <= 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, jixisnatch))

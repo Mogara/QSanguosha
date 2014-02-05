@@ -1397,6 +1397,7 @@ sgs.ai_skill_use_func.ZhijianCard = function(card, use, self)
 		use.to:append(target)
 	end
 	local zhijian = sgs.Card_Parse("@ZhijianCard=" .. select_equip:getId() .. "&zhijian")
+	assert(zhijian)
 	use.card = zhijian
 end
 

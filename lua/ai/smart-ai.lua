@@ -2092,6 +2092,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 	local null_num = self:getCardsNum("Nullification")
 	local menghuo = self.room:findPlayerBySkillName("huoshou")
 	if null_card then null_card = sgs.Card_Parse(null_card) else return nil end
+	assert(null_card)
 	if self.player:isLocked(null_card) then return nil end
 	if (from and from:isDead()) or (to and to:isDead()) then return nil end
 
@@ -3351,6 +3352,7 @@ local function getSkillViewCard(card, class_name, player, card_place)
 				local skill_card_str = callback(card, player, card_place, class_name)
 				if skill_card_str then
 					local skill_card = sgs.Card_Parse(skill_card_str)
+					assert(skill_card)
 					if skill_card:isKindOf(class_name) and not player:isCardLimited(skill_card, skill_card:getHandlingMethod()) then return skill_card_str end
 				end
 			end
@@ -3520,7 +3522,10 @@ function SmartAI:getCardId(class_name, player, acard)
 		viewas = #viewArr > 0 and viewArr[1]
 		cardid = #cardArr > 0 and cardArr[1]
 		local viewCard
-		if viewas then viewCard = sgs.Card_Parse(viewas) end
+		if viewas then 
+			viewCard = sgs.Card_Parse(viewas) 
+			assert(viewCard)
+		end
 		return (viewas or cardid) or (cardid or viewas)
 	end
 	return cardsView(self, class_name, player)
@@ -3561,6 +3566,7 @@ function SmartAI:getCards(class_name, flag)
 			card_str = getSkillViewCard(card, class_name, player, card_place)
 			if card_str then
 				card_str = sgs.Card_Parse(card_str)
+				assert(card_str)
 				table.insert(cards, card_str)
 			end
 		end
@@ -3569,6 +3575,7 @@ function SmartAI:getCards(class_name, flag)
 	card_str = cardsView(self, class_name, player)
 	if card_str then
 		card_str = sgs.Card_Parse(card_str)
+		assert(card_str)
 		table.insert(cards, card_str)
 	end
 

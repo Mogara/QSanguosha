@@ -161,6 +161,7 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 		local card_id = red_card:getEffectiveId()
 		local card_str = string.format("await_exhausted:duoshi[%s:%d]=%d&duoshi",red_card:getSuitString(), red_card:getNumber(), red_card:getEffectiveId())
 		local await = sgs.Card_Parse(card_str)
+		assert(await)
 		return await
 	end
 end
@@ -521,6 +522,8 @@ qingcheng_skill.getTurnUseCard = function(self, inclusive)
 		local card_id = equipcard:getEffectiveId()
 		local card_str = ("@QingchengCard=" .. card_id .. "&qingcheng")
 		local qc_card = sgs.Card_Parse(card_str)
+		
+		assert(qc_card)
 
 		return qc_card
 	end
