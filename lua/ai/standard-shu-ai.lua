@@ -508,9 +508,7 @@ function sgs.ai_slash_prohibit.xiangle(self, from, to)
 		jink_num = getCardsNum("Jink", from, self.player)
 	end
 	if self.player:getHandcardNum() == 2 then
-		if self.player:hasSkill("beifa") then self.player:setFlags("stack_overflow_xiangle") end
 		local needkongcheng = self:needKongcheng()
-		self.player:setFlags("-stack_overflow_xiangle")
 		if needkongcheng then return slash_num + analeptic_num + jink_num < 2 end
 	end
 	return slash_num + analeptic_num + math.max(jink_num - 1, 0) < 2
@@ -596,25 +594,12 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	self:sort(self.friends_noself, "handcard")
 	self.friends_noself = sgs.reverse(self.friends_noself)
 	for _, target in ipairs(self.friends_noself) do
-		if not target:hasSkill("dawu") and target:hasSkills("yongsi|zhiheng|" .. sgs.priority_skill .. "|shensu")
-			and (not self:willSkipPlayPhase(target) or target:hasSkill("shensu")) then
+		if target:hasSkills("zhiheng|" .. sgs.priority_skill .. "|shensu") and (not self:willSkipPlayPhase(target) or target:hasSkill("shensu")) then
 			self.fangquan_card_str = "@FangquanCard=" .. to_discard .. "&fangquan->" .. target:objectName()
 			return true
 		end
 	end
 	
-	for _, target in ipairs(self.friends_noself) do
-		if target:hasSkill("dawu") then
-			local use = true
-			for _, p in ipairs(self.friends_noself) do
-				if p:getMark("@fog") > 0 then use = false break end
-			end
-			if use then
-				self.fangquan_card_str = "@FangquanCard=" .. to_discard .. "&fangquan->" .. target:objectName()
-				return true
-			end
-		end
-	end
 	return false
 end
 
@@ -626,7 +611,7 @@ sgs.ai_card_intention.FangquanCard = -120
 
 sgs.ai_skill_invoke.zaiqi = function(self, data)
 	local lostHp = 2
-	if self.player:hasSkills("rende|rende") and #self.friends_noself > 0 and not self:willSkipPlayPhase() then lostHp = 3 end
+	if self.player:hasSkill("rende") and #self.friends_noself > 0 and not self:willSkipPlayPhase() then lostHp = 3 end
 	return self.player:getLostHp() >= lostHp
 end
 
@@ -675,7 +660,6 @@ sgs.ai_skill_invoke.shenzhi = function(self, data)
 	if self:getCardsNum("Peach") > 0 then return false end
 	if self.player:getHandcardNum() >= 3 then return false end
 	if self.player:getHandcardNum() >= self.player:getHp() and self.player:isWounded() then return true end
-	if self.player:hasSkill("beifa") and self.player:getHandcardNum() == 1 and self:needKongcheng() then return true end
 	if self.player:hasSkill("sijian") and self.player:getHandcardNum() == 1 then return true end
 	return false
 end
