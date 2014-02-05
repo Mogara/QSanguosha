@@ -670,11 +670,10 @@ sgs.jiuchi_suit_value = {
 sgs.ai_suit_priority.jiuchi= "diamond|heart|club|spade"
 
 
-sgs.ai_skill_cardask["@beige"] = function(self, data)
-	local damage = data:toDamage()
-	if not self:isFriend(damage.to) or self:isFriend(damage.from) then return "." end
-	local to_discard = self:askForDiscard("beige", 1, 1, false, true)
-	if #to_discard > 0 then return "$&beige" .. to_discard[1] else return "." end
+sgs.ai_skill_discard.beige = function(self)
+	local damage = self.player:getTag("beige_data"):toDamage()
+	if not self:isFriend(damage.to) or self:isFriend(damage.from) then return {} end
+	return self:askForDiscard("dummy_reason", 1, 1, false, true)
 end
 
 function sgs.ai_cardneed.beige(to, card)
