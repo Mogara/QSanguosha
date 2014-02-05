@@ -64,11 +64,8 @@ function debugFunc(self, room, player, data)
 
 				debugmsg("%s[%s]: %d:%d:%d %s",
 					sgs.Sanguosha:translate(players[i]:getGeneralName()),					
-					sgs.Sanguosha:translate(sgs.evaluatePlayerRole(players[i])),
-					sgs.role_evaluation[players[i]:objectName()]["rebel"],
-					sgs.role_evaluation[players[i]:objectName()]["loyalist"],
-					sgs.role_evaluation[players[i]:objectName()]["renegade"],
-					  rel)
+					sgs.Sanguosha:translate(players[i]:getRole()),
+							  rel)
 			end
 		end
 
@@ -96,10 +93,7 @@ function endlessNiepan(who)
 	local room = who:getRoom()	
 	if who:getGeneral2() or who:getHp() > 0 then return end
 
-	local rebel_value = sgs.role_evaluation[who:objectName()]["rebel"]
-	local renegade_value = sgs.role_evaluation[who:objectName()]["renegade"]
-	local loyalist_value = sgs.role_evaluation[who:objectName()]["loyalist"]
-	
+
 	for _,skill in sgs.qlist(who:getVisibleSkillList()) do
 		if skill:getLocation()==sgs.Skill_Right then
 			room:detachSkillFromPlayer(who, skill:objectName())
@@ -115,9 +109,6 @@ function endlessNiepan(who)
 	who:bury()
 	who:drawCards(5)
 
-	sgs.role_evaluation[who:objectName()]["rebel"] = rebel_value
-	sgs.role_evaluation[who:objectName()]["renegade"] = renegade_value
-	sgs.role_evaluation[who:objectName()]["loyalist"] = loyalist_value
 end
 
 
@@ -135,32 +126,8 @@ function SmartAI:printStand()
 	self.room:output("end of friends")
 end
 
-function SmartAI:printFEList()
-	for _, player in ipairs (self.enemies) do
-		self.room:writeToConsole("enemy "..player:getGeneralName()..(sgs.role_evaluation[player:objectName()][player:getRole()] or "") .. player:getRole())
-	end
-	for _, player in ipairs (self.friends_noself) do
-		self.room:writeToConsole("friend "..player:getGeneralName()..(sgs.role_evaluation[player:objectName()][player:getRole()] or "") .. player:getRole())
-	end
-	self.room:writeToConsole(self.player:getGeneralName().." list end")
-end
-
 function SmartAI:log(outString)
 	self.room:output(outString)
-end
-
-function outputPlayersEvaluation()
-	if not global_room:getLord() then return end
-	global_room:writeToConsole("=========== MISJUDGE START ===========" )
-	for _, player in sgs.qlist(global_room:getOtherPlayers(global_room:getLord())) do
-		local evaluate_role = sgs.evaluatePlayerRole(player)
-		global_room:writeToConsole("<------- " .. player:getGeneralName() .. " ------->")
-		global_room:writeToConsole("Role: " .. player:getRole() .. "	  Evaluate role: " .. evaluate_role)
-		global_room:writeToConsole("Rebel:" .. sgs.role_evaluation[player:objectName()]["rebel"] .. " Loyalist:"
-									.. sgs.role_evaluation[player:objectName()]["loyalist"] .. " Renegade:"
-									.. sgs.role_evaluation[player:objectName()]["renegade"])
-	end
-	global_room:writeToConsole("================ END ================" )
 end
 
 function sgs.checkMisjudge(player)
@@ -184,9 +151,9 @@ function sgs.checkMisjudge(player)
 			end
 		end
 		for _, p in sgs.qlist(room:getOtherPlayers(room:getLord())) do
-			if sgs.evaluatePlayerRole(p) == "rebel" and rebel_num > 0 then evaluate_rebel = evaluate_rebel + 1
-			elseif sgs.evaluatePlayerRole(p) == "loyalist" and loyalist_num > 0 then evaluate_loyalist = evaluate_loyalist + 1
-			elseif sgs.evaluatePlayerRole(p) == "renegade" and renegade_num > 0 then evaluate_renegade = evaluate_renegade + 1
+			if p:getRole() == "rebel" and rebel_num > 0 then evaluate_rebel = evaluate_rebel + 1
+			elseif p:getRole() == "loyalist" and loyalist_num > 0 then evaluate_loyalist = evaluate_loyalist + 1
+			elseif p:getRole() == "renegade" and renegade_num > 0 then evaluate_renegade = evaluate_renegade + 1
 			end
 		end
 		
@@ -221,5 +188,44 @@ function sgs.Card_Parse(str)
 	if type(str) ~= "string" and type(str) ~= "number" and str.toString() then
 		global_room:writeToConsole(str:toString())
 	end
-	return cardparse(str)
+	if string.len(str) > 3 and not string.find(str, "&") then
+		global_room:writeToConsole("showskillname is empty! >> " .. str)
+	end
+	local card = cardparse(str)
+	if not card then global_room:writeToConsole("Wrong!!sgs.Card_Parse >> " .. str) end
+	return card
 end
+
+function SmartAI:printAll(self, player, intention)
+	local name = player:objectName()
+	self.room:writeToConsole(self:getHegGeneralName(player) .. math.floor(intention * 10) / 10
+							.. " R" .. math.floor((sgs.ai_loyalty["shu"][name] or 0) * 10) / 10
+							.. " G" .. math.floor((sgs.ai_loyalty["wu"][name] or 0) * 10) / 10
+							.. " B" .. math.floor((sgs.ai_loyalty["wei"][name] or 0) * 10) / 10
+							.. " Q" .. math.floor((sgs.ai_loyalty["qun"][name] or 0) * 10) / 10
+							.. " E" .. (sgs.ai_explicit[name] or "nil"))
+end
+
+function sgs.printFEList(player)
+	global_room:writeToConsole("gameProcess :: " .. sgs.gameProcess())
+	for _, p in sgs.qlist(global_room:getAlivePlayers()) do
+		if player and p:objectName() ~= player:objectName() then continue end
+		local name = p:getGeneralName() .. "/" .. p:getGeneral2Name()
+		global_room:writeToConsole("====  " .. name .. "  kingdom::" .. p:getKingdom() .. "  ====")
+		local sgsself = sgs.ais[p:objectName()]
+		sgsself:updatePlayers()
+		local msge = "enemies:"
+		for _, enemy in ipairs(sgsself.enemies) do
+			local name1 = enemy:getGeneralName() .. "/" .. enemy:getGeneral2Name()
+			msge = msge .. name1 .. ", "
+		end
+		global_room:writeToConsole(msge)
+		local msgf = "friends:"
+		for _, friend in ipairs(sgsself.friends) do
+			local name2 = friend:getGeneralName() .. "/" .. friend:getGeneral2Name()
+			msgf = msgf .. name2 .. ", "
+		end
+		global_room:writeToConsole(msgf)
+	end
+end
+

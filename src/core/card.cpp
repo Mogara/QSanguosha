@@ -386,7 +386,8 @@ const Card *Card::Parse(const QString &str) {
 
     if (str.startsWith(QChar('@'))) {
         // skill card
-        QRegExp pattern("@(\\w+)=([^:]+)(:.+)?");
+        QRegExp pattern1("@(\\w+)=([^:]+)&(.*)(:.+)?");
+        QRegExp pattern2("@(\\w+)=([^:]+)(:.+)?");
         QRegExp ex_pattern("@(\\w*)\\[(\\w+):(.+)\\]=([^:]+)&(.*)(:.+)?");
 
         QStringList texts;
@@ -396,8 +397,14 @@ const Card *Card::Parse(const QString &str) {
         QString show_skill;
         QString user_string;
 
-        if (pattern.exactMatch(str)) {
-            texts = pattern.capturedTexts();
+        if (pattern1.exactMatch(str)) {
+            texts = pattern1.capturedTexts();
+            card_name = texts.at(1);
+            subcard_str = texts.at(2);
+            show_skill = texts.at(3);
+            user_string = texts.at(4);
+        } else if (pattern2.exactMatch(str)) {
+            texts = pattern2.capturedTexts();
             card_name = texts.at(1);
             subcard_str = texts.at(2);
             user_string = texts.at(3);
@@ -450,6 +457,8 @@ const Card *Card::Parse(const QString &str) {
 
         if (!show_skill.isEmpty())
             card->setShowSkill(show_skill);
+        else if (!skillName.isEmpty())
+            card->setShowSkill(skillName);
 
         if (!user_string.isEmpty()) {
             user_string.remove(0, 1);

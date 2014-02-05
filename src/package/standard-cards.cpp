@@ -1243,8 +1243,10 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const {
 
     Room *room = effect.from->getRoom();
 
+    effect.to->setFlags("KnownBothTarget");// For AI
     QString choice = room->askForChoice(effect.from, objectName(),
                                         choices.join("+"), QVariant::fromValue(effect.to));
+    effect.to->setFlags("-KnownBothTarget");
     LogMessage log;
     log.type = "#KnownBothView";
     log.from = effect.from;

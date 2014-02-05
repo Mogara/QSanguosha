@@ -95,7 +95,7 @@ local function getOwnCards(self, up, bottom, next_judge)
 					table.remove(bottom, index)
 					shuangxiong = true
 				end
-			elseif self:hasSkills("xianzhen|tianyi|dahe") then
+			elseif self.player:hasSkills("xianzhen|tianyi|dahe") then
 				local maxcard = self:getMaxCard(self.player)
 				has_big = maxcard and maxcard:getNumber() > 10
 				if not has_big and gcard:getNumber() > 10 then
@@ -333,8 +333,7 @@ local function XinZhan(self, cards)
 		local index = 1
 		local lightning_flag = false
 		local judge_str = sgs.ai_judgestring[need_judge:objectName()] or sgs.ai_judgestring[need_judge:getSuitString()]
-		self:log("------------------>"..judge_str ..":")
-		
+
 		for _, for_judge in ipairs(bottom) do
 			if judge_str == "spade" and not lightning_flag then
 				has_lightning = need_judge
@@ -380,13 +379,10 @@ local function XinZhan(self, cards)
 	return up, {}
 end
 
-function SmartAI:askForGuanxing(cards, up_only)
-	--KOF模式--
-	local func = Tactic("guanxing", self, up_only)
-	if func then return func(self, cards) end
-	--身份局--
-	if not up_only then return GuanXing(self,cards)
-	else return XinZhan(self, cards)
+function SmartAI:askForGuanxing(cards, guanxing_type)
+	if guanxing_type == sgs.Room_GuanxingBothSides then return GuanXing(self, cards)
+	elseif guanxing_type == sgs.Room_GuanxingUpOnly then return XinZhan(self, cards)
+	elseif guanxing_type == sgs.Room_GuanxingDownOnly then return {}, cards
 	end
 	return cards, {}
 end

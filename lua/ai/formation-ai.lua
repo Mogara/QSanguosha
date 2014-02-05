@@ -205,8 +205,7 @@ end
 
 sgs.ai_skill_invoke.shoucheng = function(self, data)
 	local move = data:toMoveOneTime()
-	return move.from and self:isFriend(move.from)
-			and not (move.from:getPhase() == sgs.Player_NotActive and (move.from:hasSkill("manjuan") or self:needKongcheng(move.from, true)))
+	return move.from and self:isFriend(move.from) and not self:needKongcheng(move.from, true)
 end
 
 sgs.ai_skill_choice.shoucheng = function(self, choices)
@@ -217,7 +216,7 @@ local shangyi_skill = {}
 shangyi_skill.name = "shangyi"
 table.insert(sgs.ai_skills, shangyi_skill)
 shangyi_skill.getTurnUseCard = function(self)
-	local card_str = ("@ShangyiCard=.")
+	local card_str = ("@ShangyiCard=.&shangyi")
 	local shangyi_card = sgs.Card_Parse(card_str)
 	assert(shangyi_card)
 	return shangyi_card
@@ -339,7 +338,7 @@ local function will_discard_zhendu(self)
 	local need_damage = self:getDamagedEffects(current, self.player) or self:needToLoseHp(current, self.player)
 	if self:isFriend(current) then
 		if current:getMark("drank") > 0 and not need_damage then return -1 end
-		if (getKnownCard(current, "Slash") > 0 or (getCardsNum("Slash", current) >= 1 and current:getHandcardNum() >= 2))
+		if (getKnownCard(current, self.player, "Slash") > 0 or (getCardsNum("Slash", current) >= 1 and current:getHandcardNum() >= 2))
 			and (not self:damageIsEffective(current, nil, self.player) or current:getHp() > 2 or (getCardsNum("Peach", current) > 1 and not self:isWeak(current))) then
 			local slash = sgs.Sanguosha:cloneCard("slash")
 			local trend = 3
@@ -355,7 +354,7 @@ local function will_discard_zhendu(self)
 		if need_damage then return 3 end
 	elseif self:isEnemy(current) then
 		if need_damage or current:getHandcardNum() >= 2 then return -1 end
-		if getKnownCard(current, "Slash") == 0 and getCardsNum("Slash", current) < 0.5 then return 3.5 end
+		if getKnownCard(current, self.player, "Slash") == 0 and getCardsNum("Slash", current) < 0.5 then return 3.5 end
 	end
 	return -1
 end
