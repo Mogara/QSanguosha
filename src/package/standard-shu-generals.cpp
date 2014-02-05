@@ -124,12 +124,14 @@ public:
 
 class PaoxiaoArmorNullificaion: public TriggerSkill{
 public:
-    PaoxiaoArmorNullificaion(): TriggerSkill("#paoxiao"){
+    PaoxiaoArmorNullificaion(): TriggerSkill("paoxiao_null"){
         events << TargetConfirmed;
+        global = true;
+
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
-        if (TriggerSkill::triggerable(player).isEmpty())
+        if (!(player != NULL && player->isAlive() && player->hasSkill("paoxiao")))
             return QStringList();
 
         ServerPlayer *lord = room->getLord(player->getKingdom());
@@ -147,13 +149,16 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->hasShownSkill(this))
+        if (player->hasShownSkill(Sanguosha->getSkill("paoxiao")))
             return true;
         else {
             player->tag["paoxiao_use"] = data;
             bool invoke = player->askForSkillInvoke("paoxiao", "armor_nullify");
             player->tag.remove("paoxiao_use");
-            return invoke;
+            if (invoke){
+                player->showGeneral(player->inHeadSkills("paoxiao"));
+                return true;
+            }
         }
         return false;
     }
@@ -1423,8 +1428,7 @@ void StandardPackage::addShuGenerals()
 
     General *zhangfei = new General(this, "zhangfei", "shu"); // SHU 003
     zhangfei->addSkill(new Paoxiao);
-    zhangfei->addSkill(new PaoxiaoArmorNullificaion);
-    related_skills.insertMulti("paoxiao", "#paoxiao");
+    skills << new PaoxiaoArmorNullificaion;
 
     General *zhugeliang = new General(this, "zhugeliang", "shu", 3); // SHU 004
     zhugeliang->addCompanion("huangyueying");
