@@ -176,6 +176,8 @@ public slots:
     void doCancelButton();
     void doDiscardButton();
 
+    inline QPointF tableCenterPos() {    return m_tableCenterPos;    };
+
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);

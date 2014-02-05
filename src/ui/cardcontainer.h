@@ -48,17 +48,17 @@ public slots:
 protected:
     QRectF _m_boundingRect;
     virtual bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
+    QPixmap _m_background_top, _m_background_middle, _m_background_bottom;
+    CloseButton *close_button;
+    QGraphicsPixmapItem *_m_background, *_m_background_seat;
 
 private:
     QList<CardItem *> items;
-    CloseButton *close_button;
-    QPixmap _m_background_top, _m_background_middle, _m_background_bottom;
-    QGraphicsPixmapItem *_m_background, *_m_background_seat;
     QStack<QList<CardItem *> > items_stack;
     QStack<bool> retained_stack;
 
     void _addCardItem(int card_id, const QPointF &pos);
-    void _repaint();
+    virtual void _repaint();
 
 private slots:
     void grabItem();
@@ -70,7 +70,7 @@ signals:
     void item_gongxined(int card_id);
 };
 
-class GuanxingBox: public QSanSelectableItem {
+class GuanxingBox: public CardContainer {
     Q_OBJECT
 
 public:
@@ -86,11 +86,7 @@ private:
     QList<CardItem *> up_items, down_items;
     bool up_only;
 
-    static const int start_x = 76;
-    static const int start_y1 = 105;
-    static const int start_y2 = 249;
-    static const int middle_y = 173;
-    static const int skip = 102;
+    void _repaint();
 };
 
 #endif

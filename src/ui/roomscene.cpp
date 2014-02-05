@@ -901,7 +901,7 @@ void RoomScene::updateTable() {
                          _m_roomLayout->m_discardPileMinWidth), _m_commonLayout->m_cardNormalHeight);
     m_tablePile->adjustCards();
     card_container->setPos(m_tableCenterPos - QPointF(card_container->boundingRect().width() / 2, card_container->boundingRect().height() / 2));
-    guanxing_box->setPos(m_tableCenterPos);
+    guanxing_box->setPos(m_tableCenterPos - QPointF(guanxing_box->boundingRect().width() / 2, guanxing_box->boundingRect().height() / 2));
     prompt_box->setPos(m_tableCenterPos);
     pausing_text->setPos(m_tableCenterPos - pausing_text->boundingRect().center());
     pausing_item->setRect(sceneRect());
