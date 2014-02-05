@@ -3081,7 +3081,7 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 	local show_head_general, show_deputy_general
 	for _, skname in ipairs(skills_to_show:split("|")) do
 		if self.player:inHeadSkills(skname) then show_head_general = true
-		elseif self.player:inDeputySkills(skname) then show_deputy_general = true end
+		elseif self.player:hasSkill(skname) then show_deputy_general = true end
 		if show_head_general or show_deputy_general then
 			if string.find(choices, "show_both_generals") then return "show_both_generals"
 			else break end
