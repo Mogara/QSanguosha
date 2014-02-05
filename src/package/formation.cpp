@@ -1267,18 +1267,17 @@ public:
             if (!to_change.isEmpty()){
                 QStringList change_list;
                 change_list << to_change;
-                if (Sanguosha->getGeneral(room->getTag(player->objectName()).toStringList()[1])->isMale())
-                    change_list << "sujiang";
-                else
-                    change_list << "sujiangf";
+                
+                room->revivePlayer(player);
 
                 int maxhp = player->getMaxHp();
-                room->changeHero(player, to_change, false, false, false, true);
-                room->changeHero(player, change_list[1], false, false, true, false);
-                room->setPlayerProperty(player, "maxhp", maxhp);
+                room->changeHero(player, to_change, false, true, false, true);
+                player->removeGeneral(false);
 
-                room->revivePlayer(player);
+                change_list << player->getActualGeneral2Name();
+
                 room->setPlayerProperty(player, "hp", 2);
+                room->setPlayerProperty(player, "maxhp", maxhp);
                 room->setTag(player->objectName(), change_list);
 
                 room->setPlayerProperty(player, "kingdom", dfowner->getKingdom());
