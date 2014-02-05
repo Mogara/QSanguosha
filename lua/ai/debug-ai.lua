@@ -192,7 +192,7 @@ function sgs.Card_Parse(str)
 		global_room:writeToConsole("showskillname is empty! >> " .. str)
 	end
 	local card = cardparse(str)
-	if not card then global_room:writeToConsole("Wrong!!sgs.Card_Parse >> " .. str) end
+	if not card then global_room:writeToConsole("Wrong!!sgs.Card_Parse >> " .. str) assert(false) end
 	return card
 end
 
@@ -210,19 +210,19 @@ function sgs.printFEList(player)
 	global_room:writeToConsole("gameProcess :: " .. sgs.gameProcess())
 	for _, p in sgs.qlist(global_room:getAlivePlayers()) do
 		if player and p:objectName() ~= player:objectName() then continue end
-		local name = p:getGeneralName() .. "/" .. p:getGeneral2Name()
+		local name = p:getActualGeneral1Name() .. "/" .. p:getActualGeneral2Name()
 		global_room:writeToConsole("====  " .. name .. "  kingdom::" .. p:getKingdom() .. "  ====")
 		local sgsself = sgs.ais[p:objectName()]
 		sgsself:updatePlayers()
 		local msge = "enemies:"
 		for _, enemy in ipairs(sgsself.enemies) do
-			local name1 = enemy:getGeneralName() .. "/" .. enemy:getGeneral2Name()
+			local name1 = enemy:getActualGeneral1Name() .. "/" .. enemy:getActualGeneral2Name()
 			msge = msge .. name1 .. ", "
 		end
 		global_room:writeToConsole(msge)
 		local msgf = "friends:"
 		for _, friend in ipairs(sgsself.friends) do
-			local name2 = friend:getGeneralName() .. "/" .. friend:getGeneral2Name()
+			local name2 = friend:getActualGeneral1Name() .. "/" .. friend:getActualGeneral2Name()
 			msgf = msgf .. name2 .. ", "
 		end
 		global_room:writeToConsole(msgf)

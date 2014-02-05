@@ -11,7 +11,7 @@ jixi_skill.getTurnUseCard = function(self)
 	local can_use = false
 	for i = 0, self.player:getPile("field"):length() - 1, 1 do
 		local snatch = sgs.Sanguosha:getCard(self.player:getPile("field"):at(i))
-		local snatch_str = ("snatch:jixi[%s:%s]=%d"):format(snatch:getSuitString(), snatch:getNumberString(), self.player:getPile("field"):at(i))
+		local snatch_str = ("snatch:jixi[%s:%s]=%d&jixi"):format(snatch:getSuitString(), snatch:getNumberString(), self.player:getPile("field"):at(i))
 		local jixisnatch = sgs.Card_Parse(snatch_str)
 		assert(jixisnatch)
 
