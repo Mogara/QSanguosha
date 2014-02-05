@@ -1,4 +1,5 @@
 #include "AboutUs.h"
+#include "engine.h"
 
 #include <QListWidget>
 #include <QTextBrowser>
@@ -26,8 +27,9 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
 
     setLayout(layout);
 
-    QStringList developers;
-    developers << tr("QSanguosha-Rara") << "YanGuam" << "Fsu0413" << "0147certainly";
+    QStringList developers = GetConfigFromLuaState(Sanguosha->getLuaState(), "developers").toStringList();
+    developers.prepend(tr("QSanguosha-Hegemony-V2"));
+
     foreach (QString name, developers) {
         QListWidgetItem *item = new QListWidgetItem(name, list);
         item->setData(Qt::UserRole, name);
