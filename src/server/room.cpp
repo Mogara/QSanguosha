@@ -2593,58 +2593,7 @@ void Room::run() {
 
     if (scenario && !scenario->generalSelection())
         startGame();
-    else if (mode == "06_3v3") {
-        thread_3v3 = new RoomThread3v3(this);
-        thread_3v3->start();
-
-        connect(thread_3v3, SIGNAL(finished()), this, SLOT(startGame()));
-        connect(thread_3v3, SIGNAL(finished()), thread_3v3, SLOT(deleteLater()));
-    } else if (mode == "06_XMode") {
-        thread_xmode = new RoomThreadXMode(this);
-        thread_xmode->start();
-
-        connect(thread_xmode, SIGNAL(finished()), this, SLOT(startGame()));
-        connect(thread_xmode, SIGNAL(finished()), thread_xmode, SLOT(deleteLater()));
-    } else if (mode == "02_1v1") {
-        thread_1v1 = new RoomThread1v1(this);
-        thread_1v1->start();
-
-        connect(thread_1v1, SIGNAL(finished()), this, SLOT(startGame()));
-        connect(thread_1v1, SIGNAL(finished()), thread_1v1, SLOT(deleteLater()));
-    } else if (mode == "04_1v3") {
-        ServerPlayer *lord = m_players.first();
-        setPlayerProperty(lord, "general", "shenlvbu1");
-
-        QList<const General *> generals = QList<const General *>();
-        foreach (QString pack_name, GetConfigFromLuaState(Sanguosha->getLuaState(), "hulao_packages").toStringList()) {
-             const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
-             if (pack) generals << pack->findChildren<const General *>();
-        }
-
-        QStringList names;
-        foreach (const General *general, generals) {
-            if (general->isTotallyHidden())
-                continue;
-            names << general->objectName();
-        }
-
-        foreach (QString name, Config.value("Banlist/HulaoPass").toStringList())
-            if (names.contains(name)) names.removeOne(name);
-
-        foreach (ServerPlayer *player, m_players) {
-            if (player == lord)
-                continue;
-
-            qShuffle(names);
-            QStringList choices = names.mid(0, 3);
-            QString name = askForGeneral(player, choices);
-
-            setPlayerProperty(player, "general", name);
-            names.removeOne(name);
-        }
-
-        startGame();
-    } else {
+    else {
         chooseGenerals();
         startGame();
     }
