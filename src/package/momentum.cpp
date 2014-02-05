@@ -594,7 +594,13 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        target->getRoom()->handleAcquireDetachSkills(target, "sunce_yinghun!|sunce_yingzi!");
+        bool head = target->inHeadSkills(objectName());
+        QStringList skills;
+        skills << "sunce_yinghun" << "sunce_yingzi";
+        if (!head)
+            for (int i = 0; i < skills.length(); i++)
+                skills[i].append("!");
+        target->getRoom()->handleAcquireDetachSkills(target, skills);
         target->setMark("hunshang",1);
         return false;
     }
