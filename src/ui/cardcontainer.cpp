@@ -38,7 +38,7 @@ void CardContainer::_repaint() {
     const int blank = 3;
     int width = (card_width + blank) * items.length() - blank + 50;
     if (width * 1.5 > RoomSceneInstance->sceneRect().width()) {
-        width = (card_width + blank) * (items.length() + 1) / 2 - blank + 50;
+        width = (card_width + blank) * ((items.length() + 1) / 2) - blank + 50;
         one_row = false;
     }
     int height = (one_row ? 1 : 2) * card_height + 70 + (one_row ? 0 : blank);
@@ -117,7 +117,7 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
     bool one_row = true;
     int width = (card_width + blank) * items.length() - blank + 50;
     if (width * 1.5 > RoomSceneInstance->sceneRect().width()) {
-        width = (card_width + blank) * (items.length() + 1) / 2 - blank + 50;
+        width = (card_width + blank) * ((items.length() + 1) / 2) - blank + 50;
         one_row = false;
     }
     int first_row = one_row ? items.length() : (items.length() + 1) / 2;
@@ -323,7 +323,7 @@ void GuanxingBox::doGuanxing (const QList<int> &card_ids, bool up_only) {
     const int blank = 3;
     int width = (card_width + blank) * up_items.length() - blank + 50;
     if (width * 1.5 > RoomSceneInstance->sceneRect().width()) {
-        width = (card_width + blank) * (up_items.length() + 1) / 2 - blank + 50;
+        width = (card_width + blank) * ((up_items.length() + 1) / 2) - blank + 50;
         one_row = false;
     }
     int first_row = one_row ? up_items.length() : (up_items.length() + 1) / 2;
@@ -456,7 +456,7 @@ void GuanxingBox::_repaint() {
     const int blank = 3;
     int width = (card_width + blank) * up_items.length() - blank + 50;
     if (width * 1.5 > RoomSceneInstance->sceneRect().width()) {
-        width = (card_width + blank) * (up_items.length() + 1) / 2 - blank + 50;
+        width = (card_width + blank) * ((up_items.length() + 1) / 2) - blank + 50;
         one_row = false;
     }
     int height = (one_row ? 1 : 2) * card_height + (one_row ? 0 : blank);
