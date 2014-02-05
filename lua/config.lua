@@ -12,6 +12,8 @@ config = {
 		"36Li" ,
 		"Fu Nima" ,
 		"Z ZH" ,
+		"82" ,
+		"XXX" ,
 	} ,
 
 	kingdoms = { "wei", "shu", "wu", "qun", "god" },
