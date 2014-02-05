@@ -35,13 +35,14 @@ public:
         room->notifySkillInvoked(lidian, objectName());
 
         QList<int> card_ids = room->getNCards(4);
+        QList<int> original_card_ids = card_ids;
         QList<int> obtained;
         room->fillAG(card_ids, lidian);
         int id1 = room->askForAG(lidian, card_ids, false, objectName());
         card_ids.removeOne(id1);
         obtained << id1;
         room->clearAG(lidian);
-        room->fillAG(card_ids, lidian);
+        room->fillAG(original_card_ids, lidian, obtained);
         int id2 = room->askForAG(lidian, card_ids, false, objectName());
         card_ids.removeOne(id2);
         obtained << id2;
