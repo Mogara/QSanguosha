@@ -752,10 +752,6 @@ sgs.xiaoji_keep_value = {
 	DefensiveHorse = 5
 }
 
-sgs.ai_skill_choice.yinghun = function(self, choices)
-	return self.yinghunchoice
-end
-
 sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 	local x = self.player:getLostHp()
 	local n = x - 1

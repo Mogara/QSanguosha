@@ -44,6 +44,56 @@ sgs.ai_choicemade_filter.skillInvoke.hengjiang = function(self, player, promptli
 	end
 end
 
+sgs.ai_skill_invoke.qianxi = function(self, data)
+	for _, p in ipairs(self.enemies) do
+		if self.player:distanceTo(p) == 1 and not p:isKongcheng() then
+			return true
+		end
+	end
+	return false
+end
+
+sgs.ai_skill_playerchosen.qianxi = function(self, targets)
+	local enemies = {}
+	local slash = self:getCard("Slash") or sgs.Sanguosha:cloneCard("slash")
+	local isRed = (self.player:getTag("qianxi"):toString() == "red")
+
+	for _, target in sgs.qlist(targets) do
+		if self:isEnemy(target) and not target:isKongcheng() then
+			table.insert(enemies, target)
+		end
+	end
+
+	if #enemies == 1 then
+		return enemies[1]
+	else
+		self:sort(enemies, "defense")
+		if not isRed then
+			for _, enemy in ipairs(enemies) do
+				if enemy:hasSkill("qingguo") and self:slashIsEffective(slash, enemy) then return enemy end
+			end
+			for _, enemy in ipairs(enemies) do
+				if enemy:hasSkill("kanpo") then return enemy end
+			end
+		else
+			for _, enemy in ipairs(enemies) do
+				if getKnownCard(enemy, self.player, "Jink", false, "h") > 0 and self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self) then return enemy end
+			end
+			for _, enemy in ipairs(enemies) do
+				if getKnownCard(enemy, self.player, "Peach", true, "h") > 0 or enemy:hasSkill("jijiu") then return enemy end
+			end
+			for _, enemy in ipairs(enemies) do
+				if getKnownCard(enemy, self.player, "Jink", false, "h") > 0 and self:slashIsEffective(slash, enemy) then return enemy end
+			end
+		end
+		return enemies[1]
+	end
+	return targets:first()
+end
+
+sgs.ai_playerchosen_intention.qianxi = 80
+
+
 sgs.ai_skill_invoke.guixiu = function(self, data)
 	return self:isWeak() and not self:willSkipPlayPhase()
 end
@@ -144,6 +194,12 @@ sgs.ai_skill_choice.yingyang = function(self, choices, data)
 		return "up"
 	end
 end
+
+sgs.ai_skill_invoke.sunce_yingzi = sgs.ai_skill_invoke.yingzi
+sgs.ai_skill_choice.sunce_yinghun = sgs.ai_skill_choice.yinghun
+sgs.ai_skill_playerchosen.sunce_yinghun = sgs.ai_skill_playerchosen.yinghun
+sgs.ai_playerchosen_intention.sunce_yinghun = sgs.ai_playerchosen_intention.yinghun
+sgs.ai_choicemade_filter.skillChoice.sunce_yinghun = sgs.ai_choicemade_filter.skillChoice.yinghun
 
 local duanxie_skill = {}
 duanxie_skill.name = "duanxie"
@@ -332,7 +388,7 @@ sgs.ai_skill_choice.chuanxin_lose = function(self, choices, data)
 	end
  end
  
- sgs.ai_skill_invoke.fengshi = function(self, data)
+sgs.ai_skill_invoke.fengshi = function(self, data)
 	local target = data:toPlayer()
 	if not target then return false end
 	if self:needToThrowArmor(target) then return self:isFriend(target) end
@@ -356,3 +412,69 @@ sgs.ai_choicemade_filter.skillInvoke.fengshi = function(self, player, promptlist
 		end
 	end
 end
+
+sgs.ai_skill_invoke.wuxin = true
+
+local wendao_skill = {}
+wendao_skill.name = "wendao"
+table.insert(sgs.ai_skills, wendao_skill)
+wendao_skill.getTurnUseCard = function(self)
+	if not self.player:hasUsed("WendaoCard") then
+		local invoke = "no"
+		local discardpile = self.room:getDiscardPile()
+		local owner = nil
+		for _, i in sgs.qlist(discardpile) do
+			if sgs.Sanguosha:getCard(i):objectName() == "PeaceSpell" then
+				invoke = "di"
+				break
+			end
+		end
+		if not invoke then
+			for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+				if p:getWeapon() and p:getWeapon():objectName() == "PeaceSpell" then
+					invoke = "eq"
+					owner = p
+					break
+				end
+			end
+		end
+		if invoke ~= "no" then
+			if invoke == "eq" then
+				assert(owner)
+				if owner:hasArmorEffect("PeaceSpell") then
+					if (owner:objectName() == self.player:objectName()) then
+						if not (self.player:hasSkill("qingnang") or (self.player:getHp() >= 3)) then
+							return nil
+						end
+					else
+						if (self.player:isFriendWith(owner)) then
+							if not self:needToLoseHp(owner, self.player) then return nil end
+							if owner:isChained() then return nil end
+						else
+							if self:needToLoseHp(owner, self.player) then return nil end
+						end
+					end
+				end
+			end
+			local to_discard
+			local cards = sgs.QList2Table(self.player:getCards("he"))
+			self:sortByKeepValue(cards)
+			local cards_copy = {}
+			for _, c in ipairs(cards) do
+				table.insert(cards_copy, c)
+			end
+			for _, c in ipairs(cards_copy) do
+				if (not c:isRed()) or isCard("Peach", c, self.player) then table.removeOne(cards, c) end
+			end
+			if #cards == 0 then return nil end
+			return sgs.Card_Parse("@WendaoCard=" .. cards[1]:getEffectiveId() .. "&wendao")
+		end
+	end
+	return nil
+end
+
+sgs.ai_skill_use_func.WendaoCard = function(card, use, self)
+	use.card = card
+end
+
+sgs.ai_use_priority.WendaoCard = sgs.ai_use_priority.ZhihengCard
