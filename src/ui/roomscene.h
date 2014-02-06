@@ -364,7 +364,7 @@ private slots:
 
     void takeAmazingGrace(ClientPlayer *taker, int card_id, bool move_cards);
 
-    void attachSkill(const QString &skill_name, bool from_left);
+    void attachSkill(const QString &skill_name, const bool &head = true);
     void detachSkill(const QString &skill_name);
 
     void doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids);

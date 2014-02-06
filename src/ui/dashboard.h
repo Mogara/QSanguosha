@@ -52,7 +52,7 @@ public:
     virtual void showProgressBar(QSanProtocol::Countdown countdown);
 
     QSanSkillButton *removeSkillButton(const QString &skillName);
-    QSanSkillButton *addSkillButton(const QString &skillName);
+    QSanSkillButton *addSkillButton(const QString &skillName, const bool &head = true);
     bool isAvatarUnderMouse();
 
     void highlightEquip(QString skillName, bool hightlight);

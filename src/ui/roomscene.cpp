@@ -483,9 +483,6 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
                 }
                 log_box->appendLog(type, player->objectName(), QStringList(), QString(), newHeroName, arg2);
             }
-            if (player->getGeneralName() == "shenlvbu1" && newHeroName == "shenlvbu2"
-                && player->getMark("secondMode") > 0)
-                Sanguosha->playSystemAudioEffect("stagechange");
             if (player != Self) break;
             const General* oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
             const General* newHero = Sanguosha->getGeneral(newHeroName);
@@ -496,7 +493,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
 
             if (newHero) {
                 foreach (const Skill *skill, newHero->getVisibleSkills(true, !isSecondaryHero))
-                    attachSkill(skill->objectName(), false);
+                    attachSkill(skill->objectName(), !isSecondaryHero);
             }
             break;
         }
@@ -1954,7 +1951,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move) {
 
 void RoomScene::addSkillButton(const Skill *skill, const bool &head) {
     // check duplication
-    QSanSkillButton *btn = dashboard->addSkillButton(skill->objectName());
+    QSanSkillButton *btn = dashboard->addSkillButton(skill->objectName(), head);
     if (btn == NULL) return;
 
     if (btn->getViewAsSkill() != NULL  && !m_replayControl) {
@@ -3262,10 +3259,10 @@ void RoomScene::chooseSkillButton() {
     dialog->exec();
 }
 
-void RoomScene::attachSkill(const QString &skill_name, bool from_left) {
+void RoomScene::attachSkill(const QString &skill_name, const bool &head) {
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if (skill)
-        addSkillButton(skill, from_left);
+        addSkillButton(skill, head);
 }
 
 void RoomScene::detachSkill(const QString &skill_name) {

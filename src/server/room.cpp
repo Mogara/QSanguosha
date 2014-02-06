@@ -1877,7 +1877,6 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
         changePlayerGeneral2(player, new_general);
     else
         changePlayerGeneral(player, new_general);
-    player->setMaxHp(player->getGeneralMaxHp());
 
     if (full_state)
         player->setHp(player->getMaxHp());
@@ -4366,7 +4365,12 @@ void Room::preparePlayers() {
 }
 
 void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general) {
-    setPlayerProperty(player, "general", new_general);
+    player->setProperty("general", new_general);
+    QList<ServerPlayer *> players = m_players;
+    if (new_general == "anjiang") players.removeOne(player);
+    foreach(ServerPlayer *p, players)
+        notifyProperty(p, player, "general");
+
     Q_ASSERT(player->getGeneral() != NULL);
     if (new_general != "anjiang")
         player->setGender(player->getGeneral()->getGender());
@@ -4376,7 +4380,11 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
 }
 
 void Room::changePlayerGeneral2(ServerPlayer *player, const QString &new_general) {
-    setPlayerProperty(player, "general2", new_general);
+    player->setProperty("general2", new_general);
+    QList<ServerPlayer *> players = m_players;
+    if (new_general == "anjiang") players.removeOne(player);
+    foreach(ServerPlayer *p, players)
+        notifyProperty(p, player, "general2");
     Q_ASSERT(player->getGeneral2() != NULL);
     if (!player->hasShownGeneral1()) {
         if (new_general != "anjiang")

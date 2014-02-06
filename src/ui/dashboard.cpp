@@ -446,7 +446,7 @@ void Dashboard::setWidth(int width) {
     _updateDeathIcon();
 }
 
-QSanSkillButton *Dashboard::addSkillButton(const QString &skillName) {
+QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, const bool &head) {
     // if it's a equip skill, add it to equip bar
     _mutexEquipAnim.lock();
 
@@ -483,8 +483,14 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName) {
         _m_button_recycle.append(_m_leftSkillDock->getSkillButtonByName(skillName));
         return NULL;
     }
-    QSanInvokeSkillDock *dock = Self->inHeadSkills(skillName) ? 
-                                _m_rightSkillDock :_m_leftSkillDock;
+    QSanInvokeSkillDock *dock = NULL;
+    // The directions 'left' and 'right' here are opposite to the actual convention,
+    // for we have swapped the positions of avatars. Names of the two properties should
+    // be corrected later.
+    if (Self->ownSkill(skillName) || Self->getAcquiredSkills().contains(skillName))
+        dock = Self->inHeadSkills(skillName) ? _m_rightSkillDock : _m_leftSkillDock;
+    else
+        dock = head ? _m_rightSkillDock : _m_leftSkillDock;
     return dock->addSkillButtonByName(skillName);
 }
 

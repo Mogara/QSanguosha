@@ -413,9 +413,9 @@ void Player::addSkill(const QString &skill_name, bool head_skill) {
     const Skill *skill = Sanguosha->getSkill(skill_name);
     Q_ASSERT(skill);
     if (head_skill)
-        head_skills[skill_name] = !skill->canPreshow();
+        head_skills[skill_name] = !skill->canPreshow() || general1_showed;
     else
-        deputy_skills[skill_name] = !skill->canPreshow();
+        deputy_skills[skill_name] = !skill->canPreshow() || general2_showed;
 }
 
 void Player::loseSkill(const QString &skill_name) {

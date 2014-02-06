@@ -210,12 +210,12 @@ void QSanSkillButton::setSkill(const Skill *skill) {
      if (skill == NULL) skill = _m_skill;
 
      Skill::Frequency freq = skill->getFrequency();
-     if (skill->inherits("ArraySummonSkill")) {
+     if (skill->inherits("BattleArraySkill")) {
          setStyle(QSanButton::S_STYLE_TOGGLE);
          setState(QSanButton::S_STATE_DISABLED);
          _setSkillType(QSanInvokeSkillButton::S_SKILL_ARRAY);
-         _m_emitActivateSignal = false;
-         _m_emitDeactivateSignal = false;
+         _m_emitActivateSignal = true;
+         _m_emitDeactivateSignal = true;
      } else if ((freq == Skill::Frequent || freq == Skill::NotFrequent) 
          && skill->inherits("TriggerSkill") && !skill->inherits("WeaponSkill")
          && !skill->inherits("ArmorSkill") && _m_viewAsSkill == NULL) {
@@ -270,7 +270,7 @@ void QSanSkillButton::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 void QSanSkillButton::setEnabled(bool enabled) {
     if (_m_state == S_STATE_CANPRESHOW) return;
     //dirty hack for shuangxiong!!!
-    if (!enabled && _m_skill->canPreshow() && _m_viewAsSkill && _m_skill->objectName() != "shuangxiong") {
+    if (!enabled && _m_skill->canPreshow() && !Self->hasShownSkill(_m_skill) && _m_viewAsSkill && _m_skill->objectName() != "shuangxiong") {
         setState(S_STATE_DISABLED);
         update();
     } else
