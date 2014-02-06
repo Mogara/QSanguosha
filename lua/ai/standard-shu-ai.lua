@@ -469,7 +469,22 @@ function sgs.ai_armor_value.bazhen(card)
 	if not card then return 4 end
 end
 
-
+sgs.ai_event_callback[sgs.TargetConfirmed].bazhen = function(self, player, data)
+	if player:getState() == "online" then return end
+	if (not player:ownSkill("bazhen")) then return end
+	if player:hasShownSkill(sgs.Sanguosha:getSkill("bazhen")) then return end
+	if player:hasPreshowedSkill("bazhen") then return end
+	
+	local use = data:toCardUse()
+	
+	if use.to:contains(player) and self:slashIsEffective(use.card, player, use.from, false) then
+		local jink_nums = use.from:getTag("Jink_" .. use.card:toString()):toIntList()
+		local jink_num = jink_nums:at(use.to:indexOf(player))
+		if jink_num > 0 then
+			player:preshowSkill("bazhen")
+		end
+	end
+end
 
 sgs.ai_skill_cardask["@xiangle-discard"] = function(self, data)
 	local target = data:toPlayer()
