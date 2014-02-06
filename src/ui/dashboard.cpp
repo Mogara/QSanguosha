@@ -62,8 +62,8 @@ void Dashboard::refresh() {
         _m_hidden_mark1->setVisible(false);
         _m_hidden_mark2->setVisible(false);
     } else if (m_player) {
-        _m_shadow_layer1->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
-        _m_shadow_layer2->setBrush(G_DASHBOARD_LAYOUT.m_generalShadowColor);
+        _m_shadow_layer1->setBrush(m_player->hasShownGeneral1() ? QColor(0, 0, 0, 0) : G_DASHBOARD_LAYOUT.m_generalShadowColor);
+        _m_shadow_layer2->setBrush(m_player->hasShownGeneral2() ? QColor(0, 0, 0, 0) : G_DASHBOARD_LAYOUT.m_generalShadowColor);
         _m_hidden_mark1->setVisible(m_player->isHidden(true));
         _m_hidden_mark2->setVisible(m_player->isHidden(false));
     }
