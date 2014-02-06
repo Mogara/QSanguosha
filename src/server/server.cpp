@@ -568,7 +568,7 @@ QGroupBox *ServerDialog::createGameModeBox() {
     for (int i = 0; i < item_list.length(); i++) {
         QObject *item = item_list.at(i);
 
-        QVBoxLayout *side = i <= item_list.length() / 2 - 4 ? left : right;
+        QVBoxLayout *side = i <= item_list.length() / 2 ? left : right;
 
         if (item->isWidgetType()) {
             QWidget *widget = qobject_cast<QWidget *>(item);
@@ -577,7 +577,7 @@ QGroupBox *ServerDialog::createGameModeBox() {
             QLayout *item_layout = qobject_cast<QLayout *>(item);
             side->addLayout(item_layout);
         }
-        if (i == item_list.length() / 2 - 4)
+        if (i == item_list.length() / 2)
             side->addStretch();
     }
 
