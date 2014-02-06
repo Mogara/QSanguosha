@@ -224,6 +224,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             room->sendLog(log);
             room->addPlayerMark(player, "Global_TurnCount");
 
+            Json::Value update_handcards_array(Json::arrayValue);
+            foreach (ServerPlayer *p, room->getPlayers()){
+                Json::Value _current(Json::arrayValue);
+                _current[0] = QSanProtocol::Utils::toJsonString(p->objectName());
+                _current[1] = p->getHandcardNum();
+                update_handcards_array.append(_current);
+            }
+            room->doBroadcastNotify(QSanProtocol::S_COMMAND_UPDATE_HANDCARD_NUM, update_handcards_array);
+
             if (!player->faceUp()) {
                 room->setPlayerFlag(player, "-Global_FirstRound");
                 player->turnOver();

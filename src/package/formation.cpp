@@ -49,7 +49,9 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->askForSkillInvoke("tuntian", data)){
+        ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
+        if (!dengai) return false;
+        if (dengai->askForSkillInvoke("tuntian", data)){
             room->broadcastSkillInvoke("tuntian");
             return true;
         }

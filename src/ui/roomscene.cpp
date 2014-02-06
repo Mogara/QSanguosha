@@ -168,6 +168,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(assign_asked()), this, SLOT(startAssign()));
     connect(ClientInstance, SIGNAL(start_in_xs()), this, SLOT(startInXs()));
 
+    connect(ClientInstance, SIGNAL(update_handcard_num()), this, SLOT(updateHandcardNum()));
+
     guanxing_box = new GuanxingBox;
     guanxing_box->hide();
     addItem(guanxing_box);
@@ -4248,3 +4250,9 @@ void RoomScene::setChatBoxVisible(bool show) {
     }
 }
 
+void RoomScene::updateHandcardNum(){
+    dashboard->updateHandcardNum();
+    foreach (Photo *p, photos){
+        p->updateHandcardNum();
+    }
+}
