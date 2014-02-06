@@ -1785,9 +1785,8 @@
         <translation>%1势力武将</translation>
     </message>
     <message>
-        <location filename="../../src/core/general.cpp" line="190"/>
         <source>Companions:</source>
-        <translation>珠联璧合：</translation>
+        <translation type="obsolete">珠联璧合：</translation>
     </message>
 </context>
 <context>
@@ -1866,37 +1865,38 @@
         <translation>更换武将皮肤</translation>
     </message>
     <message>
+        <location filename="../../src/dialog/generaloverview.ui" line="132"/>
         <source>Companions</source>
-        <translation type="obsolete">珠联璧合</translation>
+        <translation>珠联璧合</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.ui" line="130"/>
+        <location filename="../../src/dialog/generaloverview.ui" line="144"/>
         <source>Skill</source>
         <translation>技能</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.ui" line="201"/>
+        <location filename="../../src/dialog/generaloverview.ui" line="215"/>
         <source>Designer</source>
         <translation>设计</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.ui" line="208"/>
+        <location filename="../../src/dialog/generaloverview.ui" line="222"/>
         <source>Illustrator</source>
         <translation>插画</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.ui" line="257"/>
+        <location filename="../../src/dialog/generaloverview.ui" line="271"/>
         <location filename="../../src/dialog/generaloverview.cpp" line="656"/>
         <source>Search...</source>
         <translation>搜索...</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.ui" line="264"/>
+        <location filename="../../src/dialog/generaloverview.ui" line="278"/>
         <source>Return...</source>
         <translation>返回...</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.ui" line="184"/>
+        <location filename="../../src/dialog/generaloverview.ui" line="198"/>
         <source>CV</source>
         <translation>配音</translation>
     </message>
