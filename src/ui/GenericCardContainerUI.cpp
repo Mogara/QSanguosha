@@ -705,6 +705,7 @@ PlayerCardContainer::PlayerCardContainer() {
     _m_maxVotes = 1;
     _m_votesItem = NULL;
     _m_distanceItem = NULL;
+    _m_seatItem = NULL;
     _m_groupMain = new QGraphicsPixmapItem(this);
     _m_groupMain->setFlag(ItemHasNoContents);
     _m_groupMain->setPos(0, 0);
@@ -924,6 +925,26 @@ void PlayerCardContainer::showDistance() {
         _m_distanceItem->hide();
     else
         _m_distanceItem->show();
+}
+
+void PlayerCardContainer::showSeat() {
+    bool isNull = (_m_seatItem == NULL);
+    _paintPixmap(_m_seatItem, _m_layout->m_votesIconRegion,
+                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_VOTES_NUMBER, QString::number(m_player->getSeat())),
+                 _getAvatarParent());
+    _m_seatItem->setZValue(1.1);
+    if (!m_player->isAlive()) {
+        QGraphicsColorizeEffect *effect = new QGraphicsColorizeEffect();
+        effect->setColor(_m_layout->m_deathEffectColor);
+        effect->setStrength(1.0);
+        _m_seatItem->setGraphicsEffect(effect);
+    } else {
+        _m_seatItem->setGraphicsEffect(NULL);
+    }
+    if (_m_seatItem->isVisible() && !isNull)
+        _m_seatItem->hide();
+    else
+        _m_seatItem->show();
 }
 
 bool PlayerCardContainer::_isSelected(QGraphicsItem *item) const {

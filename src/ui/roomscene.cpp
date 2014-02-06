@@ -1332,6 +1332,15 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
             }
             break;
         }
+
+    case Qt::Key_R: {
+            if (Self == NULL) return;
+            foreach (Photo *photo, photos) {
+                if (photo->getPlayer())
+                    photo->showSeat();
+            }
+            break;
+        }
     case Qt::Key_Z: {
             if (dashboard) {
                 m_skillButtonSank = !m_skillButtonSank;
