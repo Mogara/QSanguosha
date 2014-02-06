@@ -24,24 +24,6 @@ class QRadioButton;
 
 class Package;
 
-class Select3v3GeneralDialog: public QDialog {
-    Q_OBJECT
-
-public:
-    Select3v3GeneralDialog(QDialog *parent);
-
-private:
-    QTabWidget *tab_widget;
-    QSet<QString> ex_generals;
-
-    void fillTabWidget();
-    void fillListWidget(QListWidget *list, const Package *pack);
-
-private slots:
-    void save3v3Generals();
-    void toggleCheck();
-};
-
 class BanlistDialog: public QDialog {
     Q_OBJECT
 
@@ -83,9 +65,6 @@ private:
     QLayout *createButtonLayout();
 
     QGroupBox *createGameModeBox();
-    QGroupBox *create1v1Box();
-    QGroupBox *create3v3Box();
-    QGroupBox *createXModeBox();
 
     QLineEdit *server_name_edit;
     QSpinBox *timeout_spinbox;
@@ -97,33 +76,11 @@ private:
     QCheckBox *free_assign_self_checkbox;
     QLabel *pile_swapping_label;
     QSpinBox *pile_swapping_spinbox;
-    QCheckBox *without_lordskill_checkbox;
     QCheckBox *lord_convert_checkbox;
-    QSpinBox *maxchoice_spinbox;
-    QSpinBox *godlimit_spinbox;
-    QLabel *godlimit_label;
-    QLabel *lord_maxchoice_label;
-    QSpinBox *lord_maxchoice_spinbox;
-    QSpinBox *nonlord_maxchoice_spinbox;
     QCheckBox *forbid_same_ip_checkbox;
     QCheckBox *disable_chat_checkbox;
-    QCheckBox *second_general_checkbox;
-    QCheckBox *scene_checkbox;    //changjing
-    QCheckBox *same_checkbox;
-    QCheckBox *basara_checkbox;
-    QCheckBox *hegemony_checkbox;
     QLabel *hegemony_maxchoice_label;
     QSpinBox *hegemony_maxchoice_spinbox;
-    QLabel *hegemony_maxshown_label;
-    QSpinBox *hegemony_maxshown_spinbox;
-    QLabel *max_hp_label;
-    QComboBox *max_hp_scheme_ComboBox;
-    QLabel *scheme0_subtraction_label;
-    QSpinBox *scheme0_subtraction_spinbox;
-    QCheckBox *prevent_awaken_below3_checkbox;
-    QComboBox *scenario_ComboBox;
-    QComboBox *mini_scene_ComboBox;
-    QPushButton *mini_scene_button;
     QLineEdit *address_edit;
     QLineEdit *port_edit;
     QSpinBox *game_start_spinbox;
@@ -136,30 +93,17 @@ private:
     QCheckBox *surrender_at_death_checkbox;
     QLabel *luck_card_label;
     QSpinBox *luck_card_spinbox;
-    QRadioButton *official_3v3_radiobutton;
-    QComboBox *official_3v3_ComboBox;
-    QComboBox *role_choose_ComboBox;
-    QCheckBox *exclude_disaster_checkbox;
-    QComboBox *official_1v1_ComboBox;
-    QCheckBox *kof_using_extension_checkbox;
-    QCheckBox *kof_card_extension_checkbox;
-    QComboBox *role_choose_xmode_ComboBox;
     QCheckBox *disable_lua_checkbox;
 
     QButtonGroup *extension_group;
     QButtonGroup *mode_group;
 
 private slots:
-    void setMaxHpSchemeBox();
 
     void onOkButtonClicked();
     void onDetectButtonClicked();
-    void select3v3Generals();
-    void edit1v1Banlist();
-    void updateButtonEnablility(QAbstractButton *button);
 
     void doCustomAssign();
-    void setMiniCheckBox();
 };
 
 class Scenario;

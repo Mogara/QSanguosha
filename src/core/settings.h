@@ -38,14 +38,9 @@ public:
     bool DisableChat;
     bool FreeAssignSelf;
     bool Enable2ndGeneral;
-    bool EnableScene;    //changjing
-    bool EnableSame;
     bool EnableBasara;
     bool EnableHegemony;
     bool EnableLordGeneralConvert;
-    int MaxHpScheme;
-    int Scheme0Subtraction;
-    bool PreventAwakenBelow3;
     QString Address;
     bool EnableAI;
     int AIDelay;

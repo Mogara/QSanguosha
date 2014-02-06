@@ -2468,9 +2468,7 @@ void Room::chooseGenerals() {
     if (!Config.EnableHegemony) {
         QStringList lord_list;
         ServerPlayer *the_lord = getLord();
-        if (Config.EnableSame)
-            lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
-        else if (the_lord->getState() == "robot")
+    if (the_lord->getState() == "robot")
             if (((qrand() % 100 < nonlord_prob || lord_num == 0) && nonlord_num > 0)
                 || Sanguosha->getLords().length() == 0)
                 lord_list = Sanguosha->getRandomGenerals(1);
@@ -2482,16 +2480,6 @@ void Room::chooseGenerals() {
         the_lord->setGeneralName(general);
         if (!Config.EnableBasara)
             broadcastProperty(the_lord, "general", general);
-
-        if (Config.EnableSame) {
-            foreach (ServerPlayer *p, m_players) {
-                if (!p->isLord())
-                    p->setGeneralName(general);
-            }
-
-            Config.Enable2ndGeneral = false;
-            return;
-        }
     }
     QList<ServerPlayer *> to_assign = m_players;
     if (!Config.EnableHegemony) to_assign.removeOne(getLord());
@@ -3061,36 +3049,6 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose) {
             thread->trigger(PostHpReduced, this, victim, data);
         }
     }
-}
-
-bool Room::changeMaxHpForAwakenSkill(ServerPlayer *player, int magnitude) {
-    player->gainMark("@waked");
-    int n = player->getMark("@waked");
-    if (magnitude < 0) {
-        if (Config.Enable2ndGeneral && player->getGeneral() && player->getGeneral2()
-            && Config.MaxHpScheme > 0 && Config.PreventAwakenBelow3
-            && player->getMaxHp() <= 3) {
-            setPlayerMark(player, "AwakenLostMaxHp", 1);
-        } else {
-            loseMaxHp(player, -magnitude);
-        }
-    } else {
-        setPlayerProperty(player, "maxhp", player->getMaxHp() + magnitude);
-
-        LogMessage log;
-        log.type = "#GainMaxHp";
-        log.from = player;
-        log.arg = QString::number(magnitude);
-        sendLog(log);
-
-        LogMessage log2;
-        log2.type = "#GetHp";
-        log2.from = player;
-        log2.arg = QString::number(player->getHp());
-        log2.arg2 = QString::number(player->getMaxHp());
-        sendLog(log2);
-    }
-    return (player->getMark("@waked") >= n);
 }
 
 void Room::applyDamage(ServerPlayer *victim, const DamageStruct &damage) {

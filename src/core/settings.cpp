@@ -61,15 +61,6 @@ void Settings::init() {
     GameMode = value("GameMode", "02p").toString();
 
     QStringList banpackagelist = value("BanPackages").toStringList();
-    if (banpackagelist.isEmpty()) {
-        banpackagelist << "nostalgia" << "nostal_standard" << "yitian" << "wisdom" << "nostal_wind"
-                       << "disaster" << "god" << "YJCM" /*<< "yitian_cards"*/ << "test"
-                       << "sp" << "sp_cards" << "BGM" << "YJCM2012" << "Special3v3"
-                       << "New3v3Card" /*<< "joy"*/ << "joy_equip" << "hegemony_card"
-                       << "hegemony" << "ling" << "BGMDIY" << "New3v3_2013Card"
-                       << "nostal_yjcm" << "nostal_yjcm2012" << "YJCM2013" << "New1v1Card" << "assassins"
-                       << "hegemony_sp" << "Special1v1" << "Special1v1OL" << "Special3v3_2013";
-    }
     setValue("BanPackages", banpackagelist);
 
     BanPackages = value("BanPackages").toStringList();
@@ -80,15 +71,10 @@ void Settings::init() {
     ForbidSIMC = value("ForbidSIMC", false).toBool();
     DisableChat = value("DisableChat", false).toBool();
     FreeAssignSelf = EnableCheat && value("FreeAssignSelf", false).toBool();
-    Enable2ndGeneral = value("Enable2ndGeneral", true).toBool();
-    EnableScene = value("EnableScene", false).toBool();
-    EnableSame = value("EnableSame", false).toBool();
-    EnableBasara = value("EnableBasara", true).toBool();
-    EnableHegemony = value("EnableHegemony", true).toBool();
+    Enable2ndGeneral = true;
+    EnableBasara = true;
+    EnableHegemony = true;
     EnableLordGeneralConvert = value("EnableLordGeneralConvert", true).toBool();
-    MaxHpScheme = value("MaxHpScheme", 0).toInt();
-    Scheme0Subtraction = value("Scheme0Subtraction", 3).toInt();
-    PreventAwakenBelow3 = value("PreventAwakenBelow3", false).toBool();
     Address = value("Address", QString()).toString();
     EnableAI = value("EnableAI", true).toBool();
     OriginAIDelay = value("OriginAIDelay", 1000).toInt();
@@ -110,7 +96,7 @@ void Settings::init() {
     ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
 
     HostAddress = value("HostAddress", "127.0.0.1").toString();
-    UserAvatar = value("UserAvatar", "zhangliao").toString();
+    UserAvatar = value("UserAvatar", "zhouyu").toString();
     HistoryIPs = value("HistoryIPs").toStringList();
     DetectorPort = value("DetectorPort", 9526u).toUInt();
     MaxCards = value("MaxCards", 15).toInt();
@@ -152,33 +138,9 @@ void Settings::init() {
     QStringList banlist = value("Banlist/Roles").toStringList();
     if (banlist.isEmpty()) {
         foreach (QString ban_general, roles_ban)
-                banlist << ban_general;
+            banlist << ban_general;
 
         setValue("Banlist/Roles", banlist);
-    }
-
-    banlist = value("Banlist/1v1").toStringList();
-    if (banlist.isEmpty()) {
-        foreach (QString ban_general, kof_ban)
-            banlist << ban_general;
-
-        setValue("Banlist/1v1", banlist);
-    }
-
-    banlist = value("Banlist/HulaoPass").toStringList();
-    if (banlist.isEmpty()) {
-        foreach (QString ban_general, hulao_ban)
-            banlist << ban_general;
-
-        setValue("Banlist/HulaoPass", banlist);
-    }
-
-    banlist = value("Banlist/XMode").toStringList();
-    if (banlist.isEmpty()) {
-        foreach (QString ban_general, xmode_ban)
-            banlist << ban_general;
-
-        setValue("Banlist/XMode", banlist);
     }
 
     banlist = value("Banlist/Basara").toStringList();
@@ -202,13 +164,6 @@ void Settings::init() {
             banlist << ban_general;
 
         setValue("Banlist/Pairs", banlist);
-    }
-
-    QStringList forbid_packages = value("ForbidPackages").toStringList();
-    if (forbid_packages.isEmpty()) {
-        forbid_packages << "New3v3Card" << "New3v3_2013Card" << "New1v1Card" << "test";
-
-        setValue("ForbidPackages", forbid_packages);
     }
 
     Config.ExtraHiddenGenerals = GetConfigFromLuaState(lua, "extra_hidden_generals").toStringList();
