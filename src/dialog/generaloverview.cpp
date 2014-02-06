@@ -541,6 +541,11 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
     ui->illustratorLineEdit->setText(getIllustratorInfo(general->objectName()));
 
     button_layout->addStretch();
+    QString companions_text = general->getCompanions();
+    if (companions_text.isEmpty())
+        ui->companionsLineEdit->setText(tr("None"));
+    else
+        ui->companionsLineEdit->setText(companions_text);
     ui->skillTextEdit->append(general->getSkillDescription(false, false));
     ui->changeGeneralButton->setEnabled(Self && Self->getGeneralName() != general->objectName());
     ui->changeGeneral2Button->setEnabled(Self && Self->getGeneral2Name() != general->objectName());
