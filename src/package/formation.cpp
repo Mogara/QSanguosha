@@ -1300,6 +1300,8 @@ public:
 
                 room->setPlayerProperty(player, "kingdom", dfowner->getKingdom());
                 room->setPlayerProperty(player, "role", BasaraMode::getMappedRole(dfowner->getKingdom()));
+
+                player->drawCards(1);
             }
         }
         return false;
