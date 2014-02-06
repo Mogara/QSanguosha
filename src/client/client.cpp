@@ -81,6 +81,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_RESET_PILE] = &Client::resetPiles;
     m_callbacks[S_COMMAND_UPDATE_PILE] = &Client::setPileNumber;
     m_callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
+    m_callbacks[S_COMMAND_UPDATE_HANDCARD_NUM] = &Client::setHandcardNum;
 
     // interactive methods
     m_interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
@@ -1056,6 +1057,26 @@ void Client::setPileNumber(const Json::Value &pile_str) {
     if (!pile_str.isInt()) return;
     pile_num = pile_str.asInt();
     updatePileNum();
+}
+
+void Client::setHandcardNum(const Json::Value &num_array){
+    if (!num_array.isArray()) return;
+    for (unsigned i = 0u; i < num_array.size(); i++){
+        Json::Value _current = num_array[i];
+        if (!_current.isArray())
+            continue;
+        if (_current.size() != 2 || !_current[0].isString() || !_current[1].isInt())
+            continue;
+
+        QString name = toQString(_current[0]);
+        int num = _current[1].asInt();
+
+        ClientPlayer *p = getPlayer(name);
+        if (p != NULL)
+            p->setHandcardNum(num);
+    }
+
+    emit update_handcard_num();
 }
 
 void Client::setCardFlag(const Json::Value &pattern_str) {

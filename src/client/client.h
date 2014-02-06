@@ -100,6 +100,7 @@ public:
     void maxhpChange(const Json::Value &change_str);
     void resetPiles(const Json::Value &);
     void setPileNumber(const Json::Value &pile_str);
+    void setHandcardNum(const Json::Value &num_array);
     void gameOver(const Json::Value &);
     void loseCards(const Json::Value &);
     void getCards(const Json::Value &);
@@ -337,6 +338,8 @@ signals:
 
     void head_preshowed();
     void deputy_preshowed();
+
+    void update_handcard_num();
 };
 
 extern Client *ClientInstance;
