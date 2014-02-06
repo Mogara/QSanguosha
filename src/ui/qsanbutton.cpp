@@ -9,7 +9,8 @@
 #include <QGraphicsSceneHoverEvent>
 #include "client.h"
 
-QSanButton::QSanButton(QGraphicsItem *parent): QGraphicsObject(parent)
+QSanButton::QSanButton(QGraphicsItem *parent)
+    : QGraphicsObject(parent), multi_state(false), first_state(true)
 {
     _m_state = S_STATE_UP;
     _m_style = S_STYLE_PUSH;
@@ -19,8 +20,8 @@ QSanButton::QSanButton(QGraphicsItem *parent): QGraphicsObject(parent)
     setAcceptedMouseButtons(Qt::LeftButton);
 }
 
-QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent)
-    : QGraphicsObject(parent)
+QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent, const bool &multi_state)
+    : QGraphicsObject(parent), multi_state(multi_state), first_state(true)
 {
     _m_state = S_STATE_UP;
     _m_style = S_STYLE_PUSH;
@@ -28,8 +29,11 @@ QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGra
     _m_buttonName = buttonName;
     _m_mouseEntered = false;
 
-    for (int i = 0; i < (int)S_NUM_BUTTON_STATES; i++)
-        _m_bgPixmap[i] = G_ROOM_SKIN.getButtonPixmap(groupName, buttonName, (QSanButton::ButtonState)i);
+    const int state_count = multi_state ? (int)S_NUM_BUTTON_STATES * 2 : (int)S_NUM_BUTTON_STATES;
+    for (int i = 0; i < state_count; i++) {
+        const bool state1 = i < S_NUM_BUTTON_STATES;
+        _m_bgPixmap[i] = G_ROOM_SKIN.getButtonPixmap(groupName, buttonName, (QSanButton::ButtonState)(state1 ? i : (i - S_NUM_BUTTON_STATES)), state1);
+    }
     setSize(_m_bgPixmap[0].size());
 
     setAcceptsHoverEvents(true);
@@ -46,7 +50,7 @@ QRectF QSanButton::boundingRect() const{
 }
 
 void QSanButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    painter->drawPixmap(0, 0, _m_bgPixmap[(int)_m_state]);
+    painter->drawPixmap(0, 0, _m_bgPixmap[(int)_m_state + (first_state ? 0 : S_NUM_BUTTON_STATES)]);
 }
 
 void QSanButton::setSize(QSize newSize) {
@@ -127,7 +131,7 @@ void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     QPointF point = event->pos();
     if (!insideButton(point)) return;
 
-    if (_m_style == S_STYLE_TOGGLE 
+    if (_m_style == S_STYLE_TOGGLE && !multi_state
         || _m_state == S_STATE_DISABLED 
         || _m_state == S_STATE_CANPRESHOW) return;
     setState(S_STATE_DOWN);
@@ -139,15 +143,17 @@ void QSanButton::_onMouseClick(bool inside) {
         const Skill * skill = qobject_cast<const QSanSkillButton *>(this)->getSkill();
         if (skill->canPreshow() && !Self->hasShownSkill(skill)) changeState = false;
     }
+    if (multi_state)
+        first_state = !first_state;
     if (_m_style == S_STYLE_PUSH && changeState)
         setState(S_STATE_UP);
     else if (_m_style == S_STYLE_TOGGLE) {
         if (_m_state == S_STATE_HOVER)
             _m_state = S_STATE_UP; // temporarily set, do not use setState!
         if (_m_state == S_STATE_DOWN && inside)
-            setState(S_STATE_UP);
+            _m_state = S_STATE_UP;
         else if (_m_state == S_STATE_UP && inside)
-            setState(S_STATE_DOWN);
+            _m_state = S_STATE_DOWN;
     }
     update();
 

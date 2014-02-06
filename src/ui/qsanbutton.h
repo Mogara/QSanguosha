@@ -13,7 +13,7 @@ class QSanButton: public QGraphicsObject{
 
 public:
     QSanButton(QGraphicsItem *parent);
-    QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent);
+    QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent, const bool &multi_state = false);
     enum ButtonState { S_STATE_UP, S_STATE_HOVER, S_STATE_DOWN, S_STATE_CANPRESHOW,
                        S_STATE_DISABLED, S_NUM_BUTTON_STATES };
     enum ButtonStyle { S_STYLE_PUSH, S_STYLE_TOGGLE };
@@ -50,7 +50,10 @@ protected:
     // @todo: currently this is an extremely dirty hack. Refactor the button states to
     // get rid of it.
     bool _m_mouseEntered;
-    QPixmap _m_bgPixmap[S_NUM_BUTTON_STATES];
+    QPixmap _m_bgPixmap[S_NUM_BUTTON_STATES * 2];
+    //this property is designed for trust button.
+    bool multi_state;
+    bool first_state;
 
 signals:
     void clicked();

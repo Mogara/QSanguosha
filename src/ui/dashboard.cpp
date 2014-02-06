@@ -74,11 +74,13 @@ bool Dashboard::isAvatarUnderMouse() {
 }
 
 void Dashboard::hideControlButtons() {
+    m_trustButton->hide();
     m_btnReverseSelection->hide();
     m_btnSortHandcard->hide();
 }
 
 void Dashboard::showControlButtons() {
+    m_trustButton->show();
     m_btnReverseSelection->show();
     m_btnSortHandcard->show();
 }
@@ -541,21 +543,43 @@ void Dashboard::setPlayer(ClientPlayer *player) {
 }
 
 void Dashboard::_createExtraButtons() {
+    m_trustButton = new QSanButton("handcard", "trust", this, true);
+    m_trustButton->setStyle(QSanButton::S_STYLE_TOGGLE);
     m_btnReverseSelection = new QSanButton("handcard", "reverse-selection", this);
     m_btnSortHandcard = new QSanButton("handcard", "sort", this);
     m_btnNoNullification = new QSanButton("handcard", "nullification", this);
     m_btnNoNullification->setStyle(QSanButton::S_STYLE_TOGGLE);
     // @todo: auto hide.
-    m_btnReverseSelection->setPos(G_DASHBOARD_LAYOUT.m_rswidth, -m_btnReverseSelection->boundingRect().height());
-    m_btnSortHandcard->setPos(m_btnReverseSelection->boundingRect().right() + G_DASHBOARD_LAYOUT.m_rswidth,
-                              -m_btnReverseSelection->boundingRect().height());
-    m_btnNoNullification->setPos(m_btnReverseSelection->boundingRect().right() + m_btnSortHandcard->boundingRect().width() + G_DASHBOARD_LAYOUT.m_rswidth,
-                                 -m_btnReverseSelection->boundingRect().height());
+    m_trustButton->setPos(G_DASHBOARD_LAYOUT.m_rswidth, - m_trustButton->boundingRect().height());
+    m_btnReverseSelection->setPos(m_trustButton->boundingRect().width() + G_DASHBOARD_LAYOUT.m_rswidth, - m_trustButton->boundingRect().height());
+    m_btnSortHandcard->setPos(m_trustButton->boundingRect().width() + m_btnReverseSelection->boundingRect().width() + G_DASHBOARD_LAYOUT.m_rswidth,
+                              - m_trustButton->boundingRect().height());
+    m_btnNoNullification->setPos(m_btnReverseSelection->boundingRect().width() + m_btnReverseSelection->boundingRect().width() + m_btnSortHandcard->boundingRect().width() + G_DASHBOARD_LAYOUT.m_rswidth,
+                                 - m_trustButton->boundingRect().height());
 
+    m_trustButton->hide();
+    m_btnReverseSelection->hide();
+    m_btnSortHandcard->hide();
     m_btnNoNullification->hide();
+    connect(m_trustButton, SIGNAL(clicked()), RoomSceneInstance, SLOT(trust()));
+    connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
     connect(m_btnReverseSelection, SIGNAL(clicked()), this, SLOT(reverseSelection()));
     connect(m_btnSortHandcard, SIGNAL(clicked()), this, SLOT(sortCards()));
     connect(m_btnNoNullification, SIGNAL(clicked()), this, SLOT(cancelNullification()));
+}
+
+void Dashboard::showSeat() {
+    const QRect region = G_DASHBOARD_LAYOUT.m_seatIconRegion;
+    PixmapAnimation *pma = PixmapAnimation::GetPixmapAnimation(_m_rightFrame, "seat");
+    if (pma) {
+        pma->setTransform(QTransform::fromTranslate(- pma->boundingRect().width() / 2, - pma->boundingRect().height() / 2));
+        pma->setPos(region.center().x(), region.center().y());
+        pma->setZValue(20002.0);
+    }
+    _paintPixmap(_m_seatItem, region,
+                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getSeat())),
+                 _m_rightFrame);
+    _m_seatItem->setZValue(1.1);
 }
 
 void Dashboard::skillButtonActivated() {
@@ -1145,6 +1169,14 @@ void Dashboard::onDeputySkillPreshowed() {
         _m_hidden_mark2->setVisible(m_player->isHidden(false));
     else
         _m_hidden_mark2->setVisible(false);
+}
+
+void Dashboard::updateTrustButton() {
+    if (!ClientInstance->getReplayer()) {
+        bool trusting = Self->getState() == "trust";
+        m_trustButton->update();
+        setTrust(trusting);
+    }
 }
 
 const ViewAsSkill *Dashboard::currentSkill() const{

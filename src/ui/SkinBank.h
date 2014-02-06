@@ -196,6 +196,7 @@ public:
         QRect m_hiddenMarkRegion1, m_hiddenMarkRegion2;
         AnchoredRect m_deathIconRegion;
         QRect m_votesIconRegion;
+        QRect m_seatIconRegion;
         QColor m_drankMaskColor;
         QColor m_duanchangMaskColor;
         QColor m_deathEffectColor;
@@ -288,7 +289,7 @@ public:
     const DashboardLayout &getDashboardLayout() const;
 
     QString getButtonPixmapPath(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
-    QPixmap getButtonPixmap(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
+    QPixmap getButtonPixmap(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state, const bool &first_state = true) const;
     QPixmap getSkillButtonPixmap(QSanButton::ButtonState state,
                                  QSanInvokeSkillButton::SkillType type,
                                  QSanInvokeSkillButton::SkillButtonWidth width) const;
@@ -344,6 +345,7 @@ public:
     static const char *S_SKIN_KEY_KINGDOM_ICON;
     static const char *S_SKIN_KEY_KINGDOM_COLOR_MASK;
     static const char *S_SKIN_KEY_VOTES_NUMBER;
+    static const char *S_SKIN_KEY_SEAT_NUMBER;
     static const char *S_SKIN_KEY_HAND_CARD_BACK;
     static const char *S_SKIN_KEY_HAND_CARD_SUIT;
     static const char *S_SKIN_KEY_JUDGE_CARD_ICON;

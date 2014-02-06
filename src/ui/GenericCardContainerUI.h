@@ -96,7 +96,7 @@ public slots:
     void updateVotes(bool need_select = true, bool display_1 = false);
     void updateReformState();
     void showDistance();
-    void showSeat();
+    virtual void showSeat();
     virtual void refresh();
 
 protected:
