@@ -142,6 +142,21 @@ QString General::getPackage() const{
         return QString(); // avoid null pointer exception;
 }
 
+QString General::getCompanions() const{
+    if (isLord())
+        return tr("%1 Generals").arg(Sanguosha->translate(getKingdom()));
+    QStringList name;
+    foreach (QString general, companions)
+        name << QString("%1").arg(Sanguosha->translate(general));
+    foreach (QString gnr, Sanguosha->getLimitedGeneralNames()) {
+        if (!Sanguosha->getGeneral(gnr))
+            continue;
+        if (Sanguosha->getGeneral(gnr)->companions.contains(objectName()))
+            name << QString("%1").arg(Sanguosha->translate(gnr));
+    }
+    return name.join(" ");
+}
+
 QString General::getSkillDescription(bool include_name, bool yellow) const{
     QString description;
 
@@ -170,11 +185,10 @@ QString General::getSkillDescription(bool include_name, bool yellow) const{
             if (double_max_hp % 2)
                 name.append("<img src='image/system/magatamas/half.png' height = 12/>");
         }
-        if (!companions.isEmpty()) {
+        if (!getCompanions().isEmpty()) {
             name.append("<br/> <br/>");
-            name.append(QString("<font color=%1><b>%2</b></font>     ").arg(color_str).arg(tr("Companions:")));
-            foreach (QString general, companions)
-                name.append(QString("<font color=%1>%2</font> ").arg(color_str).arg(Sanguosha->translate(general)));
+            name.append(QString("<font color=%1><b>%2:</b></font>     ").arg(color_str).arg(Sanguosha->translate("Companions")));
+            name.append(QString("<font color=%1>%2</font>").arg(color_str).arg(getCompanions()));
         }
         name.append("<br/> <br/>");
         description.prepend(name);
