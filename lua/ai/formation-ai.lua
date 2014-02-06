@@ -315,11 +315,6 @@ end
 sgs.ai_card_intention.TiaoxinCard = 80
 sgs.ai_use_priority.TiaoxinCard = 4
 
-sgs.ai_skill_invoke.tianfu = function(self, data)
-	local jiangwei = data:toPlayer()
-	return jiangwei and self:isFriend(jiangwei)
-end
-
 sgs.ai_skill_invoke.shoucheng = function(self, data)
 	local move = data:toMoveOneTime()
 	return move.from and self:isFriend(move.from) and not self:needKongcheng(move.from, true)

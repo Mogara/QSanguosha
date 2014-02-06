@@ -382,8 +382,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
         do {
             trigger_who.clear();
-            for (int i = 0; i < skills.size(); i++) {
-                const TriggerSkill *skill = skills[i];
+            foreach (const TriggerSkill *skill, skills) {
                 ServerPlayer *ask_who = target;
                 if (!triggered.contains(skill)) {
                     if (skill->objectName() == "game_rule") {
@@ -396,11 +395,11 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                             break;
                         triggered.append(skill);
                     } else {
-                        QStringList triggerSkillList = skill->triggerable(triggerEvent, room, target, data, ask_who);
-                        if (!triggerSkillList.isEmpty()) {
-                            while (room->isPaused()) {}
-                            if (will_trigger.isEmpty()
-                                    || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority()) {
+                        while (room->isPaused()) {}
+                        if (will_trigger.isEmpty()
+                                || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority()) {
+                            QStringList triggerSkillList = skill->triggerable(triggerEvent, room, target, data, ask_who);
+                            if (!triggerSkillList.isEmpty()) {
                                 foreach (QString skill_name, triggerSkillList) {
                                     const TriggerSkill *trskill = Sanguosha->getTriggerSkill(skill_name);
                                     if (trskill) {
@@ -408,11 +407,11 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                                         trigger_who[ask_who].append(trskill);
                                     }
                                 }
-                            } else if(skill->getDynamicPriority() != will_trigger.last()->getDynamicPriority())
-                                break;
+                            }
+                        } else if(skill->getDynamicPriority() != will_trigger.last()->getDynamicPriority())
+                            break;
 
-                            triggered.append(skill);
-                        }
+                        triggered.append(skill);
                     }
                 }
                 triggerable_tested << skill;
@@ -421,10 +420,10 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
             if (!will_trigger.isEmpty()) {
                 will_trigger.clear();
                 foreach(auto p, trigger_who.keys()) {
-                    QList<const TriggerSkill *> skills = trigger_who.value(p);
-                    if (skills.isEmpty()) continue;
+                    QList<const TriggerSkill *> who_skills = trigger_who.value(p);
+                    if (who_skills.isEmpty()) continue;
                     QStringList names, back_up;
-                    foreach (auto skill, skills) {
+                    foreach (auto skill, who_skills) {
                         QString name = skill->objectName();
                         if (names.contains(name))
                             back_up << name;
@@ -443,7 +442,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         else
                             name = names.first();
                         if (name == "trigger_none") break;
-                        const TriggerSkill *skill = skills.at(names.indexOf(name));
+                        const TriggerSkill *skill = who_skills.at(names.indexOf(name));
                         if (skill->cost(triggerEvent, room, target, data)) {
                             will_trigger.prepend(skill);
                             if (p && p->ownSkill(name) && !p->hasShownSkill(Sanguosha->getSkill(name)))
@@ -453,7 +452,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                             back_up.removeOne(name);
                         else
                             names.removeOne(name);
-                        skills.removeOne(skill);
+                        who_skills.removeOne(skill);
                     } while (names.length() > 1);
                 }
             }

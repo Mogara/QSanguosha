@@ -338,6 +338,10 @@ public:
         view_as_skill = new HuyuanViewAsSkill;
     }
 
+    virtual bool canPreshow() const {
+        return true;
+    }
+
     virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *target, QVariant &data, ServerPlayer* &ask_who) const {
         if (PhaseChangeSkill::triggerable(target).isEmpty()) return QStringList();
         if (target->getPhase() == Player::Finish && !target->isNude())
