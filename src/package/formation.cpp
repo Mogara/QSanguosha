@@ -397,7 +397,7 @@ public:
 
         if (room->alivePlayerCount() < 4) return QStringList();
         ServerPlayer *caohong = room->findPlayerBySkillName(objectName());
-        if (!caohong) return QStringList();
+        if (!caohong || !caohong->hasShownSkill(this)) return QStringList();
         QList<ServerPlayer *> teammates = caohong->getFormation();
         foreach (ServerPlayer *p, room->getOtherPlayers(caohong))
             if (teammates.contains(p)) {
@@ -1300,6 +1300,8 @@ public:
 
                 room->setPlayerProperty(player, "kingdom", dfowner->getKingdom());
                 room->setPlayerProperty(player, "role", BasaraMode::getMappedRole(dfowner->getKingdom()));
+
+                player->drawCards(1);
             }
         }
         return false;
