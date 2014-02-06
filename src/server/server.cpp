@@ -187,94 +187,15 @@ QWidget *ServerDialog::createAdvancedTab() {
     pile_swapping_spinbox = new QSpinBox;
     pile_swapping_spinbox->setRange(-1, 15);
     pile_swapping_spinbox->setValue(Config.value("PileSwappingLimitation", 5).toInt());
-    /*
-    without_lordskill_checkbox = new QCheckBox(tr("Without Lordskill"));
-    without_lordskill_checkbox->setChecked(Config.value("WithoutLordskill", false).toBool());
-    */
+
     lord_convert_checkbox = new QCheckBox(tr("Enable Lord Rule"));
     lord_convert_checkbox->setChecked(Config.value("EnableLordGeneralConvert", true).toBool());
-    /*
-    maxchoice_spinbox = new QSpinBox;
-    maxchoice_spinbox->setRange(3, 10);
-    maxchoice_spinbox->setValue(Config.value("MaxChoice", 5).toInt());
-    */
-    /*
-    godlimit_label = new QLabel(tr("Upperlimit for gods"));
-    godlimit_label->setToolTip(tr("<font color=#FFFF33>-1 means that all gods may appear in your general chosen dialog!</font>"));
-    godlimit_spinbox = new QSpinBox;
-    godlimit_spinbox->setRange(-1, 8);
-    godlimit_spinbox->setValue(Config.value("GodLimit", -1).toInt());
-    */
-    /*
-    lord_maxchoice_label = new QLabel(tr("Upperlimit for lord"));
-    lord_maxchoice_label->setToolTip(tr("<font color=#FFFF33>-1 means that all lords are available</font>"));
-    lord_maxchoice_spinbox = new QSpinBox;
-    lord_maxchoice_spinbox->setRange(-1, 10);
-    lord_maxchoice_spinbox->setValue(Config.value("LordMaxChoice", -1).toInt());
-    */
-    /*
-    nonlord_maxchoice_spinbox = new QSpinBox;
-    nonlord_maxchoice_spinbox->setRange(0, 10);
-    nonlord_maxchoice_spinbox->setValue(Config.value("NonLordMaxChoice", 2).toInt());
-    */
-    /*
-    second_general_checkbox = new QCheckBox(tr("Enable second general"));
-    second_general_checkbox->setChecked(Config.Enable2ndGeneral);
-    */
-    /*
-    scene_checkbox  = new QCheckBox(tr("Enable Scene"));
-    scene_checkbox->setChecked(Config.EnableScene);    //changjing
-    */
-    /*
-    same_checkbox = new QCheckBox(tr("Enable Same"));
-    same_checkbox->setChecked(Config.EnableSame);
-    */
-    /*
-    max_hp_label = new QLabel(tr("Max HP scheme"));
-    max_hp_scheme_ComboBox = new QComboBox;
-    max_hp_scheme_ComboBox->addItem(tr("Sum - X"));
-    max_hp_scheme_ComboBox->addItem(tr("Minimum"));
-    max_hp_scheme_ComboBox->addItem(tr("Maximum"));
-    max_hp_scheme_ComboBox->addItem(tr("Average"));
-    max_hp_scheme_ComboBox->setCurrentIndex(Config.MaxHpScheme);
-    */
-    /*
-    prevent_awaken_below3_checkbox = new QCheckBox(tr("Prevent maxhp being less than 3 for awaken skills"));
-    prevent_awaken_below3_checkbox->setChecked(Config.PreventAwakenBelow3);
-    prevent_awaken_below3_checkbox->setEnabled(max_hp_scheme_ComboBox->currentIndex() != 0);
-    */
-    /*
-    scheme0_subtraction_label = new QLabel(tr("Subtraction for scheme 0"));
-    scheme0_subtraction_label->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
-    scheme0_subtraction_spinbox = new QSpinBox;
-    scheme0_subtraction_spinbox->setRange(-5, 12);
-    scheme0_subtraction_spinbox->setValue(Config.Scheme0Subtraction);
-    scheme0_subtraction_spinbox->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
 
-    connect(max_hp_scheme_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setMaxHpSchemeBox()));
-    */
-    /*
-    basara_checkbox = new QCheckBox(tr("Enable Basara"));
-    basara_checkbox->setChecked(Config.EnableBasara);
-    updateButtonEnablility(mode_group->checkedButton());
-    connect(mode_group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(updateButtonEnablility(QAbstractButton *)));
-
-    hegemony_checkbox = new QCheckBox(tr("Enable Hegemony"));
-    hegemony_checkbox->setChecked(Config.EnableBasara && Config.EnableHegemony);
-    hegemony_checkbox->setEnabled(basara_checkbox->isChecked());
-    connect(basara_checkbox, SIGNAL(toggled(bool)), hegemony_checkbox, SLOT(setChecked(bool)));
-    connect(basara_checkbox, SIGNAL(toggled(bool)), hegemony_checkbox, SLOT(setEnabled(bool)));
-    */
     hegemony_maxchoice_label = new QLabel(tr("Upperlimit for hegemony"));
     hegemony_maxchoice_spinbox = new QSpinBox;
     hegemony_maxchoice_spinbox->setRange(5, 10);
     hegemony_maxchoice_spinbox->setValue(Config.value("HegemonyMaxChoice", 7).toInt());
-    /*
-    hegemony_maxshown_label = new QLabel(tr("Max shown num for hegemony"));
-    hegemony_maxshown_spinbox = new QSpinBox;
-    hegemony_maxshown_spinbox->setRange(1, 11);
-    hegemony_maxshown_spinbox->setValue(Config.value("HegemonyMaxShown", 2).toInt());
-    */
+
     address_edit = new QLineEdit;
     address_edit->setText(Config.Address);
 #if QT_VERSION >= 0x040700
@@ -288,8 +209,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     port_edit->setText(QString::number(Config.ServerPort));
     port_edit->setValidator(new QIntValidator(1, 9999, port_edit));
 
-    layout->addWidget(forbid_same_ip_checkbox);
-    layout->addWidget(disable_chat_checkbox);
+    layout->addLayout(HLay(forbid_same_ip_checkbox, disable_chat_checkbox));
     layout->addWidget(random_seat_checkbox);
     layout->addWidget(enable_cheat_checkbox);
     layout->addWidget(free_choose_checkbox);
@@ -366,8 +286,7 @@ QWidget *ServerDialog::createMiscTab() {
     QVBoxLayout *tablayout = new QVBoxLayout;
     tablayout->addLayout(HLay(new QLabel(tr("Game start count down")), game_start_spinbox));
     tablayout->addLayout(HLay(new QLabel(tr("Nullification count down")), nullification_spinbox));
-    tablayout->addWidget(minimize_dialog_checkbox);
-    tablayout->addWidget(surrender_at_death_checkbox);
+    tablayout->addLayout(HLay(minimize_dialog_checkbox, surrender_at_death_checkbox));
     tablayout->addLayout(HLay(luck_card_label, luck_card_spinbox));
     tablayout->addWidget(luck_card_spinbox);
     tablayout->addWidget(ai_groupbox);
