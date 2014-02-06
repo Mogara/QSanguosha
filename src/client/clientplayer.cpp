@@ -134,7 +134,7 @@ QString ClientPlayer::getDeathPixmapPath() const{
         else
             basename = "guard";
     } else if (ServerInfo.EnableHegemony) {
-        basename.clear();
+        basename = getRole();
     } else
         basename = getRole();
 
