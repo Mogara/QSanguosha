@@ -96,6 +96,7 @@ public slots:
     void updateVotes(bool need_select = true, bool display_1 = false);
     void updateReformState();
     void showDistance();
+    void showSeat();
     virtual void refresh();
 
 protected:
@@ -211,6 +212,9 @@ protected:
 
     // The following stuffs for showing distance
     QGraphicsPixmapItem *_m_distanceItem;
+
+    // The following stuffs for showing seat
+    QGraphicsPixmapItem *_m_seatItem;
 
 protected slots:
     virtual void _onEquipSelectChanged();

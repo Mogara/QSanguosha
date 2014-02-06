@@ -7,9 +7,6 @@
 #include "gamerule.h"
 #include "scenerule.h"
 #include "banpair.h"
-#include "roomthread3v3.h"
-#include "roomthreadxmode.h"
-#include "roomthread1v1.h"
 #include "server.h"
 #include "generalselector.h"
 #include "jsonutils.h"
@@ -2470,9 +2467,7 @@ void Room::chooseGenerals() {
     if (!Config.EnableHegemony) {
         QStringList lord_list;
         ServerPlayer *the_lord = getLord();
-        if (Config.EnableSame)
-            lord_list = Sanguosha->getRandomGenerals(Config.value("MaxChoice", 5).toInt());
-        else if (the_lord->getState() == "robot")
+    if (the_lord->getState() == "robot")
             if (((qrand() % 100 < nonlord_prob || lord_num == 0) && nonlord_num > 0)
                 || Sanguosha->getLords().length() == 0)
                 lord_list = Sanguosha->getRandomGenerals(1);
@@ -2484,16 +2479,6 @@ void Room::chooseGenerals() {
         the_lord->setGeneralName(general);
         if (!Config.EnableBasara)
             broadcastProperty(the_lord, "general", general);
-
-        if (Config.EnableSame) {
-            foreach (ServerPlayer *p, m_players) {
-                if (!p->isLord())
-                    p->setGeneralName(general);
-            }
-
-            Config.Enable2ndGeneral = false;
-            return;
-        }
     }
     QList<ServerPlayer *> to_assign = m_players;
     if (!Config.EnableHegemony) to_assign.removeOne(getLord());
@@ -2592,58 +2577,7 @@ void Room::run() {
 
     if (scenario && !scenario->generalSelection())
         startGame();
-    else if (mode == "06_3v3") {
-        thread_3v3 = new RoomThread3v3(this);
-        thread_3v3->start();
-
-        connect(thread_3v3, SIGNAL(finished()), this, SLOT(startGame()));
-        connect(thread_3v3, SIGNAL(finished()), thread_3v3, SLOT(deleteLater()));
-    } else if (mode == "06_XMode") {
-        thread_xmode = new RoomThreadXMode(this);
-        thread_xmode->start();
-
-        connect(thread_xmode, SIGNAL(finished()), this, SLOT(startGame()));
-        connect(thread_xmode, SIGNAL(finished()), thread_xmode, SLOT(deleteLater()));
-    } else if (mode == "02_1v1") {
-        thread_1v1 = new RoomThread1v1(this);
-        thread_1v1->start();
-
-        connect(thread_1v1, SIGNAL(finished()), this, SLOT(startGame()));
-        connect(thread_1v1, SIGNAL(finished()), thread_1v1, SLOT(deleteLater()));
-    } else if (mode == "04_1v3") {
-        ServerPlayer *lord = m_players.first();
-        setPlayerProperty(lord, "general", "shenlvbu1");
-
-        QList<const General *> generals = QList<const General *>();
-        foreach (QString pack_name, GetConfigFromLuaState(Sanguosha->getLuaState(), "hulao_packages").toStringList()) {
-             const Package *pack = Sanguosha->findChild<const Package *>(pack_name);
-             if (pack) generals << pack->findChildren<const General *>();
-        }
-
-        QStringList names;
-        foreach (const General *general, generals) {
-            if (general->isTotallyHidden())
-                continue;
-            names << general->objectName();
-        }
-
-        foreach (QString name, Config.value("Banlist/HulaoPass").toStringList())
-            if (names.contains(name)) names.removeOne(name);
-
-        foreach (ServerPlayer *player, m_players) {
-            if (player == lord)
-                continue;
-
-            qShuffle(names);
-            QStringList choices = names.mid(0, 3);
-            QString name = askForGeneral(player, choices);
-
-            setPlayerProperty(player, "general", name);
-            names.removeOne(name);
-        }
-
-        startGame();
-    } else {
+    else {
         chooseGenerals();
         startGame();
     }
@@ -3114,36 +3048,6 @@ void Room::loseMaxHp(ServerPlayer *victim, int lose) {
             thread->trigger(PostHpReduced, this, victim, data);
         }
     }
-}
-
-bool Room::changeMaxHpForAwakenSkill(ServerPlayer *player, int magnitude) {
-    player->gainMark("@waked");
-    int n = player->getMark("@waked");
-    if (magnitude < 0) {
-        if (Config.Enable2ndGeneral && player->getGeneral() && player->getGeneral2()
-            && Config.MaxHpScheme > 0 && Config.PreventAwakenBelow3
-            && player->getMaxHp() <= 3) {
-            setPlayerMark(player, "AwakenLostMaxHp", 1);
-        } else {
-            loseMaxHp(player, -magnitude);
-        }
-    } else {
-        setPlayerProperty(player, "maxhp", player->getMaxHp() + magnitude);
-
-        LogMessage log;
-        log.type = "#GainMaxHp";
-        log.from = player;
-        log.arg = QString::number(magnitude);
-        sendLog(log);
-
-        LogMessage log2;
-        log2.type = "#GetHp";
-        log2.from = player;
-        log2.arg = QString::number(player->getHp());
-        log2.arg2 = QString::number(player->getMaxHp());
-        sendLog(log2);
-    }
-    return (player->getMark("@waked") >= n);
 }
 
 void Room::applyDamage(ServerPlayer *victim, const DamageStruct &damage) {

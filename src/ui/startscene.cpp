@@ -121,24 +121,6 @@ void StartScene::printServerInfo() {
     if (Config.EnableCheat)
         server_log->append(Config.FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
 
-    if (Config.Enable2ndGeneral) {
-        QString scheme_str;
-        switch (Config.MaxHpScheme) {
-        case 0: scheme_str = QString(tr("Sum - %1")).arg(Config.Scheme0Subtraction); break;
-        case 1: scheme_str = tr("Minimum"); break;
-        case 2: scheme_str = tr("Maximum"); break;
-        case 3: scheme_str = tr("Average"); break;
-        }
-        server_log->append(tr("Secondary general is enabled, max hp scheme is %1").arg(scheme_str));
-    } else
-        server_log->append(tr("Seconardary general is disabled"));
-
-    server_log->append(Config.EnableScene ?
-                           tr("Scene Mode is enabled") :
-                           tr("Scene Mode is disabled"));
-    server_log->append(Config.EnableSame ?
-                           tr("Same Mode is enabled") :
-                           tr("Same Mode is disabled"));
     server_log->append(Config.EnableBasara ?
                            tr("Basara Mode is enabled") :
                            tr("Basara Mode is disabled"));

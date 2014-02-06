@@ -209,6 +209,17 @@ CommonTranslationTable = {
 	["CAPITAL(8)"] = "八",
 	["CAPITAL(9)"] = "九",
 	["CAPITAL(10)"] = "十",
+
+	["SEAT(1)"] = "一号位",
+	["SEAT(2)"] = "二号位",
+	["SEAT(3)"] = "三号位",
+	["SEAT(4)"] = "四号位",
+	["SEAT(5)"] = "五号位",
+	["SEAT(6)"] = "六号位",
+	["SEAT(7)"] = "七号位",
+	["SEAT(8)"] = "八号位",
+	["SEAT(9)"] = "九号位",
+	["SEAT(10)"] = "十号位",
 }
 
 return CommonTranslationTable

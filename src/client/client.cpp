@@ -721,8 +721,8 @@ QString Client::getPlayerName(const QString &str) {
         general_name = Sanguosha->translate(general_name);
         if (player->getGeneral2())
             general_name.append("/" + Sanguosha->translate(player->getGeneral2Name()));
-        if (ServerInfo.EnableSame || player->getGeneralName() == "anjiang")
-            general_name = QString("%1[%2]").arg(general_name).arg(player->getSeat());
+        if (player->getGeneralName() == "anjiang" && player->getGeneral2Name() == "anjiang")
+            general_name = Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(player->getSeat())));
         return general_name;
     } else
         return Sanguosha->translate(str);

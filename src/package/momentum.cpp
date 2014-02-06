@@ -392,7 +392,9 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
-        if (player == NULL || !player->isAlive() || TriggerSkill::triggerable(player).isEmpty() ) return QStringList();
+        if (player == NULL || !player->isAlive()) return QStringList();
+        ServerPlayer *owner = room->findPlayerBySkillName(objectName());
+        if (!TriggerSkill::triggerable(triggerEvent, room, owner, data, owner).contains(objectName())) return QStringList();
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from->getPhase() == Player::Play && use.from->getMark(objectName()) == 0) {
             if (!use.card->isKindOf("SkillCard"))
@@ -403,16 +405,22 @@ public:
                     ids << use.card->getEffectiveId();
                 else if (use.card->subcardsLength() > 0)
                     ids = use.card->getSubcards();
-                if (!ids.isEmpty())
-                    if (player->isFriendWith(use.from))
+                if (!ids.isEmpty()){
+                    if (owner->isFriendWith(use.from)){
+                        ask_who = owner;
                         return QStringList(objectName());
+                    }
+                }
             }
         }
         return QStringList();
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (room->askForSkillInvoke(player, objectName())) {
+        ServerPlayer *owner = room->findPlayerBySkillName(objectName());
+        if (!TriggerSkill::triggerable(triggerEvent, room, owner, data, owner).contains(objectName()))
+            return false;
+        if (room->askForSkillInvoke(owner, objectName())) {
             room->broadcastSkillInvoke(objectName());
             return true;
         }
@@ -594,7 +602,13 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        target->getRoom()->handleAcquireDetachSkills(target, "sunce_yinghun!|sunce_yingzi!");
+        bool head = target->inHeadSkills(objectName());
+        QStringList skills;
+        skills << "sunce_yinghun" << "sunce_yingzi";
+        if (!head)
+            for (int i = 0; i < skills.length(); i++)
+                skills[i].append("!");
+        target->getRoom()->handleAcquireDetachSkills(target, skills);
         target->setMark("hunshang",1);
         return false;
     }

@@ -255,12 +255,6 @@
     <ClCompile Include="..\..\src\server\roomthread.cpp">
       <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\server\roomthread1v1.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\server\roomthread3v3.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\server\server.cpp">
       <Filter>server</Filter>
     </ClCompile>
@@ -375,15 +369,6 @@
     <ClCompile Include="Release\moc_fancheng-scenario.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\server\roomthreadxmode.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_roomthreadxmode.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_roomthreadxmode.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\formation.cpp">
       <Filter>package</Filter>
     </ClCompile>
@@ -444,12 +429,6 @@
       <Filter>server</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\server\roomthread.h">
-      <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\server\roomthread1v1.h">
-      <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\server\roomthread3v3.h">
       <Filter>server</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\server\server.h">
@@ -640,9 +619,6 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\scenario\fancheng-scenario.h">
       <Filter>scenario</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\server\roomthreadxmode.h">
-      <Filter>server</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\package\formation.h">
       <Filter>package</Filter>
@@ -923,18 +899,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_roomthread.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_roomthread1v1.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_roomthread1v1.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_roomthread3v3.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_roomthread3v3.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_scenario-overview.cpp">

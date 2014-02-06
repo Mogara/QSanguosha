@@ -91,24 +91,14 @@ Engine::Engine()
 
     // available game modes
     modes["02p"] = tr("2 players");
-    //modes["02pbb"] = tr("2 players (using blance beam)");
-    modes["02_1v1"] = tr("2 players (KOF style)");
     modes["03p"] = tr("3 players");
     modes["04p"] = tr("4 players");
-    modes["04_1v3"] = tr("4 players (Hulao Pass)");
     modes["05p"] = tr("5 players");
     modes["06p"] = tr("6 players");
-    modes["06pd"] = tr("6 players (2 renegades)");
-    modes["06_3v3"] = tr("6 players (3v3)");
-    modes["06_XMode"] = tr("6 players (XMode)");
     modes["07p"] = tr("7 players");
     modes["08p"] = tr("8 players");
-    modes["08pd"] = tr("8 players (2 renegades)");
-    modes["08pz"] = tr("8 players (0 renegade)");
     modes["09p"] = tr("9 players");
-    modes["10pd"] = tr("10 players");
-    modes["10p"] = tr("10 players (1 renegade)");
-    modes["10pz"] = tr("10 players (0 renegade)");
+    modes["10p"] = tr("10 players");
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
@@ -277,12 +267,7 @@ QString Engine::translate(const QString &to_translate) const{
 }
 
 int Engine::getRoleIndex() const{
-    if (ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode") {
-        return 4;
-    } else if (ServerInfo.EnableHegemony) {
-        return 5;
-    } else
-        return 1;
+    return 5;
 }
 
 const CardPattern *Engine::getPattern(const QString &name) const{
@@ -349,16 +334,8 @@ int Engine::getGeneralCount(bool include_banned) const{
         const General *general = itor.value();
         if (getBanPackages().contains(general->getPackage()))
             total--;
-        else if ((isNormalGameMode(ServerInfo.GameMode)
-                  || ServerInfo.GameMode.contains("_mini_")
-                  || ServerInfo.GameMode == "custom_scenario")
+        else if ((isNormalGameMode(ServerInfo.GameMode))
                  && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
-            total--;
-        else if (ServerInfo.GameMode == "04_1v3"
-                 && Config.value("Banlist/HulaoPass").toStringList().contains(general->objectName()))
-            total--;
-        else if (ServerInfo.GameMode == "06_XMode"
-                 && Config.value("Banlist/XMode").toStringList().contains(general->objectName()))
             total--;
         else if (ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
             total--;
@@ -547,7 +524,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersionNumber() const{
-    return "20140203_AlphaTest";
+    return "20140205_AlphaTest";
 }
 
 QString Engine::getVersion() const{
@@ -627,10 +604,6 @@ QString Engine::getSetupString() const{
         flags.append("F");
     if (Config.Enable2ndGeneral)
         flags.append("S");
-    if (Config.EnableScene)
-        flags.append("N");
-    if (Config.EnableSame)
-        flags.append("T");
     if (Config.EnableBasara)
         flags.append("B");
     if (Config.EnableHegemony)
@@ -639,17 +612,6 @@ QString Engine::getSetupString() const{
         flags.append("A");
     if (Config.DisableChat)
         flags.append("M");
-
-    if (Config.MaxHpScheme == 1)
-        flags.append("1");
-    else if (Config.MaxHpScheme == 2)
-        flags.append("2");
-    else if (Config.MaxHpScheme == 3)
-        flags.append("3");
-    else if (Config.MaxHpScheme == 0) {
-        char c = Config.Scheme0Subtraction + 5 + 'a'; // from -5 to 12
-        flags.append(c);
-    }
 
     QString server_name = Config.ServerName.toUtf8().toBase64();
     QStringList setup_items;

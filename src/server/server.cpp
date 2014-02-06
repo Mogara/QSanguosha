@@ -148,35 +148,14 @@ QWidget *ServerDialog::createPackageTab() {
     return widget;
 }
 
-void ServerDialog::setMaxHpSchemeBox() {
-    if (!second_general_checkbox->isChecked()) {
-        prevent_awaken_below3_checkbox->setVisible(false);
-
-        scheme0_subtraction_label->setVisible(false);
-        scheme0_subtraction_spinbox->setVisible(false);
-
-        return;
-    }
-    int index = max_hp_scheme_ComboBox->currentIndex();
-    if (index == 0) {
-        prevent_awaken_below3_checkbox->setVisible(false);
-
-        scheme0_subtraction_label->setVisible(true);
-        scheme0_subtraction_spinbox->setVisible(true);
-        scheme0_subtraction_spinbox->setValue(Config.value("Scheme0Subtraction", 3).toInt());
-        scheme0_subtraction_spinbox->setEnabled(true);
-    } else {
-        prevent_awaken_below3_checkbox->setVisible(true);
-        prevent_awaken_below3_checkbox->setChecked(Config.value("PreventAwakenBelow3", false).toBool());
-        prevent_awaken_below3_checkbox->setEnabled(true);
-
-        scheme0_subtraction_label->setVisible(false);
-        scheme0_subtraction_spinbox->setVisible(false);
-    }
-}
-
 QWidget *ServerDialog::createAdvancedTab() {
     QVBoxLayout *layout = new QVBoxLayout;
+
+    forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
+    forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
+
+    disable_chat_checkbox = new QCheckBox(tr("Disable chat"));
+    disable_chat_checkbox->setChecked(Config.DisableChat);
 
     random_seat_checkbox = new QCheckBox(tr("Arrange the seats randomly"));
     random_seat_checkbox->setChecked(Config.RandomSeat);
@@ -209,88 +188,13 @@ QWidget *ServerDialog::createAdvancedTab() {
     pile_swapping_spinbox->setRange(-1, 15);
     pile_swapping_spinbox->setValue(Config.value("PileSwappingLimitation", 5).toInt());
 
-    without_lordskill_checkbox = new QCheckBox(tr("Without Lordskill"));
-    without_lordskill_checkbox->setChecked(Config.value("WithoutLordskill", false).toBool());
-
     lord_convert_checkbox = new QCheckBox(tr("Enable Lord Rule"));
     lord_convert_checkbox->setChecked(Config.value("EnableLordGeneralConvert", true).toBool());
-
-    maxchoice_spinbox = new QSpinBox;
-    maxchoice_spinbox->setRange(3, 10);
-    maxchoice_spinbox->setValue(Config.value("MaxChoice", 5).toInt());
-
-    godlimit_label = new QLabel(tr("Upperlimit for gods"));
-    godlimit_label->setToolTip(tr("<font color=#FFFF33>-1 means that all gods may appear in your general chosen dialog!</font>"));
-    godlimit_spinbox = new QSpinBox;
-    godlimit_spinbox->setRange(-1, 8);
-    godlimit_spinbox->setValue(Config.value("GodLimit", -1).toInt());
-
-    lord_maxchoice_label = new QLabel(tr("Upperlimit for lord"));
-    lord_maxchoice_label->setToolTip(tr("<font color=#FFFF33>-1 means that all lords are available</font>"));
-    lord_maxchoice_spinbox = new QSpinBox;
-    lord_maxchoice_spinbox->setRange(-1, 10);
-    lord_maxchoice_spinbox->setValue(Config.value("LordMaxChoice", -1).toInt());
-
-    nonlord_maxchoice_spinbox = new QSpinBox;
-    nonlord_maxchoice_spinbox->setRange(0, 10);
-    nonlord_maxchoice_spinbox->setValue(Config.value("NonLordMaxChoice", 2).toInt());
-
-    forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
-    forbid_same_ip_checkbox->setChecked(Config.ForbidSIMC);
-
-    disable_chat_checkbox = new QCheckBox(tr("Disable chat"));
-    disable_chat_checkbox->setChecked(Config.DisableChat);
-
-    second_general_checkbox = new QCheckBox(tr("Enable second general"));
-    second_general_checkbox->setChecked(Config.Enable2ndGeneral);
-
-    scene_checkbox  = new QCheckBox(tr("Enable Scene"));
-    scene_checkbox->setChecked(Config.EnableScene);    //changjing
-
-    same_checkbox = new QCheckBox(tr("Enable Same"));
-    same_checkbox->setChecked(Config.EnableSame);
-
-    max_hp_label = new QLabel(tr("Max HP scheme"));
-    max_hp_scheme_ComboBox = new QComboBox;
-    max_hp_scheme_ComboBox->addItem(tr("Sum - X"));
-    max_hp_scheme_ComboBox->addItem(tr("Minimum"));
-    max_hp_scheme_ComboBox->addItem(tr("Maximum"));
-    max_hp_scheme_ComboBox->addItem(tr("Average"));
-    max_hp_scheme_ComboBox->setCurrentIndex(Config.MaxHpScheme);
-
-    prevent_awaken_below3_checkbox = new QCheckBox(tr("Prevent maxhp being less than 3 for awaken skills"));
-    prevent_awaken_below3_checkbox->setChecked(Config.PreventAwakenBelow3);
-    prevent_awaken_below3_checkbox->setEnabled(max_hp_scheme_ComboBox->currentIndex() != 0);
-
-    scheme0_subtraction_label = new QLabel(tr("Subtraction for scheme 0"));
-    scheme0_subtraction_label->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
-    scheme0_subtraction_spinbox = new QSpinBox;
-    scheme0_subtraction_spinbox->setRange(-5, 12);
-    scheme0_subtraction_spinbox->setValue(Config.Scheme0Subtraction);
-    scheme0_subtraction_spinbox->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
-
-    connect(max_hp_scheme_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setMaxHpSchemeBox()));
-
-    basara_checkbox = new QCheckBox(tr("Enable Basara"));
-    basara_checkbox->setChecked(Config.EnableBasara);
-    updateButtonEnablility(mode_group->checkedButton());
-    connect(mode_group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(updateButtonEnablility(QAbstractButton *)));
-
-    hegemony_checkbox = new QCheckBox(tr("Enable Hegemony"));
-    hegemony_checkbox->setChecked(Config.EnableBasara && Config.EnableHegemony);
-    hegemony_checkbox->setEnabled(basara_checkbox->isChecked());
-    connect(basara_checkbox, SIGNAL(toggled(bool)), hegemony_checkbox, SLOT(setChecked(bool)));
-    connect(basara_checkbox, SIGNAL(toggled(bool)), hegemony_checkbox, SLOT(setEnabled(bool)));
 
     hegemony_maxchoice_label = new QLabel(tr("Upperlimit for hegemony"));
     hegemony_maxchoice_spinbox = new QSpinBox;
     hegemony_maxchoice_spinbox->setRange(5, 10);
     hegemony_maxchoice_spinbox->setValue(Config.value("HegemonyMaxChoice", 7).toInt());
-
-    hegemony_maxshown_label = new QLabel(tr("Max shown num for hegemony"));
-    hegemony_maxshown_spinbox = new QSpinBox;
-    hegemony_maxshown_spinbox->setRange(1, 11);
-    hegemony_maxshown_spinbox->setValue(Config.value("HegemonyMaxShown", 2).toInt());
 
     address_edit = new QLineEdit;
     address_edit->setText(Config.Address);
@@ -305,26 +209,14 @@ QWidget *ServerDialog::createAdvancedTab() {
     port_edit->setText(QString::number(Config.ServerPort));
     port_edit->setValidator(new QIntValidator(1, 9999, port_edit));
 
-    layout->addWidget(forbid_same_ip_checkbox);
-    layout->addWidget(disable_chat_checkbox);
+    layout->addLayout(HLay(forbid_same_ip_checkbox, disable_chat_checkbox));
     layout->addWidget(random_seat_checkbox);
     layout->addWidget(enable_cheat_checkbox);
     layout->addWidget(free_choose_checkbox);
     layout->addLayout(HLay(free_assign_checkbox, free_assign_self_checkbox));
     layout->addLayout(HLay(pile_swapping_label, pile_swapping_spinbox));
-    layout->addLayout(HLay(without_lordskill_checkbox, lord_convert_checkbox));
-    layout->addLayout(HLay(new QLabel(tr("Upperlimit for general")), maxchoice_spinbox));
-    layout->addLayout(HLay(godlimit_label, godlimit_spinbox));
-    layout->addLayout(HLay(lord_maxchoice_label, lord_maxchoice_spinbox));
-    layout->addLayout(HLay(new QLabel(tr("Upperlimit for non-lord")), nonlord_maxchoice_spinbox));
-    layout->addWidget(second_general_checkbox);
-    layout->addLayout(HLay(max_hp_label, max_hp_scheme_ComboBox));
-    layout->addLayout(HLay(scheme0_subtraction_label, scheme0_subtraction_spinbox));
-    layout->addWidget(prevent_awaken_below3_checkbox);
-    layout->addLayout(HLay(basara_checkbox, hegemony_checkbox));
+    layout->addWidget(lord_convert_checkbox);
     layout->addLayout(HLay(hegemony_maxchoice_label, hegemony_maxchoice_spinbox));
-    layout->addLayout(HLay(hegemony_maxshown_label, hegemony_maxshown_spinbox));
-    layout->addWidget(same_checkbox);
     layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
     layout->addWidget(detect_button);
     layout->addLayout(HLay(new QLabel(tr("Port")), port_edit));
@@ -332,33 +224,7 @@ QWidget *ServerDialog::createAdvancedTab() {
 
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
-
-    max_hp_label->setVisible(Config.Enable2ndGeneral);
-    connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_label, SLOT(setVisible(bool)));
-    max_hp_scheme_ComboBox->setVisible(Config.Enable2ndGeneral);
-    connect(second_general_checkbox, SIGNAL(toggled(bool)), max_hp_scheme_ComboBox, SLOT(setVisible(bool)));
-
-    if (Config.Enable2ndGeneral) {
-        prevent_awaken_below3_checkbox->setVisible(max_hp_scheme_ComboBox->currentIndex() != 0);
-        scheme0_subtraction_label->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
-        scheme0_subtraction_spinbox->setVisible(max_hp_scheme_ComboBox->currentIndex() == 0);
-    } else {
-        prevent_awaken_below3_checkbox->setVisible(false);
-        scheme0_subtraction_label->setVisible(false);
-        scheme0_subtraction_spinbox->setVisible(false);
-    }
-    connect(second_general_checkbox, SIGNAL(toggled(bool)), this, SLOT(setMaxHpSchemeBox()));
-
-    hegemony_maxchoice_label->setVisible(Config.EnableHegemony);
-    connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxchoice_label, SLOT(setVisible(bool)));
-    hegemony_maxchoice_spinbox->setVisible(Config.EnableHegemony);
-    connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxchoice_spinbox, SLOT(setVisible(bool)));
-
-    hegemony_maxshown_label->setVisible(Config.EnableHegemony);
-    connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxshown_label, SLOT(setVisible(bool)));
-    hegemony_maxshown_spinbox->setVisible(Config.EnableHegemony);
-    connect(hegemony_checkbox, SIGNAL(toggled(bool)), hegemony_maxshown_spinbox, SLOT(setVisible(bool)));
-
+    
     return widget;
 }
 
@@ -390,7 +256,7 @@ QWidget *ServerDialog::createMiscTab() {
     QVBoxLayout *layout = new QVBoxLayout;
 
     ai_enable_checkbox = new QCheckBox(tr("Enable AI"));
-    ai_enable_checkbox->setChecked(Config.EnableAI);
+    ai_enable_checkbox->setChecked(true);
     ai_enable_checkbox->setEnabled(false); // Force to enable AI for disabling it causes crashes!!
 
     ai_delay_spinbox = new QSpinBox;
@@ -420,8 +286,7 @@ QWidget *ServerDialog::createMiscTab() {
     QVBoxLayout *tablayout = new QVBoxLayout;
     tablayout->addLayout(HLay(new QLabel(tr("Game start count down")), game_start_spinbox));
     tablayout->addLayout(HLay(new QLabel(tr("Nullification count down")), nullification_spinbox));
-    tablayout->addWidget(minimize_dialog_checkbox);
-    tablayout->addWidget(surrender_at_death_checkbox);
+    tablayout->addLayout(HLay(minimize_dialog_checkbox, surrender_at_death_checkbox));
     tablayout->addLayout(HLay(luck_card_label, luck_card_spinbox));
     tablayout->addWidget(luck_card_spinbox);
     tablayout->addWidget(ai_groupbox);
@@ -436,28 +301,6 @@ void ServerDialog::ensureEnableAI() {
     ai_enable_checkbox->setChecked(true);
 }
 
-void ServerDialog::updateButtonEnablility(QAbstractButton *button) {
-    if (!button) return;
-    if (button->objectName().contains("scenario")
-        || button->objectName().contains("mini")
-        || button->objectName().contains("1v1")
-        || button->objectName().contains("1v3")) {
-        basara_checkbox->setChecked(false);
-        basara_checkbox->setEnabled(false);
-    } else {
-        basara_checkbox->setEnabled(true);
-    }
-
-    if (button->objectName().contains("mini")) {
-        mini_scene_button->setEnabled(true);
-        second_general_checkbox->setChecked(false);
-        second_general_checkbox->setEnabled(false);
-    } else {
-        second_general_checkbox->setEnabled(true);
-        mini_scene_button->setEnabled(false);
-    }
-}
-
 void BanlistDialog::switchTo(int item) {
     this->item = item;
     list = lists.at(item);
@@ -470,7 +313,7 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     setWindowTitle(tr("Select generals that are excluded"));
 
     if (ban_list.isEmpty())
-        ban_list << "Roles" << "1v1" << "HulaoPass" << "XMode" << "Basara" << "Hegemony" << "Pairs";
+        ban_list << "Roles" << "Basara" << "Hegemony" << "Pairs";
     QVBoxLayout *layout = new QVBoxLayout;
 
     QTabWidget *tab = new QTabWidget;
@@ -615,132 +458,6 @@ void BanlistDialog::saveAll() {
     BanPair::loadBanPairs();
 }
 
-void ServerDialog::edit1v1Banlist() {
-    BanlistDialog *dialog = new BanlistDialog(this);
-    dialog->exec();
-}
-
-QGroupBox *ServerDialog::create1v1Box() {
-    QGroupBox *box = new QGroupBox(tr("1v1 options"));
-    box->setEnabled(Config.GameMode == "02_1v1");
-    box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
-    QVBoxLayout *vlayout = new QVBoxLayout;
-
-    QComboBox *officialComboBox = new QComboBox;
-    officialComboBox->addItem(tr("Classical"), "Classical");
-    officialComboBox->addItem("2013", "2013");
-    officialComboBox->addItem("OL", "OL");
-
-    official_1v1_ComboBox = officialComboBox;
-
-    QString rule = Config.value("1v1/Rule", "Classical").toString();
-    if (rule == "2013")
-        officialComboBox->setCurrentIndex(1);
-    else if (rule == "OL")
-        officialComboBox->setCurrentIndex(2);
-
-    kof_using_extension_checkbox = new QCheckBox(tr("General extensions"));
-    kof_using_extension_checkbox->setChecked(Config.value("1v1/UsingExtension", false).toBool());
-
-    kof_card_extension_checkbox = new QCheckBox(tr("Card extensions"));
-    kof_card_extension_checkbox->setChecked(Config.value("1v1/UsingCardExtension", false).toBool());
-
-    vlayout->addLayout(HLay(new QLabel(tr("Rule option")), official_1v1_ComboBox));
-
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addWidget(new QLabel(tr("Extension setting")));
-    hlayout->addStretch();
-    hlayout->addWidget(kof_using_extension_checkbox);
-    hlayout->addWidget(kof_card_extension_checkbox);
-
-    vlayout->addLayout(hlayout);
-    box->setLayout(vlayout);
-
-    return box;
-}
-
-QGroupBox *ServerDialog::create3v3Box() {
-    QGroupBox *box = new QGroupBox(tr("3v3 options"));
-    box->setEnabled(Config.GameMode == "06_3v3");
-    box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
-    QVBoxLayout *vlayout = new QVBoxLayout;
-
-    official_3v3_radiobutton = new QRadioButton(tr("Official mode"));
-
-    QComboBox *officialComboBox = new QComboBox;
-    officialComboBox->addItem(tr("Classical"), "Classical");
-    officialComboBox->addItem("2012", "2012");
-    officialComboBox->addItem("2013", "2013");
-
-    official_3v3_ComboBox = officialComboBox;
-
-    QString rule = Config.value("3v3/OfficialRule", "2013").toString();
-    if (rule == "2012")
-        officialComboBox->setCurrentIndex(1);
-    else if (rule == "2013")
-        officialComboBox->setCurrentIndex(2);
-
-    QRadioButton *extend = new QRadioButton(tr("Extension mode"));
-    QPushButton *extend_edit_button = new QPushButton(tr("General selection ..."));
-    extend_edit_button->setEnabled(false);
-    connect(extend, SIGNAL(toggled(bool)), extend_edit_button, SLOT(setEnabled(bool)));
-    connect(extend_edit_button, SIGNAL(clicked()), this, SLOT(select3v3Generals()));
-
-    exclude_disaster_checkbox = new QCheckBox(tr("Exclude disasters"));
-    exclude_disaster_checkbox->setChecked(Config.value("3v3/ExcludeDisasters", true).toBool());
-
-    QComboBox *roleChooseComboBox = new QComboBox;
-    roleChooseComboBox->addItem(tr("Normal"), "Normal");
-    roleChooseComboBox->addItem(tr("Random"), "Random");
-    roleChooseComboBox->addItem(tr("All roles"), "AllRoles");
-
-    role_choose_ComboBox = roleChooseComboBox;
-
-    QString scheme = Config.value("3v3/RoleChoose", "Normal").toString();
-    if (scheme == "Random")
-        roleChooseComboBox->setCurrentIndex(1);
-    else if (scheme == "AllRoles")
-        roleChooseComboBox->setCurrentIndex(2);
-
-    vlayout->addLayout(HLay(official_3v3_radiobutton, official_3v3_ComboBox));
-    vlayout->addLayout(HLay(extend, extend_edit_button));
-    vlayout->addWidget(exclude_disaster_checkbox);
-    vlayout->addLayout(HLay(new QLabel(tr("Role choose")), role_choose_ComboBox));
-    box->setLayout(vlayout);
-
-    bool using_extension = Config.value("3v3/UsingExtension", false).toBool();
-    if (using_extension)
-        extend->setChecked(true);
-    else
-        official_3v3_radiobutton->setChecked(true);
-
-    return box;
-}
-
-QGroupBox *ServerDialog::createXModeBox() {
-    QGroupBox *box = new QGroupBox(tr("XMode options"));
-    box->setEnabled(Config.GameMode == "06_XMode");
-    box->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
-    QComboBox *roleChooseComboBox = new QComboBox;
-    roleChooseComboBox->addItem(tr("Normal"), "Normal");
-    roleChooseComboBox->addItem(tr("Random"), "Random");
-    roleChooseComboBox->addItem(tr("All roles"), "AllRoles");
-
-    role_choose_xmode_ComboBox = roleChooseComboBox;
-
-    QString scheme = Config.value("XMode/RoleChooseX", "Normal").toString();
-    if (scheme == "Random")
-        roleChooseComboBox->setCurrentIndex(1);
-    else if (scheme == "AllRoles")
-        roleChooseComboBox->setCurrentIndex(2);
-
-    box->setLayout(HLay(new QLabel(tr("Role choose")), role_choose_xmode_ComboBox));
-    return box;
-}
-
 QGroupBox *ServerDialog::createGameModeBox() {
     QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
     mode_group = new QButtonGroup;
@@ -757,89 +474,11 @@ QGroupBox *ServerDialog::createGameModeBox() {
         button->setObjectName(itor.key());
         mode_group->addButton(button);
 
-        if (itor.key() == "02_1v1") {
-            QGroupBox *box = create1v1Box();
-            connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
-
-            item_list << button << box;
-        } else if (itor.key() == "06_3v3") {
-            QGroupBox *box = create3v3Box();
-            connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
-
-            item_list << button << box;
-        } else if (itor.key() == "06_XMode") {
-            QGroupBox *box = createXModeBox();
-            connect(button, SIGNAL(toggled(bool)), box, SLOT(setEnabled(bool)));
-
-            item_list << button << box;
-        } else {
-            item_list << button;
-        }
+        item_list << button;
 
         if (itor.key() == Config.GameMode)
             button->setChecked(true);
     }
-
-    // add scenario modes
-    QRadioButton *scenario_button = new QRadioButton(tr("Scenario mode"));
-    scenario_button->setObjectName("scenario");
-    mode_group->addButton(scenario_button);
-
-    scenario_ComboBox = new QComboBox;
-    QStringList names = Sanguosha->getModScenarioNames();
-    foreach (QString name, names) {
-        QString scenario_name = Sanguosha->translate(name);
-        const Scenario *scenario = Sanguosha->getScenario(name);
-        int count = scenario->getPlayerCount();
-        QString text = tr("%1 (%2 persons)").arg(scenario_name).arg(count);
-        scenario_ComboBox->addItem(text, name);
-    }
-
-    if (mode_group->checkedButton() == NULL) {
-        int index = names.indexOf(Config.GameMode);
-        if (index != -1) {
-            scenario_button->setChecked(true);
-            scenario_ComboBox->setCurrentIndex(index);
-        }
-    }
-
-    //mini scenes
-    QRadioButton *mini_scenes = new QRadioButton(tr("Mini Scenes"));
-    mini_scenes->setObjectName("mini");
-    mode_group->addButton(mini_scenes);
-
-    mini_scene_ComboBox = new QComboBox;
-    int index = -1;
-    int stage = qMin(Sanguosha->getMiniSceneCounts(), Config.value("MiniSceneStage", 1).toInt());
-
-    for (int i = 1; i <= stage; i++) {
-        QString name = QString(MiniScene::S_KEY_MINISCENE).arg(QString::number(i));
-        QString scenario_name = Sanguosha->translate(name);
-        const Scenario *scenario = Sanguosha->getScenario(name);
-        int count = scenario->getPlayerCount();
-        QString text = tr("%1 (%2 persons)").arg(scenario_name).arg(count);
-        mini_scene_ComboBox->addItem(text, name);
-
-        if (name == Config.GameMode) index = i - 1;
-    }
-
-    if (index >= 0) {
-        mini_scene_ComboBox->setCurrentIndex(index);
-        mini_scenes->setChecked(true);
-    } else if (Config.GameMode == "custom_scenario")
-        mini_scenes->setChecked(true);
-
-    mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
-    connect(mini_scene_button, SIGNAL(clicked()), this, SLOT(doCustomAssign()));
-
-    mini_scene_button->setEnabled(mode_group->checkedButton() ?
-                                      mode_group->checkedButton()->objectName() == "mini" :
-                                      false);
-
-    item_list << HLay(scenario_button, scenario_ComboBox);
-    item_list << HLay(mini_scenes, mini_scene_ComboBox);
-    item_list << HLay(mini_scenes, mini_scene_button);
-
     // ============
 
     QVBoxLayout *left = new QVBoxLayout;
@@ -848,7 +487,7 @@ QGroupBox *ServerDialog::createGameModeBox() {
     for (int i = 0; i < item_list.length(); i++) {
         QObject *item = item_list.at(i);
 
-        QVBoxLayout *side = i <= item_list.length() / 2 - 4 ? left : right;
+        QVBoxLayout *side = i <= item_list.length() / 2 ? left : right;
 
         if (item->isWidgetType()) {
             QWidget *widget = qobject_cast<QWidget *>(item);
@@ -857,7 +496,7 @@ QGroupBox *ServerDialog::createGameModeBox() {
             QLayout *item_layout = qobject_cast<QLayout *>(item);
             side->addLayout(item_layout);
         }
-        if (i == item_list.length() / 2 - 4)
+        if (i == item_list.length() / 2)
             side->addStretch();
     }
 
@@ -904,123 +543,10 @@ void ServerDialog::onOkButtonClicked() {
     accept();
 }
 
-Select3v3GeneralDialog::Select3v3GeneralDialog(QDialog *parent)
-    : QDialog(parent)
-{
-    setWindowTitle(tr("Select generals in extend 3v3 mode"));
-    ex_generals = Config.value("3v3/ExtensionGenerals").toStringList().toSet();
-    QVBoxLayout *layout = new QVBoxLayout;
-    tab_widget = new QTabWidget;
-    fillTabWidget();
-
-    QPushButton *ok_button = new QPushButton(tr("OK"));
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addStretch();
-    hlayout->addWidget(ok_button);
-
-    layout->addWidget(tab_widget);
-    layout->addLayout(hlayout);
-    setLayout(layout);
-    setMinimumWidth(550);
-
-    connect(this, SIGNAL(accepted()), this, SLOT(save3v3Generals()));
-}
-
-void Select3v3GeneralDialog::fillTabWidget() {
-    QList<const Package *> packages = Sanguosha->findChildren<const Package *>();
-    foreach (const Package *package, packages) {
-        switch (package->getType()) {
-        case Package::GeneralPack:
-        case Package::MixedPack: {
-                QListWidget *list = new QListWidget;
-                list->setViewMode(QListView::IconMode);
-                list->setDragDropMode(QListView::NoDragDrop);
-                fillListWidget(list, package);
-
-                tab_widget->addTab(list, Sanguosha->translate(package->objectName()));
-            }
-        default:
-                break;
-        }
-    }
-}
-
-void Select3v3GeneralDialog::fillListWidget(QListWidget *list, const Package *pack) {
-    QList<const General *> generals = pack->findChildren<const General *>();
-    foreach (const General *general, generals) {
-        if (Sanguosha->isGeneralHidden(general->objectName())) continue;
-
-        QListWidgetItem *item = new QListWidgetItem(list);
-        item->setData(Qt::UserRole, general->objectName());
-        item->setIcon(QIcon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY)));
-
-        bool checked = false;
-        if (ex_generals.isEmpty()) {
-            checked = (pack->objectName() == "standard" || pack->objectName() == "wind")
-                      && general->objectName() != "yuji";
-        } else
-            checked = ex_generals.contains(general->objectName());
-
-        if (checked)
-            item->setCheckState(Qt::Checked);
-        else
-            item->setCheckState(Qt::Unchecked);
-    }
-
-    QAction *action = new QAction(tr("Check/Uncheck all"), list);
-    list->addAction(action);
-    list->setContextMenuPolicy(Qt::ActionsContextMenu);
-    list->setResizeMode(QListView::Adjust);
-
-    connect(action, SIGNAL(triggered()), this, SLOT(toggleCheck()));
-}
-
 void ServerDialog::doCustomAssign() {
     CustomAssignDialog *dialog = new CustomAssignDialog(this);
 
     connect(dialog, SIGNAL(scenario_changed()), this, SLOT(setMiniCheckBox()));
-    dialog->exec();
-}
-
-void ServerDialog::setMiniCheckBox() {
-    mini_scene_ComboBox->setEnabled(false);
-}
-
-void Select3v3GeneralDialog::toggleCheck() {
-    QWidget *widget = tab_widget->currentWidget();
-    QListWidget *list = qobject_cast<QListWidget *>(widget);
-
-    if (list == NULL || list->item(0) == NULL) return;
-
-    bool checked = list->item(0)->checkState() != Qt::Checked;
-
-    for (int i = 0; i < list->count(); i++)
-        list->item(i)->setCheckState(checked ? Qt::Checked : Qt::Unchecked);
-}
-
-void Select3v3GeneralDialog::save3v3Generals() {
-    ex_generals.clear();
-
-    for (int i = 0; i < tab_widget->count(); i++) {
-        QWidget *widget = tab_widget->widget(i);
-        QListWidget *list = qobject_cast<QListWidget *>(widget);
-        if (list) {
-            for (int j = 0; j < list->count(); j++) {
-                QListWidgetItem *item = list->item(j);
-                if (item->checkState() == Qt::Checked)
-                    ex_generals << item->data(Qt::UserRole).toString();
-            }
-        }
-    }
-
-    QStringList list = ex_generals.toList();
-    QVariant data = QVariant::fromValue(list);
-    Config.setValue("3v3/ExtensionGenerals", data);
-}
-
-void ServerDialog::select3v3Generals() {
-    QDialog *dialog = new Select3v3GeneralDialog(this);
     dialog->exec();
 }
 
@@ -1039,20 +565,7 @@ bool ServerDialog::config() {
     Config.FreeAssignSelf = Config.EnableCheat && free_assign_self_checkbox->isChecked() && free_assign_checkbox->isEnabled();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.DisableChat = disable_chat_checkbox->isChecked();
-    Config.Enable2ndGeneral = second_general_checkbox->isChecked();
-    Config.EnableScene = scene_checkbox->isChecked();        //changjing
-    Config.EnableSame = same_checkbox->isChecked();
-    Config.EnableBasara = basara_checkbox->isChecked() && basara_checkbox->isEnabled();
-    Config.EnableHegemony = hegemony_checkbox->isChecked() && hegemony_checkbox->isEnabled();
     Config.EnableLordGeneralConvert = lord_convert_checkbox->isChecked();
-    Config.MaxHpScheme = max_hp_scheme_ComboBox->currentIndex();
-    if (Config.MaxHpScheme == 0) {
-        Config.Scheme0Subtraction = scheme0_subtraction_spinbox->value();
-        Config.PreventAwakenBelow3 = false;
-    } else {
-        Config.Scheme0Subtraction = 3;
-        Config.PreventAwakenBelow3 = prevent_awaken_below3_checkbox->isChecked();
-    }
     Config.Address = address_edit->text();
     Config.CountDownSeconds = game_start_spinbox->value();
     Config.NullificationCountDown = nullification_spinbox->value();
@@ -1069,15 +582,7 @@ bool ServerDialog::config() {
 
     // game mode
     QString objname = mode_group->checkedButton()->objectName();
-    if (objname == "scenario")
-        Config.GameMode = scenario_ComboBox->itemData(scenario_ComboBox->currentIndex()).toString();
-    else if (objname == "mini") {
-        if (mini_scene_ComboBox->isEnabled())
-            Config.GameMode = mini_scene_ComboBox->itemData(mini_scene_ComboBox->currentIndex()).toString();
-        else
-            Config.GameMode = "custom_scenario";
-    } else
-        Config.GameMode = objname;
+    Config.GameMode = objname;
 
     Config.setValue("ServerName", Config.ServerName);
     Config.setValue("GameMode", Config.GameMode);
@@ -1089,25 +594,10 @@ bool ServerDialog::config() {
     Config.setValue("FreeAssign", Config.EnableCheat && free_assign_checkbox->isChecked());
     Config.setValue("FreeAssignSelf", Config.FreeAssignSelf);
     Config.setValue("PileSwappingLimitation", pile_swapping_spinbox->value());
-    Config.setValue("WithoutLordskill", without_lordskill_checkbox->isChecked());
     Config.setValue("EnableLordGeneralConvert", lord_convert_checkbox->isChecked());
-    Config.setValue("MaxChoice", maxchoice_spinbox->value());
-    Config.setValue("GodLimit", godlimit_spinbox->value());
-    Config.setValue("LordMaxChoice", lord_maxchoice_spinbox->value());
-    Config.setValue("NonLordMaxChoice", nonlord_maxchoice_spinbox->value());
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);
     Config.setValue("DisableChat", Config.DisableChat);
-    Config.setValue("Enable2ndGeneral", Config.Enable2ndGeneral);
-    Config.setValue("EnableScene", Config.EnableScene);   //changjing
-    Config.setValue("EnableSame", Config.EnableSame);
-    Config.setValue("EnableBasara", Config.EnableBasara);
-    Config.setValue("EnableHegemony", Config.EnableHegemony);
-    Config.setValue("EnableLordGeneralConvert", Config.EnableLordGeneralConvert);
     Config.setValue("HegemonyMaxChoice", hegemony_maxchoice_spinbox->value());
-    Config.setValue("HegemonyMaxShown", hegemony_maxshown_spinbox->value());
-    Config.setValue("MaxHpScheme", Config.MaxHpScheme);
-    Config.setValue("Scheme0Subtraction", Config.Scheme0Subtraction);
-    Config.setValue("PreventAwakenBelow3", Config.PreventAwakenBelow3);
     Config.setValue("CountDownSeconds", game_start_spinbox->value());
     Config.setValue("NullificationCountDown", nullification_spinbox->value());
     Config.setValue("EnableMinimizeDialog", Config.EnableMinimizeDialog);
@@ -1120,23 +610,6 @@ bool ServerDialog::config() {
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("Address", Config.Address);
     Config.setValue("DisableLua", disable_lua_checkbox->isChecked());
-
-    Config.beginGroup("3v3");
-    Config.setValue("UsingExtension", !official_3v3_radiobutton->isChecked());
-    Config.setValue("RoleChoose", role_choose_ComboBox->itemData(role_choose_ComboBox->currentIndex()).toString());
-    Config.setValue("ExcludeDisaster", exclude_disaster_checkbox->isChecked());
-    Config.setValue("OfficialRule", official_3v3_ComboBox->itemData(official_3v3_ComboBox->currentIndex()).toString());
-    Config.endGroup();
-
-    Config.beginGroup("1v1");
-    Config.setValue("Rule", official_1v1_ComboBox->itemData(official_1v1_ComboBox->currentIndex()).toString());
-    Config.setValue("UsingExtension", kof_using_extension_checkbox->isChecked());
-    Config.setValue("UsingCardExtension", kof_card_extension_checkbox->isChecked());
-    Config.endGroup();
-
-    Config.beginGroup("XMode");
-    Config.setValue("RoleChooseX", role_choose_xmode_ComboBox->itemData(role_choose_xmode_ComboBox->currentIndex()).toString());
-    Config.endGroup();
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
