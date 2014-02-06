@@ -1274,14 +1274,26 @@ public:
                 
                 room->revivePlayer(player);
 
-                int maxhp = player->getMaxHp();
-                room->changeHero(player, to_change, false, true, false, true);
                 player->removeGeneral(false);
+                foreach(const Skill *skill, player->getSkills())
+                    player->loseSkill(skill->objectName());
+                player->detachAllSkills();
+                room->setPlayerProperty(player, "general1_showed", true);
+                foreach(const Skill *skill, Sanguosha->getGeneral(to_change)->getSkillList(true, true)) {
+                    player->addSkill(skill->objectName());
+                    Json::Value args;
+                    args[0] = QSanProtocol::S_GAME_EVENT_ADD_SKILL;
+                    args[1] = QSanProtocol::Utils::toJsonString(player->objectName());
+                    args[2] = QSanProtocol::Utils::toJsonString(skill->objectName());
+                    args[3] = true;
+                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+                }
+                room->changeHero(player, to_change, false, true, false, true);
+                player->setSkillsPreshowed("h");
 
                 change_list << player->getActualGeneral2Name();
 
                 room->setPlayerProperty(player, "hp", 2);
-                room->setPlayerProperty(player, "maxhp", maxhp);
                 room->setTag(player->objectName(), change_list);
 
                 room->setPlayerProperty(player, "kingdom", dfowner->getKingdom());
@@ -1303,3 +1315,4 @@ FormationEquipPackage::FormationEquipPackage(): Package("formation_equip", CardP
 
 ADD_PACKAGE(FormationEquip)
 
+     
