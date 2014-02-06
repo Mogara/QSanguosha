@@ -1194,12 +1194,16 @@ void Player::setSkillPreshowed(const QString &skill, const bool preshowed) {
 
 void Player::setSkillsPreshowed(const QString &flags, const bool preshowed) {
     if (flags.contains("h")) {
-        foreach (QString skill, head_skills.keys())
+        foreach (QString skill, head_skills.keys()) {
+            if (!Sanguosha->getSkill(skill)->canPreshow()) continue;
             head_skills[skill] = preshowed;
+        }
     }
     if (flags.contains("d")) {
-        foreach (QString skill, deputy_skills.keys())
+        foreach (QString skill, deputy_skills.keys()) {
+            if (!Sanguosha->getSkill(skill)->canPreshow()) continue;
             deputy_skills[skill] = preshowed;
+        }
     }
 }
 
@@ -1208,7 +1212,7 @@ bool Player::hasPreshowedSkill(const QString &name) const {
 }
 
 bool Player::isHidden(const bool &head_general) const {
-    if (head_general ? hasShownGeneral1() : hasShownGeneral2()) return false;
+    if (head_general ? general1_showed : general2_showed) return false;
     const QList<const Skill *> skills = head_general ? getHeadSkillList() : getDeputySkillList();
     unsigned int count = 0;
     foreach(const Skill *skill, skills) {

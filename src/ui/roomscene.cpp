@@ -452,7 +452,17 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             Json::Value::Members keys = arg[1].getMemberNames();
             for (unsigned int i = 0; i < keys.size(); i++) {
                 const char *skill = keys[i].c_str();
-                Self->setSkillPreshowed(skill, arg[1][skill].asBool());
+                const bool showed = arg[1][skill].asBool();
+                Self->setSkillPreshowed(skill, showed);
+                if (!showed) {
+                    foreach(QSanSkillButton *btn, m_skillButtons) {
+                        if (btn->getSkill()->objectName() == skill) {
+                            btn->QGraphicsObject::setEnabled(true);
+                            btn->setState(QSanButton::S_STATE_CANPRESHOW);
+                            break;
+                        }
+                    }
+                }
             }
             break;
         }
@@ -2282,9 +2292,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             const Skill *skill = button->getSkill();
             if (skill->getFrequency() == Skill::Wake)
                 button->setEnabled(Self->getMark(skill->objectName()) > 0);
-            else
-                button->setEnabled(button->getSkill()->canPreshow() 
-                                   && !Self->hasShownSkill(button->getSkill()));
+            else if (QSanButton::S_STATE_CANPRESHOW != button->getState())
+                button->setState(QSanButton::S_STATE_DISABLED);
         }
     }
 

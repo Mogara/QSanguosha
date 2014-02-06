@@ -477,10 +477,10 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, const bool 
     Q_ASSERT(skill && !skill->inherits("WeaponSkill") && !skill->inherits("ArmorSkill"));
 #endif
     if (_m_rightSkillDock->getSkillButtonByName(skillName)) {
-        _m_button_recycle.append(_m_rightSkillDock->getSkillButtonByName(skillName));
+        //_m_button_recycle.append(_m_rightSkillDock->getSkillButtonByName(skillName));
         return NULL;
     } else if (_m_leftSkillDock->getSkillButtonByName(skillName)) {
-        _m_button_recycle.append(_m_leftSkillDock->getSkillButtonByName(skillName));
+        //_m_button_recycle.append(_m_leftSkillDock->getSkillButtonByName(skillName));
         return NULL;
     }
     QSanInvokeSkillDock *dock = NULL;
@@ -515,9 +515,9 @@ QSanSkillButton *Dashboard::removeSkillButton(const QString &skillName) {
             temp = _m_leftSkillDock->getSkillButtonByName(skillName);
             dock = _m_leftSkillDock;
         }
-        if (_m_button_recycle.contains(temp))
-            _m_button_recycle.removeOne(temp);
-        else
+        //if (_m_button_recycle.contains(temp))
+            //_m_button_recycle.removeOne(temp);
+        //else
             btn = dock->removeSkillButtonByName(skillName);
     }
     return btn;

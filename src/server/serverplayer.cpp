@@ -1220,6 +1220,8 @@ void ServerPlayer::showGeneral(bool head_general) {
     if (head_general) {
         if (getGeneralName() != "anjiang") return;
 
+        setSkillsPreshowed("h");
+        notifyPreshow();
         room->setPlayerProperty(this, "general1_showed", true);
 
         general_name = names.first();
@@ -1233,7 +1235,6 @@ void ServerPlayer::showGeneral(bool head_general) {
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral(this, general_name);
 
-        setSkillsPreshowed("h");
         sendSkillsToOthers();
 
         if (getMark("@duanchang") < 1 || tag["Duanchang"].toString() == "deputy")
@@ -1277,6 +1278,8 @@ void ServerPlayer::showGeneral(bool head_general) {
     } else {
         if (getGeneral2Name() != "anjiang") return;
 
+        setSkillsPreshowed("d");
+        notifyPreshow();
         room->setPlayerProperty(this, "general2_showed", true);
 
         general_name = names.at(1);
@@ -1289,7 +1292,6 @@ void ServerPlayer::showGeneral(bool head_general) {
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral2(this, general_name);
 
-        setSkillsPreshowed("d");
         sendSkillsToOthers(false);
 
         if (getMark("@duanchang") < 1 || tag["Duanchang"].toString() == "head")
@@ -1347,6 +1349,8 @@ void ServerPlayer::hideGeneral(bool head_general) {
     if (head_general) {
         if (getGeneralName() == "anjiang") return;
 
+        setSkillsPreshowed("h", false);
+        notifyPreshow();
         room->setPlayerProperty(this, "general1_showed", false);
 
         Json::Value arg(Json::arrayValue);
@@ -1359,7 +1363,6 @@ void ServerPlayer::hideGeneral(bool head_general) {
             room->doNotify(p, S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral(this, "anjiang");
 
-        setSkillsPreshowed("h", false);
         disconnectSkillsFromOthers();
 
         foreach (const Skill *skill, getVisibleSkillList()) {
@@ -1381,7 +1384,9 @@ void ServerPlayer::hideGeneral(bool head_general) {
         }
     } else {
         if (getGeneral2Name() == "anjiang") return;
-
+        
+        setSkillsPreshowed("d", false);
+        notifyPreshow();
         room->setPlayerProperty(this, "general2_showed", false);
 
         Json::Value arg(Json::arrayValue);
@@ -1394,7 +1399,6 @@ void ServerPlayer::hideGeneral(bool head_general) {
             room->doNotify(p, S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral2(this, "anjiang");
 
-        setSkillsPreshowed("d", false);
         disconnectSkillsFromOthers(false);
 
         foreach (const Skill *skill, getVisibleSkillList()) {
@@ -1415,8 +1419,6 @@ void ServerPlayer::hideGeneral(bool head_general) {
             room->setPlayerProperty(this, "role", BasaraMode::getMappedRole("god"));
         }
     }
-
-    notifyPreshow();
 
     Q_ASSERT(room->getThread() != NULL);
     room->getThread()->trigger(GeneralHidden, room, this, QVariant(head_general));
