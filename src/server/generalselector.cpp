@@ -23,8 +23,6 @@ GeneralSelector *GeneralSelector::getInstance() {
 GeneralSelector::GeneralSelector() {
     loadFirstGeneralTable();
     loadSecondGeneralTable();
-    load3v3Table();
-    load1v1Table();
 }
 
 QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &candidates) {
@@ -85,7 +83,12 @@ QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &ca
     return max_general;
 }
 
-QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &candidates) {
+QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &_candidates) {
+    QStringList candidates = _candidates;
+    for (int i = 0; i < _candidates.length(); i++){
+        if (_candidates[i].startsWith("lord_"))
+            candidates.removeOne(_candidates[i]);
+    }
     QString first = player->getGeneralName();
 
     int max = -1;
@@ -108,14 +111,6 @@ QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &c
     Q_ASSERT(!max_general.isEmpty());
 
     return max_general;
-}
-
-QString GeneralSelector::select3v3(ServerPlayer *, const QStringList &candidates) {
-    return selectHighest(priority_3v3_table, candidates, 5);
-}
-
-QString GeneralSelector::select1v1(const QStringList &candidates) {
-    return selectHighest(priority_1v1_table, candidates, 5);
 }
 
 QString GeneralSelector::selectHighest(const QHash<QString, int> &table, const QStringList &candidates, int default_value) {
@@ -141,51 +136,6 @@ static bool CompareByMaxHp(const QString &a, const QString &b) {
     const General *g2 = Sanguosha->getGeneral(b);
 
     return g1->getDoubleMaxHp() < g2->getDoubleMaxHp();
-}
-
-QStringList GeneralSelector::arrange3v3(ServerPlayer *player) {
-    QStringList arranged = player->getSelected();
-    qShuffle(arranged);
-    arranged = arranged.mid(0, 3);
-
-    qSort(arranged.begin(), arranged.end(), CompareByMaxHp);
-    arranged.swap(0, 1);
-
-    return arranged;
-}
-
-static bool CompareFunction(const QString &first, const QString &second) {
-    return Selector->get1v1ArrangeValue(first) > Selector->get1v1ArrangeValue(second);
-}
-
-int GeneralSelector::get1v1ArrangeValue(const QString &name) {
-    int value = priority_1v1_table.value(name, 5);
-    if (sacrifice.contains(name))
-        value += 1000;
-    return value;
-}
-
-QStringList GeneralSelector::arrange1v1(ServerPlayer *player) {
-    QStringList arranged = player->getSelected();
-    qSort(arranged.begin(), arranged.end(), CompareFunction);
-
-    QStringList result;
-    int i;
-    for (i = 0; i < 3; i++) {
-        if (get1v1ArrangeValue(arranged[i]) > 1000) {
-            result << arranged[i];
-            break;
-        }
-    }
-    if (!result.isEmpty()) {
-        int strong = (i == 0) ? 1 : 0;
-        int weak = (i == 2) ? 1 : 2;
-        result << arranged[weak] << arranged[strong];
-    } else {
-        result << arranged[1] << arranged[2] << arranged[0];
-    }
-
-    return result;
 }
 
 void GeneralSelector::loadFirstGeneralTable() {
@@ -240,45 +190,3 @@ void GeneralSelector::loadSecondGeneralTable() {
         file.close();
     }
 }
-
-void GeneralSelector::load3v3Table() {
-    QFile file("etc/3v3-priority.txt");
-    if (file.open(QIODevice::ReadOnly)) {
-        QTextStream stream(&file);
-        while (!stream.atEnd()) {
-            QString name;
-            int priority;
-
-            stream >> name >> priority;
-
-            priority_3v3_table.insert(name, priority);
-        }
-
-        file.close();
-    }
-}
-
-void GeneralSelector::load1v1Table() {
-    QRegExp rx("(\\w+)\\s+(\\d+)\\s*(\\*)?");
-    QFile file("etc/1v1-priority.txt");
-    if (file.open(QIODevice::ReadOnly)) {
-        QTextStream stream(&file);
-        while (!stream.atEnd()) {
-            QString line = stream.readLine();
-            if (!rx.exactMatch(line))
-                continue;
-
-            QStringList texts = rx.capturedTexts();
-            QString name = texts.at(1);
-            int priority = texts.at(2).toInt();
-
-            priority_1v1_table.insert(name, priority);
-
-            if (!texts.at(3).isEmpty())
-                sacrifice << name;
-        }
-
-        file.close();
-    }
-}
-
