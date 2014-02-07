@@ -577,15 +577,15 @@ sgs.ai_skill_cardask["@guidao-card"]=function(self, data)
 	local card_id = self:getRetrialCardId(cards, judge)
 	if card_id == -1 then
 		if self:needRetrial(judge) and judge.reason ~= "beige" then
-			if self:needToThrowArmor() then return "$&guidao" .. self.player:getArmor():getEffectiveId() end
+			if self:needToThrowArmor() then return "$" .. self.player:getArmor():getEffectiveId() end
 			self:sortByUseValue(cards, true)
 			if self:getUseValue(judge.card) > self:getUseValue(cards[1]) then
-				return "$&guidao" .. cards[1]:getId()
+				return "$" .. cards[1]:getId()
 			end
 		end
 	elseif self:needRetrial(judge) or self:getUseValue(judge.card) > self:getUseValue(sgs.Sanguosha:getCard(card_id)) then
 		local card = sgs.Sanguosha:getCard(card_id)
-		return "$&guidao" .. card_id
+		return "$" .. card_id
 	end
 	
 	return "."
