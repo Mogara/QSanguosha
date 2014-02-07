@@ -143,7 +143,7 @@ void QSanButton::_onMouseClick(bool inside) {
         const Skill * skill = qobject_cast<const QSanSkillButton *>(this)->getSkill();
         if (skill->canPreshow() && !Self->hasShownSkill(skill)) changeState = false;
     }
-    if (multi_state)
+    if (multi_state && inside)
         first_state = !first_state;
     if (_m_style == S_STYLE_PUSH && changeState)
         setState(S_STATE_UP);
