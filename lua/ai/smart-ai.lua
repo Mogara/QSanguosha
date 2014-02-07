@@ -1828,6 +1828,10 @@ function SmartAI:filterEvent(event, player, data)
 		player:setFlags("AI_Playing")
 	elseif event == sgs.EventPhaseStart then
 		if player:getPhase() == sgs.Player_RoundStart then
+		if not sgs.ai_setSkillsPreshowed then
+			self:setSkillsPreshowed()
+			sgs.ai_setSkillsPreshowed = true
+		end
 			sgs.printFEList(player)
 		elseif player:getPhase() == sgs.Player_NotActive then
 			if sgs.recorder.player:objectName() == player:objectName() then sgs.turncount = sgs.turncount + 1 end
@@ -2911,14 +2915,9 @@ function SmartAI:willUsePeachTo(dying)
 		
 		if (self.player:objectName() == dying:objectName()) then
 			card_str = self:getCardId("Analeptic")
-			if not card_str then
-			card_str = self:getCardId("Peach") end
-		elseif dying:isLord() then
-			card_str = self:getCardId("Peach")
+			if not card_str then card_str = self:getCardId("Peach") end
 		elseif self:doNotSave(dying) then return "."
-		elseif self:getAllPeachNum() > 1 then
-			card_str = self:getCardId("Peach") 
-		end
+		else card_str = self:getCardId("Peach") end
 	end
 	if not card_str then return nil end
 	return card_str
@@ -4821,6 +4820,14 @@ function SmartAI:getGuixinValue(player)
 		end
 	end
 	return 0.3
+end
+
+function SmartAI:setSkillsPreshowed()
+	for _, player in sgs.qlist(self.room:getAlivePlayers()) do
+		if player:getAI() then
+			player:setSkillsPreshowed("hd")
+		end
+	end
 end
 
 dofile "lua/ai/debug-ai.lua"

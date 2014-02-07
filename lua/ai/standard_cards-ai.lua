@@ -796,7 +796,7 @@ function SmartAI:useCardPeach(card, use)
 	
 	for _, enemy in ipairs(self.enemies) do
 		if self.player:getHandcardNum() < 3 and 
-				(enemy:hasSkills(sgs.drawpeach_skill) or getCardsNum("Dismantlement", enemy) >= 1
+				(enemy:hasSkills(sgs.drawpeach_skill) or getCardsNum("Dismantlement", enemy, self.player) >= 1
 					or enemy:hasSkill("jixi") and enemy:getPile("field"):length() >0 and enemy:distanceTo(self.player) == 1
 					or enemy:hasSkill("qixi") and getKnownCard(enemy, self.player, "black", nil, "he") >= 1
 					or getCardsNum("Snatch", enemy) >= 1 and enemy:distanceTo(self.player) == 1
@@ -2412,6 +2412,7 @@ function SmartAI:useCardIndulgence(card, use)
 	if #enemies == 0 then return end
 	
 	local getvalue = function(enemy)
+		if enemy:hasSkill("weimu") and card:isBlack() then return -100 end
 		if enemy:hasSkill("qiaobian") and not enemy:containsTrick("supply_shortage") and not enemy:containsTrick("indulgence") then return -100 end
 		if zhanghe_seat > 0 and (self:playerGetRound(zhanghe) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
 			return -100 end
