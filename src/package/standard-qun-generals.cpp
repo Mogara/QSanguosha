@@ -793,18 +793,15 @@ public:
         room->notifySkillInvoked(player, objectName());
 
         if (choice == "head_general")
-            target->tag["Duanchang"] = QString("head");
+            room->setPlayerProperty(target, "Duanchang", "head");
         else
-            target->tag["Duanchang"] = QString("deputy");
+            room->setPlayerProperty(target, "Duanchang", "deputy");
 
         QList<const Skill *> skills = choice == "head_general" ? target->getHeadSkillList()
                                                                : target->getDeputySkillList();
-        QStringList detachList;
-        foreach (const Skill *skill, skills) {
+        foreach (const Skill *skill, skills)
             if (skill->getLocation() == Skill::Right && !skill->isAttachedLordSkill())
-                detachList.append("-" + skill->objectName());
-        }
-        room->handleAcquireDetachSkills(death.damage->from, detachList);
+                room->detachSkillFromPlayer(target, skill->objectName(), !target->hasShownSkill(skill));
 
         if (death.damage->from->isAlive())
             death.damage->from->gainMark("@duanchang");

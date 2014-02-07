@@ -193,6 +193,7 @@ public:
         QRect m_actionedIconRegion;
         QRect m_saveMeIconRegion;
         QRect m_chainedIconRegion, m_chainedIconRegion2;
+        QRect m_duanchangMaskRegion, m_duanchangMaskRegion2;
         QRect m_hiddenMarkRegion1, m_hiddenMarkRegion2;
         AnchoredRect m_deathIconRegion;
         QRect m_votesIconRegion;
@@ -337,6 +338,7 @@ public:
     static const char *S_SKIN_KEY_FACETURNEDMASK;
     static const char *S_SKIN_KEY_BLANK_GENERAL;
     static const char *S_SKIN_KEY_CHAIN;
+    static const char *S_SKIN_KEY_DUANCHANG;
     static const char *S_SKIN_KEY_PHASE;
     static const char *S_SKIN_KEY_SELECTED_FRAME;
     static const char *S_SKIN_KEY_FOCUS_FRAME;

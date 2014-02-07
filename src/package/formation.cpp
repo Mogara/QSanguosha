@@ -527,7 +527,7 @@ public:
 
         if (room->alivePlayerCount() < 4 || !jiangwei->hasShownSkill(this)) return QStringList();
         ServerPlayer *current = room->getCurrent();
-        if (current && current->isAlive() && jiangwei->inFormationRalation(current))
+        if (current && current->isAlive() && jiangwei->inFormationRalation(current) && (jiangwei->getFormation().length() > 1))
             room->attachSkillToPlayer(jiangwei, "kanpo");
 
         return QStringList();
@@ -1273,8 +1273,6 @@ public:
             if (!to_change.isEmpty()){
                 QStringList change_list;
                 change_list << to_change;
-                
-                room->revivePlayer(player);
 
                 player->removeGeneral(false);
                 foreach(const Skill *skill, player->getSkills())
@@ -1294,6 +1292,8 @@ public:
                 player->setSkillsPreshowed("h");
 
                 change_list << player->getActualGeneral2Name();
+                
+                room->revivePlayer(player);
 
                 room->setPlayerProperty(player, "hp", 2);
                 room->setTag(player->objectName(), change_list);

@@ -4262,12 +4262,12 @@ void Room::doAnimate(QSanProtocol::AnimateType type, const QString &arg1, const 
 void Room::preparePlayers() {
     foreach (ServerPlayer *player, m_players) {
         QString general1_name = tag[player->objectName()].toStringList().at(0);
-        if (player->getMark("@duanchang") < 1 || player->tag["Duanchang"].toString() == "deputy")
+        if (player->property("Duanchang").toString() != "head")
             foreach(const Skill *skill, Sanguosha->getGeneral(general1_name)->getVisibleSkillList(true, true))
                 player->addSkill(skill->objectName());
 
         QString general2_name = tag[player->objectName()].toStringList().at(1);
-        if (player->getMark("@duanchang") < 1 || player->tag["Duanchang"].toString() == "head")
+        if (player->property("Duanchang").toString() != "deputy")
             foreach(const Skill *skill, Sanguosha->getGeneral(general2_name)->getVisibleSkillList(true, false))
                 player->addSkill(skill->objectName(), false);
 

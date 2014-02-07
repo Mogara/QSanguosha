@@ -89,7 +89,6 @@ public slots:
     void updateHp();
     void updateHandcardNum();
     void updateDrankState();
-    virtual void updateDuanchang();
     void updatePile(const QString &pile_name);
     void updateRole(const QString &role);
     void updateMarks();
@@ -163,6 +162,7 @@ protected:
     QGraphicsPixmapItem *_m_avatarIcon, *_m_smallAvatarIcon, *_m_circleItem;
     QGraphicsPixmapItem *_m_screenNameItem;
     QGraphicsPixmapItem *_m_chainIcon, *_m_chainIcon2;
+    QGraphicsPixmapItem *_m_duanchangMask, *_m_duanchangMask2;
     QGraphicsPixmapItem *_m_faceTurnedIcon, *_m_faceTurnedIcon2;
     QGraphicsPixmapItem *_m_handCardBg, *_m_handCardNumText;
     QGraphicsPixmapItem *_m_kingdomColorMaskIcon;
