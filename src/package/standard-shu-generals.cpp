@@ -644,7 +644,13 @@ public:
         if (!TriggerSkill::triggerable(player).isEmpty()){
             bool invoke = player->tag.value("InvokeKuanggu", false).toBool();
             player->tag["InvokeKuanggu"] = false;
-            return (invoke && player->isWounded()) ? QStringList(objectName()) : QStringList();
+            if (invoke && player->isWounded()) {
+                QStringList skill_list;
+                DamageStruct damage = data.value<DamageStruct>();
+                for (int i = 0; i < damage.damage; i++)
+                    skill_list << objectName();
+                return skill_list;
+            }
         }
         return QStringList();
     }
@@ -659,10 +665,6 @@ public:
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();
-
-        room->broadcastSkillInvoke(objectName());
-
         LogMessage log;
         log.type = "#TriggerSkill";
         log.from = player;
@@ -672,7 +674,6 @@ public:
 
         RecoverStruct recover;
         recover.who = player;
-        recover.recover = damage.damage;
         room->recover(player, recover);
 
         return false;
