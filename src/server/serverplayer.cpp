@@ -16,7 +16,7 @@ const int ServerPlayer::S_NUM_SEMAPHORES = 6;
 
 ServerPlayer::ServerPlayer(Room *room)
     : Player(room), m_isClientResponseReady(false), m_isWaitingReply(false),
-      socket(NULL), room(room),
+      socket(NULL), room(room), event_received(false),
       ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL),
       _m_phases_index(0), _m_clientResponse(Json::nullValue)
 {
@@ -1732,5 +1732,23 @@ void ServerPlayer::summonFriends(const ArrayType type) {
         break;
                                   }
     }
+}
+
+bool ServerPlayer::event(QEvent *event) {
+    if (event->type() == QEvent::User) {
+        semas[SEMA_MUTEX]->acquire();
+        ServerPlayerEvent *SPEvent = static_cast<ServerPlayerEvent *>(event);
+        setProperty(SPEvent->property_name, SPEvent->value);
+        room->broadcastProperty(this, SPEvent->property_name);
+        event_received = true;
+        semas[SEMA_MUTEX]->release();
+    }
+    return Player::event(event);
+}
+
+ServerPlayerEvent::ServerPlayerEvent(char *property_name, QVariant &value)
+    : QEvent(QEvent::User), property_name(property_name), value(value)
+{
+
 }
 

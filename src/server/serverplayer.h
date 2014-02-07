@@ -16,6 +16,15 @@ struct PhaseStruct;
 
 #include <QSemaphore>
 #include <QDateTime>
+#include <QEvent>
+
+class ServerPlayerEvent: public QEvent {
+public:
+    ServerPlayerEvent(char *property_name, QVariant &value);
+
+    char *property_name;
+    QVariant value;
+};
 
 class ServerPlayer: public Player {
     Q_OBJECT
@@ -161,10 +170,14 @@ public:
     bool inFormationRalation(ServerPlayer *teammate) const;
     void summonFriends(const BattleArrayType::ArrayType type);
 
+    bool event_received;
+
 protected:
     //Synchronization helpers
     QSemaphore **semas;
     static const int S_NUM_SEMAPHORES;
+
+    bool event(QEvent *event);
 
 private:
     ClientSocket *socket;
