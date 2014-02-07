@@ -527,7 +527,7 @@ public:
 
         if (room->alivePlayerCount() < 4 || !jiangwei->hasShownSkill(this)) return QStringList();
         ServerPlayer *current = room->getCurrent();
-        if (current && current->isAlive() && jiangwei->inFormationRalation(current))
+        if (current && current->isAlive() && jiangwei->inFormationRalation(current) && (jiangwei->getFormation().length() > 1))
             room->attachSkillToPlayer(jiangwei, "kanpo");
 
         return QStringList();
