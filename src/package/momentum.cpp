@@ -1229,19 +1229,19 @@ public:
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const {
         if (triggerEvent == EventPhaseStart) {
-            if (TriggerSkill::triggerable(player).isEmpty()) return QStringList();
+            if (!player || !player->isAlive() || !player->hasLordSkill(objectName())) return QStringList();
             if (player->getPhase() != Player::Start) return QStringList();
             if (!player->getPile("heavenly_army").isEmpty()) return QStringList();
             return QStringList(objectName());
         } else if (triggerEvent == PreHpLost) {
-            if (TriggerSkill::triggerable(player).isEmpty()) return QStringList();
+            if (!player || !player->isAlive() || !player->hasLordSkill(objectName())) return QStringList();
             if (player->getPile("heavenly_army").isEmpty()) return QStringList();
             return QStringList(objectName());
         } else {
             if (player == NULL)
                 return QStringList();
             if (triggerEvent == GeneralShown){
-                if (!TriggerSkill::triggerable(player).isEmpty()){
+                if (player && player->isAlive() && player->hasLordSkill(objectName())){
                     foreach (ServerPlayer *p, room->getAlivePlayers()){
                         if (p->willBeFriendWith(player) || p->getKingdom() == player->getKingdom()){
                             room->attachSkillToPlayer(p, "hongfa_slash");
@@ -1249,12 +1249,13 @@ public:
                     }
                 }
                 else {
-                    if (!TriggerSkill::triggerable(room->getLord(player->getKingdom())).isEmpty()){
+                    ServerPlayer *lord = room->getLord(player->getKingdom());
+                    if (lord && lord->isAlive() && lord->hasLordSkill(objectName())){
                         room->attachSkillToPlayer(player, "hongfa_slash");
                     }
                 }
             }
-            else if (!TriggerSkill::triggerable(player).isEmpty()){
+            else if (player && player->isAlive() && player->hasLordSkill(objectName())){
                 if (triggerEvent == Death){
                     DeathStruct death = data.value<DeathStruct>();
                     if (death.who != player)

@@ -265,7 +265,7 @@ kurou_skill.getTurnUseCard=function(self,inclusive)
 			if #self.friends == 1 and #self.enemies == 1 and self.player:aliveCount() == 2 then to_death = false end
 		end
 		if to_death then
-			if not use.isDummy then self.player:setFlags("Kurou_toDie") end
+			self.player:setFlags("Kurou_toDie")
 			sgs.ai_use_priority.KurouCard = 0
 			return kuroucard
 		end

@@ -63,3 +63,4 @@ ai.html
 /Qt*.dll
 /dmp/*.dmp
 *Thumbs.db
+*.tmp

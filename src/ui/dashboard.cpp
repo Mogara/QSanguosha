@@ -204,6 +204,9 @@ void Dashboard::_createRight() {
     _m_shadow_layer2 = new QGraphicsRectItem(_m_rightFrame);
     _m_shadow_layer2->setRect(G_DASHBOARD_LAYOUT.m_secondaryAvatarArea);
 
+    _paintPixmap(_m_faceTurnedIcon2, _m_layout->m_secondaryAvatarArea, QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK,
+                 _m_rightFrame);
+
     _paintPixmap(_m_hidden_mark1, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion1, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
     _paintPixmap(_m_hidden_mark2, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion2, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
 
@@ -547,7 +550,7 @@ void Dashboard::_createExtraButtons() {
     m_trustButton->setStyle(QSanButton::S_STYLE_TOGGLE);
     m_btnReverseSelection = new QSanButton("handcard", "reverse-selection", this);
     m_btnSortHandcard = new QSanButton("handcard", "sort", this);
-    m_btnNoNullification = new QSanButton("handcard", "nullification", this);
+    m_btnNoNullification = new QSanButton("handcard", "nullification", this, true);
     m_btnNoNullification->setStyle(QSanButton::S_STYLE_TOGGLE);
     // @todo: auto hide.
     m_trustButton->setPos(G_DASHBOARD_LAYOUT.m_rswidth, - m_trustButton->boundingRect().height());
@@ -573,8 +576,7 @@ void Dashboard::showSeat() {
     PixmapAnimation *pma = PixmapAnimation::GetPixmapAnimation(_m_rightFrame, "seat");
     if (pma) {
         pma->setTransform(QTransform::fromTranslate(- pma->boundingRect().width() / 2, - pma->boundingRect().height() / 2));
-        pma->setPos(region.center().x(), region.center().y());
-        pma->setZValue(20002.0);
+        pma->setPos(region.center());
     }
     _paintPixmap(_m_seatItem, region,
                  _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getSeat())),

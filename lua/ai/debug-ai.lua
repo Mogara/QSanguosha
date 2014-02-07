@@ -211,7 +211,7 @@ function sgs.printFEList(player)
 	for _, p in sgs.qlist(global_room:getAlivePlayers()) do
 		if player and p:objectName() ~= player:objectName() then continue end
 		local name = p:getActualGeneral1Name() .. "/" .. p:getActualGeneral2Name()
-		global_room:writeToConsole("====  " .. name .. "  kingdom::" .. p:getKingdom() .. "  ====")
+		global_room:writeToConsole("----  " .. name .. "  kingdom::" .. p:getKingdom() .. "  ----")
 		local sgsself = sgs.ais[p:objectName()]
 		sgsself:updatePlayers()
 		local msge = "enemies:"

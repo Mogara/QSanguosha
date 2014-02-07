@@ -967,44 +967,8 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 	return
 end
 
-sgs.ai_skill_choice.qingcheng = function(self, choices, data)
-	local target = data:toPlayer()
-	if self:isFriend(target) then
-		if target:hasSkill("shiyong", true) and target:getMark("Qingchengshiyong") == 0 then return "shiyong" end
-	end
-	if target:getHp() < 1 and target:hasSkill("buqu", true) and target:getMark("Qingchengbuqu") == 0 then return "buqu" end 
-	if self:isWeak(target) then
-		for _, askill in ipairs((sgs.exclusive_skill .. "|" .. sgs.save_skill):split("|")) do
-			if target:hasSkill(askill, true) and target:getMark("Qingcheng" .. askill) == 0 then
-				return askill
-			end
-		end
-	end
-	for _, askill in ipairs(("noswuyan|weimu|wuyan|guixin|fenyong|liuli|yiji|jieming|neoganglie|fankui|fangzhu|enyuan|nosenyuan|" ..
-						"ganglie|vsganglie|langgu|qingguo|luoying|guzheng|jianxiong|longdan|xiangle|renwang|huangen|tianming|yizhong|bazhen|jijiu|" ..
-						"beige|longhun|gushou|buyi|mingzhe|danlao|qianxun|jiang|yanzheng|juxiang|huoshou|anxian|zhichi|feiying|" ..
-						"tianxiang|xiaoji|xuanfeng|nosxuanfeng|xiaoguo|guhuo|guidao|guicai|nosshangshi|lianying|sijian|mingshi|" ..
-						"yicong|zhiyu|lirang|xingshang|shushen|shangshi|leiji|wusheng|wushuang|tuntian|quanji|kongcheng|jieyuan|" ..
-						"jilve|wuhun|kuangbao|tongxin|shenjun|ytchengxiang|sizhan|toudu|xiliang|tanlan|shien"):split("|")) do
-		if target:hasSkill(askill, true) and target:getMark("Qingcheng" .. askill) == 0 then
-			return askill
-		end
-	end
-end
 
 sgs.ai_use_value.QingchengCard = 2
 sgs.ai_use_priority.QingchengCard = 7.2
 sgs.ai_card_intention.QingchengCard = 0
 
-sgs.ai_choicemade_filter.skillChoice.qingcheng = function(self, player, promptlist)
-	local choice = promptlist[#promptlist]
-	local target = nil
-	for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
-		if p:hasSkill(choice, true) then
-			target = p
-			break
-		end
-	end
-	if not target then return end
-	if choice == "shiyong" then sgs.updateIntention(player, target, -10) else sgs.updateIntention(player, target, 10) end
-end

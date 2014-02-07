@@ -28,7 +28,6 @@ function sgs.ai_skill_invoke.hengjiang(self, data)
 		return true
 	else
 		if target:getPhase() > sgs.Player_Discard then return true end
-		if target:hasSkill("yongsi") then return false end
 		if target:hasSkill("keji") and not target:hasFlag("KejiSlashInPlayPhase") then return true end
 		return target:getHandcardNum() <= target:getMaxCards() - 2
 	end
@@ -101,7 +100,7 @@ end
 sgs.ai_skill_invoke.guixiu_rec = function()
 	return true
 end
-
+--[[
 local cunsi_skill = {}
 cunsi_skill.name = "cunsi"
 table.insert(sgs.ai_skills, cunsi_skill)
@@ -129,15 +128,12 @@ end
 sgs.ai_skill_use_func.GuixiuCard = function(card, use, self)
 	use.card = card
 end
+]]
 
 sgs.ai_skill_invoke.yongjue = function(self, data)
 	local player = data:toPlayer()
 	return player and self:isFriend(player) and not (self:needKongcheng(player, true) and not self:hasCrossbowEffect(player))
 end
-
-sgs.ai_use_value.CunsiCard = 10
-sgs.ai_use_priority.CunsiCard = 10.1
-sgs.ai_use_priority.GuixiuCard = sgs.ai_use_priority.CunsiCard
 
 sgs.ai_cardneed.jiang = function(to, card, self)
 	return isCard("Duel", card, to) or (isCard("Slash", card, to) and card:isRed())
@@ -276,7 +272,7 @@ sgs.ai_skill_choice.benghuai = function(self, choices, data)
 		end
 	end
 	if self.player:getMaxHp() >= self.player:getHp() + 2 then
-		if self.player:getMaxHp() > 5 and (self.player:hasSkills("nosmiji|yinghun|juejing|zaiqi|nosshangshi") or self.player:hasSkill("miji") and self:findPlayerToDraw(false)) then
+		if self.player:getMaxHp() > 5 and (self.player:hasSkills("yinghun|zaiqi") and self:findPlayerToDraw(false)) then
 			local enemy_num = 0
 			for _, p in ipairs(self.enemies) do
 				if p:inMyAttackRange(self.player) and not self:willSkipPlayPhase(p) then enemy_num = enemy_num + 1 end
