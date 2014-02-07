@@ -795,8 +795,7 @@ sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 	return nil, -1
 end
 
-
-sgs.ai_skill_use["@@shuangren"] = function(self, prompt)
+sgs.ai_skill_playerchosen.shuangren = function(self, targets)
 	if self.player:isKongcheng() then return "." end
 	self:sort(self.enemies, "handcard")
 	local max_card = self:getMaxCard()
@@ -815,7 +814,7 @@ sgs.ai_skill_use["@@shuangren"] = function(self, prompt)
 				local enemy_max_point = enemy_max_card and enemy_max_card:getNumber() or 100
 				if max_point > enemy_max_point then
 					self.shuangren_card = max_card:getEffectiveId()
-					return "@ShuangrenCard=.->" .. enemy:objectName()
+					return enemy
 				end
 			end
 		end
@@ -823,43 +822,12 @@ sgs.ai_skill_use["@@shuangren"] = function(self, prompt)
 			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
 				if max_point >= 10 then
 					self.shuangren_card = max_card:getEffectiveId()
-					return "@ShuangrenCard=.->" .. enemy:objectName()
-				end
-			end
-		end
-		if #self.enemies < 1 then return end
-		self:sort(self.friends_noself, "handcard")
-		for index = #self.friends_noself, 1, -1 do
-			local friend = self.friends_noself[index]
-			if not friend:isKongcheng() then
-				local friend_min_card = self:getMinCard(friend)
-				local friend_min_point = friend_min_card and friend_min_card:getNumber() or 100
-				if max_point > friend_min_point then
-					self.shuangren_card = max_card:getEffectiveId()
-					return "@ShuangrenCard=.->" .. friend:objectName()
-				end
-			end
-		end
-
-		local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
-		if zhugeliang and self:isFriend(zhugeliang) and zhugeliang:getHandcardNum() == 1 and zhugeliang:objectName() ~= self.player:objectName() then
-			if max_point >= 7 then
-				self.shuangren_card = max_card:getEffectiveId()
-				return "@ShuangrenCard=.->" .. zhugeliang:objectName()
-			end
-		end
-
-		for index = #self.friends_noself, 1, -1 do
-			local friend = self.friends_noself[index]
-			if not friend:isKongcheng() then
-				if max_point >= 7 then
-					self.shuangren_card = max_card:getEffectiveId()
-					return "@ShuangrenCard=.->" .. friend:objectName()
+					return enemy
 				end
 			end
 		end
 	end
-	return "."
+	return nil
 end
 
 function sgs.ai_skill_pindian.shuangren(minusecard, self, requestor)
@@ -867,8 +835,8 @@ function sgs.ai_skill_pindian.shuangren(minusecard, self, requestor)
 	return self:isFriend(requestor) and self:getMinCard() or (maxcard:getNumber() < 6 and minusecard or maxcard)
 end
 
-sgs.ai_skill_playerchosen.shuangren = sgs.ai_skill_playerchosen.zero_card_as_slash
-sgs.ai_card_intention.ShuangrenCard = sgs.ai_card_intention.TianyiCard
+sgs.ai_skill_playerchosen["shuangren-slash"] = sgs.ai_skill_playerchosen.zero_card_as_slash
+--sgs.ai_card_intention.ShuangrenCard = sgs.ai_card_intention.TianyiCard
 sgs.ai_cardneed.shuangren = sgs.ai_cardneed.bignumber
 
 
