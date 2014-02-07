@@ -117,6 +117,9 @@
 // icons
 "saveMe": "image/system/death/save-me.png",
 "playerActioned": "image/system/3v3/actioned.png",
+"photoSeatNum-default": "image/system/seat-num/photo/%1.png",
+"dashboardSeatNum-default": "image/system/seat-num/dashboard/%1.png",
+
 // card relevant
 "handCardBack": "image/system/card-back.png",
 "generalCardBack": "image/system/unknown.png",

@@ -996,53 +996,9 @@ public:
     }
 };
 
-ShuangrenCard::ShuangrenCard() {
-}
-
-bool ShuangrenCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
-}
-
-void ShuangrenCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.from->getRoom();
-    bool success = effect.from->pindian(effect.to, "shuangren", NULL);
-    if (success) {
-        QList<ServerPlayer *> targets;
-        foreach (ServerPlayer *target, room->getAlivePlayers()) {
-            if (effect.from->canSlash(target, NULL, false) && (target->isFriendWith(effect.to) || effect.to == target))
-                targets << target;
-        }
-        if (targets.isEmpty())
-            return;
-
-        ServerPlayer *target = room->askForPlayerChosen(effect.from, targets, "shuangren", "@dummy-slash");
-
-        Slash *slash = new Slash(Card::NoSuit, 0);
-        slash->setSkillName("_shuangren");
-        room->useCard(CardUseStruct(slash, effect.from, target), false);
-    } else {
-        room->broadcastSkillInvoke("shuangren", 3);
-        room->setPlayerFlag(effect.from, "ShuangrenSkipPlay");
-    }
-}
-
-class ShuangrenViewAsSkill: public ZeroCardViewAsSkill {
-public:
-    ShuangrenViewAsSkill(): ZeroCardViewAsSkill("shuangren") {
-        response_pattern = "@@shuangren";
-    }
-
-    virtual const Card *viewAs() const{
-        ShuangrenCard *card = new ShuangrenCard;
-        card->setShowSkill(objectName());
-        return card;
-    }
-};
-
 class Shuangren: public PhaseChangeSkill {
 public:
     Shuangren(): PhaseChangeSkill("shuangren") {
-        view_as_skill = new ShuangrenViewAsSkill;
     }
 
     virtual bool canPreshow() const {
@@ -1068,21 +1024,50 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *jiling, QVariant &data) const{
-        return room->askForUseCard(jiling, "@@shuangren", "@shuangren-card");
+        QList<ServerPlayer *> targets;
+        foreach (ServerPlayer *p, room->getOtherPlayers(jiling)){
+            if (!p->isKongcheng())
+                targets << p;
+        }
+        ServerPlayer *victim;
+        if ((victim = room->askForPlayerChosen(jiling, targets, "shuangren", "@shuangren", true, true)) != NULL){
+            room->broadcastSkillInvoke(objectName(), 1);
+            jiling->tag["shuangren_target"] = QVariant::fromValue(victim);
+            return true;
+        }
+        return false;
     }
 
     virtual bool onPhaseChange(ServerPlayer *jiling) const{
-        if (jiling->hasFlag("ShuangrenSkipPlay"))
-            return true;
+        ServerPlayer *target = jiling->tag["shuangren_target"].value<ServerPlayer *>();
+        if (target != NULL){
+            bool success = jiling->pindian(target, "shuangren", NULL);
+            Room *room = jiling->getRoom();
+            if (success) {
+                QList<ServerPlayer *> targets;
+                foreach (ServerPlayer *p, room->getAlivePlayers()){
+                    if (jiling->canSlash(target, NULL, false) && (p->isFriendWith(target) || target == p)){
+                        targets << target;
+                    }
+                }
+                if (targets.isEmpty())
+                    return false;
 
+                ServerPlayer *slasher = room->askForPlayerChosen(jiling, targets, "shuangren-slash", "@dummy-slash");
+                Slash *slash = new Slash(Card::NoSuit, 0);
+                slash->setSkillName("_shuangren");
+                room->useCard(CardUseStruct(slash, jiling, target));
+            }
+            else {
+                room->broadcastSkillInvoke("shuangren", 3);
+                return true;
+            }
+        }
         return false;
     }
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
-        if (card->isKindOf("Slash"))
-            return 2;
-        else
-            return 1;
+        return 2;
     }
 };
 
@@ -1374,7 +1359,6 @@ void StandardPackage::addQunGenerals()
     addMetaObject<LijianCard>();
     addMetaObject<LuanwuCard>();
     addMetaObject<XiongyiCard>();
-    addMetaObject<ShuangrenCard>();
     addMetaObject<HuoshuiCard>();
     addMetaObject<QingchengCard>();
 }

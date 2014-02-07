@@ -110,6 +110,8 @@ public:
 
     void setPlayer(ClientPlayer *player);
 
+    void showSeat();
+
 public slots:
     void sortCards();
     void beginSorting();
@@ -151,6 +153,7 @@ protected:
     QMutex m_mutex;
     QMutex m_mutexEnableCards;
 
+    QSanButton *m_trustButton;
     QSanButton *m_btnReverseSelection;
     QSanButton *m_btnSortHandcard;
     QSanButton *m_btnNoNullification;
@@ -218,6 +221,7 @@ private slots:
     void onDeputyStateChanged();
     void onHeadSkillPreshowed();
     void onDeputySkillPreshowed();
+    void updateTrustButton();
 
 signals:
     void card_selected(const Card *card);

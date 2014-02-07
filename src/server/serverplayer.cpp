@@ -947,6 +947,8 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
     if (isChained())
         room->notifyProperty(player, this, "chained");
 
+    room->notifyProperty(player, this, "gender");
+
     QList<ServerPlayer*> players;
     players << player;
 
@@ -1260,7 +1262,7 @@ void ServerPlayer::showGeneral(bool head_general) {
             if (!has_lord) {
                 foreach(auto p, room->getOtherPlayers(this, true)) {
                     if (p->getKingdom() == kingdom) {
-                        if (p->isAlive() && p->getGeneral()->isLord()) {
+                        if (p->getGeneral()->isLord()) {
                             has_lord = true;
                             break;
                         }
@@ -1270,7 +1272,7 @@ void ServerPlayer::showGeneral(bool head_general) {
                 }
             }
 
-            if (!has_lord && i > (room->getPlayers().length() / 2))
+            if ((!has_lord && i > (room->getPlayers().length() / 2)) || (has_lord && getLord(true)->isDead()))
                 role = "careerist";
 
             room->setPlayerProperty(this, "role", role);

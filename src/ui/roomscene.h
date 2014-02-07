@@ -209,7 +209,6 @@ private:
     TablePile *m_tablePile;
     QMainWindow *main_window;
     QSanButton *ok_button, *cancel_button, *discard_button;
-    QSanButton *trust_button;
     QMenu *miscellaneous_menu, *change_general_menu;
     Window *prompt_box;
     Window *pindian_box;
@@ -325,7 +324,6 @@ private slots:
     void updateSkillButtons();
     void acquireSkill(const ClientPlayer *player, const QString &skill_name, const bool &head = true);
     void updateSelectedTargets();
-    void updateTrustButton();
     void onSkillActivated();
     void onSkillDeactivated();
     void doTimeout();

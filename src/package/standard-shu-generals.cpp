@@ -87,7 +87,7 @@ public:
 
     virtual bool viewFilter(const Card *card) const{
         const Player *lord = Self->getLord();
-        if (lord == NULL || !lord->hasSkill("shouyue"))
+        if (lord == NULL || !lord->hasLordSkill("shouyue"))
             if (!card->isRed())
                 return false;
 
@@ -135,7 +135,7 @@ public:
             return QStringList();
 
         ServerPlayer *lord = room->getLord(player->getKingdom());
-        if (lord != NULL && lord->hasSkill("shouyue")){
+        if (lord != NULL && lord->hasLordSkill("shouyue")){
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Slash") && use.from == player){
                 foreach (ServerPlayer *p, use.to.toSet()){
@@ -357,7 +357,7 @@ public:
             return QStringList();
 
         ServerPlayer *lord = room->getLord(player->getKingdom());
-        if (lord != NULL && lord->hasSkill("shouyue")){
+        if (lord != NULL && lord->hasLordSkill("shouyue")){
             const Card *card = NULL;
             if (triggerEvent == CardUsed)
                 card = data.value<CardUseStruct>().card;
@@ -456,7 +456,7 @@ private:
         JudgeStruct judge;
 
         ServerPlayer *lord = room->getLord(source->getKingdom());
-        if (lord != NULL && lord->hasSkill("shouyue")){
+        if (lord != NULL && lord->hasLordSkill("shouyue")){
             judge.pattern = ".|spade";
             judge.good = false;
         }

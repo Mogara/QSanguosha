@@ -575,17 +575,10 @@ QGraphicsItem *RoomScene::createDashboardButtons() {
     connect(cancel_button, SIGNAL(clicked()), this, SLOT(doCancelButton()));
     connect(discard_button, SIGNAL(clicked()), this, SLOT(doDiscardButton()));
 
-    trust_button = new QSanButton("platter", "trust", widget);
-    trust_button->setStyle(QSanButton::S_STYLE_TOGGLE);
-    trust_button->setRect(G_DASHBOARD_LAYOUT.m_trustButtonArea);
-    connect(trust_button, SIGNAL(clicked()), this, SLOT(trust()));
-    connect(Self, SIGNAL(state_changed()), this, SLOT(updateTrustButton()));
-
     // set them all disabled
     ok_button->setEnabled(false);
     cancel_button->setEnabled(false);
     discard_button->setEnabled(false);
-    trust_button->setEnabled(false);
     return widget;
 }
 
@@ -1342,14 +1335,6 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
             break;
         }
 
-    case Qt::Key_R: {
-            if (Self == NULL) return;
-            foreach (Photo *photo, photos) {
-                if (photo->getPlayer())
-                    photo->showSeat();
-            }
-            break;
-        }
     case Qt::Key_Z: {
             if (dashboard) {
                 m_skillButtonSank = !m_skillButtonSank;
@@ -2543,14 +2528,6 @@ void RoomScene::onSkillActivated() {
     }
 }
 
-void RoomScene::updateTrustButton() {
-    if (!ClientInstance->getReplayer()) {
-        bool trusting = Self->getState() == "trust";
-        trust_button->update();
-        dashboard->setTrust(trusting);
-    }
-}
-
 void RoomScene::doOkButton() {
     if (!ok_button->isEnabled()) return;
     if (card_container->retained()) card_container->clear();
@@ -3477,7 +3454,6 @@ void RoomScene::onGameStart() {
         log_box->append(QString(tr("<font color='%1'>---------- Game Start ----------</font>").arg(Config.TextEditColor.name())));
 
     connect(Self, SIGNAL(skill_state_changed(QString)), this, SLOT(skillStateChange(QString)));
-    trust_button->setEnabled(true);
 #ifdef AUDIO_SUPPORT
     if (Config.EnableBgMusic) {
         // start playing background music
@@ -3489,6 +3465,10 @@ void RoomScene::onGameStart() {
 #endif
     game_started = true;
     dashboard->refresh();
+    dashboard->showControlButtons();
+    dashboard->showSeat();
+    foreach (Photo *photo, photos)
+        photo->showSeat();
 }
 
 void RoomScene::freeze() {
