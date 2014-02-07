@@ -177,7 +177,7 @@ int Player::getAttackRange(bool include_weapon) const{
     bool liegong_lord_effect = false;
     if (hasSkill("liegong")){
         const Player *lord = getLord();
-        if (lord != NULL && lord->hasSkill("shouyue"))
+        if (lord != NULL && lord->hasLordSkill("shouyue"))
             liegong_lord_effect = true;
     }
 
@@ -1038,7 +1038,7 @@ int Player::getPlayerNumWithSameKingdom(const QString &_to_calculate /* = QStrin
             num += 1;
     }
 
-    if (hasSkill("hongfa") && to_calculate == "qun")
+    if (hasLordSkill("hongfa") && to_calculate == "qun")
         num += getPile("heavenly_army").length();
 
     return num;
