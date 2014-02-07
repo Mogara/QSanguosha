@@ -1361,6 +1361,9 @@ bool Indulgence::targetFilter(const QList<const Player *> &targets, const Player
 
 void Indulgence::takeEffect(ServerPlayer *target) const{
     target->clearHistory();
+#ifndef QT_NO_DEBUG
+    if (!target->getAI() && target->askForSkillInvoke("userdefine:cancelIndulgence")) return;
+#endif
     target->skip(Player::Play);
 }
 

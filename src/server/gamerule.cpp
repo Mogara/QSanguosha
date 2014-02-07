@@ -414,6 +414,12 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
         }
     case AskForPeachesDone: {
             if (player->getHp() <= 0 && player->isAlive()) {
+#ifndef QT_NO_DEBUG
+                if (!player->getAI() && player->askForSkillInvoke("userdefine:revive")) {
+                    room->setPlayerProperty(player, "hp", player->getMaxHp());
+                    break;
+                }
+#endif
                 DyingStruct dying = data.value<DyingStruct>();
                 room->killPlayer(player, dying.damage);
             }

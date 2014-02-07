@@ -34,4 +34,6 @@ return
 	["Hegemony"] = "国战",
 	["Roles"] = "身份",
 	["~anjiang"] = "死不瞑目啊……",
+	["@define:revive"] = "是否原地满血复活？",
+	["@define:cancelIndulgence"] = "是否取消乐不思蜀效果？"
 }
