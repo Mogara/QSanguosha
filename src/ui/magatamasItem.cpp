@@ -147,7 +147,7 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
 
     if (m_maxHp <= 4) {
         int i;
-        for (i = 0; i < m_maxHp - m_hp; i++) {
+        for (i = 0; i < m_maxHp - qMax(m_hp, 0); i++) {
             QRect rect(xStep * i,  yStep * i, m_imageArea.width(), m_imageArea.height());
             rect.translate(m_imageArea.topLeft());
             painter->drawPixmap(rect, _icons[0]);
