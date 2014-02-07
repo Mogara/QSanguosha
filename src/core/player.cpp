@@ -260,6 +260,17 @@ const General *Player::getGeneral2() const{
     return general2;
 }
 
+QString Player::getFootnoteName() const{
+    if (general && general->objectName() != "anjiang")
+        return general->objectName();
+    else if (general2 && general2->objectName() != "anjiang")
+        return general2->objectName();
+    else if (!screen_name.isEmpty())
+        return screen_name;
+    else
+        return QString();
+}
+
 QString Player::getState() const{
     return state;
 }
