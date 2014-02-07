@@ -44,6 +44,7 @@ const char *QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK = "%1FaceTurnedMask";
 const char *QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL = "%1BlankGeneral";
 const char *QSanRoomSkin::S_SKIN_KEY_EXTRA_SKILL_BG = "%1ExtraSkillBg";
 const char *QSanRoomSkin::S_SKIN_KEY_CHAIN = "%1Chain";
+const char *QSanRoomSkin::S_SKIN_KEY_DUANCHANG = "%1Duanchang";
 const char *QSanRoomSkin::S_SKIN_KEY_PHASE = "%1Phase%2";
 const char *QSanRoomSkin::S_SKIN_KEY_SELECTED_FRAME = "%1FrameWhenSelected";
 const char *QSanRoomSkin::S_SKIN_KEY_FOCUS_FRAME = "%1FocusFrame%2";
@@ -867,6 +868,8 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         tryParse(playerConfig["saveMeIconRegion"], layout->m_saveMeIconRegion);
         tryParse(playerConfig["chainedIconRegion"], layout->m_chainedIconRegion);
         tryParse(playerConfig["chainedIconRegion2"], layout->m_chainedIconRegion2);
+        tryParse(playerConfig["duanchangMaskRegion"], layout->m_duanchangMaskRegion);
+        tryParse(playerConfig["duanchangMaskRegion2"], layout->m_duanchangMaskRegion2);
         tryParse(playerConfig["hiddenMarkRegion"], layout->m_hiddenMarkRegion1);
         tryParse(playerConfig["hiddenMarkRegion2"], layout->m_hiddenMarkRegion2);
         layout->m_deathIconRegion.tryParse(playerConfig["deathIconRegion"]);
