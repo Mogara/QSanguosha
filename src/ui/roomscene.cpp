@@ -503,7 +503,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
                     detachSkill(skill->objectName());
             }
 
-            if (newHero) {
+            if (newHero && !player->isDuanchang(!isSecondaryHero)) {
                 foreach (const Skill *skill, newHero->getVisibleSkills(true, !isSecondaryHero))
                     attachSkill(skill->objectName(), !isSecondaryHero);
             }
@@ -1989,12 +1989,15 @@ void RoomScene::acquireSkill(const ClientPlayer *player, const QString &skill_na
 void RoomScene::updateSkillButtons() {
     foreach (const Skill *skill, Self->getVisibleSkillList()) {
         if (skill->isLordSkill()
-            && (Self->getRole() != "lord"
+            && (!Self->isLord()
                 || ServerInfo.GameMode == "06_3v3"
                 || ServerInfo.GameMode == "06_XMode"
                 || ServerInfo.GameMode == "02_1v1"
                 || Config.value("WithoutLordskill", false).toBool()))
                 continue;
+
+        if (Self->isDuanchang(Self->inHeadSkills(skill->objectName())))
+            continue;
 
         addSkillButton(skill);
     }

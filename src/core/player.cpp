@@ -696,6 +696,15 @@ void Player::setChained(bool chained) {
     }
 }
 
+bool Player::isDuanchang(const bool head) const{
+    if (head && property("Duanchang").toString() == "head")
+        return true;
+    else if (!head && property("Duanchang").toString() == "deputy")
+        return true;
+    else
+        return false;
+}
+
 void Player::addMark(const QString &mark, int add_num) {
     int value = marks.value(mark, 0);
     value += add_num;

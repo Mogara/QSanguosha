@@ -189,6 +189,8 @@ public:
     void setChained(bool chained);
     bool isChained() const;
 
+    bool isDuanchang(const bool head = true) const;
+
     bool canSlash(const Player *other, const Card *slash, bool distance_limit = true,
                   int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlash(const Player *other, bool distance_limit = true,

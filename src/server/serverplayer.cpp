@@ -1239,7 +1239,7 @@ void ServerPlayer::showGeneral(bool head_general) {
 
         sendSkillsToOthers();
 
-        if (getMark("@duanchang") < 1 || tag["Duanchang"].toString() == "deputy")
+        if (property("Duanchang").toString() != "head")
             foreach (const Skill *skill, getHeadSkillList()) {
                 if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
                     && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
@@ -1296,7 +1296,7 @@ void ServerPlayer::showGeneral(bool head_general) {
 
         sendSkillsToOthers(false);
 
-        if (getMark("@duanchang") < 1 || tag["Duanchang"].toString() == "head")
+        if (property("Duanchang").toString() != "deputy")
             foreach (const Skill *skill, getDeputySkillList()) {
                 if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
                     && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
@@ -1319,7 +1319,7 @@ void ServerPlayer::showGeneral(bool head_general) {
             if (!has_lord) {
                 foreach(auto p, room->getOtherPlayers(this, true)) {
                     if (p->getKingdom() == kingdom) {
-                        if (p->isAlive() && p->getGeneral()->isLord()) {
+                        if (p->getGeneral()->isLord()) {
                             has_lord = true;
                             break;
                         }
@@ -1329,7 +1329,7 @@ void ServerPlayer::showGeneral(bool head_general) {
                 }
             }
 
-            if (!has_lord && i > (room->getPlayers().length() / 2))
+            if (!has_lord && i > (room->getPlayers().length() / 2) || (has_lord && getLord(true)->isDead()))
                 role = "careerist";
 
             room->setPlayerProperty(this, "role", role);
