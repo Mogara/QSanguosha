@@ -723,7 +723,7 @@ QString Client::getPlayerName(const QString &str) {
         if (player->getGeneral2())
             general_name.append("/" + Sanguosha->translate(player->getGeneral2Name()));
         if (player->getGeneralName() == "anjiang" && player->getGeneral2Name() == "anjiang")
-            general_name = player->screenName();
+            general_name = Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(player->property("UI_Seat").toInt())));
         return general_name;
     } else
         return Sanguosha->translate(str);

@@ -930,6 +930,8 @@ void PlayerCardContainer::showSeat() {
     _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegion,
                  _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getSeat())),
                  _getAvatarParent());
+    //save the seat number for later use
+    m_player->setProperty("UI_Seat", m_player->getSeat());
     _m_seatItem->setZValue(1.1);
 }
 

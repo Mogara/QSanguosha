@@ -86,6 +86,6 @@
     "extraSkillArea": [28, 75, 48, 17],
     "extraSkillFont": ["SimLi", [14, 14, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
     "extraSkillTextArea": [28, 73, 48, 17],
-	"seatIconRegion": [54, 155, 23, 16]
+	"seatIconRegion": [54, 152, 23, 16]
 }
 }

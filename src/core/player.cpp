@@ -265,8 +265,8 @@ QString Player::getFootnoteName() const{
         return general->objectName();
     else if (general2 && general2->objectName() != "anjiang")
         return general2->objectName();
-    else if (!screen_name.isEmpty())
-        return screen_name;
+    else if (property("UI_Seat").toInt())
+        return Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(property("UI_Seat").toInt())));
     else
         return QString();
 }
