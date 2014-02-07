@@ -1273,8 +1273,6 @@ public:
             if (!to_change.isEmpty()){
                 QStringList change_list;
                 change_list << to_change;
-                
-                room->revivePlayer(player);
 
                 player->removeGeneral(false);
                 foreach(const Skill *skill, player->getSkills())
@@ -1294,6 +1292,8 @@ public:
                 player->setSkillsPreshowed("h");
 
                 change_list << player->getActualGeneral2Name();
+                
+                room->revivePlayer(player);
 
                 room->setPlayerProperty(player, "hp", 2);
                 room->setTag(player->objectName(), change_list);

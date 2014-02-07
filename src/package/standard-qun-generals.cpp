@@ -801,7 +801,7 @@ public:
                                                                : target->getDeputySkillList();
         foreach (const Skill *skill, skills)
             if (skill->getLocation() == Skill::Right && !skill->isAttachedLordSkill())
-                room->detachSkillFromPlayer(target, skill->objectName(), true);
+                room->detachSkillFromPlayer(target, skill->objectName(), !target->hasShownSkill(skill));
 
         if (death.damage->from->isAlive())
             death.damage->from->gainMark("@duanchang");
