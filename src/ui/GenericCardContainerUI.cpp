@@ -439,8 +439,7 @@ void PlayerCardContainer::repaintAll() {
     //we have two avatar areas now...
     _paintPixmap(_m_faceTurnedIcon, _m_layout->m_avatarArea, QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK,
                  _getAvatarParent());
-    _paintPixmap(_m_faceTurnedIcon2, _m_layout->m_secondaryAvatarArea, QSanRoomSkin::S_SKIN_KEY_FACETURNEDMASK,
-                 _getAvatarParent());
+    //paint faceTurnedIcon in secondaryAvatarArea only if inheriting Dashboard
     _paintPixmap(_m_chainIcon, _m_layout->m_chainedIconRegion, QSanRoomSkin::S_SKIN_KEY_CHAIN,
                  _getAvatarParent());
     _paintPixmap(_m_chainIcon2, _m_layout->m_chainedIconRegion2,                                    QSanRoomSkin::S_SKIN_KEY_CHAIN, _getAvatarParent());
