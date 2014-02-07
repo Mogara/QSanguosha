@@ -177,7 +177,7 @@ int Player::getAttackRange(bool include_weapon) const{
     bool liegong_lord_effect = false;
     if (hasSkill("liegong")){
         const Player *lord = getLord();
-        if (lord != NULL && lord->hasSkill("shouyue"))
+        if (lord != NULL && lord->hasLordSkill("shouyue"))
             liegong_lord_effect = true;
     }
 
@@ -258,6 +258,17 @@ QString Player::getGeneral2Name() const{
 
 const General *Player::getGeneral2() const{
     return general2;
+}
+
+QString Player::getFootnoteName() const{
+    if (general && general->objectName() != "anjiang")
+        return general->objectName();
+    else if (general2 && general2->objectName() != "anjiang")
+        return general2->objectName();
+    else if (!screen_name.isEmpty())
+        return screen_name;
+    else
+        return QString();
 }
 
 QString Player::getState() const{
@@ -1012,8 +1023,8 @@ void Player::removeQinggangTag(const Card *card) {
     }
 }
 
-const Player *Player::getLord() const{
-    QList<const Player *> sib = getAliveSiblings();
+const Player *Player::getLord(const bool include_death) const{
+    QList<const Player *> sib = include_death ? getSiblings() : getAliveSiblings();
     sib << this;
     foreach(const Player *p, sib){
         if (p->getGeneral()->isLord() && p->getKingdom() == kingdom)
@@ -1038,7 +1049,7 @@ int Player::getPlayerNumWithSameKingdom(const QString &_to_calculate /* = QStrin
             num += 1;
     }
 
-    if (hasSkill("hongfa") && to_calculate == "qun")
+    if (hasLordSkill("hongfa") && to_calculate == "qun")
         num += getPile("heavenly_army").length();
 
     return num;

@@ -123,48 +123,48 @@ sgs.ai_skill_use["@@huyuan"] = function(self, prompt)
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
 	self:sortByKeepValue(cards)
-	if self.player:hasArmorEffect("silver_lion") then
+	if self.player:hasArmorEffect("SilverLion") then
 		local player = huyuan_validate(self, "SilverLion", false)
-		if player then return "@HuyuanCard=" .. self.player:getArmor():getEffectiveId() .. "->" .. player:objectName() end
+		if player then return "@HuyuanCard=" .. self.player:getArmor():getEffectiveId() .. "&huyuan->" .. player:objectName() end
 	end
 	if self.player:getOffensiveHorse() then
 		local player = huyuan_validate(self, "OffensiveHorse", false)
-		if player then return "@HuyuanCard=" .. self.player:getOffensiveHorse():getEffectiveId() .. "->" .. player:objectName() end
+		if player then return "@HuyuanCard=" .. self.player:getOffensiveHorse():getEffectiveId() .. "&huyuan->" .. player:objectName() end
 	end
 	if self.player:getWeapon() then
 		local player = huyuan_validate(self, "Weapon", false)
-		if player then return "@HuyuanCard=" .. self.player:getWeapon():getEffectiveId() .. "->" .. player:objectName() end
+		if player then return "@HuyuanCard=" .. self.player:getWeapon():getEffectiveId() .. "&huyuan->" .. player:objectName() end
 	end
 	if self.player:getArmor() and self.player:getLostHp() <= 1 and self.player:getHandcardNum() >= 3 then
 		local player = huyuan_validate(self, "Armor", false)
-		if player then return "@HuyuanCard=" .. self.player:getArmor():getEffectiveId() .. "->" .. player:objectName() end
+		if player then return "@HuyuanCard=" .. self.player:getArmor():getEffectiveId() .. "&huyuan->" .. player:objectName() end
 	end
 	for _, card in ipairs(cards) do
 		if card:isKindOf("DefensiveHorse") then
 			local player = huyuan_validate(self, "DefensiveHorse", true)
-			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
+			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "&huyuan->" .. player:objectName() end
 		end
 	end
 	for _, card in ipairs(cards) do
 		if card:isKindOf("OffensiveHorse") then
 			local player = huyuan_validate(self, "OffensiveHorse", true)
-			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
+			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "&huyuan->" .. player:objectName() end
 		end
 	end
 	for _, card in ipairs(cards) do
 		if card:isKindOf("Weapon") then
 			local player = huyuan_validate(self, "Weapon", true)
-			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
+			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "&huyuan->" .. player:objectName() end
 		end
 	end
 	for _, card in ipairs(cards) do
 		if card:isKindOf("SilverLion") then
 			local player = huyuan_validate(self, "SilverLion", true)
-			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
+			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "&huyuan->" .. player:objectName() end
 		end
 		if card:isKindOf("Armor") and huyuan_validate(self, "Armor", true) then
 			local player = huyuan_validate(self, "Armor", true)
-			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
+			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "&huyuan->" .. player:objectName() end
 		end
 	end
 end
@@ -198,47 +198,6 @@ sgs.huyuan_keep_value = {
 	EquipCard = 4.8
 }
 
-sgs.ai_skill_use["@@heyi"] = function(self, prompt)
-	local players = sgs.QList2Table(self.room:getOtherPlayers(self.player))
-	local first, last = self.player, self.player
-	for i = 1, #players do
-		if self:isFriend(players[i]) then last = players[i] else break end
-	end
-	for i = #players, 1, -1 do
-		if self:isFriend(players[i]) then first = players[i] else break end
-	end
-	if first:objectName() == self.player:objectName() and last:objectName() == self.player:objectName() then return "." end
-	return ("@HeyiCard=.->%s+%s"):format(first:objectName(), last:objectName())
-end
-
-sgs.ai_card_intention.HeyiCard = function(self, card, from, tos)
-	local players = sgs.QList2Table(self.room:getOtherPlayers(from))
-	local first, last = tos[1], tos[2]
-	if first:objectName() == from:objectName() then
-		for i = 1, #players do
-			if players[i]:objectName() ~= last:objectName() then sgs.updateIntention(from, players[i], -60) else break end
-		end
-		sgs.updateIntention(from, last, -60)
-	elseif last:objectName() == from:objectName() then
-		for i = #players, 1, -1 do
-			if players[i]:objectName() ~= first:objectName() then sgs.updateIntention(from, players[i], -60) else break end
-		end
-		sgs.updateIntention(from, first, -60)
-	else
-		if table.indexOf(players, first) < table.index(player, last) then
-			first = tos[2]
-			last = tos[1]
-		end
-		for i = 1, #players do
-			if players[i]:objectName() ~= last:objectName() then sgs.updateIntention(from, players[i], -60) else break end
-		end
-		for i = #players, 1, -1 do
-			if players[i]:objectName() ~= first:objectName() then sgs.updateIntention(from, players[i], -60) else break end
-		end
-		sgs.updateIntention(from, last, -60)
-		sgs.updateIntention(from, first, -60)
-	end
-end
 
 function SmartAI:isTiaoxinTarget(enemy)
 	if not enemy then self.room:writeToConsole(debug.traceback()) return end
@@ -360,7 +319,7 @@ sgs.ai_card_intention.ShangyiCard = 50
 sgs.ai_skill_invoke.niaoxiang = function(self, data)
 	local p = data:toPlayer()
 	if not self:isEnemy(p) then return false end
-	if p:hasSkills("leiji|nosleiji") and getCardsNum("Jink", p) >= 1 then return false end
+	if p:hasSkill("leiji") and getCardsNum("Jink", p) >= 1 then return false end
 	return true
 end
 
@@ -450,8 +409,8 @@ local function will_discard_zhendu(self)
 	local need_damage = self:getDamagedEffects(current, self.player) or self:needToLoseHp(current, self.player)
 	if self:isFriend(current) then
 		if current:getMark("drank") > 0 and not need_damage then return -1 end
-		if (getKnownCard(current, self.player, "Slash") > 0 or (getCardsNum("Slash", current) >= 1 and current:getHandcardNum() >= 2))
-			and (not self:damageIsEffective(current, nil, self.player) or current:getHp() > 2 or (getCardsNum("Peach", current) > 1 and not self:isWeak(current))) then
+		if (getKnownCard(current, self.player, "Slash") > 0 or (getCardsNum("Slash", current, self.player) >= 1 and current:getHandcardNum() >= 2))
+			and (not self:damageIsEffective(current, nil, self.player) or current:getHp() > 2 or (getCardsNum("Peach", current, self.player) > 1 and not self:isWeak(current))) then
 			local slash = sgs.Sanguosha:cloneCard("slash")
 			local trend = 3
 			if current:hasWeapon("axe") then trend = trend - 1
@@ -466,7 +425,7 @@ local function will_discard_zhendu(self)
 		if need_damage then return 3 end
 	elseif self:isEnemy(current) then
 		if need_damage or current:getHandcardNum() >= 2 then return -1 end
-		if getKnownCard(current, self.player, "Slash") == 0 and getCardsNum("Slash", current) < 0.5 then return 3.5 end
+		if getKnownCard(current, self.player, "Slash") == 0 and getCardsNum("Slash", current, self.player) < 0.5 then return 3.5 end
 	end
 	return -1
 end

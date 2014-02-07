@@ -109,9 +109,7 @@ return {
 	["illustrator:jiling"] = "樱花闪乱",
 	["shuangren"] = "双刃",
 	[":shuangren"] = "出牌阶段开始时，你可以与一名角色拼点。若你赢，你视为对其或一名与其势力相同的其他角色使用一张【杀】。若你没赢，你结束出牌阶段。",
-	["@@shuangren"] = "双刃",
-	["@shuangren-card"] = "你可以发动“双刃”",
-	["~shuangren"] = "选择一名其他角色→点击确定",
+	["@shuangren"] = "你可以发动“双刃”",
 
 	["#tianfeng"] = "河北瑰杰",
 	["tianfeng"] = "田丰",

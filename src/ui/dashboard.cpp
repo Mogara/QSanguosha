@@ -550,7 +550,7 @@ void Dashboard::_createExtraButtons() {
     m_trustButton->setStyle(QSanButton::S_STYLE_TOGGLE);
     m_btnReverseSelection = new QSanButton("handcard", "reverse-selection", this);
     m_btnSortHandcard = new QSanButton("handcard", "sort", this);
-    m_btnNoNullification = new QSanButton("handcard", "nullification", this);
+    m_btnNoNullification = new QSanButton("handcard", "nullification", this, true);
     m_btnNoNullification->setStyle(QSanButton::S_STYLE_TOGGLE);
     // @todo: auto hide.
     m_trustButton->setPos(G_DASHBOARD_LAYOUT.m_rswidth, - m_trustButton->boundingRect().height());

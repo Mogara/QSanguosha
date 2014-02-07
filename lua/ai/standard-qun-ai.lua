@@ -43,7 +43,7 @@ sgs.ai_view_as.jijiu = function(card, player, card_place)
 	local card_id = card:getEffectiveId()
 	if card_place ~= sgs.Player_PlaceSpecial and card:isRed() and player:getPhase() == sgs.Player_NotActive
 		and not player:hasFlag("Global_PreventPeach") then
-		return ("peach:jijiu[%s:%s]=%d%s"):format(suit, number, card_id, "&qiangnang")
+		return ("peach:jijiu[%s:%s]=%d%s"):format(suit, number, card_id, "&jijiu")
 	end
 end
 
@@ -577,15 +577,15 @@ sgs.ai_skill_cardask["@guidao-card"]=function(self, data)
 	local card_id = self:getRetrialCardId(cards, judge)
 	if card_id == -1 then
 		if self:needRetrial(judge) and judge.reason ~= "beige" then
-			if self:needToThrowArmor() then return "$&guidao" .. self.player:getArmor():getEffectiveId() end
+			if self:needToThrowArmor() then return "$" .. self.player:getArmor():getEffectiveId() end
 			self:sortByUseValue(cards, true)
 			if self:getUseValue(judge.card) > self:getUseValue(cards[1]) then
-				return "$&guidao" .. cards[1]:getId()
+				return "$" .. cards[1]:getId()
 			end
 		end
 	elseif self:needRetrial(judge) or self:getUseValue(judge.card) > self:getUseValue(sgs.Sanguosha:getCard(card_id)) then
 		local card = sgs.Sanguosha:getCard(card_id)
-		return "$&guidao" .. card_id
+		return "$" .. card_id
 	end
 	
 	return "."
@@ -795,8 +795,7 @@ sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 	return nil, -1
 end
 
-
-sgs.ai_skill_use["@@shuangren"] = function(self, prompt)
+sgs.ai_skill_playerchosen.shuangren = function(self, targets)
 	if self.player:isKongcheng() then return "." end
 	self:sort(self.enemies, "handcard")
 	local max_card = self:getMaxCard()
@@ -815,7 +814,7 @@ sgs.ai_skill_use["@@shuangren"] = function(self, prompt)
 				local enemy_max_point = enemy_max_card and enemy_max_card:getNumber() or 100
 				if max_point > enemy_max_point then
 					self.shuangren_card = max_card:getEffectiveId()
-					return "@ShuangrenCard=.->" .. enemy:objectName()
+					return enemy
 				end
 			end
 		end
@@ -823,43 +822,12 @@ sgs.ai_skill_use["@@shuangren"] = function(self, prompt)
 			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
 				if max_point >= 10 then
 					self.shuangren_card = max_card:getEffectiveId()
-					return "@ShuangrenCard=.->" .. enemy:objectName()
-				end
-			end
-		end
-		if #self.enemies < 1 then return end
-		self:sort(self.friends_noself, "handcard")
-		for index = #self.friends_noself, 1, -1 do
-			local friend = self.friends_noself[index]
-			if not friend:isKongcheng() then
-				local friend_min_card = self:getMinCard(friend)
-				local friend_min_point = friend_min_card and friend_min_card:getNumber() or 100
-				if max_point > friend_min_point then
-					self.shuangren_card = max_card:getEffectiveId()
-					return "@ShuangrenCard=.->" .. friend:objectName()
-				end
-			end
-		end
-
-		local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
-		if zhugeliang and self:isFriend(zhugeliang) and zhugeliang:getHandcardNum() == 1 and zhugeliang:objectName() ~= self.player:objectName() then
-			if max_point >= 7 then
-				self.shuangren_card = max_card:getEffectiveId()
-				return "@ShuangrenCard=.->" .. zhugeliang:objectName()
-			end
-		end
-
-		for index = #self.friends_noself, 1, -1 do
-			local friend = self.friends_noself[index]
-			if not friend:isKongcheng() then
-				if max_point >= 7 then
-					self.shuangren_card = max_card:getEffectiveId()
-					return "@ShuangrenCard=.->" .. friend:objectName()
+					return enemy
 				end
 			end
 		end
 	end
-	return "."
+	return nil
 end
 
 function sgs.ai_skill_pindian.shuangren(minusecard, self, requestor)
@@ -867,8 +835,8 @@ function sgs.ai_skill_pindian.shuangren(minusecard, self, requestor)
 	return self:isFriend(requestor) and self:getMinCard() or (maxcard:getNumber() < 6 and minusecard or maxcard)
 end
 
-sgs.ai_skill_playerchosen.shuangren = sgs.ai_skill_playerchosen.zero_card_as_slash
-sgs.ai_card_intention.ShuangrenCard = sgs.ai_card_intention.TianyiCard
+sgs.ai_skill_playerchosen["shuangren-slash"] = sgs.ai_skill_playerchosen.zero_card_as_slash
+--sgs.ai_card_intention.ShuangrenCard = sgs.ai_card_intention.TianyiCard
 sgs.ai_cardneed.shuangren = sgs.ai_cardneed.bignumber
 
 
@@ -999,44 +967,8 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 	return
 end
 
-sgs.ai_skill_choice.qingcheng = function(self, choices, data)
-	local target = data:toPlayer()
-	if self:isFriend(target) then
-		if target:hasSkill("shiyong", true) and target:getMark("Qingchengshiyong") == 0 then return "shiyong" end
-	end
-	if target:getHp() < 1 and target:hasSkill("buqu", true) and target:getMark("Qingchengbuqu") == 0 then return "buqu" end 
-	if self:isWeak(target) then
-		for _, askill in ipairs((sgs.exclusive_skill .. "|" .. sgs.save_skill):split("|")) do
-			if target:hasSkill(askill, true) and target:getMark("Qingcheng" .. askill) == 0 then
-				return askill
-			end
-		end
-	end
-	for _, askill in ipairs(("noswuyan|weimu|wuyan|guixin|fenyong|liuli|yiji|jieming|neoganglie|fankui|fangzhu|enyuan|nosenyuan|" ..
-						"ganglie|vsganglie|langgu|qingguo|luoying|guzheng|jianxiong|longdan|xiangle|renwang|huangen|tianming|yizhong|bazhen|jijiu|" ..
-						"beige|longhun|gushou|buyi|mingzhe|danlao|qianxun|jiang|yanzheng|juxiang|huoshou|anxian|zhichi|feiying|" ..
-						"tianxiang|xiaoji|xuanfeng|nosxuanfeng|xiaoguo|guhuo|guidao|guicai|nosshangshi|lianying|sijian|mingshi|" ..
-						"yicong|zhiyu|lirang|xingshang|shushen|shangshi|leiji|wusheng|wushuang|tuntian|quanji|kongcheng|jieyuan|" ..
-						"jilve|wuhun|kuangbao|tongxin|shenjun|ytchengxiang|sizhan|toudu|xiliang|tanlan|shien"):split("|")) do
-		if target:hasSkill(askill, true) and target:getMark("Qingcheng" .. askill) == 0 then
-			return askill
-		end
-	end
-end
 
 sgs.ai_use_value.QingchengCard = 2
 sgs.ai_use_priority.QingchengCard = 7.2
 sgs.ai_card_intention.QingchengCard = 0
 
-sgs.ai_choicemade_filter.skillChoice.qingcheng = function(self, player, promptlist)
-	local choice = promptlist[#promptlist]
-	local target = nil
-	for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
-		if p:hasSkill(choice, true) then
-			target = p
-			break
-		end
-	end
-	if not target then return end
-	if choice == "shiyong" then sgs.updateIntention(player, target, -10) else sgs.updateIntention(player, target, 10) end
-end

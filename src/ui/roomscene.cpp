@@ -1763,15 +1763,15 @@ QString RoomScene::_translateMovement(const CardsMoveStruct &move) {
     QString playerName, targetName;
 
     if (srcPhoto != NULL)
-        playerName = Sanguosha->translate(srcPhoto->getPlayer()->getGeneralName());
+        playerName = Sanguosha->translate(srcPhoto->getPlayer()->getFootnoteName());
     else if (reason.m_playerId == Self->objectName())
-        playerName = QString("%1(%2)").arg(Sanguosha->translate(Self->getGeneralName())).arg(Sanguosha->translate("yourself"));
+        playerName = QString("%1(%2)").arg(Sanguosha->translate(Self->getFootnoteName())).arg(Sanguosha->translate("yourself"));
 
     if (dstPhoto != NULL)
-        targetName = Sanguosha->translate("use upon").append(Sanguosha->translate(dstPhoto->getPlayer()->getGeneralName()));
+        targetName = Sanguosha->translate("use upon").append(Sanguosha->translate(dstPhoto->getPlayer()->getFootnoteName()));
     else if (reason.m_targetId == Self->objectName())
         targetName = QString("%1%2(%3)").arg(Sanguosha->translate("use upon"))
-                                        .arg(Sanguosha->translate(Self->getGeneralName()))
+                                        .arg(Sanguosha->translate(Self->getFootnoteName()))
                                         .arg(Sanguosha->translate("yourself"));
 
     QString result(playerName + targetName);
