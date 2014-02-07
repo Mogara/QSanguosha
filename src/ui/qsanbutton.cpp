@@ -150,9 +150,12 @@ void QSanButton::_onMouseClick(bool inside) {
     else if (_m_style == S_STYLE_TOGGLE) {
         if (_m_state == S_STATE_HOVER)
             _m_state = S_STATE_UP; // temporarily set, do not use setState!
-        if (_m_state == S_STATE_DOWN && inside)
-            _m_state = S_STATE_UP;
-        else if (_m_state == S_STATE_UP && inside)
+        if (_m_state == S_STATE_DOWN) {
+            if (inside)
+                _m_state = S_STATE_HOVER;
+            else
+                _m_state = S_STATE_UP;
+        } else if (_m_state == S_STATE_UP && inside)
             _m_state = S_STATE_DOWN;
     }
     update();
