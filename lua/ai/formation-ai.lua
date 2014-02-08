@@ -276,11 +276,12 @@ sgs.ai_use_priority.TiaoxinCard = 4
 
 sgs.ai_skill_invoke.shoucheng = function(self, data)
 	local move = data:toMoveOneTime()
-	return move.from and self:isFriend(move.from) and not self:needKongcheng(move.from, true)
-end
-
-sgs.ai_skill_choice.shoucheng = function(self, choices)
-	return (self.player:getPhase() == sgs.Player_NotActive and self:needKongcheng(self.player, true)) and "reject" or "accept"
+	if move and move.from then
+		local from = findPlayerByObjectName(move.from:objectName())
+		if from and self:isFriend(from) and not self:needKongcheng(move.from, true) then
+			return true
+		end
+	end
 end
 
 local shangyi_skill = {}
