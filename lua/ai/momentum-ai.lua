@@ -93,7 +93,7 @@ end
 sgs.ai_playerchosen_intention.qianxi = 80
 
 sgs.ai_skill_invoke.guixiu = true
-	
+
 local cunsi_skill = {}
 cunsi_skill.name = "cunsi"
 table.insert(sgs.ai_skills, cunsi_skill)
@@ -136,38 +136,14 @@ sgs.ai_skill_choice.yingyang = function(self, choices, data)
 
 	if math.abs(f_num - t_num) > 3 then return "cancel" end
 
-	local table_pindian_friends = { "tianyi", "shuangren", "qiaoshui" }
-	if reason == "mizhao" then
-		if amFrom then
-			if self:isFriend(to) then
-				if self:getCardsNum("Jink") > 0 then return "down"
-				elseif getCardsNum("Jink", to, self.player) >= 1 then return "up"
-				else return self.player:getHp() >= to:getHp() and "down" or "up"
-				end
-			else
-				return "up"
-			end
-		else
-			if self:isFriend(from) then
-				if self:getCardsNum("Jink") > 0 then return "down"
-				elseif getCardsNum("Jink", from, self.player) >= 1 then return "up"
-				else return self.player:getHp() >= to:getHp() and "down" or "up"
-				end
-			else
-				return "up"
-			end
-		end
-	elseif reason == "quhu" then
+	local table_pindian_friends = { "tianyi", "shuangren" }
+	if reason == "quhu" then
 		if amFrom and self.player:hasSkill("jieming") then
 			if f_num > 8 then return "up"
 			elseif self:getJiemingChaofeng(player) <= -6 then return "down"
 			end
 		end
 		return "up"
-	elseif reason == "xiechan" then
-		return (not amFrom and self:getCardsNum("Slash") > getCardsNum("Slash", from, self.player)) and "down" or "up"
-	elseif reason == "zhiba_pindian" or reason == "nosquanji" then
-		return (amFrom and self:isFriend(to)) and "down" or "up"
 	elseif table.contains(table_pindian_friends, reason) then
 		return (not amFrom and self:isFriend(from)) and "down" or "up"
 	else
