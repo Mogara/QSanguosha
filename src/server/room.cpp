@@ -986,8 +986,15 @@ bool Room::isCanceled(const CardEffectStruct &effect) {
 
     QStringList targets = getTag(effect.card->toString() + "HegNullificationTargets").toStringList();
     if (!targets.isEmpty()) {
-        if (targets.contains(effect.to->objectName()))
+        if (targets.contains(effect.to->objectName())){
+            LogMessage log;
+            log.type = "#HegNullificationEffect";
+            log.from = effect.from;
+            log.to << effect.to;
+            log.arg = effect.card->objectName();
+            sendLog(log);
             return true;
+        }
     }
 
     setTag("HegNullificationValid", false);
@@ -1100,18 +1107,35 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     doAnimate(S_ANIMATE_NULLIFICATION, repliedPlayer->objectName(), to->objectName());
     useCard(CardUseStruct(card, repliedPlayer, QList<ServerPlayer *>()));
 
+    QString heg_nullification_selection;
     if ((to && to->hasShownOneGeneral() && card->isKindOf("HegNullification")
-         && askForChoice(repliedPlayer, "heg_nullification", "single+all", data) == "all")
+         && (heg_nullification_selection = askForChoice(repliedPlayer, "heg_nullification", "single+all", data)) == "all")
         || trick->isKindOf("HegNullification")) {
         setTag("HegNullificationValid", !getTag("HegNullificationValid").toBool());
     }
 
-    LogMessage log;
-    log.type = "#NullificationDetails";
-    log.from = from;
-    log.to << to;
-    log.arg = trick_name;
-    sendLog(log);
+    if (!card->isKindOf("HegNullification") || heg_nullification_selection.isEmpty()){
+        LogMessage log;
+        log.type = "#NullificationDetails";
+        log.from = from;
+        log.to << to;
+        log.arg = trick_name;
+        sendLog(log);
+    }
+    else {
+        LogMessage log;
+        log.type = "#HegNullificationDetails";
+        log.from = from;
+        log.to << to;
+        log.arg = trick_name;
+        sendLog(log);
+        LogMessage log2;
+        log2.type = "#HegNullificationSelection";
+        log2.from = from;
+        heg_nullification_selection = "hegnul_" + heg_nullification_selection;
+        log2.arg = heg_nullification_selection;
+        sendLog(log2);
+    }
     thread->delay(500);
 
     QVariant decisionData = QVariant::fromValue("Nullification:" + QString(trick->getClassName())

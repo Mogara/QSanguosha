@@ -769,8 +769,6 @@ void PlayerCardContainer::_adjustComponentZValues() {
     //it's meaningless to judge which icon should be on top
     _layUnder(_m_chainIcon2);
     _layUnder(_m_chainIcon);
-    _layUnder(_m_duanchangMask2);
-    _layUnder(_m_duanchangMask);
     _layUnder(_m_hpBox);
     _layUnder(_m_handCardNumText);
     _layUnder(_m_handCardBg);
@@ -790,6 +788,8 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_extraSkillBg);
     _layUnder(_m_faceTurnedIcon2);
     _layUnder(_m_faceTurnedIcon);
+    _layUnder(_m_duanchangMask2);
+    _layUnder(_m_duanchangMask);
     _layUnder(_m_secondaryAvatarArea);
     _layUnder(_m_avatarArea);
     _layUnder(_m_circleItem);

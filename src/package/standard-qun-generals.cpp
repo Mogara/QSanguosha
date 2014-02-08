@@ -523,7 +523,7 @@ public:
         } else {
             log.type = "$CancelTargetNoUser";
         }
-        log.to = use.to;
+        log.to << player;
         log.arg = use.card->objectName();
         room->sendLog(log);
 
