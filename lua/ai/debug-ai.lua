@@ -229,3 +229,12 @@ function sgs.printFEList(player)
 	end
 end
 
+function sgs.ShowPlayer(player)
+	for _, p in sgs.qlist(global_room:getAlivePlayers()) do
+		if player then
+			if player:objectName() == p:objectName() then p:showGeneral() end
+		else
+			p:showGeneral()
+		end
+	end
+end

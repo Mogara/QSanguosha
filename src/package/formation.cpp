@@ -261,8 +261,13 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
+        if (!dengai) return false;
+        
+        QList<int> ids = dengai->getPile("field");
+        room->fillAG(ids, dengai);
+        int id = room->askForAG(dengai, ids, false, objectName());
+        room->clearAG(dengai);
 
-        int id = room->askForAG(dengai, dengai->getPile("field"), false, objectName());
         if (player == dengai) {
             LogMessage log;
             log.type = "$MoveCard";
@@ -788,7 +793,7 @@ public:
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *yuji = room->findPlayerBySkillName(objectName());
-        if (yuji && room->askForSkillInvoke(yuji, objectName())){
+        if (yuji && room->askForSkillInvoke(yuji, objectName(), data)){
             room->broadcastSkillInvoke(objectName());
             return true;
         }
@@ -995,7 +1000,7 @@ public:
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
         if (invoke){
-            room->broadcastSkillInvoke(objectName(), 2);
+            room->broadcastSkillInvoke(objectName(), (triggerEvent == BeforeCardsMove) ? 1 : 2);
             return true;
         }
 
