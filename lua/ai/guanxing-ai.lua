@@ -68,7 +68,7 @@ local function getOwnCards(self, up, bottom, next_judge)
 					table.remove(bottom, index)
 					fuhun2 = true
 				end
-				if not fuhun2 and gcard:isBlack() and gcard:getTypeId() == sgs.Card_Equip then
+				if not fuhun2 and gcard:isBlack() and gcard:getTypeId() == sgs.Card_TypeEquip then
 					table.insert(up, gcard) 
 					table.remove(bottom, index)
 					fuhun2 = true

@@ -992,7 +992,7 @@ end
 function SmartAI:adjustUsePriority(card, v)
 	local suits = {"club", "spade", "diamond", "heart"}
 
-	if card:getTypeId() == sgs.Card_Skill then return v end
+	if card:getTypeId() == sgs.Card_TypeSkill then return v end
 
 	for _, askill in sgs.qlist(self.player:getVisibleSkillList()) do
 		local callback = sgs.ai_suit_priority[askill:objectName()]
