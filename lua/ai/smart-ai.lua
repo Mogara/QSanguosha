@@ -282,11 +282,12 @@ function SmartAI:objectiveLevel(player, tactics)
 	local self_kingdom = self.player:getKingdom()
 	local player_kingdom = sgs.ai_explicit[player:objectName()]
 	if player_kingdom == "unknown" and player:getRole() ~= "careerist" then
-		local mark = string.format("KnownBoth_%s_%s", self.player:objectName(), player:objectName())
+		local mark = string.format("KnownBoth_%s_%s", self.player:objectName(), player:objectName()) 
 		if player:getMark(mark) > 0 then player_kingdom = player:getKingdom() end
 	end
-
-	if (not sgs.isAnjiang(self.player) or sgs.shown_kingdom[self_kingdom] < 4) and self.role ~= "careerist" and self_kingdom == player_kingdom then return -2 end
+	
+	local upperlimit = player:getLord() and 99 or self.room:getPlayers():length() / 2
+	if (not sgs.isAnjiang(self.player) or sgs.shown_kingdom[self_kingdom] < upperlimit) and self.role ~= "careerist" and self_kingdom == player_kingdom then return -2 end
 	if self:getKingdomCount() <= 2 then return 5 end
 	if self:getKingdomCount() == 3 and self.player:aliveCount() == 3 then return 5 end
 	
@@ -297,12 +298,12 @@ function SmartAI:objectiveLevel(player, tactics)
 
 	else
 		
-		local selfIsCareerist = self.role == "careerist" or sgs.shown_kingdom[self_kingdom] >= 4 and sgs.isAnjiang(self.player)
+		local selfIsCareerist = self.role == "careerist" or sgs.shown_kingdom[self_kingdom] >= upperlimit and sgs.isAnjiang(self.player)
 		local isweak = player:isKongcheng() and player:getHp() == 1 and not player:hasSkill("kongcheng") and not sgs.isAnjiang(player)
 
 		local gameProcess = sgs.gameProcess()
 		if gameProcess == "===" then
-			if not selfIsCareerist and sgs.shown_kingdom[self_kingdom] < 4 then
+			if not selfIsCareerist and sgs.shown_kingdom[self_kingdom] < upperlimit then
 				if sgs.isAnjiang(player) and player_kingdom == "unknown" then
 					if self:evaluateKingdom(player) == self_kingdom then return -1
 					elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
@@ -316,7 +317,7 @@ function SmartAI:objectiveLevel(player, tactics)
 		elseif string.find(gameProcess, "&") then
 			if sgs.ai_tactics == "PT" then
 				local kingdom = gameProcess:split("&")[1]
-				if self_kingdom == kingdom and not selfIsCareerist and sgs.shown_kingdom[self_kingdom] < 4 then
+				if self_kingdom == kingdom and not selfIsCareerist and sgs.shown_kingdom[self_kingdom] < upperlimit then
 					if self:evaluateKingdom(player) == self_kingdom then return -1
 					elseif not string.find(self:evaluateKingdom(player), kingdom) or not sgs.isAnjiang(player) then return 5
 					else return 0
@@ -328,8 +329,8 @@ function SmartAI:objectiveLevel(player, tactics)
 				local kingdom1, kingdom2 = gameProcess:split("&")[1], gameProcess:split("&")[2]
 				if (self_kingdom == kingdom1 or self_kingdom == kingdom2) and not selfIsCareerist then
 					if player_kingdom == kingdom1 or player_kingdom == kingdom2 then return 0
-					elseif sgs.isAnjiang(player) and (sgs.shown_kingdom[kingdom1] < 4 and self:evaluateKingdom(player) == kingdom1
-								or sgs.shown_kingdom[kingdom2] < 4 and self:evaluateKingdom(player) == kingdom2) then return 0
+					elseif sgs.isAnjiang(player) and (sgs.shown_kingdom[kingdom1] < upperlimit and self:evaluateKingdom(player) == kingdom1
+								or sgs.shown_kingdom[kingdom2] < upperlimit and self:evaluateKingdom(player) == kingdom2) then return 0
 					elseif string.find(self:evaluateKingdom(player), kingdom1) or string.find(self:evaluateKingdom(player), kingdom2) then return 1
 					else return 5
 					end
@@ -346,7 +347,7 @@ function SmartAI:objectiveLevel(player, tactics)
 			local kingdom = gameProcess:split("+")[1]
 			if string.find(gameProcess, "+++") then
 				if self_kingdom == kingdom and not selfIsCareerist then
-					if sgs.shown_kingdom[self_kingdom] < 4 and sgs.isAnjiang(player) and self:evaluateKingdom(player) == self_kingdom then return 0
+					if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) and self:evaluateKingdom(player) == self_kingdom then return 0
 					else return 5
 					end
 				else
@@ -357,7 +358,7 @@ function SmartAI:objectiveLevel(player, tactics)
 				end
 			elseif string.find(gameProcess, "++") then
 				if self_kingdom == kingdom and not selfIsCareerist then
-					if sgs.shown_kingdom[self_kingdom] < 4 and sgs.isAnjiang(player) then
+					if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) then
 						if self:evaluateKingdom(player) == self_kingdom then return -1
 						elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
 						elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 1 and self:getOverflow() <= 0 then return 0
@@ -372,7 +373,7 @@ function SmartAI:objectiveLevel(player, tactics)
 				end
 			else
 				if self_kingdom == kingdom and not selfIsCareerist then
-					if sgs.shown_kingdom[self_kingdom] < 4 and sgs.isAnjiang(player) then
+					if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) then
 						if self:evaluateKingdom(player) == self_kingdom then return -1
 						elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
 						elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 1 then return 0
@@ -403,7 +404,7 @@ function sgs.gameProcess()
 	local kingdoms = { "wei", "shu", "wu", "qun" }
 	local anjiang = 0
 	for _, ap in sgs.qlist(global_room:getAlivePlayers()) do
-		if not sgs.isAnjiang(ap) and ap:getRole() ~= "careerist" then
+		if string.find("wei-shu-wu-qun", sgs.ai_explicit[ap:objectName()]) then
 			local v = 3 + sgs.getProcessDefense(ap, true) / 2
 			value[sgs.ai_explicit[ap:objectName()]] = value[sgs.ai_explicit[ap:objectName()]] + v
 		else
@@ -449,7 +450,8 @@ function SmartAI:evaluateKingdom(player, other)
 	other = other or self.player
 	if sgs.ai_explicit[player:objectName()] ~= "unknown" then return sgs.ai_explicit[player:objectName()] end
 	if player:getMark(string.format("KnownBoth_%s_%s", other:objectName(), player:objectName())) > 0 then
-		return sgs.shown_kingdom[player:getKingdom()] < 4 and player:getKingdom() or "careerist"
+		local upperlimit = player:getLord() and 99 or self.room:getPlayers():length() / 2
+		return sgs.shown_kingdom[player:getKingdom()] < upperlimit and player:getKingdom() or "careerist"
 	end
 	
 	local max_value, max_kingdom = 0, {}
