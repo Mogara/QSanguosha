@@ -655,7 +655,7 @@ public:
 
     virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &ask_who) const {
         if (!PhaseChangeSkill::triggerable(player).isEmpty() && player->getPhase() == Player::Finish && player->isChained())
-            foreach (ServerPlayer *p, room->getAlivePlayers())
+            foreach (ServerPlayer *p, room->getAllPlayers())
                 if (p->isChained() && player->canDiscard(p, "he"))
                     return QStringList(objectName());
 
@@ -673,7 +673,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        foreach (ServerPlayer *p, room->getAlivePlayers())
+        foreach (ServerPlayer *p, room->getAllPlayers())
             if (p->isChained() && player->canDiscard(p, "he")) {
                 int card_id = room->askForCardChosen(player, p, "he", objectName(), player == p, Card::MethodDiscard);
                 room->throwCard(card_id, p, player);
