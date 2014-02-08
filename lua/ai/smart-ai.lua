@@ -289,7 +289,6 @@ function SmartAI:objectiveLevel(player, tactics)
 	local upperlimit = player:getLord() and 99 or self.room:getPlayers():length() / 2
 	if (not sgs.isAnjiang(self.player) or sgs.shown_kingdom[self_kingdom] < upperlimit) and self.role ~= "careerist" and self_kingdom == player_kingdom then return -2 end
 	if self:getKingdomCount() <= 2 then return 5 end
-	if self:getKingdomCount() == 3 and self.player:aliveCount() == 3 then return 5 end
 	
 	if not tactics then return self:objectiveLevel(player, sgs.ai_tactics) end
 
@@ -633,6 +632,7 @@ function sgs.getProcessDefense(player, gameProcess, update)
 	if player:hasSkill("buqu") then defense = defense - math.max(4 - player:getPile("buqu"):length(), 0) end
 	if player:hasSkill("guzhen") then defense = defense + 1 end
 	if player:hasSkill("dimeng") then defense = defense + 2 end
+	if player:hasSkill("keji") then defense = defense + player:getHandcardNum() * 0.5 end
 	if player:hasSkill("jieyin") and player:getHandcardNum() > 1 then defense = defense + 2 end
 	
 	if player:hasSkill("jijiu") then defense = defense + 2 end
@@ -992,7 +992,7 @@ end
 function SmartAI:adjustUsePriority(card, v)
 	local suits = {"club", "spade", "diamond", "heart"}
 
-	if card:getTypeId() == sgs.Card_Skill then return v end
+	if card:getTypeId() == sgs.Card_TypeSkill then return v end
 
 	for _, askill in sgs.qlist(self.player:getVisibleSkillList()) do
 		local callback = sgs.ai_suit_priority[askill:objectName()]

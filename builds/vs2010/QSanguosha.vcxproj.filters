@@ -156,17 +156,8 @@
     <ClCompile Include="..\..\src\package\standard.cpp">
       <Filter>package</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\package\wind.cpp">
-      <Filter>package</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\exppattern.cpp">
       <Filter>package</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scenario\boss-mode-scenario.cpp">
-      <Filter>scenario</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scenario\couple-scenario.cpp">
-      <Filter>scenario</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\scenario\miniscenarios.cpp">
       <Filter>scenario</Filter>
@@ -342,15 +333,6 @@
     <ClCompile Include="..\..\src\ui\GenericCardContainerUI.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_zombie-scenario.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_zombie-scenario.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scenario\zombie-scenario.cpp">
-      <Filter>scenario</Filter>
-    </ClCompile>
     <ClCompile Include="Debug\moc_record-analysis.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -359,15 +341,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\core\record-analysis.cpp">
       <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\scenario\fancheng-scenario.cpp">
-      <Filter>scenario</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_fancheng-scenario.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_fancheng-scenario.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\package\formation.cpp">
       <Filter>package</Filter>
@@ -512,17 +485,8 @@
     <CustomBuild Include="..\..\src\package\standard.h">
       <Filter>package</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\package\wind.h">
-      <Filter>package</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\package\package.h">
       <Filter>package</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\scenario\boss-mode-scenario.h">
-      <Filter>scenario</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\scenario\couple-scenario.h">
-      <Filter>scenario</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\scenario\scenario.h">
       <Filter>scenario</Filter>
@@ -611,14 +575,8 @@
     <CustomBuild Include="..\..\src\ui\GenericCardContainerUI.h">
       <Filter>ui</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\scenario\zombie-scenario.h">
-      <Filter>scenario</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\core\record-analysis.h">
       <Filter>core</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\scenario\fancheng-scenario.h">
-      <Filter>scenario</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\package\formation.h">
       <Filter>package</Filter>
@@ -641,12 +599,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_aux-skills.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_boss-mode-scenario.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_boss-mode-scenario.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_button.cpp">
@@ -737,12 +689,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_contestdb.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_couple-scenario.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_couple-scenario.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_customassigndialog.cpp">
@@ -965,12 +911,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_startscene.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_wind.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_wind.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_window.cpp">

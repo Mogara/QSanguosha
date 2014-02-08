@@ -36,19 +36,6 @@ config = {
 		"Test"
 	},
 
-	hulao_packages = {
-		"standard",
-		"wind"
-	},
-
-	xmode_packages = {
-		"standard",
-		"wind",
-		"fire",
-		"nostal_standard",
-		"nostal_wind",
-	},
-
 	easy_text = {
 		"太慢了，做两个俯卧撑吧！",
 		"快点吧，我等的花儿都谢了！",
@@ -89,47 +76,6 @@ config = {
 	},
 
 	roles_ban = {
-		"vs_xiahoudun",
-		"vs_guanyu",
-		"vs_zhaoyun",
-		"vs_lvbu",
-		"kof_zhangliao",
-		"kof_xuchu",
-		"kof_zhenji",
-		"kof_xiahouyuan",
-		"kof_guanyu",
-		"kof_machao",
-		"kof_nos_huangyueying",
-		"kof_huangzhong",
-		"kof_jiangwei",
-		"kof_menghuo",
-		"kof_zhurong",
-		"kof_sunshangxiang",
-		"kof_nos_diaochan",
-	},
-
-	kof_ban = {
-		"sunquan",
-		"huatuo"
-	},
-
-	hulao_ban = {
-		"yuji"
-	},
-
-	xmode_ban = {
-		"huatuo",
-		"zhangjiao",
-		"caoren",
-		"zhoutai",
-		"yuji",
-		"liubei",
-		"diaochan",
-		"huangyueying",
-		"st_yuanshu",
-		"st_huaxiong",
-		"nos_zhangjiao",
-		"nos_yuji",
 	},
 
 	basara_ban = {
@@ -140,21 +86,4 @@ config = {
 
 	pairs_ban = {
 	},
-
-	couple_lord = "caocao",
-	couple_couples = {
-		"caopi|caozhi+zhenji",
-		"simayi+zhangchunhua",
-		"liubei+ganfuren|sp_sunshangxiang",
-		"zhangfei|bgm_zhangfei+xiahoushi|xiahoujuan",
-		"zhugeliang|wolong+huangyueying",
-		"menghuo+zhurong",
-		"zhouyu+xiaoqiao",
-		"lvbu|dongzhuo+diaochan",
-		"sunjian+wuguotai",
-		"sunce+daqiao",
-		"sunquan+bulianshi",
-		"diy_simazhao+diy_wangyuanji",
-		"liuxie|diy_liuxie+fuhuanghou|as_fuhuanghou"
-	}
 }

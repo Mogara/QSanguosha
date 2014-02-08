@@ -434,3 +434,62 @@ sgs.ai_skill_use_func.WendaoCard = function(card, use, self)
 end
 
 sgs.ai_use_priority.WendaoCard = sgs.ai_use_priority.ZhihengCard
+
+function sgs.ai_cardsview.hongfa_slash(self, class_name, player)
+	local lord = player:getLord()
+	if class_name == "Slash" and lord and lord:hasLordSkill("hongfa") and not lord:getPile("heavenly_army"):isEmpty() then
+		return "@HongfaResponseCard=.&hongfa_slash"
+	end
+end
+
+local hongfa_slash_skill = {}
+hongfa_slash_skill.name = "hongfa_slash"
+table.insert(sgs.ai_skills, hongfa_slash_skill)
+hongfa_slash_skill.getTurnUseCard = function(self)
+	self.HongfaSlashCard_target = nil
+	self.HongfaCard_id = nil
+	if not self:slashIsAvailable() then return end
+	if self.player:hasUsed("HongfaCard") then return end
+	local lord = self.player:getLord()
+	if lord and lord:hasLordSkill("hongfa") and not lord:getPile("heavenly_army"):isEmpty() then
+		local hongfa_slash = sgs.Card_Parse("@HongfaCard=.&hongfa_slash")
+		assert(hongfa_slash)
+		return hongfa_slash
+	end
+	return
+end
+
+sgs.ai_skill_use_func.HongfaCard = function(card, use, self)
+	local ids = self.player:getLord():getPile("heavenly_army")
+	for _, id in sgs.qlist(ids) do
+		local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_SuitToBeDecided, -1)
+		slash:addSubcard(id)
+		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+		self:useCardSlash(slash, dummy_use)
+		if dummy_use.card and dummy_use.to:length() > 0 then
+			use.card = card
+			if not use.isDummy then
+				local t = {}
+				for _, to in sgs.qlist(dummy_use.to) do
+					table.insert(t, to:objectName())
+				end
+				self.HongfaCard_target = table.concat(t, "+")
+				self.HongfaCard_id = id
+			end
+		end
+	end
+end
+
+sgs.ai_skill_use["@@hongfa_slash!"] = function(self, prompt)
+	assert(self.HongfaCard_target)
+	return "@HongfaSlashCard=.&hongfa_slash->" .. self.HongfaCard_target
+end
+
+sgs.ai_skill_askforag.hongfa = function(self, card_ids)
+	if self.HongfaCard_id then
+		return self.HongfaCard_id
+	end
+	return card_ids[1]
+end
+
+sgs.ai_use_priority.HongfaCard = sgs.ai_use_priority.Slash

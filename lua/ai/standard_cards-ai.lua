@@ -3051,7 +3051,7 @@ end
 
 sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 	if string.find(sgs.gameProcess(), self.player:getKingdom() .. "++") and sgs.isAnjiang(self.player) then
-		local upperlimit = self.player:getLord() and 99 or #self.room:getPlayers() / 2
+		local upperlimit = self.player:getLord() and 99 or self.room:getPlayers():length() / 2
 		if sgs.shown_kingdom[self.player:getKingdom()] < upperlimit  then return choices:split("+")[1] end
 	end
 	local skills_to_show = "zaiqi|buqu|kuanggu|guanxing|luoshen|tuxi|zhiheng|qiaobian|longdan"

@@ -817,31 +817,6 @@ bool Room::doBroadcastNotify(int command, const QString &arg) {
 }
 
 void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer *except) {
-    // @@Compatibility
-    // ================================================
-    if (strcmp(method, "clearAG") == 0) {
-        clearAG();
-        return;
-    } else if (strcmp(method, "animate") == 0) {
-        AnimateType a_type;
-        QString arg1, arg2;
-        QStringList list = arg.split(":");
-        if (list.length() > 1)
-            arg1 = list.at(1);
-        if (list.length() > 2)
-            arg2 = list.at(2);
-        QString type = list.first();
-        if (type == "lightbox")
-            a_type = S_ANIMATE_LIGHTBOX;
-        else if (type == "nullification")
-            a_type = S_ANIMATE_NULLIFICATION;
-        else if (type == "indicate")
-            a_type = S_ANIMATE_INDICATE;
-        doAnimate(a_type, arg1, arg2);
-        return;
-    }
-    // ================================================
-
     broadcast(QString("%1 %2").arg(method).arg(arg), except);
 }
 
@@ -1233,17 +1208,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
                              const QVariant &data, Card::HandlingMethod method, ServerPlayer *to,
                              bool isRetrial, const QString &skill_name, bool isProvision) {
-    // @@Compatibility.
-    // ===================================================
-    TriggerEvent triggerEvent = (TriggerEvent)int(method);
-    switch (triggerEvent) {
-    case CardUsed: method = Card::MethodUse; break;
-    case CardResponded: method = Card::MethodResponse; break;
-    case AskForRetrial: method = Card::MethodResponse; isRetrial = true; break;
-    case NonTrigger: method = Card::MethodNone; break;
-    default: ;
-    }
-    // ===================================================
 
     Q_ASSERT(pattern != "slash" || method != Card::MethodUse); // use askForUseSlashTo instead
     while (isPaused()) {}
