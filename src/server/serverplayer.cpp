@@ -1736,13 +1736,19 @@ void ServerPlayer::summonFriends(const ArrayType type) {
 
 #ifndef QT_NO_DEBUG
 bool ServerPlayer::event(QEvent *event) {
+#define SET_MY_PROPERTY {\
+    ServerPlayerEvent *SPEvent = static_cast<ServerPlayerEvent *>(event);\
+        setProperty(SPEvent->property_name, SPEvent->value);\
+        room->broadcastProperty(this, SPEvent->property_name);\
+        event_received = true;\
+}
     if (event->type() == QEvent::User) {
-        semas[SEMA_MUTEX]->acquire();
-        ServerPlayerEvent *SPEvent = static_cast<ServerPlayerEvent *>(event);
-        setProperty(SPEvent->property_name, SPEvent->value);
-        room->broadcastProperty(this, SPEvent->property_name);
-        event_received = true;
-        semas[SEMA_MUTEX]->release();
+        if (semas[SEMA_MUTEX]) {
+            semas[SEMA_MUTEX]->acquire();
+            SET_MY_PROPERTY;
+            semas[SEMA_MUTEX]->release();
+        } else
+            SET_MY_PROPERTY;
     }
     return Player::event(event);
 }
