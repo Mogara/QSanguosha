@@ -788,7 +788,7 @@ public:
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *yuji = room->findPlayerBySkillName(objectName());
-        if (yuji && room->askForSkillInvoke(yuji, objectName())){
+        if (yuji && room->askForSkillInvoke(yuji, objectName(), data)){
             room->broadcastSkillInvoke(objectName());
             return true;
         }
