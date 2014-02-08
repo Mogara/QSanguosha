@@ -298,7 +298,8 @@ function SmartAI:objectiveLevel(player, tactics)
 	else
 		
 		local selfIsCareerist = self.role == "careerist" or sgs.shown_kingdom[self_kingdom] >= upperlimit and sgs.isAnjiang(self.player)
-		local isweak = player:isKongcheng() and player:getHp() == 1 and not player:hasSkill("kongcheng") and not sgs.isAnjiang(player)
+		local isweak = player:getHp() == 1 and not player:hasSkill("kongcheng") and not sgs.isAnjiang(player)
+						and (player:isKongcheng() or sgs.card_lack[player:objectName()] == 1 and player:getHandcardNum() <= 1)
 
 		local gameProcess = sgs.gameProcess()
 		if gameProcess == "===" then
@@ -337,7 +338,7 @@ function SmartAI:objectiveLevel(player, tactics)
 					if player_kingdom == kingdom1 or player_kingdom == kingdom2 then return 5
 					elseif self:evaluateKingdom(player) == kingdom1 or self:evaluateKingdom(player) == kingdom2 then return 3
 					elseif string.find(self:evaluateKingdom(player), kingdom1) or string.find(self:evaluateKingdom(player), kingdom2) then return 0
-					elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 1 and self:getOverflow() <= 0 then return 0
+					elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 1 then return 0
 					else return -1
 					end
 				end
@@ -430,7 +431,7 @@ function sgs.gameProcess()
 		else return "===" end
 	end
 	
-	if value[kingdoms[1]] > 0 and value[kingdoms[1]] - value[kingdoms[2]] <= 1 and value[kingdoms[1]] - value[kingdoms[3]] > 1 then
+	if value[kingdoms[1]] > 0 and value[kingdoms[1]] - value[kingdoms[2]] <= 1 and value[kingdoms[1]] - value[kingdoms[3]] > 1 and anjiang <= 1 then
 		return kingdoms[1] .. "&" .. kingdoms[2]
 	end
 	
@@ -548,12 +549,14 @@ function SmartAI:updatePlayers(update)
 end
 
 function SmartAI:updatePlayerKingdom(player)
-	sgs.ai_explicit[player:objectName()] = player:getRole() == "careerist" and "careerist" or player:getKingdom()
+	if player then
+		sgs.ai_explicit[player:objectName()] = player:getRole() == "careerist" and "careerist" or player:getKingdom()
 	
-	local kingdoms = {"wei", "wu", "shu", "qun"}
-	for _, k in ipairs(kingdoms) do
-		if k == sgs.ai_explicit[player:objectName()] then sgs.ai_loyalty[k][player:objectName()] = 99
-		else sgs.ai_loyalty[k][player:objectName()] = 0
+		local kingdoms = {"wei", "wu", "shu", "qun"}
+		for _, k in ipairs(kingdoms) do
+			if k == sgs.ai_explicit[player:objectName()] then sgs.ai_loyalty[k][player:objectName()] = 99
+			else sgs.ai_loyalty[k][player:objectName()] = 0
+			end
 		end
 	end
 	
@@ -563,6 +566,9 @@ function SmartAI:updatePlayerKingdom(player)
 	sgs.shown_kingdom.qun = 0
 
 	for _, p in sgs.qlist(self.room:getPlayers()) do
+		if sgs.ai_explicit[p:objectName()] ~= "unknown" and not player then
+			sgs.ai_explicit[p:objectName()] = p:getRole() == "careerist" and "careerist" or p:getKingdom()
+		end
 		if sgs.ai_explicit[p:objectName()] == "careerist" or sgs.ai_explicit[p:objectName()] == "unknown" then continue end
 		sgs.shown_kingdom[sgs.ai_explicit[p:objectName()]] = sgs.shown_kingdom[sgs.ai_explicit[p:objectName()]] + 1
 	end
@@ -629,7 +635,7 @@ function sgs.getProcessDefense(player, gameProcess, update)
 	
 	if player:hasSkill("yinghun") and player:getLostHp() > 0 then defense = defense + player:getLostHp() - 0.5 end
 	if player:hasSkill("tianxiang") then defense = defense + player:getHandcardNum() * 0.5 end
-	if player:hasSkill("buqu") then defense = defense - math.max(4 - player:getPile("buqu"):length(), 0) end
+	if player:hasSkill("buqu") then defense = defense + math.max(4 - player:getPile("buqu"):length(), 0) end
 	if player:hasSkill("guzhen") then defense = defense + 1 end
 	if player:hasSkill("dimeng") then defense = defense + 2 end
 	if player:hasSkill("keji") then defense = defense + player:getHandcardNum() * 0.5 end
@@ -1830,15 +1836,16 @@ function SmartAI:filterEvent(event, player, data)
 		player:setFlags("AI_Playing")
 	elseif event == sgs.EventPhaseStart then
 		if player:getPhase() == sgs.Player_RoundStart then
-		if not sgs.ai_setSkillsPreshowed then
-			self:setSkillsPreshowed()
-			sgs.ai_setSkillsPreshowed = true
-		end
+			if not sgs.ai_setSkillsPreshowed then
+				self:setSkillsPreshowed()
+				sgs.ai_setSkillsPreshowed = true
+			end
 			sgs.printFEList(player)
 		elseif player:getPhase() == sgs.Player_NotActive then
 			if sgs.recorder.player:objectName() == player:objectName() then sgs.turncount = sgs.turncount + 1 end
 		end
 	elseif event == sgs.GameStart then
+		if sgs.turncount > 0 then self:updatePlayerKingdom() end
 		
 	end
 end
@@ -2874,7 +2881,7 @@ function SmartAI:willUsePeachTo(dying)
 	end
 	
 	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
-	if type(damage) == "table" and damage.to:objectName() == dying:objectName() and damage.from and damage.from:objectName() == self.player:objectName()
+	if type(damage) == "userdata" and damage.to and damage.to:objectName() == dying:objectName() and damage.from and damage.from:objectName() == self.player:objectName()
 		and (self.player:getKingdom() ~= sgs.ai_explicit[damage.to:objectName()] or self.role == "careerist") then
 		return "."
 	end
