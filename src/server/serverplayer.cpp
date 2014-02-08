@@ -311,14 +311,6 @@ void ServerPlayer::invoke(const QSanPacket *packet) {
 }
 
 void ServerPlayer::invoke(const char *method, const QString &arg) {
-    // @@Compatibility
-    // ================================================
-    if (strcmp(method, "clearAG") == 0) {
-        room->clearAG(this);
-        return;
-    }
-    // ================================================
-
     unicast(QString("%1 %2").arg(method).arg(arg));
 }
 
