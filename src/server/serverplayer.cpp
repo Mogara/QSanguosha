@@ -34,7 +34,10 @@ Room *ServerPlayer::getRoom() const{
 }
 
 void ServerPlayer::broadcastSkillInvoke(const QString &card_name) const{
-    room->broadcastSkillInvoke(card_name, isMale(), -1);
+    QString name = card_name;
+    if (name.startsWith("heg_"))
+        name.remove("heg_");
+    room->broadcastSkillInvoke(name, isMale(), -1);
 }
 
 void ServerPlayer::broadcastSkillInvoke(const Card *card) const{
