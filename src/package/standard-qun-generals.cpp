@@ -1042,8 +1042,8 @@ public:
             if (success) {
                 QList<ServerPlayer *> targets;
                 foreach (ServerPlayer *p, room->getAlivePlayers()){
-                    if (jiling->canSlash(target, NULL, false) && (p->isFriendWith(target) || target == p)){
-                        targets << target;
+                    if (jiling->canSlash(p, NULL, false) && (p->isFriendWith(target) || target == p)){
+                        targets << p;
                     }
                 }
                 if (targets.isEmpty())
