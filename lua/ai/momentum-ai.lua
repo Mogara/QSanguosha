@@ -92,15 +92,8 @@ end
 
 sgs.ai_playerchosen_intention.qianxi = 80
 
-
-sgs.ai_skill_invoke.guixiu = function(self, data)
-	return self:isWeak() and not self:willSkipPlayPhase()
-end
-
-sgs.ai_skill_invoke.guixiu_rec = function()
-	return true
-end
---[[
+sgs.ai_skill_invoke.guixiu = true
+	
 local cunsi_skill = {}
 cunsi_skill.name = "cunsi"
 table.insert(sgs.ai_skills, cunsi_skill)
@@ -109,30 +102,21 @@ cunsi_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_use_func.CunsiCard = function(card, use, self)
-	if sgs.turncount <= 2 and self.player:aliveCount() > 2 and #self.friends_noself == 0 then return end
-	local to, manjuan
+	if self.player:aliveCount() > 2 and #self.friends_noself == 0 then return end
+	local to
 	for _, friend in ipairs(self.friends_noself) do
-		to = friend
-		break
+		if self:evaluateKingdom(friend) == self.player:getKingdom() then
+			to = friend
+			break
+		end
 	end
 	if not to then to = self.player end
-	if self.player:getMark("guixiu") >= 1 then
-		use.card = sgs.Card_Parse("@GuixiuCard=.&guixiu")
-		return
-	else
-		use.card = card
-		if use.to then use.to:append(to) end
-	end
-end
-
-sgs.ai_skill_use_func.GuixiuCard = function(card, use, self)
 	use.card = card
+	if use.to then use.to:append(to) end
 end
-]]
 
 sgs.ai_skill_invoke.yongjue = function(self, data)
-	local player = data:toPlayer()
-	return player and self:isFriend(player) and not (self:needKongcheng(player, true) and not self:hasCrossbowEffect(player))
+	return true
 end
 
 sgs.ai_cardneed.jiang = function(to, card, self)
