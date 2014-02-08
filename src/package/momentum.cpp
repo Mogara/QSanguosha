@@ -1460,9 +1460,30 @@ public:
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         if (triggerEvent == DamageInflicted){
+            DamageStruct damage = data.value<DamageStruct>();
+
+            LogMessage l;
+            l.type = "#PeaceSpellNatureDamage" ;
+            l.from = damage.from ;
+            l.to << damage.to ;
+            l.arg = QString::number(damage.damage);
+            switch (damage.nature) {
+            case DamageStruct::Normal: l.arg2 = "normal_nature"; break;
+            case DamageStruct::Fire: l.arg2 = "fire_nature"; break;
+            case DamageStruct::Thunder: l.arg2 = "thunder_nature"; break;
+            }
+            
+            room->sendLog(l);
+
             return true;
         }
         else {
+            LogMessage l;
+            l.type = "#PeaceSpellLost" ;
+            l.from = player ;
+
+            room->sendLog(l);
+
             room->loseHp(player);
             if (player->isAlive())
                 player->drawCards(2);

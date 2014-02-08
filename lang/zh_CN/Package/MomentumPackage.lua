@@ -110,5 +110,6 @@ return {
 
 	["PeaceSpell"] = "太平要术",
 	[":PeaceSpell"] = "装备牌·防具<br/>技能：<font color=\"blue\"><b>锁定技，</b></font>每当你受到属性伤害时，你防止此伤害；<font color=\"blue\"><b>锁定技，</b></font>与你势力相同的角色的手牌上限+X（X为与你势力相同的角色的数量）；<font color=\"blue\"><b>锁定技，</b></font>每当你失去装备区里的【太平要术】时，你失去1点体力，然后摸两张牌。",
-	
+	["#PeaceSpellNatureDamage"] = "<font color=\"yellow\"><b>太平要术</b></font> 被触发，防止了 %from 对 %to 造成的 %arg 点 %arg2 伤害" ,
+	["#PeaceSpellLost"] = "%from 的 <font color=\"yellow\"><b>太平要术</b></font> 从装备区失去，需要失去1点体力并摸两张牌" ,
 }
