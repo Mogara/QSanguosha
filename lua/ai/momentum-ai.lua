@@ -438,7 +438,7 @@ sgs.ai_use_priority.WendaoCard = sgs.ai_use_priority.ZhihengCard
 function sgs.ai_cardsview.hongfa_slash(self, class_name, player)
 	local lord = player:getLord()
 	if class_name == "Slash" and lord and lord:hasLordSkill("hongfa") and not lord:getPile("heavenly_army"):isEmpty() then
-		return "@HongfaCard=.&hongfa_slash"
+		return "@HongfaResponseCard=.&hongfa_slash"
 	end
 end
 
@@ -486,8 +486,10 @@ sgs.ai_skill_use["@@hongfa_slash!"] = function(self, prompt)
 end
 
 sgs.ai_skill_askforag.hongfa = function(self, card_ids)
-	assert(self.HongfaCard_id)
-	return self.HongfaCard_id
+	if self.HongfaCard_id then
+		return self.HongfaCard_id
+	end
+	return card_ids[1]
 end
 
 sgs.ai_use_priority.HongfaCard = sgs.ai_use_priority.Slash
