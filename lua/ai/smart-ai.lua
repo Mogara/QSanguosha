@@ -263,6 +263,7 @@ function SmartAI:activate(use)
 			or (card:canRecast() and not self.player:isCardLimited(card, sgs.Card_MethodRecast)) then
 			local type = card:getTypeId()
 			self["use" .. sgs.ai_type_name[type + 1] .. "Card"](self, card, use)
+			self.room:writeToConsole("gameProcess :: " .. sgs.gameProcess())
 			
 			if use:isValid(nil) then
 				self.toUse = nil
@@ -287,13 +288,14 @@ function SmartAI:objectiveLevel(player, tactics)
 
 	if (not sgs.isAnjiang(self.player) or sgs.shown_kingdom[self_kingdom] < 4) and self.role ~= "careerist" and self_kingdom == player_kingdom then return -2 end
 	if self:getKingdomCount() <= 2 then return 5 end
+	if self:getKingdomCount() == 3 and self.player:aliveCount() == 3 then return 5 end
 	
 	if not tactics then return self:objectiveLevel(player, sgs.ai_tactics) end
 
 	if sgs.ai_tactics == "2B" then
 		return 5
 
-	elseif sgs.ai_tactics == "PT" or sgs.ai_tactics == "WY" then
+	else
 		
 		local selfIsCareerist = self.role == "careerist" or sgs.shown_kingdom[self_kingdom] >= 4 and sgs.isAnjiang(self.player)
 		local isweak = player:isKongcheng() and player:getHp() == 1 and not player:hasSkill("kongcheng") and not sgs.isAnjiang(player)
@@ -301,15 +303,15 @@ function SmartAI:objectiveLevel(player, tactics)
 		local gameProcess = sgs.gameProcess()
 		if gameProcess == "===" then
 			if not selfIsCareerist and sgs.shown_kingdom[self_kingdom] < 4 then
-				if sgs.isAnjiang(player) then
+				if sgs.isAnjiang(player) and player_kingdom == "unknown" then
 					if self:evaluateKingdom(player) == self_kingdom then return -1
 					elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
-					elseif self:evaluateKingdom(player) == "unknow" then return 0
+					elseif self:evaluateKingdom(player) == "unknown" then return self:getOverflow() > 0 and 1 or 0
 					else return self:getOverflow() > 5 or 1
 					end
 				else return 5
 				end
-			else return self:getOverflow() > 0 and 1 or 0
+			else return self:getOverflow() > 0 and 4 or 0
 			end
 		elseif string.find(gameProcess, "&") then
 			if sgs.ai_tactics == "PT" then
@@ -360,23 +362,23 @@ function SmartAI:objectiveLevel(player, tactics)
 						elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
 						elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 1 and self:getOverflow() <= 0 then return 0
 						end
-					else return 5
 					end
+					return 5
 				else
 					if player_kingdom == kingdom or self:evaluateKingdom(player) == kingdom or isweak then return 5
 					elseif not string.find(self:evaluateKingdom(player), kingdom) then return 0
 					else return 3
 					end
 				end
-			elseif string.find(gameProcess, "+") then
+			else
 				if self_kingdom == kingdom and not selfIsCareerist then
 					if sgs.shown_kingdom[self_kingdom] < 4 and sgs.isAnjiang(player) then
 						if self:evaluateKingdom(player) == self_kingdom then return -1
 						elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
-						elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 1 and self:getOverflow() <= 0 then return 0
+						elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 1 then return 0
 						end
-					else return 5
 					end
+					return 5
 				else
 					if player_kingdom == kingdom or isweak then return 5
 					elseif self:evaluateKingdom(player) == kingdom then return 3
@@ -402,7 +404,7 @@ function sgs.gameProcess()
 	local anjiang = 0
 	for _, ap in sgs.qlist(global_room:getAlivePlayers()) do
 		if not sgs.isAnjiang(ap) and ap:getRole() ~= "careerist" then
-			local v = sgs.getProcessDefense(ap, true) / 2
+			local v = 3 + sgs.getProcessDefense(ap, true) / 2
 			value[sgs.ai_explicit[ap:objectName()]] = value[sgs.ai_explicit[ap:objectName()]] + v
 		else
 			anjiang = anjiang + 1
@@ -442,9 +444,13 @@ function sgs.gameProcess()
 	return "==="
 end
 
-function SmartAI:evaluateKingdom(player)
-	player = player or self.player
+function SmartAI:evaluateKingdom(player, other)
+	if not player then self.room:writeToConsole(debug.traceback()) return "unknown" end
+	other = other or self.player
 	if sgs.ai_explicit[player:objectName()] ~= "unknown" then return sgs.ai_explicit[player:objectName()] end
+	if player:getMark(string.format("KnownBoth_%s_%s", other:objectName(), player:objectName())) > 0 then
+		return sgs.shown_kingdom[player:getKingdom()] < 4 and player:getKingdom() or "careerist"
+	end
 	
 	local max_value, max_kingdom = 0, {}
 	for kingdom, v in pairs(sgs.ai_loyalty) do
@@ -461,12 +467,6 @@ function SmartAI:evaluateKingdom(player)
 	end
 	
 	return #max_kingdom > 0 and table.concat(max_kingdom, "?") or "unknown"
-end
-
-function SmartAI:getHegGeneralName(player)
-	player = player or self.player
-	local names = self.room:getTag(player:objectName()):toStringList()
-	if #names > 0 then return names[1] else return player:getGeneralName() end
 end
 
 function sgs.isAnjiang(player, another)
@@ -561,9 +561,9 @@ function SmartAI:updatePlayerKingdom(player)
 	sgs.shown_kingdom.wu = 0
 	sgs.shown_kingdom.qun = 0
 
-	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
-		if sgs.ai_explicit[player:objectName()] == "careerist" then continue end
-		sgs.shown_kingdom[sgs.ai_explicit[player:objectName()]] = sgs.shown_kingdom[sgs.ai_explicit[player:objectName()]] + 1
+	for _, p in sgs.qlist(self.room:getPlayers()) do
+		if sgs.ai_explicit[p:objectName()] == "careerist" or sgs.ai_explicit[p:objectName()] == "unknown" then continue end
+		sgs.shown_kingdom[sgs.ai_explicit[p:objectName()]] = sgs.shown_kingdom[sgs.ai_explicit[p:objectName()]] + 1
 	end
 	
 	for _, p in sgs.qlist(global_room:getAllPlayers()) do
