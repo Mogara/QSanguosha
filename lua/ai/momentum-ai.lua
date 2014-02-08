@@ -493,3 +493,19 @@ sgs.ai_skill_askforag.hongfa = function(self, card_ids)
 end
 
 sgs.ai_use_priority.HongfaCard = sgs.ai_use_priority.Slash
+
+sgs.ai_slash_prohibit.PeaceSpell = function(self, from, enemy, card)
+	if enemy:hasArmorEffect("PeaceSpell") and card:isKindOf("NatureSlash") then return true end
+	return
+end
+function sgs.ai_armor_value.PeaceSpell(player, self)
+	if getCardsNum("Peach", player, player) + getCardsNum("Analeptic", player, player) == 0 and player:getHp() == 1 then return 9 end
+	return 3.5
+end
+
+PeaceSpell_damageeffect = function(self, to, nature, from)
+	if to:hasArmorEffect("PeaceSpell") and nature ~= sgs.DamageStruct_Normal then return false end
+	return true
+end
+table.insert(sgs.ai_damage_effect, PeaceSpell_damageeffect)
+

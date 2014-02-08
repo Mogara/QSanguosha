@@ -3077,3 +3077,43 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 	if self.player:aliveCount() <= 5 then return choices[1] end
 	return choices[math.random(1, #choices)]
 end
+
+sgs.ai_skill_use["@@Triblade"] = function(self, prompt)
+	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
+	if type(damage) ~= "userdata" then return "." end
+	local targets = sgs.SPlayerList()
+	for _, p in sgs.qlist(self.room:getOtherPlayers(damage.to)) do
+		if damage.to:distanceTo(p) == 1 then targets:append(p) end
+	end
+	if targets:isEmpty() then return "." end
+	local id
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(cards)
+	for _, c in ipairs(cards) do
+		if not self.player:isCardLimited(c, sgs.Card_MethodDiscard) then id = c:getEffectiveId() break end
+	end
+	if not id then return "." end
+	for _, target in sgs.qlist(targets) do
+		if self:isEnemy(target) and self:damageIsEffective(target, nil, self.player) and not self:getDamagedEffects(target, self.player)
+			and not self:needToLoseHp(target, self.player) then
+			return "@TribladeSkillCard=" .. id .. "&tribladeskill->" .. target:objectName()
+		end
+	end
+	for _, target in sgs.qlist(targets) do
+		if self:isFriend(target) and self:damageIsEffective(target, nil, self.player)
+			and (self:getDamagedEffects(target, self.player) or self:needToLoseHp(target, self.player, nil, true)) then
+			return "@TribladeSkillCard=" .. id .. "&tribladeskill->" .. target:objectName()
+		end
+	end
+	return "."
+end
+function sgs.ai_slash_weaponfilter.Triblade(self, to, player)
+	if player:distanceTo(to) > math.max(sgs.weapon_range.Triblade, player:getAttackRange()) then return end
+	return sgs.card_lack[to:objectName()]["Jink"] == 1 or getCardsNum("Jink", to, self.player) == 0
+end
+function sgs.ai_weapon_value.Triblade(self, enemy, player)
+	if not enemy then return 1 end
+	if enemy and player:getHandcardNum() > 2 then return math.min(3.8, player:getHandcardNum() - 1) end
+end
+
+sgs.ai_use_priority.Triblade = 2.673
