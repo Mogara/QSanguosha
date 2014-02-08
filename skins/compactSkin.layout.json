@@ -50,6 +50,8 @@
     "circleImageType": 0,
     "avatarArea": [1, 1, 129, 150],
     "secondaryAvatarArea": [65, 1, 64, 150],
+	"duanchangMaskRegion": [1, 1, 64, 150],
+    "duanchangMaskRegion2": [65, 1, 64, 150],
     "circleArea": [1, 1, 129, 150],
     "avatarNameArea": [1, 18, 40, 50],
     "avatarNameFont": ["@SimLi", [16, 16, 0], 0, [255, 255, 255, 255], 4, 10, [0, 0], [50, 50, 50, 200]],
