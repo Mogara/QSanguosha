@@ -34,6 +34,8 @@ return
 	["Hegemony"] = "国战",
 	["Roles"] = "身份",
 	["~anjiang"] = "死不瞑目啊……",
+	--Debug Mode
 	["@define:revive"] = "是否原地满血复活？",
-	["@define:cancelIndulgence"] = "是否取消乐不思蜀效果？"
+	["@define:cancelIndulgence"] = "是否取消乐不思蜀效果？",
+	["@define:playNormally"] = "是否正常进行回合？",
 }

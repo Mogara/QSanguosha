@@ -236,6 +236,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             if (!player->faceUp()) {
                 room->setPlayerFlag(player, "-Global_FirstRound");
                 player->turnOver();
+#ifndef QT_NO_DEBUG
+                if (player->isAlive() && !player->getAI() && player->askForSkillInvoke("userdefine:playNormally"))
+                    player->play();
+#endif
             } else if (player->isAlive())
                 player->play();
 
