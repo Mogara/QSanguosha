@@ -362,7 +362,8 @@ end
 
 function SmartAI:useCardIronChain(card, use)
 	if self.player:isLocked(card) then return end
-	if #self.enemies == 1 and #(self:getChainedFriends()) <= 1 then return end
+	use.card = card
+	if #self.enemies == 1 and #self:getChainedFriends() <= 1 then return end
 	local friendtargets, friendtargets2 = {}, {}
 	local otherfriends = {}
 	local enemytargets = {}

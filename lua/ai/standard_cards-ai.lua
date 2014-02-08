@@ -3050,8 +3050,9 @@ sgs.ai_skill_choice.CompanionEffect = function(self, choice, data)
 end
 
 sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
-	if string.find(sgs.gameProcess(), self.player:getKingdom() .. "++") and sgs.shown_kingdom[self.player:getKingdom()] < 4 and sgs.isAnjiang(self.player) then
-		return choices:split("+")[1]
+	if string.find(sgs.gameProcess(), self.player:getKingdom() .. "++") and sgs.isAnjiang(self.player) then
+		local upperlimit = self.player:getLord() and 99 or self.room:getPlayers():length() / 2
+		if sgs.shown_kingdom[self.player:getKingdom()] < upperlimit  then return choices:split("+")[1] end
 	end
 	local skills_to_show = "zaiqi|buqu|kuanggu|guanxing|luoshen|tuxi|zhiheng|qiaobian|longdan"
 							.. "|liuli|wushuang|niepan"

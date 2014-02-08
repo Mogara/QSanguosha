@@ -16,6 +16,8 @@ struct PhaseStruct;
 
 #include <QSemaphore>
 #include <QDateTime>
+
+#ifndef QT_NO_DEBUG
 #include <QEvent>
 
 class ServerPlayerEvent: public QEvent {
@@ -25,6 +27,7 @@ public:
     char *property_name;
     QVariant value;
 };
+#endif
 
 class ServerPlayer: public Player {
     Q_OBJECT
@@ -176,8 +179,9 @@ protected:
     //Synchronization helpers
     QSemaphore **semas;
     static const int S_NUM_SEMAPHORES;
-
+#ifndef QT_NO_DEBUG
     bool event(QEvent *event);
+#endif
 
 private:
     ClientSocket *socket;
