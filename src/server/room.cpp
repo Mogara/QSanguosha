@@ -22,7 +22,10 @@
 #include <QDateTime>
 #include <QFile>
 #include <QTextStream>
+
+#ifndef QT_NO_DEBUG
 #include <QApplication>
+#endif
 
 #ifdef QSAN_UI_LIBRARY_AVAILABLE
 #pragma message WARN("UI elements detected in server side!!!")
@@ -1600,16 +1603,20 @@ void Room::setPlayerFlag(ServerPlayer *player, const QString &flag) {
 }
 
 void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, const QVariant &value) {
+#ifndef QT_NO_DEBUG
     player->event_received = false;
     if (player->thread() == currentThread()) {
+#endif
         player->setProperty(property_name, value);
         broadcastProperty(player, property_name);
+#ifndef QT_NO_DEBUG
         player->event_received = true;
     } else {
         char *pname = const_cast<char *>(property_name);
         QVariant &v = const_cast<QVariant &>(value);
         qApp->postEvent(player, new ServerPlayerEvent(pname, v), INT_MAX);
     }
+#endif
 
     if (strcmp(property_name, "hp") == 0)
         thread->trigger(HpChanged, this, player);
@@ -1619,8 +1626,10 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
 
     if (strcmp(property_name, "chained") == 0)
         thread->trigger(ChainStateChanged, this, player);
+#ifndef QT_NO_DEBUG
     //wait for main thread
     while (!player->event_received) {   };
+#endif
 }
 
 void Room::setPlayerMark(ServerPlayer *player, const QString &mark, int value) {

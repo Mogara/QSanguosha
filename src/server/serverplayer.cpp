@@ -1734,6 +1734,7 @@ void ServerPlayer::summonFriends(const ArrayType type) {
     }
 }
 
+#ifndef QT_NO_DEBUG
 bool ServerPlayer::event(QEvent *event) {
     if (event->type() == QEvent::User) {
         semas[SEMA_MUTEX]->acquire();
@@ -1751,4 +1752,5 @@ ServerPlayerEvent::ServerPlayerEvent(char *property_name, QVariant &value)
 {
 
 }
+#endif
 
