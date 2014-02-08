@@ -13,11 +13,6 @@
 #include "lua-wrapper.h"
 #include "RoomState.h"
 
-#include "couple-scenario.h"
-#include "boss-mode-scenario.h"
-#include "zombie-scenario.h"
-#include "fancheng-scenario.h"
-
 #include <QFile>
 #include <QTextStream>
 #include <QStringList>
@@ -50,10 +45,7 @@ void Engine::_loadMiniScenarios() {
 }
 
 void Engine::_loadModScenarios() {
-    addScenario(new CoupleScenario());
-    addScenario(new FanchengScenario());
-    addScenario(new ZombieScenario());
-    addScenario(new ImpasseScenario());
+    //wait for a new scenario
 }
 
 void Engine::addPackage(const QString &name) {

@@ -14,7 +14,6 @@
 #include "pixmapanimation.h"
 #include "audio.h"
 #include "SkinBank.h"
-#include "wind.h"
 #include "record-analysis.h"
 #include "jsonutils.h"
 
