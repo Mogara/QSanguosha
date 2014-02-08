@@ -261,8 +261,13 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
+        if (!dengai) return false;
+        
+        QList<int> ids = dengai->getPile("field");
+        room->fillAG(ids, dengai);
+        int id = room->askForAG(dengai, ids, false, objectName());
+        room->clearAG(dengai);
 
-        int id = room->askForAG(dengai, dengai->getPile("field"), false, objectName());
         if (player == dengai) {
             LogMessage log;
             log.type = "$MoveCard";
