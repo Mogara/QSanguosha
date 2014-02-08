@@ -50,7 +50,7 @@
     "circleImageType": 0,
     "avatarArea": [1, 1, 129, 150],
     "secondaryAvatarArea": [65, 1, 64, 150],
-	"duanchangMaskRegion": [1, 1, 64, 150],
+    "duanchangMaskRegion": [1, 1, 64, 150],
     "duanchangMaskRegion2": [65, 1, 64, 150],
     "circleArea": [1, 1, 129, 150],
     "avatarNameArea": [1, 18, 40, 50],
@@ -88,6 +88,6 @@
     "extraSkillArea": [28, 75, 48, 17],
     "extraSkillFont": ["SimLi", [14, 14, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
     "extraSkillTextArea": [28, 73, 48, 17],
-	"seatIconRegion": [54, 154, 23, 16]
+    "seatIconRegion": [54, 154, 23, 16]
 }
 }
