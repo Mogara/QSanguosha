@@ -444,6 +444,8 @@ sgs.ai_skill_discard.zhendu = function(self)
 	return {}
 end
 
+sgs.ai_skill_invoke.jizhao = sgs.ai_skill_invoke.niepan
+
 sgs.weapon_range.DragonPhoenix = 2
 sgs.ai_use_priority.DragonPhoenix = 2.400
 function sgs.ai_weapon_value.DragonPhoenix(self, enemy, player)
