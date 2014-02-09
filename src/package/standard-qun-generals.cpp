@@ -1052,7 +1052,7 @@ public:
                 ServerPlayer *slasher = room->askForPlayerChosen(jiling, targets, "shuangren-slash", "@dummy-slash");
                 Slash *slash = new Slash(Card::NoSuit, 0);
                 slash->setSkillName("_shuangren");
-                room->useCard(CardUseStruct(slash, jiling, slasher));
+                room->useCard(CardUseStruct(slash, jiling, slasher), false);
             }
             else {
                 room->broadcastSkillInvoke("shuangren", 3);
