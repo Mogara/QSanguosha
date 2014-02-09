@@ -52,11 +52,18 @@
 --阵法技里如果没有定义该量，则会报错
 
 --can_trigger:
---lua函数，返回用加号分割的技能名的字符串。
---关于返回值，这里的用途是这样，比如姜维的遗志，可以返回"guanxing"来使遗志发动观星而不用在遗志里把观星整个重写一遍。
+--lua函数，返回两个值，第一个用加号分割的技能名的字符串，第二个是技能的发动者（也就是源码里可以改变的那个ask_who）。
+--关于第一个返回值，这里的用途是这样，比如姜维的遗志，可以返回"guanxing"来使遗志发动观星而不用在遗志里把观星整个重写一遍。
 --对于遗计等等技能，如果一次受到两点伤害，可以返回"yiji+yiji"，这样的话，可以发动两次遗计。神智忘隙节命同理。
---传入参数为self(技能对象),event(触发事件),room(房间对象),player(技能的触发者),data(事件数据),ask_who(技能的发动者)
---默认条件为“具有本技能并且存活，并且只发动一次”
+--第二个返回值，用于技能触发者和技能发动者不一致的情况，比如类似骁果的技能
+--对于这种情况，用room:findPlayerBySkillName(self:objectName())找到技能的发动者，最后返回，类似这样：
+local yuejin = room:findPlayerBySkillName("xiaoguo")
+if yuejin and yuejin:isAlive() then
+	return "xiaoguo", yuejin
+end
+--第二个返回值可以省略
+--传入参数为self(技能对象),event(触发事件),room(房间对象),player(技能的触发者),data(事件数据)
+--默认条件为“具有本技能并且存活，并且是技能触发者只发动一次本技能”
 --在这里和身份局技能不同，国战要求把所有关于技能判断的部分全放到这里，还有一些锁定效果也要放到里面
 --比如克己的判断出牌阶段是否使用或打出杀，要在CardUsed和CardResponded事件触发技的can_trigger里设置flag
 
@@ -83,40 +90,42 @@
 
 --以下是曹操奸雄的实现：
 
-jianxiong=sgs.CreateTriggerSkill{
-	
-	frequency = sgs.Skill_NotFrequent,
-	
-	name      = "jianxiong",
-	
-	events={sgs.Damaged}, --或者events=sgs.Damaged
-	
-	on_trigger=function(self,event,player,data)
-		local room = player:getRoom()
-		local card = data:toDamage().card
-		--这两步通常是必要的。我们需要room对象来操作大多数的游戏要素，我们也需要将data对象转成对应的数据类型来得到相应的信息。
-		if not room:obtainable(card,player) then return end
-		if room:askForSkillInvoke(player,"jianxiong") then
-			room:playSkillEffect("jianxiong")
-			player:obtainCard(card)
+jianxiong = sgs.CreateTriggerSkill{
+	name = "jianxiong" ,
+	events = {sgs.Damaged} ,
+	can_trigger = function(self, event, room, player, data)
+		if table.contains(self:TriggerSkillTriggerable(event, room, player, data, player), self:objectName()) then
+			local damage = data:toDamage() --这步通常是必要的。我们需要将data对象转成对应的数据类型来得到相应的信息。
+			local card = damage.card
+			return (card and (room:getCardPlace(card:getEffectiveId()) == sgs.Player_PlaceTable)) and self:objectName() or ""
 		end
-	end
+		return ""
+	end ,
+	on_cost = function(self, event, room, player, data)
+		if player:askForSkillInvoke(self:objectName(), data) then
+			room:broadcastSkillInvoke(self:objectName())
+			return true
+		end
+		return false
+	end ,
+	on_effect = function(self, event, room, player, data)
+		local damage = data:toDamage()
+		player:obtainCard(damage.card)
+		return false
+	end ,
 }
---在on_trigger方法中，我们首先获取了room对象。
 
---对于影响整盘游戏的效果，我们必须需要获取room对象。大多数情况下，room对象都是必须获取的。
-
---on_trigger方法的data参数是一个QVariant，根据不同的事件我们需要用不同的方法得到它原本的数据类型。
+--data参数是一个QVariant，根据不同的事件我们需要用不同的方法得到它原本的数据类型。
 --对于Damaged事件（你受到了伤害），data对象的类型是DamageStruct，我们使用toDamage()得到DamageStruct。
 
---询问技能发动时，需要使用room对象的askForSkillInvoke方法。
---playSkillEffect方法则可以播放技能的发动效果。（但是对技能发动效果本身没有影响）
+--询问技能发动时，需要使用Room对象或者ServerPlayer的askForSkillInvoke方法。
+--BroadcastSkillInvoke方法则可以播放技能的发动效果。（但是对技能发动效果本身没有影响）
 
---player:obtainCard(card) 即让player得到造成伤害的card。
+--player:obtainCard(damage.card) 即让player得到造成伤害的card。
 
---在”某个阶段可触发“的技能，或者”摸牌时改为xx“这样的技能，可以使用PhaseChange事件来触发，并对event对象进行判断进行触发控制。
+--在“某个阶段开始时可触发”的技能，或者“摸牌时改为xx”这样的技能，可以使用EventPhaseStart事件来触发，并对TriggerEvent对象进行判断进行触发控制。
 
---对于在复数个时机发动的触发技，我们需要在on_trigger中使用条件语句。
+--对于在复数个时机发动的触发技，我们需要使用条件语句。
 
 --以下是袁术”庸肆“技能的实现：
 
