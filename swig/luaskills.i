@@ -308,9 +308,7 @@ QStringList LuaTriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, 
     // the last event: data
     SWIG_NewPointerObj(l, &data, SWIGTYPE_p_QVariant, 0);
 
-    SWIG_NewPointerObj(l, ask_who, SWIGTYPE_p_ServerPlayer, 0);
-
-    int error = lua_pcall(l, 6, 2, 0);
+    int error = lua_pcall(l, 5, 2, 0);
     if (error){
         const char *msg = lua_tostring(l, -1);
         lua_pop(l, 1);
@@ -429,9 +427,7 @@ QStringList LuaBattleArraySkill::triggerable(TriggerEvent triggerEvent, Room *ro
     // the last event: data
     SWIG_NewPointerObj(l, &data, SWIGTYPE_p_QVariant, 0);
 
-    SWIG_NewPointerObj(l, ask_who, SWIGTYPE_p_ServerPlayer, 0);
-
-    int error = lua_pcall(l, 6, 2, 0);
+    int error = lua_pcall(l, 5, 2, 0);
     if (error){
         const char *msg = lua_tostring(l, -1);
         lua_pop(l, 1);
