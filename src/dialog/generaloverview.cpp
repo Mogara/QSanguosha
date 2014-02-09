@@ -303,7 +303,23 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         name = Sanguosha->translate(general_name);
         kingdom = Sanguosha->translate(general->getKingdom());
         gender = general->isMale() ? tr("Male") : (general->isFemale() ? tr("Female") : tr("NoGender"));
-        max_hp = QString::number((float)general->getDoubleMaxHp() / 2);
+        if (general->getMaxHpHead() == general->getMaxHpDeputy())
+            max_hp = QString::number((float)general->getDoubleMaxHp() / 2);
+        else {
+            max_hp = QString::number((float)general->getMaxHpHead() / 2);
+            if (general->getMaxHpHead() != general->getDoubleMaxHp()) {
+                max_hp.prepend("(");
+                max_hp.append(")");
+            }
+            max_hp.append("/");
+            QString deputy_max_hp = QString::number((float)general->getMaxHpDeputy() / 2);
+            if (general->getMaxHpDeputy() != general->getDoubleMaxHp()) {
+                deputy_max_hp.prepend("(");
+                deputy_max_hp.append(")");
+            }
+            max_hp.append(deputy_max_hp);
+        }
+
         package = Sanguosha->translate(general->getPackage());
 
         QString nickname = Sanguosha->translate("#" + general_name);
