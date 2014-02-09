@@ -270,6 +270,18 @@ public:
 
         // avatar size
         QSize m_tinyAvatarSize;
+
+        //role combo box
+        QSize ROLE_NORMAL_BG_SIZE;
+        QRect ROLE_WEI_RECT;
+        QRect ROLE_QUN_RECT;
+        QRect ROLE_SHU_RECT;
+        QRect ROLE_WU_RECT;
+        QColor ROLE_WEI_COLOR;
+        QColor ROLE_QUN_COLOR;
+        QColor ROLE_SHU_COLOR;
+        QColor ROLE_WU_COLOR;
+        QColor ROLE_DARK_COLOR;
     };
 
     enum GeneralIconSize {
@@ -376,6 +388,10 @@ public:
 
     // Animations
     static const char *S_SKIN_KEY_ANIMATIONS;
+
+    // RoleComboBix
+    static const char *S_SKIN_KEY_EXPANDING_ROLE_BOX;
+    static const char *S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK;
 
 protected:
     RoomLayout _m_roomLayout;

@@ -183,6 +183,7 @@ protected:
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void keyReleaseEvent(QKeyEvent *event);
+
     //this method causes crashes
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     QMutex m_roomMutex;
@@ -391,6 +392,7 @@ private slots:
 signals:
     void restart();
     void return_to_start();
+    void cancel_role_box_expanding();
 };
 
 extern RoomScene *RoomSceneInstance;

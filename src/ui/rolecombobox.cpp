@@ -1,103 +1,110 @@
 #include "rolecombobox.h"
-#include "photo.h"
-#include "engine.h"
+#include "SkinBank.h"
+#include "roomscene.h"
 
-#include <QGraphicsScene>
-
-RoleComboBoxItem::RoleComboBoxItem(const QString &role, int number, QSize size)
-    : m_role(role), m_number(number), m_size(size)
-{
-    setRole(role);
-    this->setFlag(QGraphicsItem::ItemIgnoresParentOpacity);
-}
-
-QString RoleComboBoxItem::getRole() const{
-    return m_role;
-}
-
-void RoleComboBoxItem::setRole(const QString &role) {
-    m_role = role;
-    if (m_number != 0 && role != "unknown")
-        load(QString("image/system/roles/%1-%2.png").arg(m_role).arg(m_number), m_size, false);
-    else
-        load(QString("image/system/roles/%1.png").arg(m_role), m_size, false);
-}
-
-void RoleComboBoxItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-    emit clicked();
-}
-
-RoleComboBox::RoleComboBox(QGraphicsItem *parent)
-    : QGraphicsObject(parent)
-{
-    int index = Sanguosha->getRoleIndex();
-    QSize size(S_ROLE_COMBO_BOX_WIDTH, S_ROLE_COMBO_BOX_HEIGHT);
-    m_currentRole = new RoleComboBoxItem("unknown", index, size);
-    m_currentRole->setParentItem(this);
-    connect(m_currentRole, SIGNAL(clicked()), this, SLOT(expand()));
-    if (ServerInfo.EnableHegemony)
-        items << new RoleComboBoxItem("lord", index, size);
-    items << new RoleComboBoxItem("loyalist", index, size)
-          << new RoleComboBoxItem("rebel", index, size)
-          << new RoleComboBoxItem("renegade", index, size)
-          << new RoleComboBoxItem("careerist", index, size);
-    for (int i = 0; i < items.length(); i++) {
-        RoleComboBoxItem *item = items.at(i);
-        item->setPos(0, (i + 1) * (S_ROLE_COMBO_BOX_HEIGHT + S_ROLE_COMBO_BOX_GAP));
-        item->setZValue(1.0);
+void RoleComboBox::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    if (!fixed_role.isEmpty()) return;
+    QPoint point = QPoint(event->pos().x(), event->pos().y());;
+    if (expanding && !boundingRect().contains(point)) {
+        expanding = false;
+        update();
+        return;
+    } else if (!expanding) {
+        expanding = true;
+        update();
+        return;
     }
-    foreach (RoleComboBoxItem *item, items) {
-        item->setParentItem(this);
-        item->hide();
-        connect(item, SIGNAL(clicked()), this, SLOT(collapse()));
-    }
+    if (G_COMMON_LAYOUT.ROLE_WEI_RECT.contains(point))
+        wei_excluded = !wei_excluded;
+    else if (G_COMMON_LAYOUT.ROLE_QUN_RECT.contains(point))
+        qun_excluded = !qun_excluded;
+    else if (G_COMMON_LAYOUT.ROLE_SHU_RECT.contains(point))
+        shu_excluded = !shu_excluded;
+    else if (G_COMMON_LAYOUT.ROLE_WU_RECT.contains(point))
+        wu_excluded = !wu_excluded;
+    update();
 }
 
 void RoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    /*
+      --------------------
+      --------------------
+      ||       ||       ||
+      ||  WEI  ||  QUN  ||
+      ||       ||       ||
+      --------------------
+      --------------------
+      ||       ||       ||
+      ||  SHU  ||  WU   ||
+      ||       ||       ||
+      --------------------
+      --------------------
+    */
+    if (!fixed_role.isEmpty()) {
+        QPixmap pix;
+        pix.load(QString("image/system/roles/%1.png").arg(fixed_role));
+        painter->drawPixmap(0, 0, pix);
+        update();
+        return;
+    }
+    if (!expanding) {
+        if (circle) {
+            QPixmap pix;
+            pix.load("image/system/roles/unknown.png");
+            painter->drawPixmap(0, 0, pix);
+        } else {
+            QColor grey = G_COMMON_LAYOUT.ROLE_DARK_COLOR;
+            QPen pen(Qt::black);
+            pen.setWidth(1);
+            painter->setPen(pen);
+            //paint wei
+            painter->setBrush(QBrush(wei_excluded ? grey : G_COMMON_LAYOUT.ROLE_WEI_COLOR));
+            painter->drawRect(COMPACT_BORDER_WIDTH, COMPACT_BORDER_WIDTH, COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH);
+            //paint qun
+            painter->setBrush(QBrush(qun_excluded ? grey : G_COMMON_LAYOUT.ROLE_QUN_COLOR));
+            painter->drawRect(COMPACT_BORDER_WIDTH * 2 + COMPACT_ITEM_LENGTH, COMPACT_BORDER_WIDTH, COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH);
+            //paint shu
+            painter->setBrush(QBrush(shu_excluded ? grey : G_COMMON_LAYOUT.ROLE_SHU_COLOR));
+            painter->drawRect(COMPACT_BORDER_WIDTH, COMPACT_BORDER_WIDTH * 2 + COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH);
+            //paint wu
+            painter->setBrush(QBrush(wu_excluded ? grey : G_COMMON_LAYOUT.ROLE_WU_COLOR));
+            painter->drawRect(COMPACT_BORDER_WIDTH * 2 + COMPACT_ITEM_LENGTH, COMPACT_BORDER_WIDTH * 2 + COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH);
+        }
+    } else {
+        QPixmap pix = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_EXPANDING_ROLE_BOX);
+        painter->drawPixmap(0, 0, pix);
+
+        if (wei_excluded)
+            painter->drawPixmap(G_COMMON_LAYOUT.ROLE_WEI_RECT, G_ROOM_SKIN.getPixmap (QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "wei"));
+        if (qun_excluded)
+            painter->drawPixmap(G_COMMON_LAYOUT.ROLE_QUN_RECT, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "qun"));
+        if (shu_excluded)
+            painter->drawPixmap(G_COMMON_LAYOUT.ROLE_SHU_RECT, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "shu"));
+        if (wu_excluded)
+            painter->drawPixmap(G_COMMON_LAYOUT.ROLE_WU_RECT, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "wu"));
+    }
 }
 
-QRectF RoleComboBox::boundingRect() const{
-    if (items.empty())
-        return QRect(0, 0, 0, 0);
-    else
-        return items[0]->boundingRect();
+QRectF RoleComboBox::boundingRect() const {
+    QRect rect = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_EXPANDING_ROLE_BOX).rect();
+    return QRectF(rect.x(), rect.y(), rect.width(), rect.height());
 }
 
-void RoleComboBox::collapse() {
-    disconnect(m_currentRole, SIGNAL(clicked()), this, SLOT(collapse()));
-    connect(m_currentRole, SIGNAL(clicked()), this, SLOT(expand()));
-    RoleComboBoxItem *clicked_item = qobject_cast<RoleComboBoxItem *>(sender());
-    foreach (RoleComboBoxItem *item, items) item->hide();
-    m_currentRole->setRole(clicked_item->getRole());
-}
-
-void RoleComboBox::expand() {
-    foreach (RoleComboBoxItem *item, items)
-        item->show();
-    m_currentRole->setRole("unknown");
-    connect(m_currentRole, SIGNAL(clicked()), this, SLOT(collapse()));
-}
-
-void RoleComboBox::toggle() {
-    Q_ASSERT(!_m_fixedRole.isNull());
-    if (!isEnabled()) return;
-    QString displayed = m_currentRole->getRole();
-    if (displayed == "unknown")
-        m_currentRole->setRole(_m_fixedRole);
-    else
-        m_currentRole->setRole("unknown");
+RoleComboBox::RoleComboBox(QGraphicsItem *photo, bool circle)
+    : QGraphicsObject(photo), circle(circle), expanding(false), wei_excluded(false), qun_excluded(false), shu_excluded(false), wu_excluded(false)
+{
+    connect(RoomSceneInstance, SIGNAL(cancel_role_box_expanding()), this, SLOT(mouseClickedOutside()));
+    setAcceptedMouseButtons(Qt::LeftButton);
 }
 
 void RoleComboBox::fix(const QString &role) {
-    if (_m_fixedRole.isNull()) {
-        disconnect(m_currentRole, SIGNAL(clicked()), this, SLOT(expand()));
-        connect(m_currentRole, SIGNAL(clicked()), this, SLOT(toggle()));
-    }
-    m_currentRole->setRole(role);
-    _m_fixedRole = role;
-    // delete all
-    foreach (RoleComboBoxItem *item, items)
-        delete item;
-   items.clear();
+    if (role == "god") return;
+    fixed_role = role;
+    update();
 }
 
+void RoleComboBox::mouseClickedOutside() {
+    if (!expanding) return;
+    expanding = false;
+    update();
+}

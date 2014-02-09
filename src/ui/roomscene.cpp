@@ -100,7 +100,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(Self, SIGNAL(pile_changed(QString)), dashboard, SLOT(updatePile(QString)));
 
     // add role ComboBox
-    connect(Self, SIGNAL(role_changed(QString)), dashboard, SLOT(updateRole(QString)));
+    connect(Self, SIGNAL(kingdom_changed(QString)), dashboard, SLOT(updateKingdom(QString)));
 
     m_replayControl = NULL;
     if (ClientInstance->getReplayer()) {
@@ -1019,6 +1019,18 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats) {
 // cause a lot of major problems. We should look into this later.
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsScene::mousePressEvent(event);
+    bool changed = false;
+    QPoint point(event->pos().x(), event->pos().y());
+    foreach(Photo *photo, photos) {
+        RoleComboBox *box = photo->getRoleComboBox();
+        if (!box->boundingRect().contains(point) && box->isExpanding())
+            changed = true;
+    }
+    RoleComboBox *box = dashboard->getRoleComboBox();
+    if (!box->boundingRect().contains(point) && box->isExpanding())
+        changed = true;
+    if (changed)
+        emit cancel_role_box_expanding();
     /*
     _m_isMouseButtonDown = true;
     _m_isInDragAndUseMode = false;

@@ -240,7 +240,7 @@ void Dashboard::setTrust(bool trust) {
 void Dashboard::killPlayer() {
     trusting_item->hide();
     trusting_text->hide();
-    _m_roleComboBox->fix(m_player->getRole());
+    _m_roleComboBox->fix(m_player->getKingdom());
     _m_roleComboBox->setEnabled(false);
     _updateDeathIcon();
     _m_saveMeIcon->hide();
@@ -316,6 +316,10 @@ void Dashboard::_addHandCard(CardItem *card_item) {
     connect(card_item, SIGNAL(thrown()), this, SLOT(onCardItemThrown()));
     connect(card_item, SIGNAL(enter_hover()), this, SLOT(onCardItemHover()));
     connect(card_item, SIGNAL(leave_hover()), this, SLOT(onCardItemLeaveHover()));
+}
+
+void Dashboard::_createRoleComboBox() {
+    _m_roleComboBox = new RoleComboBox(_m_rightFrame, true);
 }
 
 void Dashboard::selectCard(const QString &pattern, bool forward, bool multiple) {
