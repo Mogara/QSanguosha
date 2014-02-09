@@ -816,7 +816,7 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *wolong, QVariant &data) const{
-        //此处更改是因为“八阵”是“视为装备八卦阵“，真正发动的技能是八卦阵，而不是八阵。
+        //此处更改是因为“八阵”是“视为装备八卦阵”，真正发动的技能是八卦阵，而不是八阵。
         JudgeStruct judge;
         judge.pattern = ".|red";
         judge.good = true;
