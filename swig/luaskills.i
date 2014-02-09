@@ -319,17 +319,11 @@ QStringList LuaTriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, 
     }
     else {
         QString trigger_str = lua_tostring(l, -2);
-        QString ask_who_str = lua_tostring(l, -1);
-        if (!ask_who_str.isNull() && !ask_who_str.isEmpty()){
-            foreach (ServerPlayer *p, room->getPlayers()){
-                if (p->objectName() == ask_who_str){
-                    ask_who = p;
-                    break;
-                }
-            }
+        void *ask_who_p = NULL;
+        int convert_result = SWIG_ConvertPtr(l, -1, &ask_who_p, SWIGTYPE_p_ServerPlayer, 0);
+        if (SWIG_IsOK(convert_result) && ask_who_p != NULL){
+            ask_who = static_cast<ServerPlayer *>(ask_who_p);
         }
-        else
-            ask_who = player;
         lua_pop(l, 2);
         QStringList trigger_list = trigger_str.split("+");
         return trigger_list;
@@ -446,17 +440,11 @@ QStringList LuaBattleArraySkill::triggerable(TriggerEvent triggerEvent, Room *ro
     }
     else {
         QString trigger_str = lua_tostring(l, -2);
-        QString ask_who_str = lua_tostring(l, -1);
-        if (!ask_who_str.isNull() && !ask_who_str.isEmpty()){
-            foreach (ServerPlayer *p, room->getPlayers()){
-                if (p->objectName() == ask_who_str){
-                    ask_who = p;
-                    break;
-                }
-            }
+        void *ask_who_p = NULL;
+        int convert_result = SWIG_ConvertPtr(l, -1, &ask_who_p, SWIGTYPE_p_ServerPlayer, 0);
+        if (SWIG_IsOK(convert_result) && ask_who_p != NULL){
+            ask_who = static_cast<ServerPlayer *>(ask_who_p);
         }
-        else
-            ask_who = player;
         lua_pop(l, 2);
         QStringList trigger_list = trigger_str.split("+");
         return trigger_list;
