@@ -34,7 +34,10 @@ Room *ServerPlayer::getRoom() const{
 }
 
 void ServerPlayer::broadcastSkillInvoke(const QString &card_name) const{
-    room->broadcastSkillInvoke(card_name, isMale(), -1);
+    QString name = card_name;
+    if (name.startsWith("heg_"))
+        name.remove("heg_");
+    room->broadcastSkillInvoke(name, isMale(), -1);
 }
 
 void ServerPlayer::broadcastSkillInvoke(const Card *card) const{
@@ -829,8 +832,8 @@ int ServerPlayer::getGeneralMaxHp() const{
     if (getGeneral2() == NULL)
         max_hp = getGeneral()->getDoubleMaxHp();
     else {
-        int first = getGeneral()->getDoubleMaxHp();
-        int second = getGeneral2()->getDoubleMaxHp();
+        int first = getGeneral()->getMaxHpHead();
+        int second = getGeneral2()->getMaxHpDeputy();
 
         max_hp = (first + second) / 2;
     }

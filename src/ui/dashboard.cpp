@@ -580,7 +580,7 @@ void Dashboard::showSeat() {
     PixmapAnimation *pma = PixmapAnimation::GetPixmapAnimation(_m_rightFrame, "seat");
     if (pma) {
         pma->setTransform(QTransform::fromTranslate(- pma->boundingRect().width() / 2, - pma->boundingRect().height() / 2));
-        pma->setPos(region.center());
+        pma->setPos(region.x() + region.width() / 2, region.y() + region.height() / 2);
     }
     _paintPixmap(_m_seatItem, region,
                  _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->getSeat())),

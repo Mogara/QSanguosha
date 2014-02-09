@@ -419,19 +419,25 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
             if (!will_trigger.isEmpty()) {
                 will_trigger.clear();
-                foreach(auto p, trigger_who.keys()) {
+                foreach(ServerPlayer *p, trigger_who.keys()) {
                     QList<const TriggerSkill *> who_skills = trigger_who.value(p);
                     if (who_skills.isEmpty()) continue;
+                    if (p)
+                        room->setPlayerFlag(p, "Global_askForSkillCost");           // TriggerOrder need protect
                     QStringList names, back_up;
-                    foreach (auto skill, who_skills) {
+                    bool has_compulsory = false;
+                    foreach (const TriggerSkill *skill, who_skills) {
+                        if (skill->getFrequency() == Skill::Compulsory)
+                            has_compulsory = true;
                         QString name = skill->objectName();
                         if (names.contains(name))
                             back_up << name;
                         else
                             names << name;
                     }
-                    if (names.length() > 1 || !back_up.isEmpty())
+                    if ((names.length() > 1 || !back_up.isEmpty()) && !has_compulsory)
                         names << "trigger_none";
+
                     do {
                         if (names.length() == 2 && back_up.isEmpty())
                             names.removeLast();
@@ -443,17 +449,24 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                             name = names.first();
                         if (name == "trigger_none") break;
                         const TriggerSkill *skill = who_skills.at(names.indexOf(name));
+                        if (skill->isGlobal() || (p && p->ownSkill(name) && p->hasShownSkill(Sanguosha->getSkill(name)))) // if hasShown, then needn't protect
+                            if (p->hasFlag("Global_askForSkillCost"))
+                                room->setPlayerFlag(p, "-Global_askForSkillCost");
                         if (skill->cost(triggerEvent, room, target, data)) {
                             will_trigger.prepend(skill);
                             if (p && p->ownSkill(name) && !p->hasShownSkill(Sanguosha->getSkill(name)))
                                 p->showGeneral(p->inHeadSkills(name));
                         }
+                        if (p && !p->hasFlag("Global_askForSkillCost"))          // for next time
+                            room->setPlayerFlag(p, "Global_askForSkillCost");
                         if (back_up.contains(name))
                             back_up.removeOne(name);
                         else
                             names.removeOne(name);
                         who_skills.removeOne(skill);
                     } while (names.length() > 1);
+                    if (p && p->hasFlag("Global_askForSkillCost"))
+                        room->setPlayerFlag(p, "-Global_askForSkillCost"); // remove Flag
                 }
             }
 

@@ -523,7 +523,7 @@ public:
         } else {
             log.type = "$CancelTargetNoUser";
         }
-        log.to = use.to;
+        log.to << player;
         log.arg = use.card->objectName();
         room->sendLog(log);
 
@@ -1042,8 +1042,8 @@ public:
             if (success) {
                 QList<ServerPlayer *> targets;
                 foreach (ServerPlayer *p, room->getAlivePlayers()){
-                    if (jiling->canSlash(target, NULL, false) && (p->isFriendWith(target) || target == p)){
-                        targets << target;
+                    if (jiling->canSlash(p, NULL, false) && (p->isFriendWith(target) || target == p)){
+                        targets << p;
                     }
                 }
                 if (targets.isEmpty())
@@ -1052,7 +1052,7 @@ public:
                 ServerPlayer *slasher = room->askForPlayerChosen(jiling, targets, "shuangren-slash", "@dummy-slash");
                 Slash *slash = new Slash(Card::NoSuit, 0);
                 slash->setSkillName("_shuangren");
-                room->useCard(CardUseStruct(slash, jiling, slasher));
+                room->useCard(CardUseStruct(slash, jiling, slasher), false);
             }
             else {
                 room->broadcastSkillInvoke("shuangren", 3);

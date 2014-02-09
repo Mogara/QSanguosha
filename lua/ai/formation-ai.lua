@@ -276,11 +276,12 @@ sgs.ai_use_priority.TiaoxinCard = 4
 
 sgs.ai_skill_invoke.shoucheng = function(self, data)
 	local move = data:toMoveOneTime()
-	return move.from and self:isFriend(move.from) and not self:needKongcheng(move.from, true)
-end
-
-sgs.ai_skill_choice.shoucheng = function(self, choices)
-	return (self.player:getPhase() == sgs.Player_NotActive and self:needKongcheng(self.player, true)) and "reject" or "accept"
+	if move and move.from then
+		local from = findPlayerByObjectName(move.from:objectName())
+		if from and self:isFriend(from) and not self:needKongcheng(move.from, true) then
+			return true
+		end
+	end
 end
 
 local shangyi_skill = {}
@@ -441,4 +442,27 @@ sgs.ai_skill_discard.zhendu = function(self)
 		end
 	end
 	return {}
+end
+
+sgs.weapon_range.DragonPhoenix = 2
+sgs.ai_use_priority.DragonPhoenix = 2.400
+function sgs.ai_weapon_value.DragonPhoenix(self, enemy, player)
+	if enemy and enemy:getHp() <= 1 and (sgs.card_lack[enemy:objectName()]["Jink"] == 1 or getCardsNum("Jink", enemy, self.player) == 0) then
+		return 4.1
+	end
+end
+function sgs.ai_slash_weaponfilter.DragonPhoenix(self, to, player)
+	if player:distanceTo(to) > math.max(sgs.weapon_range.DragonPhoenix, player:getAttackRange()) then return end
+	return getCardsNum("Peach", to, self.player) + getCardsNum("Jink", to, self.player) < 1
+		and (sgs.card_lack[to:objectName()]["Jink"] == 1 or getCardsNum("Jink", to, self.player) == 0)
+end
+
+sgs.ai_skill_invoke.DragonPhoenix = function(self, data)
+	if data:toString() == "revive" then return true end
+	local death = data:toDeath()
+	if death.who then return true
+	else
+		local to = data:toPlayer()
+		return not self:doNotDiscard(to)
+	end
 end

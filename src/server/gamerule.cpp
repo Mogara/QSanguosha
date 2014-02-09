@@ -378,7 +378,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             if (data.canConvert<DamageStruct>()) {
                 DamageStruct damage = data.value<DamageStruct>();
                 room->enterDying(player, &damage);
-            } else
+            } else if (!player->hasFlag("Global_Dying")) //temp way to prevent pangtong enterDying again when using niepan with PeaceSpell in PlaceEquip
                 room->enterDying(player, NULL);
 
             break;

@@ -287,6 +287,18 @@ public:
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
+        room->notifySkillInvoked(player, objectName());
+        LogMessage log;
+        if (use.from) {
+            log.type = "$CancelTarget";
+            log.from = use.from;
+        } else {
+            log.type = "$CancelTargetNoUser";
+        }
+        log.to << player;
+        log.arg = use.card->objectName();
+        room->sendLog(log);
+
         use.to.removeOne(player);
         data = QVariant::fromValue(use);
         return false;
@@ -804,7 +816,7 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *wolong, QVariant &data) const{
-        //此处更改是因为“八阵”是“视为”装备八卦阵，真正发动的技能是八卦阵，而不是八阵。
+        //此处更改是因为“八阵”是“视为装备八卦阵”，真正发动的技能是八卦阵，而不是八阵。
         JudgeStruct judge;
         judge.pattern = ".|red";
         judge.good = true;

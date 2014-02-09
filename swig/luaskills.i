@@ -308,9 +308,7 @@ QStringList LuaTriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, 
     // the last event: data
     SWIG_NewPointerObj(l, &data, SWIGTYPE_p_QVariant, 0);
 
-    SWIG_NewPointerObj(l, ask_who, SWIGTYPE_p_ServerPlayer, 0);
-
-    int error = lua_pcall(l, 6, 1, 0);
+    int error = lua_pcall(l, 5, 2, 0);
     if (error){
         const char *msg = lua_tostring(l, -1);
         lua_pop(l, 1);
@@ -318,8 +316,13 @@ QStringList LuaTriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, 
         return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who);
     }
     else {
-        QString trigger_str = lua_tostring(l, -1);
-        lua_pop(l, 1);
+        QString trigger_str = lua_tostring(l, -2);
+        void *ask_who_p = NULL;
+        int convert_result = SWIG_ConvertPtr(l, -1, &ask_who_p, SWIGTYPE_p_ServerPlayer, 0);
+        if (SWIG_IsOK(convert_result) && ask_who_p != NULL){
+            ask_who = static_cast<ServerPlayer *>(ask_who_p);
+        }
+        lua_pop(l, 2);
         QStringList trigger_list = trigger_str.split("+");
         return trigger_list;
     }
@@ -424,18 +427,21 @@ QStringList LuaBattleArraySkill::triggerable(TriggerEvent triggerEvent, Room *ro
     // the last event: data
     SWIG_NewPointerObj(l, &data, SWIGTYPE_p_QVariant, 0);
 
-    SWIG_NewPointerObj(l, ask_who, SWIGTYPE_p_ServerPlayer, 0);
-
-    int error = lua_pcall(l, 6, 1, 0);
+    int error = lua_pcall(l, 5, 2, 0);
     if (error){
         const char *msg = lua_tostring(l, -1);
         lua_pop(l, 1);
         room->output(msg);
-        return BattleArraySkill::triggerable(triggerEvent, room, player, data, ask_who);
+        return TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who);
     }
     else {
-        QString trigger_str = lua_tostring(l, -1);
-        lua_pop(l, 1);
+        QString trigger_str = lua_tostring(l, -2);
+        void *ask_who_p = NULL;
+        int convert_result = SWIG_ConvertPtr(l, -1, &ask_who_p, SWIGTYPE_p_ServerPlayer, 0);
+        if (SWIG_IsOK(convert_result) && ask_who_p != NULL){
+            ask_who = static_cast<ServerPlayer *>(ask_who_p);
+        }
+        lua_pop(l, 2);
         QStringList trigger_list = trigger_str.split("+");
         return trigger_list;
     }

@@ -728,16 +728,18 @@ xiongyi_skill.name = "xiongyi"
 table.insert(sgs.ai_skills, xiongyi_skill)
 xiongyi_skill.getTurnUseCard = function(self)
 	if self.player:getMark("@arise") < 1 then return end
-	if (#self.friends <= #self.enemies and sgs.turncount > 2 and self.player:getLostHp() > 0) or (sgs.turncount > 1 and self:isWeak()) then
+	for _, friend in ipairs(self.friends) do
+		if self:objectiveLevel(friend) == 2 and self:isWeak(friend) then
+			return sgs.Card_Parse("@XiongyiCard=.&xiongyi")
+		end
+	end
+	if sgs.gameProcess() == "qun+++" then
 		return sgs.Card_Parse("@XiongyiCard=.&xiongyi")
 	end
 end
 
 sgs.ai_skill_use_func.XiongyiCard = function(card, use, self)
 	use.card = card
-	for i = 1, #self.friends do
-		if use.to then use.to:append(self.friends[i]) end
-	end
 end
 
 sgs.ai_card_intention.XiongyiCard = -80
