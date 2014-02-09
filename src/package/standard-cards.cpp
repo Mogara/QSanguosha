@@ -641,12 +641,20 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        return (room->askForSkillInvoke(player, "EightDiagram"));
+        if (room->askForSkillInvoke(player, "EightDiagram")) {
+            if (player->hasArmorEffect("bazhen"))
+                player->showGeneral(player->inHeadSkills("bazhen"));
+            return true;
+        }
+        return false;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        int armor_id = player->getArmor()->getId();
-        room->setCardFlag(armor_id, "using");
+        int armor_id = -1;
+        if (player->getArmor()) {
+            int armor_id = player->getArmor()->getId();
+            room->setCardFlag(armor_id, "using");
+        }
         room->setEmotion(player, "armor/eight_diagram");
         JudgeStruct judge;
         judge.pattern = ".|red";
@@ -655,7 +663,8 @@ public:
         judge.who = player;
 
         room->judge(judge);
-        room->setCardFlag(armor_id, "-using");
+        if (armor_id != -1)
+            room->setCardFlag(armor_id, "-using");
 
         if (judge.isGood()) {
             Jink *jink = new Jink(Card::NoSuit, 0);
