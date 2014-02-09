@@ -304,7 +304,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         kingdom = Sanguosha->translate(general->getKingdom());
         gender = general->isMale() ? tr("Male") : (general->isFemale() ? tr("Female") : tr("NoGender"));
         if (general->getMaxHpHead() == general->getMaxHpDeputy())
-            max_hp = QString::number((float)general->getDoubleMaxHp() / 2);
+            max_hp = QString::number((float)general->getMaxHpHead() / 2);
         else {
             max_hp = QString::number((float)general->getMaxHpHead() / 2);
             if (general->getMaxHpHead() != general->getDoubleMaxHp()) {
