@@ -425,15 +425,19 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                     if (p)
                         room->setPlayerFlag(p, "Global_askForSkillCost");           // TriggerOrder need protect
                     QStringList names, back_up;
-                    foreach (auto skill, who_skills) {
+                    bool has_compulsory = false;
+                    foreach (const TriggerSkill *skill, who_skills) {
+                        if (skill->getFrequency() == Skill::Compulsory)
+                            has_compulsory = true;
                         QString name = skill->objectName();
                         if (names.contains(name))
                             back_up << name;
                         else
                             names << name;
                     }
-                    if (names.length() > 1 || !back_up.isEmpty())
+                    if ((names.length() > 1 || !back_up.isEmpty()) && !has_compulsory)
                         names << "trigger_none";
+
                     do {
                         if (names.length() == 2 && back_up.isEmpty())
                             names.removeLast();
