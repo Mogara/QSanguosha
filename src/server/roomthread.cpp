@@ -449,7 +449,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         else
                             name = names.first();
                         if (name == "trigger_none") break;
-                        const TriggerSkill *skill = who_skills.at(names.indexOf(name));
+                        const TriggerSkill *skill = Sanguosha->getTriggerSkill(name);
                         cost_order.prepend(skill);
                         if (back_up.contains(name))
                             back_up.removeOne(name);
