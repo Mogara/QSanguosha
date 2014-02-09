@@ -326,7 +326,7 @@ signals:
     void role_changed(const QString &new_role);
     void state_changed();
     void hp_changed();
-    void kingdom_changed();
+    void kingdom_changed(QString new_kingdom);
     void phase_changed();
     void owner_changed(bool owner);
     void head_state_changed();

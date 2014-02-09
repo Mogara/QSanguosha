@@ -630,7 +630,7 @@ QString Player::getKingdom() const{
 void Player::setKingdom(const QString &kingdom) {
     if (this->kingdom != kingdom) {
         this->kingdom = kingdom;
-        emit kingdom_changed();
+        emit kingdom_changed(kingdom);
     }
 }
 

@@ -82,6 +82,8 @@ public:
 
     QPixmap paintByMask(QPixmap& source);
 
+    inline RoleComboBox *getRoleComboBox() const {    return _m_roleComboBox;    };
+
 public slots:
     void updateAvatar();
     virtual void updateSmallAvatar();
@@ -90,7 +92,7 @@ public slots:
     void updateHandcardNum();
     void updateDrankState();
     void updatePile(const QString &pile_name);
-    void updateRole(const QString &role);
+    void updateKingdom(const QString &kingdom);
     void updateMarks();
     void updateVotes(bool need_select = true, bool display_1 = false);
     void updateReformState();
@@ -118,7 +120,7 @@ protected:
     virtual QGraphicsItem *_getDeathIconParent() = 0;
     virtual QString getResourceKeyName() = 0;
 
-    void _createRoleComboBox();
+    virtual void _createRoleComboBox();
     void _updateProgressBar(); // a dirty function used by the class itself only.
     void _updateDeathIcon();
     void _updateEquips();

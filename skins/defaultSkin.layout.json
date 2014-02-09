@@ -37,7 +37,18 @@
     ],
     // I realized that some MOD might need a wider background area than the foreground magatamas in order
     // to draw certain effect. The following factor specifies the number of invisible magatama to be appended. 
-    "hpExtraSpaceHolder": 0
+    "hpExtraSpaceHolder": 0,
+	
+	"roleNormalBgSize": [46, 47],
+	"roleWeiRect": [3, 3, 20, 20],
+	"roleQunRect": [23, 3, 20, 20],
+	"roleShuRect": [3, 23, 20, 20],
+	"roleWuRect": [23, 23, 20, 20],
+	"roleWeiColor": [39, 121, 170],
+	"roleQunColor": [195, 177, 84],
+	"roleShuColor": [172, 49, 32],
+	"roleWuColor": [85, 164, 52],
+	"roleDarkColor": [125, 125, 126]
 },
 "room":
 {

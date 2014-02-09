@@ -477,14 +477,14 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player) {
     if (player) {
         connect(player, SIGNAL(general_changed()), this, SLOT(updateAvatar()));
         connect(player, SIGNAL(general2_changed()), this, SLOT(updateSmallAvatar()));
-        connect(player, SIGNAL(kingdom_changed()), this, SLOT(updateAvatar()));
+        connect(player, SIGNAL(kingdom_changed(QString)), this, SLOT(updateAvatar()));
         connect(player, SIGNAL(state_changed()), this, SLOT(refresh()));
         connect(player, SIGNAL(phase_changed()), this, SLOT(updatePhase()));
         connect(player, SIGNAL(drank_changed()), this, SLOT(updateDrankState()));
         connect(player, SIGNAL(action_taken()), this, SLOT(refresh()));
         connect(player, SIGNAL(duanchang_invoked()), this, SLOT(refresh()));
         connect(player, SIGNAL(pile_changed(QString)), this, SLOT(updatePile(QString)));
-        connect(player, SIGNAL(role_changed(QString)), _m_roleComboBox, SLOT(fix(QString)));
+        connect(player, SIGNAL(kingdom_changed(QString)), _m_roleComboBox, SLOT(fix(QString)));
         connect(player, SIGNAL(hp_changed()), this, SLOT(updateHp()));
 
         QTextDocument *textDoc = m_player->getMarkDoc();
@@ -797,8 +797,8 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_avatarIcon);
 }
 
-void PlayerCardContainer::updateRole(const QString &role) {
-    _m_roleComboBox->fix(role);
+void PlayerCardContainer::updateKingdom(const QString &kingdom) {
+    _m_roleComboBox->fix(kingdom);
 }
 
 void PlayerCardContainer::_updateProgressBar() {
@@ -868,7 +868,7 @@ void PlayerCardContainer::_updateDeathIcon() {
 }
 
 void PlayerCardContainer::killPlayer() {
-    _m_roleComboBox->fix(m_player->getRole());
+    _m_roleComboBox->fix(m_player->getKingdom());
     _m_roleComboBox->setEnabled(false);
     _updateDeathIcon();
     _m_saveMeIcon->hide();

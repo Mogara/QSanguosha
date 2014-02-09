@@ -80,6 +80,11 @@ const char *QSanRoomSkin::S_SKIN_KEY_CARD_CONTAINER_FRAME = "cardContainerFrame"
 // Animations
 const char *QSanRoomSkin::S_SKIN_KEY_ANIMATIONS = "preloads";
 
+//RoleComboBox
+const char *QSanRoomSkin::S_SKIN_KEY_EXPANDING_ROLE_BOX = "expandingRoleBox";
+const char *QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK = "roleBoxKingdomMask-%1";
+
+
 QSanSkinFactory* QSanSkinFactory::_sm_singleton = NULL;
 QHash<QString, QPixmap> QSanPixmapCache::_m_pixmapBank;
 QHash<QString, int *> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
@@ -777,6 +782,17 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
     _m_commonLayout.m_cardFootnoteFont.tryParse(config["cardFootnoteFont"]);
     for (int i = 0; i < 6; i++)
         _m_commonLayout.m_hpFont[i].tryParse(config["magatamaFont"][i]);
+
+    tryParse(config["roleNormalBgSize"], _m_commonLayout.ROLE_NORMAL_BG_SIZE);
+    tryParse(config["roleWeiRect"], _m_commonLayout.ROLE_WEI_RECT);
+    tryParse(config["roleQunRect"], _m_commonLayout.ROLE_QUN_RECT);
+    tryParse(config["roleShuRect"], _m_commonLayout.ROLE_SHU_RECT);
+    tryParse(config["roleWuRect"], _m_commonLayout.ROLE_WU_RECT);
+    tryParse(config["roleWeiColor"], _m_commonLayout.ROLE_WEI_COLOR);
+    tryParse(config["roleQunColor"], _m_commonLayout.ROLE_QUN_COLOR);
+    tryParse(config["roleShuColor"], _m_commonLayout.ROLE_SHU_COLOR);
+    tryParse(config["roleWuColor"], _m_commonLayout.ROLE_WU_COLOR);
+    tryParse(config["roleDarkColor"], _m_commonLayout.ROLE_DARK_COLOR);
 
     config = layoutConfig[S_SKIN_KEY_ROOM];
     tryParse(config["chatBoxHeightPercentage"], _m_roomLayout.m_chatBoxHeightPercentage);
