@@ -439,6 +439,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         names << "trigger_none";
 
                     QList<const TriggerSkill *> cost_order;
+                    QStringList _names = names;
                     do {
                         if (names.length() == 2 && back_up.isEmpty())
                             names.removeLast();
@@ -449,7 +450,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         else
                             name = names.first();
                         if (name == "trigger_none") break;
-                        const TriggerSkill *skill = Sanguosha->getTriggerSkill(name);
+                        const TriggerSkill *skill = who_skills[_names.indexOf(name)];
                         cost_order.prepend(skill);
                         if (back_up.contains(name))
                             back_up.removeOne(name);
