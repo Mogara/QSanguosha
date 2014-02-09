@@ -569,7 +569,7 @@ bool Player::hasArmorEffect(const QString &armor_name) const{
         || getMark("Equips_Nullified_to_Yourself") > 0)
         return false;
     if (armor_name == "bazhen")
-        return armor == NULL && alive && hasShownSkill(Sanguosha->getSkill("bazhen"));
+        return armor == NULL && alive && hasSkill("bazhen");
     else {
         if (!armor) return false;
         if (armor->objectName() == armor_name || armor->isKindOf(armor_name.toStdString().c_str())) return true;
