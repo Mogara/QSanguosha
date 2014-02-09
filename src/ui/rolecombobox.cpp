@@ -3,7 +3,7 @@
 #include "roomscene.h"
 
 void RoleComboBox::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-    if (!fixed_role.isEmpty()) return;
+    if (!fixed_role.isEmpty() || circle) return;
     QPoint point = QPoint(event->pos().x(), event->pos().y());;
     if (expanding && !boundingRect().contains(point)) {
         expanding = false;

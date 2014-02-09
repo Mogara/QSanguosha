@@ -286,6 +286,8 @@ void Player::setRole(const QString &role) {
     if (this->role != role) {
         this->role = role;
         emit role_changed(role);
+        if (role == "careerist")
+            emit kingdom_changed("careerist");
     }
 }
 
@@ -630,6 +632,7 @@ QString Player::getKingdom() const{
 void Player::setKingdom(const QString &kingdom) {
     if (this->kingdom != kingdom) {
         this->kingdom = kingdom;
+        if (role == "careerist") return;
         emit kingdom_changed(kingdom);
     }
 }
