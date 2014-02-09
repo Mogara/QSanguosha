@@ -874,9 +874,21 @@ bool Room::notifyMoveFocus(ServerPlayer *player, CommandType command) {
 
 bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, CommandType command, Countdown countdown) {
     Json::Value arg(Json::arrayValue);
-    int n = players.size();
+    //============================================
+    //for protecting anjiang
+    //============================================
+    bool verify = false;
+    foreach (ServerPlayer *p, players)
+        if (p->hasFlag("Global_askForSkillCost")) {
+            verify = true;
+            break;
+        }
+    QList<ServerPlayer *> new_players;
+    new_players = verify ? getAllPlayers() : players;
+    //============================================
+    int n = new_players.size();
     for (int i = 0; i < n; i++)
-        arg[0][i] = toJsonString(players[i]->objectName());
+        arg[0][i] = toJsonString(new_players[i]->objectName());
     arg[1] = (int)command;
     arg[2] = countdown.toJsonValue();
     return doBroadcastNotify(S_COMMAND_MOVE_FOCUS, arg);
