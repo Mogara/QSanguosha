@@ -794,47 +794,13 @@ public:
             || player->getMark("Equips_Nullified_to_Yourself") > 0)
             return QStringList();
 
-        if (player->getArmor() == NULL && player->isAlive())
-            return QStringList(objectName());
+        if (player->hasArmorEffect("bazhen"))
+            return QStringList("EightDiagram");
 
         return QStringList();
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (!player->hasShownSkill(this)){
-            if (player->askForSkillInvoke("bazhen", "showgeneral")){
-                if (player->ownSkill(objectName()) && !player->hasShownSkill(this))
-                    player->showGeneral(player->inHeadSkills(objectName()));
-            }
-        }
-
-        if (player->hasArmorEffect("bazhen") && player->askForSkillInvoke("EightDiagram")){
-            room->broadcastSkillInvoke(objectName(), 1);
-            return true;
-        }
-        return false;
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *wolong, QVariant &data) const{
-        //此处更改是因为“八阵”是“视为装备八卦阵”，真正发动的技能是八卦阵，而不是八阵。
-        JudgeStruct judge;
-        judge.pattern = ".|red";
-        judge.good = true;
-        judge.reason = "EightDiagram";
-        judge.who = wolong;
-
-        room->setEmotion(wolong, "armor/eight_diagram");
-        room->judge(judge);
-
-        if (judge.isGood()) {
-            Jink *jink = new Jink(Card::NoSuit, 0);
-            jink->setSkillName("EightDiagram");
-            room->broadcastSkillInvoke(objectName(), 2);
-            room->provide(jink);
-            return true;
-        }
-
-
         return false;
     }
 };
