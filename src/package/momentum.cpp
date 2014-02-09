@@ -569,6 +569,10 @@ public:
     Sunce_Yingzi(): Yingzi(){
         setObjectName("sunce_yingzi");
     }
+
+    virtual bool canPreshow() const {
+        return false;
+    }
 };
 
 class Hunshang: public PhaseChangeSkill {

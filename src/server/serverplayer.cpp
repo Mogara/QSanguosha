@@ -832,8 +832,8 @@ int ServerPlayer::getGeneralMaxHp() const{
     if (getGeneral2() == NULL)
         max_hp = getGeneral()->getDoubleMaxHp();
     else {
-        int first = getGeneral()->getDoubleMaxHp();
-        int second = getGeneral2()->getDoubleMaxHp();
+        int first = getGeneral()->getMaxHpHead();
+        int second = getGeneral2()->getMaxHpDeputy();
 
         max_hp = (first + second) / 2;
     }
