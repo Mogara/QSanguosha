@@ -40,10 +40,10 @@
     "hpExtraSpaceHolder": 0,
 	
 	"roleNormalBgSize": [46, 47],
-	"roleWeiRect": [3, 3, 20, 20],
-	"roleQunRect": [23, 3, 20, 20],
-	"roleShuRect": [3, 23, 20, 20],
-	"roleWuRect": [23, 23, 20, 20],
+	"roleWeiRect": [3, 3, 19, 19],
+	"roleQunRect": [23, 3, 19, 19],
+	"roleShuRect": [3, 23, 19, 19],
+	"roleWuRect": [23, 23, 19, 19],
 	"roleWeiColor": [39, 121, 170],
 	"roleQunColor": [195, 177, 84],
 	"roleShuColor": [172, 49, 32],
@@ -159,7 +159,7 @@
     // the width of the region to disperse cards when the cards are to be moved to the special pile. 
     "disperseWidth": 250,
     "markTextArea": [0, 0, 50, 50],
-    "roleComboBoxPos": [-30, 8],
+    "roleComboBoxPos": [-32, 6],
     "borderWidth": 6,
     "avatarImageType": 2,
     "secondaryAvatarImageType": 2,
