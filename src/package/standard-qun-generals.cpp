@@ -944,12 +944,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
-        bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
-        if (invoke){
-            room->broadcastSkillInvoke(objectName());
-            return true;
-        }
-        return false;
+        return player->hasShownSkill(this) || room->askForSkillInvoke(player, objectName());
     }
 
     virtual bool effect(TriggerEvent , Room *room, ServerPlayer *kongrong, QVariant &data) const{
