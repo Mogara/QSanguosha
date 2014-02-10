@@ -531,6 +531,7 @@ function sgs.CreateArraySummonSkill(spec)
 	end
 
 	function skill:enabled_at_play(player)
+		if player:getAliveSiblings():length() < 3 then return false end
 		if player:hasFlag("Global_SummonFailed") then return false end
 		local skill = sgs.Sanguosha:getTriggerSkill(self:objectName()):toBattleArraySkill()
 		if skill then
