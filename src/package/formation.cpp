@@ -1212,7 +1212,7 @@ public:
                 break;
             }
         }
-        if (dfowner == NULL)
+        if (dfowner == NULL || dfowner->getRole() == "careerist")
             return false;
 
         DeathStruct death = data.value<DeathStruct>();

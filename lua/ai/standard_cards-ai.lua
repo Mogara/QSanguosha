@@ -263,11 +263,6 @@ end
 function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	if not slash or not to then self.room:writeToConsole(debug.traceback()) return end
 	from = from or self.player
-	if to:hasSkill("yizhong") and not to:getArmor() then
-		if slash:isBlack() then
-			return false
-		end
-	end
 	if to:hasSkill("kongcheng") and to:isKongcheng() then return false end
 
 	local natures = {

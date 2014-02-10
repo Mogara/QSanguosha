@@ -100,7 +100,7 @@ function setInitialTables()
 	sgs.ai_type_name = 			{"Skill", "Basic", "Trick", "Equip"}
 	sgs.lose_equip_skill = "xiaoji"
 	sgs.need_kongcheng = "lianying|kongcheng"
-	sgs.masochism_skill = 		"yiji|fankui|jieming|ganglie|fangzhu"
+	sgs.masochism_skill = 		"yiji|fankui|jieming|ganglie|fangzhu|hengjiang|qianhuan"
 	sgs.wizard_skill = 		"guicai|guidao|tiandu"
 	sgs.wizard_harm_skill = 	"guicai|guidao"
 	sgs.priority_skill = 		"dimeng|haoshi|qingnang|jizhi|guzheng|qixi|jieyin|guose|duanliang|jujian|fanjian|lijian|tuxi|qiaobian|zhiheng|luoshen|rende|wansha|qingcheng|shuangren"
