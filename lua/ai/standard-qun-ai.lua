@@ -746,9 +746,7 @@ end
 sgs.ai_card_intention.XiongyiCard = -80
 sgs.ai_use_priority.XiongyiCard = 9.31
 
-sgs.ai_skill_invoke.mingshi = function(self, data)
-	return not data:toDamage().from:hasShownAllGenerals()
-end
+sgs.ai_skill_invoke.mingshi = true
 
 sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 	self:updatePlayers()
