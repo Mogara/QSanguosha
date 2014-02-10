@@ -171,11 +171,16 @@ QString General::getSkillDescription(bool include_name, bool yellow) const{
         QString color_str = Sanguosha->getKingdomColor(kingdom).name();
         QString name = QString("<font color=%1><b>%2</b></font>     ").arg(color_str).arg(Sanguosha->translate(objectName()));
         name.prepend(QString("<img src='image/kingdom/icon/%1.png'/>    ").arg(kingdom));
+        int region = double_max_hp;
         int waken = 0;
-        if (deputy_max_hp_adjusted_value < 0 || head_max_hp_adjusted_value < 0)
-            waken = qMin(deputy_max_hp_adjusted_value, head_max_hp_adjusted_value);      // for wake-skill general
+        if (deputy_max_hp_adjusted_value != 0 || head_max_hp_adjusted_value != 0) {
+            int waken1 = head_max_hp_adjusted_value;
+            int waken2 = deputy_max_hp_adjusted_value;      // for wake-skill general
+            region += qMax(waken1, waken2);
+            waken = -qAbs(waken1 - waken2);
+        }
         int i = 2;
-        while (i <= double_max_hp + waken) {
+        while (i <= region + waken) {
             name.append("<img src='image/system/magatamas/3.png' height = 12/>");
             i += 2;
         }
