@@ -261,9 +261,9 @@ const General *Player::getGeneral2() const{
 }
 
 QString Player::getFootnoteName() const{
-    if (general && general->objectName() != "anjiang")
+    if (general && general->objectName() != "anjiang" && !general->objectName().contains("sujiang"))
         return general->objectName();
-    else if (general2 && general2->objectName() != "anjiang")
+    else if (general2 && general2->objectName() != "anjiang" && !general2->objectName().contains("sujiang"))
         return general2->objectName();
     else if (property("UI_Seat").toInt())
         return Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(property("UI_Seat").toInt())));

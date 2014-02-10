@@ -722,6 +722,16 @@ QString Client::getPlayerName(const QString &str) {
         general_name = Sanguosha->translate(general_name);
         if (player->getGeneral2())
             general_name.append("/" + Sanguosha->translate(player->getGeneral2Name()));
+        if (general_name.contains("sujiang")) {
+            QStringList names = general_name.split("/");
+            if (names.length() == 2) {
+                if (names[0].contains("sujiang"))
+                    names.removeAt(0);
+                else
+                    names.removeAt(1);
+                general_name = names.first();
+            }
+        }
         if (player->getGeneralName() == "anjiang" && player->getGeneral2Name() == "anjiang")
             general_name = Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(player->property("UI_Seat").toInt())));
         return general_name;
