@@ -478,7 +478,6 @@ luanwu_skill.name = "luanwu"
 table.insert(sgs.ai_skills, luanwu_skill)
 luanwu_skill.getTurnUseCard = function(self)
 	if self.player:getMark("@chaos") <= 0 then return end
-	--if self.room:getMode() == "_mini_13" then return sgs.Card_Parse("@LuanwuCard=.&luanwu") end
 	local good, bad = 0, 0
 	local lord = self.room:getLord()
 	if lord and self.role ~= "rebel" and self:isWeak(lord) then return end
@@ -544,8 +543,6 @@ sgs.ai_skill_invoke.mengjin = function(self, data)
 	end
 	return not self:isFriend(effect.to)
 end
-
-
 
 sgs.ai_skill_cardask["@guidao-card"]=function(self, data)
 	local judge = data:toJudge()
@@ -656,22 +653,10 @@ function SmartAI:findLeijiTarget(player, leiji_value, slasher)
 end
 
 sgs.ai_skill_playerchosen.leiji = function(self, targets)
-
 	local xq = self.room:findPlayerBySkillName("tianxiang")
 	if xq and self:isEnemy(xq) and sgs.GetConfig("AIChat", true) and xq:getState() == "robot" then
 		xq:speak(sgs.Sanguosha:translate(self.player:getGeneralName()) .. "有种来劈我！")
 	end
-	
-	local mode = self.room:getMode()
-	if mode:find("_mini_17") or mode:find("_mini_19") or mode:find("_mini_20") or mode:find("_mini_26") then
-		local players = self.room:getAllPlayers();
-		for _, aplayer in sgs.qlist(players) do
-			if aplayer:getState() ~= "robot" then
-				return aplayer
-			end
-		end
-	end
-
 	self:updatePlayers()
 	return self:findLeijiTarget(self.player, 100, nil, 1)
 end
@@ -838,7 +823,7 @@ function sgs.ai_skill_pindian.shuangren(minusecard, self, requestor)
 end
 
 sgs.ai_skill_playerchosen["shuangren-slash"] = sgs.ai_skill_playerchosen.zero_card_as_slash
---sgs.ai_card_intention.ShuangrenCard = sgs.ai_card_intention.TianyiCard
+sgs.ai_playerchosen_intention.shuangren = 20
 sgs.ai_cardneed.shuangren = sgs.ai_cardneed.bignumber
 
 
@@ -852,18 +837,6 @@ sgs.ai_playerchosen_intention.sijian = function(self, from, to)
 		intention = 0
 	end
 	sgs.updateIntention(from, to, intention)
-end
-
-sgs.ai_skill_invoke.suishi = function(self, data)
-	local promptlist = data:toString():split(":")
-	local effect = promptlist[1]
-	local tianfeng = findPlayerByObjectName(promptlist[2])
-	if effect == "draw" then
-		return tianfeng and self:isFriend(tianfeng)
-	elseif effect == "losehp" then
-		return tianfeng and self:isEnemy(tianfeng)
-	end
-	return false
 end
 
 sgs.ai_skill_invoke.kuangfu = function(self, data)
@@ -959,18 +932,59 @@ qingcheng_skill.getTurnUseCard = function(self, inclusive)
 end
 
 sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
-	if true then return end
-	local target
-	if not target then return end
-	use.card = card
-	if use.to then
-		use.to:append(target)
+	local room = self.room
+	local zhoutai = room:findPlayerBySkillName("buqu")
+	if zhoutai and zhoutai:getPile("buqu") > 1 and zhoutai:hasShownAllGenerals() then
+		use.card = card
+		if ((not isDummy) and use.to) then
+			sgs.ai_skill_choice.QingchengCard = (zhoutai:inHeadSkills("buqu") and "head_general" or "debuty_general")
+			use.to:append(zhoutai)
+		end
+		return
 	end
+	
+	local dummy_use = {isDummy = true, to = sgs.SPlayerList()}
+	local slash = sgs.Sanguosha:cloneCard("Slash")
+	self:useBasicCard(slash, use)
+	if (use.card) then
+		for _, p in sgs.qlist(use.to) do
+			if not p:hasShownAllGenerals() then continue end
+			if self.player:isFriendWith(p) or (self.player:getActualGeneral1():getKingdom() == p:getKingdom()) then continue end
+			local skill_table = sgs.masochism_skills.split("|")
+			for _, skill_name in ipairs(skill_table) do
+				if (p:hasSkill(skill_name)) then
+					use.card = card
+					if ((not isDummy) and use.to) then
+						sgs.ai_skill_choice.QingchengCard = (p:inHeadSkills(skill_name) and "head_general" or "deputy_general")
+						use.to:append(p)
+					end
+					return
+				end
+			end
+		end
+	end
+	
 	return
 end
 
 
-sgs.ai_use_value.QingchengCard = 2
-sgs.ai_use_priority.QingchengCard = 7.2
-sgs.ai_card_intention.QingchengCard = 0
+sgs.ai_use_value.QingchengCard = 6
+sgs.ai_use_priority.QingchengCard = sgs.ai_use_priority.slash + 0.1
+sgs.ai_card_intention.QingchengCard = 100
 
+local huoshui_skill = {}
+huoshui_skill.name = "huoshui"
+table.insert(sgs.ai_skills, huoshui_skill)
+function huoshui_skill.getTurnUseCard(self)
+	if self.player:hasShownSkill(sgs.Sanguosha:getSkill("huoshui")) then return nil end
+	local card = sgs.Card_Parse("@HuoshuiCard=.&huoshui")
+	assert(card)
+	return card
+end
+function sgs.ai_skill_use_func.HuoshuiCard(card, use, self)
+	if (math.random() < 0.1)
+		use.card = card
+	end
+end
+
+sgs.ai_use_priority.HuoshuiCard = 3
