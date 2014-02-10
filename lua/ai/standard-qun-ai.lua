@@ -78,6 +78,17 @@ end
 
 sgs.ai_skill_cardask["@multi-jink"] = sgs.ai_skill_cardask["@multi-jink-start"]
 
+sgs.ai_skill_invoke.wushuang = function(self, data)
+	local use = data:toCardUse()
+	if use.card then
+		if use.card:isKindOf("Duel") then return true end
+		for _, p in sgs.qlist(use.to) do
+			if p:getKingdom() == "qun" then return false end
+		end
+		return true
+	end
+	return false
+end
 
 function SmartAI:getLijianCard()
 	local card_id
@@ -530,6 +541,11 @@ end
 
 sgs.dynamic_value.damage_card.LuanwuCard = true
 
+sgs.ai_skill_invoke.weimu = true
+
+sgs.ai_skill_invoke.wansha = function(self, data)
+	return data:toDying().who:getKingdom() ~= "qun"
+end
 
 sgs.ai_skill_invoke.mengjin = function(self, data)
 	local effect = data:toSlashEffect()
@@ -730,34 +746,13 @@ end
 sgs.ai_card_intention.XiongyiCard = -80
 sgs.ai_use_priority.XiongyiCard = 9.31
 
+sgs.ai_skill_invoke.mingshi = function(self, data)
+	return not data:toDamage().from:hasShownAllGenerals()
+end
 
 sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
-	local Shenfen_user
-	for _, player in sgs.qlist(self.room:getAllPlayers()) do
-		if player:hasFlag("ShenfenUsing") then
-			Shenfen_user = player
-			break
-		end
-	end
-
 	self:updatePlayers()
 	local available_friends = {}
-	for _, friend in ipairs(self.friends_noself) do
-		local insert = true
-		if insert and friend:hasFlag("DimengTarget") then
-			local another
-			for _, p in sgs.qlist(self.room:getOtherPlayers(friend)) do
-				if p:hasFlag("DimengTarget") then
-					another = p
-					break
-				end
-			end
-			if not another or not self:isFriend(another) then insert = false end
-		end
-		if insert and Shenfen_user and friend:objectName() ~= Shenfen_user:objectName() and friend:getHandcardNum() < 4 then insert = false end
-		if insert then table.insert(available_friends, friend) end
-	end
-
 	local cards = {}
 	for _, card_id in ipairs(card_ids) do
 		table.insert(cards, sgs.Sanguosha:getCard(card_id))
@@ -768,9 +763,6 @@ sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 	if card and friend and table.contains(available_friends, friend) then return friend, card:getId() end
 	if #available_friends > 0 then
 		self:sort(available_friends, "handcard")
-		if Shenfen_user and table.contains(available_friends, Shenfen_user) then
-			return Shenfen_user, id
-		end
 		for _, afriend in ipairs(available_friends) do
 			if not self:needKongcheng(afriend, true) then
 				return afriend, id
