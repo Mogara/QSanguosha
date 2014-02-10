@@ -1057,7 +1057,7 @@ int Player::getPlayerNumWithSameKingdom(const QString &_to_calculate /* = QStrin
 
     int num = 0;
     foreach (const Player *p, players){
-        if (p->hasShownOneGeneral() && p->getKingdom() == to_calculate)
+        if (p->hasShownOneGeneral() && p->getKingdom() == to_calculate && p->getRole() != "careerist")
             num += 1;
     }
 

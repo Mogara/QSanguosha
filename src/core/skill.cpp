@@ -367,7 +367,8 @@ const Card *ArraySummonSkill::viewAs() const {
 }
 
 using namespace BattleArrayType;
-bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const {
+bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const{
+    if (player->getAliveSiblings().length() < 3) return false;
     if (player->hasFlag("Global_SummonFailed")) return false;
     const BattleArraySkill *skill = qobject_cast<const BattleArraySkill *>(Sanguosha->getTriggerSkill(objectName()));
     if (skill) {
@@ -535,14 +536,5 @@ QStringList ArmorSkill::triggerable(const ServerPlayer *target) const{
     if (target == NULL || target->getArmor() == NULL)
         return QStringList();
     return (target->hasArmorEffect(objectName())) ? QStringList(objectName()) : QStringList();
-}
-
-MarkAssignSkill::MarkAssignSkill(const QString &mark, int n)
-    : GameStartSkill(QString("#%1-%2").arg(mark).arg(n)), mark_name(mark), n(n)
-{
-}
-
-void MarkAssignSkill::onGameStart(ServerPlayer *player) const{
-    player->getRoom()->setPlayerMark(player, mark_name, player->getMark(mark_name) + n);
 }
 

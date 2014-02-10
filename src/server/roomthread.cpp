@@ -439,8 +439,9 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         names << "trigger_none";
 
                     QList<const TriggerSkill *> cost_order;
+                    QStringList _names = names;
                     do {
-                        if (names.length() == 2 && back_up.isEmpty())
+                        if (names.length() == 2 && back_up.isEmpty() && !has_compulsory)
                             names.removeLast();
 
                         QString name;
@@ -449,13 +450,26 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         else
                             name = names.first();
                         if (name == "trigger_none") break;
-                        const TriggerSkill *skill = who_skills.at(names.indexOf(name));
+                        const TriggerSkill *skill = who_skills[_names.indexOf(name)];
                         cost_order.prepend(skill);
                         if (back_up.contains(name))
                             back_up.removeOne(name);
                         else
                             names.removeOne(name);
-                    } while (names.length() > 1);
+
+                        if (has_compulsory){
+                            has_compulsory = false;
+                            foreach (QString n, names){
+                                const TriggerSkill *s = who_skills[_names.indexOf(n)];
+                                if (s->getFrequency() == Skill::Compulsory){
+                                    has_compulsory = true;
+                                    break;
+                                }
+                            }
+                            if (!has_compulsory)
+                                names << "trigger_none";
+                        }
+                    } while (names.length() > 1 || has_compulsory);
 
                     if (!cost_order.isEmpty())
                         foreach (const TriggerSkill *skill, cost_order) {
