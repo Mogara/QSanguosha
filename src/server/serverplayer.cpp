@@ -1209,7 +1209,7 @@ bool ServerPlayer::CompareByActionOrder(ServerPlayer *a, ServerPlayer *b) {
     return room->getFront(a, b) == a;
 }
 
-void ServerPlayer::showGeneral(bool head_general) {
+void ServerPlayer::showGeneral(bool head_general, bool trigger_event) {
     QStringList names = room->getTag(objectName()).toStringList();
     if (names.isEmpty()) return;
     QString general_name;
@@ -1338,8 +1338,10 @@ void ServerPlayer::showGeneral(bool head_general) {
     log.arg2 = getGeneral2Name();
     room->sendLog(log);
 
-    Q_ASSERT(room->getThread() != NULL);
-    room->getThread()->trigger(GeneralShown, room, this, QVariant(head_general));
+    if (trigger_event) {
+        Q_ASSERT(room->getThread() != NULL);
+        room->getThread()->trigger(GeneralShown, room, this, QVariant(head_general));
+    }
 }
 
 void ServerPlayer::hideGeneral(bool head_general) {

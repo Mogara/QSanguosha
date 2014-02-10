@@ -900,30 +900,61 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
         }
     } else if (Config.EnableHegemony) {
         QStringList winners;
-        auto players = room->getAlivePlayers();
-        auto win_player = players.first();
-        if (players.length() == 1) {
-            foreach (auto p, room->getPlayers()) {
-                if (win_player->isFriendWith(p))
-                    winners << p->objectName();
-            }
+        QList<ServerPlayer *> players = room->getAlivePlayers();
+        ServerPlayer *win_player = players.first();
+        if (players.length() == 1 && !win_player->hasShownOneGeneral()) {
+            win_player->showGeneral();
         } else {
-            bool has_anjiang = false, has_diff_kingdoms = false;
-            foreach(auto p, players) {
-                if (!p->hasShownOneGeneral()) {
-                    has_anjiang = true;
-                    break;
-                }
-                foreach (auto player, players) {
-                    if (!p->isFriendWith(player)) {
+            bool has_diff_kingdoms = false;
+            foreach(ServerPlayer *p, players) {
+                foreach (ServerPlayer *p2, players) {
+                    if (p->hasShownOneGeneral() && p2->hasShownAllGenerals() && !p->isFriendWith(p2)) {
                         has_diff_kingdoms = true;
-                        break;
+                        break;// 如果两个都亮了，不是小伙伴，那么呵呵一笑。
+                    }
+                    if ((p->hasShownOneGeneral() && !p2->hasShownOneGeneral() && !p2->willBeFriendWith(p))
+                     || (!p->hasShownOneGeneral() && p2->hasShownOneGeneral() && !p->willBeFriendWith(p2))) {
+                        has_diff_kingdoms = true;
+                        break;// 一个亮了，一个没亮，不是小伙伴，呵呵一笑。
+                    }
+                    if (!p->hasShownOneGeneral() && !p2->hasShownOneGeneral()) {
+                        if (p->getActualGeneral1()->getKingdom() != p2->getActualGeneral2()->getKingdom()) {
+                            has_diff_kingdoms = true;
+                            break;  // 两个都没亮，势力还不同，呵呵一笑
+                        }
                     }
                 }
             }
-            if (has_anjiang || has_diff_kingdoms) return QString();
+            if (!has_diff_kingdoms) { // 判断野心家
+                QMap<QString, int> kingdoms;
+                foreach (ServerPlayer *p, room->getPlayers()) {
+                    QString kingdom;
+                    if (p->hasShownOneGeneral())
+                        kingdom = p->getKingdom();
+                    else
+                        kingdom = p->getActualGeneral1()->getKingdom();
+                    if (room->getLord(kingdom) && room->getLord(kingdom)->isAlive()) continue;
+                    if (room->getLord(kingdom) && room->getLord(kingdom)->isDead())
+                        kingdoms[kingdom] += 10;
+                    else
+                        kingdoms[kingdom] ++;
+                    if (p->isAlive() && !p->hasShownOneGeneral() && kingdoms[kingdom] > room->getPlayers().length() / 2) {
+                        has_diff_kingdoms = true;
+                        break;  //活着的人里面有没亮的野心家，呵呵一笑。
+                    }
+                }
+            }
 
-            foreach (auto p, room->getPlayers()) {
+            if (has_diff_kingdoms) return QString();    //有人不是自己人，呵呵一笑。
+            
+            // 到了这一步，都是自己人了，全员亮将。
+            foreach(ServerPlayer *p, players) {
+                if (!p->hasShownOneGeneral()) {
+                    p->showGeneral(true, false); // 不用再触发事件了，嵌套影响结算。
+                }
+            }
+
+            foreach (ServerPlayer *p, room->getPlayers()) {
                 if (win_player->isFriendWith(p))
                     winners << p->objectName();
             }
