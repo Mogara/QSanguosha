@@ -367,7 +367,8 @@ const Card *ArraySummonSkill::viewAs() const {
 }
 
 using namespace BattleArrayType;
-bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const {
+bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const{
+    if (player->getAliveSiblings().length() < 3) return false;
     if (player->hasFlag("Global_SummonFailed")) return false;
     const BattleArraySkill *skill = qobject_cast<const BattleArraySkill *>(Sanguosha->getTriggerSkill(objectName()));
     if (skill) {
