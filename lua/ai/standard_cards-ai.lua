@@ -3042,13 +3042,6 @@ sgs.ai_choicemade_filter.skillChoice.known_both = function(self, from, promptlis
 	end
 end
 
-sgs.ai_skill_invoke["@define:halfmaxhp"] = true
-
-sgs.ai_skill_choice.CompanionEffect = function(self, choice, data)
-	if self:isWeak() and string.find(choice, "recover") then return "recover"
-	else return "draw" end
-end
-
 sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 	if string.find(sgs.gameProcess(), self.player:getKingdom() .. "++") and sgs.isAnjiang(self.player) then
 		local upperlimit = self.player:getLord() and 99 or self.room:getPlayers():length() / 2
@@ -3117,3 +3110,4 @@ function sgs.ai_weapon_value.Triblade(self, enemy, player)
 end
 
 sgs.ai_use_priority.Triblade = 2.673
+

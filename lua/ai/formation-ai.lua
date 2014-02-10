@@ -460,9 +460,9 @@ function sgs.ai_slash_weaponfilter.DragonPhoenix(self, to, player)
 end
 
 sgs.ai_skill_invoke.DragonPhoenix = function(self, data)
-	if data:toString() == "revive" then return true end
+	if data:toString() == "revive" and self.role ~= "careerist" then return true end
 	local death = data:toDeath()
-	if death.who then return true
+	if death.who and self.role ~= "careerist" then return true
 	else
 		local to = data:toPlayer()
 		return not self:doNotDiscard(to)

@@ -75,21 +75,19 @@ sgs.ai_chat_func =			{}
 sgs.ai_event_callback =		{}
 sgs.ai_NeedPeach =			{}
 sgs.ai_processdefense = 	{}
-sgs.shown_kingdom = 		{
-	wei = 0,
-	shu = 0,
-	wu = 0,
-	qun = 0,
-}
+sgs.shown_kingdom = 		{}
 sgs.ai_damage_effect = 		{}
 sgs.ai_explicit = 			{}
 sgs.ai_loyalty = 			{
 	wei = {},
 	shu = {},
 	wu = {},
-	qun = {}
+	qun = {},
+	god = {}
 
 }
+
+
 
 for i=sgs.NonTrigger, sgs.NumOfEvents, 1 do
 	sgs.ai_debug_func[i]	={}
@@ -127,13 +125,31 @@ function setInitialTables()
 	local t = { "PT", "PT", "PT", "PT", "PT", "WY", "WY", "WY", "WY", "2B" }
 	sgs.ai_tactics = t[math.random(1, #t)]
 	
-	for _, p in sgs.qlist(global_room:getAlivePlayers()) do
-		sgs.ai_loyalty["wei"][p:objectName()] = 0
-		sgs.ai_loyalty["shu"][p:objectName()] = 0
-		sgs.ai_loyalty["wu"][p:objectName()] = 0
-		sgs.ai_loyalty["qun"][p:objectName()] = 0
-		sgs.ai_explicit[p:objectName()] = "unknown"
+	sgs.RolesTable = { "lord", "loyalist", "renegade", "rebel", "careerist" }
+	sgs.KingdomsTable = { "wei", "shu", "wu", "qun", "god"}
+
+	for _, kingdom in ipairs(sgs.Sanguosha:getKingdoms()) do
+		if not table.contains(sgs.KingdomsTable, kingdom) then
+			table.insert(sgs.KingdomsTable, kingdom)
+		end
+		sgs.ai_loyalty[kingdom] = {}
 	end
+	
+	for _, p in sgs.qlist(global_room:getAlivePlayers()) do
+		sgs.shown_kingdom[p:getKingdom()] = 0
+		for kingdom, v in pairs(sgs.ai_loyalty) do
+			sgs.ai_loyalty[kingdom][p:objectName()] = 0
+		end
+		sgs.ai_explicit[p:objectName()] = "unknown"
+		if string.len(p:getRole()) == 0 then
+			global_room:setPlayerProperty(p, "role", sgs.QVariant(p:getKingdom()))
+		end
+		if not string.find("lord--loyalist--renegade--rebel--careerist", p:getRole()) then
+			table.insert(sgs.RolesTable, p:getKingdom())
+		end
+	end
+
+
 end
 
 function SmartAI:initialize(player)
@@ -262,8 +278,10 @@ function SmartAI:activate(use)
 		if not self.player:isCardLimited(card, card:getHandlingMethod())
 			or (card:canRecast() and not self.player:isCardLimited(card, sgs.Card_MethodRecast)) then
 			local type = card:getTypeId()
+			
+			global_room:writeToConsole(" gP :: " .. sgs.gameProcess())
+			
 			self["use" .. sgs.ai_type_name[type + 1] .. "Card"](self, card, use)
-			self.room:writeToConsole("gameProcess :: " .. sgs.gameProcess())
 			
 			if use:isValid(nil) then
 				self.toUse = nil
@@ -394,17 +412,16 @@ function SmartAI:objectiveLevel(player, tactics)
 end
 
 function sgs.gameProcess()
-	local value = {
-		["wei"] = 0,
-		["shu"] = 0,
-		["wu"] = 0,
-		["qun"] = 0
-	}
+	local value = {}
+	local kingdoms = sgs.KingdomsTable
+	for _, kingdom in ipairs(kingdoms) do
+		value[kingdom] = 0
+	end
 	
-	local kingdoms = { "wei", "shu", "wu", "qun" }
 	local anjiang = 0
-	for _, ap in sgs.qlist(global_room:getAlivePlayers()) do
-		if string.find("wei-shu-wu-qun", sgs.ai_explicit[ap:objectName()]) then
+	local players = global_room:getAlivePlayers()
+	for _, ap in sgs.qlist(players) do
+		if table.contains(kingdoms, sgs.ai_explicit[ap:objectName()]) then
 			local v = 3 + sgs.getProcessDefense(ap, true) / 2
 			value[sgs.ai_explicit[ap:objectName()]] = value[sgs.ai_explicit[ap:objectName()]] + v
 		else
@@ -425,7 +442,7 @@ function sgs.gameProcess()
 	end
 	
 	if value[kingdoms[1]] >= sum_value1 and value[kingdoms[1]] > 0 then
-		if anjiang <= 1 then return kingdoms[1] .. "+++"
+		if anjiang <= 1 and player:length() > 3 then return kingdoms[1] .. "+++"
 		elseif anjiang <= 3 then return kingdoms[1] .. "++"
 		elseif anjiang <= 5 then return kingdoms[1] .. "+"
 		else return "===" end
@@ -487,7 +504,7 @@ function sgs.updateIntention(from, to, intention)
 		if intention > 0 then intention = 10 end
 		if intention < 0 then intention = -10 end
 		sgs.outputKingdomValues(from, intention)
-		local kingdoms = { "wei", "shu", "wu", "qun" }
+		local kingdoms = sgs.KingdomsTable
 		if intention > 0 then
 			for _, kingdom in ipairs(kingdoms) do
 				if kingdom ~= to:getKingdom() then
@@ -510,14 +527,15 @@ function sgs.updateIntention(from, to, intention)
 end
 
 function sgs.outputKingdomValues(player, level)
-	global_room:writeToConsole(player:getGeneralName() .. " " .. level .. " "
-								.. " Wei:" .. math.ceil(sgs.ai_loyalty["wei"][player:objectName()])
-								.. " Shu:" .. math.ceil(sgs.ai_loyalty["shu"][player:objectName()])
-								.. " Wu:" .. math.ceil(sgs.ai_loyalty["wu"][player:objectName()])
-								.. " Qun:" .. math.ceil(sgs.ai_loyalty["qun"][player:objectName()])
-								.. " gP:" .. sgs.gameProcess() .. " "
-								.. sgs.current_mode_players.lord .. sgs.current_mode_players.loyalist .. sgs.current_mode_players.rebel
-								.. sgs.current_mode_players.renegade .. sgs.current_mode_players.careerist)
+	local msg = player:getGeneralName() .. " " .. level .. " "
+	local kingdoms = sgs.KingdomsTable
+	for _, kingdom in ipairs(kingdoms) do
+		msg = msg .. " " .. kingdom .. math.ceil(sgs.ai_loyalty[kingdom][player:objectName()])
+	end
+	msg = msg .. " gP:" .. sgs.gameProcess() .. " "
+			.. sgs.current_mode_players.lord .. sgs.current_mode_players.loyalist .. sgs.current_mode_players.rebel
+			.. sgs.current_mode_players.renegade .. sgs.current_mode_players.careerist
+	global_room:writeToConsole(msg)
 end
 
 function SmartAI:updatePlayers(update)
@@ -552,7 +570,7 @@ function SmartAI:updatePlayerKingdom(player)
 	if player then
 		sgs.ai_explicit[player:objectName()] = player:getRole() == "careerist" and "careerist" or player:getKingdom()
 	
-		local kingdoms = {"wei", "wu", "shu", "qun"}
+		local kingdoms = sgs.KingdomsTable
 		for _, k in ipairs(kingdoms) do
 			if k == sgs.ai_explicit[player:objectName()] then sgs.ai_loyalty[k][player:objectName()] = 99
 			else sgs.ai_loyalty[k][player:objectName()] = 0
@@ -560,11 +578,10 @@ function SmartAI:updatePlayerKingdom(player)
 		end
 	end
 	
-	sgs.shown_kingdom.wei = 0
-	sgs.shown_kingdom.shu = 0
-	sgs.shown_kingdom.wu = 0
-	sgs.shown_kingdom.qun = 0
-
+	for k, v in pairs(sgs.shown_kingdom) do
+		sgs.shown_kingdom[k] = 0
+	end
+	
 	for _, p in sgs.qlist(self.room:getPlayers()) do
 		if sgs.ai_explicit[p:objectName()] ~= "unknown" and not player then
 			sgs.ai_explicit[p:objectName()] = p:getRole() == "careerist" and "careerist" or p:getKingdom()
@@ -572,7 +589,7 @@ function SmartAI:updatePlayerKingdom(player)
 		if sgs.ai_explicit[p:objectName()] == "careerist" or sgs.ai_explicit[p:objectName()] == "unknown" then continue end
 		sgs.shown_kingdom[sgs.ai_explicit[p:objectName()]] = sgs.shown_kingdom[sgs.ai_explicit[p:objectName()]] + 1
 	end
-	
+
 	for _, p in sgs.qlist(global_room:getAllPlayers()) do
 		sgs.ais[p:objectName()]:updatePlayers()
 	end
@@ -1012,12 +1029,14 @@ function SmartAI:adjustUsePriority(card, v)
 	end
 	
 	table.insert(suits, "no_suit")
-	if card:isKindOf("Slash") then 
+	if card:isKindOf("Slash") then
 		if card:getSkillName() == "Spear" then v = v - 0.1 end
 		if card:isRed() then
 			v = v - 0.05
 		end
-		if card:isKindOf("NatureSlash") then v = v - 0.1 end
+		if card:isKindOf("NatureSlash") then
+			if self.slashAvail == 1 then v = v + 0.1 else v = v - 0.1 end
+		end
 		if self.player:hasSkill("jiang") and card:isRed() then v = v + 0.21 end
 	end
 	
@@ -1401,10 +1420,11 @@ function SmartAI:sortEnemies(players)
 end
 
 function sgs.updateAlivePlayerRoles()
-	for _, arole in ipairs({"lord", "loyalist", "rebel", "renegade", "careerist"}) do
+	for _, arole in ipairs(sgs.RolesTable) do
 		sgs.current_mode_players[arole] = 0
 	end
 	for _, aplayer in sgs.qlist(global_room:getAllPlayers()) do
+		if not sgs.current_mode_players[aplayer:getRole()] then global_room:setPlayerProperty(aplayer, "role", sgs.QVariant(aplayer:getKingdom())) end
 		sgs.current_mode_players[aplayer:getRole()] = sgs.current_mode_players[aplayer:getRole()] + 1
 	end
 end
@@ -1663,7 +1683,6 @@ function SmartAI:filterEvent(event, player, data)
 							or (card:isKindOf("Duel") and card:getSkillName() ~= "lijian" and card:getSkillName() ~= "noslijian"
 								and not (self:getDamagedEffects(who, player) or self:needToLoseHp(who, player, nil, true, true))))
 						then
-						-- self.room:writeToConsole(who:getGeneralName() .."+".. who:getGeneral2Name() .. " | " .. card:objectName())
 						sgs.updateIntention(from, who, -10)
 					end
 				end
@@ -1855,6 +1874,8 @@ function SmartAI:askForSuit(reason)
 	local callback = sgs.ai_skill_suit[reason]
 	if type(callback) == "function" then
 		if callback(self) then return callback(self) end
+	elseif callback == nil then
+		self.room:writeToConsole("sgs.ai_skill_suit." .. reason .. "  ???")
 	end
 	return math.random(0, 3)
 end
@@ -1867,6 +1888,7 @@ function SmartAI:askForSkillInvoke(skill_name, data)
 	elseif type(invoke) == "function" then
 		return invoke(self, data)
 	else
+		self.room:writeToConsole("sgs.ai_skill_invoke." .. skill_name .. "  ???")
 		local skill = sgs.Sanguosha:getSkill(skill_name)
 		return skill and skill:getFrequency() == sgs.Skill_Frequent
 	end
@@ -1879,6 +1901,7 @@ function SmartAI:askForChoice(skill_name, choices, data)
 	elseif type(choice) == "function" then
 		return choice(self, choices, data)
 	else
+		self.room:writeToConsole("sgs.ai_skill_choice." .. skill_name .. "  ???")
 		local skill = sgs.Sanguosha:getSkill(skill_name)
 		if skill and choices:match(skill:getDefaultChoice(self.player)) then
 			return skill:getDefaultChoice(self.player)
@@ -4853,8 +4876,9 @@ dofile "lua/ai/standard-wei-ai.lua"
 dofile "lua/ai/standard-shu-ai.lua"
 dofile "lua/ai/standard-wu-ai.lua"
 dofile "lua/ai/standard-qun-ai.lua"
+dofile "lua/ai/basara-ai.lua"
 
-local loaded = "standard|standard_cards|maneuvering|"
+local loaded = "standard|standard_cards|maneuvering"
 
 local files = table.concat(sgs.GetFileNames("lua/ai"), " ")
 
