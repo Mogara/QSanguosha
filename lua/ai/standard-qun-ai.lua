@@ -734,7 +734,7 @@ xiongyi_skill.getTurnUseCard = function(self)
 			return sgs.Card_Parse("@XiongyiCard=.&xiongyi")
 		end
 	end
-	if sgs.gameProcess() == "qun+++" then
+	if sgs.gameProcess() == "qun>>>" then
 		return sgs.Card_Parse("@XiongyiCard=.&xiongyi")
 	end
 end
