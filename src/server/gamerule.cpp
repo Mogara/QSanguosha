@@ -374,12 +374,12 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             break;
         }
     case PostHpReduced: {
-            if (player->getHp() > 0)
+            if (player->getHp() > 0 || player->hasFlag("Global_Dying")) // newest GameRule -- a player cannot enter dying when it is dying.
                 break;
             if (data.canConvert<DamageStruct>()) {
                 DamageStruct damage = data.value<DamageStruct>();
                 room->enterDying(player, &damage);
-            } else if (!player->hasFlag("Global_Dying")) //temp way to prevent pangtong enterDying again when using niepan with PeaceSpell in PlaceEquip
+            } else
                 room->enterDying(player, NULL);
 
             break;
