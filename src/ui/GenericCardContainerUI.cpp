@@ -868,7 +868,7 @@ void PlayerCardContainer::_updateDeathIcon() {
 }
 
 void PlayerCardContainer::killPlayer() {
-    _m_roleComboBox->fix(m_player->getKingdom());
+    _m_roleComboBox->fix(m_player->getRole() == "careerist" ? "careerist" : m_player->getKingdom());
     _m_roleComboBox->setEnabled(false);
     _updateDeathIcon();
     _m_saveMeIcon->hide();
