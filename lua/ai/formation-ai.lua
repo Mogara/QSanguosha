@@ -1,4 +1,3 @@
-
 local jixi_skill = {}
 jixi_skill.name = "jixi"
 table.insert(sgs.ai_skills, jixi_skill)
@@ -43,37 +42,21 @@ end
 function sgs.ai_skill_invoke.ziliang(self, data)
 	self.ziliang_id = nil
 	local damage = data:toDamage()
-	if damage.to:hasSkill("manjuan") and damage.to:getPhase() == sgs.Player_NotActive then return false end
-	if not self:isFriend(damage.to) then
-		if damage.to:getPhase() == sgs.Player_NotActive and self:needKongcheng(damage.to, true) then
-			local ids = sgs.QList2Table(self.player:getPile("field"))
-			for _, id in ipairs(ids) do
-				local card = sgs.Sanguosha:getCard(id)
-				if card:isKindOf("Disaster") or card:isKindOf("GodSalvation") or card:isKindOf("AmazingGrace") or card:isKindOf("FireAttack") then
-					self.ziliang_id = id
-					return true
-				end
-			end
-		else
-			return false
+	if not (damage.to:getPhase() == sgs.Player_NotActive and self:needKongcheng(damage.to, true)) then
+		local ids = sgs.QList2Table(self.player:getPile("field"))
+		local cards = {}
+		for _, id in ipairs(ids) do table.insert(cards, sgs.Sanguosha:getCard(id)) end
+		for _, card in ipairs(cards) do
+			if card:isKindOf("Peach") then self.ziliang_id = card:getEffectiveId() return true end
 		end
+		for _, card in ipairs(cards) do
+			if card:isKindOf("Jink") then self.ziliang_id = card:getEffectiveId() return true end
+		end
+		self:sortByKeepValue(cards, true)
+		self.ziliang_id = cards[1]:getEffectiveId()
+		return true
 	else
-		if not (damage.to:getPhase() == sgs.Player_NotActive and self:needKongcheng(damage.to, true)) then
-			local ids = sgs.QList2Table(self.player:getPile("field"))
-			local cards = {}
-			for _, id in ipairs(ids) do table.insert(cards, sgs.Sanguosha:getCard(id)) end
-			for _, card in ipairs(cards) do
-				if card:isKindOf("Peach") then self.ziliang_id = card:getEffectiveId() return true end
-			end
-			for _, card in ipairs(cards) do
-				if card:isKindOf("Jink") then self.ziliang_id = card:getEffectiveId() return true end
-			end
-			self:sortByKeepValue(cards, true)
-			self.ziliang_id = cards[1]:getEffectiveId()
-			return true
-		else
-			return false
-		end
+		return false
 	end
 end
 
@@ -317,20 +300,9 @@ sgs.ai_use_value.ShangyiCard = 4
 sgs.ai_use_priority.ShangyiCard = 9
 sgs.ai_card_intention.ShangyiCard = 50
 
-sgs.ai_skill_invoke.niaoxiang = function(self, data)
-	local p = data:toPlayer()
-	if not self:isEnemy(p) then return false end
-	if p:hasSkill("leiji") and getCardsNum("Jink", p) >= 1 then return false end
-	return true
-end
-
 sgs.ai_skill_invoke.yicheng = function(self, data)
 	local player = data:toPlayer()
-	if player:hasSkill("manjuan") and player:getPhase() == sgs.Player_NotActive then
-		if player:canDiscard(player, "he") then return self:isEnemy(player) else return false end
-	else
-		return self:isFriend(player)
-	end
+	return true
 end
 
 sgs.ai_skill_discard.yicheng = function(self, discard_num, min_num, optional, include_equip)
@@ -445,6 +417,8 @@ end
 
 sgs.ai_skill_invoke.jizhao = sgs.ai_skill_invoke.niepan
 
+sgs.ai_skill_invoke.zhangwu = true
+
 sgs.weapon_range.DragonPhoenix = 2
 sgs.ai_use_priority.DragonPhoenix = 2.400
 function sgs.ai_weapon_value.DragonPhoenix(self, enemy, player)
@@ -452,6 +426,7 @@ function sgs.ai_weapon_value.DragonPhoenix(self, enemy, player)
 		return 4.1
 	end
 end
+
 function sgs.ai_slash_weaponfilter.DragonPhoenix(self, to, player)
 	if player:distanceTo(to) > math.max(sgs.weapon_range.DragonPhoenix, player:getAttackRange()) then return end
 	return getCardsNum("Peach", to, self.player) + getCardsNum("Jink", to, self.player) < 1

@@ -412,6 +412,8 @@ end
 
 sgs.ai_use_priority.WendaoCard = sgs.ai_use_priority.ZhihengCard
 
+sgs.ai_skill_invoke.hongfa = true
+
 function sgs.ai_cardsview.hongfa_slash(self, class_name, player)
 	local lord = player:getLord()
 	if class_name == "Slash" and lord and lord:hasLordSkill("hongfa") and not lord:getPile("heavenly_army"):isEmpty() then
