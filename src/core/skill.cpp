@@ -538,12 +538,3 @@ QStringList ArmorSkill::triggerable(const ServerPlayer *target) const{
     return (target->hasArmorEffect(objectName())) ? QStringList(objectName()) : QStringList();
 }
 
-MarkAssignSkill::MarkAssignSkill(const QString &mark, int n)
-    : GameStartSkill(QString("#%1-%2").arg(mark).arg(n)), mark_name(mark), n(n)
-{
-}
-
-void MarkAssignSkill::onGameStart(ServerPlayer *player) const{
-    player->getRoom()->setPlayerMark(player, mark_name, player->getMark(mark_name) + n);
-}
-

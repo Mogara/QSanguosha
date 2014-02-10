@@ -337,18 +337,5 @@ public:
     virtual QStringList triggerable(const ServerPlayer *target) const;
 };
 
-class MarkAssignSkill: public GameStartSkill {
-    Q_OBJECT
-
-public:
-    MarkAssignSkill(const QString &mark, int n);
-
-    virtual void onGameStart(ServerPlayer *player) const;
-
-private:
-    QString mark_name;
-    int n;
-};
-
 #endif
 
