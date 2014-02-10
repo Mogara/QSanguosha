@@ -2,6 +2,9 @@
 sgs.ai_skill_choice.TriggerOrder = function(self, choices, data)
 	if string.find(choices, "jieming") then return "jieming" end
 	local choice = choices:split("+")[2]
+	if choice == "trigger_none" then
+		choice = choices:split("+")[1]
+	end
 	return choice
 end
 
