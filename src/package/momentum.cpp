@@ -81,7 +81,12 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->askForSkillInvoke(objectName())){
+        DamageStruct damage = data.value<DamageStruct>();ServerPlayer *target = NULL;
+        if (triggerEvent == Damage)
+            target = damage.to;
+        else
+            target = damage.from;
+        if (player->askForSkillInvoke(objectName(), QVariant::fromValue(target))){
             room->broadcastSkillInvoke(objectName());
             return true;
         }
