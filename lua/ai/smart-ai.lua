@@ -361,9 +361,9 @@ function SmartAI:objectiveLevel(player, tactics)
 					end
 				end
 			end
-		elseif string.find(gameProcess, "+") then
-			local kingdom = gameProcess:split("+")[1]
-			if string.find(gameProcess, "+++") then
+		elseif string.find(gameProcess, ">") then
+			local kingdom = gameProcess:split(">")[1]
+			if string.find(gameProcess, ">>>") then
 				if self_kingdom == kingdom and not selfIsCareerist then
 					if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) and self:evaluateKingdom(player) == self_kingdom then return 0
 					else return 5
@@ -374,7 +374,7 @@ function SmartAI:objectiveLevel(player, tactics)
 					else return 3
 					end
 				end
-			elseif string.find(gameProcess, "++") then
+			elseif string.find(gameProcess, ">>") then
 				if self_kingdom == kingdom and not selfIsCareerist then
 					if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) then
 						if self:evaluateKingdom(player) == self_kingdom then return -1
@@ -442,9 +442,9 @@ function sgs.gameProcess()
 	end
 	
 	if value[kingdoms[1]] >= sum_value1 and value[kingdoms[1]] > 0 then
-		if anjiang <= 1 and player:length() > 3 then return kingdoms[1] .. "+++"
-		elseif anjiang <= 3 then return kingdoms[1] .. "++"
-		elseif anjiang <= 5 then return kingdoms[1] .. "+"
+		if anjiang <= 1 and players:length() > 3 then return kingdoms[1] .. ">>>"
+		elseif anjiang <= 3 then return kingdoms[1] .. ">>"
+		elseif anjiang <= 5 then return kingdoms[1] .. ">"
 		else return "===" end
 	end
 	
@@ -453,10 +453,10 @@ function sgs.gameProcess()
 	end
 	
 	if value[kingdoms[1]] >= sum_value2 and value[kingdoms[1]] > 0 then
-		if anjiang == 0 then return kingdoms[1] .. "++"
-		elseif anjiang <= 3 then return kingdoms[1] .. "+" end
+		if anjiang == 0 then return kingdoms[1] .. ">>"
+		elseif anjiang <= 3 then return kingdoms[1] .. ">" end
 	elseif value[kingdoms[1]] >= sum_value3 and value[kingdoms[1]] > 0 then
-		return kingdoms[1] .. "+"
+		return kingdoms[1] .. ">"
 	end
 	
 	return "==="
