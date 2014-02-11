@@ -519,7 +519,7 @@ public:
         if (TriggerSkill::triggerable(sunce).isEmpty()) return QStringList();
         PindianStar pindian = data.value<PindianStar>();
         if (pindian->from != sunce && pindian->to != sunce) return QStringList();
-        ask_who = pindian->from == sunce ? player : sunce;
+        ask_who = sunce;
         return QStringList(objectName());
     }
 
