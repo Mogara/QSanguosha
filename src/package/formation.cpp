@@ -805,8 +805,6 @@ public:
         ServerPlayer *yuji = room->findPlayerBySkillName(objectName());
         if (!yuji) return false;
         if (triggerEvent == Damaged) {
-            room->broadcastSkillInvoke(objectName());
-
             int id = room->drawCard();
             Card::Suit suit = Sanguosha->getCard(id)->getSuit();
             bool duplicate = false;
@@ -823,7 +821,6 @@ public:
             }
         } else if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
-            room->broadcastSkillInvoke(objectName());
             room->notifySkillInvoked(yuji, objectName());
             QList<int> ids = yuji->getPile("sorcery");
             int id = -1;
@@ -896,6 +893,12 @@ public:
 
         return false;
     }
+	
+	virtual int getEffectIndex(const ServerPlayer *, const Card *c) const{
+		if (c->isKindOf("Analeptic"))
+			return 0;
+		return -1;
+	}
 };
 
 class Qiluan: public TriggerSkill {
