@@ -390,7 +390,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
 
             try {
                 ServerPlayer *jiayu = room->getCurrent();
-                if (jiayu->hasSkill("wansha") && jiayu->hasShownSkill(Sanguosha->getSkill("wansha")) 
+                if (jiayu->hasSkill("wansha") && jiayu->hasShownSkill(Sanguosha->getSkill("wansha"))
                         && jiayu->isAlive() && jiayu->getPhase() != Player::NotActive){
                     if (player != dying.who && player != jiayu)
                         room->setPlayerFlag(player, "Global_PreventPeach");
@@ -953,7 +953,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
             }
 
             if (has_diff_kingdoms) return QString();    //有人不是自己人，呵呵一笑。
-            
+
             // 到了这一步，都是自己人了，全员亮将。
             foreach(ServerPlayer *p, players) {
                 if (!p->hasShownOneGeneral()) {

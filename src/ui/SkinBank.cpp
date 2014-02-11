@@ -266,7 +266,7 @@ QPixmap QSanRoomSkin::getSkillButtonPixmap(QSanButton::ButtonState state,
 
 QPixmap QSanRoomSkin::getButtonPixmap(const QString &groupName,
                                       const QString &buttonName,
-                                      QSanButton::ButtonState state, 
+                                      QSanButton::ButtonState state,
                                       const bool &first_state) const{
     QString name = buttonName;
     if (!first_state) name += "2";

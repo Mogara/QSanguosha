@@ -2647,7 +2647,7 @@ void RoomScene::changeTableBg() {
     QRectF displayRegion = sceneRect();
 
     QPixmap tableBg = QPixmap(Config.TableBgImage)
-        .scaled(displayRegion.width(), displayRegion.height(), 
+        .scaled(displayRegion.width(), displayRegion.height(),
                 Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     m_tableh -= _m_roomLayout->m_photoDashboardPadding;
     m_tableBg->setPos(0, 0);

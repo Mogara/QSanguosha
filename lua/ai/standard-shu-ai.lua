@@ -219,20 +219,20 @@ local longdan_skill={}
 longdan_skill.name="longdan"
 table.insert(sgs.ai_skills,longdan_skill)
 longdan_skill.getTurnUseCard=function(self)
-	local cards = self.player:getCards("h")	
+	local cards = self.player:getCards("h")
 	cards=sgs.QList2Table(cards)
-	
+
 	local jink_card
-	
+
 	self:sortByUseValue(cards,true)
-	
+
 	for _,card in ipairs(cards)  do
 		if card:isKindOf("Jink") then
 			jink_card = card
 			break
 		end
 	end
-	
+
 	if not jink_card then return nil end
 	local suit = jink_card:getSuitString()
 	local number = jink_card:getNumberString()
@@ -240,9 +240,9 @@ longdan_skill.getTurnUseCard=function(self)
 	local card_str = ("slash:longdan[%s:%s]=%d&longdan"):format(suit, number, card_id)
 	local slash = sgs.Card_Parse(card_str)
 	assert(slash)
-	
+
 	return slash
-		
+
 end
 
 sgs.ai_view_as.longdan = function(card, player, card_place)
@@ -274,13 +274,13 @@ sgs.ai_skill_invoke.tieji = function(self, data)
 
 	local zj = self.room:findPlayerBySkillName("guidao")
 	if zj and self:isEnemy(zj) and self:canRetrial(zj) then return false end
-	
+
 	if target:hasArmorEffect("EightDiagram") and not IgnoreArmor(self.player, target) then return true end
 	if target:hasLordSkill("hujia") then
 		for _, p in ipairs(self.enemies) do
-			if p:getKingdom() == "wei" and (p:hasArmorEffect("EightDiagram") or p:getHandcardNum() > 0) then return true end		
+			if p:getKingdom() == "wei" and (p:hasArmorEffect("EightDiagram") or p:getHandcardNum() > 0) then return true end
 		end
-	end	
+	end
 	if target:hasSkill("longhun") and target:getHp() == 1 and self:hasSuit("club", true, target) then return true end
 
 	if target:isKongcheng() or (self:getKnownNum(target) == target:getHandcardNum() and getKnownCard(target, self.player, "Jink", true) == 0) then return false end
@@ -474,9 +474,9 @@ sgs.ai_event_callback[sgs.TargetConfirmed].bazhen = function(self, player, data)
 	if (not player:ownSkill("bazhen")) then return end
 	if player:hasShownSkill(sgs.Sanguosha:getSkill("bazhen")) then return end
 	if player:hasPreshowedSkill("bazhen") then return end
-	
+
 	local use = data:toCardUse()
-	
+
 	if use.to:contains(player) and self:slashIsEffective(use.card, player, use.from, false) then
 		local jink_nums = use.from:getTag("Jink_" .. use.card:toString()):toIntList()
 		local jink_num = jink_nums:at(use.to:indexOf(player))
@@ -600,7 +600,7 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	if to_discard == nil then return false end
 
 	-- At last we try to find the target
-	
+
 	local AssistTarget = self:AssistTarget()
 	if AssistTarget and not self:willSkipPlayPhase(AssistTarget) then
 		self.fangquan_card_str = "@FangquanCard=" .. to_discard .. "&fangquan->" .. AssistTarget:objectName()
@@ -614,7 +614,7 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 			return true
 		end
 	end
-	
+
 	return false
 end
 
@@ -644,9 +644,9 @@ sgs.ai_skill_invoke.lieren = function(self, data)
 		local card = self.player:getHandcards():first()
 		if card:isKindOf("Jink") or card:isKindOf("Peach") then return end
 	end
-	
-	if (self.player:getHandcardNum() >= self.player:getHp() or self:getMaxCard():getNumber() > 10 
-		or (self:needKongcheng() and self.player:getHandcardNum() == 1) or not self:hasLoseHandcardEffective()) 
+
+	if (self.player:getHandcardNum() >= self.player:getHp() or self:getMaxCard():getNumber() > 10
+		or (self:needKongcheng() and self.player:getHandcardNum() == 1) or not self:hasLoseHandcardEffective())
 		and not self:doNotDiscard(damage.to, "h", true) and not (self.player:getHandcardNum() == 1 and self:doNotDiscard(damage.to, "e", true)) then
 			return true
 	end

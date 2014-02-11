@@ -50,8 +50,8 @@ public:
 
         DummyCard dummy(obtained);
         lidian->obtainCard(&dummy, false);
-		room->askForGuanxing(lidian, card_ids, Room::GuanxingDownOnly);
-		
+        room->askForGuanxing(lidian, card_ids, Room::GuanxingDownOnly);
+
         return true;
     }
 };
@@ -1477,7 +1477,7 @@ public:
             case DamageStruct::Fire: l.arg2 = "fire_nature"; break;
             case DamageStruct::Thunder: l.arg2 = "thunder_nature"; break;
             }
-            
+
             room->sendLog(l);
 
             return true;

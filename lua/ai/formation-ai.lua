@@ -188,7 +188,7 @@ function SmartAI:isTiaoxinTarget(enemy)
 		and not (enemy:hasWeapon("DoubleSword") and self.player:getGender() ~= enemy:getGender())
 		then return true end
 	if sgs.card_lack[enemy:objectName()]["Slash"] == 1
-		or self:needLeiji(self.player, enemy) 
+		or self:needLeiji(self.player, enemy)
 		or self:getDamagedEffects(self.player, enemy, true)
 		or self:needToLoseHp(self.player, enemy, true)
 		then return true end

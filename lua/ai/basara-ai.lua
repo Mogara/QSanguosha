@@ -37,14 +37,14 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 			else break end
 		end
 	end
-	
+
 	if show_head_general and string.find(choices, "show_head_general") then return "show_head_general"
 	elseif show_deputy_general and string.find(choices, "show_deputy_general") then return "show_deputy_general"
 	elseif sgs.turncount < 2 then return "cancel" end
 	choices = choices:split("+")
-	
+
 	local playerscount = self.room:getPlayers():length()
-	
+
 	if (self:getKingdomCount() > 0) and ((self:getKingdomCount() + 1) * 2 <= playerscount) then return choices[1] end
 	if self.player:aliveCount() <= 5 then return choices[1] end
 	return choices[math.random(1, #choices)]

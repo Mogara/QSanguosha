@@ -224,7 +224,7 @@ QWidget *ServerDialog::createAdvancedTab() {
 
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
-    
+
     return widget;
 }
 

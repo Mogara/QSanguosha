@@ -945,7 +945,7 @@ void PlayerCardContainer::showSeat() {
 }
 
 bool PlayerCardContainer::_isSelected(QGraphicsItem *item) const {
-    return item != NULL && item->isUnderMouse() && isEnabled() && 
+    return item != NULL && item->isUnderMouse() && isEnabled() &&
            (flags() & QGraphicsItem::ItemIsSelectable);
 }
 

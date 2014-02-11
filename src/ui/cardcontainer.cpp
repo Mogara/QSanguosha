@@ -24,7 +24,7 @@ CardContainer::CardContainer()
 }
 
 void CardContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
-    
+
 }
 
 QRectF CardContainer::boundingRect() const{
@@ -72,7 +72,7 @@ void CardContainer::_repaint() {
             y = 45;
         } else {
             if (items.length() % 2 == 1)
-                x = 25 + card_width / 2 + blank / 2 
+                x = 25 + card_width / 2 + blank / 2
                     + (card_width + blank) * (i - first_row);
             else
                 x = 25 + (card_width + blank) * (i - first_row);
@@ -129,7 +129,7 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
             pos.setY(45);
         } else {
             if (n % 2 == 1)
-                pos.setX(25 + card_width / 2 + blank / 2 
+                pos.setX(25 + card_width / 2 + blank / 2
                     + (card_width + blank) * (i - first_row));
             else
                 pos.setX(25 + (card_width + blank) * (i - first_row));
@@ -337,7 +337,7 @@ void GuanxingBox::doGuanxing (const QList<int> &card_ids, bool up_only) {
             pos.setY(45);
         } else {
             if (up_items.length() % 2 == 1)
-                pos.setX(25 + card_width / 2 + blank / 2 
+                pos.setX(25 + card_width / 2 + blank / 2
                     + (card_width + blank) * (i - first_row));
             else
                 pos.setX(25 + (card_width + blank) * (i - first_row));
@@ -391,7 +391,7 @@ void GuanxingBox::adjust() {
             pos.setY(45);
         } else {
             if (item_count % 2 == 1)
-                pos.setX(25 + card_width / 2 + blank / 2 
+                pos.setX(25 + card_width / 2 + blank / 2
                     + (card_width + blank) * (i - first_row));
             else
                 pos.setX(25 + (card_width + blank) * (i - first_row));
@@ -408,7 +408,7 @@ void GuanxingBox::adjust() {
             pos.setY(45 + (card_height + blank) * (one_row ? 1 : 2));
         } else {
             if (item_count % 2 == 1)
-                pos.setX(25 + card_width / 2 + blank / 2 
+                pos.setX(25 + card_width / 2 + blank / 2
                     + (card_width + blank) * (i - first_row));
             else
                 pos.setX(25 + (card_width + blank) * (i - first_row));
@@ -492,7 +492,7 @@ void GuanxingBox::_repaint() {
             y = 45;
         } else {
             if (up_items.length() % 2 == 1)
-                x = 25 + card_width / 2 + blank / 2 
+                x = 25 + card_width / 2 + blank / 2
                     + (card_width + blank) * (i - first_row);
             else
                 x = 25 + (card_width + blank) * (i - first_row);

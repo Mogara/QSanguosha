@@ -1383,7 +1383,7 @@ void ServerPlayer::hideGeneral(bool head_general) {
         }
     } else {
         if (getGeneral2Name() == "anjiang") return;
-        
+
         setSkillsPreshowed("d", false);
         notifyPreshow();
         room->setPlayerProperty(this, "general2_showed", false);

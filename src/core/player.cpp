@@ -1258,7 +1258,7 @@ bool Player::isFriendWith(const Player *player) const {
 
     if (this == player)
         return true;
-    
+
     if (role == "careerist" || player->role == "careerist")
         return false;
 

@@ -262,7 +262,7 @@ public:
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
         if (!dengai) return false;
-        
+
         QList<int> ids = dengai->getPile("field");
         room->fillAG(ids, dengai);
         int id = room->askForAG(dengai, ids, false, objectName());
@@ -893,12 +893,12 @@ public:
 
         return false;
     }
-	
-	virtual int getEffectIndex(const ServerPlayer *, const Card *c) const{
-		if (c->isKindOf("Analeptic"))
-			return 0;
-		return -1;
-	}
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *c) const{
+        if (c->isKindOf("Analeptic"))
+            return 0;
+        return -1;
+    }
 };
 
 class Qiluan: public TriggerSkill {
@@ -1300,7 +1300,7 @@ public:
                 player->setSkillsPreshowed("h");
 
                 change_list << player->getActualGeneral2Name();
-                
+
                 room->revivePlayer(player);
 
                 room->setPlayerProperty(player, "hp", 2);
@@ -1327,4 +1327,4 @@ FormationEquipPackage::FormationEquipPackage(): Package("formation_equip", CardP
 
 ADD_PACKAGE(FormationEquip)
 
-     
+

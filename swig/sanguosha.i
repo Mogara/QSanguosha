@@ -1085,7 +1085,7 @@ public:
     const BattleArraySkill *toBattleArraySkill() const{
         return qobject_cast<const BattleArraySkill *>($self);
     }
-    
+
     QStringList TriggerSkillTriggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         return $self->TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who);
     }

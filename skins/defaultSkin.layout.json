@@ -13,14 +13,14 @@
     "chooseGeneralBoxSwitchIconSizeThreshold": 12,
     "chooseGeneralBoxSwitchIconEachRow": 6,
     "chooseGeneralBoxSwitchIconEachRowForTooManyGenerals": 7,
-    "chooseGeneralBoxNoIconThreshold": 21, 
+    "chooseGeneralBoxNoIconThreshold": 21,
     "chooseGeneralBoxSparseIconSize": [171, 240],
     "chooseGeneralBoxDenseIconSize": [130, 130],
     "tinyAvatarSize": [40, 40],
     // When hp exceeds 5, we use text (e.g. 5/8) instead of drawing more than 5 magatamas. The color
     // and font are specified below.
     // All the font in skin file takes the following format:
-    // simple font: ["fontName", fontSize, fontWeight(bold), foreColor(rgba)] 
+    // simple font: ["fontName", fontSize, fontWeight(bold), foreColor(rgba)]
     // shawdow font: ["fontName", fontSize, fontWeight(bold), foreColor(rgba), shadowRadius,
     //                shadowDecadeFactor, shadowOffset, shadowDeepestColor]
     // the shadow radius is the width of shadow on each end; the shadow decade factor specifies how
@@ -36,19 +36,19 @@
         ["Arial", [15, 15, -2], 80, [66, 174, 34, 255], 2, 10, [0, 0], [20, 20, 20, 155]]
     ],
     // I realized that some MOD might need a wider background area than the foreground magatamas in order
-    // to draw certain effect. The following factor specifies the number of invisible magatama to be appended. 
+    // to draw certain effect. The following factor specifies the number of invisible magatama to be appended.
     "hpExtraSpaceHolder": 0,
-	
-	"roleNormalBgSize": [46, 47],
-	"roleWeiRect": [3, 3, 19, 19],
-	"roleQunRect": [23, 3, 19, 19],
-	"roleShuRect": [3, 23, 19, 19],
-	"roleWuRect": [23, 23, 19, 19],
-	"roleWeiColor": [39, 121, 170],
-	"roleQunColor": [195, 177, 84],
-	"roleShuColor": [172, 49, 32],
-	"roleWuColor": [85, 164, 52],
-	"roleDarkColor": [125, 125, 126]
+
+    "roleNormalBgSize": [46, 47],
+    "roleWeiRect": [3, 3, 19, 19],
+    "roleQunRect": [23, 3, 19, 19],
+    "roleShuRect": [3, 23, 19, 19],
+    "roleWuRect": [23, 23, 19, 19],
+    "roleWeiColor": [39, 121, 170],
+    "roleQunColor": [195, 177, 84],
+    "roleShuColor": [172, 49, 32],
+    "roleWuColor": [85, 164, 52],
+    "roleDarkColor": [125, 125, 126]
 },
 "room":
 {
@@ -83,7 +83,7 @@
     //"equipDistanceArea": [14, -5, 30, 21], // need adjustment
     "equipPointArea": [106, -4, 25, 25],
     //"equipFont": ["FZLiBian-S02", [14, 14, 0], 50, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
-    "equipPointFont": ["arial", [13, 13, 3], 20, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]], 
+    "equipPointFont": ["arial", [13, 13, 3], 20, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],
     "delayedTrickFirstRegion": [-13, 16, 28, 28],
     "delayedTrickStep": [0, 19],
     "roleComboBoxPos": [130, 1],
@@ -132,14 +132,14 @@
     "extraSkillArea": [32, 96, 56, 20],
     "extraSkillFont": ["SimLi", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
     "extraSkillTextArea": [32, 93, 56, 20],
-	"seatIconRegion": [4, 1, 23, 16]
+    "seatIconRegion": [4, 1, 23, 16]
 },
 "dashboard":
 {
     "leftWidth": 164,
     "rightWidth": 282,
-	"magatamasBaseWidth": 24,
-	"reverseSelectionWidth": 10,
+    "magatamasBaseWidth": 24,
+    "reverseSelectionWidth": 10,
     "normalHeight": 150,
     "floatingAreaHeight": 50,
     "handCardNumIconArea": [-126, 126, 30, 18],
@@ -153,10 +153,10 @@
     "equipDistanceArea": [0, 0, 0, 0],
     "equipPointArea": [117, -5, 30, 30],
     "equipFont": ["SimLi", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0], [240, 240, 240, 200]],
-    "equipPointFont": ["arial", [14, 14, 3], 20, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]], 
+    "equipPointFont": ["arial", [14, 14, 3], 20, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]],
     "delayedTrickFirstRegion": [155, -11, 28, 28],
     "delayedTrickStep": [28, 0],
-    // the width of the region to disperse cards when the cards are to be moved to the special pile. 
+    // the width of the region to disperse cards when the cards are to be moved to the special pile.
     "disperseWidth": 250,
     "markTextArea": [0, 0, 50, 50],
     "roleComboBoxPos": [-32, 6],
@@ -169,7 +169,7 @@
     "circleArea": [8, 10, 134, 134],
     "avatarNameArea": [8, 28, 30, 89],
     "focusFrameArea": [0, -3, 128, 174],
-	"focusFrameArea2": [129, -3, 128, 174],
+    "focusFrameArea2": [129, -3, 128, 174],
     "secondaryAvatarNameArea": [84, 36, 18, 36],
     // "avatarNameFont": ["@simli", [12, 12, 1], 60, [255, 255, 255, 255], 5, 8, [0, 0], [50, 50, 50, 150]],
     // "smallAvatarNameFont": ["@simli", [12, 12, 1], 40, [255, 255, 255, 255], 2, 10, [0, 0], [50, 50, 50, 150]],
@@ -192,7 +192,7 @@
     "magatamaImageArea": [0, 3, 22, 22],
     "magatamasBgVisible": false,
     "magatamasAnchor": ["bottomRight", [281, 146]],
-    "cardMoveArea": [-50, 65, 200, 130], 
+    "cardMoveArea": [-50, 65, 200, 130],
     "progressBarArea": ["bottomCenter", "bottomCenter", [-8, 0], [300, 18]],
     "progressBarHorizontal": true,
     "privatePileStartPos": [10, 30],
@@ -202,7 +202,7 @@
     "saveMeIconRegion": [5, 15, 122, 50],
     "votesIconRegion": [50, 52, 50, 50],
     "chainedIconRegion": [-12, 77, 138, 19],
-	"chainedIconRegion2": [119, 77, 138, 19],
+    "chainedIconRegion2": [119, 77, 138, 19],
     "deathIconRegion": ["center", "center", [0, 0], [157, 102]],
     "drankMaskColor": [250, 0, 0, 115],
     "duanchangMaskColor": [255, 255, 255, 128],
@@ -212,15 +212,15 @@
     "discardButtonArea": [70, 48, 33, 130],
     "trustButtonArea": [69, 136, 36, 35],
     "trustEffectColor": [38, 26, 66],
-	"generalShadowColor": [0, 0, 0, 180],
-	"hiddenMarkRegion": [4, -3, 124, 146],
-	"hiddenMarkRegion2": [132, -3, 124, 146],
-	"seatIconRegion": [-31, 132, 29, 29]
+    "generalShadowColor": [0, 0, 0, 180],
+    "hiddenMarkRegion": [4, -3, 124, 146],
+    "hiddenMarkRegion2": [132, -3, 124, 146],
+    "seatIconRegion": [-31, 132, 29, 29]
 },
 "skillButton":
 {
 "height": 26,
-"width": [120, 58, 45], 
+"width": [120, 58, 45],
 "textArea": [[13, 2, 112, 20], [16, 2, 44, 20], [9, 2, 40, 20]],
 "textAreaDown": [[14, 3, 112, 20], [17, 3, 44, 20], [10, 3, 40, 20]],
 "textFont": [["simkai", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
