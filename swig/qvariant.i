@@ -4,10 +4,12 @@ public:
     QVariant(int);
     QVariant(const char *);
     QVariant(bool);
+	QVariant(QList<QVariant>);
     int toInt() const;
     QString toString() const;
     QStringList toStringList() const;
     bool toBool() const;
+	QList<QVariant> toList() const;
 };
 
 %extend QVariant {
@@ -126,7 +128,7 @@ public:
     CardResponseStruct toCardResponse() const{
         return $self->value<CardResponseStruct>();
     }
-
+/*
     void setValue(QList<int> intlist) {
         QVariantList varlist;
         for (int i = 0; i < intlist.length(); i++)
@@ -143,4 +145,5 @@ public:
         }
         return result;
     }
+*/
 };
