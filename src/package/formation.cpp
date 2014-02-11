@@ -1271,6 +1271,7 @@ public:
 
 
         if (room->askForSkillInvoke(dfowner, "DragonPhoenix", data) && room->askForSkillInvoke(player, "DragonPhoenix", "revive")){
+            room->setPlayerProperty(player, "Duanchang", "");
             QString to_change;
             AI *ai = player->getAI();
             if (ai)

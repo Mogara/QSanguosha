@@ -357,6 +357,7 @@ void CunsiCard::onEffect(const CardEffectStruct &effect) const{
     room->doLightbox("$CunsiAnimate", 3000);
     effect.from->removeGeneral(effect.from->inHeadSkills("cunsi"));
     room->acquireSkill(effect.to, "yongjue");
+    room->setPlayerMark(effect.to, "@yongjue", 1);
     if (effect.to != effect.from)
         effect.to->drawCards(2);
 }
