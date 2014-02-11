@@ -157,7 +157,7 @@ void ConfigDialog::on_resetRecordPathsButton_clicked() {
     QString paths = "records/";
     ui->recordPathsSetupLineEdit->setText(paths);
     Config.RecordSavePaths = paths;
-    Config.setValue("ReocordSavePaths", paths);
+    Config.setValue("RecordSavePaths", paths);
 }
 
 void ConfigDialog::saveConfig() {
