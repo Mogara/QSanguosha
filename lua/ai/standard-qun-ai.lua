@@ -959,7 +959,7 @@ end
 
 
 sgs.ai_use_value.QingchengCard = 6
-sgs.ai_use_priority.QingchengCard = sgs.ai_use_priority.slash + 0.1
+sgs.ai_use_priority.QingchengCard = sgs.ai_use_priority.Slash + 0.1
 sgs.ai_card_intention.QingchengCard = 100
 
 local huoshui_skill = {}
@@ -972,7 +972,7 @@ function huoshui_skill.getTurnUseCard(self)
 	return card
 end
 function sgs.ai_skill_use_func.HuoshuiCard(card, use, self)
-	if (math.random() < 0.1)
+	if (math.random() < 0.1) then
 		use.card = card
 	end
 end
