@@ -184,7 +184,12 @@ void PlayerCardContainer::updateAvatar() {
                                                   _m_layout->m_screenNameArea,
                                                   Qt::AlignCenter,
                                                   m_player->screenName());
-    }
+    } else if (!inherits("Dashboard"))
+            _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
+                                                  _m_layout->m_screenNameArea,
+                                                  Qt::AlignCenter,
+                                                  "");
+
     if (general != NULL) {
         _m_avatarArea->setToolTip(m_player->getHeadSkillDescription());
         QString name = general->objectName();

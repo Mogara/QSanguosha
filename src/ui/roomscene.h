@@ -163,7 +163,7 @@ public slots:
     void setDashboardShadow(const QString &who);
     void showServerInformation();
     void surrender();
-    void saveReplayRecord();
+    void saveReplayRecord(const bool auto_save = false, const bool network_only = false);
     void makeDamage();
     void makeKilling();
     void makeReviving();

@@ -28,6 +28,8 @@ private slots:
     void on_browseBgButton_clicked();
     void on_resetTableBgButton_clicked();
     void on_browseTableBgButton_clicked();
+    void on_resetRecordPathsButton_clicked();
+    void on_browseRecordPathsButton_clicked();
     void saveConfig();
 
 signals:

@@ -68,6 +68,10 @@
 "generalCircleMask-0": "deprecated",
 "generalCircleMask-1": ["image/generals/double-general/circle-dashboard-mask.png", [73, 0, 71, 71]],
 
+// developers' private avatar
+"playerGeneralIcon-slob-1": ["image/system/developers/private_avatar/slob.png", [0, 22, 213, 246], [155, 179]],
+"playerGeneralIcon-slob-2": "image/system/developers/private_avatar/slob.png",
+
 // generals defined later will override default path and also previously defined generals
 "playerGeneralIcon-anjiang-0": ["image/generals/big/anjiang.png", [0, 0, 134, 134], [40, 40]],
 "playerGeneralIcon-anjiang-2": "image/generals/big/anjiang.png",

@@ -41,6 +41,25 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->autoTargetCheckBox->setChecked(Config.EnableAutoTarget);
     ui->intellectualSelectionCheckBox->setChecked(Config.EnableIntellectualSelection);
     ui->doubleClickCheckBox->setChecked(Config.EnableDoubleClick);
+    
+    ui->enableAutoSaveCheckBox->setChecked(Config.EnableAutoSaveRecord);
+    ui->networkOnlyCheckBox->setChecked(Config.NetworkOnly);
+
+    ui->networkOnlyCheckBox->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
+    ui->recordPathsSetupLabel->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
+    ui->recordPathsSetupLineEdit->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
+    ui->browseRecordPathsButton->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
+    ui->resetRecordPathsButton->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
+    
+    connect(ui->enableAutoSaveCheckBox, SIGNAL(toggled(bool)), ui->networkOnlyCheckBox, SLOT(setEnabled(bool)));
+    connect(ui->enableAutoSaveCheckBox, SIGNAL(toggled(bool)), ui->recordPathsSetupLabel, SLOT(setEnabled(bool)));
+    connect(ui->enableAutoSaveCheckBox, SIGNAL(toggled(bool)), ui->recordPathsSetupLineEdit, SLOT(setEnabled(bool)));
+    connect(ui->enableAutoSaveCheckBox, SIGNAL(toggled(bool)), ui->browseRecordPathsButton, SLOT(setEnabled(bool)));
+    connect(ui->enableAutoSaveCheckBox, SIGNAL(toggled(bool)), ui->resetRecordPathsButton, SLOT(setEnabled(bool)));
+
+    QString record_path = Config.value("RecordSavePaths", "records/").toString();
+    if (!record_path.startsWith(":"))
+        ui->recordPathsSetupLineEdit->setText(record_path);
 
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
 
@@ -119,6 +138,28 @@ void ConfigDialog::on_resetTableBgButton_clicked() {
     emit tableBg_changed();
 }
 
+void ConfigDialog::on_browseRecordPathsButton_clicked() {
+    QString paths = QFileDialog::getExistingDirectory(this,
+        tr("Select a Record Paths"),
+        "records/");
+
+    if (!paths.isEmpty()) {
+        ui->recordPathsSetupLineEdit->setText(paths);
+
+        Config.RecordSavePaths = paths;
+        Config.setValue("RecordSavePaths", paths);
+    }
+}
+
+void ConfigDialog::on_resetRecordPathsButton_clicked() {
+    ui->recordPathsSetupLineEdit->clear();
+
+    QString paths = "records/";
+    ui->recordPathsSetupLineEdit->setText(paths);
+    Config.RecordSavePaths = paths;
+    Config.setValue("RecordSavePaths", paths);
+}
+
 void ConfigDialog::saveConfig() {
     float volume = ui->bgmVolumeSlider->value() / 100.0;
     Config.BGMVolume = volume;
@@ -150,9 +191,15 @@ void ConfigDialog::saveConfig() {
 
     Config.EnableIntellectualSelection = ui->intellectualSelectionCheckBox->isChecked();
     Config.setValue("EnableIntellectualSelection", Config.EnableIntellectualSelection);
-
+    
     Config.EnableDoubleClick = ui->doubleClickCheckBox->isChecked();
     Config.setValue("EnableDoubleClick", Config.EnableDoubleClick);
+
+    Config.EnableAutoSaveRecord = ui->enableAutoSaveCheckBox->isChecked();
+    Config.setValue("EnableAutoSaveRecord", Config.EnableAutoSaveRecord);
+
+    Config.NetworkOnly = ui->networkOnlyCheckBox->isChecked();
+    Config.setValue("NetworkOnly", Config.NetworkOnly);
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked() {

@@ -1400,7 +1400,8 @@ void StandardPackage::addShuGenerals()
     liubei->addCompanion("guanyu");
     liubei->addCompanion("zhangfei");
     liubei->addCompanion("ganfuren");
-    liubei->addSkill(new Rende);
+    liubei->addSkill(new Rende); 
+
 
     General *guanyu = new General(this, "guanyu", "shu", 5); // SHU 002
     guanyu->addSkill(new Wusheng);

@@ -4,7 +4,7 @@ sgs.ai_skill_invoke.jianxiong = function(self, data)
 end
 
 sgs.ai_skill_invoke.fankui = function(self, data)
-	local target = data:toPlayer()
+	local target = data:toDamage().from
 	if not target then return end
 	if sgs.ai_need_damaged.fankui(self, target, self.player) then return true end
 

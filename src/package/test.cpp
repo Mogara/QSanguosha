@@ -54,6 +54,9 @@ TestPackage::TestPackage()
 
     new General(this, "anjiang", "god", 4, true, true, true);
 
+    // developers
+    new General(this, "slob", "programmer", 9, true, true, true);
+
     skills << new SuperMaxCards << new SuperOffensiveDistance << new SuperDefensiveDistance;
 }
 

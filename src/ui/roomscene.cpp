@@ -2791,6 +2791,9 @@ void RoomScene::onGameOver() {
     fillTable(winner_table, winner_list);
     fillTable(loser_table, loser_list);
 
+    if (Config.value("EnableAutoSaveRecord").toBool())
+        saveReplayRecord(true, Config.value("NetworkOnly").toBool());
+
     addRestartButton(dialog);
     m_roomMutex.unlock();
     dialog->exec();
@@ -2823,7 +2826,30 @@ void RoomScene::addRestartButton(QDialog *dialog) {
     connect(return_button, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
 }
 
-void RoomScene::saveReplayRecord() {
+void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only) {
+    if (auto_save) {
+        bool is_network = false;
+        foreach (const ClientPlayer *player, ClientInstance->getPlayers()) {
+            if (player == Self) continue;
+            if (player->getState() != "robot") {
+                is_network = true;
+                break;
+            }
+        }
+        if (network_only && !is_network) return;
+        QString location = Config.value("RecordSavePaths", "records/").toString();
+        if (!location.startsWith(":")) {
+            location.replace("\\", "/");
+            if (!location.endsWith("/"))
+                location.append("/");
+            location.append(QString("%1%2-").arg(Self->getActualGeneral1()->objectName())
+                                            .arg(Self->getActualGeneral2()->objectName()));
+            location.append(QDateTime::currentDateTime().toString("yyyyMMddhhmmss"));
+            location.append(".txt");
+            ClientInstance->save(location);
+        }
+        return;
+    }
     QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
     QString filename = QFileDialog::getSaveFileName(main_window,
                                                     tr("Save replay record"),
