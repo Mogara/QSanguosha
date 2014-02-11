@@ -935,16 +935,16 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 
 	local dummy_use = {isDummy = true, to = sgs.SPlayerList()}
 	local slash = sgs.Sanguosha:cloneCard("Slash")
-	self:useBasicCard(slash, use)
-	if (use.card) then
-		for _, p in sgs.qlist(use.to) do
+	self:useBasicCard(slash, dummy_use)
+	if (dummy_use.card and dummy_use.to:length() > 0) then
+		for _, p in sgs.qlist(dummy_use.to) do
 			if not p:hasShownAllGenerals() then continue end
 			if self.player:isFriendWith(p) or (self.player:getActualGeneral1():getKingdom() == p:getKingdom()) then continue end
 			local skill_table = sgs.masochism_skills.split("|")
 			for _, skill_name in ipairs(skill_table) do
 				if (p:hasSkill(skill_name)) then
 					use.card = card
-					if ((not isDummy) and use.to) then
+					if ((not use.isDummy) and use.to) then
 						sgs.ai_skill_choice.QingchengCard = (p:inHeadSkills(skill_name) and "head_general" or "deputy_general")
 						use.to:append(p)
 					end
