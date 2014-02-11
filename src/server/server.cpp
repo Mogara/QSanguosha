@@ -511,16 +511,19 @@ BanIPDialog::BanIPDialog(QWidget *parent, Server *theserver)
 
 void BanIPDialog::loadIPList(){
     foreach (Room *room, server->rooms){
-        QMap<QString, QString> ip_map;
+        QStringList ip_list, name_list;
         foreach (ServerPlayer *p, room->getPlayers()){
-            if (p->getState() != "offline" && p->getState() != "robot")
-                ip_map[p->screenName()] = p->getIp();
+            if (p->getState() != "offline" && p->getState() != "robot") {
+                name_list << p->screenName();
+                ip_list << p->getIp();
+            }
         }
 
         left->clear();
 
-        foreach(QString name, ip_map.keys()){
-            QString detail = name + "::" + ip_map[name];
+        if (name_list.length() != ip_list.length()) return;
+        for (int i = 0; i < name_list.length(); i ++) {
+            QString detail = name_list[i] + "::" + ip_list[i];
             left->addItem(detail);
         }
     }
