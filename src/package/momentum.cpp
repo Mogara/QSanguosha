@@ -48,10 +48,10 @@ public:
         obtained << id2;
         room->clearAG(lidian);
 
-        room->askForGuanxing(lidian, card_ids, Room::GuanxingDownOnly);
         DummyCard dummy(obtained);
         lidian->obtainCard(&dummy, false);
-
+		room->askForGuanxing(lidian, card_ids, Room::GuanxingDownOnly);
+		
         return true;
     }
 };
