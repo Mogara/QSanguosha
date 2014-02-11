@@ -4,12 +4,12 @@ public:
     QVariant(int);
     QVariant(const char *);
     QVariant(bool);
-	QVariant(QList<QVariant>);
+    QVariant(QList<QVariant>);
     int toInt() const;
     QString toString() const;
     QStringList toStringList() const;
     bool toBool() const;
-	QList<QVariant> toList() const;
+    QList<QVariant> toList() const;
 };
 
 %extend QVariant {
