@@ -387,11 +387,6 @@
     <string>About Us</string>
    </property>
   </action>
-  <action name="actionView_Server_Banned_IP">
-   <property name="text">
-    <string>View Server Banned IP</string>
-   </property>
-  </action>
   <action name="actionManage_Ban_IP">
    <property name="text">
     <string>Manage Ban IP</string>
