@@ -105,7 +105,7 @@ void StartScene::printServerInfo() {
             server_log->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(item));
         else if (item == "127.0.0.1")
             server_log->append(tr("Your loopback address %1, this address is available only for your host").arg(item));
-        else if (item.startsWith("5."))
+        else if (item.startsWith("5.") || item.startsWith("25."))
             server_log->append(tr("Your Hamachi address: %1, the address is available for users that joined the same Hamachi network").arg(item));
         else if (!item.startsWith("169.254."))
             server_log->append(tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(item));
