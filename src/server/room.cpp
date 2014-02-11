@@ -2487,7 +2487,7 @@ void Room::chooseGenerals() {
     if (!Config.EnableHegemony) {
         QStringList lord_list;
         ServerPlayer *the_lord = getLord();
-    if (the_lord->getState() == "robot")
+        if (the_lord->getState() == "robot")
             if (((qrand() % 100 < nonlord_prob || lord_num == 0) && nonlord_num > 0)
                 || Sanguosha->getLords().length() == 0)
                 lord_list = Sanguosha->getRandomGenerals(1);
@@ -2702,17 +2702,19 @@ QString Room::_chooseDefaultGeneral(ServerPlayer *player) const{
     if (Config.EnableHegemony && Config.Enable2ndGeneral) {
         foreach (QString name, player->getSelected()) {
             Q_ASSERT(!name.isEmpty());
-            if (player->getGeneral() != NULL) { // choosing first general
+            if (player->getGeneral() != NULL) { // choosing second general
                 if (name == player->getGeneralName()) continue;
                 Q_ASSERT(Sanguosha->getGeneral(name) != NULL);
                 Q_ASSERT(player->getGeneral() != NULL);
+                if (Sanguosha->getGeneral(name)->isLord()) continue;
                 if (Sanguosha->getGeneral(name)->getKingdom() == player->getGeneral()->getKingdom())
                     return name;
             } else {
-                foreach (QString other, player->getSelected()) { // choosing second general
+                foreach (QString other, player->getSelected()) { // choosing first general
                     if (name == other) continue;
                     Q_ASSERT(Sanguosha->getGeneral(other) != NULL);
                     Q_ASSERT(Sanguosha->getGeneral(name) != NULL);
+                    if (Sanguosha->getGeneral(other)->isLord()) continue;
                     if (Sanguosha->getGeneral(name)->getKingdom() == Sanguosha->getGeneral(other)->getKingdom())
                         return name;
                 }
