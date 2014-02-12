@@ -178,6 +178,8 @@ public slots:
 
     inline QPointF tableCenterPos() {    return m_tableCenterPos;    };
 
+    void doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids);
+
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -365,8 +367,6 @@ private slots:
 
     void attachSkill(const QString &skill_name, const bool &head = true);
     void detachSkill(const QString &skill_name);
-
-    void doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids);
 
     void startAssign();
 

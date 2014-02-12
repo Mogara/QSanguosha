@@ -98,6 +98,7 @@ public slots:
     void updateReformState();
     void showDistance();
     virtual void showSeat();
+    virtual void showPile();
     virtual void refresh();
 
 protected:
