@@ -306,7 +306,8 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule) {
         trigger(TurnBroken, room, player);
         ServerPlayer *next = qobject_cast<ServerPlayer *>(player->getNextAlive());
         if (player->getPhase() != Player::NotActive) {
-            game_rule->effect(EventPhaseEnd, room, player, QVariant());
+            QVariant _variant;
+            game_rule->effect(EventPhaseEnd, room, player, _variant);
             player->changePhase(player->getPhase(), Player::NotActive);
         }
 
@@ -360,7 +361,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
     bool broken = false;
     QList<const TriggerSkill *> will_trigger;
     QSet<const TriggerSkill *> triggerable_tested;
-    auto trigger_who = QMap<ServerPlayer *, QList<const TriggerSkill *>>();
+    QMap<ServerPlayer *, QList<const TriggerSkill *> > trigger_who = QMap<ServerPlayer *, QList<const TriggerSkill *> >();
 
     try {
         QList<const TriggerSkill *> triggered;

@@ -1273,7 +1273,7 @@ bool Player::willBeFriendWith(const Player *player) const {
         bool has_lord = isAlive() && isLord();
 
         if (!has_lord) {
-            foreach(auto p, getSiblings()) {
+            foreach(const Player *p, getSiblings()) {
                 if (p->getKingdom() == kingdom) {
                     if (p->isAlive() && p->isLord()) {
                         has_lord = true;

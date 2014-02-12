@@ -735,7 +735,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             if (data.toBool()) {
                 if (player->isLord()) {
                     QString kingdom = player->getKingdom();
-                    foreach(auto p, room->getPlayers()) {
+                    foreach(ServerPlayer *p, room->getPlayers()) {
                         if (p->getKingdom() == kingdom && p->getRole() == "careerist")
                             room->setPlayerProperty(p, "role", BasaraMode::getMappedRole(kingdom));
                     }

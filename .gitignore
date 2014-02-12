@@ -64,3 +64,6 @@ ai.html
 /dmp/*.dmp
 *Thumbs.db
 *.tmp
+libgcc_s_dw2-1.dll
+libstdc++-6.dll
+mingwm10.dll

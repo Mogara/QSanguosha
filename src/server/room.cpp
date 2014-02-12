@@ -1166,7 +1166,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
 }
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason,
-                           bool handcard_visible, Card::HandlingMethod method, QList<int> &disabled_ids) {
+                           bool handcard_visible, Card::HandlingMethod method, const QList<int> &disabled_ids) {
     while (isPaused()) {}
     notifyMoveFocus(player, S_COMMAND_CHOOSE_CARD);
 
