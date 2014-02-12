@@ -3505,7 +3505,8 @@ void RoomScene::onGameStart() {
 #endif
     game_started = true;
     dashboard->refresh();
-    dashboard->showControlButtons();
+    if (!ClientInstance->getReplayer())
+        dashboard->showControlButtons();
     dashboard->showSeat();
     foreach (Photo *photo, photos)
         photo->showSeat();
