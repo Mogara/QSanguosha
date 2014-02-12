@@ -79,6 +79,7 @@ SOURCES += \
     src/ui/cardcontainer.cpp \
     src/ui/carditem.cpp \
     src/ui/chatwidget.cpp \
+    src/ui/choosegeneralbox.cpp \
     src/ui/clientlogbox.cpp \
     src/ui/dashboard.cpp \
     src/ui/GenericCardContainerUI.cpp \
@@ -165,6 +166,7 @@ HEADERS += \
     src/ui/cardcontainer.h \
     src/ui/carditem.h \
     src/ui/chatwidget.h \
+    src/ui/choosegeneralbox.h \
     src/ui/clientlogbox.h \
     src/ui/dashboard.h \
     src/ui/GenericCardContainerUI.h \
