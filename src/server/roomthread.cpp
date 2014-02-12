@@ -361,7 +361,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
     bool broken = false;
     QList<const TriggerSkill *> will_trigger;
     QSet<const TriggerSkill *> triggerable_tested;
-    QMap<ServerPlayer *, QList<const TriggerSkill *> > trigger_who = QMap<ServerPlayer *, QList<const TriggerSkill *> >();
+    QMap<ServerPlayer *, QList<const TriggerSkill *> > trigger_who;
 
     try {
         QList<const TriggerSkill *> triggered;
