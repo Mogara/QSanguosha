@@ -1,8 +1,8 @@
 -- translation for Hegemony Momentum Package
 
 return {
-	["momentum"] = "国战-势包",
-	["momentum_equip"] = "国战-势包",
+	["momentum"] = "势包",
+	["momentum_equip"] = "势包",
 
 	["#lidian"] = "深明大义",
 	["lidian"] = "李典",
