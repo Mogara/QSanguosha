@@ -470,13 +470,21 @@ BanIPDialog::BanIPDialog(QWidget *parent, Server *theserver)
     QVBoxLayout *right_layout = new QVBoxLayout;
 
     left = new QListWidget;
+    left->setSortingEnabled(false);
     right = new QListWidget;
 
     QPushButton *insert = new QPushButton(tr("Insert to banned IP list"));
+    QPushButton *kick = new QPushButton(tr("Kick from server"));
+
     QPushButton *remove = new QPushButton(tr("Remove from banned IP list"));
 
     left_layout->addWidget(left);
-    left_layout->addWidget(insert);
+
+    QHBoxLayout *left_button_layout = new QHBoxLayout;
+    left_button_layout->addWidget(insert);
+    left_button_layout->addWidget(kick);
+
+    left_layout->addLayout(left_button_layout);
 
     right_layout->addWidget(right);
     right_layout->addWidget(remove);
@@ -502,6 +510,7 @@ BanIPDialog::BanIPDialog(QWidget *parent, Server *theserver)
     connect(cancel, SIGNAL(clicked()), this, SLOT(reject()));
     connect(insert, SIGNAL(clicked()), this, SLOT(insertClicked()));
     connect(remove, SIGNAL(clicked()), this, SLOT(removeClicked()));
+    connect(kick, SIGNAL(clicked()), this, SLOT(kickClicked()));
 
     if (server)
         loadIPList();
@@ -511,21 +520,18 @@ BanIPDialog::BanIPDialog(QWidget *parent, Server *theserver)
 
 void BanIPDialog::loadIPList(){
     foreach (Room *room, server->rooms){
-        QStringList ip_list, name_list;
         foreach (ServerPlayer *p, room->getPlayers()){
             if (p->getState() != "offline" && p->getState() != "robot") {
-                name_list << p->screenName();
-                ip_list << p->getIp();
+                sp_list << p;
             }
         }
+    }
 
-        left->clear();
+    left->clear();
 
-        if (name_list.length() != ip_list.length()) return;
-        for (int i = 0; i < name_list.length(); i ++) {
-            QString detail = name_list[i] + "::" + ip_list[i];
-            left->addItem(detail);
-        }
+    foreach (ServerPlayer *p, sp_list){
+        QString parsed_string = QString("%1::%2").arg(p->screenName(), p->getIp());
+        left->addItem(parsed_string);
     }
 }
 
@@ -553,6 +559,20 @@ void BanIPDialog::removeClicked(){
     int row = right->currentRow();
     if (row != -1)
         delete right->takeItem(row);
+}
+
+void BanIPDialog::kickClicked(){
+    int row = left->currentRow();
+    if (row != -1){
+        ServerPlayer *p = sp_list[row];
+        QStringList split_data = left->currentItem()->text().split("::");
+        QString ip = split_data.takeLast();
+        QString screenName = split_data.join("::");
+        if (p->screenName() == screenName && p->getIp() == ip){
+            //procedure kick
+            p->kick();
+        }
+    }
 }
 
 void BanIPDialog::save(){

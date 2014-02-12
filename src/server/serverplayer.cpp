@@ -206,7 +206,7 @@ void ServerPlayer::setSocket(ClientSocket *socket) {
         if (this->socket) {
             this->disconnect(this->socket);
             this->socket->disconnect(this);
-            this->socket->disconnectFromHost();
+            //this->socket->disconnectFromHost();
             this->socket->deleteLater();
         }
 
@@ -214,6 +214,13 @@ void ServerPlayer::setSocket(ClientSocket *socket) {
     }
 
     this->socket = socket;
+}
+
+void ServerPlayer::kick(){
+    room->notifyProperty(this, this, "flags", "is_kicked");
+    if (socket != NULL)
+        socket->disconnectFromHost();
+    setSocket(NULL);
 }
 
 void ServerPlayer::getMessage(const char *message) {

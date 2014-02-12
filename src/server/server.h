@@ -154,6 +154,7 @@ private:
     QListWidget *right;
 
     Server *server;
+    QList<ServerPlayer *> sp_list;
 
     void loadIPList();
     void loadBannedList();
@@ -161,6 +162,7 @@ private:
 private slots:
     void insertClicked();
     void removeClicked();
+    void kickClicked();
 
     void save();
 };

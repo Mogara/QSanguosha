@@ -25,32 +25,37 @@
 <context>
     <name>BanIPDialog</name>
     <message>
-        <location filename="../../src/server/server.cpp" line="475"/>
+        <location filename="../../src/server/server.cpp" line="476"/>
         <source>Insert to banned IP list</source>
         <translation>加入禁止IP列表</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="476"/>
+        <location filename="../../src/server/server.cpp" line="477"/>
+        <source>Kick from server</source>
+        <translation>踢出服务器</translation>
+    </message>
+    <message>
+        <location filename="../../src/server/server.cpp" line="479"/>
         <source>Remove from banned IP list</source>
         <translation>从禁止IP列表中删除</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="484"/>
+        <location filename="../../src/server/server.cpp" line="492"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="485"/>
+        <location filename="../../src/server/server.cpp" line="493"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="542"/>
+        <location filename="../../src/server/server.cpp" line="551"/>
         <source>Warning!</source>
         <translation>警告！</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="542"/>
+        <location filename="../../src/server/server.cpp" line="551"/>
         <source>This is your local Loopback Address and can&apos;t be banned!</source>
         <translation>这是你的本地回环地址，不可以被禁止！</translation>
     </message>
@@ -2956,32 +2961,37 @@
 <context>
     <name>NativeClientSocket</name>
     <message>
-        <location filename="../../src/util/nativesocket.cpp" line="129"/>
+        <location filename="../../src/util/nativesocket.cpp" line="130"/>
         <source>Connection was refused or timeout</source>
         <translation>连接被拒绝或超时</translation>
     </message>
     <message>
-        <location filename="../../src/util/nativesocket.cpp" line="131"/>
+        <location filename="../../src/util/nativesocket.cpp" line="133"/>
+        <source>You are kicked from server</source>
+        <translation>你已经被踢出服务器</translation>
+    </message>
+    <message>
+        <location filename="../../src/util/nativesocket.cpp" line="135"/>
         <source>Remote host close this connection</source>
         <translation>远程主机已关闭此次连接</translation>
     </message>
     <message>
-        <location filename="../../src/util/nativesocket.cpp" line="133"/>
+        <location filename="../../src/util/nativesocket.cpp" line="140"/>
         <source>Host not found</source>
         <translation>未找到主机</translation>
     </message>
     <message>
-        <location filename="../../src/util/nativesocket.cpp" line="135"/>
+        <location filename="../../src/util/nativesocket.cpp" line="142"/>
         <source>Socket access error</source>
         <translation>套接字访问错误</translation>
     </message>
     <message>
-        <location filename="../../src/util/nativesocket.cpp" line="138"/>
+        <location filename="../../src/util/nativesocket.cpp" line="145"/>
         <source>Unknow error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="../../src/util/nativesocket.cpp" line="141"/>
+        <location filename="../../src/util/nativesocket.cpp" line="148"/>
         <source>Connection failed, error code = %1
  reason:
  %2</source>
@@ -4050,18 +4060,18 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>Server</name>
     <message>
-        <location filename="../../src/server/server.cpp" line="781"/>
-        <location filename="../../src/server/server.cpp" line="790"/>
+        <location filename="../../src/server/server.cpp" line="804"/>
+        <location filename="../../src/server/server.cpp" line="813"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="797"/>
+        <location filename="../../src/server/server.cpp" line="820"/>
         <source>%1 connected</source>
         <translation>%1 已连接</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="813"/>
+        <location filename="../../src/server/server.cpp" line="836"/>
         <source>Invalid signup string: %1</source>
         <translation>无效的登录字符串: %1</translation>
     </message>
@@ -4462,7 +4472,7 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>高级</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="566"/>
+        <location filename="../../src/server/server.cpp" line="589"/>
         <source>Game mode</source>
         <translation>游戏模式</translation>
     </message>
@@ -4517,12 +4527,12 @@ P = 你自己, R = 你所在的房间</translation>
         <translation type="obsolete">官方3v3</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="622"/>
+        <location filename="../../src/server/server.cpp" line="645"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="623"/>
+        <location filename="../../src/server/server.cpp" line="646"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
@@ -4689,7 +4699,7 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>ServerPlayer</name>
     <message>
-        <location filename="../../src/server/serverplayer.cpp" line="322"/>
+        <location filename="../../src/server/serverplayer.cpp" line="329"/>
         <source>Anonymous</source>
         <translation>匿名</translation>
     </message>
@@ -4804,7 +4814,7 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="../../src/dialog/cardeditor.cpp" line="238"/>
         <source>Copyright text</source>
-        <translation>™&amp;©  2011 游卡桌游</translation>
+        <translation>™&amp;©  2014 游卡桌游</translation>
     </message>
 </context>
 <context>
