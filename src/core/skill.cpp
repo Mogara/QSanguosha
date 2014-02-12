@@ -38,6 +38,27 @@ QString Skill::getDescription(bool yellow) const{
     QString des_src = Sanguosha->translate(":" + objectName());
     if (des_src == ":" + objectName())
         return QString();
+    foreach (QString skill_type, Sanguosha->getSkillColorMap().keys()) {
+        QString to_replace = Sanguosha->translate(skill_type);
+        if (to_replace == skill_type) continue;
+        QString color_str = Sanguosha->getSkillColor(skill_type).name();
+        if (des_src.contains(to_replace))
+            des_src.replace(to_replace, QString("<font color=%1><b>%2</b></font>").arg(color_str)
+                                                                                  .arg(to_replace));
+    }
+
+    for (int i = 0; i < 6; i++) {
+        Card::Suit suit = (Card::Suit)i;
+        QString str = Card::Suit2String(suit);
+        QString to_replace = Sanguosha->translate(str);
+        bool red = suit == Card::Heart
+                || suit == Card::Diamond
+                || suit == Card::NoSuitRed;
+        if (to_replace == str) continue;
+        if (des_src.contains(to_replace))
+            des_src.replace(to_replace, QString("<font color=%1>%2</font>").arg(red ? "#FF0000" : "#000000")
+                                                                                  .arg(Sanguosha->translate(str+"_char")));
+    }
     return QString("<font color=%1>%2</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(des_src);
 }
 

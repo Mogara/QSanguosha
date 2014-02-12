@@ -577,6 +577,31 @@ QColor Engine::getKingdomColor(const QString &kingdom) const{
     return color_map.value(kingdom);
 }
 
+QMap<QString, QColor> Engine::getSkillColorMap() const {
+    static QMap<QString, QColor> color_map;
+    if (color_map.isEmpty()) {
+        QVariantMap map = GetValueFromLuaState(lua, "config", "skill_colors").toMap();
+        QMapIterator<QString, QVariant> itor(map);
+        while (itor.hasNext()) {
+            itor.next();
+            QColor color(itor.value().toString());
+            if (!color.isValid()) {
+                qWarning("Invalid color for skill %s", qPrintable(itor.key()));
+                color = QColor(128, 128, 128);
+            }
+            color_map[itor.key()] = color;
+        }
+
+        Q_ASSERT(!color_map.isEmpty());
+    }
+
+    return color_map;
+}
+
+QColor Engine::getSkillColor(const QString &skill_type) const {
+    return Engine::getSkillColorMap().value(skill_type);
+}
+
 QStringList Engine::getChattingEasyTexts() const{
     static QStringList easy_texts;
     if (easy_texts.isEmpty())

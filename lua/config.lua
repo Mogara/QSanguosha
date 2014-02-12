@@ -13,7 +13,6 @@ config = {
 		"Fu Nima" ,
 		"Z ZH" ,
 		"82" ,
-		"XXX" ,
 	} ,
 
 	kingdoms = { "wei", "shu", "wu", "qun", "god" },
@@ -23,6 +22,16 @@ config = {
 		wu = "#4DB873",
 		qun = "#8A807A",
 		god = "#96943D",
+	},
+
+	skill_colors = {
+		compulsory = "#0000FF",
+		once_per_turn = "#008000",
+		limited = "#FF0000",
+		head = "#00FF00",
+		deputy = "#00FFFF",
+		array = "#800080",
+		lord = "#FFA500",
 	},
 
 	package_names = {
