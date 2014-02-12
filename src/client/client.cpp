@@ -7,6 +7,7 @@
 #include "recorder.h"
 #include "jsonutils.h"
 #include "SkinBank.h"
+#include "roomscene.h"
 
 #include <QApplication>
 #include <QMessageBox>
@@ -288,7 +289,11 @@ void Client::processServerPacket(const char *cmd) {
                 (this->*callback)(packet.getMessageBody());
             }
         } else if (packet.getPacketType() == S_TYPE_REQUEST) {
-            if (!replayer)
+            if (getReplayer()) {
+                if ((getStatus() & Client::ClientStatusBasicMask) == ExecDialog)
+                    RoomSceneInstance->doCancelButton();
+            }
+            if (!replayer || packet.getPacketDescription() == 0x411)
                 processServerRequest(packet);
         }
     } else
