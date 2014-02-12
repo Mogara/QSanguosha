@@ -48,7 +48,7 @@
     "roleQunColor": [195, 177, 84],
     "roleShuColor": [172, 49, 32],
     "roleWuColor": [85, 164, 52],
-    "roleDarkColor": [125, 125, 126]
+    "roleDarkColor": [125, 125, 126] ,
 	
 	"generalBoxBgColor": [0, 0, 0, 220],
 	"generalBoxBorderColor": [166, 150, 122],
