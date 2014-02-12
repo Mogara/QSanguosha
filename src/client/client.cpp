@@ -293,7 +293,7 @@ void Client::processServerPacket(const char *cmd) {
                 if ((getStatus() & Client::ClientStatusBasicMask) == ExecDialog)
                     RoomSceneInstance->doCancelButton();
             }
-            if (!replayer || packet.getPacketDescription() == 0x411)
+            if (!replayer || (packet.getPacketDescription() == 0x411 && packet.getCommandType() == S_COMMAND_CHOOSE_GENERAL))
                 processServerRequest(packet);
         }
     } else

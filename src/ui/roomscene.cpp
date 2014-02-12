@@ -2600,6 +2600,7 @@ void RoomScene::doCancelButton() {
             break;
         }
     case Client::ExecDialog: {
+            if (ClientInstance->getReplayer()) break;
             m_choiceDialog->reject();
             break;
         }
