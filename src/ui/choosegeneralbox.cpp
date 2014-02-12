@@ -173,6 +173,7 @@ void ChooseGeneralBox::chooseGeneral(QStringList generals) {
     }
 
     confirm->setPos(boundingRect().center().x() - confirm->boundingRect().width() / 2, boundingRect().height() - 60);
+    _initializeItems();
 
     if (ServerInfo.OperationTimeout != 0) {
         progress_bar = new QSanCommandProgressBar();
