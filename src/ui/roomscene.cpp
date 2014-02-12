@@ -2842,8 +2842,8 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only) 
             location.replace("\\", "/");
             if (!location.endsWith("/"))
                 location.append("/");
-            location.append(QString("%1%2-").arg(Self->getActualGeneral1()->objectName())
-                                            .arg(Self->getActualGeneral2()->objectName()));
+            location.append(QString("%1%2-").arg(Sanguosha->translate(Self->getActualGeneral1()->objectName()))
+                                            .arg(Sanguosha->translate(Self->getActualGeneral2()->objectName())));
             location.append(QDateTime::currentDateTime().toString("yyyyMMddhhmmss"));
             location.append(".txt");
             ClientInstance->save(location);
