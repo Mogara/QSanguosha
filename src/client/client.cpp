@@ -282,16 +282,14 @@ void Client::processServerPacket(const char *cmd) {
     if (m_isGameOver) return;
     QSanGeneralPacket packet;
     if (packet.parse(cmd)) {
+        if (replayer)
+            RoomSceneInstance->doCancelButton();
         if (packet.getPacketType() == S_TYPE_NOTIFICATION) {
             CallBack callback = m_callbacks[packet.getCommandType()];
             if (callback) {
                 (this->*callback)(packet.getMessageBody());
             }
         } else if (packet.getPacketType() == S_TYPE_REQUEST) {
-            if (getReplayer()) {
-                if ((getStatus() & Client::ClientStatusBasicMask) == ExecDialog)
-                    RoomSceneInstance->doCancelButton();
-            }
             if (!replayer || (packet.getPacketDescription() == 0x411 && packet.getCommandType() == S_COMMAND_CHOOSE_GENERAL))
                 processServerRequest(packet);
         }

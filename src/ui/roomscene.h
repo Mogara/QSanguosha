@@ -177,6 +177,8 @@ public slots:
     void doCancelButton();
     void doDiscardButton();
 
+    void doTimeout();
+
     inline QPointF tableCenterPos() {    return m_tableCenterPos;    };
 
     void doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids);
@@ -332,7 +334,6 @@ private slots:
     void updateSelectedTargets();
     void onSkillActivated();
     void onSkillDeactivated();
-    void doTimeout();
     void startInXs();
     void hideAvatars();
     void changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);

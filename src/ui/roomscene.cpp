@@ -2422,11 +2422,9 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             if (m_choiceDialog != NULL) {
                 m_choiceDialog->setParent(main_window, Qt::Dialog);
                 m_choiceDialog->show();
-                if (ClientInstance->getReplayer()) {
-                    ok_button->setEnabled(false);
-                    cancel_button->setEnabled(true);
-                    discard_button->setEnabled(false);
-                }
+                ok_button->setEnabled(false);
+                cancel_button->setEnabled(true);
+                discard_button->setEnabled(false);
             }
             break;
         }
@@ -2559,6 +2557,11 @@ void RoomScene::doOkButton() {
 }
 
 void RoomScene::doCancelButton() {
+    if (ClientInstance->getReplayer() && prompt_box->isVisible()) {  // a temp way to hide choose general box
+        dashboard->stopPending();
+        ClientInstance->onPlayerChoosePlayer(NULL);
+        prompt_box->disappear();
+    }
     if (card_container->retained()) card_container->clear();
     switch (ClientInstance->getStatus() & Client::ClientStatusBasicMask) {
     case Client::Playing: {
@@ -2608,7 +2611,6 @@ void RoomScene::doCancelButton() {
             break;
         }
     case Client::ExecDialog: {
-            if (ClientInstance->getReplayer()) break;
             m_choiceDialog->reject();
             break;
         }
