@@ -583,26 +583,29 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const {
         if (player->askForSkillInvoke(objectName(), player->tag.value("LiegongCurrentTarget"))) {
             room->broadcastSkillInvoke(objectName());
             return true;
-        }
+        } else player->tag.remove("LiegongCurrentTarget");
         return false;
     }
 
-    virtual bool effect(TriggerEvent TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+        PlayerStar tar = player->tag.value("LiegongCurrentTarget").value<PlayerStar>();
         CardUseStruct use = data.value<CardUseStruct>();
         QList<ServerPlayer *> targets = use.to;
         QVariantList jink_list = player->tag["Jink_" + use.card->toString()].toList();
+        bool first_invoke = false;
         foreach (ServerPlayer *p, targets) {
-            if (targets.indexOf(p) == 0)
+            if (p == tar) {
+                first_invoke = true;
                 doLiegong(p, use, jink_list);
-            else {
+            } else if (first_invoke) {
                 int handcardnum = p->getHandcardNum();
                 if (player->getHp() <= handcardnum || player->getAttackRange() >= handcardnum) {
                     player->tag["LiegongCurrentTarget"] = QVariant::fromValue(p);
-                    if (cost(TriggerEvent, room, player, data)) {
+                    if (cost(triggerEvent, room, player, data)) {
                         doLiegong(p, use, jink_list);
                     }
                 }
