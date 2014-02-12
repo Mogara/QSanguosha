@@ -566,7 +566,7 @@ public:
         if (player != use.from || player->getPhase() != Player::Play || !use.card->isKindOf("Slash"))
             return QStringList();
 
-        ServerPlayer *first;
+        ServerPlayer *first = NULL;
         foreach (ServerPlayer *p, use.to) {
             int handcardnum = p->getHandcardNum();
             if (player->getHp() <= handcardnum || player->getAttackRange() >= handcardnum) {
