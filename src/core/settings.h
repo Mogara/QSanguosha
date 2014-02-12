@@ -68,6 +68,8 @@ public:
     bool EnableAutoTarget;
     bool EnableIntellectualSelection;
     bool EnableDoubleClick;
+    bool EnableAutoSaveRecord;
+    bool NetworkOnly;
     int OperationTimeout;
     bool OperationNoLimit;
     bool EnableEffects;
@@ -78,6 +80,7 @@ public:
 
     QString BackgroundImage;
     QString TableBgImage;
+    QString RecordSavePaths;
 
     // consts
     static const int S_SURRENDER_REQUEST_MIN_INTERVAL;

@@ -16,7 +16,7 @@ PlayerCardButton::PlayerCardButton(const QString &name)
 }
 
 PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &flags,
-                                   bool handcard_visible, Card::HandlingMethod method, QList<int> &disabled_ids)
+                                   bool handcard_visible, Card::HandlingMethod method, const QList<int> &disabled_ids)
     : player(player), handcard_visible(handcard_visible), method(method), disabled_ids(disabled_ids)
 {
     QVBoxLayout *vlayout1 = new QVBoxLayout, *vlayout2 = new QVBoxLayout;

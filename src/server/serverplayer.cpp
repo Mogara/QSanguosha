@@ -206,7 +206,7 @@ void ServerPlayer::setSocket(ClientSocket *socket) {
         if (this->socket) {
             this->disconnect(this->socket);
             this->socket->disconnect(this);
-            this->socket->disconnectFromHost();
+            //this->socket->disconnectFromHost();
             this->socket->deleteLater();
         }
 
@@ -214,6 +214,13 @@ void ServerPlayer::setSocket(ClientSocket *socket) {
     }
 
     this->socket = socket;
+}
+
+void ServerPlayer::kick(){
+    room->notifyProperty(this, this, "flags", "is_kicked");
+    if (socket != NULL)
+        socket->disconnectFromHost();
+    setSocket(NULL);
 }
 
 void ServerPlayer::getMessage(const char *message) {
@@ -1182,8 +1189,10 @@ void ServerPlayer::gainAnExtraTurn() {
                     game_rule = qobject_cast<const GameRule *>(Sanguosha->getTriggerSkill("hulaopass_mode"));
                 else
                     game_rule = qobject_cast<const GameRule *>(Sanguosha->getTriggerSkill("game_rule"));
-                if (game_rule)
-                    game_rule->effect(EventPhaseEnd, room, this, QVariant());
+                if (game_rule){
+                    QVariant _variant;
+                    game_rule->effect(EventPhaseEnd, room, this, _variant);
+                }
                 changePhase(getPhase(), Player::NotActive);
             }
             room->setCurrent(current);
@@ -1255,7 +1264,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event) {
             int i = 1;
             bool has_lord = isAlive() && getGeneral()->isLord();
             if (!has_lord) {
-                foreach(auto p, room->getOtherPlayers(this, true)) {
+                foreach(ServerPlayer *p, room->getOtherPlayers(this, true)) {
                     if (p->getKingdom() == kingdom) {
                         if (p->getGeneral()->isLord()) {
                             has_lord = true;
@@ -1312,7 +1321,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event) {
             int i = 1;
             bool has_lord = isAlive() && getGeneral()->isLord();
             if (!has_lord) {
-                foreach(auto p, room->getOtherPlayers(this, true)) {
+                foreach(ServerPlayer *p, room->getOtherPlayers(this, true)) {
                     if (p->getKingdom() == kingdom) {
                         if (p->getGeneral()->isLord()) {
                             has_lord = true;
@@ -1340,7 +1349,8 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event) {
 
     if (trigger_event) {
         Q_ASSERT(room->getThread() != NULL);
-        room->getThread()->trigger(GeneralShown, room, this, QVariant(head_general));
+        QVariant _head = head_general;
+        room->getThread()->trigger(GeneralShown, room, this, _head);
     }
 }
 
@@ -1372,7 +1382,7 @@ void ServerPlayer::hideGeneral(bool head_general) {
                     arg[0] = toJsonString(objectName());
                     arg[1] = toJsonString(skill->getLimitMark());
                     arg[2] = 0;
-                    foreach(auto p, room->getOtherPlayers(this, true))
+                    foreach(ServerPlayer *p, room->getOtherPlayers(this, true))
                         room->doNotify(p, QSanProtocol::S_COMMAND_SET_MARK, arg);
             }
         }
@@ -1383,7 +1393,7 @@ void ServerPlayer::hideGeneral(bool head_general) {
         }
     } else {
         if (getGeneral2Name() == "anjiang") return;
-        
+
         setSkillsPreshowed("d", false);
         notifyPreshow();
         room->setPlayerProperty(this, "general2_showed", false);
@@ -1408,7 +1418,7 @@ void ServerPlayer::hideGeneral(bool head_general) {
                     arg[0] = toJsonString(objectName());
                     arg[1] = toJsonString(skill->getLimitMark());
                     arg[2] = 0;
-                    foreach(auto p, room->getOtherPlayers(this, true))
+                    foreach(ServerPlayer *p, room->getOtherPlayers(this, true))
                         room->doNotify(p, QSanProtocol::S_COMMAND_SET_MARK, arg);
             }
         }
@@ -1420,7 +1430,8 @@ void ServerPlayer::hideGeneral(bool head_general) {
     }
 
     Q_ASSERT(room->getThread() != NULL);
-    room->getThread()->trigger(GeneralHidden, room, this, QVariant(head_general));
+    QVariant _head = head_general;
+    room->getThread()->trigger(GeneralHidden, room, this, _head);
 
     LogMessage log;
     log.type = "#BasaraConceal";
@@ -1466,7 +1477,7 @@ void ServerPlayer::removeGeneral(bool head_general) {
             int i = 1;
             bool has_lord = isAlive() && getGeneral()->isLord();
             if (!has_lord) {
-                foreach(auto p, room->getOtherPlayers(this, true)) {
+                foreach(ServerPlayer *p, room->getOtherPlayers(this, true)) {
                     if (p->getKingdom() == kingdom) {
                         if (p->isAlive() && p->getGeneral()->isLord()) {
                             has_lord = true;
@@ -1516,7 +1527,7 @@ void ServerPlayer::removeGeneral(bool head_general) {
             int i = 1;
             bool has_lord = isAlive() && getGeneral()->isLord();
             if (!has_lord) {
-                foreach(auto p, room->getOtherPlayers(this, true)) {
+                foreach(ServerPlayer *p, room->getOtherPlayers(this, true)) {
                     if (p->getKingdom() == kingdom) {
                         if (p->isAlive() && p->getGeneral()->isLord()) {
                             has_lord = true;
@@ -1536,7 +1547,8 @@ void ServerPlayer::removeGeneral(bool head_general) {
     }
 
     Q_ASSERT(room->getThread() != NULL);
-    room->getThread()->trigger(GeneralRemoved, room, this, QVariant(from_general));
+    QVariant _from = from_general;
+    room->getThread()->trigger(GeneralRemoved, room, this, _from);
 
     LogMessage log;
     log.type = "#BasaraRemove";
@@ -1551,20 +1563,21 @@ void ServerPlayer::sendSkillsToOthers(bool head_skill /* = true */) {
     if (names.isEmpty()) return;
 
     QString general = head_skill ? names.first() : names.last();
-    foreach(auto skill, Sanguosha->getGeneral(general)->getSkillList(true, head_skill)) {
+    foreach(const Skill *skill, Sanguosha->getGeneral(general)->getSkillList(true, head_skill)) {
         Json::Value args;
         args[0] = QSanProtocol::S_GAME_EVENT_ADD_SKILL;
         args[1] = toJsonString(objectName());
         args[2] = toJsonString(skill->objectName());
         args[3] = head_skill;
-        foreach(auto p, room->getOtherPlayers(this, true))
+        foreach(ServerPlayer *p, room->getOtherPlayers(this, true))
             room->doNotify(p, QSanProtocol::S_COMMAND_LOG_EVENT, args);
     }
 }
 
 void ServerPlayer::disconnectSkillsFromOthers(bool head_skill /* = true */) {
     foreach(QString skill, head_skill ? head_skills.keys() : deputy_skills.keys()) {
-        room->getThread()->trigger(EventLoseSkill, room, this, QVariant(skill));
+        QVariant _skill = skill;
+        room->getThread()->trigger(EventLoseSkill, room, this, _skill);
         Json::Value args;
         args[0] = QSanProtocol::S_GAME_EVENT_DETACH_SKILL;
         args[1] = toJsonString(objectName());

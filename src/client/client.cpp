@@ -7,6 +7,7 @@
 #include "recorder.h"
 #include "jsonutils.h"
 #include "SkinBank.h"
+#include "roomscene.h"
 
 #include <QApplication>
 #include <QMessageBox>
@@ -287,7 +288,11 @@ void Client::processServerPacket(const char *cmd) {
                 (this->*callback)(packet.getMessageBody());
             }
         } else if (packet.getPacketType() == S_TYPE_REQUEST) {
-            if (!replayer)
+            if (getReplayer()) {
+                if ((getStatus() & Client::ClientStatusBasicMask) == ExecDialog)
+                    RoomSceneInstance->doCancelButton();
+            }
+            if (!replayer || (packet.getPacketDescription() == 0x411 && packet.getCommandType() == S_COMMAND_CHOOSE_GENERAL))
                 processServerRequest(packet);
         }
     } else
@@ -720,6 +725,16 @@ QString Client::getPlayerName(const QString &str) {
         general_name = Sanguosha->translate(general_name);
         if (player->getGeneral2())
             general_name.append("/" + Sanguosha->translate(player->getGeneral2Name()));
+        if (general_name.contains("sujiang")) {
+            QStringList names = general_name.split("/");
+            if (names.length() == 2) {
+                if (names[0].contains("sujiang"))
+                    names.removeAt(0);
+                else
+                    names.removeAt(1);
+                general_name = names.first();
+            }
+        }
         if (player->getGeneralName() == "anjiang" && player->getGeneral2Name() == "anjiang")
             general_name = Sanguosha->translate(QString("SEAT(%1)").arg(QString::number(player->property("UI_Seat").toInt())));
         return general_name;
@@ -865,8 +880,8 @@ void Client::askForSurrender(const Json::Value &initiator) {
     QString text = tr("%1 initiated a vote for disadvataged side to claim "
                       "capitulation. Click \"OK\" to surrender or \"Cancel\" to resist.")
                       .arg(Sanguosha->translate(toQString(initiator)));
-    text.append(tr("<br/> <b>Noitce</b>: if all people on your side decides to surrender. "
-                   "You'll lose this game."));
+    text.append(tr("<br/> <b>Notice</b>: if more than half people decides to surrender. "
+                   "This game will over."));
     skill_name = "surrender";
 
     prompt_doc->setHtml(text);

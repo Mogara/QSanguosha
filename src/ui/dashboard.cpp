@@ -177,8 +177,8 @@ void Dashboard::_createRight() {
                  _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTBASE), _m_rightFrame);
     _paintPixmap(_m_rightFrameBg, QRect(0, 0, rect.width(), rect.height()),
                  _getPixmap(QSanRoomSkin::S_SKIN_KEY_RIGHTFRAME), _m_rightFrame);
-    _paintPixmap(_m_magatamasBase, 
-                 QRect(rect.width() - G_DASHBOARD_LAYOUT.m_magatamasBaseWidth, 
+    _paintPixmap(_m_magatamasBase,
+                 QRect(rect.width() - G_DASHBOARD_LAYOUT.m_magatamasBaseWidth,
                        0, rect.width(), rect.height()),
                  _getPixmap(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BASE), _m_rightFrame);
     _paintPixmap(_m_headGeneralFrame, G_DASHBOARD_LAYOUT.m_avatarArea,
@@ -210,9 +210,9 @@ void Dashboard::_createRight() {
     _paintPixmap(_m_hidden_mark1, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion1, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
     _paintPixmap(_m_hidden_mark2, G_DASHBOARD_LAYOUT.m_hiddenMarkRegion2, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK), _m_rightFrame);
 
-    connect(ClientInstance, SIGNAL(head_preshowed()), this, 
+    connect(ClientInstance, SIGNAL(head_preshowed()), this,
             SLOT(onHeadSkillPreshowed()));
-    connect(ClientInstance, SIGNAL(deputy_preshowed()), this, 
+    connect(ClientInstance, SIGNAL(deputy_preshowed()), this,
             SLOT(onDeputySkillPreshowed()));
 }
 

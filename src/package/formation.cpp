@@ -262,7 +262,7 @@ public:
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
         if (!dengai) return false;
-        
+
         QList<int> ids = dengai->getPile("field");
         room->fillAG(ids, dengai);
         int id = room->askForAG(dengai, ids, false, objectName());
@@ -805,8 +805,6 @@ public:
         ServerPlayer *yuji = room->findPlayerBySkillName(objectName());
         if (!yuji) return false;
         if (triggerEvent == Damaged) {
-            room->broadcastSkillInvoke(objectName());
-
             int id = room->drawCard();
             Card::Suit suit = Sanguosha->getCard(id)->getSuit();
             bool duplicate = false;
@@ -823,7 +821,6 @@ public:
             }
         } else if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
-            room->broadcastSkillInvoke(objectName());
             room->notifySkillInvoked(yuji, objectName());
             QList<int> ids = yuji->getPile("sorcery");
             int id = -1;
@@ -895,6 +892,12 @@ public:
             room->damage(DamageStruct(objectName(), hetaihou, player));
 
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *c) const{
+        if (c->isKindOf("Analeptic"))
+            return 0;
+        return -1;
     }
 };
 
@@ -1212,7 +1215,7 @@ public:
                 break;
             }
         }
-        if (dfowner == NULL)
+        if (dfowner == NULL || dfowner->getRole() == "careerist")
             return false;
 
         DeathStruct death = data.value<DeathStruct>();
@@ -1268,6 +1271,7 @@ public:
 
 
         if (room->askForSkillInvoke(dfowner, "DragonPhoenix", data) && room->askForSkillInvoke(player, "DragonPhoenix", "revive")){
+            room->setPlayerProperty(player, "Duanchang", "");
             QString to_change;
             AI *ai = player->getAI();
             if (ai)
@@ -1297,7 +1301,7 @@ public:
                 player->setSkillsPreshowed("h");
 
                 change_list << player->getActualGeneral2Name();
-                
+
                 room->revivePlayer(player);
 
                 room->setPlayerProperty(player, "hp", 2);
@@ -1324,4 +1328,4 @@ FormationEquipPackage::FormationEquipPackage(): Package("formation_equip", CardP
 
 ADD_PACKAGE(FormationEquip)
 
-     
+

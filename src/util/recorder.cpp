@@ -83,20 +83,13 @@ Replayer::Replayer(QObject *parent, const QString &filename)
     if (!device->open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
-    typedef char buffer_t[65535];
-
     while (!device->atEnd()) {
-        buffer_t line;
-        memset(line, 0, sizeof(buffer_t));
-        device->readLine(line, sizeof(buffer_t));
-
-        char *space = strchr(line, ' ');
-        if (space == NULL)
-            continue;
-
-        *space = '\0';
-        QString cmd = space + 1;
-        int elapsed = atoi(line);
+        QString line = device->readLine();
+        
+        QStringList splited_line = line.split(" ");
+        QString elapsed_str = splited_line.takeFirst();
+        QString cmd = splited_line.join(" ");
+        int elapsed = elapsed_str.toInt();
 
         Pair pair;
         pair.elapsed = elapsed;

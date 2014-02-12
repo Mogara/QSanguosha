@@ -306,7 +306,8 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule) {
         trigger(TurnBroken, room, player);
         ServerPlayer *next = qobject_cast<ServerPlayer *>(player->getNextAlive());
         if (player->getPhase() != Player::NotActive) {
-            game_rule->effect(EventPhaseEnd, room, player, QVariant());
+            QVariant _variant;
+            game_rule->effect(EventPhaseEnd, room, player, _variant);
             player->changePhase(player->getPhase(), Player::NotActive);
         }
 
@@ -360,7 +361,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
     bool broken = false;
     QList<const TriggerSkill *> will_trigger;
     QSet<const TriggerSkill *> triggerable_tested;
-    auto trigger_who = QMap<ServerPlayer *, QList<const TriggerSkill *>>();
+    QMap<ServerPlayer *, QList<const TriggerSkill *> > trigger_who;
 
     try {
         QList<const TriggerSkill *> triggered;
@@ -426,10 +427,12 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         room->setPlayerFlag(p, "Global_askForSkillCost");           // TriggerOrder need protect
                     QStringList names, back_up;
                     bool has_compulsory = false;
+                    QStringList _names;
                     foreach (const TriggerSkill *skill, who_skills) {
                         if (skill->getFrequency() == Skill::Compulsory)
                             has_compulsory = true;
                         QString name = skill->objectName();
+                        _names.append(name);
                         if (names.contains(name))
                             back_up << name;
                         else
@@ -439,10 +442,10 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         names << "trigger_none";
 
                     QList<const TriggerSkill *> cost_order;
-                    QStringList _names = names;
                     do {
                         if (names.length() == 2 && back_up.isEmpty() && !has_compulsory)
-                            names.removeLast();
+                            if (names.contains("trigger_none"))
+                                names.removeAll("trigger_none");
 
                         QString name;
                         if (p != NULL)

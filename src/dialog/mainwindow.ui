@@ -42,6 +42,7 @@
     <addaction name="actionCard_Overview"/>
     <addaction name="actionScenario_Overview"/>
     <addaction name="actionView_ban_list"/>
+    <addaction name="actionManage_Ban_IP"/>
     <addaction name="actionBroadcast"/>
     <addaction name="actionReplay_file_convert"/>
     <addaction name="actionRecord_analysis"/>
@@ -384,6 +385,11 @@
   <action name="actionAbout_Us">
    <property name="text">
     <string>About Us</string>
+   </property>
+  </action>
+  <action name="actionManage_Ban_IP">
+   <property name="text">
+    <string>Manage Ban IP</string>
    </property>
   </action>
  </widget>

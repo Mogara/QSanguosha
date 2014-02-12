@@ -1,8 +1,8 @@
 -- translation for Hegemony Momentum Package
 
 return {
-	["momentum"] = "国战-势包",
-	["momentum_equip"] = "国战-势包",
+	["momentum"] = "势包",
+	["momentum_equip"] = "势包",
 
 	["#lidian"] = "深明大义",
 	["lidian"] = "李典",
@@ -33,7 +33,7 @@ return {
 
 	["#mifuren"] = "乱世沉香",
 	["mifuren"] = "糜夫人",
-	["illustrator:madai"] = "木美人",
+	["illustrator:mifuren"] = "木美人",
 	["guixiu"] = "闺秀",
 	[":guixiu"] = "每当你明置此武将牌时，你可以摸两张牌；当你移除此武将牌时，你可以回复1点体力。",
 	["cunsi"] = "存嗣",

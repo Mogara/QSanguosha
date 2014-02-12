@@ -184,7 +184,12 @@ void PlayerCardContainer::updateAvatar() {
                                                   _m_layout->m_screenNameArea,
                                                   Qt::AlignCenter,
                                                   m_player->screenName());
-    }
+    } else if (!inherits("Dashboard"))
+            _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
+                                                  _m_layout->m_screenNameArea,
+                                                  Qt::AlignCenter,
+                                                  "");
+
     if (general != NULL) {
         _m_avatarArea->setToolTip(m_player->getHeadSkillDescription());
         QString name = general->objectName();
@@ -232,6 +237,11 @@ QPixmap PlayerCardContainer::paintByMask(QPixmap &source) {
     p.setCompositionMode(QPainter::CompositionMode_SourceIn);
     p.drawPixmap(0, 0, _m_layout->m_secondaryAvatarArea.width(), _m_layout->m_secondaryAvatarArea.height(), source);
     return tmp;
+}
+
+const ClientPlayer *PlayerCardContainer::getPlayer() const {
+    if (m_player) return m_player;
+    return NULL;
 }
 
 void PlayerCardContainer::updateSmallAvatar() {
@@ -304,7 +314,6 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
         }
     } else {
         // retrieve menu and create a new pile if necessary
-        QMenu* menu;
         QPushButton *button;
         if (!_m_privatePiles.contains(pile_name)) {
             button = new QPushButton;
@@ -315,32 +324,10 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
             _m_privatePiles[pile_name] = button_widget;
         } else {
             button = (QPushButton *)(_m_privatePiles[pile_name]->widget());
-            menu = button->menu();
         }
 
         button->setText(QString("%1(%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
-        menu = new QMenu(button);
-        menu->setProperty("private_pile", "true");
-
-        //Sort the cards in pile by number can let players know what is in this pile more clear.
-        //If someone has "buqu", we can got which card he need or which he hate easier.
-        QList<const Card *> cards;
-        foreach (int card_id, pile) {
-            const Card *card = Sanguosha->getCard(card_id);
-            if (card != NULL) cards << card;
-        }
-        qSort(cards.begin(), cards.end(), CompareByNumber);
-
-        foreach (const Card *card, cards)
-            menu->addAction(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()), card->getFullName());
-
-        int length = cards.count();
-        if (length > 0)
-            button->setMenu(menu);
-        else {
-            delete menu;
-            button->setMenu(NULL);
-        }
+        connect(button, SIGNAL(clicked()), this, SLOT(showPile()));
     }
 
     QPoint start = _m_layout->m_privatePileStartPos;
@@ -351,6 +338,17 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
         QGraphicsProxyWidget *widget = widgets[i];
         widget->setPos(start + i * step);
         widget->resize(size);
+    }
+}
+
+void PlayerCardContainer::showPile() {
+    QPushButton *button = qobject_cast<QPushButton *>(sender());
+    if (button) {
+        const ClientPlayer *player = getPlayer();
+        if (!player) return;
+        QList<int> card_ids = player->getPile(button->objectName());
+        if (card_ids.isEmpty()) return;
+        RoomSceneInstance->doGongxin(card_ids, false, QList<int>());
     }
 }
 
@@ -945,7 +943,7 @@ void PlayerCardContainer::showSeat() {
 }
 
 bool PlayerCardContainer::_isSelected(QGraphicsItem *item) const {
-    return item != NULL && item->isUnderMouse() && isEnabled() && 
+    return item != NULL && item->isUnderMouse() && isEnabled() &&
            (flags() & QGraphicsItem::ItemIsSelectable);
 }
 

@@ -48,9 +48,9 @@ public:
         obtained << id2;
         room->clearAG(lidian);
 
-        room->askForGuanxing(lidian, card_ids, Room::GuanxingDownOnly);
         DummyCard dummy(obtained);
         lidian->obtainCard(&dummy, false);
+        room->askForGuanxing(lidian, card_ids, Room::GuanxingDownOnly);
 
         return true;
     }
@@ -81,7 +81,12 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (player->askForSkillInvoke(objectName())){
+        DamageStruct damage = data.value<DamageStruct>();ServerPlayer *target = NULL;
+        if (triggerEvent == Damage)
+            target = damage.to;
+        else
+            target = damage.from;
+        if (player->askForSkillInvoke(objectName(), QVariant::fromValue(target))){
             room->broadcastSkillInvoke(objectName());
             return true;
         }
@@ -352,6 +357,7 @@ void CunsiCard::onEffect(const CardEffectStruct &effect) const{
     room->doLightbox("$CunsiAnimate", 3000);
     effect.from->removeGeneral(effect.from->inHeadSkills("cunsi"));
     room->acquireSkill(effect.to, "yongjue");
+    room->setPlayerMark(effect.to, "@yongjue", 1);
     if (effect.to != effect.from)
         effect.to->drawCards(2);
 }
@@ -514,7 +520,7 @@ public:
         if (TriggerSkill::triggerable(sunce).isEmpty()) return QStringList();
         PindianStar pindian = data.value<PindianStar>();
         if (pindian->from != sunce && pindian->to != sunce) return QStringList();
-        ask_who = pindian->from == sunce ? player : sunce;
+        ask_who = sunce;
         return QStringList(objectName());
     }
 
@@ -606,12 +612,8 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        bool head = target->inHeadSkills(objectName());
         QStringList skills;
-        skills << "sunce_yinghun" << "sunce_yingzi";
-        if (!head)
-            for (int i = 0; i < skills.length(); i++)
-                skills[i].append("!");
+        skills << "sunce_yinghun!" << "sunce_yingzi!";
         target->getRoom()->handleAcquireDetachSkills(target, skills);
         target->setMark("hunshang",1);
         return false;
@@ -1476,7 +1478,7 @@ public:
             case DamageStruct::Fire: l.arg2 = "fire_nature"; break;
             case DamageStruct::Thunder: l.arg2 = "thunder_nature"; break;
             }
-            
+
             room->sendLog(l);
 
             return true;

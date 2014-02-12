@@ -1166,7 +1166,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
 }
 
 int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QString &flags, const QString &reason,
-                           bool handcard_visible, Card::HandlingMethod method, QList<int> &disabled_ids) {
+                           bool handcard_visible, Card::HandlingMethod method, const QList<int> &disabled_ids) {
     while (isPaused()) {}
     notifyMoveFocus(player, S_COMMAND_CHOOSE_CARD);
 
@@ -2189,27 +2189,17 @@ bool Room::processRequestCheat(ServerPlayer *player, const QSanProtocol::QSanGen
 }
 
 bool Room::makeSurrender(ServerPlayer *initiator) {
-    bool loyalGiveup = true;
-    int loyalAlive = 0;
-    bool renegadeGiveup = true;
-    int renegadeAlive = 0;
-    bool rebelGiveup = true;
-    int rebelAlive = 0;
-
     // broadcast polling request
     QList<ServerPlayer *> playersAlive;
     foreach (ServerPlayer *player, m_players) {
-        QString playerRole = player->getRole();
-        if ((playerRole == "loyalist" || playerRole == "lord") && player->isAlive()) loyalAlive++;
-        else if (playerRole == "rebel" && player->isAlive()) rebelAlive++;
-        else if (playerRole == "renegade" && player->isAlive()) renegadeAlive++;
-
         if (player != initiator && player->isAlive() && player->isOnline()) {
             player->m_commandArgs = toJsonString(initiator->getGeneral()->objectName());
             playersAlive << player;
         }
     }
     doBroadcastRequest(playersAlive, S_COMMAND_SURRENDER);
+
+    int give_up = 1;
 
     // collect polls
     foreach (ServerPlayer *player, playersAlive) {
@@ -2219,36 +2209,11 @@ bool Room::makeSurrender(ServerPlayer *initiator) {
         else
             result = player->getClientReply().asBool();
 
-        QString playerRole = player->getRole();
-        if (playerRole == "loyalist" || playerRole == "lord") {
-            loyalGiveup &= result;
-            if (player->isAlive()) loyalAlive++;
-        } else if (playerRole == "rebel") {
-            rebelGiveup &= result;
-            if (player->isAlive()) rebelAlive++;
-        } else if (playerRole == "renegade") {
-            renegadeGiveup &= result;
-            if (player->isAlive()) renegadeAlive++;
-        }
+        if (result) give_up++;
     }
 
-    // vote counting
-    if (loyalGiveup && renegadeGiveup && !rebelGiveup)
-        gameOver("rebel");
-    else if (loyalGiveup && !renegadeGiveup && rebelGiveup)
-        gameOver("renegade");
-    else if (!loyalGiveup && renegadeGiveup && rebelGiveup)
-        gameOver("lord+loyalist");
-    else if (loyalGiveup && renegadeGiveup && rebelGiveup) {
-        // if everyone give up, then ensure that the initiator doesn't win.
-        QString playerRole = initiator->getRole();
-        if (playerRole == "lord" || playerRole == "loyalist")
-            gameOver(renegadeAlive >= rebelAlive ? "renegade" : "rebel");
-        else if (playerRole == "renegade")
-            gameOver(loyalAlive >= rebelAlive ? "loyalist+lord" : "rebel");
-        else if (playerRole == "rebel")
-            gameOver(renegadeAlive >= loyalAlive ? "renegade" : "loyalist+lord");
-    }
+    if (give_up > (playersAlive.length() + 1) / 2)
+        gameOver(".");
 
     m_surrenderRequestReceived = false;
 
@@ -2630,17 +2595,19 @@ QString Room::_chooseDefaultGeneral(ServerPlayer *player) const{
     if (Config.EnableHegemony && Config.Enable2ndGeneral) {
         foreach (QString name, player->getSelected()) {
             Q_ASSERT(!name.isEmpty());
-            if (player->getGeneral() != NULL) { // choosing first general
+            if (player->getGeneral() != NULL) { // choosing second general
                 if (name == player->getGeneralName()) continue;
                 Q_ASSERT(Sanguosha->getGeneral(name) != NULL);
                 Q_ASSERT(player->getGeneral() != NULL);
+                if (Sanguosha->getGeneral(name)->isLord()) continue;
                 if (Sanguosha->getGeneral(name)->getKingdom() == player->getGeneral()->getKingdom())
                     return name;
             } else {
-                foreach (QString other, player->getSelected()) { // choosing second general
+                foreach (QString other, player->getSelected()) { // choosing first general
                     if (name == other) continue;
                     Q_ASSERT(Sanguosha->getGeneral(other) != NULL);
                     Q_ASSERT(Sanguosha->getGeneral(name) != NULL);
+                    if (Sanguosha->getGeneral(other)->isLord()) continue;
                     if (Sanguosha->getGeneral(name)->getKingdom() == Sanguosha->getGeneral(other)->getKingdom())
                         return name;
                 }

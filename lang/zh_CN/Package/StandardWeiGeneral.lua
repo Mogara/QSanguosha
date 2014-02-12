@@ -113,7 +113,7 @@ return {
 
 	["#yuejin"] = "奋强突固",
 	["yuejin"] = "乐进",
-	["illustrator:heg_yuejin"] = "巴萨小马",
+	["illustrator:yuejin"] = "巴萨小马",
 	["xiaoguo"] = "骁果",
 	[":xiaoguo"] = "其他角色的结束阶段开始时，你可以弃置一张基本牌，令该角色选择一项：1.弃置一张装备牌；2.受到你造成的1点伤害。",
 	["@xiaoguo"] = "你可以弃置一张基本牌发动“骁果”",

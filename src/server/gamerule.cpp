@@ -390,7 +390,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
 
             try {
                 ServerPlayer *jiayu = room->getCurrent();
-                if (jiayu->hasSkill("wansha") && jiayu->hasShownSkill(Sanguosha->getSkill("wansha")) 
+                if (jiayu->hasSkill("wansha") && jiayu->hasShownSkill(Sanguosha->getSkill("wansha"))
                         && jiayu->isAlive() && jiayu->getPhase() != Player::NotActive){
                     if (player != dying.who && player != jiayu)
                         room->setPlayerFlag(player, "Global_PreventPeach");
@@ -608,10 +608,14 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                 rewardAndPunish(killer, player);
 
             if (player->getGeneral()->isLord() && player == data.value<DeathStruct>().who) {
-                foreach(ServerPlayer *p, room->getOtherPlayers(player, true)) {
+                foreach(ServerPlayer *p, room->getOtherPlayers(player, true))
                     if (p->getKingdom() == player->getKingdom())
-                        room->setPlayerProperty(p, "role", "careerist");
-                }
+                        if (p->hasShownOneGeneral())
+                            room->setPlayerProperty(p, "role", "careerist");
+                        else {
+                            p->setRole("careerist");
+                            room->notifyProperty(p, p, "role");
+                        }
             }
 
             if (room->getMode() == "02_1v1") {
@@ -731,14 +735,12 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             if (data.toBool()) {
                 if (player->isLord()) {
                     QString kingdom = player->getKingdom();
-                    foreach(auto p, room->getPlayers()) {
+                    foreach(ServerPlayer *p, room->getPlayers()) {
                         if (p->getKingdom() == kingdom && p->getRole() == "careerist")
                             room->setPlayerProperty(p, "role", BasaraMode::getMappedRole(kingdom));
                     }
                 }
             }
-            if (!getWinner(player).isNull())
-                room->getThread()->trigger(GameOverJudge, room, player);
          }
     default:
             break;
@@ -902,8 +904,13 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
         QStringList winners;
         QList<ServerPlayer *> players = room->getAlivePlayers();
         ServerPlayer *win_player = players.first();
-        if (players.length() == 1 && !win_player->hasShownOneGeneral()) {
-            win_player->showGeneral();
+        if (players.length() == 1) {
+            if (!win_player->hasShownOneGeneral())
+                win_player->showGeneral(true, false);
+            foreach (ServerPlayer *p, room->getPlayers()) {
+                if (win_player->isFriendWith(p))
+                    winners << p->objectName();
+            }
         } else {
             bool has_diff_kingdoms = false;
             foreach(ServerPlayer *p, players) {
@@ -946,7 +953,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
             }
 
             if (has_diff_kingdoms) return QString();    //有人不是自己人，呵呵一笑。
-            
+
             // 到了这一步，都是自己人了，全员亮将。
             foreach(ServerPlayer *p, players) {
                 if (!p->hasShownOneGeneral()) {

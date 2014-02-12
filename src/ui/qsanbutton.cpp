@@ -132,7 +132,7 @@ void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     if (!insideButton(point)) return;
 
     if (_m_style == S_STYLE_TOGGLE && !multi_state
-        || _m_state == S_STATE_DISABLED 
+        || _m_state == S_STATE_DISABLED
         || _m_state == S_STATE_CANPRESHOW) return;
     setState(S_STATE_DOWN);
 }
@@ -202,7 +202,7 @@ void QSanSkillButton::onMouseClick() {
     if (_m_state == QSanButton::S_STATE_CANPRESHOW) {
         setState(S_STATE_DISABLED);
         ClientInstance->preshow(_m_skill->objectName());
-    } else if (_m_state == QSanButton::S_STATE_DISABLED && _m_skill->canPreshow() 
+    } else if (_m_state == QSanButton::S_STATE_DISABLED && _m_skill->canPreshow()
         && !Self->hasShownSkill(_m_skill)) {
         setState(QSanButton::S_STATE_CANPRESHOW);
         ClientInstance->preshow(_m_skill->objectName());
@@ -225,7 +225,7 @@ void QSanSkillButton::setSkill(const Skill *skill) {
          _setSkillType(QSanInvokeSkillButton::S_SKILL_ARRAY);
          _m_emitActivateSignal = true;
          _m_emitDeactivateSignal = true;
-     } else if ((freq == Skill::Frequent || freq == Skill::NotFrequent) 
+     } else if ((freq == Skill::Frequent || freq == Skill::NotFrequent)
          && skill->inherits("TriggerSkill") && !skill->inherits("WeaponSkill")
          && !skill->inherits("ArmorSkill") && _m_viewAsSkill == NULL) {
          setStyle(QSanButton::S_STYLE_TOGGLE);

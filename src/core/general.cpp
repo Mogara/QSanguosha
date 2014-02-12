@@ -171,19 +171,34 @@ QString General::getSkillDescription(bool include_name, bool yellow) const{
         QString color_str = Sanguosha->getKingdomColor(kingdom).name();
         QString name = QString("<font color=%1><b>%2</b></font>     ").arg(color_str).arg(Sanguosha->translate(objectName()));
         name.prepend(QString("<img src='image/kingdom/icon/%1.png'/>    ").arg(kingdom));
-        if (deputy_max_hp_adjusted_value == -1 || head_max_hp_adjusted_value == -1)
-        {
-            for (int i = 1; i < double_max_hp - 1; i += 2)
-                name.append("<img src='image/system/magatamas/3.png' height = 12/>");
-            if (double_max_hp % 2)
-                name.append("<img src='image/system/magatamas/half-waken.png' height = 12/>");
-            else
-                name.append("<img src='image/system/magatamas/full-waken.png' height = 12/>");
-        } else {
-            for (int i = 1; i < double_max_hp; i += 2)
-                name.append("<img src='image/system/magatamas/3.png' height = 12/>");
-            if (double_max_hp % 2)
+        int region = double_max_hp;
+        int waken = 0;
+        if (deputy_max_hp_adjusted_value != 0 || head_max_hp_adjusted_value != 0) {
+            int waken1 = head_max_hp_adjusted_value;
+            int waken2 = deputy_max_hp_adjusted_value;      // for wake-skill general
+            region += qMax(waken1, waken2);
+            waken = -qAbs(waken1 - waken2);
+        }
+        int i = 2;
+        while (i <= region + waken) {
+            name.append("<img src='image/system/magatamas/3.png' height = 12/>");
+            i += 2;
+        }
+        if ((double_max_hp + waken) % 2)
+            if (waken == 0)
                 name.append("<img src='image/system/magatamas/half.png' height = 12/>");
+            else {
+                name.append("<img src='image/system/magatamas/full-waken.png' height = 12/>");
+                waken ++;
+            }
+        if (waken < 0) {
+            i = -2;
+            while (i >= waken) {
+                name.append("<img src='image/system/magatamas/3-waken.png' height = 12/>");
+                i -= 2;
+            }
+            if (qAbs(waken) % 2)
+                name.append("<img src='image/system/magatamas/half-waken.png' height = 12/>");
         }
         if (!getCompanions().isEmpty()) {
             name.append("<br/> <br/>");

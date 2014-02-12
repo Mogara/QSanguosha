@@ -870,3 +870,9 @@ void MainWindow::on_actionAbout_GPLv3_triggered() {
     window->appear();
 }
 
+void MainWindow::on_actionManage_Ban_IP_triggered(){
+    Server *server = findChild<Server *>();
+
+    BanIPDialog *dlg = new BanIPDialog(this, server);
+    dlg->show();
+}

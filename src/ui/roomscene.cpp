@@ -2422,9 +2422,11 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             if (m_choiceDialog != NULL) {
                 m_choiceDialog->setParent(main_window, Qt::Dialog);
                 m_choiceDialog->show();
-                ok_button->setEnabled(false);
-                cancel_button->setEnabled(true);
-                discard_button->setEnabled(false);
+                if (ClientInstance->getReplayer()) {
+                    ok_button->setEnabled(false);
+                    cancel_button->setEnabled(true);
+                    discard_button->setEnabled(false);
+                }
             }
             break;
         }
@@ -2606,6 +2608,7 @@ void RoomScene::doCancelButton() {
             break;
         }
     case Client::ExecDialog: {
+            if (ClientInstance->getReplayer()) break;
             m_choiceDialog->reject();
             break;
         }
@@ -2655,7 +2658,7 @@ void RoomScene::changeTableBg() {
     QRectF displayRegion = sceneRect();
 
     QPixmap tableBg = QPixmap(Config.TableBgImage)
-        .scaled(displayRegion.width(), displayRegion.height(), 
+        .scaled(displayRegion.width(), displayRegion.height(),
                 Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     m_tableh -= _m_roomLayout->m_photoDashboardPadding;
     m_tableBg->setPos(0, 0);
@@ -2799,6 +2802,9 @@ void RoomScene::onGameOver() {
     fillTable(winner_table, winner_list);
     fillTable(loser_table, loser_list);
 
+    if (Config.value("EnableAutoSaveRecord").toBool())
+        saveReplayRecord(true, Config.value("NetworkOnly").toBool());
+
     addRestartButton(dialog);
     m_roomMutex.unlock();
     dialog->exec();
@@ -2831,7 +2837,30 @@ void RoomScene::addRestartButton(QDialog *dialog) {
     connect(return_button, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
 }
 
-void RoomScene::saveReplayRecord() {
+void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only) {
+    if (auto_save) {
+        bool is_network = false;
+        foreach (const ClientPlayer *player, ClientInstance->getPlayers()) {
+            if (player == Self) continue;
+            if (player->getState() != "robot") {
+                is_network = true;
+                break;
+            }
+        }
+        if (network_only && !is_network) return;
+        QString location = Config.value("RecordSavePaths", "records/").toString();
+        if (!location.startsWith(":")) {
+            location.replace("\\", "/");
+            if (!location.endsWith("/"))
+                location.append("/");
+            location.append(QString("%1%2-").arg(Sanguosha->translate(Self->getActualGeneral1()->objectName()))
+                                            .arg(Sanguosha->translate(Self->getActualGeneral2()->objectName())));
+            location.append(QDateTime::currentDateTime().toString("yyyyMMddhhmmss"));
+            location.append(".txt");
+            ClientInstance->save(location);
+        }
+        return;
+    }
     QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
     QString filename = QFileDialog::getSaveFileName(main_window,
                                                     tr("Save replay record"),
@@ -3487,7 +3516,8 @@ void RoomScene::onGameStart() {
 #endif
     game_started = true;
     dashboard->refresh();
-    dashboard->showControlButtons();
+    if (!ClientInstance->getReplayer())
+        dashboard->showControlButtons();
     dashboard->showSeat();
     foreach (Photo *photo, photos)
         photo->showSeat();

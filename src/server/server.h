@@ -21,6 +21,7 @@ class QRadioButton;
 #include <QSplitter>
 #include <QTabWidget>
 #include <QMultiHash>
+#include <QTableWidget>
 
 class Package;
 
@@ -108,6 +109,7 @@ private slots:
 
 class Scenario;
 class ServerPlayer;
+class BanIPDialog;
 
 class Server: public QObject {
     Q_OBJECT
@@ -120,6 +122,8 @@ public:
     void daemonize();
     Room *createNewRoom();
     void signupPlayer(ServerPlayer *player);
+
+    friend class BanIPDialog;
 
 private:
     ServerSocket *server;
@@ -137,6 +141,30 @@ private slots:
 
 signals:
     void server_message(const QString &);
+};
+
+class BanIPDialog: public QDialog {
+    Q_OBJECT
+
+public:
+    BanIPDialog(QWidget *parent, Server *theserver);
+
+private:
+    QListWidget *left;
+    QListWidget *right;
+
+    Server *server;
+    QList<ServerPlayer *> sp_list;
+
+    void loadIPList();
+    void loadBannedList();
+
+private slots:
+    void insertClicked();
+    void removeClicked();
+    void kickClicked();
+
+    void save();
 };
 
 #endif

@@ -224,7 +224,7 @@ QWidget *ServerDialog::createAdvancedTab() {
 
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
-    
+
     return widget;
 }
 
@@ -458,6 +458,133 @@ void BanlistDialog::saveAll() {
     BanPair::loadBanPairs();
 }
 
+BanIPDialog::BanIPDialog(QWidget *parent, Server *theserver)
+    : QDialog(parent), server(theserver){
+    /*
+    if (Sanguosha->currentRoom() == NULL){
+        QMessageBox::warning(this,tr("Warining!"), tr("Game is not started!"));
+        return;
+    }
+    */
+    QVBoxLayout *left_layout = new QVBoxLayout;
+    QVBoxLayout *right_layout = new QVBoxLayout;
+
+    left = new QListWidget;
+    left->setSortingEnabled(false);
+    right = new QListWidget;
+
+    QPushButton *insert = new QPushButton(tr("Insert to banned IP list"));
+    QPushButton *kick = new QPushButton(tr("Kick from server"));
+
+    QPushButton *remove = new QPushButton(tr("Remove from banned IP list"));
+
+    left_layout->addWidget(left);
+
+    QHBoxLayout *left_button_layout = new QHBoxLayout;
+    left_button_layout->addWidget(insert);
+    left_button_layout->addWidget(kick);
+
+    left_layout->addLayout(left_button_layout);
+
+    right_layout->addWidget(right);
+    right_layout->addWidget(remove);
+
+    QPushButton *ok = new QPushButton(tr("OK"));
+    QPushButton *cancel = new QPushButton(tr("Cancel"));
+
+    QHBoxLayout *up_layout = new QHBoxLayout;
+    up_layout->addLayout(left_layout);
+    up_layout->addLayout(right_layout);
+
+    QHBoxLayout *down_layout = new QHBoxLayout;
+    down_layout->addWidget(ok);
+    down_layout->addWidget(cancel);
+
+    QVBoxLayout *total_layout = new QVBoxLayout;
+    total_layout->addLayout(up_layout);
+    total_layout->addLayout(down_layout);
+
+    setLayout(total_layout);
+    connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(this, SIGNAL(accepted()), this, SLOT(save()));
+    connect(cancel, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(insert, SIGNAL(clicked()), this, SLOT(insertClicked()));
+    connect(remove, SIGNAL(clicked()), this, SLOT(removeClicked()));
+    connect(kick, SIGNAL(clicked()), this, SLOT(kickClicked()));
+
+    if (server)
+        loadIPList();
+
+    loadBannedList();
+}
+
+void BanIPDialog::loadIPList(){
+    foreach (Room *room, server->rooms){
+        foreach (ServerPlayer *p, room->getPlayers()){
+            if (p->getState() != "offline" && p->getState() != "robot") {
+                sp_list << p;
+            }
+        }
+    }
+
+    left->clear();
+
+    foreach (ServerPlayer *p, sp_list){
+        QString parsed_string = QString("%1::%2").arg(p->screenName(), p->getIp());
+        left->addItem(parsed_string);
+    }
+}
+
+void BanIPDialog::loadBannedList() {
+    QStringList banned = Config.value("BannedIP", QStringList()).toStringList();
+
+    right->clear();
+    right->addItems(banned);
+}
+
+void BanIPDialog::insertClicked() {
+    int row = left->currentRow();
+    if (row != -1){
+        QString ip = left->currentItem()->text().split("::").last();
+
+        if (ip.startsWith("127."))
+            QMessageBox::warning(this, tr("Warning!"), tr("This is your local Loopback Address and can't be banned!"));
+
+        if (right->findItems(ip, Qt::MatchFlags(Qt::MatchExactly)).isEmpty())
+            right->addItem(ip);
+    }
+}
+
+void BanIPDialog::removeClicked(){
+    int row = right->currentRow();
+    if (row != -1)
+        delete right->takeItem(row);
+}
+
+void BanIPDialog::kickClicked(){
+    int row = left->currentRow();
+    if (row != -1){
+        ServerPlayer *p = sp_list[row];
+        QStringList split_data = left->currentItem()->text().split("::");
+        QString ip = split_data.takeLast();
+        QString screenName = split_data.join("::");
+        if (p->screenName() == screenName && p->getIp() == ip){
+            //procedure kick
+            p->kick();
+        }
+    }
+}
+
+void BanIPDialog::save(){
+    QSet<QString> ip_set;
+
+    for (int i = 0; i < right->count(); i++)
+        ip_set << right->item(i)->text();
+
+    QStringList ips = ip_set.toList();
+    Config.setValue("BannedIP", ips);
+}
+
 QGroupBox *ServerDialog::createGameModeBox() {
     QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
     mode_group = new QButtonGroup;
@@ -670,14 +797,21 @@ Room *Server::createNewRoom() {
 }
 
 void Server::processNewConnection(ClientSocket *socket) {
+    QString addr = socket->peerAddress();
     if (Config.ForbidSIMC) {
-        QString addr = socket->peerAddress();
         if (addresses.contains(addr)) {
             socket->disconnectFromHost();
             emit server_message(tr("Forbid the connection of address %1").arg(addr));
             return;
-        } else
+        } 
+        else
             addresses.insert(addr);
+    }
+
+    if (Config.value("BannedIP").toStringList().contains(addr)){
+        socket->disconnectFromHost();
+        emit server_message(tr("Forbid the connection of address %1").arg(addr));
+        return;
     }
 
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));

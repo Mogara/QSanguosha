@@ -164,7 +164,7 @@ public slots:
     void setDashboardShadow(const QString &who);
     void showServerInformation();
     void surrender();
-    void saveReplayRecord();
+    void saveReplayRecord(const bool auto_save = false, const bool network_only = false);
     void makeDamage();
     void makeKilling();
     void makeReviving();
@@ -178,6 +178,8 @@ public slots:
     void doDiscardButton();
 
     inline QPointF tableCenterPos() {    return m_tableCenterPos;    };
+
+    void doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids);
 
 protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -368,8 +370,6 @@ private slots:
 
     void attachSkill(const QString &skill_name, const bool &head = true);
     void detachSkill(const QString &skill_name);
-
-    void doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids);
 
     void startAssign();
 

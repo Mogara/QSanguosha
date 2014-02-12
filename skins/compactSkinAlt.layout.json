@@ -13,7 +13,7 @@
     "discardPileMinWidth": 465,
     "discardPilePadding": 50,
     "maximumSceneSize": [1130, 675], // if greater than this size, switch to default skin
-    "minimumSceneSize": [940, 595], // if smaller than this size, start scaling 
+    "minimumSceneSize": [940, 595], // if smaller than this size, start scaling
     "maximumSceneSize-10player": [1145, 845],
     "minimumSceneSize-10player": [990, 740]
 },
@@ -24,7 +24,7 @@
     "mainFrameArea": [0, 0, 131, 152],
     "canvasArea": [0, 0, 131, 152],
     "handCardNumIconArea": [3, 70, 21, 22],
-    "handCardFont": ["DroidSansFallback", [12, 12, 3], 20, [255, 255, 255, 255]],	
+    "handCardFont": ["DroidSansFallback", [12, 12, 3], 20, [255, 255, 255, 255]],
     "equipAreas": [[3, 94, 150, 13], [3, 108, 150, 13], [3, 122, 150, 13], [3, 136, 150, 13]],
     "equipImageArea": [1, 1, 11, 11],
     //"equipTextArea": [35, -5, 85, 21], // need adjustment
@@ -32,7 +32,7 @@
     //"equipDistanceArea": [14, -5, 30, 21], // need adjustment
     "equipPointArea": [98, -6, 25, 25],
     //"equipFont": ["FZLiBian-S02", [14, 14, 0], 50, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
-    "equipPointFont": ["DroidSansFallback", [11, 11, 3], 0, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]], 
+    "equipPointFont": ["DroidSansFallback", [11, 11, 3], 0, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],
     "delayedTrickFirstRegion": [-10, 16, 28, 28],
     "delayedTrickStep": [0, 19],
     "roleComboBoxPos": [104, 1],
@@ -55,7 +55,7 @@
     "magatamasBgVisible": true,
     "magatamasAnchor": ["bottomRight", [136, 85]],
     "cardMoveArea": [-50, 35, 200, 130],
-    "phaseArea": [5, 147, 140, 12],	
+    "phaseArea": [5, 147, 140, 12],
     "onlineStatusArea": [93, 20, 30, 25],
     "onlineStatusBgColor": [0, 0, 0, 0],
     "onlineStatusFont": ["DroidSansFallback",12, 0, [255, 255, 255, 255], 3, 10, [0, 0], [20, 20, 20, 155]],

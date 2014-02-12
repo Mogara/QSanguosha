@@ -1085,7 +1085,7 @@ public:
     const BattleArraySkill *toBattleArraySkill() const{
         return qobject_cast<const BattleArraySkill *>($self);
     }
-    
+
     QStringList TriggerSkillTriggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         return $self->TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who);
     }
@@ -1295,7 +1295,7 @@ public:
     bool askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive);
     bool isCanceled(const CardEffectStruct &effect);
     int askForCardChosen(ServerPlayer *player, ServerPlayer *who, const char *flags, const char *reason,
-                         bool handcard_visible = false, Card::HandlingMethod method = Card::MethodNone, QList<int> &disabled_ids = QList<int>());
+                         bool handcard_visible = false, Card::HandlingMethod method = Card::MethodNone, const QList<int> &disabled_ids = QList<int>());
     const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, const QVariant &data, const char *skill_name);
     const Card *askForCard(ServerPlayer *player, const char *pattern, const char *prompt, const QVariant &data = QVariant(),
                            Card::HandlingMethod method = Card::MethodDiscard, ServerPlayer *to = NULL, bool isRetrial = false,
@@ -1345,6 +1345,7 @@ public:
         qWarning("%s", msg);
     }
     void throwEvent(const TriggerEvent event) {
+        Q_UNUSED($self);
         throw event;
     }
 };

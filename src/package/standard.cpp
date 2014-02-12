@@ -291,12 +291,12 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
             if (count_players[i]->isAlive())
                 players << count_players[i];
         }
-        
+
         for (int i = 0; i <= index; i++) {
             if (count_players[i]->isAlive())
                 players << count_players[i];
         }
-        
+
         ServerPlayer *p = NULL;
 
         foreach (ServerPlayer *player, players) {
