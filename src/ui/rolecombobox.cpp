@@ -14,13 +14,13 @@ void RoleComboBox::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         update();
         return;
     }
-    if (G_COMMON_LAYOUT.ROLE_WEI_RECT.contains(point))
+    if (G_COMMON_LAYOUT.m_roleWeiRect.contains(point))
         wei_excluded = !wei_excluded;
-    else if (G_COMMON_LAYOUT.ROLE_QUN_RECT.contains(point))
+    else if (G_COMMON_LAYOUT.m_roleQunRect.contains(point))
         qun_excluded = !qun_excluded;
-    else if (G_COMMON_LAYOUT.ROLE_SHU_RECT.contains(point))
+    else if (G_COMMON_LAYOUT.m_roleShuRect.contains(point))
         shu_excluded = !shu_excluded;
-    else if (G_COMMON_LAYOUT.ROLE_WU_RECT.contains(point))
+    else if (G_COMMON_LAYOUT.m_roleWuRect.contains(point))
         wu_excluded = !wu_excluded;
     update();
 }
@@ -53,21 +53,21 @@ void RoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
             pix.load("image/system/roles/unknown.png");
             painter->drawPixmap(0, 0, pix);
         } else {
-            QColor grey = G_COMMON_LAYOUT.ROLE_DARK_COLOR;
+            QColor grey = G_COMMON_LAYOUT.m_roleDarkColor;
             QPen pen(Qt::black);
             pen.setWidth(1);
             painter->setPen(pen);
             //paint wei
-            painter->setBrush(QBrush(wei_excluded ? grey : G_COMMON_LAYOUT.ROLE_WEI_COLOR));
+            painter->setBrush(QBrush(wei_excluded ? grey : G_COMMON_LAYOUT.m_roleWeiColor));
             painter->drawRect(COMPACT_BORDER_WIDTH, COMPACT_BORDER_WIDTH, COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH);
             //paint qun
-            painter->setBrush(QBrush(qun_excluded ? grey : G_COMMON_LAYOUT.ROLE_QUN_COLOR));
+            painter->setBrush(QBrush(qun_excluded ? grey : G_COMMON_LAYOUT.m_roleQunColor));
             painter->drawRect(COMPACT_BORDER_WIDTH * 2 + COMPACT_ITEM_LENGTH, COMPACT_BORDER_WIDTH, COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH);
             //paint shu
-            painter->setBrush(QBrush(shu_excluded ? grey : G_COMMON_LAYOUT.ROLE_SHU_COLOR));
+            painter->setBrush(QBrush(shu_excluded ? grey : G_COMMON_LAYOUT.m_roleShuColor));
             painter->drawRect(COMPACT_BORDER_WIDTH, COMPACT_BORDER_WIDTH * 2 + COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH);
             //paint wu
-            painter->setBrush(QBrush(wu_excluded ? grey : G_COMMON_LAYOUT.ROLE_WU_COLOR));
+            painter->setBrush(QBrush(wu_excluded ? grey : G_COMMON_LAYOUT.m_roleWuColor));
             painter->drawRect(COMPACT_BORDER_WIDTH * 2 + COMPACT_ITEM_LENGTH, COMPACT_BORDER_WIDTH * 2 + COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH);
         }
     } else {
@@ -75,13 +75,13 @@ void RoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
         painter->drawPixmap(0, 0, pix);
 
         if (wei_excluded)
-            painter->drawPixmap(G_COMMON_LAYOUT.ROLE_WEI_RECT, G_ROOM_SKIN.getPixmap (QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "wei"));
+            painter->drawPixmap(G_COMMON_LAYOUT.m_roleWeiRect, G_ROOM_SKIN.getPixmap (QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "wei"));
         if (qun_excluded)
-            painter->drawPixmap(G_COMMON_LAYOUT.ROLE_QUN_RECT, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "qun"));
+            painter->drawPixmap(G_COMMON_LAYOUT.m_roleQunRect, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "qun"));
         if (shu_excluded)
-            painter->drawPixmap(G_COMMON_LAYOUT.ROLE_SHU_RECT, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "shu"));
+            painter->drawPixmap(G_COMMON_LAYOUT.m_roleShuRect, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "shu"));
         if (wu_excluded)
-            painter->drawPixmap(G_COMMON_LAYOUT.ROLE_WU_RECT, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "wu"));
+            painter->drawPixmap(G_COMMON_LAYOUT.m_roleWuRect, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "wu"));
     }
 }
 

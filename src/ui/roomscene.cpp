@@ -16,6 +16,7 @@
 #include "SkinBank.h"
 #include "record-analysis.h"
 #include "jsonutils.h"
+#include "choosegeneralbox.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -177,6 +178,12 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(guanxing(QList<int>, bool)), guanxing_box, SLOT(doGuanxing(QList<int>, bool)));
     guanxing_box->moveBy(-120, 0);
 
+    choose_general_box = new ChooseGeneralBox;
+    choose_general_box->hide();
+    addItem(choose_general_box);
+    choose_general_box->setZValue(30000.0);
+    choose_general_box->moveBy(-120, 0);
+
     card_container = new CardContainer();
     card_container->hide();
     addItem(card_container);
@@ -200,7 +207,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     if (ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "02_1v1" || ServerInfo.GameMode == "06_XMode") {
         if (ServerInfo.GameMode != "06_XMode") {
             connect(ClientInstance, SIGNAL(generals_filled(QStringList)), this, SLOT(fillGenerals(QStringList)));
-            connect(ClientInstance, SIGNAL(general_asked()), this, SLOT(startGeneralSelection()));
             connect(ClientInstance, SIGNAL(general_taken(QString, QString, QString)), this, SLOT(takeGeneral(QString, QString, QString)));
             connect(ClientInstance, SIGNAL(general_recovered(int, QString)), this, SLOT(recoverGeneral(int, QString)));
         }
@@ -904,6 +910,7 @@ void RoomScene::updateTable() {
     m_tablePile->adjustCards();
     card_container->setPos(m_tableCenterPos - QPointF(card_container->boundingRect().width() / 2, card_container->boundingRect().height() / 2));
     guanxing_box->setPos(m_tableCenterPos - QPointF(guanxing_box->boundingRect().width() / 2, guanxing_box->boundingRect().height() / 2));
+    choose_general_box->setPos(m_tableCenterPos - QPointF(choose_general_box->boundingRect().width() / 2, choose_general_box->boundingRect().height() / 2));
     prompt_box->setPos(m_tableCenterPos);
     pausing_text->setPos(m_tableCenterPos - pausing_text->boundingRect().center());
     pausing_item->setRect(sceneRect());
@@ -1439,14 +1446,11 @@ void RoomScene::chooseGeneral(const QStringList &generals) {
     if (!main_window->isActiveWindow())
         Sanguosha->playSystemAudioEffect("prelude");
 
-    QDialog *dialog;
-    if (generals.isEmpty())
-        dialog = new FreeChooseDialog(main_window);
-    else
-        dialog = new ChooseGeneralDialog(generals, main_window);
-
-    delete m_choiceDialog;
-    m_choiceDialog = dialog;
+    if (generals.isEmpty()) {
+        delete m_choiceDialog;
+        m_choiceDialog = new FreeChooseDialog(main_window);
+    } else
+        choose_general_box->chooseGeneral(generals);
 }
 
 void RoomScene::chooseSuit(const QStringList &suits) {
@@ -2254,9 +2258,6 @@ void RoomScene::doTimeout() {
             ok_button->click();
             break;
         }
-    case Client::AskForGeneralTaken: {
-            break;
-        }
     case Client::AskForArrangement: {
             arrange_items << down_generals.mid(0, 3 - arrange_items.length());
             finishArrange();
@@ -2306,7 +2307,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 guanxing_box->clear();
                 if (!card_container->retained())
                     card_container->clear();
-            }
+            } else if (oldStatus == Client::AskForGeneralChosen)
+                choose_general_box->clear();
             prompt_box->disappear();
             ClientInstance->getPromptDoc()->clear();
 
@@ -2497,7 +2499,13 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
             break;
         }
-    case Client::AskForGeneralTaken:
+    case Client::AskForGeneralChosen: {
+            ok_button->setEnabled(false);
+            cancel_button->setEnabled(false);
+            discard_button->setEnabled(false);
+
+            break;
+       }
     case Client::AskForArrangement: {
             ok_button->setEnabled(false);
             cancel_button->setEnabled(false);
@@ -2513,7 +2521,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         return;
 
     // do timeout
-    if (newStatus != Client::NotActive && newStatus != oldStatus) {
+    if (newStatus != Client::NotActive && newStatus != oldStatus && newStatus != Client::AskForGeneralChosen) {
         QApplication::alert(main_window);
         connect(dashboard, SIGNAL(progressBarTimedOut()), this, SLOT(doTimeout()));
         dashboard->showProgressBar(ClientInstance->getCountdown());
@@ -3933,25 +3941,6 @@ void RoomScene::recoverGeneral(int index, const QString &name) {
             item->changeGeneral(name);
             break;
         }
-    }
-}
-
-void RoomScene::startGeneralSelection() {
-    foreach (CardItem *item, general_items) {
-        item->setFlag(QGraphicsItem::ItemIsFocusable);
-        connect(item, SIGNAL(double_clicked()), this, SLOT(selectGeneral()));
-    }
-}
-
-void RoomScene::selectGeneral() {
-    CardItem *item = qobject_cast<CardItem *>(sender());
-    if (item) {
-        ClientInstance->replyToServer(S_COMMAND_ASK_GENERAL, Utils::toJsonString(item->objectName()));
-        foreach (CardItem *item, general_items) {
-            item->setFlag(QGraphicsItem::ItemIsFocusable, false);
-            item->disconnect(this);
-        }
-        ClientInstance->setStatus(Client::NotActive);
     }
 }
 

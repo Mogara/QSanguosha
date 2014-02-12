@@ -2419,49 +2419,14 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign) {
     if (Config.Enable2ndGeneral) {
         foreach (QString name, BanPair::getAllBanSet())
             existed << name;
-        if (to_assign.first()->getGeneral()) {
-            foreach (QString name, BanPair::getSecondBanSet())
-                existed << name;
-        }
     }
 
-    const int max_choice = (Config.EnableHegemony && Config.Enable2ndGeneral) ?
-                               Config.value("HegemonyMaxChoice", 7).toInt() :
-                               Config.value("MaxChoice", 5).toInt();
+    const int max_choice = Config.value("HegemonyMaxChoice", 7).toInt();
     const int total = Sanguosha->getGeneralCount();
     const int max_available = (total - existed.size()) / to_assign.length();
     const int choice_count = qMin(max_choice, max_available);
 
     QStringList choices = Sanguosha->getRandomGenerals(total - existed.size(), existed);
-
-    if (Config.EnableHegemony) {
-        if (to_assign.first()->getGeneral()) {
-            foreach (ServerPlayer *sp, m_players) {
-                QStringList old_list = sp->getSelected();
-                sp->clearSelected();
-                QString choice;
-
-                //keep legal generals
-                foreach (QString name, old_list) {
-                    Q_ASSERT(sp->getGeneral() != NULL);
-                    if (Sanguosha->getGeneral(name)->getKingdom() != sp->getGeneral()->getKingdom()
-                        || sp->findReasonable(old_list, true) == name) {
-                        sp->addToSelected(name);
-                        old_list.removeOne(name);
-                    }
-                }
-
-                //drop the rest and add new generals
-                while (old_list.length()) {
-                    choice = sp->findReasonable(choices);
-                    sp->addToSelected(choice);
-                    old_list.pop_front();
-                    choices.removeOne(choice);
-                }
-            }
-            return;
-        }
-    }
 
     foreach (ServerPlayer *player, to_assign) {
         player->clearSelected();
@@ -2476,32 +2441,7 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign) {
 }
 
 void Room::chooseGenerals() {
-    QStringList ban_list = Config.value("Banlist/Roles").toStringList();
-    Sanguosha->banRandomGods();
-    // for lord.
-    int lord_num = Config.value("LordMaxChoice", -1).toInt();
-    int nonlord_num = Config.value("NonLordMaxChoice", 2).toInt();
-    if (lord_num == 0 && nonlord_num == 0)
-        nonlord_num = 1;
-    int nonlord_prob = (lord_num == -1) ? 5 : 55 - qMin(lord_num, 10);
-    if (!Config.EnableHegemony) {
-        QStringList lord_list;
-        ServerPlayer *the_lord = getLord();
-    if (the_lord->getState() == "robot")
-            if (((qrand() % 100 < nonlord_prob || lord_num == 0) && nonlord_num > 0)
-                || Sanguosha->getLords().length() == 0)
-                lord_list = Sanguosha->getRandomGenerals(1);
-            else
-                lord_list = Sanguosha->getLords();
-        else
-            lord_list = Sanguosha->getRandomLords();
-        QString general = askForGeneral(the_lord, lord_list);
-        the_lord->setGeneralName(general);
-        if (!Config.EnableBasara)
-            broadcastProperty(the_lord, "general", general);
-    }
     QList<ServerPlayer *> to_assign = m_players;
-    if (!Config.EnableHegemony) to_assign.removeOne(getLord());
 
     assignGeneralsForPlayers(to_assign);
     foreach (ServerPlayer *player, to_assign)
@@ -2511,59 +2451,47 @@ void Room::chooseGenerals() {
     foreach (ServerPlayer *player, to_assign) {
         if (player->getGeneral() != NULL) continue;
         Json::Value generalName = player->getClientReply();
-        if (!player->m_isClientResponseReady || !generalName.isString()
-            || !_setPlayerGeneral(player, toQString(generalName), true))
+        if (!player->m_isClientResponseReady || !generalName.isString()) {
             _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
-    }
-
-    if (Config.Enable2ndGeneral) {
-        QList<ServerPlayer *> to_assign = m_players;
-        assignGeneralsForPlayers(to_assign);
-        foreach (ServerPlayer *player, to_assign)
-            _setupChooseGeneralRequestArgs(player);
-
-        doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
-        foreach (ServerPlayer *player, to_assign) {
-            if (player->getGeneral2() != NULL) continue;
-            Json::Value generalName = player->getClientReply();
-            if (!player->m_isClientResponseReady || !generalName.isString()
-                || !_setPlayerGeneral(player, toQString(generalName), false))
+            _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
+        } else {
+            QStringList generals = toQString(generalName).split("+");
+            if (!_setPlayerGeneral(player, generals.first(), true))
+                _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
+            if (generals.length() != 2 || !_setPlayerGeneral(player, generals.last(), false))
                 _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
         }
     }
 
-    if (Config.EnableBasara) {
-        foreach (ServerPlayer *player, m_players) {
-            QStringList names;
-            if (player->getGeneral()) {
-                QString name = player->getGeneralName();
-                QString role = BasaraMode::getMappedRole(player->getGeneral()->getKingdom());
-                names.append(name);
-                player->setActualGeneral1Name(name);
-                player->setRole(role);
-                player->setGeneralName("anjiang");
-                foreach (ServerPlayer *p, getPlayers())
-                    notifyProperty(p, player, "actual_general1", name);
-                foreach (ServerPlayer *p, getOtherPlayers(player))
-                    notifyProperty(p, player, "general");
-                notifyProperty(player, player, "general", name);
-                notifyProperty(player, player, "role", role);
-            }
-            if (player->getGeneral2() && Config.Enable2ndGeneral) {
-                QString name = player->getGeneral2Name();
-                names.append(name);
-                player->setActualGeneral2Name(name);
-                player->setGeneral2Name("anjiang");
-                foreach (ServerPlayer *p, getPlayers())
-                    notifyProperty(p, player, "actual_general2", name);
-                foreach (ServerPlayer *p, getOtherPlayers(player))
-                    notifyProperty(p, player, "general2");
-                notifyProperty(player, player, "general2", name);
-            }
-            this->setTag(player->objectName(), QVariant::fromValue(names));
+    foreach (ServerPlayer *player, m_players) {
+        QStringList names;
+        if (player->getGeneral()) {
+            QString name = player->getGeneralName();
+            QString role = BasaraMode::getMappedRole(player->getGeneral()->getKingdom());
+            names.append(name);
+            player->setActualGeneral1Name(name);
+            player->setRole(role);
+            player->setGeneralName("anjiang");
+            foreach (ServerPlayer *p, getPlayers())
+                notifyProperty(p, player, "actual_general1", name);
+            foreach (ServerPlayer *p, getOtherPlayers(player))
+                notifyProperty(p, player, "general");
+            notifyProperty(player, player, "general", name);
+            notifyProperty(player, player, "role", role);
         }
+        if (player->getGeneral2()) {
+            QString name = player->getGeneral2Name();
+            names.append(name);
+            player->setActualGeneral2Name(name);
+            player->setGeneral2Name("anjiang");
+            foreach (ServerPlayer *p, getPlayers())
+                notifyProperty(p, player, "actual_general2", name);
+            foreach (ServerPlayer *p, getOtherPlayers(player))
+                notifyProperty(p, player, "general2");
+            notifyProperty(player, player, "general2", name);
+        }
+        this->setTag(player->objectName(), QVariant::fromValue(names));
     }
-    Config.setValue("Banlist/Roles", ban_list);
 }
 
 void Room::run() {

@@ -33,7 +33,7 @@ public:
         AskForGuanxing = 0x0A,
         AskForGongxin = 0x0B,
         AskForShowOrPindian = 0x0C,
-        AskForGeneralTaken = 0x0D,
+        AskForGeneralChosen = 0x0D,
         AskForArrangement = 0x0E,
 
         RespondingUse = 0x11,
@@ -165,7 +165,6 @@ public:
 
     // 3v3 & 1v1 methods
     void fillGenerals(const Json::Value &generals);
-    void askForGeneral3v3(const Json::Value &);
     void takeGeneral(const Json::Value &take_str);
     void startArrange(const Json::Value &to_arrange);
 

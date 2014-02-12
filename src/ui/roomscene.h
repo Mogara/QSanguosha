@@ -19,6 +19,7 @@ class CardContainer;
 class GuanxingBox;
 class QSanButton;
 class QGroupBox;
+class ChooseGeneralBox;
 struct RoomLayout;
 
 #include <QGraphicsScene>
@@ -236,6 +237,8 @@ private:
 
     GuanxingBox *guanxing_box;
 
+    ChooseGeneralBox *choose_general_box;
+
     QList<CardItem *> gongxin_items;
 
     ClientLogBox *log_box;
@@ -378,8 +381,6 @@ private slots:
     void fillGenerals(const QStringList &names);
     void takeGeneral(const QString &who, const QString &name, const QString &rule);
     void recoverGeneral(int index, const QString &name);
-    void startGeneralSelection();
-    void selectGeneral();
     void startArrange(const QString &to_arrange);
     void toggleArrange();
     void finishArrange();

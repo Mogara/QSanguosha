@@ -1,14 +1,14 @@
 #ifndef _PACKAGE_H
 #define _PACKAGE_H
 
-class Skill;
-class Card;
-class Player;
-
 #include <QObject>
 #include <QHash>
 #include <QStringList>
 #include <QMap>
+
+class Card;
+class Player;
+class Skill;
 
 class CardPattern {
 public:

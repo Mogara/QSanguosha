@@ -84,6 +84,9 @@ const char *QSanRoomSkin::S_SKIN_KEY_ANIMATIONS = "preloads";
 const char *QSanRoomSkin::S_SKIN_KEY_EXPANDING_ROLE_BOX = "expandingRoleBox";
 const char *QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK = "roleBoxKingdomMask-%1";
 
+//ChooseGeneralBox
+const char *QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_SPLIT_LINE = "chooseGeneralBoxSplitLine";
+const char *QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_DEST_SEAT = "chooseGeneralBoxDestSeat";
 
 QSanSkinFactory* QSanSkinFactory::_sm_singleton = NULL;
 QHash<QString, QPixmap> QSanPixmapCache::_m_pixmapBank;
@@ -783,16 +786,20 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
     for (int i = 0; i < 6; i++)
         _m_commonLayout.m_hpFont[i].tryParse(config["magatamaFont"][i]);
 
-    tryParse(config["roleNormalBgSize"], _m_commonLayout.ROLE_NORMAL_BG_SIZE);
-    tryParse(config["roleWeiRect"], _m_commonLayout.ROLE_WEI_RECT);
-    tryParse(config["roleQunRect"], _m_commonLayout.ROLE_QUN_RECT);
-    tryParse(config["roleShuRect"], _m_commonLayout.ROLE_SHU_RECT);
-    tryParse(config["roleWuRect"], _m_commonLayout.ROLE_WU_RECT);
-    tryParse(config["roleWeiColor"], _m_commonLayout.ROLE_WEI_COLOR);
-    tryParse(config["roleQunColor"], _m_commonLayout.ROLE_QUN_COLOR);
-    tryParse(config["roleShuColor"], _m_commonLayout.ROLE_SHU_COLOR);
-    tryParse(config["roleWuColor"], _m_commonLayout.ROLE_WU_COLOR);
-    tryParse(config["roleDarkColor"], _m_commonLayout.ROLE_DARK_COLOR);
+    tryParse(config["roleNormalBgSize"], _m_commonLayout.m_roleNormalBgSize);
+    tryParse(config["roleWeiRect"], _m_commonLayout.m_roleWeiRect);
+    tryParse(config["roleQunRect"], _m_commonLayout.m_roleQunRect);
+    tryParse(config["roleShuRect"], _m_commonLayout.m_roleShuRect);
+    tryParse(config["roleWuRect"], _m_commonLayout.m_roleWuRect);
+    tryParse(config["roleWeiColor"], _m_commonLayout.m_roleWeiColor);
+    tryParse(config["roleQunColor"], _m_commonLayout.m_roleQunColor);
+    tryParse(config["roleShuColor"], _m_commonLayout.m_roleShuColor);
+    tryParse(config["roleWuColor"], _m_commonLayout.m_roleWuColor);
+    tryParse(config["roleDarkColor"], _m_commonLayout.m_roleDarkColor);
+    tryParse(config["generalBoxBgColor"], _m_commonLayout.m_chooseGeneralBoxBackgroundColor);
+    tryParse(config["generalBoxBorderColor"], _m_commonLayout.m_chooseGeneralBoxBorderColor);
+    _m_commonLayout.m_chooseGeneralBoxTitleFont.tryParse(config["generalBoxTitleFont"]);
+    _m_commonLayout.m_chooseGeneralBoxDestSeatFont.tryParse(config["generalBoxDestSeatFont"]);
 
     config = layoutConfig[S_SKIN_KEY_ROOM];
     tryParse(config["chatBoxHeightPercentage"], _m_roomLayout.m_chatBoxHeightPercentage);

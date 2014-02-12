@@ -115,7 +115,6 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_CLEAR_AMAZING_GRACE] = &Client::clearAG;
 
     // 3v3 mode & 1v1 mode
-    m_interactions[S_COMMAND_ASK_GENERAL] = &Client::askForGeneral3v3;
     m_interactions[S_COMMAND_ARRANGE_GENERAL] = &Client::startArrange;
 
     m_callbacks[S_COMMAND_FILL_GENERAL] = &Client::fillGenerals;
@@ -443,7 +442,6 @@ void Client::onPlayerChooseGeneral(const QString &item_name) {
         replyToServer(S_COMMAND_CHOOSE_GENERAL, toJsonString(item_name));
         Sanguosha->playSystemAudioEffect("choose-item");
     }
-
 }
 
 void Client::requestCheatRunScript(const QString &script) {
@@ -1256,7 +1254,7 @@ void Client::askForGeneral(const Json::Value &arg) {
     QStringList generals;
     if (!tryParse(arg, generals)) return;
     emit generals_got(generals);
-    setStatus(ExecDialog);
+    setStatus(AskForGeneralChosen);
 }
 
 void Client::askForSuit(const Json::Value &) {
@@ -1747,11 +1745,6 @@ void Client::fillGenerals(const Json::Value &generals) {
     QStringList filled;
     tryParse(generals, filled);
     emit generals_filled(filled);
-}
-
-void Client::askForGeneral3v3(const Json::Value &) {
-    emit general_asked();
-    setStatus(AskForGeneralTaken);
 }
 
 void Client::takeGeneral(const Json::Value &take_str) {

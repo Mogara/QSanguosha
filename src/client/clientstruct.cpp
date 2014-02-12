@@ -14,8 +14,7 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
     time_t timeOut;
     if (OperationTimeout == 0)
         return 0;
-    else if (command == QSanProtocol::S_COMMAND_CHOOSE_GENERAL
-             || command == QSanProtocol::S_COMMAND_ASK_GENERAL)
+    else if (command == QSanProtocol::S_COMMAND_CHOOSE_GENERAL)
         timeOut = OperationTimeout * 1500;
     else if (command == QSanProtocol::S_COMMAND_SKILL_GUANXING
              || command == QSanProtocol::S_COMMAND_ARRANGE_GENERAL)
