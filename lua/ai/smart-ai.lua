@@ -10,7 +10,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = class "SmartAI"
 
-version = "QSanguosha AI 20140207 (V0.22 Alpha)"
+version = "QSanguosha AI 20140213 (V0.23 Alpha)"
 
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
@@ -75,7 +75,13 @@ sgs.ai_chat_func =			{}
 sgs.ai_event_callback =		{}
 sgs.ai_NeedPeach =			{}
 sgs.ai_processdefense = 	{}
-sgs.shown_kingdom = 		{}
+sgs.shown_kingdom = 		{
+	wei = 0,
+	shu = 0,
+	wu =  0,
+	qun = 0,
+	god = 0
+}
 sgs.ai_damage_effect = 		{}
 sgs.ai_explicit = 			{}
 sgs.ai_loyalty = 			{
@@ -126,7 +132,7 @@ function setInitialTables()
 	sgs.ai_tactics = t[math.random(1, #t)]
 
 	sgs.RolesTable = { "lord", "loyalist", "renegade", "rebel", "careerist" }
-	sgs.KingdomsTable = { "wei", "shu", "wu", "qun", "god"}
+	sgs.KingdomsTable = { "wei", "shu", "wu", "qun", "god" }
 
 	for _, kingdom in ipairs(sgs.Sanguosha:getKingdoms()) do
 		if not table.contains(sgs.KingdomsTable, kingdom) then
@@ -278,8 +284,6 @@ function SmartAI:activate(use)
 		if not self.player:isCardLimited(card, card:getHandlingMethod())
 			or (card:canRecast() and not self.player:isCardLimited(card, sgs.Card_MethodRecast)) then
 			local type = card:getTypeId()
-
-			global_room:writeToConsole(" gP :: " .. sgs.gameProcess())
 
 			self["use" .. sgs.ai_type_name[type + 1] .. "Card"](self, card, use)
 
@@ -550,7 +554,7 @@ function SmartAI:updatePlayers(update)
 
 	if update then
 		for _, p in sgs.qlist(self.room:getAlivePlayers()) do
-			sgs.getProcessDefense(p, true, true)
+			sgs.getProcessDefense(p, true)
 		end
 	end
 
@@ -595,10 +599,12 @@ function SmartAI:updatePlayerKingdom(player)
 	end
 end
 
-function sgs.getProcessDefense(player, gameProcess, update)
+function sgs.getProcessDefense(player, update)
 	if not player then return 0 end
 	if not update and global_room:getCurrent() then
-		return sgs.ai_processdefense[player:objectName()] or 0
+		if sgs.ai_processdefense[player:objectName()] then return sgs.ai_processdefense[player:objectName()]
+		else return sgs.getProcessDefense(player, true)
+		end
 	end
 	local attacker = global_room:getCurrent()
 	if not attacker then return 0 end
@@ -622,8 +628,10 @@ function sgs.getProcessDefense(player, gameProcess, update)
 
 	local m = sgs.masochism_skill:split("|")
 	for _, masochism in ipairs(m) do
-		if player:hasSkill(masochism) and sgs.isGoodHp(player) then
-			defense = defense + 1
+		if player:hasSkill(masochism) then
+			local goodHp = player:getHp() > 1 or getCardsNum("Peach", player, global_room:getCurrent()) >= 1 or getCardsNum("Analeptic", player, global_room:getCurrent()) >= 1
+							or hasBuquEffect(player) or (player:hasSkill("niepan") and player:getMark("@nirvana") > 0)
+			if goodHp then defense = defense + 1 end
 		end
 	end
 
@@ -1859,7 +1867,7 @@ function SmartAI:filterEvent(event, player, data)
 				self:setSkillsPreshowed()
 				sgs.ai_setSkillsPreshowed = true
 			end
-			sgs.printFEList(player)
+			-- sgs.printFEList(player)
 		elseif player:getPhase() == sgs.Player_NotActive then
 			if sgs.recorder.player:objectName() == player:objectName() then sgs.turncount = sgs.turncount + 1 end
 		end
@@ -1874,8 +1882,6 @@ function SmartAI:askForSuit(reason)
 	local callback = sgs.ai_skill_suit[reason]
 	if type(callback) == "function" then
 		if callback(self) then return callback(self) end
-	elseif callback == nil then
-		self.room:writeToConsole("sgs.ai_skill_suit." .. reason .. "  ???")
 	end
 	return math.random(0, 3)
 end
@@ -1888,7 +1894,6 @@ function SmartAI:askForSkillInvoke(skill_name, data)
 	elseif type(invoke) == "function" then
 		return invoke(self, data)
 	else
-		self.room:writeToConsole("sgs.ai_skill_invoke." .. skill_name .. "  ???")
 		local skill = sgs.Sanguosha:getSkill(skill_name)
 		return skill and skill:getFrequency() == sgs.Skill_Frequent
 	end
@@ -1901,7 +1906,6 @@ function SmartAI:askForChoice(skill_name, choices, data)
 	elseif type(choice) == "function" then
 		return choice(self, choices, data)
 	else
-		self.room:writeToConsole("sgs.ai_skill_choice." .. skill_name .. "  ???")
 		local skill = sgs.Sanguosha:getSkill(skill_name)
 		if skill and choices:match(skill:getDefaultChoice(self.player)) then
 			return skill:getDefaultChoice(self.player)
@@ -2446,9 +2450,6 @@ function SmartAI:askForAG(card_ids, refusable, reason)
 	end
 	self:sortByCardNeed(cards, true)
 
-	if not cards or #cards == 0 then
-		self.room:writeToConsole("askForAG!" ..reason)
-	end
 	return cards[1]:getEffectiveId()
 end
 
