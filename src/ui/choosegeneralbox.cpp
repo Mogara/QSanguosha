@@ -123,6 +123,7 @@ QRectF ChooseGeneralBox::boundingRect() const {
 
 void ChooseGeneralBox::chooseGeneral(QStringList generals) {
     //ÖØÐÂ»æÖÆ±³¾°
+    if (generals.contains("anjiang(lord)")) generals.removeAll("anjiang(lord)");
     general_number = generals.length();
     update();
 
