@@ -1143,7 +1143,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         sendLog(log);
         LogMessage log2;
         log2.type = "#HegNullificationSelection";
-        log2.from = from;
+        log2.from = repliedPlayer;
         heg_nullification_selection = "hegnul_" + heg_nullification_selection;
         log2.arg = heg_nullification_selection;
         sendLog(log2);
