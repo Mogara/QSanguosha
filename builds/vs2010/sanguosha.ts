@@ -473,17 +473,17 @@
 <context>
     <name>ChooseGeneralBox</name>
     <message>
-        <location filename="../../src/ui/choosegeneralbox.cpp" line="80"/>
+        <location filename="../../src/ui/choosegeneralbox.cpp" line="110"/>
         <source>Please select the same nationality generals</source>
         <translation>请选择相同势力的武将</translation>
     </message>
     <message>
-        <location filename="../../src/ui/choosegeneralbox.cpp" line="96"/>
+        <location filename="../../src/ui/choosegeneralbox.cpp" line="126"/>
         <source>head_general</source>
         <translation>主将</translation>
     </message>
     <message>
-        <location filename="../../src/ui/choosegeneralbox.cpp" line="99"/>
+        <location filename="../../src/ui/choosegeneralbox.cpp" line="129"/>
         <source>deputy_general</source>
         <translation>副将</translation>
     </message>
