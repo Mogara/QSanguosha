@@ -915,7 +915,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
             bool has_diff_kingdoms = false;
             foreach(ServerPlayer *p, players) {
                 foreach (ServerPlayer *p2, players) {
-                    if (p->hasShownOneGeneral() && p2->hasShownAllGenerals() && !p->isFriendWith(p2)) {
+                    if (p->hasShownOneGeneral() && p2->hasShownOneGeneral() && !p->isFriendWith(p2)) {
                         has_diff_kingdoms = true;
                         break;// 如果两个都亮了，不是小伙伴，那么呵呵一笑。
                     }

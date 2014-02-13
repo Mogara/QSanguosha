@@ -2945,7 +2945,7 @@ sgs.ai_nullification.AwaitExhausted = function(self, card, from, to, positive)
 			if self:getOverflow() > 0 or self:getCardsNum("Nullification") > 1 then return true end
 		end
 	else
-		if self:isFriend(to) and self:getOverflow() > 0 or self:getCardsNum("Nullification") > 1 then return true end
+		if self:isFriend(to) and (self:getOverflow() > 0 or self:getCardsNum("Nullification") > 1) then return true end
 	end
 	return
 end

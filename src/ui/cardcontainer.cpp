@@ -373,7 +373,7 @@ void GuanxingBox::adjust() {
     const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
     const int middle_y = 45 + (one_row ? card_height : (card_height * 2 + blank));
 
-    QList<CardItem *> *items = (up_only || item->y() + card_height / 2 <= middle_y) ? &up_items : items = &down_items;
+    QList<CardItem *> *items = (up_only || item->y() + card_height / 2 <= middle_y) ? &up_items : &down_items;
     bool odd_row = true;
     if (!one_row && item_count % 2) {
         const qreal y = item->y() + card_height / 2;

@@ -153,7 +153,8 @@ QRectF ChooseGeneralBox::boundingRect() const {
 
 void ChooseGeneralBox::chooseGeneral(QStringList generals) {
     //重新绘制背景
-    general_number = generals.length() - 1;//有个冒充武将潜入的怪蜀黍
+    if (generals.contains("anjiang(lord)")) generals.removeAll("anjiang(lord)");
+    general_number = generals.length();
     update();
 
     items.clear();
@@ -325,7 +326,10 @@ void ChooseGeneralBox::reply() {
         if (selected.length() == 2)
             generals += ("+" + selected.last()->objectName());
     }
-
+    if (progress_bar != NULL){
+        progress_bar->hide();
+        progress_bar->deleteLater();
+    }
     ClientInstance->onPlayerChooseGeneral(generals);
     clear();
 }

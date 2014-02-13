@@ -39,21 +39,6 @@ bool QingnangCard::targetFilter(const QList<const Player *> &targets, const Play
     return targets.isEmpty() && to_select->isWounded();
 }
 
-bool QingnangCard::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
-    return targets.value(0, Self)->isWounded();
-}
-
-void QingnangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    ServerPlayer *target = targets.value(0, source);
-
-    CardEffectStruct effect;
-    effect.card = this;
-    effect.from = source;
-    effect.to = target;
-
-    room->cardEffect(effect);
-}
-
 void QingnangCard::onEffect(const CardEffectStruct &effect) const{
     RecoverStruct recover;
     recover.card = this;
@@ -738,7 +723,7 @@ public:
             }
         case Card::Club: {
                 if (damage.from && damage.from->isAlive())
-                    room->askForDiscard(damage.from, "beige", 2, 2, false, true);
+                    room->askForDiscard(damage.from, "beige_discard", 2, 2, false, true);
 
                 break;
             }
