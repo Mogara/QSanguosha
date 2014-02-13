@@ -534,7 +534,6 @@ private:
         ServerPlayer *m_to;
     };
     bool _askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive, _NullificationAiHelper helper);
-    void _setupChooseGeneralRequestArgs(ServerPlayer *player);
 
 private slots:
     void reportDisconnection();

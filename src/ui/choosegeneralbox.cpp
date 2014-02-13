@@ -123,7 +123,7 @@ QRectF ChooseGeneralBox::boundingRect() const {
 
 void ChooseGeneralBox::chooseGeneral(QStringList generals) {
     //重新绘制背景
-    general_number = generals.length() - 1;//有个冒充武将潜入的怪蜀黍
+    general_number = generals.length();
     update();
 
     items.clear();

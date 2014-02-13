@@ -2410,7 +2410,7 @@ void Room::chooseGenerals() {
 
     assignGeneralsForPlayers(to_assign);
     foreach (ServerPlayer *player, to_assign)
-        _setupChooseGeneralRequestArgs(player);
+        player->m_commandArgs = toJsonArray(player->getSelected());;
 
     doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
     foreach (ServerPlayer *player, to_assign) {
@@ -5051,15 +5051,6 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
         thread->trigger(ChoiceMade, this, player, data);
     }
     return choice;
-}
-
-void Room::_setupChooseGeneralRequestArgs(ServerPlayer *player) {
-    Json::Value options = toJsonArray(player->getSelected());
-    if (!Config.EnableBasara)
-        options.append(toJsonString(QString("%1(lord)").arg(getLord()->getGeneralName())));
-    else
-        options.append("anjiang(lord)");
-    player->m_commandArgs = options;
 }
 
 QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice) {
