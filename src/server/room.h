@@ -4,9 +4,6 @@
 class TriggerSkill;
 class ProhibitSkill;
 class Scenario;
-class RoomThread3v3;
-class RoomThreadXMode;
-class RoomThread1v1;
 class TrickCard;
 
 struct lua_State;
@@ -27,9 +24,6 @@ public:
     enum GuanxingType { GuanxingUpOnly = 1, GuanxingBothSides = 0, GuanxingDownOnly = -1 };
 
     friend class RoomThread;
-    friend class RoomThread3v3;
-    friend class RoomThreadXMode;
-    friend class RoomThread1v1;
 
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
     typedef bool (Room::*CallBack)(ServerPlayer *, const QSanProtocol::QSanGeneralPacket *);
@@ -256,7 +250,6 @@ public:
     void swapSeat(ServerPlayer *a, ServerPlayer *b);
     lua_State *getLuaState() const;
     void setFixedDistance(Player *from, const Player *to, int distance);
-    void reverseFor3v3(const Card *card, ServerPlayer *player, QList<ServerPlayer *> &list);
     bool hasWelfare(const ServerPlayer *player) const;
     ServerPlayer *getFront(ServerPlayer *a, ServerPlayer *b) const;
     void signup(ServerPlayer *player, const QString &screen_name, const QString &avatar, bool is_robot);
@@ -472,9 +465,6 @@ private:
     QList<AI *> ais;
 
     RoomThread *thread;
-    RoomThread3v3 *thread_3v3;
-    RoomThreadXMode *thread_xmode;
-    RoomThread1v1 *thread_1v1;
     QSemaphore _m_semRaceRequest; // When race starts, server waits on his semaphore for the first replier
     QSemaphore _m_semRoomMutex; // Provide per-room  (rather than per-player) level protection of any shared variables
 

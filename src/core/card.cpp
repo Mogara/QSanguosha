@@ -598,11 +598,6 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
 
     room->sortByActionOrder(card_use.to);
 
-    QList<ServerPlayer *> targets = card_use.to;
-    if (room->getMode() == "06_3v3" && (isKindOf("AOE") || isKindOf("GlobalEffect")))
-        room->reverseFor3v3(this, player, targets);
-    card_use.to = targets;
-
     bool hidden = (card_use.card->getTypeId() == TypeSkill && !card_use.card->willThrow());
     LogMessage log;
     log.from = player;
