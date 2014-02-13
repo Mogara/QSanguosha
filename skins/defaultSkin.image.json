@@ -155,5 +155,9 @@
 
 //choose general box
 "chooseGeneralBoxSplitLine": "image/system/choose-general-box/split-line.png",
-"chooseGeneralBoxDestSeat": "image/system/choose-general-box/dest-seat.png"
+"chooseGeneralBoxDestSeat": "image/system/choose-general-box/dest-seat.png",
+
+//general card item
+"generalCardItemCompanionFont-default": "image/system/companions/prompt/%1.png",
+"generalCardItemCompanionIcon-default": "image/system/companions/icons/%1.png"
 }

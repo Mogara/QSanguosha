@@ -4,6 +4,7 @@
 #include "carditem.h"
 #include "qsanbutton.h"
 #include "TimedProgressBar.h"
+#include "sprite.h"
 
 class GeneralCardItem: public CardItem {
     Q_OBJECT
@@ -11,6 +12,13 @@ class GeneralCardItem: public CardItem {
 public:
     GeneralCardItem(const QString &general_name);
 
+    void showCompanion();
+
+protected:
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+private:
+    bool has_companion;
 };
 
 class ChooseGeneralBox: public QGraphicsObject {
@@ -45,11 +53,15 @@ private:
     QGraphicsProxyWidget *progress_bar_item;
     QSanCommandProgressBar *progress_bar;
 
+    EffectAnimation *animations;
+
     void _initializeItems();
 
 private slots:
     void _adjust();
     void _onItemClicked();
+    void _onCardItemHover();
+    void _onCardItemLeaveHover();
 };
 
 #endif // _CHOOSE_GENERAL_BOX_H

@@ -5,9 +5,38 @@
 #include "protocol.h"
 
 GeneralCardItem::GeneralCardItem(const QString &general_name)
-    : CardItem(general_name)
+    : CardItem(general_name), has_companion(false)
 {
+    setAcceptHoverEvents(true);
+}
 
+void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+
+    QRect rect = G_COMMON_LAYOUT.m_cardMainArea;
+    if (!isEnabled()) {
+        painter->fillRect(rect, QColor(0, 0, 0));
+        painter->setOpacity(0.4 * opacity());
+    }
+
+    if (!_m_isUnknownGeneral)
+        painter->drawPixmap(rect, G_ROOM_SKIN.getCardMainPixmap(objectName()));
+    else
+        painter->drawPixmap(rect, G_ROOM_SKIN.getPixmap("generalCardBack"));
+
+    if (!has_companion) return;
+
+    QString kingdom = Sanguosha->getGeneral(objectName())->getKingdom();
+    QPixmap icon = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON, kingdom);
+    painter->drawPixmap(boundingRect().center().x() - icon.width() / 2 + 3, boundingRect().bottom() - icon.height(), icon);
+
+    painter->drawPixmap(G_COMMON_LAYOUT.m_generalCardItemCompanionPromptRegion, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT, kingdom));
+}
+
+void GeneralCardItem::showCompanion() {
+    if (has_companion) return;
+    has_companion = true;
+    update();
 }
 
 ChooseGeneralBox::ChooseGeneralBox() 
@@ -19,6 +48,7 @@ ChooseGeneralBox::ChooseGeneralBox()
     confirm->setEnabled(false);
     connect(confirm, SIGNAL(clicked()), this, SLOT(reply()));
     progress_bar = NULL;
+    animations = new EffectAnimation;
 }
 
 void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
@@ -134,9 +164,19 @@ void ChooseGeneralBox::chooseGeneral(QStringList generals) {
         general_item->setAutoBack(true);
         general_item->setFlag(QGraphicsItem::ItemIsFocusable);
         general_item->setAcceptedMouseButtons(Qt::LeftButton);
-        general_item->setToolTip(Sanguosha->getGeneral(general)->getSkillDescription(true));
         connect(general_item, SIGNAL(released()), this, SLOT(_adjust()));
         connect(general_item, SIGNAL(clicked()), this, SLOT(_onItemClicked()));
+        connect(general_item, SIGNAL(enter_hover()), this, SLOT(_onCardItemHover()));
+        connect(general_item, SIGNAL(leave_hover()), this, SLOT(_onCardItemLeaveHover()));
+
+        const General *hero = Sanguosha->getGeneral(general);
+        foreach (QString other, generals) {
+            if (other.endsWith("(lord)")) continue;
+            if (general != other && hero->isCompanionWith(other)) {
+                general_item->showCompanion();
+                break;
+            }
+        }
 
         items << general_item;
         general_item->setParentItem(this);
@@ -176,15 +216,17 @@ void ChooseGeneralBox::chooseGeneral(QStringList generals) {
     _initializeItems();
 
     if (ServerInfo.OperationTimeout != 0) {
-        progress_bar = new QSanCommandProgressBar();
-        progress_bar->setMinimumWidth(200);
-        progress_bar->setMaximumHeight(12);
-        progress_bar->setTimerEnabled(true);
-        progress_bar_item = new QGraphicsProxyWidget(this);
-        progress_bar_item->setWidget(progress_bar);
-        progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 30);
+        if (!progress_bar) {
+	        progress_bar = new QSanCommandProgressBar();
+	        progress_bar->setMinimumWidth(200);
+	        progress_bar->setMaximumHeight(12);
+	        progress_bar->setTimerEnabled(true);
+	        progress_bar_item = new QGraphicsProxyWidget(this);
+	        progress_bar_item->setWidget(progress_bar);
+	        progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 30);
+	        connect(progress_bar, SIGNAL(timedOut()), this, SLOT(reply()));
+        }
         progress_bar->setCountdown(QSanProtocol::S_COMMAND_CHOOSE_GENERAL);
-        connect(progress_bar, SIGNAL(timedOut()), this, SLOT(reply()));
         progress_bar->show();
     }
 }
@@ -206,7 +248,9 @@ void ChooseGeneralBox::_adjust() {
         item->setHomePos(item->data(S_DATA_INITIAL_HOME_POS).toPointF());
         item->goBack(true);
         //º¢Ö½£¬»ØÈ¥°É
-    } else if (items.contains(item) && item->y() > middle_y) {
+    } else if (selected.length() == 2 && !Sanguosha->getGeneral(selected.first()->objectName())->isLord() && (selected.first() == item && item->x() > boundingRect().center().x() || selected.last() == item && item->x() < boundingRect().center().x()))
+        qSwap(selected[0], selected[1]);
+    else if (items.contains(item) && item->y() > middle_y) {
         if (selected.length() > 1) return;
         items.removeOne(item);
         selected << item;
@@ -349,4 +393,18 @@ void ChooseGeneralBox::_onItemClicked() {
         _initializeItems();
         if (confirm->isEnabled()) confirm->setEnabled(false);
     }
+}
+
+void ChooseGeneralBox::_onCardItemHover() {
+    QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
+    if (!card_item) return;
+
+    animations->emphasize(card_item);
+}
+
+void ChooseGeneralBox::_onCardItemLeaveHover() {
+    QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
+    if (!card_item) return;
+
+    animations->effectOut(card_item);
 }

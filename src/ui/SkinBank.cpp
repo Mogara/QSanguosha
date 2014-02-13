@@ -88,6 +88,10 @@ const char *QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK = "roleBoxKingdomMask
 const char *QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_SPLIT_LINE = "chooseGeneralBoxSplitLine";
 const char *QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_DEST_SEAT = "chooseGeneralBoxDestSeat";
 
+//GeneralCardItem
+const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT = "generalCardItemCompanionFont-%1";
+const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON = "generalCardItemCompanionIcon-%1";
+
 QSanSkinFactory* QSanSkinFactory::_sm_singleton = NULL;
 QHash<QString, QPixmap> QSanPixmapCache::_m_pixmapBank;
 QHash<QString, int *> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
@@ -800,6 +804,8 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
     tryParse(config["generalBoxBorderColor"], _m_commonLayout.m_chooseGeneralBoxBorderColor);
     _m_commonLayout.m_chooseGeneralBoxTitleFont.tryParse(config["generalBoxTitleFont"]);
     _m_commonLayout.m_chooseGeneralBoxDestSeatFont.tryParse(config["generalBoxDestSeatFont"]);
+
+    tryParse(config["generalCardItemCompanionPromptRegion"], _m_commonLayout.m_generalCardItemCompanionPromptRegion);
 
     config = layoutConfig[S_SKIN_KEY_ROOM];
     tryParse(config["chatBoxHeightPercentage"], _m_roomLayout.m_chatBoxHeightPercentage);

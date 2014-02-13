@@ -288,6 +288,9 @@ public:
         QColor m_chooseGeneralBoxBorderColor;
         QSanSimpleTextFont m_chooseGeneralBoxTitleFont;
         QSanSimpleTextFont m_chooseGeneralBoxDestSeatFont;
+
+        //General Card Item
+        QRect m_generalCardItemCompanionPromptRegion;
     };
 
     enum GeneralIconSize {
@@ -402,6 +405,10 @@ public:
     //ChooseGeneralBox
     static const char *S_SKIN_KEY_CHOOSE_GENERAL_BOX_SPLIT_LINE;
     static const char *S_SKIN_KEY_CHOOSE_GENERAL_BOX_DEST_SEAT;
+
+    //GeneralCardItem
+    static const char *S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT;
+    static const char *S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON;
 
 protected:
     RoomLayout _m_roomLayout;

@@ -52,8 +52,10 @@
 	
 	"generalBoxBgColor": [0, 0, 0, 220],
 	"generalBoxBorderColor": [166, 150, 122],
-	"generalBoxTitleFont": ["SimSun", 16, 2, [228, 213, 160]],
-	"generalBoxDestSeatFont": ["Simsun", 12, 2, [105, 103, 91]]
+	"generalBoxTitleFont": ["SimHei", 16, 2, [228, 213, 160]],
+	"generalBoxDestSeatFont": ["SimSun", 12, 2, [105, 103, 91]],
+	
+	"generalCardItemCompanionPromptRegion": [-1, 102, 95, 15]
 },
 "room":
 {
