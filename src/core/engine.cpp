@@ -983,7 +983,10 @@ QList<int> Engine::getRandomCards() const{
 }
 
 QString Engine::getRandomGeneralName() const{
-    return generals.keys().at(qrand() % generals.size());
+    QString name = generals.keys().at(qrand() % generals.size());
+    while (generals.value(name)->getKingdom() == "programmer")
+        name = generals.keys().at(qrand() % generals.size());
+    return name;
 }
 
 void Engine::playSystemAudioEffect(const QString &name) const{
