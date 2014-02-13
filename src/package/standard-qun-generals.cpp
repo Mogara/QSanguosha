@@ -738,7 +738,7 @@ public:
             }
         case Card::Club: {
                 if (damage.from && damage.from->isAlive())
-                    room->askForDiscard(damage.from, "beige", 2, 2, false, true);
+                    room->askForDiscard(damage.from, "beige_discard", 2, 2, false, true);
 
                 break;
             }
