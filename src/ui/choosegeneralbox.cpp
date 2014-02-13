@@ -282,9 +282,10 @@ void ChooseGeneralBox::reply() {
         if (selected.length() == 2)
             generals += ("+" + selected.last()->objectName());
     }
-    progress_bar->hide();
-    progress_bar->deleteLater();
-
+    if (progress_bar != NULL){
+        progress_bar->hide();
+        progress_bar->deleteLater();
+    }
     ClientInstance->onPlayerChooseGeneral(generals);
     clear();
 }
