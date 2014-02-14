@@ -115,7 +115,11 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 
 	local use_cards = {}
 	for index = #unpreferedCards, 1, -1 do
-		if not self.player:isJilei(sgs.Sanguosha:getCard(unpreferedCards[index])) then table.insert(use_cards, unpreferedCards[index]) end
+		if not self.player:isJilei(sgs.Sanguosha:getCard(unpreferedCards[index])) then
+			if #use_cards < self.player:getMaxHp() then
+				table.insert(use_cards, unpreferedCards[index])
+			end
+		end
 	end
 
 	if #use_cards > 0 then
@@ -1229,6 +1233,18 @@ sgs.ai_card_intention.TianyiCard = 0
 sgs.dynamic_value.control_card.TianyiCard = true
 
 sgs.ai_use_value.TianyiCard = 8.5
+
+sgs.ai_skill_askforag.buqu = function(self, card_ids)
+	for i, card_id in ipairs(card_ids) do
+		for j, card_id2 in ipairs(card_ids) do
+			if i ~= j and sgs.Sanguosha:getCard(card_id):getNumber() == sgs.Sanguosha:getCard(card_id2):getNumber() then
+				return card_id
+			end
+		end
+	end
+
+	return card_ids[1]
+end
 
 function sgs.ai_skill_invoke.buqu(self, data)
 	return true
