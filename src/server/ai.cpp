@@ -261,7 +261,7 @@ QString TrustAI::askForChoice(const QString &skill_name, const QString &choice, 
     return choices.at(qrand() % choices.length());
 }
 
-QList<int> TrustAI::askForDiscard(const QString &, int discard_num, int min_num, bool optional, bool include_equip) {
+QList<int> TrustAI::askForDiscard(const QString &, int discard_num, int , bool optional, bool include_equip) {
     QList<int> to_discard;
     if (optional)
         return to_discard;

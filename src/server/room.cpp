@@ -1243,7 +1243,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
 const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
                              const QVariant &data, Card::HandlingMethod method, ServerPlayer *to,
-                             bool isRetrial, const QString &skill_name, bool isProvision) {
+                             bool isRetrial, const QString &, bool isProvision) {
 
     Q_ASSERT(pattern != "slash" || method != Card::MethodUse); // use askForUseSlashTo instead
     while (isPaused()) {}
@@ -2232,7 +2232,7 @@ ServerPlayer *Room::getOwner() const{
     return NULL;
 }
 
-void Room::toggleReadyCommand(ServerPlayer *player, const QString &) {
+void Room::toggleReadyCommand(ServerPlayer *, const QString &) {
     if (!game_started && isFull())
         start();
 }

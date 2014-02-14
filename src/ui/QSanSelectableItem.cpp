@@ -77,7 +77,7 @@ void QSanSelectableItem::scaleSmoothly(qreal ratio) {
     setTransform(trans);
 }
 
-void QSanSelectableItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void QSanSelectableItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
     painter->drawPixmap(QRect(0, 0, _m_width, _m_height), _m_mainPixmap);
 }
 

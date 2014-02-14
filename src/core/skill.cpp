@@ -283,15 +283,15 @@ QStringList TriggerSkill::triggerable(const ServerPlayer *target) const{
     return QStringList();
 }
 
-QStringList TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+QStringList TriggerSkill::triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
     return triggerable(player); //temp way
 }
 
-bool TriggerSkill::cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+bool TriggerSkill::cost(TriggerEvent , Room *, ServerPlayer *, QVariant &) const{
     return true;
 }
 
-bool TriggerSkill::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+bool TriggerSkill::effect(TriggerEvent , Room *, ServerPlayer *, QVariant &) const{
     return false;
 }
 
@@ -503,7 +503,7 @@ int FakeMoveSkill::getPriority() const{
     return 10;
 }
 
-QStringList FakeMoveSkill::triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &, ServerPlayer * &ask_who) const{
+QStringList FakeMoveSkill::triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &, ServerPlayer * &) const{
     return (target != NULL) ? QStringList(objectName()) : QStringList();
 }
 
@@ -522,7 +522,7 @@ DetachEffectSkill::DetachEffectSkill(const QString &skillname, const QString &pi
     events << EventLoseSkill;
 }
 
-QStringList DetachEffectSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &ask_who) const{
+QStringList DetachEffectSkill::triggerable(TriggerEvent , Room *, ServerPlayer *target, QVariant &, ServerPlayer * &) const{
     return (target != NULL) ? QStringList(objectName()) : QStringList();
 }
 

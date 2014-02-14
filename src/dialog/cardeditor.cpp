@@ -77,7 +77,7 @@ void BlackEdgeTextItem::setFont(const QFont &font){
     Config.setValue("CardEditor/" + objectName() + "Font", font);
 }
 
-void BlackEdgeTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+void BlackEdgeTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){
     if(text.isEmpty())
         return;
 
@@ -209,11 +209,11 @@ public:
             EditAction->trigger();
     }
 
-    virtual void focusInEvent(QFocusEvent *event){
+    virtual void focusInEvent(QFocusEvent *){
         frame->show();
     }
 
-    virtual void focusOutEvent(QFocusEvent *event){
+    virtual void focusOutEvent(QFocusEvent *){
         frame->hide();
     }
 
@@ -410,7 +410,7 @@ void SkillBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
     painter->drawPixmap(0, -down.height()-middle_height-up.height(), up);
 }
 
-void SkillBox::mousePressEvent(QGraphicsSceneMouseEvent *event){
+void SkillBox::mousePressEvent(QGraphicsSceneMouseEvent *){
     QApplication::setOverrideCursor(QCursor(Qt::SizeVerCursor));
 }
 

@@ -341,3 +341,5 @@ else:unix|win32: LIBS += -L$$PWD/lib/ -lfreetype
 
 INCLUDEPATH += $$PWD/include/freetype
 DEPENDPATH += $$PWD/include/freetype
+
+DEFINES += _CRT_SECURE_NO_WARNINGS

@@ -893,7 +893,7 @@ void PlayerCardContainer::revivePlayer() {
     refresh();
 }
 
-void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+void PlayerCardContainer::mousePressEvent(QGraphicsSceneMouseEvent *) {
 }
 
 void PlayerCardContainer::updateVotes(bool need_select, bool display_1) {
@@ -962,7 +962,7 @@ void PlayerCardContainer::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     }
 }
 
-void PlayerCardContainer::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
+void PlayerCardContainer::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
     if (Config.EnableDoubleClick)
         RoomSceneInstance->doOkButton();
 }

@@ -591,7 +591,7 @@ QRectF ReplayerControlBar::boundingRect() const{
     return QRectF(0, 0, S_BUTTON_WIDTH * 4 + S_BUTTON_GAP * 3, S_BUTTON_HEIGHT);
 }
 
-void ReplayerControlBar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void ReplayerControlBar::paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) {
 }
 
 ReplayerControlBar::ReplayerControlBar(Dashboard *dashboard) {
@@ -2720,7 +2720,7 @@ void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nat
     }
 }
 
-void RoomScene::changeMaxHp(const QString &who, int delta) {
+void RoomScene::changeMaxHp(const QString &, int delta) {
     if (delta < 0)
         Sanguosha->playSystemAudioEffect("maxhplost");
 }

@@ -632,7 +632,7 @@ public:
         events << CardAsked;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (ArmorSkill::triggerable(player).isEmpty()) return QStringList();
         QString asked = data.toStringList().first();
         if (asked == "jink") return QStringList(objectName());
@@ -640,7 +640,7 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         if (room->askForSkillInvoke(player, "EightDiagram")) {
             if (player->hasArmorEffect("bazhen"))
                 player->showGeneral(player->inHeadSkills("bazhen"));
@@ -649,7 +649,7 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         int armor_id = -1;
         if (player->getArmor()) {
             int armor_id = player->getArmor()->getId();
@@ -1298,7 +1298,7 @@ bool BefriendAttacking::targetFilter(const QList<const Player *> &targets, const
     return to_select->hasShownOneGeneral() && !Self->isFriendWith(to_select);
 }
 
-bool BefriendAttacking::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const {
+bool BefriendAttacking::targetsFeasible(const QList<const Player *> &targets, const Player *) const {
     return targets.length() > 0;
 }
 
@@ -1478,7 +1478,7 @@ public:
         events << SlashEffected;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (ArmorSkill::triggerable(player).isEmpty()) return QStringList();
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (effect.slash->isBlack()) return QStringList(objectName());
@@ -1550,7 +1550,7 @@ TribladeSkillCard::TribladeSkillCard(): SkillCard(){
     setObjectName("Triblade");
 }
 
-bool TribladeSkillCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+bool TribladeSkillCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *) const{
     return targets.length() == 0 && to_select->hasFlag("TribladeCanBeSelected");
 }
 
@@ -1579,7 +1579,7 @@ public:
         view_as_skill = new TribladeSkillVS;
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.to && damage.to->isAlive() && damage.card && damage.card->isKindOf("Slash")
             && damage.by_user && !damage.chain && !damage.transfer){
@@ -1608,7 +1608,7 @@ public:
         events << DamageInflicted << SlashEffected << CardEffected;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (ArmorSkill::triggerable(player).isEmpty()) return QStringList();
         if (triggerEvent == SlashEffected) {
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
@@ -1681,7 +1681,7 @@ public:
         events << DamageInflicted << CardsMoveOneTime;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             if (!ArmorSkill::triggerable(player).isEmpty() && damage.damage > 1)

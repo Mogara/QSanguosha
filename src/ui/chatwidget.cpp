@@ -172,7 +172,7 @@ QRectF ChatWidget::boundingRect() const{
     return QRectF(-1, 0, 24 * 3 + 2, 24);
 }
 
-void ChatWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void ChatWidget::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
     painter->drawPixmap(base->pos(), base_pixmap);
 }
 

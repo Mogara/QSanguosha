@@ -5,7 +5,7 @@
 
 #include <QTimer>
 
-QList<CardItem *> TablePile::removeCardItems(const QList<int> &card_ids, Player::Place place) {
+QList<CardItem *> TablePile::removeCardItems(const QList<int> &card_ids, Player::Place ) {
     QList<CardItem *> result;
     _m_mutex_pileCards.lock();
     result = _createCards(card_ids);

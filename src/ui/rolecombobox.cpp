@@ -25,7 +25,7 @@ void RoleComboBox::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     update();
 }
 
-void RoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void RoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
     /*
       --------------------
       --------------------

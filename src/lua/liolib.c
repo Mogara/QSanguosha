@@ -348,7 +348,7 @@ static int io_lines (lua_State *L) {
 
 static int read_number (lua_State *L, FILE *f) {
   lua_Number d;
-  if (fscanf(f, LUA_NUMBER_SCAN, &d) == 1) {
+  if (fscanf_s(f, LUA_NUMBER_SCAN, &d) == 1) {
     lua_pushnumber(L, d);
     return 1;
   }

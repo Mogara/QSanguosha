@@ -731,7 +731,7 @@ QPixmap IQSanComponentSkin::getPixmapFromFileName(const QString &fileName) const
     return QSanPixmapCache::getPixmap(fileName, fileName);
 }
 
-bool QSanRoomSkin::_loadAnimationConfig(const Json::Value &animationConfig) {
+bool QSanRoomSkin::_loadAnimationConfig(const Json::Value &) {
     return true;
 }
 

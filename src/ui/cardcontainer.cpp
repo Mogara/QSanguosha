@@ -23,7 +23,7 @@ CardContainer::CardContainer()
     connect(close_button, SIGNAL(clicked()), this, SLOT(clear()));
 }
 
-void CardContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
+void CardContainer::paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) {
 
 }
 
@@ -185,7 +185,7 @@ void CardContainer::freezeCards(bool is_frozen) {
         item->setFrozen(is_frozen);
 }
 
-QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Player::Place place) {
+QList<CardItem *> CardContainer::removeCardItems(const QList<int> &card_ids, Player::Place ) {
     QList<CardItem *> result;
     foreach (int card_id, card_ids) {
         CardItem *to_take = NULL;
