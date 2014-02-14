@@ -1553,7 +1553,7 @@ void ServerPlayer::removeGeneral(bool head_general) {
     LogMessage log;
     log.type = "#BasaraRemove";
     log.from = this;
-    log.arg  = head_general ? "head" : "deputy";
+    log.arg  = head_general ? "head_general" : "deputy_general";
     log.arg2 = from_general;
     room->sendLog(log);
 }

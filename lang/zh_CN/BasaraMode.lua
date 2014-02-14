@@ -13,8 +13,6 @@ return
 	["show_both_generals"] = "展示双将",
 	["Companions"] = "珠联璧合",
 	["hidden_general"] = "暗将",
-	["head"] = "主将",
-	["deputy"] = "副将",
 	["head_general"] = "主将",
 	["deputy_general"] = "副将",
 	["CompanionEffect"] = "珠联璧合",
