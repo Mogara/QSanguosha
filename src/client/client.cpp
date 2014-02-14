@@ -1265,8 +1265,10 @@ void Client::warn(const QString &reason) {
 
 void Client::askForGeneral(const Json::Value &arg) {
     QStringList generals;
-    if (!tryParse(arg, generals)) return;
-    emit generals_got(generals);
+    if (!tryParse(arg[0], generals)) return;
+    bool single_result;
+    if (!tryParse(arg[1], single_result)) return;
+    emit generals_got(generals, single_result);
     setStatus(AskForGeneralChosen);
 }
 
