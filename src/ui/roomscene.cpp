@@ -3978,6 +3978,7 @@ void RoomScene::recoverGeneral(int index, const QString &name) {
 
 void RoomScene::changeGeneral(const QString &general) {
     if (to_change && arrange_button) to_change->changeGeneral(general);
+    choose_general_box->adjustItems();
 }
 
 void RoomScene::revealGeneral(bool self, const QString &general) {

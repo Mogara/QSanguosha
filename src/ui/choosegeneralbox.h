@@ -13,6 +13,7 @@ public:
     GeneralCardItem(const QString &general_name);
 
     void showCompanion();
+    void hideCompanion();
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -30,6 +31,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
     QRectF boundingRect() const;
     void clear();
+    void adjustItems();
 
 public slots:
     void chooseGeneral(QStringList generals);

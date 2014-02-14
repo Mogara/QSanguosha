@@ -39,6 +39,12 @@ void GeneralCardItem::showCompanion() {
     update();
 }
 
+void GeneralCardItem::hideCompanion() {
+    if (!has_companion) return;
+    has_companion = false;
+    update();
+}
+
 ChooseGeneralBox::ChooseGeneralBox() 
     : general_number(0)
 {
@@ -269,23 +275,46 @@ void ChooseGeneralBox::_adjust() {
         }
     }
 
+    adjustItems();
+}
+
+void ChooseGeneralBox::adjustItems() {
     if (selected.length() == 2){
         foreach(GeneralCardItem *card, items)
             card->setEnabled(false);
         confirm->setEnabled(true);
     } else if (selected.length() == 1) {
+        selected.first()->hideCompanion();
         foreach(GeneralCardItem *card, items) {
             const General *seleted_general = Sanguosha->getGeneral(selected.first()->objectName());
             const General *general = Sanguosha->getGeneral(card->objectName());
             if (general->getKingdom() != seleted_general->getKingdom() || general->isLord()) {
                 if (card->isEnabled())
                     card->setEnabled(false);
-            } else if (!card->isEnabled())
-                card->setEnabled(true);
+                card->hideCompanion();
+            } else {
+                if (!card->isEnabled())
+                    card->setEnabled(true);
+                if (general->isCompanionWith(selected.first()->objectName())) {
+                    selected.first()->showCompanion();
+                    card->showCompanion();
+                } else card->hideCompanion();
+            }
         }
         if (confirm->isEnabled()) confirm->setEnabled(false);
     } else {
         _initializeItems();
+        foreach (GeneralCardItem *card, items) {
+            card->hideCompanion();
+            foreach (GeneralCardItem *other, items) {
+                if (other->objectName().endsWith("(lord)")) continue;
+                const General *hero = Sanguosha->getGeneral(card->objectName());
+                if (card != other && hero->isCompanionWith(other->objectName())) {
+                    card->showCompanion();
+                    break;
+                }
+            }
+        }
         if (confirm->isEnabled()) confirm->setEnabled(false);
     }
 }
@@ -378,25 +407,7 @@ void ChooseGeneralBox::_onItemClicked() {
         }
     }
 
-    if (selected.length() == 2){
-        foreach(GeneralCardItem *card, items)
-            card->setEnabled(false);
-        confirm->setEnabled(true);
-    } else if (selected.length() == 1) {
-        foreach(GeneralCardItem *card, items) {
-            const General *seleted_general = Sanguosha->getGeneral(selected.first()->objectName());
-            const General *general = Sanguosha->getGeneral(card->objectName());
-            if (general->getKingdom() != seleted_general->getKingdom() || general->isLord()) {
-                if (card->isEnabled())
-                    card->setEnabled(false);
-            } else if (!card->isEnabled())
-                card->setEnabled(true);
-        }
-        if (confirm->isEnabled()) confirm->setEnabled(false);
-    } else {
-        _initializeItems();
-        if (confirm->isEnabled()) confirm->setEnabled(false);
-    }
+    adjustItems();
 }
 
 void ChooseGeneralBox::_onCardItemHover() {
