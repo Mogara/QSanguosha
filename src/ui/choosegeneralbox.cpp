@@ -10,7 +10,7 @@ GeneralCardItem::GeneralCardItem(const QString &general_name)
     setAcceptHoverEvents(true);
 }
 
-void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
     QRect rect = G_COMMON_LAYOUT.m_cardMainArea;
@@ -227,12 +227,11 @@ void ChooseGeneralBox::chooseGeneral(QStringList generals) {
         }
 
         card_item->setPos(25, 45);
-        if (!single_result) {
-            card_item->setHomePos(pos);
+        if (!single_result)
             //把我家庭住址存下来，防止回不来
             card_item->setData(S_DATA_INITIAL_HOME_POS, pos);
-            card_item->goBack(true);
-        }
+        card_item->setHomePos(pos);
+        card_item->goBack(true);
     }
 
     if (single_result)
@@ -405,6 +404,7 @@ void ChooseGeneralBox::_onItemClicked() {
 
     if (single_result) {
         selected << item;
+        reply();
         return;
     }
 
