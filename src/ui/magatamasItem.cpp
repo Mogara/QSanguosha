@@ -133,6 +133,7 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp) {
 
 void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     if (m_maxHp <= 0) return;
+
     int imageIndex = qBound(0, m_hp, 3);
     if (m_hp == m_maxHp) imageIndex = 3;
 
@@ -143,6 +144,11 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     } else {
         xStep = 0;
         yStep = m_iconSize.height();
+    }
+
+    if (m_showBackground) {
+        QRect rect(0, - m_imageArea.height(), xStep * qMin(m_maxHp, 4) + m_imageArea.width() + 1, yStep * qMin(m_maxHp, 4) + 3);
+        painter->drawPixmap(rect, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BG));
     }
 
     if (m_maxHp <= 4) {
