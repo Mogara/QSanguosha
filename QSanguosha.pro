@@ -330,7 +330,7 @@ CONFIG(lua){
 
 TRANSLATIONS += builds/vs2010/sanguosha.ts
 
-system("lrelease builds/vs2010/sanguosha.ts")
+#system("lrelease builds/vs2010/sanguosha.ts")
 
 OTHER_FILES += \
     sanguosha.qss \
