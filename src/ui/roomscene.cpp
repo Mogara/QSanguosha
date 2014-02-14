@@ -2857,6 +2857,8 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only) 
             location.replace("\\", "/");
             if (!location.endsWith("/"))
                 location.append("/");
+            if (!QDir(location).exists())
+                QDir().mkdir(location);
             location.append(QString("%1%2-").arg(Sanguosha->translate(Self->getActualGeneral1()->objectName()))
                                             .arg(Sanguosha->translate(Self->getActualGeneral2()->objectName())));
             location.append(QDateTime::currentDateTime().toString("yyyyMMddhhmmss"));
