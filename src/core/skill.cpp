@@ -56,8 +56,10 @@ QString Skill::getDescription(bool yellow) const{
                 || suit == Card::NoSuitRed;
         if (to_replace == str) continue;
         if (des_src.contains(to_replace))
-            des_src.replace(to_replace, QString("<font color=%1>%2</font>").arg(red ? "#FF0000" : "#000000")
-                                                                                  .arg(Sanguosha->translate(str+"_char")));
+            if (red)
+                des_src.replace(to_replace, QString("<font color=#FF0000>%1</font>").arg(Sanguosha->translate(str+"_char")));
+            else
+                des_src.replace(to_replace, QString("<font color=#000000><span style=background-color:white>%1</span></font>").arg(Sanguosha->translate(str+"_char")));
     }
     return QString("<font color=%1>%2</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(des_src);
 }
