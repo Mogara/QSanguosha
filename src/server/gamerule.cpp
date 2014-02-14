@@ -314,8 +314,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                 }
                 card_use = data.value<CardUseStruct>();
 
-                if (card_use.card && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty())
-                        && !card_use.card->targetFixed() && card_use.to.isEmpty()) {
+                if (card_use.card && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty()) && !card_use.card->targetFixed()
+                        && card_use.to.isEmpty() && room->getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
                     CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
                     room->throwCard(card_use.card, reason, NULL);
                     break;
