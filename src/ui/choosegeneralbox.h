@@ -32,6 +32,7 @@ public:
     QRectF boundingRect() const;
     void clear();
     void adjustItems();
+    inline void setSingleResult(const bool single_result) {    this->single_result = single_result;    };
 
 public slots:
     void chooseGeneral(QStringList generals);
@@ -54,6 +55,8 @@ private:
     QSanButton *confirm;
     QGraphicsProxyWidget *progress_bar_item;
     QSanCommandProgressBar *progress_bar;
+
+    bool single_result;
 
     EffectAnimation *animations;
 

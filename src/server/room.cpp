@@ -2305,8 +2305,13 @@ void Room::chooseGenerals() {
     QList<ServerPlayer *> to_assign = m_players;
 
     assignGeneralsForPlayers(to_assign);
-    foreach (ServerPlayer *player, to_assign)
-        player->m_commandArgs = toJsonArray(player->getSelected());;
+
+    foreach (ServerPlayer *player, to_assign) {
+        Json::Value args;
+        args[0] = toJsonArray(player->getSelected());
+        args[1] = false;
+        player->m_commandArgs = args;
+    }
 
     doBroadcastRequest(to_assign, S_COMMAND_CHOOSE_GENERAL);
     foreach (ServerPlayer *player, to_assign) {
@@ -4949,23 +4954,34 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
     return choice;
 }
 
-QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice) {
+QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice, bool single_result) {
     while (isPaused()) {}
     notifyMoveFocus(player, S_COMMAND_CHOOSE_GENERAL);
 
     if (generals.length() == 1)
         return generals.first();
 
-    if (default_choice.isEmpty())
+    if (!single_result && generals.length() == 2)
+        return generals.join("+");
+
+    if (default_choice.isEmpty()) {
         default_choice = generals.at(qrand() % generals.length());
 
+        if (!single_result) {
+            QStringList heros = generals;
+            heros.removeOne(default_choice);
+            default_choice += heros.at(qrand() % heros.length());
+        }
+    }
+
     if (player->isOnline()) {
-        Json::Value options = toJsonArray(generals);
+        Json::Value options;
+        options[0] = toJsonArray(generals);
+        options[1] = single_result;
         bool success = doRequest(player, S_COMMAND_CHOOSE_GENERAL, options, true);
 
         Json::Value clientResponse = player->getClientReply();
-        bool free = Config.FreeChoose || mode.startsWith("_mini_") || mode == "custom_scenario";
-        if (!success || !clientResponse.isString() || (!free && !generals.contains(clientResponse.asCString())))
+        if (!success || !clientResponse.isString() || (!Config.FreeChoose && !generals.contains(clientResponse.asCString())))
             return default_choice;
         else
             return toQString(clientResponse);
@@ -4974,8 +4990,8 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, Q
     return default_choice;
 }
 
-QString Room::askForGeneral(ServerPlayer *player, const QString &generals, QString default_choice) {
-    return askForGeneral(player, generals.split("+"), default_choice); // For Lua only!!!
+QString Room::askForGeneral(ServerPlayer *player, const QString &generals, QString default_choice, bool single_result) {
+    return askForGeneral(player, generals.split("+"), default_choice, single_result); // For Lua only!!!
 }
 
 bool Room::makeCheat(ServerPlayer *player) {
