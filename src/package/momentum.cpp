@@ -455,8 +455,9 @@ public:
 
 class YongjueStart: public TriggerSkill {
 public:
-    YongjueStart(): TriggerSkill("#yongjue-start") {
+    YongjueStart(): TriggerSkill("yongjue-start") {
         events << EventPhaseStart;
+        global = true;
     }
 
     virtual int getPriority() const{
@@ -1406,7 +1407,6 @@ MomentumPackage::MomentumPackage()
     zhangren->addSkill(new Fengshi);
 
     skills << new Yongjue << new YongjueStart << new Benghuai << new HongfaSlash << new Sunce_Yinghun << new Sunce_Yingzi;
-    related_skills.insertMulti("yongjue", "#yongjue-start");
 
     addMetaObject<CunsiCard>();
     addMetaObject<DuanxieCard>();
