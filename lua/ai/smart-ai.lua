@@ -4023,6 +4023,7 @@ function SmartAI:hasTrickEffective(card, to, from)
 
 	if to:hasSkill("hongyan") and card:isKindOf("Lightning") then return false end
 	if to:hasSkill("qianxun") and card:isKindOf("Snatch") then return false end
+	if to:hasSkill("qianxun") and card:isKindOf("Indulgence") then return false end
 	if to:hasSkill("weimu") and card:isBlack() then return false end
 	if to:hasSkill("kongcheng") and to:isKongcheng() and card:isKindOf("Duel") then return false end
 
