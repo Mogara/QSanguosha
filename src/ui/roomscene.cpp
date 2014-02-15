@@ -3399,7 +3399,7 @@ void RoomScene::doGongxin(const QList<int> &card_ids, bool enable_heart, QList<i
     if (enable_heart)
         card_container->startGongxin(enabled_ids);
     else
-        card_container->addCloseButton();
+        card_container->addConfirmButton();
 }
 
 void RoomScene::showOwnerButtons(bool owner) {

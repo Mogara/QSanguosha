@@ -167,6 +167,14 @@
     </message>
 </context>
 <context>
+    <name>CardContainer</name>
+    <message>
+        <location filename="../../src/ui/cardcontainer.cpp" line="33"/>
+        <source>QSanguosha-Hegemony</source>
+        <translation>太阳神三国杀·国战</translation>
+    </message>
+</context>
+<context>
     <name>CardEditor</name>
     <message>
         <location filename="../../src/dialog/cardeditor.cpp" line="743"/>
@@ -2219,6 +2227,24 @@
         <location filename="../../src/dialog/generaloverview.cpp" line="183"/>
         <source>OK</source>
         <translation>确定</translation>
+    </message>
+</context>
+<context>
+    <name>GuanxingBox</name>
+    <message>
+        <location filename="../../src/ui/cardcontainer.cpp" line="450"/>
+        <source>Please arrange the cards</source>
+        <translation>请排列卡牌</translation>
+    </message>
+    <message>
+        <location filename="../../src/ui/cardcontainer.cpp" line="483"/>
+        <source>cards on the top of the pile</source>
+        <translation>置于牌堆顶的牌</translation>
+    </message>
+    <message>
+        <location filename="../../src/ui/cardcontainer.cpp" line="486"/>
+        <source>cards at the bottom of the pile</source>
+        <translation>置于牌堆底的牌</translation>
     </message>
 </context>
 <context>

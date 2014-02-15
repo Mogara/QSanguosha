@@ -1,28 +1,12 @@
 #ifndef _CARD_CONTAINER_H
 #define _CARD_CONTAINER_H
 
-class CardItem;
 class ClientPlayer;
 
-#include "QSanSelectableItem.h"
 #include "carditem.h"
 #include "GenericCardContainerUI.h"
 
 #include <QStack>
-
-class CloseButton: public QSanSelectableItem {
-    Q_OBJECT
-
-public:
-    CloseButton();
-
-protected:
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
-signals:
-    void clicked();
-};
 
 class CardContainer: public GenericCardContainer {
     Q_OBJECT
@@ -33,11 +17,11 @@ public:
     int getFirstEnabled() const;
     void startChoose();
     void startGongxin(const QList<int> &enabled_ids);
-    void addCloseButton();
+    void addConfirmButton();
     void view(const ClientPlayer *player);
     virtual QRectF boundingRect() const;
     ClientPlayer *m_currentPlayer;
-    virtual void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *);
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     bool retained();
 
 public slots:
@@ -46,11 +30,10 @@ public slots:
     void freezeCards(bool is_disable);
 
 protected:
-    QRectF _m_boundingRect;
     virtual bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
-    QPixmap _m_background_top, _m_background_middle, _m_background_bottom;
-    CloseButton *close_button;
-    QGraphicsPixmapItem *_m_background, *_m_background_seat;
+    QSanButton *confirm_button;
+    int scene_width;
+    int item_count;
 
 private:
     QList<CardItem *> items;
@@ -58,7 +41,6 @@ private:
     QStack<bool> retained_stack;
 
     void _addCardItem(int card_id, const QPointF &pos);
-    virtual void _repaint();
 
 private slots:
     void grabItem();
@@ -77,6 +59,10 @@ public:
     GuanxingBox();
     void clear();
     void reply();
+    virtual QRectF boundingRect() const;
+
+protected:
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 public slots:
     void doGuanxing(const QList<int> &card_ids, bool up_only);
@@ -85,8 +71,6 @@ public slots:
 private:
     QList<CardItem *> up_items, down_items;
     bool up_only;
-
-    void _repaint();
 };
 
 #endif
