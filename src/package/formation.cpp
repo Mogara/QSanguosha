@@ -1215,7 +1215,7 @@ public:
                 break;
             }
         }
-        if (dfowner == NULL || dfowner->getRole() == "careerist")
+        if (dfowner == NULL || dfowner->getRole() == "careerist" || !dfowner->hasShownOneGeneral())
             return false;
 
         DeathStruct death = data.value<DeathStruct>();
