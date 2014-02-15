@@ -924,9 +924,9 @@ end
 sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 	local room = self.room
 	local zhoutai = room:findPlayerBySkillName("buqu")
-	if zhoutai and zhoutai:getPile("buqu") > 1 and zhoutai:hasShownAllGenerals() then
+	if zhoutai and zhoutai:getPile("buqu"):length() > 1 and zhoutai:hasShownAllGenerals() then
 		use.card = card
-		if ((not isDummy) and use.to) then
+		if not use.isDummy and use.to then
 			sgs.ai_skill_choice.QingchengCard = (zhoutai:inHeadSkills("buqu") and "head_general" or "debuty_general")
 			use.to:append(zhoutai)
 		end
@@ -940,7 +940,7 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 		for _, p in sgs.qlist(dummy_use.to) do
 			if not p:hasShownAllGenerals() then continue end
 			if self.player:isFriendWith(p) or (self.player:getActualGeneral1():getKingdom() == p:getKingdom()) then continue end
-			local skill_table = sgs.masochism_skills.split("|")
+			local skill_table = sgs.masochism_skill:split("|")
 			for _, skill_name in ipairs(skill_table) do
 				if (p:hasSkill(skill_name)) then
 					use.card = card
