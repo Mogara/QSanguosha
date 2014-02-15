@@ -1289,7 +1289,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
-        if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who).contains(objectName())){
+        if (TriggerSkill::triggerable(player).contains(objectName())){
 
             QList<ServerPlayer *> friends;
             foreach (ServerPlayer *p, room->getOtherPlayers(player)){

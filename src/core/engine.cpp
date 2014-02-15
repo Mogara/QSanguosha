@@ -905,6 +905,7 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
     QStringList all_generals = getLimitedGeneralNames();
     QSet<QString> general_set = all_generals.toSet();
 
+    count = qMin(count, all_generals.count());
     Q_ASSERT(all_generals.count() >= count);
 
     if (Config.EnableBasara)

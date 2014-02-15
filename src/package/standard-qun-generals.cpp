@@ -1109,12 +1109,12 @@ public:
             DyingStruct dying = data.value<DyingStruct>();
             if (dying.damage && dying.damage->from)
                 target = dying.damage->from;
-            if (dying.who != player && target && (target->isFriendWith(player) || player->willBeFriendWith(target)))
+            if (dying.who != player && target && target->isFriendWith(player))
                 return QStringList(objectName());
         } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
             target = death.who;
-            if (target && (target->isFriendWith(player) || player->willBeFriendWith(target)))
+            if (target && target->isFriendWith(player))
                 return QStringList(objectName());
         }
         return QStringList();
@@ -1135,10 +1135,8 @@ public:
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         if (triggerEvent == Dying) {
-            room->broadcastSkillInvoke(objectName(), 1);
             player->drawCards(1);
         } else if (triggerEvent == Death) {
-            room->broadcastSkillInvoke(objectName(), 2);
             room->loseHp(player);
         }
         return false;

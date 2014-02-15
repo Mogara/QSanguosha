@@ -239,7 +239,7 @@ void DelayedTrick::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &
             if (room->getCardOwner(getEffectiveId()) != source) return;
         }
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
-        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+        room->moveCardTo(this, NULL, Player::DiscardPile, reason, true);
     }
 }
 
