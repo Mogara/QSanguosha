@@ -721,6 +721,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                     } else if (choice == "draw")
                         player->drawCards(2);
                     room->removePlayerMark(player, "CompanionEffect");
+
+                    room->setEmotion(player, "companion");
                 }
                 if (player->getMark("HalfMaxHpLeft") > 0) {
                     LogMessage log;
