@@ -331,6 +331,21 @@ void RoomThread::run() {
     foreach (const TriggerSkill *triggerSkill, Sanguosha->getGlobalTriggerSkills())
         addTriggerSkill(triggerSkill);
 
+    QString winner = game_rule->getWinner(room->getPlayers().first());
+    if (!winner.isNull()) {
+        try {
+            room->gameOver(winner);
+        }
+        catch (TriggerEvent triggerEvent) {
+            if (triggerEvent == GameFinished) {
+                terminate();
+                Sanguosha->unregisterRoom();
+                return;
+            } else
+                Q_ASSERT(false);
+        }
+    }
+
     // start game
     try {
         trigger(GameStart, (Room *)room, NULL);

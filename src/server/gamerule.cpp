@@ -314,8 +314,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                 }
                 card_use = data.value<CardUseStruct>();
 
-                if (card_use.card && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty())
-                        && !card_use.card->targetFixed() && card_use.to.isEmpty()) {
+                if (card_use.card && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty()) && !card_use.card->targetFixed()
+                        && card_use.to.isEmpty() && room->getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
                     CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
                     room->throwCard(card_use.card, reason, NULL);
                     break;
@@ -931,16 +931,23 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
                         }
                     }
                 }
+                if (has_diff_kingdoms)
+                    break;
             }
             if (!has_diff_kingdoms) { // ÅÐ¶ÏÒ°ÐÄ¼Ò
                 QMap<QString, int> kingdoms;
+                QStringList lords;
+                foreach (ServerPlayer *p, room->getPlayers())
+                    if (p->isLord() || p->getActualGeneral1()->isLord())
+                        if (p->isAlive())
+                            lords << p->getActualGeneral1()->getKingdom();
                 foreach (ServerPlayer *p, room->getPlayers()) {
                     QString kingdom;
                     if (p->hasShownOneGeneral())
                         kingdom = p->getKingdom();
                     else
                         kingdom = p->getActualGeneral1()->getKingdom();
-                    if (room->getLord(kingdom) && room->getLord(kingdom)->isAlive()) continue;
+                    if (lords.contains(kingdom)) continue;
                     if (room->getLord(kingdom) && room->getLord(kingdom)->isDead())
                         kingdoms[kingdom] += 10;
                     else

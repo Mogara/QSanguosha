@@ -733,13 +733,13 @@ public:
         if (pangtong->askForSkillInvoke(objectName(), data)) {
             room->broadcastSkillInvoke(objectName());
             room->doLightbox("$NiepanAnimate");
-            room->removePlayerMark(pangtong, "@nirvana");
             return true;
         }
         return false;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *pangtong, QVariant &) const{
+        room->removePlayerMark(pangtong, "@nirvana");
         pangtong->throwAllHandCardsAndEquips();
         QList<const Card *> tricks = pangtong->getJudgingArea();
         foreach (const Card *trick, tricks) {
