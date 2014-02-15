@@ -646,7 +646,7 @@ public:
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         int armor_id = -1;
         if (player->getArmor()) {
-            int armor_id = player->getArmor()->getId();
+            armor_id = player->getArmor()->getId();
             room->setCardFlag(armor_id, "using");
         }
         room->setEmotion(player, "armor/eight_diagram");
