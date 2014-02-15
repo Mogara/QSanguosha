@@ -78,7 +78,7 @@ private slots:
     void on_actionCard_editor_triggered();
     void on_actionAcknowledgement_triggered();
     void on_actionBroadcast_triggered();
-    void on_actionScenario_Overview_triggered();
+    void on_actionRule_Summary_triggered();
     void on_actionRole_assign_table_triggered();
     void on_actionMinimize_to_system_tray_triggered();
     void on_actionShow_Hide_Menu_triggered();

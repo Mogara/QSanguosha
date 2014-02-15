@@ -52,7 +52,6 @@ SOURCES += \
     src/dialog/packagingeditor.cpp \
     src/dialog/playercarddialog.cpp \
     src/dialog/roleassigndialog.cpp \
-    src/dialog/scenario-overview.cpp \
     src/package/exppattern.cpp \
     src/package/formation.cpp \
     src/package/momentum.cpp \
@@ -107,7 +106,8 @@ SOURCES += \
     src/jsoncpp/src/json_reader.cpp \
     src/jsoncpp/src/json_internalmap.inl \
     src/jsoncpp/src/json_internalarray.inl \
-    swig/sanguosha_wrap.cxx
+    swig/sanguosha_wrap.cxx \
+    src/dialog/rule-summary.cpp
 HEADERS += \
     src/client/aux-skills.h \
     src/client/client.h \
@@ -144,7 +144,6 @@ HEADERS += \
     src/dialog/packagingeditor.h \
     src/dialog/playercarddialog.h \
     src/dialog/roleassigndialog.h \
-    src/dialog/scenario-overview.h \
     src/package/exppattern.h \
     src/package/formation.h \
     src/package/momentum.h \
@@ -199,7 +198,8 @@ HEADERS += \
     src/jsoncpp/include/json/features.h \
     src/jsoncpp/include/json/config.h \
     src/jsoncpp/include/json/autolink.h \
-    src/jsoncpp/include/json/assertions.h
+    src/jsoncpp/include/json/assertions.h \
+    src/dialog/rule-summary.h
 
 FORMS += \
     src/dialog/cardoverview.ui \

@@ -6,11 +6,11 @@
 class QListWidget;
 class QTextEdit;
 
-class ScenarioOverview: public QDialog {
+class RuleSummary: public QDialog {
     Q_OBJECT
 
 public:
-    ScenarioOverview(QWidget *parent);
+    RuleSummary(QWidget *parent);
 
 private:
     QListWidget *list;

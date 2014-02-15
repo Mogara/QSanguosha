@@ -6,7 +6,7 @@
 #include "generaloverview.h"
 #include "cardoverview.h"
 #include "ui_mainwindow.h"
-#include "scenario-overview.h"
+#include "rule-summary.h"
 #include "window.h"
 #include "pixmapanimation.h"
 #include "record-analysis.h"
@@ -93,7 +93,7 @@ MainWindow::MainWindow(QWidget *parent)
             << ui->actionConfigure
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
-            << ui->actionScenario_Overview
+            << ui->actionRule_Summary
             << ui->actionAbout
             << ui->actionAbout_Us;
 
@@ -126,7 +126,7 @@ void MainWindow::restoreFromConfig() {
     ui->actionNever_nullify_my_trick->setEnabled(false);
 }
 
-void MainWindow::closeEvent(QCloseEvent *event) {
+void MainWindow::closeEvent(QCloseEvent *) {
     Config.setValue("WindowSize", size());
     Config.setValue("WindowPosition", pos());
 }
@@ -323,7 +323,7 @@ void MainWindow::gotoStartScene() {
             << ui->actionConfigure
             << ui->actionGeneral_Overview
             << ui->actionCard_Overview
-            << ui->actionScenario_Overview
+            << ui->actionRule_Summary
             << ui->actionAbout
             << ui->actionAbout_Us;
 
@@ -566,9 +566,9 @@ void MainWindow::on_actionRole_assign_table_triggered()
     window->appear();
 }
 
-void MainWindow::on_actionScenario_Overview_triggered()
+void MainWindow::on_actionRule_Summary_triggered()
 {
-    ScenarioOverview *dialog = new ScenarioOverview(this);
+    RuleSummary *dialog = new RuleSummary(this);
     dialog->show();
 }
 

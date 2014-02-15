@@ -1,4 +1,4 @@
-#include "scenario-overview.h"
+#include "rule-summary.h"
 #include "engine.h"
 #include "scenario.h"
 
@@ -8,10 +8,10 @@
 #include <QFile>
 #include <QTextStream>
 
-ScenarioOverview::ScenarioOverview(QWidget *parent)
+RuleSummary::RuleSummary(QWidget *parent)
     : QDialog(parent)
 {
-    setWindowTitle(tr("Scenario overview"));
+    setWindowTitle(tr("Rule Summary"));
     resize(800, 600);
 
     list = new QListWidget;
@@ -42,7 +42,7 @@ ScenarioOverview::ScenarioOverview(QWidget *parent)
         loadContent(0);
 }
 
-void ScenarioOverview::loadContent(int row) {
+void RuleSummary::loadContent(int row) {
     QString name = list->item(row)->data(Qt::UserRole).toString();
     QString filename = QString("scenarios/%1.html").arg(name);
     QFile file(filename);

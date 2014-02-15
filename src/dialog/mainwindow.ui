@@ -40,7 +40,7 @@
     <addaction name="actionConfigure"/>
     <addaction name="actionGeneral_Overview"/>
     <addaction name="actionCard_Overview"/>
-    <addaction name="actionScenario_Overview"/>
+    <addaction name="actionRule_Summary"/>
     <addaction name="actionView_ban_list"/>
     <addaction name="actionManage_Ban_IP"/>
     <addaction name="actionBroadcast"/>
@@ -251,9 +251,9 @@
     <string>Role assign table</string>
    </property>
   </action>
-  <action name="actionScenario_Overview">
+  <action name="actionRule_Summary">
    <property name="text">
-    <string>Scenario overview</string>
+    <string>Rule Summary</string>
    </property>
   </action>
   <action name="actionScript_editor">
