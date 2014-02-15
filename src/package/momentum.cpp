@@ -1083,6 +1083,9 @@ public:
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
         if (!player->hasShownOneGeneral())
             return false;
+        const Player *zhangjiao = player->getLord();
+        if (!zhangjiao || zhangjiao->getPile("heavenly_army").isEmpty() || !zhangjiao->isFriendWith(player))
+            return false;
         if (pattern == "slash")
             return true;
         return pattern == "@@hongfa_slash!";
