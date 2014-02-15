@@ -3122,9 +3122,10 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         item = new QTableWidgetItem;
 
         if (ServerInfo.EnableHegemony) {
-            QIcon icon(QString("image/kingdom/icon/%1.png").arg(player->getKingdom()));
+            QString str = player->getRole() == "careerist" ? "careerist" : player->getKingdom();
+            QIcon icon(QString("image/system/roles/%1.png").arg(str));
             item->setIcon(icon);
-            item->setText(Sanguosha->translate(player->getKingdom()));
+            item->setText(Sanguosha->translate(str));
         } else {
             QIcon icon(QString("image/system/roles/%1.png").arg(player->getRole()));
             item->setIcon(icon);

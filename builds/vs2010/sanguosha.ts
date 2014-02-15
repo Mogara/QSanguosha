@@ -3906,7 +3906,7 @@
     <message>
         <location filename="../../src/ui/roomscene.cpp" line="3092"/>
         <source>Nationality</source>
-        <translation>国籍</translation>
+        <translation>势力</translation>
     </message>
     <message>
         <location filename="../../src/ui/roomscene.cpp" line="3094"/>
