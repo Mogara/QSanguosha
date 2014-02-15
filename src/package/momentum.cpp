@@ -81,7 +81,8 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        DamageStruct damage = data.value<DamageStruct>();ServerPlayer *target = NULL;
+        DamageStruct damage = data.value<DamageStruct>();
+        ServerPlayer *target = NULL;
         if (triggerEvent == Damage)
             target = damage.to;
         else

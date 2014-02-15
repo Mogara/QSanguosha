@@ -13,13 +13,13 @@ public:
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer * &) const;
     virtual int getPriority() const;
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    QString getWinner(ServerPlayer *victim) const;
 
 private:
     void onPhaseProceed(ServerPlayer *player) const;
     void rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const;
     void changeGeneral1v1(ServerPlayer *player) const;
     void changeGeneralXMode(ServerPlayer *player) const;
-    QString getWinner(ServerPlayer *victim) const;
 };
 
 class BasaraMode: public GameRule {

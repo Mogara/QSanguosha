@@ -931,16 +931,23 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
                         }
                     }
                 }
+                if (has_diff_kingdoms)
+                    break;
             }
             if (!has_diff_kingdoms) { // ÅÐ¶ÏÒ°ÐÄ¼Ò
                 QMap<QString, int> kingdoms;
+                QStringList lords;
+                foreach (ServerPlayer *p, room->getPlayers())
+                    if (p->isLord() || p->getActualGeneral1()->isLord())
+                        if (p->isAlive())
+                            lords << p->getActualGeneral1()->getKingdom();
                 foreach (ServerPlayer *p, room->getPlayers()) {
                     QString kingdom;
                     if (p->hasShownOneGeneral())
                         kingdom = p->getKingdom();
                     else
                         kingdom = p->getActualGeneral1()->getKingdom();
-                    if (room->getLord(kingdom) && room->getLord(kingdom)->isAlive()) continue;
+                    if (lords.contains(kingdom)) continue;
                     if (room->getLord(kingdom) && room->getLord(kingdom)->isDead())
                         kingdoms[kingdom] += 10;
                     else
