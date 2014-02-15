@@ -349,9 +349,6 @@ ServerPlayer *TrustAI::askForYiji(const QList<int> &, const QString &, int &) {
 }
 
 void TrustAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &bottom, int guanxing_type) {
-    Q_UNUSED(bottom);
-    Q_UNUSED(guanxing_type);
-
     if (guanxing_type == Room::GuanxingDownOnly) {
         bottom = cards;
         up.clear();
@@ -483,7 +480,7 @@ void LuaAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int> &
 
     pushCallback(L, __FUNCTION__);
     pushQIntList(L, cards);
-   lua_pushinteger(L, guanxing_type);
+    lua_pushinteger(L, guanxing_type);
 
     int error = lua_pcall(L, 3, 2, 0);
     if (error) {
