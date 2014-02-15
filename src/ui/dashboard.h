@@ -183,6 +183,8 @@ protected:
 
     QGraphicsPixmapItem *_m_hidden_mark1, *_m_hidden_mark2;
 
+    QGraphicsPixmapItem *_m_head_icon, *_m_deputy_icon;
+
     // for parts creation
     void _createLeft();
     void _createRight();

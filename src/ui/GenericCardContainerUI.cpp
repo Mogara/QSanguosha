@@ -256,16 +256,18 @@ void PlayerCardContainer::updateSmallAvatar() {
             area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 5);
         _paintPixmap(_m_smallAvatarIcon, area, avatarIcon, _getAvatarParent());
         QString kingdom = m_player->getKingdom();
+        _paintPixmap(_m_kingdomColorMaskIcon2, _m_layout->m_kingdomMaskArea2,
+                     G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, kingdom), this->_getAvatarParent());
         QString show_name = Sanguosha->translate("&" + name);
         if (show_name.startsWith("&"))
             show_name = Sanguosha->translate(name);
         _m_layout->m_smallAvatarNameFont.paintText(_m_secondaryAvatarNameItem,
                                                        _m_layout->m_secondaryAvatarNameArea,
-                                                       Qt::AlignLeft | Qt::AlignJustify, name);
+                                                       Qt::AlignLeft | Qt::AlignJustify, show_name);
     } else {
         _paintPixmap(_m_smallAvatarIcon, _m_layout->m_secondaryAvatarArea,
                      QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
-        _clearPixmap(_m_kingdomColorMaskIcon);
+        _clearPixmap(_m_kingdomColorMaskIcon2);
         _clearPixmap(_m_kingdomIcon);
         _m_secondaryAvatarArea->setToolTip(QString());
     }
@@ -685,7 +687,7 @@ PlayerCardContainer::PlayerCardContainer() {
     _m_duanchangMask = _m_duanchangMask2 = NULL;
     _m_faceTurnedIcon = _m_faceTurnedIcon2 = NULL;
     _m_handCardBg = _m_handCardNumText = NULL;
-    _m_kingdomColorMaskIcon = _m_deathIcon = NULL;
+    _m_kingdomColorMaskIcon = _m_kingdomColorMaskIcon2 = _m_deathIcon = NULL;
     _m_actionIcon = NULL;
     _m_kingdomIcon = NULL;
     _m_saveMeIcon = NULL;
@@ -777,6 +779,7 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_avatarNameItem);
     _layUnder(_m_kingdomIcon);
     _layUnder(_m_kingdomColorMaskIcon);
+    _layUnder(_m_kingdomColorMaskIcon2);
     _layUnder(_m_screenNameItem);
     for (int i = 0; i < 4; i++)
         _layUnder(_m_equipRegions[i]);

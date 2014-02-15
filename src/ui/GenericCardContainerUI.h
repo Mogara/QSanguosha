@@ -168,7 +168,7 @@ protected:
     QGraphicsPixmapItem *_m_duanchangMask, *_m_duanchangMask2;
     QGraphicsPixmapItem *_m_faceTurnedIcon, *_m_faceTurnedIcon2;
     QGraphicsPixmapItem *_m_handCardBg, *_m_handCardNumText;
-    QGraphicsPixmapItem *_m_kingdomColorMaskIcon;
+    QGraphicsPixmapItem *_m_kingdomColorMaskIcon, *_m_kingdomColorMaskIcon2;
     QGraphicsPixmapItem *_m_deathIcon;
     QGraphicsPixmapItem *_m_actionIcon;
     QGraphicsPixmapItem *_m_kingdomIcon;

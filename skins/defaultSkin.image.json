@@ -160,5 +160,8 @@
 
 //general card item
 "generalCardItemCompanionFont-default": "image/system/companions/prompt/%1.png",
-"generalCardItemCompanionIcon-default": "image/system/companions/icons/%1.png"
+"generalCardItemCompanionIcon-default": "image/system/companions/icons/%1.png",
+
+"headIcon": "image/system/head.png",
+"deputyIcon": "image/system/deputy.png"
 }

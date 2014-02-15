@@ -1288,7 +1288,7 @@ public:
         return true;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+    virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         if (TriggerSkill::triggerable(player).contains(objectName())){
 
             QList<ServerPlayer *> friends;
