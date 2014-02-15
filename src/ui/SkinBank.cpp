@@ -70,6 +70,8 @@ const char *QSanRoomSkin::S_SKIN_KEY_PROGRESS_BAR_IMAGE = "progressBar";
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE = "generalCircleImage-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_MASK = "generalCircleMask-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK = "hiddenMark";
+const char *QSanRoomSkin::S_SKIN_KEY_HEAD_ICON = "headIcon";
+const char *QSanRoomSkin::S_SKIN_KEY_DEPUTY_ICON = "deputyIcon";
 
 //CardContainer
 const char *QSanRoomSkin::S_SKIN_KEY_CARD_CONTAINER_TOP = "cardContainerTop";
@@ -873,6 +875,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         tryParse(playerConfig["secondaryAvatarNameArea"], layout->m_secondaryAvatarNameArea);
         layout->m_smallAvatarNameFont.tryParse(playerConfig["smallAvatarNameFont"]);
         tryParse(playerConfig["kingdomMaskArea"], layout->m_kingdomMaskArea);
+        tryParse(playerConfig["kingdomMaskArea2"], layout->m_kingdomMaskArea2);
         tryParse(playerConfig["kingdomIconArea"], layout->m_kingdomIconArea);
 
         layout->m_handCardFont.tryParse(playerConfig["handCardFont"]);
@@ -901,6 +904,8 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         tryParse(playerConfig["duanchangMaskRegion2"], layout->m_duanchangMaskRegion2);
         tryParse(playerConfig["hiddenMarkRegion"], layout->m_hiddenMarkRegion1);
         tryParse(playerConfig["hiddenMarkRegion2"], layout->m_hiddenMarkRegion2);
+        tryParse(playerConfig["headIconRegion"], layout->m_headIconRegion);
+        tryParse(playerConfig["deputyIconRegion"], layout->m_deputyIconRegion);
         layout->m_deathIconRegion.tryParse(playerConfig["deathIconRegion"]);
         tryParse(playerConfig["votesIconRegion"], layout->m_votesIconRegion);
         tryParse(playerConfig["seatIconRegion"], layout->m_seatIconRegion);

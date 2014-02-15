@@ -168,6 +168,7 @@ public:
         QSanShadowTextFont m_smallAvatarNameFont;
         QRect m_kingdomIconArea;
         QRect m_kingdomMaskArea;
+        QRect m_kingdomMaskArea2;
         QSanShadowTextFont m_handCardFont;
         QRect m_screenNameArea;
         QSanShadowTextFont m_screenNameFont;
@@ -195,6 +196,7 @@ public:
         QRect m_chainedIconRegion, m_chainedIconRegion2;
         QRect m_duanchangMaskRegion, m_duanchangMaskRegion2;
         QRect m_hiddenMarkRegion1, m_hiddenMarkRegion2;
+        QRect m_headIconRegion, m_deputyIconRegion;
         AnchoredRect m_deathIconRegion;
         QRect m_votesIconRegion;
         QRect m_seatIconRegion;
@@ -387,6 +389,8 @@ public:
     static const char *S_SKIN_KEY_GENERAL_CIRCLE_IMAGE;
     static const char *S_SKIN_KEY_GENERAL_CIRCLE_MASK;
     static const char *S_SKIN_KEY_HIDDEN_MARK;
+    static const char *S_SKIN_KEY_HEAD_ICON;
+    static const char *S_SKIN_KEY_DEPUTY_ICON;
 
     //CardContainer
 

@@ -33,6 +33,7 @@ Dashboard::Dashboard(QGraphicsItem *widget)
         _m_isEquipsAnimOn[i] = false;
     }
     _m_hidden_mark1 = _m_hidden_mark2 = NULL;
+    _m_head_icon = _m_deputy_icon = NULL;
     // At this stage, we cannot decide the dashboard size yet, the whole
     // point in creating them here is to allow PlayerCardContainer to
     // anchor all controls and widgets to the correct frame.
@@ -160,6 +161,8 @@ void Dashboard::_adjustComponentZValues() {
     //the following 2 items must be on top
     _m_headGeneralFrame->setZValue(1000);
     _m_deputyGeneralFrame->setZValue(1000);
+    _m_head_icon->setZValue(2000);
+    _m_deputy_icon->setZValue(2000);
 }
 
 int Dashboard::width() {
@@ -214,6 +217,9 @@ void Dashboard::_createRight() {
             SLOT(onHeadSkillPreshowed()));
     connect(ClientInstance, SIGNAL(deputy_preshowed()), this,
             SLOT(onDeputySkillPreshowed()));
+
+    _paintPixmap(_m_head_icon, G_DASHBOARD_LAYOUT.m_headIconRegion, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HEAD_ICON), _m_rightFrame);
+    _paintPixmap(_m_deputy_icon, G_DASHBOARD_LAYOUT.m_deputyIconRegion, _getPixmap(QSanRoomSkin::S_SKIN_KEY_DEPUTY_ICON), _m_rightFrame);
 }
 
 void Dashboard::_updateFrames() {
