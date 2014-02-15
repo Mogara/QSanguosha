@@ -298,8 +298,8 @@ end
 
 function SmartAI:objectiveLevel(player, tactics)
 	if not player then self.room:writeToConsole(debug.traceback()) return 0 end
-	if self.player:objectName() == player:objectName() then return -5 end
-	if self.room:getOtherPlayers(player):length() == 1 then return 5 end
+	if self.player:objectName() == player:objectName() then return -2 end
+	if self.room:alivePlayerCount() == 2 then return 5 end
 
 	local self_kingdom = self.player:getKingdom()
 	local player_kingdom = sgs.ai_explicit[player:objectName()]
@@ -314,7 +314,7 @@ function SmartAI:objectiveLevel(player, tactics)
 
 	if not tactics then return self:objectiveLevel(player, sgs.ai_tactics) end
 
-	if sgs.ai_tactics == "2B" then
+	if tactics == "2B" then
 		return 5
 
 	else
@@ -337,7 +337,7 @@ function SmartAI:objectiveLevel(player, tactics)
 			else return self:getOverflow() > 0 and 4 or 0
 			end
 		elseif string.find(gameProcess, "&") then
-			if sgs.ai_tactics == "PT" then
+			if tactics == "PT" then
 				local kingdom = gameProcess:split("&")[1]
 				if self_kingdom == kingdom and not selfIsCareerist and sgs.shown_kingdom[self_kingdom] < upperlimit then
 					if self:evaluateKingdom(player) == self_kingdom then return -1
@@ -347,7 +347,7 @@ function SmartAI:objectiveLevel(player, tactics)
 				elseif (player_kingdom == kingdom or self:evaluateKingdom(player) == kingdom) and player:getRole() ~= "careerist" then return 5
 				else return 0
 				end
-			elseif sgs.ai_tactics == "WY" then
+			elseif tactics == "WY" then
 				local kingdom1, kingdom2 = gameProcess:split("&")[1], gameProcess:split("&")[2]
 				if (self_kingdom == kingdom1 or self_kingdom == kingdom2) and not selfIsCareerist then
 					if player_kingdom == kingdom1 or player_kingdom == kingdom2 then return 0
@@ -555,6 +555,22 @@ function SmartAI:updatePlayers(update)
 	if update then
 		for _, p in sgs.qlist(self.room:getAlivePlayers()) do
 			sgs.getProcessDefense(p, true)
+		end
+	end
+
+	if not sgs.isAnjiang(self.player) then
+		local updateNewKingdom = self.player:getRole() == "careerist" and sgs.ai_explicit[self.player:objectName()] ~= "careerist"
+								or self.player:getRole() ~= "careerist" and sgs.ai_explicit[self.player:objectName()] ~= self.player:getKingdom()
+		if updateNewKingdom then
+			sgs.ai_explicit[self.player:objectName()] = self.player:getRole() == "careerist" and "careerist" or self.player:getKingdom()
+			for k, v in pairs(sgs.shown_kingdom) do
+				sgs.shown_kingdom[k] = 0
+			end
+
+			for _, p in sgs.qlist(self.room:getPlayers()) do
+				if sgs.ai_explicit[p:objectName()] == "careerist" or sgs.ai_explicit[p:objectName()] == "unknown" then continue end
+				sgs.shown_kingdom[sgs.ai_explicit[p:objectName()]] = sgs.shown_kingdom[sgs.ai_explicit[p:objectName()]] + 1
+			end
 		end
 	end
 
@@ -1867,13 +1883,11 @@ function SmartAI:filterEvent(event, player, data)
 				self:setSkillsPreshowed()
 				sgs.ai_setSkillsPreshowed = true
 			end
+			if player:getAI() then player:setSkillsPreshowed("hd", true) end
 			-- sgs.printFEList(player)
 		elseif player:getPhase() == sgs.Player_NotActive then
 			if sgs.recorder.player:objectName() == player:objectName() then sgs.turncount = sgs.turncount + 1 end
 		end
-	elseif event == sgs.GameStart then
-		if sgs.turncount > 0 then self:updatePlayerKingdom() end
-
 	end
 end
 
@@ -2586,7 +2600,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 	end
 
 	local AssistTarget = self:AssistTarget()
-	if AssistTarget and (self:needKongcheng(AssistTarget, true) or self:willSkipPlayPhase(AssistTarget) or AssistTarget:hasSkill("manjuan")) then
+	if AssistTarget and (self:needKongcheng(AssistTarget, true) or self:willSkipPlayPhase(AssistTarget)) then
 		AssistTarget = nil
 	end
 
@@ -2595,7 +2609,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 			specialnum = specialnum + 1
 		end
 	end
-	if specialnum > 1 and #cardtogivespecial == 0 and self.player:hasSkill("nosrende") and self.player:getPhase() == sgs.Player_Play then
+	if specialnum > 1 and #cardtogivespecial == 0 and self.player:hasSkill("rende") and self.player:getPhase() == sgs.Player_Play then
 		local xunyu = self.room:findPlayerBySkillName("jieming")
 		local huatuo = self.room:findPlayerBySkillName("jijiu")
 		local no_distance = self.slash_distance_limit
