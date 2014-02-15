@@ -1109,12 +1109,12 @@ public:
             DyingStruct dying = data.value<DyingStruct>();
             if (dying.damage && dying.damage->from)
                 target = dying.damage->from;
-            if (dying.who != player && target && (target->isFriendWith(player) || player->willBeFriendWith(target)))
+            if (dying.who != player && target && target->isFriendWith(player))
                 return QStringList(objectName());
         } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
             target = death.who;
-            if (target && (target->isFriendWith(player) || player->willBeFriendWith(target)))
+            if (target && target->isFriendWith(player))
                 return QStringList(objectName());
         }
         return QStringList();
