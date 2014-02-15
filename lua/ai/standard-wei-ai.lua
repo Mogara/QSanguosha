@@ -1149,12 +1149,9 @@ function SmartAI:toTurnOver(player, n, reason) -- @todo: param of toTurnOver
 			return false
 		end
 	end
-	if n > 1 and player:hasSkill("jijiu") then
-		return false
-	end
-	if player:hasSkill("jushou") and player:getPhase() <= sgs.Player_Finish then
-		return false
-	end
+	if n > 1 and player:hasSkill("jijiu") then return false end
+	if player:hasSkill("jushou") and player:getPhase() <= sgs.Player_Finish then return false end
+	if not player:faceUp() then return false end
 	return true
 end
 

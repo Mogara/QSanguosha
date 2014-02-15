@@ -762,7 +762,6 @@ sgs.ai_skill_invoke.mingshi = true
 
 sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 	self:updatePlayers()
-	local available_friends = {}
 	local cards = {}
 	for _, card_id in ipairs(card_ids) do
 		table.insert(cards, sgs.Sanguosha:getCard(card_id))
@@ -770,16 +769,16 @@ sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 	local id = card_ids[1]
 
 	local card, friend = self:getCardNeedPlayer(cards)
-	if card and friend and table.contains(available_friends, friend) then return friend, card:getId() end
-	if #available_friends > 0 then
-		self:sort(available_friends, "handcard")
-		for _, afriend in ipairs(available_friends) do
+	if card and friend and table.contains(self.friends_noself, friend) then return friend, card:getId() end
+	if #self.friends_noself > 0 then
+		self:sort(self.friends_noself, "handcard")
+		for _, afriend in ipairs(self.friends_noself) do
 			if not self:needKongcheng(afriend, true) then
 				return afriend, id
 			end
 		end
-		self:sort(available_friends, "defense")
-		return available_friends[1], id
+		self:sort(self.friends_noself, "defense")
+		return self.friends_noself[1], id
 	end
 	return nil, -1
 end
