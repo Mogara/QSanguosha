@@ -352,13 +352,13 @@ void TrustAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int>
     Q_UNUSED(bottom);
     Q_UNUSED(guanxing_type);
 
-	if (guanxing_type == Room::GuanxingDownOnly) {
-		bottom = cards;
-		up.clear();
-	} else {
-		up = cards;
-		bottom.clear();
-	}
+    if (guanxing_type == Room::GuanxingDownOnly) {
+        bottom = cards;
+        up.clear();
+    } else {
+        up = cards;
+        bottom.clear();
+    }
 }
 
 LuaAI::LuaAI(ServerPlayer *player)
