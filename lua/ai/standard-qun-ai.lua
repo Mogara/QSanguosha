@@ -714,8 +714,6 @@ function sgs.ai_cardneed.beige(to, card)
 end
 
 function sgs.ai_slash_prohibit.duanchang(self, from, to)
-	if from:hasSkill("jueqing") or (from:hasSkill("nosqianxi") and from:distanceTo(to) == 1) then return false end
-	if from:hasFlag("NosJiefanUsed") then return false end
 	if to:getHp() > 1 or #(self:getEnemies(from)) == 1 then return false end
 	if from:getMaxHp() == 3 and from:getArmor() and from:getDefensiveHorse() then return false end
 	if from:getMaxHp() <= 3 or (from:isLord() and self:isWeak(from)) then return true end
@@ -723,6 +721,20 @@ function sgs.ai_slash_prohibit.duanchang(self, from, to)
 	return false
 end
 
+sgs.ai_skill_choice.duanchang = function(self, choices, data)
+	local who = data:toPlayer()
+	local needToDuanchangSkills = ""
+	if self:isFriend(who) then
+		if who:getHeadSkillList():length() >= who:getDeputySkillList():length() then
+			return "deputy_general"
+		end
+	else
+		if who:getHeadSkillList():length() >= who:getDeputySkillList():length() then
+			return "head_general"
+		end
+	end
+	return "head_general"
+end
 
 xiongyi_skill = {}
 xiongyi_skill.name = "xiongyi"
