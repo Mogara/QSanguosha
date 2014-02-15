@@ -1036,6 +1036,16 @@ bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to
     return true;
 }
 
+void Snatch::onUse(Room *room, const CardUseStruct &card_use) const {
+    foreach (ServerPlayer *p, card_use.to) {
+        if (card_use.from->distanceTo(p) > 1 && card_use.from->hasSkill("qicai") && !card_use.from->hasShownSkill(Sanguosha->getSkill("qicai"))){
+            card_use.from->showGeneral(card_use.from->inHeadSkills("qicai")); // a better method for targetmodskill is needed
+            break;
+        }
+    }
+    SingleTargetTrick::onUse(room, card_use);
+}
+
 void Snatch::onEffect(const CardEffectStruct &effect) const{
     if (effect.from->isDead())
         return;
@@ -1403,6 +1413,10 @@ void SupplyShortage::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *from = card_use.from;
     if (from && from->distanceTo(card_use.to.first()) == 2 && !from->hasShownSkill(Sanguosha->getSkill("duanliang")))
         from->showGeneral(from->inHeadSkills("duanliang"));
+
+    if (card_use.from->distanceTo(card_use.to.first()) > 1 && card_use.from->hasSkill("qicai"))
+        card_use.from->showGeneral(card_use.from->inHeadSkills("qicai")); // a better method for targetmodskill is needed
+
     DelayedTrick::onUse(room, card_use);
 }
 
