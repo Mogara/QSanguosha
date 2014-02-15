@@ -767,7 +767,7 @@ public:
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         DeathStruct death = data.value<DeathStruct>();
         ServerPlayer *target = death.damage->from;
-        QString choice = room->askForChoice(player, objectName(), "head_general+deputy_general", data);
+        QString choice = room->askForChoice(player, objectName(), "head_general+deputy_general", QVariant::fromValue((PlayerStar)target));
         LogMessage log;
         log.type = choice == "head_general" ? "#DuanchangLoseHeadSkills" : "#DuanchangLoseDeputySkills";
         log.from = player;

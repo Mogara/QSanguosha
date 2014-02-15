@@ -1,11 +1,17 @@
 
 sgs.ai_skill_choice.TriggerOrder = function(self, choices, data)
+	self.TurnStartShowGeneral_Choice = nil
 	if string.find(choices, "jieming") then return "jieming" end
-	local choice = choices:split("+")[2]
-	if choice == "trigger_none" then
-		choice = choices:split("+")[1]
+	local skillnames = choices:split("+")
+	for _, skillname in ipairs(skillnames) do
+		if skillname == "trigger_none" then return "trigger_none" end
+		if self:askForSkillInvoke(skillname, data) then
+			self.TurnStartShowGeneral_Choice = "cancel"
+			return skillname
+		end
 	end
-	return choice
+	
+	return "trigger_none"
 end
 
 sgs.ai_skill_invoke["userdefine:halfmaxhp"] = true
@@ -26,6 +32,11 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 		local upperlimit = self.player:getLord() and 99 or self.room:getPlayers():length() / 2
 		if sgs.shown_kingdom[self.player:getKingdom()] < upperlimit  then return choices:split("+")[1] end
 	end
+	if self.TurnStartShowGeneral_Choice then
+		local choice = self.TurnStartShowGeneral_Choice
+		self.TurnStartShowGeneral_Choice = nil
+		return choice
+	end
 	local skills_to_show = "zaiqi|buqu|kuanggu|guanxing|luoshen|tuxi|zhiheng|qiaobian|longdan"
 							.. "|liuli|wushuang|niepan"
 	local show_head_general, show_deputy_general
@@ -40,7 +51,7 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 
 	if show_head_general and string.find(choices, "show_head_general") then return "show_head_general"
 	elseif show_deputy_general and string.find(choices, "show_deputy_general") then return "show_deputy_general"
-	elseif sgs.turncount < 2 then return "cancel" end
+	elseif sgs.turncount <= 2 then return "cancel" end
 	choices = choices:split("+")
 
 	local playerscount = self.room:getPlayers():length()

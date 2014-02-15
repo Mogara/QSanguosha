@@ -714,8 +714,6 @@ function sgs.ai_cardneed.beige(to, card)
 end
 
 function sgs.ai_slash_prohibit.duanchang(self, from, to)
-	if from:hasSkill("jueqing") or (from:hasSkill("nosqianxi") and from:distanceTo(to) == 1) then return false end
-	if from:hasFlag("NosJiefanUsed") then return false end
 	if to:getHp() > 1 or #(self:getEnemies(from)) == 1 then return false end
 	if from:getMaxHp() == 3 and from:getArmor() and from:getDefensiveHorse() then return false end
 	if from:getMaxHp() <= 3 or (from:isLord() and self:isWeak(from)) then return true end
@@ -723,6 +721,20 @@ function sgs.ai_slash_prohibit.duanchang(self, from, to)
 	return false
 end
 
+sgs.ai_skill_choice.duanchang = function(self, choices, data)
+	local who = data:toPlayer()
+	local needToDuanchangSkills = ""
+	if self:isFriend(who) then
+		if who:getHeadSkillList():length() >= who:getDeputySkillList():length() then
+			return "deputy_general"
+		end
+	else
+		if who:getHeadSkillList():length() >= who:getDeputySkillList():length() then
+			return "head_general"
+		end
+	end
+	return "head_general"
+end
 
 xiongyi_skill = {}
 xiongyi_skill.name = "xiongyi"
@@ -750,7 +762,6 @@ sgs.ai_skill_invoke.mingshi = true
 
 sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 	self:updatePlayers()
-	local available_friends = {}
 	local cards = {}
 	for _, card_id in ipairs(card_ids) do
 		table.insert(cards, sgs.Sanguosha:getCard(card_id))
@@ -758,16 +769,16 @@ sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 	local id = card_ids[1]
 
 	local card, friend = self:getCardNeedPlayer(cards)
-	if card and friend and table.contains(available_friends, friend) then return friend, card:getId() end
-	if #available_friends > 0 then
-		self:sort(available_friends, "handcard")
-		for _, afriend in ipairs(available_friends) do
+	if card and friend and table.contains(self.friends_noself, friend) then return friend, card:getId() end
+	if #self.friends_noself > 0 then
+		self:sort(self.friends_noself, "handcard")
+		for _, afriend in ipairs(self.friends_noself) do
 			if not self:needKongcheng(afriend, true) then
 				return afriend, id
 			end
 		end
-		self:sort(available_friends, "defense")
-		return available_friends[1], id
+		self:sort(self.friends_noself, "defense")
+		return self.friends_noself[1], id
 	end
 	return nil, -1
 end
