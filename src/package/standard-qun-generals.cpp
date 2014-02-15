@@ -1135,10 +1135,8 @@ public:
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         if (triggerEvent == Dying) {
-            room->broadcastSkillInvoke(objectName(), 1);
             player->drawCards(1);
         } else if (triggerEvent == Death) {
-            room->broadcastSkillInvoke(objectName(), 2);
             room->loseHp(player);
         }
         return false;
