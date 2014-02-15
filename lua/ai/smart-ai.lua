@@ -3187,7 +3187,7 @@ function SmartAI:damageIsEffective(to, nature, from)
 	from = from or self.room:getCurrent()
 	nature = nature or sgs.DamageStruct_Normal
 
-	if to:hasSkill("mingshi") and from:getEquips():length() - (self.equipsToDec or 0) <= to:getEquips():length() then return false end
+	if to:hasSkill("mingshi") and not from:hasShownAllGenerals() then return false end
 
 	for _, callback in ipairs(sgs.ai_damage_effect) do
 		if type(callback) == "function" then
