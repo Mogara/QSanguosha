@@ -178,8 +178,8 @@
     "focusFrameArea": [0, -3, 128, 174],
     "focusFrameArea2": [129, -3, 128, 174],
     "secondaryAvatarNameArea": [154, -10, 60, 30],
-    "avatarNameFont": ["simli", [16, 16, 1], 0, [255, 255, 255, 255], 1, 8, [0, 0], [50, 50, 50, 150]],
-    "smallAvatarNameFont": ["simli", [16, 16, 1], 0, [255, 255, 255, 255], 1, 8, [0, 0], [50, 50, 50, 150]],
+    "avatarNameFont": ["simli", [18, 18, 1], 0, [255, 255, 255, 255], 0, 8, [0, 0], [50, 50, 50, 150]],
+    "smallAvatarNameFont": ["simli", [18, 18, 1], 0, [255, 255, 255, 255], 0, 8, [0, 0], [50, 50, 50, 150]],
 	"headIconRegion": [2, -5, 29, 24],
 	"deputyIconRegion": [130, -5, 29, 24],
     // must be in one of the following format:
