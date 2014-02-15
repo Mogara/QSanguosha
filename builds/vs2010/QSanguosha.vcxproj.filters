@@ -219,7 +219,7 @@
     <ClCompile Include="..\..\src\ui\rolecombobox.cpp">
       <Filter>ui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\dialog\scenario-overview.cpp">
+    <ClCompile Include="..\..\src\dialog\rule-summary.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\server\ai.cpp">
@@ -485,7 +485,7 @@
     <CustomBuild Include="..\..\src\dialog\roleassigndialog.h">
       <Filter>dialog</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\scenario-overview.h">
+    <CustomBuild Include="..\..\src\dialog\rule-summary.h">
       <Filter>dialog</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\package\standard-equips.h">
@@ -859,10 +859,10 @@
     <ClCompile Include="release\moc_roomthread.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="debug\moc_scenario-overview.cpp">
+    <ClCompile Include="debug\moc_rule-summary.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="release\moc_scenario-overview.cpp">
+    <ClCompile Include="release\moc_rule-summary.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_scenario.cpp">

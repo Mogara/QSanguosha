@@ -1399,6 +1399,13 @@ void SupplyShortage::takeEffect(ServerPlayer *target) const{
     target->skip(Player::Draw);
 }
 
+void SupplyShortage::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *from = card_use.from;
+    if (from && from->distanceTo(card_use.to.first()) == 2 && !from->hasShownSkill(Sanguosha->getSkill("duanliang")))
+        from->showGeneral(from->inHeadSkills("duanliang"));
+    DelayedTrick::onUse(room, card_use);
+}
+
 Disaster::Disaster(Card::Suit suit, int number)
     : DelayedTrick(suit, number, true)
 {
