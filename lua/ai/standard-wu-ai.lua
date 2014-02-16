@@ -215,10 +215,10 @@ function sgs.ai_cardneed.qixi(to, card)
 end
 
 
-local kurou_skill={}
-kurou_skill.name="kurou"
-table.insert(sgs.ai_skills,kurou_skill)
-kurou_skill.getTurnUseCard=function(self,inclusive)
+local kurou_skill = {}
+kurou_skill.name = "kurou"
+table.insert(sgs.ai_skills, kurou_skill)
+kurou_skill.getTurnUseCard = function(self, inclusive)
 	self.player:setFlags("-Kurou_toDie")
 	sgs.ai_use_priority.KurouCard = 6.8
 	local kuroucard = sgs.Card_Parse("@KurouCard=.&kurou")
@@ -244,7 +244,7 @@ kurou_skill.getTurnUseCard=function(self,inclusive)
 
 	--Suicide by Kurou
 	local nextplayer = self.player:getNextAlive()
-	if self.player:getHp() == 1 then
+	if self.player:getHp() == 1 and self:getCardsNum("Armor") == 0 and self:getCardsNum("Jink") == 0 then
 		local to_death = false
 		if self:isFriend(nextplayer) then
 			for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
@@ -662,10 +662,10 @@ function SmartAI:getWoundedFriend(maleOnly)
 	return list1, list2
 end
 
-local jieyin_skill={}
+local jieyin_skill = {}
 jieyin_skill.name = "jieyin"
-table.insert(sgs.ai_skills,jieyin_skill)
-jieyin_skill.getTurnUseCard=function(self)
+table.insert(sgs.ai_skills, jieyin_skill)
+jieyin_skill.getTurnUseCard = function(self)
 	if self.player:getHandcardNum() < 2 then return nil end
 	if self.player:hasUsed("JieyinCard") then return nil end
 
@@ -768,15 +768,14 @@ sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 		self:sort(self.friends_noself, "handcard")
 		self.friends_noself = sgs.reverse(self.friends_noself)
 		for _, friend in ipairs(self.friends_noself) do
-			if friend:hasSkills(sgs.lose_equip_skill) and friend:getCards("e"):length() > 0
-			  and not friend:hasSkill("manjuan") then
+			if friend:hasSkills(sgs.lose_equip_skill) and friend:getCards("e"):length() > 0 then
 				self.yinghun = friend
 				break
 			end
 		end
 		if not self.yinghun then
 			for _, friend in ipairs(self.friends_noself) do
-				if friend:hasSkills("tuntian+zaoxian") and not friend:hasSkill("manjuan") then
+				if friend:hasSkill("tuntian") then
 					self.yinghun = friend
 					break
 				end
@@ -784,27 +783,20 @@ sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 		end
 		if not self.yinghun then
 			for _, friend in ipairs(self.friends_noself) do
-				if self:needToThrowArmor(friend) and not friend:hasSkill("manjuan") then
+				if self:needToThrowArmor(friend) then
 					self.yinghun = friend
 					break
 				end
 			end
 		end
-		if not self.yinghun then
-			for _, enemy in ipairs(self.enemies) do
-				if enemy:hasSkill("manjuan") then
-					return enemy
-				end
-			end
-		end
 
-		if not self.yinghun and player and not player:hasSkill("manjuan") and player:getCardCount(true) > 0 and not self:needKongcheng(player, true) then
+		if not self.yinghun and player and player:getCardCount(true) > 0 and not self:needKongcheng(player, true) then
 			self.yinghun = player
 		end
 
 		if not self.yinghun then
 			for _, friend in ipairs(self.friends_noself) do
-				if friend:getCards("he"):length() > 0 and not friend:hasSkill("manjuan") then
+				if friend:getCards("he"):length() > 0 then
 					self.yinghun = friend
 					break
 				end
@@ -812,24 +804,21 @@ sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 		end
 		if not self.yinghun then
 			for _, friend in ipairs(self.friends_noself) do
-				if not friend:hasSkill("manjuan") then
-					self.yinghun = friend
-					break
-				end
+				self.yinghun = friend
+				break
 			end
 		end
 	elseif #self.friends > 1 then
 		self:sort(self.friends_noself)
 		for _, friend in ipairs(self.friends_noself) do
-			if friend:hasSkills(sgs.lose_equip_skill) and friend:getCards("e"):length() > 0
-			  and not friend:hasSkill("manjuan") then
+			if friend:hasSkills(sgs.lose_equip_skill) and friend:getCards("e"):length() > 0 then
 				self.yinghun = friend
 				break
 			end
 		end
 		if not self.yinghun then
 			for _, friend in ipairs(self.friends_noself) do
-				if friend:hasSkills("tuntian+zaoxian") and not friend:hasSkill("manjuan") then
+				if friend:hasSkill("tuntian") then
 					self.yinghun = friend
 					break
 				end
@@ -837,7 +826,7 @@ sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 		end
 		if not self.yinghun then
 			for _, friend in ipairs(self.friends_noself) do
-				if self:needToThrowArmor(friend) and not friend:hasSkill("manjuan") then
+				if self:needToThrowArmor(friend) then
 					self.yinghun = friend
 					break
 				end
@@ -907,7 +896,7 @@ sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 			if not enemy:isNude()
 				and not (enemy:hasSkills(sgs.lose_equip_skill) and enemy:getCards("e"):length() > 0)
 				and not self:needToThrowArmor(enemy)
-				and not enemy:hasSkills("tuntian+zaoxian") then
+				and not enemy:hasSkill("tuntian") then
 				self.yinghunchoice = "d1tx"
 				return enemy
 			end
@@ -916,7 +905,7 @@ sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 			if not enemy:isNude()
 				and not (enemy:hasSkills(sgs.lose_equip_skill) and enemy:getCards("e"):length() > 0)
 				and not self:needToThrowArmor(enemy)
-				and not (enemy:hasSkills("tuntian+zaoxian") and x < 3 and enemy:getCards("he"):length() < 2) then
+				and not (enemy:hasSkill("tuntian") and x < 3 and enemy:getCards("he"):length() < 2) then
 				self.yinghunchoice = "d1tx"
 				return enemy
 			end
@@ -933,7 +922,6 @@ end
 sgs.ai_playerchosen_intention.yinghun = function(self, from, to)
 	if from:getLostHp() > 1 then return end
 	local intention = -80
-	if to:hasSkill("manjuan") then intention = -intention end
 	sgs.updateIntention(from, to, intention)
 end
 
@@ -982,7 +970,7 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 
 	for _, enemy in ipairs(self.enemies) do
 		if (enemy:getHp() <= dmg.damage and enemy:isAlive()) then
-			if (enemy:getHandcardNum() <= 2 or enemy:hasSkills("guose|leiji|ganglie|enyuan|qingguo|wuyan|kongcheng") or enemy:containsTrick("indulgence"))
+			if (enemy:getHandcardNum() <= 2 or enemy:hasSkills("guose|leiji|ganglie|enyuan|qingguo|kongcheng") or enemy:containsTrick("indulgence"))
 				and self:canAttack(enemy, dmg.from or self.room:getCurrent(), dmg.nature)
 				and not (dmg.card and dmg.card:getTypeId() == sgs.Card_TypeTrick and enemy:hasSkill("wuyan")) then
 				return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. enemy:objectName()
@@ -994,10 +982,10 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 		if (friend:getLostHp() + dmg.damage > 1 and friend:isAlive()) then
 			if friend:isChained() and dmg.nature ~= sgs.DamageStruct_Normal and not self:isGoodChainTarget(friend, dmg.from, dmg.nature, dmg.damage, dmg.card) then
 			elseif friend:getHp() >= 2 and dmg.damage < 2
-					and (friend:hasSkills("yiji|buqu|nosbuqu|shuangxiong|zaiqi|yinghun|jianxiong|fangzhu")
+					and (friend:hasSkills("yiji|buqu|shuangxiong|zaiqi|yinghun|jianxiong|fangzhu")
 						or self:getDamagedEffects(friend, dmg.from or self.room:getCurrent())
 						or self:needToLoseHp(friend)
-						or (friend:getHandcardNum() < 3 and (friend:hasSkill("nosrende") or (friend:hasSkill("rende") and not friend:hasUsed("RendeCard"))))) then
+						or (friend:getHandcardNum() < 3 and friend:hasSkill("rende"))) then
 				return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. friend:objectName()
 				elseif dmg.card and dmg.card:getTypeId() == sgs.Card_TypeTrick and friend:hasSkill("wuyan") and friend:getLostHp() > 1 then
 					return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. friend:objectName()
@@ -1008,9 +996,8 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 	for _, enemy in ipairs(self.enemies) do
 		if (enemy:getLostHp() <= 1 or dmg.damage > 1) and enemy:isAlive() then
 			if (enemy:getHandcardNum() <= 2)
-				or enemy:containsTrick("indulgence") or enemy:hasSkills("guose|leiji|vsganglie|ganglie|enyuan|qingguo|wuyan|kongcheng")
-				and self:canAttack(enemy, (dmg.from or self.room:getCurrent()), dmg.nature)
-				and not (dmg.card and dmg.card:getTypeId() == sgs.Card_TypeTrick and enemy:hasSkill("wuyan")) then
+				or enemy:containsTrick("indulgence") or enemy:hasSkills("guose|leiji|ganglie|enyuan|qingguo|kongcheng")
+				and self:canAttack(enemy, (dmg.from or self.room:getCurrent()), dmg.nature) then
 				return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. enemy:objectName() end
 		end
 	end
@@ -1018,8 +1005,7 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 	for i = #self.enemies, 1, -1 do
 		local enemy = self.enemies[i]
 		if not enemy:isWounded() and not enemy:hasSkills(sgs.masochism_skill) and enemy:isAlive()
-			and self:canAttack(enemy, dmg.from or self.room:getCurrent(), dmg.nature)
-			and (not (dmg.card and dmg.card:getTypeId() == sgs.Card_TypeTrick and enemy:hasSkill("wuyan") and enemy:getLostHp() > 0) or self:isWeak()) then
+			and self:canAttack(enemy, dmg.from or self.room:getCurrent(), dmg.nature) and self:isWeak() then
 			return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. enemy:objectName()
 		end
 	end
@@ -1033,7 +1019,7 @@ sgs.ai_card_intention.TianxiangCard = function(self, card, from, tos)
 	local intention = 10
 	if hasBuquEffect(to) then intention = 0
 	elseif (to:getHp() >= 2 and to:hasSkills("yiji|shuangxiong|zaiqi|yinghun|jianxiong|fangzhu"))
-		or (to:getHandcardNum() < 3 and (to:hasSkill("nosrende") or (to:hasSkill("rende") and not to:hasUsed("RendeCard")))) then
+		or to:getHandcardNum() < 3 and to:hasSkill("rende") then
 		intention = -10
 	end
 	sgs.updateIntention(from, to, intention)
@@ -1279,10 +1265,7 @@ end
 
 sgs.ai_skill_invoke.haoshi = function(self, data)
 	local extra = 0
-	local draw_skills = {
-						["yingzi"] = 1, ["zishou"] = self.player:getLostHp(), ["shenwei"] = 2, ["juejing"] = self.player:getLostHp(),
-						["luoyi"] = -1, ["zhaolie"] = -1, ["hongyuan"] = -1, ["dujin"] = math.floor(self.player:getEquips():length() / 2 + 1)
-						}
+	local draw_skills = { ["yingzi"] = 1, ["luoyi"] = -1, ["dujin"] = math.floor(self.player:getEquips():length() / 2 + 1) }
 	for skill_name, n in ipairs(draw_skills) do
 		if self.player:hasSkill(skill_name) then
 			local skill = sgs.Sanguosha:getSkill(skill_name)
@@ -1377,19 +1360,14 @@ function DimengIsWorth(self, friend, enemy, mycards, myequips)
 	elseif e_peach < f_peach and e_peach < 1 then
 		return false
 	elseif e_hand1 == f_hand1 and e_hand1 > 0 then
-		return friend:hasSkills("tuntian+zaoxian")
+		return friend:hasSkill("tuntian")
 	end
 	local cardNum = #mycards
 	local delt = e_hand1 - f_hand1 --assert: delt>0
 	if delt > cardNum then
 		return false
 	end
-	local equipNum = #myequips
-	if equipNum > 0 then
-		if self.player:hasSkills("xuanfeng|xiaoji|nosxuanfeng") then
-			return true
-		end
-	end
+	if #myequips > 0 and self.player:hasSkill("xiaoji") then return true end
 	--now e_hand1>f_hand1 and delt<=cardNum
 	local soKeep = 0
 	local soUse = 0
@@ -1557,9 +1535,7 @@ sgs.ai_skill_use_func.ZhijianCard = function(card, use, self)
 	end
 
 	if not target then return end
-	if use.to then
-		use.to:append(target)
-	end
+	if use.to then use.to:append(target) end
 	local zhijian = sgs.Card_Parse("@ZhijianCard=" .. select_equip:getId() .. "&zhijian")
 	assert(zhijian)
 	use.card = zhijian
@@ -1712,6 +1688,7 @@ fenxun_skill.name = "fenxun"
 table.insert(sgs.ai_skills, fenxun_skill)
 fenxun_skill.getTurnUseCard = function(self)
 	if self.player:hasUsed("FenxunCard") then return end
+	if not self:slashIsAvailable() then return end
 	if #self.enemies == 0 then return end
 	if not self.player:isNude() then
 		local card_id

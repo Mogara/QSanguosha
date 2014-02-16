@@ -237,11 +237,6 @@ function SmartAI:findTuxiTarget()
 		return #targets
 	end
 
-	if dengai and self:isFriend(dengai) and sgs.ai_explicit[dengai:objectName()] ~= "unknown" and (not self:isWeak(dengai) or self:getEnemyNumBySeat(self.player, dengai) == 0 )
-			and dengai:hasSkill("zaoxian") and dengai:getMark("zaoxian") == 0 and dengai:getPile("field"):length() == 2 and add_player(dengai, 1) == 2 then
-		return targets
-	end
-
 	if zhugeliang and self:isFriend(zhugeliang) and sgs.ai_explicit[zhugeliang:objectName()] ~= "unknown" and zhugeliang:getHandcardNum() == 1
 		and self:getEnemyNumBySeat(self.player,zhugeliang) > 0 then
 		if zhugeliang:getHp() <= 2 then
@@ -287,7 +282,7 @@ function SmartAI:findTuxiTarget()
 		local x = enemy:getHandcardNum()
 		local good_target = true
 		if x == 1 and self:needKongcheng(enemy) then good_target = false end
-		if x >= 2 and enemy:hasSkill("tuntian+zaoxian") then good_target = false end
+		if x >= 2 and enemy:hasSkill("tuntian") then good_target = false end
 		if good_target and add_player(enemy) == 2 then return targets end
 	end
 
@@ -295,19 +290,15 @@ function SmartAI:findTuxiTarget()
 		return targets
 	end
 
-	if dengai and self:isFriend(dengai) and dengai:hasSkill("zaoxian") and (not self:isWeak(dengai) or self:getEnemyNumBySeat(self.player, dengai) == 0 ) and add_player(dengai, 1) == 2 then
-		return targets
-	end
-
 	local others = self.room:getOtherPlayers(self.player)
 	for _, other in sgs.qlist(others) do
-		if self:objectiveLevel(other) >= 0 and not other:hasSkill("tuntian+zaoxian") and add_player(other) == 2 then
+		if self:objectiveLevel(other) >= 0 and not other:hasSkill("tuntian") and add_player(other) == 2 then
 			return targets
 		end
 	end
 
 	for _, other in sgs.qlist(others) do
-		if self:objectiveLevel(other) >= 0 and not other:hasSkill("tuntian+zaoxian") and add_player(other) == 1 and math.random(0, 5) <= 1 and not self.player:hasSkill("qiaobian") then
+		if self:objectiveLevel(other) >= 0 and not other:hasSkill("tuntian") and add_player(other) == 1 and math.random(0, 5) <= 1 and not self.player:hasSkill("qiaobian") then
 			return targets
 		end
 	end
@@ -341,7 +332,7 @@ sgs.ai_skill_invoke.luoyi = function(self,data)
 		if card:isKindOf("Duel") then
 			for _, enemy in ipairs(self.enemies) do
 				if self:getCardsNum("Slash") >= getCardsNum("Slash", enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
-				and self:objectiveLevel(enemy) > 3 and self:damageIsEffective(enemy) and enemy:getMark("@late") < 1 then
+				and self:objectiveLevel(enemy) > 3 and self:damageIsEffective(enemy) then
 					dueltarget = dueltarget + 1
 				end
 			end
@@ -604,7 +595,7 @@ sgs.ai_skill_use["@@shensu2"] = function(self, prompt, method)
 		local eff = self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
 
 		if not self.player:canSlash(enemy, slash, false) then
-		elseif throw_weapon and enemy:hasArmorEffect("Vine") and not self.player:hasSkill("zonghuo") then
+		elseif throw_weapon and enemy:hasArmorEffect("Vine") then
 		elseif self:slashProhibit(nil, enemy) then
 		elseif eff then
 			if enemy:getHp() == 1 and getCardsNum("Jink", enemy, self.player) == 0 then
@@ -761,7 +752,7 @@ sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, i
 			end
 			local to_discard_peach = true
 			for _,fd in ipairs(self.friends) do
-				if fd:getHp()<=2 and not fd:hasSkill("niepan") then
+				if fd:getHp() <= 2 and not fd:hasSkill("niepan") then
 					to_discard_peach = false
 				end
 			end
