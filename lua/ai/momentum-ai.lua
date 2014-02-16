@@ -24,6 +24,7 @@ end
 
 function sgs.ai_skill_invoke.hengjiang(self, data)
 	local target = data:toPlayer()
+	if not target then return end
 	if self:isEnemy(target) then
 		return true
 	else
@@ -412,11 +413,19 @@ sgs.ai_use_priority.WendaoCard = sgs.ai_use_priority.ZhihengCard
 
 sgs.ai_skill_invoke.hongfa = true
 
-function sgs.ai_cardsview.hongfa_slash(self, class_name, player)
-	local lord = player:getLord()
-	if class_name == "Slash" and lord and lord:hasLordSkill("hongfa") and not lord:getPile("heavenly_army"):isEmpty() then
-		return "@HongfaResponseCard=.&hongfa_slash"
+sgs.ai_skill_invoke.hongfa_slash_resp = function(self, data)
+	local asked = data:toStringList()
+	local prompt = asked[2]
+	if self:askForCard("slash", prompt, 1) == "." then return false end
+	
+	local cards = self.player:getHandcards()
+	for _, card in sgs.qlist(cards) do
+		if isCard("Slash", card, self.player) then
+			return false
+		end
 	end
+	
+	return true
 end
 
 local hongfa_slash_skill = {}

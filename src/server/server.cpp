@@ -187,7 +187,7 @@ QWidget *ServerDialog::createAdvancedTab() {
 
     hegemony_maxchoice_label = new QLabel(tr("Upperlimit for hegemony"));
     hegemony_maxchoice_spinbox = new QSpinBox;
-    hegemony_maxchoice_spinbox->setRange(5, 10);
+    hegemony_maxchoice_spinbox->setRange(5, 7); //wait for a new extension
     hegemony_maxchoice_spinbox->setValue(Config.value("HegemonyMaxChoice", 7).toInt());
 
     address_edit = new QLineEdit;

@@ -1421,6 +1421,7 @@ public:
             }
 
             room->sendLog(l);
+			room->setEmotion(damage.to, "armor/peacespell");
 
             return true;
         }

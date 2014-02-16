@@ -3012,6 +3012,8 @@ function SmartAI:useCardKnownBoth(KnownBoth, use)
 			end
 		end
 	end
+	use.card = KnownBoth
+	if use.to then use.to = sgs.SPlayerList() end
 end
 sgs.ai_skill_choice.known_both = function(self, choices, data)
 	local target = data:toPlayer()

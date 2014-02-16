@@ -3551,10 +3551,24 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion, bool perm
     if (photo) {
         photo->setEmotion(emotion, permanent);
     } else {
-        PixmapAnimation *pma = PixmapAnimation::GetPixmapAnimation(dashboard, emotion);
-        if (pma) {
-            pma->moveBy(0, -dashboard->boundingRect().height() / 1.5);
-            pma->setZValue(20002.0);
+        QString path = QString("image/system/emotion/%1.png").arg(emotion);
+        if (QFile::exists(path)) {
+            QSanSelectableItem *item = new QSanSelectableItem(path);
+            addItem(item);
+            item->setZValue(20002.0);
+            item->setPos(dashboard->boundingRect().width() / 2 - item->boundingRect().width(),
+                dashboard->scenePos().y() - item->boundingRect().height() / 1.5);
+            QPropertyAnimation *appear = new QPropertyAnimation(item, "opacity");
+            appear->setEndValue(0.0);
+            appear->setDuration(2000);
+            appear->start(QAbstractAnimation::DeleteWhenStopped);
+            connect(appear, SIGNAL(finished()), item, SLOT(deleteLater()));
+        } else {
+            PixmapAnimation *pma = PixmapAnimation::GetPixmapAnimation(dashboard, emotion);
+            if (pma) {
+                pma->moveBy(0, -dashboard->boundingRect().height() / 1.5);
+                pma->setZValue(20002.0);
+            }
         }
     }
 }
