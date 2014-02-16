@@ -741,6 +741,11 @@ xiongyi_skill.name = "xiongyi"
 table.insert(sgs.ai_skills, xiongyi_skill)
 xiongyi_skill.getTurnUseCard = function(self)
 	if self.player:getMark("@arise") < 1 then return end
+	
+	if self.player:hasShownSkill(sgs.Sanguosha:getSkill("baoling")) then
+		return sgs.Card_Parse("@XiongyiCard=.&xiongyi")
+	end
+	
 	for _, friend in ipairs(self.friends) do
 		if self:objectiveLevel(friend) == 2 and self:isWeak(friend) then
 			return sgs.Card_Parse("@XiongyiCard=.&xiongyi")
