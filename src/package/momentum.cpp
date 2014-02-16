@@ -412,7 +412,7 @@ public:
                 else if (use.card->subcardsLength() > 0)
                     ids = use.card->getSubcards();
                 if (!ids.isEmpty()){
-                    if (owner->isFriendWith(use.from) && TriggerSkill::triggerable(triggerEvent, room, owner, data, owner).contains(objectName())){
+                    if (TriggerSkill::triggerable(triggerEvent, room, owner, data, owner).contains(objectName()) && owner->isFriendWith(use.from)){
                         ask_who = owner;
                         return QStringList(objectName());
                     }
