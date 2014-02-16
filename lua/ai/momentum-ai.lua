@@ -24,6 +24,7 @@ end
 
 function sgs.ai_skill_invoke.hengjiang(self, data)
 	local target = data:toPlayer()
+	if not target then return end
 	if self:isEnemy(target) then
 		return true
 	else
