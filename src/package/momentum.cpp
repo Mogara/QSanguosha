@@ -1085,146 +1085,85 @@ public:
         const Player *zhangjiao = player->getLord();
         if (!zhangjiao || zhangjiao->getPile("heavenly_army").isEmpty() || !zhangjiao->isFriendWith(player))
             return false;
-        if (pattern == "slash")
+        if (pattern == "slash" && Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
             return true;
         return pattern == "@@hongfa_slash!";
     }
 
     virtual const Card *viewAs() const{
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-        if (pattern == "slash")
-            return new HongfaResponseCard;
-        else if (pattern == "@@hongfa_slash!")
+        if (pattern == "@@hongfa_slash!")
             return new HongfaSlashCard;
         else
             return new HongfaCard;
     }
 };
 
-HongfaResponseCard::HongfaResponseCard() {
-    will_throw = false;
-    handling_method = Card::MethodNone;
-    m_skillName = "hongfa_slash";
-    target_fixed = true;
-}
-
-const Card *HongfaResponseCard::validate(CardUseStruct &card_use) const{
-    ServerPlayer *qunxiong = card_use.from;
-    Room *room = qunxiong->getRoom();
-    room->broadcastSkillInvoke("hongfa");
-
-    const Player *zhangjiao = qunxiong->getLord();
-    if (!zhangjiao || !zhangjiao->isFriendWith(qunxiong)) return NULL;
-    QList<int> tianbings;
-    QList<int> total = zhangjiao->getPile("heavenly_army");
-    foreach (int id, total) {
-        Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-        slash->addSubcard(id);
-        if (!Slash::IsAvailable(qunxiong, slash))
-            continue;
-        foreach (ServerPlayer *p, room->getAlivePlayers()) {
-            if (!slash->targetFilter(QList<const Player *>(), p, qunxiong))
-                continue;
-            if (qunxiong->isProhibited(p, slash))
-                continue;
-            tianbings << id;
-            break;
-        }
-        delete slash;
-        slash = NULL;
+class HongfaSlashResp: public TriggerSkill{
+public:
+    HongfaSlashResp(): TriggerSkill("hongfa_slash_resp"){
+        events << CardAsked;
+        global = true;
     }
 
-    if (tianbings.isEmpty())
-        return NULL;
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        if (player != NULL && player->isAlive()){
+            ServerPlayer *zhangjiao = room->getLord(player->getKingdom());
+            if (zhangjiao == NULL || !zhangjiao->hasSkill("hongfa") || zhangjiao->getPile("heavenly_army").isEmpty())
+                return QStringList();
 
-    QList<int> disabled;
-    foreach (int id, total) {
-        if (!tianbings.contains(id))
-            disabled << id;
-    }
+            QStringList ask = data.toStringList();
+            if (ask[0] == "slash"){
+                QList<int> can_use = zhangjiao->getPile("heavenly_army");
+                foreach (int id, zhangjiao->getPile("heavenly_army")){
+                    if (player->isCardLimited(Sanguosha->getCard(id), Card::MethodResponse, false))
+                        can_use.removeOne(id);
+                }
 
-    int card_id;
-    if (tianbings.length() == 1)
-        card_id = tianbings.first();
-    else {
-        room->fillAG(total, qunxiong, disabled);
-        card_id = room->askForAG(qunxiong, tianbings, false, "hongfa");
-        room->clearAG(qunxiong);
+                if (can_use.isEmpty())
+                    return QStringList();
 
-        if (card_id == -1)
-            return NULL;
-    }
-
-    Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-    slash->setSkillName("hongfa");
-    slash->addSubcard(card_id);
-
-    QList<ServerPlayer *> targets;
-    foreach (ServerPlayer *p, room->getAlivePlayers()) {
-        if (!slash->targetFilter(QList<const Player *>(), p, qunxiong))
-            continue;
-        if (qunxiong->isProhibited(p, slash))
-            continue;
-
-        targets << p;
-    }
-    if (targets.isEmpty())
-        return NULL;
-
-    room->setPlayerProperty(qunxiong, "hongfa_slash", slash->toString());
-
-    CardUseStruct use;
-    use.card = slash;
-    use.from = qunxiong;
-
-    if (room->askForUseCard(qunxiong, "@@hongfa_slash!", "@hongfa-target")) {
-        foreach (ServerPlayer *p, room->getAlivePlayers()) {
-            if (p->hasFlag("HongfaTarget")) {
-                room->setPlayerFlag(p, "-HongfaTarget");
-                use.to << p;
+                return QStringList(objectName());
             }
         }
-    } else {
-        use.to << targets.at(qrand() % targets.length());
-    }
-    room->setPlayerProperty(qunxiong, "hongfa_slash", QString());
-
-    room->moveCardTo(slash, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_USE, qunxiong->objectName()));
-    //temp way to fix the card movement
-
-    card_use = use;
-    return slash;
-}
-
-const Card *HongfaResponseCard::validateInResponse(ServerPlayer *qunxiong) const{
-    Room *room = qunxiong->getRoom();
-    room->broadcastSkillInvoke("hongfa");
-
-    const Player *zhangjiao = qunxiong->getLord();
-    if (!zhangjiao || !zhangjiao->isFriendWith(qunxiong)) return NULL;
-    QList<int> tianbings = zhangjiao->getPile("heavenly_army");
-    if (tianbings.isEmpty())
-        return NULL;
-
-    int card_id;
-    if (tianbings.length() == 1)
-        card_id = tianbings.first();
-    else {
-        room->fillAG(tianbings, qunxiong);
-        card_id = room->askForAG(qunxiong, tianbings, false, "hongfa");
-        room->clearAG(qunxiong);
-
-        if (card_id == -1)
-            return NULL;
+        return QStringList();
     }
 
-    Slash *slash = new Slash(Card::SuitToBeDecided, -1);
-    slash->setSkillName("hongfa");
-    slash->addSubcard(card_id);
-    slash->deleteLater();
-    room->moveCardTo(slash, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_USE, qunxiong->objectName()));
-    return slash;
-}
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        if (player->askForSkillInvoke(objectName(), data)){
+            room->broadcastSkillInvoke("hongfa");
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+        ServerPlayer *zhangjiao = room->getLord(player->getKingdom());
+        QList<int> can_use = zhangjiao->getPile("heavenly_army"), can_not_use;
+        foreach (int id, zhangjiao->getPile("heavenly_army")){
+            if (player->isCardLimited(Sanguosha->getCard(id), Card::MethodResponse, false)){
+                can_use.removeOne(id);
+                can_not_use << id;
+            }
+        }
+
+        if (!can_use.isEmpty()){
+            room->fillAG(zhangjiao->getPile("heavenly_army"), player, can_not_use);
+            int id = room->askForAG(player, can_use, false, "hongfa");
+            room->clearAG(player);
+
+            Slash *slash = new Slash(Card::SuitToBeDecided, -1);
+            slash->setSkillName("hongfa");
+            slash->addSubcard(id);
+
+            room->moveCardTo(slash, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_RESPONSE, player->objectName()));
+
+            room->provide(slash);
+            return true;
+        }
+        return false;
+    }
+};
 
 class Hongfa: public TriggerSkill {
 public:
@@ -1409,14 +1348,13 @@ MomentumPackage::MomentumPackage()
     zhangren->addSkill(new Chuanxin);
     zhangren->addSkill(new Fengshi);
 
-    skills << new Yongjue << new YongjueStart << new Benghuai << new HongfaSlash << new Sunce_Yinghun << new Sunce_Yingzi;
+    skills << new Yongjue << new YongjueStart << new Benghuai << new HongfaSlash << new HongfaSlashResp << new Sunce_Yinghun << new Sunce_Yingzi;
 
     addMetaObject<CunsiCard>();
     addMetaObject<DuanxieCard>();
     addMetaObject<FengshiSummon>();
     addMetaObject<HongfaCard>();
     addMetaObject<HongfaSlashCard>();
-    addMetaObject<HongfaResponseCard>();
     addMetaObject<WendaoCard>();
 
     General *lord_zhangjiao = new General(this, "lord_zhangjiao$", "qun");
