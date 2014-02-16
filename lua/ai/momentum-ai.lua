@@ -1,6 +1,6 @@
 function sgs.ai_skill_invoke.wangxi(self, data)
 	local target = data:toPlayer()
-	if target and self:isFriend(target) then
+	if target and self.player:isFriendWith(target) then
 		return not self:needKongcheng(target, true)
 	else
 		return self:needKongcheng(target, true)
@@ -115,9 +115,7 @@ sgs.ai_skill_use_func.CunsiCard = function(card, use, self)
 	if use.to then use.to:append(to) end
 end
 
-sgs.ai_skill_invoke.yongjue = function(self, data)
-	return true
-end
+sgs.ai_skill_invoke.yongjue = true
 
 sgs.ai_cardneed.jiang = function(to, card, self)
 	return isCard("Duel", card, to) or (isCard("Slash", card, to) and card:isRed())

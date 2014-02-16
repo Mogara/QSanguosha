@@ -1386,6 +1386,7 @@ function SmartAI:isFriend(other, another)
 		return of ~= nil and af ~= nil and of == af
 	end
 	if self.player:objectName() == other:objectName() then return true end
+	if self.player:isFriendWith(other) then return true end
 	local obj_level = self:objectiveLevel(other)
 	if obj_level < 0 then return true
 	elseif obj_level == 0 then return nil end
@@ -1395,7 +1396,7 @@ end
 function SmartAI:isEnemy(other, another)
 	if not other then self.room:writeToConsole(debug.traceback()) return end
 	if another then
-		local of, af = self:isFriend(other), self:isFriend(another)
+		local of, af = self:isEnemy(other), self:isEnemy(another)
 		return of ~= nil and af ~= nil and of ~= af
 	end
 	if self.player:objectName() == other:objectName() then return false end
