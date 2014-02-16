@@ -98,8 +98,8 @@ LuaSkillCard *LuaSkillCard::clone() const{
 }
 
 LuaSkillCard *LuaSkillCard::Parse(const QString &str) {
-    QRegExp rx("#(\\w+):(.*):(.*)");
-    QRegExp e_rx("#(\\w*)\\[(\\w+):(.+)\\]:(.*):(.*)");
+    QRegExp rx("#(\\w+):(.*):(.*)&(.*)");
+    QRegExp e_rx("#(\\w*)\\[(\\w+):(.+)\\]:(.*):(.*)&(.*)");
 
     static QMap<QString, Card::Suit> suit_map;
     if (suit_map.isEmpty()) {
@@ -116,12 +116,14 @@ LuaSkillCard *LuaSkillCard::Parse(const QString &str) {
     QString name, suit, number;
     QString subcard_str;
     QString user_string;
+    QString show_skill;
 
     if (rx.exactMatch(str)) {
         texts = rx.capturedTexts();
         name = texts.at(1);
         subcard_str = texts.at(2);
         user_string = texts.at(3);
+        show_skill = texts.at(4);
     } else if (e_rx.exactMatch(str)) {
         texts = e_rx.capturedTexts();
         name = texts.at(1);
@@ -129,6 +131,7 @@ LuaSkillCard *LuaSkillCard::Parse(const QString &str) {
         number = texts.at(3);
         subcard_str = texts.at(4);
         user_string = texts.at(5);
+        show_skill = texts.at(6);
     } else
         return NULL;
 
@@ -164,14 +167,18 @@ LuaSkillCard *LuaSkillCard::Parse(const QString &str) {
     if (skillName.isEmpty())
         skillName = name.toLower().remove("card");
     new_card->setSkillName(skillName);
+
+    if (!show_skill.isEmpty())
+        new_card->setShowSkill(show_skill);
+
     return new_card;
 }
 
 QString LuaSkillCard::toString(bool hidden) const{
     Q_UNUSED(hidden);
-    return QString("#%1[%2:%3]:%4:%5").arg(objectName())
+    return QString("#%1[%2:%3]:%4:%5&%6").arg(objectName())
            .arg(getSuitString()).arg(getNumberString())
-           .arg(subcardString()).arg(user_string);
+           .arg(subcardString()).arg(user_string).arg(show_skill);
 }
 
 LuaBasicCard::LuaBasicCard(Card::Suit suit, int number, const char *obj_name, const char *class_name, const char *subtype)
