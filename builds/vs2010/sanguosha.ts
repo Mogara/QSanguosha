@@ -50,12 +50,18 @@
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="545"/>
+        <location filename="../../src/server/server.cpp" line="512"/>
+        <location filename="../../src/server/server.cpp" line="547"/>
         <source>Warning!</source>
         <translation>警告！</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="545"/>
+        <location filename="../../src/server/server.cpp" line="512"/>
+        <source>There is no server running!</source>
+        <translation>没有服务器运行！</translation>
+    </message>
+    <message>
+        <location filename="../../src/server/server.cpp" line="547"/>
         <source>This is your local Loopback Address and can&apos;t be banned!</source>
         <translation>这是你的本地回环地址，不可以被禁止！</translation>
     </message>
@@ -4124,18 +4130,18 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>Server</name>
     <message>
-        <location filename="../../src/server/server.cpp" line="798"/>
-        <location filename="../../src/server/server.cpp" line="807"/>
+        <location filename="../../src/server/server.cpp" line="800"/>
+        <location filename="../../src/server/server.cpp" line="809"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="814"/>
+        <location filename="../../src/server/server.cpp" line="816"/>
         <source>%1 connected</source>
         <translation>%1 已连接</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="830"/>
+        <location filename="../../src/server/server.cpp" line="832"/>
         <source>Invalid signup string: %1</source>
         <translation>无效的登录字符串: %1</translation>
     </message>
@@ -4535,7 +4541,7 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>高级</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="583"/>
+        <location filename="../../src/server/server.cpp" line="585"/>
         <source>Game mode</source>
         <translation>游戏模式</translation>
     </message>
@@ -4590,12 +4596,12 @@ P = 你自己, R = 你所在的房间</translation>
         <translation type="obsolete">官方3v3</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="639"/>
+        <location filename="../../src/server/server.cpp" line="641"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="640"/>
+        <location filename="../../src/server/server.cpp" line="642"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
