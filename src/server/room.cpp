@@ -2408,10 +2408,8 @@ void Room::assignRoles() {
         QString role = roles.at(i);
 
         player->setRole(role);
-        if (role == "lord" && !ServerInfo.EnableHegemony)
-            broadcastProperty(player, "role", "lord");
-        else
-            notifyProperty(player, player, "role");
+
+        notifyProperty(player, player, "role");
     }
 }
 

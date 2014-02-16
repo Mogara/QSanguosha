@@ -326,17 +326,6 @@ int Engine::getGeneralCount(bool include_banned) const{
         const General *general = itor.value();
         if (getBanPackages().contains(general->getPackage()))
             total--;
-        else if ((isNormalGameMode(ServerInfo.GameMode))
-                 && Config.value("Banlist/Roles").toStringList().contains(general->objectName()))
-            total--;
-        else if (ServerInfo.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
-            total--;
-        else if (ServerInfo.EnableBasara
-                 && Config.value("Banlist/Basara").toStringList().contains(general->objectName()))
-            total--;
-        else if (ServerInfo.EnableHegemony
-                 && Config.value("Banlist/Hegemony").toStringList().contains(general->objectName()))
-            total--;
     }
 
     return total;

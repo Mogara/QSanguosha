@@ -153,7 +153,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(skill_invoked(QString, QString)), this, SLOT(showSkillInvocation(QString, QString)));
     connect(ClientInstance, SIGNAL(skill_acquired(const ClientPlayer *, QString, const bool &)), this, SLOT(acquireSkill(const ClientPlayer *, QString, const bool &)));
     connect(ClientInstance, SIGNAL(animated(int, QStringList)), this, SLOT(doAnimation(int, QStringList)));
-    connect(ClientInstance, SIGNAL(role_state_changed(QString)), this, SLOT(updateRoles(QString)));
     connect(ClientInstance, SIGNAL(event_received(const Json::Value)), this, SLOT(handleGameEvent(const Json::Value)));
 
     connect(ClientInstance, SIGNAL(game_started()), this, SLOT(onGameStart()));
@@ -307,7 +306,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     m_pileCardNumInfoTextBox->setParentItem(m_rolesBox);
     m_pileCardNumInfoTextBox->setDocument(ClientInstance->getLinesDoc());
     m_pileCardNumInfoTextBox->setDefaultTextColor(Config.TextEditColor);
-    updateRoles(roles);
 
     add_robot = NULL;
     fill_robots = NULL;
@@ -3083,10 +3081,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
     static QStringList labels;
     if (labels.isEmpty()) {
         labels << tr("General") << tr("Name") << tr("Alive");
-        if (ServerInfo.EnableHegemony)
-            labels << tr("Nationality");
-        else
-            labels << tr("Role");
+        labels << tr("Nationality");
 
         labels << tr("TurnCount");
         labels << tr("Recover") << tr("Damage") << tr("Damaged") << tr("Kill") << tr("Designation");
@@ -3116,36 +3111,11 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
 
         item = new QTableWidgetItem;
 
-        if (ServerInfo.EnableHegemony) {
-            QString str = player->getRole() == "careerist" ? "careerist" : player->getKingdom();
-            QIcon icon(QString("image/system/roles/%1.png").arg(str));
-            item->setIcon(icon);
-            item->setText(Sanguosha->translate(str));
-        } else {
-            QIcon icon(QString("image/system/roles/%1.png").arg(player->getRole()));
-            item->setIcon(icon);
-            QString role = player->getRole();
-            if (ServerInfo.GameMode.startsWith("06_")) {
-                if (role == "lord" || role == "renegade")
-                    role = "leader";
-                else
-                    role = "guard";
-            } else if (ServerInfo.GameMode == "04_1v3") {
-                int seat = player->getSeat();
-                switch (seat) {
-                case 1: role = "lvbu"; break;
-                case 2: role = "vanguard"; break;
-                case 3: role = "mainstay"; break;
-                case 4: role = "general"; break;
-                }
-            } else if (ServerInfo.GameMode == "02_1v1") {
-                if (role == "lord")
-                    role = "defensive";
-                else
-                    role = "offensive";
-            }
-            item->setText(Sanguosha->translate(role));
-        }
+        QString str = player->getRole() == "careerist" ? "careerist" : player->getKingdom();
+        QIcon icon(QString("image/system/roles/%1.png").arg(str));
+        item->setIcon(icon);
+        item->setText(Sanguosha->translate(str));
+
         if (!player->isAlive())
             item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
         table->setItem(i, 3, item);
@@ -4207,30 +4177,6 @@ static inline void AddRoleIcon(QMap<QChar, QPixmap> &map, char c, const QString 
 
     QSanUiUtils::makeGray(pixmap);
     map[qc.toLower()] = pixmap;
-}
-
-void RoomScene::updateRoles(const QString &roles) {
-    foreach (QGraphicsItem *item, role_items)
-        removeItem(item);
-
-    role_items.clear();
-    if (ServerInfo.EnableHegemony) return;
-
-    static QMap<QChar, QPixmap> map;
-    if (map.isEmpty()) {
-        AddRoleIcon(map, 'Z', "lord");
-        AddRoleIcon(map, 'C', "loyalist");
-        AddRoleIcon(map, 'F', "rebel");
-        AddRoleIcon(map, 'N', "renegade");
-    }
-
-    foreach (QChar c, roles) {
-        if (map.contains(c)) {
-            QGraphicsPixmapItem *item = addPixmap(map.value(c));
-            role_items << item;
-        }
-    }
-    updateRolesBox();
 }
 
 void RoomScene::updateRolesBox() {

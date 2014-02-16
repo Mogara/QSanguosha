@@ -346,7 +346,6 @@ private slots:
     void showOwnerButtons(bool owner);
     void showPlayerCards();
     void updateRolesBox();
-    void updateRoles(const QString &roles);
     void addSkillButton(const Skill *skill, const bool &head = true);
 
     void resetPiles();
