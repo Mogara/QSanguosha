@@ -68,7 +68,6 @@
     <addaction name="separator"/>
     <addaction name="actionAcknowledgement_2"/>
     <addaction name="separator"/>
-    <addaction name="actionRole_assign_table"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -244,11 +243,6 @@
    </property>
    <property name="shortcut">
     <string>Alt+S</string>
-   </property>
-  </action>
-  <action name="actionRole_assign_table">
-   <property name="text">
-    <string>Role assign table</string>
    </property>
   </action>
   <action name="actionRule_Summary">
