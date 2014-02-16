@@ -508,6 +508,8 @@ BanIPDialog::BanIPDialog(QWidget *parent, Server *theserver)
 
     if (server)
         loadIPList();
+    else 
+        QMessageBox::warning(this, tr("Warning!"), tr("There is no server running!"));
 
     loadBannedList();
 }
