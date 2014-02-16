@@ -401,7 +401,6 @@ public:
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (player == NULL || !player->isAlive()) return QStringList();
         ServerPlayer *owner = room->findPlayerBySkillName(objectName());
-        if (!TriggerSkill::triggerable(triggerEvent, room, owner, data, owner).contains(objectName())) return QStringList();
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from->getPhase() == Player::Play && use.from->getMark(objectName()) == 0) {
             if (!use.card->isKindOf("SkillCard"))
@@ -413,7 +412,7 @@ public:
                 else if (use.card->subcardsLength() > 0)
                     ids = use.card->getSubcards();
                 if (!ids.isEmpty()){
-                    if (owner->isFriendWith(use.from)){
+                    if (owner->isFriendWith(use.from) && TriggerSkill::triggerable(triggerEvent, room, owner, data, owner).contains(objectName())){
                         ask_who = owner;
                         return QStringList(objectName());
                     }

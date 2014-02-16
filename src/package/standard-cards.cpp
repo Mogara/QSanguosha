@@ -902,8 +902,10 @@ Nullification::Nullification(Suit suit, int number)
 
 void Nullification::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     // does nothing, just throw it
-    CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName());
-    room->moveCardTo(this, source, NULL, Player::DiscardPile, reason);
+    if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable){
+        CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName());
+        room->moveCardTo(this, NULL, Player::DiscardPile, reason);
+    }
 }
 
 bool Nullification::isAvailable(const Player *) const{
