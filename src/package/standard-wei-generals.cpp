@@ -287,8 +287,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
-        QVariant data_card = QVariant::fromValue(data.value<JudgeStruct *>()->card);
-        if (player->askForSkillInvoke(objectName(), data_card)){
+        if (player->askForSkillInvoke(objectName(), data)){
             room->broadcastSkillInvoke(objectName());
             return true;
         }

@@ -396,7 +396,11 @@ sgs.luoyi_keep_value = {
 }
 
 
-sgs.ai_skill_invoke.tiandu = sgs.ai_skill_invoke.jianxiong
+sgs.ai_skill_invoke.tiandu = function(self, data)
+	local judge = data:toJudge()
+	if judge.reason == "tuntian" then return false end
+	return not (self:needKongcheng() and self.player:isKongcheng())
+end 
 
 function sgs.ai_slash_prohibit.tiandu(self, from, to)
 	if self:canLiegong(to, from) then return false end
@@ -417,7 +421,7 @@ sgs.ai_skill_askforyiji.yiji = function(self, card_ids)
 		table.insert(cards, sgs.Sanguosha:getCard(card_id))
 	end
 
-	if self.player:getHandcardNum() <= 2 and not Shenfen_user then
+	if self.player:getHandcardNum() <= 2 then
 		return nil, -1
 	end
 
