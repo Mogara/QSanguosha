@@ -257,3 +257,30 @@ void ConfigDialog::on_setTextEditColorButton_clicked() {
     }
 }
 
+void ConfigDialog::on_toolTipFontColorButton_clicked()
+{
+    QColor color = QColorDialog::getColor(Config.SkillDescriptionInToolTipColor, this);
+    if (color.isValid()) {
+        Config.SkillDescriptionInToolTipColor = color;
+        Config.setValue("SkillDescriptionInToolTipColor", color);
+    }
+}
+
+void ConfigDialog::on_overviewFontColorButton_clicked()
+{
+    QColor color = QColorDialog::getColor(QColor(Config.SkillDescriptionInOverviewColor), this);
+    if (color.isValid()) {
+        Config.SkillDescriptionInOverviewColor = color;
+        Config.setValue("SkillDescriptionInOverviewColor", color);
+    }
+}
+
+void ConfigDialog::on_toolTipBackgroundColorButton_clicked()
+{
+    QColor color = QColorDialog::getColor(QColor(Config.ToolTipBackgroundColor), this);
+    if (color.isValid()) {
+        Config.ToolTipBackgroundColor = color;
+        Config.setValue("ToolTipBackgroundColor", color);
+        qApp->setStyleSheet(QString("QToolTip { border: 0px solid; background: %1; }").arg(color.name()));
+    }
+}

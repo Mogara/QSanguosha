@@ -1106,7 +1106,7 @@ public:
         global = true;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+    virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         if (player != NULL && player->isAlive()){
             ServerPlayer *zhangjiao = room->getLord(player->getKingdom());
             if (zhangjiao == NULL || !zhangjiao->hasSkill("hongfa") || zhangjiao->getPile("heavenly_army").isEmpty())
@@ -1129,7 +1129,7 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
         if (player->askForSkillInvoke(objectName(), data)){
             room->broadcastSkillInvoke("hongfa");
             return true;
@@ -1137,7 +1137,7 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const{
         ServerPlayer *zhangjiao = room->getLord(player->getKingdom());
         QList<int> can_use = zhangjiao->getPile("heavenly_army"), can_not_use;
         foreach (int id, zhangjiao->getPile("heavenly_army")){

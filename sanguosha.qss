@@ -10,11 +10,6 @@ QProgressBar::chunk{
     background: #B22222;
 }
 
-QToolTip{
-    border: 0px solid;
-    background: rgb(0,0,0);
-}
-
 QTextEdit{
     background-color: rgba(0,0,0,80);
 }
