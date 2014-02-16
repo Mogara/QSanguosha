@@ -282,15 +282,18 @@ void Client::processServerPacket(const char *cmd) {
     if (m_isGameOver) return;
     QSanGeneralPacket packet;
     if (packet.parse(cmd)) {
-        if (replayer)
-            RoomSceneInstance->doCancelButton();
         if (packet.getPacketType() == S_TYPE_NOTIFICATION) {
             CallBack callback = m_callbacks[packet.getCommandType()];
             if (callback) {
                 (this->*callback)(packet.getMessageBody());
             }
         } else if (packet.getPacketType() == S_TYPE_REQUEST) {
-            if (!replayer || (packet.getPacketDescription() == 0x411 && packet.getCommandType() == S_COMMAND_CHOOSE_GENERAL))
+            if (replayer && packet.getPacketDescription() == 0x411 && packet.getCommandType() == S_COMMAND_CHOOSE_GENERAL) {
+                CallBack callback = m_interactions[S_COMMAND_CHOOSE_GENERAL];
+                if (callback)
+                    (this->*callback)(packet.getMessageBody());
+            }
+            else if (!replayer)
                 processServerRequest(packet);
         }
     } else
@@ -309,7 +312,8 @@ bool Client::processServerRequest(const QSanGeneralPacket &packet) {
         countdown.m_type = Countdown::S_COUNTDOWN_USE_DEFAULT;
         countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
     }
-    setCountdown(countdown);
+    if (!replayer) 
+        setCountdown(countdown);
     CallBack callback = m_interactions[command];
     if (!callback) return false;
     (this->*callback)(msg);
@@ -948,6 +952,7 @@ void Client::onPlayerChooseCard(int card_id) {
 }
 
 void Client::onPlayerChoosePlayer(const Player *player) {
+    if (replayer) return;
     if (player == NULL && !m_isDiscardActionRefusable)
         player = findChild<const Player *>(players_to_choose.first());
 

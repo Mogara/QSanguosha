@@ -95,10 +95,10 @@ sgs.ai_loyalty = 			{
 
 
 
-for i=sgs.NonTrigger, sgs.NumOfEvents, 1 do
-	sgs.ai_debug_func[i]	={}
-	sgs.ai_chat_func[i]		={}
-	sgs.ai_event_callback[i]={}
+for i = sgs.NonTrigger, sgs.NumOfEvents, 1 do
+	sgs.ai_debug_func[i] = {}
+	sgs.ai_chat_func[i] = {}
+	sgs.ai_event_callback[i] = {}
 end
 
 function setInitialTables()
@@ -297,6 +297,7 @@ function SmartAI:activate(use)
 end
 
 function SmartAI:objectiveLevel(player, tactics)
+	tactics = tactics or sgs.ai_tactics
 	if not player then self.room:writeToConsole(debug.traceback()) return 0 end
 	if self.player:objectName() == player:objectName() then return -2 end
 	if self.room:alivePlayerCount() == 2 then return 5 end
@@ -311,8 +312,6 @@ function SmartAI:objectiveLevel(player, tactics)
 	local upperlimit = player:getLord() and 99 or self.room:getPlayers():length() / 2
 	if (not sgs.isAnjiang(self.player) or sgs.shown_kingdom[self_kingdom] < upperlimit) and self.role ~= "careerist" and self_kingdom == player_kingdom then return -2 end
 	if self:getKingdomCount() <= 2 then return 5 end
-
-	if not tactics then return self:objectiveLevel(player, sgs.ai_tactics) end
 
 	if tactics == "2B" then
 		return 5
@@ -687,6 +686,11 @@ function sgs.getProcessDefense(player, update)
 	if player:hasLordSkill("hongfa") then
 		for _, p in sgs.qlist(global_room:getAlivePlayers()) do
 			if sgs.ai_explicit[p:objectName()] == "qun" then defense = defense + 1 end
+		end
+	end
+	if player:hasSkill("guhuo") then
+		for _, p in sgs.qlist(global_room:getOtherPlayers(player)) do
+			if p:hasSkill("chanyuan") then defense = defense + 1 end
 		end
 	end
 
@@ -1699,7 +1703,7 @@ function SmartAI:filterEvent(event, player, data)
 					if not sgs.isAnjiang(who)
 						and (card:isKindOf("FireAttack")
 							or ((card:isKindOf("Dismantlement") or card:isKindOf("Snatch"))
-								and not self:needToThrowArmor(who) and not who:hasSkills("tuntian+zaoxian")
+								and not self:needToThrowArmor(who) and not who:hasSkill("tuntian")
 								and who:getCards("j"):isEmpty()
 								and not (who:getCards("e"):length() > 0 and self:hasSkills(sgs.lose_equip_skill, who))
 								and not (self:needKongcheng(who) and who:getHandcardNum() == 1))
@@ -4476,7 +4480,7 @@ function SmartAI:findPlayerToDiscard(flags, include_self, isDiscard, players, re
 		for _, enemy in ipairs(enemies) do
 			local cards = sgs.QList2Table(enemy:getHandcards())
 			local flag = string.format("%s_%s_%s","visible", self.player:objectName(), enemy:objectName())
-			if #cards <= 2 and not enemy:isKongcheng() and not (enemy:hasSkills("tuntian+zaoxian") and enemy:getPhase() == sgs.Player_NotActive) then
+			if #cards <= 2 and not enemy:isKongcheng() and not (enemy:hasSkill("tuntian") and enemy:getPhase() == sgs.Player_NotActive) then
 				for _, cc in ipairs(cards) do
 					if (cc:hasFlag("visible") or cc:hasFlag(flag)) and (cc:isKindOf("Peach") or cc:isKindOf("Analeptic")) and (not isDiscard or self.player:canDiscard(enemy, cc:getId())) then
 						table.insert(player_table, enemy)
@@ -4563,6 +4567,7 @@ function SmartAI:dontRespondPeachInJudge(judge)
 	local peach_num = self:getCardsNum("Peach")
 	if peach_num == 0 then return false end
 	if self:willSkipPlayPhase() and self:getCardsNum("Peach") > self:getOverflow(self.player, true) then return false end
+	if judge.reason == "lightning" and self:isFriend(judge.who) then return false end
 
 	local card = self:getCard("Peach")
 	local dummy_use = { isDummy = true }
@@ -4577,9 +4582,7 @@ function SmartAI:dontRespondPeachInJudge(judge)
 		end
 	end
 
-	--judge.reason:baonue,neoganglie,ganglie,caizhaoji_hujia
-	if judge.reason == "tuntian" and judge.who:getMark("zaoxian") == 0 and judge.who:getPile("field"):length() < 2 then return true
-	elseif (judge.reason == "EightDiagram" or judge.reason == "bazhen") and
+	if (judge.reason == "EightDiagram" or judge.reason == "bazhen") and
 		self:isFriend(judge.who) and not self:isWeak(judge.who) then return true
 	elseif judge.reason == "tieji" then return true
 	elseif judge.reason == "qianxi" then return true
@@ -4607,6 +4610,7 @@ function SmartAI:AssistTarget()
 			sgs.ai_AssistTarget_off = true
 		end
 	end
+	player = sgs.ai_AssistTarget
 	if player and not player:getAI() and player:isAlive() and self:isFriend(player) and player:objectName() ~= self.player:objectName() then return player end
 	return
 end
@@ -4677,17 +4681,11 @@ function SmartAI:ImitateResult_DrawNCards(player, skills)
 			elseif skillname == "zaiqi" then return math.floor(lost * 3 / 4)
 			elseif skillname == "luoyi" then count = count - 1
 			elseif skillname == "yingzi" then count = count + 1
-			elseif skillname == "haoshi" then count = count + 2
-			elseif skillname == "yongsi" then
-				local kingdoms = self:getKingdomCount()
-				count = count + kingdoms
-			end
+			elseif skillname == "haoshi" then count = count + 2 end
 		end
 	end
 	return count
 end
-
-
 
 function SmartAI:willSkipPlayPhase(player, NotContains_Null)
 	local player = player or self.player
@@ -4859,7 +4857,7 @@ function SmartAI:getGuixinValue(player)
 				elseif i == 3 then value = 0.25
 				end
 				if player:hasSkills(sgs.lose_equip_skill) then value = value + 0.1 end
-				if player:hasSkills("tuntian+zaoxian") then value = value + 0.1 end
+				if player:hasSkill("tuntian") then value = value + 0.1 end
 				return value
 			end
 		end
@@ -4869,7 +4867,7 @@ function SmartAI:getGuixinValue(player)
 		else
 			local index = player:hasSkills("jijiu|qingnang|leiji|jieyin|beige|kanpo|liuli|qiaobian|zhiheng|guidao|tianxiang|lijian") and 0.5 or 0.4
 			local value = 0.2 - index / (player:getHandcardNum() + 1)
-			if player:hasSkills("tuntian+zaoxian") then value = value + 0.1 end
+			if player:hasSkill("tuntian") then value = value + 0.1 end
 			return value
 		end
 	end

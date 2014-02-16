@@ -51,7 +51,7 @@ ChooseGeneralBox::ChooseGeneralBox()
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
     confirm = new QSanButton("choose-general-box", "confirm", this);
-    confirm->setEnabled(false);
+    confirm->setEnabled(ClientInstance->getReplayer());
     connect(confirm, SIGNAL(clicked()), this, SLOT(reply()));
     progress_bar = NULL;
     animations = new EffectAnimation;

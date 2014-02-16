@@ -1,4 +1,3 @@
-
 function SmartAI:shouldUseRende()
 	if (self:hasCrossbowEffect() or self:getCardsNum("Crossbow") > 0) and self:getCardsNum("Slash") > 0 then
 		self:sort(self.enemies, "defense")
@@ -57,13 +56,11 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(cards, true)
 
-	local notFound
 	for i = 1, #cards do
 		local card, friend = self:getCardNeedPlayer(cards)
 		if card and friend then
 			cards = self:resetCards(cards, card)
 		else
-			notFound = true
 			break
 		end
 
@@ -94,34 +91,14 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 			if dummy_use.card then continue end
 		end
 
-		if friend:hasSkill("enyuan") and #cards >= 1 and not (self.room:getMode() == "04_1v3" and self.player:getMark("rende") == 1) then
+		if friend:hasSkill("enyuan") and #cards >= 1 then
 			use.card = sgs.Card_Parse("@RendeCard=" .. card:getId() .. "+" .. cards[1]:getId() .. "&rende")
-			break
 		else
 			use.card = sgs.Card_Parse("@RendeCard=" .. card:getId() .. "&rende")
 		end
 		if use.to then use.to:append(friend) return end
 	end
 
-	if notFound then
-		local pangtong = self.room:findPlayerBySkillName("manjuan")
-		if not pangtong then return end
-		local cards = sgs.QList2Table(self.player:getHandcards())
-		self:sortByUseValue(cards, true)
-		if self.player:isWounded() and self.player:getHandcardNum() > 3 and self.player:getMark("rende") < 2 then
-			self:sortByUseValue(cards, true)
-			local to_give = {}
-			for _, card in ipairs(cards) do
-				if not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player) then table.insert(to_give, card:getId()) end
-				if #to_give == 2 - self.player:getMark("rende") then break end
-			end
-			if #to_give > 0 then
-				use.card = sgs.Card_Parse("@RendeCard=" .. table.concat(to_give, "+"))
-				assert(use.card)
-				if use.to then use.to:append(pangtong) end
-			end
-		end
-	end
 end
 
 sgs.ai_use_value.RendeCard = 8.5
@@ -215,13 +192,11 @@ sgs.paoxiao_keep_value = {
 }
 
 
-local longdan_skill={}
-longdan_skill.name="longdan"
-table.insert(sgs.ai_skills,longdan_skill)
-longdan_skill.getTurnUseCard=function(self)
-	local cards = self.player:getCards("h")
-	cards=sgs.QList2Table(cards)
-
+local longdan_skill = {}
+longdan_skill.name = "longdan"
+table.insert(sgs.ai_skills, longdan_skill)
+longdan_skill.getTurnUseCard = function(self)
+	local cards = sgs.QList2Table(self.player:getHandcards())
 	local jink_card
 
 	self:sortByUseValue(cards,true)
@@ -259,13 +234,11 @@ sgs.ai_view_as.longdan = function(card, player, card_place)
 end
 
 sgs.longdan_keep_value = {
-	Peach = 6,
-	Analeptic = 5.8,
-	Jink = 5.7,
-	FireSlash = 5.7,
-	Slash = 5.6,
-	ThunderSlash = 5.5,
-	ExNihilo = 4.7
+	Jink = 5.2,
+	FireSlash = 5.21,
+	Slash = 5.2,
+	ThunderSlash = 5.22,
+	ExNihilo = 4.3
 }
 
 sgs.ai_skill_invoke.tieji = function(self, data)
@@ -274,16 +247,6 @@ sgs.ai_skill_invoke.tieji = function(self, data)
 
 	local zj = self.room:findPlayerBySkillName("guidao")
 	if zj and self:isEnemy(zj) and self:canRetrial(zj) then return false end
-
-	if target:hasArmorEffect("EightDiagram") and not IgnoreArmor(self.player, target) then return true end
-	if target:hasLordSkill("hujia") then
-		for _, p in ipairs(self.enemies) do
-			if p:getKingdom() == "wei" and (p:hasArmorEffect("EightDiagram") or p:getHandcardNum() > 0) then return true end
-		end
-	end
-	if target:hasSkill("longhun") and target:getHp() == 1 and self:hasSuit("club", true, target) then return true end
-
-	if target:isKongcheng() or (self:getKnownNum(target) == target:getHandcardNum() and getKnownCard(target, self.player, "Jink", true) == 0) then return false end
 	return true
 end
 
@@ -320,7 +283,6 @@ function SmartAI:canLiegong(to, from)
 	to = to or self.player
 	if not from then return false end
 	if from:hasSkill("liegong") and from:getPhase() == sgs.Player_Play and (to:getHandcardNum() >= from:getHp() or to:getHandcardNum() <= from:getAttackRange()) then return true end
-	if from:hasSkill("kofliegong") and from:getPhase() == sgs.Player_Play and to:getHandcardNum() >= from:getHp() then return true end
 	return false
 end
 
@@ -399,7 +361,7 @@ huoji_skill.getTurnUseCard = function(self)
 	self:sortByUseValue(cards,true)
 
 	for _,acard in ipairs(cards) do
-		if acard:isRed() and not acard:isKindOf("Peach") and (self:getDynamicUsePriority(acard) < sgs.ai_use_value.FireAttack or self:getOverflow() > 0) then
+		if acard:isRed() and not isCard("Peach", acard, self.player) and (self:getDynamicUsePriority(acard) < sgs.ai_use_value.FireAttack or self:getOverflow() > 0) then
 			if acard:isKindOf("Slash") and self:getCardsNum("Slash") == 1 then
 				local keep
 				local dummy_use = { isDummy = true , to = sgs.SPlayerList() }

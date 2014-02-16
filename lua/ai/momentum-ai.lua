@@ -1,6 +1,6 @@
 function sgs.ai_skill_invoke.wangxi(self, data)
 	local target = data:toPlayer()
-	if target and self.player:isFriendWith(target) then
+	if target and (self.player:isFriendWith(target) or self:isFriend(target)) then
 		return not self:needKongcheng(target, true)
 	else
 		return self:needKongcheng(target, true)

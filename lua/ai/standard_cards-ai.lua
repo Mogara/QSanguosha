@@ -676,12 +676,12 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 
 		if self.player:getHandcardNum() == 1 and self:needKongcheng() then return getJink() end
 		if not self:hasLoseHandcardEffective() and not self.player:isKongcheng() then return getJink() end
-		if target:hasSkill("mengjin") and not (target:hasSkill("nosqianxi") and target:distanceTo(self.player) == 1) then
+		if target:hasSkill("mengjin") then
 			if self:doNotDiscard(self.player, "he", true) then return getJink() end
 			if self.player:getCards("he"):length() == 1 and not self.player:getArmor() then return getJink() end
 			if self.player:hasSkills("jijiu|qingnang") and self.player:getCards("he"):length() > 1 then return "." end
 			if (self:getCardsNum("Peach") > 0 or (self:getCardsNum("Analeptic") > 0 and self:isWeak()))
-				and not self.player:hasSkills("tuntian+zaoxian") and not self:willSkipPlayPhase() then
+				and not self.player:hasSkill("tuntian") and not self:willSkipPlayPhase() then
 				return "."
 			end
 		end
@@ -973,7 +973,7 @@ sgs.ai_skill_invoke.IceSword = function(self, data)
 		if target:getArmor() and self:evaluateArmor(target:getArmor(), target) > 3 and not (target:hasArmorEffect("SilverLion") and target:isWounded()) then return true end
 		local num = target:getHandcardNum()
 		if self.player:hasSkill("tieji") or self:canLiegong(target, self.player) then return false end
-		if target:hasSkills("tuntian+zaoxian") and target:getPhase() == sgs.Player_NotActive then return false end
+		if target:hasSkill("tuntian") and target:getPhase() == sgs.Player_NotActive then return false end
 		if target:hasSkills(sgs.need_kongcheng) then return false end
 		if target:getCards("he"):length()<4 and target:getCards("he"):length()>1 then return true end
 		return false
@@ -2062,7 +2062,6 @@ sgs.ai_choicemade_filter.cardChosen.snatch = function(self, player, promptlist)
 		local place = self.room:getCardPlace(id)
 		local card = sgs.Sanguosha:getCard(id)
 		local intention = 70
-		if to:hasSkills("tuntian+zaoxian") and to:getPile("field") == 2 and to:getMark("zaoxian") == 0 then intention = 0 end
 		if place == sgs.Player_PlaceDelayedTrick then
 			if not card:isKindOf("Disaster") then intention = -intention else intention = 0 end
 		elseif place == sgs.Player_PlaceEquip then
@@ -2151,7 +2150,7 @@ function SmartAI:useCardCollateral(card, use)
 			and self:hasTrickEffective(card, enemy)
 			and not enemy:hasSkills(sgs.lose_equip_skill)
 			and not (enemy:hasSkill("weimu") and card:isBlack())
-			and not (enemy:hasSkill("tuntian") and enemy:hasSkill("zaoxian"))
+			and not enemy:hasSkill("tuntian")
 			and self:objectiveLevel(enemy) >= 0
 			and enemy:getWeapon() then
 
