@@ -180,6 +180,13 @@ end
 
 function ganglie_discard(self, discard_num, min_num, optional, include_equip, skillName)
 	local xiahou = self.room:findPlayerBySkillName(skillName)
+	
+	for _, card in sgs.qlist(self.player:getHandcards()) do
+		if isCard("Peach", card, self.player) then
+			return {}
+		end
+	end
+	
 	if xiahou and (not self:damageIsEffective(self.player, sgs.DamageStruct_Normal, xiahou) or self:getDamagedEffects(self.player, xiahou)) then return {} end
 	if xiahou and self:needToLoseHp(self.player, xiahou) then return {} end
 end
