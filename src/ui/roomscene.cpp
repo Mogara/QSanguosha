@@ -2559,11 +2559,6 @@ void RoomScene::doOkButton() {
 }
 
 void RoomScene::doCancelButton() {
-    if (ClientInstance->getReplayer() && prompt_box->isVisible()) {  // a temp way to hide choose general box
-        dashboard->stopPending();
-        ClientInstance->onPlayerChoosePlayer(NULL);
-        prompt_box->disappear();
-    }
     if (card_container->retained()) card_container->clear();
     switch (ClientInstance->getStatus() & Client::ClientStatusBasicMask) {
     case Client::Playing: {
