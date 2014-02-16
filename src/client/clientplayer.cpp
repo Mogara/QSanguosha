@@ -127,16 +127,7 @@ void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids
 }
 
 QString ClientPlayer::getDeathPixmapPath() const{
-    QString basename;
-    if (ServerInfo.GameMode == "06_3v3" || ServerInfo.GameMode == "06_XMode") {
-        if (getRole() == "lord" || getRole() == "renegade")
-            basename = "marshal";
-        else
-            basename = "guard";
-    } else if (ServerInfo.EnableHegemony) {
-        basename = getRole() == "careerist" ? "careerist" : getKingdom();
-    } else
-        basename = getRole();
+    QString basename = getRole() == "careerist" ? "careerist" : getKingdom();
 
     if (basename.isEmpty())
         basename = "unknown";

@@ -101,7 +101,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         }
     }
 
-    if (!view_only && ServerInfo.EnableHegemony && ServerInfo.Enable2ndGeneral && generals.length() > 2) {
+    if (!view_only && generals.length() > 2) {
         int index = 0;
         foreach (const General *general, generals) {
             int party = 0;
@@ -139,15 +139,6 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     if (generals.length() <= columns) {
         layout = new QHBoxLayout;
 
-        if (lord_name.size() && !ServerInfo.EnableHegemony && !no_icon) {
-            const General *lord = Sanguosha->getGeneral(lord_name);
-
-            QLabel *label = new QLabel;
-            label->setPixmap(G_ROOM_SKIN.getGeneralPixmap(lord->objectName(), icon_type));
-            label->setToolTip(lord->getSkillDescription(true));
-            layout->addWidget(label);
-        }
-
         foreach (OptionButton *button, buttons)
             layout->addWidget(button);
     } else {
@@ -155,14 +146,6 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
         QHBoxLayout *hlayout = new QHBoxLayout;
         QVBoxLayout *lord_layout = new QVBoxLayout;
 
-        if (lord_name.size() && !ServerInfo.EnableHegemony && !no_icon) {
-            const General *lord = Sanguosha->getGeneral(lord_name);
-
-            QLabel *label = new QLabel;
-            label->setPixmap(G_ROOM_SKIN.getCardMainPixmap(lord->objectName()));
-            label->setToolTip(lord->getSkillDescription(true));
-            lord_layout->addWidget(label);
-        }
         lord_layout->addStretch();
         hlayout->addLayout(lord_layout);
 
@@ -193,18 +176,6 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
 
     QVBoxLayout *dialog_layout = new QVBoxLayout;
     dialog_layout->addLayout(layout);
-
-    if (!view_only && !ServerInfo.EnableHegemony) {
-        // role prompt
-        QLabel *role_label = new QLabel(tr("Your role is %1").arg(Sanguosha->translate(Self->getRole())));
-        if (lord_name.size()) role_label->setText(tr("The lord has chosen %1. Your seat is %2. %3")
-                                                     .arg(Sanguosha->translate(lord_name))
-                                                     .arg(Sanguosha->translate("CAPITAL("
-                                                                               + QString::number(Self->getSeat())
-                                                                               + ")"))
-                                                     .arg(role_label->text()));
-        dialog_layout->addWidget(role_label);
-    }
 
     // progress bar & free choose button
     QHBoxLayout *last_layout = new QHBoxLayout;

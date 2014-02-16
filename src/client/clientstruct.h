@@ -22,15 +22,8 @@ struct ServerInfoStruct {
     bool RandomSeat;
     bool EnableCheat;
     bool FreeChoose;
-    bool Enable2ndGeneral;
-    bool EnableScene;
-    bool EnableSame;
-    bool EnableBasara;
-    bool EnableHegemony;
     bool EnableAI;
     bool DisableChat;
-    int MaxHpScheme;
-    int Scheme0Subtraction;
 
     bool DuringGame;
 };
@@ -55,12 +48,6 @@ private:
     QLabel *port_label;
     QLabel *game_mode_label;
     QLabel *player_count_label;
-    QLabel *two_general_label;
-    QLabel *scene_label;
-    QLabel *same_label;
-    QLabel *basara_label;
-    QLabel *hegemony_label;
-    QLabel *max_hp_label;
     QLabel *random_seat_label;
     QLabel *enable_cheat_label;
     QLabel *free_choose_label;
