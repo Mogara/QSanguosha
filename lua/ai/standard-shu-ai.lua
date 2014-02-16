@@ -469,6 +469,11 @@ function sgs.ai_armor_value.bazhen(card)
 	if not card then return 4 end
 end
 
+sgs.ai_skill_invoke.xiangle = function(self, data)
+	local use = data:toCardUse()
+	return not self:needToLoseHp(self.player, use.from, true)
+end
+
 sgs.ai_skill_cardask["@xiangle-discard"] = function(self, data)
 	local target = data:toPlayer()
 	if self:isFriend(target) and not self:findLeijiTarget(target, 50, self.player) then return "." end
@@ -658,7 +663,6 @@ sgs.ai_skill_invoke.shenzhi = function(self, data)
 	if self:getCardsNum("Peach") > 0 then return false end
 	if self.player:getHandcardNum() >= 3 then return false end
 	if self.player:getHandcardNum() >= self.player:getHp() and self.player:isWounded() then return true end
-	if self.player:hasSkill("sijian") and self.player:getHandcardNum() == 1 then return true end
 	return false
 end
 

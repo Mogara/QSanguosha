@@ -1099,8 +1099,10 @@ sgs.dynamic_value.control_card.QuhuCard = true
 
 sgs.ai_skill_playerchosen.jieming = function(self, targets)
 	local friends = {}
+	local selected_target = self.player:getTag("jieming_target"):toStringList()
+	
 	for _, player in ipairs(self.friends) do
-		if player:isAlive() then
+		if player:isAlive() and not table.contains(selected_target, player:objectName()) then
 			table.insert(friends, player)
 		end
 	end
