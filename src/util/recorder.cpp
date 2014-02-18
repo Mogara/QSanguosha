@@ -28,7 +28,7 @@ void Recorder::recordLine(const QString &line) {
 }
 
 bool Recorder::save(const QString &filename) const{
-    if (filename.endsWith(".txt")) {
+    if (filename.endsWith(".qsgs")) {
         QFile file(filename);
         if (file.open(QIODevice::WriteOnly | QIODevice::Text))
             return file.write(data) != -1;
@@ -72,7 +72,7 @@ Replayer::Replayer(QObject *parent, const QString &filename)
         QByteArray *data = new QByteArray(PNG2TXT(filename));
         QBuffer *buffer = new QBuffer(data);
         device = buffer;
-    } else if (filename.endsWith(".txt")) {
+    } else if (filename.endsWith(".qsgs")) {
         QFile *file = new QFile(filename);
         device = file;
     }

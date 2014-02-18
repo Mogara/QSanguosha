@@ -2855,7 +2855,7 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only) 
             location.append(QString("%1%2-").arg(Sanguosha->translate(Self->getActualGeneral1()->objectName()))
                                             .arg(Sanguosha->translate(Self->getActualGeneral2()->objectName())));
             location.append(QDateTime::currentDateTime().toString("yyyyMMddhhmmss"));
-            location.append(".txt");
+            location.append(".qsgs");
             ClientInstance->save(location);
         }
         return;
@@ -2864,7 +2864,7 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only) 
     QString filename = QFileDialog::getSaveFileName(main_window,
                                                     tr("Save replay record"),
                                                     location,
-                                                    tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
+                                                    tr("QSanguosha Replay File (*.qsgs);; Image replay file (*.png)"));
 
     if (!filename.isEmpty()) ClientInstance->save(filename);
 }
