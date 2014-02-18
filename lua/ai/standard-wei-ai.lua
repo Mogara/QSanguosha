@@ -785,7 +785,7 @@ sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, i
 		elseif self.player:containsTrick("indulgence") then
 			if self.player:getHandcardNum() > 3 or self.player:getHandcardNum() > self.player:getHp() - 1 then return to_discard end
 			for _, friend in ipairs(self.friends_noself) do
-				if not friend:containsTrick("YanxiaoCard") and (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) then
+				if (friend:containsTrick("indulgence") or friend:containsTrick("supply_shortage")) then
 					return to_discard
 				end
 			end
