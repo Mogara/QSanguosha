@@ -81,7 +81,21 @@ sgs.ai_skill_cardask["@multi-jink"] = sgs.ai_skill_cardask["@multi-jink-start"]
 sgs.ai_skill_invoke.wushuang = function(self, data)
 	local use = data:toCardUse()
 	if use.card then
-		if use.card:isKindOf("Duel") then return true end
+		if use.card:isKindOf("Duel") then
+			if use.from:objectName() == self.player:objectName() then
+				for _, p in sgs.qlist(use.to) do
+					if p:getKingdom() == "qun" then return false end
+				end
+				return true
+			else
+				for _, c in sgs.qlist(self.player:getHandcards()) do
+					if isCard("Slash", c, self.player) then
+						return true
+					end
+				end
+				return false
+			end
+		end
 		for _, p in sgs.qlist(use.to) do
 			if p:getKingdom() == "qun" then return false end
 		end
@@ -835,7 +849,7 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 	if zhoutai and zhoutai:getPile("buqu"):length() > 1 and zhoutai:hasShownAllGenerals() then
 		use.card = card
 		if not use.isDummy and use.to then
-			sgs.ai_skill_choice.QingchengCard = (zhoutai:inHeadSkills("buqu") and "head_general" or "debuty_general")
+			sgs.ai_skill_choice.qingcheng = (zhoutai:inHeadSkills("buqu") and "head_general" or "debuty_general")
 			use.to:append(zhoutai)
 		end
 		return
@@ -853,7 +867,7 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 				if (p:hasSkill(skill_name)) then
 					use.card = card
 					if ((not use.isDummy) and use.to) then
-						sgs.ai_skill_choice.QingchengCard = (p:inHeadSkills(skill_name) and "head_general" or "deputy_general")
+						sgs.ai_skill_choice.qingcheng = (p:inHeadSkills(skill_name) and "head_general" or "deputy_general")
 						use.to:append(p)
 					end
 					return

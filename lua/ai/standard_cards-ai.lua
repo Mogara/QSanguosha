@@ -2406,16 +2406,17 @@ function SmartAI:useCardIndulgence(card, use)
 	if #enemies == 0 then return end
 
 	local getvalue = function(enemy)
-		if enemy:hasSkill("weimu") and card:isBlack() then return -100 end
-		if enemy:containsTrick("indulgence") then return -100 end
-		if enemy:hasSkill("qiaobian") and not enemy:containsTrick("supply_shortage") and not enemy:containsTrick("indulgence") then return -100 end
+		if enemy:hasSkill("qianxun") then return -101 end
+		if enemy:hasSkill("weimu") and card:isBlack() then return -101 end
+		if enemy:containsTrick("indulgence") then return -101 end
+		if enemy:hasSkill("qiaobian") and not enemy:containsTrick("supply_shortage") and not enemy:containsTrick("indulgence") then return -101 end
 		if zhanghe_seat > 0 and (self:playerGetRound(zhanghe) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
-			return -100 end
+			return -101 end
 
 		local value = enemy:getHandcardNum() - enemy:getHp()
 
 		if enemy:hasSkills("lijian|fanjian|dimeng|jijiu|jieyin|zhiheng|rende") then value = value + 10 end
-		if enemy:hasSkills("qixi|qice|guose|duanliang|luoshen|jizhi|wansha") then value = value + 5 end
+		if enemy:hasSkills("qixi|guose|duanliang|luoshen|jizhi|wansha") then value = value + 5 end
 		if enemy:hasSkills("guzheng|duoshi") then value = value + 3 end
 		if self:isWeak(enemy) then value = value + 3 end
 		if enemy:isLord() then value = value + 3 end
