@@ -152,6 +152,7 @@ class HengjiangDraw: public TriggerSkill {
 public:
     HengjiangDraw(): TriggerSkill("#hengjiang-draw") {
         events << TurnStart << CardsMoveOneTime << EventPhaseChanging;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const {
@@ -272,6 +273,7 @@ class QianxiClear: public TriggerSkill {
 public:
     QianxiClear(): TriggerSkill("#qianxi-clear") {
         events << EventPhaseChanging << Death;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const {
@@ -379,6 +381,7 @@ class CunsiStart: public TriggerSkill {
 public:
     CunsiStart(): TriggerSkill("#cunsi-start") {
         events << GameStart << EventAcquireSkill;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{

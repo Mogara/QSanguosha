@@ -760,7 +760,6 @@ public:
 class DuanliangTargetMod: public TargetModSkill {
 public:
     DuanliangTargetMod(): TargetModSkill("#duanliang-target") {
-        frequency = NotFrequent;
         pattern = "SupplyShortage";
     }
 
@@ -775,7 +774,6 @@ public:
 class Jushou: public PhaseChangeSkill {
 public:
     Jushou(): PhaseChangeSkill("jushou") {
-        frequency = NotFrequent;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{

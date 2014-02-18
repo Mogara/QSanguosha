@@ -127,7 +127,6 @@ public:
     PaoxiaoArmorNullificaion(): TriggerSkill("paoxiao_null"){
         events << TargetConfirmed;
         global = true;
-
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
@@ -840,6 +839,7 @@ public:
 
 SavageAssaultAvoid::SavageAssaultAvoid(const QString &avoid_skill): TriggerSkill("#sa_avoid_" + avoid_skill), avoid_skill(avoid_skill){
     events << CardEffected;
+    frequency = Compulsory;
 }
 
 QStringList SavageAssaultAvoid::triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
@@ -1248,6 +1248,7 @@ class FangquanGive: public PhaseChangeSkill {
 public:
     FangquanGive(): PhaseChangeSkill("fangquan-give") {
         global = true;
+        frequency = Compulsory;
     }
 
     virtual int getPriority() const{

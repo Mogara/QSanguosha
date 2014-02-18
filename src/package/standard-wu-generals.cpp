@@ -65,6 +65,7 @@ public:
     KejiGlobal(): TriggerSkill("keji-global"){
         global = true;
         events << PreCardUsed << CardResponded;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
@@ -606,6 +607,7 @@ class TianxiangDraw: public TriggerSkill {
 public:
     TianxiangDraw(): TriggerSkill("#tianxiang") {
         events << DamageComplete;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
@@ -702,7 +704,6 @@ public:
 class TianyiTargetMod: public TargetModSkill {
 public:
     TianyiTargetMod(): TargetModSkill("#tianyi-target") {
-        frequency = NotFrequent;
     }
 
     virtual int getResidueNum(const Player *from, const Card *) const{
@@ -731,6 +732,7 @@ class BuquRemove: public TriggerSkill {
 public:
     BuquRemove(): TriggerSkill("#buqu-remove") {
         events << HpRecover;
+        frequency = Compulsory;
     }
 
     static void Remove(ServerPlayer *zhoutai) {
@@ -898,6 +900,7 @@ public:
 class BuquClear: public DetachEffectSkill {
 public:
     BuquClear(): DetachEffectSkill("buqu") {
+        frequency = Compulsory;
     }
 
     virtual void onSkillDetached(Room *room, ServerPlayer *player) const{
@@ -978,6 +981,7 @@ class HaoshiGive: public TriggerSkill {
 public:
     HaoshiGive(): TriggerSkill("#haoshi-give") {
         events << AfterDrawNCards;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *lusu, QVariant &, ServerPlayer * &) const{
@@ -1155,6 +1159,7 @@ class GuzhengRecord: public TriggerSkill {
 public:
     GuzhengRecord(): TriggerSkill("#guzheng-record") {
         events << CardsMoveOneTime;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *erzhang, QVariant &data, ServerPlayer * &) const{
