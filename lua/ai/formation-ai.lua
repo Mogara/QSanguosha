@@ -440,6 +440,6 @@ sgs.ai_skill_invoke.DragonPhoenix = function(self, data)
 	if death.who and self.role ~= "careerist" then return true
 	else
 		local to = data:toPlayer()
-		return not self:doNotDiscard(to)
+		return self:doNotDiscard(to) == self:isFriend(to)
 	end
 end
