@@ -2799,8 +2799,8 @@ void RoomScene::onGameOver() {
     fillTable(winner_table, winner_list);
     fillTable(loser_table, loser_list);
 
-    if (Config.value("EnableAutoSaveRecord").toBool())
-        saveReplayRecord(true, Config.value("NetworkOnly").toBool());
+    if (!ClientInstance->getReplayer() && Config.value("EnableAutoSaveRecord", false).toBool())
+        saveReplayRecord(true, Config.value("NetworkOnly", false).toBool());
 
     addRestartButton(dialog);
     m_roomMutex.unlock();
