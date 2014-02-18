@@ -126,6 +126,13 @@ sgs.ai_suit_priority.jiang = function(self, card)
 	return (card:isKindOf("Slash") or card:isKindOf("Duel")) and "diamond|heart|club|spade" or "club|spade|diamond|heart"
 end
 
+sgs.ai_skill_invoke.yingyang = function(self, data)
+	local pindian = data:toPindian()
+	local f_num, t_num = pindian.from_number, pindian.to_number
+	if math.abs(f_num - t_num) <= 3 then return true end
+	return false
+end
+
 sgs.ai_skill_choice.yingyang = function(self, choices, data)
 	local pindian = data:toPindian()
 	local reason = pindian.reason
@@ -133,20 +140,18 @@ sgs.ai_skill_choice.yingyang = function(self, choices, data)
 	local f_num, t_num = pindian.from_number, pindian.to_number
 	local amFrom = self.player:objectName() == from:objectName()
 
-	if math.abs(f_num - t_num) > 3 then return "cancel" end
-
 	local table_pindian_friends = { "tianyi", "shuangren" }
 	if reason == "quhu" then
 		if amFrom and self.player:hasSkill("jieming") then
-			if f_num > 8 then return "up"
-			elseif self:getJiemingChaofeng(player) <= -6 then return "down"
+			if f_num > 8 then return "jia3"
+			elseif self:getJiemingChaofeng(player) <= -6 then return "jian3"
 			end
 		end
-		return "up"
+		return "jia3"
 	elseif table.contains(table_pindian_friends, reason) then
-		return (not amFrom and self:isFriend(from)) and "down" or "up"
+		return (not amFrom and self:isFriend(from)) and "jian3" or "jia3"
 	else
-		return "up"
+		return "jia3"
 	end
 end
 
