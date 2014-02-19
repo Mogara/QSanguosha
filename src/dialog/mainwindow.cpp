@@ -228,7 +228,7 @@ void MainWindow::on_actionReplay_triggered() {
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Select a reply file"),
                                                     location,
-                                                    tr("QSanguosha Replay File (*.qsgs);; Image replay file (*.png)"));
+                                                    tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
 
     if (filename.isEmpty())
         return;

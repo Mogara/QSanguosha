@@ -2864,7 +2864,7 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only) 
     QString filename = QFileDialog::getSaveFileName(main_window,
                                                     tr("Save replay record"),
                                                     location,
-                                                    tr("QSanguosha Replay File (*.qsgs);; Image replay file (*.png)"));
+                                                    tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
 
     if (!filename.isEmpty()) ClientInstance->save(filename);
 }
