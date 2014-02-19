@@ -13,14 +13,6 @@
         <source>QSanguosha-Hegemony-V2</source>
         <translation>太阳神三国杀V2国战</translation>
     </message>
-    <message>
-        <source>YanGuam</source>
-        <translation type="obsolete">啦啦SLG</translation>
-    </message>
-    <message>
-        <source>0147certainly</source>
-        <translation type="obsolete">元嘉体</translation>
-    </message>
 </context>
 <context>
     <name>BanIPDialog</name>
@@ -457,10 +449,6 @@
         <translation>女性配音</translation>
     </message>
     <message>
-        <source>This is an Lua extension</source>
-        <translation type="obsolete">该包为Lua扩展包</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/cardoverview.cpp" line="110"/>
         <source>&lt;font color=#FFFF33&gt;This is an Lua extension&lt;/font&gt;</source>
         <translation>&lt;font color=#FFFF33&gt;该包为Lua扩展包&lt;/font&gt;</translation>
@@ -513,22 +501,6 @@
         <location filename="../../src/dialog/choosegeneraldialog.cpp" line="49"/>
         <source>Choose general</source>
         <translation>选择武将</translation>
-    </message>
-    <message>
-        <source>Your role is %1</source>
-        <translation type="obsolete">你的身份是 %1</translation>
-    </message>
-    <message>
-        <source>The lord has chosen %1. Your seat is %2. %3</source>
-        <translation type="obsolete">主公选择了 %1，你处于 %2号位，%3</translation>
-    </message>
-    <message>
-        <source>Your seat is %1</source>
-        <translation type="obsolete">您处于 %1号位 </translation>
-    </message>
-    <message>
-        <source>The lord has chosen %1. %2, %3.</source>
-        <translation type="obsolete">主公选择了 %1，%2，%3。</translation>
     </message>
     <message>
         <location filename="../../src/dialog/choosegeneraldialog.cpp" line="197"/>
@@ -594,10 +566,6 @@
         <location filename="../../src/client/client.cpp" line="882"/>
         <source>%1 initiated a vote for disadvataged side to claim capitulation. Click &quot;OK&quot; to surrender or &quot;Cancel&quot; to resist.</source>
         <translation>%1 要求所有人表决是否投降。 点【确定】表示你要投降，点【取消】拒绝向其他玩家投降。</translation>
-    </message>
-    <message>
-        <source>&lt;br/&gt; &lt;b&gt;Noitce&lt;/b&gt;: if all people on your side decides to surrender. You&apos;ll lose this game.</source>
-        <translation type="obsolete">&lt;br/&gt; &lt;b&gt;警告&lt;/b&gt;: 如果你所在阵营里包括你在内的所有玩家表示投降，游戏将以你失败为结果立即结束。</translation>
     </message>
     <message>
         <location filename="../../src/client/client.cpp" line="885"/>
@@ -670,14 +638,6 @@
         <translation>游戏已经结束</translation>
     </message>
     <message>
-        <source>The server require password to signup</source>
-        <translation type="obsolete">服务器要求密码才能登录</translation>
-    </message>
-    <message>
-        <source>Your password is wrong</source>
-        <translation type="obsolete">密码错误</translation>
-    </message>
-    <message>
         <location filename="../../src/client/client.cpp" line="1261"/>
         <source>Invalid signup string</source>
         <translation>无效的登录字符串</translation>
@@ -728,10 +688,6 @@
         <translation>给其他角色</translation>
     </message>
     <message>
-        <source>Please distribute %1 cards as you wish</source>
-        <translation type="obsolete">请将 %1 张牌任意分配</translation>
-    </message>
-    <message>
         <location filename="../../src/client/client.cpp" line="1693"/>
         <source>&lt;font color=&apos;red&apos;&gt;System: %1&lt;/font&gt;</source>
         <translation>&lt;font color=&apos;red&apos;&gt;系统: %1&lt;/font&gt;</translation>
@@ -753,22 +709,6 @@
         <location filename="../../src/client/client.cpp" line="264"/>
         <source>Setup string can not be parsed: %1</source>
         <translation>设置字符串没能成功解析: %1</translation>
-    </message>
-    <message>
-        <source>No such room!</source>
-        <translation type="obsolete">没有这个房间!</translation>
-    </message>
-    <message>
-        <source>Room is full!</source>
-        <translation type="obsolete">房间已满!</translation>
-    </message>
-    <message>
-        <source>Invalid setup string!</source>
-        <translation type="obsolete">无效的设置字符串!</translation>
-    </message>
-    <message>
-        <source>Unknown room error: %1</source>
-        <translation type="obsolete">未知房间错误: %1</translation>
     </message>
 </context>
 <context>
@@ -834,22 +774,6 @@
         <location filename="../../src/ui/clientlogbox.cpp" line="133"/>
         <source>Due to the effect of [%1], %from %4 %2 as %3</source>
         <translation>由于“%1”的效果，%from 的 %2 被视为 %3 %4</translation>
-    </message>
-    <message>
-        <source>%from use skill [%1]</source>
-        <translation type="obsolete">%from 发动了技能【%1】</translation>
-    </message>
-    <message>
-        <source>%from use skill [%1], and the cost is %2</source>
-        <translation type="obsolete">%from 发动了技能【%1】，所用的牌为 %2</translation>
-    </message>
-    <message>
-        <source>%from use skill [%1], %3 [%2]</source>
-        <translation type="obsolete">%from 使用了【%1】技能，%3了 【%2】</translation>
-    </message>
-    <message>
-        <source>%from use skill [%1] %4 %2 as %3</source>
-        <translation type="obsolete">%from 使用了技能【%1】将 %2 当成了 %3 %4</translation>
     </message>
     <message>
         <location filename="../../src/ui/clientlogbox.cpp" line="135"/>
@@ -1016,25 +940,9 @@
         <translation>启用自动保存</translation>
     </message>
     <message>
-        <source>Nullification count down</source>
-        <translation type="obsolete">无懈可击时间</translation>
-    </message>
-    <message>
-        <source> seconds</source>
-        <translation type="obsolete"> 秒</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/configdialog.ui" line="521"/>
         <source>Never nullify my single target trick</source>
         <translation>从不对自己使用的单目标锦囊使用【无懈可击】</translation>
-    </message>
-    <message>
-        <source>Minimize the dialog when server runs</source>
-        <translation type="obsolete">服务器运行时最小化到托盘</translation>
-    </message>
-    <message>
-        <source>Game start count down</source>
-        <translation type="obsolete">游戏开始前倒计时</translation>
     </message>
     <message>
         <location filename="../../src/dialog/configdialog.ui" line="540"/>
@@ -1045,54 +953,6 @@
         <location filename="../../src/dialog/configdialog.ui" line="559"/>
         <source>Enable intellectual selection</source>
         <translation>智能选牌</translation>
-    </message>
-    <message>
-        <source>Disable Lua extensions</source>
-        <translation type="obsolete">禁用Lua扩展</translation>
-    </message>
-    <message>
-        <source>Help me to choose targets of one card</source>
-        <translation type="obsolete">自动选中卡牌的唯一目标</translation>
-    </message>
-    <message>
-        <source>Contest mode</source>
-        <translation type="obsolete">竞赛模式</translation>
-    </message>
-    <message>
-        <source>SMTP Server</source>
-        <translation type="obsolete">SMTP 服务器</translation>
-    </message>
-    <message>
-        <source>SMTP server&apos;s address</source>
-        <translation type="obsolete">SMTP 服务器的地址</translation>
-    </message>
-    <message>
-        <source>Sender</source>
-        <translation type="obsolete">发送者</translation>
-    </message>
-    <message>
-        <source>The sender&apos;s email address</source>
-        <translation type="obsolete">发送者的邮件地址</translation>
-    </message>
-    <message>
-        <source>Password</source>
-        <translation type="obsolete">密码</translation>
-    </message>
-    <message>
-        <source>The password</source>
-        <translation type="obsolete">密码</translation>
-    </message>
-    <message>
-        <source>Receiver</source>
-        <translation type="obsolete">接收者</translation>
-    </message>
-    <message>
-        <source>The receiver&apos;s email address</source>
-        <translation type="obsolete">接收者的电子邮件</translation>
-    </message>
-    <message>
-        <source>Only save the record of lord</source>
-        <translation type="obsolete">仅保存主公的重放记录</translation>
     </message>
     <message>
         <location filename="../../src/dialog/configdialog.cpp" line="91"/>
@@ -1163,14 +1023,6 @@
         <location filename="../../src/dialog/connectiondialog.ui" line="89"/>
         <source>Detect LAN ...</source>
         <translation>探测局域网 ...</translation>
-    </message>
-    <message>
-        <source>Password:</source>
-        <translation type="obsolete">密码:</translation>
-    </message>
-    <message>
-        <source>Only used in contest</source>
-        <translation type="obsolete">仅在比赛中使用</translation>
     </message>
     <message>
         <location filename="../../src/dialog/connectiondialog.ui" line="203"/>
@@ -1298,10 +1150,6 @@
         <translation>无</translation>
     </message>
     <message>
-        <source>%1 mark</source>
-        <translation type="obsolete">%1标记</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="137"/>
         <source>General</source>
         <translation>主将</translation>
@@ -1340,10 +1188,6 @@
         <location filename="../../src/dialog/customassigndialog.cpp" line="158"/>
         <source>RestInDiscardPile</source>
         <translation>非预设摸牌均置于弃牌堆</translation>
-    </message>
-    <message>
-        <source>EndedByPileEnds</source>
-        <translation type="obsolete">自定义摸牌堆用完失败</translation>
     </message>
     <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="160"/>
@@ -1597,10 +1441,6 @@
         <translation>火焰</translation>
     </message>
     <message>
-        <source>HP recover</source>
-        <translation type="obsolete">体力回复</translation>
-    </message>
-    <message>
         <location filename="../../src/ui/roomscene.cpp" line="2956"/>
         <source>Recover HP</source>
         <translation>体力回复</translation>
@@ -1773,10 +1613,6 @@
         <translation>2 人局</translation>
     </message>
     <message>
-        <source>2 players (KOF style)</source>
-        <translation type="obsolete">2 人局 [KOF模式]</translation>
-    </message>
-    <message>
         <location filename="../../src/core/engine.cpp" line="86"/>
         <source>3 players</source>
         <translation>3 人局</translation>
@@ -1785,10 +1621,6 @@
         <location filename="../../src/core/engine.cpp" line="87"/>
         <source>4 players</source>
         <translation>4 人局</translation>
-    </message>
-    <message>
-        <source>4 players (Hulao Pass)</source>
-        <translation type="obsolete">4 人局 [虎牢关1v3]</translation>
     </message>
     <message>
         <location filename="../../src/core/engine.cpp" line="88"/>
@@ -1801,18 +1633,6 @@
         <translation>6 人局</translation>
     </message>
     <message>
-        <source>6 players (2 renegades)</source>
-        <translation type="obsolete">6 人局 [双内奸]</translation>
-    </message>
-    <message>
-        <source>6 players (3v3)</source>
-        <translation type="obsolete">6 人局 [3v3]</translation>
-    </message>
-    <message>
-        <source>6 players (XMode)</source>
-        <translation type="obsolete">6 人局 [血战到底]</translation>
-    </message>
-    <message>
         <location filename="../../src/core/engine.cpp" line="90"/>
         <source>7 players</source>
         <translation>7 人局</translation>
@@ -1823,18 +1643,6 @@
         <translation>8 人局</translation>
     </message>
     <message>
-        <source>8 players (2 renegades)</source>
-        <translation type="obsolete">8 人局 [双内奸]</translation>
-    </message>
-    <message>
-        <source>8 players (0 renegade)</source>
-        <translation type="obsolete">8 人局 [无内奸]</translation>
-    </message>
-    <message>
-        <source>NewQSanguosha</source>
-        <translation type="obsolete">太阳神三国杀-20130224-春分</translation>
-    </message>
-    <message>
         <location filename="../../src/core/engine.cpp" line="92"/>
         <source>9 players</source>
         <translation>9 人局</translation>
@@ -1843,14 +1651,6 @@
         <location filename="../../src/core/engine.cpp" line="93"/>
         <source>10 players</source>
         <translation>10 人局</translation>
-    </message>
-    <message>
-        <source>10 players (1 renegade)</source>
-        <translation type="obsolete">10 人局 [单内奸]</translation>
-    </message>
-    <message>
-        <source>10 players (0 renegade)</source>
-        <translation type="obsolete">10 人局 [无内奸]</translation>
     </message>
     <message>
         <location filename="../../src/core/engine.cpp" line="141"/>
@@ -1887,10 +1687,6 @@
         <location filename="../../src/core/general.cpp" line="147"/>
         <source>%1 Generals</source>
         <translation>%1势力武将</translation>
-    </message>
-    <message>
-        <source>Companions:</source>
-        <translation type="obsolete">珠联璧合：</translation>
     </message>
 </context>
 <context>
@@ -2031,14 +1827,6 @@
         <translation>无性别</translation>
     </message>
     <message>
-        <source>This general is hidden</source>
-        <translation type="obsolete">该武将被隐藏， 不会出现在选将列表中</translation>
-    </message>
-    <message>
-        <source>This is an Lua extension</source>
-        <translation type="obsolete">该包为Lua扩展包</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="338"/>
         <location filename="../../src/dialog/generaloverview.cpp" line="351"/>
         <source>&lt;font color=#FFFF33&gt;This general is hidden&lt;/font&gt;</source>
@@ -2113,26 +1901,14 @@
         <translation>称号</translation>
     </message>
     <message>
-        <source>Input characters included by the nickname. &apos;?&apos; and &apos;*&apos; is available. Every nickname meets the condition if the line is empty.</source>
-        <translation type="obsolete">输入武将称号，可以使用&apos;?&apos;与&apos;*&apos;通配符</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="50"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <source>Input characters included by the name. &apos;?&apos; and &apos;*&apos; is available. Every name meets the condition if the line is empty.</source>
-        <translation type="obsolete">输入武将称号，可以使用&apos;?&apos;与&apos;*&apos;通配符</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="56"/>
         <source>MaxHp Min</source>
         <translation>体力上限（最小值）</translation>
-    </message>
-    <message>
-        <source>Set lowerlimit and upperlimit of max HP. 0 ~ 0 meets all conditions.</source>
-        <translation type="obsolete">设置武将体力上限范围，若最小值与最大值均为0则所有武将符合条件（若最大值小于最小值，则按最小值计算）</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="58"/>
@@ -2143,10 +1919,6 @@
         <location filename="../../src/dialog/generaloverview.cpp" line="74"/>
         <source>Gender</source>
         <translation>性别</translation>
-    </message>
-    <message>
-        <source>Select genders. Every gender meets the condition if none is selected.</source>
-        <translation type="obsolete">选择武将性别，若未选择任何性别则所有性别均符合条件</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="45"/>
@@ -2210,17 +1982,9 @@
         <translation>全不选</translation>
     </message>
     <message>
-        <source>Select kingdoms. Every kingdom meets the condition if none is selected.</source>
-        <translation type="obsolete">选择武将势力，若未选择任何势力则所有势力均符合条件</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="136"/>
         <source>Packages</source>
         <translation>包</translation>
-    </message>
-    <message>
-        <source>Select packages. Every package meets the condition if none is selected.</source>
-        <translation type="obsolete">选择武将包，若未选择任何包则所有包均符合条件</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="182"/>
@@ -2249,37 +2013,6 @@
         <location filename="../../src/ui/cardcontainer.cpp" line="485"/>
         <source>cards at the bottom of the pile</source>
         <translation>置于牌堆底的牌</translation>
-    </message>
-</context>
-<context>
-    <name>HallDialog</name>
-    <message>
-        <source>Hall</source>
-        <translation type="obsolete">大厅</translation>
-    </message>
-    <message>
-        <source>Room ID</source>
-        <translation type="obsolete">房间号</translation>
-    </message>
-    <message>
-        <source>Room Name</source>
-        <translation type="obsolete">名称</translation>
-    </message>
-    <message>
-        <source>Person</source>
-        <translation type="obsolete">人数</translation>
-    </message>
-    <message>
-        <source>Join</source>
-        <translation type="obsolete">加入</translation>
-    </message>
-    <message>
-        <source>Create room</source>
-        <translation type="obsolete">建立房间</translation>
-    </message>
-    <message>
-        <source>Waiting room only</source>
-        <translation type="obsolete">仅显示未满房间</translation>
     </message>
 </context>
 <context>
@@ -2406,10 +2139,6 @@
         <translation>服务器信息</translation>
     </message>
     <message>
-        <source>Kick</source>
-        <translation type="obsolete">踢人</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/mainwindow.ui" line="205"/>
         <source>Replay</source>
         <translation>战局重放</translation>
@@ -2433,10 +2162,6 @@
         <location filename="../../src/dialog/mainwindow.ui" line="226"/>
         <source>Show/Hide menu</source>
         <translation>显示/隐藏菜单</translation>
-    </message>
-    <message>
-        <source>Scenario overview</source>
-        <translation type="obsolete">剧情一览</translation>
     </message>
     <message>
         <location filename="../../src/dialog/mainwindow.ui" line="258"/>
@@ -2463,10 +2188,6 @@
         <location filename="../../src/dialog/mainwindow.ui" line="284"/>
         <source>Expand dashboard</source>
         <translation>延长控制板</translation>
-    </message>
-    <message>
-        <source>Get card ...</source>
-        <translation type="obsolete">获取卡牌 ...</translation>
     </message>
     <message>
         <location filename="../../src/dialog/mainwindow.ui" line="250"/>
@@ -2573,10 +2294,6 @@
         <translation>关于我们</translation>
     </message>
     <message>
-        <source>View Server Banned IP</source>
-        <translation type="obsolete">查看服务器禁止IP</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/mainwindow.ui" line="386"/>
         <source>Manage Ban IP</source>
         <translation>管理禁止IP</translation>
@@ -2600,10 +2317,6 @@
         <location filename="../../src/dialog/mainwindow.ui" line="245"/>
         <source>Alt+S</source>
         <translation></translation>
-    </message>
-    <message>
-        <source>Role assign table</source>
-        <translation type="obsolete">身份分配表</translation>
     </message>
     <message>
         <location filename="../../src/dialog/mainwindow.ui" line="149"/>
@@ -2656,10 +2369,6 @@
         <translation>下载链接: &lt;a href=&apos;%1&apos;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <source>Pure text replay file (*.txt);; Image replay file (*.png)</source>
-        <translation type="obsolete">纯文本重放文件 (*.txt);; 图像重放文件 (*.png)</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/mainwindow.cpp" line="247"/>
         <source>Network error</source>
         <translation>网络错误</translation>
@@ -2697,14 +2406,6 @@
         <location filename="../../src/dialog/mainwindow.cpp" line="809"/>
         <source>OK</source>
         <translation>确定</translation>
-    </message>
-    <message>
-        <source> (no renegade)</source>
-        <translation type="obsolete"> (无内奸)</translation>
-    </message>
-    <message>
-        <source> (single renegade)</source>
-        <translation type="obsolete"> (单内奸)</translation>
     </message>
     <message>
         <location filename="../../src/dialog/mainwindow.cpp" line="631"/>
@@ -2777,10 +2478,6 @@
         <translation>GNU 通用公共许可协议（简称GNU GPL或GPL），是一个广泛被使用的自由软件许可证条款，它确保了广大用户自由地使用、学习、共享或修改软件。</translation>
     </message>
     <message>
-        <source>(General2)</source>
-        <translation type="obsolete">(副将)</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/mainwindow.cpp" line="678"/>
         <source>Alive</source>
         <translation>存活</translation>
@@ -2811,10 +2508,6 @@
         <translation>游戏模式：</translation>
     </message>
     <message>
-        <source>Chat Infomation:</source>
-        <translation type="obsolete">聊天信息：</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/mainwindow.cpp" line="752"/>
         <source>FMOD is a proprietary audio library made by Firelight Technologies</source>
         <translation>FMOD 是由 Firelight Technologies 出品的专有音频库</translation>
@@ -2837,21 +2530,9 @@
         <translation>服务器尚未启动!</translation>
     </message>
     <message>
-        <source>This function is not implemented yet!</source>
-        <translation type="obsolete">此功能尚未实现!</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/mainwindow.cpp" line="597"/>
         <source>Please select a replay file</source>
         <translation>请选择一个重放文件</translation>
-    </message>
-    <message>
-        <source>Send low level command</source>
-        <translation type="obsolete">发送底层命令</translation>
-    </message>
-    <message>
-        <source>Please input the raw low level command</source>
-        <translation type="obsolete">请输入要发送的底层命令</translation>
     </message>
     <message>
         <location filename="../../src/dialog/mainwindow.cpp" line="409"/>
@@ -2897,30 +2578,6 @@
         <translation>源代码: &lt;a href=&apos;%1&apos; style = &quot;color:#0072c1; &quot;&gt;%1&lt;/a&gt; &lt;br/&gt;</translation>
     </message>
     <message>
-        <source>Count</source>
-        <translation type="obsolete">人数</translation>
-    </message>
-    <message>
-        <source>Lord</source>
-        <translation type="obsolete">主公</translation>
-    </message>
-    <message>
-        <source>Loyalist</source>
-        <translation type="obsolete">忠臣</translation>
-    </message>
-    <message>
-        <source>Rebel</source>
-        <translation type="obsolete">反贼</translation>
-    </message>
-    <message>
-        <source>Renegade</source>
-        <translation type="obsolete">内奸</translation>
-    </message>
-    <message>
-        <source> (double renegade)</source>
-        <translation type="obsolete"> (双内奸)</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/mainwindow.cpp" line="507"/>
         <source>Game is minimized</source>
         <translation>游戏已经最小化到系统托盘</translation>
@@ -2963,49 +2620,6 @@
         <location filename="../../src/dialog/packagingeditor.cpp" line="53"/>
         <source>Description</source>
         <translation>描述</translation>
-    </message>
-</context>
-<context>
-    <name>MyPixmapItem</name>
-    <message>
-        <source>EASY_TEXT_1</source>
-        <translation type="obsolete">太慢了，做两个俯卧撑吧！</translation>
-    </message>
-    <message>
-        <source>EASY_TEXT_2</source>
-        <translation type="obsolete">快点吧，我等的花儿都谢了！</translation>
-    </message>
-    <message>
-        <source>EASY_TEXT_3</source>
-        <translation type="obsolete">高，实在是高！</translation>
-    </message>
-    <message>
-        <source>EASY_TEXT_4</source>
-        <translation type="obsolete">好手段，可真不一般啊！</translation>
-    </message>
-    <message>
-        <source>EASY_TEXT_5</source>
-        <translation type="obsolete">哦，太菜了。水平有待提高。</translation>
-    </message>
-    <message>
-        <source>EASY_TEXT_6</source>
-        <translation type="obsolete">你会不会玩啊？！</translation>
-    </message>
-    <message>
-        <source>EASY_TEXT_7</source>
-        <translation type="obsolete">嘿，一般人，我不使这招。</translation>
-    </message>
-    <message>
-        <source>EASY_TEXT_8</source>
-        <translation type="obsolete">呵，好牌就是这么打地！</translation>
-    </message>
-    <message>
-        <source>EASY_TEXT_9</source>
-        <translation type="obsolete">杀！神挡杀神！佛挡杀佛！</translation>
-    </message>
-    <message>
-        <source>EASY_TEXT_10</source>
-        <translation type="obsolete">你也忒坏了吧？！</translation>
     </message>
 </context>
 <context>
@@ -3173,10 +2787,6 @@
 </context>
 <context>
     <name>Player</name>
-    <message>
-        <source>No skills</source>
-        <translation type="obsolete">无技能</translation>
-    </message>
     <message>
         <location filename="../../src/core/player.cpp" line="915"/>
         <source>&lt;font color=%1&gt;No skills&lt;/font&gt;</source>
@@ -3471,17 +3081,6 @@
     </message>
 </context>
 <context>
-    <name>Replayer</name>
-    <message>
-        <source>Warning</source>
-        <translation type="obsolete">警告</translation>
-    </message>
-    <message>
-        <source>The replay use old protocol</source>
-        <translation type="obsolete">游戏录像使用的为旧通信协议，播放此录像可能会有不可预知的问题</translation>
-    </message>
-</context>
-<context>
     <name>RoleAssignDialog</name>
     <message>
         <location filename="../../src/dialog/roleassigndialog.cpp" line="19"/>
@@ -3558,10 +3157,6 @@
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <source>Contestant</source>
-        <translation type="obsolete">选手</translation>
-    </message>
-    <message>
         <location filename="../../src/server/room.cpp" line="2009"/>
         <source>&lt;font color=#000000&gt;Player &lt;b&gt;%1&lt;/b&gt; left the game&lt;/font&gt;</source>
         <translation>&lt;font color=#000000&gt;玩家 %1 离开了游戏&lt;/font&gt;</translation>
@@ -3631,14 +3226,6 @@
         <location filename="../../src/ui/roomscene.cpp" line="3790"/>
         <source>Warning</source>
         <translation>警告</translation>
-    </message>
-    <message>
-        <source>Please choose a player</source>
-        <translation type="obsolete">请选择一名玩家</translation>
-    </message>
-    <message>
-        <source>Pure text replay file (*.txt);; Image replay file (*.png)</source>
-        <translation type="obsolete">纯文本重放文件 (*.txt);; 图像重放文件 (*.png)</translation>
     </message>
     <message>
         <location filename="../../src/ui/roomscene.cpp" line="316"/>
@@ -3828,10 +3415,6 @@
         <translation>确定按钮在客户端在执行对话框状态下是不能被禁用的</translation>
     </message>
     <message>
-        <source>Please choose a player&lt;br/&gt; &lt;b&gt;Source&lt;/b&gt;: %1&lt;br/&gt;</source>
-        <translation type="obsolete">请选择一名角色&lt;br/&gt; &lt;b&gt;技能来源&lt;/b&gt;: %1&lt;br/&gt;</translation>
-    </message>
-    <message>
         <location filename="../../src/ui/roomscene.cpp" line="2722"/>
         <location filename="../../src/ui/roomscene.cpp" line="2745"/>
         <source>&lt;font color=&apos;%1&apos;&gt;---------- Game Finish ----------&lt;/font&gt;</source>
@@ -3931,10 +3514,6 @@
         <translation>势力</translation>
     </message>
     <message>
-        <source>Role</source>
-        <translation type="obsolete">身份</translation>
-    </message>
-    <message>
         <location filename="../../src/ui/roomscene.cpp" line="3086"/>
         <source>TurnCount</source>
         <translation>回合</translation>
@@ -4015,22 +3594,6 @@
         <translation>服务器信息</translation>
     </message>
     <message>
-        <source>Only the lord can kick!</source>
-        <translation type="obsolete">只有主公才能踢人!</translation>
-    </message>
-    <message>
-        <source>This function is disabled in contest mode</source>
-        <translation type="obsolete">此功能在竞赛模式下是禁用的</translation>
-    </message>
-    <message>
-        <source>Kick</source>
-        <translation type="obsolete">踢人</translation>
-    </message>
-    <message>
-        <source>Please select the player to kick</source>
-        <translation type="obsolete">请选择被踢玩家</translation>
-    </message>
-    <message>
         <location filename="../../src/ui/roomscene.cpp" line="3790"/>
         <source>You can only initiate a surrender poll at your play phase!</source>
         <translation>只有在你的出牌阶段才能请求投降!</translation>
@@ -4069,20 +3632,9 @@
 <context>
     <name>RuleSummary</name>
     <message>
-        <source>Scenario overview</source>
-        <translation type="obsolete">剧情一览</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/rule-summary.cpp" line="14"/>
         <source>Rule Summary</source>
         <translation>规则概述</translation>
-    </message>
-</context>
-<context>
-    <name>ScenarioOverview</name>
-    <message>
-        <source>Scenario overview</source>
-        <translation type="obsolete">剧情一览</translation>
     </message>
 </context>
 <context>
@@ -4104,21 +3656,6 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="../../src/ui/roomscene.cpp" line="2886"/>
         <source>OK</source>
         <translation>确定</translation>
-    </message>
-</context>
-<context>
-    <name>Select3v3GeneralDialog</name>
-    <message>
-        <source>Select generals in extend 3v3 mode</source>
-        <translation type="obsolete">选择在扩展 3v3 模式中启用的武将</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation type="obsolete">确定</translation>
-    </message>
-    <message>
-        <source>Check/Uncheck all</source>
-        <translation type="obsolete">全部勾选或取消勾选</translation>
     </message>
 </context>
 <context>
@@ -4160,10 +3697,6 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>没有限制</translation>
     </message>
     <message>
-        <source>Banlist ...</source>
-        <translation type="obsolete">禁表 ...</translation>
-    </message>
-    <message>
         <location filename="../../src/server/server.cpp" line="81"/>
         <source>&lt;font color=#FFFF33&gt;The setting takes effect after reboot&lt;/font&gt;</source>
         <translation>&lt;font color=#FFFF33&gt;此项设置保存后重启游戏方能生效&lt;/font&gt;</translation>
@@ -4184,30 +3717,6 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>启用君主规则</translation>
     </message>
     <message>
-        <source>Upperlimit for gods</source>
-        <translation type="obsolete">备选神将上限</translation>
-    </message>
-    <message>
-        <source>-1 means that all gods may appear in your general chosen dialog!</source>
-        <translation type="obsolete">-1表示所有神将都有可能出现在选框中</translation>
-    </message>
-    <message>
-        <source>Sum - X</source>
-        <translation type="obsolete">和减X</translation>
-    </message>
-    <message>
-        <source>Prevent maxhp being less than 3 for awaken skills</source>
-        <translation type="obsolete">3体力上限触发觉醒技时不扣减上限</translation>
-    </message>
-    <message>
-        <source>Subtraction for scheme 0</source>
-        <translation type="obsolete">体力上限求和后减去</translation>
-    </message>
-    <message>
-        <source>Max shown num for hegemony</source>
-        <translation type="obsolete">同势力最大亮将数</translation>
-    </message>
-    <message>
         <location filename="../../src/server/server.cpp" line="236"/>
         <source>Minimize the dialog when server runs</source>
         <translation>服务器运行时最小化到托盘</translation>
@@ -4218,10 +3727,6 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>单机游戏阵亡后可立即认输</translation>
     </message>
     <message>
-        <source>Enable the luck card</source>
-        <translation type="obsolete">启用手气卡</translation>
-    </message>
-    <message>
         <location filename="../../src/server/server.cpp" line="281"/>
         <source>Game start count down</source>
         <translation>游戏开始前倒计时</translation>
@@ -4230,34 +3735,6 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="../../src/server/server.cpp" line="282"/>
         <source>Nullification count down</source>
         <translation>无懈可击时间</translation>
-    </message>
-    <message>
-        <source>1v1 options</source>
-        <translation type="obsolete">1v1 选项</translation>
-    </message>
-    <message>
-        <source>Classical</source>
-        <translation type="obsolete">经典</translation>
-    </message>
-    <message>
-        <source>General extensions</source>
-        <translation type="obsolete">武将</translation>
-    </message>
-    <message>
-        <source>Card extensions</source>
-        <translation type="obsolete">卡牌</translation>
-    </message>
-    <message>
-        <source>Rule option</source>
-        <translation type="obsolete">规则设置</translation>
-    </message>
-    <message>
-        <source>Extension setting</source>
-        <translation type="obsolete">使用全扩</translation>
-    </message>
-    <message>
-        <source>3v3 options</source>
-        <translation type="obsolete">3v3 选项</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="40"/>
@@ -4273,10 +3750,6 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="../../src/server/server.cpp" line="79"/>
         <source>Disable Lua</source>
         <translation>禁用Lua扩展（重启后生效）</translation>
-    </message>
-    <message>
-        <source>The setting takes effect after reboot</source>
-        <translation type="obsolete">此项设置保存后重启游戏方能生效</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="89"/>
@@ -4299,62 +3772,14 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>启用作弊</translation>
     </message>
     <message>
-        <source>This option enables the cheat menu</source>
-        <translation type="obsolete">本选项启用作弊菜单</translation>
-    </message>
-    <message>
         <location filename="../../src/server/server.cpp" line="169"/>
         <source>Assign only your own role</source>
         <translation>仅分配自己的身份</translation>
     </message>
     <message>
-        <source>-1 means no limitations</source>
-        <translation type="obsolete">-1表示无次数限制（虎牢关模式不生效）</translation>
-    </message>
-    <message>
-        <source>Without Lordskill</source>
-        <translation type="obsolete">主公无主公技</translation>
-    </message>
-    <message>
-        <source>Enable SP Convert</source>
-        <translation type="obsolete">同技能SP替换</translation>
-    </message>
-    <message>
-        <source>-1 means that all lords are available</source>
-        <translation type="obsolete">-1表示所有默认主公均会出现在选将列表中</translation>
-    </message>
-    <message>
-        <source>Enable Same</source>
-        <translation type="obsolete">同将模式</translation>
-    </message>
-    <message>
-        <source>Maximum</source>
-        <translation type="obsolete">较大值</translation>
-    </message>
-    <message>
-        <source>Enable Basara</source>
-        <translation type="obsolete">启用暗将模式</translation>
-    </message>
-    <message>
-        <source>Enable Hegemony</source>
-        <translation type="obsolete">启用国战模式</translation>
-    </message>
-    <message>
-        <source>Max num of same-kingdom generals</source>
-        <translation type="obsolete">同势力武将亮将上限</translation>
-    </message>
-    <message>
         <location filename="../../src/server/server.cpp" line="179"/>
         <source>Pile-swapping limitation</source>
         <translation>最大洗牌次数</translation>
-    </message>
-    <message>
-        <source>Upperlimit for lord</source>
-        <translation type="obsolete">主公选择上限（主公选将）</translation>
-    </message>
-    <message>
-        <source>Upperlimit for non-lord</source>
-        <translation type="obsolete">非主公选择上限（主公选将）</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="188"/>
@@ -4372,61 +3797,9 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>更改后的电脑延时</translation>
     </message>
     <message>
-        <source>Standard mode</source>
-        <translation type="obsolete">经典3v3</translation>
-    </message>
-    <message>
-        <source>New Mode</source>
-        <translation type="obsolete">新版3v3</translation>
-    </message>
-    <message>
-        <source>Extension mode</source>
-        <translation type="obsolete">全扩3v3</translation>
-    </message>
-    <message>
-        <source>General selection ...</source>
-        <translation type="obsolete">武将选择 ...</translation>
-    </message>
-    <message>
-        <source>Exclude disasters</source>
-        <translation type="obsolete">移除天灾卡牌</translation>
-    </message>
-    <message>
-        <source>Normal</source>
-        <translation type="obsolete">普通</translation>
-    </message>
-    <message>
-        <source>Random</source>
-        <translation type="obsolete">随机</translation>
-    </message>
-    <message>
-        <source>All roles</source>
-        <translation type="obsolete">全身份</translation>
-    </message>
-    <message>
-        <source>Role choose</source>
-        <translation type="obsolete">身份选择</translation>
-    </message>
-    <message>
-        <source>XMode options</source>
-        <translation type="obsolete">血战到底模式选项</translation>
-    </message>
-    <message>
-        <source>Scenario mode</source>
-        <translation type="obsolete">剧情模式</translation>
-    </message>
-    <message>
-        <source>Contest mode</source>
-        <translation type="obsolete">竞赛模式</translation>
-    </message>
-    <message>
         <location filename="../../src/server/server.cpp" line="39"/>
         <source>Basic</source>
         <translation>基本</translation>
-    </message>
-    <message>
-        <source>Requires password to login, hide screen name and disable kicking</source>
-        <translation type="obsolete">需要密码才能登录，隐藏玩家昵称且禁止主公T人</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="165"/>
@@ -4437,38 +3810,6 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="../../src/server/server.cpp" line="151"/>
         <source>Disable chat</source>
         <translation>禁止聊天</translation>
-    </message>
-    <message>
-        <source>Enable second general</source>
-        <translation type="obsolete">启用双将</translation>
-    </message>
-    <message>
-        <source>Enable Scene</source>
-        <translation type="obsolete">启用场景模式</translation>
-    </message>
-    <message>
-        <source>Sum - 3</source>
-        <translation type="obsolete">上限之和减3</translation>
-    </message>
-    <message>
-        <source>Minimum</source>
-        <translation type="obsolete">较小值</translation>
-    </message>
-    <message>
-        <source>Average</source>
-        <translation type="obsolete">平均值</translation>
-    </message>
-    <message>
-        <source>Upperlimit for general</source>
-        <translation type="obsolete">选将上限</translation>
-    </message>
-    <message>
-        <source>Max HP scheme</source>
-        <translation type="obsolete">体力上限分配方案</translation>
-    </message>
-    <message>
-        <source>Annouce my IP in WAN</source>
-        <translation type="obsolete">在广域网上公布我的 IP</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="196"/>
@@ -4491,14 +3832,6 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>人工智能</translation>
     </message>
     <message>
-        <source>Role predictable</source>
-        <translation type="obsolete">身份预知</translation>
-    </message>
-    <message>
-        <source>AI Chat</source>
-        <translation type="obsolete">开启 AI 聊天</translation>
-    </message>
-    <message>
         <location filename="../../src/server/server.cpp" line="260"/>
         <location filename="../../src/server/server.cpp" line="269"/>
         <source> millisecond</source>
@@ -4510,26 +3843,6 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>电脑延迟</translation>
     </message>
     <message>
-        <source>%1</source>
-        <translation type="obsolete">%1</translation>
-    </message>
-    <message>
-        <source>Custom Mini Scene</source>
-        <translation type="obsolete">自定义小型场景</translation>
-    </message>
-    <message>
-        <source>Mini Scenes</source>
-        <translation type="obsolete">小型场景</translation>
-    </message>
-    <message>
-        <source>Warning</source>
-        <translation type="obsolete">警告</translation>
-    </message>
-    <message>
-        <source>Please fill address when you want to annouce your server&apos;s IP</source>
-        <translation type="obsolete">若您想在广域网上公布服务器，请填入地址</translation>
-    </message>
-    <message>
         <location filename="../../src/server/server.cpp" line="41"/>
         <source>Advanced</source>
         <translation>高级</translation>
@@ -4538,10 +3851,6 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="../../src/server/server.cpp" line="585"/>
         <source>Game mode</source>
         <translation>游戏模式</translation>
-    </message>
-    <message>
-        <source>%1 (%2 persons)</source>
-        <translation type="obsolete">%1 (%2 人)</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="161"/>
@@ -4559,18 +3868,6 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>服务器名</translation>
     </message>
     <message>
-        <source>Enable Lord General Convert</source>
-        <translation type="obsolete">君主武将替换</translation>
-    </message>
-    <message>
-        <source>&lt;font color=#FFFF33&gt;-1 means that all gods may appear in your general chosen dialog!&lt;/font&gt;</source>
-        <translation type="obsolete">&lt;font color=#FFFF33&gt;-1表示所有神将都有可能出现在选框中&lt;/font&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;font color=#FFFF33&gt;-1 means that all lords are available&lt;/font&gt;</source>
-        <translation type="obsolete">&lt;font color=#FFFF33&gt;-1表示所有默认主公均会出现在选将列表中&lt;/font&gt;</translation>
-    </message>
-    <message>
         <location filename="../../src/server/server.cpp" line="216"/>
         <source>Port</source>
         <translation>端口</translation>
@@ -4584,10 +3881,6 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="../../src/server/server.cpp" line="252"/>
         <source>Enable AI</source>
         <translation>启用 AI</translation>
-    </message>
-    <message>
-        <source>Official mode</source>
-        <translation type="obsolete">官方3v3</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="641"/>
@@ -4633,30 +3926,6 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>玩家人数</translation>
     </message>
     <message>
-        <source>2nd general mode</source>
-        <translation type="obsolete">双将模式</translation>
-    </message>
-    <message>
-        <source>Scene Mode</source>
-        <translation type="obsolete">场景模式</translation>
-    </message>
-    <message>
-        <source>Same Mode</source>
-        <translation type="obsolete">同将模式</translation>
-    </message>
-    <message>
-        <source>Basara Mode</source>
-        <translation type="obsolete">暗将模式</translation>
-    </message>
-    <message>
-        <source>Hegemony Mode</source>
-        <translation type="obsolete">国战模式</translation>
-    </message>
-    <message>
-        <source>Max HP scheme</source>
-        <translation type="obsolete">体力上限分配方案</translation>
-    </message>
-    <message>
         <location filename="../../src/client/clientstruct.cpp" line="99"/>
         <source>Random seat</source>
         <translation>随机座位</translation>
@@ -4698,26 +3967,6 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>自由选将</translation>
     </message>
     <message>
-        <source>Sum - %1</source>
-        <translation type="obsolete">和减%1</translation>
-    </message>
-    <message>
-        <source>Minimum</source>
-        <translation type="obsolete">较小值</translation>
-    </message>
-    <message>
-        <source>Maximum</source>
-        <translation type="obsolete">较大值</translation>
-    </message>
-    <message>
-        <source>Average</source>
-        <translation type="obsolete">平均值</translation>
-    </message>
-    <message>
-        <source>2nd general is disabled</source>
-        <translation type="obsolete">双将未启用</translation>
-    </message>
-    <message>
         <location filename="../../src/client/clientstruct.cpp" line="129"/>
         <source>No limit</source>
         <translation>没有限制</translation>
@@ -4745,10 +3994,6 @@ P = 你自己, R = 你所在的房间</translation>
         <source>Anonymous</source>
         <translation>匿名</translation>
     </message>
-    <message>
-        <source>Contestant</source>
-        <translation type="obsolete">选手</translation>
-    </message>
 </context>
 <context>
     <name>Settings</name>
@@ -4774,21 +4019,6 @@ P = 你自己, R = 你所在的房间</translation>
     </message>
 </context>
 <context>
-    <name>Skill</name>
-    <message>
-        <source> [Limited]</source>
-        <translation type="obsolete">【限定技】</translation>
-    </message>
-    <message>
-        <source> [Compulsory]</source>
-        <translation type="obsolete"> [锁定技]</translation>
-    </message>
-    <message>
-        <source> [Wake]</source>
-        <translation type="obsolete"> [觉醒技]</translation>
-    </message>
-</context>
-<context>
     <name>SkillAssignDialog</name>
     <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="1720"/>
@@ -4800,10 +4030,6 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="../../src/dialog/customassigndialog.cpp" line="1726"/>
         <source>Input the Skill Name</source>
         <translation>请输入内部技能名，如rende</translation>
-    </message>
-    <message>
-        <source>Internal skill name is a phonetic form, the rest of the special circumstances, please see the translation of documents in the lang directory.</source>
-        <translation type="obsolete">内部技能名一般是拼音形式，其余特殊情况请查看lang目录下的翻译文件。</translation>
     </message>
     <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="1728"/>
@@ -4897,18 +4123,6 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>玩家人数为 %1</translation>
     </message>
     <message>
-        <source>The contest mode is enabled</source>
-        <translation type="obsolete">竞赛模式已启用</translation>
-    </message>
-    <message>
-        <source>Enabled</source>
-        <translation type="obsolete">启用</translation>
-    </message>
-    <message>
-        <source>Disabled</source>
-        <translation type="obsolete">未启用</translation>
-    </message>
-    <message>
         <location filename="../../src/ui/startscene.cpp" line="120"/>
         <source>Cheat is enabled</source>
         <translation>作弊功能已启用</translation>
@@ -4927,66 +4141,6 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="../../src/ui/startscene.cpp" line="122"/>
         <source>Free choose is disabled</source>
         <translation>自由选将未启用</translation>
-    </message>
-    <message>
-        <source>sum - 3</source>
-        <translation type="obsolete">和减3</translation>
-    </message>
-    <message>
-        <source>minimum</source>
-        <translation type="obsolete">最小值</translation>
-    </message>
-    <message>
-        <source>average</source>
-        <translation type="obsolete">平均值</translation>
-    </message>
-    <message>
-        <source>sum - 4</source>
-        <translation type="obsolete">和减4</translation>
-    </message>
-    <message>
-        <source>maximum</source>
-        <translation type="obsolete">较大值</translation>
-    </message>
-    <message>
-        <source>Sum - %1</source>
-        <translation type="obsolete">和减%1</translation>
-    </message>
-    <message>
-        <source>Minimum</source>
-        <translation type="obsolete">较小值</translation>
-    </message>
-    <message>
-        <source>Maximum</source>
-        <translation type="obsolete">较大值</translation>
-    </message>
-    <message>
-        <source>Average</source>
-        <translation type="obsolete">平均值</translation>
-    </message>
-    <message>
-        <source>Secondary general is enabled, max hp scheme is %1</source>
-        <translation type="obsolete">双将模式已启用，体力上限分配方案是 %1</translation>
-    </message>
-    <message>
-        <source>Seconardary general is disabled</source>
-        <translation type="obsolete">双将模式未启用</translation>
-    </message>
-    <message>
-        <source>Scene Mode is enabled</source>
-        <translation type="obsolete">场景模式已启用</translation>
-    </message>
-    <message>
-        <source>Scene Mode is disabled</source>
-        <translation type="obsolete">场景模式未启用</translation>
-    </message>
-    <message>
-        <source>Same Mode is enabled</source>
-        <translation type="obsolete">同将模式已启用</translation>
-    </message>
-    <message>
-        <source>Same Mode is disabled</source>
-        <translation type="obsolete">同将模式未启用</translation>
     </message>
     <message>
         <location filename="../../src/ui/startscene.cpp" line="125"/>
@@ -5012,14 +4166,6 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="../../src/ui/startscene.cpp" line="132"/>
         <source>This server is AI enabled, AI delay is %1 milliseconds</source>
         <translation>服务器启用了 AI，AI 的延迟是 %1 毫秒</translation>
-    </message>
-    <message>
-        <source>This server is AI chat enabled</source>
-        <translation type="obsolete">服务器启用了 AI 聊天</translation>
-    </message>
-    <message>
-        <source>This server is AI chat disabled</source>
-        <translation type="obsolete">服务器关闭了 AI 聊天</translation>
     </message>
     <message>
         <location filename="../../src/ui/startscene.cpp" line="134"/>
