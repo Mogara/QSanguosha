@@ -1531,7 +1531,7 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
             original_tooltip = QString(":%1").arg(option);
             tooltip = Sanguosha->translate(original_tooltip);
         }
-        if (tooltip != original_tooltip) button->setToolTip(QString("<font color=%1>%2</font>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(tooltip));
+        if (tooltip != original_tooltip) button->setToolTip(QString("<font color=#FFFF33>%1</font>").arg(tooltip));
 
         connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
         connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerMakeChoice()));

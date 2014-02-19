@@ -32,12 +32,6 @@ private slots:
     void on_browseRecordPathsButton_clicked();
     void saveConfig();
 
-    void on_toolTipFontColorButton_clicked();
-
-    void on_overviewFontColorButton_clicked();
-
-    void on_toolTipBackgroundColorButton_clicked();
-
 signals:
     void bg_changed();
     void tableBg_changed();

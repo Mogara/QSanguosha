@@ -70,7 +70,7 @@ public:
     QString getName() const;
     QString getSkillName(bool removePrefix = true) const;
     virtual void setSkillName(const QString &skill_name);
-    QString getDescription(bool inToolTip = true) const;
+    QString getDescription(bool yellow = true) const;
 
     virtual bool isMute() const;
     virtual bool willThrow() const;

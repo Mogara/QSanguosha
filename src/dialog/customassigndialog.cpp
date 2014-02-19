@@ -106,7 +106,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
             QLabel *mark_icon = new QLabel(mark_translate);
             mark_icon->setPixmap(QPixmap(file.filePath()));
             mark_icon->setObjectName(mark_name);
-            mark_icon->setToolTip(tr("<font color=%1>%2 mark</font>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(mark_translate));
+            mark_icon->setToolTip(tr("<font color=#FFFF33>%1 mark</font>").arg(mark_translate));
             mark_icons << mark_icon;
         }
     }
@@ -1725,9 +1725,9 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString player_name, QStri
 #if QT_VERSION >= 0x040700
     input_skill->setPlaceholderText(tr("Input the Skill Name"));
 #endif
-    input_skill->setToolTip(tr("<font color=%1>Internal skill name is a phonetic form, "
+    input_skill->setToolTip(tr("<font color=#FFFF33>Internal skill name is a phonetic form, "
                                "the rest of the special circumstances, "
-                               "please see the translation of documents in the lang directory.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+                               "please see the translation of documents in the lang directory.</font>"));
 
     QCompleter *completer = new QCompleter(Sanguosha->getSkillNames(), input_skill);
     input_skill->setCompleter(completer);
