@@ -31,7 +31,7 @@
 thetrigger = sgs.CreateTriggerSkill{
 	name = "thetrigger" ,
 	events = {sgs.EventPhaseStart} ,
-	can_trigger = function(self, event, room, player, data, ask_who)
+	can_trigger = function(self, event, room, player, data)
 		blablabla
 	end ,
 	on_cost = function(self, event, room, player, data)
