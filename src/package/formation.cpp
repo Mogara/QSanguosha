@@ -15,7 +15,7 @@ class Tuntian: public TriggerSkill {
 public:
     Tuntian(): TriggerSkill("tuntian") {
         events << CardsMoveOneTime << FinishJudge;
-        frequency = Frequent;
+        frequency = Compulsory; // for tuntian second stage
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
@@ -32,8 +32,10 @@ public:
             }
         } else if (triggerEvent == FinishJudge) {
             JudgeStar judge = data.value<JudgeStar>();
-            if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
-                player->addToPile("field", judge->card->getEffectiveId());
+            if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
+                ask_who = dengai;
+                return QStringList(objectName());
+            }
 
             if (room->getTag("judge").toInt() == 0){
                 int postponed_tuntian = dengai->getMark("tuntian_postpone");
@@ -48,9 +50,15 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *, QVariant &data) const{
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
         if (!dengai) return false;
+        if (triggerEvent == FinishJudge) {
+            JudgeStar judge = data.value<JudgeStar>();
+            if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
+                return true;
+            }
+        }
         if (dengai->askForSkillInvoke("tuntian", data)){
             room->broadcastSkillInvoke("tuntian");
             return true;
@@ -59,15 +67,35 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *, QVariant &) const{
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
         if (!dengai) return false;
-        JudgeStruct judge;
-        judge.pattern = ".|heart";
-        judge.good = false;
-        judge.reason = "tuntian";
-        judge.who = dengai;
-        room->judge(judge);
+        if (triggerEvent == CardsMoveOneTime) {
+            JudgeStruct judge;
+            judge.pattern = ".|heart";
+            judge.good = false;
+            judge.reason = "tuntian";
+            judge.who = dengai;
+            room->judge(judge);
+        } else if (triggerEvent == FinishJudge) {
+            JudgeStar judge = data.value<JudgeStar>();
+            if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
+                dengai->addToPile("field", judge->card->getEffectiveId());
+
+            if (room->getTag("judge").toInt() == 0){
+                int postponed_tuntian = dengai->getMark("tuntian_postpone");
+
+                if (postponed_tuntian > 0){
+                    dengai->removeMark("tuntian_postpone");
+                    JudgeStruct judge;
+                    judge.pattern = ".|heart";
+                    judge.good = false;
+                    judge.reason = "tuntian";
+                    judge.who = dengai;
+                    room->judge(judge);
+                }
+            }
+        }
 
         return false;
     }
