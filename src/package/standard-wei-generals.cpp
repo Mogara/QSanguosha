@@ -154,7 +154,7 @@ bool TuxiCard::targetFilter(const QList<const Player *> &targets, const Player *
     return !to_select->isKongcheng();
 }
 
-void TuxiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void TuxiCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     QVariantList target_list;
     foreach (ServerPlayer *target, targets){
         target_list << QVariant::fromValue(target);
@@ -492,7 +492,7 @@ bool ShensuCard::targetFilter(const QList<const Player *> &targets, const Player
     return slash->targetFilter(targets, to_select, Self);
 }
 
-void ShensuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void ShensuCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     foreach (ServerPlayer *target, targets) {
         if (!source->canSlash(target, NULL, false))
             targets.removeOne(target);
