@@ -2727,6 +2727,12 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
                 && !card_use.from->hasShownSkill(Sanguosha->getSkill(skill_name)))
                 card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
 
+            QStringList tarmod_detect;
+            while (!((tarmod_detect = card_use.card->checkTargetModSkillShow(card_use)).isEmpty())){
+                QString to_show = askForChoice(card_use.from, "tarmod_show", tarmod_detect.join("+"), QVariant::fromValue(card_use));
+                card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+            }
+
             if (card->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1) {
                 Card *trick = Sanguosha->cloneCard(card);
                 Q_ASSERT(trick != NULL);
@@ -3689,9 +3695,6 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
             int card_id = cards_move.card_ids[j];
             const Card *card = Sanguosha->getCard(card_id);
             card->setFlags("-visible");
-            if (cards_move.to) // Hand/Equip/Judge
-                cards_move.to->addCard(card, cards_move.to_place);
-
             m_drawPile->append(card_id);
             doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
         }

@@ -444,6 +444,8 @@ public:
     Q_INVOKABLE Duel(Card::Suit suit, int number);
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+
+    virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
 class DelayedTrick: public TrickCard {
@@ -484,7 +486,8 @@ public:
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void takeEffect(ServerPlayer *target) const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+
+    virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
 class Disaster: public DelayedTrick {
@@ -664,6 +667,8 @@ public:
     virtual bool isAvailable(const Player *player) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+
+    virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
 class Snatch:public SingleTargetTrick {
@@ -673,8 +678,9 @@ public:
     Q_INVOKABLE Snatch(Card::Suit suit, int number);
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+
+    virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
 class Dismantlement: public SingleTargetTrick {
@@ -685,6 +691,8 @@ public:
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+
+    virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
 class IronChain: public TrickCard {
@@ -700,6 +708,8 @@ public:
 
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+
+    virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
 class FireAttack: public SingleTargetTrick {
@@ -710,6 +720,8 @@ public:
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+
+    virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
 class AwaitExhausted: public TrickCard{
@@ -735,6 +747,8 @@ public:
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
+
+    virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
 class BefriendAttacking: public SingleTargetTrick{
@@ -747,6 +761,8 @@ public:
     virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isAvailable(const Player *player) const;
+
+    virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
 #endif
