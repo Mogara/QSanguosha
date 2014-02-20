@@ -97,6 +97,7 @@ void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     QList<int> total = dengai->getPile("field");
     foreach (int id, total) {
         Snatch *snatch = new Snatch(Card::SuitToBeDecided, -1);
+        snatch->setSkillName("jixi");
         snatch->addSubcard(id);
         if (!snatch->isAvailable(dengai))
             continue;
@@ -371,6 +372,7 @@ public:
             int card_id = room->askForCardChosen(caohong, to_dismantle, "he", "huyuan", false, Card::MethodDiscard);
             room->throwCard(Sanguosha->getCard(card_id), to_dismantle, caohong);
         }
+        return false;
     }
 };
 
