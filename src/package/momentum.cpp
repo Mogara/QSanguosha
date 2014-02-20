@@ -685,8 +685,12 @@ public:
         Room *room = player->getRoom();
         foreach (ServerPlayer *p, room->getAllPlayers())
             if (p->isChained() && player->canDiscard(p, "he")) {
-                int card_id = room->askForCardChosen(player, p, "he", objectName(), player == p, Card::MethodDiscard);
-                room->throwCard(card_id, p, player);
+                if (player != p){
+                    int card_id = room->askForCardChosen(player, p, "he", objectName(), false, Card::MethodDiscard);
+                    room->throwCard(card_id, p, player);
+                }
+                else
+                    room->askForDiscard(player, objectName(), 1, 1, false, true);
             }
         return false;
     }

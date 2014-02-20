@@ -396,9 +396,11 @@ public:
                 targets << p;
         }
         if (!targets.isEmpty()) {
-            ServerPlayer *to_dismantle = room->askForPlayerChosen(caohong, targets, "huyuan", "@huyuan-discard:" + target->objectName());
-            int card_id = room->askForCardChosen(caohong, to_dismantle, "he", "huyuan", false, Card::MethodDiscard);
-            room->throwCard(Sanguosha->getCard(card_id), to_dismantle, caohong);
+            ServerPlayer *to_dismantle = room->askForPlayerChosen(caohong, targets, "huyuan", "@huyuan-discard:" + target->objectName(), true);
+            if (to_dismantle){
+                int card_id = room->askForCardChosen(caohong, to_dismantle, "he", "huyuan", false, Card::MethodDiscard);
+                room->throwCard(Sanguosha->getCard(card_id), to_dismantle, caohong);
+            }
         }
         return false;
     }
