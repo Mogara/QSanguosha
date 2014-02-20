@@ -223,8 +223,7 @@ public:
     virtual const Card *viewAs() const{
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
         if (pattern == "@@jixi!") {
-            Card *card = new JixiSnatchCard;
-            return card;
+            return new JixiSnatchCard;
         } else
             return new JixiCard;
     }
@@ -298,29 +297,10 @@ bool HuyuanCard::targetFilter(const QList<const Player *> &targets, const Player
 }
 
 void HuyuanCard::onEffect(const CardEffectStruct &effect) const{
-    ServerPlayer *caohong = effect.from;
-    Room *room = caohong->getRoom();
-    room->moveCardTo(this, caohong, effect.to, Player::PlaceEquip,
-                     CardMoveReason(CardMoveReason::S_REASON_PUT, caohong->objectName(), "huyuan", QString()));
+    const Card *equip = Sanguosha->getCard(subcards[0]);
 
-    const Card *card = Sanguosha->getCard(subcards.first());
-
-    LogMessage log;
-    log.type = "$ZhijianEquip";
-    log.from = effect.to;
-    log.card_str = QString::number(card->getEffectiveId());
-    room->sendLog(log);
-
-    QList<ServerPlayer *> targets;
-    foreach (ServerPlayer *p, room->getAllPlayers()) {
-        if (effect.to->distanceTo(p) == 1 && caohong->canDiscard(p, "he"))
-            targets << p;
-    }
-    if (!targets.isEmpty()) {
-        ServerPlayer *to_dismantle = room->askForPlayerChosen(caohong, targets, "huyuan", "@huyuan-discard:" + effect.to->objectName());
-        int card_id = room->askForCardChosen(caohong, to_dismantle, "he", "huyuan", false, Card::MethodDiscard);
-        room->throwCard(Sanguosha->getCard(card_id), to_dismantle, caohong);
-    }
+    effect.from->tag["huyuan_equip"] = QVariant::fromValue(equip);
+    effect.from->tag["huyuan_target"] = QVariant::fromValue(effect.to);
 }
 
 class HuyuanViewAsSkill: public OneCardViewAsSkill {
@@ -357,11 +337,40 @@ public:
     }
 
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *target, QVariant &) const {
-        return room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
+        target->tag.remove("huyuan_equip");
+        target->tag.remove("huyuan_target");
+        room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
+        if (target->tag.contains("huyuan_equip") && target->tag.contains("huyuan_target"))
+            return true;
+
+        return false;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *) const{
-        return false;
+    virtual bool onPhaseChange(ServerPlayer *caohong) const{
+        Room *room = caohong->getRoom();
+
+        const Card *card = caohong->tag["huyuan_equip"].value<const Card *>();
+        ServerPlayer *target = caohong->tag["huyuan_target"].value<ServerPlayer *>();
+
+        room->moveCardTo(card, caohong, target, Player::PlaceEquip,
+            CardMoveReason(CardMoveReason::S_REASON_PUT, caohong->objectName(), "huyuan", QString()));
+
+        LogMessage log;
+        log.type = "$ZhijianEquip";
+        log.from = target;
+        log.card_str = QString::number(card->getEffectiveId());
+        room->sendLog(log);
+
+        QList<ServerPlayer *> targets;
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
+            if (target->distanceTo(p) == 1 && caohong->canDiscard(p, "he"))
+                targets << p;
+        }
+        if (!targets.isEmpty()) {
+            ServerPlayer *to_dismantle = room->askForPlayerChosen(caohong, targets, "huyuan", "@huyuan-discard:" + target->objectName());
+            int card_id = room->askForCardChosen(caohong, to_dismantle, "he", "huyuan", false, Card::MethodDiscard);
+            room->throwCard(Sanguosha->getCard(card_id), to_dismantle, caohong);
+        }
     }
 };
 

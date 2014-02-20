@@ -1121,7 +1121,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
-        bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
+        bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName(), (int)triggerEvent);
         if (invoke){
             if (triggerEvent == Dying) {
                 room->broadcastSkillInvoke(objectName(), 1);
@@ -1192,10 +1192,10 @@ public:
         QString choice = room->askForChoice(panfeng, "kuangfu", choicelist.join("+"));
 
         if (choice == "move") {
-            room->broadcastSkillInvoke(objectName(), 1);
+            room->broadcastSkillInvoke(objectName(), 2);
             room->moveCardTo(card, panfeng, Player::PlaceEquip);
         } else {
-            room->broadcastSkillInvoke(objectName(), 2);
+            room->broadcastSkillInvoke(objectName(), 1);
             room->throwCard(card, target, panfeng);
         }
 
