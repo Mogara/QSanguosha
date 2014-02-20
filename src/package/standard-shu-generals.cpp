@@ -758,7 +758,7 @@ public:
         if (!pangtong->faceUp())
             pangtong->turnOver();
 
-        return false;
+        return pangtong->getHp() > 0 || pangtong->isDead();
     }
 };
 

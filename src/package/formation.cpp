@@ -1139,7 +1139,7 @@ public:
         }
 
         room->handleAcquireDetachSkills(player, "-shouyue|rende");
-        return false;
+        return player->getHp() > 0 || player->isDead();
     }
 };
 
