@@ -1019,10 +1019,7 @@ bool Room::isCanceled(const CardEffectStruct &effect) {
     setTag("NullifyingCard", decisionData);
     setTag("NullifyingTimes", 0);
     bool result = askForNullification(effect.card, effect.from, effect.to, true);
-    if (getTag("HegNullificationValid").toBool()) {
-        if (effect.card->isKindOf("Disaster"))
-            return result;
-        QStringList targets;
+    if (getTag("HegNullificationValid").toBool() && effect.card->isNDTrick()) {
         foreach(ServerPlayer *p, m_players) {
             if (p->isAlive() && p->isFriendWith(effect.to))
                 targets << p->objectName();
@@ -1120,7 +1117,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     useCard(CardUseStruct(card, repliedPlayer, QList<ServerPlayer *>()));
 
     QString heg_nullification_selection;
-    if ((to && to->hasShownOneGeneral() && card->isKindOf("HegNullification")
+    if ((to && to->hasShownOneGeneral() && card->isKindOf("HegNullification") && trick->isNDTrick()
          && (heg_nullification_selection = askForChoice(repliedPlayer, "heg_nullification", "single+all", data)) == "all")
         || trick->isKindOf("HegNullification")) {
         setTag("HegNullificationValid", !getTag("HegNullificationValid").toBool());
