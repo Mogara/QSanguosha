@@ -299,9 +299,11 @@ public:
         events << FinishJudge;
     }
 
-    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
+    virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        return (!TriggerSkill::triggerable(player).isEmpty() && judge->who == player) ? QStringList(objectName()) : QStringList();
+        if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
+            return TriggerSkill::triggerable(player);
+        return QStringList();
     }
 
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
