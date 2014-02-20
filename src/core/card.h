@@ -123,7 +123,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
 
-    inline virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const { return QStringList(); }
+    inline virtual QStringList checkTargetModSkillShow(const CardUseStruct & /* use */) const { return QStringList(); }
 
     virtual QString showSkill() const;
     virtual void setShowSkill(const QString &skill_name);
