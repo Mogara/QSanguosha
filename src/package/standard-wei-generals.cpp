@@ -729,7 +729,7 @@ public:
         return true;
     }
 
-    virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         room->setPlayerMark(player, "qiaobianPhase", (int)change.to);
         int index = 0;
@@ -745,10 +745,10 @@ public:
         case Player::Discard: index = 4; break;
         case Player::PhaseNone: Q_ASSERT(false);
         }
-        return (!TriggerSkill::triggerable(player).isEmpty() && index > 0
+        return (!TriggerSkill::triggerable(player).isEmpty() && index > 0 && !player->isSkipped(change.to)
             && player->canDiscard(player, "h")) ? QStringList(objectName()) : QStringList();
     }
-    virtual bool cost(TriggerEvent ,Room *room, ServerPlayer *zhanghe, QVariant &data) const{
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *zhanghe, QVariant &data) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         int index = 0;
         switch (change.to) {
