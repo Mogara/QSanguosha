@@ -76,8 +76,8 @@ install: $(BUILD)/QSanguosha
 	cp -r acknowledgement $(PREFIX)/share/QSanguosha/.
 	cp -r audio $(PREFIX)/share/QSanguosha/.
 	cp -r backdrop $(PREFIX)/share/QSanguosha/.
+	cp -r developers $(PREFIX)/share/QSanguosha/.
 	cp -r diy $(PREFIX)/share/QSanguosha/.
-	cp -r etc $(PREFIX)/share/QSanguosha/.
 	cp -r font $(PREFIX)/share/QSanguosha/.
 	cp -r image $(PREFIX)/share/QSanguosha/.
 	cp -r lang $(PREFIX)/share/QSanguosha/.
