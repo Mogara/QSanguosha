@@ -3,15 +3,16 @@ sgs.ai_skill_choice.TriggerOrder = function(self, choices, data)
 	self.TurnStartShowGeneral_Choice = nil
 	if string.find(choices, "jieming") then return "jieming" end
 	local skillnames = choices:split("+")
+	table.removeOne(skillnames, "trigger_none")
 	for _, skillname in ipairs(skillnames) do
-		if skillname == "trigger_none" then return "trigger_none" end
 		if self:askForSkillInvoke(skillname, data) then
-			self.TurnStartShowGeneral_Choice = "cancel"
 			return skillname
 		end
 	end
-	
-	return "trigger_none"
+	if string.find(choices, "trigger_none") then
+		return "trigger_none"
+	end
+	return skillnames[math.random(1, #skillnames)]
 end
 
 sgs.ai_skill_invoke["userdefine:halfmaxhp"] = true
@@ -28,9 +29,56 @@ sgs.ai_skill_choice.heg_nullification = function(self, choice, data)
 end
 
 sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
+	local function getReturnValue(head)
+		return head and "show_head_general" or "show_deputy_general"
+	end
+
+	local must_show = ("shushen|shoucheng|yicheng|qianhuan|cunsi|chuanxin"):split("|")
+	local must_not_show = ("baoling"):split("|")
+	local not_show = {}
+	for _, skill in ipairs(must_not_show) do
+		if self.player:ownSkill(skill) then
+			not_show[self.player:inHeadSkills(skill)] = true
+		end
+	end
+	
+	local show = {}
+	for _, skill in ipairs(must_show) do
+		if self.player:ownSkill(skill) and (not not_show[self.player:inHeadSkills(skill)]) then
+			show[self.player:inHeadSkills(skill)] = true
+		end
+	end
+	if (show[true] and show[false]) then
+		return "show_both_generals"
+	else
+		for _, a in ipairs(show) do
+			if show[a] then
+				return getReturnValue(a)
+			end
+		end
+	end
+	
+	local should_show = false
+	local kingdom = self.player:getActualGeneral2():getKingdom()
+	if self.room:getLord(kingdom) then
+		should_show = true
+	elseif sgs.shown_kingdom(kingdom) < self.room:getPlayers():length() / 2 then
+		should_show = true
+	end
+	
+	if should_show then
+		if not_show[true] then
+			return getReturnValue(true)
+		else
+			return getReturnValue(false)
+		end
+	end
+	return "cancel"
+
+--[[
 	if string.find(sgs.gameProcess(), self.player:getKingdom() .. ">>") and sgs.isAnjiang(self.player) then
 		local upperlimit = self.player:getLord() and 99 or self.room:getPlayers():length() / 2
-		if sgs.shown_kingdom[self.player:getKingdom()] < upperlimit  then return choices:split("+")[1] end
+		if sgs.shown_kingdom[self.player:getKingdom()] < upperlimit then return choices:split("+")[1] end
 	end
 	if self.TurnStartShowGeneral_Choice then
 		local choice = self.TurnStartShowGeneral_Choice
@@ -59,4 +107,6 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 	if (self:getKingdomCount() > 0) and ((self:getKingdomCount() + 1) * 2 <= playerscount) then return choices[1] end
 	if self.player:aliveCount() <= 5 then return choices[1] end
 	return choices[math.random(1, #choices)]
+	
+]]
 end

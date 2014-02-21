@@ -657,7 +657,7 @@ function sgs.getProcessDefense(player, update)
 
 	if player:hasSkill("rende") and player:getHp() > 2 then defense = defense + 1 end
 	if player:hasSkill("zaiqi") and player:getHp() > 1 then defense = defense + player:getLostHp() * 0.5 end
-	if player:hasSkills("tieji|jizhi|liegong|kuanggu") then defense = defense + 0.5 end
+	if player:hasSkills("tieji|liegong|kuanggu") then defense = defense + 0.5 end
 	if player:hasSkill("xiangle") then defense = defense + 1 end
 	if player:hasSkill("shushen") then defense = defense + 1 end
 	if player:hasSkill("kongcheng") and player:isKongcheng() then defense = defense + 2 end
@@ -686,11 +686,6 @@ function sgs.getProcessDefense(player, update)
 	if player:hasLordSkill("hongfa") then
 		for _, p in sgs.qlist(global_room:getAlivePlayers()) do
 			if sgs.ai_explicit[p:objectName()] == "qun" then defense = defense + 1 end
-		end
-	end
-	if player:hasSkill("guhuo") then
-		for _, p in sgs.qlist(global_room:getOtherPlayers(player)) do
-			if p:hasSkill("chanyuan") then defense = defense + 1 end
 		end
 	end
 
