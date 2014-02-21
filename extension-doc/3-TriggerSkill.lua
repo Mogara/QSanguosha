@@ -19,7 +19,7 @@
 --执行askForSkillInvoke（询问技能发动）时，frequency会影响玩家做决定的方式。
 --frequency也起到了技能分类以及用于增加技能提示显示的作用。
 	--frequency可能的值有：
-	--sgs.Skill_NotFrequent（不频繁发动：该技能的askForSkillInvoke总是会弹出提示询问玩家是否发动）
+	--sgs.Skill_NotFrequent（非锁定技：该技能的askForSkillInvoke总是会弹出提示询问玩家是否发动）
 	--sgs.Skill_Compulsory （锁定技：该技能会在显示上提示玩家这是一个锁定技能）
 	--sgs.Skill_Limited （限定技：该技能会在显示上提示玩家这是一个限定技能）
 	--sgs.Skill_Wake（觉醒技：该技能的默认优先度为3而不是2；该技能会在显示上提示玩家这是一个觉醒技）
@@ -169,6 +169,8 @@ LuaWangxi = sgs.CreateTriggerSkill{
 		_data:setValue(target) --在LUA中用setValue给QVariant赋值
 		
 		if player:askForSkillInvoke(self:objectName(), _data) then
+		--特别注意这个_data传入，大部分情况下用于AI。如果这个参数为ServerPlayer类型，则会在界面上提示发动目标
+		--如果这个参数为字符串，则该函数不提示发动技能，而是出现一个提示框，内容由你自己去翻译。
 			room:broadcastSkillInvoke(self:objectName())
 			return true
 		end
@@ -190,4 +192,27 @@ LuaWangxi = sgs.CreateTriggerSkill{
 		return false
 	end ,
 }
+
+--sgs.CreateTriggerSkill有4个远房亲戚：他们是：
+sgs.CreateMasochismSkill(spec) --创建卖血技能，时机为sgs.Damaged
+sgs.CreateGameStartSkill(spec) --创建游戏开始时技能，时机为sgs.GameStart
+sgs.CreateDrawCardsSkill(spec) --创建摸牌技能，时机为sgs.DrawNCards
+sgs.CreatePhaseChangeSkill(spec) --创建阶段转换（其实是阶段开始）技能，时机为sgs.EventPhaseStart
+--这些技能的on_effect均被代替，具体为：
+sgs.CreateMasochismSkill(spec)
+--on_effect被代替为on_damaged，参数为：
+--self(技能本身), player(受到伤害的ServerPlayer), damage(伤害结构体)
+--不接受返回值
+sgs.CreateGameStartSkill(spec)
+--on_effect被代替为on_gamestart，参数为：
+--self(技能本身), player(触发的ServerPlayer)
+--不接受返回值
+sgs.CreateDrawCardsSkill(spec)
+--on_effect被代替为draw_num_func，参数为：
+--self(技能本身), player(摸牌的ServerPlayer), n(之前的摸牌数)
+--返回值为整型，代表修正之后的摸牌数
+sgs.CreatePhaseChangeSkill(spec)
+--on_effect被代替为on_phasechange，参数为：
+--self(技能本身), player(触发的ServerPlayer)
+--返回值为布尔型，与on_effect相同
 

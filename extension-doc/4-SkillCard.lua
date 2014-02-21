@@ -9,11 +9,11 @@
 --由于技能牌的需要有多个实例存在（每次发动技能得到一个技能牌），
 --我们在DIY module当中并不像ViewAsSkill和TriggerSkill当中使用构造函数来创建SkillCard。
 --我们需要将SkillCard的参数在一个lua table当中定义好，然后在每次需要创建SkillCard的时候再调用sgs.CreateSkillCard获取SkillCard对象。
---或者，我们也可以先创建好一个SkillCard，然后在技能中复制它。
+--或者，我们也可以先创建好一个SkillCard，然后在技能中复制它。（这是常用办法哦）
 
 --sgs.CreateSkillCard需要以下参数定义：
 
---name,target_fixed,will_throw, filter,feasible,on_use,on_effect
+--name, target_fixed, will_throw, handling_method, can_recast, filter, feasible, on_use, on_effect, on_validate, on_validate_in_response
 
 --name:
 --字符串，牌的名字。取个好听的名字~
@@ -29,12 +29,22 @@
 --也可以将will_throw设为false,然后使用room:throwCard(card)这个方法来灵活地控制如何将牌移动到弃牌区。
 --默认值为true。
 
+--handling_method:
+--Card::HandlingMethod枚举值，默认为：
+sgs.Card_MethodUse --非will_throw
+sgs.Card_MethodDiscard --will_throw
+--表示这个技能卡的操作方式，不过一般情况下的非will_throw都要手动修改
+
+--can_recast:
+--布尔值，指定该牌能否被重铸。
+--此值的修改仅仅影响被CardLimited之后还能不能选择这张牌，重铸的效果要写到about_to_use里
+
 --filter：
 --lua函数，返回一个布尔值，类似于ViewAsSkill中的view_filter，但filter方法的对象是玩家目标。
 --你在使用牌时只能指定玩家为对象，不能直接指定玩家的某张牌为对象；
 --比如过河拆桥，在神杀中，“选择对方的一张牌并弃置”是过河拆桥的效果，但过河拆桥的对象只有对方玩家。
 --如果你确实需要“作为对象的牌”，请还是在了解游戏机制后自行发明解决方法……
---传入参数为self,targets(已经选择的玩家),to_select(需要判断是否能选择的玩家)
+--传入参数为self,targets(已经选择的玩家),to_select(需要判断是否能选择的玩家), Self(自身玩家)
 --默认条件为“一名其他玩家”。
 
 --feasible：
@@ -43,94 +53,93 @@
 --所以view_as返回了无意义的Nil也无所谓；然而在SkillCard当中，点确定的机会只有一次，
 --因此我们规定用feasible来排除无效使用的情况。
 --只有在feasible返回了true时，你才可以点确定。
---传入参数为self,targets(已经选择的玩家)
+--传入参数为self,targets(已经选择的玩家),Self(自身玩家)
 --默认条件为"target_fixed为true(不需要指定目标)，或者选择了至少一名玩家为目标"
 
+--about_to_use:
+--lua函数，无返回值，执行使用结算当中的第一步
+--除非有十足的把握重写这个函数不会影响技能卡结算，否则最好不要重写
+--默认值比较复杂，暂时不介绍
+--传入参数：self, room, cardUse(卡牌使用结构体)
+
 --on_use:
---lua函数，无返回值，类似于on_trigger，执行使用效果。
+--lua函数，无返回值，类似于on_trigger，执行使用效果中的一步。
 --传入参数为self,room(游戏房间对象),source(使用者),targets(牌的使用目标)
---无默认。
+--默认值为对每一名目标循环执行room:cardEffect()，此函数用于触发一系列事件最终执行on_effect。
 
 --on_effect：
---lua函数，无返回值，同样用于执行使用效果，但只定义对于某一个目标的效果。
---通常情况下你只需要写on_effect或者on_use当中的一个。
---如果是没有目标或者是目标特定的技能，使用on_use；
---如果是有几个目标执行相同或类似的效果，使用on_effect。
---如果是玩家指定的目标，还是使用on_effect。
+--lua函数，无返回值，执行使用效果的最后一步，定义对每名玩家的效果。
+--传入参数self, effect(卡牌使用效果结构体)
 
---以下为“离间牌”的 feasible 以及filter方法：
+--on_validate:
+--lua函数，返回值为const Card *类型，用于在使用牌之前修改要使用的牌
+--传入参数：self, cardUse
+--默认值为返回自身
+--使用此函数可以参考弘法
 
-filter=function(self,targets,to_select)
-	if (not to_select:getGeneral():isMale()) or #targets>1 then return false 
-	elseif to_select:hasSkill("kongcheng") and to_select:isKongcheng() and #targets==0 then return false
-	else return true end
-	--当已经选择了多于1名玩家时，不能选择其他玩家。
-	--空城诸葛不能选择。
-end
+--on_validate_in_response
+--lua函数，返回值为const Card *类型，用于在响应牌之前修改要使用的牌
+--传入参数：self, user（打出牌的人）
+--默认值为返回自身
+--使用此函数可以参考弘法
 
-feasible=function(self,targets)
-	return #targets==2
-	--只有选择了2名玩家时，才能使用牌
-end
+--以下为“离间牌”的实现方法
 
---on_use 和 on_effect 为牌的效果执行。他们的区别在于生效时机的不同。
---on_use在牌被使用时生效，而on_effect在牌在使用中对某一名目标进行结算时生效。
---因此，在不存在需要结算“一名玩家对另一名指定的玩家”的效果时，使用on_use实行效果即可；
---存在指定的目标时，则原则上应该使用on_effect。
-
---on_use和on_effect可以同时存在。牌效果进行结算时，先执行on_use，然后对每名目标执行on_effect
-
---以下为“雷击牌”的on_effect方法：
-
-on_effect=function(self,effect)
-
-	--effect 为一个CardEffectStruct，其from和to为player对象，代表谁使用的牌对谁结算
-	local from=effect.from
-	local to  =effect.to
-	local room=to:getRoom()
-	
-	--sefEmotion在玩家的头像上显示表情
-	room:setEmotion(to,"bad")
-	
-	--进行判定时，首先创建“判定”对象。
-	--pattern为一个正则表达式，由冒号隔开的三段分别匹配牌名、花色和点数	
-	--good的定义和之后的判定结果获取有关。
-	--原则上，之前的pattern与判定牌匹配时，如果这种情况下执行的效果对于判定者来说是“好”的，
-	--那么good应该是true。
-	local judge=sgs.JudgeStruct()
-	judge.pattern=sgs.QRegExp("(.*):(spade):(.*)")
-	judge.good=false
-	judge.reason="leiji"
-	judge.who=to
-	
-	--然后，让room根据此判定对象进行判定。判定结果依然在judge里面。
-	room:judge(judge)
-	
-	--如果判定结果是一个“坏”结果，那么造成伤害
-	if judge.isBad() then
-		--和判定一样，造成伤害时先创建伤害struct,然后交由room:damage执行
-		local damage=sgs.DamageStruct()
-        damage.card = nil
-        damage.damage = 2
-        damage.from = from
-        damage.to = to
-        damage.nature = sgs.DamageStruct_Thunder
+LuaLijianCard = sgs.CreateSkillCard{
+	name = "LuaLijianCard" ,
+	filter = function(self, targets, to_select, Self)
+		if not to_select:isMale() then
+			return false
+		end
 		
-		room:damage(damage)
-	else
-		room:setEmotion(from,"bad")
-	end
-	
-end,
-
---以下为孙权“制衡”的on_use方法：
-
-on_use=function(self,room,source,targets)
-	--self代表技能牌本身。由于是将“任意张牌当成制衡牌打出”，
-	--因此弃置制衡牌就等于弃置所有用来发动制衡的牌，也即被制衡掉的牌。
-	room:throwCard(self)	
-
-	--摸取相当于被用来发动制衡的牌的数目的牌。
-	--可以用self:getSubcards()来获取这些牌的QList。
-	room:drawCards(source,self:getSubcards():length())
-end,
+		local duel = sgs.Sanguosha:cloneCard("Duel", sgs.Card_NoSuit, 0) --克隆一张决斗
+		if (#targets == 0) and Self:isProhibited(to_select, duel) then --如果决斗目标不能被决斗，则返回false
+			return false
+		end
+		if (#targets == 1) and to_select:isCardLimited(duel, sgs.Card_MethodUse) then --如果决斗的使用者不能决斗，则返回false
+			return false
+		end
+		
+		return (#targets < 2) and (to_select:objectName() ~= Self:objectName()) --离间牌的目标数要少于2才能选其他人，且不能为自己
+	end ,
+	feasible = function(self, targets, Self)
+		return #targets == 2 --离间牌可以使用的前提只有目标数为2
+	end ,
+	about_to_use = function(self, room, cardUse) --重写的about_to_use，可以看出来只删掉了各种条件判断和排序目标的about_to_use也很麻烦，而且绝大多数情况不用重写
+		local diaochan = cardUse.from
+		
+		local l = sgs.LogMessage()
+		l.from = diaochan
+		for _, p in sgs.qlist(cardUse.to) do
+			l.to:append(p)
+		end
+		l.type = "#UseCard" ,
+		l.card_str = self:toString()
+		room:sendLog(l)
+		
+		local data = sgs.QVariant()
+		data:setValue(cardUse)
+		local thread = room:getThread()
+		
+		thread:trigger(sgs.PreCardUsed, room, diaochan, data)
+		room:broadcastSkillInvoke("LuaLijian")
+		
+		local reason = sgs.CardMoveReason(sgs.CardMoveReason_S_REASON_THROW, diaochan:objectName(), "", "LuaLijian", "")
+		room:moveCardTo(self, diaochan, nil, sgs.Player_DiscardPile, reason, true)
+		
+		thread:trigger(sgs.CardUsed, room, diaochan, data)
+		thread:trigger(sgs.CardFinished, room, diaochan, data)
+	end ,
+	on_use = function(self, room, player, targets)
+		--由于重写了about_to_use，删掉了排序目标，因此targets为界面上点击选择的顺序，正常的targets为按行动顺序排序的
+		local to = targets[1] --决斗目标
+		local from = targets[2] --决斗使用者
+		
+		local duel = sgs.Sanguosha:cloneCard("Duel", sgs.Card_NoSuit, 0) --真实克隆的决斗，这个才是真正要使用的
+		duel:setSkillName("_" .. self:getSkillName()) --设置技能名
+		
+		if (not from:isCardLimited(duel, sgs.Card_MethodUse)) and (not from:isProhibited(to, duel)) then --如果满足了使用条件
+			room:useCard(sgs.CardUseStruct(duel, from, to)) --使用决斗
+		end
+	end ,
+}
