@@ -82,11 +82,12 @@ int main(int argc, char *argv[]) {
     }
 
     QFile file("sanguosha.qss");
+    QString styleSheet;
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream(&file);
-        qApp->setStyleSheet(stream.readAll());
-        qApp->setStyleSheet(QString("QToolTip{ border: 0px solid; background: %1; }").arg(Config.ToolTipBackgroundColor.name()));
+        styleSheet = stream.readAll();
     }
+    qApp->setStyleSheet(styleSheet + QString("QToolTip{ border: 0px solid; background: %1; }").arg(Config.ToolTipBackgroundColor.name()));
 
 #ifdef AUDIO_SUPPORT
     Audio::init();

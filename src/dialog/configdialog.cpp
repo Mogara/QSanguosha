@@ -6,6 +6,7 @@
 #include <QDesktopServices>
 #include <QFontDialog>
 #include <QColorDialog>
+#include "..\src\corelib\io\qtextstream.h"
 
 ConfigDialog::ConfigDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::ConfigDialog)
@@ -281,6 +282,12 @@ void ConfigDialog::on_toolTipBackgroundColorButton_clicked()
     if (color.isValid()) {
         Config.ToolTipBackgroundColor = color;
         Config.setValue("ToolTipBackgroundColor", color);
-        qApp->setStyleSheet(QString("QToolTip { border: 0px solid; background: %1; }").arg(color.name()));
+        QFile file("sanguosha.qss");
+        QString styleSheet;
+        if (file.open(QIODevice::ReadOnly)) {
+            QTextStream stream(&file);
+            styleSheet = stream.readAll();
+        }
+        qApp->setStyleSheet(styleSheet + QString("QToolTip{ border: 0px solid; background: %1; }").arg(Config.ToolTipBackgroundColor.name()));
     }
 }
