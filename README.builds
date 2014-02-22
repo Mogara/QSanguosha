@@ -14,3 +14,19 @@ To build QSanguosha with VS2010
 5. Right click project "QSanguosha" in your Solution Explorer, select "Properties", go to "Debugging" tab, set "Working Directory" to "$(ProjectDir)..\..\" (do not enter the quote marks). Then select "OK".
 
 6. You are now able to build the solution.
+
+To build QSanguosha in Linux
+
+1.Download and install the libraries from Qt offical website or software sources, make sure the Qt version is 4.8.x, not 5.x.
+
+2.Download and install the swig from http://www.swigwin.org or software source, make sure the version of swig is 2.0.10(not later!!)
+
+3.open a terminal here, type:
+
+sudo cp libfmodex*.so /usr/local/lib
+sudo ldconfig
+make -f ./linux.mk
+cp libfmodex*.so ../QSanguosha_Release
+make -f ./linux.mk
+
+4.You are now able to run the program in the source folder.
