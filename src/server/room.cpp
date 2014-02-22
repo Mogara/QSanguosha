@@ -1019,10 +1019,7 @@ bool Room::isCanceled(const CardEffectStruct &effect) {
     setTag("NullifyingCard", decisionData);
     setTag("NullifyingTimes", 0);
     bool result = askForNullification(effect.card, effect.from, effect.to, true);
-    if (getTag("HegNullificationValid").toBool()) {
-        if (effect.card->isKindOf("Disaster"))
-            return result;
-        QStringList targets;
+    if (getTag("HegNullificationValid").toBool() && effect.card->isNDTrick()) {
         foreach(ServerPlayer *p, m_players) {
             if (p->isAlive() && p->isFriendWith(effect.to))
                 targets << p->objectName();
@@ -1120,7 +1117,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     useCard(CardUseStruct(card, repliedPlayer, QList<ServerPlayer *>()));
 
     QString heg_nullification_selection;
-    if ((to && to->hasShownOneGeneral() && card->isKindOf("HegNullification")
+    if ((to && to->hasShownOneGeneral() && card->isKindOf("HegNullification") && trick->isNDTrick()
          && (heg_nullification_selection = askForChoice(repliedPlayer, "heg_nullification", "single+all", data)) == "all")
         || trick->isKindOf("HegNullification")) {
         setTag("HegNullificationValid", !getTag("HegNullificationValid").toBool());
@@ -2727,6 +2724,12 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
                 && !card_use.from->hasShownSkill(Sanguosha->getSkill(skill_name)))
                 card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
 
+            QStringList tarmod_detect;
+            while (!((tarmod_detect = card_use.card->checkTargetModSkillShow(card_use)).isEmpty())){
+                QString to_show = askForChoice(card_use.from, "tarmod_show", tarmod_detect.join("+"), QVariant::fromValue(card_use));
+                card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+            }
+
             if (card->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1) {
                 Card *trick = Sanguosha->cloneCard(card);
                 Q_ASSERT(trick != NULL);
@@ -3689,9 +3692,6 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
             int card_id = cards_move.card_ids[j];
             const Card *card = Sanguosha->getCard(card_id);
             card->setFlags("-visible");
-            if (cards_move.to) // Hand/Equip/Judge
-                cards_move.to->addCard(card, cards_move.to_place);
-
             m_drawPile->append(card_id);
             doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
         }
@@ -3742,7 +3742,6 @@ void Room::moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, 
 void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool enforceOrigin) {
     // First, process remove card
     QList<CardsMoveStruct> origin = cards_moves;
-    notifyMoveCards(true, cards_moves, forceMoveVisible);
 
     QList<CardsMoveOneTimeStruct> moveOneTimes = _mergeMoves(cards_moves);
     foreach (ServerPlayer *player, getAllPlayers()) {
@@ -3770,6 +3769,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     }
 
     cards_moves = _separateMoves(moveOneTimes);
+    notifyMoveCards(true, cards_moves, forceMoveVisible);
 
     QList<Player::Place> final_places;
     QList<Player *> move_tos;

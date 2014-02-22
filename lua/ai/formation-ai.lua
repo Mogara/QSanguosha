@@ -423,6 +423,16 @@ sgs.ai_skill_invoke.zhangwu = true
 sgs.weapon_range.DragonPhoenix = 2
 sgs.ai_use_priority.DragonPhoenix = 2.400
 function sgs.ai_weapon_value.DragonPhoenix(self, enemy, player)
+	local lordliubei = nil
+	for _, p in sgs.qlist(room:getAlivePlayers()) do
+		if p:hasSkill("zhangwu") then
+			lordliubei = p
+			break
+		end
+	end
+	if lordliubei and player:getWeapon() and not player:hasSkill("xiaoji") then
+		return -10
+	end
 	if enemy and enemy:getHp() <= 1 and (sgs.card_lack[enemy:objectName()]["Jink"] == 1 or getCardsNum("Jink", enemy, self.player) == 0) then
 		return 4.1
 	end
@@ -440,6 +450,6 @@ sgs.ai_skill_invoke.DragonPhoenix = function(self, data)
 	if death.who and self.role ~= "careerist" then return true
 	else
 		local to = data:toPlayer()
-		return not self:doNotDiscard(to)
+		return self:doNotDiscard(to) == self:isFriend(to)
 	end
 end

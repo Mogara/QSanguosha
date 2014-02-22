@@ -70,7 +70,7 @@ public:
     QString getName() const;
     QString getSkillName(bool removePrefix = true) const;
     virtual void setSkillName(const QString &skill_name);
-    QString getDescription(bool inToolTip = true) const;
+    QString getDescription(bool yellow = true) const;
 
     virtual bool isMute() const;
     virtual bool willThrow() const;
@@ -122,6 +122,8 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isCancelable(const CardEffectStruct &effect) const;
+
+    inline virtual QStringList checkTargetModSkillShow(const CardUseStruct & /* use */) const { return QStringList(); }
 
     virtual QString showSkill() const;
     virtual void setShowSkill(const QString &skill_name);

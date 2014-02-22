@@ -21,7 +21,7 @@ void RecAnalysis::initialize(QString dir) {
         QString record_data(data);
         records_line = record_data.split("\n");
     }
-    else if (dir.endsWith(".txt")) {
+    else if (dir.endsWith(".qsgs")) {
         QFile file(dir);
         if (file.open(QIODevice::ReadOnly)) {
             QTextStream stream(&file);

@@ -55,7 +55,7 @@ $(BUILD)/QSanguosha: $(BUILD)/libfmodex.so $(BUILD)/swig/sanguosha_wrap.cxx $(BU
 	@ln -sf linux.mk Makefile
 	cd $(BUILD) && $(MAKE)
 	@rm -f QSanguosha
-	@ln -sf $(BUILD)/QSanguosha QSanguosha
+	@cp $(BUILD)/QSanguosha QSanguosha
 
 $(DEBUG_BUILD)/QSanguosha: $(DEBUG_BUILD)/libfmodex.so $(DEBUG_BUILD)/swig/sanguosha_wrap.cxx $(DEBUG_BUILD)/Makefile
 	@echo "PWD is: $(OLDPWD)"
@@ -66,6 +66,7 @@ $(DEBUG_BUILD)/QSanguosha: $(DEBUG_BUILD)/libfmodex.so $(DEBUG_BUILD)/swig/sangu
 sanguosha.qm: $(BUILD)/QSanguosha sanguosha.ts
 	lupdate QSanguosha.pro
 	lrelease QSanguosha.pro
+	@cp builds/vs2010/sanguosha.qm sanguosha.qm
 	@echo "Well, compile done. Now you can run make install with root "
 
 install: $(BUILD)/QSanguosha
@@ -76,8 +77,8 @@ install: $(BUILD)/QSanguosha
 	cp -r acknowledgement $(PREFIX)/share/QSanguosha/.
 	cp -r audio $(PREFIX)/share/QSanguosha/.
 	cp -r backdrop $(PREFIX)/share/QSanguosha/.
+	cp -r developers $(PREFIX)/share/QSanguosha/.
 	cp -r diy $(PREFIX)/share/QSanguosha/.
-	cp -r etc $(PREFIX)/share/QSanguosha/.
 	cp -r font $(PREFIX)/share/QSanguosha/.
 	cp -r image $(PREFIX)/share/QSanguosha/.
 	cp -r lang $(PREFIX)/share/QSanguosha/.

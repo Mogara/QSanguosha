@@ -42,21 +42,21 @@ QWidget *GeneralSearch::createInfoTab() {
     layout->addWidget(include_hidden_checkbox);
 
     nickname_label = new QLabel(tr("Nickname"));
-    nickname_label->setToolTip(tr("<font color=%1>Input characters included by the nickname. '?' and '*' is available. Every nickname meets the condition if the line is empty.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+    nickname_label->setToolTip(tr("<font color=#FFFF33>Input characters included by the nickname. '?' and '*' is available. Every nickname meets the condition if the line is empty.</font>"));
     nickname_edit = new QLineEdit;
     nickname_edit->clear();
     layout->addLayout(HLay(nickname_label, nickname_edit));
 
     name_label = new QLabel(tr("Name"));
-    name_label->setToolTip(tr("<font color=%1>Input characters included by the name. '?' and '*' is available. Every name meets the condition if the line is empty.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+    name_label->setToolTip(tr("<font color=#FFFF33>Input characters included by the name. '?' and '*' is available. Every name meets the condition if the line is empty.</font>"));
     name_edit = new QLineEdit;
     name_edit->clear();
     layout->addLayout(HLay(name_label, name_edit));
 
     maxhp_lower_label = new QLabel(tr("MaxHp Min"));
-    maxhp_lower_label->setToolTip(tr("<font color=%1>Set lowerlimit and upperlimit of max HP. 0 ~ 0 meets all conditions.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+    maxhp_lower_label->setToolTip(tr("<font color=#FFFF33>Set lowerlimit and upperlimit of max HP. 0 ~ 0 meets all conditions.</font>"));
     maxhp_upper_label = new QLabel(tr("MaxHp Max"));
-    maxhp_upper_label->setToolTip(tr("<font color=%1>Set lowerlimit and upperlimit of max HP. 0 ~ 0 meets all conditions.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+    maxhp_upper_label->setToolTip(tr("<font color=#FFFF33>Set lowerlimit and upperlimit of max HP. 0 ~ 0 meets all conditions.</font>"));
 
     maxhp_lower_spinbox = new QSpinBox;
     maxhp_lower_spinbox->setRange(0, 10);
@@ -72,7 +72,7 @@ QWidget *GeneralSearch::createInfoTab() {
     layout->addLayout(maxhp_hlay);
 
     QGroupBox *gender_group = new QGroupBox(tr("Gender"));
-    gender_group->setToolTip(tr("<font color=%1>Select genders. Every gender meets the condition if none is selected.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+    gender_group->setToolTip(tr("<font color=#FFFF33>Select genders. Every gender meets the condition if none is selected.</font>"));
     gender_buttons = new QButtonGroup;
     gender_buttons->setExclusive(false);
 
@@ -107,7 +107,7 @@ QWidget *GeneralSearch::createInfoTab() {
     kingdom_buttons->setExclusive(false);
 
     QGroupBox *kingdom_box = new QGroupBox(tr("Kingdoms"));
-    kingdom_box->setToolTip(tr("<font color=%1>Select kingdoms. Every kingdom meets the condition if none is selected.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+    kingdom_box->setToolTip(tr("<font color=#FFFF33>Select kingdoms. Every kingdom meets the condition if none is selected.</font>"));
 
     QGridLayout *kingdom_layout = new QGridLayout;
     kingdom_box->setLayout(kingdom_layout);
@@ -134,7 +134,7 @@ QWidget *GeneralSearch::createInfoTab() {
     QStringList extensions = Sanguosha->getExtensions();
 
     QGroupBox *package_box = new QGroupBox(tr("Packages"));
-    package_box->setToolTip(tr("<font color=%1>Select packages. Every package meets the condition if none is selected.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+    package_box->setToolTip(tr("<font color=#FFFF33>Select packages. Every package meets the condition if none is selected.</font>"));
 
     QVBoxLayout *package_layout = new QVBoxLayout;
 
@@ -335,7 +335,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
 
         if (Sanguosha->isGeneralHidden(general_name)) {
             nickname_item->setBackgroundColor(Qt::gray);
-            nickname_item->setToolTip(tr("<font color=%1>This general is hidden</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+            nickname_item->setToolTip(tr("<font color=#FFFF33>This general is hidden</font>"));
         }
 
         QTableWidgetItem *name_item = new QTableWidgetItem(name);
@@ -348,7 +348,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
 
         if (Sanguosha->isGeneralHidden(general_name)) {
             name_item->setBackgroundColor(Qt::gray);
-            name_item->setToolTip(tr("<font color=%1>This general is hidden</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+            name_item->setToolTip(tr("<font color=#FFFF33>This general is hidden</font>"));
         }
 
         QTableWidgetItem *kingdom_item = new QTableWidgetItem(kingdom);
@@ -364,7 +364,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         package_item->setTextAlignment(Qt::AlignCenter);
         if (Config.value("LuaPackages", QString()).toString().split("+").contains(general->getPackage())) {
             package_item->setBackgroundColor(QColor(0x66, 0xCC, 0xFF));
-            package_item->setToolTip(tr("<font color=%1>This is an Lua extension</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+            package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
         }
 
         ui->tableWidget->setItem(i, 0, nickname_item);
@@ -563,8 +563,8 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
     else
         ui->companionsLineEdit->setText(companions_text);
     ui->skillTextEdit->append(general->getSkillDescription(false, false));
-    ui->changeGeneralButton->setEnabled(Self && Self->getGeneralName() != general->objectName());
-    ui->changeGeneral2Button->setEnabled(Self && Self->getGeneral2Name() != general->objectName());
+    ui->changeGeneralButton->setEnabled(Self && Self->getActualGeneral1Name() != general->objectName());
+    ui->changeGeneral2Button->setEnabled(Self && Self->getActualGeneral2Name() != general->objectName());
 }
 
 void GeneralOverview::playAudioEffect() {

@@ -127,7 +127,6 @@ public:
     PaoxiaoArmorNullificaion(): TriggerSkill("paoxiao_null"){
         events << TargetConfirmed;
         global = true;
-
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
@@ -406,10 +405,10 @@ Mashu::Mashu(const QString &owner): DistanceSkill("mashu_" + owner), owner(owner
 }
 
 int Mashu::getCorrect(const Player *from, const Player *) const{
-        if (from->hasSkill(objectName()) && from->hasShownSkill(this))
-            return -1;
-        else
-            return 0;
+    if (from->hasSkill(objectName()) && from->hasShownSkill(this))
+        return -1;
+    else
+        return 0;
 }
 
 class Tieji: public TriggerSkill {
@@ -759,7 +758,7 @@ public:
         if (!pangtong->faceUp())
             pangtong->turnOver();
 
-        return false;
+        return pangtong->getHp() > 0 || pangtong->isDead();
     }
 };
 
@@ -840,6 +839,7 @@ public:
 
 SavageAssaultAvoid::SavageAssaultAvoid(const QString &avoid_skill): TriggerSkill("#sa_avoid_" + avoid_skill), avoid_skill(avoid_skill){
     events << CardEffected;
+    frequency = Compulsory;
 }
 
 QStringList SavageAssaultAvoid::triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
@@ -1248,6 +1248,7 @@ class FangquanGive: public PhaseChangeSkill {
 public:
     FangquanGive(): PhaseChangeSkill("fangquan-give") {
         global = true;
+        frequency = Compulsory;
     }
 
     virtual int getPriority() const{

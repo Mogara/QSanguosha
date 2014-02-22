@@ -4,7 +4,7 @@
 TARGET = QSanguosha
 QT += network sql declarative
 TEMPLATE = app
-CONFIG += warn_on audio
+CONFIG += audio
 
 # choose luajit if you like it, the default is to use lua.
 CONFIG += lua

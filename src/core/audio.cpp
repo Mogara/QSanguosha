@@ -1,5 +1,5 @@
 #include "audio.h"
-#include "fmod.h"
+#include "fmod.hpp"
 #include "settings.h"
 
 #include <QCache>

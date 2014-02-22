@@ -154,21 +154,14 @@ bool TuxiCard::targetFilter(const QList<const Player *> &targets, const Player *
     return !to_select->isKongcheng();
 }
 
-void TuxiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    QList<CardsMoveStruct> moves;
-    CardsMoveStruct move1;
-    move1.card_ids << room->askForCardChosen(source, targets[0], "h", "tuxi");
-    move1.to = source;
-    move1.to_place = Player::PlaceHand;
-    moves.push_back(move1);
-    if (targets.length() == 2) {
-        CardsMoveStruct move2;
-        move2.card_ids << room->askForCardChosen(source, targets[1], "h", "tuxi");
-        move2.to = source;
-        move2.to_place = Player::PlaceHand;
-        moves.push_back(move2);
+void TuxiCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    QVariantList target_list;
+    foreach (ServerPlayer *target, targets){
+        target_list << QVariant::fromValue(target);
     }
-    room->moveCards(moves, false);
+
+    source->tag["tuxi_invoke"] = target_list;
+    source->setFlags("tuxi");
 }
 
 class TuxiViewAsSkill: public ZeroCardViewAsSkill {
@@ -199,6 +192,7 @@ public:
             return QStringList();
 
         if (player->getPhase() == Player::Draw){
+            player->tag.remove("tuxi_invoke");
             bool can_invoke = false;
             QList<ServerPlayer *> other_players = room->getOtherPlayers(player);
             foreach (ServerPlayer *player, other_players) {
@@ -214,10 +208,34 @@ public:
     }
 
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const{
-        return room->askForUseCard(player, "@@tuxi", "@tuxi-card");
+        room->askForUseCard(player, "@@tuxi", "@tuxi-card");
+        if (player->hasFlag("tuxi") && player->tag.contains("tuxi_invoke"))
+            return true;
+
+        return false;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *) const{
+    virtual bool onPhaseChange(ServerPlayer *source) const{
+        QVariantList targets = source->tag["tuxi_invoke"].toList();
+        source->tag.remove("tuxi_invoke");
+
+        Room *room = source->getRoom();
+
+        QList<CardsMoveStruct> moves;
+        CardsMoveStruct move1;
+        move1.card_ids << room->askForCardChosen(source, targets[0].value<ServerPlayer *>(), "h", "tuxi");
+        move1.to = source;
+        move1.to_place = Player::PlaceHand;
+        moves.push_back(move1);
+        if (targets.length() == 2) {
+            CardsMoveStruct move2;
+            move2.card_ids << room->askForCardChosen(source, targets[1].value<ServerPlayer *>(), "h", "tuxi");
+            move2.to = source;
+            move2.to_place = Player::PlaceHand;
+            moves.push_back(move2);
+        }
+        room->moveCards(moves, false);
+        
         return true;
     }
 };
@@ -281,9 +299,11 @@ public:
         events << FinishJudge;
     }
 
-    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
+    virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        return (!TriggerSkill::triggerable(player).isEmpty() && judge->who == player) ? QStringList(objectName()) : QStringList();
+        if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
+            return TriggerSkill::triggerable(player);
+        return QStringList();
     }
 
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
@@ -474,16 +494,24 @@ bool ShensuCard::targetFilter(const QList<const Player *> &targets, const Player
     return slash->targetFilter(targets, to_select, Self);
 }
 
-void ShensuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void ShensuCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     foreach (ServerPlayer *target, targets) {
         if (!source->canSlash(target, NULL, false))
             targets.removeOne(target);
     }
 
     if (targets.length() > 0) {
-        Slash *slash = new Slash(Card::NoSuit, 0);
-        slash->setSkillName("_shensu");
-        room->useCard(CardUseStruct(slash, source, targets));
+        QString index = "2";
+        if (Sanguosha->currentRoomState()->getCurrentCardUsePattern().endsWith("1"))
+            index = "1";
+
+        QVariantList target_list;
+        foreach (ServerPlayer *target, targets){
+            target_list << QVariant::fromValue(target);
+        }
+
+        source->tag["shensu_invoke" + index] = target_list;
+        source->setFlags("shensu" + index);
     }
 }
 
@@ -542,11 +570,16 @@ public:
             return QStringList();
         if (!Slash::IsAvailable(xiahouyuan))
             return QStringList();
+
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.to == Player::Judge && !xiahouyuan->isSkipped(Player::Judge) && !xiahouyuan->isSkipped(Player::Draw))
+        if (change.to == Player::Judge && !xiahouyuan->isSkipped(Player::Judge) && !xiahouyuan->isSkipped(Player::Draw)){
+            xiahouyuan->tag.remove("shensu_invoke1");
             return QStringList(objectName());
-        if (change.to == Player::Play && xiahouyuan->canDiscard(xiahouyuan,"he") && !xiahouyuan->isSkipped(Player::Play))
+        }
+        else if (change.to == Player::Play && xiahouyuan->canDiscard(xiahouyuan,"he") && !xiahouyuan->isSkipped(Player::Play)){
+            xiahouyuan->tag.remove("shensu_invoke2");
             return QStringList(objectName());
+        }
 
         return QStringList();
     }
@@ -554,17 +587,40 @@ public:
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *xiahouyuan, QVariant &data) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::Judge && room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1", 1)) {
-            xiahouyuan->skip(Player::Judge);
-            xiahouyuan->skip(Player::Draw);
-            return true;
+            if (xiahouyuan->hasFlag("shensu1") && xiahouyuan->tag.contains("shensu_invoke1")){
+                xiahouyuan->skip(Player::Judge);
+                xiahouyuan->skip(Player::Draw);
+                return true;
+            }
         } else if (change.to == Player::Play && room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2, Card::MethodDiscard)) {
-            xiahouyuan->skip(Player::Play);
-            return true;
+            if (xiahouyuan->hasFlag("shensu2") && xiahouyuan->tag.contains("shensu_invoke2")){
+                xiahouyuan->skip(Player::Play);
+                return true;
+            }
         }
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        QVariantList target_list;
+        if (change.to == Player::Judge){
+            target_list = player->tag["shensu_invoke1"].toList();
+            player->tag.remove("shensu_invoke1");
+        }
+        else {
+            target_list = player->tag["shensu_invoke2"].toList();
+            player->tag.remove("shensu_invoke2");
+        }
+
+        Slash *slash = new Slash(Card::NoSuit, 0);
+        slash->setSkillName("_shensu");
+        QList<ServerPlayer *> targets;
+        foreach (QVariant x, target_list){
+            targets << x.value<ServerPlayer *>();
+        }
+
+        room->useCard(CardUseStruct(slash, player, targets), false);
         return false;
     }
 };
@@ -673,7 +729,7 @@ public:
         return true;
     }
 
-    virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         room->setPlayerMark(player, "qiaobianPhase", (int)change.to);
         int index = 0;
@@ -689,10 +745,10 @@ public:
         case Player::Discard: index = 4; break;
         case Player::PhaseNone: Q_ASSERT(false);
         }
-        return (!TriggerSkill::triggerable(player).isEmpty() && index > 0
+        return (!TriggerSkill::triggerable(player).isEmpty() && index > 0 && !player->isSkipped(change.to)
             && player->canDiscard(player, "h")) ? QStringList(objectName()) : QStringList();
     }
-    virtual bool cost(TriggerEvent ,Room *room, ServerPlayer *zhanghe, QVariant &data) const{
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *zhanghe, QVariant &data) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         int index = 0;
         switch (change.to) {
@@ -760,7 +816,6 @@ public:
 class DuanliangTargetMod: public TargetModSkill {
 public:
     DuanliangTargetMod(): TargetModSkill("#duanliang-target") {
-        frequency = NotFrequent;
         pattern = "SupplyShortage";
     }
 
@@ -775,7 +830,6 @@ public:
 class Jushou: public PhaseChangeSkill {
 public:
     Jushou(): PhaseChangeSkill("jushou") {
-        frequency = NotFrequent;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{

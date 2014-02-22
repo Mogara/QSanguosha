@@ -1531,7 +1531,7 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
             original_tooltip = QString(":%1").arg(option);
             tooltip = Sanguosha->translate(original_tooltip);
         }
-        if (tooltip != original_tooltip) button->setToolTip(QString("<font color=%1>%2</font>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(tooltip));
+        if (tooltip != original_tooltip) button->setToolTip(QString("<font color=#FFFF33>%1</font>").arg(tooltip));
 
         connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
         connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerMakeChoice()));
@@ -2799,8 +2799,8 @@ void RoomScene::onGameOver() {
     fillTable(winner_table, winner_list);
     fillTable(loser_table, loser_list);
 
-    if (Config.value("EnableAutoSaveRecord").toBool())
-        saveReplayRecord(true, Config.value("NetworkOnly").toBool());
+    if (!ClientInstance->getReplayer() && Config.value("EnableAutoSaveRecord", false).toBool())
+        saveReplayRecord(true, Config.value("NetworkOnly", false).toBool());
 
     addRestartButton(dialog);
     m_roomMutex.unlock();
@@ -2855,7 +2855,7 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only) 
             location.append(QString("%1%2-").arg(Sanguosha->translate(Self->getActualGeneral1()->objectName()))
                                             .arg(Sanguosha->translate(Self->getActualGeneral2()->objectName())));
             location.append(QDateTime::currentDateTime().toString("yyyyMMddhhmmss"));
-            location.append(".txt");
+            location.append(".qsgs");
             ClientInstance->save(location);
         }
         return;
@@ -2864,7 +2864,7 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only) 
     QString filename = QFileDialog::getSaveFileName(main_window,
                                                     tr("Save replay record"),
                                                     location,
-                                                    tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
+                                                    tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
 
     if (!filename.isEmpty()) ClientInstance->save(filename);
 }

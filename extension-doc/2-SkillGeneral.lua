@@ -14,11 +14,11 @@
 --特点：在某个时机，可以执行某某效果
 
 --距离技：
---马术、义从、飞影
+--马术、飞影
 --特点：不用说大家都明白
 
 --手牌上限技
---宗室、权计（后续效果）
+--横江（后续效果）
 --特点：还能是什么
 --克己不是手牌上限技，是触发技
 
@@ -31,7 +31,7 @@
 thetrigger = sgs.CreateTriggerSkill{
 	name = "thetrigger" ,
 	events = {sgs.EventPhaseStart} ,
-	can_trigger = function(self, event, room, player, data, ask_who)
+	can_trigger = function(self, event, room, player, data)
 		blablabla
 	end ,
 	on_cost = function(self, event, room, player, data)

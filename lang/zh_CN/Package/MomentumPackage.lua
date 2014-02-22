@@ -82,6 +82,8 @@ return {
 	["$BaolingAnimate"] = "image=image/animate/baoling.png" ,
 	["benghuai"] = "崩坏",
 	[":benghuai"] = "锁定技，结束阶段开始时，若你不是体力值最小的角色，你选择一项：1.失去1点体力；2.减1点体力上限。",
+	["benghuai:hp"] = "崩坏体力" ,
+	["benghuai:maxhp"] = "崩坏体力上限" ,
 
 	["#zhangren"] = "索命神射",
 	["zhangren"] = "张任",

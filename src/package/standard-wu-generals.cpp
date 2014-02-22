@@ -65,6 +65,7 @@ public:
     KejiGlobal(): TriggerSkill("keji-global"){
         global = true;
         events << PreCardUsed << CardResponded;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
@@ -540,24 +541,8 @@ TianxiangCard::TianxiangCard() {
 }
 
 void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.to->getRoom();
-
-    effect.to->addMark("TianxiangTarget");
-    DamageStruct damage = effect.from->tag.value("TianxiangDamage").value<DamageStruct>();
-
-    if (damage.card && damage.card->isKindOf("Slash"))
-        effect.from->removeQinggangTag(damage.card);
-
-    damage.to = effect.to;
-    damage.transfer = true;
-    try {
-        room->damage(damage);
-    }
-    catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken || triggerEvent == StageChange)
-            effect.to->removeMark("TianxiangTarget");
-        throw triggerEvent;
-    }
+    effect.to->setFlags("tianxiang_target");
+    effect.from->setFlags("tianxiang_invoke");
 }
 
 class TianxiangViewAsSkill: public OneCardViewAsSkill {
@@ -593,11 +578,47 @@ public:
     }
 
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *xiaoqiao, QVariant &data) const{
+        foreach (ServerPlayer *p, room->getAlivePlayers()){
+            p->setFlags("-tianxiang_target");
+        }
+        xiaoqiao->setFlags("-tianxiang_invoke");
         xiaoqiao->tag["TianxiangDamage"] = data;
-        return room->askForUseCard(xiaoqiao, "@@tianxiang", "@tianxiang-card", -1, Card::MethodDiscard);
+        room->askForUseCard(xiaoqiao, "@@tianxiang", "@tianxiang-card", -1, Card::MethodDiscard);
+        xiaoqiao->tag.remove("TianxiangDamage");
+        if (xiaoqiao->hasFlag("tianxiang_invoke"))
+            return true;
+
+        return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *xiaoqiao, QVariant &data) const{
+        ServerPlayer *target = NULL;
+        foreach (ServerPlayer *p, room->getAlivePlayers()){
+            if (p->hasFlag("tianxiang_target")){
+                target = p;
+                break;
+            }
+        }
+        xiaoqiao->setFlags("-tianxiang_invoke");
+        target->setFlags("-tianxiang_target");
+        target->addMark("TianxiangTarget");
+
+        DamageStruct damage = data.value<DamageStruct>();
+        damage.transfer = true;
+        damage.to = target;
+
+        if (damage.card != NULL && damage.card->isKindOf("Slash"))
+            xiaoqiao->removeQinggangTag(damage.card);
+
+        try {
+            room->damage(damage);
+        }
+        catch (TriggerEvent triggerEvent) {
+            if (triggerEvent == TurnBroken){
+                target->removeMark("TianxiangTarget");
+            }
+            throw triggerEvent;
+        }
         return true;
     }
 };
@@ -606,6 +627,7 @@ class TianxiangDraw: public TriggerSkill {
 public:
     TianxiangDraw(): TriggerSkill("#tianxiang") {
         events << DamageComplete;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
@@ -702,7 +724,6 @@ public:
 class TianyiTargetMod: public TargetModSkill {
 public:
     TianyiTargetMod(): TargetModSkill("#tianyi-target") {
-        frequency = NotFrequent;
     }
 
     virtual int getResidueNum(const Player *from, const Card *) const{
@@ -731,6 +752,7 @@ class BuquRemove: public TriggerSkill {
 public:
     BuquRemove(): TriggerSkill("#buqu-remove") {
         events << HpRecover;
+        frequency = Compulsory;
     }
 
     static void Remove(ServerPlayer *zhoutai) {
@@ -898,6 +920,7 @@ public:
 class BuquClear: public DetachEffectSkill {
 public:
     BuquClear(): DetachEffectSkill("buqu") {
+        frequency = Compulsory;
     }
 
     virtual void onSkillDetached(Room *room, ServerPlayer *player) const{
@@ -978,6 +1001,7 @@ class HaoshiGive: public TriggerSkill {
 public:
     HaoshiGive(): TriggerSkill("#haoshi-give") {
         events << AfterDrawNCards;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *lusu, QVariant &, ServerPlayer * &) const{
@@ -1155,6 +1179,7 @@ class GuzhengRecord: public TriggerSkill {
 public:
     GuzhengRecord(): TriggerSkill("#guzheng-record") {
         events << CardsMoveOneTime;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *erzhang, QVariant &data, ServerPlayer * &) const{

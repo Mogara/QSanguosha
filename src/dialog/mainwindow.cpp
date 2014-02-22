@@ -228,7 +228,7 @@ void MainWindow::on_actionReplay_triggered() {
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Select a reply file"),
                                                     location,
-                                                    tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
+                                                    tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
 
     if (filename.isEmpty())
         return;
@@ -312,6 +312,11 @@ void MainWindow::gotoStartScene() {
     QList<Server *> servers = findChildren<Server *>();
     if (!servers.isEmpty())
         servers.first()->deleteLater();
+
+    if (Self) {
+        delete Self;
+        Self = NULL;
+    }
 
     StartScene *start_scene = new StartScene;
 
@@ -596,7 +601,7 @@ void MainWindow::on_actionReplay_file_convert_triggered() {
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Please select a replay file"),
                                                     Config.value("LastReplayDir").toString(),
-                                                    tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
+                                                    tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
 
     if (filename.isEmpty())
         return;
@@ -606,14 +611,14 @@ void MainWindow::on_actionReplay_file_convert_triggered() {
         QFileInfo info(filename);
         QString tosave = info.absoluteDir().absoluteFilePath(info.baseName());
 
-        if (filename.endsWith(".txt")) {
+        if (filename.endsWith(".qsgs")) {
             tosave.append(".png");
 
             // txt to png
             Recorder::TXT2PNG(file.readAll()).save(tosave);
 
         } else if (filename.endsWith(".png")) {
-            tosave.append(".txt");
+            tosave.append(".qsgs");
 
             // png to txt
             QByteArray data = Replayer::PNG2TXT(filename);
@@ -630,7 +635,7 @@ void MainWindow::on_actionRecord_analysis_triggered() {
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Load replay record"),
                                                     location,
-                                                    tr("Pure text replay file (*.txt);; Image replay file (*.png)"));
+                                                    tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
 
     if (filename.isEmpty()) return;
 

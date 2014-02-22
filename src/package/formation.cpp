@@ -15,7 +15,7 @@ class Tuntian: public TriggerSkill {
 public:
     Tuntian(): TriggerSkill("tuntian") {
         events << CardsMoveOneTime << FinishJudge;
-        frequency = Frequent;
+        frequency = Compulsory; // for tuntian second stage
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
@@ -32,8 +32,10 @@ public:
             }
         } else if (triggerEvent == FinishJudge) {
             JudgeStar judge = data.value<JudgeStar>();
-            if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
-                player->addToPile("field", judge->card->getEffectiveId());
+            if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
+                ask_who = dengai;
+                return QStringList(objectName());
+            }
 
             if (room->getTag("judge").toInt() == 0){
                 int postponed_tuntian = dengai->getMark("tuntian_postpone");
@@ -48,9 +50,15 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *, QVariant &data) const{
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
         if (!dengai) return false;
+        if (triggerEvent == FinishJudge) {
+            JudgeStar judge = data.value<JudgeStar>();
+            if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
+                return true;
+            }
+        }
         if (dengai->askForSkillInvoke("tuntian", data)){
             room->broadcastSkillInvoke("tuntian");
             return true;
@@ -59,15 +67,35 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *, QVariant &) const{
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
         if (!dengai) return false;
-        JudgeStruct judge;
-        judge.pattern = ".|heart";
-        judge.good = false;
-        judge.reason = "tuntian";
-        judge.who = dengai;
-        room->judge(judge);
+        if (triggerEvent == CardsMoveOneTime) {
+            JudgeStruct judge;
+            judge.pattern = ".|heart";
+            judge.good = false;
+            judge.reason = "tuntian";
+            judge.who = dengai;
+            room->judge(judge);
+        } else if (triggerEvent == FinishJudge) {
+            JudgeStar judge = data.value<JudgeStar>();
+            if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
+                dengai->addToPile("field", judge->card->getEffectiveId());
+
+            if (room->getTag("judge").toInt() == 0){
+                int postponed_tuntian = dengai->getMark("tuntian_postpone");
+
+                if (postponed_tuntian > 0){
+                    dengai->removeMark("tuntian_postpone");
+                    JudgeStruct judge;
+                    judge.pattern = ".|heart";
+                    judge.good = false;
+                    judge.reason = "tuntian";
+                    judge.who = dengai;
+                    room->judge(judge);
+                }
+            }
+        }
 
         return false;
     }
@@ -97,6 +125,7 @@ void JixiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     QList<int> total = dengai->getPile("field");
     foreach (int id, total) {
         Snatch *snatch = new Snatch(Card::SuitToBeDecided, -1);
+        snatch->setSkillName("jixi");
         snatch->addSubcard(id);
         if (!snatch->isAvailable(dengai))
             continue;
@@ -223,8 +252,7 @@ public:
     virtual const Card *viewAs() const{
         QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
         if (pattern == "@@jixi!") {
-            Card *card = new JixiSnatchCard;
-            return card;
+            return new JixiSnatchCard;
         } else
             return new JixiCard;
     }
@@ -298,29 +326,10 @@ bool HuyuanCard::targetFilter(const QList<const Player *> &targets, const Player
 }
 
 void HuyuanCard::onEffect(const CardEffectStruct &effect) const{
-    ServerPlayer *caohong = effect.from;
-    Room *room = caohong->getRoom();
-    room->moveCardTo(this, caohong, effect.to, Player::PlaceEquip,
-                     CardMoveReason(CardMoveReason::S_REASON_PUT, caohong->objectName(), "huyuan", QString()));
+    const Card *equip = Sanguosha->getCard(subcards[0]);
 
-    const Card *card = Sanguosha->getCard(subcards.first());
-
-    LogMessage log;
-    log.type = "$ZhijianEquip";
-    log.from = effect.to;
-    log.card_str = QString::number(card->getEffectiveId());
-    room->sendLog(log);
-
-    QList<ServerPlayer *> targets;
-    foreach (ServerPlayer *p, room->getAllPlayers()) {
-        if (effect.to->distanceTo(p) == 1 && caohong->canDiscard(p, "he"))
-            targets << p;
-    }
-    if (!targets.isEmpty()) {
-        ServerPlayer *to_dismantle = room->askForPlayerChosen(caohong, targets, "huyuan", "@huyuan-discard:" + effect.to->objectName());
-        int card_id = room->askForCardChosen(caohong, to_dismantle, "he", "huyuan", false, Card::MethodDiscard);
-        room->throwCard(Sanguosha->getCard(card_id), to_dismantle, caohong);
-    }
+    effect.from->tag["huyuan_equip"] = QVariant::fromValue(equip);
+    effect.from->tag["huyuan_target"] = QVariant::fromValue(effect.to);
 }
 
 class HuyuanViewAsSkill: public OneCardViewAsSkill {
@@ -357,10 +366,42 @@ public:
     }
 
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *target, QVariant &) const {
-        return room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
+        target->tag.remove("huyuan_equip");
+        target->tag.remove("huyuan_target");
+        room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
+        if (target->tag.contains("huyuan_equip") && target->tag.contains("huyuan_target"))
+            return true;
+
+        return false;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *) const{
+    virtual bool onPhaseChange(ServerPlayer *caohong) const{
+        Room *room = caohong->getRoom();
+
+        const Card *card = caohong->tag["huyuan_equip"].value<const Card *>();
+        ServerPlayer *target = caohong->tag["huyuan_target"].value<ServerPlayer *>();
+
+        room->moveCardTo(card, caohong, target, Player::PlaceEquip,
+            CardMoveReason(CardMoveReason::S_REASON_PUT, caohong->objectName(), "huyuan", QString()));
+
+        LogMessage log;
+        log.type = "$ZhijianEquip";
+        log.from = target;
+        log.card_str = QString::number(card->getEffectiveId());
+        room->sendLog(log);
+
+        QList<ServerPlayer *> targets;
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
+            if (target->distanceTo(p) == 1 && caohong->canDiscard(p, "he"))
+                targets << p;
+        }
+        if (!targets.isEmpty()) {
+            ServerPlayer *to_dismantle = room->askForPlayerChosen(caohong, targets, "huyuan", "@huyuan-discard:" + target->objectName(), true);
+            if (to_dismantle){
+                int card_id = room->askForCardChosen(caohong, to_dismantle, "he", "huyuan", false, Card::MethodDiscard);
+                room->throwCard(Sanguosha->getCard(card_id), to_dismantle, caohong);
+            }
+        }
         return false;
     }
 };
@@ -1100,7 +1141,7 @@ public:
         }
 
         room->handleAcquireDetachSkills(player, "-shouyue|rende");
-        return false;
+        return player->getHp() > 0 || player->isDead();
     }
 };
 

@@ -78,7 +78,7 @@ QWidget *ServerDialog::createBasicTab() {
 QWidget *ServerDialog::createPackageTab() {
     disable_lua_checkbox = new QCheckBox(tr("Disable Lua"));
     disable_lua_checkbox->setChecked(Config.DisableLua);
-    disable_lua_checkbox->setToolTip(tr("<font color=%1>The setting takes effect after reboot</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+    disable_lua_checkbox->setToolTip(tr("<font color=#FFFF33>The setting takes effect after reboot</font>"));
 
     extension_group = new QButtonGroup;
     extension_group->setExclusive(false);
@@ -155,7 +155,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     random_seat_checkbox->setChecked(Config.RandomSeat);
 
     enable_cheat_checkbox = new QCheckBox(tr("Enable cheat"));
-    enable_cheat_checkbox->setToolTip(tr("<font color=%1>This option enables the cheat menu</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+    enable_cheat_checkbox->setToolTip(tr("<font color=#FFFF33>This option enables the cheat menu</font>"));
     enable_cheat_checkbox->setChecked(Config.EnableCheat);
 
     free_choose_checkbox = new QCheckBox(tr("Choose generals and cards freely"));
@@ -177,7 +177,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     connect(free_assign_checkbox, SIGNAL(toggled(bool)), free_assign_self_checkbox, SLOT(setEnabled(bool)));
 
     pile_swapping_label = new QLabel(tr("Pile-swapping limitation"));
-    pile_swapping_label->setToolTip(tr("<font color=%1>-1 means no limitations</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+    pile_swapping_label->setToolTip(tr("<font color=#FFFF33>-1 means no limitations</font>"));
     pile_swapping_spinbox = new QSpinBox;
     pile_swapping_spinbox->setRange(-1, 15);
     pile_swapping_spinbox->setValue(Config.value("PileSwappingLimitation", 5).toInt());

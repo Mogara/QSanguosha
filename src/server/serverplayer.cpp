@@ -462,14 +462,16 @@ bool ServerPlayer::hasNullification() const{
     }
 
     foreach (const Skill *skill, getVisibleSkillList(true)) {
-        if (skill->inherits("ViewAsSkill")) {
-            const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(skill);
-            if (vsskill->isEnabledAtNullification(this)) return true;
-        } else if (skill->inherits("TriggerSkill")) {
-            const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
-            if (trigger_skill && trigger_skill->getViewAsSkill()) {
-                const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(trigger_skill->getViewAsSkill());
-                if (vsskill && vsskill->isEnabledAtNullification(this)) return true;
+        if (hasSkill(skill->objectName())){
+            if (skill->inherits("ViewAsSkill")) {
+                const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(skill);
+                if (vsskill->isEnabledAtNullification(this)) return true;
+            } else if (skill->inherits("TriggerSkill")) {
+                const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
+                if (trigger_skill && trigger_skill->getViewAsSkill()) {
+                    const ViewAsSkill *vsskill = qobject_cast<const ViewAsSkill *>(trigger_skill->getViewAsSkill());
+                    if (vsskill && vsskill->isEnabledAtNullification(this)) return true;
+                }
             }
         }
     }
