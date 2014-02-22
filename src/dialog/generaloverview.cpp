@@ -563,8 +563,8 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
     else
         ui->companionsLineEdit->setText(companions_text);
     ui->skillTextEdit->append(general->getSkillDescription(false, false));
-    ui->changeGeneralButton->setEnabled(Self && Self->getGeneralName() != general->objectName());
-    ui->changeGeneral2Button->setEnabled(Self && Self->getGeneral2Name() != general->objectName());
+    ui->changeGeneralButton->setEnabled(Self && Self->getActualGeneral1Name() != general->objectName());
+    ui->changeGeneral2Button->setEnabled(Self && Self->getActualGeneral2Name() != general->objectName());
 }
 
 void GeneralOverview::playAudioEffect() {

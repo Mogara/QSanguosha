@@ -313,6 +313,11 @@ void MainWindow::gotoStartScene() {
     if (!servers.isEmpty())
         servers.first()->deleteLater();
 
+    if (Self) {
+        delete Self;
+        Self = NULL;
+    }
+
     StartScene *start_scene = new StartScene;
 
     QList<QAction *> actions;
