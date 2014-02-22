@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>494</width>
-    <height>611</height>
+    <width>502</width>
+    <height>565</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -27,8 +27,8 @@
     <rect>
      <x>10</x>
      <y>20</y>
-     <width>471</width>
-     <height>541</height>
+     <width>481</width>
+     <height>491</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -42,8 +42,8 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>210</y>
-       <width>441</width>
+       <y>150</y>
+       <width>451</width>
        <height>191</height>
       </rect>
      </property>
@@ -55,7 +55,7 @@
        <rect>
         <x>10</x>
         <y>20</y>
-        <width>421</width>
+        <width>431</width>
         <height>71</height>
        </rect>
       </property>
@@ -154,7 +154,7 @@
        <rect>
         <x>10</x>
         <y>130</y>
-        <width>411</width>
+        <width>421</width>
         <height>24</height>
        </rect>
       </property>
@@ -189,7 +189,7 @@
        <rect>
         <x>10</x>
         <y>160</y>
-        <width>411</width>
+        <width>421</width>
         <height>24</height>
        </rect>
       </property>
@@ -225,8 +225,8 @@
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>441</width>
-       <height>201</height>
+       <width>451</width>
+       <height>131</height>
       </rect>
      </property>
      <property name="title">
@@ -237,7 +237,7 @@
        <rect>
         <x>10</x>
         <y>20</y>
-        <width>421</width>
+        <width>211</width>
         <height>73</height>
        </rect>
       </property>
@@ -300,7 +300,7 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>170</y>
+        <y>110</y>
         <width>95</width>
         <height>16</height>
        </rect>
@@ -313,7 +313,7 @@
       <property name="geometry">
        <rect>
         <x>140</x>
-        <y>170</y>
+        <y>110</y>
         <width>111</width>
         <height>16</height>
        </rect>
@@ -325,9 +325,9 @@
      <widget class="QWidget" name="layoutWidget4_2">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>90</y>
-        <width>421</width>
+        <x>230</x>
+        <y>20</y>
+        <width>211</width>
         <height>73</height>
        </rect>
       </property>
@@ -391,9 +391,9 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>410</y>
-       <width>441</width>
-       <height>91</height>
+       <y>350</y>
+       <width>451</width>
+       <height>141</height>
       </rect>
      </property>
      <property name="title">
@@ -502,6 +502,45 @@
        <string>Color ...</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="toolTipFontColorButton">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>80</y>
+        <width>141</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Skill Description Color in Tool Tip</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="overviewFontColorButton">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>80</y>
+        <width>131</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Skill Description Color in Overview</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="toolTipBackgroundColorButton">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>80</y>
+        <width>131</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Tool Tip Background Color</string>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QWidget" name="gameTab">
@@ -586,7 +625,7 @@
       <rect>
        <x>10</x>
        <y>90</y>
-       <width>441</width>
+       <width>451</width>
        <height>121</height>
       </rect>
      </property>
@@ -599,7 +638,7 @@
         <x>10</x>
         <y>40</y>
         <width>421</width>
-        <height>71</height>
+        <height>73</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -708,7 +747,7 @@
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>570</y>
+     <y>520</y>
      <width>341</width>
      <height>32</height>
     </rect>

@@ -6,7 +6,7 @@
 #include <QDesktopServices>
 #include <QFontDialog>
 #include <QColorDialog>
-#include "..\src\corelib\io\qtextstream.h"
+#include <QTextStream>
 
 ConfigDialog::ConfigDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::ConfigDialog)
@@ -289,3 +289,5 @@ void ConfigDialog::on_toolTipBackgroundColorButton_clicked()
             styleSheet = stream.readAll();
         }
         qApp->setStyleSheet(styleSheet + QString("QToolTip{ border: 0px solid; background: %1; }").arg(Config.ToolTipBackgroundColor.name()));
+    }
+}
