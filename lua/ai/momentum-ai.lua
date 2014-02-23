@@ -366,9 +366,9 @@ wendao_skill.getTurnUseCard = function(self)
 				break
 			end
 		end
-		if not invoke then
+		if invoke == "no" then
 			for _, p in sgs.qlist(self.room:getAlivePlayers()) do
-				if p:getWeapon() and p:getWeapon():objectName() == "PeaceSpell" then
+				if p:getArmor() and p:getArmor():objectName() == "PeaceSpell" then
 					invoke = "eq"
 					owner = p
 					break
@@ -381,9 +381,7 @@ wendao_skill.getTurnUseCard = function(self)
 				if owner:hasArmorEffect("PeaceSpell") then
 					if (owner:objectName() == self.player:objectName()) then
 						if (not self.player:hasSkill("hongfa")) or (self.player:getPile("heavenly_army"):isEmpty()) then
-							if not (self.player:hasSkill("qingnang") or (self.player:getHp() >= 3)) then
-								return nil
-							end
+							if self.player:getHp() <= 1 then return nil end
 						end
 					else
 						if (self.player:isFriendWith(owner)) then
@@ -402,7 +400,7 @@ wendao_skill.getTurnUseCard = function(self)
 				table.insert(cards_copy, c)
 			end
 			for _, c in ipairs(cards_copy) do
-				if c:isKindOf("PeaceSpell") then
+				if c:objectName() == "PeaceSpell" then
 					return sgs.Card_Parse("@WendaoCard=" .. c:getEffectiveId() .. "&wendao")
 				end
 				if (not c:isRed()) or isCard("Peach", c, self.player) then table.removeOne(cards, c) end
@@ -419,8 +417,8 @@ sgs.ai_skill_use_func.WendaoCard = function(card, use, self)
 end
 
 sgs.ai_event_callback[sgs.EventPhaseStart].wendao = function(self, player, data)
-	if player:hasSkill("wendao+hongfa") then
-		if player:getArmor():isKindOf("PeaceSpell") and not player:getPile("heavenly_army"):isEmpty() then
+	if player:hasSkills("wendao+hongfa") then
+		if player:getArmor() and player:getArmor():objectName() == "PeaceSpell" and not player:getPile("heavenly_army"):isEmpty() then
 			sgs.ai_use_priority.WendaoCard = 11
 		else
 			sgs.ai_use_priority.WendaoCard = sgs.ai_use_priority.ZhihengCard
