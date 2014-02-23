@@ -505,6 +505,7 @@ class QinggangSwordSkill: public WeaponSkill {
 public:
     QinggangSwordSkill(): WeaponSkill("QinggangSword") {
         events << TargetConfirmed;
+        frequency = Compulsory;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -1899,6 +1900,7 @@ class RenwangShieldSkill: public ArmorSkill {
 public:
     RenwangShieldSkill(): ArmorSkill("RenwangShield") {
         events << SlashEffected;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
@@ -2029,6 +2031,7 @@ class VineSkill: public ArmorSkill {
 public:
     VineSkill(): ArmorSkill("Vine") {
         events << DamageInflicted << SlashEffected << CardEffected;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
@@ -2102,6 +2105,7 @@ class SilverLionSkill: public ArmorSkill {
 public:
     SilverLionSkill(): ArmorSkill("SilverLion") {
         events << DamageInflicted << CardsMoveOneTime;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
