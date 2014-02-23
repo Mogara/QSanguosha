@@ -321,10 +321,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
 
             if (target == player) break;
 
-            CardUseStruct use;
-            use.from = NULL;
-            use.to << player;
-            use.card = this;
+            CardUseStruct use(this, NULL, player);
             QVariant data = QVariant::fromValue(use);
             thread->trigger(TargetConfirming, room, player, data);
             CardUseStruct new_use = data.value<CardUseStruct>();

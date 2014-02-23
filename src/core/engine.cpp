@@ -661,62 +661,25 @@ int Engine::getPlayerCount(const QString &mode) const{
 QString Engine::getRoles(const QString &mode) const{
     int n = getPlayerCount(mode);
 
-    if (mode == "02_1v1") {
-        return "ZN";
-    } else if (mode == "04_1v3") {
-        return "ZFFF";
-    }
-
     if (modes.contains(mode)) {
-        static const char *table1[] = {
+        static const char *table[] = {
             "",
             "",
 
-            "ZF", // 2
-            "ZFN", // 3
-            "ZNFF", // 4
-            "ZCFFN", // 5
-            "ZCFFFN", // 6
-            "ZCCFFFN", // 7
-            "ZCCFFFFN", // 8
-            "ZCCCFFFFN", // 9
-            "ZCCCFFFFFN" // 10
+            "ZN", // 2
+            "ZNN", // 3
+            "ZNNN", // 4
+            "ZNNNN", // 5
+            "ZNNNNN", // 6
+            "ZNNNNNN", // 7
+            "ZNNNNNNN", // 8
+            "ZNNNNNNNN", // 9
+            "ZNNNNNNNNN" // 10
         };
 
-        static const char *table2[] = {
-            "",
-            "",
-
-            "ZF", // 2
-            "ZFN", // 3
-            "ZNFF", // 4
-            "ZCFFN", // 5
-            "ZCFFNN", // 6
-            "ZCCFFFN", // 7
-            "ZCCFFFNN", // 8
-            "ZCCCFFFFN", // 9
-            "ZCCCFFFFNN" // 10
-        };
-
-        const char **table = mode.endsWith("d") ? table2 : table1;
         QString rolechar = table[n];
-        if (mode.endsWith("z"))
-            rolechar.replace("N", "C");
-        else if (Config.EnableHegemony) {
-            rolechar.replace("F", "N");
-            rolechar.replace("C", "N");
-        }
 
         return rolechar;
-    } else if (mode.startsWith("@")) {
-        if (n == 8)
-            return "ZCCCNFFF";
-        else if (n == 6)
-            return "ZCCNFF";
-    } else {
-        const Scenario *scenario = getScenario(mode);
-        if (scenario)
-            return scenario->getRoles();
     }
     return QString();
 }
@@ -923,49 +886,15 @@ QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) c
 }
 
 QList<int> Engine::getRandomCards() const{
-    bool exclude_disaters = false, using_2012_3v3 = false, using_2013_3v3 = false;
-
-    if (Config.GameMode == "06_3v3") {
-        using_2012_3v3 = (Config.value("3v3/OfficialRule", "2013").toString() == "2012");
-        using_2013_3v3 = (Config.value("3v3/OfficialRule", "2013").toString() == "2013");
-        exclude_disaters = !Config.value("3v3/UsingExtension", false).toBool() || Config.value("3v3/ExcludeDisasters", true).toBool();
-    }
-
-    if (Config.GameMode == "04_1v3")
-        exclude_disaters = true;
-
     QList<int> list;
     foreach (Card *card, cards) {
         card->clearFlags();
 
-        if (exclude_disaters && card->isKindOf("Disaster"))
-            continue;
-
-        if (card->getPackage() == "New3v3Card" && (using_2012_3v3 || using_2013_3v3))
-            list << card->getId();
-        else if (card->getPackage() == "New3v3_2013Card" && using_2013_3v3)
-            list << card->getId();
-
-        if (Config.GameMode == "02_1v1" && !Config.value("1v1/UsingCardExtension", false).toBool()) {
-            if (card->getPackage() == "New1v1Card")
-                list << card->getId();
-            continue;
-        }
-
-        if (Config.GameMode == "06_3v3" && !Config.value("3v3/UsingExtension", false).toBool()
-            && card->getPackage() != "standard_cards" && card->getPackage() != "standard_ex_cards")
-            continue;
         if (!getBanPackages().contains(card->getPackage()))
             list << card->getId();
     }
     if (Config.EnableLordGeneralConvert && !getBanPackages().contains("formation_equip"))
         list.removeOne(55);
-    if (using_2012_3v3 || using_2013_3v3)
-        list.removeOne(98);
-    if (using_2013_3v3) {
-        list.removeOne(53);
-        list.removeOne(54);
-    }
 
     qShuffle(list);
 

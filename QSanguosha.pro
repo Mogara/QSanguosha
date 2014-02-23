@@ -51,7 +51,6 @@ SOURCES += \
     src/dialog/mainwindow.cpp \
     src/dialog/packagingeditor.cpp \
     src/dialog/playercarddialog.cpp \
-    src/dialog/roleassigndialog.cpp \
     src/package/exppattern.cpp \
     src/package/formation.cpp \
     src/package/momentum.cpp \
@@ -143,7 +142,6 @@ HEADERS += \
     src/dialog/mainwindow.h \
     src/dialog/packagingeditor.h \
     src/dialog/playercarddialog.h \
-    src/dialog/roleassigndialog.h \
     src/package/exppattern.h \
     src/package/formation.h \
     src/package/momentum.h \

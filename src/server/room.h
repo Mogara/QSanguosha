@@ -503,7 +503,6 @@ private:
     void broadcast(const QString &message, ServerPlayer *except = NULL);
     void initCallbacks();
     QString askForOrder(ServerPlayer *player);
-    QString askForRole(ServerPlayer *player, const QStringList &roles, const QString &scheme);
 
     //process client requests
     bool processRequestCheat(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);

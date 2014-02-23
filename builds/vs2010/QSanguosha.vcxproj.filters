@@ -117,9 +117,6 @@
     <ClCompile Include="..\..\src\dialog\cardoverview.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\dialog\roleassigndialog.cpp">
-      <Filter>dialog</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\dialog\playercarddialog.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
@@ -482,9 +479,6 @@
     <CustomBuild Include="..\..\src\dialog\playercarddialog.h">
       <Filter>dialog</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\roleassigndialog.h">
-      <Filter>dialog</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\rule-summary.h">
       <Filter>dialog</Filter>
     </CustomBuild>
@@ -827,12 +821,6 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_recorder.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="debug\moc_roleassigndialog.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_roleassigndialog.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_rolecombobox.cpp">

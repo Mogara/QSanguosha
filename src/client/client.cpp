@@ -87,7 +87,6 @@ Client::Client(QObject *parent, const QString &filename)
     // interactive methods
     m_interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
     m_interactions[S_COMMAND_CHOOSE_PLAYER] = &Client::askForPlayerChosen;
-    m_interactions[S_COMMAND_CHOOSE_ROLE] = &Client::askForAssign;
     m_interactions[S_COMMAND_CHOOSE_DIRECTION] = &Client::askForDirection;
     m_interactions[S_COMMAND_EXCHANGE_CARD] = &Client::askForExchange;
     m_interactions[S_COMMAND_ASK_PEACH] = &Client::askForSinglePeach;
@@ -107,7 +106,6 @@ Client::Client(QObject *parent, const QString &filename)
     m_interactions[S_COMMAND_PINDIAN] = &Client::askForPindian;
     m_interactions[S_COMMAND_CHOOSE_CARD] = &Client::askForCardChosen;
     m_interactions[S_COMMAND_CHOOSE_ORDER] = &Client::askForOrder;
-    m_interactions[S_COMMAND_CHOOSE_ROLE_3V3] = &Client::askForRole3v3;
     m_interactions[S_COMMAND_SURRENDER] = &Client::askForSurrender;
     m_interactions[S_COMMAND_LUCK_CARD] = &Client::askForLuckCard;
 
@@ -1315,21 +1313,10 @@ void Client::askForCardChosen(const Json::Value &ask_str) {
     setStatus(ExecDialog);
 }
 
-
 void Client::askForOrder(const Json::Value &arg) {
     if (!arg.isInt()) return;
     Game3v3ChooseOrderCommand reason = (Game3v3ChooseOrderCommand)arg.asInt();
     emit orders_got(reason);
-    setStatus(ExecDialog);
-}
-
-void Client::askForRole3v3(const Json::Value &arg) {
-    if (!arg.isArray() || arg.size() != 2
-        || !arg[0].isString() || !arg[1].isArray()) return;
-    QStringList roles;
-    if (!tryParse(arg[1], roles)) return;
-    QString scheme = toQString(arg[0]);
-    emit roles_got(scheme, roles);
     setStatus(ExecDialog);
 }
 
@@ -1503,18 +1490,6 @@ void Client::attachSkill(const Json::Value &skill) {
     QString skill_name = toQString(skill);
     Self->acquireSkill(skill_name);
     emit skill_attached(skill_name, true);
-}
-
-void Client::askForAssign(const Json::Value &) {
-    emit assign_asked();
-}
-
-void Client::onPlayerAssignRole(const QList<QString> &names, const QList<QString> &roles) {
-    Q_ASSERT(names.size() == roles.size());
-    Json::Value reply(Json::arrayValue);
-    reply[0] = toJsonArray(names);
-    reply[1] = toJsonArray(roles);
-    replyToServer(S_COMMAND_CHOOSE_ROLE, reply);
 }
 
 void Client::askForGuanxing(const Json::Value &arg) {
@@ -1786,11 +1761,6 @@ void Client::startArrange(const Json::Value &to_arrange) {
         emit arrange_started(arrangelist.join("+"));
     }
     setStatus(AskForArrangement);
-}
-
-void Client::onPlayerChooseRole3v3() {
-    replyToServer(S_COMMAND_CHOOSE_ROLE_3V3, toJsonString(sender()->objectName()));
-    setStatus(NotActive);
 }
 
 void Client::recoverGeneral(const Json::Value &recover_str) {

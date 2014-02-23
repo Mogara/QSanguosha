@@ -73,8 +73,6 @@ private:
     QCheckBox *random_seat_checkbox;
     QCheckBox *enable_cheat_checkbox;
     QCheckBox *free_choose_checkbox;
-    QCheckBox *free_assign_checkbox;
-    QCheckBox *free_assign_self_checkbox;
     QLabel *pile_swapping_label;
     QSpinBox *pile_swapping_spinbox;
     QCheckBox *lord_convert_checkbox;
