@@ -699,10 +699,23 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
 
         room->setTag("QiaobianTarget", QVariant::fromValue(from));
         ServerPlayer *to = room->askForPlayerChosen(zhanghe, tos, "qiaobian", "@qiaobian-to:::" + card->objectName());
-        if (to)
+        if (to){
             room->moveCardTo(card, from, to, place,
                              CardMoveReason(CardMoveReason::S_REASON_TRANSFER,
                                             zhanghe->objectName(), "qiaobian", QString()));
+
+            if (place == Player::PlaceDelayedTrick){
+                CardUseStruct use(card, NULL, to);
+                QVariant _data = QVariant::fromValue(use);
+                room->getThread()->trigger(TargetConfirming, room, to, _data);
+                CardUseStruct new_use = _data.value<CardUseStruct>();
+                if (new_use.to.isEmpty())
+                    card->onNullified(to);
+
+                foreach (ServerPlayer *p, room->getAllPlayers())
+                    room->getThread()->trigger(TargetConfirmed, room, p, _data);
+            }
+        }
         room->removeTag("QiaobianTarget");
     }
 }
