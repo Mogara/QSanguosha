@@ -901,13 +901,13 @@ QSet<QString> Player::getAcquiredSkills() const{
     return head_acquired_skills + deputy_acquired_skills;
 }
 
-QString Player::getSkillDescription(bool yellow) const{
+QString Player::getSkillDescription(bool inToolTip) const{
     QString description = QString();
-    QString color = yellow ? "#FFFF33" : "#FF0080";
+    QString color = inToolTip ? Config.SkillDescriptionInToolTipColor.name() : Config.SkillDescriptionInOverviewColor.name();
 
     foreach (const Skill *skill, getVisibleSkillList()) {
         QString skill_name = Sanguosha->translate(skill->objectName());
-        QString desc = skill->getDescription(yellow);
+        QString desc = skill->getDescription(inToolTip);
         desc.replace("\n", "<br/>");
         description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(color).arg(skill_name).arg(desc));
     }
@@ -924,7 +924,7 @@ QString Player::getHeadSkillDescription() const {
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription();
         desc.replace("\n", "<br/>");
-        description.append(QString("<font color=#FFFF33><b>%1</b>:</font> %2 <br/> <br/>").arg(skill_name).arg(desc));
+        description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(skill_name).arg(desc));
     }
     return description;
 }
@@ -936,7 +936,7 @@ QString Player::getDeputySkillDescription() const {
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription();
         desc.replace("\n", "<br/>");
-        description.append(QString("<font color=#FFFF33><b>%1</b>:</font> %2 <br/> <br/>").arg(skill_name).arg(desc));
+        description.append(QString("<font color=%1><b>%2</b>:</font> %3 <br/> <br/>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(skill_name).arg(desc));
     }
     return description;
 }
@@ -1254,7 +1254,7 @@ bool Player::ownSkill(const QString &skill_name) const {
 bool Player::isFriendWith(const Player *player) const {
     Q_ASSERT(player);
     if (!hasShownOneGeneral() || !player->hasShownOneGeneral())
-        return false;                // ÈôÎ´ÁÁ½«Ôò²»´æÔÚÈÎºÎÏàÍ¬ÊÆÁ¦Îä½«£¨×Ô¼ºÒ²²»ÊÇ£©
+        return false;                // ï¿½ï¿½Î´ï¿½ï¿½ï¿½ï¿½ï¿½ò²»´ï¿½ï¿½ï¿½ï¿½Îºï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½ä½«ï¿½ï¿½ï¿½Ô¼ï¿½Ò²ï¿½ï¿½ï¿½Ç£ï¿½
 
     if (this == player)
         return true;

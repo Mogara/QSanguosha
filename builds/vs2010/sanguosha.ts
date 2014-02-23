@@ -449,9 +449,13 @@
         <translation>女性配音</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/cardoverview.cpp" line="110"/>
         <source>&lt;font color=#FFFF33&gt;This is an Lua extension&lt;/font&gt;</source>
-        <translation>&lt;font color=#FFFF33&gt;该包为Lua扩展包&lt;/font&gt;</translation>
+        <translation type="obsolete">&lt;font color=#FFFF33&gt;该包为Lua扩展包&lt;/font&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/cardoverview.cpp" line="110"/>
+        <source>&lt;font color=%1&gt;This is an Lua extension&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;该包为Lua扩展包&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/cardoverview.cpp" line="147"/>
@@ -812,7 +816,7 @@
         <location filename="../../src/dialog/configdialog.ui" line="98"/>
         <location filename="../../src/dialog/configdialog.ui" line="284"/>
         <location filename="../../src/dialog/configdialog.ui" line="374"/>
-        <location filename="../../src/dialog/configdialog.ui" line="648"/>
+        <location filename="../../src/dialog/configdialog.ui" line="687"/>
         <source>Browse ...</source>
         <translation>浏览 ...</translation>
     </message>
@@ -820,7 +824,7 @@
         <location filename="../../src/dialog/configdialog.ui" line="105"/>
         <location filename="../../src/dialog/configdialog.ui" line="291"/>
         <location filename="../../src/dialog/configdialog.ui" line="381"/>
-        <location filename="../../src/dialog/configdialog.ui" line="658"/>
+        <location filename="../../src/dialog/configdialog.ui" line="697"/>
         <source>Reset</source>
         <translation>重置</translation>
     </message>
@@ -910,78 +914,93 @@
         <translation>颜色 ...</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.ui" line="509"/>
+        <location filename="../../src/dialog/configdialog.ui" line="515"/>
+        <source>Skill Description Color in Tool Tip</source>
+        <translation>悬浮文字颜色</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/configdialog.ui" line="528"/>
+        <source>Skill Description Color in Overview</source>
+        <translation>一览文字颜色</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/configdialog.ui" line="541"/>
+        <source>Tool Tip Background Color</source>
+        <translation>悬浮文字背景色</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/configdialog.ui" line="548"/>
         <source>Game</source>
         <translation>游戏</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.ui" line="578"/>
+        <location filename="../../src/dialog/configdialog.ui" line="617"/>
         <source>Enable double-click</source>
         <translation>双击牌或头像使用牌</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.ui" line="594"/>
+        <location filename="../../src/dialog/configdialog.ui" line="633"/>
         <source>Game Record</source>
         <translation>游戏录像</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.ui" line="614"/>
+        <location filename="../../src/dialog/configdialog.ui" line="653"/>
         <source>Setup Record Paths</source>
         <translation>设置录像保存路径</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.ui" line="679"/>
+        <location filename="../../src/dialog/configdialog.ui" line="718"/>
         <source>Network Game Only</source>
         <translation>只保存联机游戏</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.ui" line="695"/>
+        <location filename="../../src/dialog/configdialog.ui" line="734"/>
         <source>Enable Auto Save</source>
         <translation>启用自动保存</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.ui" line="521"/>
+        <location filename="../../src/dialog/configdialog.ui" line="560"/>
         <source>Never nullify my single target trick</source>
         <translation>从不对自己使用的单目标锦囊使用【无懈可击】</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.ui" line="540"/>
+        <location filename="../../src/dialog/configdialog.ui" line="579"/>
         <source>Enable auto target</source>
         <translation>自动选择唯一目标</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.ui" line="559"/>
+        <location filename="../../src/dialog/configdialog.ui" line="598"/>
         <source>Enable intellectual selection</source>
         <translation>智能选牌</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.cpp" line="91"/>
+        <location filename="../../src/dialog/configdialog.cpp" line="92"/>
         <source>Select a background image</source>
         <translation>请选择一张背景图片</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.cpp" line="93"/>
-        <location filename="../../src/dialog/configdialog.cpp" line="119"/>
+        <location filename="../../src/dialog/configdialog.cpp" line="94"/>
+        <location filename="../../src/dialog/configdialog.cpp" line="120"/>
         <source>Images (*.png *.bmp *.jpg)</source>
         <translation>图片 (*.png *.bmp *.jpg)</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.cpp" line="117"/>
+        <location filename="../../src/dialog/configdialog.cpp" line="118"/>
         <source>Select a tableBg image</source>
         <translation>请选择一张游戏时背景图片</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.cpp" line="143"/>
+        <location filename="../../src/dialog/configdialog.cpp" line="144"/>
         <source>Select a Record Paths</source>
         <translation>选择保存路径</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.cpp" line="207"/>
+        <location filename="../../src/dialog/configdialog.cpp" line="208"/>
         <source>Select a background music</source>
         <translation>请选择背景音乐文件</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/configdialog.cpp" line="209"/>
+        <location filename="../../src/dialog/configdialog.cpp" line="210"/>
         <source>Audio files (*.wav *.mp3 *.ogg)</source>
         <translation>音频文件 (*.wav *.mp3 *.ogg)</translation>
     </message>
@@ -1150,6 +1169,11 @@
         <translation>无</translation>
     </message>
     <message>
+        <location filename="../../src/dialog/customassigndialog.cpp" line="109"/>
+        <source>&lt;font color=%1&gt;%2 mark&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;%2标记&lt;/font&gt;</translation>
+    </message>
+    <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="137"/>
         <source>General</source>
         <translation>主将</translation>
@@ -1242,9 +1266,8 @@
         <translation>赢</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/customassigndialog.cpp" line="109"/>
         <source>&lt;font color=#FFFF33&gt;%1 mark&lt;/font&gt;</source>
-        <translation>&lt;font color=#FFFF33&gt;%1标记&lt;/font&gt;</translation>
+        <translation type="obsolete">&lt;font color=#FFFF33&gt;%1标记&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="192"/>
@@ -1684,7 +1707,7 @@
 <context>
     <name>General</name>
     <message>
-        <location filename="../../src/core/general.cpp" line="147"/>
+        <location filename="../../src/core/general.cpp" line="148"/>
         <source>%1 Generals</source>
         <translation>%1势力武将</translation>
     </message>
@@ -1827,15 +1850,23 @@
         <translation>无性别</translation>
     </message>
     <message>
+        <source>&lt;font color=#FFFF33&gt;This general is hidden&lt;/font&gt;</source>
+        <translation type="obsolete">&lt;font color=#FFFF33&gt;该武将被隐藏， 不会出现在选将列表中&lt;/font&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;font color=#FFFF33&gt;This is an Lua extension&lt;/font&gt;</source>
+        <translation type="obsolete">&lt;font color=#FFFF33&gt;该包为Lua扩展包&lt;/font&gt;</translation>
+    </message>
+    <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="338"/>
         <location filename="../../src/dialog/generaloverview.cpp" line="351"/>
-        <source>&lt;font color=#FFFF33&gt;This general is hidden&lt;/font&gt;</source>
-        <translation>&lt;font color=#FFFF33&gt;该武将被隐藏， 不会出现在选将列表中&lt;/font&gt;</translation>
+        <source>&lt;font color=%1&gt;This general is hidden&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;该武将被隐藏， 不会出现在选将列表中&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="367"/>
-        <source>&lt;font color=#FFFF33&gt;This is an Lua extension&lt;/font&gt;</source>
-        <translation>&lt;font color=#FFFF33&gt;该包为Lua扩展包&lt;/font&gt;</translation>
+        <source>&lt;font color=%1&gt;This is an Lua extension&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;该包为Lua扩展包&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="471"/>
@@ -1901,14 +1932,30 @@
         <translation>称号</translation>
     </message>
     <message>
+        <location filename="../../src/dialog/generaloverview.cpp" line="45"/>
+        <source>&lt;font color=%1&gt;Input characters included by the nickname. &apos;?&apos; and &apos;*&apos; is available. Every nickname meets the condition if the line is empty.&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;输入武将称号，可以使用&apos;?&apos;与&apos;*&apos;通配符&lt;/font&gt;</translation>
+    </message>
+    <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="50"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
+        <location filename="../../src/dialog/generaloverview.cpp" line="51"/>
+        <source>&lt;font color=%1&gt;Input characters included by the name. &apos;?&apos; and &apos;*&apos; is available. Every name meets the condition if the line is empty.&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;输入武将名，可以使用&apos;?&apos;与&apos;*&apos;通配符&lt;/font&gt;</translation>
+    </message>
+    <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="56"/>
         <source>MaxHp Min</source>
         <translation>体力上限（最小值）</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/generaloverview.cpp" line="57"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="59"/>
+        <source>&lt;font color=%1&gt;Set lowerlimit and upperlimit of max HP. 0 ~ 0 meets all conditions.&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;设置武将体力上限范围，若最小值与最大值均为0则所有武将符合条件（若最大值小于最小值，则按最小值计算）&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="58"/>
@@ -1921,25 +1968,20 @@
         <translation>性别</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="45"/>
         <source>&lt;font color=#FFFF33&gt;Input characters included by the nickname. &apos;?&apos; and &apos;*&apos; is available. Every nickname meets the condition if the line is empty.&lt;/font&gt;</source>
-        <translation>&lt;font color=#FFFF33&gt;输入武将称号，可以使用&apos;?&apos;与&apos;*&apos;通配符&lt;/font&gt;</translation>
+        <translation type="obsolete">&lt;font color=#FFFF33&gt;输入武将称号，可以使用&apos;?&apos;与&apos;*&apos;通配符&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="51"/>
         <source>&lt;font color=#FFFF33&gt;Input characters included by the name. &apos;?&apos; and &apos;*&apos; is available. Every name meets the condition if the line is empty.&lt;/font&gt;</source>
-        <translation>&lt;font color=#FFFF33&gt;输入武将名，可以使用&apos;?&apos;与&apos;*&apos;通配符&lt;/font&gt;</translation>
+        <translation type="obsolete">&lt;font color=#FFFF33&gt;输入武将名，可以使用&apos;?&apos;与&apos;*&apos;通配符&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="57"/>
-        <location filename="../../src/dialog/generaloverview.cpp" line="59"/>
         <source>&lt;font color=#FFFF33&gt;Set lowerlimit and upperlimit of max HP. 0 ~ 0 meets all conditions.&lt;/font&gt;</source>
-        <translation>&lt;font color=#FFFF33&gt;设置武将体力上限范围，若最小值与最大值均为0则所有武将符合条件（若最大值小于最小值，则按最小值计算）&lt;/font&gt;</translation>
+        <translation type="obsolete">&lt;font color=#FFFF33&gt;设置武将体力上限范围，若最小值与最大值均为0则所有武将符合条件（若最大值小于最小值，则按最小值计算）&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="75"/>
         <source>&lt;font color=#FFFF33&gt;Select genders. Every gender meets the condition if none is selected.&lt;/font&gt;</source>
-        <translation>&lt;font color=#FFFF33&gt;选择武将性别，若未选择任何性别则所有性别均符合条件&lt;/font&gt;</translation>
+        <translation type="obsolete">&lt;font color=#FFFF33&gt;选择武将性别，若未选择任何性别则所有性别均符合条件&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="81"/>
@@ -1962,14 +2004,12 @@
         <translation>势力</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="110"/>
         <source>&lt;font color=#FFFF33&gt;Select kingdoms. Every kingdom meets the condition if none is selected.&lt;/font&gt;</source>
-        <translation>&lt;font color=#FFFF33&gt;选择武将势力，若未选择任何势力则所有势力均符合条件&lt;/font&gt;</translation>
+        <translation type="obsolete">&lt;font color=#FFFF33&gt;选择武将势力，若未选择任何势力则所有势力均符合条件&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="137"/>
         <source>&lt;font color=#FFFF33&gt;Select packages. Every package meets the condition if none is selected.&lt;/font&gt;</source>
-        <translation>&lt;font color=#FFFF33&gt;选择武将包，若未选择任何包则所有包均符合条件&lt;/font&gt;</translation>
+        <translation type="obsolete">&lt;font color=#FFFF33&gt;选择武将包，若未选择任何包则所有包均符合条件&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="142"/>
@@ -1985,6 +2025,21 @@
         <location filename="../../src/dialog/generaloverview.cpp" line="136"/>
         <source>Packages</source>
         <translation>包</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/generaloverview.cpp" line="75"/>
+        <source>&lt;font color=%1&gt;Select genders. Every gender meets the condition if none is selected.&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;选择武将性别，若未选择任何性别则所有性别均符合条件&lt;/font&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/generaloverview.cpp" line="110"/>
+        <source>&lt;font color=%1&gt;Select kingdoms. Every kingdom meets the condition if none is selected.&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;选择武将势力，若未选择任何势力则所有势力均符合条件&lt;/font&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/generaloverview.cpp" line="137"/>
+        <source>&lt;font color=%1&gt;Select packages. Every package meets the condition if none is selected.&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;选择武将包，若未选择任何包则所有包均符合条件&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="182"/>
@@ -3697,19 +3752,16 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>没有限制</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="81"/>
         <source>&lt;font color=#FFFF33&gt;The setting takes effect after reboot&lt;/font&gt;</source>
-        <translation>&lt;font color=#FFFF33&gt;此项设置保存后重启游戏方能生效&lt;/font&gt;</translation>
+        <translation type="obsolete">&lt;font color=#FFFF33&gt;此项设置保存后重启游戏方能生效&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="158"/>
         <source>&lt;font color=#FFFF33&gt;This option enables the cheat menu&lt;/font&gt;</source>
-        <translation>&lt;font color=#FFFF33&gt;本选项启用作弊菜单&lt;/font&gt;</translation>
+        <translation type="obsolete">&lt;font color=#FFFF33&gt;本选项启用作弊菜单&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="180"/>
         <source>&lt;font color=#FFFF33&gt;-1 means no limitations&lt;/font&gt;</source>
-        <translation>&lt;font color=#FFFF33&gt;-1表示无次数限制（虎牢关模式不生效）&lt;/font&gt;</translation>
+        <translation type="obsolete">&lt;font color=#FFFF33&gt;-1表示无次数限制（虎牢关模式不生效）&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="185"/>
@@ -3752,6 +3804,11 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>禁用Lua扩展（重启后生效）</translation>
     </message>
     <message>
+        <location filename="../../src/server/server.cpp" line="81"/>
+        <source>&lt;font color=%1&gt;The setting takes effect after reboot&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;此项设置保存后重启游戏方能生效&lt;/font&gt;</translation>
+    </message>
+    <message>
         <location filename="../../src/server/server.cpp" line="89"/>
         <source>General package</source>
         <translation>武将包</translation>
@@ -3772,6 +3829,11 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>启用作弊</translation>
     </message>
     <message>
+        <location filename="../../src/server/server.cpp" line="158"/>
+        <source>&lt;font color=%1&gt;This option enables the cheat menu&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;本选项启用作弊菜单&lt;/font&gt;</translation>
+    </message>
+    <message>
         <location filename="../../src/server/server.cpp" line="169"/>
         <source>Assign only your own role</source>
         <translation>仅分配自己的身份</translation>
@@ -3780,6 +3842,11 @@ P = 你自己, R = 你所在的房间</translation>
         <location filename="../../src/server/server.cpp" line="179"/>
         <source>Pile-swapping limitation</source>
         <translation>最大洗牌次数</translation>
+    </message>
+    <message>
+        <location filename="../../src/server/server.cpp" line="180"/>
+        <source>&lt;font color=%1&gt;-1 means no limitations&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;-1表示无次数限制&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="188"/>
@@ -4008,12 +4075,12 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>不能载入字体文件 %1 !</translation>
     </message>
     <message>
-        <location filename="../../src/core/settings.cpp" line="95"/>
+        <location filename="../../src/core/settings.cpp" line="98"/>
         <source>Sanguosha-fans</source>
         <translation>三国杀fans</translation>
     </message>
     <message>
-        <location filename="../../src/core/settings.cpp" line="96"/>
+        <location filename="../../src/core/settings.cpp" line="99"/>
         <source>%1&apos;s server</source>
         <translation>%1的服务器</translation>
     </message>
@@ -4032,9 +4099,13 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>请输入内部技能名，如rende</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/customassigndialog.cpp" line="1728"/>
         <source>&lt;font color=#FFFF33&gt;Internal skill name is a phonetic form, the rest of the special circumstances, please see the translation of documents in the lang directory.&lt;/font&gt;</source>
-        <translation>&lt;font color=#FFFF33&gt;内部技能名一般是拼音形式，其余特殊情况请查看lang目录下的翻译文件。&lt;/font&gt;</translation>
+        <translation type="obsolete">&lt;font color=#FFFF33&gt;内部技能名一般是拼音形式，其余特殊情况请查看lang目录下的翻译文件。&lt;/font&gt;</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/customassigndialog.cpp" line="1728"/>
+        <source>&lt;font color=%1&gt;Internal skill name is a phonetic form, the rest of the special circumstances, please see the translation of documents in the lang directory.&lt;/font&gt;</source>
+        <translation>&lt;font color=%1&gt;内部技能名一般是拼音形式，其余特殊情况请查看lang目录下的翻译文件。&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="1735"/>

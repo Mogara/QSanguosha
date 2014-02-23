@@ -107,7 +107,7 @@ void CardOverview::addCard(int i, const Card *card) {
     QTableWidgetItem *package_item = new QTableWidgetItem(package);
     if (Config.value("LuaPackages", QString()).toString().split("+").contains(card->getPackage())) {
         package_item->setBackgroundColor(QColor(0x66, 0xCC, 0xFF));
-        package_item->setToolTip(tr("<font color=#FFFF33>This is an Lua extension</font>"));
+        package_item->setToolTip(tr("<font color=%1>This is an Lua extension</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
     }
     ui->tableWidget->setItem(i, 5, package_item);
 }

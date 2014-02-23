@@ -34,7 +34,7 @@ bool Skill::isAttachedLordSkill() const{
     return attached_lord_skill;
 }
 
-QString Skill::getDescription(bool yellow) const{
+QString Skill::getDescription(bool inToolTip) const{
     QString des_src = Sanguosha->translate(":" + objectName());
     if (des_src == ":" + objectName())
         return QString();
@@ -61,7 +61,7 @@ QString Skill::getDescription(bool yellow) const{
             else
                 des_src.replace(to_replace, QString("<font color=#000000><span style=background-color:white>%1</span></font>").arg(Sanguosha->translate(str+"_char")));
     }
-    return QString("<font color=%1>%2</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(des_src);
+    return QString("<font color=%1>%2</font>").arg(inToolTip ? Config.SkillDescriptionInToolTipColor.name() : Config.SkillDescriptionInOverviewColor.name()).arg(des_src);
 }
 
 QString Skill::getNotice(int index) const{

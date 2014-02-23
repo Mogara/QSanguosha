@@ -56,7 +56,7 @@ public:
 
     QString getPackage() const;
     QString getCompanions() const;
-    QString getSkillDescription(bool include_name = false, bool yellow = true) const;
+    QString getSkillDescription(bool include_name = false, bool inToolTip = true) const;
 
     inline QSet<QString> getExtraSkillSet() const{ return extra_set; }
 
