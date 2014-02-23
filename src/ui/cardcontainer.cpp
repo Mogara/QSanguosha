@@ -108,12 +108,12 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
     int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
     bool one_row = true;
-    int width = (card_width + blank) * items.length() - blank + 50;
-    if (width * 1.5 > RoomSceneInstance->sceneRect().width()) {
-        width = (card_width + blank) * ((items.length() + 1) / 2) - blank + 50;
+    int width = (card_width + blank) * item_count - blank + 50;
+    if (width * 1.5 > scene_width) {
+        width = (card_width + blank) * ((item_count + 1) / 2) - blank + 50;
         one_row = false;
     }
-    int first_row = one_row ? items.length() : (items.length() + 1) / 2;
+    int first_row = one_row ? item_count : (item_count + 1) / 2;
 
     for (int i = 0; i < item_count; i++) {
         QPointF pos;

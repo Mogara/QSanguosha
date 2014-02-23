@@ -1,3 +1,7 @@
+#if defined(WIN32) && defined(VS2010)
+#include <vld.h>
+#endif
+
 #include <QApplication>
 
 #include <QCoreApplication>
