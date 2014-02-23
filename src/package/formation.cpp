@@ -1344,6 +1344,7 @@ public:
                 change_list << player->getActualGeneral2Name();
 
                 room->revivePlayer(player);
+                room->setPlayerFlag(player, "Global_DFDebut");
 
                 room->setPlayerProperty(player, "hp", 2);
                 room->setTag(player->objectName(), change_list);

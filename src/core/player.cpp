@@ -375,33 +375,6 @@ bool Player::hasInnateSkill(const QString &skill_name) const{
 }
 
 bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
-    /*if (!include_lose) {
-        if (!hasEquipSkill(skill_name) && ((hasFlag("huoshui") && getHp() >= (getMaxHp() + 1) / 2)
-                                           || getMark("Qingcheng" + skill_name) > 0))
-            return false;
-    }
-    if (acquired_skills.contains(skill_name))
-        return true;
-
-    QString mode = getGameMode();
-    if (mode == "06_3v3" || mode == "06_XMode" || mode == "02_1v1" || Config.value("WithoutLordskill", false).toBool())
-        return false;
-
-    if (ServerInfo.EnableHegemony)
-        return false;
-
-    if (isLord())
-        return head_skills.value(skill_name, false)
-               || deputy_skills.value(skill_name, false);
-
-    if (hasSkill("weidi")) {
-        foreach (const Player *player, getAliveSiblings()) {
-            if (player->isLord())
-                return player->hasLordSkill(skill_name, true);
-        }
-    }
-
-    return false;*/
     const Skill *skill = Sanguosha->getSkill(skill_name);
 
     return skill && skill->isLordSkill() && isLord() && hasSkill(skill_name, include_lose);

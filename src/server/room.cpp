@@ -369,16 +369,9 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason) {
                     broadcastProperty(player, "role");
             }
 
-            static QStringList continue_list;
-            if (continue_list.isEmpty())
-                continue_list << "02_1v1" << "04_1v3" << "06_XMode";
-            if (continue_list.contains(Config.GameMode))
-                return;
-
             if (Config.AlterAIDelayAD)
                 Config.AIDelay = Config.AIDelayAD;
-            if (victim->isOnline() && Config.SurrenderAtDeath && mode != "02_1v1" && mode != "06_XMode"
-                && askForSkillInvoke(victim, "surrender", "yes"))
+            if (victim->isOnline() && Config.SurrenderAtDeath && askForSkillInvoke(victim, "surrender", "yes"))
                 makeSurrender(victim);
         }
     }
@@ -2995,10 +2988,10 @@ void Room::damage(const DamageStruct &data) {
                 damage_data.to->removeQinggangTag(damage_data.card);
             thread->trigger(DamageDone, this, damage_data.to, qdata);
 
-            if (damage_data.from && !damage_data.from->hasFlag("Global_KOFDebut"))
+            if (damage_data.from && !damage_data.from->hasFlag("Global_DFDebut"))
                 thread->trigger(Damage, this, damage_data.from, qdata);
 
-            if (!damage_data.to->hasFlag("Global_KOFDebut"))
+            if (!damage_data.to->hasFlag("Global_DFDebut"))
                 thread->trigger(Damaged, this, damage_data.to, qdata);
         } while (false);
 
@@ -3173,23 +3166,8 @@ void Room::startGame() {
     }
 
     foreach (ServerPlayer *player, m_players) {
-        if (!Config.EnableBasara
-            && (mode == "06_3v3" || mode == "02_1v1" || mode == "06_XMode" || !player->isLord()))
-            broadcastProperty(player, "general");
-
-        if (mode == "02_1v1")
-            doBroadcastNotify(getOtherPlayers(player, true), S_COMMAND_REVEAL_GENERAL, toJsonArray(player->objectName(), player->getGeneralName()));
-
-        if (Config.Enable2ndGeneral
-            && mode != "02_1v1" && mode != "06_3v3" && mode != "06_XMode" && mode != "04_1v3"
-            && !Config.EnableBasara)
-            broadcastProperty(player, "general2");
-
         broadcastProperty(player, "hp");
         broadcastProperty(player, "maxhp");
-
-        if (mode == "06_3v3" || mode == "06_XMode")
-            broadcastProperty(player, "role");
     }
 
     preparePlayers();
@@ -3215,8 +3193,7 @@ void Room::startGame() {
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
 
     thread = new RoomThread(this);
-    if (mode != "02_1v1" && mode != "06_3v3" && mode != "06_XMode")
-        _m_roomState.reset();
+    _m_roomState.reset();
     connect(thread, SIGNAL(started()), this, SIGNAL(game_start()));
 
     if (!_virtual) thread->start();

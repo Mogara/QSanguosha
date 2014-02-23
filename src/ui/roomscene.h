@@ -376,10 +376,10 @@ private slots:
     void updateHandcardNum();
 
     // 3v3 mode & 1v1 mode
-    void fillGenerals(const QStringList &names);
-    void takeGeneral(const QString &who, const QString &name, const QString &rule);
+    void fillGenerals(const QStringList &);
+    void takeGeneral(const QString &who, const QString &name, const QString &);
     void recoverGeneral(int index, const QString &name);
-    void startArrange(const QString &to_arrange);
+    void startArrange(const QString &);
     void toggleArrange();
     void finishArrange();
     void changeGeneral(const QString &general);
