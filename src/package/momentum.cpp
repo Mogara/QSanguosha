@@ -1389,6 +1389,7 @@ class PeaceSpellSkill: public ArmorSkill{
 public:
     PeaceSpellSkill(): ArmorSkill("PeaceSpell") {
         events << DamageInflicted << CardsMoveOneTime;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
