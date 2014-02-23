@@ -380,8 +380,10 @@ wendao_skill.getTurnUseCard = function(self)
 				assert(owner)
 				if owner:hasArmorEffect("PeaceSpell") then
 					if (owner:objectName() == self.player:objectName()) then
-						if not (self.player:hasSkill("qingnang") or (self.player:getHp() >= 3)) then
-							return nil
+						if (not self.player:hasSkill("hongfa")) or (self.player:getPile("heavenly_army"):isEmpty()) then
+							if not (self.player:hasSkill("qingnang") or (self.player:getHp() >= 3)) then
+								return nil
+							end
 						end
 					else
 						if (self.player:isFriendWith(owner)) then
@@ -393,7 +395,6 @@ wendao_skill.getTurnUseCard = function(self)
 					end
 				end
 			end
-			local to_discard
 			local cards = sgs.QList2Table(self.player:getCards("he"))
 			self:sortByKeepValue(cards)
 			local cards_copy = {}
@@ -401,6 +402,9 @@ wendao_skill.getTurnUseCard = function(self)
 				table.insert(cards_copy, c)
 			end
 			for _, c in ipairs(cards_copy) do
+				if c:isKindOf("PeaceSpell") then
+					return sgs.Card_Parse("@WendaoCard=" .. c:getEffectiveId() .. "&wendao")
+				end
 				if (not c:isRed()) or isCard("Peach", c, self.player) then table.removeOne(cards, c) end
 			end
 			if #cards == 0 then return nil end
@@ -412,6 +416,16 @@ end
 
 sgs.ai_skill_use_func.WendaoCard = function(card, use, self)
 	use.card = card
+end
+
+sgs.ai_event_callback[sgs.EventPhaseStart].wendao = function(self, player, data)
+	if player:hasSkill("wendao+hongfa") then
+		if player:getArmor():isKindOf("PeaceSpell") and not player:getPile("heavenly_army"):isEmpty() then
+			sgs.ai_use_priority.WendaoCard = 11
+		else
+			sgs.ai_use_priority.WendaoCard = sgs.ai_use_priority.ZhihengCard
+		end
+	end
 end
 
 sgs.ai_use_priority.WendaoCard = sgs.ai_use_priority.ZhihengCard
@@ -490,6 +504,7 @@ sgs.ai_slash_prohibit.PeaceSpell = function(self, from, enemy, card)
 	return
 end
 function sgs.ai_armor_value.PeaceSpell(player, self)
+	if player:hasSkills("hongfa+wendao") then return 1000 end
 	if getCardsNum("Peach", player, player) + getCardsNum("Analeptic", player, player) == 0 and player:getHp() == 1 then return 9 end
 	return 3.5
 end
