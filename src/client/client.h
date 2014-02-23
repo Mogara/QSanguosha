@@ -69,7 +69,6 @@ public:
     void onPlayerDiscardCards(const Card *card);
     void onPlayerReplyYiji(const Card *card, const Player *to);
     void onPlayerReplyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards);
-    void onPlayerAssignRole(const QList<QString> &names, const QList<QString> &roles);
     QList<const ClientPlayer *> getPlayers() const;
     void speakToServer(const QString &text);
     ClientPlayer *getPlayer(const QString &name);
@@ -154,13 +153,11 @@ public:
     void askForGuanxing(const Json::Value &);
     void showAllCards(const Json::Value &);
     void askForGongxin(const Json::Value &);
-    void askForAssign(const Json::Value &); // Assign roles at the beginning of game
     void askForSurrender(const Json::Value &);
     void askForLuckCard(const Json::Value &);
     void handleGameEvent(const Json::Value &);
     //3v3 & 1v1
     void askForOrder(const Json::Value &);
-    void askForRole3v3(const Json::Value &);
     void askForDirection(const Json::Value &);
 
     // 3v3 & 1v1 methods
@@ -262,7 +259,6 @@ private slots:
     void onPlayerChooseKingdom();
     void alertFocus();
     void onPlayerChooseOrder();
-    void onPlayerChooseRole3v3();
 
 signals:
     void version_checked(const QString &version_number, const QString &mod_name);
@@ -332,7 +328,6 @@ signals:
     void role_state_changed(const QString &state_str);
     void generals_viewed(const QString &reason, const QStringList &names);
 
-    void assign_asked();
     void start_in_xs();
 
     void head_preshowed();

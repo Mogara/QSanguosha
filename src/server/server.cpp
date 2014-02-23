@@ -162,19 +162,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     free_choose_checkbox->setChecked(Config.FreeChoose);
     free_choose_checkbox->setVisible(Config.EnableCheat);
 
-    free_assign_checkbox = new QCheckBox(tr("Assign role and seat freely"));
-    free_assign_checkbox->setChecked(Config.value("FreeAssign").toBool());
-    free_assign_checkbox->setVisible(Config.EnableCheat);
-
-    free_assign_self_checkbox = new QCheckBox(tr("Assign only your own role"));
-    free_assign_self_checkbox->setChecked(Config.FreeAssignSelf);
-    free_assign_self_checkbox->setEnabled(free_assign_checkbox->isChecked());
-    free_assign_self_checkbox->setVisible(Config.EnableCheat);
-
     connect(enable_cheat_checkbox, SIGNAL(toggled(bool)), free_choose_checkbox, SLOT(setVisible(bool)));
-    connect(enable_cheat_checkbox, SIGNAL(toggled(bool)), free_assign_checkbox, SLOT(setVisible(bool)));
-    connect(enable_cheat_checkbox, SIGNAL(toggled(bool)), free_assign_self_checkbox, SLOT(setVisible(bool)));
-    connect(free_assign_checkbox, SIGNAL(toggled(bool)), free_assign_self_checkbox, SLOT(setEnabled(bool)));
 
     pile_swapping_label = new QLabel(tr("Pile-swapping limitation"));
     pile_swapping_label->setToolTip(tr("<font color=%1>-1 means no limitations</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
@@ -207,7 +195,6 @@ QWidget *ServerDialog::createAdvancedTab() {
     layout->addWidget(random_seat_checkbox);
     layout->addWidget(enable_cheat_checkbox);
     layout->addWidget(free_choose_checkbox);
-    layout->addLayout(HLay(free_assign_checkbox, free_assign_self_checkbox));
     layout->addLayout(HLay(pile_swapping_label, pile_swapping_spinbox));
     layout->addWidget(lord_convert_checkbox);
     layout->addLayout(HLay(hegemony_maxchoice_label, hegemony_maxchoice_spinbox));
@@ -685,7 +672,6 @@ bool ServerDialog::config() {
     Config.RandomSeat = random_seat_checkbox->isChecked();
     Config.EnableCheat = enable_cheat_checkbox->isChecked();
     Config.FreeChoose = Config.EnableCheat && free_choose_checkbox->isChecked();
-    Config.FreeAssignSelf = Config.EnableCheat && free_assign_self_checkbox->isChecked() && free_assign_checkbox->isEnabled();
     Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
     Config.DisableChat = disable_chat_checkbox->isChecked();
     Config.EnableLordGeneralConvert = lord_convert_checkbox->isChecked();
@@ -714,8 +700,6 @@ bool ServerDialog::config() {
     Config.setValue("RandomSeat", Config.RandomSeat);
     Config.setValue("EnableCheat", Config.EnableCheat);
     Config.setValue("FreeChoose", Config.FreeChoose);
-    Config.setValue("FreeAssign", Config.EnableCheat && free_assign_checkbox->isChecked());
-    Config.setValue("FreeAssignSelf", Config.FreeAssignSelf);
     Config.setValue("PileSwappingLimitation", pile_swapping_spinbox->value());
     Config.setValue("EnableLordGeneralConvert", lord_convert_checkbox->isChecked());
     Config.setValue("ForbidSIMC", Config.ForbidSIMC);

@@ -371,8 +371,6 @@ private slots:
     void attachSkill(const QString &skill_name, const bool &head = true);
     void detachSkill(const QString &skill_name);
 
-    void startAssign();
-
     void doPindianAnimation();
 
     void updateHandcardNum();

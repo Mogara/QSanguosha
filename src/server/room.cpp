@@ -5438,22 +5438,6 @@ QString Room::askForOrder(ServerPlayer *player) {
     return (result == S_CAMP_WARM) ? "warm" : "cool";
 }
 
-QString Room::askForRole(ServerPlayer *player, const QStringList &roles, const QString &scheme) {
-    while (isPaused()) {}
-    notifyMoveFocus(player, S_COMMAND_CHOOSE_ROLE_3V3);
-
-    QStringList squeezed = roles.toSet().toList();
-    Json::Value arg(Json::arrayValue);
-    arg[0] = toJsonString(scheme);
-    arg[1] = toJsonArray(squeezed);
-    bool success = doRequest(player, S_COMMAND_CHOOSE_ROLE_3V3, arg, true);
-    Json::Value clientReply = player->getClientReply();
-    QString result = "abstain";
-    if (success && clientReply.isString())
-        result = clientReply.asCString();
-    return result;
-}
-
 void Room::networkDelayTestCommand(ServerPlayer *player, const QString &) {
     qint64 delay = player->endNetworkDelayTest();
     QString reportStr = tr("<font color=#EEB422>The network delay of player <b>%1</b> is %2 milliseconds.</font>")
