@@ -2221,6 +2221,8 @@ function SmartAI:askForNullification(trick, from, to, positive)
 	end
 end
 
+sgs.ai_skill_choice.heg_nullification = "all"
+
 function SmartAI:getCardRandomly(who, flags)
 	local cards = who:getCards(flags)
 	if cards:isEmpty() then return end
