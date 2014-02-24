@@ -1,12 +1,9 @@
-#include "general.h"
-#include "standard.h"
+#include "standard-wei-generals.h"
 #include "skill.h"
 #include "engine.h"
+#include "standard-basics.h"
+#include "standard-tricks.h"
 #include "client.h"
-#include "serverplayer.h"
-#include "room.h"
-#include "ai.h"
-#include "settings.h"
 
 class Jianxiong: public MasochismSkill {
 public:

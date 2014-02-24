@@ -1,14 +1,9 @@
 #include "formation.h"
-#include "general.h"
-#include "standard.h"
-#include "standard-equips.h"
-#include "skill.h"
-#include "engine.h"
+#include "standard-basics.h"
+#include "standard-tricks.h"
 #include "client.h"
-#include "serverplayer.h"
-#include "room.h"
-#include "ai.h"
-#include "settings.h"
+#include "engine.h"
+#include "structs.h"
 #include "gamerule.h"
 
 class Tuntian: public TriggerSkill {

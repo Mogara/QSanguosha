@@ -1,12 +1,10 @@
-#include "general.h"
-#include "standard.h"
+#include "standard-qun-generals.h"
 #include "skill.h"
+#include "standard-basics.h"
+#include "standard-tricks.h"
+#include "standard-shu-generals.h"
 #include "engine.h"
 #include "client.h"
-#include "serverplayer.h"
-#include "room.h"
-#include "ai.h"
-#include "settings.h"
 
 class Jijiu: public OneCardViewAsSkill {
 public:

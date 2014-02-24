@@ -1,12 +1,10 @@
-#include "general.h"
-#include "standard.h"
-#include "skill.h"
-#include "engine.h"
+#include "standard-shu-generals.h"
+#include "structs.h"
+#include "standard-basics.h"
+#include "standard-tricks.h"
 #include "client.h"
-#include "serverplayer.h"
-#include "room.h"
-#include "ai.h"
-#include "settings.h"
+#include "engine.h"
+#include "util.h"
 
 RendeCard::RendeCard() {
     will_throw = false;
