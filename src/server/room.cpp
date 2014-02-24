@@ -1108,15 +1108,14 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
 
     doAnimate(S_ANIMATE_NULLIFICATION, repliedPlayer->objectName(), to->objectName());
     useCard(CardUseStruct(card, repliedPlayer, QList<ServerPlayer *>()));
-
+    bool isHegNullification = false;
     QString heg_nullification_selection;
-    if ((to && to->hasShownOneGeneral() && card->isKindOf("HegNullification") && trick->isNDTrick()
-         && (heg_nullification_selection = askForChoice(repliedPlayer, "heg_nullification", "single+all", data)) == "all")
-        || trick->isKindOf("HegNullification")) {
-        setTag("HegNullificationValid", !getTag("HegNullificationValid").toBool());
+    if (card->isKindOf("HegNullification") && !trick->isKindOf("Nullification") && trick->isNDTrick()){
+        isHegNullification = true;
+        heg_nullification_selection = askForChoice(repliedPlayer, "heg_nullification", "single+all", data);
     }
 
-    if (!card->isKindOf("HegNullification") || heg_nullification_selection.isEmpty()){
+    if (!isHegNullification){
         LogMessage log;
         log.type = "#NullificationDetails";
         log.from = from;
@@ -1134,8 +1133,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
         LogMessage log2;
         log2.type = "#HegNullificationSelection";
         log2.from = repliedPlayer;
-        heg_nullification_selection = "hegnul_" + heg_nullification_selection;
-        log2.arg = heg_nullification_selection;
+        log2.arg =  "hegnul_" + heg_nullification_selection;
         sendLog(log2);
     }
     thread->delay(500);
@@ -1151,6 +1149,10 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     effect.to = repliedPlayer;
     if (card->isCancelable(effect))
         result = !_askForNullification(card, repliedPlayer, to, !positive, aiHelper);
+
+    if (isHegNullification && heg_nullification_selection == "all" && result){
+        setTag("HegNullificationValid", true);
+    }
 
     return result;
 }
