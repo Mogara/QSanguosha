@@ -1,9 +1,9 @@
-﻿QSanguosha-Hegemony (QSGSH) Version 0.5.2 beta
+﻿QSanguosha-Hegemony (QSGSH) Version 0.6.0 beta
 
 
   Change Log / Release Notes
   
-0.5.2 beta (February 24 2014)
+0.6.0 beta (February 25 2014)
 -----------------------------
   Bugs Fixed:
   +勇决结算有误
