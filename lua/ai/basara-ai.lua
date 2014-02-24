@@ -62,7 +62,7 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 	local kingdom = self.player:getActualGeneral2():getKingdom()
 	if self.room:getLord(kingdom) then
 		should_show = true
-	elseif sgs.shown_kingdom(kingdom) < self.room:getPlayers():length() / 2 then
+	elseif sgs.shown_kingdom[kingdom] < self.room:getPlayers():length() / 2 then
 		should_show = true
 	end
 	
