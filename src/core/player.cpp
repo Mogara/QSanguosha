@@ -2,7 +2,7 @@
 #include "engine.h"
 #include "room.h"
 #include "client.h"
-#include "standard.h"
+#include "standard-basics.h"
 #include "settings.h"
 
 Player::Player(QObject *parent)

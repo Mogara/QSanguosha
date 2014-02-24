@@ -60,7 +60,6 @@ sgs.ai_suit_priority.jijiu= "club|spade|diamond|heart"
 
 sgs.ai_skill_cardask["@wushuang-slash-1"] = function(self, data, pattern, target)
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
-	if not target:hasSkill("jueqing") and (self.player:hasSkill("wuyan") or target:hasSkill("wuyan")) then return "." end
 	if self:getCardsNum("Slash") < 2 and not (self.player:getHandcardNum() == 1 and self.player:hasSkills(sgs.need_kongcheng)) then return "." end
 end
 
@@ -156,11 +155,8 @@ function SmartAI:findLijianTarget(card_name, use)
 	local findFriend_maxSlash = function(self, first)
 		local maxSlash = 0
 		local friend_maxSlash
-		local nos_fazheng, fazheng
 		for _, friend in ipairs(self.friends_noself) do
 			if friend:isMale() and self:hasTrickEffective(duel, first, friend) then
-				if friend:hasSkill("nosenyuan") and friend:getHp() > 1 then nos_fazheng = friend end
-				if friend:hasSkill("enyuan") and friend:getHp() > 1 then fazheng = friend end
 				if (getCardsNum("Slash", friend) > maxSlash) then
 					maxSlash = getCardsNum("Slash", friend)
 					friend_maxSlash = friend
@@ -170,13 +166,12 @@ function SmartAI:findLijianTarget(card_name, use)
 
 		if friend_maxSlash then
 			local safe = false
-			if first:hasSkills("fankui|enyuan|ganglie") and not first:hasSkills("wuyan|noswuyan") then
+			if first:hasSkills("fankui|ganglie") then
 				if (first:getHp() <= 1 and first:getHandcardNum() == 0) then safe = true end
 			elseif (getCardsNum("Slash", friend_maxSlash) >= getCardsNum("Slash", first)) then safe = true end
 			if safe then return friend_maxSlash end
 		else self:log("unfound")
 		end
-		if nos_fazheng or fazheng then	return nos_fazheng or fazheng end
 		return nil
 	end
 
@@ -479,14 +474,13 @@ sgs.ai_skill_cardask["@guidao-card"]=function(self, data)
 	local all_cards = self.player:getCards("he")
 	if all_cards:isEmpty() then return "." end
 
-	local needTokeep = judge.card:getSuit() ~= sgs.Card_Spade and (not self:hasSkill("leiji") or judge.card:getSuit() ~= sgs.Card_Club)
+	local needTokeep = judge.card:getSuit() ~= sgs.Card_Spade
 						and sgs.ai_AOE_data and self:playerGetRound(judge.who) < self:playerGetRound(self.player) and self:findLeijiTarget(self.player, 50)
 						and (self:getCardsNum("Jink") > 0 or self:hasEightDiagramEffect()) and self:getFinalRetrial() == 1
 
 	local keptspade, keptblack = 0, 0
 	if needTokeep then
-		if self.player:hasSkill("nosleiji") then keptspade = 2 end
-		if self.player:hasSkill("leiji") then keptblack = 2 end
+		if self.player:hasSkill("leiji") then keptspade = 2 end
 	end
 	local cards = {}
 	for _, card in sgs.qlist(all_cards) do
@@ -781,7 +775,7 @@ sgs.ai_skill_choice.kuangfu_equip = function(self, choices, data)
 			end
 		end
 		if choices:match("1") and who:hasArmorEffect("EightDiagram") and not self:needToThrowArmor(who) then return "1" end
-		if who:hasSkills("jijiu|beige|mingce|weimu|qingcheng") and not self:doNotDiscard(who, "e", false, 1, reason) then
+		if who:hasSkills("jijiu|beige|weimu|qingcheng") and not self:doNotDiscard(who, "e", false, 1, reason) then
 			if choices:match("2") then return "2" end
 			if choices:match("1") and who:getArmor() and not self:needToThrowArmor(who) then return "1" end
 			if choices:match("3") and (not who:hasSkill("jijiu") or who:getOffensiveHorse():isRed()) then return "3" end

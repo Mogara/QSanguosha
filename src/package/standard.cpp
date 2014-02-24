@@ -1,11 +1,7 @@
 #include "standard.h"
-#include "serverplayer.h"
 #include "room.h"
 #include "skill.h"
-#include "clientplayer.h"
 #include "engine.h"
-#include "client.h"
-#include "exppattern.h"
 
 QString BasicCard::getType() const{
     return "basic";
@@ -345,14 +341,6 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
 Weapon::Weapon(Suit suit, int number, int range)
     : EquipCard(suit, number), range(range)
 {
-    can_recast = true;
-}
-
-bool Weapon::isAvailable(const Player *player) const{
-    QString mode = player->getGameMode();
-    if (mode == "04_1v3" && !player->isCardLimited(this, Card::MethodRecast))
-        return true;
-    return !player->isCardLimited(this, Card::MethodUse) && EquipCard::isAvailable(player);
 }
 
 int Weapon::getRange() const{
@@ -361,30 +349,6 @@ int Weapon::getRange() const{
 
 QString Weapon::getSubtype() const{
     return "weapon";
-}
-
-void Weapon::onUse(Room *room, const CardUseStruct &card_use) const{
-    CardUseStruct use = card_use;
-    ServerPlayer *player = card_use.from;
-    if (room->getMode() == "04_1v3"
-        && use.card->isKindOf("Weapon")
-        && (player->isCardLimited(use.card, Card::MethodUse)
-            || player->askForSkillInvoke("weapon_recast", QVariant::fromValue(use)))) {
-        CardMoveReason reason(CardMoveReason::S_REASON_RECAST, player->objectName());
-        reason.m_eventName = "weapon_recast";
-        room->moveCardTo(use.card, player, NULL, Player::DiscardPile, reason);
-        player->broadcastSkillInvoke("@recast");
-
-        LogMessage log;
-        log.type = "#Card_Recast";
-        log.from = player;
-        log.card_str = use.card->toString();
-        room->sendLog(log);
-
-        player->drawCards(1);
-        return;
-    }
-    EquipCard::onUse(room, use);
 }
 
 EquipCard::Location Weapon::location() const{
@@ -450,41 +414,4 @@ EquipCard::Location Horse::location() const{
     else
         return OffensiveHorseLocation;
 }
-
-StandardPackage::StandardPackage()
-    : Package("standard")
-{
-    addWeiGenerals();
-    addShuGenerals();
-    addWuGenerals();
-    addQunGenerals();
-
-    patterns["."] = new ExpPattern(".|.|.|hand");
-    patterns[".S"] = new ExpPattern(".|spade|.|hand");
-    patterns[".C"] = new ExpPattern(".|club|.|hand");
-    patterns[".H"] = new ExpPattern(".|heart|.|hand");
-    patterns[".D"] = new ExpPattern(".|diamond|.|hand");
-
-    patterns[".black"] = new ExpPattern(".|black|.|hand");
-    patterns[".red"] = new ExpPattern(".|red|.|hand");
-
-    patterns[".."] = new ExpPattern(".");
-    patterns["..S"] = new ExpPattern(".|spade");
-    patterns["..C"] = new ExpPattern(".|club");
-    patterns["..H"] = new ExpPattern(".|heart");
-    patterns["..D"] = new ExpPattern(".|diamond");
-
-    patterns[".Basic"] = new ExpPattern("BasicCard");
-    patterns[".Trick"] = new ExpPattern("TrickCard");
-    patterns[".Equip"] = new ExpPattern("EquipCard");
-
-    patterns[".Weapon"] = new ExpPattern("Weapon");
-    patterns["slash"] = new ExpPattern("Slash");
-    patterns["jink"] = new ExpPattern("Jink");
-    patterns["peach"] = new  ExpPattern("Peach");
-    patterns["nullification"] = new ExpPattern("Nullification");
-    patterns["peach+analeptic"] = new ExpPattern("Peach,Analeptic");
-}
-
-ADD_PACKAGE(Standard)
 

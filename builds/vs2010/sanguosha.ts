@@ -2028,7 +2028,7 @@
         <location filename="../../src/dialog/mainwindow.ui" line="14"/>
         <location filename="../../src/dialog/mainwindow.cpp" line="152"/>
         <source>Sanguosha</source>
-        <translation>太阳神三国杀·国战0.5.1</translation>
+        <translation>太阳神三国杀·国战0.6.0</translation>
     </message>
     <message>
         <location filename="../../src/dialog/mainwindow.ui" line="28"/>

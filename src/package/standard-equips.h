@@ -112,12 +112,6 @@ public:
     virtual void onUninstall(ServerPlayer *player) const;
 };
 
-class StandardCardPackage: public Package {
-    Q_OBJECT
-
-public:
-    StandardCardPackage();
-};
 
 #endif
 

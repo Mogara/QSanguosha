@@ -632,7 +632,6 @@ function sgs.getProcessDefense(player, update)
 	end
 
 	if player:getArmor() and player:hasArmorEffect(player:getArmor():objectName()) then defense = defense + 2 end
-	if not player:getArmor() and player:hasSkill("yizhong") then defense = defense + 2 end
 	if player:getDefensiveHorse() then defense = defense + 0.5 end
 
 	if hasEightDiagram then
@@ -676,7 +675,7 @@ function sgs.getProcessDefense(player, update)
 	if player:hasSkill("yinghun") and player:getLostHp() > 0 then defense = defense + player:getLostHp() - 0.5 end
 	if player:hasSkill("tianxiang") then defense = defense + player:getHandcardNum() * 0.5 end
 	if player:hasSkill("buqu") then defense = defense + math.max(4 - player:getPile("buqu"):length(), 0) end
-	if player:hasSkill("guzhen") then defense = defense + 1 end
+	if player:hasSkill("guzheng") then defense = defense + 1 end
 	if player:hasSkill("dimeng") then defense = defense + 2 end
 	if player:hasSkill("keji") then defense = defense + player:getHandcardNum() * 0.5 end
 	if player:hasSkill("jieyin") and player:getHandcardNum() > 1 then defense = defense + 2 end
@@ -729,7 +728,6 @@ function sgs.getDefense(player, gameProcess, update)
 	end
 
 	if player:getArmor() then defense = defense + 2 end
-	if not player:getArmor() and player:hasSkill("yizhong") then defense = defense + 2 end
 
 	if hasEightDiagram then
 		defense = defense + 1.3
@@ -899,7 +897,7 @@ function SmartAI:getKeepValue(card, kept, Write)
 				elseif card:isKindOf("OffensiveHorse") then return -9.8
 				else return -9.7
 				end
-			elseif self.player:hasSkills("bazhen|yizhong") and card:isKindOf("Armor") then return -8
+			elseif self.player:hasSkill("bazhen") and card:isKindOf("Armor") then return -8
 			elseif self:needKongcheng() then return 5.0
 			elseif card:isKindOf("Armor") then return self:isWeak() and 5.2 or 3.2
 			elseif card:isKindOf("DefensiveHorse") then return self:isWeak() and 4.3 or 3.19
@@ -985,7 +983,7 @@ function SmartAI:getUseValue(card)
 		if self.weaponUsed and card:isKindOf("Weapon") then v = 2 end
 		if self.player:hasSkills("qiangxi") and card:isKindOf("Weapon") then v = 2 end
 		if self.player:hasSkill("kurou") and card:isKindOf("Crossbow") then return 9 end
-		if self.player:hasSkills("bazhen|yizhong") and card:isKindOf("Armor") then v = 2 end
+		if self.player:hasSkill("bazhen") and card:isKindOf("Armor") then v = 2 end
 
 		if self.player:hasSkills(sgs.lose_equip_skill) then return 10 end
 	elseif card:getTypeId() == sgs.Card_TypeBasic then
@@ -1560,13 +1558,12 @@ sgs.ai_choicemade_filter.Yiji.general = function(self, from, promptlist)
 	if from and to then
 		local callback = sgs.ai_Yiji_intention[reason]
 		if callback then
-			if type(callback) == "number" and not (self:needKongcheng(to, true) and #cards == 1)
-				and not (to:hasSkill("manjuan") and to:getPhase() == sgs.Player_NotActive) then
+			if type(callback) == "number" and not (self:needKongcheng(to, true) and #cards == 1) then
 				sgs.updateIntention(from, to, sgs.ai_Yiji_intention[reason])
 			elseif type(callback) == "function" then
 				callback(self, from, to, cards)
 			end
-		elseif not (self:needKongcheng(to, true) and #cards == 1) and not (to:hasSkill("manjuan") and to:getPhase() == sgs.Player_NotActive) then
+		elseif not (self:needKongcheng(to, true) and #cards == 1) then
 			sgs.updateIntention(from, to, -10)
 		end
 	end
@@ -1971,7 +1968,7 @@ function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_e
 			elseif card:isKindOf("OffensiveHorse") then return 1
 			elseif card:isKindOf("Weapon") then return 2
 			elseif card:isKindOf("DefensiveHorse") then return 3
-			elseif self.player:hasSkills("bazhen|yizhong") and card:isKindOf("Armor") then return 0
+			elseif self.player:hasSkill("bazhen") and card:isKindOf("Armor") then return 0
 			elseif card:isKindOf("Armor") then return 4
 			end
 		elseif self.player:hasSkills(sgs.lose_equip_skill) then return 5
@@ -2087,8 +2084,8 @@ function SmartAI:askForNullification(trick, from, to, positive)
 					end
 				else
 					if trick:isKindOf("Snatch") then return null_card end
-					if trick:isKindOf("Duel") and not from:hasSkill("wuyan") and self:isWeak(to) then return null_card end
-					if trick:isKindOf("FireAttack") and from:objectName() ~= to:objectName() and not from:hasSkill("wuyan") then
+					if trick:isKindOf("Duel") and self:isWeak(to) then return null_card end
+					if trick:isKindOf("FireAttack") and from:objectName() ~= to:objectName() then
 						if from:getHandcardNum() > 2
 							or self:isWeak(to)
 							or to:hasArmorEffect("Vine")
@@ -2117,7 +2114,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 					return null_card
 				end
 			end
-			if trick:isKindOf("AOE") and not (from:hasSkill("wuyan") and not (menghuo and trick:isKindOf("SavageAssault"))) then
+			if trick:isKindOf("AOE") and (menghuo and trick:isKindOf("SavageAssault")) then
 				if self.player:objectName() == to:objectName() then
 					if self.player:hasSkills("jieming|yiji") and
 						(self.player:getHp() > 1 or self:getCardsNum("Peach") > 0 or self:getCardsNum("Analeptic") > 0) then
@@ -2667,7 +2664,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 	for _, friend in ipairs(friends) do
 		if friend:getHp()<=2 and friend:faceUp() then
 			for _, hcard in ipairs(cards) do
-				if (hcard:isKindOf("Armor") and not friend:getArmor() and not friend:hasSkills("yizhong|bazhen"))
+				if (hcard:isKindOf("Armor") and not friend:getArmor() and not friend:hasSkill("bazhen"))
 					or (hcard:isKindOf("DefensiveHorse") and not friend:getDefensiveHorse()) then
 					return hcard, friend
 				end
@@ -2963,9 +2960,6 @@ function SmartAI:willUsePeachTo(dying)
 			if not same then return "." end
 		end
 		if dying:hasFlag("Kurou_toDie") and (not dying:getWeapon() or dying:getWeapon():objectName() ~= "Crossbow") then return "." end
-		if self.player:objectName() ~= dying:objectName() and dying:hasSkill("jiushi") and dying:faceUp() and dying:getHp()== 0 then
-			return "."
-		end
 
 		if (self.player:objectName() == dying:objectName()) then
 			card_str = self:getCardId("Analeptic")
@@ -3641,12 +3635,6 @@ function getCardsNum(class_name, player, from)
 		else
 			return num
 		end
-	elseif class_name == "Analeptic" then
-		if player:hasSkill("jiushi") then
-			return num + 1
-		else
-			return num
-		end
 	elseif class_name == "Nullification" then
 		if player:hasSkill("kanpo") then
 			return num + blacknull + (player:getHandcardNum() - shownum)*0.5
@@ -4244,7 +4232,7 @@ function SmartAI:useEquipCard(card, use)
 	elseif card:isKindOf("Armor") then
 		local lion = self:getCard("SilverLion")
 		if lion and self.player:isWounded() and not self.player:hasArmorEffect("SilverLion") and not card:isKindOf("SilverLion")
-			and not (self.player:hasSkills("bazhen|yizhong") and not self.player:getArmor()) then
+			and not (self.player:hasSkill("bazhen") and not self.player:getArmor()) then
 			use.card = lion
 			return
 		end
@@ -4334,7 +4322,7 @@ end
 function SmartAI:needToThrowArmor(player)
 	player = player or self.player
 	if not player:getArmor() or not player:hasArmorEffect(player:getArmor():objectName()) then return false end
-	if player:hasSkills("bazhen|yizhong") and not player:getArmor():isKindOf("EightDiagram") then return true end
+	if player:hasSkill("bazhen") and not player:getArmor():isKindOf("EightDiagram") then return true end
 	if self:evaluateArmor(player:getArmor(), player) <= -2 then return true end
 	if player:hasArmorEffect("SilverLion") and player:isWounded() then
 		if self:isFriend(player) then

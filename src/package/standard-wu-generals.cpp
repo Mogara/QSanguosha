@@ -1,12 +1,8 @@
-#include "general.h"
-#include "standard.h"
-#include "skill.h"
+#include "standard-wu-generals.h"
 #include "engine.h"
+#include "standard-basics.h"
+#include "standard-tricks.h"
 #include "client.h"
-#include "serverplayer.h"
-#include "room.h"
-#include "ai.h"
-#include "settings.h"
 
 ZhihengCard::ZhihengCard() {
     target_fixed = true;

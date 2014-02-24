@@ -1,12 +1,10 @@
-#include "general.h"
-#include "standard.h"
+#include "standard-qun-generals.h"
 #include "skill.h"
+#include "standard-basics.h"
+#include "standard-tricks.h"
+#include "standard-shu-generals.h"
 #include "engine.h"
 #include "client.h"
-#include "serverplayer.h"
-#include "room.h"
-#include "ai.h"
-#include "settings.h"
 
 class Jijiu: public OneCardViewAsSkill {
 public:
@@ -1228,8 +1226,8 @@ QingchengCard::QingchengCard() {
 }
 
 bool QingchengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if (to_select->isLord() && to_select->getActualGeneral2Name().contains("sujiang")) return false;
-    if (to_select->getActualGeneral1Name().contains("sujiang") && to_select->getActualGeneral2Name().contains("sujiang")) return false;
+    if ((to_select->isLord() || to_select->getGeneralName().contains("sujiang"))
+        && to_select->getGeneral2Name().contains("sujiang")) return false;
     return targets.isEmpty() && to_select != Self && to_select->hasShownAllGenerals();
 }
 
@@ -1238,9 +1236,9 @@ void QingchengCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = player->getRoom();
 
     QStringList choices;
-    if (!player->isLord() && !player->getActualGeneral1Name().contains("sujiang"))
+    if (!to->isLord() && !to->getGeneralName().contains("sujiang"))
         choices << "head_general";
-    if (!player->getActualGeneral2Name().contains("sujiang"))
+    if (!to->getGeneral2Name().contains("sujiang"))
         choices << "deputy_general";
 
     QString choice;
