@@ -632,7 +632,6 @@ function sgs.getProcessDefense(player, update)
 	end
 
 	if player:getArmor() and player:hasArmorEffect(player:getArmor():objectName()) then defense = defense + 2 end
-	if not player:getArmor() and player:hasSkill("yizhong") then defense = defense + 2 end
 	if player:getDefensiveHorse() then defense = defense + 0.5 end
 
 	if hasEightDiagram then
