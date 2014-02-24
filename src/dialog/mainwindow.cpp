@@ -69,6 +69,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
     scene = NULL;
 
     connection_dialog = new ConnectionDialog(this);
@@ -201,7 +202,7 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
 
     client->disconnectFromHost();
 
-    static QString link = "https://github.com/Fsu0413/QSanguosha-For-Hegemony";
+    static QString link = "http://pan.baidu.com/share/home?uk=3173324412";
     QString text = tr("Server version is %1, client version is %2 <br/>").arg(server_version).arg(client_version);
     if (server_version > client_version)
         text.append(tr("Your client version is older than the server's, please update it <br/>"));
