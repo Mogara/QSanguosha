@@ -1,4 +1,4 @@
-#if defined(WIN32) && defined(VS2010)
+#if defined(WIN32) && defined(VS2010) && !defined(QT_NO_DEBUG)
 #include <vld.h>
 #endif
 
