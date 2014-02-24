@@ -231,8 +231,7 @@ kurou_skill.getTurnUseCard = function(self, inclusive)
 		for _, enemy in ipairs(self.enemies) do
 			if self.player:canSlash(enemy, nil, true) and self:slashIsEffective(slash, enemy)
 			    and not (enemy:hasSkill("kongcheng") and enemy:isKongcheng())
-				and not (enemy:hasSkills("fankui|guixin") and not self.player:hasSkill("paoxiao"))
-				and not enemy:hasSkills("fenyong|jilei|zhichi")
+				and not (enemy:hasSkills("fankui") and not self.player:hasSkill("paoxiao"))
 				and sgs.isGoodTarget(enemy, self.enemies, self) and not self:slashProhibit(slash, enemy) and self.player:getHp() > 1 then
 				return kuroucard
 			end
@@ -641,10 +640,7 @@ function SmartAI:getWoundedFriend(maleOnly)
 
 	for _, friend in ipairs(self.friends) do
 		if friend:isLord() then
-			if friend:getMark("hunzi") == 0 and friend:hasSkill("hunzi")
-					and self:getEnemyNumBySeat(self.player,friend) <= (friend:getHp()>= 2 and 1 or 0) then
-				addToList(friend, 2)
-			elseif self:needToLoseHp(friend, nil, nil, true, true) then
+			if self:needToLoseHp(friend, nil, nil, true, true) then
 				addToList(friend, 2)
 			else
 				addToList(friend, 1)
@@ -970,7 +966,7 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 
 	for _, enemy in ipairs(self.enemies) do
 		if (enemy:getHp() <= dmg.damage and enemy:isAlive()) then
-			if (enemy:getHandcardNum() <= 2 or enemy:hasSkills("guose|leiji|ganglie|enyuan|qingguo|kongcheng") or enemy:containsTrick("indulgence"))
+			if (enemy:getHandcardNum() <= 2 or enemy:hasSkills("guose|leiji|ganglie|qingguo|kongcheng") or enemy:containsTrick("indulgence"))
 				and self:canAttack(enemy, dmg.from or self.room:getCurrent(), dmg.nature)
 				and not (dmg.card and dmg.card:getTypeId() == sgs.Card_TypeTrick and enemy:hasSkill("wuyan")) then
 				return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. enemy:objectName()
@@ -996,7 +992,7 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 	for _, enemy in ipairs(self.enemies) do
 		if (enemy:getLostHp() <= 1 or dmg.damage > 1) and enemy:isAlive() then
 			if (enemy:getHandcardNum() <= 2)
-				or enemy:containsTrick("indulgence") or enemy:hasSkills("guose|leiji|ganglie|enyuan|qingguo|kongcheng")
+				or enemy:containsTrick("indulgence") or enemy:hasSkills("guose|leiji|ganglie|qingguo|kongcheng")
 				and self:canAttack(enemy, (dmg.from or self.room:getCurrent()), dmg.nature) then
 				return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. enemy:objectName() end
 		end

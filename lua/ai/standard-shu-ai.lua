@@ -91,11 +91,7 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 			if dummy_use.card then continue end
 		end
 
-		if friend:hasSkill("enyuan") and #cards >= 1 then
-			use.card = sgs.Card_Parse("@RendeCard=" .. card:getId() .. "+" .. cards[1]:getId() .. "&rende")
-		else
-			use.card = sgs.Card_Parse("@RendeCard=" .. card:getId() .. "&rende")
-		end
+		use.card = sgs.Card_Parse("@RendeCard=" .. card:getId() .. "&rende")
 		if use.to then use.to:append(friend) return end
 	end
 

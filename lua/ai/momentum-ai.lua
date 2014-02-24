@@ -258,97 +258,10 @@ end
 
 sgs.ai_skill_invoke.chuanxin = function(self, data)
 	local damage = data:toDamage()
-	if not damage.to then return end
-	local invoke
-	local to = damage.to
-	if to:getMark("chuanxin_" .. self.player:objectName()) == 0 and to:getVisibleSkillList():length() > 1 then
-		local count = 0
-		for _, skill in sgs.qlist(to:getVisibleSkillList()) do
-			if not skill:isAttachedLordSkill() then count = count + 1 end
-		end
-		if count > 1 then
-			for _, skill in ipairs(("benghuai|shiyong|yaowu|wumou|chanyuan|jinjiu|tongji"):split("|")) do
-				if to:hasSkill(skill) then
-					if self:isFriend(to) then return true
-					elseif (skill == "benghuai" or skill == "shiyong") and to:getMaxHp() <= 3 then return true
-					end
-					return false
-				end
-			end
-			invoke = true
-		end
-	end
-	if to:getEquips():length() > 0 then
-		if self:isFriend(to) then
-			return self:needToLoseHp(to) and to:getEquips():length() == 1
-					and (self:needToThrowArmor(to) or (to:hasSkills(sgs.lose_equip_skill)
-														and (to:getOffensiveHorse() or (to:getWeapon() and self:evaluateWeapon(to:getWeapon(), to) < 4))))
-		elseif to:getHp() >= 2 and to:hasSkills(sgs.lose_equip_skill) and (not to:getArmor() or self:needToThrowArmor(to)) then
-			return false
-		end
-		invoke = true
-	end
-	return (invoke and self:isEnemy(to) and not self:hasHeavySlashDamage(self.player, damage.card, to))
-			or (not invoke and self:isFriend(to))
+	return self:isEnemy(damage.to) and not self:hasHeavySlashDamage(self.player, damage.card, damage.to)
 end
 
-sgs.ai_skill_choice.chuanxin = function(self, choices, data)
-	if self.player:hasSkills("benghuai|shiyong}yaowu|wumou|chanyuan|jinjiu|tongji") then return "detach" end
-	if self:needToLoseHp(self.player) or self:needToThrowArmor() or self.player:getEquips():length() <= 2 or self.player:hasSkills(sgs.lose_equip_skill) then
-		return "throw"
-	end
-	return (not self:isWeak()) and "throw" or "detach"
-end
-
-sgs.ai_skill_choice.chuanxin_lose = function(self, choices, data)
-	for _, skill in ipairs(("benghuai|shiyong|yaowu|wumou|chanyuan|jinjiu|tongji|huwei|pianyi|xiaoxi"):split("|")) do
-		if self.player:hasSkill(skill) then return skill end
-	end
-	for _, skill in sgs.qlist(self.player:getVisibleSkillList()) do
-		if (skill:getFrequency() == sgs.Skill_Wake and (self.player:getMark(skill:objectName()) > 0 or skill:objectName() == "baoling"))
-			or (skill:getFrequency() == sgs.Skill_Limited and self.player:getMark(skill:getLimitMark()) == 0) then
-			return skill:objectName()
-		end
-	end
-	if self.player:hasSkill("cuorui") and self.player:getMark("CuoruiSkipJudge") > 0 then return "cuorui" end
-	if self.player:hasSkills("paoxiao+huxiao") then return "huxiao" end
-	if self.player:hasSkills("fankui+duodao") then return "duodao" end
-	if self.player:hasSkills("jilve+wansha") then return "wansha" end
-	if self.player:hasSkills("wuqian+wushuang") then return "wushuang" end
-	if self.player:hasSkills("tianfu+kanpo") then return "kanpo" end
-	if self.player:hasSkills("fuhun|nosfuhun") then
-		if choices:matchOne("paoxiao") then return "paoxiao" end
-		if choices:matchOne("wusheng") then return "wusheng" end
-	end
-	if self.player:hasSkill("luoyan") and self.player:getPile("xingwu"):length() > 0 then
-		if choices:matchOne("tianxiang") then return "tianxiang" end
-		if choices:matchOne("liuli") then return "liuli" end
-	end
-	if self.player:hasSkill("baobian") then
-		for _, skill in ipairs(("paoxiao|shensu|tiaoxin"):split("|")) do
-			if self.player:hasSkill(skill) then return skill end
-		end
-	end
-	if self.player:hasSkill("mouduan") and (self.player:getMark("@wu") > 0 or self.player:getMark("@wen") > 0) then
-		for _, skill in ipairs(("jiang|qianxun|yingzi|keji"):split("|")) do
-			if self.player:hasSkill(skill) then return skill end
-		end
-	end
-	if self.player:hasSkill("huashen") then
-		local huashen_skill = self.player:getTag("HuashenSkill"):toString()
-		if #huashen_skill > 0 and self.player:hasSkill(huashen_skill) then return huashen_skill end
-	end
-	if self.player:hasSkill("xiaode") then
-		local xiaode_skill = self.player:getTag("XiaodeSkill"):toString()
-		if #xiaode_skill > 0 and self.player:hasSkill(xiaode_skill) then return xiaode_skill end
-	end
-	for _, skill in sgs.qlist(self.player:getVisibleSkillList()) do
-		if skill:isLordSkill() then return skill:objectName() end
-	end
-	for _, skill in ipairs(("guixiu|suishi|weidi|xinsheng|huoshou|lianpo|hongyan|mashu|jueqing|yicong|tannang|feiying"):split("|")) do
-		if self.player:hasSkill(skill) then return skill end
-	end
-end
+sgs.ai_skill_choice.chuanxin = "discard"
 
 sgs.ai_skill_invoke.wuxin = true
 

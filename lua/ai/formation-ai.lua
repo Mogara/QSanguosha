@@ -78,7 +78,7 @@ local function huyuan_validate(self, equip_type, is_handcard)
 	if is_handcard then targets = self.friends else targets = self.friends_noself end
 	if equip_type == "SilverLion" then
 		for _, enemy in ipairs(self.enemies) do
-			if enemy:hasSkills("yizhong|bazhen") then table.insert(targets, enemy) end
+			if enemy:hasSkill("bazhen") then table.insert(targets, enemy) end
 		end
 	end
 	for _, friend in ipairs(targets) do
@@ -89,7 +89,7 @@ local function huyuan_validate(self, equip_type, is_handcard)
 				break
 			end
 		end
-		if not has_equip and not ((equip_type == "Armor" or equip_type == "SilverLion") and friend:hasSkills("yizhong|bazhen")) then
+		if not has_equip and not ((equip_type == "Armor" or equip_type == "SilverLion") and friend:hasSkill("bazhen")) then
 			self:sort(self.enemies, "defense")
 			for _, enemy in ipairs(self.enemies) do
 				if friend:distanceTo(enemy) == 1 and self.player:canDiscard(enemy, "he") then
@@ -164,7 +164,7 @@ sgs.ai_skill_playerchosen.huyuan = function(self, targets)
 end
 
 sgs.ai_card_intention.HuyuanCard = function(self, card, from, to)
-	if to[1]:hasSkills("bazhen|yizhong") then
+	if to[1]:hasSkill("bazhen") then
 		if sgs.Sanguosha:getCard(card:getEffectiveId()):isKindOf("SilverLion") then
 			sgs.updateIntention(from, to[1], 10)
 			return
@@ -387,7 +387,7 @@ local function will_discard_zhendu(self)
 			local slash = sgs.Sanguosha:cloneCard("slash")
 			local trend = 3
 			if current:hasWeapon("axe") then trend = trend - 1
-			elseif current:hasSkills("liegong|kofliegong|tieji|wushuang|niaoxiang") then trend = trend - 0.4 end
+			elseif current:hasSkills("liegong|tieji|wushuang|niaoxiang") then trend = trend - 0.4 end
 			for _, enemy in ipairs(self.enemies) do
 				if current:canSlash(enemy) and not self:slashProhibit(slash, enemy, current)
 					and self:slashIsEffective(slash, enemy, current) and sgs.isGoodTarget(enemy, self.enemies, self, true) then

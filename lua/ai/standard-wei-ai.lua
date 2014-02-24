@@ -134,7 +134,7 @@ function sgs.ai_cardneed.guicai(to, card, self)
 	for _, player in sgs.qlist(self.room:getAllPlayers()) do
 		if self:getFinalRetrial(to) == 1 then
 			if player:containsTrick("lightning") then
-				return card:getSuit() == sgs.Card_Spade and card:getNumber() >= 2 and card:getNumber() <= 9 and not self.player:hasSkills("hongyan|wuyan")
+				return card:getSuit() == sgs.Card_Spade and card:getNumber() >= 2 and card:getNumber() <= 9 and not self.player:hasSkill("hongyan")
 			end
 			if self:isFriend(player) and self:willSkipDrawPhase(player) then
 				return card:getSuit() == sgs.Card_Club
@@ -273,7 +273,7 @@ function SmartAI:findTuxiTarget()
 	end
 
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:hasSkills("jijiu|qingnang|xinzhan|leiji|jieyin|beige|kanpo|liuli|qiaobian|zhiheng|guidao|tianxiang|lijian") then
+		if enemy:hasSkills("jijiu|qingnang|leiji|jieyin|beige|kanpo|liuli|qiaobian|zhiheng|guidao|tianxiang|lijian") then
 			if add_player(enemy) == 2 then return targets end
 		end
 	end
@@ -953,7 +953,7 @@ sgs.ai_suit_priority.duanliang= "club|spade|diamond|heart"
 function sgs.ai_skill_invoke.jushou(self, data)
 	if not self.player:faceUp() then return true end
 	for _, friend in ipairs(self.friends) do
-		if friend:hasSkills("fangzhu|jilve") then return true end
+		if friend:hasSkill("fangzhu") then return true end
 	end
 	return self:isWeak()
 end
