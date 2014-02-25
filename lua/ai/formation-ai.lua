@@ -1,3 +1,5 @@
+sgs.ai_skill_invoke.tuntian = true
+
 local jixi_skill = {}
 jixi_skill.name = "jixi"
 table.insert(sgs.ai_skills, jixi_skill)
