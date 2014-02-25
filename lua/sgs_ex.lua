@@ -465,6 +465,10 @@ function sgs.CreateOneCardViewAsSkill(spec)
 
 	local skill = sgs.LuaViewAsSkill(spec.name, response_pattern)
 
+	if spec.relate_to_place then
+		skill:setRelateToPlace(spec.relate_to_place)
+	end
+
 	function skill:view_as(cards)
 		if #cards ~= 1 then return nil end
 		return spec.view_as(self, cards[1])
@@ -497,6 +501,10 @@ function sgs.CreateZeroCardViewAsSkill(spec)
 
 	local skill = sgs.LuaViewAsSkill(spec.name, response_pattern)
 
+	if spec.relate_to_place then
+		skill:setRelateToPlace(spec.relate_to_place)
+	end
+
 	function skill:view_as(cards)
 		if #cards > 0 then return nil end
 		return spec.view_as(self)
@@ -518,6 +526,10 @@ function sgs.CreateArraySummonSkill(spec)
 	assert(spec.array_summon_card)
 
 	local skill = sgs.LuaViewAsSkill(spec.name, "")
+
+	if spec.relate_to_place then
+		skill:setRelateToPlace(spec.relate_to_place)
+	end
 
 	function skill:view_as(cards)
 		if #cards > 0 then return nil end
