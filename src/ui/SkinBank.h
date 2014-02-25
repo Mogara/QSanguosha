@@ -275,14 +275,8 @@ public:
 
         //role combo box
         QSize m_roleNormalBgSize;
-        QRect m_roleWeiRect;
-        QRect m_roleQunRect;
-        QRect m_roleShuRect;
-        QRect m_roleWuRect;
-        QColor m_roleWeiColor;
-        QColor m_roleQunColor;
-        QColor m_roleShuColor;
-        QColor m_roleWuColor;
+        QHash<QString, QRect> m_rolesRect;
+        QHash<QString, QColor> m_rolesColor;
         QColor m_roleDarkColor;
 
         //Choose General Box
@@ -335,6 +329,10 @@ public:
     static const char *S_SKIN_KEY_PHOTO;
     static const char *S_SKIN_KEY_COMMON;
     static const char *S_SKIN_KEY_ROOM;
+
+    // role box
+    static const char *S_SKIN_KEY_ROLE_BOX_RECT;
+    static const char *S_SKIN_KEY_ROLE_BOX_COLOR;
 
     //bg
     static const char *S_SKIN_KEY_TABLE_BG;

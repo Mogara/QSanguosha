@@ -1,6 +1,7 @@
 #include "rolecombobox.h"
 #include "SkinBank.h"
 #include "roomscene.h"
+#include "engine.h"
 
 void RoleComboBox::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     if (!fixed_role.isEmpty() || circle) return;
@@ -14,14 +15,14 @@ void RoleComboBox::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         update();
         return;
     }
-    if (G_COMMON_LAYOUT.m_roleWeiRect.contains(point))
-        wei_excluded = !wei_excluded;
-    else if (G_COMMON_LAYOUT.m_roleQunRect.contains(point))
-        qun_excluded = !qun_excluded;
-    else if (G_COMMON_LAYOUT.m_roleShuRect.contains(point))
-        shu_excluded = !shu_excluded;
-    else if (G_COMMON_LAYOUT.m_roleWuRect.contains(point))
-        wu_excluded = !wu_excluded;
+    QStringList kingdoms = Sanguosha->getKingdoms();
+    kingdoms.removeAll("god");
+    foreach(QString kingdom, kingdoms) {
+        if (G_COMMON_LAYOUT.m_rolesRect.value(kingdom, QRect()).contains(point)) {
+            kingdoms_excluded[kingdom] = !kingdoms_excluded.value(kingdom);
+            break;
+        }
+    }
     update();
 }
 
@@ -47,6 +48,8 @@ void RoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QW
         update();
         return;
     }
+    QStringList kingdoms = Sanguosha->getKingdoms();
+    kingdoms.removeAll("god");
     if (!expanding) {
         if (circle) {
             QPixmap pix;
@@ -57,31 +60,22 @@ void RoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QW
             QPen pen(Qt::black);
             pen.setWidth(1);
             painter->setPen(pen);
-            //paint wei
-            painter->setBrush(QBrush(wei_excluded ? grey : G_COMMON_LAYOUT.m_roleWeiColor));
-            painter->drawRect(COMPACT_BORDER_WIDTH, COMPACT_BORDER_WIDTH, COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH);
-            //paint qun
-            painter->setBrush(QBrush(qun_excluded ? grey : G_COMMON_LAYOUT.m_roleQunColor));
-            painter->drawRect(COMPACT_BORDER_WIDTH * 2 + COMPACT_ITEM_LENGTH, COMPACT_BORDER_WIDTH, COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH);
-            //paint shu
-            painter->setBrush(QBrush(shu_excluded ? grey : G_COMMON_LAYOUT.m_roleShuColor));
-            painter->drawRect(COMPACT_BORDER_WIDTH, COMPACT_BORDER_WIDTH * 2 + COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH);
-            //paint wu
-            painter->setBrush(QBrush(wu_excluded ? grey : G_COMMON_LAYOUT.m_roleWuColor));
-            painter->drawRect(COMPACT_BORDER_WIDTH * 2 + COMPACT_ITEM_LENGTH, COMPACT_BORDER_WIDTH * 2 + COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH);
+            
+            int index = 0;
+            foreach(QString kingdom, kingdoms) {
+                painter->setBrush(QBrush(kingdoms_excluded.value(kingdom) ? grey : G_COMMON_LAYOUT.m_rolesColor.value(kingdom)));
+                painter->drawRect(COMPACT_BORDER_WIDTH + ((index % 2) ? COMPACT_BORDER_WIDTH + COMPACT_ITEM_LENGTH : 0), COMPACT_BORDER_WIDTH + (COMPACT_BORDER_WIDTH + COMPACT_ITEM_LENGTH) * (index / 2), COMPACT_ITEM_LENGTH, COMPACT_ITEM_LENGTH);
+                ++ index;
+            }
         }
     } else {
         QPixmap pix = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_EXPANDING_ROLE_BOX);
         painter->drawPixmap(0, 0, pix);
 
-        if (wei_excluded)
-            painter->drawPixmap(G_COMMON_LAYOUT.m_roleWeiRect, G_ROOM_SKIN.getPixmap (QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "wei"));
-        if (qun_excluded)
-            painter->drawPixmap(G_COMMON_LAYOUT.m_roleQunRect, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "qun"));
-        if (shu_excluded)
-            painter->drawPixmap(G_COMMON_LAYOUT.m_roleShuRect, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "shu"));
-        if (wu_excluded)
-            painter->drawPixmap(G_COMMON_LAYOUT.m_roleWuRect, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, "wu"));
+        foreach(QString kingdom, kingdoms) {
+            if (kingdoms_excluded.value(kingdom))
+                painter->drawPixmap(G_COMMON_LAYOUT.m_rolesRect.value(kingdom), G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK, kingdom));
+        }
     }
 }
 
@@ -91,8 +85,13 @@ QRectF RoleComboBox::boundingRect() const {
 }
 
 RoleComboBox::RoleComboBox(QGraphicsItem *photo, bool circle)
-    : QGraphicsObject(photo), circle(circle), expanding(false), wei_excluded(false), qun_excluded(false), shu_excluded(false), wu_excluded(false)
+    : QGraphicsObject(photo), circle(circle), expanding(false)
 {
+    QStringList kingdoms = Sanguosha->getKingdoms();
+    kingdoms.removeAll("god");
+    foreach(QString kingdom, kingdoms)
+        kingdoms_excluded[kingdom] = false;
+
     connect(RoomSceneInstance, SIGNAL(cancel_role_box_expanding()), this, SLOT(mouseClickedOutside()));
     setAcceptedMouseButtons(Qt::LeftButton);
 }

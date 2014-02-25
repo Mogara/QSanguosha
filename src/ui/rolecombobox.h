@@ -21,7 +21,7 @@ private:
 
     bool circle;
     bool expanding;
-    bool wei_excluded, qun_excluded, shu_excluded, wu_excluded;
+    QMap<QString, bool> kingdoms_excluded;
     QString fixed_role;
 
 protected:
