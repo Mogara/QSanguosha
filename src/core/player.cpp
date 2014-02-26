@@ -159,32 +159,6 @@ void Player::clearFlags() {
 }
 
 int Player::getAttackRange(bool include_weapon) const{
-    /*
-    int original_range = 1;
-    if (hasFlag("InfinityAttackRange") || getMark("InfinityAttackRange") > 0) original_range = 10000; // Actually infinity
-    int weapon_range = 0;
-    if (include_weapon && weapon != NULL) {
-        const Weapon *card = qobject_cast<const Weapon *>(weapon->getRealCard());
-        Q_ASSERT(card);
-        weapon_range = card->getRange();
-    }
-
-    bool six_swords_effect = false;
-    foreach(const Player *p, getAliveSiblings()) {
-        if (p->hasWeapon("SixSwords") && isFriendWith(p))
-            six_swords_effect = true;
-    }
-
-    bool liegong_lord_effect = false;
-    if (hasSkill("liegong")){
-        const Player *lord = getLord();
-        if (lord != NULL && lord->hasLordSkill("shouyue"))
-            liegong_lord_effect = true;
-    }
-
-    return qMax(original_range, weapon_range) + (six_swords_effect ? 1 : 0) + (liegong_lord_effect ? 1 : 0);
-    */
-
     if (hasFlag("InfinityAttackRange") || getMark("InfinityAttackRange") > 0)
         return 1000;
 
@@ -202,7 +176,12 @@ int Player::getAttackRange(bool include_weapon) const{
         weapon_range = card->getRange();
     }
 
-    return qMax(original_range, weapon_range) + Sanguosha->correctAttackRange(this, include_weapon, false);
+    int real_range = qMax(original_range, weapon_range) + Sanguosha->correctAttackRange(this, include_weapon, false);
+
+    if (real_range < 0)
+        real_range = 0;
+
+    return real_range;
 }
 
 bool Player::inMyAttackRange(const Player *other) const{
