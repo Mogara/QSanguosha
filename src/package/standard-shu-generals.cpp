@@ -631,7 +631,7 @@ public:
     }
 
     virtual int getExtra(const Player *target, bool include_weapon) const{
-        if (target->hasSkill("liegong")){
+        if (target->hasShownSkill(Sanguosha->getSkill("liegong"))){
             const Player *lord = target->getLord();
 
             if (lord != NULL && lord->hasSkill("shouyue")){

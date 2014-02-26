@@ -58,6 +58,11 @@ LuaTargetModSkill::LuaTargetModSkill(const char *name, const char *pattern)
     this->pattern = pattern;
 }
 
+LuaAttackRangeSkill::LuaAttackRangeSkill(const char *name)
+    : AttackRangeSkill(name), extra_func(0), fixed_func(0)
+{
+}
+
 static QHash<QString, const LuaSkillCard *> LuaSkillCards;
 static QHash<QString, QString> LuaSkillCardsSkillName;
 
