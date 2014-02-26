@@ -1000,7 +1000,8 @@ int Engine::correctMaxCards(const Player *target, bool fixed) const{
     foreach (const MaxCardsSkill *skill, maxcards_skills) {
         if (fixed) {
             int f = skill->getFixed(target);
-            if (f >= 0) return f;
+            if (f > extra)
+                extra = f;
         } else {
             extra += skill->getExtra(target);
         }
@@ -1043,13 +1044,14 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
 }
 
 
-int Engine::correctAttackRange(const Player *target, bool include_weapon /* = true */, bool fixed /* = false */) const{
+int Engine::correctAttackRange(const Player *target, bool include_weapon, bool fixed) const{
     int extra = 0;
 
     foreach (const AttackRangeSkill *skill, attackrange_skills) {
         if (fixed) {
             int f = skill->getFixed(target, include_weapon);
-            if (f >= 0) return f;
+            if (f > extra)
+                extra = f;
         } else {
             extra += skill->getExtra(target, include_weapon);
         }
