@@ -150,6 +150,8 @@ void Engine::addSkills(const QList<const Skill *> &all_skills) {
             maxcards_skills << qobject_cast<const MaxCardsSkill *>(skill);
         else if (skill->inherits("TargetModSkill"))
             targetmod_skills << qobject_cast<const TargetModSkill *>(skill);
+        else if (skill->inherits("AttackRangeSkill"))
+            attackrange_skills << qobject_cast<const AttackRangeSkill *>(skill);
         else if (skill->inherits("TriggerSkill")) {
             const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
             if (trigger_skill && trigger_skill->isGlobal())
@@ -168,6 +170,10 @@ QList<const MaxCardsSkill *> Engine::getMaxCardsSkills() const{
 
 QList<const TargetModSkill *> Engine::getTargetModSkills() const{
     return targetmod_skills;
+}
+
+QList<const AttackRangeSkill *> Engine::getAttackRangeSkills() const{
+    return attackrange_skills;
 }
 
 QList<const TriggerSkill *> Engine::getGlobalTriggerSkills() const{
@@ -1036,3 +1042,18 @@ int Engine::correctCardTarget(const TargetModSkill::ModType type, const Player *
     return x;
 }
 
+
+int Engine::correctAttackRange(const Player *target, bool include_weapon /* = true */, bool fixed /* = false */) const{
+    int extra = 0;
+
+    foreach (const AttackRangeSkill *skill, attackrange_skills) {
+        if (fixed) {
+            int f = skill->getFixed(target, include_weapon);
+            if (f >= 0) return f;
+        } else {
+            extra += skill->getExtra(target, include_weapon);
+        }
+    }
+
+    return extra;
+}

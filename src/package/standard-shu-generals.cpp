@@ -625,6 +625,23 @@ private:
     }
 };
 
+class LiegongRange: public AttackRangeSkill{
+public:
+    LiegongRange(): AttackRangeSkill("#liegong-for-lord"){
+    }
+
+    virtual int getExtra(const Player *target, bool include_weapon) const{
+        if (target->hasSkill("liegong")){
+            const Player *lord = target->getLord();
+
+            if (lord != NULL && lord->hasSkill("shouyue")){
+                return 1;
+            }
+        }
+        return 0;
+    }
+};
+
 
 class KuangguGlobal: public TriggerSkill{
 public:
@@ -1432,6 +1449,8 @@ void StandardPackage::addShuGenerals()
     General *huangzhong = new General(this, "huangzhong", "shu"); // SHU 008
     huangzhong->addCompanion("weiyan");
     huangzhong->addSkill(new Liegong);
+    huangzhong->addSkill(new LiegongRange);
+    related_skills.insertMulti("liegong", "#liegong-for-lord");
 
     General *weiyan = new General(this, "weiyan", "shu"); // SHU 009
     weiyan->addSkill(new Kuanggu);

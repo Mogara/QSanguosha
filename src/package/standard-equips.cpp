@@ -387,6 +387,21 @@ SixSwords::SixSwords(Suit suit, int number)
     setObjectName("SixSwords");
 }
 
+class SixSwordsSkill: public AttackRangeSkill{
+public:
+    SixSwordsSkill(): AttackRangeSkill("SixSwords"){
+    }
+
+    virtual int getExtra(const Player *target, bool include_weapon) const{
+        foreach (const Player *p, target->getAliveSiblings()){
+            if (p->hasWeapon("SixSwords") && p->isFriendWith(target) && p->getMark("Equips_Nullified_to_Yourself") == 0)
+                return 1;
+        }
+
+        return 0;
+    }
+};
+
 Triblade::Triblade(Card::Suit suit, int number): Weapon(suit, number, 3){
     setObjectName("Triblade");
 }
