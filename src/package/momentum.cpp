@@ -582,10 +582,11 @@ public:
     }
 };
 
-class Hunshang: public PhaseChangeSkill {
+class Hunshang: public TriggerSkill {
 public:
-    Hunshang(): PhaseChangeSkill("hunshang") {
+    Hunshang(): TriggerSkill("hunshang") {
         frequency = Compulsory;
+        events << GameStart << EventPhaseStart;
         relate_to_place = "deputy";
     }
 
@@ -593,14 +594,23 @@ public:
         return false;
     }
 
-    virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const {
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const {
+        if (TriggerSkill::triggerable(player).isEmpty()) return QStringList();
+        if (triggerEvent == GameStart) {
+            const Skill *yinghun = Sanguosha->getSkill("sunce_yinghun");
+            if (yinghun != NULL && yinghun->inherits("TriggerSkill")){
+                const TriggerSkill *yinghun_trigger = qobject_cast<const TriggerSkill *>(yinghun);
+                room->getThread()->addTriggerSkill(yinghun_trigger);
+            }
+
+            return QStringList();
+        }
         if (player != NULL && player->getPhase() == Player::NotActive && player->getMark("hunshang") > 0){
             player->setMark("hunshang",0);
             room->handleAcquireDetachSkills(player, "-sunce_yinghun|-sunce_yingzi", true);
             return QStringList();
         }
-        return (!PhaseChangeSkill::triggerable(player).isEmpty()
-            && (player->getPhase() == Player::Start) && player->getHp() == 1) ? QStringList(objectName()) : QStringList();
+        return (player->getPhase() == Player::Start && player->getHp() == 1) ? QStringList(objectName()) : QStringList();
     }
 
     virtual bool cost(TriggerEvent , Room* room, ServerPlayer *player, QVariant &) const{
@@ -612,16 +622,12 @@ public:
         return false;
     }
 
-    virtual bool onPhaseChange(ServerPlayer *target) const{
+    virtual bool effect(TriggerEvent , Room* room, ServerPlayer *target, QVariant &) const{
         QStringList skills;
         skills << "sunce_yinghun!" << "sunce_yingzi!";
-        target->getRoom()->handleAcquireDetachSkills(target, skills);
+        room->handleAcquireDetachSkills(target, skills);
         target->setMark("hunshang",1);
         return false;
-    }
-
-    virtual int getPriority() const{
-        return 3;
     }
 };
 
