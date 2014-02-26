@@ -996,7 +996,9 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
 
 void Player::addQinggangTag(const Card *card) {
     QStringList qinggang = this->tag["Qinggang"].toStringList();
-    qinggang.append(card->toString());
+    QString card_string = card->toString();
+    if (!qinggang.contains(card_string))
+        qinggang << card_string;
     this->tag["Qinggang"] = QVariant::fromValue(qinggang);
 }
 
