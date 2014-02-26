@@ -24,6 +24,8 @@ const char *QSanRoomSkin::S_SKIN_KEY_PHOTO = "photo";
 const char *QSanRoomSkin::S_SKIN_KEY_ROOM = "room";
 const char *QSanRoomSkin::S_SKIN_KEY_COMMON = "common";
 const char *QSanRoomSkin::S_SKIN_KEY_DASHBOARD = "dashboard";
+const char *QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_RECT = "roleBoxRect-%1";
+const char *QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_COLOR = "roleBoxColor-%1";
 
 // buttons
 const char *QSanRoomSkin::S_SKIN_KEY_BUTTON = "button-%1";
@@ -793,14 +795,12 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         _m_commonLayout.m_hpFont[i].tryParse(config["magatamaFont"][i]);
 
     tryParse(config["roleNormalBgSize"], _m_commonLayout.m_roleNormalBgSize);
-    tryParse(config["roleWeiRect"], _m_commonLayout.m_roleWeiRect);
-    tryParse(config["roleQunRect"], _m_commonLayout.m_roleQunRect);
-    tryParse(config["roleShuRect"], _m_commonLayout.m_roleShuRect);
-    tryParse(config["roleWuRect"], _m_commonLayout.m_roleWuRect);
-    tryParse(config["roleWeiColor"], _m_commonLayout.m_roleWeiColor);
-    tryParse(config["roleQunColor"], _m_commonLayout.m_roleQunColor);
-    tryParse(config["roleShuColor"], _m_commonLayout.m_roleShuColor);
-    tryParse(config["roleWuColor"], _m_commonLayout.m_roleWuColor);
+    QStringList kingdoms = Sanguosha->getKingdoms();
+    kingdoms.removeAll("god");
+    foreach(QString kingdom, kingdoms) {
+        tryParse(config[QString(S_SKIN_KEY_ROLE_BOX_RECT).arg(kingdom).toLatin1().constData()], _m_commonLayout.m_rolesRect[kingdom]);
+        tryParse(config[QString(S_SKIN_KEY_ROLE_BOX_COLOR).arg(kingdom).toLatin1().constData()], _m_commonLayout.m_rolesColor[kingdom]);
+    }
     tryParse(config["roleDarkColor"], _m_commonLayout.m_roleDarkColor);
     tryParse(config["generalBoxBgColor"], _m_commonLayout.m_chooseGeneralBoxBackgroundColor);
     tryParse(config["generalBoxBorderColor"], _m_commonLayout.m_chooseGeneralBoxBorderColor);

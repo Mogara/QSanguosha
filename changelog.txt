@@ -1,7 +1,21 @@
-﻿QSanguosha-Hegemony (QSGSH) Version 0.6.0 beta
+﻿QSanguosha-Hegemony (QSGSH) Version 0.6.1 beta
 
 
   Change Log / Release Notes
+  
+0.6.1 beta 
+-----------------------------
+  Bugs Fixed:
+  +AI不发动屯田
+  
+  API Changes:
+  +修复lua主将技/副将技无效的问题
+  
+  +开放添加自定义势力的UI接口，自定义势力功能到此已开放完毕
+  
+  New Features/Enhancements:
+  +战报窗口增加边框
+  
   
 0.6.0 beta (February 25 2014)
 -----------------------------
@@ -127,6 +141,7 @@
   +“关于我们”中添加两个热门的神杀·国战联机群快速链接及二维码
   
   +客户端与服务器版本不一致时提供可用的下载地址
+  
   
 0.5.1 beta (February 16 2014)
 -----------------------------

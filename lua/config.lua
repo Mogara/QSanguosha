@@ -15,7 +15,7 @@ config = {
 		"82" ,
 	} ,
 
-	kingdoms = { "wei", "shu", "wu", "qun", "god" },
+	kingdoms = { "wei", "qun", "shu", "wu", "god" },
 	kingdom_colors = {
 		wei = "#547998",
 		shu = "#D0796C",
