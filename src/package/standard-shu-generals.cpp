@@ -634,7 +634,7 @@ public:
         if (target->hasShownSkill(Sanguosha->getSkill("liegong"))){
             const Player *lord = target->getLord();
 
-            if (lord != NULL && lord->hasSkill("shouyue")){
+            if (lord != NULL && lord->hasLordSkill("shouyue")){
                 return 1;
             }
         }
