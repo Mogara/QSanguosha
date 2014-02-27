@@ -630,7 +630,7 @@ public:
     LiegongRange(): AttackRangeSkill("#liegong-for-lord"){
     }
 
-    virtual int getExtra(const Player *target, bool include_weapon) const{
+    virtual int getExtra(const Player *target, bool) const{
         if (target->hasShownSkill(Sanguosha->getSkill("liegong"))){
             const Player *lord = target->getLord();
 

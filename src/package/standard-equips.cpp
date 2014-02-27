@@ -392,7 +392,7 @@ public:
     SixSwordsSkill(): AttackRangeSkill("SixSwords"){
     }
 
-    virtual int getExtra(const Player *target, bool include_weapon) const{
+    virtual int getExtra(const Player *target, bool) const{
         foreach (const Player *p, target->getAliveSiblings()){
             if (p->hasWeapon("SixSwords") && p->isFriendWith(target) && p->getMark("Equips_Nullified_to_Yourself") == 0)
                 return 1;
