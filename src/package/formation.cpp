@@ -1104,7 +1104,7 @@ public:
         if (TriggerSkill::triggerable(player).isEmpty())
             return QStringList();
 
-        if (player->getMark("@jizhao") == 0)
+        if (player->getMark("@jizhao") == 0 || player->getHp() > 0)
             return QStringList();
 
         DyingStruct dying = data.value<DyingStruct>();
@@ -1136,7 +1136,7 @@ public:
         }
 
         room->handleAcquireDetachSkills(player, "-shouyue|rende");
-        return player->getHp() > 0 || player->isDead();
+        return false; //return player->getHp() > 0 || player->isDead();
     }
 };
 

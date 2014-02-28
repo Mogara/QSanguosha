@@ -736,6 +736,10 @@ public:
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *target, QVariant &data, ServerPlayer * &) const {
         if (!TriggerSkill::triggerable(target).isEmpty() && target->getMark("@nirvana") > 0){
             DyingStruct dying_data = data.value<DyingStruct>();
+			
+			if (target->getHp() > 0)
+				return QStringList();
+			
             if (dying_data.who != target)
                 return QStringList();
             return QStringList(objectName());
@@ -773,7 +777,7 @@ public:
         if (!pangtong->faceUp())
             pangtong->turnOver();
 
-        return pangtong->getHp() > 0 || pangtong->isDead();
+        return false; //return pangtong->getHp() > 0 || pangtong->isDead();
     }
 };
 
