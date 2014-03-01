@@ -80,9 +80,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\src\breakpad\client\windows\crash_generation\client_info.cc" />
     <ClCompile Include="..\..\src\breakpad\client\windows\crash_generation\crash_generation_client.cc" />
     <ClCompile Include="..\..\src\breakpad\client\windows\crash_generation\crash_generation_server.cc" />

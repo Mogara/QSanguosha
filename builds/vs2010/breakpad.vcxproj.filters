@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\..\src\breakpad\common\windows\guid_string.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
