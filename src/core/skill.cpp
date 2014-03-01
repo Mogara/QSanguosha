@@ -493,6 +493,18 @@ int SlashNoDistanceLimitSkill::getDistanceLimit(const Player *from, const Card *
         return 0;
 }
 
+AttackRangeSkill::AttackRangeSkill(const QString &name): Skill(name, Skill::Compulsory){
+
+}
+
+int AttackRangeSkill::getExtra(const Player *, bool) const{
+    return 0;
+}
+
+int AttackRangeSkill::getFixed(const Player *, bool) const{
+    return -1;
+}
+
 FakeMoveSkill::FakeMoveSkill(const QString &name)
     : TriggerSkill(QString("#%1-fake-move").arg(name)), name(name)
 {

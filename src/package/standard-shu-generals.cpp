@@ -625,6 +625,23 @@ private:
     }
 };
 
+class LiegongRange: public AttackRangeSkill{
+public:
+    LiegongRange(): AttackRangeSkill("#liegong-for-lord"){
+    }
+
+    virtual int getExtra(const Player *target, bool) const{
+        if (target->hasShownSkill(Sanguosha->getSkill("liegong"))){
+            const Player *lord = target->getLord();
+
+            if (lord != NULL && lord->hasLordSkill("shouyue")){
+                return 1;
+            }
+        }
+        return 0;
+    }
+};
+
 
 class KuangguGlobal: public TriggerSkill{
 public:
@@ -719,6 +736,10 @@ public:
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *target, QVariant &data, ServerPlayer * &) const {
         if (!TriggerSkill::triggerable(target).isEmpty() && target->getMark("@nirvana") > 0){
             DyingStruct dying_data = data.value<DyingStruct>();
+			
+			if (target->getHp() > 0)
+				return QStringList();
+			
             if (dying_data.who != target)
                 return QStringList();
             return QStringList(objectName());
@@ -756,7 +777,7 @@ public:
         if (!pangtong->faceUp())
             pangtong->turnOver();
 
-        return pangtong->getHp() > 0 || pangtong->isDead();
+        return false; //return pangtong->getHp() > 0 || pangtong->isDead();
     }
 };
 
@@ -1432,6 +1453,8 @@ void StandardPackage::addShuGenerals()
     General *huangzhong = new General(this, "huangzhong", "shu"); // SHU 008
     huangzhong->addCompanion("weiyan");
     huangzhong->addSkill(new Liegong);
+    huangzhong->addSkill(new LiegongRange);
+    related_skills.insertMulti("liegong", "#liegong-for-lord");
 
     General *weiyan = new General(this, "weiyan", "shu"); // SHU 009
     weiyan->addSkill(new Kuanggu);

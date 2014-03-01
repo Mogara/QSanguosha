@@ -550,6 +550,7 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	local AssistTarget = self:AssistTarget()
 	if AssistTarget and not self:willSkipPlayPhase(AssistTarget) then
 		self.fangquan_card_str = "@FangquanCard=" .. to_discard .. "&fangquan->" .. AssistTarget:objectName()
+		return true
 	end
 
 	self:sort(self.friends_noself, "handcard")
@@ -565,7 +566,27 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 end
 
 sgs.ai_skill_use["@@fangquan"] = function(self, prompt)
-	return self.fangquan_card_str or "."
+	local fangquan_card = sgs.Card_Parse(self.fangquan_card_str)
+	local in_handcard = true
+	for _, id in sgs.qlist(fangquan_card:getSubcards()) do
+		if not self.player:handCards():contains(id) then
+			in_handcard = false
+			break
+		end
+	end
+	if in_handcard then return self.fangquan_card_str end
+	
+	local cards = sgs.QList2Table(self.player:getHandcards()) 
+	self:sortByKeepValue(cards)
+	cards = sgs.reverse(cards)
+
+	for i = #cards, 1, -1 do
+		local card = cards[i]
+		if not isCard("Peach", card, self.player) and not self.player:isJilei(card) then
+			return "@FangquanCard=" .. card:getEffectiveId() .. "&fangquan->" .. target:objectName()
+			break
+		end
+	end
 end
 
 sgs.ai_card_intention.FangquanCard = -120

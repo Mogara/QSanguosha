@@ -86,6 +86,7 @@ public:
     QList<const MaxCardsSkill *> getMaxCardsSkills() const;
     QList<const TargetModSkill *> getTargetModSkills() const;
     QList<const TriggerSkill *> getGlobalTriggerSkills() const;
+    QList<const AttackRangeSkill *> getAttackRangeSkills() const;
     void addSkills(const QList<const Skill *> &skills);
 
     int getCardCount() const;
@@ -110,6 +111,7 @@ public:
     int correctDistance(const Player *from, const Player *to) const;
     int correctMaxCards(const Player *target, bool fixed = false) const;
     int correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const;
+    int correctAttackRange(const Player *target, bool include_weapon = true, bool fixed = false) const;
 
     void registerRoom(QObject *room);
     void unregisterRoom();
@@ -142,6 +144,7 @@ private:
     QList<const DistanceSkill *> distance_skills;
     QList<const MaxCardsSkill *> maxcards_skills;
     QList<const TargetModSkill *> targetmod_skills;
+    QList<const AttackRangeSkill *> attackrange_skills;
     QList<const TriggerSkill *> global_trigger_skills;
 
     QList<Card *> cards;

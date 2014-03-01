@@ -153,6 +153,25 @@ public:
     LuaFunction fixed_func;
 };
 
+class AttackRangeSkill: public Skill{
+public:
+    AttackRangeSkill(const QString &name);
+
+    virtual int getExtra(const Player *target, bool include_weapon) const;
+    virtual int getFixed(const Player *target, bool include_weapon) const;
+};
+
+class LuaAttackRangeSkill: public AttackRangeSkill{
+public:
+    LuaAttackRangeSkill(const char *name);
+
+    virtual int getExtra(const Player *target, bool include_weapon) const;
+    virtual int getFixed(const Player *target, bool include_weapon) const;
+
+    LuaFunction extra_func;
+    LuaFunction fixed_func;
+};
+
 class LuaTargetModSkill: public TargetModSkill {
 public:
     LuaTargetModSkill(const char *name, const char *pattern);
@@ -693,6 +712,54 @@ bool LuaFilterSkill::viewFilter(const Card *to_select) const{
     bool result = lua_toboolean(L, -1);
     lua_pop(L, 1);
     return result;
+}
+
+int LuaAttackRangeSkill::getExtra(const Player *target, bool include_weapon) const{
+    if (extra_func == 0)
+        return AttackRangeSkill::getExtra(target, include_weapon);
+
+    lua_State *l = Sanguosha->getLuaState();
+    
+    lua_rawgeti(l, LUA_REGISTRYINDEX, extra_func);
+
+    SWIG_NewPointerObj(l, this, SWIGTYPE_p_LuaAttackRangeSkill, 0);
+    SWIG_NewPointerObj(l, target, SWIGTYPE_p_Player, 0);
+    lua_pushboolean(l, include_weapon);
+
+    int error = lua_pcall(l, 3, 1, 0);
+    if (error){
+        Error(l);
+        return AttackRangeSkill::getExtra(target, include_weapon);
+    }
+    
+    int extra = lua_tointeger(l, -1);
+    lua_pop(l, 1);
+
+    return extra;
+}
+
+int LuaAttackRangeSkill::getFixed(const Player *target, bool include_weapon) const{
+    if (fixed_func == 0)
+        return AttackRangeSkill::getFixed(target, include_weapon);
+
+    lua_State *l = Sanguosha->getLuaState();
+
+    lua_rawgeti(l, LUA_REGISTRYINDEX, fixed_func);
+
+    SWIG_NewPointerObj(l, this, SWIGTYPE_p_LuaAttackRangeSkill, 0);
+    SWIG_NewPointerObj(l, target, SWIGTYPE_p_Player, 0);
+    lua_pushboolean(l, include_weapon);
+
+    int error = lua_pcall(l, 3, 1, 0);
+    if (error){
+        Error(l);
+        return AttackRangeSkill::getFixed(target, include_weapon);
+    }
+
+    int extra = lua_tointeger(l, -1);
+    lua_pop(l, 1);
+
+    return extra;
 }
 
 const Card *LuaFilterSkill::viewAs(const Card *originalCard) const{

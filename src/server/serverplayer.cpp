@@ -1629,7 +1629,7 @@ void ServerPlayer::notifyPreshow() {
 }
 
 bool ServerPlayer::inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const {
-    if (isFriendWith(victim) || !isFriendWith(skill_owner)) return false;
+    if (isFriendWith(victim) || !isFriendWith(skill_owner) || !victim->hasShownOneGeneral()) return false;
     if (this == skill_owner)
         return (getNextAlive() == victim && getNextAlive(2)->isFriendWith(this))
             || (getLastAlive() == victim && getLastAlive(2)->isFriendWith(this));
