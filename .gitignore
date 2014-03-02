@@ -37,6 +37,7 @@ Bin/
 /QSanSMTPClient/QSanSMTPClient/QSanSMTPClient.sdf
 /QSanSMTPClient/QSanSMTPClient/QSanSMTPClient.suo
 /QSanSMTPClient/QSanSMTPClient/*.user
+/QSanSMTPClient/QSanSMTPClient/ipch
 tags
 /extensions
 *~
