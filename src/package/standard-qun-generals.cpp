@@ -1243,7 +1243,7 @@ void QingchengCard::onEffect(const CardEffectStruct &effect) const{
 
     QString choice;
     if (!choices.isEmpty())
-        choice = room->askForChoice(player, objectName(), choices.join("+"), "qingcheng");
+        choice = room->askForChoice(player, "qingcheng", choices.join("+"));
     to->hideGeneral(choice == "head_general");
 }
 

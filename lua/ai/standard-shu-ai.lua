@@ -584,7 +584,6 @@ sgs.ai_skill_use["@@fangquan"] = function(self, prompt)
 		local card = cards[i]
 		if not isCard("Peach", card, self.player) and not self.player:isJilei(card) then
 			return "@FangquanCard=" .. card:getEffectiveId() .. "&fangquan->" .. target:objectName()
-			break
 		end
 	end
 end

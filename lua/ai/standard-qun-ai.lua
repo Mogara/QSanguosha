@@ -843,7 +843,7 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 	if zhoutai and zhoutai:getPile("buqu"):length() > 1 and zhoutai:hasShownAllGenerals() then
 		use.card = card
 		if not use.isDummy and use.to then
-			sgs.ai_skill_choice.qingcheng = (zhoutai:inHeadSkills("buqu") and "head_general" or "debuty_general")
+			sgs.ai_skill_choice.qingcheng = (zhoutai:inHeadSkills("buqu") and "head_general" or "deputy_general")
 			use.to:append(zhoutai)
 		end
 		return

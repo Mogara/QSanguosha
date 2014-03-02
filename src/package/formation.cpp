@@ -9,51 +9,26 @@
 class Tuntian: public TriggerSkill {
 public:
     Tuntian(): TriggerSkill("tuntian") {
-        events << CardsMoveOneTime << FinishJudge;
-        frequency = Compulsory; // for tuntian second stage
+        events << CardsMoveOneTime;
+        frequency = Frequent;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
-        ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
-        if (!dengai || dengai->getPhase() != Player::NotActive) return QStringList();
-        if (triggerEvent == CardsMoveOneTime && !TriggerSkill::triggerable(player).isEmpty()) {
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
+        if (triggerEvent == CardsMoveOneTime && !TriggerSkill::triggerable(player).isEmpty() && player->getPhase() == Player::NotActive) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.from == player && (move.from_places.contains(Player::PlaceHand) || move.from_places.contains(Player::PlaceEquip))
                 && !(move.to == player && (move.to_place == Player::PlaceHand || move.to_place == Player::PlaceEquip))) {
                 if (room->getTag("judge").toInt() > 0) {
-                    room->addPlayerMark(player, "tuntian_postpone");
+                    player->addMark("tuntian_postpone");
                     return QStringList();
                 } else return QStringList(objectName());
-            }
-        } else if (triggerEvent == FinishJudge) {
-            JudgeStar judge = data.value<JudgeStar>();
-            if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
-                ask_who = dengai;
-                return QStringList(objectName());
-            }
-
-            if (room->getTag("judge").toInt() == 0){
-                int postponed_tuntian = dengai->getMark("tuntian_postpone");
-
-                if (postponed_tuntian > 0){
-                    dengai->removeMark("tuntian_postpone");
-                    ask_who = dengai;
-                    return QStringList(objectName());
-                }
             }
         }
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
-        if (!dengai) return false;
-        if (triggerEvent == FinishJudge) {
-            JudgeStar judge = data.value<JudgeStar>();
-            if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
-                return true;
-            }
-        }
         if (dengai->askForSkillInvoke("tuntian", data)){
             room->broadcastSkillInvoke("tuntian");
             return true;
@@ -62,35 +37,67 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &) const{
         ServerPlayer *dengai = room->findPlayerBySkillName(objectName());
-        if (!dengai) return false;
-        if (triggerEvent == CardsMoveOneTime) {
-            JudgeStruct judge;
-            judge.pattern = ".|heart";
-            judge.good = false;
-            judge.reason = "tuntian";
-            judge.who = dengai;
-            room->judge(judge);
-        } else if (triggerEvent == FinishJudge) {
-            JudgeStar judge = data.value<JudgeStar>();
-            if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
-                dengai->addToPile("field", judge->card->getEffectiveId());
+        JudgeStruct judge;
+        judge.pattern = ".|heart";
+        judge.good = false;
+        judge.reason = "tuntian";
+        judge.who = dengai;
+        room->judge(judge);
+        return false;
+    }
+};
 
-            if (room->getTag("judge").toInt() == 0){
-                int postponed_tuntian = dengai->getMark("tuntian_postpone");
+class TuntianPostpone: public TriggerSkill{
+public:
+    TuntianPostpone(): TriggerSkill("#tuntian-postpone"){
+        events << FinishJudge;
+    }
 
-                if (postponed_tuntian > 0){
-                    dengai->removeMark("tuntian_postpone");
-                    JudgeStruct judge;
-                    judge.pattern = ".|heart";
-                    judge.good = false;
-                    judge.reason = "tuntian";
-                    judge.who = dengai;
-                    room->judge(judge);
-                }
+    virtual int getPriority() const{
+        return -1;
+    }
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer * &ask_who) const{
+        ServerPlayer *dengai = room->findPlayerBySkillName("tuntian");
+        if (dengai != NULL && dengai->isAlive() && dengai->hasSkill("tuntian")){
+            int postponed = dengai->getMark("tuntian_postpone");
+            if (postponed > 0){
+                dengai->removeMark("tuntian_postpone");
+                ask_who = dengai;
+                return QStringList("tuntian");
             }
         }
+        return QStringList();
+    }
+};
+
+class TuntianGotoField: public TriggerSkill{
+public:
+    TuntianGotoField(): TriggerSkill("#tuntian-gotofield"){
+        events << FinishJudge;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer * &ask_who) const{
+        JudgeStruct *judge = data.value<JudgeStruct *>();
+        if (judge->who != NULL && judge->who->isAlive() && judge->who->hasSkill("tuntian"))
+            if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge){
+                ask_who = judge->who;
+                return QStringList(objectName());
+            }
+
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &data) const{
+        JudgeStruct *judge = data.value<JudgeStruct *>();
+        return judge->who->askForSkillInvoke("tuntian", "gotofield");
+    }
+
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &data) const{
+        JudgeStruct *judge = data.value<JudgeStruct *>();
+        judge->who->addToPile("field", judge->card);
 
         return false;
     }
@@ -425,15 +432,21 @@ public:
                 foreach (ServerPlayer *p, room->getAllPlayers())
                     if (p->getMark("feiying") > 0) {
                         room->setPlayerMark(p, "feiying", 0);
-                        room->detachSkillFromPlayer(p, "feiying", true);
+                        room->detachSkillFromPlayer(p, "feiying", false, true);
                     }
                 return QStringList();
+            }
+            else {
+                if (death.who->getMark("feiying") > 0){
+                    room->setPlayerMark(death.who, "feiying", 0);
+                    room->detachSkillFromPlayer(death.who, "feiying", false, true);
+                }
             }
         }
         foreach (ServerPlayer *p, room->getAllPlayers())
             if (p->getMark("feiying") > 0) {
                 room->setPlayerMark(p, "feiying", 0);
-                room->detachSkillFromPlayer(p, "feiying", true);
+                room->detachSkillFromPlayer(p, "feiying", false, true);
             }
 
         if (room->alivePlayerCount() < 4) return QStringList();
@@ -1146,11 +1159,15 @@ FormationPackage::FormationPackage()
 {
     General *dengai = new General(this, "dengai", "wei"); // WEI 015
     dengai->addSkill(new Tuntian);
+    dengai->addSkill(new TuntianPostpone);
+    dengai->addSkill(new TuntianGotoField);
     dengai->addSkill(new TuntianDistance);
     dengai->addSkill(new Jixi);
     dengai->setHeadMaxHpAdjustedValue(-1);
     dengai->addSkill(new Ziliang);
     related_skills.insertMulti("tuntian", "#tuntian-dist");
+    related_skills.insertMulti("tuntian", "#tuntian-postpone");
+    related_skills.insertMulti("tuntian", "#tuntian-gotofield");
 
     General *caohong = new General(this, "caohong", "wei"); // WEI 018
     caohong->addCompanion("caoren");

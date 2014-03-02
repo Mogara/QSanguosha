@@ -1117,7 +1117,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
-        if (player != NULL && player->isAlive()){
+        if (player != NULL && player->isAlive() && player->hasShownOneGeneral()){
             ServerPlayer *zhangjiao = room->getLord(player->getKingdom());
             if (zhangjiao == NULL || !zhangjiao->hasSkill("hongfa") || zhangjiao->getPile("heavenly_army").isEmpty())
                 return QStringList();
