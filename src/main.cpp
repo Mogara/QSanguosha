@@ -107,8 +107,7 @@ int main(int argc, char *argv[]) {
     Audio::init();
 #endif
 
-    //MainWindow *main_window = new MainWindow;
-    MainWindow *main_window = NULL;
+    MainWindow *main_window = new MainWindow;
 
     Sanguosha->setParent(main_window);
     main_window->show();
