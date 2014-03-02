@@ -34,6 +34,9 @@ Bin/
 /builds/vs2010/QSanguosha.suo
 /builds/vs2010/*.user
 /builds/vs2010/*.opensdf
+/QSanSMTPClient/QSanSMTPClient/QSanSMTPClient.sdf
+/QSanSMTPClient/QSanSMTPClient/QSanSMTPClient.suo
+/QSanSMTPClient/QSanSMTPClient/*.user
 tags
 /extensions
 *~

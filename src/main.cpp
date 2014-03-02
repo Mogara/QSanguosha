@@ -9,6 +9,7 @@
 #include <QDir>
 #include <cstring>
 #include <QDateTime>
+#include <QProcess>
 
 #include "mainwindow.h"
 #include "settings.h"
@@ -29,6 +30,15 @@ static bool callback(const wchar_t *dump_path, const wchar_t *id,
         qWarning("Dump file created in %s, dump guid is %ws\n", dump_path, id);
     else
         qWarning("Dump failed\n");
+
+    char *ID = new char;
+    WideCharToMultiByte(CP_ACP, 0, id, -1, ID, wcslen(id), NULL, NULL);
+    QProcess *process = new QProcess(qApp);
+    QStringList args;
+    args << QString(ID) + ".dmp";
+    process->start("QSanSMTPClient", args);
+    delete ID;
+    ID = NULL;
     return succeeded;
 }
 
@@ -97,7 +107,8 @@ int main(int argc, char *argv[]) {
     Audio::init();
 #endif
 
-    MainWindow *main_window = new MainWindow;
+    //MainWindow *main_window = new MainWindow;
+    MainWindow *main_window = NULL;
 
     Sanguosha->setParent(main_window);
     main_window->show();
