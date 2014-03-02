@@ -425,15 +425,21 @@ public:
                 foreach (ServerPlayer *p, room->getAllPlayers())
                     if (p->getMark("feiying") > 0) {
                         room->setPlayerMark(p, "feiying", 0);
-                        room->detachSkillFromPlayer(p, "feiying", true);
+                        room->detachSkillFromPlayer(p, "feiying", false, true);
                     }
                 return QStringList();
+            }
+            else {
+                if (death.who->getMark("feiying") > 0){
+                    room->setPlayerMark(death.who, "feiying", 0);
+                    room->detachSkillFromPlayer(death.who, "feiying", false, true);
+                }
             }
         }
         foreach (ServerPlayer *p, room->getAllPlayers())
             if (p->getMark("feiying") > 0) {
                 room->setPlayerMark(p, "feiying", 0);
-                room->detachSkillFromPlayer(p, "feiying", true);
+                room->detachSkillFromPlayer(p, "feiying", false, true);
             }
 
         if (room->alivePlayerCount() < 4) return QStringList();
