@@ -737,8 +737,8 @@ public:
         if (!TriggerSkill::triggerable(target).isEmpty() && target->getMark("@nirvana") > 0){
             DyingStruct dying_data = data.value<DyingStruct>();
 			
-			if (target->getHp() > 0)
-				return QStringList();
+            if (target->getHp() > 0)
+                return QStringList();
 			
             if (dying_data.who != target)
                 return QStringList();
