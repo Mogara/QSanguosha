@@ -383,7 +383,7 @@ void Room::judge(JudgeStruct &judge_struct) {
     JudgeStar judge_star = &judge_struct;
     QVariant data = QVariant::fromValue(judge_star);
 
-    tag["judge"] = tag["judge"].toInt() + 1;
+    setTag("judge", getTag("judge").toInt() + 1);
 
     thread->trigger(StartJudge, this, judge_star->who, data);
 
@@ -395,7 +395,7 @@ void Room::judge(JudgeStruct &judge_struct) {
 
     thread->trigger(FinishRetrial, this, judge_star->who, data);
 
-    tag["judge"] = tag["judge"].toInt() - 1;
+    setTag("judge", getTag("judge").toInt() - 1);
 
     thread->trigger(FinishJudge, this, judge_star->who, data);
 }
@@ -3720,7 +3720,6 @@ void Room::moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, 
 
 void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool enforceOrigin) {
     // First, process remove card
-    QList<CardsMoveStruct> origin = cards_moves;
 
     QList<CardsMoveOneTimeStruct> moveOneTimes = _mergeMoves(cards_moves);
     foreach (ServerPlayer *player, getAllPlayers()) {
@@ -3749,6 +3748,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
 
     cards_moves = _separateMoves(moveOneTimes);
     notifyMoveCards(true, cards_moves, forceMoveVisible);
+    QList<CardsMoveStruct> origin = cards_moves;
 
     QList<Player::Place> final_places;
     QList<Player *> move_tos;
