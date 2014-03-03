@@ -258,7 +258,7 @@ end
 
 sgs.ai_skill_invoke.chuanxin = function(self, data)
 	local damage = data:toDamage()
-	return self:isEnemy(damage.to) and not self:hasHeavySlashDamage(self.player, damage.card, damage.to)
+	return not self:isFriend(damage.to) and not self:hasHeavySlashDamage(self.player, damage.card, damage.to)
 end
 
 sgs.ai_skill_choice.chuanxin = "discard"
