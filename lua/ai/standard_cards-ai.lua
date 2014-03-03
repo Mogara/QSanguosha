@@ -1164,7 +1164,7 @@ function cardsView_spear(self, player, skill_name)
 	local card_id1 = newcards[1]:getEffectiveId()
 	local card_id2 = newcards[2]:getEffectiveId()
 
-	local card_str = ("slash:%s[%s:%s]=%d+%d&Spear"):format(skill_name, "to_be_decided", 0, card_id1, card_id2)
+	local card_str = ("slash:%s[%s:%s]=%d+%d&%s"):format(skill_name, "to_be_decided", 0, card_id1, card_id2, skill_name)
 	return card_str
 end
 
