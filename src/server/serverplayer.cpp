@@ -1447,6 +1447,9 @@ void ServerPlayer::removeGeneral(bool head_general) {
     QString general_name, from_general;
 
     if (head_general) {
+        if (!hasShownGeneral1())
+            showGeneral();   //zoushi?
+
         from_general = getActualGeneral1Name();
         if (from_general.contains("sujiang")) return;
         General::Gender gender = getActualGeneral1()->getGender();
@@ -1497,6 +1500,9 @@ void ServerPlayer::removeGeneral(bool head_general) {
             room->setPlayerProperty(this, "role", role);
         }
     } else {
+        if (!hasShownGeneral2())
+            showGeneral(false); //zoushi?
+
         from_general = getActualGeneral2Name();
         if (from_general.contains("sujiang")) return;
         General::Gender gender = getActualGeneral2()->getGender();
