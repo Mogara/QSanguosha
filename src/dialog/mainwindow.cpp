@@ -494,7 +494,7 @@ void MainWindow::on_actionShow_Hide_Menu_triggered()
 void MainWindow::on_actionMinimize_to_system_tray_triggered()
 {
     if (systray == NULL) {
-        QIcon icon("image/system/magatamas/5.png");
+        QIcon icon("image/system/magatamas/3.png");
         systray = new QSystemTrayIcon(icon, this);
 
         QAction *appear = new QAction(tr("Show main window"), this);
