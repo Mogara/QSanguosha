@@ -11,7 +11,7 @@ function sgs.CreateTriggerSkill(spec)
 	local skill
 
 	if spec.is_battle_array then
-		assert(type(spec.battle_array_type) == "number")
+		assert(spec.battle_array_type and type(spec.battle_array_type) == "number")
 		assert(spec.view_as_skill)
 		skill = sgs.LuaBattleArraySkill(spec.name, frequency, limit_mark, spec.battle_array_type)
 	else
