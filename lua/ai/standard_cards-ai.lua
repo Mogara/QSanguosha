@@ -1227,7 +1227,7 @@ function turnUse_spear(self, inclusive, skill_name)
 		end
 	end
 
-	local card_str = ("slash:%s[%s:%s]=%d+%d%s"):format(skill_name, "to_be_decided", 0, card_id1, card_id2, "&Spear")
+	local card_str = ("slash:%s[%s:%s]=%d+%d&%s"):format(skill_name, "to_be_decided", 0, card_id1, card_id2, skill_name)
 	local slash = sgs.Card_Parse(card_str)
 	assert(slash)
 	return slash
