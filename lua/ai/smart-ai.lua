@@ -4881,10 +4881,16 @@ dofile "lua/ai/basara-ai.lua"
 local loaded = "standard|standard_cards|maneuvering"
 
 local files = table.concat(sgs.GetFileNames("lua/ai"), " ")
+local LUAExtensions = string.split(string.lower(sgs.GetConfig("LuaPackages", "")), "+")
+local LUAExtensionFiles = table.concat(sgs.GetFileNames("extensions/ai"), " ")
 
 for _, aextension in ipairs(sgs.Sanguosha:getExtensions()) do
-	if not loaded:match(aextension) and files:match(string.lower(aextension)) then
+	if table.contains(LUAExtensions, string.lower(aextension)) then
+		if LUAExtensionFiles:match(string.lower(aextension)) then
+			dofile("extensions/ai/" .. string.lower(aextension) .. "-ai.lua")
+		end
+	elseif not loaded:match(aextension) and files:match(string.lower(aextension)) then
 		dofile("lua/ai/" .. string.lower(aextension) .. "-ai.lua")
 	end
-end
 
+end
