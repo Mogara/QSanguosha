@@ -59,7 +59,7 @@ public:
         return -1;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer * &ask_who) const{
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer * &ask_who) const{
         ServerPlayer *dengai = room->findPlayerBySkillName("tuntian");
         if (dengai != NULL && dengai->isAlive() && dengai->hasSkill("tuntian")){
             int postponed = dengai->getMark("tuntian_postpone");
