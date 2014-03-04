@@ -49,13 +49,13 @@
     "roleShuColor": [172, 49, 32],
     "roleWuColor": [85, 164, 52],
     "roleDarkColor": [125, 125, 126] ,
-	
-	"generalBoxBgColor": [0, 0, 0, 220],
-	"generalBoxBorderColor": [166, 150, 122],
-	"generalBoxTitleFont": ["simhei", 16, 2, [228, 213, 160]],
-	"generalBoxDestSeatFont": ["DroidSansFallback", 12, 2, [105, 103, 91]],
-	
-	"generalCardItemCompanionPromptRegion": [-1, 102, 95, 15]
+
+    "generalBoxBgColor": [0, 0, 0, 220],
+    "generalBoxBorderColor": [166, 150, 122],
+    "generalBoxTitleFont": ["simhei", 16, 2, [228, 213, 160]],
+    "generalBoxDestSeatFont": ["DroidSansFallback", 12, 2, [105, 103, 91]],
+
+    "generalCardItemCompanionPromptRegion": [-1, 102, 95, 15]
 },
 "room":
 {
@@ -180,8 +180,8 @@
     "secondaryAvatarNameArea": [154, -10, 60, 30],
     "avatarNameFont": ["simli", [18, 18, 1], 0, [255, 255, 255, 255], 0, 8, [0, 0], [50, 50, 50, 150]],
     "smallAvatarNameFont": ["simli", [18, 18, 1], 0, [255, 255, 255, 255], 0, 8, [0, 0], [50, 50, 50, 150]],
-	"headIconRegion": [2, -5, 29, 24],
-	"deputyIconRegion": [130, -5, 29, 24],
+    "headIconRegion": [2, -5, 29, 24],
+    "deputyIconRegion": [130, -5, 29, 24],
     // must be in one of the following format:
     // [offsetX, offestY, sizeX, sizeY]
     // [childAnchor, parentAnchor, [offsetX, offsetY]]
@@ -194,7 +194,7 @@
     "phaseArea": ["bottomRight", "bottomRight", [-100, 0], [209, 20]],
     "kingdomIconArea": [2, 2, 28, 28],
     "kingdomMaskArea": [2, -1, 87, 18],
-	"kingdomMaskArea2": [130, -1, 87, 18],
+    "kingdomMaskArea2": [130, -1, 87, 18],
     "screenNameArea": [0, 7, 157, 25],
     "screenNameFont": ["DroidSansFallback", 12, 0, [255, 255, 255, 255], 2, 10, [0, 0], [0, 0, 0, 224]],
     "magatamasHorizontal": false,
