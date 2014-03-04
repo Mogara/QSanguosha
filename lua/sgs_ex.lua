@@ -18,6 +18,12 @@ function sgs.CreateTriggerSkill(spec)
 		skill = sgs.LuaTriggerSkill(spec.name, frequency, limit_mark)
 		if type(spec.can_preshow) == "boolean" then
 			skill:setCanPreshow(spec.can_preshow)
+		else
+			if spec.view_as_skill then
+				skill:setCanPreshow(false)
+			else
+				skill:setCanPreshow(true)
+			end
 		end
 	end
 
