@@ -62,7 +62,6 @@ public:
     int getPlayerCount(const QString &mode) const;
     QString getRoles(const QString &mode) const;
     QStringList getRoleList(const QString &mode) const;
-    int getRoleIndex() const;
 
     const CardPattern *getPattern(const QString &name) const;
     bool matchExpPattern(const QString &pattern, const Player *player, const Card *card) const;

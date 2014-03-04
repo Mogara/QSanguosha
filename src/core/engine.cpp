@@ -264,10 +264,6 @@ QString Engine::translate(const QString &to_translate) const{
     return res;
 }
 
-int Engine::getRoleIndex() const{
-    return 5;
-}
-
 const CardPattern *Engine::getPattern(const QString &name) const{
     const CardPattern *ptn = patterns.value(name, NULL);
     if (ptn) return ptn;
