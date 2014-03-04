@@ -413,7 +413,7 @@ public:
                     ids = use.card->getSubcards();
                 if (!ids.isEmpty()){
                     if (TriggerSkill::triggerable(triggerEvent, room, owner, data, owner).contains(objectName()) && owner->isFriendWith(use.from)){
-                        ask_who = owner;
+                        ask_who = use.from;
                         return QStringList(objectName());
                     }
                 }
@@ -426,7 +426,8 @@ public:
         ServerPlayer *owner = room->findPlayerBySkillName(objectName());
         if (!TriggerSkill::triggerable(triggerEvent, room, owner, data, owner).contains(objectName()))
             return false;
-        if (room->askForSkillInvoke(owner, objectName())) {
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (room->askForSkillInvoke(use.from, objectName())) {
             room->broadcastSkillInvoke(objectName());
             return true;
         }
