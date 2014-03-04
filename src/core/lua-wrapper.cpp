@@ -5,7 +5,7 @@ LuaTriggerSkill::LuaTriggerSkill(const char *name, Frequency frequency, const ch
     : TriggerSkill(name), can_trigger(0), on_cost(0), on_effect(0), priority(2)
 {
     this->frequency = frequency;
-    this->limit_mark = QString(limit_mark);
+    this->limit_mark = limit_mark;
 }
 
 int LuaTriggerSkill::getPriority() const{
@@ -13,17 +13,14 @@ int LuaTriggerSkill::getPriority() const{
 }
 
 bool LuaTriggerSkill::canPreshow() const{
-    if (this->view_as_skill == NULL)
-        return can_preshow;
-    else
-        return false;
+    return can_preshow;
 }
 
 LuaBattleArraySkill::LuaBattleArraySkill(const char *name, Frequency frequency, const char *limit_mark, BattleArrayType::ArrayType array_type)
     : BattleArraySkill(name, array_type)
 {
     this->frequency = frequency;
-    this->limit_mark = (QString)limit_mark;
+    this->limit_mark = limit_mark;
 }
 
 int LuaBattleArraySkill::getPriority() const{
