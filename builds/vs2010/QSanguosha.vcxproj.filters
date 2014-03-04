@@ -228,9 +228,6 @@
     <ClCompile Include="..\..\src\server\gamerule.cpp">
       <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\server\generalselector.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\main.cpp">
       <Filter>server</Filter>
     </ClCompile>
@@ -501,9 +498,6 @@
     <ClCompile Include="Release\moc_generaloverview.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Release\moc_generalselector.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="Release\moc_indicatoritem.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
@@ -663,9 +657,6 @@
     <ClCompile Include="Debug\moc_generaloverview.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_generalselector.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="Debug\moc_indicatoritem.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -771,9 +762,6 @@
       <Filter>server</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\server\gamerule.h">
-      <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\server\generalselector.h">
       <Filter>server</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\server\room.h">

@@ -8,7 +8,6 @@
 #include "scenerule.h"
 #include "banpair.h"
 #include "server.h"
-#include "generalselector.h"
 #include "jsonutils.h"
 #include "structs.h"
 #include "miniscenarios.h"
@@ -2483,34 +2482,28 @@ int Room::getCardFromPile(const QString &card_pattern) {
 
 QString Room::_chooseDefaultGeneral(ServerPlayer *player) const{
     Q_ASSERT(!player->getSelected().isEmpty());
-    if (Config.EnableHegemony && Config.Enable2ndGeneral) {
-        foreach (QString name, player->getSelected()) {
-            Q_ASSERT(!name.isEmpty());
-            if (player->getGeneral() != NULL) { // choosing second general
-                if (name == player->getGeneralName()) continue;
+    foreach (QString name, player->getSelected()) {
+        Q_ASSERT(!name.isEmpty());
+        if (player->getGeneral() != NULL) { // choosing second general
+            if (name == player->getGeneralName()) continue;
+            Q_ASSERT(Sanguosha->getGeneral(name) != NULL);
+            Q_ASSERT(player->getGeneral() != NULL);
+            if (Sanguosha->getGeneral(name)->isLord()) continue;
+            if (Sanguosha->getGeneral(name)->getKingdom() == player->getGeneral()->getKingdom())
+                return name;
+        } else {
+            foreach (QString other, player->getSelected()) { // choosing first general
+                if (name == other) continue;
+                Q_ASSERT(Sanguosha->getGeneral(other) != NULL);
                 Q_ASSERT(Sanguosha->getGeneral(name) != NULL);
-                Q_ASSERT(player->getGeneral() != NULL);
-                if (Sanguosha->getGeneral(name)->isLord()) continue;
-                if (Sanguosha->getGeneral(name)->getKingdom() == player->getGeneral()->getKingdom())
+                if (Sanguosha->getGeneral(other)->isLord()) continue;
+                if (Sanguosha->getGeneral(name)->getKingdom() == Sanguosha->getGeneral(other)->getKingdom())
                     return name;
-            } else {
-                foreach (QString other, player->getSelected()) { // choosing first general
-                    if (name == other) continue;
-                    Q_ASSERT(Sanguosha->getGeneral(other) != NULL);
-                    Q_ASSERT(Sanguosha->getGeneral(name) != NULL);
-                    if (Sanguosha->getGeneral(other)->isLord()) continue;
-                    if (Sanguosha->getGeneral(name)->getKingdom() == Sanguosha->getGeneral(other)->getKingdom())
-                        return name;
-                }
             }
         }
-        Q_ASSERT(false);
-        return QString();
-    } else {
-        GeneralSelector *selector = GeneralSelector::getInstance();
-        QString choice = selector->selectFirst(player, player->getSelected());
-        return choice;
     }
+    Q_ASSERT(false);
+    return QString();
 }
 
 bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, bool isFirst) {
