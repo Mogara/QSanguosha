@@ -55,11 +55,12 @@ QString Skill::getDescription(bool inToolTip) const{
                 || suit == Card::Diamond
                 || suit == Card::NoSuitRed;
         if (to_replace == str) continue;
-        if (des_src.contains(to_replace))
+        if (des_src.contains(to_replace)) {
             if (red)
                 des_src.replace(to_replace, QString("<font color=#FF0000>%1</font>").arg(Sanguosha->translate(str+"_char")));
             else
                 des_src.replace(to_replace, QString("<font color=#000000><span style=background-color:white>%1</span></font>").arg(Sanguosha->translate(str+"_char")));
+        }
     }
     return QString("<font color=%1>%2</font>").arg(inToolTip ? Config.SkillDescriptionInToolTipColor.name() : Config.SkillDescriptionInOverviewColor.name()).arg(des_src);
 }

@@ -203,7 +203,7 @@ public:
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->getAliveSiblings().length() > 1
-               && player->canDiscard(player, "he") && !player->hasUsed("LijianCard");
+                && player->canDiscard(player, "he") && !player->hasUsed("LijianCard");
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -314,14 +314,15 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
-        if (triggerEvent == EventPhaseStart) {
-            if (player->getPhase() == Player::Start) {
-                room->setPlayerMark(player, "shuangxiong", 0);
-                return QStringList();
-            } else if (player->getPhase() == Player::Draw && !TriggerSkill::triggerable(player).isEmpty())
-                return QStringList(objectName());
-        }else if (player)
-            if (triggerEvent == FinishJudge) {
+        if (player != NULL){
+            if (triggerEvent == EventPhaseStart) {
+                if (player->getPhase() == Player::Start) {
+                    room->setPlayerMark(player, "shuangxiong", 0);
+                    return QStringList();
+                } else if (player->getPhase() == Player::Draw && !TriggerSkill::triggerable(player).isEmpty())
+                    return QStringList(objectName());
+            }
+            else if (triggerEvent == FinishJudge) {
                 JudgeStar judge = data.value<JudgeStar>();
                 if (judge->reason == "shuangxiong"){
                     if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
@@ -329,13 +330,14 @@ public:
                     judge->pattern = judge->card->isRed() ? "red" : "black";
                 }
                 return QStringList();
-            } else if (triggerEvent == EventPhaseChanging) {
+            }
+            else if (triggerEvent == EventPhaseChanging) {
                 PhaseChangeStruct change = data.value<PhaseChangeStruct>();
                 if (change.to == Player::NotActive && player->hasFlag("shuangxiong"))
                     room->setPlayerFlag(player, "-shuangxiong");
                 return QStringList();
             }
-
+        }
         return QStringList();
     }
 
@@ -429,7 +431,7 @@ void LuanwuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
     foreach (ServerPlayer *player, players) {
         if (player->isAlive())
             room->cardEffect(this, source, player);
-            room->getThread()->delay();
+        room->getThread()->delay();
     }
 }
 
@@ -709,30 +711,30 @@ public:
         Card::Suit suit = (Card::Suit)(judge.pattern.toInt());
         switch (suit) {
         case Card::Heart: {
-                RecoverStruct recover;
-                recover.who = caiwenji;
-                room->recover(player, recover);
+            RecoverStruct recover;
+            recover.who = caiwenji;
+            room->recover(player, recover);
 
-                break;
-            }
+            break;
+        }
         case Card::Diamond: {
-                player->drawCards(2);
-                break;
-            }
+            player->drawCards(2);
+            break;
+        }
         case Card::Club: {
-                if (damage.from && damage.from->isAlive())
-                    room->askForDiscard(damage.from, "beige_discard", 2, 2, false, true);
+            if (damage.from && damage.from->isAlive())
+                room->askForDiscard(damage.from, "beige_discard", 2, 2, false, true);
 
-                break;
-            }
+            break;
+        }
         case Card::Spade: {
-                if (damage.from && damage.from->isAlive())
-                    damage.from->turnOver();
+            if (damage.from && damage.from->isAlive())
+                damage.from->turnOver();
 
-                break;
-            }
+            break;
+        }
         default:
-                break;
+            break;
         }
         return false;
     }
@@ -907,14 +909,14 @@ public:
         if (move.from != player)
             return QStringList();
         if (move.to_place == Player::DiscardPile
-            && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)) {
+                && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)) {
 
             int i = 0;
             QList<int> lirang_card;
             foreach (int card_id, move.card_ids) {
                 if (room->getCardOwner(card_id) == move.from
-                    && (move.from_places[i] == Player::PlaceHand || move.from_places[i] == Player::PlaceEquip)) {
-                        lirang_card << card_id;
+                        && (move.from_places[i] == Player::PlaceHand || move.from_places[i] == Player::PlaceEquip)) {
+                    lirang_card << card_id;
                 }
                 i++;
             }
@@ -935,14 +937,14 @@ public:
         if (move.from != kongrong)
             return false;
         if (move.to_place == Player::DiscardPile
-            && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)) {
+                && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)) {
 
             int i = 0;
             QList<int> lirang_card;
             foreach (int card_id, move.card_ids) {
                 if (room->getCardOwner(card_id) == move.from
-                    && (move.from_places[i] == Player::PlaceHand || move.from_places[i] == Player::PlaceEquip)) {
-                        lirang_card << card_id;
+                        && (move.from_places[i] == Player::PlaceHand || move.from_places[i] == Player::PlaceEquip)) {
+                    lirang_card << card_id;
                 }
                 i++;
             }
@@ -1227,7 +1229,7 @@ QingchengCard::QingchengCard() {
 
 bool QingchengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
     if ((to_select->isLord() || to_select->getGeneralName().contains("sujiang"))
-        && to_select->getGeneral2Name().contains("sujiang")) return false;
+            && to_select->getGeneral2Name().contains("sujiang")) return false;
     return targets.isEmpty() && to_select != Self && to_select->hasShownAllGenerals();
 }
 

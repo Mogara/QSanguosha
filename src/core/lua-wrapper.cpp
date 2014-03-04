@@ -2,7 +2,7 @@
 #include "util.h"
 
 LuaTriggerSkill::LuaTriggerSkill(const char *name, Frequency frequency, const char *limit_mark)
-    : TriggerSkill(name), on_cost(0), can_trigger(0), on_effect(0), priority(2)
+    : TriggerSkill(name), can_trigger(0), on_cost(0), on_effect(0), priority(2)
 {
     this->frequency = frequency;
     this->limit_mark = QString(limit_mark);

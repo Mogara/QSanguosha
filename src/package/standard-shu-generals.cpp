@@ -209,7 +209,7 @@ public:
             if (choices.length() != 3)
                 choices << "cancel";
             QString choice = room->askForChoice(player, "GuanxingShowGeneral", choices.join("+"));
-            if (choice == "cancel")
+            if (choice == "cancel"){
                 if (show1) {
                     room->broadcastSkillInvoke(objectName());
                     return true;
@@ -218,6 +218,7 @@ public:
                     onPhaseChange(player);
                     return false;
                 }
+            }
             if (choice != "show_head_general")
                 player->showGeneral(false);
             if (choice == "show_deputy_general" && !show1){

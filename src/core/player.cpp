@@ -1212,7 +1212,7 @@ bool Player::hasPreshowedSkill(const QString &name) const {
 bool Player::isHidden(const bool &head_general) const {
     if (head_general ? general1_showed : general2_showed) return false;
     const QList<const Skill *> skills = head_general ? getHeadSkillList() : getDeputySkillList();
-    unsigned int count = 0;
+    int count = 0;
     foreach(const Skill *skill, skills) {
         if(skill->canPreshow() && hasPreshowedSkill(skill->objectName()))
             return false;
