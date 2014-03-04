@@ -355,19 +355,16 @@ sgs.ai_skill_discard.yicheng = function(self, discard_num, min_num, optional, in
 	return self:askForDiscard("dummyreason", 1, 1, false, true)
 end
 
-sgs.ai_skill_invoke.qianhuan = function(self)
+sgs.ai_skill_invoke.qianhuan = function(self, data)
+	if data:toString() == "gethuan" then return true end
 	local use = self.player:getTag("qianhuan_data"):toCardUse()
-	if not use.card then
-		return true
+	if (use.from and self:isFriend(use.from)) then return false end --队友给自己出桃子不无懈（暂）
+	local to = use.to:first()
+	if to:objectName() == self.player:objectName() then
+		return not (use.from and (use.from:objectName() == to:objectName()
+									or (use.card:isKindOf("Slash") and self:isPriorFriendOfSlash(self.player, use.card, use.from))))
 	else
-		if (use.from and self:isFriend(use.from)) then return false end --队友给自己出桃子不无懈（暂）
-		local to = use.to:first()
-		if to:objectName() == self.player:objectName() then
-			return not (use.from and (use.from:objectName() == to:objectName()
-										or (use.card:isKindOf("Slash") and self:isPriorFriendOfSlash(self.player, use.card, use.from))))
-		else
-			return not (use.from and use.from:objectName() == to:objectName())
-		end
+		return not (use.from and use.from:objectName() == to:objectName())
 	end
 end
 
