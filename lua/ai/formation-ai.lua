@@ -355,8 +355,8 @@ sgs.ai_skill_discard.yicheng = function(self, discard_num, min_num, optional, in
 	return self:askForDiscard("dummyreason", 1, 1, false, true)
 end
 
-sgs.ai_skill_invoke.qianhuan = function(self, data)
-	local use = data:toCardUse()
+sgs.ai_skill_invoke.qianhuan = function(self)
+	local use = self.player:getTag("qianhuan_data"):toCardUse()
 	if not use.card then
 		return true
 	else
@@ -369,14 +369,6 @@ sgs.ai_skill_invoke.qianhuan = function(self, data)
 			return not (use.from and use.from:objectName() == to:objectName())
 		end
 	end
-end
-
-sgs.ai_skill_choice.qianhuan = function(self, choices, data)
-	local use = data:toCardUse()
-	if use.card:isKindOf("Peach") or use.card:isKindOf("Analeptic") or use.card:isKindOf("ExNihilo") then return "reject" end
-	if use.from and use.from:objectName() == self.player:objectName() then return "reject" end
-	if use.from and use.card:isKindOf("Slash") and self:isPriorFriendOfSlash(self.player, use.card, use.from) then return "reject" end
-	return "accept"
 end
 
 local function will_discard_zhendu(self)

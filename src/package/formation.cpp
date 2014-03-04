@@ -840,9 +840,26 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *, QVariant &data) const{
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *yuji = room->findPlayerBySkillName(objectName());
-        if (yuji && room->askForSkillInvoke(yuji, objectName(), data)){
+        yuji->tag["qianhuan_data"] = data;
+        QString prompt;
+
+        if (triggerEvent == Damaged)
+            prompt = "gethuan";
+        else {
+            QStringList prompt_list;
+            prompt_list << "canceltarget";
+            CardUseStruct use = data.value<CardUseStruct>();
+            prompt_list << "";
+            prompt_list << use.to.first()->objectName();
+            prompt_list << use.card->objectName();
+            prompt = prompt_list.join(":");
+        }
+        
+        bool invoke = (yuji != NULL && yuji->askForSkillInvoke(objectName(), prompt));
+        yuji->tag.remove("qianhuan_data");
+        if (invoke){
             room->broadcastSkillInvoke(objectName());
             return true;
         }
