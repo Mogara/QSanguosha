@@ -219,9 +219,6 @@
     <ClCompile Include="..\..\src\server\serverplayer.cpp">
       <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\server\contestdb.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\server\gamerule.cpp">
       <Filter>server</Filter>
     </ClCompile>
@@ -468,9 +465,6 @@
     <ClCompile Include="Release\moc_connectiondialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Release\moc_contestdb.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="Release\moc_customassigndialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
@@ -627,9 +621,6 @@
     <ClCompile Include="Debug\moc_connectiondialog.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_contestdb.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="Debug\moc_customassigndialog.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -753,9 +744,6 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
-      <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\server\contestdb.h">
       <Filter>server</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\server\gamerule.h">

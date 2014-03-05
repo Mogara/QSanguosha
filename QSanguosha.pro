@@ -68,7 +68,6 @@ SOURCES += \
     src/scenario/scenario.cpp \
     src/scenario/scenerule.cpp \
     src/server/ai.cpp \
-    src/server/contestdb.cpp \
     src/server/gamerule.cpp \
     src/server/room.cpp \
     src/server/roomthread.cpp \
@@ -159,7 +158,6 @@ HEADERS += \
     src/scenario/scenario.h \
     src/scenario/scenerule.h \
     src/server/ai.h \
-    src/server/contestdb.h \
     src/server/gamerule.h \
     src/server/room.h \
     src/server/roomthread.h \
