@@ -1020,31 +1020,6 @@
     </message>
 </context>
 <context>
-    <name>ContestDB</name>
-    <message>
-        <location filename="../../src/server/contestdb.cpp" line="26"/>
-        <source>Database open error</source>
-        <translation>数据库打开出错</translation>
-    </message>
-    <message>
-        <location filename="../../src/server/contestdb.cpp" line="26"/>
-        <source>The database can not be opened:
- %1</source>
-        <translation>数据库无法打开:
-%1</translation>
-    </message>
-    <message>
-        <location filename="../../src/server/contestdb.cpp" line="59"/>
-        <source>Database query error</source>
-        <translation>数据库查询出错</translation>
-    </message>
-    <message>
-        <location filename="../../src/server/contestdb.cpp" line="59"/>
-        <source>Please create database before using this mode</source>
-        <translation>在使用竞赛模式前，请先创建好相关的数据库文件</translation>
-    </message>
-</context>
-<context>
     <name>CustomAssignDialog</name>
     <message>
         <location filename="../../src/dialog/customassigndialog.cpp" line="40"/>
@@ -3104,7 +3079,7 @@
  %1</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="5410"/>
+        <location filename="../../src/server/room.cpp" line="5406"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
