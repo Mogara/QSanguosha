@@ -3,6 +3,7 @@
 #include "standard-basics.h"
 #include "standard-tricks.h"
 #include "client.h"
+#include "settings.h"
 
 ZhihengCard::ZhihengCard() {
     target_fixed = true;
@@ -771,9 +772,11 @@ public:
         } else {
             int to_remove = buqu.length() - need;
             for (int i = 0; i < to_remove; i++) {
-                room->fillAG(buqu);
+                room->fillAG(buqu, zhoutai);
+                int aidelay = Config.AIDelay;
+                Config.AIDelay = 0;
                 int card_id = room->askForAG(zhoutai, buqu, false, "buqu");
-
+                Config.AIDelay = aidelay;
                 LogMessage log;
                 log.type = "$BuquRemove";
                 log.from = zhoutai;
@@ -782,7 +785,7 @@ public:
 
                 buqu.removeOne(card_id);
                 room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
-                room->clearAG();
+                room->clearAG(zhoutai);
             }
         }
     }
