@@ -265,29 +265,8 @@ QStringList ServerPlayer::getSelected() const{
 
 QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreasonable) {
     foreach (QString name, generals) {
-        if (Config.Enable2ndGeneral) {
-
-            if (Config.EnableHegemony && getGeneral()
-                && getGeneral()->getKingdom() != Sanguosha->getGeneral(name)->getKingdom())
-                continue;
-        }
-        if (Config.EnableBasara) {
-            QStringList ban_list = Config.value("Banlist/Basara").toStringList();
-            if (ban_list.contains(name)) continue;
-        }
-        if (Config.GameMode == "zombie_mode") {
-            QStringList ban_list = Config.value("Banlist/Zombie").toStringList();
-            if(ban_list.contains(name))continue;
-        }
-        if (Config.GameMode.endsWith("p")
-            || Config.GameMode.endsWith("pd")
-            || Config.GameMode.endsWith("pz")
-            || Config.GameMode.contains("_mini_")
-            || Config.GameMode == "custom_scenario") {
-                QStringList ban_list = Config.value("Banlist/Roles").toStringList();
-                if (ban_list.contains(name)) continue;
-        }
-
+        if (getGeneral() && getGeneral()->getKingdom() != Sanguosha->getGeneral(name)->getKingdom())
+            continue;
         return name;
     }
 
