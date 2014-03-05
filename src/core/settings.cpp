@@ -118,8 +118,8 @@ void Settings::init() {
     BGMVolume = value("BGMVolume", 1.0f).toFloat();
     EffectVolume = value("EffectVolume", 1.0f).toFloat();
 
-    BackgroundImage = value("BackgroundImage", "backdrop/new-version.jpg").toString();
-    TableBgImage = value("TableBgImage", "backdrop/default.jpg").toString();
+    BackgroundImage = value("BackgroundImage", "image/backdrop/new-version.jpg").toString();
+    TableBgImage = value("TableBgImage", "image/backdrop/default.jpg").toString();
     
     EnableAutoSaveRecord = value("EnableAutoSaveRecord", false).toBool();
     NetworkOnly = value("NetworkOnly", false).toBool();
