@@ -403,8 +403,6 @@ void PlayerCardContainer::refresh() {
             _m_faceTurnedIcon2->setVisible(false);
         if (_m_chainIcon)
             _m_chainIcon->setVisible(false);
-        if (_m_chainIcon2)
-            _m_chainIcon2->setVisible(false);
         if (_m_duanchangMask)
             _m_duanchangMask->setVisible(false);
         if (_m_duanchangMask2)
@@ -415,7 +413,6 @@ void PlayerCardContainer::refresh() {
         if (_m_faceTurnedIcon) _m_faceTurnedIcon->setVisible(!m_player->faceUp());
         if (_m_faceTurnedIcon2) _m_faceTurnedIcon2->setVisible(!m_player->faceUp());
         if (_m_chainIcon) _m_chainIcon->setVisible(m_player->isChained());
-        if (_m_chainIcon2) _m_chainIcon2->setVisible(m_player->isChained());
         if (_m_duanchangMask) _m_duanchangMask->setVisible(m_player->isDuanchang(true));
         if (_m_duanchangMask2) _m_duanchangMask2->setVisible(m_player->isDuanchang(false));
         if (_m_actionIcon) _m_actionIcon->setVisible(m_player->hasFlag("actioned"));
@@ -442,8 +439,6 @@ void PlayerCardContainer::repaintAll() {
                  _getAvatarParent());
     //paint faceTurnedIcon in secondaryAvatarArea only if inheriting Dashboard
     _paintPixmap(_m_chainIcon, _m_layout->m_chainedIconRegion, QSanRoomSkin::S_SKIN_KEY_CHAIN,
-                 _getAvatarParent());
-    _paintPixmap(_m_chainIcon2, _m_layout->m_chainedIconRegion2, QSanRoomSkin::S_SKIN_KEY_CHAIN,
                  _getAvatarParent());
     _paintPixmap(_m_duanchangMask, _m_layout->m_duanchangMaskRegion, QSanRoomSkin::S_SKIN_KEY_DUANCHANG,
                  _getAvatarParent());
@@ -683,7 +678,7 @@ PlayerCardContainer::PlayerCardContainer() {
     _m_avatarNameItem = _m_secondaryAvatarNameItem = NULL;
     _m_avatarIcon = _m_smallAvatarIcon = _m_circleItem = NULL;
     _m_screenNameItem = NULL;
-    _m_chainIcon = _m_chainIcon2 = NULL;
+    _m_chainIcon = NULL;
     _m_duanchangMask = _m_duanchangMask2 = NULL;
     _m_faceTurnedIcon = _m_faceTurnedIcon2 = NULL;
     _m_handCardBg = _m_handCardNumText = NULL;
@@ -767,7 +762,6 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_progressBarItem);
     _layUnder(_m_roleComboBox);
     //it's meaningless to judge which icon should be on top
-    _layUnder(_m_chainIcon2);
     _layUnder(_m_chainIcon);
     _layUnder(_m_hpBox);
     _layUnder(_m_handCardNumText);

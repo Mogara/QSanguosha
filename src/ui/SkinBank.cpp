@@ -899,7 +899,6 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         tryParse(playerConfig["actionedIconRegion"], layout->m_actionedIconRegion);
         tryParse(playerConfig["saveMeIconRegion"], layout->m_saveMeIconRegion);
         tryParse(playerConfig["chainedIconRegion"], layout->m_chainedIconRegion);
-        tryParse(playerConfig["chainedIconRegion2"], layout->m_chainedIconRegion2);
         tryParse(playerConfig["duanchangMaskRegion"], layout->m_duanchangMaskRegion);
         tryParse(playerConfig["duanchangMaskRegion2"], layout->m_duanchangMaskRegion2);
         tryParse(playerConfig["hiddenMarkRegion"], layout->m_hiddenMarkRegion1);
