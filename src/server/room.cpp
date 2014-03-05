@@ -6,7 +6,6 @@
 #include "scenario.h"
 #include "gamerule.h"
 #include "scenerule.h"
-#include "banpair.h"
 #include "server.h"
 #include "jsonutils.h"
 #include "structs.h"
@@ -2267,10 +2266,6 @@ void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign) {
             existed << player->getGeneralName();
         if (player->getGeneral2())
             existed << player->getGeneral2Name();
-    }
-    if (Config.Enable2ndGeneral) {
-        foreach (QString name, BanPair::getAllBanSet())
-            existed << name;
     }
 
     const int max_choice = Config.value("HegemonyMaxChoice", 7).toInt();

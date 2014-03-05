@@ -5,7 +5,6 @@
 #include "settings.h"
 #include "scenario.h"
 #include "lua.hpp"
-#include "banpair.h"
 #include "audio.h"
 #include "protocol.h"
 #include "jsonutils.h"
@@ -708,84 +707,6 @@ int Engine::getCardCount() const{
     return cards.length();
 }
 
-QStringList Engine::getLords(bool contain_banned) const{
-    QStringList lords;
-
-    // add intrinsic lord
-    foreach (QString lord, lord_list) {
-        const General *general = generals.value(lord);
-        if (getBanPackages().contains(general->getPackage()))
-            continue;
-        if (!contain_banned) {
-            if (ServerInfo.GameMode.endsWith("p")
-                || ServerInfo.GameMode.endsWith("pd")
-                || ServerInfo.GameMode.endsWith("pz")
-                || ServerInfo.GameMode.contains("_mini_")
-                || ServerInfo.GameMode == "custom_scenario")
-                if (Config.value("Banlist/Roles", "").toStringList().contains(lord))
-                    continue;
-            if (Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
-                continue;
-        }
-        lords << lord;
-    }
-
-    return lords;
-}
-
-QStringList Engine::getRandomLords() const{
-    QStringList banlist_ban;
-    if (Config.EnableBasara)
-        banlist_ban = Config.value("Banlist/Basara").toStringList();
-
-    if (Config.GameMode == "zombie_mode")
-        banlist_ban.append(Config.value("Banlist/Zombie").toStringList());
-    else if (isNormalGameMode(Config.GameMode))
-        banlist_ban.append(Config.value("Banlist/Roles").toStringList());
-
-    QStringList lords;
-
-    foreach (QString alord, getLords()) {
-        if (banlist_ban.contains(alord)) continue;
-        lords << alord;
-    }
-
-    int lord_num = Config.value("LordMaxChoice", -1).toInt();
-    if (lord_num != -1 && lord_num < lords.length()) {
-        int to_remove = lords.length() - lord_num;
-        for (int i = 0; i < to_remove; i++) {
-            lords.removeAt(qrand() % lords.length());
-        }
-    }
-
-    QStringList nonlord_list;
-    foreach (QString nonlord, generals.keys()) {
-        if (isGeneralHidden(nonlord) || lord_list.contains(nonlord)) continue;
-        const General *general = generals.value(nonlord);
-        if (getBanPackages().contains(general->getPackage()))
-            continue;
-        if (Config.Enable2ndGeneral && BanPair::isBanned(general->objectName()))
-            continue;
-        if (banlist_ban.contains(general->objectName()))
-            continue;
-
-        nonlord_list << nonlord;
-    }
-
-    qShuffle(nonlord_list);
-
-    int i;
-    int extra = Config.value("NonLordMaxChoice", 2).toInt();
-    if (lord_num == 0 && extra == 0)
-        extra = 1;
-    for (i = 0; i < extra; i++) {
-        lords << nonlord_list.at(i);
-        if (i == nonlord_list.length() - 1) break;
-    }
-
-    return lords;
-}
-
 QStringList Engine::getLimitedGeneralNames() const{
     QStringList general_names;
     QHashIterator<QString, const General *> itor(generals);
@@ -822,37 +743,6 @@ QStringList Engine::getLimitedGeneralNames() const{
 */
 
     return general_names;
-}
-
-void Engine::banRandomGods() const{
-    QStringList all_generals = getLimitedGeneralNames();
-
-    qShuffle(all_generals);
-
-    int count = 0;
-    int max = Config.value("GodLimit", 5).toInt();
-
-    if (max == -1)
-        return;
-
-    QStringList gods;
-
-    foreach(const QString &general, all_generals) {
-        if (getGeneral(general)->getKingdom() == "god") {
-            gods << general;
-            count ++;
-        }
-    };
-    int bancount = count - max;
-    if (bancount <= 0)
-        return;
-    QStringList ban_gods = gods.mid(0, bancount);
-    Q_ASSERT(ban_gods.count() == bancount);
-
-    QStringList ban_list = Config.value("Banlist/Roles").toStringList();
-
-    ban_list.append(ban_gods);
-    Config.setValue("Banlist/Roles", ban_list);
 }
 
 QStringList Engine::getRandomGenerals(int count, const QSet<QString> &ban_set) const{

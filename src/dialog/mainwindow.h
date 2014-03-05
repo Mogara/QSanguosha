@@ -100,7 +100,6 @@ private slots:
     void startGameInAnotherInstance();
     void changeBackground();
     void changeTableBg();
-    void on_actionView_ban_list_triggered();
     void on_actionManage_Ban_IP_triggered();
 };
 

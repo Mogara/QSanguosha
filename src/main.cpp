@@ -13,7 +13,6 @@
 
 #include "mainwindow.h"
 #include "settings.h"
-#include "banpair.h"
 #include "server.h"
 #include "audio.h"
 
@@ -81,7 +80,6 @@ int main(int argc, char *argv[]) {
     Sanguosha = new Engine;
     Config.init();
     qApp->setFont(Config.AppFont);
-    BanPair::loadBanPairs();
 
     if (qApp->arguments().contains("-server")) {
         Server *server = new Server(qApp);

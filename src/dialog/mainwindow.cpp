@@ -747,11 +747,6 @@ void MainWindow::on_actionRecord_analysis_triggered() {
     rec_dialog->exec();
 }
 
-void MainWindow::on_actionView_ban_list_triggered() {
-    BanlistDialog *dialog = new BanlistDialog(this, true);
-    dialog->exec();
-}
-
 #include "audio.h"
 
 void MainWindow::on_actionAbout_fmod_triggered() {

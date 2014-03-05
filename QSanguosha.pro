@@ -24,7 +24,6 @@ SOURCES += \
     src/client/client.cpp \
     src/client/clientplayer.cpp \
     src/client/clientstruct.cpp \
-    src/core/banpair.cpp \
     src/core/card.cpp \
     src/core/engine.cpp \
     src/core/general.cpp \
@@ -114,7 +113,6 @@ HEADERS += \
     src/client/clientplayer.h \
     src/client/clientstruct.h \
     src/core/audio.h \
-    src/core/banpair.h \
     src/core/card.h \
     src/core/compiler-specific.h \
     src/core/engine.h \

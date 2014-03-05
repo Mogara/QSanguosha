@@ -41,7 +41,6 @@
     <addaction name="actionGeneral_Overview"/>
     <addaction name="actionCard_Overview"/>
     <addaction name="actionRule_Summary"/>
-    <addaction name="actionView_ban_list"/>
     <addaction name="actionManage_Ban_IP"/>
     <addaction name="actionBroadcast"/>
     <addaction name="actionReplay_file_convert"/>

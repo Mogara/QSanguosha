@@ -4,7 +4,6 @@
 #include "ai.h"
 #include "settings.h"
 #include "recorder.h"
-#include "banpair.h"
 #include "lua-wrapper.h"
 #include "jsonutils.h"
 #include "skill.h"
@@ -267,11 +266,6 @@ QStringList ServerPlayer::getSelected() const{
 QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreasonable) {
     foreach (QString name, generals) {
         if (Config.Enable2ndGeneral) {
-            if (getGeneral()) {
-                if (!BanPair::isBanned(getGeneralName()) && BanPair::isBanned(getGeneralName(), name)) continue;
-            } else {
-                if (BanPair::isBanned(name)) continue;
-            }
 
             if (Config.EnableHegemony && getGeneral()
                 && getGeneral()->getKingdom() != Sanguosha->getGeneral(name)->getKingdom())
@@ -290,8 +284,8 @@ QString ServerPlayer::findReasonable(const QStringList &generals, bool no_unreas
             || Config.GameMode.endsWith("pz")
             || Config.GameMode.contains("_mini_")
             || Config.GameMode == "custom_scenario") {
-            QStringList ban_list = Config.value("Banlist/Roles").toStringList();
-            if (ban_list.contains(name)) continue;
+                QStringList ban_list = Config.value("Banlist/Roles").toStringList();
+                if (ban_list.contains(name)) continue;
         }
 
         return name;

@@ -87,9 +87,6 @@
     <ClCompile Include="..\..\src\core\audio.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\core\banpair.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\core\card.cpp">
       <Filter>core</Filter>
     </ClCompile>
@@ -1041,9 +1038,6 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\audio.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\core\banpair.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\package\exppattern.h">
