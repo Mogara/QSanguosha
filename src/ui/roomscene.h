@@ -79,17 +79,6 @@ private slots:
     void disableSource();
 };
 
-class KOFOrderBox: public QGraphicsPixmapItem {
-public:
-    KOFOrderBox(bool self, QGraphicsScene *scene);
-    void revealGeneral(const QString &name);
-    void killPlayer(const QString &general_name);
-
-private:
-    QSanSelectableItem *avatars[3];
-    int revealed;
-};
-
 class ReplayerControlBar: public QGraphicsObject{
     Q_OBJECT
 
@@ -267,7 +256,6 @@ private:
     QList<QGraphicsRectItem *> arrange_rects;
     QList<CardItem *> arrange_items;
     Button *arrange_button;
-    KOFOrderBox *enemy_box, *self_box;
     QPointF m_tableCenterPos;
     ReplayerControlBar *m_replayControl;
 
@@ -300,9 +288,6 @@ private:
     void addRestartButton(QDialog *dialog);
     QGraphicsItem *createDashboardButtons();
     void createReplayControlBar();
-
-    void fillGenerals1v1(const QStringList &names);
-    void fillGenerals3v3(const QStringList &names);
 
     void showPindianBox(const QString &from_name, int from_id, const QString &to_name, int to_id, const QString &reason);
     void setChatBoxVisible(bool show);
@@ -383,7 +368,7 @@ private slots:
     void toggleArrange();
     void finishArrange();
     void changeGeneral(const QString &general);
-    void revealGeneral(bool self, const QString &general);
+    //void revealGeneral(bool self, const QString &general);
 
     void skillStateChange(const QString &skill_name);
     void trust();

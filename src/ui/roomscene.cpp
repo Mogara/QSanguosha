@@ -199,9 +199,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(skill_attached(QString, bool)), this, SLOT(attachSkill(QString, bool)));
     connect(ClientInstance, SIGNAL(skill_detached(QString)), this, SLOT(detachSkill(QString)));
 
-    enemy_box = NULL;
-    self_box = NULL;
-
     // chat box
     chat_box = new QTextEdit;
     chat_box->setObjectName("chat_box");
@@ -715,15 +712,10 @@ void RoomScene::adjustItems() {
     chat_widget->setPos(_m_infoPlane.right() - chat_widget->boundingRect().width(),
                         chat_edit_widget->y() + (_m_roomLayout->m_chatTextBoxHeight - chat_widget->boundingRect().height()) / 2);
 
-    padding += _m_roomLayout->m_photoRoomPadding;
-    if (self_box)
-        self_box->setPos(_m_infoPlane.left() - padding - self_box->boundingRect().width(),
-                         sceneRect().height() - padding - self_box->boundingRect().height()
-                         - G_DASHBOARD_LAYOUT.m_normalHeight - G_DASHBOARD_LAYOUT.m_floatingAreaHeight);
-    if (enemy_box)
-        enemy_box->setPos(padding * 2, padding * 2);
 
-    padding -= _m_roomLayout->m_photoRoomPadding;
+    padding += _m_roomLayout->m_photoRoomPadding;
+    padding -= _m_roomLayout->m_photoRoomPadding; //selling moe?
+
     m_tablew = displayRegion.width();// - infoPlane.width();
     m_tableh = displayRegion.height();// - dashboard->boundingRect().height();
     QPixmap tableBg = QPixmap(Config.TableBgImage)
@@ -3376,50 +3368,6 @@ void RoomScene::showPlayerCards() {
     }
 }
 
-KOFOrderBox::KOFOrderBox(bool self, QGraphicsScene *scene) {
-    QString basename = self ? "self" : "enemy";
-    QString path = QString("image/system/1v1/%1.png").arg(basename);
-    setPixmap(QPixmap(path));
-    scene->addItem(this);
-
-    for (int i = 0; i < 3; i++) {
-        avatars[i] = new QSanSelectableItem;
-        avatars[i]->load("image/system/1v1/unknown.png", QSize(122, 50));
-        avatars[i]->setParentItem(this);
-        avatars[i]->setPos(5, 23 + 62 *i);
-        avatars[i]->setObjectName("unknown");
-    }
-
-    revealed = 0;
-}
-
-void KOFOrderBox::revealGeneral(const QString &name) {
-    if (revealed < 3) {
-        avatars[revealed]->setPixmap(G_ROOM_SKIN.getGeneralPixmap(name, QSanRoomSkin::S_GENERAL_ICON_SIZE_KOF));
-        avatars[revealed]->setObjectName(name);
-        const General *general = Sanguosha->getGeneral(name);
-        if (general)
-            avatars[revealed]->setToolTip(general->getSkillDescription(true));
-        revealed++;
-    }
-}
-
-void KOFOrderBox::killPlayer(const QString &general_name) {
-    for (int i = 0; i < revealed; i++) {
-        QSanSelectableItem *avatar = avatars[i];
-        if (avatar->isEnabled() && avatar->objectName() == general_name) {
-            QPixmap pixmap("image/system/death/unknown.png");
-            QGraphicsPixmapItem *death = new QGraphicsPixmapItem(pixmap, avatar);
-            death->setScale(0.5);
-            death->moveBy(15, 0);
-            avatar->makeGray();
-            avatar->setEnabled(false);
-
-            return;
-        }
-    }
-}
-
 void RoomScene::onGameStart() {
     main_window->activateWindow();
 
@@ -3750,89 +3698,6 @@ void RoomScene::surrender() {
         ClientInstance->requestSurrender();
 }
 
-void RoomScene::fillGenerals1v1(const QStringList &names) {
-    int len = names.length() / 2;
-    QString path = QString("image/system/1v1/select%1.png").arg(len == 5 ? QString() : "2");
-    selector_box = new QSanSelectableItem(path, true);
-    selector_box->setPos(m_tableCenterPos);
-    selector_box->setFlag(QGraphicsItem::ItemIsMovable);
-    addItem(selector_box);
-    selector_box->setZValue(10000);
-
-    const static int start_x = 42  + G_COMMON_LAYOUT.m_cardNormalWidth / 2;
-    const static int width = 86;
-    const static int start_y = 59  + G_COMMON_LAYOUT.m_cardNormalHeight / 2;
-    const static int height = 121;
-
-    foreach (QString name, names) {
-        CardItem *item = new CardItem(name);
-        item->setObjectName(name);
-        general_items << item;
-    }
-
-    qShuffle(general_items);
-
-    int n = names.length();
-    double scaleRatio = 116.0 / G_COMMON_LAYOUT.m_cardNormalHeight;
-    for (int i = 0; i < n; i++) {
-        int row, column;
-        if (i < len) {
-            row = 1;
-            column = i;
-        } else {
-            row = 2;
-            column = i - len;
-        }
-
-        CardItem *general_item = general_items.at(i);
-        general_item->scaleSmoothly(scaleRatio);
-        general_item->setParentItem(selector_box);
-        general_item->setPos(start_x + width * column, start_y + height * row);
-        general_item->setHomePos(general_item->pos());
-    }
-}
-
-void RoomScene::fillGenerals3v3(const QStringList &names) {
-    QString temperature;
-    if (Self->getRole().startsWith("l"))
-        temperature = "warm";
-    else
-        temperature = "cool";
-
-    QString path = QString("image/system/3v3/select-%1.png").arg(temperature);
-    selector_box = new QSanSelectableItem(path, true);
-    selector_box->setFlag(QGraphicsItem::ItemIsMovable);
-    addItem(selector_box);
-    selector_box->setZValue(10000);
-    selector_box->setPos(m_tableCenterPos);
-
-    const static int start_x = 109;
-    const static int width = 86;
-    const static int row_y[4] = {150, 271, 394, 516};
-
-    int n = names.length();
-    double scaleRatio = 116.0 / G_COMMON_LAYOUT.m_cardNormalHeight;
-    for (int i = 0; i < n; i++) {
-        int row, column;
-        if (i < 8) {
-            row = 1;
-            column = i;
-        } else {
-            row = 2;
-            column = i - 8;
-        }
-
-        CardItem *general_item = new CardItem(names.at(i));
-        general_item->scaleSmoothly(scaleRatio);
-        general_item->setParentItem(selector_box);
-        general_item->setPos(start_x + width * column, row_y[row]);
-        general_item->setHomePos(general_item->pos());
-        general_item->setObjectName(names.at(i));
-
-        general_items << general_item;
-    }
-}
-
 void RoomScene::fillGenerals(const QStringList &) {
     // 3v3 and 1v1 method here?
 }
@@ -3898,13 +3763,6 @@ void RoomScene::recoverGeneral(int index, const QString &name) {
 void RoomScene::changeGeneral(const QString &general) {
     if (to_change && arrange_button) to_change->changeGeneral(general);
     choose_general_box->adjustItems();
-}
-
-void RoomScene::revealGeneral(bool self, const QString &general) {
-    if (self)
-        self_box->revealGeneral(general);
-    else
-        enemy_box->revealGeneral(general);
 }
 
 void RoomScene::skillStateChange(const QString &skill_name) {
