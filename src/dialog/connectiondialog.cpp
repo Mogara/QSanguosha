@@ -24,7 +24,7 @@ void ConnectionDialog::showAvatarList() {
     ui->avatarList->clear();
     QList<const General *> generals = Sanguosha->findChildren<const General *>();
     foreach (const General *general, generals) {
-        if (general->getKingdom() == "programmer") continue;
+        if (general->isTotallyHidden()) continue;
         QIcon icon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
         QString text = Sanguosha->translate(general->objectName());
         QListWidgetItem *item = new QListWidgetItem(icon, text, ui->avatarList);
