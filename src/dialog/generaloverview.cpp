@@ -529,17 +529,6 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
         connect(win_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
     }
 
-    if (general_name == "shenlvbu1" || general_name == "shenlvbu2") {
-        QCommandLinkButton *stage_change_button = new QCommandLinkButton(tr("Stage Change"),
-                                                                         tr("Trashes, the real fun is just beginning!"));
-
-        button_layout->addWidget(stage_change_button);
-        addCopyAction(stage_change_button);
-
-        stage_change_button->setObjectName("audio/system/stagechange.ogg");
-        connect(stage_change_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
-    }
-
     QString designer_text = Sanguosha->translate("designer:" + general->objectName());
     if (!designer_text.startsWith("designer:"))
         ui->designerLineEdit->setText(designer_text);
