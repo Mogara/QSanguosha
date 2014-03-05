@@ -4602,15 +4602,11 @@ Player::Place Room::getCardPlace(int card_id) const{
     return place_map.value(card_id);
 }
 
-ServerPlayer *Room::getLord(const QString &kingdom /* = QString() */) const{
-    if (kingdom.isEmpty())
-        return NULL;
-
+ServerPlayer *Room::getLord(const QString &kingdom) const{
     foreach (ServerPlayer *player, m_players) {
         if (player->getGeneral()->isLord() && player->isAlive() && player->getKingdom() == kingdom)
             return player;
     }
-
 
     return NULL;
 }

@@ -211,38 +211,9 @@ Card::Suit TrustAI::askForSuit(const QString &) {
 }
 
 QString TrustAI::askForKingdom() {
-    QString role;
-    ServerPlayer *lord = room->getLord();
     QStringList kingdoms = Sanguosha->getKingdoms();
     kingdoms.removeOne("god");
-    if (!lord) return kingdoms.at(qrand() % kingdoms.length());
-
-    switch(self->getRoleEnum()) {
-    case Player::Lord: role = kingdoms.at(qrand() % kingdoms.length()); break;
-    case Player::Renegade:
-    case Player::Rebel: {
-            if ((lord->hasLordSkill("xueyi") && self->getRoleEnum() == Player::Rebel) || lord->hasLordSkill("shichou"))
-                role = "wei";
-            else
-                role = lord->getKingdom();
-            break;
-    }
-    case Player::Loyalist: {
-            if (lord->getGeneral()->isLord())
-                role = lord->getKingdom();
-            else if (lord->getGeneral2() && lord->getGeneral2()->isLord())
-                role = lord->getGeneral2()->getKingdom();
-            else {
-                if (lord->hasSkill("yongsi")) kingdoms.removeOne(lord->getKingdom());
-                role = kingdoms.at(qrand() % kingdoms.length());
-            }
-            break;
-        }
-    default:
-            break;
-    }
-
-    return role;
+    return kingdoms.at(qrand() % kingdoms.length());
 }
 
 bool TrustAI::askForSkillInvoke(const QString &, const QVariant &) {
