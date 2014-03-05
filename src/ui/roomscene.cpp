@@ -712,10 +712,6 @@ void RoomScene::adjustItems() {
     chat_widget->setPos(_m_infoPlane.right() - chat_widget->boundingRect().width(),
                         chat_edit_widget->y() + (_m_roomLayout->m_chatTextBoxHeight - chat_widget->boundingRect().height()) / 2);
 
-
-    padding += _m_roomLayout->m_photoRoomPadding;
-    padding -= _m_roomLayout->m_photoRoomPadding; //selling moe?
-
     m_tablew = displayRegion.width();// - infoPlane.width();
     m_tableh = displayRegion.height();// - dashboard->boundingRect().height();
     QPixmap tableBg = QPixmap(Config.TableBgImage)
