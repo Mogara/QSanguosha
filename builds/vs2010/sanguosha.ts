@@ -59,37 +59,6 @@
     </message>
 </context>
 <context>
-    <name>BanlistDialog</name>
-    <message>
-        <source>Select generals that are excluded</source>
-        <translation type="obsolete">选择排除的武将</translation>
-    </message>
-    <message>
-        <source>Add ...</source>
-        <translation type="obsolete">添加 ...</translation>
-    </message>
-    <message>
-        <source>Remove</source>
-        <translation type="obsolete">删除</translation>
-    </message>
-    <message>
-        <source>Add 2nd general ...</source>
-        <translation type="obsolete">禁作副将 ...</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation type="obsolete">确定</translation>
-    </message>
-    <message>
-        <source>Banned for all: %1</source>
-        <translation type="obsolete">%1 (单禁)</translation>
-    </message>
-    <message>
-        <source>Banned for second general: %1</source>
-        <translation type="obsolete">%1 (禁作副将)</translation>
-    </message>
-</context>
-<context>
     <name>BroadcastBox</name>
     <message>
         <location filename="../../src/dialog/mainwindow.cpp" line="528"/>
@@ -1856,14 +1825,6 @@
         <location filename="../../src/dialog/generaloverview.cpp" line="520"/>
         <source>Six dragons lead my chariot, I will ride the wind with the greatest speed.With all of the feudal lords under my command,to rule the world with one name!</source>
         <translation>驾六龙，乘风而行，九合诸侯，一匡天下!</translation>
-    </message>
-    <message>
-        <source>Stage Change</source>
-        <translation type="obsolete">变身</translation>
-    </message>
-    <message>
-        <source>Trashes, the real fun is just beginning!</source>
-        <translation type="obsolete">杂鱼们，好戏才刚刚开始！</translation>
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.cpp" line="551"/>
