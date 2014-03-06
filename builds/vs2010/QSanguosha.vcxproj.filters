@@ -49,11 +49,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="ui\form">
-      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
-      <Extensions>ui</Extensions>
-      <ParseFiles>false</ParseFiles>
-    </Filter>
     <Filter Include="Generated Files\Debug">
       <UniqueIdentifier>{13da7146-21c7-4bd7-8ca8-4fb9c3c1c028}</UniqueIdentifier>
       <Extensions>cpp;moc</Extensions>
@@ -66,6 +61,11 @@
     </Filter>
     <Filter Include="Swig Files">
       <UniqueIdentifier>{9981aa0b-e6a2-412b-95d7-2e22d217b648}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="dialog\form">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+      <ParseFiles>false</ParseFiles>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -991,19 +991,19 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\dialog\cardoverview.ui">
-      <Filter>ui\form</Filter>
+      <Filter>dialog\form</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\configdialog.ui">
-      <Filter>ui\form</Filter>
+      <Filter>dialog\form</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\connectiondialog.ui">
-      <Filter>ui\form</Filter>
+      <Filter>dialog\form</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\generaloverview.ui">
-      <Filter>ui\form</Filter>
+      <Filter>dialog\form</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\mainwindow.ui">
-      <Filter>ui\form</Filter>
+      <Filter>dialog\form</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
