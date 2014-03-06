@@ -25,11 +25,6 @@ static bool callback(const wchar_t *dump_path, const wchar_t *id,
                      void *context, EXCEPTION_POINTERS *exinfo,
                      MDRawAssertionInfo *assertion,
                      bool succeeded) {
-    if (succeeded)
-        qWarning("Dump file created in %s, dump guid is %ws\n", dump_path, id);
-    else
-        qWarning("Dump failed\n");
-
     if (succeeded && QFile::exists("QSanSMTPClient.exe")){
         char *ID = new char[65535];
         memset(ID, 0, sizeof(ID));
