@@ -193,7 +193,7 @@ public:
         // various icons
         QRect m_actionedIconRegion;
         QRect m_saveMeIconRegion;
-        QRect m_chainedIconRegion, m_chainedIconRegion2;
+        QRect m_chainedIconRegion;
         QRect m_duanchangMaskRegion, m_duanchangMaskRegion2;
         QRect m_hiddenMarkRegion1, m_hiddenMarkRegion2;
         QRect m_headIconRegion, m_deputyIconRegion;

@@ -412,7 +412,7 @@ public:
                 else if (use.card->subcardsLength() > 0)
                     ids = use.card->getSubcards();
                 if (!ids.isEmpty()){
-                    if (TriggerSkill::triggerable(triggerEvent, room, owner, data, owner).contains(objectName()) && owner->isFriendWith(use.from)){
+                    if (TriggerSkill::triggerable(owner).contains(objectName()) && owner->isFriendWith(use.from)){
                         ask_who = use.from;
                         return QStringList(objectName());
                     }
@@ -422,12 +422,16 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
-        ServerPlayer *owner = room->findPlayerBySkillName(objectName());
-        if (!TriggerSkill::triggerable(triggerEvent, room, owner, data, owner).contains(objectName()))
-            return false;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
+        ServerPlayer *owner = room->findPlayerBySkillName(objectName());
         if (room->askForSkillInvoke(use.from, objectName())) {
+            LogMessage log;
+            log.type = "#InvokeOthersSkill";
+            log.from = use.from;
+            log.to.append(owner);
+            log.arg = objectName();
+            room->sendLog(log);
             room->broadcastSkillInvoke(objectName());
             return true;
         }
