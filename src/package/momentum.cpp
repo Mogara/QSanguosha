@@ -398,7 +398,7 @@ public:
         return false;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (player == NULL || !player->isAlive()) return QStringList();
         ServerPlayer *owner = room->findPlayerBySkillName(objectName());
         CardUseStruct use = data.value<CardUseStruct>();
@@ -422,7 +422,7 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *owner = room->findPlayerBySkillName(objectName());
         if (room->askForSkillInvoke(use.from, objectName())) {
