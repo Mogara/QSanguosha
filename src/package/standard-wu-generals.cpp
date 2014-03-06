@@ -598,24 +598,14 @@ public:
         }
         xiaoqiao->setFlags("-tianxiang_invoke");
         target->setFlags("-tianxiang_target");
-        target->addMark("TianxiangTarget");
 
         DamageStruct damage = data.value<DamageStruct>();
         damage.transfer = true;
         damage.to = target;
+        damage.transfer_reason = "tianxiang";
 
-        if (damage.card != NULL && damage.card->isKindOf("Slash"))
-            xiaoqiao->removeQinggangTag(damage.card);
+        xiaoqiao->tag["TransferDamage"] = QVariant::fromValue(damage);
 
-        try {
-            room->damage(damage);
-        }
-        catch (TriggerEvent triggerEvent) {
-            if (triggerEvent == TurnBroken){
-                target->removeMark("TianxiangTarget");
-            }
-            throw triggerEvent;
-        }
         return true;
     }
 };
@@ -630,7 +620,7 @@ public:
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         if (player == NULL) return QStringList();
         DamageStruct damage = data.value<DamageStruct>();
-        if (player->isAlive() && player->getMark("TianxiangTarget") > 0 && damage.transfer) {
+        if (player->isAlive() && damage.transfer && damage.transfer_reason == "tianxiang") {
             player->drawCards(player->getLostHp());
             player->removeMark("TianxiangTarget");
         }

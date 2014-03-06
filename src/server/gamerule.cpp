@@ -350,12 +350,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             foreach (ServerPlayer *p, room->getAlivePlayers())
                 room->doNotify(p, QSanProtocol::S_COMMAND_NULLIFICATION_ASKED, QSanProtocol::Utils::toJsonString("."));
         }
-        if (use.card->isKindOf("Slash")){
+        if (use.card->isKindOf("Slash"))
             use.from->tag.remove("Jink_" + use.card->toString());
-            foreach (ServerPlayer *p, use.to){
-                p->removeQinggangTag(use.card);
-            }
-        }
 
         break;
     }
@@ -468,6 +464,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
     }
     case DamageComplete: {
         DamageStruct damage = data.value<DamageStruct>();
+        if (damage.prevented)
+            return false;
         if (damage.nature != DamageStruct::Normal && player->isChained())
             room->setPlayerProperty(player, "chained", false);
         if (room->getTag("is_chained").toInt() > 0) {
