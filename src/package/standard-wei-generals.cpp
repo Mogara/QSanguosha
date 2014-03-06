@@ -313,7 +313,7 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *guojia, QVariant &data) const{
         JudgeStar judge = data.value<JudgeStar>();
-        if (room->getCardPlace(judge->card->getEffectiveId()) != Player::PlaceHand)
+        if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
             guojia->obtainCard(judge->card);
         return false;
     }
@@ -947,7 +947,6 @@ void QuhuCard::use(Room *room, ServerPlayer *xunyu, QList<ServerPlayer *> &targe
             return;
         }
 
-        room->broadcastSkillInvoke("#tunlang");
         ServerPlayer *wolf = room->askForPlayerChosen(xunyu, wolves, "quhu", QString("@quhu-damage:%1").arg(tiger->objectName()));
         room->damage(DamageStruct("quhu", tiger, wolf));
     } else {
