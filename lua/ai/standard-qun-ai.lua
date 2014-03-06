@@ -149,7 +149,6 @@ function SmartAI:getLijianCard()
 end
 
 function SmartAI:findLijianTarget(card_name, use)
-	local lord = self.room:getLord()
 	local duel = sgs.Sanguosha:cloneCard("duel")
 
 	local findFriend_maxSlash = function(self, first)
@@ -207,15 +206,6 @@ function SmartAI:findLijianTarget(card_name, use)
 		end
 
 		if #males >= 1 and males[1]:getHp() == 1 then
-			if lord and self:isFriend(lord) and lord:isMale() and lord:objectName() ~= males[1]:objectName() and self:hasTrickEffective(duel, males[1], lord)
-				and not lord:isLocked(duel) and lord:objectName() ~= self.player:objectName() and lord:isAlive()
-				and (getCardsNum("Slash", males[1]) < 1
-					or getCardsNum("Slash", males[1]) < getCardsNum("Slash", lord)
-					or self:getKnownNum(males[1]) == males[1]:getHandcardNum() and getKnownCard(males[1], self.player, "Slash", true, "he") == 0)
-				then
-				return males[1], lord
-			end
-
 			local afriend = findFriend_maxSlash(self, males[1])
 			if afriend and afriend:objectName() ~= males[1]:objectName() then
 				return males[1], afriend
@@ -399,8 +389,6 @@ table.insert(sgs.ai_skills, luanwu_skill)
 luanwu_skill.getTurnUseCard = function(self)
 	if self.player:getMark("@chaos") <= 0 then return end
 	local good, bad = 0, 0
-	local lord = self.room:getLord()
-	if lord and self.role ~= "rebel" and self:isWeak(lord) then return end
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if self:isWeak(player) then
 			if self:isFriend(player) then bad = bad + 1

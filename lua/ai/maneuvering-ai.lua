@@ -450,8 +450,6 @@ sgs.ai_skill_cardask["@fire-attack"] = function(self, data, pattern, target)
 	local card
 
 	self:sortByUseValue(cards, true)
-	local lord = self.room:getLord()
-	if sgs.GetConfig("EnableHegemony", false) then lord = nil end
 
 	for _, acard in ipairs(cards) do
 		if acard:getSuitString() == convert[pattern] then

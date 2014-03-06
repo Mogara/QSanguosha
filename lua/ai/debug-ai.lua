@@ -131,8 +131,6 @@ function SmartAI:log(outString)
 end
 
 function sgs.checkMisjudge(player)
-	if not global_room:getLord() then return end
-
 	local room = global_room
 	local mode = room:getMode()
 	if player then
@@ -143,19 +141,6 @@ function sgs.checkMisjudge(player)
 	else
 		local rebel_num, loyalist_num, renegade_num = 0, 0, 0
 		local evaluate_rebel, evaluate_loyalist, evaluate_renegade = 0, 0, 0
-		for _, p in sgs.qlist(room:getOtherPlayers(room:getLord())) do
-			local role = p:getRole()
-			if role == "rebel" then rebel_num = rebel_num + 1
-			elseif role == "loyalist" then loyalist_num = loyalist_num + 1
-			elseif role == "renegade" then renegade_num = renegade_num + 1
-			end
-		end
-		for _, p in sgs.qlist(room:getOtherPlayers(room:getLord())) do
-			if p:getRole() == "rebel" and rebel_num > 0 then evaluate_rebel = evaluate_rebel + 1
-			elseif p:getRole() == "loyalist" and loyalist_num > 0 then evaluate_loyalist = evaluate_loyalist + 1
-			elseif p:getRole() == "renegade" and renegade_num > 0 then evaluate_renegade = evaluate_renegade + 1
-			end
-		end
 
 		if evaluate_renegade < 1 then
 			if (evaluate_rebel >= rebel_num + renegade_num and evaluate_rebel > rebel_num)

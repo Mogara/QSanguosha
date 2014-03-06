@@ -1679,11 +1679,6 @@ function SmartAI:getDangerousCard(who)
 	end
 	if armor and armor:isKindOf("EightDiagram") and who:hasSkill("leiji") then return armor:getEffectiveId() end
 
-	local lord = self.room:getLord()
-	if lord and lord:hasLordSkill("hujia") and self:isEnemy(lord) and armor and armor:isKindOf("EightDiagram") and who:getKingdom() == "wei" then
-		return armor:getEffectiveId()
-	end
-
 	if (weapon and who:hasSkill("liegong")) then return weapon:getEffectiveId() end
 end
 
@@ -1800,20 +1795,6 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 
 	local enemies = {}
 	if #self.enemies == 0 and self:getOverflow() > 0 then
-		local lord = self.room:getLord()
-		for _, player in ipairs(players) do
-			if not self:isFriend(player) then
-				if lord and self.player:isLord() then
-					local kingdoms = {}
-					if lord:getGeneral():isLord() then table.insert(kingdoms, lord:getGeneral():getKingdom()) end
-					if lord:getGeneral2() and lord:getGeneral2():isLord() then table.insert(kingdoms, lord:getGeneral2():getKingdom()) end
-				elseif lord and player:objectName() ~= lord:objectName() then
-					table.insert(enemies, player)
-				elseif not lord then
-					table.insert(enemies, player)
-				end
-			end
-		end
 		enemies = self:exclude(enemies, card)
 		self:sort(enemies, "defense")
 		enemies = sgs.reverse(enemies)

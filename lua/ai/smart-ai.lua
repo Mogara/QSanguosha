@@ -3238,14 +3238,6 @@ end
 
 local function getPlayerSkillList(player)
 	local skills = sgs.QList2Table(player:getVisibleSkillList())
-	if player:hasSkill("weidi") and not player:isLord() then
-		local lord = player:getRoom():getLord()
-		if lord then
-			for _, skill in sgs.qlist(lord:getVisibleSkillList()) do
-				if skill:isLordSkill() then table.insert(skills, skill) end
-			end
-		end
-	end
 	return skills
 end
 
@@ -4763,7 +4755,6 @@ function SmartAI:cantbeHurt(player, from, damageNum)
 	if player:hasSkill("duanchang") and not player:isLord() and #(self:getFriendsNoself(player)) > 0 and player:getHp() <= 1 then
 		if not (from:getMaxHp() == 3 and from:getArmor() and from:getDefensiveHorse()) then
 			if from:getMaxHp() <= 3 or (from:isLord() and self:isWeak(from)) then return true end
-			if from:getMaxHp() <= 3 or (self.room:getLord() and from:getRole() == "renegade") then return true end
 		end
 	end
 	if player:hasSkill("tianxiang") and getKnownCard(player, self.player, "diamond|club", false) < player:getHandcardNum() then
