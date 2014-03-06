@@ -30,14 +30,17 @@ static bool callback(const wchar_t *dump_path, const wchar_t *id,
     else
         qWarning("Dump failed\n");
 
-    char *ID = new char;
-    WideCharToMultiByte(CP_ACP, 0, id, -1, ID, wcslen(id), NULL, NULL);
-    QProcess *process = new QProcess(qApp);
-    QStringList args;
-    args << QString(ID) + ".dmp";
-    process->start("QSanSMTPClient", args);
-    delete ID;
-    ID = NULL;
+    if (succeeded && QFile::exists("QSanSMTPClient.exe")){
+        char *ID = new char[65535];
+        memset(ID, 0, sizeof(ID));
+        WideCharToMultiByte(CP_ACP, 0, id, -1, ID, wcslen(id), NULL, NULL);
+        QProcess *process = new QProcess(qApp);
+        QStringList args;
+        args << QString(ID) + ".dmp";
+        process->start("QSanSMTPClient", args);
+        delete[] ID;
+        ID = NULL;
+    }
     return succeeded;
 }
 
