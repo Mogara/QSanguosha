@@ -843,6 +843,8 @@ public:
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data) const{
         ServerPlayer *yuji = room->findPlayerBySkillName(objectName());
+        if (yuji == NULL)
+            return false;
         yuji->tag["qianhuan_data"] = data;
         QString prompt;
 
@@ -858,7 +860,7 @@ public:
             prompt = prompt_list.join(":");
         }
         
-        bool invoke = (yuji != NULL && yuji->askForSkillInvoke(objectName(), prompt));
+        bool invoke = yuji->askForSkillInvoke(objectName(), prompt);
         yuji->tag.remove("qianhuan_data");
         if (invoke){
             room->broadcastSkillInvoke(objectName());
