@@ -949,9 +949,13 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
             Json::Value clientReply = player->getClientReply();
             if (!success || !clientReply.isString()) {
                 answer = ".";
-                const Skill *skill = Sanguosha->getSkill(skill_name);
-                if (skill)
-                    return skill->getDefaultChoice(player);
+                if (skill_name == "TurnStartShowGeneral")
+                    answer = "cancel";
+                else {
+                    const Skill *skill = Sanguosha->getSkill(skill_name);
+                    if (skill)
+                        answer = skill->getDefaultChoice(player);
+                }
             } else
                 answer = toQString(clientReply);
         }

@@ -1570,6 +1570,9 @@ void ServerPlayer::disconnectSkillsFromOthers(bool head_skill /* = true */) {
 }
 
 bool ServerPlayer::askForGeneralShow(bool one) {
+    if (hasShownAllGenerals())
+        return false;
+
     QStringList choices;
 
     if (!hasShownGeneral1())
