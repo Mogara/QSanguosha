@@ -51,7 +51,7 @@
   
   +修复Room::_moveCards底层实现中交换装备更新问题
   
-  +lua扩展包的AI文件可以放入"extensions/ai/"以方便玩家移除（开发团队也推荐您使用此特性）
+  +LUA扩展包的AI文件改为放入"extensions/ai/"以方便玩家移除（原文件夹不再可以放置LUA扩展包AI）
   
   +触发技can_preshow缺省时，技能有视为技部分不可预亮，反之可预亮
   
