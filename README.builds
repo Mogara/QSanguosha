@@ -5,7 +5,7 @@ To build QSanguosha with VS2010
 (2) QT Visual Studio Add-in (for Qt 4) http://download.qt-project.org/official_releases/vsaddin/qt-vs-addin-1.1.11-opensource.exe
    and then install them.
 
-2. Download the swigwin (swig for Windows, 2.0.9 or 2.0.10(Not 2.0.11!! Bug has been detected)) http://sourceforge.net/projects/swig/files/swigwin/
+2. Download the swigwin (swig for Windows, 2.0.12) http://sourceforge.net/projects/swig/files/swigwin/
 
 3. Create a tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to tools/swig. To make sure you copied them to the right directory hierachy, check if this file exists: <Your source direcotry>/QSanguosha/tools/swig/swig.exe
 
@@ -19,7 +19,7 @@ To build QSanguosha in Linux
 
 1.Download and install the libraries from Qt offical website or software sources, make sure the Qt version is 4.8.x, not 5.x.
 
-2.Download and install the swig from http://www.swigwin.org or software source, make sure the version of swig is 2.0.10(not later!!)
+2.Download and install the swig from http://sourceforge.net/projects/swig/files/swig/ or software source, make sure the version of swig is 2.0.9 or later (and not 2.0.11)
 
 3.open a terminal here, type:
 

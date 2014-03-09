@@ -13,7 +13,7 @@
 
 --sgs.CreateSkillCard需要以下参数定义：
 
---name, target_fixed, will_throw, handling_method, can_recast, filter, feasible, on_use, on_effect, on_validate, on_validate_in_response
+--name, target_fixed, will_throw, handling_method, can_recast, filter, feasible, about_to_use, on_use, on_effect, on_validate, on_validate_in_response
 
 --name:
 --字符串，牌的名字。取个好听的名字~
@@ -143,3 +143,20 @@ LuaLijianCard = sgs.CreateSkillCard{
 		end
 	end ,
 }
+
+--上例“离间”比较复杂，我们来看一个比较简单的技能卡：制衡。
+
+LuaZhihengCard = sgs.CreateSkillCard{
+	name = "LuaZhihengCard" ,
+	target_fixed = true ,
+	on_use = function(self, room, source, targets)
+		if source:isAlive() then
+			source:drawCards(self:getSubcards():length())
+		end
+	end ,
+}
+
+--制衡，就是这么简单。
+--有人会问，弃牌哪里去了？怎么只有摸牌？不是要弃最多体力上限张么？这里怎么没限制？
+--这张制衡技能卡的will_throw没有设置，所以为true，所以视为这张技能卡的牌，在执行on_use之前，就被弃置掉了。
+--牌的限制在视为技里实现，而不是在这里。

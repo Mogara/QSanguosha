@@ -250,7 +250,9 @@ void QSanSkillButton::setSkill(const Skill *skill) {
          _m_emitActivateSignal = false;
          _m_emitDeactivateSignal = false;
      } else return;
-     setToolTip(skill->getDescription());
+     QString desc = skill->getDescription();
+     desc.simplified();
+     setToolTip(desc);
 
      if (!Self->hasShownSkill(skill) && skill->canPreshow())
          setState(QSanButton::S_STATE_CANPRESHOW);

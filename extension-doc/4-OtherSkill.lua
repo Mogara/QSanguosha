@@ -13,7 +13,7 @@ function sgs.CreateMashuSkill(name) --创建马术技能，在CreateDistanceSkil
 	local mashu_skill = {}
 	mashu_skill.name = "LuaMashu_" .. name
 	mashu_skill.correct_func = function(self, from, to)
-		if from:hasSkill(self:objectName()) then
+		if from:hasShownSkill(self) then
 			return -1
 		end
 		return 0
@@ -64,6 +64,25 @@ LuaQicai = sgs.CreateTargetModSkill{
 	--传入参数都是self, player, card
 		if (player:hasSkill(self:objectName()) and card:isKindOf("TrickCard")) then
 			return 1000 --返回1000，在我们的最多10人局里，基本就等于无限了
+		end
+		return 0
+	end ,
+}
+
+--攻击范围技(sgs.CreateAttackRangeSkill)
+--顾名思义，修改攻击范围的
+--目前只有黄忠和吴六剑用到了攻击范围技
+--注意攻击范围技不会亮将，所以使用时请注意一些
+
+--黄忠君主效果实现：注意shouyue这个技能是附加给关羽/张飞/赵云/马超/黄忠各个人的，在君刘备这里只是个标志而已。
+LuaLiegongRange = sgs.CreateAttackRangeSkill{
+	name = "#LuaLiegong-for-lord" ,
+	extra_func = function(self, player, include_weapon)
+		if player:hasShownSkill(sgs.Sanguosha:getSkill("liegong")) then
+			local lord = player:getLord() --返回的是Player类型的指针，不是ServerPlayer！！！这里不是服务器
+			if lord and lord:hasLordSkill("shouyue") then
+				return 1
+			end
 		end
 		return 0
 	end ,
