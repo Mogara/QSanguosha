@@ -194,6 +194,10 @@ void SentbackEffect::draw(QPainter *painter) {
     return;
 }
 
+SentbackEffect::~SentbackEffect() {
+    delete grayed;
+}
+
 FadeEffect::FadeEffect(bool stay, QObject *) {
     this->setObjectName("fader");
     index = 0;

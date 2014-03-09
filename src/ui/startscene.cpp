@@ -134,3 +134,6 @@ void StartScene::printServerInfo() {
         server_log->append(tr("This server is AI disabled"));
 }
 
+StartScene::~StartScene() {
+    delete logo;
+}

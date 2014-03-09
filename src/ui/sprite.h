@@ -75,6 +75,8 @@ class SentbackEffect: public QAnimatedEffect {
 public:
     SentbackEffect(bool stay = false, QObject *parent = 0);
 
+    virtual ~SentbackEffect();
+
 protected:
     virtual void draw(QPainter *painter);
     virtual QRectF boundingRectFor(const QRectF &sourceRect) const;

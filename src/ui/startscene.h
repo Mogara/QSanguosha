@@ -18,6 +18,8 @@ public:
     void setServerLogBackground();
     void switchToServer(Server *server);
 
+    virtual ~StartScene();
+
 private:
     void printServerInfo();
 

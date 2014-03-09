@@ -149,3 +149,7 @@ void Button::timerEvent(QTimerEvent *) {
     }
 }
 
+Button::~Button() {
+    delete outimg;
+}
+
