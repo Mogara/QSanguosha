@@ -63,6 +63,8 @@
   
   +DamageStruct新增属性transfer_reason(QString类型，用以记录伤害被转移的原因，如"tianxiang"), prevented(bool，用以记录伤害是否被防止)
   
+  +更新lua扩展包帮助文档OtherSkill和SkillCard中部分内容
+  
   New Features/Enhancements:
   +战报窗口增加边框
   
@@ -83,6 +85,12 @@
   +"展示武将"统一规范为"明置武将"
   
   +配置对话框中，起始页设为"环境"
+  
+  +技能描述中提示技能是否可预亮
+  
+  +放缓AI亮将的节奏
+  
+  +着手优化程序性能
   
   
 0.6.0 beta (February 25 2014)

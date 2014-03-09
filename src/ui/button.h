@@ -6,6 +6,7 @@
 #include <QGraphicsObject>
 #include <QFont>
 #include <QFontMetrics>
+#include <QGraphicsDropShadowEffect>
 
 class Button: public QGraphicsObject{
     Q_OBJECT
@@ -38,6 +39,7 @@ private:
     QGraphicsPixmapItem *title_item;
     int glow;
     int timer_id;
+    QGraphicsDropShadowEffect *de;
 
     void init();
 

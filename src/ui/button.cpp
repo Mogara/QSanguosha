@@ -5,7 +5,6 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsRotation>
 #include <QPropertyAnimation>
-#include <QGraphicsDropShadowEffect>
 
 static QRectF ButtonRect(0, 0, 189, 46);
 
@@ -39,7 +38,7 @@ void Button::init() {
     title_item->setPixmap(*title);
     title_item->show();
 
-    QGraphicsDropShadowEffect *de = new QGraphicsDropShadowEffect;
+    de = new QGraphicsDropShadowEffect;
     de->setOffset(0);
     de->setBlurRadius(12);
     de->setColor(QColor(255, 165, 0));
@@ -151,5 +150,6 @@ void Button::timerEvent(QTimerEvent *) {
 
 Button::~Button() {
     delete outimg;
+    delete de;
 }
 
