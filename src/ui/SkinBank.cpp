@@ -189,9 +189,8 @@ void IQSanComponentSkin::QSanShadowTextFont::paintText(QPainter *painter, QRect 
         painter->drawImage(0, 0, image);
         return;
     }
-    QImage shadow = QSanUiUtils::produceShadow(image, m_shadowColor, m_shadowRadius, m_shadowDecadeFactor);
     // now, overlay foreground on shadow
-    painter->drawImage(pos.topLeft(), shadow);
+    QSanUiUtils::paintShadow(painter, image, m_shadowColor, m_shadowRadius, m_shadowDecadeFactor, pos);
     painter->drawImage(pos.topLeft(), image); //pos, image);
 }
 
@@ -206,10 +205,9 @@ void IQSanComponentSkin::QSanShadowTextFont::paintText(QGraphicsPixmapItem *pixm
     QSanSimpleTextFont::paintText(&imagePainter, QRect(m_shadowRadius, m_shadowRadius,
                                   pos.width() - m_shadowRadius * 2, pos.height() - m_shadowRadius * 2),
                                   align, text);
-    QImage shadow = QSanUiUtils::produceShadow(image, m_shadowColor, m_shadowRadius, m_shadowDecadeFactor);
-    // now, overlay foreground on shadow
-    QPixmap pixmap = QPixmap::fromImage(shadow);
+    QPixmap pixmap = QPixmap::fromImage(image);
     QPainter shadowPainter(&pixmap);
+    QSanUiUtils::paintShadow(&shadowPainter, image, m_shadowColor, m_shadowRadius, m_shadowDecadeFactor, 0, 0);
     shadowPainter.drawImage(0, 0, image);
     pixmapItem->setPixmap(pixmap);
     pixmapItem->setPos(pos.x(), pos.y());

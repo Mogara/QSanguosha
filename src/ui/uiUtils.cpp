@@ -6,7 +6,7 @@
 #include <qdesktopservices.h>
 #include <qmutex.h>
 
-QImage QSanUiUtils::produceShadow(const QImage &image, QColor shadowColor, int radius, double decade) {
+void QSanUiUtils::paintShadow(QPainter *painter, const QImage &image, QColor shadowColor, int radius, double decade, const int x, const int y) {
     const uchar *oldImage = image.bits();
     int cols = image.width();
     int rows = image.height();
@@ -15,23 +15,23 @@ QImage QSanUiUtils::produceShadow(const QImage &image, QColor shadowColor, int r
 #define _NEW_PIXEL_CHANNEL(x, y, channel) (newImage[(y * cols + x) * 4 + channel])
 #define _NEW_PIXEL(x, y) _NEW_PIXEL_CHANNEL(x, y, 3)
 #define _OLD_PIXEL(x, y) (oldImage[(y * cols + x) * 4 + 3])
-    for (int y = 0; y < rows; y++) {
-        for (int x = 0; x < cols; x++) {
-            _NEW_PIXEL_CHANNEL(x, y, 0) = shadowColor.blue();
-            _NEW_PIXEL_CHANNEL(x, y, 1) = shadowColor.green();
-            _NEW_PIXEL_CHANNEL(x, y, 2) = shadowColor.red();
-            _NEW_PIXEL_CHANNEL(x, y, 3) = 0;
+    for (int Y = 0; Y < rows; Y++) {
+        for (int X = 0; X < cols; X++) {
+            _NEW_PIXEL_CHANNEL(X, Y, 0) = shadowColor.blue();
+            _NEW_PIXEL_CHANNEL(X, Y, 1) = shadowColor.green();
+            _NEW_PIXEL_CHANNEL(X, Y, 2) = shadowColor.red();
+            _NEW_PIXEL_CHANNEL(X, Y, 3) = 0;
         }
     }
 
-    for (int y = 0; y < rows; y++) {
-        for (int x = 0; x < cols; x++) {
-            uchar oldVal = _OLD_PIXEL(x, y);
+    for (int Y = 0; Y < rows; Y++) {
+        for (int X = 0; X < cols; X++) {
+            uchar oldVal = _OLD_PIXEL(X, Y);
             if (oldVal == 0) continue;
             for (int dy = -radius; dy <= radius; dy++) {
                 for (int dx = -radius; dx <= radius; dx++) {
-                    int wx = x + dx;
-                    int wy = y + dy;
+                    int wx = X + dx;
+                    int wy = Y + dy;
                     int dist = dx * dx + dy * dy;
                     if (wx < 0 || wy < 0 || wx >= cols || wy >= rows) continue;
                     if (dx * dx + dy * dy > radius * radius) continue;
@@ -46,7 +46,12 @@ QImage QSanUiUtils::produceShadow(const QImage &image, QColor shadowColor, int r
 #undef _NEW_PIXEL
 #undef _OLD_PIXEL
     QImage result(newImage, cols, rows, QImage::Format_ARGB32);
-    return result;
+    painter->drawImage(x, y, result);
+}
+
+void QSanUiUtils::paintShadow(QPainter *painter, const QImage &image, QColor shadowColor, int radius, double decade, const QRect boundingBox) {
+    QPoint TL = boundingBox.topLeft();
+    paintShadow(painter, image, shadowColor, radius, decade, TL.x(), TL.y());
 }
 
 void QSanUiUtils::makeGray(QPixmap &pixmap) {
@@ -328,6 +333,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
     if (ystart < 0) ystart = 0;
     QImage result(newImage, cols, rows, QImage::Format_ARGB32);
     painter->drawImage(topLeft.x() + xstart, topLeft.y() + ystart, result);
+    delete[] newImage;
+    newImage = NULL;
     return true;
 }
 
@@ -491,6 +498,8 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QSt
     if (ystart < 0) ystart = 0;
     QImage result(newImage, cols, rows, QImage::Format_ARGB32);
     painter->drawImage(topLeft.x() + xstart, topLeft.y() + ystart, result);
+    delete[] newImage;
+    newImage = NULL;
     return true;
 }
 
