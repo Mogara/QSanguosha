@@ -1343,14 +1343,14 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
         if (method == Card::MethodUse) {
             CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(), QString(), card->getSkillName(), QString());
-            moveCardTo(card, player, NULL, Player::PlaceTable, reason, true);
+            moveCardTo(card, NULL, Player::PlaceTable, reason, true);
         } else if (method == Card::MethodDiscard) {
             CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName());
-            moveCardTo(card, player, NULL, Player::DiscardPile, reason, pattern != "." && pattern != "..");
+            moveCardTo(card, NULL, Player::DiscardPile, reason, pattern != "." && pattern != "..");
         } else if (method != Card::MethodNone && !isRetrial) {
             CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->objectName());
             reason.m_skillName = card->getSkillName();
-            moveCardTo(card, player, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
+            moveCardTo(card, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
         }
 
         if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {
@@ -1364,7 +1364,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 if (getCardPlace(card->getEffectiveId()) == Player::PlaceTable) {
                     CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(),
                                           QString(), card->getSkillName(), QString());
-                    moveCardTo(card, player, NULL, Player::DiscardPile, reason, true);
+                    moveCardTo(card, NULL, Player::DiscardPile, reason, true);
                 }
                 CardUseStruct card_use;
                 card_use.card = card;

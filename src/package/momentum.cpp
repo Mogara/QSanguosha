@@ -1039,9 +1039,6 @@ void HongfaCard::onUse(Room *room, const CardUseStruct &card_use) const{
     }
     room->setPlayerProperty(qunxiong, "hongfa_slash", QString());
 
-    room->moveCardTo(slash, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_USE, qunxiong->objectName()));
-    //temp way to fix the card movement
-
     room->useCard(use);
 }
 
@@ -1170,8 +1167,6 @@ public:
             Slash *slash = new Slash(Card::SuitToBeDecided, -1);
             slash->setSkillName("hongfa");
             slash->addSubcard(id);
-
-            room->moveCardTo(slash, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_RESPONSE, player->objectName()));
 
             room->provide(slash);
             return true;
