@@ -1023,6 +1023,7 @@ const Player *Player::getLord(const bool include_death) const{
 
 int Player::getPlayerNumWithSameKingdom(const QString &_to_calculate /* = QString() */) const{
     if (!hasShownOneGeneral()) return 0;
+    if (getRole() == "careerist") return 1;
     QString to_calculate = _to_calculate;
 
     if (to_calculate.isEmpty())
