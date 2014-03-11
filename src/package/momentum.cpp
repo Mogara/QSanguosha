@@ -1464,6 +1464,9 @@ public:
     }
 
     virtual int getExtra(const Player *target) const{
+        if (!target->hasShownOneGeneral())
+            return 0;
+
         QList<const Player *> targets = target->getAliveSiblings();
         targets << target;
 
