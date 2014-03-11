@@ -42,7 +42,7 @@ QWidget *GeneralSearch::createInfoTab() {
     layout->addWidget(include_hidden_checkbox);
 
     nickname_label = new QLabel(tr("Nickname"));
-   nickname_label->setToolTip(tr("<font color=%1>Input characters included by the nickname. '?' and '*' is available. Every nickname meets the condition if the line is empty.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+    nickname_label->setToolTip(tr("<font color=%1>Input characters included by the nickname. '?' and '*' is available. Every nickname meets the condition if the line is empty.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
     nickname_edit = new QLineEdit;
     nickname_edit->clear();
     layout->addLayout(HLay(nickname_label, nickname_edit));

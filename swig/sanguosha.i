@@ -1010,6 +1010,7 @@ public:
     QList<int> getRandomCards() const;
     QString getRandomGeneralName() const;
     QStringList getLimitedGeneralNames() const;
+    QStringList getGeneralNames() const;
 
     void playSystemAudioEffect(const char *name) const;
     void playAudioEffect(const char *filename) const;
