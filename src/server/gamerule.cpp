@@ -295,8 +295,16 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                 card_use.card->doPreAction(room, card_use);
 
             QList<ServerPlayer *> targets = card_use.to;
-            if (card_use.from && !card_use.to.empty()) {
-                foreach (ServerPlayer *to, card_use.to) {
+
+            if (card_use.from != NULL){
+                thread->trigger(TargetChoosing, room, card_use.from, data);
+                CardUseStruct new_use = data.value<CardUseStruct>();
+                targets = new_use.to;
+            }
+
+            if (card_use.from && !targets.isEmpty()) {
+                QList<ServerPlayer *> targets_copy = targets;
+                foreach (ServerPlayer *to, targets_copy) {
                     if (targets.contains(to)) {
                         thread->trigger(TargetConfirming, room, to, data);
                         CardUseStruct new_use = data.value<CardUseStruct>();
@@ -323,6 +331,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                     card_use.from->tag["Jink_" + card_use.card->toString()] = QVariant::fromValue(jink_list);
                 }
                 if (card_use.from && !card_use.to.isEmpty()) {
+                    foreach (ServerPlayer *p, room->getAllPlayers())
+                        thread->trigger(TargetChosen, room, p, data);
                     foreach (ServerPlayer *p, room->getAllPlayers())
                         thread->trigger(TargetConfirmed, room, p, data);
                 }

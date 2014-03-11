@@ -14,7 +14,7 @@ Crossbow::Crossbow(Suit suit, int number)
 class DoubleSwordSkill: public WeaponSkill {
 public:
     DoubleSwordSkill(): WeaponSkill("DoubleSword") {
-        events << TargetConfirmed;
+        events << TargetChosen;
     }
 
     virtual QStringList triggerable(const ServerPlayer *target) const{
@@ -59,7 +59,7 @@ DoubleSword::DoubleSword(Suit suit, int number)
 class QinggangSwordSkill: public WeaponSkill {
 public:
     QinggangSwordSkill(): WeaponSkill("QinggangSword") {
-        events << TargetConfirmed;
+        events << TargetChosen;
         frequency = Compulsory;
     }
 

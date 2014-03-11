@@ -744,7 +744,7 @@ NiaoxiangSummon::NiaoxiangSummon()
 class Niaoxiang: public BattleArraySkill {
 public:
     Niaoxiang(): BattleArraySkill("niaoxiang", BattleArrayType::Siege) {
-        events << TargetConfirmed;
+        events << TargetChosen;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
@@ -1251,7 +1251,7 @@ DragonPhoenix::DragonPhoenix(Suit suit, int number)
 class DragonPhoenixSkill: public WeaponSkill{
 public:
     DragonPhoenixSkill(): WeaponSkill("DragonPhoenix"){
-        events << TargetConfirmed;
+        events << TargetChosen;
     }
 
     virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{

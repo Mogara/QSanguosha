@@ -710,6 +710,8 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
                     card->onNullified(to);
 
                 foreach (ServerPlayer *p, room->getAllPlayers())
+                    room->getThread()->trigger(TargetChosen, room, p, _data);
+                foreach (ServerPlayer *p, room->getAllPlayers())
                     room->getThread()->trigger(TargetConfirmed, room, p, _data);
             }
         }

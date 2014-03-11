@@ -327,6 +327,8 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
             }
 
             foreach (ServerPlayer *p, room->getAllPlayers())
+                thread->trigger(TargetChosen, room, p, data);
+            foreach (ServerPlayer *p, room->getAllPlayers())
                 thread->trigger(TargetConfirmed, room, p, data);
             break;
         }

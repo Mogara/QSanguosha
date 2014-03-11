@@ -480,14 +480,20 @@ public:
 class Jiang: public TriggerSkill {
 public:
     Jiang(): TriggerSkill("jiang") {
-        events << TargetConfirmed;
+        events << TargetConfirmed << TargetChosen;
         frequency = Frequent;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *sunce, QVariant &data, ServerPlayer* &) const {
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *sunce, QVariant &data, ServerPlayer* &) const {
         if (TriggerSkill::triggerable(sunce).isEmpty()) return QStringList();
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from == sunce || use.to.contains(sunce)) {
+        bool invoke = false;
+        if (triggerEvent == TargetChosen)
+            invoke = (sunce == use.from);
+        else
+            invoke = (use.to.contains(sunce));
+
+        if (invoke) {
             if (use.card->isKindOf("Duel") || (use.card->isKindOf("Slash") && use.card->isRed()))
                 return QStringList(objectName());
         }
@@ -878,7 +884,7 @@ FengshiSummon::FengshiSummon()
 class Fengshi: public BattleArraySkill {
 public:
     Fengshi(): BattleArraySkill("fengshi", BattleArrayType::Siege) {
-        events << TargetConfirmed;
+        events << TargetChosen;
     }
 
     virtual bool canPreshow() const{
