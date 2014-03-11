@@ -441,9 +441,8 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
         CardUseStruct use = data.value<CardUseStruct>();
-        QList<ServerPlayer *> targets = use.to;
         ServerPlayer *machao = room->findPlayerBySkillName(objectName());
         QVariantList jink_list = machao->tag["Jink_" + use.card->toString()].toList();
         
@@ -582,9 +581,8 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
         CardUseStruct use = data.value<CardUseStruct>();
-        QList<ServerPlayer *> targets = use.to;
         ServerPlayer *huangzhong = room->findPlayerBySkillName(objectName());
         QVariantList jink_list = huangzhong->tag["Jink_" + use.card->toString()].toList();
 
