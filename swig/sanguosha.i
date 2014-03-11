@@ -6,6 +6,7 @@
 #include "engine.h"
 #include "client.h"
 #include "namespace.h"
+#include "gamerule.h"
 
 #include <QDir>
 
@@ -24,6 +25,10 @@ namespace BattleArrayType
         Siege,
         Formation
     };
+};
+
+namespace BasaraMode {
+    QString getMappedRole(const QString &role);
 };
 
 class QObject {

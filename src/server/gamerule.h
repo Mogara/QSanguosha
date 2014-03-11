@@ -3,8 +3,6 @@
 
 #include "skill.h"
 
-//static QVariant _dummy_variant;
-
 class GameRule: public TriggerSkill {
     Q_OBJECT
 
@@ -20,17 +18,8 @@ private:
     void rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const;
 };
 
-class BasaraMode: public GameRule {
-    Q_OBJECT
-
-public:
-    BasaraMode(QObject *parent);
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
-    virtual int getPriority() const;
-    void playerShowed(ServerPlayer *player) const;
-    void generalShowed(ServerPlayer *player, QString general_name) const;
-    static QString getMappedRole(const QString &role);
+namespace BasaraMode {
+    QString getMappedRole(const QString &role);
 };
 
 #endif
