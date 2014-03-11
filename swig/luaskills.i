@@ -22,16 +22,16 @@ public:
 
 class BattleArraySkill: public TriggerSkill {
 public:
-    BattleArraySkill(const QString &name,const BattleArrayType::ArrayType type);
+    BattleArraySkill(const QString &name,const HegemonyMode::ArrayType type);
 
     virtual void summonFriends(ServerPlayer *player) const;
 
-    BattleArrayType::ArrayType getArrayType() const;
+    HegemonyMode::ArrayType getArrayType() const;
 };
 
 class LuaBattleArraySkill: public BattleArraySkill {
 public:
-    LuaBattleArraySkill(const char *name, Frequency frequency, const char *limit_mark, BattleArrayType::ArrayType array_type);
+    LuaBattleArraySkill(const char *name, Frequency frequency, const char *limit_mark, HegemonyMode::ArrayType array_type);
     void addEvent(TriggerEvent triggerEvent);
     void setViewAsSkill(ViewAsSkill *view_as_skill);
 

@@ -361,7 +361,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason) {
                     QString role = player->getKingdom();
                     if (role == "god")
                         role = Sanguosha->getGeneral(getTag(player->objectName()).toStringList().at(0))->getKingdom();
-                    role = BasaraMode::getMappedRole(role);
+                    role = HegemonyMode::getMappedRole(role);
                     broadcastProperty(player, "role", role);
                 } else
                     broadcastProperty(player, "role");
@@ -2323,7 +2323,7 @@ void Room::chooseGenerals() {
         QStringList names;
         if (player->getGeneral()) {
             QString name = player->getGeneralName();
-            QString role = BasaraMode::getMappedRole(player->getGeneral()->getKingdom());
+            QString role = HegemonyMode::getMappedRole(player->getGeneral()->getKingdom());
             names.append(name);
             player->setActualGeneral1Name(name);
             player->setRole(role);

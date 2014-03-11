@@ -416,7 +416,7 @@ HeyiSummon::HeyiSummon()
 
 class Heyi: public BattleArraySkill {
 public:
-    Heyi(): BattleArraySkill("heyi", BattleArrayType::Formation) {
+    Heyi(): BattleArraySkill("heyi", HegemonyMode::Formation) {
         events << GeneralShown << GeneralHidden << GeneralRemoved << Death;
     }
 
@@ -563,7 +563,7 @@ TianfuSummon::TianfuSummon()
 
 class Tianfu: public BattleArraySkill {
 public:
-    Tianfu(): BattleArraySkill("tianfu", BattleArrayType::Formation) {
+    Tianfu(): BattleArraySkill("tianfu", HegemonyMode::Formation) {
         events << EventPhaseStart << Death;
         relate_to_place = "head";
     }
@@ -743,7 +743,7 @@ NiaoxiangSummon::NiaoxiangSummon()
 
 class Niaoxiang: public BattleArraySkill {
 public:
-    Niaoxiang(): BattleArraySkill("niaoxiang", BattleArrayType::Siege) {
+    Niaoxiang(): BattleArraySkill("niaoxiang", HegemonyMode::Siege) {
         events << TargetChosen;
     }
 
@@ -1382,7 +1382,7 @@ public:
                 room->setTag(player->objectName(), change_list);
 
                 room->setPlayerProperty(player, "kingdom", dfowner->getKingdom());
-                room->setPlayerProperty(player, "role", BasaraMode::getMappedRole(dfowner->getKingdom()));
+                room->setPlayerProperty(player, "role", HegemonyMode::getMappedRole(dfowner->getKingdom()));
 
                 player->drawCards(1);
             }

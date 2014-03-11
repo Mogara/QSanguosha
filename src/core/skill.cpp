@@ -369,7 +369,7 @@ bool GameStartSkill::effect(TriggerEvent, Room *, ServerPlayer *player, QVariant
     return false;
 }
 
-BattleArraySkill::BattleArraySkill(const QString &name, const BattleArrayType::ArrayType type)
+BattleArraySkill::BattleArraySkill(const QString &name, const HegemonyMode::ArrayType type)
     : TriggerSkill(name), array_type(type)
 {
     if (!inherits("LuaBattleArraySkill")) //extremely dirty hack!!!
@@ -395,7 +395,7 @@ const Card *ArraySummonSkill::viewAs() const {
     return card;
 }
 
-using namespace BattleArrayType;
+using namespace HegemonyMode;
 bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const{
     if (player->getAliveSiblings().length() < 3) return false;
     if (player->hasFlag("Global_SummonFailed")) return false;

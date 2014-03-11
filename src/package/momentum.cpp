@@ -883,7 +883,7 @@ FengshiSummon::FengshiSummon()
 
 class Fengshi: public BattleArraySkill {
 public:
-    Fengshi(): BattleArraySkill("fengshi", BattleArrayType::Siege) {
+    Fengshi(): BattleArraySkill("fengshi", HegemonyMode::Siege) {
         events << TargetChosen;
     }
 

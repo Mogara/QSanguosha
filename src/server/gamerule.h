@@ -18,9 +18,5 @@ private:
     void rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const;
 };
 
-namespace BasaraMode {
-    QString getMappedRole(const QString &role);
-};
-
 #endif
 

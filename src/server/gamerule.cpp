@@ -714,7 +714,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                 QString kingdom = player->getKingdom();
                 foreach(ServerPlayer *p, room->getPlayers()) {
                     if (p->getKingdom() == kingdom && p->getRole() == "careerist")
-                        room->setPlayerProperty(p, "role", BasaraMode::getMappedRole(kingdom));
+                        room->setPlayerProperty(p, "role", HegemonyMode::getMappedRole(kingdom));
                 }
             }
         }
@@ -823,15 +823,4 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
     
 
     return winner;
-}
-
-QString BasaraMode::getMappedRole(const QString &role) {
-    static QMap<QString, QString> roles;
-    if (roles.isEmpty()) {
-        roles["wei"] = "lord";
-        roles["shu"] = "loyalist";
-        roles["wu"] = "rebel";
-        roles["qun"] = "renegade";
-    }
-    return roles[role];
 }

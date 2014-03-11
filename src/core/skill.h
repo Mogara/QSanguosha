@@ -208,13 +208,13 @@ class BattleArraySkill: public TriggerSkill {
 
 public:
 
-    BattleArraySkill(const QString &name,const BattleArrayType::ArrayType type);
+    BattleArraySkill(const QString &name,const HegemonyMode::ArrayType type);
 
     virtual void summonFriends(ServerPlayer *player) const;
 
-    inline BattleArrayType::ArrayType getArrayType() const { return array_type; }
+    inline HegemonyMode::ArrayType getArrayType() const { return array_type; }
 private:
-    BattleArrayType::ArrayType array_type;
+    HegemonyMode::ArrayType array_type;
 };
 
 class ArraySummonSkill: public ZeroCardViewAsSkill {

@@ -6,7 +6,6 @@
 #include "engine.h"
 #include "client.h"
 #include "namespace.h"
-#include "gamerule.h"
 
 #include <QDir>
 
@@ -19,16 +18,13 @@
 
 // ----------------------------------------
 
-namespace BattleArrayType
-{
-    enum ArrayType {
+namespace HegemonyMode {
+    QString getMappedRole(const QString &role);
+
+	enum ArrayType {
         Siege,
         Formation
     };
-};
-
-namespace BasaraMode {
-    QString getMappedRole(const QString &role);
 };
 
 class QObject {
@@ -415,7 +411,7 @@ public:
     bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
     QList<ServerPlayer *> getFormation() const;
     bool inFormationRalation(ServerPlayer *teammate) const;
-    void summonFriends(const BattleArrayType::ArrayType type);
+    void summonFriends(const HegemonyMode::ArrayType type);
 };
 
 %extend ServerPlayer {
