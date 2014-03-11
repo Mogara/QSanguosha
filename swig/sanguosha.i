@@ -21,7 +21,7 @@
 namespace HegemonyMode {
     QString getMappedRole(const QString &role);
 
-	enum ArrayType {
+    enum ArrayType {
         Siege,
         Formation
     };

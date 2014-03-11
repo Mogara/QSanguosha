@@ -310,7 +310,7 @@ bool Client::processServerRequest(const QSanGeneralPacket &packet) {
         countdown.m_type = Countdown::S_COUNTDOWN_USE_DEFAULT;
         countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
     }
-    if (!replayer) 
+    if (!replayer)
         setCountdown(countdown);
     CallBack callback = m_interactions[command];
     if (!callback) return false;

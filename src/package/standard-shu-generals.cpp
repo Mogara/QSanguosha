@@ -445,7 +445,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         ServerPlayer *machao = room->findPlayerBySkillName(objectName());
         QVariantList jink_list = machao->tag["Jink_" + use.card->toString()].toList();
-        
+
         doTieji(player, machao, use, jink_list);
 
         machao->tag["Jink_" + use.card->toString()] = QVariant::fromValue(jink_list);
@@ -714,10 +714,10 @@ public:
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *target, QVariant &data, ServerPlayer * &) const {
         if (!TriggerSkill::triggerable(target).isEmpty() && target->getMark("@nirvana") > 0){
             DyingStruct dying_data = data.value<DyingStruct>();
-			
+
             if (target->getHp() > 0)
                 return QStringList();
-			
+
             if (dying_data.who != target)
                 return QStringList();
             return QStringList(objectName());
@@ -1401,7 +1401,7 @@ void StandardPackage::addShuGenerals()
     liubei->addCompanion("guanyu");
     liubei->addCompanion("zhangfei");
     liubei->addCompanion("ganfuren");
-    liubei->addSkill(new Rende); 
+    liubei->addSkill(new Rende);
 
 
     General *guanyu = new General(this, "guanyu", "shu", 5); // SHU 002

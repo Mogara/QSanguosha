@@ -859,7 +859,7 @@ public:
             prompt_list << use.card->objectName();
             prompt = prompt_list.join(":");
         }
-        
+
         bool invoke = yuji->askForSkillInvoke(objectName(), prompt);
         yuji->tag.remove("qianhuan_data");
         if (invoke){

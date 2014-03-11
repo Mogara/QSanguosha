@@ -719,7 +719,7 @@ int LuaAttackRangeSkill::getExtra(const Player *target, bool include_weapon) con
         return AttackRangeSkill::getExtra(target, include_weapon);
 
     lua_State *l = Sanguosha->getLuaState();
-    
+
     lua_rawgeti(l, LUA_REGISTRYINDEX, extra_func);
 
     SWIG_NewPointerObj(l, this, SWIGTYPE_p_LuaAttackRangeSkill, 0);
@@ -731,7 +731,7 @@ int LuaAttackRangeSkill::getExtra(const Player *target, bool include_weapon) con
         Error(l);
         return AttackRangeSkill::getExtra(target, include_weapon);
     }
-    
+
     int extra = lua_tointeger(l, -1);
     lua_pop(l, 1);
 

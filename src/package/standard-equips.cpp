@@ -654,7 +654,7 @@ QList<Card *> StandardCardPackage::equipCards(){
 
     QList<Card *> horses;
 
-    horses 
+    horses
         << new DefensiveHorse(Card::Spade, 5)
         << new DefensiveHorse(Card::Club, 5)
         << new DefensiveHorse(Card::Heart, 13)

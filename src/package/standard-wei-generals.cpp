@@ -232,7 +232,7 @@ public:
             moves.push_back(move2);
         }
         room->moveCards(moves, false);
-        
+
         return true;
     }
 };

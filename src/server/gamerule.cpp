@@ -820,7 +820,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
         }
     }
     winner = winners.join("+");
-    
+
 
     return winner;
 }
