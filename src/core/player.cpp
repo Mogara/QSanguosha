@@ -1095,6 +1095,17 @@ QList<const Player *> Player::getAliveSiblings() const{
 }
 
 bool Player::hasShownSkill(const Skill *skill) const{
+    if (skill->inherits("ArmorSkill") || skill->inherits("WeaponSkill"))
+        return true;
+
+    if (!skill->isVisible()){
+        const Skill *main_skill = Sanguosha->getMainSkill(skill->objectName());
+        if (main_skill != NULL)
+            return hasShownSkill(main_skill);
+        else
+            return false;
+    }
+
     if (general1_showed && head_skills.keys().contains(skill->objectName()))
         return true;
     else if (general2_showed && deputy_skills.keys().contains(skill->objectName()))
