@@ -575,17 +575,17 @@ public:
     }
 };
 
-class Sunce_Yinghun: public Yinghun{
+class Yinghun_Sunce: public Yinghun{
 public:
-    Sunce_Yinghun(): Yinghun(){
-        setObjectName("sunce_yinghun");
+    Yinghun_Sunce(): Yinghun(){
+        setObjectName("yinghun_sunce");
     }
 };
 
-class Sunce_Yingzi: public Yingzi{
+class Yingzi_Sunce: public Yingzi{
 public:
-    Sunce_Yingzi(): Yingzi(){
-        setObjectName("sunce_yingzi");
+    Yingzi_Sunce(): Yingzi(){
+        setObjectName("yingzi_sunce");
     }
 
     virtual bool canPreshow() const {
@@ -608,7 +608,7 @@ public:
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const {
         if (TriggerSkill::triggerable(player).isEmpty()) return QStringList();
         if (triggerEvent == GameStart) {
-            const Skill *yinghun = Sanguosha->getSkill("sunce_yinghun");
+            const Skill *yinghun = Sanguosha->getSkill("yinghun_sunce");
             if (yinghun != NULL && yinghun->inherits("TriggerSkill")){
                 const TriggerSkill *yinghun_trigger = qobject_cast<const TriggerSkill *>(yinghun);
                 room->getThread()->addTriggerSkill(yinghun_trigger);
@@ -618,7 +618,7 @@ public:
         }
         if (player != NULL && player->getPhase() == Player::NotActive && player->getMark("hunshang") > 0){
             player->setMark("hunshang",0);
-            room->handleAcquireDetachSkills(player, "-sunce_yinghun|-sunce_yingzi", true);
+            room->handleAcquireDetachSkills(player, "-yinghun_sunce|-yingzi_sunce", true);
             return QStringList();
         }
         return (player->getPhase() == Player::Start && player->getHp() == 1) ? QStringList(objectName()) : QStringList();
@@ -635,7 +635,7 @@ public:
 
     virtual bool effect(TriggerEvent , Room* room, ServerPlayer *target, QVariant &) const{
         QStringList skills;
-        skills << "sunce_yinghun!" << "sunce_yingzi!";
+        skills << "yinghun_sunce!" << "yingzi_sunce!";
         room->handleAcquireDetachSkills(target, skills);
         target->setMark("hunshang",1);
         return false;
@@ -1348,8 +1348,8 @@ MomentumPackage::MomentumPackage()
     sunce->addSkill(new Yingyang);
     sunce->addSkill(new Hunshang);
     sunce->setDeputyMaxHpAdjustedValue(-1);
-    sunce->addRelateSkill("sunce_yinghun");
-    sunce->addRelateSkill("sunce_yingzi");
+    sunce->addRelateSkill("yinghun_sunce");
+    sunce->addRelateSkill("yingzi_sunce");
 
     General *chenwudongxi = new General(this, "chenwudongxi", "wu", 4); // WU 023
     chenwudongxi->addSkill(new Duanxie);
@@ -1364,7 +1364,7 @@ MomentumPackage::MomentumPackage()
     zhangren->addSkill(new Chuanxin);
     zhangren->addSkill(new Fengshi);
 
-    skills << new Yongjue << new YongjueStart << new Benghuai << new HongfaSlash << new HongfaSlashResp << new Sunce_Yinghun << new Sunce_Yingzi;
+    skills << new Yongjue << new YongjueStart << new Benghuai << new HongfaSlash << new HongfaSlashResp << new Yinghun_Sunce << new Yingzi_Sunce;
 
     addMetaObject<CunsiCard>();
     addMetaObject<DuanxieCard>();

@@ -38,8 +38,15 @@ QString Skill::getDescription(bool inToolTip) const{
     QString desc = "\n";
     if (!canPreshow())
         desc.prepend(QString("<font color=gray>(%1)</font>").arg(tr("this skill cannot preshow")));
-    QString des_src = Sanguosha->translate(":" + objectName());
-    if (des_src == ":" + objectName())
+
+    QString skill_name = objectName();
+    
+    if (objectName().contains("_")){
+        skill_name = objectName().split("_").first();
+    }
+
+    QString des_src = Sanguosha->translate(":" + skill_name);
+    if (des_src == ":" + skill_name)
         return desc;
     foreach (QString skill_type, Sanguosha->getSkillColorMap().keys()) {
         QString to_replace = Sanguosha->translate(skill_type);
