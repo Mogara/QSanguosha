@@ -55,7 +55,6 @@ return {
 	["pangde"] = "庞德",
 	["illustrator:pangde"] = "LiuHeng",
 	["mashu_pangde"] = "马术",
-	[":mashu_pangde"] = "锁定技，你与其他角色的距离-1。",
 	["mengjin"] = "猛进",
 	[":mengjin"] = "每当你使用的【杀】被目标角色使用的【闪】抵消时，你可以弃置其一张牌。",
 
@@ -86,7 +85,6 @@ return {
 	["mateng"] = "马腾",
 	["illustrator:mateng"] = "DH",
 	["mashu_mateng"] = "马术",
-	[":mashu_mateng"] = "锁定技，你与其他角色的距离-1。",
 	["xiongyi"] = "雄异",
 	[":xiongyi"] = "限定技，出牌阶段，你可以令与你势力相同的所有角色各摸三张牌，然后若你的势力是角色最少的势力，你回复1点体力。",
 	["@arise"] = "雄异",

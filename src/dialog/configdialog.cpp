@@ -42,7 +42,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->autoTargetCheckBox->setChecked(Config.EnableAutoTarget);
     ui->intellectualSelectionCheckBox->setChecked(Config.EnableIntellectualSelection);
     ui->doubleClickCheckBox->setChecked(Config.EnableDoubleClick);
-    
+
     ui->enableAutoSaveCheckBox->setChecked(Config.EnableAutoSaveRecord);
     ui->networkOnlyCheckBox->setChecked(Config.NetworkOnly);
 
@@ -51,7 +51,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->recordPathsSetupLineEdit->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
     ui->browseRecordPathsButton->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
     ui->resetRecordPathsButton->setEnabled(ui->enableAutoSaveCheckBox->isChecked());
-    
+
     connect(ui->enableAutoSaveCheckBox, SIGNAL(toggled(bool)), ui->networkOnlyCheckBox, SLOT(setEnabled(bool)));
     connect(ui->enableAutoSaveCheckBox, SIGNAL(toggled(bool)), ui->recordPathsSetupLabel, SLOT(setEnabled(bool)));
     connect(ui->enableAutoSaveCheckBox, SIGNAL(toggled(bool)), ui->recordPathsSetupLineEdit, SLOT(setEnabled(bool)));
@@ -192,7 +192,7 @@ void ConfigDialog::saveConfig() {
 
     Config.EnableIntellectualSelection = ui->intellectualSelectionCheckBox->isChecked();
     Config.setValue("EnableIntellectualSelection", Config.EnableIntellectualSelection);
-    
+
     Config.EnableDoubleClick = ui->doubleClickCheckBox->isChecked();
     Config.setValue("EnableDoubleClick", Config.EnableDoubleClick);
 

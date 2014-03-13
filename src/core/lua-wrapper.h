@@ -35,7 +35,7 @@ class LuaBattleArraySkill: public BattleArraySkill {
     Q_OBJECT
 
 public:
-    LuaBattleArraySkill(const char *name, Frequency frequency, const char *limit_mark, BattleArrayType::ArrayType array_type);
+    LuaBattleArraySkill(const char *name, Frequency frequency, const char *limit_mark, HegemonyMode::ArrayType array_type);
     inline void addEvent(TriggerEvent triggerEvent) { events << triggerEvent; }
     inline void setViewAsSkill(ViewAsSkill *view_as_skill) { this->view_as_skill = view_as_skill; }
 

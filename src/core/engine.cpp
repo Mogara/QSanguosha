@@ -707,7 +707,7 @@ int Engine::getCardCount() const{
     return cards.length();
 }
 
-QStringList Engine::getLimitedGeneralNames() const{
+QStringList Engine::getGeneralNames() const{
     QStringList general_names;
     QHashIterator<QString, const General *> itor(generals);
 
@@ -717,6 +717,11 @@ QStringList Engine::getLimitedGeneralNames() const{
             general_names << itor.key();
     }
 
+    return general_names;
+}
+
+QStringList Engine::getLimitedGeneralNames() const{
+    QStringList general_names = getGeneralNames();
 
     QStringList general_names_copy = general_names;
     if (Config.EnableLordGeneralConvert){
@@ -733,15 +738,6 @@ QStringList Engine::getLimitedGeneralNames() const{
                 general_names.removeOne(name);
         }
     }
-
-/*
-    if (!getBanPackages().contains("sp") && !getBanPackages().contains("assassins")) {
-        general_names.removeOne("liuxie");
-        general_names.removeOne("lingju");
-        general_names.removeOne("fuwan");
-    }
-*/
-
     return general_names;
 }
 

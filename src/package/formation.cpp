@@ -416,7 +416,7 @@ HeyiSummon::HeyiSummon()
 
 class Heyi: public BattleArraySkill {
 public:
-    Heyi(): BattleArraySkill("heyi", BattleArrayType::Formation) {
+    Heyi(): BattleArraySkill("heyi", HegemonyMode::Formation) {
         events << GeneralShown << GeneralHidden << GeneralRemoved << Death;
     }
 
@@ -563,7 +563,7 @@ TianfuSummon::TianfuSummon()
 
 class Tianfu: public BattleArraySkill {
 public:
-    Tianfu(): BattleArraySkill("tianfu", BattleArrayType::Formation) {
+    Tianfu(): BattleArraySkill("tianfu", HegemonyMode::Formation) {
         events << EventPhaseStart << Death;
         relate_to_place = "head";
     }
@@ -743,8 +743,8 @@ NiaoxiangSummon::NiaoxiangSummon()
 
 class Niaoxiang: public BattleArraySkill {
 public:
-    Niaoxiang(): BattleArraySkill("niaoxiang", BattleArrayType::Siege) {
-        events << TargetConfirmed;
+    Niaoxiang(): BattleArraySkill("niaoxiang", HegemonyMode::Siege) {
+        events << TargetChosen;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
@@ -859,7 +859,7 @@ public:
             prompt_list << use.card->objectName();
             prompt = prompt_list.join(":");
         }
-        
+
         bool invoke = yuji->askForSkillInvoke(objectName(), prompt);
         yuji->tag.remove("qianhuan_data");
         if (invoke){
@@ -1251,7 +1251,7 @@ DragonPhoenix::DragonPhoenix(Suit suit, int number)
 class DragonPhoenixSkill: public WeaponSkill{
 public:
     DragonPhoenixSkill(): WeaponSkill("DragonPhoenix"){
-        events << TargetConfirmed;
+        events << TargetChosen;
     }
 
     virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
@@ -1382,7 +1382,7 @@ public:
                 room->setTag(player->objectName(), change_list);
 
                 room->setPlayerProperty(player, "kingdom", dfowner->getKingdom());
-                room->setPlayerProperty(player, "role", BasaraMode::getMappedRole(dfowner->getKingdom()));
+                room->setPlayerProperty(player, "role", HegemonyMode::getMappedRole(dfowner->getKingdom()));
 
                 player->drawCards(1);
             }

@@ -16,7 +16,7 @@ bool LuaTriggerSkill::canPreshow() const{
     return can_preshow;
 }
 
-LuaBattleArraySkill::LuaBattleArraySkill(const char *name, Frequency frequency, const char *limit_mark, BattleArrayType::ArrayType array_type)
+LuaBattleArraySkill::LuaBattleArraySkill(const char *name, Frequency frequency, const char *limit_mark, HegemonyMode::ArrayType array_type)
     : BattleArraySkill(name, array_type)
 {
     this->frequency = frequency;

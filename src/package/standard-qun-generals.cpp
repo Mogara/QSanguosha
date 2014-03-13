@@ -65,13 +65,13 @@ public:
 class Wushuang: public TriggerSkill {
 public:
     Wushuang(): TriggerSkill("wushuang") {
-        events << TargetConfirmed << CardFinished;
+        events << TargetChosen << CardFinished;
         frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         if (player == NULL) return QStringList();
-        if (triggerEvent == TargetConfirmed) {
+        if (triggerEvent == TargetChosen) {
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Slash") && !TriggerSkill::triggerable(use.from).isEmpty() && use.from == player)
                 return QStringList(objectName());
@@ -102,7 +102,7 @@ public:
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        if (triggerEvent == TargetConfirmed) {
+        if (triggerEvent == TargetChosen) {
             CardUseStruct use = data.value<CardUseStruct>();
             bool can_invoke = false;
             if (use.card->isKindOf("Slash") && !TriggerSkill::triggerable(use.from).isEmpty() && use.from == player) {

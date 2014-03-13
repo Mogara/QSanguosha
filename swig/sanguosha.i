@@ -18,8 +18,9 @@
 
 // ----------------------------------------
 
-namespace BattleArrayType
-{
+namespace HegemonyMode {
+    QString getMappedRole(const QString &role);
+
     enum ArrayType {
         Siege,
         Formation
@@ -410,7 +411,7 @@ public:
     bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
     QList<ServerPlayer *> getFormation() const;
     bool inFormationRalation(ServerPlayer *teammate) const;
-    void summonFriends(const BattleArrayType::ArrayType type);
+    void summonFriends(const HegemonyMode::ArrayType type);
 };
 
 %extend ServerPlayer {
@@ -752,11 +753,13 @@ enum TriggerEvent {
     BeforeCardsMove, // sometimes we need to record cards before the move
     CardsMoveOneTime,
 
-    PreCardUsed, // for AI to filter events only.
+    PreCardUsed,
     CardUsed,
+    TargetChoosing , //distinguish "choose target" and "confirm target"
     TargetConfirming,
+    TargetChosen ,
     TargetConfirmed,
-    CardEffect, // for AI to filter events only
+    CardEffect,
     CardEffected,
     PostCardEffected,
     CardFinished,
@@ -1010,6 +1013,7 @@ public:
     QList<int> getRandomCards() const;
     QString getRandomGeneralName() const;
     QStringList getLimitedGeneralNames() const;
+    QStringList getGeneralNames() const;
 
     void playSystemAudioEffect(const char *name) const;
     void playAudioEffect(const char *filename) const;

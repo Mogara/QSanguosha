@@ -337,7 +337,7 @@ BanIPDialog::BanIPDialog(QWidget *parent, Server *theserver)
 
     if (server)
         loadIPList();
-    else 
+    else
         QMessageBox::warning(this, tr("Warning!"), tr("There is no server running!"));
 
     loadBannedList();
@@ -625,7 +625,7 @@ void Server::processNewConnection(ClientSocket *socket) {
             socket->disconnectFromHost();
             emit server_message(tr("Forbid the connection of address %1").arg(addr));
             return;
-        } 
+        }
         else
             addresses.insert(addr);
     }

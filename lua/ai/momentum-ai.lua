@@ -157,11 +157,11 @@ end
 
 sgs.ai_skill_invoke.hunshang = true
 
-sgs.ai_skill_invoke.sunce_yingzi = sgs.ai_skill_invoke.yingzi
-sgs.ai_skill_choice.sunce_yinghun = sgs.ai_skill_choice.yinghun
-sgs.ai_skill_playerchosen.sunce_yinghun = sgs.ai_skill_playerchosen.yinghun
-sgs.ai_playerchosen_intention.sunce_yinghun = sgs.ai_playerchosen_intention.yinghun
-sgs.ai_choicemade_filter.skillChoice.sunce_yinghun = sgs.ai_choicemade_filter.skillChoice.yinghun
+sgs.ai_skill_invoke.yingzi_sunce = sgs.ai_skill_invoke.yingzi
+sgs.ai_skill_choice.yinghun_sunce = sgs.ai_skill_choice.yinghun
+sgs.ai_skill_playerchosen.yinghun_sunce = sgs.ai_skill_playerchosen.yinghun
+sgs.ai_playerchosen_intention.yinghun_sunce = sgs.ai_playerchosen_intention.yinghun
+sgs.ai_choicemade_filter.skillChoice.yinghun_sunce = sgs.ai_choicemade_filter.skillChoice.yinghun
 
 local duanxie_skill = {}
 duanxie_skill.name = "duanxie"

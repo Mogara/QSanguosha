@@ -38,8 +38,15 @@ QString Skill::getDescription(bool inToolTip) const{
     QString desc = "\n";
     if (!canPreshow())
         desc.prepend(QString("<font color=gray>(%1)</font>").arg(tr("this skill cannot preshow")));
-    QString des_src = Sanguosha->translate(":" + objectName());
-    if (des_src == ":" + objectName())
+
+    QString skill_name = objectName();
+    
+    if (objectName().contains("_")){
+        skill_name = objectName().split("_").first();
+    }
+
+    QString des_src = Sanguosha->translate(":" + skill_name);
+    if (des_src == ":" + skill_name)
         return desc;
     foreach (QString skill_type, Sanguosha->getSkillColorMap().keys()) {
         QString to_replace = Sanguosha->translate(skill_type);
@@ -375,7 +382,7 @@ bool GameStartSkill::effect(TriggerEvent, Room *, ServerPlayer *player, QVariant
     return false;
 }
 
-BattleArraySkill::BattleArraySkill(const QString &name, const BattleArrayType::ArrayType type)
+BattleArraySkill::BattleArraySkill(const QString &name, const HegemonyMode::ArrayType type)
     : TriggerSkill(name), array_type(type)
 {
     if (!inherits("LuaBattleArraySkill")) //extremely dirty hack!!!
@@ -401,7 +408,7 @@ const Card *ArraySummonSkill::viewAs() const {
     return card;
 }
 
-using namespace BattleArrayType;
+using namespace HegemonyMode;
 bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const{
     if (player->getAliveSiblings().length() < 3) return false;
     if (player->hasFlag("Global_SummonFailed")) return false;

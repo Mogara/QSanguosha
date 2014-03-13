@@ -1022,7 +1022,6 @@ const Player *Player::getLord(const bool include_death) const{
 }
 
 int Player::getPlayerNumWithSameKingdom(const QString &_to_calculate /* = QString() */) const{
-    if (!hasShownOneGeneral()) return 0;
     QString to_calculate = _to_calculate;
 
     if (to_calculate.isEmpty())
@@ -1033,7 +1032,7 @@ int Player::getPlayerNumWithSameKingdom(const QString &_to_calculate /* = QStrin
 
     int num = 0;
     foreach (const Player *p, players){
-        if (p->hasShownOneGeneral() && p->getKingdom() == to_calculate && p->getRole() != "careerist")
+        if (p->hasShownOneGeneral() && p->getKingdom() == to_calculate && (this == p || p->getRole() != "careerist"))
             num += 1;
     }
 
@@ -1095,6 +1094,17 @@ QList<const Player *> Player::getAliveSiblings() const{
 }
 
 bool Player::hasShownSkill(const Skill *skill) const{
+    if (skill->inherits("ArmorSkill") || skill->inherits("WeaponSkill"))
+        return true;
+
+    if (!skill->isVisible()){
+        const Skill *main_skill = Sanguosha->getMainSkill(skill->objectName());
+        if (main_skill != NULL)
+            return hasShownSkill(main_skill);
+        else
+            return false;
+    }
+
     if (general1_showed && head_skills.keys().contains(skill->objectName()))
         return true;
     else if (general2_showed && deputy_skills.keys().contains(skill->objectName()))
