@@ -13,6 +13,8 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
     setWindowTitle(tr("About Us"));
     resize(800, 600);
 
+    setStyleSheet("QToolTip{ border: 0px solid; background: white; }");
+
     list = new QListWidget;
     list->setMaximumWidth(150);
 
