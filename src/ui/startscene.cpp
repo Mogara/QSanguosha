@@ -136,4 +136,10 @@ void StartScene::printServerInfo() {
 
 StartScene::~StartScene() {
     delete logo;
+    logo = NULL;
+
+    foreach(Button *btn, buttons) {
+        delete btn;
+        btn = NULL;
+    }
 }

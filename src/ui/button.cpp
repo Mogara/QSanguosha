@@ -80,7 +80,7 @@ void Button::init() {
         }
     }
 
-    QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect;
+    effect = new QGraphicsDropShadowEffect;
     effect->setBlurRadius(5);
     effect->setOffset(this->boundingRect().height() / 7.0);
     effect->setColor(QColor(0, 0, 0, 200));
@@ -150,6 +150,12 @@ void Button::timerEvent(QTimerEvent *) {
 
 Button::~Button() {
     delete outimg;
+    outimg = NULL;
+
     delete de;
+    de = NULL;
+
+    delete effect;
+    effect = NULL;
 }
 

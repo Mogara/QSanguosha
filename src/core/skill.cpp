@@ -301,6 +301,12 @@ bool TriggerSkill::effect(TriggerEvent , Room *, ServerPlayer *, QVariant &) con
     return false;
 }
 
+TriggerSkill::~TriggerSkill() {
+    if (view_as_skill)
+        delete view_as_skill;
+    events.clear();
+}
+
 ScenarioRule::ScenarioRule(Scenario *scenario)
     :TriggerSkill(scenario->objectName())
 {

@@ -140,6 +140,8 @@ public:
 
     inline bool isGlobal() const{ return global; }
 
+    virtual ~TriggerSkill();
+
 protected:
     const ViewAsSkill *view_as_skill;
     QList<TriggerEvent> events;

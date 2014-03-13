@@ -67,6 +67,8 @@ public:
         convert_pairs.insertMulti(from, to);
     }
 
+    virtual ~Package();
+
 protected:
     QList<const QMetaObject *> metaobjects;
     QList<const Skill *> skills;

@@ -39,7 +39,9 @@ private:
     QGraphicsPixmapItem *title_item;
     int glow;
     int timer_id;
+
     QGraphicsDropShadowEffect *de;
+    QGraphicsDropShadowEffect *effect;
 
     void init();
 
