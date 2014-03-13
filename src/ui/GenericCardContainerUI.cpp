@@ -329,6 +329,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
         }
 
         button->setText(QString("%1(%2)").arg(Sanguosha->translate(pile_name)).arg(pile.length()));
+        disconnect(button, SIGNAL(clicked()), this, SLOT(showPile()));
         connect(button, SIGNAL(clicked()), this, SLOT(showPile()));
     }
 

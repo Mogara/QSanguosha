@@ -91,6 +91,22 @@ public slots:
     void updateHp();
     void updateHandcardNum();
     void updateDrankState();
+    //************************************
+    // Method:    updatePile
+    // FullName:  PlayerCardContainer::updatePile
+    // Access:    public 
+    // Returns:   void
+    // Qualifier:
+    // Parameter: const QString & pile_name
+    // Description: Update the button of the private pile named pile_name.
+    //              The pile button will be destructed if the pile contains no card.
+    //
+    // Last Updated By Yanguam Siliagim
+    // To fix no-response when click "confirm" in pile box
+    //
+    // QSanguosha-Hegemony Team
+    // March 14 2014
+    //************************************
     void updatePile(const QString &pile_name);
     void updateKingdom(const QString &kingdom);
     void updateMarks();

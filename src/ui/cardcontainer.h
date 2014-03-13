@@ -17,6 +17,21 @@ public:
     int getFirstEnabled() const;
     void startChoose();
     void startGongxin(const QList<int> &enabled_ids);
+    //************************************
+    // Method:    addConfirmButton
+    // FullName:  CardContainer::addConfirmButton
+    // Access:    public 
+    // Returns:   void
+    // Qualifier:
+    // Description: Show a confirm button. The container will be closed immediately when click the
+    // button.
+    //
+    // Last Updated By Yanguam Siliagim
+    // To fix no-response when click "confirm" in pile box
+    //
+    // QSanguosha-Hegemony Team
+    // March 14 2014
+    //************************************
     void addConfirmButton();
     void view(const ClientPlayer *player);
     virtual QRectF boundingRect() const;

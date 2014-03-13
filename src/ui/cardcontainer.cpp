@@ -227,6 +227,7 @@ void CardContainer::startGongxin(const QList<int> &enabled_ids) {
 }
 
 void CardContainer::addConfirmButton() {
+    confirm_button->initializeMousePosition();
     confirm_button->show();
 }
 

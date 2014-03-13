@@ -10,25 +10,18 @@
 #include "client.h"
 
 QSanButton::QSanButton(QGraphicsItem *parent)
-    : QGraphicsObject(parent), multi_state(false), first_state(true)
+    : QGraphicsObject(parent), multi_state(false), first_state(true), _m_state(S_STATE_UP), _m_style(S_STYLE_PUSH), 
+    _m_mouseEntered(false)
 {
-    _m_state = S_STATE_UP;
-    _m_style = S_STYLE_PUSH;
-    _m_mouseEntered = false;
     setSize(QSize(0, 0));
     setAcceptsHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
 }
 
 QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent, const bool &multi_state)
-    : QGraphicsObject(parent), multi_state(multi_state), first_state(true)
+    : QGraphicsObject(parent), multi_state(multi_state), first_state(true), _m_state(S_STATE_UP), _m_style(S_STYLE_PUSH),
+    _m_groupName(groupName), _m_buttonName(buttonName), _m_mouseEntered(false)
 {
-    _m_state = S_STATE_UP;
-    _m_style = S_STYLE_PUSH;
-    _m_groupName = groupName;
-    _m_buttonName = buttonName;
-    _m_mouseEntered = false;
-
     const int state_count = multi_state ? (int)S_NUM_BUTTON_STATES * 2 : (int)S_NUM_BUTTON_STATES;
     for (int i = 0; i < state_count; i++) {
         const bool state1 = i < S_NUM_BUTTON_STATES;
