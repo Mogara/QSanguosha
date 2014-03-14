@@ -358,7 +358,7 @@ end
 sgs.ai_skill_invoke.qianhuan = function(self, data)
 	if data:toString() == "gethuan" then return true end
 	local use = self.player:getTag("qianhuan_data"):toCardUse()
-	if (use.from and self:isFriend(use.from)) then return false end --¶ÓÓÑ¸ø×Ô¼º³öÌÒ×Ó²»ÎÞÐ¸£¨ÔÝ£©
+	if (use.from and self:isFriend(use.from)) then return false end --ï¿½ï¿½ï¿½Ñ¸ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½Ð¸ï¿½ï¿½ï¿½Ý£ï¿½
 	local to = use.to:first()
 	if to:objectName() == self.player:objectName() then
 		return not (use.from and (use.from:objectName() == to:objectName()
@@ -415,7 +415,7 @@ sgs.weapon_range.DragonPhoenix = 2
 sgs.ai_use_priority.DragonPhoenix = 2.400
 function sgs.ai_weapon_value.DragonPhoenix(self, enemy, player)
 	local lordliubei = nil
-	for _, p in sgs.qlist(room:getAlivePlayers()) do
+	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
 		if p:hasSkill("zhangwu") then
 			lordliubei = p
 			break
