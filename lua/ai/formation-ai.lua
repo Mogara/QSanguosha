@@ -358,7 +358,7 @@ end
 sgs.ai_skill_invoke.qianhuan = function(self, data)
 	if data:toString() == "gethuan" then return true end
 	local use = self.player:getTag("qianhuan_data"):toCardUse()
-	if (use.from and self:isFriend(use.from)) then return false end --���Ѹ��Լ������Ӳ���и���ݣ�
+	if (use.from and self:isFriend(use.from)) then return false end --队友给自己出桃子不无懈（暂）
 	local to = use.to:first()
 	if to:objectName() == self.player:objectName() then
 		return not (use.from and (use.from:objectName() == to:objectName()
