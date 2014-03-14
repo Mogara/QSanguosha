@@ -878,17 +878,8 @@ void RoomScene::updateTable() {
     pausing_item->setRect(sceneRect());
     pausing_item->setPos(0, 0);
 
-    int *seatToRegion;
+    int *seatToRegion = regularSeatIndex[photos.length() - 1];
     bool pkMode = false;
-    if (ServerInfo.GameMode == "04_1v3" && game_started) {
-        seatToRegion = hulaoSeatIndex[Self->getSeat() - 1];
-        pkMode = true;
-    } else if (ServerInfo.GameMode == "06_3v3" && game_started) {
-        seatToRegion = kof3v3SeatIndex[(Self->getSeat() - 1) % 3];
-        pkMode = true;
-    } else {
-        seatToRegion = regularSeatIndex[photos.length() - 1];
-    }
     QList<Photo *> photosInRegion[C_NUM_REGIONS];
     int n = photos.length();
     for (int i = 0; i < n; i++) {
@@ -2765,12 +2756,9 @@ void RoomScene::onGameOver() {
 
 void RoomScene::addRestartButton(QDialog *dialog) {
     dialog->resize(main_window->width() / 2, dialog->height());
-    bool goto_next = false;
-    if (ServerInfo.GameMode.contains("_mini_") && Self->property("win").toBool())
-        goto_next = (_m_currentStage < Sanguosha->getMiniSceneCounts());
 
     QPushButton *restart_button;
-    restart_button = new QPushButton(goto_next ? tr("Next Stage") : tr("Restart Game"));
+    restart_button = new QPushButton(tr("Restart Game"));
     QPushButton *return_button = new QPushButton(tr("Return to main menu"));
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
@@ -3252,57 +3240,58 @@ void RoomScene::viewDistance() {
 }
 
 void RoomScene::speak() {
-    if (game_started && ServerInfo.DisableChat)
-        chat_box->append(tr("This room does not allow chatting!"));
-    else {
-        bool broadcast = true;
-        QString text = chat_edit->text();
-        if (text == ".StartBgMusic") {
-            broadcast = false;
-            Config.EnableBgMusic = true;
-            Config.setValue("EnableBgMusic", true);
+
+    bool broadcast = true;
+    QString text = chat_edit->text();
+    if (text == ".StartBgMusic") {
+        broadcast = false;
+        Config.EnableBgMusic = true;
+        Config.setValue("EnableBgMusic", true);
 #ifdef AUDIO_SUPPORT
-            Audio::stopBGM();
-            QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.ogg").toString();
-            Audio::playBGM(bgmusic_path);
-            Audio::setBGMVolume(Config.BGMVolume);
+        Audio::stopBGM();
+        QString bgmusic_path = Config.value("BackgroundMusic", "audio/system/background.ogg").toString();
+        Audio::playBGM(bgmusic_path);
+        Audio::setBGMVolume(Config.BGMVolume);
 #endif
-        } else if (text.startsWith(".StartBgMusic=")) {
-            broadcast = false;
-            Config.EnableBgMusic = true;
-            Config.setValue("EnableBgMusic", true);
-            QString path = text.mid(14);
-            if (path.startsWith("|")) {
-                path = path.mid(1);
-                Config.setValue("BackgroundMusic", path);
-            }
-#ifdef AUDIO_SUPPORT
-            Audio::stopBGM();
-            Audio::playBGM(path);
-            Audio::setBGMVolume(Config.BGMVolume);
-#endif
-        } else if (text == ".StopBgMusic") {
-            broadcast = false;
-            Config.EnableBgMusic = false;
-            Config.setValue("EnableBgMusic", false);
-#ifdef AUDIO_SUPPORT
-            Audio::stopBGM();
-#endif
+    } else if (text.startsWith(".StartBgMusic=")) {
+        broadcast = false;
+        Config.EnableBgMusic = true;
+        Config.setValue("EnableBgMusic", true);
+        QString path = text.mid(14);
+        if (path.startsWith("|")) {
+            path = path.mid(1);
+            Config.setValue("BackgroundMusic", path);
         }
-        if (broadcast)
+#ifdef AUDIO_SUPPORT
+        Audio::stopBGM();
+        Audio::playBGM(path);
+        Audio::setBGMVolume(Config.BGMVolume);
+#endif
+    } else if (text == ".StopBgMusic") {
+        broadcast = false;
+        Config.EnableBgMusic = false;
+        Config.setValue("EnableBgMusic", false);
+#ifdef AUDIO_SUPPORT
+        Audio::stopBGM();
+#endif
+    }
+    if (broadcast) {
+        if (game_started && ServerInfo.DisableChat)
+            chat_box->append(tr("This room does not allow chatting!"));
+        else
             ClientInstance->speakToServer(text);
-        else {
-            QString title;
-            if (Self) {
-                title = Self->getGeneralName();
-                title = Sanguosha->translate(title);
-                title.append(QString("(%1)").arg(Self->screenName()));
-                title = QString("<b>%1</b>").arg(title);
-            }
-            QString line = tr("<font color='%1'>[%2] said: %3 </font>")
-                           .arg(Config.TextEditColor.name()).arg(title).arg(text);
-            appendChatBox(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
+    }
+    else {
+        QString title;
+        if (Self) {
+            title = Self->getGeneralName();
+            title = Sanguosha->translate(title);
+            title.append(QString("(%1)").arg(Self->screenName()));
+            title = QString("<b>%1</b>").arg(title);
         }
+        QString line = tr("<font color='%1'>[%2] said: %3 </font>")
+            .arg(Config.TextEditColor.name()).arg(title).arg(text);
+        appendChatBox(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
     }
     chat_edit->clear();
 }
@@ -3849,13 +3838,8 @@ void RoomScene::toggleArrange() {
     }
 
     for (int i = 0; i < down_generals.length(); i++) {
-        QPointF pos;
-        if (ServerInfo.GameMode == "06_3v3")
-            pos = QPointF(65 + G_COMMON_LAYOUT.m_cardNormalWidth / 2 + i * 86,
-                          452 + G_COMMON_LAYOUT.m_cardNormalHeight / 2);
-        else
-            pos = QPointF(43 + G_COMMON_LAYOUT.m_cardNormalWidth / 2 + i * 86,
-                          60 + G_COMMON_LAYOUT.m_cardNormalHeight / 2 + 3 * 120);
+        QPointF pos = QPointF(43 + G_COMMON_LAYOUT.m_cardNormalWidth / 2 + i * 86,
+                             60 + G_COMMON_LAYOUT.m_cardNormalHeight / 2 + 3 * 120);
         CardItem *item = down_generals.at(i);
         item->setHomePos(pos);
         item->goBack(true);

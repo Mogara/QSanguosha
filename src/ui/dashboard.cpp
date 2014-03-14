@@ -254,10 +254,6 @@ void Dashboard::killPlayer() {
     if (_m_distanceItem) _m_distanceItem->hide();
 
     _m_deathIcon->show();
-    if (ServerInfo.GameMode == "04_1v3" && !Self->isLord()) {
-        _m_votesGot = 6;
-        updateVotes(false);
-    }
 }
 
 void Dashboard::revivePlayer() {

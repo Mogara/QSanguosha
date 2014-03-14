@@ -875,12 +875,7 @@ void PlayerCardContainer::killPlayer() {
     effect->setStrength(1.0);
     _m_groupMain->setGraphicsEffect(effect);
     refresh();
-    if (ServerInfo.GameMode == "04_1v3" && !m_player->isLord()) {
-        _m_deathIcon->hide();
-        _m_votesGot = 6;
-        updateVotes(false, true);
-    } else
-        _m_deathIcon->show();
+    _m_deathIcon->show();
 }
 
 void PlayerCardContainer::revivePlayer() {
