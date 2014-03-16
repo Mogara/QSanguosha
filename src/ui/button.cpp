@@ -152,10 +152,7 @@ Button::~Button() {
     delete outimg;
     outimg = NULL;
 
-    delete de;
-    de = NULL;
-
-    delete effect;
-    effect = NULL;
+    de->deleteLater();
+    effect->deleteLater();
 }
 
