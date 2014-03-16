@@ -261,15 +261,6 @@ GeneralOverview::GeneralOverview(QWidget *parent)
     group_box->setLayout(button_layout);
     ui->scrollArea->setWidget(group_box);
     ui->skillTextEdit->setProperty("description", true);
-    if (ServerInfo.DuringGame && ServerInfo.EnableCheat) {
-        ui->changeGeneralButton->show();
-        ui->changeGeneral2Button->show();
-        connect(ui->changeGeneralButton, SIGNAL(clicked()), this, SLOT(askTransfiguration()));
-        connect(ui->changeGeneral2Button, SIGNAL(clicked()), this, SLOT(askTransfiguration()));
-    } else {
-        ui->changeGeneralButton->hide();
-        ui->changeGeneral2Button->hide();
-    }
     connect(ui->changeHeroSkinButton, SIGNAL(clicked()), this, SLOT(askChangeSkin()));
 
     general_search = new GeneralSearch(this);
@@ -552,8 +543,6 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
     else
         ui->companionsLineEdit->setText(companions_text);
     ui->skillTextEdit->append(general->getSkillDescription(false, false));
-    ui->changeGeneralButton->setEnabled(Self && Self->getActualGeneral1Name() != general->objectName());
-    ui->changeGeneral2Button->setEnabled(Self && Self->getActualGeneral2Name() != general->objectName());
 }
 
 void GeneralOverview::playAudioEffect() {
@@ -562,26 +551,6 @@ void GeneralOverview::playAudioEffect() {
         QString source = button->objectName();
         if (!source.isEmpty())
             Sanguosha->playAudioEffect(source);
-    }
-}
-
-void GeneralOverview::askTransfiguration() {
-    QPushButton *button = qobject_cast<QPushButton *>(sender());
-    bool isSecondaryHero = (button && button->objectName() == ui->changeGeneral2Button->objectName());
-    if (ServerInfo.EnableCheat && Self) {
-        if (isSecondaryHero)
-            ui->changeGeneral2Button->setEnabled(false);
-        else
-            ui->changeGeneralButton->setEnabled(false);
-        int row = ui->tableWidget->currentRow();
-        QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
-        ClientInstance->requestCheatChangeGeneral(general_name, isSecondaryHero);
-    }
-}
-
-void GeneralOverview::on_tableWidget_itemDoubleClicked(QTableWidgetItem *) {
-    if (ServerInfo.EnableCheat && Self) {
-        askTransfiguration();
     }
 }
 

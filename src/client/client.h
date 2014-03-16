@@ -48,7 +48,6 @@ public:
 
     // cheat functions
     void requestCheatGetOneCard(int card_id);
-    void requestCheatChangeGeneral(const QString &name, bool isSecondaryHero = false);
     void requestCheatKill(const QString &killer, const QString &victim);
     void requestCheatDamage(const QString &source, const QString &target, DamageStruct::Nature nature, int points);
     void requestCheatRevive(const QString &name);

@@ -36,7 +36,6 @@ namespace QSanProtocol {
 
     enum CheatCode {
         S_CHEAT_GET_ONE_CARD,
-        S_CHEAT_CHANGE_GENERAL,
         S_CHEAT_KILL_PLAYER,
         S_CHEAT_REVIVE_PLAYER,
         S_CHEAT_MAKE_DAMAGE,
