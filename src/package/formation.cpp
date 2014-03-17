@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #include "formation.h"
 #include "standard-basics.h"
 #include "standard-tricks.h"
@@ -1369,6 +1388,9 @@ public:
                     args[2] = QSanProtocol::Utils::toJsonString(skill->objectName());
                     args[3] = true;
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
+
+                    if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
+                        room->addPlayerMark(player, skill->getLimitMark());
                 }
                 room->changeHero(player, to_change, false, true, false, true);
                 player->setSkillsPreshowed("h");

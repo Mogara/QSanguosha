@@ -843,10 +843,13 @@ sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, i
 			return to_discard
 		end
 	elseif current_phase == sgs.Player_Discard and not self.player:isSkipped(sgs.Player_Discard) then
+		self.player:setFlags("AI_ConsideringQiaobianSkipDiscard")
 		self:sortByKeepValue(cards)
-		if self.player:getHandcardNum() - 1 > self:getOverflow(false, true) then
+		if self:getOverflow(false, true) > 1 then
+			self.player:setFlags("-AI_ConsideringQiaobianSkipDiscard")
 			return { cards[1]:getEffectiveId() }
 		end
+		self.player:setFlags("-AI_ConsideringQiaobianSkipDiscard")
 	end
 
 	return {}

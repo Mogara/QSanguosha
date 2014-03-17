@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #ifndef _ROOM_SCENE_H
 #define _ROOM_SCENE_H
 
@@ -204,7 +223,7 @@ private:
     TablePile *m_tablePile;
     QMainWindow *main_window;
     QSanButton *ok_button, *cancel_button, *discard_button;
-    QMenu *miscellaneous_menu, *change_general_menu;
+    QMenu *miscellaneous_menu;
     Window *prompt_box;
     Window *pindian_box;
     CardItem *pindian_from_card, *pindian_to_card;
@@ -252,7 +271,6 @@ private:
     // for 3v3 & 1v1 mode
     QSanSelectableItem *selector_box;
     QList<CardItem *> general_items, up_generals, down_generals;
-    CardItem *to_change;
     QList<QGraphicsRectItem *> arrange_rects;
     QList<CardItem *> arrange_items;
     Button *arrange_button;
@@ -367,7 +385,6 @@ private slots:
     void startArrange(const QString &);
     void toggleArrange();
     void finishArrange();
-    void changeGeneral(const QString &general);
     //void revealGeneral(bool self, const QString &general);
 
     void skillStateChange(const QString &skill_name);

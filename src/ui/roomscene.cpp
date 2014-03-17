@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #include "roomscene.h"
 #include "settings.h"
 #include "carditem.h"
@@ -116,13 +135,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     choose_skill = new ChoosePlayerSkill;
 
     miscellaneous_menu = new QMenu(main_window);
-
-    change_general_menu = new QMenu(main_window);
-    QAction *action = change_general_menu->addAction(tr("Change general ..."));
-    FreeChooseDialog *general_changer = new FreeChooseDialog(main_window);
-    connect(action, SIGNAL(triggered()), general_changer, SLOT(exec()));
-    connect(general_changer, SIGNAL(general_chosen(QString)), this, SLOT(changeGeneral(QString)));
-    to_change = NULL;
 
     // do signal-slot connections
     connect(ClientInstance, SIGNAL(player_added(ClientPlayer *)), SLOT(addPlayer(ClientPlayer *)));
@@ -1320,7 +1332,7 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QGraphicsScene::contextMenuEvent(event);
 
     QGraphicsItem *item = itemAt(event->scenePos());
-    if (item->zValue() < -99999) { // @todo_P: tableBg?
+    if (item && item->zValue() < -99999) { // @todo_P: tableBg?
         QMenu *menu = miscellaneous_menu;
         menu->clear();
         menu->setTitle(tr("Miscellaneous"));
@@ -1385,12 +1397,6 @@ void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
         connect(discard, SIGNAL(triggered()), this, SLOT(toggleDiscards()));
 
         menu->popup(event->screenPos());
-    } else if (ServerInfo.FreeChoose && arrange_button) {
-        QGraphicsObject *obj = item->toGraphicsObject();
-        if (obj && Sanguosha->getGeneral(obj->objectName())) {
-            to_change = qobject_cast<CardItem *>(obj);
-            change_general_menu->popup(event->screenPos());
-        }
     }
 }
 
@@ -3743,11 +3749,6 @@ void RoomScene::recoverGeneral(int index, const QString &name) {
             break;
         }
     }
-}
-
-void RoomScene::changeGeneral(const QString &general) {
-    if (to_change && arrange_button) to_change->changeGeneral(general);
-    choose_general_box->adjustItems();
 }
 
 void RoomScene::skillStateChange(const QString &skill_name) {

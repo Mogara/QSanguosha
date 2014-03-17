@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #ifndef _SETTINGS_H
 #define _SETTINGS_H
 
@@ -13,6 +32,20 @@ class Settings: public QSettings {
 
 public:
     explicit Settings();
+    //************************************
+    // Method:    init
+    // FullName:  Settings::init
+    // Access:    public 
+    // Returns:   void
+    // Qualifier:
+    // Description: Initialize Config and create a user setting file to save user's settings.
+    //
+    // Last Updated By Yanguam Siliagim
+    // To use a proper way to convert generals and cards
+    //
+    // QSanguosha-Hegemony Team
+    // March 17 2014
+    //************************************
     void init();
 
     const QRectF Rect;
@@ -42,7 +75,6 @@ public:
     bool Enable2ndGeneral;
     bool EnableBasara;
     bool EnableHegemony;
-    bool EnableLordGeneralConvert;
     QString Address;
     bool EnableAI;
     int AIDelay;
