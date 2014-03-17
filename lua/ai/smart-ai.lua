@@ -2976,11 +2976,12 @@ function SmartAI:askForSinglePeach(dying)
 	return card_str or "."
 end
 
-
 function SmartAI:getOverflow(player, getMaxCards)
 	player = player or self.player
 	local MaxCards = player:getMaxCards()
-	if player:hasSkill("qiaobian") then MaxCards = math.max(self.player:getHandcardNum() - 1, MaxCards) end
+	if player:hasSkill("qiaobian") and not player:hasFlag("AI_ConsideringQiaobianSkipDiscard") then
+		MaxCards = math.max(self.player:getHandcardNum() - 1, MaxCards) 
+	end
 	if player:hasSkill("keji") and not player:hasFlag("KejiSlashInPlayPhase") then MaxCards = self.player:getHandcardNum() end
 	if getMaxCards then return MaxCards end
 	return player:getHandcardNum() - MaxCards
