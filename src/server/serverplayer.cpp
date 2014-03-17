@@ -820,9 +820,6 @@ int ServerPlayer::getGeneralMaxHp() const{
         max_hp = (first + second) / 2;
     }
 
-    if (room->hasWelfare(this))
-        max_hp++;
-
     return max_hp;
 }
 

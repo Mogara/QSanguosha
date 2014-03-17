@@ -3046,15 +3046,6 @@ void Room::sendDamageLog(const DamageStruct &data) {
     sendLog(log);
 }
 
-bool Room::hasWelfare(const ServerPlayer *player) const{
-    if (mode == "06_3v3")
-        return player->isLord() || player->getRole() == "renegade";
-    else if (Config.EnableHegemony || mode == "06_XMode")
-        return false;
-    else
-        return player->isLord() && player_count > 4;
-}
-
 ServerPlayer *Room::getFront(ServerPlayer *a, ServerPlayer *b) const{
     ServerPlayer *starter = current;
     if (starter == NULL)
