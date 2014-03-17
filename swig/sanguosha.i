@@ -1234,7 +1234,6 @@ public:
     void resetAI(ServerPlayer *player);
     void swapSeat(ServerPlayer *a, ServerPlayer *b);
     void setFixedDistance(Player *from, const Player *to, int distance);
-    bool hasWelfare(const ServerPlayer *player) const;
     ServerPlayer *getFront(ServerPlayer *a, ServerPlayer *b) const;
     void signup(ServerPlayer *player, const char *screen_name, const char *avatar, bool is_robot);
     ServerPlayer *getOwner() const;
