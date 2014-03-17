@@ -1,8 +1,30 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #include "choosegeneralbox.h"
 #include "engine.h"
 #include "roomscene.h"
 #include "SkinBank.h"
 #include "protocol.h"
+#include "choosegeneraldialog.h"
+
+#include <QApplication>
 
 GeneralCardItem::GeneralCardItem(const QString &general_name)
     : CardItem(general_name), has_companion(false)
@@ -43,6 +65,27 @@ void GeneralCardItem::hideCompanion() {
     if (!has_companion) return;
     has_companion = false;
     update();
+}
+
+void GeneralCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+    if (Qt::RightButton == event->button()) {
+        FreeChooseDialog *general_changer = new FreeChooseDialog(QApplication::focusWidget());
+        connect(general_changer, SIGNAL(general_chosen(QString)), this, SLOT(changeGeneral(QString)));
+        general_changer->exec();
+        general_changer->deleteLater();
+        return;
+    }
+    if (frozen) return;
+
+    QPointF totalMove = mapToParent(event->pos()) - _m_lastMousePressScenePos;
+    if (totalMove.x() * totalMove.x() + totalMove.y() * totalMove.y() < _S_MOVE_JITTER_TOLERANCE)
+        emit clicked();
+    else
+        emit released();
+
+    if (auto_back) {
+        goBack(true, false);
+    }
 }
 
 ChooseGeneralBox::ChooseGeneralBox() 
@@ -87,9 +130,9 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //
     //
     //==================================================
-    //||                                          |X| ||
-    //||==============================================||
     //||               岑失岑泳鉱心麼繍                ||
+    //||==============================================||
+    //||                                              ||
     //||             __________________               ||
     //||            |                  |              ||
     //||            |                  |              ||
@@ -102,6 +145,10 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //||            |                  |              ||
     //||            |                  |              ||
     //||             ！！！！！！！！！！！！！！！！！！               ||
+    //||                                              ||
+    //||             ==================               ||
+    //||             ||   confirm    ||               ||
+    //||             ==================               ||
     //||                                              ||
     //==================================================
     painter->save();
@@ -175,7 +222,6 @@ void ChooseGeneralBox::chooseGeneral(QStringList generals) {
         if (general.endsWith("(lord)")) continue;
         GeneralCardItem *general_item = new GeneralCardItem(general);
         general_item->setFlag(QGraphicsItem::ItemIsFocusable);
-        general_item->setAcceptedMouseButtons(Qt::LeftButton);
 
         if (single_result)
             general_item->setFlag(QGraphicsItem::ItemIsMovable, false);
@@ -187,6 +233,7 @@ void ChooseGeneralBox::chooseGeneral(QStringList generals) {
         connect(general_item, SIGNAL(clicked()), this, SLOT(_onItemClicked()));
         connect(general_item, SIGNAL(enter_hover()), this, SLOT(_onCardItemHover()));
         connect(general_item, SIGNAL(leave_hover()), this, SLOT(_onCardItemLeaveHover()));
+        connect(general_item, SIGNAL(general_changed()), this, SLOT(adjustItems()));
 
         if (!single_result) {
             const General *hero = Sanguosha->getGeneral(general);

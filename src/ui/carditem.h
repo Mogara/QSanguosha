@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #ifndef _CARD_ITEM_H
 #define _CARD_ITEM_H
 
@@ -45,7 +64,6 @@ public:
     void showAvatar(const General *general);
     void hideAvatar();
     void setAutoBack(bool auto_back);
-    void changeGeneral(const QString &general_name);
     void setFootnote(const QString &desc);
 
     inline bool isSelected() const{ return m_isSelected; }
@@ -75,6 +93,9 @@ protected:
     double m_opacityAtHome;
     bool m_isSelected;
     bool _m_isUnknownGeneral;
+    bool auto_back, frozen;
+    QPointF _m_lastMousePressScenePos;
+
     static const int _S_CLICK_JITTER_TOLERANCE;
     static const int _S_MOVE_JITTER_TOLERANCE;
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -89,8 +110,7 @@ private:
     int m_cardId;
     QString _m_frameType, _m_avatarName;
     QPointF home_pos;
-    QPointF _m_lastMousePressScenePos;
-    bool auto_back, frozen;
+
 signals:
     void toggle_discards();
     void clicked();
@@ -100,6 +120,9 @@ signals:
     void enter_hover();
     void leave_hover();
     void movement_animation_finished();
+
+public slots:
+    void changeGeneral(const QString &general_name);
 };
 
 #endif
