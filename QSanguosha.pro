@@ -10,14 +10,6 @@ CONFIG += audio
 CONFIG += lua
 
 
-# If you want to enable joystick support, please uncomment the following line:
-# CONFIG += joystick
-# However, joystick is not supported under Mac OS X temporarily
-
-# If you want enable voice reading for chat content, uncomment the following line:
-# CONFIG += chatvoice
-# Also, this function can only enabled under Windows system as it make use of Microsoft TTS
-
 SOURCES += \
     src/main.cpp \
     src/client/aux-skills.cpp \
@@ -236,21 +228,6 @@ CONFIG(audio){
     INCLUDEPATH += include/fmod
     LIBS += -lfmodex
     SOURCES += src/core/audio.cpp
-}
-
-CONFIG(joystick){
-    DEFINES += JOYSTICK_SUPPORT
-    HEADERS += src/ui/joystick.h
-    SOURCES += src/ui/joystick.cpp
-    win32: LIBS += -lplibjs -lplibul -lwinmm
-    unix: LIBS += -lplibjs -lplibul
-}
-
-CONFIG(chatvoice){
-    win32{
-        CONFIG += qaxcontainer
-        DEFINES += CHAT_VOICE
-    }
 }
 
 CONFIG(lua){
