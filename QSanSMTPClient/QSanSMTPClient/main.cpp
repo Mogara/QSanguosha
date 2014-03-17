@@ -16,7 +16,7 @@
  *
  * QSanguosha-Hegemony Team
  * Last Updated By Yanguam Siliagim
- * 2014 2 March
+ * March 2 2014
  * *****************************************************************/
 
 #include "mainwindow.h"

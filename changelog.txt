@@ -1,9 +1,9 @@
-﻿QSanguosha-Hegemony (QSGSH) Version 0.6.1 beta
+﻿QSanguosha-Hegemony (QSGSH) Version 0.7.0 beta
 
 
   Change Log / Release Notes
   
-0.6.1 beta 
+0.7.0 beta 
 -----------------------------
   Bugs Fixed:
   +AI不发动屯田
@@ -38,6 +38,14 @@
   
   +天妒可获得已不处于处理区的判定牌
   
+  +使用不属于自己的牌，卡牌移动的来源是使用者
+  
+  +没有与野心家同势力的角色
+  
+  +点击查看移除游戏的牌时，确认键需要反复点击
+  
+  +飞龙夺凤复活后没有限定技标记
+  
   API Changes:
   +修复lua主将技/副将技无效的问题
   
@@ -65,12 +73,22 @@
   
   +更新lua扩展包帮助文档OtherSkill和SkillCard中部分内容
   
+  +修改Player::hasShownSkill底层实现，考虑装备技能和隐藏技能
+  
+  +新增时机TargetChoosing 和 TargetChosen，用以区分选择目标与指定目标
+  
+  +新增sgs.HegemonyMode_getMappedRole，用以获取势力对应的身份
+  
+  +关闭Room::changeHero接口
+  
+  +移除Room::hasWelfare
+  
   New Features/Enhancements:
   +战报窗口增加边框
   
-  +使用清晰度更高的曹洪卡牌
+  +使用清晰度更高的曹洪、陆逊、邹氏卡牌
   
-  +崩溃后询问是否立即上传dmp文件给程序维护人员
+  +崩溃后询问是否立即上传dmp文件给程序维护人员（感谢Tőkés Attila及其团队的协助开发）
   
   +移除暗置武将前先明置
   
@@ -91,6 +109,20 @@
   +放缓AI亮将的节奏
   
   +着手优化程序性能
+  
+  +显示所有珠联璧合关系，不论扩展包是否禁用
+  
+  +升级freetype字体渲染库至最新版(2.5.3)(from www.freetype.org)感谢freetype开发团队
+  
+  +"关于我们"对话框中的悬浮文字背景色设为白色，易于识别
+  
+  +即使禁止聊天，也可以在聊天框输入作弊码
+  
+  +调整君刘备在场时飞龙夺凤的AI价值
+  
+  +移除替换武将的作弊功能
+  
+  +添加卡牌及武将替换的选项
   
   
 0.6.0 beta (February 25 2014)

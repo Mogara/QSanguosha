@@ -64,6 +64,20 @@ public:
     Card *cloneCard(const Card *card) const;
     Card *cloneCard(const QString &name, Card::Suit suit = Card::SuitToBeDecided, int number = -1, const QStringList &flags = QStringList()) const;
     SkillCard *cloneSkillCard(const QString &name) const;
+    //************************************
+    // Method:    getVersionNumber
+    // FullName:  Engine::getVersionNumber
+    // Access:    public 
+    // Returns:   QT_NAMESPACE::QString
+    // Qualifier: const
+    // Description: Get current version number.
+    //
+    // Last Updated By Yanguam Siliagim
+    // To update version number
+    //
+    // QSanguosha-Hegemony Team
+    // March 17 2014
+    //************************************
     QString getVersionNumber() const;
     QString getVersion() const;
     QString getVersionName() const;
