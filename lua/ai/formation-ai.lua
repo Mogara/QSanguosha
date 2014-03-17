@@ -76,17 +76,17 @@ sgs.ai_choicemade_filter.skillInvoke.ziliang = function(self, player, promptlist
 end
 
 local function huyuan_validate(self, equip_type, is_handcard)
-	local targets
+	local targets = {}
 	if is_handcard then targets = self.friends else targets = self.friends_noself end
 	if equip_type == "SilverLion" then
 		for _, enemy in ipairs(self.enemies) do
-			if enemy:hasSkill("bazhen") then table.insert(targets, enemy) end
+			if enemy:hasSkill("bazhen") and not enemy:getArmor() then table.insert(targets, enemy) end
 		end
 	end
 	for _, friend in ipairs(targets) do
 		local has_equip = false
 		for _, equip in sgs.qlist(friend:getEquips()) do
-			if equip:isKindOf(equip_type) then
+			if equip:isKindOf(equip_type == "SilverLion" and "Armor" or equip_type) then
 				has_equip = true
 				break
 			end

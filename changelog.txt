@@ -46,6 +46,8 @@
   
   +飞龙夺凤复活后没有限定技标记
   
+  +AI对装备防具的角色发动护援，将白银狮子置入其装备区
+  
   API Changes:
   +修复lua主将技/副将技无效的问题
   
@@ -77,7 +79,7 @@
   
   +新增时机TargetChoosing 和 TargetChosen，用以区分选择目标与指定目标
   
-  +新增sgs.HegemonyMode_getMappedRole，用以获取势力对应的身份
+  +新增sgs.getMappedRole，用以获取势力对应的身份
   
   +关闭Room::changeHero接口
   
