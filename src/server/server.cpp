@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #include "server.h"
 #include "settings.h"
 #include "room.h"
@@ -38,6 +57,7 @@ ServerDialog::ServerDialog(QWidget *parent)
     tab_widget->addTab(createBasicTab(), tr("Basic"));
     tab_widget->addTab(createPackageTab(), tr("Game Pacakge Selection"));
     tab_widget->addTab(createAdvancedTab(), tr("Advanced"));
+    tab_widget->addTab(createConversionTab(), tr("Conversion Selection"));
     tab_widget->addTab(createMiscTab(), tr("Miscellaneous"));
 
     QVBoxLayout *layout = new QVBoxLayout;
@@ -169,9 +189,6 @@ QWidget *ServerDialog::createAdvancedTab() {
     pile_swapping_spinbox->setRange(-1, 15);
     pile_swapping_spinbox->setValue(Config.value("PileSwappingLimitation", 5).toInt());
 
-    lord_convert_checkbox = new QCheckBox(tr("Enable Lord Rule"));
-    lord_convert_checkbox->setChecked(Config.value("EnableLordGeneralConvert", true).toBool());
-
     hegemony_maxchoice_label = new QLabel(tr("Upperlimit for hegemony"));
     hegemony_maxchoice_spinbox = new QSpinBox;
     hegemony_maxchoice_spinbox->setRange(5, 7); //wait for a new extension
@@ -195,7 +212,6 @@ QWidget *ServerDialog::createAdvancedTab() {
     layout->addWidget(enable_cheat_checkbox);
     layout->addWidget(free_choose_checkbox);
     layout->addLayout(HLay(pile_swapping_label, pile_swapping_spinbox));
-    layout->addWidget(lord_convert_checkbox);
     layout->addLayout(HLay(hegemony_maxchoice_label, hegemony_maxchoice_spinbox));
     layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
     layout->addWidget(detect_button);
@@ -205,6 +221,58 @@ QWidget *ServerDialog::createAdvancedTab() {
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
 
+    return widget;
+}
+
+QWidget *ServerDialog::createConversionTab() {
+    conversions_group = new QButtonGroup;
+    conversions_group->setExclusive(false);
+
+    QGroupBox *formation_conversions = new QGroupBox(tr("Formation Conversions"));
+    QGroupBox *momentum_conversions = new QGroupBox(tr("Momentum Conversions"));
+
+    QVBoxLayout *formation_layout = new QVBoxLayout;
+    QVBoxLayout *momentum_layout = new QVBoxLayout;
+    formation_conversions->setLayout(formation_layout);
+    momentum_conversions->setLayout(momentum_layout);
+
+    const bool enable_lord_liubei = Config.value("GeneralConversions").toStringList().contains("liubei->lord_liubei");
+    convert_liubei_to_lord = new QCheckBox(tr("Convert Liu Bei to Lord Liu Bei"));
+    convert_liubei_to_lord->setChecked(enable_lord_liubei);
+
+    convert_ds_to_dp = new QCheckBox(tr("Convert DoubleSword to DragonPhoenix"));
+    convert_ds_to_dp->setChecked(Config.value("CardConversions").toStringList().contains("55->108"));
+    convert_ds_to_dp->setDisabled(enable_lord_liubei);
+
+    connect(convert_liubei_to_lord, SIGNAL(toggled(bool)), convert_ds_to_dp, SLOT(setChecked(bool)));
+    connect(convert_liubei_to_lord, SIGNAL(toggled(bool)), convert_ds_to_dp, SLOT(setDisabled(bool)));
+
+    conversions_group->addButton(convert_liubei_to_lord);
+    conversions_group->addButton(convert_ds_to_dp);
+    formation_layout->addWidget(convert_liubei_to_lord);
+    formation_layout->addWidget(convert_ds_to_dp);
+
+    const bool enable_lord_zhangjiao = Config.value("GeneralConversions").toStringList().contains("zhangjiao->lord_zhangjiao");
+    convert_zhangjiao_to_lord = new QCheckBox(tr("Convert Zhang Jiao to Lord Zhang Jiao"));
+    convert_zhangjiao_to_lord->setChecked(enable_lord_zhangjiao);
+
+    add_peace_spell = new QCheckBox(tr("Add Peace Spell"));
+    add_peace_spell->setChecked(Config.value("CardConversions").toStringList().contains("+109"));
+    add_peace_spell->setDisabled(enable_lord_zhangjiao);
+
+    connect(convert_zhangjiao_to_lord, SIGNAL(toggled(bool)), add_peace_spell, SLOT(setChecked(bool)));
+    connect(convert_zhangjiao_to_lord, SIGNAL(toggled(bool)), add_peace_spell, SLOT(setDisabled(bool)));
+
+    conversions_group->addButton(add_peace_spell);
+    conversions_group->addButton(convert_zhangjiao_to_lord);
+    momentum_layout->addWidget(convert_zhangjiao_to_lord);
+    momentum_layout->addWidget(add_peace_spell);
+
+    QWidget *widget = new QWidget;
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(formation_conversions);
+    layout->addWidget(momentum_conversions);
+    widget->setLayout(layout);
     return widget;
 }
 
@@ -279,6 +347,180 @@ QWidget *ServerDialog::createMiscTab() {
 
 void ServerDialog::ensureEnableAI() {
     ai_enable_checkbox->setChecked(true);
+}
+
+QGroupBox *ServerDialog::createGameModeBox() {
+    QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
+    mode_group = new QButtonGroup;
+
+    QObjectList item_list;
+
+    // normal modes
+    QMap<QString, QString> modes = Sanguosha->getAvailableModes();
+    QMapIterator<QString, QString> itor(modes);
+    while (itor.hasNext()) {
+        itor.next();
+
+        QRadioButton *button = new QRadioButton(itor.value());
+        button->setObjectName(itor.key());
+        mode_group->addButton(button);
+
+        item_list << button;
+
+        if (itor.key() == Config.GameMode)
+            button->setChecked(true);
+    }
+    // ============
+
+    QVBoxLayout *left = new QVBoxLayout;
+    QVBoxLayout *right = new QVBoxLayout;
+
+    for (int i = 0; i < item_list.length(); i++) {
+        QObject *item = item_list.at(i);
+
+        QVBoxLayout *side = i <= item_list.length() / 2 ? left : right;
+
+        if (item->isWidgetType()) {
+            QWidget *widget = qobject_cast<QWidget *>(item);
+            side->addWidget(widget);
+        } else {
+            QLayout *item_layout = qobject_cast<QLayout *>(item);
+            side->addLayout(item_layout);
+        }
+        if (i == item_list.length() / 2)
+            side->addStretch();
+    }
+
+    right->addStretch();
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addLayout(left);
+    layout->addLayout(right);
+
+    mode_box->setLayout(layout);
+
+    return mode_box;
+}
+
+QLayout *ServerDialog::createButtonLayout() {
+    QHBoxLayout *button_layout = new QHBoxLayout;
+    button_layout->addStretch();
+
+    QPushButton *ok_button = new QPushButton(tr("OK"));
+    QPushButton *cancel_button = new QPushButton(tr("Cancel"));
+
+    button_layout->addWidget(ok_button);
+    button_layout->addWidget(cancel_button);
+
+    connect(ok_button, SIGNAL(clicked()), this, SLOT(onOkButtonClicked()));
+    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
+
+    return button_layout;
+}
+
+void ServerDialog::onDetectButtonClicked() {
+    QHostInfo vHostInfo = QHostInfo::fromName(QHostInfo::localHostName());
+    QList<QHostAddress> vAddressList = vHostInfo.addresses();
+    foreach (QHostAddress address, vAddressList) {
+        if (!address.isNull() && address != QHostAddress::LocalHost
+            && address.protocol() ==  QAbstractSocket::IPv4Protocol) {
+            address_edit->setText(address.toString());
+            return;
+        }
+    }
+}
+
+void ServerDialog::onOkButtonClicked() {
+    accept();
+}
+
+void ServerDialog::doCustomAssign() {
+    CustomAssignDialog *dialog = new CustomAssignDialog(this);
+
+    connect(dialog, SIGNAL(scenario_changed()), this, SLOT(setMiniCheckBox()));
+    dialog->exec();
+}
+
+bool ServerDialog::config() {
+    exec();
+
+    if (result() != Accepted)
+        return false;
+
+    Config.ServerName = server_name_edit->text();
+    Config.OperationTimeout = timeout_spinbox->value();
+    Config.OperationNoLimit = nolimit_checkbox->isChecked();
+    Config.RandomSeat = random_seat_checkbox->isChecked();
+    Config.EnableCheat = enable_cheat_checkbox->isChecked();
+    Config.FreeChoose = Config.EnableCheat && free_choose_checkbox->isChecked();
+    Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
+    Config.DisableChat = disable_chat_checkbox->isChecked();
+    Config.Address = address_edit->text();
+    Config.CountDownSeconds = game_start_spinbox->value();
+    Config.NullificationCountDown = nullification_spinbox->value();
+    Config.EnableMinimizeDialog = minimize_dialog_checkbox->isChecked();
+    Config.EnableAI = ai_enable_checkbox->isChecked();
+    Config.OriginAIDelay = ai_delay_spinbox->value();
+    Config.AIDelay = Config.OriginAIDelay;
+    Config.AIDelayAD = ai_delay_ad_spinbox->value();
+    Config.AlterAIDelayAD = ai_delay_altered_checkbox->isChecked();
+    Config.ServerPort = port_edit->text().toInt();
+    Config.DisableLua = disable_lua_checkbox->isChecked();
+    Config.SurrenderAtDeath = surrender_at_death_checkbox->isChecked();
+    Config.LuckCardLimitation = luck_card_spinbox->value();
+
+    // game mode
+    QString objname = mode_group->checkedButton()->objectName();
+    Config.GameMode = objname;
+
+    Config.setValue("ServerName", Config.ServerName);
+    Config.setValue("GameMode", Config.GameMode);
+    Config.setValue("OperationTimeout", Config.OperationTimeout);
+    Config.setValue("OperationNoLimit", Config.OperationNoLimit);
+    Config.setValue("RandomSeat", Config.RandomSeat);
+    Config.setValue("EnableCheat", Config.EnableCheat);
+    Config.setValue("FreeChoose", Config.FreeChoose);
+    Config.setValue("PileSwappingLimitation", pile_swapping_spinbox->value());
+    Config.setValue("ForbidSIMC", Config.ForbidSIMC);
+    Config.setValue("DisableChat", Config.DisableChat);
+    Config.setValue("HegemonyMaxChoice", hegemony_maxchoice_spinbox->value());
+    Config.setValue("CountDownSeconds", game_start_spinbox->value());
+    Config.setValue("NullificationCountDown", nullification_spinbox->value());
+    Config.setValue("EnableMinimizeDialog", Config.EnableMinimizeDialog);
+    Config.setValue("EnableAI", Config.EnableAI);
+    Config.setValue("OriginAIDelay", Config.OriginAIDelay);
+    Config.setValue("AlterAIDelayAD", ai_delay_altered_checkbox->isChecked());
+    Config.setValue("AIDelayAD", Config.AIDelayAD);
+    Config.setValue("SurrenderAtDeath", Config.SurrenderAtDeath);
+    Config.setValue("LuckCardLimitation", Config.LuckCardLimitation);
+    Config.setValue("ServerPort", Config.ServerPort);
+    Config.setValue("Address", Config.Address);
+    Config.setValue("DisableLua", disable_lua_checkbox->isChecked());
+
+    QSet<QString> ban_packages;
+    QList<QAbstractButton *> checkboxes = extension_group->buttons();
+    foreach (QAbstractButton *checkbox, checkboxes) {
+        if (!checkbox->isChecked()) {
+            QString package_name = checkbox->objectName();
+            Sanguosha->addBanPackage(package_name);
+            ban_packages.insert(package_name);
+        }
+    }
+
+    Config.BanPackages = ban_packages.toList();
+    Config.setValue("BanPackages", Config.BanPackages);
+
+    QStringList general_conversions;
+    if (convert_liubei_to_lord->isChecked()) general_conversions << "liubei->lord_liubei";
+    if (convert_zhangjiao_to_lord->isChecked()) general_conversions << "zhangjiao->lord_zhangjiao";
+    Config.setValue("GeneralConversions", general_conversions);
+
+    QStringList card_conversions;
+    if (convert_ds_to_dp->isChecked()) card_conversions << "55->108";
+    if (add_peace_spell->isChecked()) card_conversions << "+109";
+    Config.setValue("CardConversions", card_conversions);
+
+    return true;
 }
 
 BanIPDialog::BanIPDialog(QWidget *parent, Server *theserver)
@@ -408,172 +650,6 @@ void BanIPDialog::save(){
 
     QStringList ips = ip_set.toList();
     Config.setValue("BannedIP", ips);
-}
-
-QGroupBox *ServerDialog::createGameModeBox() {
-    QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
-    mode_group = new QButtonGroup;
-
-    QObjectList item_list;
-
-    // normal modes
-    QMap<QString, QString> modes = Sanguosha->getAvailableModes();
-    QMapIterator<QString, QString> itor(modes);
-    while (itor.hasNext()) {
-        itor.next();
-
-        QRadioButton *button = new QRadioButton(itor.value());
-        button->setObjectName(itor.key());
-        mode_group->addButton(button);
-
-        item_list << button;
-
-        if (itor.key() == Config.GameMode)
-            button->setChecked(true);
-    }
-    // ============
-
-    QVBoxLayout *left = new QVBoxLayout;
-    QVBoxLayout *right = new QVBoxLayout;
-
-    for (int i = 0; i < item_list.length(); i++) {
-        QObject *item = item_list.at(i);
-
-        QVBoxLayout *side = i <= item_list.length() / 2 ? left : right;
-
-        if (item->isWidgetType()) {
-            QWidget *widget = qobject_cast<QWidget *>(item);
-            side->addWidget(widget);
-        } else {
-            QLayout *item_layout = qobject_cast<QLayout *>(item);
-            side->addLayout(item_layout);
-        }
-        if (i == item_list.length() / 2)
-            side->addStretch();
-    }
-
-    right->addStretch();
-
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addLayout(left);
-    layout->addLayout(right);
-
-    mode_box->setLayout(layout);
-
-    return mode_box;
-}
-
-QLayout *ServerDialog::createButtonLayout() {
-    QHBoxLayout *button_layout = new QHBoxLayout;
-    button_layout->addStretch();
-
-    QPushButton *ok_button = new QPushButton(tr("OK"));
-    QPushButton *cancel_button = new QPushButton(tr("Cancel"));
-
-    button_layout->addWidget(ok_button);
-    button_layout->addWidget(cancel_button);
-
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(onOkButtonClicked()));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
-
-    return button_layout;
-}
-
-void ServerDialog::onDetectButtonClicked() {
-    QHostInfo vHostInfo = QHostInfo::fromName(QHostInfo::localHostName());
-    QList<QHostAddress> vAddressList = vHostInfo.addresses();
-    foreach (QHostAddress address, vAddressList) {
-        if (!address.isNull() && address != QHostAddress::LocalHost
-            && address.protocol() ==  QAbstractSocket::IPv4Protocol) {
-            address_edit->setText(address.toString());
-            return;
-        }
-    }
-}
-
-void ServerDialog::onOkButtonClicked() {
-    accept();
-}
-
-void ServerDialog::doCustomAssign() {
-    CustomAssignDialog *dialog = new CustomAssignDialog(this);
-
-    connect(dialog, SIGNAL(scenario_changed()), this, SLOT(setMiniCheckBox()));
-    dialog->exec();
-}
-
-bool ServerDialog::config() {
-    exec();
-
-    if (result() != Accepted)
-        return false;
-
-    Config.ServerName = server_name_edit->text();
-    Config.OperationTimeout = timeout_spinbox->value();
-    Config.OperationNoLimit = nolimit_checkbox->isChecked();
-    Config.RandomSeat = random_seat_checkbox->isChecked();
-    Config.EnableCheat = enable_cheat_checkbox->isChecked();
-    Config.FreeChoose = Config.EnableCheat && free_choose_checkbox->isChecked();
-    Config.ForbidSIMC = forbid_same_ip_checkbox->isChecked();
-    Config.DisableChat = disable_chat_checkbox->isChecked();
-    Config.EnableLordGeneralConvert = lord_convert_checkbox->isChecked();
-    Config.Address = address_edit->text();
-    Config.CountDownSeconds = game_start_spinbox->value();
-    Config.NullificationCountDown = nullification_spinbox->value();
-    Config.EnableMinimizeDialog = minimize_dialog_checkbox->isChecked();
-    Config.EnableAI = ai_enable_checkbox->isChecked();
-    Config.OriginAIDelay = ai_delay_spinbox->value();
-    Config.AIDelay = Config.OriginAIDelay;
-    Config.AIDelayAD = ai_delay_ad_spinbox->value();
-    Config.AlterAIDelayAD = ai_delay_altered_checkbox->isChecked();
-    Config.ServerPort = port_edit->text().toInt();
-    Config.DisableLua = disable_lua_checkbox->isChecked();
-    Config.SurrenderAtDeath = surrender_at_death_checkbox->isChecked();
-    Config.LuckCardLimitation = luck_card_spinbox->value();
-
-    // game mode
-    QString objname = mode_group->checkedButton()->objectName();
-    Config.GameMode = objname;
-
-    Config.setValue("ServerName", Config.ServerName);
-    Config.setValue("GameMode", Config.GameMode);
-    Config.setValue("OperationTimeout", Config.OperationTimeout);
-    Config.setValue("OperationNoLimit", Config.OperationNoLimit);
-    Config.setValue("RandomSeat", Config.RandomSeat);
-    Config.setValue("EnableCheat", Config.EnableCheat);
-    Config.setValue("FreeChoose", Config.FreeChoose);
-    Config.setValue("PileSwappingLimitation", pile_swapping_spinbox->value());
-    Config.setValue("EnableLordGeneralConvert", lord_convert_checkbox->isChecked());
-    Config.setValue("ForbidSIMC", Config.ForbidSIMC);
-    Config.setValue("DisableChat", Config.DisableChat);
-    Config.setValue("HegemonyMaxChoice", hegemony_maxchoice_spinbox->value());
-    Config.setValue("CountDownSeconds", game_start_spinbox->value());
-    Config.setValue("NullificationCountDown", nullification_spinbox->value());
-    Config.setValue("EnableMinimizeDialog", Config.EnableMinimizeDialog);
-    Config.setValue("EnableAI", Config.EnableAI);
-    Config.setValue("OriginAIDelay", Config.OriginAIDelay);
-    Config.setValue("AlterAIDelayAD", ai_delay_altered_checkbox->isChecked());
-    Config.setValue("AIDelayAD", Config.AIDelayAD);
-    Config.setValue("SurrenderAtDeath", Config.SurrenderAtDeath);
-    Config.setValue("LuckCardLimitation", Config.LuckCardLimitation);
-    Config.setValue("ServerPort", Config.ServerPort);
-    Config.setValue("Address", Config.Address);
-    Config.setValue("DisableLua", disable_lua_checkbox->isChecked());
-
-    QSet<QString> ban_packages;
-    QList<QAbstractButton *> checkboxes = extension_group->buttons();
-    foreach (QAbstractButton *checkbox, checkboxes) {
-        if (!checkbox->isChecked()) {
-            QString package_name = checkbox->objectName();
-            Sanguosha->addBanPackage(package_name);
-            ban_packages.insert(package_name);
-        }
-    }
-
-    Config.BanPackages = ban_packages.toList();
-    Config.setValue("BanPackages", Config.BanPackages);
-
-    return true;
 }
 
 Server::Server(QObject *parent)

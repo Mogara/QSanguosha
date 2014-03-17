@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #include "settings.h"
 #include "photo.h"
 #include "card.h"
@@ -76,7 +95,6 @@ void Settings::init() {
     Enable2ndGeneral = true;
     EnableBasara = true;
     EnableHegemony = true;
-    EnableLordGeneralConvert = value("EnableLordGeneralConvert", true).toBool();
     Address = value("Address", QString()).toString();
     EnableAI = value("EnableAI", true).toBool();
     OriginAIDelay = value("OriginAIDelay", 1000).toInt();

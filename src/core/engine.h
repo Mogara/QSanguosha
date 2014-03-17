@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #ifndef _ENGINE_H
 #define _ENGINE_H
 
@@ -94,9 +113,53 @@ public:
     Card *getCard(int cardId);
     WrappedCard *getWrappedCard(int cardId);
 
+    //************************************
+    // Method:    getRandomGenerals
+    // FullName:  Engine::getRandomGenerals
+    // Access:    public 
+    // Returns:   QT_NAMESPACE::QStringList
+    // Qualifier: const
+    // Parameter: int count
+    // Parameter: const QSet<QString> & ban_set
+    // Description: Get [count] available generals and no one is in [ban_set].
+    //
+    // Last Updated By Yanguam Siliagim
+    // To use a proper way to convert generals and cards
+    //
+    // QSanguosha-Hegemony Team
+    // March 17 2014
+    //************************************
     QStringList getRandomGenerals(int count, const QSet<QString> &ban_set = QSet<QString>()) const;
+    //************************************
+    // Method:    getRandomCards
+    // FullName:  Engine::getRandomCards
+    // Access:    public 
+    // Returns:   QList<int>
+    // Qualifier: const
+    // Description: Get IDs of all the available cards.
+    //
+    // Last Updated By Yanguam Siliagim
+    // To use a proper way to convert generals and cards
+    //
+    // QSanguosha-Hegemony Team
+    // March 17 2014
+    //************************************
     QList<int> getRandomCards() const;
     QString getRandomGeneralName() const;
+    //************************************
+    // Method:    getLimitedGeneralNames
+    // FullName:  Engine::getLimitedGeneralNames
+    // Access:    public 
+    // Returns:   QT_NAMESPACE::QStringList
+    // Qualifier: const
+    // Description: It was designed to get the list of all available generals.
+    //
+    // Last Updated By Yanguam Siliagim
+    // To use a proper way to convert generals and cards
+    //
+    // QSanguosha-Hegemony Team
+    // March 17 2014
+    //************************************
     QStringList getLimitedGeneralNames() const;
     QStringList getGeneralNames() const;
 
