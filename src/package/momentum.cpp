@@ -67,7 +67,7 @@ public:
             target = damage.to;
         else
             target = damage.from;
-        if (!target || !target->isAlive() || target == player) return QStringList();
+        if (!target || !target->isAlive() || target == player || target->hasFlag("Global_DFDebut")) return QStringList();
 
         QStringList trigger_list;
 

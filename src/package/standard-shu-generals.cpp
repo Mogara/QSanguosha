@@ -1054,7 +1054,7 @@ public:
         if (TriggerSkill::triggerable(zhurong).isEmpty()) return QStringList();
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.card && damage.card->isKindOf("Slash") && !zhurong->isKongcheng()
-            && !damage.to->isKongcheng() && damage.to != zhurong && !damage.chain && !damage.transfer)
+            && !damage.to->isKongcheng() && damage.to != zhurong && !damage.chain && !damage.transfer && !damage.to->hasFlag("Global_DFDebut"))
             return QStringList(objectName());
         return QStringList();
     }

@@ -1153,7 +1153,7 @@ public:
         if (TriggerSkill::triggerable(panfeng).isEmpty()) return QStringList();
         DamageStruct damage = data.value<DamageStruct>();
         ServerPlayer *target = damage.to;
-        if (damage.card && damage.card->isKindOf("Slash") && target->hasEquip() && !damage.chain && !damage.transfer) {
+        if (damage.card && damage.card->isKindOf("Slash") && target->hasEquip() && !damage.chain && !damage.transfer && !damage.to->hasFlag("Global_DFDebut")) {
             QStringList equiplist;
             for (int i = 0; i <= 3; i++) {
                 if (!target->getEquip(i)) continue;
