@@ -361,7 +361,6 @@ public:
 
     virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        room->broadcastSkillInvoke(objectName());
         room->notifySkillInvoked(player, objectName());
         LogMessage log;
         if (use.from) {
