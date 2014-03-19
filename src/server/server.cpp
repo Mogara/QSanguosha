@@ -120,12 +120,10 @@ QWidget *ServerDialog::createPackageTab() {
         if (package == NULL)
             continue;
 
-        bool forbid_package = Config.value("ForbidPackages").toStringList().contains(extension);
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setObjectName(extension);
         checkbox->setText(Sanguosha->translate(extension));
-        checkbox->setChecked(!ban_packages.contains(extension) && !forbid_package);
-        checkbox->setEnabled(!forbid_package);
+        checkbox->setChecked(!ban_packages.contains(extension));
 
         extension_group->addButton(checkbox);
 
@@ -511,13 +509,25 @@ bool ServerDialog::config() {
     Config.setValue("BanPackages", Config.BanPackages);
 
     QStringList general_conversions;
-    if (convert_liubei_to_lord->isChecked()) general_conversions << "liubei->lord_liubei";
-    if (convert_zhangjiao_to_lord->isChecked()) general_conversions << "zhangjiao->lord_zhangjiao";
+    if (convert_liubei_to_lord->isChecked()) 
+        general_conversions << "liubei->lord_liubei";
+    else
+        general_conversions << "lord_liubei->liubei";
+    if (convert_zhangjiao_to_lord->isChecked())
+        general_conversions << "zhangjiao->lord_zhangjiao";
+    else
+        general_conversions << "lord_zhangjiao->zhangjiao";
     Config.setValue("GeneralConversions", general_conversions);
 
     QStringList card_conversions;
-    if (convert_ds_to_dp->isChecked()) card_conversions << "55->108";
-    if (add_peace_spell->isChecked()) card_conversions << "+109";
+    if (convert_ds_to_dp->isChecked())
+        card_conversions << "55->108";
+    else
+        card_conversions << "108->55";
+    if (add_peace_spell->isChecked())
+        card_conversions << "+109";
+    else
+        card_conversions << "-109";
     Config.setValue("CardConversions", card_conversions);
 
     return true;
