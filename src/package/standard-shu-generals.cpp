@@ -125,6 +125,7 @@ public:
     PaoxiaoArmorNullificaion(): TriggerSkill("paoxiao_null"){
         events << TargetChosen;
         global = true;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
@@ -626,6 +627,7 @@ public:
     KuangguGlobal(): TriggerSkill("KuangguGlobal"){
         global = true;
         events << PreDamageDone;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{

@@ -463,6 +463,7 @@ public:
     YongjueStart(): TriggerSkill("yongjue-start") {
         events << EventPhaseStart;
         global = true;
+        frequency = Compulsory;
     }
 
     virtual int getPriority() const{
