@@ -1055,5 +1055,8 @@
     <ClInclude Include="..\..\src\core\namespace.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\core\util.h">
+      <Filter>core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
