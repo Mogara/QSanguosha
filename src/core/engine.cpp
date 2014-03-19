@@ -742,20 +742,19 @@ QStringList Engine::getGeneralNames() const{
 QStringList Engine::getLimitedGeneralNames() const{
     //for later use
     QStringList general_names = getGeneralNames();
+    QStringList general_names_copy = general_names;
+
+    foreach (QString n, general_names_copy){
+        if (n.startsWith("lord_"))
+            general_names.removeOne(n);
+    }
 
     QStringList general_conversions = Config.value("GeneralConversions").toStringList();
     foreach (QString str, general_conversions) {
-        QString string = str;
-        if (string.startsWith("-")) {
-            string.mid(1);
-            general_names.removeOne(string);
-        } else if (str.contains("->")) {
-            QStringList strs = string.split("->");
-            Q_ASSERT(strs.length() == 2);
-
-            general_names.removeOne(strs.first());
-            if (!general_names.contains(strs.last()))
-                general_names << strs.last();
+        QString lord = "lord_" + str;
+        if (general_names_copy.contains(lord) && general_names.contains(str)){
+            general_names.removeOne(str);
+            general_names << lord;
         }
     }
 
@@ -790,28 +789,10 @@ QList<int> Engine::getRandomCards() const{
     }
     QStringList card_conversions = Config.value("CardConversions").toStringList();
     foreach (QString str, card_conversions) {
-        QString string = str;
-        if (string.startsWith("+")) {
-            string.mid(1);
-            bool *ok = new bool;
-            const int id = string.toInt(ok);
-            if (ok && !list.contains(id))
-                list << id;
-            delete ok;
-        } else if (str.contains("->")) {
-            QStringList strs = string.split("->");
-            Q_ASSERT(strs.length() == 2);
-
-            bool *ok = new bool;
-            const int id1 = strs.first().toInt(ok);
-            const int id2 = strs.last().toInt(ok);
-            if (ok) {
-                list.removeAll(id1);
-                if (!list.contains(id2))
-                    list << id2;
-            }
-            delete ok;
-        }
+        if (str == "DragonPhoenix")
+            list.removeOne(55);
+        else
+            list.removeOne(108);
     }
 
     qShuffle(list);

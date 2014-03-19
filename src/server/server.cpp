@@ -234,12 +234,12 @@ QWidget *ServerDialog::createConversionTab() {
     formation_conversions->setLayout(formation_layout);
     momentum_conversions->setLayout(momentum_layout);
 
-    const bool enable_lord_liubei = Config.value("GeneralConversions").toStringList().contains("liubei->lord_liubei");
+    const bool enable_lord_liubei = Config.value("GeneralConversions").toStringList().contains("liubei");
     convert_liubei_to_lord = new QCheckBox(tr("Convert Liu Bei to Lord Liu Bei"));
     convert_liubei_to_lord->setChecked(enable_lord_liubei);
 
     convert_ds_to_dp = new QCheckBox(tr("Convert DoubleSword to DragonPhoenix"));
-    convert_ds_to_dp->setChecked(Config.value("CardConversions").toStringList().contains("55->108"));
+    convert_ds_to_dp->setChecked(Config.value("CardConversions").toStringList().contains("DragonPhoenix"));
     convert_ds_to_dp->setDisabled(enable_lord_liubei);
 
     connect(convert_liubei_to_lord, SIGNAL(toggled(bool)), convert_ds_to_dp, SLOT(setChecked(bool)));
@@ -250,21 +250,21 @@ QWidget *ServerDialog::createConversionTab() {
     formation_layout->addWidget(convert_liubei_to_lord);
     formation_layout->addWidget(convert_ds_to_dp);
 
-    const bool enable_lord_zhangjiao = Config.value("GeneralConversions").toStringList().contains("zhangjiao->lord_zhangjiao");
+    const bool enable_lord_zhangjiao = Config.value("GeneralConversions").toStringList().contains("zhangjiao");
     convert_zhangjiao_to_lord = new QCheckBox(tr("Convert Zhang Jiao to Lord Zhang Jiao"));
     convert_zhangjiao_to_lord->setChecked(enable_lord_zhangjiao);
-
+/*
     add_peace_spell = new QCheckBox(tr("Add Peace Spell"));
     add_peace_spell->setChecked(Config.value("CardConversions").toStringList().contains("+109"));
     add_peace_spell->setDisabled(enable_lord_zhangjiao);
 
     connect(convert_zhangjiao_to_lord, SIGNAL(toggled(bool)), add_peace_spell, SLOT(setChecked(bool)));
     connect(convert_zhangjiao_to_lord, SIGNAL(toggled(bool)), add_peace_spell, SLOT(setDisabled(bool)));
-
-    conversions_group->addButton(add_peace_spell);
+*/
     conversions_group->addButton(convert_zhangjiao_to_lord);
+    //conversions_group->addButton(add_peace_spell);
     momentum_layout->addWidget(convert_zhangjiao_to_lord);
-    momentum_layout->addWidget(add_peace_spell);
+    //momentum_layout->addWidget(add_peace_spell);
 
     QWidget *widget = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout;
@@ -509,25 +509,13 @@ bool ServerDialog::config() {
     Config.setValue("BanPackages", Config.BanPackages);
 
     QStringList general_conversions;
-    if (convert_liubei_to_lord->isChecked()) 
-        general_conversions << "liubei->lord_liubei";
-    else
-        general_conversions << "lord_liubei->liubei";
-    if (convert_zhangjiao_to_lord->isChecked())
-        general_conversions << "zhangjiao->lord_zhangjiao";
-    else
-        general_conversions << "lord_zhangjiao->zhangjiao";
+    if (convert_liubei_to_lord->isChecked()) general_conversions << "liubei";
+    if (convert_zhangjiao_to_lord->isChecked()) general_conversions << "zhangjiao";
     Config.setValue("GeneralConversions", general_conversions);
 
     QStringList card_conversions;
-    if (convert_ds_to_dp->isChecked())
-        card_conversions << "55->108";
-    else
-        card_conversions << "108->55";
-    if (add_peace_spell->isChecked())
-        card_conversions << "+109";
-    else
-        card_conversions << "-109";
+    if (convert_ds_to_dp->isChecked()) card_conversions << "DragonPhoenix";
+    //if (add_peace_spell->isChecked()) card_conversions << "+109";
     Config.setValue("CardConversions", card_conversions);
 
     return true;
@@ -535,12 +523,12 @@ bool ServerDialog::config() {
 
 BanIPDialog::BanIPDialog(QWidget *parent, Server *theserver)
     : QDialog(parent), server(theserver){
-    /*
+/*
     if (Sanguosha->currentRoom() == NULL){
-        QMessageBox::warning(this,tr("Warining!"), tr("Game is not started!"));
+        QMessageBox::warning(this, tr("Warining!"), tr("Game is not started!"));
         return;
     }
-    */
+*/
     QVBoxLayout *left_layout = new QVBoxLayout;
     QVBoxLayout *right_layout = new QVBoxLayout;
 
