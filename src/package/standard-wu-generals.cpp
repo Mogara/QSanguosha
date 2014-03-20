@@ -1231,8 +1231,11 @@ public:
         }
 
 
-        if (cardsToGet.isEmpty())
+        if (cardsToGet.isEmpty()){
+            erzhang->tag.remove("GuzhengToGet");
+            erzhang->tag.remove("GuzhengOther");
             return QStringList();
+        }
 
         ask_who = erzhang;
         return QStringList(objectName());
