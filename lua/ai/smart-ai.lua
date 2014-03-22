@@ -1062,7 +1062,7 @@ function SmartAI:adjustUsePriority(card, v)
 		
 		for _, p in ipairs(self.friends) do
 			if p:hasSkill("yongjue") then
-				v = v + 3
+				v = 9.4
 				break
 			end
 		end
