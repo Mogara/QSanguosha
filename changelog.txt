@@ -50,6 +50,14 @@
   
   +AI手牌大量溢出时，不发动巧变跳过弃牌阶段
   
+  +谦逊台词重复播放
+  
+  +飞龙夺凤复活目标后可以发动造成伤害后可触发的技能
+  
+  +lua扩展包技能禁止弃置造成度势无法正常使用
+  
+  +孔融在场时固政会获得一些莫名奇妙的牌
+  
   API Changes:
   +修复lua主将技/副将技无效的问题
   
@@ -86,6 +94,10 @@
   +关闭Room::changeHero接口
   
   +移除Room::hasWelfare
+  
+  +升级lua middleclass对象库至最新(3.0.1)(from github.com/kikito/middleclass)感谢kikito及其团队的开发与维护
+  
+  +添加通用Log模板 #DanlaoAvoid
   
   New Features/Enhancements:
   +战报窗口增加边框
@@ -129,6 +141,12 @@
   +添加卡牌及武将替换的选项
   
   +选将时右击卡牌换将
+  
+  +升级存嗣AI
+  
+  +预置更多AI昵称
+  
+  +添加返回起始界面的按钮
   
   
 0.6.0 beta (February 25 2014)
