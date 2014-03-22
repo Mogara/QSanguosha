@@ -103,7 +103,18 @@ cunsi_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_use_func.CunsiCard = function(card, use, self)
-	if self.player:aliveCount() > 2 and #self.friends_noself == 0 then return end
+	local Self = self.player
+	local room = Self:getRoom()
+	
+	local all_shown = true
+	
+	for _, p in sgs.qlist(room:getOtherPlayers(Self)) do
+		if not p:hasShownAllGenerals() then
+			all_shown = false
+			break
+		end
+	end
+
 	local to
 	for _, friend in ipairs(self.friends_noself) do
 		if self:evaluateKingdom(friend) == self.player:getKingdom() then
@@ -111,9 +122,16 @@ sgs.ai_skill_use_func.CunsiCard = function(card, use, self)
 			break
 		end
 	end
-	if not to then to = self.player end
-	use.card = card
-	if use.to then use.to:append(to) end
+	if to then
+		use.card = card
+		if use.to then use.to:append(to) end
+	end
+	if use.card then return end
+	
+	if all_shown and #self.friends_noself == 0 then
+		use.card = card
+		if use.to then use.to:append(Self) end
+	end
 end
 
 sgs.ai_skill_invoke.yongjue = true

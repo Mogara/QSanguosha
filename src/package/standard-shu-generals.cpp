@@ -125,6 +125,7 @@ public:
     PaoxiaoArmorNullificaion(): TriggerSkill("paoxiao_null"){
         events << TargetChosen;
         global = true;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
@@ -626,6 +627,7 @@ public:
     KuangguGlobal(): TriggerSkill("KuangguGlobal"){
         global = true;
         events << PreDamageDone;
+        frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
@@ -1054,7 +1056,7 @@ public:
         if (TriggerSkill::triggerable(zhurong).isEmpty()) return QStringList();
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.card && damage.card->isKindOf("Slash") && !zhurong->isKongcheng()
-            && !damage.to->isKongcheng() && damage.to != zhurong && !damage.chain && !damage.transfer)
+            && !damage.to->isKongcheng() && damage.to != zhurong && !damage.chain && !damage.transfer && !damage.to->hasFlag("Global_DFDebut"))
             return QStringList(objectName());
         return QStringList();
     }
@@ -1092,7 +1094,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         if (triggerEvent == TargetConfirming){
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Slash") && !TriggerSkill::triggerable(player).isEmpty())
@@ -1103,13 +1105,6 @@ public:
                 player->setMark("xiangle", 0);
                 if (!player->hasShownSkill(this))
                     return QStringList();
-                SlashEffectStruct effect = data.value<SlashEffectStruct>();
-                LogMessage log;
-                log.type = "#XiangleAvoid";
-                log.from = effect.from;
-                log.to << player;
-                log.arg = objectName();
-                room->sendLog(log);
                 return QStringList(objectName());
             }
         } else if (triggerEvent == CardFinished){
@@ -1133,8 +1128,16 @@ public:
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *liushan, QVariant &data) const{
-        if (triggerEvent == SlashEffected)
+        if (triggerEvent == SlashEffected){
+            SlashEffectStruct effect = data.value<SlashEffectStruct>();
+            LogMessage log;
+            log.type = "#DanlaoAvoid";
+            log.from = effect.to;
+            log.arg2 = objectName();
+            log.arg = effect.slash->objectName();
+            room->sendLog(log);
             return true;
+        }
 
         CardUseStruct use = data.value<CardUseStruct>();
         room->notifySkillInvoked(liushan, objectName());

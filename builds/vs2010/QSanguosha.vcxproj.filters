@@ -222,9 +222,6 @@
     <ClCompile Include="..\..\src\server\gamerule.cpp">
       <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\main.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\server\room.cpp">
       <Filter>server</Filter>
     </ClCompile>
@@ -741,6 +738,7 @@
     <ClCompile Include="Release\moc_standard-package.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1053,6 +1051,9 @@
       <Filter>ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\core\namespace.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\util.h">
       <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,4 +1,4 @@
-require "middleclass"
+local class = require "middleclass"
 
 --- a SkillCard class
 --
