@@ -992,9 +992,9 @@ function SmartAI:getUseValue(card)
 			if self.player:hasFlag("TianyiSuccess") or self:hasHeavySlashDamage(self.player, card) then v = 8.7 end
 			if self.player:getPhase() == sgs.Player_Play and self:slashIsAvailable() and #self.enemies > 0 and self:getCardsNum("Slash") == 1 then v = v + 5 end
 			if self:hasCrossbowEffect() then v = v + 4 end
-			if card:getSkillName() == "Spear"   then v = v - 1 end
+			if card:getSkillName() == "Spear" then v = v - 1 end
 		elseif card:isKindOf("Jink") then
-			if self:getCardsNum("Jink") > 1 then v = v-6 end
+			if self:getCardsNum("Jink") > 1 then v = v - 6 end
 		elseif card:isKindOf("Peach") then
 			if self.player:isWounded() then v = v + 6 end
 		end
@@ -1059,6 +1059,13 @@ function SmartAI:adjustUsePriority(card, v)
 			if self.slashAvail == 1 then v = v + 0.1 else v = v - 0.1 end
 		end
 		if self.player:hasSkill("jiang") and card:isRed() then v = v + 0.21 end
+		
+		for _, p in ipairs(self.friends) do
+			if p:hasSkill("yongjue") then
+				v = v + 3
+				break
+			end
+		end
 	end
 
 	local suits_value = {}
