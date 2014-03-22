@@ -36,7 +36,7 @@ void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
     QRect rect = G_COMMON_LAYOUT.m_cardMainArea;
-    if (!isEnabled()) {
+    if (frozen || !isEnabled()) {
         painter->fillRect(rect, QColor(0, 0, 0));
         painter->setOpacity(0.4 * opacity());
     }
@@ -85,6 +85,13 @@ void GeneralCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 
     if (auto_back) {
         goBack(true, false);
+    }
+}
+
+void GeneralCardItem::setFrozen(bool is_frozen) {
+    if (frozen != is_frozen) {
+        frozen = is_frozen;
+        update();
     }
 }
 
@@ -348,7 +355,7 @@ void ChooseGeneralBox::_adjust() {
 void ChooseGeneralBox::adjustItems() {
     if (selected.length() == 2){
         foreach(GeneralCardItem *card, items)
-            card->setEnabled(false);
+            card->setFrozen(true);
         confirm->setEnabled(true);
     } else if (selected.length() == 1) {
         selected.first()->hideCompanion();
@@ -356,12 +363,12 @@ void ChooseGeneralBox::adjustItems() {
             const General *seleted_general = Sanguosha->getGeneral(selected.first()->objectName());
             const General *general = Sanguosha->getGeneral(card->objectName());
             if (general->getKingdom() != seleted_general->getKingdom() || general->isLord()) {
-                if (card->isEnabled())
-                    card->setEnabled(false);
+                if (!card->isFrozen())
+                    card->setFrozen(true);
                 card->hideCompanion();
             } else {
-                if (!card->isEnabled())
-                    card->setEnabled(true);
+                if (card->isFrozen())
+                    card->setFrozen(false);
                 if (general->isCompanionWith(selected.first()->objectName())) {
                     selected.first()->showCompanion();
                     card->showCompanion();
@@ -404,13 +411,13 @@ void ChooseGeneralBox::_initializeItems() {
         }
         GeneralCardItem *item = items.at(index);
         if ((party < 2 || (selected.isEmpty() && has_lord && party == 2))) {
-            if (item->isEnabled())
-                item->setEnabled(false);
-        } else if (!item->isEnabled())
-            item->setEnabled(true);
+            if (!item->isFrozen())
+                item->setFrozen(true);
+        } else if (item->isFrozen())
+            item->setFrozen(false);
 
-        if (Self->isDead() && !item->isEnabled())
-            item->setEnabled(true);
+        if (Self->isDead() && item->isFrozen())
+            item->setFrozen(false);
         ++ index;
     }
 }
@@ -485,15 +492,15 @@ void ChooseGeneralBox::_onItemClicked() {
 }
 
 void ChooseGeneralBox::_onCardItemHover() {
-    QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
-    if (!card_item) return;
+    GeneralCardItem *card_item = qobject_cast<GeneralCardItem *>(sender());
+    if (!card_item || card_item->isFrozen()) return;
 
     animations->emphasize(card_item);
 }
 
 void ChooseGeneralBox::_onCardItemLeaveHover() {
-    QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
-    if (!card_item) return;
+    GeneralCardItem *card_item = qobject_cast<GeneralCardItem *>(sender());
+    if (!card_item || card_item->isFrozen()) return;
 
     animations->effectOut(card_item);
 }

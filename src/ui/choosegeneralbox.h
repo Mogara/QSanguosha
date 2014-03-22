@@ -34,15 +34,14 @@ public:
     void showCompanion();
     void hideCompanion();
 
+    virtual void setFrozen(bool is_frozen);
+
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     bool has_companion;
-
-signals:
-    void general_changed();
 };
 
 class ChooseGeneralBox: public QGraphicsObject {

@@ -70,7 +70,8 @@ public:
     inline void setSelected(bool selected) { m_isSelected = selected; }
     bool isEquipped() const;
 
-    void setFrozen(bool is_frozen);
+    virtual void setFrozen(bool is_frozen);
+    inline bool isFrozen() {  return frozen;  };
 
     inline void showFootnote() { _m_showFootnote = true; }
     inline void hideFootnote() { _m_showFootnote = false; }
@@ -120,6 +121,7 @@ signals:
     void enter_hover();
     void leave_hover();
     void movement_animation_finished();
+    void general_changed();
 
 public slots:
     void changeGeneral(const QString &general_name);

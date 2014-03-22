@@ -81,6 +81,7 @@ void CardItem::changeGeneral(const QString &general_name) {
         _m_isUnknownGeneral = true;
         setToolTip(QString());
     }
+    emit general_changed();
 }
 
 const Card *CardItem::getCard() const{
