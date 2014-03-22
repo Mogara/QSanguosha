@@ -39,7 +39,7 @@ signals:
     void pile_changed(const QString &name);
     void drank_changed();
     void action_taken();
-    void skill_state_changed(const QString &skill_name);
+    //void skill_state_changed(const QString &skill_name);
     void duanchang_invoked();
 };
 

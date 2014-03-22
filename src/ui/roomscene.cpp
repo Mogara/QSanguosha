@@ -3380,7 +3380,7 @@ void RoomScene::onGameStart() {
     if (!Self->hasFlag("marshalling"))
         log_box->append(QString(tr("<font color='%1'>---------- Game Start ----------</font>").arg(Config.TextEditColor.name())));
 
-    connect(Self, SIGNAL(skill_state_changed(QString)), this, SLOT(skillStateChange(QString)));
+    //connect(Self, SIGNAL(skill_state_changed(QString)), this, SLOT(skillStateChange(QString)));
 #ifdef AUDIO_SUPPORT
     if (Config.EnableBgMusic) {
         // start playing background music
@@ -3763,7 +3763,7 @@ void RoomScene::recoverGeneral(int index, const QString &name) {
     }
 }
 
-void RoomScene::skillStateChange(const QString &skill_name) {
+/*void RoomScene::skillStateChange(const QString &skill_name) {
     static QStringList button_remain;
     if (button_remain.isEmpty())
         button_remain << "shuangxiong";
@@ -3773,7 +3773,7 @@ void RoomScene::skillStateChange(const QString &skill_name) {
     } else if (skill_name.startsWith('-') && button_remain.contains(skill_name.mid(1))) {
         detachSkill(skill_name.mid(1));
     }
-}
+}*/
 
 void RoomScene::trust() {
     if (Self->getState() != "trust")

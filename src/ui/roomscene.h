@@ -387,7 +387,7 @@ private slots:
     void finishArrange();
     //void revealGeneral(bool self, const QString &general);
 
-    void skillStateChange(const QString &skill_name);
+    //void skillStateChange(const QString &skill_name);
     void trust();
 
 signals:
