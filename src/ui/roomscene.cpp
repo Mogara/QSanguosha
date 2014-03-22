@@ -296,6 +296,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     add_robot = NULL;
     fill_robots = NULL;
+    return_to_start_scene = NULL;
     if (ServerInfo.EnableAI) {
         control_panel = addRect(0, 0, 500, 150, Qt::NoPen);
         control_panel->hide();
@@ -303,12 +304,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
         add_robot = new Button(tr("Add a robot"));
         add_robot->setParentItem(control_panel);
         add_robot->setTransform(QTransform::fromTranslate(-add_robot->boundingRect().width() / 2, -add_robot->boundingRect().height() / 2), true);
-        add_robot->setPos(0, -add_robot->boundingRect().height() - 10);
+        add_robot->setPos(0, - add_robot->boundingRect().height() - 10);
 
         fill_robots = new Button(tr("Fill robots"));
         fill_robots->setParentItem(control_panel);
         fill_robots->setTransform(QTransform::fromTranslate(-fill_robots->boundingRect().width() / 2, -fill_robots->boundingRect().height() / 2), true);
-        add_robot->setPos(0, add_robot->boundingRect().height() + 10);
 
         connect(add_robot, SIGNAL(clicked()), ClientInstance, SLOT(addRobot()));
         connect(fill_robots, SIGNAL(clicked()), ClientInstance, SLOT(fillRobots()));
@@ -316,6 +316,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
     } else {
         control_panel = NULL;
     }
+    return_to_start_scene = new Button(tr("Return to main menu"));
+    addItem(return_to_start_scene);
+    return_to_start_scene->setTransform(QTransform::fromTranslate(- return_to_start_scene->boundingRect().width() / 2, - return_to_start_scene->boundingRect().height() / 2), true);
+    connect(return_to_start_scene, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
+
     animations = new EffectAnimation();
 
     pausing_item = new QGraphicsRectItem;
@@ -878,6 +883,7 @@ void RoomScene::updateTable() {
 
     m_tableCenterPos = tableRect.center();
     control_panel->setPos(m_tableCenterPos);
+    return_to_start_scene->setPos(m_tableCenterPos + QPointF(0, return_to_start_scene->boundingRect().height() + 10));
     m_tablePile->setPos(m_tableCenterPos);
     m_tablePile->setSize(qMax((int)tableRect.width() - _m_roomLayout->m_discardPilePadding * 2,
                          _m_roomLayout->m_discardPileMinWidth), _m_commonLayout->m_cardNormalHeight);
@@ -2602,6 +2608,7 @@ void RoomScene::hideAvatars() {
 void RoomScene::startInXs() {
     if (add_robot) add_robot->hide();
     if (fill_robots) fill_robots->hide();
+    if (return_to_start_scene) return_to_start_scene->hide();
 }
 
 void RoomScene::changeTableBg() {
@@ -2672,6 +2679,8 @@ void RoomScene::changeMaxHp(const QString &, int delta) {
 }
 
 void RoomScene::onStandoff() {
+    return_to_start_scene->show();
+
     log_box->append(QString(tr("<font color='%1'>---------- Game Finish ----------</font>").arg(Config.TextEditColor.name())));
 
     freeze();
@@ -2695,6 +2704,8 @@ void RoomScene::onStandoff() {
 }
 
 void RoomScene::onGameOver() {
+    return_to_start_scene->show();
+
     log_box->append(QString(tr("<font color='%1'>---------- Game Finish ----------</font>").arg(Config.TextEditColor.name())));
 
     m_roomMutex.lock();

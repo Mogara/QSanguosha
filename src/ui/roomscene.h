@@ -216,7 +216,7 @@ private:
     double _m_last_front_ZValue;
     GenericCardContainer *_getGenericCardContainer(Player::Place place, Player *player);
     QMap<int, QList<QList<CardItem *> > > _m_cardsMoveStash;
-    Button *add_robot, *fill_robots;
+    Button *add_robot, *fill_robots, *return_to_start_scene;
     QList<Photo *> photos;
     QMap<QString, Photo *> name2photo;
     Dashboard *dashboard;

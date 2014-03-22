@@ -68,7 +68,7 @@ void GeneralCardItem::hideCompanion() {
 }
 
 void GeneralCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
-    if (Qt::RightButton == event->button()) {
+    if (Config.FreeChoose && Qt::RightButton == event->button()) {
         FreeChooseDialog *general_changer = new FreeChooseDialog(QApplication::focusWidget());
         connect(general_changer, SIGNAL(general_chosen(QString)), this, SLOT(changeGeneral(QString)));
         general_changer->exec();
