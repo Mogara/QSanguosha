@@ -87,7 +87,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
-        if (!TriggerSkill::triggerable(player).isEmpty()){
+        if (TriggerSkill::triggerable(player)){
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (!player->hasFlag("KejiSlashInPlayPhase") && change.to == Player::Discard)
                 return QStringList(objectName());
@@ -276,7 +276,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *daqiao, QVariant &data, ServerPlayer * &) const {
-        if (TriggerSkill::triggerable(daqiao).isEmpty()) return QStringList();
+        if (!TriggerSkill::triggerable(daqiao)) return QStringList();
         CardUseStruct use = data.value<CardUseStruct>();
 
         if (use.card->isKindOf("Slash") && use.to.contains(daqiao) && daqiao->canDiscard(daqiao, "he")) {
@@ -341,7 +341,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
-        if (TriggerSkill::triggerable(player).isEmpty()) return QStringList();
+        if (!TriggerSkill::triggerable(player)) return QStringList();
         CardUseStruct use = data.value<CardUseStruct>();
         if (!use.card || use.card->getTypeId() != Card::TypeTrick || (!use.card->isKindOf("Snatch") && !use.card->isKindOf("Indulgence")))
             return QStringList();
@@ -454,7 +454,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *sunshangxiang, QVariant &data, ServerPlayer * &) const{
-        if (!TriggerSkill::triggerable(sunshangxiang).contains(objectName())) return QStringList();
+        if (!TriggerSkill::triggerable(sunshangxiang)) return QStringList();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (move.from == sunshangxiang && move.from_places.contains(Player::PlaceEquip)) {
             return QStringList(objectName());
@@ -487,7 +487,7 @@ bool Yinghun::canPreshow() const {
 }
 
 QStringList Yinghun::triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &, ServerPlayer * &) const{
-    return (!PhaseChangeSkill::triggerable(target).isEmpty()
+    return (PhaseChangeSkill::triggerable(target)
         && target->getPhase() == Player::Start
         && target->isWounded()) ? QStringList(objectName()) : QStringList();
 }
@@ -568,7 +568,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *xiaoqiao, QVariant &, ServerPlayer* &) const{
-        if (!TriggerSkill::triggerable(xiaoqiao).isEmpty())
+        if (TriggerSkill::triggerable(xiaoqiao))
             return (xiaoqiao->canDiscard(xiaoqiao, "h")) ? QStringList(objectName()) : QStringList();
         return QStringList();
     }
@@ -795,7 +795,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &, ServerPlayer* &) const{
-        if (TriggerSkill::triggerable(zhoutai).isEmpty()) return QStringList();
+        if (!TriggerSkill::triggerable(zhoutai)) return QStringList();
         if (triggerEvent == PostHpReduced && zhoutai->getHp() < 1)
             return QStringList(objectName());
         else if (triggerEvent == AskForPeachesDone) {
