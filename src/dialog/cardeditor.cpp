@@ -535,30 +535,15 @@ CardScene::CardScene()
     done_menu->addAction(done_action);
 }
 
-void CardScene::setFrame(const QString &kingdom, bool is_lord){
-    QString path;
-    if(is_lord){
-        path = QString("diy/%1-lord.png").arg(kingdom);
-
-        static QMap<QString, QColor> color_map;
-        if(color_map.isEmpty()){
-            color_map["wei"] = QColor(88, 101, 205);
-            color_map["shu"] = QColor(234, 137, 72);
-            color_map["wu"] = QColor(167, 221, 102);
-            color_map["qun"] = QColor(146, 146, 146);
-            color_map["god"] = QColor(252, 219, 85);
-        }
-        title->setColor(color_map.value(kingdom));
-    }else{
-        path = QString("diy/%1.png").arg(kingdom);
-        title->setColor(QColor(252, 219, 85));
-    }
+void CardScene::setFrame(const QString &kingdom){
+    QString path = QString("diy/%1.png").arg(kingdom);
+    title->setColor(QColor(252, 219, 85));
 
     frame->setPixmap(QPixmap(path));
 
     foreach(QGraphicsPixmapItem *item, magatamas){
         item->setPixmap(QPixmap(QString("diy/%1-magatama.png")
-                                .arg(is_lord ? "god" : kingdom)));
+                                .arg(kingdom)));
     }
 
     skill_box->setKingdom(kingdom);
@@ -569,7 +554,6 @@ void CardScene::setFrame(const QString &kingdom, bool is_lord){
     tiny_avatar_rect->setKingdom(kingdom);
 
     Config.setValue("CardEditor/Kingdom", kingdom);
-    Config.setValue("CardEditor/IsLord", is_lord);
 }
 
 void CardScene::setGeneralPhoto(const QString &filename){
@@ -919,9 +903,9 @@ QGroupBox *CardEditor::createTextItemBox(const QString &text, const QFont &font,
 
 QLayout *CardEditor::createGeneralLayout(){
     kingdom_ComboBox = new QComboBox;
-    lord_checkbox = new QCheckBox(tr("Lord"));
     QStringList kingdom_names = Sanguosha->getKingdoms();
     foreach(QString kingdom, kingdom_names){
+        if ("god" == kingdom) continue;
         QIcon icon(QString("image/kingdom/icon/%1.png").arg(kingdom));
         kingdom_ComboBox->addItem(icon, Sanguosha->translate(kingdom), kingdom);
     }
@@ -937,20 +921,16 @@ QLayout *CardEditor::createGeneralLayout(){
     QFormLayout *layout = new QFormLayout;
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addWidget(kingdom_ComboBox);
-    hlayout->addWidget(lord_checkbox);
     layout->addRow(tr("Kingdom"), hlayout);
     layout->addRow(tr("Max HP"), hp_spinbox);
     layout->addRow(tr("Image ratio"), ratio_spinbox);
 
     connect(kingdom_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setCardFrame()));
-    connect(lord_checkbox, SIGNAL(toggled(bool)), this, SLOT(setCardFrame()));
     connect(hp_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setMaxHp(int)));
     connect(ratio_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setRatio(int)));
 
     QString kingdom = Config.value("CardEditor/Kingdom", "wei").toString();
-    int is_lord = Config.value("CardEditor/IsLord", false).toBool();
     kingdom_ComboBox->setCurrentIndex(kingdom_names.indexOf(kingdom));
-    lord_checkbox->setChecked(is_lord);
     hp_spinbox->setValue(Config.value("CardEditor/MaxHP", 3).toInt());
     ratio_spinbox->setValue(Config.value("CardEditor/ImageRatio", 100).toInt());
     QString photo = Config.value("CardEditor/Photo").toString();
@@ -1006,11 +986,9 @@ QWidget *CardEditor::createSkillBox(){
 
     QComboBox *bold_ComboBox = new QComboBox;
     bold_ComboBox->setEditable(true);
-    bold_ComboBox->addItem(tr("Lord skill"));
     bold_ComboBox->addItem(tr("Compulsory"));
     bold_ComboBox->addItem(tr("Limited"));
-    bold_ComboBox->addItem(tr("Wake skill"));
-    bold_ComboBox->addItem(tr("Colla skill"));
+    bold_ComboBox->addItem(tr("Formation skill"));
     layout->addRow(tr("Insert bold text"), bold_ComboBox);
 
     connect(bold_ComboBox, SIGNAL(activated(QString)), skill_box, SLOT(insertBoldText(QString)));
@@ -1055,8 +1033,6 @@ QWidget *CardEditor::createLeft(){
 
     layout->addLayout(createGeneralLayout());
     layout->addWidget(createSkillBox());
-    layout->addStretch();
-    layout->addWidget(new QLabel(tr("Thanks to BeiwanLufen <img width='50' height='50' src='diy/lufen.jpg' />")));
 
     QWidget *widget = new QWidget;
     widget->setLayout(layout);
@@ -1065,10 +1041,7 @@ QWidget *CardEditor::createLeft(){
 
 void CardEditor::setCardFrame(){
     QString kingdom = kingdom_ComboBox->itemData(kingdom_ComboBox->currentIndex()).toString();
-    if(kingdom == "god")
-        card_scene->setFrame("god", false);
-    else
-        card_scene->setFrame(kingdom, lord_checkbox->isChecked());
+    card_scene->setFrame(kingdom);
 }
 
 void CardEditor::import(){
