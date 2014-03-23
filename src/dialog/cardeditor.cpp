@@ -274,7 +274,7 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         return;
     }
 
-    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
     QPainterPath path;
     QFontMetrics fm(font());
