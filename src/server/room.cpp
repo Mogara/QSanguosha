@@ -1818,14 +1818,14 @@ ServerPlayer *Room::findPlayer(const QString &general_name, bool include_dead) c
     if (general_name.contains("+")) {
         QStringList names = general_name.split("+");
         foreach (ServerPlayer *player, list) {
-            if (names.contains(player->getGeneralName()))
+            if (names.contains(player->getGeneralName()) || names.contains(player->objectName()))
                 return player;
         }
         return NULL;
     }
 
     foreach (ServerPlayer *player, list) {
-        if (player->getGeneralName() == general_name)
+        if (player->getGeneralName() == general_name || player->objectName() == general_name)
             return player;
     }
 
@@ -2536,7 +2536,7 @@ void Room::speakCommand(ServerPlayer *player, const QString &arg) {
                 broadcastProperty(p, "role", p->getRole());
         } else if (sentence.startsWith(".BroadcastRoles=")) {
             _NO_BROADCAST_SPEAKING
-            QString name = sentence.mid(12);
+            QString name = sentence.mid(16);
             foreach (ServerPlayer *p, m_alivePlayers) {
                 if (p->objectName() == name || p->getGeneralName() == name) {
                     broadcastProperty(p, "role", p->getRole());
