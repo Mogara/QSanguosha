@@ -59,6 +59,8 @@
   +孔融在场时固政会获得一些莫名奇妙的牌
   
   +发动双雄后，回合结束时双雄按钮消失
+
+  +卡牌编辑器加入抗锯齿（Win8.1/Win7测试通过，XP未测试，不知道效果怎样）
   
   API Changes:
   +修复lua主将技/副将技无效的问题
@@ -100,6 +102,8 @@
   +升级lua middleclass对象库至最新(3.0.1)(from github.com/kikito/middleclass)感谢kikito及其团队的开发与维护
   
   +添加通用Log模板 #DanlaoAvoid
+
+  +TriggerSkill大修改，LUA的can_trigger修改，on_cost与on_effect变为6参数
   
   New Features/Enhancements:
   +战报窗口增加边框
