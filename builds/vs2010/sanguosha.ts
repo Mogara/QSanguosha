@@ -239,10 +239,6 @@
         <translation>阵法技</translation>
     </message>
     <message>
-        <source>Lord</source>
-        <translation type="obsolete">主公</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/cardeditor.cpp" line="924"/>
         <source>Kingdom</source>
         <translation>所属势力</translation>
@@ -283,10 +279,6 @@
         <translation>插入花色</translation>
     </message>
     <message>
-        <source>Lord skill</source>
-        <translation type="obsolete">主公技</translation>
-    </message>
-    <message>
         <location filename="../../src/dialog/cardeditor.cpp" line="989"/>
         <source>Compulsory</source>
         <translation>锁定技</translation>
@@ -295,14 +287,6 @@
         <location filename="../../src/dialog/cardeditor.cpp" line="990"/>
         <source>Limited</source>
         <translation>限定技</translation>
-    </message>
-    <message>
-        <source>Wake skill</source>
-        <translation type="obsolete">觉醒技</translation>
-    </message>
-    <message>
-        <source>Colla skill</source>
-        <translation type="obsolete">联动技</translation>
     </message>
     <message>
         <location filename="../../src/dialog/cardeditor.cpp" line="992"/>
@@ -320,10 +304,6 @@
         <location filename="../../src/dialog/cardeditor.cpp" line="1031"/>
         <source>Name</source>
         <translation>名称</translation>
-    </message>
-    <message>
-        <source>Thanks to BeiwanLufen &lt;img width=&apos;50&apos; height=&apos;50&apos; src=&apos;diy/lufen.jpg&apos; /&gt;</source>
-        <translation type="obsolete">感谢背碗卤粉提供素材 &lt;img width=&apos;50&apos; height=&apos;50&apos; src=&apos;diy/lufen.jpg&apos; /&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/cardeditor.cpp" line="1049"/>
