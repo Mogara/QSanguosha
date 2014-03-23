@@ -165,7 +165,7 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
         }
     } else {
         painter->drawPixmap(m_imageArea, _icons[imageIndex]);
-        QRect rect(xStep, - yStep, m_imageArea.width(), m_imageArea.height());
+        QRect rect(xStep, yStep, m_imageArea.width(), m_imageArea.height());
         rect.translate(m_imageArea.topLeft());
         if (this->m_orientation == Qt::Horizontal)
             rect.translate(xStep * 0.5, yStep * 0.5);
