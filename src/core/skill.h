@@ -130,7 +130,7 @@ public:
     QList<TriggerEvent> getTriggerEvents() const;
 
     virtual int getPriority() const;
-    virtual QStringList triggerable(const ServerPlayer *target) const;
+    virtual bool triggerable(const ServerPlayer *target) const;
     
     virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const;
@@ -162,7 +162,7 @@ public:
     ScenarioRule(Scenario *scenario);
 
     virtual int getPriority() const;
-    virtual QStringList triggerable(const ServerPlayer *target) const;
+    virtual bool triggerable(const ServerPlayer *target) const;
 };
 
 class MasochismSkill: public TriggerSkill {
@@ -339,7 +339,7 @@ class WeaponSkill: public TriggerSkill {
 public:
     WeaponSkill(const QString &name);
 
-    virtual QStringList triggerable(const ServerPlayer *target) const;
+    virtual bool triggerable(const ServerPlayer *target) const;
 };
 
 class ArmorSkill: public TriggerSkill {
@@ -348,7 +348,7 @@ class ArmorSkill: public TriggerSkill {
 public:
     ArmorSkill(const QString &name);
 
-    virtual QStringList triggerable(const ServerPlayer *target) const;
+    virtual bool triggerable(const ServerPlayer *target) const;
 };
 
 #endif

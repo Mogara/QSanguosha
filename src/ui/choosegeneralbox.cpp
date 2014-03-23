@@ -356,7 +356,8 @@ void ChooseGeneralBox::adjustItems() {
     if (selected.length() == 2){
         foreach(GeneralCardItem *card, items)
             card->setFrozen(true);
-        confirm->setEnabled(true);
+        confirm->setEnabled(Sanguosha->getGeneral(selected.first()->objectName())->getKingdom()
+                         == Sanguosha->getGeneral(selected.last()->objectName())->getKingdom());
     } else if (selected.length() == 1) {
         selected.first()->hideCompanion();
         foreach(GeneralCardItem *card, items) {

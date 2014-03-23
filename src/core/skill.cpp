@@ -300,14 +300,14 @@ QMap<ServerPlayer *, QStringList> TriggerSkill::triggerable(TriggerEvent trigger
     return skill_lists;
 }
 
-QStringList TriggerSkill::triggerable(const ServerPlayer *target) const{
-    if (target != NULL && target->isAlive() && target->hasSkill(objectName()))
-        return QStringList(objectName());
-    return QStringList();
+bool TriggerSkill::triggerable(const ServerPlayer *target) const{
+    return target != NULL && target->isAlive() && target->hasSkill(objectName());
 }
 
-QStringList TriggerSkill::triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
-    return triggerable(player); //temp way
+QStringList TriggerSkill::triggerable(TriggerEvent , Room *, ServerPlayer *target, QVariant &, ServerPlayer* &) const{
+    if (triggerable(target))
+        return QStringList(objectName());
+    return QStringList();
 }
 
 bool TriggerSkill::cost(TriggerEvent , Room *, ServerPlayer *, QVariant &, ServerPlayer *) const{
@@ -334,8 +334,8 @@ int ScenarioRule::getPriority() const{
     return 0;
 }
 
-QStringList ScenarioRule::triggerable(const ServerPlayer *) const{
-    return QStringList(objectName());
+bool ScenarioRule::triggerable(const ServerPlayer *) const{
+    return true;
 }
 
 MasochismSkill::MasochismSkill(const QString &name)
@@ -581,10 +581,10 @@ WeaponSkill::WeaponSkill(const QString &name)
 {
 }
 
-QStringList WeaponSkill::triggerable(const ServerPlayer *target) const{
-    if (target == NULL) return QStringList();
-    if (target->getMark("Equips_Nullified_to_Yourself") > 0) return QStringList();
-    return (target->hasWeapon(objectName())) ? QStringList(objectName()) : QStringList();
+bool WeaponSkill::triggerable(const ServerPlayer *target) const{
+    if (target == NULL) return false;
+    if (target->getMark("Equips_Nullified_to_Yourself") > 0) return false;
+    return target->hasWeapon(objectName());
 }
 
 ArmorSkill::ArmorSkill(const QString &name)
@@ -592,9 +592,9 @@ ArmorSkill::ArmorSkill(const QString &name)
 {
 }
 
-QStringList ArmorSkill::triggerable(const ServerPlayer *target) const{
+bool ArmorSkill::triggerable(const ServerPlayer *target) const{
     if (target == NULL || target->getArmor() == NULL)
-        return QStringList();
-    return (target->hasArmorEffect(objectName())) ? QStringList(objectName()) : QStringList();
+        return false;
+    return target->hasArmorEffect(objectName());
 }
 
