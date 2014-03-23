@@ -111,7 +111,7 @@ class CardScene: public QGraphicsScene{
 public:
     explicit CardScene();
 
-    void setFrame(const QString &kingdom, bool is_lord);
+    void setFrame(const QString &kingdom);
     void setGeneralPhoto(const QString &filename);
     BlackEdgeTextItem *getNameItem() const;
     BlackEdgeTextItem *getTitleItem() const;
@@ -164,7 +164,6 @@ public:
 private:
     CardScene *card_scene;
     QComboBox *kingdom_ComboBox;
-    QCheckBox *lord_checkbox;
     QSpinBox *ratio_spinbox;
     QMap<QFontDialog *, QPushButton *> dialog2button;
 
