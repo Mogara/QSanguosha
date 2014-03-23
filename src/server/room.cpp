@@ -1911,7 +1911,7 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
     }
     if (invokeStart) {
         foreach (const TriggerSkill *skill, game_start)
-            skill->effect(GameStart, this, player, void_data); //temp change for this
+            skill->effect(GameStart, this, player, void_data, player); //temp change for this
     }
     resetAI(player);
 }

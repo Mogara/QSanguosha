@@ -9,8 +9,8 @@ public:
     virtual int getPriority() const;
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const;
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
 
     LuaFunction can_trigger;
     LuaFunction on_cost;
@@ -38,8 +38,8 @@ public:
     virtual int getPriority() const;
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const;
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
 
     LuaFunction can_trigger;
     LuaFunction on_cost;
@@ -347,7 +347,7 @@ QStringList LuaTriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, 
     }
 }
 
-bool LuaTriggerSkill::cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+bool LuaTriggerSkill::cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
     if (on_cost == 0)
         return TriggerSkill::cost(triggerEvent, room, player, data);
 
@@ -385,7 +385,7 @@ bool LuaTriggerSkill::cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *
     }
 }
 
-bool LuaTriggerSkill::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+bool LuaTriggerSkill::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
     if (on_effect == 0)
         return false;
 
@@ -466,7 +466,7 @@ QStringList LuaBattleArraySkill::triggerable(TriggerEvent triggerEvent, Room *ro
     }
 }
 
-bool LuaBattleArraySkill::cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+bool LuaBattleArraySkill::cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
     if (on_cost == 0)
         return BattleArraySkill::cost(triggerEvent, room, player, data);
 
@@ -504,7 +504,7 @@ bool LuaBattleArraySkill::cost(TriggerEvent triggerEvent, Room *room, ServerPlay
     }
 }
 
-bool LuaBattleArraySkill::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+bool LuaBattleArraySkill::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
     if (on_effect == 0)
         return false;
 

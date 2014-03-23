@@ -292,12 +292,7 @@ void QSanSkillButton::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 
 void QSanSkillButton::setEnabled(bool enabled) {
     if (_m_state == S_STATE_CANPRESHOW) return;
-    //dirty hack for shuangxiong!!!
-    if (!enabled && _m_skill->canPreshow() && _m_viewAsSkill && _m_skill->objectName() != "shuangxiong") {
-        setState(S_STATE_DISABLED);
-        update();
-    } else
-        QSanButton::setEnabled(enabled);
+    QSanButton::setEnabled(enabled);
 }
 
 void QSanInvokeSkillButton::_repaint() {

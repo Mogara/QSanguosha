@@ -1163,7 +1163,7 @@ void ServerPlayer::gainAnExtraTurn() {
                     game_rule = qobject_cast<const GameRule *>(Sanguosha->getTriggerSkill("game_rule"));
                 if (game_rule){
                     QVariant _variant;
-                    game_rule->effect(EventPhaseEnd, room, this, _variant);
+                    game_rule->effect(EventPhaseEnd, room, this, _variant, this);
                 }
                 changePhase(getPhase(), Player::NotActive);
             }
@@ -1645,7 +1645,7 @@ QList<ServerPlayer *> ServerPlayer::getFormation() const {
 
 bool ServerPlayer::inFormationRalation(ServerPlayer *teammate) const {
     QList<ServerPlayer *> teammates = getFormation();
-    return teammates.contains(teammate);
+    return teammates.length() > 1 && teammates.contains(teammate);
 }
 
 using namespace HegemonyMode;
