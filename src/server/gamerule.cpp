@@ -15,7 +15,7 @@ public:
         global = true;
     }
 
-    virtual bool cost(TriggerEvent , Room *, ServerPlayer *player, QVariant &) const{
+    virtual bool cost(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         player->askForGeneralShow(false);
         return false;
     }
@@ -32,7 +32,7 @@ public:
         global = true;
     }
 
-    virtual bool cost(TriggerEvent , Room *, ServerPlayer *player, QVariant &) const{
+    virtual bool cost(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         foreach(const Skill *skill, player->getVisibleSkillList()) {
             if (!skill->inherits("BattleArraySkill")) continue;
             const BattleArraySkill *baskill = qobject_cast<const BattleArraySkill *>(skill);
@@ -163,7 +163,7 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
     }
 }
 
-bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
     if (room->getTag("SkipGameRule").toBool()) {
         room->removeTag("SkipGameRule");
         return false;
@@ -309,6 +309,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                         thread->trigger(TargetConfirming, room, to, data);
                         CardUseStruct new_use = data.value<CardUseStruct>();
                         targets = new_use.to;
+                        if (targets.isEmpty()) break;
                     }
                 }
             }

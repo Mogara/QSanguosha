@@ -16,7 +16,7 @@ public:
     void assign(QStringList &generals, QStringList &roles) const;
     QStringList existedGenerals() const;
 
-    virtual bool effect(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool effect(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
 
     void addNPC(QString feature);
     void setOptions(QStringList option);

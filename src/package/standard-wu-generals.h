@@ -9,7 +9,7 @@ class Yingzi: public DrawCardsSkill {
 public:
     Yingzi();
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
     virtual int getDrawNum(ServerPlayer *player, int n) const;
 };
 
@@ -19,7 +19,7 @@ public:
 
     virtual bool canPreshow() const;
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const;
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const;
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
     virtual bool onPhaseChange(ServerPlayer *target) const;
 };
 

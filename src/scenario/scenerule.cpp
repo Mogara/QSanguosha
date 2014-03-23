@@ -10,7 +10,7 @@ int SceneRule::getPriority() const{
     return -2;
 }
 
-bool SceneRule::effect(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data) const {
+bool SceneRule::effect(TriggerEvent triggerEvent, Room* room, ServerPlayer *player, QVariant &data, ServerPlayer *) const {
     QStringList extensions = Sanguosha->getExtensions();
     QSet<QString> ban_packages = Config.BanPackages.toSet();
 
@@ -27,5 +27,5 @@ bool SceneRule::effect(TriggerEvent triggerEvent, Room* room, ServerPlayer *play
         }
     }
 
-    return GameRule::effect(triggerEvent, room, player, data);
+    return GameRule::effect(triggerEvent, room, player, data, player);
 }
