@@ -46,8 +46,8 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        if (player->askForSkillInvoke("tuntian", data)){
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *dengai) const{
+        if (dengai->askForSkillInvoke("tuntian", data)){
             room->broadcastSkillInvoke("tuntian");
             return true;
         }
@@ -55,12 +55,12 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *dengai) const{
         JudgeStruct judge;
         judge.pattern = ".|heart";
         judge.good = false;
         judge.reason = "tuntian";
-        judge.who = player;
+        judge.who = dengai;
         room->judge(judge);
         return false;
     }
@@ -109,7 +109,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer *) const{
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        return judge->who->askForSkillInvoke("tuntian", "gotofield");
+        return judge->who->askForSkillInvoke("_tuntian", "gotofield");
     }
 
     virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer *) const{
