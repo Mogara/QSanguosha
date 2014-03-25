@@ -1148,9 +1148,19 @@ void ServerPlayer::exchangeFreelyFromPrivatePile(const QString &skill_name, cons
 
 void ServerPlayer::gainAnExtraTurn() {
     ServerPlayer *current = room->getCurrent();
+    Player::Phase orig_phase = Player::NotActive;
+    if (current != NULL && current->isAlive())
+        orig_phase = current->getPhase();
+    
     try {
+        current->setPhase(Player::NotActive);
+        room->broadcastProperty(current, "phase");
+
         room->setCurrent(this);
         room->getThread()->trigger(TurnStart, room, this);
+
+        current->setPhase(orig_phase);
+        room->broadcastProperty(current, "phase");
         room->setCurrent(current);
     }
     catch (TriggerEvent triggerEvent) {
@@ -1167,6 +1177,8 @@ void ServerPlayer::gainAnExtraTurn() {
                 }
                 changePhase(getPhase(), Player::NotActive);
             }
+            current->setPhase(orig_phase);
+            room->broadcastProperty(current, "phase");
             room->setCurrent(current);
         }
         throw triggerEvent;

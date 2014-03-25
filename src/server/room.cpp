@@ -1902,7 +1902,7 @@ void Room::changeHero(ServerPlayer *player, const QString &new_general, bool ful
             if (skill->inherits("TriggerSkill")) {
                  const TriggerSkill *trigger = qobject_cast<const TriggerSkill *>(skill);
                  thread->addTriggerSkill(trigger);
-                 if (invokeStart && trigger->getTriggerEvents().contains(GameStart) 
+                 if (invokeStart && trigger->getTriggerEvents().contains(GameStart)
                         && !trigger->triggerable(GameStart, this, player, void_data).isEmpty())
                      game_start << trigger;
             }
@@ -4228,6 +4228,9 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use) {
         return;
     }
 
+    if (player->getPhase() != Player::Play)
+        return;
+
     notifyMoveFocus(player, S_COMMAND_PLAY_CARD);
 
     _m_roomState.setCurrentCardUsePattern(QString());
@@ -4243,8 +4246,6 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use) {
 
         qint64 diff = Config.AIDelay - timer.elapsed();
         if (diff > 0) thread->delay(diff);
-    } else if (player->getPhase() != Player::Play) {
-        return;
     } else {
         bool success = doRequest(player, S_COMMAND_PLAY_CARD, toJsonString(player->objectName()), true);
         Json::Value clientReply = player->getClientReply();
