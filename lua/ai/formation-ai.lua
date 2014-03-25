@@ -1,4 +1,5 @@
 sgs.ai_skill_invoke.tuntian = true
+sgs.ai_skill_invoke._tuntian = true
 
 local jixi_skill = {}
 jixi_skill.name = "jixi"
