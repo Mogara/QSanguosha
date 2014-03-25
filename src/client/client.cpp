@@ -356,6 +356,12 @@ void Client::updateProperty(const Json::Value &arg) {
     ClientPlayer *player = getPlayer(object_name);
     if (!player) return;
     player->setProperty(arg[1].asCString(), toQString(arg[2]));
+
+    //for shuangxiong { RoomScene::detachSkill(const QString &) }
+    if (arg[1] == "phase" && player->getPhase() == Player::Finish 
+            && player->hasFlag("shuangxiong_postpone") && player == Self && !Self->ownSkill("shuangxiong"))
+        emit skill_detached("shuangxiong");
+        
 }
 
 void Client::removePlayer(const QString &player_name) {

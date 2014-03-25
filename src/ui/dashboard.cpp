@@ -545,10 +545,7 @@ QSanSkillButton *Dashboard::removeSkillButton(const QString &skillName) {
             temp = _m_leftSkillDock->getSkillButtonByName(skillName);
             dock = _m_leftSkillDock;
         }
-        //if (_m_button_recycle.contains(temp))
-            //_m_button_recycle.removeOne(temp);
-        //else
-            btn = dock->removeSkillButtonByName(skillName);
+        btn = dock->removeSkillButtonByName(skillName);
     }
     return btn;
 }

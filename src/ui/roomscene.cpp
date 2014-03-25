@@ -3246,10 +3246,18 @@ void RoomScene::attachSkill(const QString &skill_name, const bool &head) {
 }
 
 void RoomScene::detachSkill(const QString &skill_name) {
-    QSanSkillButton *btn = dashboard->removeSkillButton(skill_name);
-    if (btn == NULL) return;    //be care LordSkill and SPConvertSkill
-    m_skillButtons.removeAll(btn);
-    btn->deleteLater();
+    // for shuangxiong { Client::updateProperty(const Json::Value &) }
+    // this is an EXTREMELY DIRTY HACK!!! for we should prevent shuangxiong skill button been removed temporily by duanchang
+    if (Self != NULL && Self->hasFlag("shuangxiong")
+            && skill_name == "shuangxiong" && Self->getPhase() <= Player::Discard){
+        Self->setFlags("shuangxiong_postpone");
+    }
+    else {
+        QSanSkillButton *btn = dashboard->removeSkillButton(skill_name);
+        if (btn == NULL) return;    //be care LordSkill and SPConvertSkill
+        m_skillButtons.removeAll(btn);
+        btn->deleteLater();
+    }
 }
 
 void RoomScene::viewDistance() {
