@@ -571,9 +571,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
     }
     case BeforeGameOverJudge: {
         if (!player->hasShownGeneral1())
-            player->showGeneral();
+            player->showGeneral(true, false);
         if (!player->hasShownGeneral2())
-            player->showGeneral(false);
+            player->showGeneral(false, false);
         break;
     }
     case GameOverJudge: {
