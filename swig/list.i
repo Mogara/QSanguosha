@@ -10,6 +10,7 @@ public:
     bool contains(const T &value) const;
     T first() const;
     T last() const;
+    void replace(int i, const T &t);
     void removeAt(int i);
     int removeAll(const T &value);
     bool removeOne(const T &value);
