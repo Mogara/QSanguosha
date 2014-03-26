@@ -350,6 +350,10 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
            || deputy_acquired_skills.contains(skill_name);
 }
 
+bool Player::hasSkill(const Skill *skill, bool include_lose) const{
+    return hasSkill(skill->objectName(), include_lose);
+}
+
 bool Player::hasSkills(const QString &skill_name, bool include_lose) const{
     foreach (QString skill, skill_name.split("|")) {
         bool checkpoint = true;
@@ -1112,6 +1116,10 @@ bool Player::hasShownSkill(const Skill *skill) const{
     return false;
 }
 
+bool Player::hasShownSkill(const QString &skill_name) const{
+    return hasShownSkill(Sanguosha->getSkill(skill_name));
+}
+
 void Player::preshowSkill(const QString &skill_name) {
     if (hasShownSkill(Sanguosha->getSkill(skill_name)))
         return;
@@ -1220,6 +1228,10 @@ bool Player::hasPreshowedSkill(const QString &name) const {
     return head_skills.value(name, false) || deputy_skills.value(name, false);
 }
 
+bool Player::hasPreshowedSkill(const Skill *skill) const{
+    return hasPreshowedSkill(skill->objectName());
+}
+
 bool Player::isHidden(const bool &head_general) const {
     if (head_general ? general1_showed : general2_showed) return false;
     const QList<const Skill *> skills = head_general ? getHeadSkillList() : getDeputySkillList();
@@ -1235,6 +1247,10 @@ bool Player::isHidden(const bool &head_general) const {
 
 bool Player::ownSkill(const QString &skill_name) const {
     return (head_skills.keys() + deputy_skills.keys()).contains(skill_name);
+}
+
+bool Player::ownSkill(const Skill *skill) const{
+    return ownSkill(skill->objectName());
 }
 
 bool Player::isFriendWith(const Player *player) const {

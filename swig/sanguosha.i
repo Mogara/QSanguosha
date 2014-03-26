@@ -167,6 +167,7 @@ public:
     virtual void addSkill(const char *skill_name, bool head_skill = true);
     virtual void loseSkill(const char *skill_name);
     bool hasSkill(const char *skill_name, bool include_lose = false) const;
+    bool hasSkill(const Skill *skill, bool include_lose = false) const;
     bool hasSkills(const char *skill_name, bool include_lose = false) const;
     bool hasInnateSkill(const char *skill_name) const;
     bool hasLordSkill(const char *skill_name, bool include_lose = false) const;
@@ -268,6 +269,7 @@ public:
     QList<const Player *> getAliveSiblings() const;
 
     bool hasShownSkill(const Skill *skill) const;
+    bool hasShownSkill(const char *skill_name) const;
     void preshowSkill(const char *skill_name);
     bool inHeadSkills(const char *skill_name) const;
     const General *getActualGeneral1() const;
@@ -287,8 +289,10 @@ public:
     void setSkillPreshowed(const char *skill, const bool preshowed = true);
     void setSkillsPreshowed(const char *falgs = "hd", const bool preshowed = true);
     bool hasPreshowedSkill(const char *name) const;
+    bool hasPreshowedSkill(const Skill *skill) const;
 
     bool ownSkill(const char *skill_name) const;
+    bool ownSkill(const Skill *skill) const;
     bool isFriendWith(const Player *player) const;
     bool willBeFriendWith(const Player *player) const;
 
