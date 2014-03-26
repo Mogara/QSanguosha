@@ -1121,7 +1121,6 @@ bool Player::hasShownSkill(const Skill *skill) const{
 
 bool Player::hasShownSkill(const QString &skill_name) const{
     const Skill *skill = Sanguosha->getSkill(skill_name);
-#ifndef QT_NO_DEBUG
     if (skill == NULL){
         QObject *roomObject = Sanguosha->currentRoomObject();
         if (roomObject != NULL && roomObject->inherits("Room")){
@@ -1131,7 +1130,6 @@ bool Player::hasShownSkill(const QString &skill_name) const{
         }
         return false;
     }
-#endif
     return hasShownSkill(skill);
 }
 
