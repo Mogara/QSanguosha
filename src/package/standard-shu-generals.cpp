@@ -415,9 +415,9 @@ int Mashu::getCorrect(const Player *from, const Player *) const{
         return 0;
 }
 
-class Tieji: public TriggerSkill {
+class Tieqi: public TriggerSkill {
 public:
-    Tieji(): TriggerSkill("tieji") {
+    Tieqi(): TriggerSkill("tieqi") {
         events << TargetChosen;
     }
 
@@ -443,16 +443,16 @@ public:
         ServerPlayer *machao = ask_who;
         QVariantList jink_list = machao->tag["Jink_" + use.card->toString()].toList();
 
-        doTieji(player, machao, use, jink_list);
+        doTieqi(player, machao, use, jink_list);
 
         machao->tag["Jink_" + use.card->toString()] = QVariant::fromValue(jink_list);
         return false;
     }
 
 private:
-    static void doTieji(ServerPlayer *target, ServerPlayer *source, CardUseStruct use, QVariantList &jink_list){
+    static void doTieqi(ServerPlayer *target, ServerPlayer *source, CardUseStruct use, QVariantList &jink_list){
         Room *room = target->getRoom();
-        target->setFlags("TiejiTarget"); // For AI
+        target->setFlags("TieqiTarget"); // For AI
 
         int index = use.to.indexOf(target);
 
@@ -469,7 +469,7 @@ private:
             judge.pattern = ".|red";
             judge.good = true;
         }
-        judge.reason = "tieji";
+        judge.reason = "tieqi";
         judge.who = source;
 
         try {
@@ -480,7 +480,7 @@ private:
         }
         catch (TriggerEvent triggerEvent) {
             if (triggerEvent == TurnBroken || triggerEvent == StageChange)
-                target->setFlags("-TiejiTarget");
+                target->setFlags("-TieqiTarget");
             throw triggerEvent;
         }
 
@@ -491,10 +491,10 @@ private:
             room->sendLog(log);
 
             jink_list.replace(index, QVariant(0));
-            room->broadcastSkillInvoke("tieji", 2);
+            room->broadcastSkillInvoke("tieqi", 2);
         }
 
-        target->setFlags("-TiejiTarget");
+        target->setFlags("-TieqiTarget");
     }
 };
 
@@ -1415,7 +1415,7 @@ void StandardPackage::addShuGenerals()
     zhaoyun->addSkill(new Longdan);
 
     General *machao = new General(this, "machao", "shu"); // SHU 006
-    machao->addSkill(new Tieji);
+    machao->addSkill(new Tieqi);
     machao->addSkill(new Mashu("machao"));
 
     General *huangyueying = new General(this, "huangyueying", "shu", 3, false); // SHU 007

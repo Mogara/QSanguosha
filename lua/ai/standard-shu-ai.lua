@@ -237,7 +237,7 @@ sgs.longdan_keep_value = {
 	ExNihilo = 4.3
 }
 
-sgs.ai_skill_invoke.tieji = function(self, data)
+sgs.ai_skill_invoke.tieqi = function(self, data)
 	local target = data:toPlayer()
 	if self:isFriend(target) then return false end
 

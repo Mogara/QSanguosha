@@ -962,7 +962,7 @@ sgs.ai_skill_invoke.IceSword = function(self, data)
 		if target:hasShownSkill("lirang") and #self:getFriendsNoself(target) > 0 then return false end
 		if target:getArmor() and self:evaluateArmor(target:getArmor(), target) > 3 and not (target:hasArmorEffect("SilverLion") and target:isWounded()) then return true end
 		local num = target:getHandcardNum()
-		if self.player:hasSkill("tieji") or self:canLiegong(target, self.player) then return false end
+		if self.player:hasSkill("tieqi") or self:canLiegong(target, self.player) then return false end
 		if target:hasShownSkill("tuntian") and target:getPhase() == sgs.Player_NotActive then return false end
 		if target:hasShownSkills(sgs.need_kongcheng) then return false end
 		if target:getCards("he"):length()<4 and target:getCards("he"):length()>1 then return true end
@@ -2678,7 +2678,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 					if getCardsNum("Jink", enemy) < 1
 						or enemy:isKongcheng()
 						or self:canLiegong(enemy, self.player)
-						or self.player:hasSkills("tieji|wushuang|qianxi")
+						or self.player:hasSkills("tieqi|wushuang|qianxi")
 						or (self.player:hasWeapon("Axe") or self:getCardsNum("Axe") > 0) and self.player:getCards("he"):length() > 4
 						then
 						return analeptic

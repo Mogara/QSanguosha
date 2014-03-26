@@ -112,7 +112,7 @@ function SmartAI:shouldUseAnaleptic(target, slash)
 
 	local hcard = target:getHandcardNum()
 	if self.player:hasSkill("liegong") and self.player:getPhase() == sgs.Player_Play and (hcard >= self.player:getHp() or hcard <= self.player:getAttackRange()) then return true end
-	if self.player:hasSkill("tieji") then return true end
+	if self.player:hasSkill("tieqi") then return true end
 
 	if self.player:hasWeapon("axe") and self.player:getCards("he"):length() > 4 then return true end
 

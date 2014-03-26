@@ -118,7 +118,7 @@ function setInitialTables()
 	sgs.recover_skill =		"rende|kuanggu|zaiqi|jieyin|qingnang|yinghun|hunzi|shenzhi|buqu"
 	sgs.use_lion_skill =		 "duanliang|qixi|guidao|lijian|zhiheng|fenxun|qingcheng"
 	sgs.need_equip_skill = 		"shensu|beige|huyuan|qingcheng"
-	sgs.judge_reason =		"bazhen|EightDiagram|supply_shortage|tuntian|qianxi|indulgence|lightning|leiji|tieji|luoshen|ganglie"
+	sgs.judge_reason =		"bazhen|EightDiagram|supply_shortage|tuntian|qianxi|indulgence|lightning|leiji|tieqi|luoshen|ganglie"
 
 	sgs.Friend_All = 0
 	sgs.Friend_Draw = 1
@@ -656,7 +656,7 @@ function sgs.getProcessDefense(player, update)
 
 	if player:hasShownSkill("rende") and player:getHp() > 2 then defense = defense + 1 end
 	if player:hasShownSkill("zaiqi") and player:getHp() > 1 then defense = defense + player:getLostHp() * 0.5 end
-	if player:hasShownSkills("tieji|liegong|kuanggu") then defense = defense + 0.5 end
+	if player:hasShownSkills("tieqi|liegong|kuanggu") then defense = defense + 0.5 end
 	if player:hasShownSkill("xiangle") then defense = defense + 1 end
 	if player:hasShownSkill("shushen") then defense = defense + 1 end
 	if player:hasShownSkill("kongcheng") and player:isKongcheng() then defense = defense + 2 end
@@ -667,7 +667,7 @@ function sgs.getProcessDefense(player, update)
 				if p:hasShownSkill("paoxiao") then defense = defense + 1 end
 				if p:hasShownSkill("longdan") then defense = defense + 1 end
 				if p:hasShownSkill("liegong") then defense = defense + 1 end
-				if p:hasShownSkill("tieji") then defense = defense + 1 end
+				if p:hasShownSkill("tieqi") then defense = defense + 1 end
 			end
 		end
 	end
@@ -4568,7 +4568,7 @@ function SmartAI:dontRespondPeachInJudge(judge)
 
 	if (judge.reason == "EightDiagram" or judge.reason == "bazhen") and
 		self:isFriend(judge.who) and not self:isWeak(judge.who) then return true
-	elseif judge.reason == "tieji" then return true
+	elseif judge.reason == "tieqi" then return true
 	elseif judge.reason == "qianxi" then return true
 	elseif judge.reason == "beige" then return true
 	end
