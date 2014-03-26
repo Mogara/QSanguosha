@@ -85,7 +85,7 @@ public:
 
     virtual bool viewFilter(const Card *card) const{
         const Player *lord = Self->getLord();
-        if (lord == NULL || !lord->hasLordSkill("shouyue"))
+        if (lord == NULL || !lord->hasLordSkill("shouyue") || !lord->hasShownGeneral1())
             if (!card->isRed())
                 return false;
 
@@ -133,7 +133,7 @@ public:
             return QStringList();
 
         ServerPlayer *lord = room->getLord(player->getKingdom());
-        if (lord != NULL && lord->hasLordSkill("shouyue")){
+        if (lord != NULL && lord->hasLordSkill("shouyue") && lord->hasShownGeneral1()){
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Slash") && use.from == player){
                 foreach (ServerPlayer *p, use.to.toSet()){
@@ -370,7 +370,7 @@ public:
             return QStringList();
 
         ServerPlayer *lord = room->getLord(player->getKingdom());
-        if (lord != NULL && lord->hasLordSkill("shouyue")){
+        if (lord != NULL && lord->hasLordSkill("shouyue") && lord->hasShownGeneral1()){
             const Card *card = NULL;
             if (triggerEvent == CardUsed)
                 card = data.value<CardUseStruct>().card;
@@ -460,7 +460,7 @@ private:
 
         ServerPlayer *lord = room->getLord(source->getKingdom());
         bool has_lord = false;
-        if (lord != NULL && lord->hasLordSkill("shouyue")){
+        if (lord != NULL && lord->hasLordSkill("shouyue") && lord->hasShownGeneral1()){
             has_lord = true;
             judge.pattern = ".|spade";
             judge.good = false;
@@ -605,7 +605,7 @@ public:
         if (target->hasShownSkill("liegong")){
             const Player *lord = target->getLord();
 
-            if (lord != NULL && lord->hasLordSkill("shouyue")){
+            if (lord != NULL && lord->hasLordSkill("shouyue") && lord->hasShownGeneral1()){
                 return 1;
             }
         }
