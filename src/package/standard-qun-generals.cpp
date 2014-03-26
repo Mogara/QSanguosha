@@ -1233,7 +1233,7 @@ public:
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return !player->hasShownSkill(Sanguosha->getSkill(objectName()));
+        return !player->hasShownSkill(objectName());
     }
 
     virtual const Card *viewAs() const{

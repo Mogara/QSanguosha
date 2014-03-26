@@ -993,7 +993,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *lusu, QVariant &, ServerPlayer * &) const{
-        if (!lusu || !lusu->isAlive() || !lusu->hasShownSkill(Sanguosha->getSkill("haoshi"))) return QStringList();
+        if (!lusu || !lusu->isAlive() || !lusu->hasShownSkill("haoshi")) return QStringList();
         if (lusu->hasFlag("haoshi")) {
             lusu->setFlags("-haoshi");
 

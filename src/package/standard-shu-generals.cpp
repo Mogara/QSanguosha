@@ -147,7 +147,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        if (player->hasShownSkill(Sanguosha->getSkill("paoxiao")))
+        if (player->hasShownSkill("paoxiao"))
             return true;
         else {
             player->tag["paoxiao_use"] = data;
@@ -201,7 +201,7 @@ public:
         // if it runs to here, it means player own both two skill;
         if (player->askForSkillInvoke(objectName())) {
             bool show1 = player->hasShownSkill(this);
-            bool show2 = player->hasShownSkill(Sanguosha->getSkill("yizhi"));
+            bool show2 = player->hasShownSkill("yizhi");
             QStringList choices;
             if (!show1)
                 choices << "show_head_general";
@@ -255,7 +255,7 @@ public:
     }
 
     virtual int getGuanxingNum(ServerPlayer *zhuge) const{
-        if (zhuge->hasShownSkill(this) && zhuge->hasShownSkill(Sanguosha->getSkill("yizhi"))) return 5;
+        if (zhuge->hasShownSkill(this) && zhuge->hasShownSkill("yizhi")) return 5;
         return qMin(5, zhuge->aliveCount());
     }
 };
@@ -602,7 +602,7 @@ public:
     }
 
     virtual int getExtra(const Player *target, bool) const{
-        if (target->hasShownSkill(Sanguosha->getSkill("liegong"))){
+        if (target->hasShownSkill("liegong")){
             const Player *lord = target->getLord();
 
             if (lord != NULL && lord->hasLordSkill("shouyue")){
@@ -843,7 +843,7 @@ QStringList SavageAssaultAvoid::triggerable(TriggerEvent , Room *, ServerPlayer 
 }
 
 bool SavageAssaultAvoid::cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-    if (player->hasShownSkill(Sanguosha->getSkill(avoid_skill))) return true;
+    if (player->hasShownSkill(avoid_skill)) return true;
     if (player->askForSkillInvoke(avoid_skill)) {
         room->broadcastSkillInvoke(avoid_skill, 1);
         player->showGeneral(player->inHeadSkills(avoid_skill));

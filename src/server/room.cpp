@@ -1307,7 +1307,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
         QString skill_name = card->showSkill();
         if (!skill_name.isNull() && player->ownSkill(skill_name)
-            && !player->hasShownSkill(Sanguosha->getSkill(skill_name)))
+            && !player->hasShownSkill(skill_name))
             player->showGeneral(player->inHeadSkills(skill_name));
 
         if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {
@@ -2709,7 +2709,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
         if (card_use.card->getRealCard() == card) {
             QString skill_name = card_use.card->showSkill();
             if (!skill_name.isNull() && card_use.from->ownSkill(skill_name)
-                && !card_use.from->hasShownSkill(Sanguosha->getSkill(skill_name)))
+                && !card_use.from->hasShownSkill(skill_name))
                 card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
 
             QStringList tarmod_detect;

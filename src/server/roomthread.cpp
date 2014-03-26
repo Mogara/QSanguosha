@@ -505,13 +505,13 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         const TriggerSkill *skill = who_skills[_names.indexOf(name)];
 
                         //----------------------------------------------- TriggerSkill::cost
-                        if (skill->isGlobal() || (p && p->ownSkill(name) && p->hasShownSkill(Sanguosha->getSkill(name)))) // if hasShown, then needn't protect
+                        if (skill->isGlobal() || (p && p->ownSkill(name) && p->hasShownSkill(name))) // if hasShown, then needn't protect
                             if (p && p->hasFlag("Global_askForSkillCost"))
                                 room->setPlayerFlag(p, "-Global_askForSkillCost");
                         bool do_effect = false;
                         if (skill->cost(triggerEvent, room, target, data, p)) {
                             do_effect = true;
-                            if (p && p->ownSkill(name) && !p->hasShownSkill(Sanguosha->getSkill(name)))
+                            if (p && p->ownSkill(name) && !p->hasShownSkill(name))
                                 p->showGeneral(p->inHeadSkills(name));
                         }
                         if (p && !p->hasFlag("Global_askForSkillCost") && !p->hasShownAllGenerals())          // for next time

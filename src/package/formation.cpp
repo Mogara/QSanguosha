@@ -126,7 +126,7 @@ public:
     }
 
     virtual int getCorrect(const Player *from, const Player *) const{
-        if (from->hasShownSkill(Sanguosha->getSkill("tuntian")))
+        if (from->hasShownSkill("tuntian"))
             return -from->getPile("field").length();
         else
             return 0;

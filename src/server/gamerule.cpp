@@ -390,7 +390,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
 
         try {
             ServerPlayer *jiayu = room->getCurrent();
-            if (jiayu->hasSkill("wansha") && jiayu->hasShownSkill(Sanguosha->getSkill("wansha"))
+            if (jiayu->hasSkill("wansha") && jiayu->hasShownSkill("wansha")
                     && jiayu->isAlive() && jiayu->getPhase() != Player::NotActive){
                 if (player != dying.who && player != jiayu)
                     room->setPlayerFlag(player, "Global_PreventPeach");
