@@ -244,9 +244,10 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
-        if (triggerEvent == DrawNCards)
+        if (triggerEvent == DrawNCards){
             if (TriggerSkill::triggerable(player))
                 return QStringList(objectName());
+        }
         else if (triggerEvent == PreCardUsed){
             if (player != NULL && player->isAlive() && player->hasFlag("luoyi")){
                 CardUseStruct use = data.value<CardUseStruct>();
