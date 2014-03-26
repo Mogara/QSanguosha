@@ -410,9 +410,10 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
-        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start)
+        if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start){
             if (TriggerSkill::triggerable(player))
                 return QStringList(objectName());
+        }
         else if (triggerEvent == FinishJudge) {
             if (player != NULL && data.value<JudgeStruct *>()->reason == objectName()) {
                 JudgeStar judge = data.value<JudgeStar>();
