@@ -1413,16 +1413,16 @@ void ServerPlayer::hideGeneral(bool head_general) {
         }
     }
 
-    Q_ASSERT(room->getThread() != NULL);
-    QVariant _head = head_general;
-    room->getThread()->trigger(GeneralHidden, room, this, _head);
-
     LogMessage log;
     log.type = "#BasaraConceal";
     log.from = this;
     log.arg  = getGeneralName();
     log.arg2 = getGeneral2Name();
     room->sendLog(log);
+
+    Q_ASSERT(room->getThread() != NULL);
+    QVariant _head = head_general;
+    room->getThread()->trigger(GeneralHidden, room, this, _head);
 }
 
 void ServerPlayer::removeGeneral(bool head_general) {
@@ -1536,16 +1536,16 @@ void ServerPlayer::removeGeneral(bool head_general) {
         }
     }
 
-    Q_ASSERT(room->getThread() != NULL);
-    QVariant _from = from_general;
-    room->getThread()->trigger(GeneralRemoved, room, this, _from);
-
     LogMessage log;
     log.type = "#BasaraRemove";
     log.from = this;
     log.arg  = head_general ? "head_general" : "deputy_general";
     log.arg2 = from_general;
     room->sendLog(log);
+
+    Q_ASSERT(room->getThread() != NULL);
+    QVariant _from = from_general;
+    room->getThread()->trigger(GeneralRemoved, room, this, _from);
 }
 
 void ServerPlayer::sendSkillsToOthers(bool head_skill /* = true */) {
