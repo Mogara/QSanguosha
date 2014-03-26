@@ -105,7 +105,7 @@ sgs.ai_need_damaged.fankui = function (self, attacker, player)
 			if not retrial_card.spade and attacker_card.spade then return attacker_card.spade end
 		end
 
-		if self:isFriend(aplayer, player) and not aplayer:hasSkill("qiaobian") then
+		if self:isFriend(aplayer, player) and not aplayer:hasShownSkill("qiaobian") then
 
 			if aplayer:containsTrick("indulgence") and self:getFinalRetrial(aplayer) == 1 and need_retrial(aplayer) and aplayer:getHandcardNum() >= aplayer:getHp() then
 				if not retrial_card.heart and attacker_card.heart then return attacker_card.heart end
@@ -134,7 +134,7 @@ function sgs.ai_cardneed.guicai(to, card, self)
 	for _, player in sgs.qlist(self.room:getAllPlayers()) do
 		if self:getFinalRetrial(to) == 1 then
 			if player:containsTrick("lightning") then
-				return card:getSuit() == sgs.Card_Spade and card:getNumber() >= 2 and card:getNumber() <= 9 and not self.player:hasSkill("hongyan")
+				return card:getSuit() == sgs.Card_Spade and card:getNumber() >= 2 and card:getNumber() <= 9 and not self.player:hasShownSkill("hongyan")
 			end
 			if self:isFriend(player) and self:willSkipDrawPhase(player) then
 				return card:getSuit() == sgs.Card_Club
@@ -282,7 +282,7 @@ function SmartAI:findTuxiTarget()
 		local x = enemy:getHandcardNum()
 		local good_target = true
 		if x == 1 and self:needKongcheng(enemy) then good_target = false end
-		if x >= 2 and enemy:hasSkill("tuntian") then good_target = false end
+		if x >= 2 and enemy:hasShownSkill("tuntian") then good_target = false end
 		if good_target and add_player(enemy) == 2 then return targets end
 	end
 
@@ -292,13 +292,13 @@ function SmartAI:findTuxiTarget()
 
 	local others = self.room:getOtherPlayers(self.player)
 	for _, other in sgs.qlist(others) do
-		if self:objectiveLevel(other) >= 0 and not other:hasSkill("tuntian") and add_player(other) == 2 then
+		if self:objectiveLevel(other) >= 0 and not other:hasShownSkill("tuntian") and add_player(other) == 2 then
 			return targets
 		end
 	end
 
 	for _, other in sgs.qlist(others) do
-		if self:objectiveLevel(other) >= 0 and not other:hasSkill("tuntian") and add_player(other) == 1 and math.random(0, 5) <= 1 and not self.player:hasSkill("qiaobian") then
+		if self:objectiveLevel(other) >= 0 and not other:hasShownSkill("tuntian") and add_player(other) == 1 and math.random(0, 5) <= 1 and not self.player:hasSkill("qiaobian") then
 			return targets
 		end
 	end
@@ -447,10 +447,10 @@ sgs.ai_skill_askforyiji.yiji = function(self, card_ids)
 end
 
 sgs.ai_need_damaged.yiji = function (self, attacker, player)
-	if not player:hasSkill("yiji") then return end
+	if not player:hasShownSkill("yiji") then return end
 	local need_card = false
 	local current = self.room:getCurrent()
-	if self:hasCrossbowEffect(current) or current:hasSkill("paoxiao") or current:hasFlag("shuangxiong") then need_card = true end
+	if self:hasCrossbowEffect(current) or current:hasShownSkill("paoxiao") or current:hasFlag("shuangxiong") then need_card = true end
 	if current:hasSkills("jieyin|jijiu") and self:getOverflow(current) <= 0 then need_card = true end
 	if self:isFriend(current, player) and need_card then return true end
 
@@ -740,7 +740,7 @@ sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, i
 	self:sortByKeepValue(cards)
 	local stealer
 	for _, ap in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if ap:hasSkill("tuxi") and self:isEnemy(ap) then stealer = ap end
+		if ap:hasShownSkill("tuxi") and self:isEnemy(ap) then stealer = ap end
 	end
 	local card
 	for i = 1, #cards, 1 do
@@ -752,7 +752,7 @@ sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, i
 			end
 			local to_discard_peach = true
 			for _,fd in ipairs(self.friends) do
-				if fd:getHp() <= 2 and not fd:hasSkill("niepan") then
+				if fd:getHp() <= 2 and not fd:hasShownSkill("niepan") then
 					to_discard_peach = false
 				end
 			end
@@ -790,7 +790,7 @@ sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, i
 				end
 			end
 		end
-	elseif current_phase == sgs.Player_Draw and not self.player:isSkipped(sgs.Player_Draw) and not self.player:hasSkill("tuxi") then
+	elseif current_phase == sgs.Player_Draw and not self.player:isSkipped(sgs.Player_Draw) and not self.player:hasShownSkill("tuxi") then
 		self.qiaobian_draw_targets = {}
 		local cardstr = sgs.ai_skill_use["@@tuxi"](self, "@tuxi")
 		if cardstr:match("->") then
@@ -956,7 +956,7 @@ sgs.ai_suit_priority.duanliang= "club|spade|diamond|heart"
 function sgs.ai_skill_invoke.jushou(self, data)
 	if not self.player:faceUp() then return true end
 	for _, friend in ipairs(self.friends) do
-		if friend:hasSkill("fangzhu") then return true end
+		if friend:hasShownSkill("fangzhu") then return true end
 	end
 	return self:isWeak()
 end
@@ -1041,14 +1041,14 @@ sgs.ai_skill_use_func.QuhuCard = function(QHCard, use, self)
 	if #self.enemies == 0 then return end
 	local max_card = self:getMaxCard()
 	local max_point = max_card:getNumber()
-	if self.player:hasSkill("yingyang") then max_point = math.min(max_point + 3, 13) end
+	if self.player:hasShownSkill("yingyang") then max_point = math.min(max_point + 3, 13) end
 	self:sort(self.enemies, "handcard")
 
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:getHp() > self.player:getHp() and not enemy:isKongcheng() then
 			local enemy_max_card = self:getMaxCard(enemy)
 			local enemy_number = enemy_max_card and enemy_max_card:getNumber() or 0
-			if enemy_max_card and enemy:hasSkill("yingyang") then enemy_number = math.min(enemy_number + 3, 13) end
+			if enemy_max_card and enemy:hasShownSkill("yingyang") then enemy_number = math.min(enemy_number + 3, 13) end
 			local allknown = 0
 			if self:getKnownNum(enemy) == enemy:getHandcardNum() then
 				allknown = allknown + 1
@@ -1069,7 +1069,7 @@ sgs.ai_skill_use_func.QuhuCard = function(QHCard, use, self)
 		end
 	end
 	if not self.player:isWounded() or (self.player:getHp() == 1 and self:getCardsNum("Analeptic") > 0 and self.player:getHandcardNum() >= 2)
-	  and self.player:hasSkill("jieming") then
+	  and self.player:hasShownSkill("jieming") then
 		local use_quhu
 		for _, friend in ipairs(self.friends) do
 			if math.min(5, friend:getMaxHp()) - friend:getHandcardNum() >= 2 then
@@ -1134,7 +1134,7 @@ sgs.ai_skill_playerchosen.jieming = function(self, targets)
 end
 
 sgs.ai_need_damaged.jieming = function(self, attacker, player)
-	return player:hasSkill("jieming") and self:getJiemingChaofeng(player) <= -6
+	return player:hasShownSkill("jieming") and self:getJiemingChaofeng(player) <= -6
 end
 
 sgs.ai_playerchosen_intention.jieming = function(self, from, to)
@@ -1156,8 +1156,8 @@ function SmartAI:toTurnOver(player, n, reason) -- @todo: param of toTurnOver
 			return false
 		end
 	end
-	if n > 1 and player:hasSkill("jijiu") then return false end
-	if player:hasSkill("jushou") and player:getPhase() <= sgs.Player_Finish then return false end
+	if n > 1 and player:hasShownSkill("jijiu") then return false end
+	if player:hasShownSkill("jushou") and player:getPhase() <= sgs.Player_Finish then return false end
 	if not player:faceUp() then return false end
 	return true
 end
@@ -1225,7 +1225,7 @@ sgs.ai_playerchosen_intention.fangzhu = function(self, from, to)
 end
 
 sgs.ai_need_damaged.fangzhu = function (self, attacker, player)
-	if not player:hasSkill("fangzhu") then return end
+	if not player:hasShownSkill("fangzhu") then return end
 	local enemies = self:getEnemies(player)
 	if #enemies < 1 then return false end
 	self:sort(enemies, "defense")

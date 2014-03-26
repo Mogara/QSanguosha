@@ -182,8 +182,8 @@ function SmartAI:findLijianTarget(card_name, use)
 
 		for _, enemy in ipairs(self.enemies) do
 			if enemy:isMale() then
-				if enemy:hasSkill("kongcheng") and enemy:isKongcheng() then zhugeliang_kongcheng = enemy
-				elseif enemy:hasSkill("jieming") then xunyu = enemy
+				if enemy:hasShownSkill("kongcheng") and enemy:isKongcheng() then zhugeliang_kongcheng = enemy
+				elseif enemy:hasShownSkill("jieming") then xunyu = enemy
 				else
 					for _, anotherenemy in ipairs(self.enemies) do
 						if anotherenemy:isMale() and anotherenemy:objectName() ~= enemy:objectName() then
@@ -509,16 +509,16 @@ function sgs.ai_cardneed.guidao(to, card, self)
 			return card:getSuit() == sgs.Card_Club and self:hasSuit("club", true, to)
 		end
 	end
-	if to:hasSkill("leiji") and self:getFinalRetrial(to, "leiji")then
+	if to:hasShownSkill("leiji") and self:getFinalRetrial(to, "leiji")then
 		return card:isBlack()
 	end
 end
 
 function SmartAI:findLeijiTarget(player, leiji_value, slasher)
-	if not player:hasSkill("leiji") then return end
+	if not player:hasShownSkill("leiji") then return end
 	if slasher then
 		if not self:slashIsEffective(sgs.Sanguosha:cloneCard("slash"), player, slasher, slasher:hasWeapon("QinggangSword")) then return nil end
-		if slasher:hasSkill("liegong") and slasher:getPhase() == sgs.Player_Play and self:isEnemy(player, slasher)
+		if slasher:hasShownSkill("liegong") and slasher:getPhase() == sgs.Player_Play and self:isEnemy(player, slasher)
 			and (player:getHandcardNum() >= slasher:getHp() or player:getHandcardNum() <= slasher:getAttackRange()) then
 			return nil
 		end
@@ -532,7 +532,7 @@ function SmartAI:findLeijiTarget(player, leiji_value, slasher)
 	local getCmpValue = function(enemy)
 		local value = 0
 		if not self:damageIsEffective(enemy, sgs.DamageStruct_Thunder, player) then return 99 end
-		if enemy:hasSkill("hongyan") then return 99 end
+		if enemy:hasShownSkill("hongyan") then return 99 end
 		if self:cantbeHurt(enemy, player, 2) or self:objectiveLevel(enemy) < 3
 			or (enemy:isChained() and not self:isGoodChainTarget(enemy, player, sgs.DamageStruct_Thunder, 2)) then return 100 end
 		if not sgs.isGoodTarget(enemy, self.enemies, self) then value = value + 50 end
@@ -576,8 +576,8 @@ function sgs.ai_slash_prohibit.leiji(self, from, to, card)
 	if self:isFriend(to, from) then return false end
 	if to:hasFlag("QianxiTarget") and (not self:hasEightDiagramEffect(to) or self.player:hasWeapon("QinggangSword")) then return false end
 	local hcard = to:getHandcardNum()
-	if from:hasSkill("liegong") and (hcard >= from:getHp() or hcard <= from:getAttackRange()) then return false end
-	if (from:getHp() >= 4 and (getCardsNum("Peach", from, to) > 0 or from:hasSkill("ganglie"))) or from:hasSkill("hongyan") and #self.friends == 1 then
+	if from:hasShownSkill("liegong") and (hcard >= from:getHp() or hcard <= from:getAttackRange()) then return false end
+	if (from:getHp() >= 4 and (getCardsNum("Peach", from, to) > 0 or from:hasShownSkill("ganglie"))) or from:hasShownSkill("hongyan") and #self.friends == 1 then
 		return false end
 
 	if sgs.card_lack[to:objectName()]["Jink"] == 2 then return true end
@@ -690,7 +690,7 @@ sgs.ai_skill_playerchosen.shuangren = function(self, targets)
 
 	if dummy_use.card then
 		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
+			if not (enemy:hasShownSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
 				local enemy_max_card = self:getMaxCard(enemy)
 				local enemy_max_point = enemy_max_card and enemy_max_card:getNumber() or 100
 				if max_point > enemy_max_point then
@@ -700,7 +700,7 @@ sgs.ai_skill_playerchosen.shuangren = function(self, targets)
 			end
 		end
 		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
+			if not (enemy:hasShownSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
 				if max_point >= 10 then
 					self.shuangren_card = max_card:getEffectiveId()
 					return enemy
@@ -727,7 +727,7 @@ end
 
 sgs.ai_playerchosen_intention.sijian = function(self, from, to)
 	local intention = 80
-	if (to:hasSkill("kongcheng") and to:getHandcardNum() == 1) or self:needToThrowArmor(to) then
+	if (to:hasShownSkill("kongcheng") and to:getHandcardNum() == 1) or self:needToThrowArmor(to) then
 		intention = 0
 	end
 	sgs.updateIntention(from, to, intention)
@@ -766,8 +766,8 @@ sgs.ai_skill_choice.kuangfu_equip = function(self, choices, data)
 		if who:hasSkills("jijiu|beige|weimu|qingcheng") and not self:doNotDiscard(who, "e", false, 1, reason) then
 			if choices:match("2") then return "2" end
 			if choices:match("1") and who:getArmor() and not self:needToThrowArmor(who) then return "1" end
-			if choices:match("3") and (not who:hasSkill("jijiu") or who:getOffensiveHorse():isRed()) then return "3" end
-			if choices:match("0") and (not who:hasSkill("jijiu") or who:getWeapon():isRed()) then return "0" end
+			if choices:match("3") and (not who:hasShownSkill("jijiu") or who:getOffensiveHorse():isRed()) then return "3" end
+			if choices:match("0") and (not who:hasShownSkill("jijiu") or who:getWeapon():isRed()) then return "0" end
 		end
 		local valuable = self:getValuableCard(who)
 		if valuable then
@@ -846,7 +846,7 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 			if self.player:isFriendWith(p) or (self.player:getActualGeneral1():getKingdom() == p:getKingdom()) then continue end
 			local skill_table = sgs.masochism_skill:split("|")
 			for _, skill_name in ipairs(skill_table) do
-				if (p:hasSkill(skill_name)) then
+				if (p:hasShownSkill(skill_name)) then
 					use.card = card
 					if ((not use.isDummy) and use.to) then
 						sgs.ai_skill_choice.qingcheng = (p:inHeadSkills(skill_name) and "head_general" or "deputy_general")

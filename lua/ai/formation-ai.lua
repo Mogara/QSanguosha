@@ -81,7 +81,7 @@ local function huyuan_validate(self, equip_type, is_handcard)
 	if is_handcard then targets = self.friends else targets = self.friends_noself end
 	if equip_type == "SilverLion" then
 		for _, enemy in ipairs(self.enemies) do
-			if enemy:hasSkill("bazhen") and not enemy:getArmor() then table.insert(targets, enemy) end
+			if enemy:hasShownSkill("bazhen") and not enemy:getArmor() then table.insert(targets, enemy) end
 		end
 	end
 	for _, friend in ipairs(targets) do
@@ -92,7 +92,7 @@ local function huyuan_validate(self, equip_type, is_handcard)
 				break
 			end
 		end
-		if not has_equip and not ((equip_type == "Armor" or equip_type == "SilverLion") and friend:hasSkill("bazhen")) then
+		if not has_equip and not ((equip_type == "Armor" or equip_type == "SilverLion") and friend:hasShownSkill("bazhen")) then
 			self:sort(self.enemies, "defense")
 			for _, enemy in ipairs(self.enemies) do
 				if friend:distanceTo(enemy) == 1 and self.player:canDiscard(enemy, "he") then
@@ -167,7 +167,7 @@ sgs.ai_skill_playerchosen.huyuan = function(self, targets)
 end
 
 sgs.ai_card_intention.HuyuanCard = function(self, card, from, to)
-	if to[1]:hasSkill("bazhen") then
+	if to[1]:hasShownSkill("bazhen") then
 		if sgs.Sanguosha:getCard(card:getEffectiveId()):isKindOf("SilverLion") then
 			sgs.updateIntention(from, to[1], 10)
 			return
@@ -417,12 +417,12 @@ sgs.ai_use_priority.DragonPhoenix = 2.400
 function sgs.ai_weapon_value.DragonPhoenix(self, enemy, player)
 	local lordliubei = nil
 	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
-		if p:hasSkill("zhangwu") then
+		if p:hasShownSkill("zhangwu") then
 			lordliubei = p
 			break
 		end
 	end
-	if lordliubei and player:getWeapon() and not player:hasSkill("xiaoji") then
+	if lordliubei and player:getWeapon() and not player:hasShownSkill("xiaoji") then
 		return -10
 	end
 	if enemy and enemy:getHp() <= 1 and (sgs.card_lack[enemy:objectName()]["Jink"] == 1 or getCardsNum("Jink", enemy, self.player) == 0) then

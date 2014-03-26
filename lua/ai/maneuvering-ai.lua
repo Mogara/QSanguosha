@@ -81,7 +81,7 @@ end
 
 function sgs.ai_armor_value.Vine(player, self)
 	if self:needKongcheng(player) and player:getHandcardNum() == 1 then
-		return player:hasSkill("kongcheng") and 5 or 3.8
+		return player:hasShownSkill("kongcheng") and 5 or 3.8
 	end
 	if self.player:hasSkills(sgs.lose_equip_skill) then return 3.8 end
 	if not self:damageIsEffective(player, sgs.DamageStruct_Fire) then return 6 end
@@ -91,7 +91,7 @@ function sgs.ai_armor_value.Vine(player, self)
 	if player:isChained() and (not self:isGoodChainTarget(player, self.player, nil, nil, fslash) or not self:isGoodChainTarget(player, self.player, nil, nil, tslash)) then return -2 end
 
 	for _, enemy in ipairs(self:getEnemies(player)) do
-		if (enemy:canSlash(player) and enemy:hasWeapon("Fan")) or enemy:hasSkill("huoji") then return -2 end
+		if (enemy:canSlash(player) and enemy:hasWeapon("Fan")) or enemy:hasShownSkill("huoji") then return -2 end
 		if getKnownCard(enemy, player, "FireSlash", true) >= 1 or getKnownCard(enemy, player, "FireAttack", true) >= 1 or
 			getKnownCard(enemy, player, "Fan") >= 1 then return -2 end
 	end
@@ -102,7 +102,7 @@ end
 
 function SmartAI:shouldUseAnaleptic(target, slash)
 	if target:hasArmorEffect("SilverLion") and not self.player:hasWeapon("QinggangSword") then return end
-	if target:hasSkill("xiangle") then
+	if target:hasShownSkill("xiangle") then
 		local basicnum = 0
 		for _, acard in sgs.qlist(self.player:getHandcards()) do
 			if acard:getTypeId() == sgs.Card_TypeBasic and not acard:isKindOf("Peach") then basicnum = basicnum + 1 end
@@ -188,16 +188,16 @@ function SmartAI:useCardSupplyShortage(card, use)
 	if #enemies == 0 then return end
 
 	local getvalue = function(enemy)
-		if card:isBlack() and enemy:hasSkill("weimu") then return -100 end
+		if card:isBlack() and enemy:hasShownSkill("weimu") then return -100 end
 		if enemy:containsTrick("supply_shortage") or enemy:containsTrick("YanxiaoCard") then return -100 end
-		if enemy:hasSkill("qiaobian") and not enemy:containsTrick("supply_shortage") and not enemy:containsTrick("indulgence") then return -100 end
+		if enemy:hasShownSkill("qiaobian") and not enemy:containsTrick("supply_shortage") and not enemy:containsTrick("indulgence") then return -100 end
 		if zhanghe_seat > 0 and (self:playerGetRound(zhanghe) <= self:playerGetRound(enemy) and self:enemiesContainsTrick() <= 1 or not enemy:faceUp()) then
 			return - 100 end
 
 		local value = 0 - enemy:getHandcardNum()
 
 		if enemy:hasSkills("haoshi|tuxi|lijian|fanjian|dimeng|jijiu|jieyin|beige")
-		  or (enemy:hasSkill("zaiqi") and enemy:getLostHp() > 1)
+		  or (enemy:hasShownSkill("zaiqi") and enemy:getLostHp() > 1)
 			then value = value + 10
 		end
 		if enemy:hasSkills(sgs.cardneed_skill .. "|tianxiang")
@@ -510,14 +510,14 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 		if not enemy:hasArmorEffect("SilverLion") then
 			if enemy:hasArmorEffect("Vine") then damage = damage + 1 end
 		end
-		if enemy:hasSkill("mingshi") and not self.player:hasShownAllGenerals() then
+		if enemy:hasShownSkill("mingshi") and not self.player:hasShownAllGenerals() then
 			damage = damage - 1
 		end
 		return self:objectiveLevel(enemy) > 3 and damage > 0 and not enemy:isKongcheng() and not self.room:isProhibited(self.player, enemy, fire_attack)
 				and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(enemy, self.player, damage)
 				and self:hasTrickEffective(fire_attack, enemy)
 				and sgs.isGoodTarget(enemy, self.enemies, self)
-				and (not (enemy:hasSkill("jianxiong") and not self:isWeak(enemy)) and not self:getDamagedEffects(enemy, self.player)
+				and (not (enemy:hasShownSkill("jianxiong") and not self:isWeak(enemy)) and not self:getDamagedEffects(enemy, self.player)
 						and not (enemy:isChained() and not self:isGoodChainTarget(enemy)))
 	end
 
@@ -579,7 +579,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 		if not enemy:hasArmorEffect("SilverLion") then
 			if enemy:hasArmorEffect("Vine") then damage = damage + 1 end
 		end
-		if enemy:hasSkill("mingshi") and not self.player:hasShownAllGenerals() then
+		if enemy:hasShownSkill("mingshi") and not self.player:hasShownAllGenerals() then
 			damage = damage - 1
 		end
 		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName()))

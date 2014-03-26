@@ -26,7 +26,7 @@ function SmartAI:shouldUseRende()
 		end
 	end
 	for _, player in ipairs(self.friends_noself) do
-		if (player:hasSkill("haoshi") and not player:containsTrick("supply_shortage")) or player:hasSkill("jijiu") then
+		if (player:hasShownSkill("haoshi") and not player:containsTrick("supply_shortage")) or player:hasShownSkill("jijiu") then
 			return true
 		end
 	end
@@ -103,7 +103,7 @@ sgs.ai_use_priority.RendeCard = 8.8
 sgs.ai_card_intention.RendeCard = function(self, card, from, tos)
 	local to = tos[1]
 	local intention = -70
-	if to:hasSkill("kongcheng") and to:isKongcheng() then
+	if to:hasShownSkill("kongcheng") and to:isKongcheng() then
 		intention = 30
 	end
 	sgs.updateIntention(from, to, intention)
@@ -278,7 +278,7 @@ function SmartAI:canLiegong(to, from)
 	from = from or self.room:getCurrent()
 	to = to or self.player
 	if not from then return false end
-	if from:hasSkill("liegong") and from:getPhase() == sgs.Player_Play and (to:getHandcardNum() >= from:getHp() or to:getHandcardNum() <= from:getAttackRange()) then return true end
+	if from:hasShownSkill("liegong") and from:getPhase() == sgs.Player_Play and (to:getHandcardNum() >= from:getHp() or to:getHandcardNum() <= from:getAttackRange()) then return true end
 	return false
 end
 
@@ -556,7 +556,7 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	self:sort(self.friends_noself, "handcard")
 	self.friends_noself = sgs.reverse(self.friends_noself)
 	for _, target in ipairs(self.friends_noself) do
-		if target:hasSkills("zhiheng|" .. sgs.priority_skill .. "|shensu") and (not self:willSkipPlayPhase(target) or target:hasSkill("shensu")) then
+		if target:hasSkills("zhiheng|" .. sgs.priority_skill .. "|shensu") and (not self:willSkipPlayPhase(target) or target:hasShownSkill("shensu")) then
 			self.fangquan_card_str = "@FangquanCard=" .. to_discard .. "&fangquan->" .. target:objectName()
 			return true
 		end

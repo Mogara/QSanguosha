@@ -179,7 +179,7 @@ local function GuanXing(self, cards)
 			end
 
 			if self:isFriend(next_player) then
-				if next_player:hasSkill("luoshen") then
+				if next_player:hasShownSkill("luoshen") then
 					if for_judge:isBlack() then
 						table.insert(next_judge, for_judge)
 						table.remove(bottom, index)
@@ -199,7 +199,7 @@ local function GuanXing(self, cards)
 					end
 				end
 			else
-				if next_player:hasSkill("luoshen") and for_judge:isRed() and not luoshen_flag then
+				if next_player:hasShownSkill("luoshen") and for_judge:isRed() and not luoshen_flag then
 					table.insert(next_judge, for_judge)
 					table.remove(bottom, index)
 					has_judged = true

@@ -230,7 +230,7 @@ kurou_skill.getTurnUseCard = function(self, inclusive)
 	if (self.player:getWeapon() and self.player:getWeapon():isKindOf("Crossbow")) or self.player:hasSkill("paoxiao") then
 		for _, enemy in ipairs(self.enemies) do
 			if self.player:canSlash(enemy, nil, true) and self:slashIsEffective(slash, enemy)
-			    and not (enemy:hasSkill("kongcheng") and enemy:isKongcheng())
+			    and not (enemy:hasShownSkill("kongcheng") and enemy:isKongcheng())
 				and not (enemy:hasSkills("fankui") and not self.player:hasSkill("paoxiao"))
 				and sgs.isGoodTarget(enemy, self.enemies, self) and not self:slashProhibit(slash, enemy) and self.player:getHp() > 1 then
 				return kuroucard
@@ -247,17 +247,17 @@ kurou_skill.getTurnUseCard = function(self, inclusive)
 		local to_death = false
 		if self:isFriend(nextplayer) then
 			for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-				if p:hasSkill("xiaoguo") and not self:isFriend(p) and not p:isKongcheng() and self.player:getEquips():isEmpty() then
+				if p:hasShownSkill("xiaoguo") and not self:isFriend(p) and not p:isKongcheng() and self.player:getEquips():isEmpty() then
 					to_death = true
 					break
 				end
 			end
 			if not to_death and not self:willSkipPlayPhase(nextplayer) then
-				if nextplayer:hasSkill("jieyin") and self.player:isMale() then return end
-				if nextplayer:hasSkill("qingnang") then return end
+				if nextplayer:hasShownSkill("jieyin") and self.player:isMale() then return end
+				if nextplayer:hasShownSkill("qingnang") then return end
 			end
 		end
-		if not self:isFriend(nextplayer) and (not self:willSkipPlayPhase(nextplayer) or nextplayer:hasSkill("shensu")) then
+		if not self:isFriend(nextplayer) and (not self:willSkipPlayPhase(nextplayer) or nextplayer:hasShownSkill("shensu")) then
 			to_death = true
 		end
 		if to_death then
@@ -499,7 +499,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt, method)
 	self:sort(self.enemies, "defense")
 
 	local doLiuli = function(who)
-		if not self:isFriend(who) and who:hasSkill("leiji")
+		if not self:isFriend(who) and who:hasShownSkill("leiji")
 			and (self:hasSuit("spade", true, who) or who:getHandcardNum() >= 3)
 			and (getKnownCard(who, self.player, "Jink", true) >= 1 or self:hasEightDiagramEffect(who)) then
 			return "."
@@ -623,8 +623,8 @@ function SmartAI:getWoundedFriend(maleOnly)
 	local getCmpHp = function(p)
 		local hp = p:getHp()
 		if p:isLord() and self:isWeak(p) then hp = hp - 10 end
-		if p:objectName() == self.player:objectName() and self:isWeak(p) and p:hasSkill("qingnang") then hp = hp - 5 end
-		if p:hasSkill("buqu") and p:getPile("buqu"):length() > 0 then hp = hp + math.max(0, 5 - p:getPile("buqu"):length()) end
+		if p:objectName() == self.player:objectName() and self:isWeak(p) and p:hasShownSkill("qingnang") then hp = hp - 5 end
+		if p:hasShownSkill("buqu") and p:getPile("buqu"):length() > 0 then hp = hp + math.max(0, 5 - p:getPile("buqu"):length()) end
 		if p:hasSkills("rende|kuanggu|zaiqi") and p:getHp() >= 2 then hp = hp + 5 end
 		return hp
 	end
@@ -771,7 +771,7 @@ sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 		end
 		if not self.yinghun then
 			for _, friend in ipairs(self.friends_noself) do
-				if friend:hasSkill("tuntian") then
+				if friend:hasShownSkill("tuntian") then
 					self.yinghun = friend
 					break
 				end
@@ -814,7 +814,7 @@ sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 		end
 		if not self.yinghun then
 			for _, friend in ipairs(self.friends_noself) do
-				if friend:hasSkill("tuntian") then
+				if friend:hasShownSkill("tuntian") then
 					self.yinghun = friend
 					break
 				end
@@ -892,7 +892,7 @@ sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 			if not enemy:isNude()
 				and not (enemy:hasSkills(sgs.lose_equip_skill) and enemy:getCards("e"):length() > 0)
 				and not self:needToThrowArmor(enemy)
-				and not enemy:hasSkill("tuntian") then
+				and not enemy:hasShownSkill("tuntian") then
 				self.yinghunchoice = "d1tx"
 				return enemy
 			end
@@ -901,7 +901,7 @@ sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 			if not enemy:isNude()
 				and not (enemy:hasSkills(sgs.lose_equip_skill) and enemy:getCards("e"):length() > 0)
 				and not self:needToThrowArmor(enemy)
-				and not (enemy:hasSkill("tuntian") and x < 3 and enemy:getCards("he"):length() < 2) then
+				and not (enemy:hasShownSkill("tuntian") and x < 3 and enemy:getCards("he"):length() < 2) then
 				self.yinghunchoice = "d1tx"
 				return enemy
 			end
@@ -967,8 +967,7 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 	for _, enemy in ipairs(self.enemies) do
 		if (enemy:getHp() <= dmg.damage and enemy:isAlive()) then
 			if (enemy:getHandcardNum() <= 2 or enemy:hasSkills("guose|leiji|ganglie|qingguo|kongcheng") or enemy:containsTrick("indulgence"))
-				and self:canAttack(enemy, dmg.from or self.room:getCurrent(), dmg.nature)
-				and not (dmg.card and dmg.card:getTypeId() == sgs.Card_TypeTrick and enemy:hasSkill("wuyan")) then
+				and self:canAttack(enemy, dmg.from or self.room:getCurrent(), dmg.nature) then
 				return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. enemy:objectName()
 			end
 		end
@@ -981,10 +980,8 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 					and (friend:hasSkills("yiji|buqu|shuangxiong|zaiqi|yinghun|jianxiong|fangzhu")
 						or self:getDamagedEffects(friend, dmg.from or self.room:getCurrent())
 						or self:needToLoseHp(friend)
-						or (friend:getHandcardNum() < 3 and friend:hasSkill("rende"))) then
+						or (friend:getHandcardNum() < 3 and friend:hasShownSkill("rende"))) then
 				return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. friend:objectName()
-				elseif dmg.card and dmg.card:getTypeId() == sgs.Card_TypeTrick and friend:hasSkill("wuyan") and friend:getLostHp() > 1 then
-					return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. friend:objectName()
 			elseif hasBuquEffect(friend) then return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. friend:objectName() end
 		end
 	end
@@ -1015,7 +1012,7 @@ sgs.ai_card_intention.TianxiangCard = function(self, card, from, tos)
 	local intention = 10
 	if hasBuquEffect(to) then intention = 0
 	elseif (to:getHp() >= 2 and to:hasSkills("yiji|shuangxiong|zaiqi|yinghun|jianxiong|fangzhu"))
-		or to:getHandcardNum() < 3 and to:hasSkill("rende") then
+		or to:getHandcardNum() < 3 and to:hasShownSkill("rende") then
 		intention = -10
 	end
 	sgs.updateIntention(from, to, intention)
@@ -1031,7 +1028,7 @@ sgs.tianxiang_suit_value = {
 }
 
 function sgs.ai_cardneed.tianxiang(to, card, self)
-	return (card:getSuit() == sgs.Card_Heart or (to:hasSkill("hongyan") and card:getSuit() == sgs.Card_Spade))
+	return (card:getSuit() == sgs.Card_Heart or (to:hasShownSkill("hongyan") and card:getSuit() == sgs.Card_Spade))
 		and (getKnownCard(to, self.player, "heart", false) + getKnownCard(to, self.player, "spade", false)) < 2
 end
 
@@ -1097,10 +1094,10 @@ sgs.ai_skill_use_func.TianyiCard = function(TYCard, use, self)
 	sgs.ai_use_priority.TianyiCard = (slashcount >= 1 and dummy_use.card) and 7.2 or 1.2
 	if slashcount >= 1 and slash and dummy_use.card then
 		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
+			if not (enemy:hasShownSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
 				local enemy_max_card = self:getMaxCard(enemy)
 				local enemy_max_point = enemy_max_card and enemy_max_card:getNumber() or 100
-				if enemy_max_card and enemy:hasSkill("yingyang") then enemy_max_point = math.min(enemy_max_point + 3, 13) end
+				if enemy_max_card and enemy:hasShownSkill("yingyang") then enemy_max_point = math.min(enemy_max_point + 3, 13) end
 				if max_point > enemy_max_point then
 					self.tianyi_card = max_card:getId()
 					use.card = TYCard
@@ -1110,7 +1107,7 @@ sgs.ai_skill_use_func.TianyiCard = function(TYCard, use, self)
 			end
 		end
 		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:hasSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
+			if not (enemy:hasShownSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
 				if max_point >= 10 then
 					self.tianyi_card = max_card:getId()
 					use.card = TYCard
@@ -1126,7 +1123,7 @@ sgs.ai_skill_use_func.TianyiCard = function(TYCard, use, self)
 			if not friend:isKongcheng() then
 				local friend_min_card = self:getMinCard(friend)
 				local friend_min_point = friend_min_card and friend_min_card:getNumber() or 100
-				if friend:hasSkill("yingyang") then friend_min_point = math.max(1, friend_min_point - 3) end
+				if friend:hasShownSkill("yingyang") then friend_min_point = math.max(1, friend_min_point - 3) end
 				if max_point > friend_min_point then
 					self.tianyi_card = max_card:getId()
 					use.card = TYCard
@@ -1356,7 +1353,7 @@ function DimengIsWorth(self, friend, enemy, mycards, myequips)
 	elseif e_peach < f_peach and e_peach < 1 then
 		return false
 	elseif e_hand1 == f_hand1 and e_hand1 > 0 then
-		return friend:hasSkill("tuntian")
+		return friend:hasShownSkill("tuntian")
 	end
 	local cardNum = #mycards
 	local delt = e_hand1 - f_hand1 --assert: delt>0

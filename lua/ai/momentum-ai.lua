@@ -29,7 +29,7 @@ function sgs.ai_skill_invoke.hengjiang(self, data)
 		return true
 	else
 		if target:getPhase() > sgs.Player_Discard then return true end
-		if target:hasSkill("keji") and not target:hasFlag("KejiSlashInPlayPhase") then return true end
+		if target:hasShownSkill("keji") and not target:hasFlag("KejiSlashInPlayPhase") then return true end
 		return target:getHandcardNum() <= target:getMaxCards() - 2
 	end
 end
@@ -38,7 +38,7 @@ sgs.ai_choicemade_filter.skillInvoke.hengjiang = function(self, player, promptli
 	if promptlist[3] == "yes" then
 		local current = self.room:getCurrent()
 		if current and current:getPhase() <= sgs.Player_Discard
-			and not (current:hasSkill("keji") and not current:hasFlag("KejiSlashInPlayPhase")) and current:getHandcardNum() > current:getMaxCards() - 2 then
+			and not (current:hasShownSkill("keji") and not current:hasFlag("KejiSlashInPlayPhase")) and current:getHandcardNum() > current:getMaxCards() - 2 then
 			sgs.updateIntention(player, current, 50)
 		end
 	end
@@ -70,17 +70,17 @@ sgs.ai_skill_playerchosen.qianxi = function(self, targets)
 		self:sort(enemies, "defense")
 		if not isRed then
 			for _, enemy in ipairs(enemies) do
-				if enemy:hasSkill("qingguo") and self:slashIsEffective(slash, enemy) then return enemy end
+				if enemy:hasShownSkill("qingguo") and self:slashIsEffective(slash, enemy) then return enemy end
 			end
 			for _, enemy in ipairs(enemies) do
-				if enemy:hasSkill("kanpo") then return enemy end
+				if enemy:hasShownSkill("kanpo") then return enemy end
 			end
 		else
 			for _, enemy in ipairs(enemies) do
 				if getKnownCard(enemy, self.player, "Jink", false, "h") > 0 and self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self) then return enemy end
 			end
 			for _, enemy in ipairs(enemies) do
-				if getKnownCard(enemy, self.player, "Peach", true, "h") > 0 or enemy:hasSkill("jijiu") then return enemy end
+				if getKnownCard(enemy, self.player, "Peach", true, "h") > 0 or enemy:hasShownSkill("jijiu") then return enemy end
 			end
 			for _, enemy in ipairs(enemies) do
 				if getKnownCard(enemy, self.player, "Jink", false, "h") > 0 and self:slashIsEffective(slash, enemy) then return enemy end
@@ -251,7 +251,7 @@ end
 
 sgs.ai_skill_choice.benghuai = function(self, choices, data)
 	for _, friend in ipairs(self.friends) do
-		if friend:hasSkill("tianxiang") and (self.player:getHp() >= 3 or (self:getCardsNum("Peach") + self:getCardsNum("Analeptic") > 0 and self.player:getHp() > 1)) then
+		if friend:hasShownSkill("tianxiang") and (self.player:getHp() >= 3 or (self:getCardsNum("Peach") + self:getCardsNum("Analeptic") > 0 and self.player:getHp() > 1)) then
 			return "hp"
 		end
 	end

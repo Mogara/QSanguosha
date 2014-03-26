@@ -7,7 +7,7 @@ function speak(to,type)
 end
 
 function speakTrigger(card,from,to,event)
-	if (event=="death") and from:hasSkill("ganglie") then
+	if (event=="death") and from:hasShownSkill("ganglie") then
 		speak(from,"ganglie_death")
 	end
 
@@ -19,11 +19,11 @@ function speakTrigger(card,from,to,event)
 		speak(from,"leiji_jink")
 	elseif card:isKindOf("QuhuCard") then
 		speak(from,"quhu")
-	elseif card:isKindOf("Slash") and to:hasSkill("yiji") and (to:getHp()<=1) then
+	elseif card:isKindOf("Slash") and to:hasShownSkill("yiji") and (to:getHp()<=1) then
 		speak(to,"guojia_weak")
-	elseif card:isKindOf("SavageAssault") and (to:hasSkill("kongcheng") or to:hasSkill("huoji")) then
+	elseif card:isKindOf("SavageAssault") and (to:hasShownSkill("kongcheng") or to:hasShownSkill("huoji")) then
 		speak(to,"daxiang")
-	elseif card:isKindOf("FireAttack") and to:hasSkill("luanji") then
+	elseif card:isKindOf("FireAttack") and to:hasShownSkill("luanji") then
 		speak(to,"yuanshao_fire")
 	end
 end
@@ -95,7 +95,7 @@ sgs.ai_chat_func[sgs.EventPhaseStart].comeon=function(self, player, data)
 				"不爽，来啊！砍我啊",
 				"求杀求砍求蹂躏",
 				}
-	if player:getPhase()== sgs.Player_Finish and not player:isKongcheng() and player:hasSkill("leiji") and os.time() % 10 < 4 then
+	if player:getPhase()== sgs.Player_Finish and not player:isKongcheng() and player:hasShownSkill("leiji") and os.time() % 10 < 4 then
 		local index =1+ (os.time() % #chat)
 		player:speak(chat[index])
 	end
