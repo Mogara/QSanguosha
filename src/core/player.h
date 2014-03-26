@@ -249,6 +249,7 @@ public:
 
     bool hasShownSkill(const Skill *skill) const;
     bool hasShownSkill(const QString &skill_name) const;
+    bool hasShownSkills(const QString &skill_names) const;
     void preshowSkill(const QString &skill_name);
     bool inHeadSkills(const QString &skill_name) const;
     const General *getActualGeneral1() const;

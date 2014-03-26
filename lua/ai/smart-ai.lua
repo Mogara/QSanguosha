@@ -656,7 +656,7 @@ function sgs.getProcessDefense(player, update)
 
 	if player:hasShownSkill("rende") and player:getHp() > 2 then defense = defense + 1 end
 	if player:hasShownSkill("zaiqi") and player:getHp() > 1 then defense = defense + player:getLostHp() * 0.5 end
-	if player:hasSkills("tieji|liegong|kuanggu") then defense = defense + 0.5 end
+	if player:hasShownSkills("tieji|liegong|kuanggu") then defense = defense + 0.5 end
 	if player:hasShownSkill("xiangle") then defense = defense + 1 end
 	if player:hasShownSkill("shushen") then defense = defense + 1 end
 	if player:hasShownSkill("kongcheng") and player:isKongcheng() then defense = defense + 2 end
@@ -2076,7 +2076,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 			if self.player:hasSkill("kongcheng") and self.player:getHandcardNum() == 1 and self.player:isLastHandCard(null_card) and trick:isKindOf("SingleTargetTrick") then
 				return null_card
 			end
-			if trick:isKindOf("ExNihilo") and (self:isWeak(from) or from:hasSkills(sgs.cardneed_skill)) then
+			if trick:isKindOf("ExNihilo") and (self:isWeak(from) or from:hasShownSkills(sgs.cardneed_skill)) then
 				return null_card
 			end
 			if trick:isKindOf("IronChain") and not to:hasArmorEffect("Vine") then return nil end
@@ -2116,7 +2116,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 					return null_card
 				end
 				if trick:isKindOf("SupplyShortage") and not to:isSkipped(sgs.Player_Draw) then
-					if to:hasSkills("guidao|tiandu") then return nil end
+					if to:hasShownSkills("guidao|tiandu") then return nil end
 					if to:hasShownSkill("qiaobian") and not to:isKongcheng() then return nil end
 					return null_card
 				end
@@ -2177,7 +2177,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 				end
 				if peach_num == 0 and not self:willSkipPlayPhase(NP) then
 					if exnihilo_num > 0 then
-						if NP:hasSkills("jizhi|rende|zhiheng") then return null_card end
+						if NP:hasShownSkills("jizhi|rende|zhiheng") then return null_card end
 					else
 						for _, enemy in ipairs(self.enemies) do
 							if snatch_num > 0 and to:distanceTo(enemy) == 1 and
@@ -2307,7 +2307,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 			if who:getArmor() and self:evaluateArmor(who:getArmor(), who) < -5 and (not isDiscard or self.player:canDiscard(who, who:getArmor():getEffectiveId())) then
 				return who:getArmor():getEffectiveId()
 			end
-			if who:hasSkills(sgs.lose_equip_skill) and self:isWeak(who) then
+			if who:hasShownSkills(sgs.lose_equip_skill) and self:isWeak(who) then
 				if who:getWeapon() and (not isDiscard or self.player:canDiscard(who, who:getWeapon():getEffectiveId())) then return who:getWeapon():getEffectiveId() end
 				if who:getOffensiveHorse() and (not isDiscard or self.player:canDiscard(who, who:getOffensiveHorse():getEffectiveId())) then return who:getOffensiveHorse():getEffectiveId() end
 			end
@@ -2316,7 +2316,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 		local dangerous = self:getDangerousCard(who)
 		if flags:match("e") and dangerous and (not isDiscard or self.player:canDiscard(who, dangerous)) then return dangerous end
 		if flags:match("e") and who:hasArmorEffect("EightDiagram") and (not isDiscard or self.player:canDiscard(who, who:getArmor():getId())) then return who:getArmor():getId() end
-		if flags:match("e") and who:hasSkills("jijiu|beige|weimu|qingcheng") and not self:doNotDiscard(who, "e", false, 1, reason) then
+		if flags:match("e") and who:hasShownSkills("jijiu|beige|weimu|qingcheng") and not self:doNotDiscard(who, "e", false, 1, reason) then
 			if who:getDefensiveHorse() and (not isDiscard or self.player:canDiscard(who, who:getDefensiveHorse():getEffectiveId())) then return who:getDefensiveHorse():getEffectiveId() end
 			if who:getArmor() and (not isDiscard or self.player:canDiscard(who, who:getArmor():getEffectiveId())) then return who:getArmor():getEffectiveId() end
 			if who:getOffensiveHorse() and (not who:hasShownSkill("jijiu") or who:getOffensiveHorse():isRed()) and (not isDiscard or self.player:canDiscard(who, who:getOffensiveHorse():getEffectiveId())) then
@@ -2333,7 +2333,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 			end
 		end
 		if flags:match("h") and (not isDiscard or self.player:canDiscard(who, "h")) then
-			if who:hasSkills("jijiu|qingnang|qiaobian|jieyin|beige")
+			if who:hasShownSkills("jijiu|qingnang|qiaobian|jieyin|beige")
 				and not who:isKongcheng() and who:getHandcardNum() <= 2 and not self:doNotDiscard(who, "h", false, 1, reason) then
 				return self:getCardRandomly(who, "h")
 			end
@@ -2365,7 +2365,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 		end
 
 		if flags:match("h") and not self:doNotDiscard(who, "h") then
-			if (who:getHandcardNum() == 1 and sgs.getDefenseSlash(who, self) < 3 and who:getHp() <= 2) or who:hasSkills(sgs.cardneed_skill) then
+			if (who:getHandcardNum() == 1 and sgs.getDefenseSlash(who, self) < 3 and who:getHp() <= 2) or who:hasShownSkills(sgs.cardneed_skill) then
 				return self:getCardRandomly(who, "h")
 			end
 		end
@@ -2556,7 +2556,7 @@ function SmartAI:needKongcheng(player, keep)
 	player = player or self.player
 	if keep then return player:isKongcheng() and player:hasShownSkill("kongcheng") end
 	if not self:hasLoseHandcardEffective(player) and not player:isKongcheng() then return true end
-	return player:hasSkills(sgs.need_kongcheng)
+	return player:hasShownSkills(sgs.need_kongcheng)
 end
 
 function SmartAI:getLeastHandcardNum(player)
@@ -2595,7 +2595,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 	local friends_table = include_self and self.friends or self.friends_noself
 	for _, player in ipairs(friends_table) do
 		local exclude = self:needKongcheng(player) or self:willSkipPlayPhase(player)
-		if player:hasSkills("keji|qiaobian|shensu") or player:getHp() - player:getHandcardNum() >= 3
+		if player:hasShownSkills("keji|qiaobian|shensu") or player:getHp() - player:getHandcardNum() >= 3
 			or (player:isLord() and self:isWeak(player) and self:getEnemyNumBySeat(self.player, player) >= 1) then
 			exclude = false
 		end
@@ -2680,7 +2680,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 
 	self:sortByUseValue(cards, true)
 	for _, friend in ipairs(friends) do
-		if friend:hasSkills("jijiu|jieyin") and friend:getHandcardNum() < 4 then
+		if friend:hasShownSkills("jijiu|jieyin") and friend:getHandcardNum() < 4 then
 			for _, hcard in ipairs(cards) do
 				if (hcard:isRed() and friend:hasShownSkill("jijiu")) or friend:hasShownSkill("jieyin") then
 					return hcard, friend
@@ -2691,7 +2691,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 
 	--Crossbow
 	for _, friend in ipairs(friends) do
-		if friend:hasSkills("longdan|wusheng|keji") and not self:hasCrossbowEffect(friend) and friend:getHandcardNum() >= 2 then
+		if friend:hasShownSkills("longdan|wusheng|keji") and not self:hasCrossbowEffect(friend) and friend:getHandcardNum() >= 2 then
 			for _, hcard in ipairs(cards) do
 				if hcard:isKindOf("Crossbow") then
 					return hcard, friend
@@ -2782,7 +2782,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 	self:sort(friends, "defense")
 	for _, hcard in ipairs(cardtogive) do
 		for _, friend in ipairs(friends) do
-			if not self:needKongcheng(friend, true) and not self:willSkipPlayPhase(friend) and friend:hasSkills(sgs.priority_skill) then
+			if not self:needKongcheng(friend, true) and not self:willSkipPlayPhase(friend) and friend:hasShownSkills(sgs.priority_skill) then
 				if (self:getOverflow() > 0 or self.player:getHandcardNum() > 3) and friend:getHandcardNum() <= 3 then
 					return hcard, friend
 				end
@@ -3015,7 +3015,7 @@ function SmartAI:hasWizard(players, onlyharm)
 	local skill
 	if onlyharm then skill = sgs.wizard_harm_skill else skill = sgs.wizard_skill end
 	for _, player in ipairs(players) do
-		if player:hasSkills(skill) then
+		if player:hasShownSkills(skill) then
 			return true
 		end
 	end
@@ -3043,7 +3043,7 @@ function SmartAI:getFinalRetrial(player, reason)
 	local wizardf, wizarde
 	player = player or self.room:getCurrent()
 	for _, aplayer in ipairs(self.friends) do
-		if aplayer:hasSkills(sgs.wizard_harm_skill) and self:canRetrial(aplayer, player, reason) then
+		if aplayer:hasShownSkills(sgs.wizard_harm_skill) and self:canRetrial(aplayer, player, reason) then
 			tmpfriend = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
 			if tmpfriend > maxfriendseat then
 				maxfriendseat = tmpfriend
@@ -3052,7 +3052,7 @@ function SmartAI:getFinalRetrial(player, reason)
 		end
 	end
 	for _, aplayer in ipairs(self.enemies) do
-		if aplayer:hasSkills(sgs.wizard_harm_skill) and self:canRetrial(aplayer, player, reason) then
+		if aplayer:hasShownSkills(sgs.wizard_harm_skill) and self:canRetrial(aplayer, player, reason) then
 			tmpenemy = (aplayer:getSeat() - player:getSeat()) % (global_room:alivePlayerCount())
 			if tmpenemy > maxenemyseat then
 				maxenemyseat = tmpenemy
@@ -3105,7 +3105,7 @@ function SmartAI:needRetrial(judge)
 
 	if reason == "supply_shortage" then
 		if self:isFriend(who) then
-			if who:hasSkills("guidao|tiandu") then return false end
+			if who:hasShownSkills("guidao|tiandu") then return false end
 			return not judge:isGood()
 		else
 			return judge:isGood()
@@ -3750,12 +3750,12 @@ function SmartAI:hasSkills(skill_names, player)
 	player = player or self.player
 	if type(player) == "table" then
 		for _, p in ipairs(player) do
-			if p:hasSkills(skill_names) then return true end
+			if p:hasShownSkills(skill_names) then return true end
 		end
 		return false
 	end
 	if type(skill_names) == "string" then
-		return player:hasSkills(skill_names)
+		return player:hasShownSkills(skill_names)
 	end
 	return false
 end
@@ -3827,7 +3827,7 @@ function SmartAI:aoeIsEffective(card, to, source)
 	end
 
 	if card:isKindOf("SavageAssault") then
-		if to:hasSkills("huoshou|juxiang") then
+		if to:hasShownSkills("huoshou|juxiang") then
 			return false
 		end
 	end
@@ -3931,7 +3931,7 @@ function SmartAI:getAoeValueTo(card, to, from)
 		if self:needToLoseHp(to, from, nil, true) then value = value + 10 end
 
 		if card:isKindOf("ArcheryAttack") then
-			if to:hasSkills("leiji") and (sj_num >= 1 or self:hasEightDiagramEffect(to)) and self:findLeijiTarget(to, 50, from) then
+			if to:hasShownSkills("leiji") and (sj_num >= 1 or self:hasEightDiagramEffect(to)) and self:findLeijiTarget(to, 50, from) then
 				value = value + 100
 				if self:hasSuit("spade", true, to) then value = value + 150
 				else value = value + to:getHandcardNum()*35
@@ -4014,7 +4014,7 @@ function SmartAI:getAoeValue(card, player)
 		good = good + 51
 	end
 
-	if attacker:hasSkills("jianxiong|luanji") then good = good + 2 * enemy_number end
+	if attacker:hasShownSkills("jianxiong|luanji") then good = good + 2 * enemy_number end
 
 	return good - bad
 end
@@ -4139,7 +4139,7 @@ function SmartAI:evaluateWeapon(card, player, target)
 	end
 
 	if player:hasShownSkill("jijiu") and card:isRed() then deltaSelfThreat = deltaSelfThreat + 0.5 end
-	if player:hasSkills("qixi|guidao") and card:isBlack() then deltaSelfThreat = deltaSelfThreat + 0.5 end
+	if player:hasShownSkills("qixi|guidao") and card:isBlack() then deltaSelfThreat = deltaSelfThreat + 0.5 end
 
 	return deltaSelfThreat
 end
@@ -4153,7 +4153,7 @@ function SmartAI:evaluateArmor(card, player)
 
 	local value = 0
 	if player:hasShownSkill("jijiu") and ecard:isRed() then value = value + 0.5 end
-	if player:hasSkills("qixi|guidao") and ecard:isBlack() then value = value + 0.5 end
+	if player:hasShownSkills("qixi|guidao") and ecard:isBlack() then value = value + 0.5 end
 	for _, askill in sgs.qlist(player:getVisibleSkillList()) do
 		local callback = sgs.ai_armor_value[askill:objectName()]
 		if type(callback) == "function" then
@@ -4328,7 +4328,7 @@ function SmartAI:needToThrowArmor(player)
 			if player:objectName() == self.player:objectName() then
 				return true
 			else
-				return self:isWeak(player) and not player:hasSkills(sgs.use_lion_skill)
+				return self:isWeak(player) and not player:hasShownSkills(sgs.use_lion_skill)
 			end
 		else
 			return true
@@ -4344,17 +4344,17 @@ function SmartAI:doNotDiscard(to, flags, conservative, n, cant_choose)
 	if to:isNude() then return true end
 	conservative = conservative or (sgs.turncount <= 2 and self.room:alivePlayerCount() > 2)
 	local enemies = self:getEnemies(to)
-	if #enemies == 1 and enemies[1]:hasSkills("qianxun|weimu") and self.room:alivePlayerCount() == 2 then conservative = false end
+	if #enemies == 1 and enemies[1]:hasShownSkills("qianxun|weimu") and self.room:alivePlayerCount() == 2 then conservative = false end
 
 	if cant_choose then
 		if self:needKongcheng(to) and to:getHandcardNum() <= n then return true end
 		if self:getLeastHandcardNum(to) <= n then return true end
-		if to:hasSkills(sgs.lose_equip_skill) and to:hasEquip() then return true end
+		if to:hasShownSkills(sgs.lose_equip_skill) and to:hasEquip() then return true end
 		if self:needToThrowArmor(to) then return true end
 	else
 		if flags:match("e") then
-			if to:hasSkills("jieyin+xiaoji") and to:getDefensiveHorse() then return false end
-			if to:hasSkills("jieyin+xiaoji") and to:getArmor() and not to:getArmor():isKindOf("SilverLion") then return false end
+			if to:hasShownSkills("jieyin+xiaoji") and to:getDefensiveHorse() then return false end
+			if to:hasShownSkills("jieyin+xiaoji") and to:getArmor() and not to:getArmor():isKindOf("SilverLion") then return false end
 		end
 		if flags == "h" or (flags == "he" and not to:hasEquip()) then
 			if to:isKongcheng() or not self.player:canDiscard(to, "h") then return true end
@@ -4363,7 +4363,7 @@ function SmartAI:doNotDiscard(to, flags, conservative, n, cant_choose)
 			if #self.friends > 1 and to:getHandcardNum() == 1 and to:hasShownSkill("sijian") then return false end
 		elseif flags == "e" or (flags == "he" and to:isKongcheng()) then
 			if not to:hasEquip() then return true end
-			if to:hasSkills(sgs.lose_equip_skill) then return true end
+			if to:hasShownSkills(sgs.lose_equip_skill) then return true end
 			if to:getCardCount(true) == 1 and self:needToThrowArmor(to) then return true end
 		end
 		if flags == "he" and n == 2 then
@@ -4373,7 +4373,7 @@ function SmartAI:doNotDiscard(to, flags, conservative, n, cant_choose)
 				if not self:hasLoseHandcardEffective(to) then return true end
 				if to:getHandcardNum() <= 2 and self:needKongcheng(to) then return true end
 			end
-			if to:hasSkills(sgs.lose_equip_skill) and to:getHandcardNum() < 2 then return true end
+			if to:hasShownSkills(sgs.lose_equip_skill) and to:getHandcardNum() < 2 then return true end
 			if to:getCardCount(true) <= 2 and self:needToThrowArmor(to) then return true end
 		end
 	end
@@ -4447,7 +4447,7 @@ function SmartAI:findPlayerToDiscard(flags, include_self, isDiscard, players, re
 			end
 		end
 		for _, enemy in ipairs(enemies) do
-			if enemy:hasSkills("jijiu|beige|weimu|qingcheng") and not self:doNotDiscard(enemy, "e") then
+			if enemy:hasShownSkills("jijiu|beige|weimu|qingcheng") and not self:doNotDiscard(enemy, "e") then
 				if enemy:getDefensiveHorse() and (not isDiscard or self.player:canDiscard(enemy, enemy:getDefensiveHorse():getEffectiveId())) then table.insert(player_table, enemy) end
 				if enemy:getArmor() and not self:needToThrowArmor(enemy) and (not isDiscard or self.player:canDiscard(enemy, enemy:getArmor():getEffectiveId())) then table.insert(player_table, enemy) end
 				if enemy:getOffensiveHorse() and (not enemy:hasShownSkill("jijiu") or enemy:getOffensiveHorse():isRed()) and (not isDiscard or self.player:canDiscard(enemy, enemy:getOffensiveHorse():getEffectiveId())) then
@@ -4532,7 +4532,7 @@ function SmartAI:findPlayerToDraw(include_self, drawnum)
 	end
 
 	for _, friend in ipairs(friends) do
-		if friend:hasSkills(sgs.cardneed_skill) and not self:willSkipPlayPhase(friend) then
+		if friend:hasShownSkills(sgs.cardneed_skill) and not self:willSkipPlayPhase(friend) then
 			return friend
 		end
 	end
@@ -4805,14 +4805,14 @@ function SmartAI:getGuixinValue(player)
 				elseif i == 0 then value = 0.7
 				elseif i == 3 then value = 0.5
 				end
-				if player:hasSkills(sgs.lose_equip_skill) or self:doNotDiscard(player, "e", true) then value = value - 0.2 end
+				if player:hasShownSkills(sgs.lose_equip_skill) or self:doNotDiscard(player, "e", true) then value = value - 0.2 end
 				return value
 			end
 		end
 		if self:needKongcheng(player) and player:getHandcardNum() == 1 then return 0 end
 		if not self:hasLoseHandcardEffective() then return 0.1
 		else
-			local index = player:hasSkills("jijiu|qingnang|leiji|jieyin|beige|kanpo|liuli|qiaobian|zhiheng|guidao|tianxiang|lijian") and 0.7 or 0.6
+			local index = player:hasShownSkills("jijiu|qingnang|leiji|jieyin|beige|kanpo|liuli|qiaobian|zhiheng|guidao|tianxiang|lijian") and 0.7 or 0.6
 			local value = 0.2 + index / (player:getHandcardNum() + 1)
 			if self:doNotDiscard(player, "h", true) then value = value - 0.1 end
 			return value
@@ -4839,7 +4839,7 @@ function SmartAI:getGuixinValue(player)
 				elseif i == 0 then value = 0.25
 				elseif i == 3 then value = 0.25
 				end
-				if player:hasSkills(sgs.lose_equip_skill) then value = value + 0.1 end
+				if player:hasShownSkills(sgs.lose_equip_skill) then value = value + 0.1 end
 				if player:hasShownSkill("tuntian") then value = value + 0.1 end
 				return value
 			end
@@ -4848,7 +4848,7 @@ function SmartAI:getGuixinValue(player)
 		elseif self:needKongcheng(player) and player:getHandcardNum() == 1 then return 0.3 end
 		if not self:hasLoseHandcardEffective() then return 0.2
 		else
-			local index = player:hasSkills("jijiu|qingnang|leiji|jieyin|beige|kanpo|liuli|qiaobian|zhiheng|guidao|tianxiang|lijian") and 0.5 or 0.4
+			local index = player:hasShownSkills("jijiu|qingnang|leiji|jieyin|beige|kanpo|liuli|qiaobian|zhiheng|guidao|tianxiang|lijian") and 0.5 or 0.4
 			local value = 0.2 - index / (player:getHandcardNum() + 1)
 			if player:hasShownSkill("tuntian") then value = value + 0.1 end
 			return value

@@ -556,7 +556,7 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	self:sort(self.friends_noself, "handcard")
 	self.friends_noself = sgs.reverse(self.friends_noself)
 	for _, target in ipairs(self.friends_noself) do
-		if target:hasSkills("zhiheng|" .. sgs.priority_skill .. "|shensu") and (not self:willSkipPlayPhase(target) or target:hasShownSkill("shensu")) then
+		if target:hasShownSkills("zhiheng|" .. sgs.priority_skill .. "|shensu") and (not self:willSkipPlayPhase(target) or target:hasShownSkill("shensu")) then
 			self.fangquan_card_str = "@FangquanCard=" .. to_discard .. "&fangquan->" .. target:objectName()
 			return true
 		end

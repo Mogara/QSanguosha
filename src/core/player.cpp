@@ -1120,6 +1120,20 @@ bool Player::hasShownSkill(const QString &skill_name) const{
     return hasShownSkill(Sanguosha->getSkill(skill_name));
 }
 
+bool Player::hasShownSkills(const QString &skill_name) const{
+    foreach (QString skill, skill_name.split("|")) {
+        bool checkpoint = true;
+        foreach (QString sk, skill.split("+")) {
+            if (!hasShownSkill(sk)) {
+                checkpoint = false;
+                break;
+            }
+        }
+        if (checkpoint) return true;
+    }
+    return false;
+}
+
 void Player::preshowSkill(const QString &skill_name) {
     if (hasShownSkill(skill_name))
         return;

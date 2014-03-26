@@ -11,7 +11,7 @@ sgs.ai_skill_invoke.fankui = function(self, data)
 	if self:isFriend(target) then
 		if self:getOverflow(target) > 2 then return true end
 		if self:doNotDiscard(target) then return true end
-		return (target:hasSkills(sgs.lose_equip_skill) and not target:getEquips():isEmpty())
+		return (target:hasShownSkills(sgs.lose_equip_skill) and not target:getEquips():isEmpty())
 		  or (self:needToThrowArmor(target) and target:getArmor()) or self:doNotDiscard(target)
 	end
 	if self:isEnemy(target) then
@@ -31,7 +31,7 @@ sgs.ai_choicemade_filter.cardChosen.fankui = function(self, player, promptlist)
 		if self:needToThrowArmor(target) and self.room:getCardPlace(id) == sgs.Player_PlaceEquip and card:isKindOf("Armor") then
 			intention = -intention
 		elseif self:doNotDiscard(target) then intention = -intention
-		elseif target:hasSkills(sgs.lose_equip_skill) and not target:getEquips():isEmpty() and
+		elseif target:hasShownSkills(sgs.lose_equip_skill) and not target:getEquips():isEmpty() and
 			self.room:getCardPlace(id) == sgs.Player_PlaceEquip and card:isKindOf("EquipCard") then
 				intention = -intention
 		elseif sgs.ai_need_damaged.fankui(self, target, player) then intention = 0
@@ -172,7 +172,7 @@ end
 sgs.ai_need_damaged.ganglie = function(self, attacker, player)
 	if not attacker then return end
 	if self:isEnemy(attacker) and attacker:getHp() + attacker:getHandcardNum() <= 3
-		and not (attacker:hasSkills(sgs.need_kongcheng .. "|buqu") and attacker:getHandcardNum() > 1) and sgs.isGoodTarget(attacker, self:getEnemies(attacker), self) then
+		and not (attacker:hasShownSkills(sgs.need_kongcheng .. "|buqu") and attacker:getHandcardNum() > 1) and sgs.isGoodTarget(attacker, self:getEnemies(attacker), self) then
 		return true
 	end
 	return false
@@ -273,7 +273,7 @@ function SmartAI:findTuxiTarget()
 	end
 
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:hasSkills("jijiu|qingnang|leiji|jieyin|beige|kanpo|liuli|qiaobian|zhiheng|guidao|tianxiang|lijian") then
+		if enemy:hasShownSkills("jijiu|qingnang|leiji|jieyin|beige|kanpo|liuli|qiaobian|zhiheng|guidao|tianxiang|lijian") then
 			if add_player(enemy) == 2 then return targets end
 		end
 	end
@@ -451,7 +451,7 @@ sgs.ai_need_damaged.yiji = function (self, attacker, player)
 	local need_card = false
 	local current = self.room:getCurrent()
 	if self:hasCrossbowEffect(current) or current:hasShownSkill("paoxiao") or current:hasFlag("shuangxiong") then need_card = true end
-	if current:hasSkills("jieyin|jijiu") and self:getOverflow(current) <= 0 then need_card = true end
+	if current:hasShownSkills("jieyin|jijiu") and self:getOverflow(current) <= 0 then need_card = true end
 	if self:isFriend(current, player) and need_card then return true end
 
 	self:sort(self.friends, "hp")
@@ -645,7 +645,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 
 		local equips = who:getCards("e")
 		local weak = false
-		if not target and not equips:isEmpty() and who:hasSkills(sgs.lose_equip_skill) then
+		if not target and not equips:isEmpty() and who:hasShownSkills(sgs.lose_equip_skill) then
 			for _, equip in sgs.qlist(equips) do
 				if equip:isKindOf("OffensiveHorse") then card = equip break
 				elseif equip:isKindOf("Weapon") then card = equip break
@@ -667,7 +667,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 				end
 				for _, friend in ipairs(self.friends) do
 					if not self:getSameEquip(card, friend) and friend:objectName() ~= who:objectName()
-						and friend:hasSkills(sgs.need_equip_skill .. "|" .. sgs.lose_equip_skill) then
+						and friend:hasShownSkills(sgs.need_equip_skill .. "|" .. sgs.lose_equip_skill) then
 							target = friend
 							break
 					end
@@ -684,7 +684,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 		local judges = who:getJudgingArea()
 
 		if card == nil or target == nil then
-			if not who:hasEquip() or who:hasSkills(sgs.lose_equip_skill) then return nil end
+			if not who:hasEquip() or who:hasShownSkills(sgs.lose_equip_skill) then return nil end
 			local card_id = self:askForCardChosen(who, "e", "snatch")
 			if card_id >= 0 and who:hasEquip(sgs.Sanguosha:getCard(card_id)) then card = sgs.Sanguosha:getCard(card_id) end
 			if card then
@@ -695,7 +695,7 @@ local function card_for_qiaobian(self, who, return_prompt)
 					self.friends = sgs.reverse(self.friends)
 				end
 				for _, friend in ipairs(self.friends) do
-					if not self:getSameEquip(card, friend) and friend:objectName() ~= who:objectName() and friend:hasSkills(sgs.lose_equip_skill .. "|shensu") then
+					if not self:getSameEquip(card, friend) and friend:objectName() ~= who:objectName() and friend:hasShownSkills(sgs.lose_equip_skill .. "|shensu") then
 						target = friend
 						break
 					end
@@ -819,7 +819,7 @@ sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, i
 		end
 
 		for _, friend in ipairs(self.friends_noself) do
-			if not friend:getCards("e"):isEmpty() and friend:hasSkills(sgs.lose_equip_skill) and card_for_qiaobian(self, friend, ".") then
+			if not friend:getCards("e"):isEmpty() and friend:hasShownSkills(sgs.lose_equip_skill) and card_for_qiaobian(self, friend, ".") then
 				return to_discard
 			end
 		end
@@ -834,7 +834,7 @@ sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, i
 
 		local targets = {}
 		for _, enemy in ipairs(self.enemies) do
-			if not enemy:hasSkills(sgs.lose_equip_skill) and card_for_qiaobian(self, enemy, ".") then
+			if not enemy:hasShownSkills(sgs.lose_equip_skill) and card_for_qiaobian(self, enemy, ".") then
 				table.insert(targets, enemy)
 			end
 		end
@@ -876,7 +876,7 @@ sgs.ai_skill_use["@@qiaobian"] = function(self, prompt)
 		end
 
 		for _, friend in ipairs(self.friends_noself) do
-			if not friend:getCards("e"):isEmpty() and friend:hasSkills(sgs.lose_equip_skill) and card_for_qiaobian(self, friend, ".") then
+			if not friend:getCards("e"):isEmpty() and friend:hasShownSkills(sgs.lose_equip_skill) and card_for_qiaobian(self, friend, ".") then
 				return QBCard .. friend:objectName()
 			end
 			if not friend:getArmor() then has_armor = false end
@@ -1195,7 +1195,7 @@ sgs.ai_skill_playerchosen.fangzhu = function(self, targets)
 			end
 			if not target then
 				for _, enemy in ipairs(self.enemies) do
-					if self:toTurnOver(enemy, n, "fangzhu") and enemy:hasSkills(sgs.priority_skill) then
+					if self:toTurnOver(enemy, n, "fangzhu") and enemy:hasShownSkills(sgs.priority_skill) then
 						target = enemy
 						break
 					end
@@ -1275,7 +1275,7 @@ sgs.ai_skill_cardask["@xiaoguo"] = function(self, data)
 		if not self:damageIsEffective(currentplayer) then return "." end
 		if self:getDamagedEffects(currentplayer) or self:needToLoseHp(currentplayer, self.player) then return "." end
 		if self:needToThrowArmor() then return "." end
-		if currentplayer:hasSkills(sgs.lose_equip_skill) and currentplayer:getCards("e"):length() > 0 then return "." end
+		if currentplayer:hasShownSkills(sgs.lose_equip_skill) and currentplayer:getCards("e"):length() > 0 then return "." end
 		return "$" .. card:getEffectiveId()
 	end
 	return "."
@@ -1286,7 +1286,7 @@ sgs.ai_choicemade_filter.cardResponded["@xiaoguo"] = function(self, player, prom
 		local current = self.room:getCurrent()
 		if not current then return end
 		local intention = 10
-		if current:hasSkills(sgs.lose_equip_skill) and current:getCards("e"):length() > 0 then intention = 0 end
+		if current:hasShownSkills(sgs.lose_equip_skill) and current:getCards("e"):length() > 0 then intention = 0 end
 		if self:needToThrowArmor(current) then return end
 		sgs.updateIntention(player, current, intention)
 	end

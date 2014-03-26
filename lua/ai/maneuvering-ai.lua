@@ -196,21 +196,21 @@ function SmartAI:useCardSupplyShortage(card, use)
 
 		local value = 0 - enemy:getHandcardNum()
 
-		if enemy:hasSkills("haoshi|tuxi|lijian|fanjian|dimeng|jijiu|jieyin|beige")
+		if enemy:hasShownSkills("haoshi|tuxi|lijian|fanjian|dimeng|jijiu|jieyin|beige")
 		  or (enemy:hasShownSkill("zaiqi") and enemy:getLostHp() > 1)
 			then value = value + 10
 		end
-		if enemy:hasSkills(sgs.cardneed_skill .. "|tianxiang")
+		if enemy:hasShownSkills(sgs.cardneed_skill .. "|tianxiang")
 			then value = value + 5
 		end
-		if enemy:hasSkills("yingzi|duoshi") then value = value + 1 end
+		if enemy:hasShownSkills("yingzi|duoshi") then value = value + 1 end
 		if self:isWeak(enemy) then value = value + 5 end
 		if enemy:isLord() then value = value + 3 end
 
 		if self:objectiveLevel(enemy) < 3 then value = value - 10 end
 		if not enemy:faceUp() then value = value - 10 end
-		if enemy:hasSkills("keji|shensu") then value = value - enemy:getHandcardNum() end
-		if enemy:hasSkills("guanxing|tiandu|guidao") then value = value - 5 end
+		if enemy:hasShownSkills("keji|shensu") then value = value - enemy:getHandcardNum() end
+		if enemy:hasShownSkills("guanxing|tiandu|guidao") then value = value - 5 end
 		if not sgs.isGoodTarget(enemy, self.enemies, self) then value = value - 1 end
 		if self:needKongcheng(enemy) then value = value - 1 end
 		return value
@@ -302,7 +302,7 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 			newvalue = newvalue - 2
 			if self:isEnemy(target) then kills = kills + 1 end
 		else
-			if self:isEnemy(target) and source:getHandcardNum() < 2 and target:hasSkills("ganglie") and source:getHp() == 1
+			if self:isEnemy(target) and source:getHandcardNum() < 2 and target:hasShownSkills("ganglie") and source:getHp() == 1
 				and self:damageIsEffective(source, nil, target) and peach_num < 1 then newvalue = newvalue - 100 end
 		end
 

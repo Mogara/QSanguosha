@@ -165,7 +165,7 @@ function SmartAI:findLijianTarget(card_name, use)
 
 		if friend_maxSlash then
 			local safe = false
-			if first:hasSkills("fankui|ganglie") then
+			if first:hasShownSkills("fankui|ganglie") then
 				if (first:getHp() <= 1 and first:getHandcardNum() == 0) then safe = true end
 			elseif (getCardsNum("Slash", friend_maxSlash) >= getCardsNum("Slash", first)) then safe = true end
 			if safe then return friend_maxSlash end
@@ -191,7 +191,7 @@ function SmartAI:findLijianTarget(card_name, use)
 								table.insert(males, enemy)
 							end
 							if #males == 1 and self:hasTrickEffective(duel, males[1], anotherenemy) then
-								if not anotherenemy:hasSkills("jizhi|jiang") then
+								if not anotherenemy:hasShownSkills("jizhi|jiang") then
 									table.insert(males, anotherenemy)
 								else
 									table.insert(others, anotherenemy)
@@ -421,7 +421,7 @@ luanwu_skill.getTurnUseCard = function(self)
 
 		if getCardsNum("Jink", player) == 0 then
 			local lost_value = 0
-			if player:hasSkills(sgs.masochism_skill) then lost_value = player:getHp() / 2 end
+			if player:hasShownSkills(sgs.masochism_skill) then lost_value = player:getHp() / 2 end
 			local hp = math.max(player:getHp(), 1)
 			if self:isFriend(player) then bad = bad + (lost_value + 1) / hp
 			else good = good + (lost_value + 1) / hp
@@ -537,8 +537,8 @@ function SmartAI:findLeijiTarget(player, leiji_value, slasher)
 			or (enemy:isChained() and not self:isGoodChainTarget(enemy, player, sgs.DamageStruct_Thunder, 2)) then return 100 end
 		if not sgs.isGoodTarget(enemy, self.enemies, self) then value = value + 50 end
 		if enemy:hasArmorEffect("SilverLion") then value = value + 20 end
-		if enemy:hasSkills(sgs.exclusive_skill) then value = value + 10 end
-		if enemy:hasSkills(sgs.masochism_skill) then value = value + 5 end
+		if enemy:hasShownSkills(sgs.exclusive_skill) then value = value + 10 end
+		if enemy:hasShownSkills(sgs.masochism_skill) then value = value + 5 end
 		if enemy:isChained() and self:isGoodChainTarget(enemy, player, sgs.DamageStruct_Thunder, 2) and #(self:getChainedEnemies(player)) > 1 then value = value - 25 end
 		if enemy:isLord() then value = value - 5 end
 		value = value + enemy:getHp() + sgs.getDefenseSlash(enemy, self) * 0.01
@@ -735,7 +735,7 @@ end
 
 sgs.ai_skill_invoke.kuangfu = function(self, data)
 	local damage = data:toDamage()
-	if damage.to:hasSkills(sgs.lose_equip_skill) then
+	if damage.to:hasShownSkills(sgs.lose_equip_skill) then
 		return self:isFriend(damage.to) and not self:isWeak(damage.to)
 	end
 	local benefit = (damage.to:getCards("e"):length() == 1 and damage.to:getArmor() and self:needToThrowArmor(damage.to))
@@ -748,7 +748,7 @@ sgs.ai_skill_choice.kuangfu_equip = function(self, choices, data)
 	if self:isFriend(who) then
 		if choices:match("1") and self:needToThrowArmor(who) then return "1" end
 		if choices:match("1") and self:evaluateArmor(who:getArmor(), who) < -5 then return "1" end
-		if who:hasSkills(sgs.lose_equip_skill) and self:isWeak(who) then
+		if who:hasShownSkills(sgs.lose_equip_skill) and self:isWeak(who) then
 			if choices:match("0") then return "0" end
 			if choices:match("3") then return "3" end
 		end
@@ -763,7 +763,7 @@ sgs.ai_skill_choice.kuangfu_equip = function(self, choices, data)
 			end
 		end
 		if choices:match("1") and who:hasArmorEffect("EightDiagram") and not self:needToThrowArmor(who) then return "1" end
-		if who:hasSkills("jijiu|beige|weimu|qingcheng") and not self:doNotDiscard(who, "e", false, 1, reason) then
+		if who:hasShownSkills("jijiu|beige|weimu|qingcheng") and not self:doNotDiscard(who, "e", false, 1, reason) then
 			if choices:match("2") then return "2" end
 			if choices:match("1") and who:getArmor() and not self:needToThrowArmor(who) then return "1" end
 			if choices:match("3") and (not who:hasShownSkill("jijiu") or who:getOffensiveHorse():isRed()) then return "3" end

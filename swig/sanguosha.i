@@ -19,7 +19,7 @@
 // ----------------------------------------
 
 namespace HegemonyMode {
-    QString getMappedRole(const QString &role);
+    QString getMappedRole(const char *role);
 
     enum ArrayType {
         Siege,
@@ -252,8 +252,8 @@ public:
     bool isJilei(const Card *card) const;
     bool isLocked(const Card *card) const;
 
-    void setCardLimitation(const QString &limit_list, const QString &pattern, bool single_turn = false);
-    void removeCardLimitation(const QString &limit_list, const QString &pattern);
+    void setCardLimitation(const char *limit_list, const char *pattern, bool single_turn = false);
+    void removeCardLimitation(const char *limit_list, const char *pattern);
     void clearCardLimitation(bool single_turn = false);
     bool isCardLimited(const Card *card, Card::HandlingMethod method, bool isHandcard = false) const;
 
@@ -270,6 +270,7 @@ public:
 
     bool hasShownSkill(const Skill *skill) const;
     bool hasShownSkill(const char *skill_name) const;
+    bool hasShownSkills(const char *skill_names) const;
     void preshowSkill(const char *skill_name);
     bool inHeadSkills(const char *skill_name) const;
     const General *getActualGeneral1() const;
