@@ -219,7 +219,6 @@ function SmartAI:findTuxiTarget()
 	local targets = {}
 
 	local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
-	local luxun = self.room:findPlayerBySkillName("lianying")
 	local dengai = self.room:findPlayerBySkillName("tuntian")
 
 	local add_player = function (player, isfriend)
@@ -252,16 +251,6 @@ function SmartAI:findTuxiTarget()
 		end
 	end
 
-	if luxun and self:isFriend(luxun) and sgs.ai_explicit[luxun:objectName()] ~= "unknown" and luxun:getHandcardNum() == 1 and self:getEnemyNumBySeat(self.player,luxun) > 0 then
-		local flag = string.format("%s_%s_%s","visible",self.player:objectName(),luxun:objectName())
-		local cards = sgs.QList2Table(luxun:getHandcards())
-		if #cards==1 and (cards[1]:hasFlag("visible") or cards[1]:hasFlag(flag)) then
-			if cards[1]:isKindOf("TrickCard") or cards[1]:isKindOf("Slash") or cards[1]:isKindOf("EquipCard") then
-				if add_player(luxun, 1) == 2  then return targets end
-			end
-		end
-	end
-
 	for _, enemy in ipairs(self.enemies) do
 		local cards = sgs.QList2Table(enemy:getHandcards())
 		local flag = string.format("%s_%s_%s", "visible", self.player:objectName(), enemy:objectName())
@@ -284,10 +273,6 @@ function SmartAI:findTuxiTarget()
 		if x == 1 and self:needKongcheng(enemy) then good_target = false end
 		if x >= 2 and enemy:hasShownSkill("tuntian") then good_target = false end
 		if good_target and add_player(enemy) == 2 then return targets end
-	end
-
-	if luxun and add_player(luxun, (self:isFriend(luxun) and 1 or nil)) == 2 then
-		return targets
 	end
 
 	local others = self.room:getOtherPlayers(self.player)

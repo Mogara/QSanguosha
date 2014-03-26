@@ -1098,6 +1098,9 @@ QList<const Player *> Player::getAliveSiblings() const{
 }
 
 bool Player::hasShownSkill(const Skill *skill) const{
+    if (skill == NULL)
+        return false;
+
     if (skill->inherits("ArmorSkill") || skill->inherits("WeaponSkill"))
         return true;
 
@@ -1117,7 +1120,19 @@ bool Player::hasShownSkill(const Skill *skill) const{
 }
 
 bool Player::hasShownSkill(const QString &skill_name) const{
-    return hasShownSkill(Sanguosha->getSkill(skill_name));
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+#ifndef QT_NO_DEBUG
+    if (skill == NULL){
+        QObject *roomObject = Sanguosha->currentRoomObject();
+        if (roomObject != NULL && roomObject->inherits("Room")){
+            Room *room = Sanguosha->currentRoom();
+            room->output("no such skill " + skill_name);
+            qWarning("%s", QString("no such skill " + skill_name).toAscii());
+        }
+        return false;
+    }
+#endif
+    return hasShownSkill(skill);
 }
 
 bool Player::hasShownSkills(const QString &skill_name) const{
