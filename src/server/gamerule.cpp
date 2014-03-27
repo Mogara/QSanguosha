@@ -239,16 +239,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
         break;
     }
     case EventPhaseEnd: {
-        foreach (ServerPlayer *p, room->getAllPlayers()) {
-            if (p->getMark("drank") > 0) {
-                LogMessage log;
-                log.type = "#UnsetDrankEndOfTurn";
-                log.from = p;
-                room->sendLog(log);
-
-                room->setPlayerMark(p, "drank", 0);
-            }
-        }
         if (player->getPhase() == Player::Play)
             room->addPlayerHistory(player, ".");
         break;
@@ -258,6 +248,16 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
         if (change.to == Player::NotActive) {
             room->setPlayerFlag(player, ".");
             room->clearPlayerCardLimitation(player, true);
+            foreach (ServerPlayer *p, room->getAllPlayers()) {
+                if (p->getMark("drank") > 0) {
+                    LogMessage log;
+                    log.type = "#UnsetDrankEndOfTurn";
+                    log.from = p;
+                    room->sendLog(log);
+
+                    room->setPlayerMark(p, "drank", 0);
+                }
+            }
         } else if (change.to == Player::Play) {
             room->addPlayerHistory(player, ".");
         } else if (change.to == Player::Start) {
