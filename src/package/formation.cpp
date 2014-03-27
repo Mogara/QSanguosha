@@ -286,7 +286,7 @@ public:
 
     virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &) const{
         QMap<ServerPlayer *, QStringList> skill_list;
-        if (player == NULL) return skill_list;
+        if (player == NULL || player->isDead()) return skill_list;
         QList<ServerPlayer *> dengais = room->findPlayersBySkillName(objectName());
         foreach (ServerPlayer *dengai, dengais)
             if (!dengai->getPile("field").isEmpty() && dengai->isFriendWith(player))
