@@ -625,6 +625,10 @@ public:
         room->useCard(CardUseStruct(slash, player, targets), false);
         return false;
     }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+        return card->getSubcards().length() + 1;
+    }
 };
 
 QiaobianCard::QiaobianCard() {
@@ -1086,7 +1090,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        ServerPlayer *to = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "fangzhu-invoke", true);
+        ServerPlayer *to = room->askForPlayerChosen(player, room->getOtherPlayers(player), objectName(), "fangzhu-invoke", true, true);
         if (to != NULL){
             room->broadcastSkillInvoke(objectName(), (to->faceUp() ? 1: 2));
             player->tag["fangzhu_invoke"] = QVariant::fromValue(to);
