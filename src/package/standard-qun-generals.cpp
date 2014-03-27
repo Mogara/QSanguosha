@@ -393,7 +393,7 @@ public:
     }
 };
 
-class Wansha: public TriggerSkill {
+class Wansha: public TriggerSkill { // Gamerule::effect (AskForPeaches)
 public:
     Wansha(): TriggerSkill("wansha") {
         events << Dying;

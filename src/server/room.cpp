@@ -1237,7 +1237,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
 
 const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const QString &prompt,
                              const QVariant &data, Card::HandlingMethod method, ServerPlayer *to,
-                             bool isRetrial, const QString &, bool isProvision) {
+                             bool isRetrial, const QString &_skill_name, bool isProvision) {
 
     Q_ASSERT(pattern != "slash" || method != Card::MethodUse); // use askForUseSlashTo instead
     while (isPaused()) {}
@@ -1321,7 +1321,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             player->broadcastSkillInvoke(card);
         } else if (method == Card::MethodDiscard) {
             LogMessage log;
-            log.type = skill_name.isEmpty()? "$DiscardCard" : "$DiscardCardWithSkill";
+            log.type = _skill_name.isEmpty()? "$DiscardCard" : "$DiscardCardWithSkill";
             log.from = player;
             QList<int> to_discard;
             if (card->isVirtualCard())
@@ -1329,11 +1329,11 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             else
                 to_discard << card->getEffectiveId();
             log.card_str = IntList2StringList(to_discard).join("+");
-            if (!skill_name.isEmpty())
-                log.arg = skill_name;
+            if (!_skill_name.isEmpty())
+                log.arg = _skill_name;
             sendLog(log);
-            if (!skill_name.isEmpty())
-                notifySkillInvoked(player, skill_name);
+            if (!_skill_name.isEmpty())
+                notifySkillInvoked(player, _skill_name);
         }
     }
 
@@ -1790,11 +1790,9 @@ void Room::swapPile() {
     }
 
     int times = tag.value("SwapPile", 0).toInt();
-    tag.insert("SwapPile", ++times);
+    setTag("SwapPile", ++times);
 
     int limit = Config.value("PileSwappingLimitation", 5).toInt() + 1;
-    if (mode == "04_1v3")
-        limit = qMin(limit, Config.BanPackages.contains("maneuvering") ? 3 : 2);
     if (limit > 0 && times == limit)
         gameOver(".");
 
@@ -4516,6 +4514,8 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
     QList<int> to_discard;
     if (ai) {
         to_discard = ai->askForDiscard(reason, discard_num, min_num, optional, include_equip);
+        if (optional && !to_discard.isEmpty())
+            thread->delay();
     } else {
         Json::Value ask_str(Json::arrayValue);
         ask_str[0] = discard_num;
@@ -4567,6 +4567,8 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
         player->setFlags("Global_AIDiscardExchanging");
         try {
             to_exchange = ai->askForDiscard(reason, discard_num, discard_num, optional, include_equip);
+            if (optional && !to_exchange.isEmpty())
+                thread->delay();
             player->setFlags("-Global_AIDiscardExchanging");
         }
         catch (TriggerEvent triggerEvent) {
