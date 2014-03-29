@@ -452,7 +452,6 @@ public:
 private:
     static void doTieqi(ServerPlayer *target, ServerPlayer *source, CardUseStruct use, QVariantList &jink_list){
         Room *room = target->getRoom();
-        target->setFlags("TieqiTarget"); // For AI
 
         int index = use.to.indexOf(target);
 
@@ -472,17 +471,10 @@ private:
         judge.reason = "tieqi";
         judge.who = source;
 
-        try {
-            if (has_lord)
-                room->notifySkillInvoked(lord, "shouyue");
+        if (has_lord)
+            room->notifySkillInvoked(lord, "shouyue");
 
-            room->judge(judge);
-        }
-        catch (TriggerEvent triggerEvent) {
-            if (triggerEvent == TurnBroken || triggerEvent == StageChange)
-                target->setFlags("-TieqiTarget");
-            throw triggerEvent;
-        }
+        room->judge(judge);
 
         if (judge.isGood()) {
             LogMessage log;
@@ -493,8 +485,6 @@ private:
             jink_list.replace(index, QVariant(0));
             room->broadcastSkillInvoke("tieqi", 2);
         }
-
-        target->setFlags("-TieqiTarget");
     }
 };
 
