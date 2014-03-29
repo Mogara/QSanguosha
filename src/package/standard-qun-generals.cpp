@@ -324,7 +324,7 @@ public:
 class Shuangxiong: public TriggerSkill {
 public:
     Shuangxiong(): TriggerSkill("shuangxiong") {
-        events << EventPhaseStart << FinishJudge << EventPhaseChanging;
+        events << EventPhaseStart << EventPhaseChanging;
         view_as_skill = new ShuangxiongViewAsSkill;
     }
 
@@ -340,15 +340,6 @@ public:
                     return QStringList();
                 } else if (player->getPhase() == Player::Draw && TriggerSkill::triggerable(player))
                     return QStringList(objectName());
-            }
-            else if (triggerEvent == FinishJudge) {
-                JudgeStar judge = data.value<JudgeStar>();
-                if (judge->reason == "shuangxiong"){
-                    if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
-                        player->obtainCard(judge->card);
-                    judge->pattern = judge->card->isRed() ? "red" : "black";
-                }
-                return QStringList();
             }
             else if (triggerEvent == EventPhaseChanging) {
                 PhaseChangeStruct change = data.value<PhaseChangeStruct>();
@@ -390,6 +381,37 @@ public:
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
         return 2;
+    }
+};
+
+class ShuangxiongGet: public TriggerSkill {
+public:
+    ShuangxiongGet(): TriggerSkill("#shuangxiong") {
+        events << FinishJudge;
+        frequency = Compulsory;
+    }
+
+    virtual bool canPreshow() const{
+        return false;
+    }
+    
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
+        if (player != NULL){
+            JudgeStar judge = data.value<JudgeStar>();
+            if (judge->reason == "shuangxiong"){
+                judge->pattern = judge->card->isRed() ? "red" : "black";
+                if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
+                    return QStringList(objectName());
+            }
+        }
+        return QStringList();
+    }
+
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *, QVariant &data, ServerPlayer *) const{
+        JudgeStar judge = data.value<JudgeStar>();
+        judge->who->obtainCard(judge->card);
+
+        return false;
     }
 };
 
@@ -1307,6 +1329,8 @@ void StandardPackage::addQunGenerals()
 
     General *yanliangwenchou = new General(this, "yanliangwenchou", "qun"); // QUN 005
     yanliangwenchou->addSkill(new Shuangxiong);
+    yanliangwenchou->addSkill(new ShuangxiongGet);
+    related_skills.insertMulti("shuangxiong", "#shuangxiong");
 
     General *jiaxu = new General(this, "jiaxu", "qun", 3); // QUN 007
     jiaxu->addSkill(new Wansha);
