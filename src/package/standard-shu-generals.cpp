@@ -843,7 +843,6 @@ bool SavageAssaultAvoid::cost(TriggerEvent , Room *room, ServerPlayer *player, Q
 }
 
 bool SavageAssaultAvoid::effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-
     LogMessage log;
     log.type = "#SkillNullify";
     log.from = player;
@@ -1084,7 +1083,6 @@ public:
         } else if (triggerEvent == SlashEffected){
             if (!TriggerSkill::triggerable(player)) return QStringList();
             if (player->getMark("xiangle") > 0) {
-                player->setMark("xiangle", 0);
                 if (!player->hasShownSkill(this))
                     return QStringList();
                 return QStringList(objectName());
@@ -1111,6 +1109,7 @@ public:
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *liushan, QVariant &data, ServerPlayer *) const{
         if (triggerEvent == SlashEffected){
+            liushan->removeMark("xiangle");
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             LogMessage log;
             log.type = "#DanlaoAvoid";
