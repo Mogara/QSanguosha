@@ -642,15 +642,10 @@ public:
 
             return QStringList();
         }
-        if (player != NULL && player->getPhase() == Player::NotActive && player->getMark("hunshang") > 0){
-            player->setMark("hunshang",0);
-            room->handleAcquireDetachSkills(player, "-yinghun_sunce|-yingzi_sunce", true);
-            return QStringList();
-        }
         return (player->getPhase() == Player::Start && player->getHp() == 1) ? QStringList(objectName()) : QStringList();
     }
 
-    virtual bool cost(TriggerEvent , Room* room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+    virtual bool cost(TriggerEvent , Room* room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
         bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
         if (invoke){
             room->broadcastSkillInvoke(objectName());
@@ -663,7 +658,32 @@ public:
         QStringList skills;
         skills << "yinghun_sunce!" << "yingzi_sunce!";
         room->handleAcquireDetachSkills(target, skills);
-        target->setMark("hunshang",1);
+        target->setMark("hunshang", 1);
+        return false;
+    }
+};
+
+class HunshangRemove: public TriggerSkill {
+public:
+    HunshangRemove(): TriggerSkill("#hunshang") {
+        frequency = Compulsory;
+        events << EventPhaseStart;
+    }
+
+    virtual bool canPreshow() const {
+        return false;
+    }
+
+    virtual bool triggerable(const ServerPlayer *player) const {
+        if (player != NULL && player->getPhase() == Player::NotActive && player->getMark("hunshang") > 0)
+            return true;
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent , Room* room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        player->setMark("hunshang", 0);
+        room->handleAcquireDetachSkills(player, "-yinghun_sunce|-yingzi_sunce", true);
+
         return false;
     }
 };
@@ -1373,6 +1393,8 @@ MomentumPackage::MomentumPackage()
     sunce->addSkill(new Jiang);
     sunce->addSkill(new Yingyang);
     sunce->addSkill(new Hunshang);
+    sunce->addSkill(new HunshangRemove);
+    related_skills.insertMulti("hunshang", "#hunshang");
     sunce->setDeputyMaxHpAdjustedValue(-1);
     sunce->addRelateSkill("yinghun_sunce");
     sunce->addRelateSkill("yingzi_sunce");

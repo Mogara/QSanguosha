@@ -496,7 +496,6 @@ class Feiying: public TriggerSkill {
 public:
     Feiying(): TriggerSkill("feiying") {
         frequency = Compulsory;
-        //attached_lord_skill = true;
     }
 
     virtual bool canPreshow() const {
@@ -618,9 +617,9 @@ public:
             if (TriggerSkill::triggerable(player) && player->getPhase() == Player::Play) {
                 if (!player->hasFlag("ShengxiDamageInPlayPhase"))
                     return QStringList(objectName());
+                else
+                    player->setFlags("-ShengxiDamageInPlayPhase");
             }
-            if (player->hasFlag("ShengxiDamageInPlayPhase"))
-                player->setFlags("-ShengxiDamageInPlayPhase");
         } else if (triggerEvent == DamageDone) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.from && damage.from->getPhase() == Player::Play && !damage.from->hasFlag("ShengxiDamageInPlayPhase"))
