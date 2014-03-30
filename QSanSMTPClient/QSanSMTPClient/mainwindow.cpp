@@ -110,10 +110,11 @@ int MainWindow::askForUploading() {
     QString file_name = qApp->arguments().at(1);
     Q_ASSERT(!file_name.isEmpty());
     if (QMessageBox::Yes == QMessageBox::question(this, tr("The Program Crashed"), tr("I regret to tell you that the program crashed just now. Fortunately, We have generated an error report successfully. \n The problem may be solved if you click \"Yes\" to upload the report to us. It may take you a few minutes."), QMessageBox::Yes | QMessageBox::No, QMessageBox::No)) {
-        SmtpClient smtp("smtp.gmail.com", 465, SmtpClient::SslConnection);
+        SmtpClient smtp("smtp.qq.com", 465, SmtpClient::SslConnection);
 
-        smtp.setUser("QSanguoshaX@gmail.com");
-        smtp.setPassword("gaodaweiwugaodaxiongzhuang");
+        smtp.setName("QSGSH");
+        smtp.setUser("QSGSH@qq.com");
+        smtp.setPassword("abcdefghijklmnopqrstuvwxyz"); //to be changed in the future, now there is some personal information in that QQ id
 
         if (!smtp.connectToHost()) {
             QMessageBox::warning(this, tr("Error!"), tr("Failed to connect to the server"), QMessageBox::Ok, QMessageBox::Ok);
@@ -133,9 +134,9 @@ int MainWindow::askForUploading() {
             UserName = "Sanguosha-fans";
 
         MimeMessage message;
-        message.setSender(new EmailAddress("QSanguoshaX@gmail.com", UserName));
-        message.addRecipient(new EmailAddress("yanguamsiliagim@gmail.com", "QSanguosha-Hegemony Team"));
-        message.setSubject("Crash Report 0.6.1");
+        message.setSender(new EmailAddress("QSGSH@qq.com", UserName));
+        message.addRecipient(new EmailAddress("Fsu0413@vip.qq.com", "QSanguosha-Hegemony Team"));
+        message.setSubject("Crash Report 0.7.0");
 
         MimeText text;
         text.setText("Hi!\n This is a mail with an error report. Sender's system:" + getSystemVersion());
