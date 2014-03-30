@@ -416,7 +416,7 @@ public:
         return false;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
         if (player->getPhase() == Player::Start){
             if (TriggerSkill::triggerable(player))
                 return QStringList(objectName());
@@ -657,7 +657,7 @@ public:
         return false;
     }
 
-    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+    virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
         return card->getSubcards().length() + 1;
     }
 };

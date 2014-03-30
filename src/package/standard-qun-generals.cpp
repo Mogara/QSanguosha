@@ -407,7 +407,7 @@ public:
         return QStringList();
     }
 
-    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *, QVariant &data, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent , Room *, ServerPlayer *, QVariant &data, ServerPlayer *) const{
         JudgeStar judge = data.value<JudgeStar>();
         judge->who->obtainCard(judge->card);
 

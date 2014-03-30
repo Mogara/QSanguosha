@@ -147,7 +147,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        if (player->hasShownSkill("paoxiao"))
+        if (player->hasShownSkill("paoxiao") || player->getAcquiredSkills().contains("paoxiao"))
             return true;
         else {
             player->tag["paoxiao_use"] = data;

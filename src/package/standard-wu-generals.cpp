@@ -991,7 +991,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *lusu, QVariant &, ServerPlayer * &) const{
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *lusu, QVariant &, ServerPlayer * &) const{
         if (!lusu || !lusu->isAlive() || !lusu->hasShownSkill("haoshi")) return QStringList();
         if (lusu->hasFlag("haoshi")) {
             lusu->setFlags("-haoshi");
