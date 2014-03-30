@@ -153,8 +153,9 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const {
-        if (!player) return QStringList();
+    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        QMap<ServerPlayer *, QStringList> skill_list;
+        if (!player) return skill_list;
         if (triggerEvent == TurnStart) {
             room->setPlayerMark(player, "@hengjiang", 0);
             foreach (ServerPlayer *p, room->getAllPlayers())
@@ -167,14 +168,14 @@ public:
                 player->setFlags("HengjiangDiscarded");
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to != Player::NotActive) return QStringList();
+            if (change.to != Player::NotActive) return skill_list;
             QList<ServerPlayer *> zangbas;
             foreach (ServerPlayer *p, room->getAllPlayers())
                 if (p->getMark("HengjiangInvoke") > 0) {
                     room->setPlayerMark(p, "HengjiangInvoke", 0);
                     zangbas << p;
                 }
-            if (zangbas.isEmpty()) return QStringList();
+            if (zangbas.isEmpty()) return skill_list;
             if (player->getMark("@hengjiang") > 0) {
                 bool invoke = false;
                 if (!player->hasFlag("HengjiangDiscarded")) {
@@ -186,15 +187,20 @@ public:
                     room->sendLog(log);
 
                     invoke = true;
-                }
-                player->setFlags("-HengjiangDiscarded");
+                } else
+                    player->setFlags("-HengjiangDiscarded");
                 room->setPlayerMark(player, "@hengjiang", 0);
                 if (invoke)
                     foreach (ServerPlayer *zangba, zangbas)
-                        zangba->drawCards(1);
+                        skill_list.insert(zangba, QStringList(objectName()));
             }
         }
-        return QStringList();
+        return skill_list;
+    }
+
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const {
+        ask_who->drawCards(1);
+        return false;
     }
 };
 
