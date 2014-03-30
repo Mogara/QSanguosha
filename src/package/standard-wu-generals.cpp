@@ -532,7 +532,6 @@ bool Yinghun::onPhaseChange(ServerPlayer *sunjian) const{
     return false;
 }
 
-
 TianxiangCard::TianxiangCard() {
 }
 
@@ -1000,34 +999,39 @@ public:
             if (lusu->getHandcardNum() <= 5)
                 return QStringList();
 
-            QList<ServerPlayer *> other_players = room->getOtherPlayers(lusu);
-            int least = 1000;
-            foreach (ServerPlayer *player, other_players)
-                least = qMin(player->getHandcardNum(), least);
-            room->setPlayerMark(lusu, "haoshi", least);
-            bool used = room->askForUseCard(lusu, "@@haoshi!", "@haoshi", -1, Card::MethodNone);
-
-            if (!used) {
-                // force lusu to give his half cards
-                ServerPlayer *beggar = NULL;
-                foreach (ServerPlayer *player, other_players) {
-                    if (player->getHandcardNum() == least) {
-                        beggar = player;
-                        break;
-                    }
-                }
-
-                int n = lusu->getHandcardNum() / 2;
-                QList<int> to_give = lusu->handCards().mid(0, n);
-                HaoshiCard haoshi_card;
-                haoshi_card.addSubcards(to_give);
-                QList<ServerPlayer *> targets;
-                targets << beggar;
-                haoshi_card.use(room, lusu, targets);
-            }
+            return QStringList(objectName());
         }
 
         return QStringList();
+    }
+
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *lusu, QVariant &, ServerPlayer *) const{
+        QList<ServerPlayer *> other_players = room->getOtherPlayers(lusu);
+        int least = 1000;
+        foreach (ServerPlayer *player, other_players)
+            least = qMin(player->getHandcardNum(), least);
+        room->setPlayerMark(lusu, "haoshi", least);
+        bool used = room->askForUseCard(lusu, "@@haoshi!", "@haoshi", -1, Card::MethodNone);
+
+        if (!used) {
+            // force lusu to give his half cards
+            ServerPlayer *beggar = NULL;
+            foreach (ServerPlayer *player, other_players) {
+                if (player->getHandcardNum() == least) {
+                    beggar = player;
+                    break;
+                }
+            }
+
+            int n = lusu->getHandcardNum() / 2;
+            QList<int> to_give = lusu->handCards().mid(0, n);
+            HaoshiCard haoshi_card;
+            haoshi_card.addSubcards(to_give);
+            QList<ServerPlayer *> targets;
+            targets << beggar;
+            haoshi_card.use(room, lusu, targets);
+        }
+        return false;
     }
 };
 

@@ -900,7 +900,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *caoren) const{
         Room *room = caoren->getRoom();
-        room->drawCards(caoren,3);
+        room->drawCards(caoren, 3);
         caoren->turnOver();
         return false;
     }
