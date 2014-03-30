@@ -42,25 +42,26 @@ SOURCES += \
     src/dialog/mainwindow.cpp \
     src/dialog/packagingeditor.cpp \
     src/dialog/playercarddialog.cpp \
-	src/dialog/rule-summary.cpp \
+    src/dialog/rule-summary.cpp \
     src/package/exppattern.cpp \
     src/package/formation.cpp \
     src/package/momentum.cpp \
     src/package/standard.cpp \
     src/package/standard-basics.cpp \
-	src/package/standard-equips.cpp \
-	src/package/standard-tricks.cpp \
+    src/package/standard-equips.cpp \
+    src/package/standard-tricks.cpp \
     src/package/standard-qun-generals.cpp \
     src/package/standard-shu-generals.cpp \
     src/package/standard-wu-generals.cpp \
     src/package/standard-wei-generals.cpp \
-	src/package/standard-package.cpp \
+    src/package/standard-package.cpp \
     src/package/package.cpp \
     src/scenario/miniscenarios.cpp \
     src/scenario/scenario.cpp \
     src/scenario/scenerule.cpp \
     src/server/ai.cpp \
     src/server/gamerule.cpp \
+    src/server/generalselector.cpp \
     src/server/room.cpp \
     src/server/roomthread.cpp \
     src/server/server.cpp \
@@ -132,25 +133,26 @@ HEADERS += \
     src/dialog/mainwindow.h \
     src/dialog/packagingeditor.h \
     src/dialog/playercarddialog.h \
-	src/dialog/rule-summary.h \
+    src/dialog/rule-summary.h \
     src/package/exppattern.h \
     src/package/formation.h \
     src/package/momentum.h \
     src/package/package.h \
     src/package/standard.h \
     src/package/standard-basics.h \
-	src/package/standard-equips.h \
-	src/package/standard-tricks.h \
+    src/package/standard-equips.h \
+    src/package/standard-tricks.h \
     src/package/standard-qun-generals.h \
     src/package/standard-shu-generals.h \
     src/package/standard-wu-generals.h \
     src/package/standard-wei-generals.h \
-	src/package/standard-package.h \
+    src/package/standard-package.h \
     src/scenario/miniscenarios.h \
     src/scenario/scenario.h \
     src/scenario/scenerule.h \
     src/server/ai.h \
     src/server/gamerule.h \
+    src/server/generalselector.h \
     src/server/room.h \
     src/server/roomthread.h \
     src/server/server.h \
@@ -192,7 +194,7 @@ HEADERS += \
     src/jsoncpp/include/json/features.h \
     src/jsoncpp/include/json/config.h \
     src/jsoncpp/include/json/autolink.h \
-    src/jsoncpp/include/json/assertions.h 
+    src/jsoncpp/include/json/assertions.h
 
 FORMS += \
     src/dialog/cardoverview.ui \
