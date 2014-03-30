@@ -10,6 +10,7 @@
 #include "jsonutils.h"
 #include "structs.h"
 #include "miniscenarios.h"
+#include "generalselector.h"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -24,7 +25,6 @@
 #ifndef QT_NO_DEBUG
 #include <QApplication>
 #endif
-#include "..\generalselector.h"
 
 #ifdef QSAN_UI_LIBRARY_AVAILABLE
 #pragma message WARN("UI elements detected in server side!!!")

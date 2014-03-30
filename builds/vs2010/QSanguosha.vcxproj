@@ -399,7 +399,7 @@
     <ClCompile Include="Debug\moc_WrappedCard.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="generalselector.cpp" />
+    <ClCompile Include="..\..\src\server\generalselector.cpp" />
     <ClCompile Include="Release\moc_AboutUs.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -880,7 +880,7 @@
     <ClInclude Include="..\..\src\core\util.h" />
     <ClInclude Include="..\..\src\ui\SkinBank.h" />
     <ClInclude Include="..\..\src\ui\uiUtils.h" />
-    <CustomBuild Include="generalselector.h">
+    <CustomBuild Include="..\..\src\server\generalselector.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing generalselector.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ConfigurationName)\moc_%(Filename).cpp</Outputs>

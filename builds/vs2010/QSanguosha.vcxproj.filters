@@ -739,14 +739,14 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\main.cpp" />
-    <ClCompile Include="generalselector.cpp">
-      <Filter>server</Filter>
-    </ClCompile>
     <ClCompile Include="Debug\moc_generalselector.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Release\moc_generalselector.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\server\generalselector.cpp">
+      <Filter>server</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -966,7 +966,7 @@
     <CustomBuild Include="..\..\src\package\standard-package.h">
       <Filter>package</Filter>
     </CustomBuild>
-    <CustomBuild Include="generalselector.h">
+    <CustomBuild Include="..\..\src\server\generalselector.h">
       <Filter>server</Filter>
     </CustomBuild>
   </ItemGroup>
