@@ -24,6 +24,7 @@
 #ifndef QT_NO_DEBUG
 #include <QApplication>
 #endif
+#include "..\generalselector.h"
 
 #ifdef QSAN_UI_LIBRARY_AVAILABLE
 #pragma message WARN("UI elements detected in server side!!!")
@@ -2480,28 +2481,15 @@ int Room::getCardFromPile(const QString &card_pattern) {
 
 QString Room::_chooseDefaultGeneral(ServerPlayer *player) const{
     Q_ASSERT(!player->getSelected().isEmpty());
-    foreach (QString name, player->getSelected()) {
-        Q_ASSERT(!name.isEmpty());
-        if (player->getGeneral() != NULL) { // choosing second general
-            if (name == player->getGeneralName()) continue;
-            Q_ASSERT(Sanguosha->getGeneral(name) != NULL);
-            Q_ASSERT(player->getGeneral() != NULL);
-            if (Sanguosha->getGeneral(name)->isLord()) continue;
-            if (Sanguosha->getGeneral(name)->getKingdom() == player->getGeneral()->getKingdom())
-                return name;
-        } else {
-            foreach (QString other, player->getSelected()) { // choosing first general
-                if (name == other) continue;
-                Q_ASSERT(Sanguosha->getGeneral(other) != NULL);
-                Q_ASSERT(Sanguosha->getGeneral(name) != NULL);
-                if (Sanguosha->getGeneral(other)->isLord()) continue;
-                if (Sanguosha->getGeneral(name)->getKingdom() == Sanguosha->getGeneral(other)->getKingdom())
-                    return name;
-            }
-        }
-    }
-    Q_ASSERT(false);
-    return QString();
+    QString choice;
+    GeneralSelector *selector = GeneralSelector::getInstance();
+    if (player->getGeneral() != NULL) // choosing second general
+        choice = selector->selectSecond(player, player->getSelected());
+    else
+        choice = selector->selectFirst(player, player->getSelected());
+
+    Q_ASSERT(!choice.isEmpty());
+    return choice;
 }
 
 bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, bool isFirst) {
