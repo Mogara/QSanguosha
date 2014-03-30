@@ -1667,8 +1667,7 @@ bool RoomScene::_shouldIgnoreDisplayMove(CardsMoveStruct &movement) {
         static QList<Player::Place> ignore_place;
         if (ignore_place.isEmpty())
             ignore_place << Player::DiscardPile << Player::PlaceTable << Player::PlaceJudge;
-        return movement.reason.m_skillName != "manjuan"
-               && ignore_place.contains(from) && ignore_place.contains(to);
+        return ignore_place.contains(from) && ignore_place.contains(to);
     }
 }
 
