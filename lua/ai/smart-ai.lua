@@ -2987,6 +2987,7 @@ function SmartAI:getOverflow(player, getMaxCards)
 	local MaxCards = player:getMaxCards()
 	if player:hasShownSkill("qiaobian") and not player:hasFlag("AI_ConsideringQiaobianSkipDiscard") then
 		MaxCards = math.max(self.player:getHandcardNum() - 1, MaxCards) 
+		player:setFlags("-AI_ConsideringQiaobianSkipDiscard")
 	end
 	if player:hasShownSkill("keji") and not player:hasFlag("KejiSlashInPlayPhase") then MaxCards = self.player:getHandcardNum() end
 	if getMaxCards then return MaxCards end
