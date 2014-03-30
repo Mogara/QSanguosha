@@ -153,8 +153,9 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const {
-        if (!player) return QStringList();
+    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        QMap<ServerPlayer *, QStringList> skill_list;
+        if (!player) return skill_list;
         if (triggerEvent == TurnStart) {
             room->setPlayerMark(player, "@hengjiang", 0);
             foreach (ServerPlayer *p, room->getAllPlayers())
@@ -167,14 +168,14 @@ public:
                 player->setFlags("HengjiangDiscarded");
         } else if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-            if (change.to != Player::NotActive) return QStringList();
+            if (change.to != Player::NotActive) return skill_list;
             QList<ServerPlayer *> zangbas;
             foreach (ServerPlayer *p, room->getAllPlayers())
                 if (p->getMark("HengjiangInvoke") > 0) {
                     room->setPlayerMark(p, "HengjiangInvoke", 0);
                     zangbas << p;
                 }
-            if (zangbas.isEmpty()) return QStringList();
+            if (zangbas.isEmpty()) return skill_list;
             if (player->getMark("@hengjiang") > 0) {
                 bool invoke = false;
                 if (!player->hasFlag("HengjiangDiscarded")) {
@@ -186,15 +187,20 @@ public:
                     room->sendLog(log);
 
                     invoke = true;
-                }
-                player->setFlags("-HengjiangDiscarded");
+                } else
+                    player->setFlags("-HengjiangDiscarded");
                 room->setPlayerMark(player, "@hengjiang", 0);
                 if (invoke)
                     foreach (ServerPlayer *zangba, zangbas)
-                        zangba->drawCards(1);
+                        skill_list.insert(zangba, QStringList(objectName()));
             }
         }
-        return QStringList();
+        return skill_list;
+    }
+
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const {
+        ask_who->drawCards(1);
+        return false;
     }
 };
 
@@ -324,20 +330,9 @@ public:
         } else if (triggerEvent == GeneralShown) {
             if (TriggerSkill::triggerable(player))
                 return (data.toBool() == player->inHeadSkills(objectName())) ? QStringList(objectName()) : QStringList();
-        } else if (data.toString() == "mifuren" && player->getMark(objectName()) > 0) {
-            room->setPlayerMark(player, objectName(), 0);
-            if (player->isWounded() && room->askForSkillInvoke(player, objectName())) {
-                LogMessage log;
-                log.type = "#InvokeSkill";
-                log.from = player;
-                log.arg = "guixiu";
-                room->sendLog(log);
-
-                RecoverStruct recover;
-                recover.who = player;
-                room->recover(player, recover);
-            }
-        }
+        } else if (data.toString() == "mifuren" && player->getMark(objectName()) > 0)
+            if (player->isWounded())
+                return QStringList(objectName());
 
         return QStringList();
     }
@@ -350,8 +345,21 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        player->drawCards(2, objectName());
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        if (triggerEvent == GeneralShown)
+            player->drawCards(2, objectName());
+        else if (triggerEvent == GeneralRemoved) {
+            room->setPlayerMark(player, objectName(), 0);
+            LogMessage log;
+            log.type = "#InvokeSkill";
+            log.from = player;
+            log.arg = "guixiu";
+            room->sendLog(log);
+
+            RecoverStruct recover;
+            recover.who = player;
+            room->recover(player, recover);
+        }
         return false;
     }
 };
@@ -634,15 +642,10 @@ public:
 
             return QStringList();
         }
-        if (player != NULL && player->getPhase() == Player::NotActive && player->getMark("hunshang") > 0){
-            player->setMark("hunshang",0);
-            room->handleAcquireDetachSkills(player, "-yinghun_sunce|-yingzi_sunce", true);
-            return QStringList();
-        }
         return (player->getPhase() == Player::Start && player->getHp() == 1) ? QStringList(objectName()) : QStringList();
     }
 
-    virtual bool cost(TriggerEvent , Room* room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+    virtual bool cost(TriggerEvent , Room* room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
         bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
         if (invoke){
             room->broadcastSkillInvoke(objectName());
@@ -655,7 +658,32 @@ public:
         QStringList skills;
         skills << "yinghun_sunce!" << "yingzi_sunce!";
         room->handleAcquireDetachSkills(target, skills);
-        target->setMark("hunshang",1);
+        target->setMark("hunshang", 1);
+        return false;
+    }
+};
+
+class HunshangRemove: public TriggerSkill {
+public:
+    HunshangRemove(): TriggerSkill("#hunshang") {
+        frequency = Compulsory;
+        events << EventPhaseStart;
+    }
+
+    virtual bool canPreshow() const {
+        return false;
+    }
+
+    virtual bool triggerable(const ServerPlayer *player) const {
+        if (player != NULL && player->getPhase() == Player::NotActive && player->getMark("hunshang") > 0)
+            return true;
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent , Room* room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        player->setMark("hunshang", 0);
+        room->handleAcquireDetachSkills(player, "-yinghun_sunce|-yingzi_sunce", true);
+
         return false;
     }
 };
@@ -1365,6 +1393,8 @@ MomentumPackage::MomentumPackage()
     sunce->addSkill(new Jiang);
     sunce->addSkill(new Yingyang);
     sunce->addSkill(new Hunshang);
+    sunce->addSkill(new HunshangRemove);
+    related_skills.insertMulti("hunshang", "#hunshang");
     sunce->setDeputyMaxHpAdjustedValue(-1);
     sunce->addRelateSkill("yinghun_sunce");
     sunce->addRelateSkill("yingzi_sunce");
