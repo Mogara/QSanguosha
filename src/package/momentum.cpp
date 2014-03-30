@@ -330,20 +330,9 @@ public:
         } else if (triggerEvent == GeneralShown) {
             if (TriggerSkill::triggerable(player))
                 return (data.toBool() == player->inHeadSkills(objectName())) ? QStringList(objectName()) : QStringList();
-        } else if (data.toString() == "mifuren" && player->getMark(objectName()) > 0) {
-            room->setPlayerMark(player, objectName(), 0);
-            if (player->isWounded() && room->askForSkillInvoke(player, objectName())) {
-                LogMessage log;
-                log.type = "#InvokeSkill";
-                log.from = player;
-                log.arg = "guixiu";
-                room->sendLog(log);
-
-                RecoverStruct recover;
-                recover.who = player;
-                room->recover(player, recover);
-            }
-        }
+        } else if (data.toString() == "mifuren" && player->getMark(objectName()) > 0)
+            if (player->isWounded())
+                return QStringList(objectName());
 
         return QStringList();
     }
@@ -356,8 +345,21 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        player->drawCards(2, objectName());
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        if (triggerEvent == GeneralShown)
+            player->drawCards(2, objectName());
+        else if (triggerEvent == GeneralRemoved) {
+            room->setPlayerMark(player, objectName(), 0);
+            LogMessage log;
+            log.type = "#InvokeSkill";
+            log.from = player;
+            log.arg = "guixiu";
+            room->sendLog(log);
+
+            RecoverStruct recover;
+            recover.who = player;
+            room->recover(player, recover);
+        }
         return false;
     }
 };
