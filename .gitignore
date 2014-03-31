@@ -58,3 +58,5 @@ libstdc++-6.dll
 mingwm10.dll
 *.orig
 Qt*.pdb
+msvcp100.dll
+msvcr100.dll

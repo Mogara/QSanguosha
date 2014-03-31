@@ -194,6 +194,17 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
     Client *client = qobject_cast<Client *>(sender());
     QString client_version = Sanguosha->getVersionNumber();
 
+    static QString link = "http://pan.baidu.com/share/home?uk=3173324412";
+
+    if (QDate::currentDate() > QDate(2014, 4, 1)){
+        QString text = tr("The April Fool's Day has passed, please download v0.6.0 version to play normally. <br />");
+        text.append(tr("Download link : <a href='%1'>%1</a> <br/>").arg(link));
+
+        QMessageBox::warning(this, tr("Warning"), text);
+        client->disconnectFromHost();
+        return;
+    }
+
     if (server_version == client_version) {
         client->signup();
         connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
@@ -202,7 +213,6 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
 
     client->disconnectFromHost();
 
-    static QString link = "http://pan.baidu.com/share/home?uk=3173324412";
     QString text = tr("Server version is %1, client version is %2 <br/>").arg(server_version).arg(client_version);
     if (server_version > client_version)
         text.append(tr("Your client version is older than the server's, please update it <br/>"));
