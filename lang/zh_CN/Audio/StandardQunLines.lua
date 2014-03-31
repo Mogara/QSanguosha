@@ -74,6 +74,7 @@ return {
 	["$shuangren2"] = "吃我一记三尖两刃刀！",
 	["$shuangren1"] = "仲国大将纪灵在此！",
 	["$shuangren3"] = "今日这武器颇不顺手。",
+	["$HappyAprilFool"] = "愚人节快乐！" ,
 	["~jiling"] = "将军为何咆哮不断？",
 	["cv:jiling"] = "官方、极光星逝",
 
