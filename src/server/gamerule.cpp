@@ -517,8 +517,19 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                 effect.to->setFlags("Global_NonSkillNullify");
                 return true;
             }
-            if (effect.to->isAlive() || effect.card->isKindOf("Slash"))
-                effect.card->onEffect(effect);
+            if (effect.to->isAlive() || effect.card->isKindOf("Slash")){
+                if (effect.card->isKindOf("SkillCard")){
+                    if (qrand() % 200 == 1){
+                        Json::Value arg(Json::arrayValue);
+                        arg[0] = 2;
+                        arg[1] = "$HappyAprilFool";
+                        arg[2] = "3000";
+                        room->doNotify(effect.from, QSanProtocol::S_COMMAND_ANIMATE, arg);
+                    }
+                }
+                else
+                    effect.card->onEffect(effect);
+            }
         }
 
         break;
