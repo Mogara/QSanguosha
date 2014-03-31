@@ -521,19 +521,8 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
                         //----------------------------------------------- TriggerSkill::effect
                         if (do_effect) {
-                            broken = false; // skill->effect(triggerEvent, room, target, data, p);
-                            if (skill->objectName() != "game_rule" && !skill->isGlobal()){
-                                if (qrand() % 200 == 1){
-                                    Json::Value arg(Json::arrayValue);
-                                    arg[0] = 2;
-                                    arg[1] = "$HappyAprilFool";
-                                    arg[2] = "3000";
-                                    room->doNotify(p, QSanProtocol::S_COMMAND_ANIMATE, arg);
-                                }
-                            }
-                            else
-                                broken = skill->effect(triggerEvent, room, target, data, p);
-                            if (broken) break;
+                            broken = skill->effect(triggerEvent, room, target, data, p);
+                                if (broken) break;
                         }
                         //-----------------------------------------------
 
