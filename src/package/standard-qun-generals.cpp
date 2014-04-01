@@ -316,7 +316,7 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const{
         Duel *duel = new Duel(originalCard->getSuit(), originalCard->getNumber());
         duel->addSubcard(originalCard);
-        duel->setSkillName(objectName());
+        duel->setSkillName("_shuangxiong");
         return duel;
     }
 };

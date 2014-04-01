@@ -579,7 +579,7 @@ TianfuSummon::TianfuSummon()
 class Tianfu: public BattleArraySkill {
 public:
     Tianfu(): BattleArraySkill("tianfu", HegemonyMode::Formation) {
-        events << EventPhaseStart << Death;
+        events << EventPhaseStart << Death << EventLoseSkill << EventAcquireSkill << GeneralShown << GeneralHidden << GeneralRemoved;
         relate_to_place = "head";
     }
 
@@ -587,18 +587,41 @@ public:
         return false;
     }
 
-    virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         if (player == NULL) return QStringList();
+
+        foreach (ServerPlayer *p, room->getPlayers()){
+            if (p->getMark("tianfu_kanpo") > 0 && p->hasSkill("kanpo")){
+                p->setMark("tianfu_kanpo", 0);
+                room->handleAcquireDetachSkills(p, "-kanpo", true);
+            }
+        }
+
+        if (triggerEvent == EventPhaseStart){
+            if (player->getPhase() != Player::RoundStart)
+                return QStringList();
+        }
+        else if (triggerEvent == EventLoseSkill && data.toString() == "tianfu"){
+            return QStringList();
+        }
+        else if (triggerEvent == GeneralHidden && player->ownSkill(this) && player->inHeadSkills(objectName()) == data.toBool()){
+            return QStringList();
+        }
+        else if (triggerEvent == GeneralRemoved && data.toString() == "jiangwei"){
+            return QStringList();
+        }
+        else if (player->aliveCount() < 4){
+            return QStringList();
+        }
 
         QList<ServerPlayer *> jiangweis = room->findPlayersBySkillName(objectName());
         foreach (ServerPlayer *jiangwei, jiangweis) {
-            if (jiangwei->hasSkill("kanpo") && !jiangwei->ownSkill("kanpo"))
-                room->detachSkillFromPlayer(jiangwei, "kanpo", true, true);
-
-            if (room->alivePlayerCount() < 4 || !jiangwei->hasShownSkill(this)) return QStringList();
+            if (!jiangwei->hasShownSkill(this)) return QStringList();
             ServerPlayer *current = room->getCurrent();
-            if (current && current->isAlive() && jiangwei->inFormationRalation(current))
+            if (current && current->isAlive() && current->getPhase() != Player::NotActive && jiangwei->inFormationRalation(current)){
+                jiangwei->setMark("tianfu_kanpo", 1);
                 room->attachSkillToPlayer(jiangwei, "kanpo");
+            }
         }
 
         return QStringList();

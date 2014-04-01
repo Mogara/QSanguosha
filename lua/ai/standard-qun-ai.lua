@@ -376,7 +376,7 @@ shuangxiong_skill.getTurnUseCard = function(self)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	local card_str = ("duel:shuangxiong[%s:%s]=%d&shuangxiong"):format(suit, number, card_id)
+	local card_str = ("duel:_shuangxiong[%s:%s]=%d&shuangxiong"):format(suit, number, card_id)
 	local skillcard = sgs.Card_Parse(card_str)
 	assert(skillcard)
 	return skillcard
