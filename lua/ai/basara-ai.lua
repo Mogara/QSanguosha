@@ -21,13 +21,13 @@ sgs.ai_skill_choice.CompanionEffect = function(self, choice, data)
 	if self:isWeak() and string.find(choice, "recover") then return "recover"
 	else return "draw" end
 end
-
+--[[
 sgs.ai_skill_choice.heg_nullification = function(self, choice, data)
 	local effect = data:toCardEffect()
 	if effect.card:isKindOf("AOE") then return "all" end
 	return "single"
 end
-
+]]
 sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 	local function getReturnValue(head)
 		return head and "show_head_general" or "show_deputy_general"
