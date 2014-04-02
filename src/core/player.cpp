@@ -1161,6 +1161,13 @@ bool Player::inHeadSkills(const QString &skill_name) const {
     return (head_skills.keys() + head_acquired_skills.toList()).contains(skill_name);
 }
 
+bool Player::inHeadSkills(const Skill *skill) const {
+    if (skill == NULL)
+        return false;
+
+    return inHeadSkills(skill->objectName());
+}
+
 const General *Player::getActualGeneral1() const {
     return actual_general1;
 }
