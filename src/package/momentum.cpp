@@ -381,27 +381,28 @@ void CunsiCard::onEffect(const CardEffectStruct &effect) const{
         effect.to->drawCards(2);
 }
 
-class Cunsi: public ZeroCardViewAsSkill {
+class CunsiVS: public ZeroCardViewAsSkill {
 public:
-    Cunsi(): ZeroCardViewAsSkill("cunsi") {
+    CunsiVS(): ZeroCardViewAsSkill("cunsi") {
     }
 
     virtual const Card *viewAs() const{
-        Card *card = new CunsiCard;
+        CunsiCard *card = new CunsiCard;
         card->setShowSkill(objectName());
         return card;
     }
 };
 
-class CunsiStart: public TriggerSkill {
+class Cunsi: public TriggerSkill {
 public:
-    CunsiStart(): TriggerSkill("#cunsi-start") {
+    Cunsi(): TriggerSkill("#cunsi-start") {
         events << GameStart << EventAcquireSkill;
         frequency = Compulsory;
+        view_as_skill = new CunsiVS;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
-        if (!player || !player->isAlive() || !player->hasSkill("cunsi")) return QStringList();
+        if (!player || !player->isAlive() || !player->ownSkill(this)) return QStringList();
         room->getThread()->addTriggerSkill(Sanguosha->getTriggerSkill("yongjue"));
         return QStringList();
     }
@@ -1382,8 +1383,6 @@ MomentumPackage::MomentumPackage()
     General *mifuren = new General(this, "mifuren", "shu", 3, false); // SHU 021
     mifuren->addSkill(new Guixiu);
     mifuren->addSkill(new Cunsi);
-    mifuren->addSkill(new CunsiStart);
-    related_skills.insertMulti("cunsi", "#cunsi-start");
     mifuren->addRelateSkill("yongjue");
 
     General *sunce = new General(this, "sunce", "wu", 4); // WU 010
