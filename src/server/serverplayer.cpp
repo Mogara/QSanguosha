@@ -785,10 +785,10 @@ void ServerPlayer::setAI(AI *ai) {
 AI *ServerPlayer::getAI() const{
     if (getState() == "online")
         return NULL;
-    else if (getState() == "trust" && !Config.EnableCheat)
-        return trust_ai;
-    else
+    else if (getState() == "robot" || Config.EnableCheat)
         return ai;
+    else
+        return trust_ai;
 }
 
 AI *ServerPlayer::getSmartAI() const{
