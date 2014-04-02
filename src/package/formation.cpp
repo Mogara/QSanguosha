@@ -1362,7 +1362,7 @@ public:
                 continue;
 
             bool continue_flag = false;
-            foreach (ServerPlayer *p, room->getAlivePlayers()){
+            foreach (ServerPlayer *p, room->getPlayers()){
                 QStringList generals_of_player = room->getTag(p->objectName()).toStringList();
                 if (generals_of_player.contains(general)){
                     continue_flag = true;
@@ -1385,7 +1385,7 @@ public:
             QString to_change;
             AI *ai = player->getAI();
             if (ai)
-                to_change = room->askForChoice(player, objectName(), avaliable_generals.join("+"));
+                to_change = room->askForChoice(player, objectName(), avaliable_generals.join("+"), dfowner->getKingdom());
             else
                 to_change = room->askForGeneral(player, avaliable_generals);
 
@@ -1412,6 +1412,8 @@ public:
                 }
                 room->changeHero(player, to_change, false, true, false, true);
                 player->setSkillsPreshowed("h");
+
+                room->setPlayerProperty(player, "actual_general1", to_change);
 
                 change_list << player->getActualGeneral2Name();
 
