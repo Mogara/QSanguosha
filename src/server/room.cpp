@@ -4053,8 +4053,12 @@ void Room::changePlayerGeneral(ServerPlayer *player, const QString &new_general)
     Q_ASSERT(player->getGeneral() != NULL);
     if (new_general != "anjiang")
         player->setGender(player->getGeneral()->getGender());
-    else if (!player->hasShownGeneral2())
-        player->setGender(General::Sexless);
+    else {
+        if (player->hasShownGeneral2())
+            player->setGender(player->getGeneral2()->getGender());
+        else
+            player->setGender(General::Sexless);
+    }
     filterCards(player, player->getCards("he"), true);
 }
 
