@@ -397,7 +397,6 @@ class Cunsi: public TriggerSkill {
 public:
     Cunsi(): TriggerSkill("cunsi") {
         events << GameStart << EventAcquireSkill;
-        frequency = Compulsory;
         view_as_skill = new CunsiVS;
     }
 
