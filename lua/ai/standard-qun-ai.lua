@@ -346,7 +346,18 @@ sgs.ai_skill_invoke.shuangxiong = function(self, data)
 	local dummy_use = { isDummy = true }
 	self:useTrickCard(duel, dummy_use)
 
-	return self.player:getHandcardNum() >= 3 and dummy_use.card
+	if (self.player:getHandcardNum() >= 3 and dummy_use.card) then
+		self.player:setFlags("ai_shuangxiong")
+		sgs.ai_use_priority.Duel = 4.2
+		return true
+	end
+	return false
+end
+
+sgs.ai_event_callback[sgs.EventPhaseStart].shuangxiong = function(self, player, data)
+	if player:getPhase() == sgs.Player_Discard and player:hasFlag("ai_shuangxiong") then
+		sgs.ai_use_priority.Duel = 2.9
+	end
 end
 
 sgs.ai_cardneed.shuangxiong = function(to, card, self)
@@ -376,7 +387,7 @@ shuangxiong_skill.getTurnUseCard = function(self)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	local card_str = ("duel:_shuangxiong[%s:%s]=%d&shuangxiong"):format(suit, number, card_id)
+	local card_str = ("duel:_shuangxiong[%s:%s]=%d"):format(suit, number, card_id)
 	local skillcard = sgs.Card_Parse(card_str)
 	assert(skillcard)
 	return skillcard
