@@ -445,3 +445,86 @@ sgs.ai_skill_invoke.DragonPhoenix = function(self, data)
 		return self:doNotDiscard(to) == self:isFriend(to)
 	end
 end
+
+sgs.ai_skill_choice.DragonPhoenix = function(self, choices, data)
+	local kingdom = data:toString()
+	choices_t = string.split(choices, "+")
+	if (kingdom == "wei") then
+		if (string.find(choices, "guojia")) then
+			return "guojia"
+		elseif (string.find(choices, "xunyu")) then
+			return "xunyu"
+		elseif (string.find(choices, "lidian")) then
+			return "lidian"
+		elseif (string.find(choices, "zhanghe")) then
+			return "zhanghe"
+		elseif (string.find(choices, "caopi")) then
+			return "caopi"
+		elseif (string.find(choices, "zhangliao")) then
+			return "zhangliao"
+		end
+		
+		table.removeOne(choices_t, "caohong")
+		table.removeOne(choices_t, "zangba")
+		table.removeOne(choices_t, "xuchu")
+		table.removeOne(choices_t, "dianwei")
+		table.removeOne(choices_t, "caoren")
+		
+	elseif (kingdom == "shu") then
+		if (string.find(choices, "mifuren")) then
+			return "mifuren"
+		elseif (string.find(choices, "pangtong")) then
+			return "pangtong"
+		elseif (string.find(choices, "lord_liubei")) then
+			return "lord_liubei"
+		elseif (string.find(choices, "liushan")) then
+			return "liushan"
+		elseif (string.find(choices, "jiangwanfeiyi")) then
+			return "jiangwanfeiyi"
+		end
+		
+		table.removeOne(choices_t, "liubei")
+		table.removeOne(choices_t, "guanyu")
+		table.removeOne(choices_t, "zhangfei")
+		table.removeOne(choices_t, "weiyan")
+		table.removeOne(choices_t, "zhurong")
+		table.removeOne(choices_t, "madai")
+		
+	elseif (kingdom == "wu") then
+		if (string.find(choices, "zhoutai")) then
+			return "zhoutai"
+		elseif (string.find(choices, "lusu")) then
+			return "lusu"
+		elseif (string.find(choices, "taishici")) then
+			return "taishici"
+		elseif (string.find(choices, "sunjian")) then
+			return "sunjian"
+		end
+		
+		table.removeOne(choices_t, "sunce")
+		table.removeOne(choices_t, "chenwudongxi")
+		table.removeOne(choices_t, "luxun")
+		table.removeOne(choices_t, "huanggai")
+		
+	elseif (kingdom == "qun") then
+		if (string.find(choices, "yuji")) then
+			return "yuji"
+		elseif (string.find(choices, "caiwenji")) then
+			return "caiwenji"
+		elseif (string.find(choices, "mateng")) then
+			return "mateng"
+		elseif (string.find(choices, "kongrong")) then
+			return "kongrong"
+		elseif (string.find(choices, "lord_zhangjiao")) then
+			return "lord_zhangjiao"
+		end
+		
+		table.removeOne(choices_t, "dongzhuo")
+		table.removeOne(choices_t, "tianfeng")
+		table.removeOne(choices_t, "zhangjiao")
+		
+	end
+	if #choices_t == 0 then choices_t = string.split(choices, "+") end
+	return choices_t[math.random(1, #choices_t)]
+end
+
