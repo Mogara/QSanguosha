@@ -123,6 +123,7 @@ public:
 public slots:
     void setRatio(int ratio);
     void setMaxHp(int max_hp);
+    void setTransMaxHp(int trans_max_hp);
     void makeBigAvatar();
     void makeSmallAvatar();
     void makeTinyAvatar();
@@ -148,7 +149,10 @@ private:
     AvatarRectItem *big_avatar_rect, *small_avatar_rect, *tiny_avatar_rect;
     QMenu *menu, *done_menu;
 
+    int max_hp, trans_max_hp;
+
     void makeAvatar(AvatarRectItem *item);
+    void _redrawTransMaxHp();
 
 signals:
     void avatar_snapped(const QRectF &rect);

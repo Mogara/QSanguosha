@@ -468,7 +468,7 @@ void AvatarRectItem::setName(const QString &name){
 }
 
 CardScene::CardScene()
-    :QGraphicsScene(QRectF(0, 0, 366, 514)), menu(NULL)
+    :QGraphicsScene(QRectF(0, 0, 366, 514)), menu(NULL), max_hp(0), trans_max_hp(0)
 {
     photo = NULL;
     frame = new QGraphicsPixmapItem;
@@ -492,13 +492,16 @@ CardScene::CardScene()
     QGraphicsItemGroup *magatama_group = new QGraphicsItemGroup(NULL, this);
 
     int i;
-    for(i=0; i<10; i++){
+    for(i=0; i<7; i++){
         QGraphicsPixmapItem *item = new QGraphicsPixmapItem;
         magatamas << item;
         item->hide();
         addItem(item);
 
-        item->setPos(94 + i*(115-94), 18);
+        if (i % 2 == 0)
+            item->setPos(69 + i * 14, 14);
+        else
+            item->setPos(63 + i * 14, 14);
 
         magatama_group->addToGroup(item);
     }
@@ -541,9 +544,12 @@ void CardScene::setFrame(const QString &kingdom){
 
     frame->setPixmap(QPixmap(path));
 
-    foreach(QGraphicsPixmapItem *item, magatamas){
-        item->setPixmap(QPixmap(QString("diy/%1-magatama.png")
-                                .arg(kingdom)));
+    for (int i = 0; i < magatamas.length(); i++){
+        QGraphicsPixmapItem *item = magatamas[i];
+        if (i % 2 == 0)
+            item->setPixmap(QPixmap(QString("diy/%1-magatama-l.png").arg(kingdom)));
+        else
+            item->setPixmap(QPixmap(QString("diy/%1-magatama-r.png").arg(kingdom)));
     }
 
     skill_box->setKingdom(kingdom);
@@ -554,6 +560,8 @@ void CardScene::setFrame(const QString &kingdom){
     tiny_avatar_rect->setKingdom(kingdom);
 
     Config.setValue("CardEditor/Kingdom", kingdom);
+
+    _redrawTransMaxHp();
 }
 
 void CardScene::setGeneralPhoto(const QString &filename){
@@ -626,13 +634,42 @@ void CardScene::setRatio(int ratio){
 
 void CardScene::setMaxHp(int max_hp){
     int n = magatamas.length();
-    max_hp = qBound(0, max_hp, n-1);
+    this->max_hp = max_hp = qBound(0, max_hp, n-1);
 
     int i;
     for(i=0; i<n; i++)
         magatamas.at(i)->setVisible(i < max_hp);
 
     Config.setValue("CardEditor/MaxHP", max_hp);
+
+    _redrawTransMaxHp();
+}
+
+void CardScene::setTransMaxHp(int trans_max_hp){
+    this->trans_max_hp = trans_max_hp;
+
+    Config.setValue("CardEditor/TransMaxHP", trans_max_hp);
+
+    _redrawTransMaxHp();
+}
+
+void CardScene::_redrawTransMaxHp(){
+    int start = max_hp - trans_max_hp + 1;
+    if (start < 0)
+        return;
+
+    QString kingdom = Config.value("CardEditor/Kingdom", "wei").toString();
+
+    for (int i = 0; i < magatamas.length(); i++){
+        QGraphicsPixmapItem *item = magatamas[i];
+        QString suffix = "";
+        if (i >= start - 1)
+            suffix = "t";
+        if (i % 2 == 0)
+            item->setPixmap(QPixmap(QString("diy/%1-magatama-l%2.png").arg(kingdom).arg(suffix)));
+        else
+            item->setPixmap(QPixmap(QString("diy/%1-magatama-r%2.png").arg(kingdom).arg(suffix)));
+    }
 }
 
 void CardScene::makeAvatar(AvatarRectItem *item){
@@ -911,7 +948,12 @@ QLayout *CardEditor::createGeneralLayout(){
     }
 
     QSpinBox *hp_spinbox = new QSpinBox;
-    hp_spinbox->setRange(0, 10);
+    hp_spinbox->setRange(0, 6);
+
+    QSpinBox *trans_hp_spinbox = new QSpinBox;
+    trans_hp_spinbox->setRange(0, 6);
+    
+    connect(hp_spinbox, SIGNAL(valueChanged(int)), trans_hp_spinbox, SLOT(setMaximum(int)));
 
     ratio_spinbox = new QSpinBox;
     ratio_spinbox->setRange(1, 1600);
@@ -923,15 +965,18 @@ QLayout *CardEditor::createGeneralLayout(){
     hlayout->addWidget(kingdom_ComboBox);
     layout->addRow(tr("Kingdom"), hlayout);
     layout->addRow(tr("Max HP"), hp_spinbox);
+    layout->addRow(tr("Trans Max HP"), trans_hp_spinbox);
     layout->addRow(tr("Image ratio"), ratio_spinbox);
 
     connect(kingdom_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setCardFrame()));
     connect(hp_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setMaxHp(int)));
+    connect(trans_hp_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setTransMaxHp(int)));
     connect(ratio_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setRatio(int)));
 
     QString kingdom = Config.value("CardEditor/Kingdom", "wei").toString();
     kingdom_ComboBox->setCurrentIndex(kingdom_names.indexOf(kingdom));
     hp_spinbox->setValue(Config.value("CardEditor/MaxHP", 3).toInt());
+    trans_hp_spinbox->setValue(Config.value("CardEditor/TransMaxHP", 0).toInt());
     ratio_spinbox->setValue(Config.value("CardEditor/ImageRatio", 100).toInt());
     QString photo = Config.value("CardEditor/Photo").toString();
     if(!photo.isEmpty())
