@@ -868,8 +868,7 @@ void Client::chooseCard(int card_id){
     if(card_id == -2){
         request("chooseCard .");
     }else{
-        delete ask_dialog;
-        ask_dialog = NULL;
+        ask_dialog->accept();
 
         request(QString("chooseCard %1").arg(card_id));
     }
