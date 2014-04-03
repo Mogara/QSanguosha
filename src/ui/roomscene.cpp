@@ -2109,6 +2109,8 @@ void RoomScene::updateStatus(Client::Status status){
             if(ClientInstance->ask_dialog != NULL){
                 ClientInstance->ask_dialog->setParent(main_window, Qt::Dialog);
                 ClientInstance->ask_dialog->exec();
+                delete ClientInstance->ask_dialog;
+                ClientInstance->ask_dialog = NULL;
 
                 ok_button->setEnabled(false);
                 cancel_button->setEnabled(true);
