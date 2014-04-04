@@ -457,8 +457,7 @@ CardScene::CardScene()
 
     QGraphicsItemGroup *magatama_group = new QGraphicsItemGroup(NULL, this);
 
-    int i;
-    for(i=0; i<7; i++){
+    for(int i = 0; i < 7; i++){
         QGraphicsPixmapItem *item = new QGraphicsPixmapItem;
         magatamas << item;
         item->hide();
@@ -996,6 +995,8 @@ QWidget *CardEditor::createSkillBox(){
     bold_ComboBox->addItem(tr("Compulsory"));
     bold_ComboBox->addItem(tr("Limited"));
     bold_ComboBox->addItem(tr("Formation skill"));
+    bold_ComboBox->addItem(tr("Head skill"));
+    bold_ComboBox->addItem(tr("Deputy skill"));
     layout->addRow(tr("Insert bold text"), bold_ComboBox);
 
     connect(bold_ComboBox, SIGNAL(activated(QString)), skill_box, SLOT(insertBoldText(QString)));
