@@ -27,14 +27,6 @@ struct RoleMapping: public QMap<RolePair, AI::Relation> {
     }
 };
 
-AI::Relation AI::GetRelation3v3(const ServerPlayer *a, const ServerPlayer *b) {
-    QChar c = a->getRole().at(0);
-    if (b->getRole().startsWith(c))
-        return Friend;
-    else
-        return Enemy;
-}
-
 AI::Relation AI::GetRelationHegemony(const ServerPlayer *a, const ServerPlayer *b) {
     Q_ASSERT(a->getRoom() != NULL);
     const bool aShown = a->getRoom()->getTag(a->objectName()).toStringList().isEmpty();
@@ -56,68 +48,6 @@ AI::Relation AI::GetRelationHegemony(const ServerPlayer *a, const ServerPlayer *
     return aKingdom == bKingdom ? Friend : Enemy;
 }
 
-AI::Relation AI::GetRelation(const ServerPlayer *a, const ServerPlayer *b) {
-    if (a == b) return Friend;
-    static RoleMapping map, map_good, map_bad;
-    if (map.isEmpty()) {
-        map.set("lord", "lord", Friend);
-        map.set("lord", "rebel", Enemy);
-        map.set("lord", "loyalist", Friend);
-        map.set("lord", "renegade", Neutrality);
-
-        map.set("loyalist", "loyalist", Friend);
-        map.set("loyalist", "lord", Friend);
-        map.set("loyalist", "rebel", Enemy);
-        map.set("loyalist", "renegade", Neutrality);
-
-        map.set("rebel", "rebel", Friend);
-        map.set("rebel", "lord", Enemy);
-        map.set("rebel", "loyalist", Enemy);
-        map.set("rebel", "renegade", Neutrality);
-
-        map.set("renegade", "lord", Friend);
-        map.set("renegade", "loyalist", Neutrality);
-        map.set("renegade", "rebel", Neutrality);
-        map.set("renegade", "renegade", Neutrality);
-
-        map_good = map;
-        map_good.set("renegade", "loyalist", Enemy, false);
-        map_good.set("renegade", "lord", Neutrality, true);
-        map_good.set("renegade", "rebel", Friend, false);
-
-        map_bad = map;
-        map_bad.set("renegade", "loyalist", Neutrality, true);
-        map_bad.set("renegade", "rebel", Enemy, true);
-    }
-
-    if (a->aliveCount() == 2) {
-        return Enemy;
-    }
-
-    QString roleA = a->getRole();
-    QString roleB = b->getRole();
-
-    Room *room = a->getRoom();
-
-    int good = 0, bad = 0;
-    QList<ServerPlayer *> players = room->getAlivePlayers();
-    foreach (ServerPlayer *player, players) {
-        switch (player->getRoleEnum()) {
-        case Player::Lord:
-        case Player::Loyalist: good++; break;
-        case Player::Rebel: bad++; break;
-        case Player::Renegade: good++; break;
-        }
-    }
-
-    if (bad > good)
-        return map_bad.get(roleA, roleB);
-    else if (good > bad)
-        return map_good.get(roleA, roleB);
-    else
-        return map.get(roleA, roleB);
-}
-
 AI::Relation AI::relationTo(const ServerPlayer *other) const{
     if (self == other)
         return Friend;
@@ -126,12 +56,7 @@ AI::Relation AI::relationTo(const ServerPlayer *other) const{
     if (scenario)
         return scenario->relationTo(self, other);
 
-    if (room->getMode() == "06_3v3" || room->getMode() == "06_XMode")
-        return GetRelation3v3(self, other);
-    else if (Config.EnableHegemony)
-        return GetRelationHegemony(self, other);
-
-    return GetRelation(self, other);
+    return GetRelationHegemony(self, other);
 }
 
 bool AI::isFriend(const ServerPlayer *other) const{
@@ -283,10 +208,6 @@ static bool CompareByNumber(const Card *c1, const Card *c2) {
 const Card *TrustAI::askForPindian(ServerPlayer *requestor, const QString &reason) {
     QList<const Card *> cards = self->getHandcards();
     qSort(cards.begin(), cards.end(), CompareByNumber);
-
-    // zhiba special case
-    if (reason == "zhiba_pindian" && self->hasLordSkill("sunce_zhiba"))
-        return cards.last();
 
     if (requestor != self && isFriend(requestor))
         return cards.first();
