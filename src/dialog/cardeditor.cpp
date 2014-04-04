@@ -599,8 +599,7 @@ void CardScene::setMaxHp(int max_hp){
     int n = magatamas.length();
     this->max_hp = max_hp = qBound(0, max_hp, n-1);
 
-    int i;
-    for(i=0; i<n; i++)
+    for(int i = 0; i < n; i++)
         magatamas.at(i)->setVisible(i < max_hp);
 
     Config.setValue("CardEditor/MaxHP", max_hp);

@@ -17,12 +17,9 @@ function SmartAI:shouldUseRende()
 		end
 	end
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:canSlash(self.player) and not self:slashProhibit(nil, self.player, enemy) then
-			if enemy:hasWeapon("GudingBlade") and self.player:getHandcardNum() == 1 and getCardsNum("Slash", enemy) >= 1 then
-				return
-			elseif self:hasCrossbowEffect(enemy) and getCardsNum("Slash", enemy) > 1 and self:getOverflow() <= 0 then
-				return
-			end
+		if enemy:canSlash(self.player) and not self:slashProhibit(nil, self.player, enemy) 
+			and self:hasCrossbowEffect(enemy) and getCardsNum("Slash", enemy) > 1 and self:getOverflow() <= 0 then
+			return false
 		end
 	end
 	for _, player in ipairs(self.friends_noself) do
@@ -30,7 +27,7 @@ function SmartAI:shouldUseRende()
 			return true
 		end
 	end
-	if ((self.player:hasSkill("rende") and self.player:getMark("rende") < 2)
+	if ((self.player:hasSkill("rende") and self.player:getMark("rende") < 3)
 		or self:getOverflow() > 0) then
 		return true
 	end
@@ -44,8 +41,6 @@ rende_skill.name = "rende"
 table.insert(sgs.ai_skills, rende_skill)
 rende_skill.getTurnUseCard = function(self)
 	if self.player:isKongcheng() then return end
-	local mode = string.lower(global_room:getMode())
-	if self.player:getMark("rende") > 1 and mode:find("04_1v3") then return end
 
 	if self:shouldUseRende() then
 		return sgs.Card_Parse("@RendeCard=.&rende")
@@ -65,8 +60,7 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 		end
 
 		if friend:objectName() == self.player:objectName() or not self.player:getHandcards():contains(card) then continue end
-		local canJijiang = self.player:hasLordSkill("jijiang") and friend:getKingdom() == "shu"
-		if card:isAvailable(self.player) and ((card:isKindOf("Slash") and not canJijiang) or card:isKindOf("Duel") or card:isKindOf("Snatch") or card:isKindOf("Dismantlement")) then
+		if card:isAvailable(self.player) and (card:isKindOf("Slash") or card:isKindOf("Duel") or card:isKindOf("Snatch") or card:isKindOf("Dismantlement")) then
 			local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 			local cardtype = card:getTypeId()
 			self["use" .. sgs.ai_type_name[cardtype + 1] .. "Card"](self, card, dummy_use)
