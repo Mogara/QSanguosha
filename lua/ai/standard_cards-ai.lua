@@ -165,10 +165,6 @@ function sgs.getDefenseSlash(player, self)
 		if player:getHp() <= 1 then defense = defense - 2.5 end
 		if player:getHp() == 2 then defense = defense - 1.5 end
 		if not hasEightDiagram then defense = defense - 2 end
-		if attacker:hasWeapon("GudingBlade") and player:getHandcardNum() == 0
-		  and not (player:hasArmorEffect("SilverLion") and not IgnoreArmor(attacker, player)) then
-			defense = defense - 2
-		end
 	end
 
 	local has_fire_slash
@@ -221,8 +217,6 @@ function SmartAI:slashProhibit(card, enemy, from)
 		if enemy:isChained() and card:isKindOf("NatureSlash") and self:slashIsEffective(card, enemy, from)
 			and not self:isGoodChainTarget(enemy, from, nature, nil, card) then return true end
 		if getCardsNum("Jink",enemy, from) == 0 and enemy:getHp() < 2 and self:slashIsEffective(card, enemy, from) then return true end
-		if enemy:isLord() and self:isWeak(enemy) and self:slashIsEffective(card, enemy, from) then return true end
-		if from:hasWeapon("GudingBlade") and enemy:isKongcheng() then return true end
 	else
 		if card:isKindOf("NatureSlash") and enemy:isChained() and not self:isGoodChainTarget(enemy, from, nature, nil, card) and self:slashIsEffective(card, enemy, from) then
 			return true
