@@ -223,22 +223,20 @@ private:
 };
 
 SkillBox::SkillBox()
-    :middle_height(0)
 {
     setAcceptedMouseButtons(Qt::LeftButton);
 
     skill_description = new QGraphicsTextItem(tr("Skill description"), this);
-    skill_description->setTextWidth(223);
+    skill_description->setTextWidth(256);
     skill_description->setFlag(ItemIsMovable);
     skill_description->setTextInteractionFlags(Qt::TextEditorInteraction);
-    skill_description->setX(25);
 
     QFont font = Config.value("CardEditor/SkillDescriptionFont").value<QFont>();
 
     copyright_text = new QGraphicsTextItem(tr("Copyright text"), this);
     copyright_text->setFont(Config.value("CardEditor/TinyFont").value<QFont>());
-    copyright_text->setTextWidth(skill_description->textWidth());
-    copyright_text->setPos(25, -4);
+    copyright_text->setTextWidth(246);
+    copyright_text->setPos(10, 105);
     copyright_text->setTextInteractionFlags(Qt::TextEditorInteraction);
 
     setSkillDescriptionFont(font);
@@ -246,21 +244,9 @@ SkillBox::SkillBox()
 
 void SkillBox::setKingdom(const QString &kingdom){
     this->kingdom = kingdom;
-    up.load(QString("diy/%1-skill-up.png").arg(kingdom));
-    down.load(QString("diy/%1-skill-down.png").arg(kingdom));
-    middle.load(QString("diy/%1-skill-middle.png").arg(kingdom));
 
     foreach(SkillTitle *skill_title, skill_titles)
         skill_title->setKingdom(kingdom);
-}
-
-void SkillBox::setMiddleHeight(int height){
-    int new_height = height < 0 ? middle.height() : height;
-    if(middle_height != new_height){
-        middle_height = new_height;
-        skill_description->setY(- middle_height - down.height());
-        prepareGeometryChange();
-    }
 }
 
 AATextItem::AATextItem(const QString &text, QGraphicsItem *parent)
@@ -284,7 +270,7 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
 void SkillBox::addSkill(const QString &text){
     SkillTitle *skill_title = new SkillTitle(kingdom, text);
-    skill_title->setPos(32, 389);
+    skill_title->setPos(20, 389);
     skill_titles << skill_title;
 
     scene()->addItem(skill_title);
@@ -332,7 +318,6 @@ void SkillBox::saveConfig(){
         Config.setValue("SkillTitleFont", skill_titles.first()->font());
     }
 
-    Config.setValue("SkillBoxMiddleHeight", middle_height);
     Config.setValue("CopyrightText", copyright_text->toPlainText());
 
     Config.endGroup();
@@ -398,29 +383,10 @@ void SkillBox::insertBoldText(const QString &bold_text){
 }
 
 QRectF SkillBox::boundingRect() const{
-    // left down cornor is the origin
-    int height = up.height() + middle_height + down.height();
-    return QRectF(0, -height, up.width(), height);
+    return QRectF(0, 0, 0, 0);
 }
 
 void SkillBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){
-    // from down to up
-    painter->drawPixmap(0, -down.height(), down);
-    painter->drawTiledPixmap(0, -down.height()-middle_height, middle.width(), middle_height, middle);
-    painter->drawPixmap(0, -down.height()-middle_height-up.height(), up);
-}
-
-void SkillBox::mousePressEvent(QGraphicsSceneMouseEvent *){
-    QApplication::setOverrideCursor(QCursor(Qt::SizeVerCursor));
-}
-
-void SkillBox::mouseMoveEvent(QGraphicsSceneMouseEvent *event){
-    int diff = event->pos().y() - event->lastPos().y();
-    setMiddleHeight(middle_height - diff);
-}
-
-void SkillBox::mouseReleaseEvent(QGraphicsSceneMouseEvent *){
-    QApplication::restoreOverrideCursor();
 }
 
 AvatarRectItem::AvatarRectItem(qreal width, qreal height, const QRectF &box_rect, int font_size)
@@ -506,8 +472,6 @@ CardScene::CardScene()
         magatama_group->addToGroup(item);
     }
 
-    magatama_group->setFlag(QGraphicsItem::ItemIsMovable);
-
     loadConfig();
 
     QGraphicsRectItem *name_box = new QGraphicsRectItem(0, 0, 16, 48);
@@ -553,7 +517,6 @@ void CardScene::setFrame(const QString &kingdom){
     }
 
     skill_box->setKingdom(kingdom);
-    skill_box->setMiddleHeight(Config.value("CardEditor/SkillBoxMiddleHeight", -1).toInt());
 
     big_avatar_rect->setKingdom(kingdom);
     small_avatar_rect->setKingdom(kingdom);
@@ -592,7 +555,7 @@ void CardScene::loadConfig(){
     name->setPos(Config.value("NamePos", QPointF(28, 206)).toPointF());
     title->setPos(Config.value("TitlePos", QPointF(49, 128)).toPointF());
     photo->setPos(Config.value("PhotoPos").toPointF());
-    skill_box->setPos(Config.value("SkillBoxPos", QPointF(70, 484)).toPointF());
+    skill_box->setPos(Config.value("SkillBoxPos", QPointF(67, 389)).toPointF());
     Config.endGroup();
 
     skill_box->loadConfig();
