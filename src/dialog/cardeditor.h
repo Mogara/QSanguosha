@@ -61,7 +61,7 @@ class SkillBox: public QGraphicsObject{
 public:
     SkillBox();
     void setKingdom(const QString &kingdom);
-    void setMiddleHeight(int height);
+
     void setTextEditable(bool editable);
     void addSkill(const QString &text);
     SkillTitle *getFocusTitle() const;
@@ -80,13 +80,10 @@ public slots:
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+
 
 private:
-    int middle_height;
-    QPixmap up, middle, down;
+
     QString kingdom;
     QList<SkillTitle *> skill_titles;
     QGraphicsTextItem *skill_description;
