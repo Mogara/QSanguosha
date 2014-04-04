@@ -142,10 +142,7 @@ public:
         QPixmap title_pixmap(QString("diy/%1-skill.png").arg(kingdom));
         setPixmap(title_pixmap);
 
-        if(kingdom == "god")
-            title_text->setDefaultTextColor(QColor(255, 255, 102));
-        else
-            title_text->setDefaultTextColor(Qt::black);
+        title_text->setDefaultTextColor(Qt::black);
     }
 
     void setText(const QString &text){
@@ -227,7 +224,7 @@ SkillBox::SkillBox()
     setAcceptedMouseButtons(Qt::LeftButton);
 
     skill_description = new QGraphicsTextItem(tr("Skill description"), this);
-    skill_description->setTextWidth(256);
+    skill_description->setTextWidth(280);
     skill_description->setFlag(ItemIsMovable);
     skill_description->setTextInteractionFlags(Qt::TextEditorInteraction);
 
