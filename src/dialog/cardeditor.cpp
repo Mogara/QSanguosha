@@ -224,7 +224,7 @@ SkillBox::SkillBox()
     setAcceptedMouseButtons(Qt::LeftButton);
 
     skill_description = new QGraphicsTextItem(tr("Skill description"), this);
-    skill_description->setTextWidth(280);
+    skill_description->setTextWidth(273);
     skill_description->setFlag(ItemIsMovable);
     skill_description->setTextInteractionFlags(Qt::TextEditorInteraction);
 
@@ -919,11 +919,12 @@ QLayout *CardEditor::createGeneralLayout(){
     ratio_spinbox->setSuffix(" %");
 
     QFormLayout *layout = new QFormLayout;
+    layout->addRow(tr("Kingdom"), kingdom_ComboBox);
     QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->addWidget(kingdom_ComboBox);
-    layout->addRow(tr("Kingdom"), hlayout);
-    layout->addRow(tr("Max HP"), hp_spinbox);
-    layout->addRow(tr("Trans Max HP"), trans_hp_spinbox);
+    hlayout->addWidget(hp_spinbox);
+    hlayout->addWidget(new QLabel(tr("Trans Max HP")));
+    hlayout->addWidget(trans_hp_spinbox);
+    layout->addRow(tr("Max HP"), hlayout);
     layout->addRow(tr("Image ratio"), ratio_spinbox);
 
     connect(kingdom_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setCardFrame()));
