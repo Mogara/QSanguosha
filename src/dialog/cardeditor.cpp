@@ -379,7 +379,7 @@ void SkillBox::insertBoldText(const QString &bold_text){
     format.setFontWeight(QFont::Bold);
     skill_description->textCursor().insertText(bold_text, format);
 
-    skill_description->textCursor().insertText(",", QTextCharFormat());
+    skill_description->textCursor().insertText(tr(","), QTextCharFormat());
 }
 
 QRectF SkillBox::boundingRect() const{
