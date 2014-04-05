@@ -54,6 +54,7 @@ protected:
 };
 
 class SkillTitle;
+class CompanionBox;
 
 class SkillBox: public QGraphicsObject{
     Q_OBJECT
@@ -112,7 +113,8 @@ public:
     void setGeneralPhoto(const QString &filename);
     BlackEdgeTextItem *getNameItem() const;
     BlackEdgeTextItem *getTitleItem() const;
-    SkillBox *getSkillBox() const;
+    inline SkillBox *getSkillBox() const { return skill_box; }
+    inline CompanionBox *getCompanionBox() const { return companion_box; }
     void saveConfig();
     void loadConfig();
     void setMenu(QMenu *menu);
@@ -128,6 +130,8 @@ public slots:
     void hideAvatarRects();
     void setAvatarNameBox(const QString &text);
     void resetPhoto();
+    void setCompanion(const QString &text);
+    //void setCompanionFont(const QFont &font); //todo_Fs:adjust the font of companion box
 
 protected:
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
@@ -145,6 +149,8 @@ private:
     SkillBox *skill_box;
     AvatarRectItem *big_avatar_rect, *small_avatar_rect, *tiny_avatar_rect;
     QMenu *menu, *done_menu;
+
+    CompanionBox *companion_box;
 
     int max_hp, trans_max_hp;
 

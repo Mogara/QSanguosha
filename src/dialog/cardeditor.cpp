@@ -132,7 +132,7 @@ public:
         setFlag(QGraphicsItem::ItemIsFocusable);
 
         frame = new QGraphicsRectItem(this);
-        frame->setRect(-1, -1, 70+2, 30+2);
+        frame->setRect(-1, -1, 58, 21);
         QPen red_pen(Qt::red);
         frame->setPen(red_pen);
         frame->hide();
@@ -217,6 +217,44 @@ public:
 private:
     AATextItem *title_text;
     QGraphicsRectItem *frame;
+};
+
+class CompanionBox: public QGraphicsPixmapItem{
+public:
+    CompanionBox(const QString &text = QString())
+        :title_text(NULL)
+    {
+        title_text = new AATextItem(text, this);
+        title_text->setFont(Config.value("CardEditor/SkillTitleFont").value<QFont>()); //todo_Fs:adjust the font
+        title_text->setPos(Config.value("CardEditor/TitleTextOffset", QPointF(10, -2)).toPointF()); //todo_Fs:adjust the position
+        title_text->document()->setDocumentMargin(0);
+        title_text->setDefaultTextColor(QColor(255, 255, 255));
+
+        setPixmap(QPixmap("diy/companion.png"));
+
+        setFlags(ItemIsMovable | ItemIsFocusable);
+    }
+
+    void setText(const QString &text){
+        title_text->setPlainText(text);
+        //todo_Fs:adjust the size of this box
+        //this is the most hardest part of this development
+    }
+
+    QString text() const{
+        return title_text->toPlainText();
+    }
+
+    void setFont(const QFont &font){
+        title_text->setFont(font);
+    }
+
+    QFont font() const{
+        return title_text->font();
+    }
+
+private:
+    AATextItem *title_text;
 };
 
 SkillBox::SkillBox()
@@ -445,6 +483,11 @@ CardScene::CardScene()
 
     skill_box = new SkillBox;
 
+    companion_box = new CompanionBox;
+    companion_box->setZValue(-1);
+    companion_box->setPos(200, 300); //todo_Fs:adjust the position and make this box vertically unmovable
+
+    addItem(companion_box);
     addItem(frame);
     addItem(name);
     addItem(title);
@@ -564,10 +607,6 @@ BlackEdgeTextItem *CardScene::getNameItem() const{
 
 BlackEdgeTextItem *CardScene::getTitleItem() const{
     return title;
-}
-
-SkillBox *CardScene::getSkillBox() const{
-    return skill_box;
 }
 
 #ifdef QT_DEBUG
@@ -690,7 +729,7 @@ void CardScene::resetPhoto(){
     }
 
     photo = new QSanSelectableItem;
-    photo->setZValue(-1);
+    photo->setZValue(-2);
     photo->setFlag(QGraphicsItem::ItemIsMovable);
     addItem(photo);
 }
@@ -716,6 +755,10 @@ void CardScene::setMenu(QMenu *menu){
     this->menu = menu;
 }
 
+void CardScene::setCompanion(const QString &text){
+    companion_box->setText(text);
+}
+
 CardEditor::CardEditor(QWidget *parent) :
     QMainWindow(parent)
 {
@@ -725,7 +768,7 @@ CardEditor::CardEditor(QWidget *parent) :
     QGraphicsView *view = new QGraphicsView;
 
     view->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing |
-                        QPainter::SmoothPixmapTransform    |
+                        QPainter::SmoothPixmapTransform |
                         QPainter::HighQualityAntialiasing
                         );
 
@@ -911,12 +954,13 @@ QLayout *CardEditor::createGeneralLayout(){
     QSpinBox *trans_hp_spinbox = new QSpinBox;
     trans_hp_spinbox->setRange(0, 6);
     
-    connect(hp_spinbox, SIGNAL(valueChanged(int)), trans_hp_spinbox, SLOT(setMaximum(int)));
-
     ratio_spinbox = new QSpinBox;
     ratio_spinbox->setRange(1, 1600);
     ratio_spinbox->setValue(100);
     ratio_spinbox->setSuffix(" %");
+
+    QLineEdit *companion_edit = new QLineEdit;
+    connect(companion_edit, SIGNAL(textChanged(QString)), card_scene, SLOT(setCompanion(QString)));
 
     QFormLayout *layout = new QFormLayout;
     layout->addRow(tr("Kingdom"), kingdom_ComboBox);
@@ -926,6 +970,18 @@ QLayout *CardEditor::createGeneralLayout(){
     hlayout->addWidget(trans_hp_spinbox);
     layout->addRow(tr("Max HP"), hlayout);
     layout->addRow(tr("Image ratio"), ratio_spinbox);
+
+    QHBoxLayout *hlayout2 = new QHBoxLayout;
+    hlayout2->addWidget(companion_edit);
+    
+    //QPushButton *companion_font_button = new QPushButton;
+    //QFontDialog *companion_font_dialog = new QFontDialog(this);
+
+    //connect(companion_font_dialog, SIGNAL(currentFontChanged(QFont)), card_scene, SLOT(setCompanionFont(QFont)));
+    //setMapping(companion_font_dialog, companion_font_button);
+
+    //hlayout2->addWidget(companion_font_button);
+    layout->addRow("Companion", hlayout2);
 
     connect(kingdom_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setCardFrame()));
     connect(hp_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setMaxHp(int)));
