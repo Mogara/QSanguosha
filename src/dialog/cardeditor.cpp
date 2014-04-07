@@ -225,8 +225,9 @@ public:
         :title_text(NULL)
     {
         title_text = new AATextItem(text, this);
-        title_text->setFont(Config.value("CardEditor/SkillTitleFont").value<QFont>()); //todo_Fs:adjust the font
-        title_text->setPos(Config.value("CardEditor/TitleTextOffset", QPointF(10, -2)).toPointF()); //todo_Fs:adjust the position
+        title_text->setFont(Config.value("CardEditor/CompanionFont").value<QFont>());
+        title_text->setPlainText(Config.value("CardEditor/Companion").toString());
+        title_text->setPos(10, -2);
         title_text->document()->setDocumentMargin(0);
         title_text->setDefaultTextColor(QColor(255, 255, 255));
 
@@ -237,8 +238,6 @@ public:
 
     void setText(const QString &text){
         title_text->setPlainText(text);
-        //todo_Fs:adjust the size of this box
-        //this is the most hardest part of this development
     }
 
     QString text() const{
@@ -251,6 +250,14 @@ public:
 
     QFont font() const{
         return title_text->font();
+    }
+
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event){
+        event->accept();
+    }
+
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event){
+        this->setPos(qBound(50.0, event->scenePos().x() - event->buttonDownPos(Qt::LeftButton).x(), 318.0), y());
     }
 
 private:
@@ -290,17 +297,10 @@ AATextItem::AATextItem(const QString &text, QGraphicsItem *parent)
 }
 
 void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    if(hasFocus()){
-        QGraphicsTextItem::paint(painter, option, widget);
-        return;
-    }
+    if(!hasFocus())
+        painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
-    painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
-
-    QPainterPath path;
-    QFontMetrics fm(font());
-    path.addText(document()->documentMargin(), fm.height(), font(), toPlainText());
-    painter->fillPath(path, defaultTextColor());
+    QGraphicsTextItem::paint(painter, option, widget);
 }
 
 void SkillBox::addSkill(const QString &text){
@@ -337,7 +337,7 @@ void SkillBox::saveConfig(){
     Config.beginGroup("CardEditor");
 
     Config.beginWriteArray("SkillTitles");
-    for(int i=0; i<skill_titles.length(); i++){
+    for(int i = 0; i < skill_titles.length(); i++){
         Config.setArrayIndex(i);
 
         Config.setValue("TitleText", skill_titles.at(i)->text());
@@ -485,7 +485,7 @@ CardScene::CardScene()
 
     companion_box = new CompanionBox;
     companion_box->setZValue(-1);
-    companion_box->setPos(200, 300); //todo_Fs:adjust the position and make this box vertically unmovable
+    companion_box->hide();
 
     addItem(companion_box);
     addItem(frame);
@@ -591,6 +591,9 @@ void CardScene::saveConfig(){
     Config.setValue("TitlePos", title->pos());
     Config.setValue("PhotoPos", photo->pos());
     Config.setValue("SkillBoxPos", skill_box->pos());
+    Config.setValue("CompanionBoxPos", companion_box->pos());
+    Config.setValue("Companion", companion_box->text());
+    Config.setValue("CompanionFont", companion_box->font());
     Config.endGroup();
 
     skill_box->saveConfig();
@@ -602,6 +605,7 @@ void CardScene::loadConfig(){
     title->setPos(Config.value("TitlePos", QPointF(49, 128)).toPointF());
     photo->setPos(Config.value("PhotoPos").toPointF());
     skill_box->setPos(Config.value("SkillBoxPos", QPointF(67, 389)).toPointF());
+    companion_box->setPos(Config.value("CompanionBoxPos", QPointF(318.50, 359)).toPointF());
     Config.endGroup();
 
     skill_box->loadConfig();
@@ -623,10 +627,11 @@ BlackEdgeTextItem *CardScene::getTitleItem() const{
 
 void CardScene::keyPressEvent(QKeyEvent *event){
     QGraphicsScene::keyPressEvent(event);
-
+#ifdef QT_DEBUG
     if(event->key() == Qt::Key_D){
-        //QMessageBox::information(NULL, "", QString("%1, %2").arg(skill_box->x()).arg(skill_box->y()));
+        QMessageBox::information(NULL, "", QString("%1, %2").arg(skill_box->x()).arg(skill_box->y()));
     }
+#endif
 }
 
 #endif
@@ -765,6 +770,16 @@ void CardScene::setMenu(QMenu *menu){
 
 void CardScene::setCompanion(const QString &text){
     companion_box->setText(text);
+}
+
+void CardScene::setCompanionFont( const QFont &font )
+{
+    companion_box->setFont(font);
+}
+
+void CardScene::setCompanionVisible( bool visible )
+{
+    companion_box->setVisible(visible);
 }
 
 CardEditor::CardEditor(QWidget *parent) :
@@ -984,25 +999,29 @@ QLayout *CardEditor::createGeneralLayout(){
     layout->addRow(tr("Image ratio"), ratio_spinbox);
 
     QHBoxLayout *hlayout2 = new QHBoxLayout;
-    hlayout2->addWidget(companion_edit);
     
-    //QPushButton *companion_font_button = new QPushButton;
-    //QFontDialog *companion_font_dialog = new QFontDialog(this);
+    QPushButton *companion_font_button = new QPushButton(tr("Companion Font"));
+    QFontDialog *companion_font_dialog = new QFontDialog(this);
 
-    //connect(companion_font_dialog, SIGNAL(currentFontChanged(QFont)), card_scene, SLOT(setCompanionFont(QFont)));
-    //setMapping(companion_font_dialog, companion_font_button);
+    connect(companion_font_dialog, SIGNAL(currentFontChanged(QFont)), card_scene, SLOT(setComapnionFont(QFont)));
+    setMapping(companion_font_dialog, companion_font_button);
 
-    //hlayout2->addWidget(companion_font_button);
-    layout->addRow("Companion", hlayout2);
+    hlayout2->addWidget(companion_font_button);
+
+    QCheckBox *show_companion_box = new QCheckBox(tr("Show companion box"));
+    hlayout2->addWidget(show_companion_box);
+    layout->addRow(tr("Companion"), companion_edit);
+    layout->addRow(hlayout2);
 
     connect(kingdom_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setCardFrame()));
     connect(lord_checkbox, SIGNAL(toggled(bool)), this, SLOT(setCardFrame()));
     connect(hp_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setMaxHp(int)));
     connect(trans_hp_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setTransMaxHp(int)));
     connect(ratio_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setRatio(int)));
-
+    connect(show_companion_box, SIGNAL(toggled(bool)), card_scene, SLOT(setCompanionVisible(bool)));
     QString kingdom = Config.value("CardEditor/Kingdom", "wei").toString();
     bool is_lord = Config.value("CardEditor/IsLord", false).toBool();
+
     kingdom_ComboBox->setCurrentIndex(kingdom_names.indexOf(kingdom));
     lord_checkbox->setChecked(is_lord);
     hp_spinbox->setValue(Config.value("CardEditor/MaxHP", 3).toInt());

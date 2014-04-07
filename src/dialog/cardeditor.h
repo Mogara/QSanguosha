@@ -114,7 +114,7 @@ public:
     BlackEdgeTextItem *getNameItem() const;
     BlackEdgeTextItem *getTitleItem() const;
     inline SkillBox *getSkillBox() const { return skill_box; }
-    inline CompanionBox *getCompanionBox() const { return companion_box; }
+    inline const CompanionBox *getCompanionBox() const { return companion_box; }
     void saveConfig();
     void loadConfig();
     void setMenu(QMenu *menu);
@@ -131,7 +131,8 @@ public slots:
     void setAvatarNameBox(const QString &text);
     void resetPhoto();
     void setCompanion(const QString &text);
-    //void setCompanionFont(const QFont &font); //todo_Fs:adjust the font of companion box
+    void setCompanionFont(const QFont &font);
+    void setCompanionVisible(bool visible);
 
 protected:
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
