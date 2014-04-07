@@ -205,7 +205,7 @@ static bool CompareByNumber(const Card *c1, const Card *c2) {
     return c1->getNumber() < c2->getNumber();
 }
 
-const Card *TrustAI::askForPindian(ServerPlayer *requestor, const QString &reason) {
+const Card *TrustAI::askForPindian(ServerPlayer *requestor, const QString &) {
     QList<const Card *> cards = self->getHandcards();
     qSort(cards.begin(), cards.end(), CompareByNumber);
 
