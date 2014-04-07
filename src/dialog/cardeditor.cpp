@@ -297,10 +297,48 @@ AATextItem::AATextItem(const QString &text, QGraphicsItem *parent)
 }
 
 void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    if(!hasFocus())
-        painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+    if(hasFocus()){
+        QGraphicsTextItem::paint(painter, option, widget);
+        return;
+    }
 
-    QGraphicsTextItem::paint(painter, option, widget);
+    painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+    QPainterPath path;
+    QFontMetrics fm(font());
+    QRegExp exp("(\\[b:[^\\[b:\\]]+\\])");
+    QString text = toPlainText();
+    exp.indexIn(text);
+    QStringList strs = exp.capturedTexts();
+    QStringList nor_strs = text.split(exp, QString::SkipEmptyParts);
+    QStringList all_strs;
+    QStringList operated;
+    foreach(QString str, strs + nor_strs) {
+        int removed_length = 0;
+        QString text_copy = text;
+        int i = text.indexOf(str);
+        int l = str.size();
+        for (int ind = 0; ind < operated.count(str); ++ ind) {
+            text_copy.remove(str);
+            removed_length += l;
+            i = text_copy.indexOf(str) + removed_length;
+        }
+        all_strs.insert(i, str);
+    }
+
+    QRegExp bold("\\[b:(.+)\\]");
+    foreach(QString string, all_strs) {
+        if (bold.exactMatch(string)) {
+            bold.indexIn(string);
+            static QFont bfont;
+            if (!bfont.bold()) {
+                bfont = font();
+                bfont.setBold(true);
+            }
+            path.addText(document()->documentMargin(), fm.height(), bfont, bold.cap());
+        } else
+            path.addText(document()->documentMargin(), fm.height(), font(), string);
+    }
+    painter->fillPath(path, defaultTextColor());
 }
 
 void SkillBox::addSkill(const QString &text){
@@ -412,7 +450,10 @@ void SkillBox::insertSuit(int index){
 void SkillBox::insertBoldText(const QString &bold_text){
     QTextCharFormat format;
     format.setFontWeight(QFont::Bold);
+
+    skill_description->textCursor().insertText("[b:", format);
     skill_description->textCursor().insertText(bold_text, format);
+    skill_description->textCursor().insertText("]", format);
 
     skill_description->textCursor().insertText(tr(","), QTextCharFormat());
 }
@@ -1088,6 +1129,9 @@ QWidget *CardEditor::createSkillBox(){
     layout->addRow(tr("Insert bold text"), bold_ComboBox);
 
     connect(bold_ComboBox, SIGNAL(activated(QString)), skill_box, SLOT(insertBoldText(QString)));
+    //temp solution
+    bold_ComboBox->setEnabled(false);
+    bold_ComboBox->setToolTip(tr("<font color=%1>This function cannot be used now, we will try to fix it.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
 
     box->setLayout(layout);
     return box;
