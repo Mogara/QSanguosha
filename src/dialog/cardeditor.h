@@ -87,8 +87,8 @@ private:
 
     QString kingdom;
     QList<SkillTitle *> skill_titles;
-    QGraphicsTextItem *skill_description;
-    QGraphicsTextItem *copyright_text;
+    AATextItem *skill_description;
+    AATextItem *copyright_text;
 };
 
 class AvatarRectItem: public QGraphicsRectItem{
@@ -109,7 +109,7 @@ class CardScene: public QGraphicsScene{
 public:
     explicit CardScene();
 
-    void setFrame(const QString &kingdom);
+    void setFrame(const QString &kingdom, bool is_lord);
     void setGeneralPhoto(const QString &filename);
     BlackEdgeTextItem *getNameItem() const;
     BlackEdgeTextItem *getTitleItem() const;
@@ -170,6 +170,7 @@ public:
 
 private:
     CardScene *card_scene;
+    QCheckBox *lord_checkbox;
     QComboBox *kingdom_ComboBox;
     QSpinBox *ratio_spinbox;
     QMap<QFontDialog *, QPushButton *> dialog2button;

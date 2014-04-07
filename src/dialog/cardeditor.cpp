@@ -81,7 +81,7 @@ void BlackEdgeTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem 
     if(text.isEmpty())
         return;
 
-    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
     if(outline > 0){
         QPen pen(Qt::black);
@@ -261,14 +261,14 @@ SkillBox::SkillBox()
 {
     setAcceptedMouseButtons(Qt::LeftButton);
 
-    skill_description = new QGraphicsTextItem(tr("Skill description"), this);
+    skill_description = new AATextItem(tr("Skill description"), this);
     skill_description->setTextWidth(273);
     skill_description->setFlag(ItemIsMovable);
     skill_description->setTextInteractionFlags(Qt::TextEditorInteraction);
 
     QFont font = Config.value("CardEditor/SkillDescriptionFont").value<QFont>();
 
-    copyright_text = new QGraphicsTextItem(tr("Copyright text"), this);
+    copyright_text = new AATextItem(tr("Copyright text"), this);
     copyright_text->setFont(Config.value("CardEditor/TinyFont").value<QFont>());
     copyright_text->setTextWidth(246);
     copyright_text->setPos(10, 105);
@@ -541,18 +541,24 @@ CardScene::CardScene()
     done_menu->addAction(done_action);
 }
 
-void CardScene::setFrame(const QString &kingdom){
-    QString path = QString("diy/%1.png").arg(kingdom);
-    title->setColor(QColor(252, 219, 85));
+void CardScene::setFrame(const QString &kingdom, bool is_lord){
+    QString path;
+    if (is_lord) {
+        path = QString("diy/%1-lord.png").arg(kingdom);
+        title->setColor(QColor(171, 151, 90));
+    } else {
+        path = QString("diy/%1.png").arg(kingdom);
+        title->setColor(QColor(246, 241, 125));
+    }
 
     frame->setPixmap(QPixmap(path));
 
     for (int i = 0; i < magatamas.length(); i++){
         QGraphicsPixmapItem *item = magatamas[i];
         if (i % 2 == 0)
-            item->setPixmap(QPixmap(QString("diy/%1-magatama-l.png").arg(kingdom)));
+            item->setPixmap(QPixmap(QString("diy/%1-magatama-l.png").arg(is_lord ? "lord" : kingdom)));
         else
-            item->setPixmap(QPixmap(QString("diy/%1-magatama-r.png").arg(kingdom)));
+            item->setPixmap(QPixmap(QString("diy/%1-magatama-r.png").arg(is_lord ? "lord" : kingdom)));
     }
 
     skill_box->setKingdom(kingdom);
@@ -562,6 +568,7 @@ void CardScene::setFrame(const QString &kingdom){
     tiny_avatar_rect->setKingdom(kingdom);
 
     Config.setValue("CardEditor/Kingdom", kingdom);
+    Config.setValue("CardEditor/IsLord", is_lord);
 
     _redrawTransMaxHp();
 }
@@ -656,6 +663,7 @@ void CardScene::_redrawTransMaxHp(){
         return;
 
     QString kingdom = Config.value("CardEditor/Kingdom", "wei").toString();
+    bool is_lord = Config.value("CardEditor/IsLord", false).toBool();
 
     for (int i = 0; i < magatamas.length(); i++){
         QGraphicsPixmapItem *item = magatamas[i];
@@ -663,9 +671,9 @@ void CardScene::_redrawTransMaxHp(){
         if (i >= start - 1)
             suffix = "t";
         if (i % 2 == 0)
-            item->setPixmap(QPixmap(QString("diy/%1-magatama-l%2.png").arg(kingdom).arg(suffix)));
+            item->setPixmap(QPixmap(QString("diy/%1-magatama-l%2.png").arg(is_lord ? "lord" : kingdom).arg(suffix)));
         else
-            item->setPixmap(QPixmap(QString("diy/%1-magatama-r%2.png").arg(kingdom).arg(suffix)));
+            item->setPixmap(QPixmap(QString("diy/%1-magatama-r%2.png").arg(is_lord ? "lord" : kingdom).arg(suffix)));
     }
 }
 
@@ -941,6 +949,7 @@ QGroupBox *CardEditor::createTextItemBox(const QString &text, const QFont &font,
 
 QLayout *CardEditor::createGeneralLayout(){
     kingdom_ComboBox = new QComboBox;
+    lord_checkbox = new QCheckBox(tr("Lord"));
     QStringList kingdom_names = Sanguosha->getKingdoms();
     foreach(QString kingdom, kingdom_names){
         if ("god" == kingdom) continue;
@@ -963,7 +972,10 @@ QLayout *CardEditor::createGeneralLayout(){
     connect(companion_edit, SIGNAL(textChanged(QString)), card_scene, SLOT(setCompanion(QString)));
 
     QFormLayout *layout = new QFormLayout;
-    layout->addRow(tr("Kingdom"), kingdom_ComboBox);
+    QHBoxLayout *klayout = new QHBoxLayout;
+    klayout->addWidget(kingdom_ComboBox);
+    klayout->addWidget(lord_checkbox);
+    layout->addRow(tr("Kingdom"), klayout);
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addWidget(hp_spinbox);
     hlayout->addWidget(new QLabel(tr("Trans Max HP")));
@@ -984,12 +996,15 @@ QLayout *CardEditor::createGeneralLayout(){
     layout->addRow("Companion", hlayout2);
 
     connect(kingdom_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(setCardFrame()));
+    connect(lord_checkbox, SIGNAL(toggled(bool)), this, SLOT(setCardFrame()));
     connect(hp_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setMaxHp(int)));
     connect(trans_hp_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setTransMaxHp(int)));
     connect(ratio_spinbox, SIGNAL(valueChanged(int)), card_scene, SLOT(setRatio(int)));
 
     QString kingdom = Config.value("CardEditor/Kingdom", "wei").toString();
+    bool is_lord = Config.value("CardEditor/IsLord", false).toBool();
     kingdom_ComboBox->setCurrentIndex(kingdom_names.indexOf(kingdom));
+    lord_checkbox->setChecked(is_lord);
     hp_spinbox->setValue(Config.value("CardEditor/MaxHP", 3).toInt());
     trans_hp_spinbox->setValue(Config.value("CardEditor/TransMaxHP", 0).toInt());
     ratio_spinbox->setValue(Config.value("CardEditor/ImageRatio", 100).toInt());
@@ -1103,7 +1118,7 @@ QWidget *CardEditor::createLeft(){
 
 void CardEditor::setCardFrame(){
     QString kingdom = kingdom_ComboBox->itemData(kingdom_ComboBox->currentIndex()).toString();
-    card_scene->setFrame(kingdom);
+    card_scene->setFrame(kingdom, lord_checkbox->isChecked());
 }
 
 void CardEditor::import(){
