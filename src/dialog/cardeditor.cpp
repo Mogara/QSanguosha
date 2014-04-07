@@ -233,7 +233,7 @@ public:
 
         setPixmap(QPixmap("diy/companion.png"));
 
-        setFlags(ItemIsMovable | ItemIsFocusable);
+        setFlags(/*ItemIsMovable | */ItemIsFocusable);
     }
 
     void setText(const QString &text){
@@ -1003,7 +1003,7 @@ QLayout *CardEditor::createGeneralLayout(){
     QPushButton *companion_font_button = new QPushButton(tr("Companion Font"));
     QFontDialog *companion_font_dialog = new QFontDialog(this);
 
-    connect(companion_font_dialog, SIGNAL(currentFontChanged(QFont)), card_scene, SLOT(setComapnionFont(QFont)));
+    connect(companion_font_dialog, SIGNAL(currentFontChanged(QFont)), card_scene, SLOT(setCompanionFont(QFont)));
     setMapping(companion_font_dialog, companion_font_button);
 
     hlayout2->addWidget(companion_font_button);
