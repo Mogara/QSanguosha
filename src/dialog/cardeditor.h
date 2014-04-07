@@ -114,7 +114,7 @@ public:
     BlackEdgeTextItem *getNameItem() const;
     BlackEdgeTextItem *getTitleItem() const;
     inline SkillBox *getSkillBox() const { return skill_box; }
-    inline const CompanionBox *getCompanionBox() const { return companion_box; }
+    inline CompanionBox *getCompanionBox() const { return companion_box; }
     void saveConfig();
     void loadConfig();
     void setMenu(QMenu *menu);

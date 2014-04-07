@@ -225,15 +225,15 @@ public:
         :title_text(NULL)
     {
         title_text = new AATextItem(text, this);
-        title_text->setFont(Config.value("CardEditor/CompanionFont").value<QFont>());
+        title_text->setFont(Config.value("CardEditor/CompanionFont", QFont("", 9)).value<QFont>());
         title_text->setPlainText(Config.value("CardEditor/Companion").toString());
-        title_text->setPos(10, -2);
+        title_text->setPos(10, 4);
         title_text->document()->setDocumentMargin(0);
         title_text->setDefaultTextColor(QColor(255, 255, 255));
 
         setPixmap(QPixmap("diy/companion.png"));
 
-        setFlags(ItemIsMovable | ItemIsFocusable);
+        setFlags(ItemIsFocusable);
     }
 
     void setText(const QString &text){
@@ -462,7 +462,7 @@ QRectF SkillBox::boundingRect() const{
     return QRectF(0, 0, 0, 0);
 }
 
-void SkillBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *){
+void SkillBox::paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *){
 }
 
 AvatarRectItem::AvatarRectItem(qreal width, qreal height, const QRectF &box_rect, int font_size)
@@ -635,6 +635,7 @@ void CardScene::saveConfig(){
     Config.setValue("CompanionBoxPos", companion_box->pos());
     Config.setValue("Companion", companion_box->text());
     Config.setValue("CompanionFont", companion_box->font());
+    Config.setValue("CompanionVisible", companion_box->isVisible());
     Config.endGroup();
 
     skill_box->saveConfig();
@@ -647,6 +648,7 @@ void CardScene::loadConfig(){
     photo->setPos(Config.value("PhotoPos").toPointF());
     skill_box->setPos(Config.value("SkillBoxPos", QPointF(67, 389)).toPointF());
     companion_box->setPos(Config.value("CompanionBoxPos", QPointF(318.50, 359)).toPointF());
+    companion_box->setVisible(Config.value("CompanionVisible", false).toBool());
     Config.endGroup();
 
     skill_box->loadConfig();
@@ -1041,11 +1043,13 @@ QLayout *CardEditor::createGeneralLayout(){
 
     QHBoxLayout *hlayout2 = new QHBoxLayout;
     
-    QPushButton *companion_font_button = new QPushButton(tr("Companion Font"));
+    QPushButton *companion_font_button = new QPushButton;
     QFontDialog *companion_font_dialog = new QFontDialog(this);
 
-    connect(companion_font_dialog, SIGNAL(currentFontChanged(QFont)), card_scene, SLOT(setComapnionFont(QFont)));
+    connect(companion_font_dialog, SIGNAL(currentFontChanged(QFont)), card_scene, SLOT(setCompanionFont(QFont)));
     setMapping(companion_font_dialog, companion_font_button);
+
+    companion_font_dialog->setCurrentFont(Config.value("CardEditor/CompanionFont", QFont("", 9)).value<QFont>());
 
     hlayout2->addWidget(companion_font_button);
 
@@ -1068,6 +1072,8 @@ QLayout *CardEditor::createGeneralLayout(){
     hp_spinbox->setValue(Config.value("CardEditor/MaxHP", 3).toInt());
     trans_hp_spinbox->setValue(Config.value("CardEditor/TransMaxHP", 0).toInt());
     ratio_spinbox->setValue(Config.value("CardEditor/ImageRatio", 100).toInt());
+    companion_edit->setText(Config.value("CardEditor/Companion").toString());
+    show_companion_box->setChecked(Config.value("CardEditor/CompanionVisible", false).toBool());
     QString photo = Config.value("CardEditor/Photo").toString();
     if(!photo.isEmpty())
         card_scene->setGeneralPhoto(photo);
