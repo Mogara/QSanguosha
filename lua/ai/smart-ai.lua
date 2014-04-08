@@ -2392,6 +2392,9 @@ function sgs.ai_skill_cardask.nullfilter(self, data, pattern, target)
 	local effect
 	if type(data) == "userdata" then
 		effect = data:toSlashEffect()
+		if effect and effect.slash then
+			damage_nature = effect.nature
+		end
 	end
 	if effect and self:hasHeavySlashDamage(target, effect.slash, self.player) then return end
 	if not self:damageIsEffective(nil, damage_nature, target) then return "." end
