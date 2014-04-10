@@ -885,7 +885,7 @@ public:
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
         if (invoke){
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), 2);
             return true;
         }
 
@@ -894,7 +894,6 @@ public:
 
     virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         room->notifySkillInvoked(player, objectName());
-        room->broadcastSkillInvoke(objectName());
         room->setTag("HuoshouSource", QVariant::fromValue((PlayerStar)player));
 
         return false;
@@ -973,7 +972,7 @@ public:
 class Juxiang: public TriggerSkill {
 public:
     Juxiang(): TriggerSkill("juxiang") {
-        events << CardUsed << BeforeCardsMove;
+        events << CardUsed << CardsMoveOneTime;
         frequency = Compulsory;
     }
 
@@ -1019,9 +1018,8 @@ public:
         log.arg = objectName();
         room->sendLog(log);
 
-        player->obtainCard(Sanguosha->getCard(move.card_ids.first()));
-        move.card_ids.clear();
-        data = QVariant::fromValue(move);
+        DummyCard sa(move.card_ids);
+        player->obtainCard(&sa);
 
         return false;
     }
