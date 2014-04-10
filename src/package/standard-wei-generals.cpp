@@ -14,7 +14,19 @@ public:
         if (MasochismSkill::triggerable(player)) {
             DamageStruct damage = data.value<DamageStruct>();
             const Card *card = damage.card;
-            return (card && room->getCardPlace(card->getEffectiveId()) == Player::PlaceTable) ? QStringList(objectName()) : QStringList();
+            bool invokable = false;
+            if (!card->isVirtualCard())
+                invokable = room->getCardPlace(card->getId()) == Player::PlaceTable;
+            else if (card->getSubcards().length() > 0){
+                invokable = true;
+                foreach (int id, card->getSubcards()){
+                    if (room->getCardPlace(id) != Player::PlaceTable){
+                        invokable = false;
+                        break;
+                    }
+                }
+            }
+            return invokable ? QStringList(objectName()) : QStringList();
         }
         return QStringList();
     }
