@@ -231,7 +231,7 @@ public:
             move2.to_place = Player::PlaceHand;
             moves.push_back(move2);
         }
-        room->moveCards(moves, false);
+        room->moveCardsAtomic(moves, false);
 
         return true;
     }
