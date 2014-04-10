@@ -662,19 +662,10 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
         }
     }
 
-    DummyCard to_throw;
-    if (!isVirtualCard() && room->getCardPlace(m_id) == Player::PlaceTable)
-        to_throw.addSubcard(this);
-    else {
-        foreach (int id, subcards){
-            if (room->getCardPlace(id) == Player::PlaceTable)
-                to_throw.addSubcard(id);
-        }
-    }
-    if (!to_throw.getSubcards().isEmpty()){
+    if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
         if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
-        room->moveCardTo(&to_throw, source, NULL, Player::DiscardPile, reason, true);
+        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
     }
 }
 

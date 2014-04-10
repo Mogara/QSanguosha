@@ -312,20 +312,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             card_use = data.value<CardUseStruct>();
 
             if (card_use.card && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty()) && !card_use.card->targetFixed()
-                    && card_use.to.isEmpty()) {
-                DummyCard to_throw;
-                if (!card_use.card->isVirtualCard() && room->getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable)
-                    to_throw.addSubcard(card_use.card);
-                else {
-                    foreach (int id, card_use.card->getSubcards()){
-                        if (room->getCardPlace(id) == Player::PlaceTable)
-                            to_throw.addSubcard(id);
-                    }
-                }
-                if (!to_throw.getSubcards().isEmpty()){
-                    CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
-                    room->throwCard(&to_throw, reason, NULL);
-                }
+                    && card_use.to.isEmpty() && room->getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
+                CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
+                room->throwCard(card_use.card, reason, NULL);
                 break;
             }
 
