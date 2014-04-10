@@ -361,7 +361,7 @@ sgs.ai_skill_invoke.qianhuan = function(self, data)
 	local use = self.player:getTag("qianhuan_data"):toCardUse()
 	if (use.from and self:isFriend(use.from)) then return false end --队友给自己出桃子不无懈（暂）
 	local to = use.to:first()
-	if to:objectName() == self.player:objectName() then
+	if to and to:objectName() == self.player:objectName() then
 		return not (use.from and (use.from:objectName() == to:objectName()
 									or (use.card:isKindOf("Slash") and self:isPriorFriendOfSlash(self.player, use.card, use.from))))
 	else
