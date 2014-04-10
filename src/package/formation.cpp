@@ -345,8 +345,16 @@ bool HuyuanCard::targetFilter(const QList<const Player *> &targets, const Player
 void HuyuanCard::onEffect(const CardEffectStruct &effect) const{
     const Card *equip = Sanguosha->getCard(subcards[0]);
 
-    effect.from->tag["huyuan_equip"] = QVariant::fromValue(equip);
     effect.from->tag["huyuan_target"] = QVariant::fromValue(effect.to);
+
+    effect.from->getRoom()->moveCardTo(equip, effect.from, effect.to, Player::PlaceEquip,
+        CardMoveReason(CardMoveReason::S_REASON_PUT, effect.from->objectName(), "huyuan", QString()));
+
+    LogMessage log;
+    log.type = "$ZhijianEquip";
+    log.from = effect.to;
+    log.card_str = QString::number(equip->getEffectiveId());
+    effect.from->getRoom()->sendLog(log);
 }
 
 class HuyuanViewAsSkill: public OneCardViewAsSkill {
@@ -385,28 +393,17 @@ public:
     virtual bool cost(TriggerEvent , Room *room, ServerPlayer *target, QVariant &, ServerPlayer *) const {
         target->tag.remove("huyuan_equip");
         target->tag.remove("huyuan_target");
-        room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
-        if (target->tag.contains("huyuan_equip") && target->tag.contains("huyuan_target")){
-            const Card *card = caohong->tag["huyuan_equip"].value<const Card *>();
-            ServerPlayer *target = caohong->tag["huyuan_target"].value<ServerPlayer *>();
-
-            room->moveCardTo(card, caohong, target, Player::PlaceEquip,
-                CardMoveReason(CardMoveReason::S_REASON_PUT, caohong->objectName(), "huyuan", QString()));
-
-            LogMessage log;
-            log.type = "$ZhijianEquip";
-            log.from = target;
-            log.card_str = QString::number(card->getEffectiveId());
-            room->sendLog(log);
-
+        bool invoek = room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
+        if (invoek && target->tag.contains("huyuan_target"))
             return true;
-        }
 
         return false;
     }
 
     virtual bool onPhaseChange(ServerPlayer *caohong) const{
         Room *room = caohong->getRoom();
+
+        ServerPlayer *target = caohong->tag["huyuan_target"].value<ServerPlayer *>();
         
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getAllPlayers()) {
@@ -415,7 +412,7 @@ public:
         }
         if (!targets.isEmpty()) {
             ServerPlayer *to_dismantle = room->askForPlayerChosen(caohong, targets, "huyuan", "@huyuan-discard:" + target->objectName(), true);
-            if (to_dismantle){
+            if (to_dismantle != NULL){
                 int card_id = room->askForCardChosen(caohong, to_dismantle, "he", "huyuan", false, Card::MethodDiscard);
                 room->throwCard(Sanguosha->getCard(card_id), to_dismantle, caohong);
             }
@@ -1097,6 +1094,8 @@ public:
         if (triggerEvent == CardsMoveOneTime){
             if (move.to_place == Player::DiscardPile || (move.to_place == Player::PlaceEquip && move.to != player))
                 return QStringList(objectName());
+            else if (move.to_place == Player::DrawPile && player->hasFlag("fldf_removing"))
+                return QStringList(objectName());
         }
         else if (triggerEvent == BeforeCardsMove){
             if ((move.from == player && (move.from_places[move.card_ids.indexOf(fldfid)] == Player::PlaceHand || move.from_places[move.card_ids.indexOf(fldfid)] == Player::PlaceEquip))
@@ -1110,7 +1109,10 @@ public:
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
         if (invoke){
-            room->broadcastSkillInvoke(objectName(), (triggerEvent == BeforeCardsMove) ? 1 : 2);
+            if (!player->hasFlag("fldf_removing"))
+                room->broadcastSkillInvoke(objectName(), (triggerEvent == BeforeCardsMove) ? 1 : 2);
+            else
+                player->setFlags("-fldf_removing");
             return true;
         }
 
@@ -1128,17 +1130,20 @@ public:
         }
 
         if (triggerEvent == CardsMoveOneTime){
-            player->obtainCard(Sanguosha->getCard(fldfid));
+            if (move.to_place == Player::DrawPile)
+                player->drawCards(2);
+            else
+                player->obtainCard(Sanguosha->getCard(fldfid));
         }
         else {
             room->showCard(player, fldfid);
+            player->setFlags("fldf_removing");
             move.from_places.removeAt(move.card_ids.indexOf(fldfid));
             move.card_ids.removeOne(fldfid);
             data = QVariant::fromValue(move);
             QList<int> to_move;
             to_move << fldfid;
             room->moveCardsToEndOfDrawpile(to_move);
-            room->drawCards(player, 2);
         }
         return false;
     }
