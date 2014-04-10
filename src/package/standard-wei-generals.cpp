@@ -716,7 +716,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
             move2.to_place = Player::PlaceHand;
             moves.push_back(move2);
         }
-        room->moveCards(moves, false);
+        room->moveCardsAtomic(moves, false);
     } else if (phase == Player::Play) {
         if (targets.isEmpty())
             return;
