@@ -398,6 +398,7 @@ public:
     Cunsi(): TriggerSkill("cunsi") {
         events << GameStart << EventAcquireSkill;
         view_as_skill = new CunsiVS;
+        frequency = Limited;
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
@@ -410,50 +411,78 @@ public:
 class Yongjue: public TriggerSkill {
 public:
     Yongjue(): TriggerSkill("yongjue") {
-        events << CardUsed;
+        events << CardUsed << BeforeCardsMove;
     }
 
     virtual bool canPreshow() const {
         return false;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (player == NULL || !player->isAlive()) return QStringList();
         QList<ServerPlayer *> owners = room->findPlayersBySkillName(objectName());
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from->getPhase() == Player::Play && use.from->getMark(objectName()) == 0) {
-            if (!use.card->isKindOf("SkillCard"))
-                use.from->addMark(objectName());
-            if (use.card->isKindOf("Slash")) {
-                QList<int> ids;
-                if (!use.card->isVirtualCard())
-                    ids << use.card->getEffectiveId();
-                else if (use.card->subcardsLength() > 0)
-                    ids = use.card->getSubcards();
-                if (!ids.isEmpty())
-                    foreach (ServerPlayer *owner, owners)
-                        if (owner->isFriendWith(use.from)){
-                            ask_who = use.from;
-                            return QStringList(objectName());
+        if (triggerEvent == CardUsed){
+            CardUseStruct use = data.value<CardUseStruct>();
+            if (use.from->getPhase() == Player::Play && use.from->getMark(objectName()) == 0){
+                if (!use.card->isKindOf("SkillCard"))
+                    use.from->addMark(objectName());
+                if (use.card->isKindOf("Slash")) {
+                    use.from->tag.remove("yongjue_card");
+                    QList<int> ids;
+                    if (!use.card->isVirtualCard())
+                        ids << use.card->getEffectiveId();
+                    else if (use.card->subcardsLength() > 0)
+                        ids = use.card->getSubcards();
+                    if (!ids.isEmpty()){
+                        QVariantList card_list;
+                        foreach (int id, ids){
+                            card_list << id;
                         }
+                        use.from->tag["yongjue_card"] = card_list;
+                    }
+                }
+            }
+        }
+        else if (triggerEvent == BeforeCardsMove){
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from != NULL && move.from->tag.contains("yongjue_card") && player == move.from
+                    && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE)
+                    && move.from_places.contains(Player::PlaceTable) && move.to_place == Player::DiscardPile){
+                QVariantList card_list = player->tag["yongjue_card"].toList();
+                player->tag.remove("yongjue_card");
+                bool invoke = true;
+                foreach (QVariant id_v, card_list){
+                    if (!(move.card_ids.contains(id_v.toInt()) && room->getCardPlace(id_v.toInt()) == Player::PlaceTable)){
+                        invoke = false;
+                        break;
+                    }
+                }
+                if (invoke){
+                    ask_who = player;
+                    foreach (ServerPlayer *p, owners){
+                        if (p->isFriendWith(player))
+                            return QStringList(objectName());
+                    }
+                }
             }
         }
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *) const{
-        CardUseStruct use = data.value<CardUseStruct>();
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         QList<ServerPlayer *> owners = room->findPlayersBySkillName(objectName());
-        ServerPlayer *owner = owners.first();
-        foreach(ServerPlayer *p, owners)
-            if (use.from->isFriendWith(p)) {
+        ServerPlayer *owner = NULL;
+        foreach(ServerPlayer *p, owners){
+            if (player->isFriendWith(p)) {
                 owner = p;
                 break;
             }
-        if (room->askForSkillInvoke(use.from, objectName())) {
+        }
+
+        if (owner != NULL && room->askForSkillInvoke(player, objectName())) {
             LogMessage log;
             log.type = "#InvokeOthersSkill";
-            log.from = use.from;
+            log.from = player;
             log.to << owner;
             log.arg = objectName();
             room->sendLog(log);
@@ -463,21 +492,13 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *, QVariant &data, ServerPlayer *) const{
-        CardUseStruct use = data.value<CardUseStruct>();
-        QList<int> ids;
-        if (!use.card->isVirtualCard())
-            ids << use.card->getEffectiveId();
-        else if (use.card->subcardsLength() > 0)
-            ids = use.card->getSubcards();
-        foreach (int id, ids) {
-            if (room->getCardPlace(id) != Player::PlaceTable)
-                ids.removeOne(id);
-        }
-        if (!ids.isEmpty()) {
-            DummyCard dummy(ids);
-            use.from->obtainCard(&dummy);
-        }
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        DummyCard dummy(move.card_ids);
+        move.card_ids.clear();
+        data = QVariant::fromValue(move);
+
+        player->obtainCard(&dummy);
 
         return false;
     }
@@ -496,7 +517,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *target, QVariant &, ServerPlayer* &) const {
-        if (!target && target->isAlive()) return QStringList();
+        if (target == NULL || target->isDead()) return QStringList();
         if (target->getPhase() == Player::Play)
             target->setMark("yongjue", 0);
         return QStringList();
