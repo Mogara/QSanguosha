@@ -17,7 +17,7 @@ return {
 	["#zhangfei"] = "万夫不当",
 	["zhangfei"] = "张飞",
 	["paoxiao"] = "咆哮",
-	[":paoxiao"] = "锁定技，你使用【杀】无次数限制。",
+	[":paoxiao"] = "你使用【杀】无次数限制。",
 	["paoxiao:armor_nullify"] = "场上有君刘备，你现在可以亮将发动【杀】的无视防具效果。" ,
 
 	["#zhugeliang"] = "迟暮的丞相",
