@@ -1094,12 +1094,10 @@ public:
         if (triggerEvent == CardsMoveOneTime){
             if (move.to_place == Player::DiscardPile || (move.to_place == Player::PlaceEquip && move.to != player))
                 return QStringList(objectName());
-            else if (move.to_place == Player::DrawPile && player->hasFlag("fldf_removing"))
-                return QStringList(objectName());
         }
         else if (triggerEvent == BeforeCardsMove){
             if ((move.from == player && (move.from_places[move.card_ids.indexOf(fldfid)] == Player::PlaceHand || move.from_places[move.card_ids.indexOf(fldfid)] == Player::PlaceEquip))
-                    && (move.to != player || (move.to_place != Player::PlaceHand && move.to_place != Player::PlaceEquip && move.to_place != Player::DrawPile)))
+                    && (move.to != player || (move.to_place != Player::PlaceHand && move.to_place != Player::PlaceEquip)))
                 return QStringList(objectName());
         }
 
@@ -1109,10 +1107,7 @@ public:
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
         if (invoke){
-            if (!player->hasFlag("fldf_removing"))
-                room->broadcastSkillInvoke(objectName(), (triggerEvent == BeforeCardsMove) ? 1 : 2);
-            else
-                player->setFlags("-fldf_removing");
+            room->broadcastSkillInvoke(objectName(), (triggerEvent == BeforeCardsMove) ? 1 : 2);
             return true;
         }
 
@@ -1130,10 +1125,7 @@ public:
         }
 
         if (triggerEvent == CardsMoveOneTime){
-            if (move.to_place == Player::DrawPile)
-                player->drawCards(2);
-            else
-                player->obtainCard(Sanguosha->getCard(fldfid));
+            player->obtainCard(Sanguosha->getCard(fldfid));
         }
         else {
             room->showCard(player, fldfid);
@@ -1145,6 +1137,50 @@ public:
             to_move << fldfid;
             room->moveCardsToEndOfDrawpile(to_move);
         }
+        return false;
+    }
+};
+
+class Zhangwu_Draw: public TriggerSkill{
+public:
+    Zhangwu_Draw(): TriggerSkill("#zhangwu-draw"){
+        frequency = Compulsory;
+        events << CardsMoveOneTime;
+    }
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!(player != NULL && player->isAlive() && player->hasSkill("zhangwu")))
+            return QStringList();
+
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        if (move.to_place == Player::DrawPile){
+            int fldfid = -1;
+            foreach (int id, move.card_ids){
+                if (Sanguosha->getCard(id)->isKindOf("DragonPhoenix")){
+                    fldfid = id;
+                    break;
+                }
+            }
+
+            if (fldfid == -1)
+                return QStringList();
+
+            if (player->hasFlag("fldf_removing")){
+                player->setFlags("-fldf_removing");
+                return QStringList(objectName());
+            }
+            
+        }
+
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+        return player->hasShownSkill(this);
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+        player->drawCards(2);
         return false;
     }
 };
@@ -1267,6 +1303,8 @@ FormationPackage::FormationPackage()
 
     General *liubei = new General(this, "lord_liubei$", "shu", 4);
     liubei->addSkill(new Zhangwu);
+    liubei->addSkill(new Zhangwu_Draw);
+    related_skills.insertMulti("zhangwu", "#zhangwu-draw");
     liubei->addSkill(new Shouyue);
     liubei->addSkill(new Jizhao);
 
