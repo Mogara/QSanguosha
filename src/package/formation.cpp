@@ -386,27 +386,28 @@ public:
         target->tag.remove("huyuan_equip");
         target->tag.remove("huyuan_target");
         room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
-        if (target->tag.contains("huyuan_equip") && target->tag.contains("huyuan_target"))
+        if (target->tag.contains("huyuan_equip") && target->tag.contains("huyuan_target")){
+            const Card *card = caohong->tag["huyuan_equip"].value<const Card *>();
+            ServerPlayer *target = caohong->tag["huyuan_target"].value<ServerPlayer *>();
+
+            room->moveCardTo(card, caohong, target, Player::PlaceEquip,
+                CardMoveReason(CardMoveReason::S_REASON_PUT, caohong->objectName(), "huyuan", QString()));
+
+            LogMessage log;
+            log.type = "$ZhijianEquip";
+            log.from = target;
+            log.card_str = QString::number(card->getEffectiveId());
+            room->sendLog(log);
+
             return true;
+        }
 
         return false;
     }
 
     virtual bool onPhaseChange(ServerPlayer *caohong) const{
         Room *room = caohong->getRoom();
-
-        const Card *card = caohong->tag["huyuan_equip"].value<const Card *>();
-        ServerPlayer *target = caohong->tag["huyuan_target"].value<ServerPlayer *>();
-
-        room->moveCardTo(card, caohong, target, Player::PlaceEquip,
-            CardMoveReason(CardMoveReason::S_REASON_PUT, caohong->objectName(), "huyuan", QString()));
-
-        LogMessage log;
-        log.type = "$ZhijianEquip";
-        log.from = target;
-        log.card_str = QString::number(card->getEffectiveId());
-        room->sendLog(log);
-
+        
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (target->distanceTo(p) == 1 && caohong->canDiscard(p, "he"))
