@@ -815,6 +815,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *zhanghe, QVariant &data, ServerPlayer *) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+/*
         int index = 0;
         switch (change.to) {
         case Player::RoundStart:
@@ -828,7 +829,15 @@ public:
         case Player::Discard: index = 4; break;
         case Player::PhaseNone: Q_ASSERT(false);
         }
-        QString discard_prompt = QString("#qiaobian-%1").arg(index);
+*/
+
+        static QStringList phase_strings;
+        if (phase_strings.isEmpty())
+            phase_strings << "round_start" << "start" << "judge" << "draw"
+            << "play" << "discard" << "finish" << "not_active";
+        int index = static_cast<int>(change.to);
+
+        QString discard_prompt = QString("#qiaobian:::%1").arg(phase_strings[index]);
 
         if (room->askForDiscard(zhanghe, objectName(), 1, 1, true, false, discard_prompt)) {
             room->broadcastSkillInvoke("qiaobian");
