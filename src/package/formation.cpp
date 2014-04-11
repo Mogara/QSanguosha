@@ -1475,6 +1475,13 @@ public:
                 room->setPlayerFlag(player, "Global_DFDebut");
 
                 room->setPlayerProperty(player, "hp", 2);
+
+                player->setChained(false);
+                room->broadcastProperty(player, "chained");
+
+                player->setFaceUp(true);
+                room->broadcastProperty(player, "faceup");
+
                 room->setTag(player->objectName(), change_list);
 
                 room->setPlayerProperty(player, "kingdom", dfowner->getKingdom());
