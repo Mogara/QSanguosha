@@ -595,7 +595,7 @@ public:
         foreach (ServerPlayer *p, room->getPlayers()){
             if (p->getMark("tianfu_kanpo") > 0 && p->hasSkill("kanpo")){
                 p->setMark("tianfu_kanpo", 0);
-                room->handleAcquireDetachSkills(p, "-kanpo", true);
+                room->detachSkillFromPlayer(p, "kanpo", true, true);
             }
         }
 
