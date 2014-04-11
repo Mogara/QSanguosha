@@ -1362,10 +1362,12 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             QVariant data = QVariant::fromValue(resp);
             thread->trigger(CardResponded, this, player, data);
             if (method == Card::MethodUse) {
-                if (getCardPlace(card->getEffectiveId()) == Player::PlaceTable) {
+                QList<int> table_cardids = getCardIdsOnTable(card);
+                if (!table_cardids.isEmpty()) {
+                    DummyCard dummy(table_cardids);
                     CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(),
                                           QString(), card->getSkillName(), QString());
-                    moveCardTo(card, NULL, Player::DiscardPile, reason, true);
+                    moveCardTo(&dummy, NULL, Player::DiscardPile, reason, true);
                 }
                 CardUseStruct card_use;
                 card_use.card = card;
@@ -2733,10 +2735,12 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
     }
     catch (TriggerEvent triggerEvent) {
         if (triggerEvent == StageChange || triggerEvent == TurnBroken) {
-            if (getCardPlace(card_use.card->getEffectiveId()) == Player::PlaceTable) {
+            QList<int> table_cardids = getCardIdsOnTable(card_use.card);
+            if (!table_cardids.isEmpty()) {
+                DummyCard dummy(table_cardids);
                 CardMoveReason reason(CardMoveReason::S_REASON_UNKNOWN, card_use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
                 if (card_use.to.size() == 1) reason.m_targetId = card_use.to.first()->objectName();
-                moveCardTo(card_use.card, card_use.from, NULL, Player::DiscardPile, reason, true);
+                moveCardTo(&dummy, card_use.from, NULL, Player::DiscardPile, reason, true);
             }
             QVariant data = QVariant::fromValue(card_use);
             card_use.from->setFlags("Global_ProcessBroken");
@@ -4603,6 +4607,27 @@ ServerPlayer *Room::getCardOwner(int card_id) const{
 Player::Place Room::getCardPlace(int card_id) const{
     if (card_id < 0) return Player::PlaceUnknown;
     return place_map.value(card_id);
+}
+
+QList<int> Room::getCardIdsOnTable(const Card *virtual_card) const{
+    if (!virtual_card->isVirtualCard()){
+        if (getCardPlace(virtual_card->getId()) == Player::PlaceTable){
+            QList<int> r;
+            int id = virtual_card->getId();
+            r << id;
+            return r;
+        }
+    }
+    else {
+        QList<int> r;
+        foreach (int id, virtual_card->getSubcards()){
+            if (getCardPlace(id) == Player::PlaceTable){
+                r << id;
+            }
+        }
+        return r;
+    }
+    return QList<int>();
 }
 
 ServerPlayer *Room::getLord(const QString &kingdom) const{

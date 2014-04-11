@@ -269,6 +269,7 @@ public:
     void setEmotion(ServerPlayer *target, const QString &emotion);
 
     Player::Place getCardPlace(int card_id) const;
+    QList<int> getCardIdsOnTable(const Card *) const;
     ServerPlayer *getCardOwner(int card_id) const;
     void setCardMapping(int card_id, ServerPlayer *owner, Player::Place place);
 

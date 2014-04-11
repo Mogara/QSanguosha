@@ -662,10 +662,12 @@ void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets)
         }
     }
 
-    if (room->getCardPlace(getEffectiveId()) == Player::PlaceTable) {
+    QList<int> table_cardids = room->getCardIdsOnTable(this);
+    if (!table_cardids.isEmpty()) {
+        DummyCard dummy(table_cardids);
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName(), QString(), this->getSkillName(), QString());
         if (targets.size() == 1) reason.m_targetId = targets.first()->objectName();
-        room->moveCardTo(this, source, NULL, Player::DiscardPile, reason, true);
+        room->moveCardTo(&dummy, source, NULL, Player::DiscardPile, reason, true);
     }
 }
 
