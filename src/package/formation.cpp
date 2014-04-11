@@ -24,6 +24,7 @@
 #include "engine.h"
 #include "structs.h"
 #include "gamerule.h"
+#include "settings.h"
 
 class Tuntian: public TriggerSkill {
 public:
@@ -310,7 +311,10 @@ public:
 
         QList<int> ids = dengai->getPile("field");
         room->fillAG(ids, dengai);
+        int aidelay = Config.AIDelay;
+        Config.AIDelay = 0;
         int id = room->askForAG(dengai, ids, false, objectName());
+        Config.AIDelay = aidelay;
         room->clearAG(dengai);
 
         if (player == dengai) {
@@ -930,9 +934,12 @@ public:
             QList<int> ids = yuji->getPile("sorcery");
             int id = -1;
             if (ids.length() > 1) {
+                int aidelay = Config.AIDelay;
+                Config.AIDelay = 0;
                 room->fillAG(ids, yuji);
                 id = room->askForAG(yuji, ids, false, objectName());
                 room->clearAG(yuji);
+                Config.AIDelay = aidelay;
             } else {
                 id = ids.first();
             }
@@ -1423,8 +1430,11 @@ public:
         if (avaliable_generals.isEmpty())
             return false;
 
-
-        if (room->askForSkillInvoke(dfowner, "DragonPhoenix", data) && room->askForSkillInvoke(player, "DragonPhoenix", "revive")){
+        int aidelay = Config.AIDelay;
+        Config.AIDelay = 0;
+        bool invoke = room->askForSkillInvoke(dfowner, "DragonPhoenix", data) && room->askForSkillInvoke(player, "DragonPhoenix", "revive");
+        Config.AIDelay = aidelay;
+        if (invoke){
             room->setPlayerProperty(player, "Duanchang", "");
             QString to_change;
             AI *ai = player->getAI();
