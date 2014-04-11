@@ -45,7 +45,7 @@ void TablePile::timerEvent(QTimerEvent *) {
             toRemove->setEnabled(false); // @todo: this is a dirty trick. Use another property in the future
     }
 
-    if (oldCards.empty()) {
+    if (oldCards.isEmpty()) {
         _m_mutex_pileCards.unlock();
         return;
     }
@@ -62,10 +62,10 @@ void TablePile::_markClearance(CardItem *item) {
 }
 
 void TablePile::clear(bool delayRequest) {
-    if (m_visibleCards.empty()) return;
+    if (m_visibleCards.isEmpty()) return;
     _m_mutex_pileCards.lock();
     // check again since we just gain the lock.
-    if (m_visibleCards.empty()) {
+    if (m_visibleCards.isEmpty()) {
         _m_mutex_pileCards.unlock();
         return;
     }
