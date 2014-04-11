@@ -4004,7 +4004,7 @@ function SmartAI:getAoeValue(card, player)
 	end
 
 	local dont
-	for _, p in ipairs(self.room:getOtherPlayers(attacker)) do
+	for _, p in sgs.qlist(self.room:getOtherPlayers(attacker)) do
 		if self:aoeIsEffective(card, p, attacker) and self:damageIsEffective(p, sgs.DamageStruct_Normal, attacker) then
 			if (card:isKindOf("SavageAssault") and getCardsNum("Slash",p,attacker) == 0) or (card:isKindOf("ArcheryAttack") and getCardsNum("Jink",p,attacker) == 0) then 
 				if self:isWeak(p) and self:getAllPeachNum(p) < 1 then
