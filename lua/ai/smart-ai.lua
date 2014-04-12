@@ -329,7 +329,7 @@ function SmartAI:objectiveLevel(player, tactics)
 					if self:evaluateKingdom(player) == self_kingdom then return -1
 					elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
 					elseif self:evaluateKingdom(player) == "unknown" then return self:getOverflow() > 0 and 1 or 0
-					else return self:getOverflow() > 5 or 1
+					else return self:getOverflow() > 5 and 1 or 0
 					end
 				else return 5
 				end
