@@ -329,7 +329,7 @@ function SmartAI:objectiveLevel(player, tactics)
 					if self:evaluateKingdom(player) == self_kingdom then return -1
 					elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
 					elseif self:evaluateKingdom(player) == "unknown" then return self:getOverflow() > 0 and 1 or 0
-					else return self:getOverflow() > 5 or 1
+					else return self:getOverflow() > 5 and 1 or 0
 					end
 				else return 5
 				end
@@ -4003,6 +4003,22 @@ function SmartAI:getAoeValue(card, player)
 		return -100
 	end
 
+	local dont = 0
+	for _, p in sgs.qlist(self.room:getOtherPlayers(attacker)) do
+		if self:aoeIsEffective(card, p, attacker) and self:damageIsEffective(p, sgs.DamageStruct_Normal, attacker) then
+			if (card:isKindOf("SavageAssault") and getCardsNum("Slash",p,attacker) == 0) or (card:isKindOf("ArcheryAttack") and getCardsNum("Jink",p,attacker) == 0) then 
+				if self:isWeak(p) and self:getAllPeachNum(p) < 1 then
+					if self:isFriend(p) then
+						dont = dont+1
+					elseif self:isEnemy(p) then
+						dont = dont-1
+					end
+				end
+			end
+		end
+	end
+	if dont > 1 then return -100 end
+	
 	local enemy_number = 0
 	for _, player in sgs.qlist(self.room:getOtherPlayers(attacker)) do
 		if self:cantbeHurt(player, attacker) and self:aoeIsEffective(card, player, attacker) then
