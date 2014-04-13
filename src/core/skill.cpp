@@ -319,7 +319,7 @@ bool TriggerSkill::effect(TriggerEvent , Room *, ServerPlayer *, QVariant &, Ser
 }
 
 TriggerSkill::~TriggerSkill() {
-    if (view_as_skill)
+    if (view_as_skill && !view_as_skill->inherits("LuaViewAsSkill"))
         delete view_as_skill;
     events.clear();
 }
