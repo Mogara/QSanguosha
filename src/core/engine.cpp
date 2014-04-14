@@ -127,7 +127,7 @@ void Engine::addTranslationEntry(const char *key, const char *value) {
 }
 
 Engine::~Engine() {
-    lua_close(lua); //此条语句会导致闪退（只不过是正在退出的过程中闪退，看不出来），不知什么原因
+    lua_close(lua);
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif
@@ -525,7 +525,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersionNumber() const{
-    return "0.7.1";
+    return "0.7.2";
 }
 
 QString Engine::getVersion() const{
