@@ -559,7 +559,7 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	return false
 end
 
---[[sgs.ai_skill_use["@@fangquan"] = function(self, prompt)
+sgs.ai_skill_use["@@fangquan"] = function(self, prompt)
 	local fangquan_card = sgs.Card_Parse(self.fangquan_card_str)
 	local in_handcard = true
 	for _, id in sgs.qlist(fangquan_card:getSubcards()) do
@@ -577,13 +577,11 @@ end
 	for i = #cards, 1, -1 do
 		local card = cards[i]
 		if not isCard("Peach", card, self.player) and not self.player:isJilei(card) then
-			return "@FangquanCard=" .. card:getEffectiveId() .. "&fangquan->" .. target:objectName()
+			local use = sgs.CardUseStruct()
+			use:parse(self.fangquan_card_str, self.room)
+			return "@FangquanCard=" .. card:getEffectiveId() .. "&fangquan->" .. use.to:first():objectName()
 		end
 	end
-end]]
-
-sgs.ai_skill_use["@@fangquan"] = function(self, prompt)
-	return self.fangquan_card_str or "."
 end
 
 sgs.ai_card_intention.FangquanCard = -120
