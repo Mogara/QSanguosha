@@ -594,7 +594,7 @@ public:
         PindianStar pindian = data.value<PindianStar>();
         bool isFrom = pindian->from == sunce;
 
-        QString choice = room->askForChoice(sunce, objectName(), "jia3+jian3", objectName());
+        QString choice = room->askForChoice(sunce, objectName(), "jia3+jian3", data);
 
         int index = 2;
         if (choice == "jia3")
