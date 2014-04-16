@@ -4009,7 +4009,7 @@ function SmartAI:getAoeValue(card, player)
 			if (card:isKindOf("SavageAssault") and getCardsNum("Slash",p,attacker) == 0) or (card:isKindOf("ArcheryAttack") and getCardsNum("Jink",p,attacker) == 0) then 
 				if self:isWeak(p) and self:getAllPeachNum(p) < 1 then
 					if self:isFriend(p) then
-						dont = dont+1
+						dont = dont+2
 					elseif self:isEnemy(p) then
 						dont = dont-1
 					end
@@ -4017,7 +4017,7 @@ function SmartAI:getAoeValue(card, player)
 			end
 		end
 	end
-	if dont > 1 then return -100 end
+	if dont > 0 then return -100 end
 	
 	local enemy_number = 0
 	for _, player in sgs.qlist(self.room:getOtherPlayers(attacker)) do
