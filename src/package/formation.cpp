@@ -831,8 +831,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        PlayerStar p = player->tag["yicheng_target"].value<PlayerStar>();
-        if (room->askForSkillInvoke(player, objectName(), QVariant::fromValue(p))){
+        if (room->askForSkillInvoke(player, objectName(), player->tag["yicheng_target"])){
             room->broadcastSkillInvoke(objectName());
             return true;
         }
