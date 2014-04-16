@@ -328,9 +328,19 @@ bool Player::isLord() const{
 bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
     const TriggerSkill *trigger = Sanguosha->getTriggerSkill(skill_name);
     if (trigger && trigger->isGlobal()) return true;
+
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    if (skill == NULL)
+        return false;
+    
+    if (!skill->isVisible()){
+        const Skill *skill = Sanguosha->getMainSkill(skill_name);
+        if (skill != NULL)
+            return hasSkill(skill);
+    }
+
     if (!include_lose) {
         if (!hasEquipSkill(skill_name)) {
-            const Skill *skill = Sanguosha->getSkill(skill_name);
             if (phase == Player::NotActive) {
                 const Player *current = NULL;
                 foreach (const Player *p, getAliveSiblings()) {
@@ -833,6 +843,12 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
             && (include_equip || !hasEquipSkill(skill->objectName()))
             && (!visible_only || skill->isVisible()))
             skillList << skill;
+        if (skill->isVisible() && !visible_only){
+            QList<const Skill *> related_skill = Sanguosha->getRelatedSkills(skill->objectName());
+            foreach(const Skill *s, related_skill)
+                if (!skillList.contains(s) && !s->isVisible())
+                    skillList << s;
+        }
     }
 
     return skillList;
