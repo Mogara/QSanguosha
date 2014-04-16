@@ -444,3 +444,5 @@ PeaceSpell_damageeffect = function(self, to, nature, from)
 end
 table.insert(sgs.ai_damage_effect, PeaceSpell_damageeffect)
 
+sgs.ai_use_priority.PeaceSpell = 0.75
+
