@@ -1663,7 +1663,7 @@ bool ServerPlayer::inSiegeRelation(const ServerPlayer *skill_owner, const Server
 
 QList<ServerPlayer *> ServerPlayer::getFormation() const {
     QList<ServerPlayer *> teammates;
-    teammates << const_cast<ServerPlayer *>(this);
+    teammates << room->findPlayer(objectName()); //avoid unsafe const_cast
     int n = aliveCount();
     int num = n;
     for (int i = 1; i < n; ++ i) {
