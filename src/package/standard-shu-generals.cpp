@@ -1199,6 +1199,7 @@ public:
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::Play){
             if (player->askForSkillInvoke(objectName())){
+                player->skip(Player::Play);
                 room->broadcastSkillInvoke(objectName(), 1);
                 return true;
             }
@@ -1212,8 +1213,6 @@ public:
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::Play){
             liushan->setFlags(objectName());
-            liushan->skip(Player::Play);
-
         }
         return false;
     }
