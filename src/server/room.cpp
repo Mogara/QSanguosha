@@ -4154,7 +4154,7 @@ final:
     delete[] cardChanged;
 }
 
-void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, const bool &head) {
+void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, bool head) {
     QString skill_name = skill->objectName();
     if (player->getAcquiredSkills().contains(skill_name))
         return;
@@ -4187,7 +4187,7 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, con
     }
 }
 
-void Room::acquireSkill(ServerPlayer *player, const QString &skill_name, bool open, const bool &head) {
+void Room::acquireSkill(ServerPlayer *player, const QString &skill_name, bool open, bool head) {
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if (skill) acquireSkill(player, skill, open, head);
 }
@@ -4725,7 +4725,7 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
 }
 
-int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids, QString skill_name) {
+int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids, const QString &skill_name) {
     Q_ASSERT(!target->isKongcheng());
     while (isPaused()) {}
     notifyMoveFocus(shenlvmeng, S_COMMAND_SKILL_GONGXIN);

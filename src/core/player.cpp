@@ -394,9 +394,9 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
     return skill && skill->isLordSkill() && isLord() && hasSkill(skill_name, include_lose);
 }
 
-void Player::acquireSkill(const QString &skill_name, const bool &head) {
-    QSet<QString> *skills = head ? &head_acquired_skills : &deputy_acquired_skills;
-    skills->insert(skill_name);
+void Player::acquireSkill(const QString &skill_name, bool head) {
+    QSet<QString> &skills = head ? head_acquired_skills : deputy_acquired_skills;
+    skills.insert(skill_name);
 }
 
 void Player::detachSkill(const QString &skill_name) {
@@ -1030,7 +1030,7 @@ void Player::removeQinggangTag(const Card *card) {
     }
 }
 
-const Player *Player::getLord(const bool include_death) const{
+const Player *Player::getLord(bool include_death) const{
     QList<const Player *> sib = include_death ? getSiblings() : getAliveSiblings();
     sib << this;
     foreach(const Player *p, sib){
@@ -1252,14 +1252,14 @@ void Player::setGeneral2Showed(bool showed) {
     emit deputy_state_changed();
 }
 
-void Player::setSkillPreshowed(const QString &skill, const bool preshowed) {
+void Player::setSkillPreshowed(const QString &skill, bool preshowed) {
     if (head_skills.keys().contains(skill))
         head_skills[skill] = preshowed;
     else if (deputy_skills.keys().contains(skill))
         deputy_skills[skill] = preshowed;
 }
 
-void Player::setSkillsPreshowed(const QString &flags, const bool preshowed) {
+void Player::setSkillsPreshowed(const QString &flags, bool preshowed) {
     if (flags.contains("h")) {
         foreach (QString skill, head_skills.keys()) {
             if (!Sanguosha->getSkill(skill)->canPreshow()) continue;

@@ -238,10 +238,10 @@ bool General::isCompanionWith(const QString &name) const {
            || other->companions.contains(objectName());
 }
 
-void General::setHeadMaxHpAdjustedValue(const int adjusted_value /* = -1 */) {
-    this->head_max_hp_adjusted_value = adjusted_value;
+void General::setHeadMaxHpAdjustedValue(int adjusted_value /* = -1 */) {
+    head_max_hp_adjusted_value = adjusted_value;
 }
 
-void General::setDeputyMaxHpAdjustedValue(const int adjusted_value /* = -1 */) {
-    this->deputy_max_hp_adjusted_value = adjusted_value;
+void General::setDeputyMaxHpAdjustedValue(int adjusted_value /* = -1 */) {
+    deputy_max_hp_adjusted_value = adjusted_value;
 }
