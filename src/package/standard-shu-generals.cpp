@@ -604,10 +604,9 @@ public:
 };
 
 
-class KuangguGlobal: public TriggerSkill{
+class KuangguRecord: public TriggerSkill{
 public:
-    KuangguGlobal(): TriggerSkill("KuangguGlobal"){
-        global = true;
+    KuangguRecord(): TriggerSkill("#kuanggu-record"){
         events << PreDamageDone;
         frequency = Compulsory;
     }
@@ -616,8 +615,11 @@ public:
         if (player != NULL){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *weiyan = damage.from;
-            if (weiyan)
-                weiyan->tag["InvokeKuanggu"] = weiyan->distanceTo(damage.to) <= 1;
+            if (weiyan != NULL)
+                if (weiyan->distanceTo(damage.to) <= 1)
+                    weiyan->tag["InvokeKuanggu"] = damage.damage;
+                else
+                    weiyan->tag.remove("InvokeKuanggu");
         }
 
         return QStringList();
@@ -633,9 +635,9 @@ public:
 
     virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         if (TriggerSkill::triggerable(player)){
-            bool invoke = player->tag.value("InvokeKuanggu", false).toBool();
-            player->tag["InvokeKuanggu"] = false;
-            if (invoke && player->isWounded()) {
+            bool ok = false;
+            int recorded_damage = player->tag["InvokeKuanggu"].toInt(&ok);
+            if (ok && recorded_damage > 0 && player->isWounded()) {
                 QStringList skill_list;
                 DamageStruct damage = data.value<DamageStruct>();
                 for (int i = 0; i < damage.damage; i++)
@@ -1416,7 +1418,8 @@ void StandardPackage::addShuGenerals()
 
     General *weiyan = new General(this, "weiyan", "shu"); // SHU 009
     weiyan->addSkill(new Kuanggu);
-    skills << new KuangguGlobal;
+    weiyan->addSkill(new KuangguRecord);
+    related_skills.insertMulti("kuanggu", "#kuanggu-record");
 
     General *pangtong = new General(this, "pangtong", "shu", 3); // SHU 010
     pangtong->addSkill(new Lianhuan);
