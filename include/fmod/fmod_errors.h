@@ -1,6 +1,6 @@
 
 /* ============================================================================================== */
-/* FMOD Ex - Error string header file. Copyright (c), Firelight Technologies Pty, Ltd. 2004-2011. */
+/* FMOD Ex - Error string header file. Copyright (c), Firelight Technologies Pty, Ltd. 2004-2014. */
 /*                                                                                                */
 /* Use this header if you want to store or display a string version / english explanation of      */
 /* the FMOD error codes.                                                                          */
@@ -38,7 +38,7 @@ static const char *FMOD_ErrorString(FMOD_RESULT errcode)
         case FMOD_ERR_DSP_NOTFOUND:           return "DSP connection error.  Couldn't find the DSP unit specified. ";
         case FMOD_ERR_DSP_RUNNING:            return "DSP error.  Cannot perform this operation while the network is in the middle of running.  This will most likely happen if a connection or disconnection is attempted in a DSP callback. ";
         case FMOD_ERR_DSP_TOOMANYCONNECTIONS: return "DSP connection error.  The unit being connected to or disconnected should only have 1 input or output. ";
-        case FMOD_ERR_EVENT_ALREADY_LOADED:   return "The specified project has already been loaded. Having multiple copies of the same project loaded simultaneously is forbidden. ";
+        case FMOD_ERR_EVENT_ALREADY_LOADED:   return "The specified project or bank has already been loaded. Having multiple copies of the same project loaded simultaneously is forbidden. ";
         case FMOD_ERR_EVENT_FAILED:           return "An Event failed to be retrieved, most likely due to 'just fail' being specified as the max playbacks behavior. ";
         case FMOD_ERR_EVENT_GUIDCONFLICT:     return "An event with the same GUID already exists. ";
         case FMOD_ERR_EVENT_INFOONLY:         return "Can't execute this command on an EVENT_INFOONLY event. ";
@@ -99,7 +99,7 @@ static const char *FMOD_ErrorString(FMOD_RESULT errcode)
         case FMOD_ERR_PLUGIN:                 return "An unspecified error has been returned from a 3rd party plugin. ";
         case FMOD_ERR_PLUGIN_INSTANCES:       return "The number of allowed instances of a plugin has been exceeded. ";
         case FMOD_ERR_PLUGIN_MISSING:         return "A requested output, dsp unit type or codec was not available. ";
-        case FMOD_ERR_PLUGIN_RESOURCE:        return "A resource that the plugin requires cannot be found. (ie the DLS file for MIDI playback) ";
+        case FMOD_ERR_PLUGIN_RESOURCE:        return "A resource that the plugin requires cannot be found. (ie the DLS file for MIDI playback or other DLLs that it needs to load) ";
         case FMOD_ERR_PRELOADED:              return "The specified sound is still in use by the event system, call EventSystem::unloadFSB before trying to release it. ";
         case FMOD_ERR_PROGRAMMERSOUND:        return "The specified sound is still in use by the event system, wait for the event which is using it finish with it. ";
         case FMOD_ERR_RECORD:                 return "An error occured trying to initialize the recording device. ";
