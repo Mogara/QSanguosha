@@ -663,12 +663,12 @@ bool TianyiCard::targetFilter(const QList<const Player *> &targets, const Player
     return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
 }
 
-void TianyiCard::use(Room *room, ServerPlayer *taishici, QList<ServerPlayer *> &targets) const{
-    bool success = taishici->pindian(targets.first(), "tianyi", NULL);
+void TianyiCard::onEffect(const CardEffectStruct &effect) const{
+    bool success = effect.from->pindian(effect.to, "tianyi", NULL);
     if (success)
-        room->setPlayerFlag(taishici, "TianyiSuccess");
+        effect.to->getRoom()->setPlayerFlag(effect.from, "TianyiSuccess");
     else
-        room->setPlayerCardLimitation(taishici, "use", "Slash", true);
+        effect.to->getRoom()->setPlayerCardLimitation(effect.from, "use", "Slash", true);
 }
 
 class TianyiViewAsSkill: public ZeroCardViewAsSkill {

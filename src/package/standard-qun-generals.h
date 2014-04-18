@@ -52,7 +52,7 @@ class LuanwuCard: public SkillCard {
 public:
     Q_INVOKABLE LuanwuCard();
 
-    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
@@ -63,6 +63,7 @@ public:
     Q_INVOKABLE XiongyiCard();
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class HuoshuiCard: public SkillCard {

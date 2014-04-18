@@ -463,17 +463,15 @@ LuanwuCard::LuanwuCard() {
     target_fixed = true;
 }
 
-void LuanwuCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
-    source->loseAllMarks("@chaos");
+void LuanwuCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    card_use.from->loseAllMarks("@chaos");
     QString lightbox = "$LuanwuAnimate";
     room->doLightbox(lightbox, 3000);
 
-    QList<ServerPlayer *> players = room->getOtherPlayers(source);
-    foreach (ServerPlayer *player, players) {
-        if (player->isAlive())
-            room->cardEffect(this, source, player);
-        room->getThread()->delay();
-    }
+    CardUseStruct new_use = card_use;
+    new_use.to << room->getOtherPlayers(card_use.from);
+
+    Card::onUse(room, new_use);
 }
 
 void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
@@ -856,8 +854,8 @@ void XiongyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void XiongyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    foreach (ServerPlayer *p, targets)
-        p->drawCards(3);
+    Card::use(room, source, targets);
+
     QList<QString> kingdom_list = Sanguosha->getKingdoms();
     bool invoke = true;
     if (source->getRole() != "careerist") {
@@ -876,6 +874,10 @@ void XiongyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
         recover.who = source;
         room->recover(source, recover);
     }
+}
+
+void XiongyiCard::onEffect(const CardEffectStruct &effect) const{
+    effect.to->drawCards(3);
 }
 
 class Xiongyi: public ZeroCardViewAsSkill {

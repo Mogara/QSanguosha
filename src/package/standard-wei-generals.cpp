@@ -981,31 +981,31 @@ bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *
     return targets.isEmpty() && to_select->getHp() > Self->getHp() && !to_select->isKongcheng();
 }
 
-void QuhuCard::use(Room *room, ServerPlayer *xunyu, QList<ServerPlayer *> &targets) const{
-    ServerPlayer *tiger = targets.first();
+void QuhuCard::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
 
-    bool success = xunyu->pindian(tiger, "quhu", NULL);
+    bool success = effect.from->pindian(effect.to, "quhu", NULL);
     if (success) {
-        QList<ServerPlayer *> players = room->getOtherPlayers(tiger), wolves;
+        QList<ServerPlayer *> players = room->getOtherPlayers(effect.to), wolves;
         foreach (ServerPlayer *player, players) {
-            if (tiger->inMyAttackRange(player))
+            if (effect.to->inMyAttackRange(player))
                 wolves << player;
         }
 
         if (wolves.isEmpty()) {
             LogMessage log;
             log.type = "#QuhuNoWolf";
-            log.from = xunyu;
-            log.to << tiger;
+            log.from = effect.from;
+            log.to << effect.to;
             room->sendLog(log);
 
             return;
         }
 
-        ServerPlayer *wolf = room->askForPlayerChosen(xunyu, wolves, "quhu", QString("@quhu-damage:%1").arg(tiger->objectName()));
-        room->damage(DamageStruct("quhu", tiger, wolf));
+        ServerPlayer *wolf = room->askForPlayerChosen(effect.from, wolves, "quhu", QString("@quhu-damage:%1").arg(effect.to->objectName()));
+        room->damage(DamageStruct("quhu", effect.to, wolf));
     } else {
-        room->damage(DamageStruct("quhu", tiger, xunyu));
+        room->damage(DamageStruct("quhu", effect.to, effect.from));
     }
 }
 
