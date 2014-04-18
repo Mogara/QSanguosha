@@ -92,7 +92,7 @@ function sgs.getDefenseSlash(player, self)
 		if player:hasShownSkill("hongyan") then defense = defense + 0.2 end
 	end
 
-	if player:hasShownSkill("tuntian") and player:hasShownSkill("jixi") and getCardsNum("Jink", player) >= 1 then
+	if player:hasShownSkill("tuntian") and player:hasShownSkill("jixi") and getCardsNum("Jink", player, global_room:getCurrent()) >= 1 then
 		defense = defense + 1.5
 	end
 
