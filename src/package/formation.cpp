@@ -868,7 +868,7 @@ public:
                     skill_list.insert(yuji, QStringList(objectName()));
         } else if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card || use.card->getTypeId() == Card::TypeEquip || use.card->getTypeId() == Card::TypeSkill)
+            if (!use.card || use.card->getTypeId() == Card::TypeEquip || use.card->getTypeId() == Card::TypeSkill || !use.to.contains(player))
                 return skill_list;
             if (use.to.length() != 1) return skill_list;
             foreach (ServerPlayer *yuji, yujis) {
