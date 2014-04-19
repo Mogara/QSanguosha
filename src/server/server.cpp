@@ -79,6 +79,7 @@ QWidget *ServerDialog::createBasicTab() {
     timeout_spinbox->setSuffix(tr(" seconds"));
     nolimit_checkbox = new QCheckBox(tr("No limit"));
     nolimit_checkbox->setChecked(Config.OperationNoLimit);
+    timeout_spinbox->setDisabled(Config.OperationNoLimit);
     connect(nolimit_checkbox, SIGNAL(toggled(bool)), timeout_spinbox, SLOT(setDisabled(bool)));
 
     QFormLayout *form_layout = new QFormLayout;
