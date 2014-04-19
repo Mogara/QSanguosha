@@ -1142,7 +1142,7 @@ bool Player::hasShownSkill(const QString &skill_name) const{
         if (roomObject != NULL && roomObject->inherits("Room")){
             Room *room = Sanguosha->currentRoom();
             room->output("no such skill " + skill_name);
-            qWarning("%s", QString("no such skill " + skill_name).toAscii());
+            qWarning("%s", QString("no such skill " + skill_name).toStdString().c_str());
         }
         return false;
     }
