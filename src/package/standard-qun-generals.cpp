@@ -24,6 +24,7 @@
 #include "standard-shu-generals.h"
 #include "engine.h"
 #include "client.h"
+#include "settings.h"
 
 class Jijiu: public OneCardViewAsSkill {
 public:
@@ -492,8 +493,10 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
             luanwu_targets << players[i];
     }
 
-    if (luanwu_targets.isEmpty() || !room->askForUseSlashTo(effect.to, luanwu_targets, "@luanwu-slash"))
+    if (luanwu_targets.isEmpty() || !room->askForUseSlashTo(effect.to, luanwu_targets, "@luanwu-slash")){
         room->loseHp(effect.to);
+        room->getThread()->delay(Config.AIDelay / 2);
+    }
 }
 
 class Luanwu: public ZeroCardViewAsSkill {
