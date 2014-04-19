@@ -156,7 +156,7 @@ void GeneralSelector::caculatePairValues( const ServerPlayer *player, const QStr
     }
 }
 
-void GeneralSelector::caculateDeputyValue( const ServerPlayer *player, const QString &first, const QStringList &candidates, QStringList &kingdom_list )
+void GeneralSelector::caculateDeputyValue( const ServerPlayer *player, const QString &first, const QStringList &candidates, const QStringList &kingdom_list )
 {
     foreach(QString second, candidates) {
         if (first == second) continue;
