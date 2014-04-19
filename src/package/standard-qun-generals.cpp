@@ -462,12 +462,13 @@ public:
 
 LuanwuCard::LuanwuCard() {
     target_fixed = true;
+    mute = true;
 }
 
 void LuanwuCard::onUse(Room *room, const CardUseStruct &card_use) const{
     card_use.from->loseAllMarks("@chaos");
-    QString lightbox = "$LuanwuAnimate";
-    room->doLightbox(lightbox, 3000);
+    room->broadcastSkillInvoke("luanwu");
+    room->doLightbox("$LuanwuAnimate", 3000);
 
     CardUseStruct new_use = card_use;
     new_use.to << room->getOtherPlayers(card_use.from);
