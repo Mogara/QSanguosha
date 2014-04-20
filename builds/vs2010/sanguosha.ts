@@ -17,43 +17,43 @@
 <context>
     <name>BanIPDialog</name>
     <message>
-        <location filename="../../src/server/server.cpp" line="539"/>
+        <location filename="../../src/server/server.cpp" line="552"/>
         <source>Insert to banned IP list</source>
         <translation>加入禁止IP列表</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="540"/>
+        <location filename="../../src/server/server.cpp" line="553"/>
         <source>Kick from server</source>
         <translation>踢出服务器</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="542"/>
+        <location filename="../../src/server/server.cpp" line="555"/>
         <source>Remove from banned IP list</source>
         <translation>从禁止IP列表中删除</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="555"/>
+        <location filename="../../src/server/server.cpp" line="568"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="556"/>
+        <location filename="../../src/server/server.cpp" line="569"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="581"/>
-        <location filename="../../src/server/server.cpp" line="616"/>
+        <location filename="../../src/server/server.cpp" line="594"/>
+        <location filename="../../src/server/server.cpp" line="629"/>
         <source>Warning!</source>
         <translation>警告！</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="581"/>
+        <location filename="../../src/server/server.cpp" line="594"/>
         <source>There is no server running!</source>
         <translation>没有服务器运行！</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="616"/>
+        <location filename="../../src/server/server.cpp" line="629"/>
         <source>This is your local Loopback Address and can&apos;t be banned!</source>
         <translation>这是你的本地回环地址，不可以被禁止！</translation>
     </message>
@@ -326,7 +326,7 @@
     <message>
         <location filename="../../src/dialog/cardeditor.cpp" line="1140"/>
         <source>&lt;font color=%1&gt;This function cannot be used now, we will try to fix it.&lt;/font&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;font color=%1&gt;这个功能暂时无法使用，我们会尽快尝试修复它。&lt;/font&gt;</translation>
     </message>
     <message>
         <location filename="../../src/dialog/cardeditor.cpp" line="1154"/>
@@ -2732,7 +2732,7 @@
 <context>
     <name>Player</name>
     <message>
-        <location filename="../../src/core/player.cpp" line="892"/>
+        <location filename="../../src/core/player.cpp" line="908"/>
         <source>&lt;font color=%1&gt;No skills&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;无技能&lt;/font&gt;</translation>
     </message>
@@ -3077,14 +3077,14 @@
         <translation>玩家序号应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="4262"/>
+        <location filename="../../src/server/room.cpp" line="4266"/>
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
  %1</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="5429"/>
+        <location filename="../../src/server/room.cpp" line="5433"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
@@ -3532,18 +3532,18 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>Server</name>
     <message>
-        <location filename="../../src/server/server.cpp" line="700"/>
-        <location filename="../../src/server/server.cpp" line="709"/>
+        <location filename="../../src/server/server.cpp" line="713"/>
+        <location filename="../../src/server/server.cpp" line="722"/>
         <source>Forbid the connection of address %1</source>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="716"/>
+        <location filename="../../src/server/server.cpp" line="729"/>
         <source>%1 connected</source>
         <translation>%1 已连接</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="732"/>
+        <location filename="../../src/server/server.cpp" line="745"/>
         <source>Invalid signup string: %1</source>
         <translation>无效的登录字符串: %1</translation>
     </message>
@@ -3557,8 +3557,8 @@ P = 你自己, R = 你所在的房间</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="79"/>
-        <location filename="../../src/server/server.cpp" line="281"/>
-        <location filename="../../src/server/server.cpp" line="286"/>
+        <location filename="../../src/server/server.cpp" line="293"/>
+        <location filename="../../src/server/server.cpp" line="298"/>
         <source> seconds</source>
         <translation> 秒</translation>
     </message>
@@ -3568,22 +3568,22 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>没有限制</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="288"/>
+        <location filename="../../src/server/server.cpp" line="300"/>
         <source>Minimize the dialog when server runs</source>
         <translation>服务器运行时最小化到托盘</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="291"/>
+        <location filename="../../src/server/server.cpp" line="303"/>
         <source>Surrender at the time of Death</source>
         <translation>单机游戏阵亡后可立即认输</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="333"/>
+        <location filename="../../src/server/server.cpp" line="345"/>
         <source>Game start count down</source>
         <translation>游戏开始前倒计时</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="334"/>
+        <location filename="../../src/server/server.cpp" line="346"/>
         <source>Nullification count down</source>
         <translation>无懈可击时间</translation>
     </message>
@@ -3603,87 +3603,97 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>其他选项</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="98"/>
+        <location filename="../../src/server/server.cpp" line="99"/>
         <source>Disable Lua</source>
         <translation>禁用Lua扩展（重启后生效）</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="100"/>
+        <location filename="../../src/server/server.cpp" line="101"/>
         <source>&lt;font color=%1&gt;The setting takes effect after reboot&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;此项设置保存后重启游戏方能生效&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="108"/>
+        <location filename="../../src/server/server.cpp" line="109"/>
         <source>General package</source>
         <translation>武将包</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="109"/>
+        <location filename="../../src/server/server.cpp" line="110"/>
         <source>Card package</source>
         <translation>卡牌包</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="171"/>
+        <location filename="../../src/server/server.cpp" line="172"/>
         <source>Arrange the seats randomly</source>
         <translation>随机安排座位</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="174"/>
+        <location filename="../../src/server/server.cpp" line="175"/>
         <source>Enable cheat</source>
         <translation>启用作弊</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="175"/>
+        <location filename="../../src/server/server.cpp" line="176"/>
         <source>&lt;font color=%1&gt;This option enables the cheat menu&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;本选项启用作弊菜单&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="184"/>
+        <location filename="../../src/server/server.cpp" line="185"/>
         <source>Pile-swapping limitation</source>
         <translation>最大洗牌次数</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="185"/>
+        <location filename="../../src/server/server.cpp" line="186"/>
         <source>&lt;font color=%1&gt;-1 means no limitations&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;-1表示无次数限制&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="190"/>
+        <location filename="../../src/server/server.cpp" line="191"/>
         <source>Upperlimit for hegemony</source>
         <translation>国战模式选将上限</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="229"/>
+        <location filename="../../src/server/server.cpp" line="230"/>
         <source>Formation Conversions</source>
         <translation>阵包替换</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="230"/>
+        <location filename="../../src/server/server.cpp" line="231"/>
         <source>Momentum Conversions</source>
         <translation>势包替换</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="238"/>
+        <location filename="../../src/server/server.cpp" line="232"/>
+        <source>Other Conversions</source>
+        <translation>其他替换</translation>
+    </message>
+    <message>
+        <location filename="../../src/server/server.cpp" line="242"/>
         <source>Convert Liu Bei to Lord Liu Bei</source>
         <translation>将刘备替换为君刘备</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="241"/>
+        <location filename="../../src/server/server.cpp" line="245"/>
         <source>Convert DoubleSword to DragonPhoenix</source>
         <translation>将雌雄双股剑替换为飞龙夺凤</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="254"/>
+        <location filename="../../src/server/server.cpp" line="258"/>
         <source>Convert Zhang Jiao to Lord Zhang Jiao</source>
         <translation>将张角替换为君张角</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="314"/>
+        <location filename="../../src/server/server.cpp" line="274"/>
+        <source>Convert Lua Lords</source>
+        <translation>替换Lua君主武将</translation>
+    </message>
+    <message>
+        <location filename="../../src/server/server.cpp" line="326"/>
         <source>Alter AI Delay After Death</source>
         <translation>场上只剩电脑时更改电脑延时</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="328"/>
+        <location filename="../../src/server/server.cpp" line="340"/>
         <source>AI delay After Death</source>
         <translation>更改后的电脑延时</translation>
     </message>
@@ -3693,38 +3703,38 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>基本</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="168"/>
+        <location filename="../../src/server/server.cpp" line="169"/>
         <source>Disable chat</source>
         <translation>禁止聊天</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="198"/>
+        <location filename="../../src/server/server.cpp" line="199"/>
         <source>Public IP or domain</source>
         <translation>公网 IP 或域名</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="214"/>
+        <location filename="../../src/server/server.cpp" line="215"/>
         <source>Address</source>
         <translation>地址</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="201"/>
+        <location filename="../../src/server/server.cpp" line="202"/>
         <source>Detect my WAN IP</source>
         <translation>探测我的广域网IP</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="299"/>
+        <location filename="../../src/server/server.cpp" line="311"/>
         <source>Artificial intelligence</source>
         <translation>人工智能</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="312"/>
-        <location filename="../../src/server/server.cpp" line="321"/>
+        <location filename="../../src/server/server.cpp" line="324"/>
+        <location filename="../../src/server/server.cpp" line="333"/>
         <source> millisecond</source>
         <translation> 毫秒</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="326"/>
+        <location filename="../../src/server/server.cpp" line="338"/>
         <source>AI delay</source>
         <translation>电脑延迟</translation>
     </message>
@@ -3734,52 +3744,52 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>高级</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="351"/>
+        <location filename="../../src/server/server.cpp" line="363"/>
         <source>Game mode</source>
         <translation>游戏模式</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="178"/>
+        <location filename="../../src/server/server.cpp" line="179"/>
         <source>Choose generals and cards freely</source>
         <translation>自由选择武将与卡牌</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="165"/>
+        <location filename="../../src/server/server.cpp" line="166"/>
         <source>Forbid same IP with multiple connection</source>
         <translation>禁止同一个IP建立多个连接</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="85"/>
+        <location filename="../../src/server/server.cpp" line="86"/>
         <source>Server name</source>
         <translation>服务器名</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="216"/>
+        <location filename="../../src/server/server.cpp" line="217"/>
         <source>Port</source>
         <translation>端口</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="294"/>
+        <location filename="../../src/server/server.cpp" line="306"/>
         <source>Upperlimit for use time of luck card</source>
         <translation>手气卡使用次数上限</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="304"/>
+        <location filename="../../src/server/server.cpp" line="316"/>
         <source>Enable AI</source>
         <translation>启用 AI</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="407"/>
+        <location filename="../../src/server/server.cpp" line="419"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="408"/>
+        <location filename="../../src/server/server.cpp" line="420"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../src/server/server.cpp" line="89"/>
+        <location filename="../../src/server/server.cpp" line="90"/>
         <source>Operation timeout</source>
         <translation>操作时间</translation>
     </message>
