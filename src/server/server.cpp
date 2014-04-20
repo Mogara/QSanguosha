@@ -229,13 +229,16 @@ QWidget *ServerDialog::createConversionTab() {
 
     QGroupBox *formation_conversions = new QGroupBox(tr("Formation Conversions"));
     QGroupBox *momentum_conversions = new QGroupBox(tr("Momentum Conversions"));
+    QGroupBox *other_conversions = new QGroupBox(tr("Other Conversions"));
 
     QVBoxLayout *formation_layout = new QVBoxLayout;
     QVBoxLayout *momentum_layout = new QVBoxLayout;
+    QVBoxLayout *other_layout = new QVBoxLayout;
     formation_conversions->setLayout(formation_layout);
     momentum_conversions->setLayout(momentum_layout);
+    other_conversions->setLayout(other_layout);
 
-    const bool enable_lord_liubei = Config.value("GeneralConversions").toStringList().contains("liubei");
+    bool enable_lord_liubei = Config.value("GeneralConversions").toStringList().contains("liubei");
     convert_liubei_to_lord = new QCheckBox(tr("Convert Liu Bei to Lord Liu Bei"));
     convert_liubei_to_lord->setChecked(enable_lord_liubei);
 
@@ -251,7 +254,7 @@ QWidget *ServerDialog::createConversionTab() {
     formation_layout->addWidget(convert_liubei_to_lord);
     formation_layout->addWidget(convert_ds_to_dp);
 
-    const bool enable_lord_zhangjiao = Config.value("GeneralConversions").toStringList().contains("zhangjiao");
+    bool enable_lord_zhangjiao = Config.value("GeneralConversions").toStringList().contains("zhangjiao");
     convert_zhangjiao_to_lord = new QCheckBox(tr("Convert Zhang Jiao to Lord Zhang Jiao"));
     convert_zhangjiao_to_lord->setChecked(enable_lord_zhangjiao);
 /*
@@ -267,10 +270,18 @@ QWidget *ServerDialog::createConversionTab() {
     momentum_layout->addWidget(convert_zhangjiao_to_lord);
     //momentum_layout->addWidget(add_peace_spell);
 
+    bool enable_lua_lord = Config.value("GeneralConvertions").toStringList().contains("Lua");
+    convert_lua_lord = new QCheckBox(tr("Convert Lua Lords"));
+    convert_lua_lord->setChecked(enable_lua_lord);
+
+    conversions_group->addButton(convert_lua_lord);
+    other_layout->addWidget(convert_lua_lord);
+
     QWidget *widget = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(formation_conversions);
     layout->addWidget(momentum_conversions);
+    layout->addWidget(other_conversions);
     widget->setLayout(layout);
     return widget;
 }
@@ -512,6 +523,7 @@ bool ServerDialog::config() {
     QStringList general_conversions;
     if (convert_liubei_to_lord->isChecked()) general_conversions << "liubei";
     if (convert_zhangjiao_to_lord->isChecked()) general_conversions << "zhangjiao";
+    if (convert_lua_lord->isChecked()) general_conversions << "Lua";
     Config.setValue("GeneralConversions", general_conversions);
 
     QStringList card_conversions;

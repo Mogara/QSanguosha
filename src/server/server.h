@@ -152,6 +152,7 @@ private:
 
     QCheckBox *convert_ds_to_dp;
     QCheckBox *convert_liubei_to_lord;
+    QCheckBox *convert_lua_lord;
 
     //QCheckBox *add_peace_spell;
     QCheckBox *convert_zhangjiao_to_lord;

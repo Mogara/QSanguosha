@@ -743,18 +743,36 @@ QStringList Engine::getLimitedGeneralNames() const{
     //for later use
     QStringList general_names = getGeneralNames();
     QStringList general_names_copy = general_names;
+    QStringList lord_general_names;
 
     foreach (QString n, general_names_copy){
-        if (n.startsWith("lord_"))
+        if (n.startsWith("lord_")){
             general_names.removeOne(n);
+            lord_general_names << n;
+        }
     }
 
     QStringList general_conversions = Config.value("GeneralConversions").toStringList();
+    bool convert_lua = general_conversions.contains("Lua");
+    general_conversions.removeOne("Lua");
     foreach (QString str, general_conversions) {
         QString lord = "lord_" + str;
         if (general_names_copy.contains(lord) && general_names.contains(str)){
             general_names.removeOne(str);
             general_names << lord;
+        }
+    }
+
+    if (convert_lua){
+        foreach (QString lord, lord_general_names){
+            QString non_lord = lord.mid(5);
+            if (generals.contains(non_lord) && generals.contains(lord) && general_names.contains(non_lord)){
+                const General *_non_lord_general = generals[non_lord];
+                if (Config.value("LuaPackages").toString().split("+").contains(_non_lord_general->getPackage())){
+                    general_names.removeOne(non_lord);
+                    general_names << lord;
+                }
+            }
         }
     }
 
