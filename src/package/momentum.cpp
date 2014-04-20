@@ -1032,6 +1032,7 @@ public:
 HongfaCard::HongfaCard() {
     target_fixed = true;
     m_skillName = "hongfa_slash";
+    mute = true;
 }
 
 void HongfaCard::onUse(Room *room, const CardUseStruct &card_use) const{
@@ -1117,6 +1118,7 @@ void HongfaCard::onUse(Room *room, const CardUseStruct &card_use) const{
 
 HongfaSlashCard::HongfaSlashCard() {
     m_skillName = "hongfa_slash";
+    mute = true;
 }
 
 bool HongfaSlashCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -1215,11 +1217,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        if (player->askForSkillInvoke(objectName(), data)){
-            room->broadcastSkillInvoke("hongfa");
-            return true;
-        }
-        return false;
+        return player->askForSkillInvoke(objectName(), data);
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
@@ -1302,9 +1300,14 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const {
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
         if (triggerEvent == EventPhaseStart) return true;
-        if (triggerEvent == PreHpLost) return player->askForSkillInvoke(objectName());
+        if (triggerEvent == PreHpLost) {
+            if (player->askForSkillInvoke(objectName())){
+                room->broadcastSkillInvoke(objectName(), 2);
+                return true;
+            }
+        }
         return false;
     }
 
@@ -1327,6 +1330,12 @@ public:
         }
 
         return false;
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const{
+        if (card->isKindOf("Slash"))
+            return 1;
+        return 0;
     }
 };
 
