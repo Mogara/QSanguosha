@@ -615,11 +615,12 @@ public:
         if (player != NULL){
             DamageStruct damage = data.value<DamageStruct>();
             ServerPlayer *weiyan = damage.from;
-            if (weiyan != NULL)
+            if (weiyan != NULL){
                 if (weiyan->distanceTo(damage.to) <= 1)
                     weiyan->tag["InvokeKuanggu"] = damage.damage;
                 else
                     weiyan->tag.remove("InvokeKuanggu");
+            }
         }
 
         return QStringList();
