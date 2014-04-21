@@ -1,7 +1,73 @@
-QSanguosha-Hegemony (QSGSH) Version 0.7.0 beta
+QSanguosha-Hegemony (QSGSH) Version 0.7.2 beta
 
 
   Change Log / Release Notes
+
+0.7.2 beta
+-----------------------------
+  Bugs Fixed:
+  +修复了多个技能的AI
+
+  +修复了Room::filterCards()函数中的内存泄露问题
+
+  +修复了Player::hasSkill()函数当中判断隐藏技能的问题
+
+  +修复狂骨只回复1点体力的问题
+
+  +来源为三国杀OL的配音，不再标注为“官方”配音
+
+  +修复烈弓、铁骑新实现方法引起的闪电移动过程中闪退问题
+
+  API Changes:
+  +更改部分技能的底层实现（驱虎，天义，乱武，雄异）
+
+  +新函数：QList<int> Room::getCardIdsOnTable(const Card *)
+   用于获取正在结算当中的牌在处理区的部分
+
+  New Features/Enhancements:
+  +新增加了许多电脑名字
+
+  +升级fmodex音频库至4.44.32
+
+  +在AI延时为0时不显示觉醒动画等
+
+  +替换LUA君主将（未测试）
+
+  +替换董卓、君主张角的配音
+   （董卓配音为OL皮肤董卓，君主张角配音为OL新风包张角）
+
+0.7.1 beta
+-----------------------------
+  Bugs Fixed:
+  +天覆在技能失去之后依然可用
+
+  +双雄的技能使用决斗是效果而不是发动技能，使用双雄决斗不会导致强制亮将
+
+  +倾城暗置武将，性别不正常
+
+  +飞龙夺凤的各种修复
+
+  +修复牌永久卡在处理区的问题以及结算当中的牌从非处理区移动到弃牌堆的问题
+
+  +修复LUA视为技闪退
+
+  API Changes:
+  +针对多种hasSkill类函数加入了方便的重载函数
+
+  +部分函数为了编写方便替换了参数的类型，多半是由传值变为传常量引用，或者由传常量值变为传常量引用等等。
+
+  New Features/Enhancements:
+  +AI对无懈可击国的选择
+
+  +飞龙夺凤AI
+
+  +离线使用托管AI
+
+  +DIY编辑器的修改，现在可以制作国战卡牌了
+
+  +由于官方修改了很多技能的结算，这里也同步修改
+
+  +拼点的牌现在为两张同时移动
 
 0.7.0 beta
 -----------------------------
@@ -59,6 +125,8 @@ QSanguosha-Hegemony (QSGSH) Version 0.7.0 beta
   +孔融在场时固政会获得一些莫名奇妙的牌
 
   +发动双雄后，回合结束时双雄按钮消失
+
+  +双雄按钮在被断肠下不会立即消失
 
   +卡牌编辑器加入抗锯齿（Win8.1/Win7测试通过，XP未测试，不知道效果怎样）
 
@@ -153,6 +221,8 @@ QSanguosha-Hegemony (QSGSH) Version 0.7.0 beta
   +添加返回起始界面的按钮
 
   +队友有勇决时，AI优先使用杀
+
+  +加入AI武将筛选功能，现在可以通过ai-selector/pair-value.txt里设置每组武将的评分了
 
 
 0.6.0 beta (February 25 2014)
