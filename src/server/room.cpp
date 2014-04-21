@@ -4614,6 +4614,9 @@ Player::Place Room::getCardPlace(int card_id) const{
 }
 
 QList<int> Room::getCardIdsOnTable(const Card *virtual_card) const{
+    if (virtual_card == NULL)
+        return QList<int>();
+
     if (!virtual_card->isVirtualCard()){
         if (getCardPlace(virtual_card->getId()) == Player::PlaceTable){
             QList<int> r;

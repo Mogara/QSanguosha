@@ -14,9 +14,12 @@ public:
         if (MasochismSkill::triggerable(player)) {
             DamageStruct damage = data.value<DamageStruct>();
             const Card *card = damage.card;
+            if (damage.card == NULL)
+                return QStringList();
+
             QList<int> table_cardids = room->getCardIdsOnTable(card);
             
-            return (card->getSubcards() == table_cardids) ? QStringList(objectName()) : QStringList();
+            return (table_cardids.length() != 0 && card->getSubcards() == table_cardids) ? QStringList(objectName()) : QStringList();
         }
         return QStringList();
     }
