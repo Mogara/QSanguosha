@@ -423,7 +423,7 @@ public:
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from->hasSkill(objectName()) && use.card != NULL && use.card->isKindOf("Slash") && use.to.contains(player)){
+        if (TriggerSkill::triggerable(use.from) && use.card != NULL && use.card->isKindOf("Slash") && use.to.contains(player)){
             ask_who = use.from;
             return QStringList(objectName());
         }
@@ -546,7 +546,7 @@ public:
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.from->hasSkill(objectName()) && use.from->getPhase() == Player::Play && use.card && use.card->isKindOf("Slash") && use.to.contains(player)){
+        if (TriggerSkill::triggerable(use.from) && use.from->getPhase() == Player::Play && use.card != NULL && use.card->isKindOf("Slash") && use.to.contains(player)){
             int handcard_num = player->getHandcardNum();
             if (handcard_num >= use.from->getHp() || handcard_num <= use.from->getAttackRange()){
                 ask_who = use.from;
