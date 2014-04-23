@@ -3088,7 +3088,7 @@
  %1</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="5433"/>
+        <location filename="../../src/server/room.cpp" line="5436"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
