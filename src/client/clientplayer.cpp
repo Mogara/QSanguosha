@@ -127,9 +127,20 @@ QTextDocument *ClientPlayer::getMarkDoc() const{
     return mark_doc;
 }
 
+static bool compareByNumber(int c1, int c2){
+    const Card *card1 = Sanguosha->getCard(c1);
+    const Card *card2 = Sanguosha->getCard(c2);
+
+    return card1->getNumber() < card2->getNumber();
+}
+
 void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids) {
-    if (add)
+    if (add){
         piles[name].append(card_ids);
+        if (name == "buqu"){
+            qSort(piles["buqu"].begin(), piles["buqu"].end(), compareByNumber);
+        }
+    }
     else
         foreach (int card_id, card_ids) {
             if (piles[name].isEmpty()) break;

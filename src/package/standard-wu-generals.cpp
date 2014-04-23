@@ -733,6 +733,13 @@ public:
     }
 };
 
+static bool compareByNumber(int c1, int c2){
+    const Card *card1 = Sanguosha->getCard(c1);
+    const Card *card2 = Sanguosha->getCard(c2);
+
+    return card1->getNumber() < card2->getNumber();
+}
+
 class BuquRemove: public TriggerSkill {
 public:
     BuquRemove(): TriggerSkill("#buqu-remove") {
@@ -743,6 +750,7 @@ public:
     static void Remove(ServerPlayer *zhoutai) {
         Room *room = zhoutai->getRoom();
         QList<int> buqu(zhoutai->getPile("buqu"));
+        qSort(buqu.begin(), buqu.end(), compareByNumber);
 
         CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), "buqu", QString());
         int need = 1 - zhoutai->getHp();
