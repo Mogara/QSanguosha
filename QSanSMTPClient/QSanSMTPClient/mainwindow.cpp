@@ -51,10 +51,8 @@ QString getSystemVersion() {
         return "Windows 7, Windows Server 2008 R2 (operating system version 6.1)";
     case (QSysInfo::WV_WINDOWS8) :
         return "Windows 8 (operating system version 6.2)";
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
     case (QSysInfo::WV_WINDOWS8_1) :
         return "Windows 8.1 (operating system version 6.3)";
-#endif
     default :
         break;
     }
