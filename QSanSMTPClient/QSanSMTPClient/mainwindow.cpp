@@ -114,7 +114,7 @@ int MainWindow::askForUploading() {
 
         smtp.setName("QSGSH");
         smtp.setUser("QSGSH@qq.com");
-        smtp.setPassword("abcdefghijklmnopqrstuvwxyz"); //to be changed in the future, now there is some personal information in that QQ id
+        smtp.setPassword("QSgsHegemony"); //since I use a temporary mobile phone number, this Password can finally put here
 
         if (!smtp.connectToHost()) {
             QMessageBox::warning(this, tr("Error!"), tr("Failed to connect to the server"), QMessageBox::Ok, QMessageBox::Ok);
