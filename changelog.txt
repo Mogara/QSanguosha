@@ -18,6 +18,8 @@ QSanguosha-Hegemony (QSGSH) Version 0.7.2 beta
 
   +修复烈弓、铁骑新实现方法引起的闪电移动过程中闪退问题
 
+  +修复突袭、巧变新实现方法导致选择到飞龙夺凤的时候引起的牌卡住问题
+
   API Changes:
   +更改部分技能的底层实现（驱虎，天义，乱武，雄异）
 
@@ -29,7 +31,9 @@ QSanguosha-Hegemony (QSGSH) Version 0.7.2 beta
 
   +升级fmodex音频库至4.44.32
 
-  +在AI延时为0时不显示觉醒动画等
+  +升级Qt基础库至4.8.6
+
+  +在AI延时为0时不显示觉醒动画
 
   +替换LUA君主将（未测试）
 
