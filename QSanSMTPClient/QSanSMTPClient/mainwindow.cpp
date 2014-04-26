@@ -50,9 +50,9 @@ QString getSystemVersion() {
     case (QSysInfo::WV_WINDOWS7) :
         return "Windows 7, Windows Server 2008 R2 (operating system version 6.1)";
     case (QSysInfo::WV_WINDOWS8) :
-        return "Windows 8 (operating system version 6.2)";
+        return "Windows 8, Windows Server 2012 (operating system version 6.2)";
     case (QSysInfo::WV_WINDOWS8_1) :
-        return "Windows 8.1 (operating system version 6.3)";
+        return "Windows 8.1, Windows Server 2012 R2 (operating system version 6.3)";
     default :
         break;
     }
@@ -100,6 +100,9 @@ QString getSystemVersion() {
     default :
         break;
     }
+#endif
+#ifdef Q_OS_LINUX
+    return "Linux";
 #endif
     return "An unknown platform";
 }

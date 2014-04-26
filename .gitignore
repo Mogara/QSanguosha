@@ -61,3 +61,4 @@ Qt*.pdb
 msvcp100.dll
 msvcr100.dll
 fmod.log
+libwinpthread-1.dll
