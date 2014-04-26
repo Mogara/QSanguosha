@@ -3513,7 +3513,10 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
     foreach (ServerPlayer *player, getAllPlayers()) {
         int i = 0;
         foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
-            if (moveOneTime.card_ids.size() == 0) continue;
+            if (moveOneTime.card_ids.size() == 0){
+                i++;
+                continue;
+            }
             QVariant data = QVariant::fromValue(moveOneTime);
             thread->trigger(BeforeCardsMove, this, player, data);
             moveOneTime = data.value<CardsMoveOneTimeStruct>();
@@ -3604,7 +3607,10 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
     foreach (ServerPlayer *player, getAllPlayers()) {
         int i = 0;
         foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
-            if (moveOneTime.card_ids.size() == 0) continue;
+            if (moveOneTime.card_ids.size() == 0){
+                i++;
+                continue;
+            }
             QVariant data = QVariant::fromValue(moveOneTime);
             thread->trigger(BeforeCardsMove, this, player, data);
             moveOneTime = data.value<CardsMoveOneTimeStruct>();
@@ -3711,7 +3717,10 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     foreach (ServerPlayer *player, getAllPlayers()) {
         int i = 0;
         foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
-            if (moveOneTime.card_ids.size() == 0) continue;
+            if (moveOneTime.card_ids.size() == 0){
+                i++;
+                continue;
+            }
             Player *origin_to = moveOneTime.to;
             Player::Place origin_place = moveOneTime.to_place;
             Player *origin_from = moveOneTime.from;
@@ -3808,7 +3817,10 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     foreach (ServerPlayer *player, getAllPlayers()) {
         int i = 0;
         foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
-            if (moveOneTime.card_ids.size() == 0) continue;
+            if (moveOneTime.card_ids.size() == 0){
+                i++;
+                continue;
+            }
             QVariant data = QVariant::fromValue(moveOneTime);
             thread->trigger(BeforeCardsMove, this, player, data);
             moveOneTime = data.value<CardsMoveOneTimeStruct>();
