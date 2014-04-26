@@ -270,7 +270,7 @@ QWidget *ServerDialog::createConversionTab() {
     momentum_layout->addWidget(convert_zhangjiao_to_lord);
     //momentum_layout->addWidget(add_peace_spell);
 
-    bool enable_lua_lord = Config.value("GeneralConvertions").toStringList().contains("Lua");
+    bool enable_lua_lord = Config.value("GeneralConversions").toStringList().contains("Lua");
     convert_lua_lord = new QCheckBox(tr("Convert Lua Lords"));
     convert_lua_lord->setChecked(enable_lua_lord);
 
