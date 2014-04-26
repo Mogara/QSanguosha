@@ -23,22 +23,22 @@
 点击“是”--将报告传给开发团队以协助我们解决问题，这可能需要几分钟的时间。</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="119"/>
+        <location filename="mainwindow.cpp" line="120"/>
         <source>Error!</source>
         <translation>网络错误！</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="119"/>
+        <location filename="mainwindow.cpp" line="120"/>
         <source>Failed to connect to the server</source>
         <translation>服务器连接失败</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="150"/>
+        <location filename="mainwindow.cpp" line="151"/>
         <source>Congratulation</source>
         <translation>上传成功</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="150"/>
+        <location filename="mainwindow.cpp" line="151"/>
         <source>The report has been uploaded successfully. We will parse the report and try to fix the crash as soon as possible. Thank you very much. 
 QSanguosha-Hegemony Team</source>
         <translation>报告已成功上传至服务器，我们将尽快组织错误分析并尽最大努力修复。谢谢您的配合。
@@ -46,12 +46,12 @@ QSanguosha-Hegemony Team</source>
 太阳神三国杀·国战开发团队</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="152"/>
+        <location filename="mainwindow.cpp" line="153"/>
         <source>Hint</source>
         <translation>提示</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="152"/>
+        <location filename="mainwindow.cpp" line="153"/>
         <source>You can upload the report to a cloud disk and inform us later on. The file name is %1. You could find it in the folder &quot;dmp&quot;. Thanks.  
 QSanguosha-Hegemony Team</source>
         <translation>你可以稍后将错误报告上传至云盘并联系我们获取。错误报告 %1 位于 &quot;dmp&quot; 文件夹下，谢谢。
