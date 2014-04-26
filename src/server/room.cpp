@@ -4112,9 +4112,9 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
         }
     }
 
-    bool *cardChanged = new bool[cards.size()];
+    QList<bool> cardChanged;
     for (int i = 0; i < cards.size(); i++)
-        cardChanged[i] = false;
+        cardChanged << false;
 
     QSet<const Skill *> skills = player->getSkills(false, false);
     QList<const FilterSkill *> filterSkills;
@@ -4126,7 +4126,7 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
             filterSkills.append(filter);
         }
     }
-    if (filterSkills.size() == 0) goto final;
+    if (filterSkills.size() == 0) return;
 
     for (int i = 0; i < cards.size(); i++) {
         const Card *card = cards[i];
@@ -4164,9 +4164,6 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
             }
         }
     }
-
-final:
-    delete[] cardChanged;
 }
 
 void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, bool head) {
