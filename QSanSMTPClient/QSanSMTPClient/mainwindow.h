@@ -14,6 +14,8 @@ public:
 
     int askForUploading();
     ~MainWindow();
+
+    QString getSystemVersion() const;
 };
 
 #endif // MAINWINDOW_H
