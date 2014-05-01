@@ -111,6 +111,6 @@ void Audio::stopBGM() {
 }
 
 QString Audio::getVersion() {
-    return "4.44.32";
+    return "4.44.33";
 }
 

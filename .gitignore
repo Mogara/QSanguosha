@@ -14,7 +14,6 @@ doc/*.html
 liblua5.1.dylib
 font/font.ttf
 QSanguosha.pro.user*
-*.dylib
 QSanguosha.exe
 QSanguosha
 debugQSanguosha

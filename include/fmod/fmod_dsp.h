@@ -109,10 +109,11 @@ typedef struct FMOD_DSP_PARAMETERDESC
     When creating a DSP unit, declare one of these and provide the relevant callbacks and name for FMOD to use when it creates and uses a DSP unit of this type.
 
     [REMARKS]
-    Some members of this structure are referenced directly inside FMOD so the structure should be allocated statically or at least remain in memory for the lifetime of the system.
     
     Members marked with [r] mean the variable is modified by FMOD and is for reading purposes only.  Do not change this value.
     Members marked with [w] mean the variable can be written to.  The user can set the value.
+    
+    IMPORTANT: The 'paramdesc' member should point to static memory, as FMOD references the data internally using the pointer provided.  Do not store these parameter description structures on the stack, or in heap memory that is freed while FMOD is using it.
     
     There are 2 different ways to change a parameter in this architecture.
     One is to use DSP::setParameter / DSP::getParameter.  This is platform independant and is dynamic, so new unknown plugins can have their parameters enumerated and used.
