@@ -2715,7 +2715,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 					if huanggai:getHp() > 2 then return crossbow:getEffectiveId() end
 					if CanSave then return crossbow:getEffectiveId() end
 				end
-				if getCardsNum("Slash", NextPlayer) >= 3 and NextPlayerisEnemy then return crossbow:getEffectiveId() end
+				if getCardsNum("Slash", NextPlayer, self.player) >= 3 and NextPlayerisEnemy then return crossbow:getEffectiveId() end
 			end
 		end
 
