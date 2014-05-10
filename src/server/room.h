@@ -354,6 +354,9 @@ public:
     void updateCardsOnLose(const CardsMoveStruct &move);
     void updateCardsOnGet(const CardsMoveStruct &move);
 
+public slots:
+    void abortGame();
+
 protected:
     virtual void run();
     int _m_Id;

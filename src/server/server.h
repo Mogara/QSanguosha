@@ -180,6 +180,7 @@ public:
     void daemonize();
     Room *createNewRoom();
     void signupPlayer(ServerPlayer *player);
+    bool isReadyToClose() const;
 
     friend class BanIPDialog;
 
@@ -199,6 +200,8 @@ private slots:
 
 signals:
     void server_message(const QString &);
+    void about_to_close();
+    void room_cleared();
 };
 
 class BanIPDialog: public QDialog {

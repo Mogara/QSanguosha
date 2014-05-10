@@ -54,6 +54,12 @@ Room::Room(QObject *parent, const QString &mode)
     DoLuaScript(L, "lua/sanguosha.lua");
     DoLuaScript(L, QFile::exists("lua/ai/private-smart-ai.lua") ?
                 "lua/ai/private-smart-ai.lua" : "lua/ai/smart-ai.lua");
+
+    //Create RoomThread inside the thread where Room exists
+    thread = new RoomThread(this);
+
+    //Destroy the room on RoomThread finished. Or it will be destroyed when Server is destroyed if the game hasn't started
+    connect(thread, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void Room::initCallbacks() {
@@ -3180,7 +3186,6 @@ void Room::startGame() {
         setCardMapping(card_id, NULL, Player::DrawPile);
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
 
-    thread = new RoomThread(this);
     _m_roomState.reset();
     connect(thread, SIGNAL(started()), this, SIGNAL(game_start()));
 
@@ -3936,6 +3941,19 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move) {
             cards.append(getCard(cardId));
         filterCards(player, cards, true);
     }
+}
+
+void Room::abortGame(){
+    //Disconnect all the clients
+    foreach(ServerPlayer *player, m_players){
+        if(player->isOnline()){
+            trustCommand(player, QString());
+        }
+        player->setSocket(NULL);
+    }
+
+    //Notify the RoomThread to exit
+    tag["AbortGame"] = true;
 }
 
 bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves, bool forceVisible, QList<ServerPlayer *> players) {

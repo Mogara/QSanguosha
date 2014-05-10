@@ -701,6 +701,7 @@ Room *Server::createNewRoom() {
 
     connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
     connect(current, SIGNAL(game_over(QString)), this, SLOT(gameOver()));
+    connect(this, SIGNAL(about_to_close()), current, SLOT(abortGame()));
 
     return current;
 }
@@ -781,6 +782,10 @@ void Server::signupPlayer(ServerPlayer *player) {
     players.insert(player->objectName(), player);
 }
 
+bool Server::isReadyToClose() const{
+    return rooms.isEmpty();
+}
+
 void Server::gameOver() {
     Room *room = qobject_cast<Room *>(sender());
     rooms.remove(room);
@@ -788,5 +793,9 @@ void Server::gameOver() {
     foreach (ServerPlayer *player, room->findChildren<ServerPlayer *>()) {
         name2objname.remove(player->screenName(), player->objectName());
         players.remove(player->objectName());
+    }
+
+    if(rooms.isEmpty()){
+        emit room_cleared();
     }
 }

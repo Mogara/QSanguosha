@@ -64,6 +64,7 @@ private:
     QSet<QString> skillSet;
 
     QList<EventTriplet> event_stack;
+    GameRule *game_rule;
 };
 
 #endif
