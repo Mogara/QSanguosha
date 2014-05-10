@@ -965,7 +965,7 @@ void Client::onPlayerChoosePlayer(const Player *player) {
 }
 
 void Client::trust() {
-    request("trust .");
+    notifyServer(S_COMMAND_TRUST);
 
     if (Self->getState() == "trust")
         Sanguosha->playSystemAudioEffect("untrust");

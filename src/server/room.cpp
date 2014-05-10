@@ -84,7 +84,7 @@ void Room::initCallbacks() {
     m_callbacks[S_COMMAND_FILL_ROBOTS] = &Room::fillRobotsCommand;
 
     callbacks["speakCommand"] = &Room::speakCommand;
-    callbacks["trustCommand"] = &Room::trustCommand;
+    m_callbacks[S_COMMAND_TRUST] = &Room::trustCommand;
     callbacks["pauseCommand"] = &Room::pauseCommand;
 
     //Client request
@@ -2048,7 +2048,7 @@ void Room::reportDisconnection() {
     }
 }
 
-void Room::trustCommand(ServerPlayer *player, const QString &) {
+void Room::trustCommand(ServerPlayer *player, const Json::Value &) {
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
     if (player->isOnline()) {
         player->setState("trust");
@@ -2217,7 +2217,7 @@ void Room::addRobotCommand(ServerPlayer *player, const Json::Value &) {
 void Room::fillRobotsCommand(ServerPlayer *player, const Json::Value &) {
     int left = player_count - m_players.length();
     for (int i = 0; i < left; i++) {
-        addRobotCommand(player, QString());
+        addRobotCommand(player, Json::Value());
     }
 }
 
@@ -3943,7 +3943,7 @@ void Room::abortGame(){
     //Disconnect all the clients
     foreach(ServerPlayer *player, m_players){
         if(player->isOnline()){
-            trustCommand(player, QString());
+            trustCommand(player, Json::Value());
         }
         player->setSocket(NULL);
     }
