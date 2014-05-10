@@ -232,6 +232,14 @@ void Client::requestToServer(CommandType command, const Json::Value &arg) {
     }
 }
 
+void Client::notifyServer(CommandType command, const Json::Value &arg) {
+    if (socket) {
+        QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_ROOM, command);
+        packet.setMessageBody(arg);
+        socket->send(toQString(packet.toString()));
+    }
+}
+
 void Client::request(const QString &message) {
     if (socket)
         socket->send(message);
@@ -257,7 +265,7 @@ void Client::setup(const QString &setup_str) {
 
     if (ServerInfo.parse(setup_str)) {
         emit server_connected();
-        request("toggleReady .");
+        notifyServer(S_COMMAND_TOGGLE_READY);
     } else {
         QMessageBox::warning(NULL, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
     }

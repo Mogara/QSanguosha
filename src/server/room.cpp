@@ -79,7 +79,7 @@ void Room::initCallbacks() {
     m_callbacks[S_COMMAND_PRESHOW] = &Room::processRequestPreshow;
 
     // Client notifications
-    callbacks["toggleReadyCommand"] = &Room::toggleReadyCommand;
+    m_callbacks[S_COMMAND_TOGGLE_READY] = &Room::toggleReadyCommand;
     callbacks["addRobotCommand"] = &Room::addRobotCommand;
     callbacks["fillRobotsCommand"] = &Room::fillRobotsCommand;
 
@@ -2230,7 +2230,7 @@ ServerPlayer *Room::getOwner() const{
     return NULL;
 }
 
-void Room::toggleReadyCommand(ServerPlayer *, const QString &) {
+void Room::toggleReadyCommand(ServerPlayer *, const Json::Value &) {
     if (!game_started && isFull())
         start();
 }
@@ -2264,7 +2264,7 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
                 p->introduceTo(player);
         }
     } else
-        toggleReadyCommand(player, QString());
+        toggleReadyCommand(player, Json::Value());
 }
 
 void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign) {

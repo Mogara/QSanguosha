@@ -338,7 +338,7 @@ public:
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
     void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
 
-    void toggleReadyCommand(ServerPlayer *player, const QString &);
+    void toggleReadyCommand(ServerPlayer *player, const Json::Value &);
     void speakCommand(ServerPlayer *player, const QString &arg);
     void trustCommand(ServerPlayer *player, const QString &arg);
     void pauseCommand(ServerPlayer *player, const QString &arg);

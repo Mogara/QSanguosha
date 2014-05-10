@@ -59,6 +59,7 @@ public:
     void disconnectFromHost();
     void replyToServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
     void requestToServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
+    void notifyServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
     void request(const QString &message);
     void onPlayerResponseCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
     void setStatus(Status status);
