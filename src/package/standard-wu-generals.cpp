@@ -663,12 +663,12 @@ bool TianyiCard::targetFilter(const QList<const Player *> &targets, const Player
     return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
 }
 
-void TianyiCard::use(Room *room, ServerPlayer *taishici, QList<ServerPlayer *> &targets) const{
-    bool success = taishici->pindian(targets.first(), "tianyi", NULL);
+void TianyiCard::onEffect(const CardEffectStruct &effect) const{
+    bool success = effect.from->pindian(effect.to, "tianyi", NULL);
     if (success)
-        room->setPlayerFlag(taishici, "TianyiSuccess");
+        effect.to->getRoom()->setPlayerFlag(effect.from, "TianyiSuccess");
     else
-        room->setPlayerCardLimitation(taishici, "use", "Slash", true);
+        effect.to->getRoom()->setPlayerCardLimitation(effect.from, "use", "Slash", true);
 }
 
 class TianyiViewAsSkill: public ZeroCardViewAsSkill {
@@ -733,6 +733,13 @@ public:
     }
 };
 
+static bool compareByNumber(int c1, int c2){
+    const Card *card1 = Sanguosha->getCard(c1);
+    const Card *card2 = Sanguosha->getCard(c2);
+
+    return card1->getNumber() < card2->getNumber();
+}
+
 class BuquRemove: public TriggerSkill {
 public:
     BuquRemove(): TriggerSkill("#buqu-remove") {
@@ -743,6 +750,7 @@ public:
     static void Remove(ServerPlayer *zhoutai) {
         Room *room = zhoutai->getRoom();
         QList<int> buqu(zhoutai->getPile("buqu"));
+        qSort(buqu.begin(), buqu.end(), compareByNumber);
 
         CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), "buqu", QString());
         int need = 1 - zhoutai->getHp();

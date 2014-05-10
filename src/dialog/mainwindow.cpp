@@ -66,7 +66,7 @@ public:
 };
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+    : QMainWindow(parent), ui(new Ui::MainWindow), server(NULL)
 {
     ui->setupUi(this);
     setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
@@ -127,7 +127,15 @@ void MainWindow::restoreFromConfig() {
     ui->actionNever_nullify_my_trick->setEnabled(false);
 }
 
-void MainWindow::closeEvent(QCloseEvent *) {
+void MainWindow::closeEvent(QCloseEvent *event) {
+    // Notify the server to clean up before the application exits. Otherwise threads may be destroyed while running
+    if(server && !server->isReadyToClose()){
+        connect(server, SIGNAL(room_cleared()), this, SLOT(close()));
+        emit about_to_close();
+        event->ignore();
+        return;
+    }
+
     Config.setValue("WindowSize", size());
     Config.setValue("WindowPosition", pos());
 }
@@ -165,12 +173,13 @@ void MainWindow::on_actionStart_Server_triggered() {
     if (!dialog->config())
         return;
 
-    Server *server = new Server(this);
+    server = new Server(this);
     if (!server->listen()) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
         return;
     }
 
+    connect(this, SIGNAL(about_to_close()), server, SIGNAL(about_to_close()));
     server->daemonize();
 
     ui->actionStart_Game->disconnect();
@@ -580,12 +589,13 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
     if (!dialog->config())
         return;
 
-    Server *server = new Server(this);
+    server = new Server(this);
     if (!server->listen()) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
         return;
     }
 
+    connect(this, SIGNAL(about_to_close()), server, SIGNAL(about_to_close()));
     server->createNewRoom();
 
     Config.HostAddress = "127.0.0.1";

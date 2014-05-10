@@ -79,6 +79,7 @@ QWidget *ServerDialog::createBasicTab() {
     timeout_spinbox->setSuffix(tr(" seconds"));
     nolimit_checkbox = new QCheckBox(tr("No limit"));
     nolimit_checkbox->setChecked(Config.OperationNoLimit);
+    timeout_spinbox->setDisabled(Config.OperationNoLimit);
     connect(nolimit_checkbox, SIGNAL(toggled(bool)), timeout_spinbox, SLOT(setDisabled(bool)));
 
     QFormLayout *form_layout = new QFormLayout;
@@ -228,13 +229,16 @@ QWidget *ServerDialog::createConversionTab() {
 
     QGroupBox *formation_conversions = new QGroupBox(tr("Formation Conversions"));
     QGroupBox *momentum_conversions = new QGroupBox(tr("Momentum Conversions"));
+    QGroupBox *other_conversions = new QGroupBox(tr("Other Conversions"));
 
     QVBoxLayout *formation_layout = new QVBoxLayout;
     QVBoxLayout *momentum_layout = new QVBoxLayout;
+    QVBoxLayout *other_layout = new QVBoxLayout;
     formation_conversions->setLayout(formation_layout);
     momentum_conversions->setLayout(momentum_layout);
+    other_conversions->setLayout(other_layout);
 
-    const bool enable_lord_liubei = Config.value("GeneralConversions").toStringList().contains("liubei");
+    bool enable_lord_liubei = Config.value("GeneralConversions").toStringList().contains("liubei");
     convert_liubei_to_lord = new QCheckBox(tr("Convert Liu Bei to Lord Liu Bei"));
     convert_liubei_to_lord->setChecked(enable_lord_liubei);
 
@@ -250,7 +254,7 @@ QWidget *ServerDialog::createConversionTab() {
     formation_layout->addWidget(convert_liubei_to_lord);
     formation_layout->addWidget(convert_ds_to_dp);
 
-    const bool enable_lord_zhangjiao = Config.value("GeneralConversions").toStringList().contains("zhangjiao");
+    bool enable_lord_zhangjiao = Config.value("GeneralConversions").toStringList().contains("zhangjiao");
     convert_zhangjiao_to_lord = new QCheckBox(tr("Convert Zhang Jiao to Lord Zhang Jiao"));
     convert_zhangjiao_to_lord->setChecked(enable_lord_zhangjiao);
 /*
@@ -266,10 +270,18 @@ QWidget *ServerDialog::createConversionTab() {
     momentum_layout->addWidget(convert_zhangjiao_to_lord);
     //momentum_layout->addWidget(add_peace_spell);
 
+    bool enable_lua_lord = Config.value("GeneralConversions").toStringList().contains("Lua");
+    convert_lua_lord = new QCheckBox(tr("Convert Lua Lords"));
+    convert_lua_lord->setChecked(enable_lua_lord);
+
+    conversions_group->addButton(convert_lua_lord);
+    other_layout->addWidget(convert_lua_lord);
+
     QWidget *widget = new QWidget;
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(formation_conversions);
     layout->addWidget(momentum_conversions);
+    layout->addWidget(other_conversions);
     widget->setLayout(layout);
     return widget;
 }
@@ -511,6 +523,7 @@ bool ServerDialog::config() {
     QStringList general_conversions;
     if (convert_liubei_to_lord->isChecked()) general_conversions << "liubei";
     if (convert_zhangjiao_to_lord->isChecked()) general_conversions << "zhangjiao";
+    if (convert_lua_lord->isChecked()) general_conversions << "Lua";
     Config.setValue("GeneralConversions", general_conversions);
 
     QStringList card_conversions;
@@ -660,7 +673,7 @@ Server::Server(QObject *parent)
     ServerInfo.parse(Sanguosha->getSetupString());
 
     current = NULL;
-    createNewRoom();
+    //createNewRoom();
 
     connect(server, SIGNAL(new_connection(ClientSocket *)), this, SLOT(processNewConnection(ClientSocket *)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
@@ -688,6 +701,7 @@ Room *Server::createNewRoom() {
 
     connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
     connect(current, SIGNAL(game_over(QString)), this, SLOT(gameOver()));
+    connect(this, SIGNAL(about_to_close()), current, SLOT(abortGame()));
 
     return current;
 }
@@ -768,6 +782,10 @@ void Server::signupPlayer(ServerPlayer *player) {
     players.insert(player->objectName(), player);
 }
 
+bool Server::isReadyToClose() const{
+    return rooms.isEmpty();
+}
+
 void Server::gameOver() {
     Room *room = qobject_cast<Room *>(sender());
     rooms.remove(room);
@@ -775,5 +793,9 @@ void Server::gameOver() {
     foreach (ServerPlayer *player, room->findChildren<ServerPlayer *>()) {
         name2objname.remove(player->screenName(), player->objectName());
         players.remove(player->objectName());
+    }
+
+    if(rooms.isEmpty()){
+        emit room_cleared();
     }
 }

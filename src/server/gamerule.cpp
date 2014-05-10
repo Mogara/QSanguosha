@@ -55,13 +55,10 @@ public:
     }
 };
 
-GameRule::GameRule(QObject *)
+GameRule::GameRule(QObject *parent)
     : TriggerSkill("game_rule")
 {
-    //@todo: this setParent is illegitimate in QT and is equivalent to calling
-    // setParent(NULL). So taking it off at the moment until we figure out
-    // a way to do it.
-    //setParent(parent);
+    setParent(parent);
 
     events << GameStart << TurnStart
            << EventPhaseStart << EventPhaseProceeding << EventPhaseEnd << EventPhaseChanging
@@ -160,6 +157,12 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
 }
 
 bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+    if(room->getTag("AbortGame").toBool()){
+        room->removeTag("AbortGame");
+        room->gameOver(room->getCurrent()->objectName());
+        return true;
+    }
+
     if (room->getTag("SkipGameRule").toBool()) {
         room->removeTag("SkipGameRule");
         return false;

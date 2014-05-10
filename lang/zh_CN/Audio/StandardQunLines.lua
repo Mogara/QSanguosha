@@ -75,10 +75,10 @@ return {
 	["$shuangren1"] = "仲国大将纪灵在此！",
 	["$shuangren3"] = "今日这武器颇不顺手。",
 	["~jiling"] = "将军为何咆哮不断？",
-	["cv:jiling"] = "官方、极光星逝",
+	["cv:jiling"] = "三国杀OL、极光星逝",
 
 	-- 田丰
-	["cv:tianfeng"] = "官方、HeLi",
+	["cv:tianfeng"] = "三国杀OL、HeLi",
 	["$sijian2"] = "忠言逆耳啊！！",
 	["$sijian1"] = "且听我最后一言！",
 	["$suishi1"] = "我军大胜，吾性命无忧矣。",

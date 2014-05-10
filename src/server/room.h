@@ -90,7 +90,7 @@ public:
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord(const QString &kingdom) const;
     void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides);
-    int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids = QList<int>(), QString skill_name = "gongxin");
+    int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids = QList<int>(), const QString &skill_name = "gongxin");
     int drawCard();
     void fillAG(const QList<int> &card_ids, ServerPlayer *who = NULL, const QList<int> &disabled_ids = QList<int>());
     void takeAG(ServerPlayer *player, int card_id, bool move_cards = true);
@@ -232,8 +232,8 @@ public:
     void changePlayerGeneral2(ServerPlayer *player, const QString &new_general);
     void filterCards(ServerPlayer *player, QList<const Card *> cards, bool refilter);
 
-    void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true, const bool &head = true);
-    void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true, const bool &head = true);
+    void acquireSkill(ServerPlayer *player, const Skill *skill, bool open = true, bool head = true);
+    void acquireSkill(ServerPlayer *player, const QString &skill_name, bool open = true, bool head = true);
     void adjustSeats();
     void swapPile();
     QList<int> getDiscardPile();
@@ -353,6 +353,9 @@ public:
     inline void resetCard(int cardId) { _m_roomState.resetCard(cardId); }
     void updateCardsOnLose(const CardsMoveStruct &move);
     void updateCardsOnGet(const CardsMoveStruct &move);
+
+public slots:
+    void abortGame();
 
 protected:
     virtual void run();

@@ -54,6 +54,12 @@ Room::Room(QObject *parent, const QString &mode)
     DoLuaScript(L, "lua/sanguosha.lua");
     DoLuaScript(L, QFile::exists("lua/ai/private-smart-ai.lua") ?
                 "lua/ai/private-smart-ai.lua" : "lua/ai/smart-ai.lua");
+
+    //Create RoomThread inside the thread where Room exists
+    thread = new RoomThread(this);
+
+    //Destroy the room on RoomThread finished. Or it will be destroyed when Server is destroyed if the game hasn't started
+    connect(thread, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void Room::initCallbacks() {
@@ -3180,7 +3186,6 @@ void Room::startGame() {
         setCardMapping(card_id, NULL, Player::DrawPile);
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
 
-    thread = new RoomThread(this);
     _m_roomState.reset();
     connect(thread, SIGNAL(started()), this, SIGNAL(game_start()));
 
@@ -3513,7 +3518,10 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
     foreach (ServerPlayer *player, getAllPlayers()) {
         int i = 0;
         foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
-            if (moveOneTime.card_ids.size() == 0) continue;
+            if (moveOneTime.card_ids.size() == 0){
+                i++;
+                continue;
+            }
             QVariant data = QVariant::fromValue(moveOneTime);
             thread->trigger(BeforeCardsMove, this, player, data);
             moveOneTime = data.value<CardsMoveOneTimeStruct>();
@@ -3604,7 +3612,10 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
     foreach (ServerPlayer *player, getAllPlayers()) {
         int i = 0;
         foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
-            if (moveOneTime.card_ids.size() == 0) continue;
+            if (moveOneTime.card_ids.size() == 0){
+                i++;
+                continue;
+            }
             QVariant data = QVariant::fromValue(moveOneTime);
             thread->trigger(BeforeCardsMove, this, player, data);
             moveOneTime = data.value<CardsMoveOneTimeStruct>();
@@ -3711,7 +3722,10 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     foreach (ServerPlayer *player, getAllPlayers()) {
         int i = 0;
         foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
-            if (moveOneTime.card_ids.size() == 0) continue;
+            if (moveOneTime.card_ids.size() == 0){
+                i++;
+                continue;
+            }
             Player *origin_to = moveOneTime.to;
             Player::Place origin_place = moveOneTime.to_place;
             Player *origin_from = moveOneTime.from;
@@ -3808,7 +3822,10 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     foreach (ServerPlayer *player, getAllPlayers()) {
         int i = 0;
         foreach (CardsMoveOneTimeStruct moveOneTime, moveOneTimes) {
-            if (moveOneTime.card_ids.size() == 0) continue;
+            if (moveOneTime.card_ids.size() == 0){
+                i++;
+                continue;
+            }
             QVariant data = QVariant::fromValue(moveOneTime);
             thread->trigger(BeforeCardsMove, this, player, data);
             moveOneTime = data.value<CardsMoveOneTimeStruct>();
@@ -3926,6 +3943,19 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move) {
     }
 }
 
+void Room::abortGame(){
+    //Disconnect all the clients
+    foreach(ServerPlayer *player, m_players){
+        if(player->isOnline()){
+            trustCommand(player, QString());
+        }
+        player->setSocket(NULL);
+    }
+
+    //Notify the RoomThread to exit
+    tag["AbortGame"] = true;
+}
+
 bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves, bool forceVisible, QList<ServerPlayer *> players) {
     if (players.isEmpty()) players = m_players;
     // process dongcha
@@ -4012,6 +4042,9 @@ void Room::broadcastSkillInvoke(const QString &skill_name, bool isMale, int type
 }
 
 void Room::doLightbox(const QString &lightboxName, int duration) {
+    if (Config.AIDelay == 0)
+        return;
+
     doAnimate(S_ANIMATE_LIGHTBOX, lightboxName, QString::number(duration));
     thread->delay(duration / 1.2);
 }
@@ -4097,9 +4130,9 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
         }
     }
 
-    bool *cardChanged = new bool[cards.size()];
+    QList<bool> cardChanged;
     for (int i = 0; i < cards.size(); i++)
-        cardChanged[i] = false;
+        cardChanged << false;
 
     QSet<const Skill *> skills = player->getSkills(false, false);
     QList<const FilterSkill *> filterSkills;
@@ -4149,11 +4182,9 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
             }
         }
     }
-
-    delete cardChanged;
 }
 
-void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, const bool &head) {
+void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, bool head) {
     QString skill_name = skill->objectName();
     if (player->getAcquiredSkills().contains(skill_name))
         return;
@@ -4186,7 +4217,7 @@ void Room::acquireSkill(ServerPlayer *player, const Skill *skill, bool open, con
     }
 }
 
-void Room::acquireSkill(ServerPlayer *player, const QString &skill_name, bool open, const bool &head) {
+void Room::acquireSkill(ServerPlayer *player, const QString &skill_name, bool open, bool head) {
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if (skill) acquireSkill(player, skill, open, head);
 }
@@ -4610,6 +4641,9 @@ Player::Place Room::getCardPlace(int card_id) const{
 }
 
 QList<int> Room::getCardIdsOnTable(const Card *virtual_card) const{
+    if (virtual_card == NULL)
+        return QList<int>();
+
     if (!virtual_card->isVirtualCard()){
         if (getCardPlace(virtual_card->getId()) == Player::PlaceTable){
             QList<int> r;
@@ -4724,7 +4758,7 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
 }
 
-int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids, QString skill_name) {
+int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids, const QString &skill_name) {
     Q_ASSERT(!target->isKongcheng());
     while (isPaused()) {}
     notifyMoveFocus(shenlvmeng, S_COMMAND_SKILL_GONGXIN);

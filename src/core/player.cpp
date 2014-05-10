@@ -328,9 +328,19 @@ bool Player::isLord() const{
 bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
     const TriggerSkill *trigger = Sanguosha->getTriggerSkill(skill_name);
     if (trigger && trigger->isGlobal()) return true;
+
+    const Skill *skill = Sanguosha->getSkill(skill_name);
+    if (skill == NULL)
+        return false;
+    
+    if (!skill->isVisible()){
+        const Skill *skill = Sanguosha->getMainSkill(skill_name);
+        if (skill != NULL)
+            return hasSkill(skill);
+    }
+
     if (!include_lose) {
         if (!hasEquipSkill(skill_name)) {
-            const Skill *skill = Sanguosha->getSkill(skill_name);
             if (phase == Player::NotActive) {
                 const Player *current = NULL;
                 foreach (const Player *p, getAliveSiblings()) {
@@ -384,9 +394,9 @@ bool Player::hasLordSkill(const QString &skill_name, bool include_lose) const{
     return skill && skill->isLordSkill() && isLord() && hasSkill(skill_name, include_lose);
 }
 
-void Player::acquireSkill(const QString &skill_name, const bool &head) {
-    QSet<QString> *skills = head ? &head_acquired_skills : &deputy_acquired_skills;
-    skills->insert(skill_name);
+void Player::acquireSkill(const QString &skill_name, bool head) {
+    QSet<QString> &skills = head ? head_acquired_skills : deputy_acquired_skills;
+    skills.insert(skill_name);
 }
 
 void Player::detachSkill(const QString &skill_name) {
@@ -833,6 +843,12 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
             && (include_equip || !hasEquipSkill(skill->objectName()))
             && (!visible_only || skill->isVisible()))
             skillList << skill;
+        if (skill->isVisible() && !visible_only){
+            QList<const Skill *> related_skill = Sanguosha->getRelatedSkills(skill->objectName());
+            foreach(const Skill *s, related_skill)
+                if (!skillList.contains(s) && !s->isVisible())
+                    skillList << s;
+        }
     }
 
     return skillList;
@@ -1014,7 +1030,7 @@ void Player::removeQinggangTag(const Card *card) {
     }
 }
 
-const Player *Player::getLord(const bool include_death) const{
+const Player *Player::getLord(bool include_death) const{
     QList<const Player *> sib = include_death ? getSiblings() : getAliveSiblings();
     sib << this;
     foreach(const Player *p, sib){
@@ -1126,7 +1142,7 @@ bool Player::hasShownSkill(const QString &skill_name) const{
         if (roomObject != NULL && roomObject->inherits("Room")){
             Room *room = Sanguosha->currentRoom();
             room->output("no such skill " + skill_name);
-            qWarning("%s", QString("no such skill " + skill_name).toAscii());
+            qWarning("%s", QString("no such skill " + skill_name).toStdString().c_str());
         }
         return false;
     }
@@ -1236,14 +1252,14 @@ void Player::setGeneral2Showed(bool showed) {
     emit deputy_state_changed();
 }
 
-void Player::setSkillPreshowed(const QString &skill, const bool preshowed) {
+void Player::setSkillPreshowed(const QString &skill, bool preshowed) {
     if (head_skills.keys().contains(skill))
         head_skills[skill] = preshowed;
     else if (deputy_skills.keys().contains(skill))
         deputy_skills[skill] = preshowed;
 }
 
-void Player::setSkillsPreshowed(const QString &flags, const bool preshowed) {
+void Player::setSkillsPreshowed(const QString &flags, bool preshowed) {
     if (flags.contains("h")) {
         foreach (QString skill, head_skills.keys()) {
             if (!Sanguosha->getSkill(skill)->canPreshow()) continue;

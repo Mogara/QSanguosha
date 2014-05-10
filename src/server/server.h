@@ -152,6 +152,7 @@ private:
 
     QCheckBox *convert_ds_to_dp;
     QCheckBox *convert_liubei_to_lord;
+    QCheckBox *convert_lua_lord;
 
     //QCheckBox *add_peace_spell;
     QCheckBox *convert_zhangjiao_to_lord;
@@ -179,6 +180,7 @@ public:
     void daemonize();
     Room *createNewRoom();
     void signupPlayer(ServerPlayer *player);
+    bool isReadyToClose() const;
 
     friend class BanIPDialog;
 
@@ -198,6 +200,8 @@ private slots:
 
 signals:
     void server_message(const QString &);
+    void about_to_close();
+    void room_cleared();
 };
 
 class BanIPDialog: public QDialog {

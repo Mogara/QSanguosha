@@ -831,8 +831,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        PlayerStar p = player->tag["yicheng_target"].value<PlayerStar>();
-        if (room->askForSkillInvoke(player, objectName(), QVariant::fromValue(p))){
+        if (room->askForSkillInvoke(player, objectName(), player->tag["yicheng_target"])){
             room->broadcastSkillInvoke(objectName());
             return true;
         }
@@ -869,7 +868,7 @@ public:
                     skill_list.insert(yuji, QStringList(objectName()));
         } else if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card || use.card->getTypeId() == Card::TypeEquip || use.card->getTypeId() == Card::TypeSkill)
+            if (!use.card || use.card->getTypeId() == Card::TypeEquip || use.card->getTypeId() == Card::TypeSkill || !use.to.contains(player))
                 return skill_list;
             if (use.to.length() != 1) return skill_list;
             foreach (ServerPlayer *yuji, yujis) {
@@ -1155,7 +1154,7 @@ public:
         events << CardsMoveOneTime;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (!(player != NULL && player->isAlive() && player->hasSkill("zhangwu")))
             return QStringList();
 
@@ -1182,11 +1181,11 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         return player->hasShownSkill(this);
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         player->drawCards(2);
         return false;
     }

@@ -76,8 +76,8 @@ public:
     void addCompanion(const char *name);
     bool isCompanionWith(const char *name) const;
 
-    void setHeadMaxHpAdjustedValue(const int adjusted_value = -1);
-    void setDeputyMaxHpAdjustedValue(const int adjusted_value = -1);
+    void setHeadMaxHpAdjustedValue(int adjusted_value = -1);
+    void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);
 
     void lastWord() const;
 };
@@ -260,7 +260,7 @@ public:
     // just for convenience
     void addQinggangTag(const Card *card);
     void removeQinggangTag(const Card *card);
-    const Player *getLord() const; // a small function put here, simple but useful
+    const Player *getLord(bool include_death = false) const; // a small function put here, simple but useful
     int getPlayerNumWithSameKingdom(const char *_to_calculate = NULL) const;
 
     void copyFrom(Player *p);
@@ -288,8 +288,8 @@ public:
     void setGeneral2Showed(bool showed);
     bool hasShownOneGeneral() const;
     bool hasShownAllGenerals() const;
-    void setSkillPreshowed(const char *skill, const bool preshowed = true);
-    void setSkillsPreshowed(const char *falgs = "hd", const bool preshowed = true);
+    void setSkillPreshowed(const char *skill, bool preshowed = true);
+    void setSkillsPreshowed(const char *falgs = "hd", bool preshowed = true);
     bool hasPreshowedSkill(const char *name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
 

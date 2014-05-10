@@ -4009,7 +4009,7 @@ function SmartAI:getAoeValue(card, player)
 			if (card:isKindOf("SavageAssault") and getCardsNum("Slash",p,attacker) == 0) or (card:isKindOf("ArcheryAttack") and getCardsNum("Jink",p,attacker) == 0) then 
 				if self:isWeak(p) and self:getAllPeachNum(p) < 1 then
 					if self:isFriend(p) then
-						dont = dont+1
+						dont = dont+2
 					elseif self:isEnemy(p) then
 						dont = dont-1
 					end
@@ -4017,7 +4017,7 @@ function SmartAI:getAoeValue(card, player)
 			end
 		end
 	end
-	if dont > 1 then return -100 end
+	if dont > 0 then return -100 end
 	
 	local enemy_number = 0
 	for _, player in sgs.qlist(self.room:getOtherPlayers(attacker)) do
@@ -4199,16 +4199,50 @@ end
 function SmartAI:useEquipCard(card, use)
 	if not card then global_room:writeToConsole(debug.traceback()) return end
 	if self.player:hasSkill("xiaoji") and self:evaluateArmor(card) > -5 then
+		local armor = self.player:getArmor()
+		if armor and armor:objectName() == "PeaceSpell" and card:isKindOf("Armor") then 
+			if (self:getAllPeachNum() == 0 and self.player:getHp() < 3) and not (self.player:getHp() < 2 and self:getCardsNum("Analeptic") > 0) then
+				return 
+			end
+		end
 		use.card = card
 		return
 	end
 	if self.player:hasSkills(sgs.lose_equip_skill) and self:evaluateArmor(card) > -5 and #self.enemies > 1 then
+		local armor = self.player:getArmor()
+		if armor and armor:objectName() == "PeaceSpell" and card:isKindOf("Armor") then 
+			if (self:getAllPeachNum() == 0 and self.player:getHp() < 3) and not (self.player:getHp() < 2 and self:getCardsNum("Analeptic") > 0) then
+				return 
+			end
+		end
 		use.card = card
 		return
 	end
 	if self.player:getHandcardNum() == 1 and self:needKongcheng() and self:evaluateArmor(card) > -5 then
+		local armor = self.player:getArmor()
+		if armor and armor:objectName() == "PeaceSpell" and card:isKindOf("Armor") then 
+			if (self:getAllPeachNum() == 0 and self.player:getHp() < 3) and not (self.player:getHp() < 2 and self:getCardsNum("Analeptic") > 0) then
+				return 
+			end
+		end
 		use.card = card
 		return
+	end
+	if card:isKindOf("Armor") and card:objectName() == "PeaceSpell" then
+		local lord_zhangjiao = self.room:findPlayerBySkillName("wendao") --有君张角在其他人（受伤/有防具）则不装备太平要术
+		if lord_zhangjiao and lord_zhangjiao:isAlive() and lord_zhangjiao:hasShownSkill("wendao") and not self:isWeak(lord_zhangjiao) then
+			if self.player:objectName() ~= lord_zhangjiao:objectName() and (self.player:isWounded() or self.player:getArmor()) then
+				return
+			end
+		end
+	end
+	if card:isKindOf("Weapon") and card:objectName() == "DragonPhoenix" then
+		local lord_liubei = self.room:findPlayerBySkillName("zhangwu") --有君刘备在（其他势力/除他以外有武器）的人不装备龙凤剑
+		if lord_liubei and lord_liubei:isAlive() and lord_liubei:hasShownSkill("zhangwu") then
+			if not self.player:isFriendWith(lord_liubei) or (self.player:objectName() ~= lord_liubei:objectName() and self.player:getWeapon()) then
+				return
+			end
+		end
 	end
 	local same = self:getSameEquip(card)
 	local zzzh, isfriend_zzzh, isenemy_zzzh = self.room:findPlayerBySkillName("guzheng")

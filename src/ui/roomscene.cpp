@@ -812,17 +812,6 @@ void RoomScene::updateTable() {
         {3, 3, 7, 7, 7, 7, 4, 4},
         {3, 3, 7, 7, 7, 7, 7, 4, 4}
     };
-    static int hulaoSeatIndex[][3] = {
-        {1, 1, 1}, // if self is shenlvbu
-        {3, 3, 1},
-        {3, 1, 4},
-        {1, 4, 4}
-    };
-    static int kof3v3SeatIndex[][5] = {
-        {3, 1, 1, 1, 4}, // lord
-        {1, 1, 1, 4, 4}, // rebel (left), same with loyalist (left)
-        {3, 3, 1, 1, 1} // loyalist (right), same with rebel (right)
-    };
 
     double hGap = _m_roomLayout->m_photoHDistance;
     double vGap = _m_roomLayout->m_photoVDistance;

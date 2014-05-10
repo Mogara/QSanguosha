@@ -52,7 +52,7 @@ public:
     void setBackgroundBrush(bool center_as_origin);
 
 protected:
-    virtual void closeEvent(QCloseEvent *);
+    virtual void closeEvent(QCloseEvent *event);
 
 private:
     FitView *view;
@@ -61,6 +61,7 @@ private:
     ConnectionDialog *connection_dialog;
     ConfigDialog *config_dialog;
     QSystemTrayIcon *systray;
+    Server *server;
 
     void restoreFromConfig();
 
@@ -101,6 +102,9 @@ private slots:
     void changeBackground();
     void changeTableBg();
     void on_actionManage_Ban_IP_triggered();
+
+signals:
+    void about_to_close();
 };
 
 #endif

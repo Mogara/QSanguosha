@@ -137,7 +137,7 @@ public:
 
     bool isLord() const;
 
-    void acquireSkill(const QString &skill_name, const bool &head = true);
+    void acquireSkill(const QString &skill_name, bool head = true);
     void detachSkill(const QString &skill_name);
     void detachAllSkills();
     virtual void addSkill(const QString &skill_name, bool head_skill = true);
@@ -239,7 +239,7 @@ public:
     // just for convenience
     void addQinggangTag(const Card *card);
     void removeQinggangTag(const Card *card);
-    const Player *getLord(const bool include_death = false) const; // a small function put here, simple but useful
+    const Player *getLord(bool include_death = false) const; // a small function put here, simple but useful
     int getPlayerNumWithSameKingdom(const QString &_to_calculate = QString()) const;
 
     void copyFrom(Player *p);
@@ -267,8 +267,8 @@ public:
     void setGeneral2Showed(bool showed);
     bool hasShownOneGeneral() const;
     bool hasShownAllGenerals() const;
-    void setSkillPreshowed(const QString &skill, const bool preshowed = true);
-    void setSkillsPreshowed(const QString &falgs = "hd", const bool preshowed = true);
+    void setSkillPreshowed(const QString &skill, bool preshowed = true);
+    void setSkillsPreshowed(const QString &falgs = "hd", bool preshowed = true);
     bool hasPreshowedSkill(const QString &name) const;
     bool hasPreshowedSkill(const Skill *skill) const;
     bool isHidden(const bool &head_general) const;
@@ -332,7 +332,7 @@ signals:
     void role_changed(const QString &new_role);
     void state_changed();
     void hp_changed();
-    void kingdom_changed(QString new_kingdom);
+    void kingdom_changed(const QString &new_kingdom);
     void phase_changed();
     void owner_changed(bool owner);
     void head_state_changed();

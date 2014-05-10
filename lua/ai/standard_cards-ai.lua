@@ -92,7 +92,7 @@ function sgs.getDefenseSlash(player, self)
 		if player:hasShownSkill("hongyan") then defense = defense + 0.2 end
 	end
 
-	if player:hasShownSkill("tuntian") and player:hasShownSkill("jixi") and getCardsNum("Jink", player) >= 1 then
+	if player:hasShownSkill("tuntian") and player:hasShownSkill("jixi") and getCardsNum("Jink", player, global_room:getCurrent()) >= 1 then
 		defense = defense + 1.5
 	end
 
@@ -2669,7 +2669,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 			for _, slash in ipairs(slashs) do
 				if self:slashIsEffective(slash, enemy) and self.player:canSlash(enemy, slash) and self:slashIsAvailable() then
 					hit_num = hit_num + 1
-					if getCardsNum("Jink", enemy) < 1
+					if getCardsNum("Jink", enemy, self.player) < 1
 						or enemy:isKongcheng()
 						or self:canLiegong(enemy, self.player)
 						or self.player:hasSkills("tieqi|wushuang|qianxi")
@@ -2715,7 +2715,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 					if huanggai:getHp() > 2 then return crossbow:getEffectiveId() end
 					if CanSave then return crossbow:getEffectiveId() end
 				end
-				if getCardsNum("Slash", NextPlayer) >= 3 and NextPlayerisEnemy then return crossbow:getEffectiveId() end
+				if getCardsNum("Slash", NextPlayer, self.player) >= 3 and NextPlayerisEnemy then return crossbow:getEffectiveId() end
 			end
 		end
 

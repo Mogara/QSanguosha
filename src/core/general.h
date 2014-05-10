@@ -63,8 +63,8 @@ public:
     void addCompanion(const QString &name);
     bool isCompanionWith(const QString &name) const;
 
-    void setHeadMaxHpAdjustedValue(const int adjusted_value = -1);
-    void setDeputyMaxHpAdjustedValue(const int adjusted_value = -1);
+    void setHeadMaxHpAdjustedValue(int adjusted_value = -1);
+    void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);
 
 public slots:
     void lastWord() const;

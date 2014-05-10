@@ -471,9 +471,11 @@ end
 
 sgs.ai_skill_invoke.fangquan = function(self, data)
 	self.fangquan_card_str = nil
+	self.fangquan_target = nil
 	if #self.friends == 1 then
 		return false
 	end
+
 
 	-- First we'll judge whether it's worth skipping the Play Phase
 	local cards = sgs.QList2Table(self.player:getHandcards())
@@ -495,6 +497,7 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 		if card:isKindOf("Crossbow") or self:hasCrossbowEffect() then hasCrossbow = true end
 	end
 
+
 	local slashs = self:getCards("Slash")
 	for _, enemy in ipairs(self.enemies) do
 		for _, slash in ipairs(slashs) do
@@ -512,12 +515,15 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	end
 	if shouldUse >= 2 then return end
 
+
 	-- Then we need to find the card to be discarded
 	local limit = self.player:getMaxCards()
 	if self.player:isKongcheng() then return false end
 	if self:getCardsNum("Peach") >= limit - 2 and self.player:isWounded() then return false end
 
+
 	local to_discard = nil
+
 
 	local index = 0
 	local all_peaches = 0
@@ -530,6 +536,7 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	self:sortByKeepValue(cards)
 	cards = sgs.reverse(cards)
 
+
 	for i = #cards, 1, -1 do
 		local card = cards[i]
 		if not isCard("Peach", card, self.player) and not self.player:isJilei(card) then
@@ -539,22 +546,28 @@ sgs.ai_skill_invoke.fangquan = function(self, data)
 	end
 	if to_discard == nil then return false end
 
+
 	-- At last we try to find the target
+
 
 	local AssistTarget = self:AssistTarget()
 	if AssistTarget and not self:willSkipPlayPhase(AssistTarget) then
+		self.fangquan_target = AssistTarget
 		self.fangquan_card_str = "@FangquanCard=" .. to_discard .. "&fangquan->" .. AssistTarget:objectName()
 		return true
 	end
+
 
 	self:sort(self.friends_noself, "handcard")
 	self.friends_noself = sgs.reverse(self.friends_noself)
 	for _, target in ipairs(self.friends_noself) do
 		if target:hasShownSkills("zhiheng|" .. sgs.priority_skill .. "|shensu") and (not self:willSkipPlayPhase(target) or target:hasShownSkill("shensu")) then
+			self.fangquan_target = target
 			self.fangquan_card_str = "@FangquanCard=" .. to_discard .. "&fangquan->" .. target:objectName()
 			return true
 		end
 	end
+
 
 	return false
 end
@@ -569,18 +582,21 @@ sgs.ai_skill_use["@@fangquan"] = function(self, prompt)
 		end
 	end
 	if in_handcard then return self.fangquan_card_str end
-	
+
 	local cards = sgs.QList2Table(self.player:getHandcards()) 
 	self:sortByKeepValue(cards)
 	cards = sgs.reverse(cards)
-
-	for i = #cards, 1, -1 do
-		local card = cards[i]
-		if not isCard("Peach", card, self.player) and not self.player:isJilei(card) then
-			return "@FangquanCard=" .. card:getEffectiveId() .. "&fangquan->" .. target:objectName()
+	
+	if self.fangquan_target then
+		for i = #cards, 1, -1 do
+			local card = cards[i]
+			if not isCard("Peach", card, self.player) and not self.player:isJilei(card) then
+				return "@FangquanCard=" .. card:getEffectiveId() .. "&fangquan->" .. self.fangquan_target:objectName()
+			end
 		end
 	end
 end
+
 
 sgs.ai_card_intention.FangquanCard = -120
 

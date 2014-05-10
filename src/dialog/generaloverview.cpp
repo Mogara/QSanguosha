@@ -532,7 +532,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
     if (!cv_text.startsWith("cv:"))
         ui->cvLineEdit->setText(cv_text);
     else
-        ui->cvLineEdit->setText(tr("Official"));
+        ui->cvLineEdit->setText(tr("Sanguosha OL"));
 
     ui->illustratorLineEdit->setText(getIllustratorInfo(general->objectName()));
 

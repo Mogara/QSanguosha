@@ -291,6 +291,10 @@ QString HegemonyMode::getMappedRole(const QString &role) {
 RoomThread::RoomThread(Room *room)
     : room(room)
 {
+    setParent(room);
+
+    //Create GameRule inside the thread where RoomThread exits
+    game_rule = new GameRule(this);
 }
 
 void RoomThread::addPlayerSkills(ServerPlayer *player, bool invoke_game_start) {
@@ -355,7 +359,6 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule) {
 void RoomThread::run() {
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
     Sanguosha->registerRoom(room);
-    GameRule *game_rule = new GameRule(this);
 
     addTriggerSkill(game_rule);
     foreach (const TriggerSkill *triggerSkill, Sanguosha->getGlobalTriggerSkills())
@@ -384,7 +387,6 @@ void RoomThread::run() {
     }
     catch (TriggerEvent triggerEvent) {
         if (triggerEvent == GameFinished) {
-            terminate();
             Sanguosha->unregisterRoom();
             return;
         } else
