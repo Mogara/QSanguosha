@@ -28,17 +28,12 @@ Bin/
 /lib/jsoncpp.lib
 /lib/breakpad.lib
 /builds/vs2010/ipch
-/builds/vs2010/QSanguosha.sdf
-/builds/vs2010/QSanguosha.suo
+*.sdf
+*.suo
 /builds/vs2010/*.user
-/builds/vs2010/*.opensdf
 /builds/vs2012/ipch
-/builds/vs2012/QSanguosha.sdf
-/builds/vs2012/QSanguosha.suo
 /builds/vs2012/*.user
-/builds/vs2012/*.opensdf
-/QSanSMTPClient/QSanSMTPClient/QSanSMTPClient.sdf
-/QSanSMTPClient/QSanSMTPClient/QSanSMTPClient.suo
+*.opensdf
 /QSanSMTPClient/QSanSMTPClient/*.user
 /QSanSMTPClient/QSanSMTPClient/ipch
 tags
@@ -65,3 +60,4 @@ Qt*.pdb
 msvcp100.dll
 msvcr100.dll
 fmod.log
+*.vspscc
