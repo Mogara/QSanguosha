@@ -2076,14 +2076,13 @@ void Room::pauseCommand(ServerPlayer *player, const QString &arg) {
     }
 }
 
-bool Room::processRequestCheat(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet) {
-    if (!Config.EnableCheat) return false;
+void Room::processRequestCheat(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet) {
+    if (!Config.EnableCheat) return;
     Json::Value arg = packet->getMessageBody();
-    if (!arg.isArray() || !arg[0].isInt()) return false;
+    if (!arg.isArray() || !arg[0].isInt()) return;
     //@todo: synchronize this
     player->m_cheatArgs = arg;
     player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
-    return true;
 }
 
 bool Room::makeSurrender(ServerPlayer *initiator) {
@@ -2120,30 +2119,28 @@ bool Room::makeSurrender(ServerPlayer *initiator) {
     return true;
 }
 
-bool Room::processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *) {
+void Room::processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *) {
     //@todo: Strictly speaking, the client must be in the PLAY phase
     //@todo: return false for 3v3 and 1v1!!!
     if (player == NULL || !player->m_isWaitingReply)
-        return false;
+        return;
     if (!_m_isFirstSurrenderRequest
         && _m_timeSinceLastSurrenderRequest.elapsed() <= Config.S_SURRENDER_REQUEST_MIN_INTERVAL)
-        return false; //@todo: warn client here after new protocol has been enacted on the warn request
+        return; //@todo: warn client here after new protocol has been enacted on the warn request
 
     _m_isFirstSurrenderRequest = false;
     _m_timeSinceLastSurrenderRequest.restart();
     m_surrenderRequestReceived = true;
     player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
-    return true;
 }
 
-bool Room::processRequestPreshow(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet) {
+void Room::processRequestPreshow(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet) {
     if (player == NULL)
-        return false;
+        return;
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
     QString skill_name = toQString(packet->getMessageBody());
     player->preshowSkill(skill_name);
     player->releaseLock(ServerPlayer::SEMA_MUTEX);
-    return true;
 }
 
 void Room::processClientPacket(const QString &request) {
