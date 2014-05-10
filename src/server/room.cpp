@@ -2076,9 +2076,8 @@ void Room::pauseCommand(ServerPlayer *player, const QString &arg) {
     }
 }
 
-void Room::processRequestCheat(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet) {
+void Room::processRequestCheat(ServerPlayer *player, const Json::Value &arg) {
     if (!Config.EnableCheat) return;
-    Json::Value arg = packet->getMessageBody();
     if (!arg.isArray() || !arg[0].isInt()) return;
     //@todo: synchronize this
     player->m_cheatArgs = arg;
@@ -2119,7 +2118,7 @@ bool Room::makeSurrender(ServerPlayer *initiator) {
     return true;
 }
 
-void Room::processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *) {
+void Room::processRequestSurrender(ServerPlayer *player, const Json::Value &) {
     //@todo: Strictly speaking, the client must be in the PLAY phase
     //@todo: return false for 3v3 and 1v1!!!
     if (player == NULL || !player->m_isWaitingReply)
@@ -2134,11 +2133,11 @@ void Room::processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSa
     player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
 }
 
-void Room::processRequestPreshow(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet) {
+void Room::processRequestPreshow(ServerPlayer *player, const Json::Value &arg) {
     if (player == NULL)
         return;
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
-    QString skill_name = toQString(packet->getMessageBody());
+    QString skill_name = toQString(arg);
     player->preshowSkill(skill_name);
     player->releaseLock(ServerPlayer::SEMA_MUTEX);
 }
@@ -2152,10 +2151,10 @@ void Room::processClientPacket(const QString &request) {
             if (player == NULL) return;
             player->setClientReplyString(request);
             processResponse(player, &packet);
-        } else if (packet.getPacketType() == S_TYPE_REQUEST) {
+        } else if (packet.getPacketType() == S_TYPE_REQUEST || packet.getPacketType() == S_TYPE_NOTIFICATION) {
             CallBack callback = m_callbacks[packet.getCommandType()];
             if (!callback) return;
-            (this->*callback)(player, &packet);
+            (this->*callback)(player, packet.getMessageBody());
         }
     } else {
         QStringList args = request.split(" ");

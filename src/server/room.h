@@ -26,7 +26,7 @@ public:
     friend class RoomThread;
 
     typedef void (Room::*Callback)(ServerPlayer *, const QString &);
-    typedef void (Room::*CallBack)(ServerPlayer *, const QSanProtocol::QSanGeneralPacket *);
+    typedef void (Room::*CallBack)(ServerPlayer *, const Json::Value &);
     typedef bool (Room::*ResponseVerifyFunction)(ServerPlayer *, const Json::Value &, void *);
 
     explicit Room(QObject *parent, const QString &mode);
@@ -508,9 +508,9 @@ private:
     QString askForOrder(ServerPlayer *player);
 
     //process client requests
-    void processRequestCheat(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
-    void processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
-    void processRequestPreshow(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
+    void processRequestCheat(ServerPlayer *player, const Json::Value &arg);
+    void processRequestSurrender(ServerPlayer *player, const Json::Value &);
+    void processRequestPreshow(ServerPlayer *player, const Json::Value &arg);
 
     bool makeSurrender(ServerPlayer *player);
     bool makeCheat(ServerPlayer *player);
