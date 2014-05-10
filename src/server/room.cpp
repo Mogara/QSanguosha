@@ -85,7 +85,7 @@ void Room::initCallbacks() {
 
     callbacks["speakCommand"] = &Room::speakCommand;
     m_callbacks[S_COMMAND_TRUST] = &Room::trustCommand;
-    callbacks["pauseCommand"] = &Room::pauseCommand;
+    m_callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
 
     //Client request
     callbacks["networkDelayTestCommand"] = &Room::networkDelayTestCommand;
@@ -2063,9 +2063,9 @@ void Room::trustCommand(ServerPlayer *player, const Json::Value &) {
     broadcastProperty(player, "state");
 }
 
-void Room::pauseCommand(ServerPlayer *player, const QString &arg) {
+void Room::pauseCommand(ServerPlayer *player, const Json::Value &arg) {
     if (!canPause(player)) return;
-    bool pause = (arg == "true");
+    bool pause = arg.asBool();
     if (game_paused != pause) {
         Json::Value arg(Json::arrayValue);
         arg[0] = (int)S_GAME_EVENT_PAUSE;
