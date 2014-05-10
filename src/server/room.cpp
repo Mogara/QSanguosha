@@ -80,8 +80,8 @@ void Room::initCallbacks() {
 
     // Client notifications
     m_callbacks[S_COMMAND_TOGGLE_READY] = &Room::toggleReadyCommand;
-    callbacks["addRobotCommand"] = &Room::addRobotCommand;
-    callbacks["fillRobotsCommand"] = &Room::fillRobotsCommand;
+    m_callbacks[S_COMMAND_ADD_ROBOT] = &Room::addRobotCommand;
+    m_callbacks[S_COMMAND_FILL_ROBOTS] = &Room::fillRobotsCommand;
 
     callbacks["speakCommand"] = &Room::speakCommand;
     callbacks["trustCommand"] = &Room::trustCommand;
@@ -2181,7 +2181,7 @@ void Room::processClientPacket(const QString &request) {
     }
 }
 
-void Room::addRobotCommand(ServerPlayer *player, const QString &) {
+void Room::addRobotCommand(ServerPlayer *player, const Json::Value &) {
     if (player && !player->isOwner()) return;
     if (isFull()) return;
 
@@ -2214,7 +2214,7 @@ void Room::addRobotCommand(ServerPlayer *player, const QString &) {
     broadcastProperty(robot, "state");
 }
 
-void Room::fillRobotsCommand(ServerPlayer *player, const QString &) {
+void Room::fillRobotsCommand(ServerPlayer *player, const Json::Value &) {
     int left = player_count - m_players.length();
     for (int i = 0; i < left; i++) {
         addRobotCommand(player, QString());

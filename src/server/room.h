@@ -343,8 +343,8 @@ public:
     void trustCommand(ServerPlayer *player, const QString &arg);
     void pauseCommand(ServerPlayer *player, const QString &arg);
     void processResponse(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *arg);
-    void addRobotCommand(ServerPlayer *player, const QString &arg);
-    void fillRobotsCommand(ServerPlayer *player, const QString &arg);
+    void addRobotCommand(ServerPlayer *player, const Json::Value &arg);
+    void fillRobotsCommand(ServerPlayer *player, const Json::Value &arg);
     void broadcastInvoke(const QSanProtocol::QSanPacket *packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void networkDelayTestCommand(ServerPlayer *player, const QString &);

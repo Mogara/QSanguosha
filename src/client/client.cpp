@@ -504,11 +504,11 @@ void Client::requestCheatGetOneCard(int card_id) {
 }
 
 void Client::addRobot() {
-    request("addRobot .");
+    notifyServer(S_COMMAND_ADD_ROBOT);
 }
 
 void Client::fillRobots() {
-    request("fillRobots .");
+    notifyServer(S_COMMAND_FILL_ROBOTS);
 }
 
 void Client::arrange(const QStringList &order) {
