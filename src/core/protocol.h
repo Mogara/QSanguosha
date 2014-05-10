@@ -124,7 +124,13 @@ namespace QSanProtocol {
         S_COMMAND_VIEW_GENERALS,
         S_COMMAND_SET_DASHBOARD_SHADOW,
 
-        S_COMMAND_PRESHOW
+        S_COMMAND_PRESHOW,
+
+        S_COMMAND_TOGGLE_READY,
+        S_COMMAND_ADD_ROBOT,
+        S_COMMAND_FILL_ROBOTS,
+        S_COMMAND_TRUST,
+        S_COMMAND_PAUSE
     };
 
     enum GameEventType {
