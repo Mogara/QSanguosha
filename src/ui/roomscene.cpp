@@ -463,11 +463,13 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
                     ClientInstance->preshow(skill);
                 else {
                     Self->setSkillPreshowed(skill, showed);
-                    foreach(QSanSkillButton *btn, m_skillButtons) {
-                        if (btn->getSkill()->objectName() == skill) {
-                            btn->QGraphicsObject::setEnabled(true);
-                            btn->setState(QSanButton::S_STATE_CANPRESHOW);
-                            break;
+                    if (!showed) {
+                        foreach(QSanSkillButton *btn, m_skillButtons) {
+                            if (btn->getSkill()->objectName() == skill) {
+                                btn->QGraphicsObject::setEnabled(true);
+                                btn->setState(QSanButton::S_STATE_CANPRESHOW);
+                                break;
+                            }
                         }
                     }
                 }
