@@ -130,7 +130,8 @@ namespace QSanProtocol {
         S_COMMAND_ADD_ROBOT,
         S_COMMAND_FILL_ROBOTS,
         S_COMMAND_TRUST,
-        S_COMMAND_PAUSE
+        S_COMMAND_PAUSE,
+        S_COMMAND_NETWORK_DELAY_TEST
     };
 
     enum GameEventType {

@@ -87,8 +87,7 @@ void Room::initCallbacks() {
     m_callbacks[S_COMMAND_TRUST] = &Room::trustCommand;
     m_callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
 
-    //Client request
-    callbacks["networkDelayTestCommand"] = &Room::networkDelayTestCommand;
+    m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
 }
 
 ServerPlayer *Room::getCurrent() const{
@@ -5493,7 +5492,7 @@ QString Room::askForOrder(ServerPlayer *player) {
     return (result == S_CAMP_WARM) ? "warm" : "cool";
 }
 
-void Room::networkDelayTestCommand(ServerPlayer *player, const QString &) {
+void Room::networkDelayTestCommand(ServerPlayer *player, const Json::Value &) {
     qint64 delay = player->endNetworkDelayTest();
     QString reportStr = tr("<font color=#EEB422>The network delay of player <b>%1</b> is %2 milliseconds.</font>")
                            .arg(player->screenName()).arg(QString::number(delay));

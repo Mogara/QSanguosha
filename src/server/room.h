@@ -348,7 +348,7 @@ public:
     void fillRobotsCommand(ServerPlayer *player, const Json::Value &arg);
     void broadcastInvoke(const QSanProtocol::QSanPacket *packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
-    void networkDelayTestCommand(ServerPlayer *player, const QString &);
+    void networkDelayTestCommand(ServerPlayer *player, const Json::Value &);
     inline RoomState *getRoomState() { return &_m_roomState; }
     inline Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
     inline void resetCard(int cardId) { _m_roomState.resetCard(cardId); }

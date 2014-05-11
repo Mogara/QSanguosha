@@ -239,7 +239,8 @@ void ServerPlayer::unicast(const QString &message) {
 
 void ServerPlayer::startNetworkDelayTest() {
     test_time = QDateTime::currentDateTime();
-    invoke("networkDelayTest");
+    QSanGeneralPacket packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_NETWORK_DELAY_TEST);
+    invoke(&packet);
 }
 
 qint64 ServerPlayer::endNetworkDelayTest() {

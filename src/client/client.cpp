@@ -36,7 +36,7 @@ Client::Client(QObject *parent, const QString &filename)
 
     callbacks["checkVersion"] = &Client::checkVersion;
     callbacks["setup"] = &Client::setup;
-    callbacks["networkDelayTest"] = &Client::networkDelayTest;
+    m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Client::networkDelayTest;
     callbacks["addPlayer"] = &Client::addPlayer;
     callbacks["removePlayer"] = &Client::removePlayer;
     callbacks["startInXs"] = &Client::startInXs;
@@ -207,8 +207,8 @@ void Client::signup() {
     }
 }
 
-void Client::networkDelayTest(const QString &) {
-    request("networkDelayTest .");
+void Client::networkDelayTest(const Json::Value &) {
+    notifyServer(S_COMMAND_NETWORK_DELAY_TEST);
 }
 
 void Client::replyToServer(CommandType command, const Json::Value &arg) {

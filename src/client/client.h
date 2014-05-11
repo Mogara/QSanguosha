@@ -88,7 +88,7 @@ public:
 
     void checkVersion(const QString &server_version);
     void setup(const QString &setup_str);
-    void networkDelayTest(const QString &);
+    void networkDelayTest(const Json::Value &);
     void addPlayer(const QString &player_info);
     void removePlayer(const QString &player_name);
     void startInXs(const QString &);
