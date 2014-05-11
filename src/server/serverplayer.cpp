@@ -291,7 +291,7 @@ void ServerPlayer::sendMessage(const QString &message) {
 }
 
 void ServerPlayer::invoke(const AbstractPacket *packet) {
-    unicast(QString::fromUtf8(packet->toString().c_str()));
+    unicast(packet->toString());
 }
 
 void ServerPlayer::invoke(const char *method, const QString &arg) {
@@ -301,7 +301,7 @@ void ServerPlayer::invoke(const char *method, const QString &arg) {
 void ServerPlayer::notify(CommandType type, const Json::Value &arg){
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, type);
     packet.setMessageBody(arg);
-    unicast(QString::fromUtf8(packet.toString().c_str()));
+    unicast(packet.toString());
 }
 
 QString ServerPlayer::reportHeader() const{

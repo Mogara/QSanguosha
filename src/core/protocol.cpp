@@ -77,7 +77,9 @@ bool QSanProtocol::Packet::parse(const string &s) {
     return true;
 }
 
-string QSanProtocol::Packet::toString() const{
+
+//characters in JSON string representations are unicode-escaped. So we don't need Base64 here.
+QByteArray QSanProtocol::Packet::toUtf8() const{
     Json::Value result(Json::arrayValue);
     result[0] = m_globalSerial;
     result[1] = m_localSerial;
@@ -92,7 +94,12 @@ string QSanProtocol::Packet::toString() const{
 
     //truncate too long messages
     if (msg.length() > S_MAX_PACKET_SIZE)
-        return msg.substr(0, S_MAX_PACKET_SIZE);
-    return msg;
+        msg = msg.substr(0, S_MAX_PACKET_SIZE);
+
+    return msg.c_str();
+}
+
+QString QSanProtocol::Packet::toString() const{
+    return QString::fromUtf8(toUtf8());
 }
 

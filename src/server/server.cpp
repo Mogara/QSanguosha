@@ -736,20 +736,15 @@ void Server::processNewConnection(ClientSocket *socket) {
 
     QSanProtocol::Packet version_packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_CHECK_VERSION);
     version_packet.setMessageBody(QSanProtocol::Utils::toJsonString(Sanguosha->getVersion()));
-    socket->send(version_packet.toString().c_str());
+    socket->send(version_packet.toUtf8());
 
     QSanProtocol::Packet setup_packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_SETUP);
     setup_packet.setMessageBody(QSanProtocol::Utils::toJsonString(Sanguosha->getSetupString()));
-    socket->send(setup_packet.toString().c_str());
+    socket->send(setup_packet.toUtf8());
 
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 
     connect(socket, SIGNAL(message_got(const char *)), this, SLOT(processRequest(const char *)));
-}
-
-static inline QString ConvertFromBase64(const QString &base64) {
-    QByteArray data = QByteArray::fromBase64(base64.toAscii());
-    return QString::fromUtf8(data);
 }
 
 void Server::processRequest(const char *request) {
@@ -761,7 +756,7 @@ void Server::processRequest(const char *request) {
         emit server_message(tr("Invalid signup string: %1").arg(request));
         Packet error(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
         error.setMessageBody("INVALID_FORMAT");
-        socket->send(error.toString().c_str());
+        socket->send(error.toUtf8());
         socket->disconnectFromHost();
         return;
     }

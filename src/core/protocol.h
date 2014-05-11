@@ -4,6 +4,8 @@
 #include <string>
 #include <list>
 #include <json/json.h>
+#include <QString>
+#include <QByteArray>
 
 namespace QSanProtocol {
     namespace Utils {
@@ -224,7 +226,8 @@ namespace QSanProtocol {
     class AbstractPacket {
     public:
         virtual bool parse(const std::string &) = 0;
-        virtual std::string toString() const = 0;
+        virtual QByteArray toUtf8() const = 0;
+        virtual QString toString() const = 0;
         virtual PacketDescription getPacketDestination() const = 0;
         virtual PacketDescription getPacketSource() const = 0;
         virtual PacketDescription getPacketType() const = 0;
@@ -249,7 +252,8 @@ namespace QSanProtocol {
         inline Json::Value &getMessageBody() { return m_msgBody; }
         inline const Json::Value &getMessageBody() const{ return m_msgBody; }
         virtual bool parse(const std::string &);
-        virtual std::string toString() const;
+        virtual QByteArray toUtf8() const;
+        virtual QString toString() const;
         virtual PacketDescription getPacketDestination() const{
             return static_cast<PacketDescription>(m_packetDescription & S_DEST_MASK);
         }

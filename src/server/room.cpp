@@ -443,7 +443,7 @@ void Room::gameOver(const QString &winner) {
             QStringList handcards;
             foreach (const Card *card, player->getHandcards())
                 handcards << Sanguosha->getEngineCard(card->getId())->getLogName();
-            QString handcard = handcards.join(", ").toUtf8().toBase64();
+            QString handcard = handcards.join(", ");
             setPlayerProperty(player, "last_handcards", handcard);
         }
     }
@@ -823,7 +823,7 @@ void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer 
 }
 
 void Room::broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except) {
-    broadcast(QString::fromUtf8(packet->toString().c_str()), except);
+    broadcast(packet->toString(), except);
 }
 
 bool Room::getResult(ServerPlayer *player, time_t timeOut) {
@@ -5068,7 +5068,7 @@ bool Room::makeCheat(ServerPlayer *player) {
         makeReviving(toQString(arg[1]));
     } else if (code == S_CHEAT_RUN_SCRIPT) {
         if (!arg[1].isString()) return false;
-        QByteArray data = QByteArray::fromBase64(arg[1].asCString());
+        QByteArray data(arg[1].asCString());
         data = qUncompress(data);
         doScript(data);
     } else if (code == S_CHEAT_GET_ONE_CARD) {

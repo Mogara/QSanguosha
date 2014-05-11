@@ -2849,8 +2849,7 @@ void ScriptExecutor::doScript() {
 
     QString script = box->toPlainText();
     QByteArray data = script.toAscii();
-    data = qCompress(data);
-    script = data.toBase64();
+    script = qCompress(data);
 
     ClientInstance->requestCheatRunScript(script);
 }
@@ -3095,7 +3094,7 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
         table->setItem(i, 9, item);
 
         item = new QTableWidgetItem;
-        QString handcards = QString::fromUtf8(QByteArray::fromBase64(player->property("last_handcards").toString().toAscii()));
+        QString handcards = player->property("last_handcards").toString();
         handcards.replace("<img src='image/system/log/spade.png' height = 12/>", tr("Spade"));
         handcards.replace("<img src='image/system/log/heart.png' height = 12/>", tr("Heart"));
         handcards.replace("<img src='image/system/log/club.png' height = 12/>", tr("Club"));

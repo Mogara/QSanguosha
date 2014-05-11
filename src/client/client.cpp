@@ -218,7 +218,7 @@ void Client::replyToServer(CommandType command, const Json::Value &arg) {
         Packet packet(S_SRC_CLIENT | S_TYPE_REPLY | S_DEST_ROOM, command);
         packet.m_localSerial = _m_lastServerSerial;
         packet.setMessageBody(arg);
-        socket->send(packet.toString().c_str());
+        socket->send(packet.toUtf8());
     }
 }
 
@@ -226,11 +226,11 @@ void Client::handleGameEvent(const Json::Value &arg) {
     emit event_received(arg);
 }
 
-void Client::requestToServer(CommandType command, const Json::Value &arg) {
+void Client::requestServer(CommandType command, const Json::Value &arg) {
     if (socket) {
         Packet packet(S_SRC_CLIENT | S_TYPE_REQUEST | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
-        socket->send(packet.toString().c_str());
+        socket->send(packet.toUtf8());
     }
 }
 
@@ -238,13 +238,13 @@ void Client::notifyServer(CommandType command, const Json::Value &arg) {
     if (socket) {
         Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
-        socket->send(packet.toString().c_str());
+        socket->send(packet.toUtf8());
     }
 }
 
-void Client::request(const QString &message) {
+void Client::request(const QByteArray &raw) {
     if (socket)
-        socket->send(message.toUtf8());
+        socket->send(raw);
 }
 
 void Client::checkVersion(const Json::Value &server_version) {
@@ -461,14 +461,14 @@ void Client::requestCheatRunScript(const QString &script) {
     Json::Value cheatReq(Json::arrayValue);
     cheatReq[0] = (int)S_CHEAT_RUN_SCRIPT;
     cheatReq[1] = toJsonString(script);
-    requestToServer(S_COMMAND_CHEAT, cheatReq);
+    requestServer(S_COMMAND_CHEAT, cheatReq);
 }
 
 void Client::requestCheatRevive(const QString &name) {
     Json::Value cheatReq(Json::arrayValue);
     cheatReq[0] = (int)S_CHEAT_REVIVE_PLAYER;
     cheatReq[1] = toJsonString(name);
-    requestToServer(S_COMMAND_CHEAT, cheatReq);
+    requestServer(S_COMMAND_CHEAT, cheatReq);
 }
 
 void Client::requestCheatDamage(const QString &source, const QString &target, DamageStruct::Nature nature, int points) {
@@ -480,21 +480,21 @@ void Client::requestCheatDamage(const QString &source, const QString &target, Da
 
     cheatReq[0] = (int)S_CHEAT_MAKE_DAMAGE;
     cheatReq[1] = cheatArg;
-    requestToServer(S_COMMAND_CHEAT, cheatReq);
+    requestServer(S_COMMAND_CHEAT, cheatReq);
 }
 
 void Client::requestCheatKill(const QString &killer, const QString &victim) {
     Json::Value cheatArg;
     cheatArg[0] = (int)S_CHEAT_KILL_PLAYER;
     cheatArg[1] = toJsonArray(killer, victim);
-    requestToServer(S_COMMAND_CHEAT, cheatArg);
+    requestServer(S_COMMAND_CHEAT, cheatArg);
 }
 
 void Client::requestCheatGetOneCard(int card_id) {
     Json::Value cheatArg;
     cheatArg[0] = (int)S_CHEAT_GET_ONE_CARD;
     cheatArg[1] = card_id;
-    requestToServer(S_COMMAND_CHEAT, cheatArg);
+    requestServer(S_COMMAND_CHEAT, cheatArg);
 }
 
 void Client::addRobot() {
@@ -975,7 +975,7 @@ void Client::trust() {
 }
 
 void Client::preshow(QString skill_name) {
-    requestToServer(S_COMMAND_PRESHOW, toJsonString(skill_name));
+    requestServer(S_COMMAND_PRESHOW, toJsonString(skill_name));
     Self->setSkillPreshowed(skill_name, !Self->hasPreshowedSkill(skill_name));
     if (Self->inHeadSkills(skill_name))
         emit head_preshowed();
@@ -984,7 +984,7 @@ void Client::preshow(QString skill_name) {
 }
 
 void Client::requestSurrender() {
-    requestToServer(S_COMMAND_SURRENDER);
+    requestServer(S_COMMAND_SURRENDER);
     setStatus(NotActive);
 }
 

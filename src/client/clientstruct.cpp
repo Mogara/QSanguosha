@@ -44,8 +44,7 @@ bool ServerInfoStruct::parse(const QString &str) {
     } else {
         DuringGame = true;
 
-        QString server_name = texts.at(1);
-        Name = QString::fromUtf8(QByteArray::fromBase64(server_name.toAscii()));
+        Name = texts.at(1);
 
         GameMode = texts.at(2);
         OperationTimeout = texts.at(3).toInt();
