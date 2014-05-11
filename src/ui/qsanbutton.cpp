@@ -367,7 +367,7 @@ void QSanInvokeSkillDock::update() {
     int m = 0;
     for (int i = 0; i < rows; i++) {
         int rowTop = (RoomSceneInstance->m_skillButtonSank) ? (-rowH - 2 * (rows - i - 1)) :
-                                                              ((-rows + i) * rowH);
+                                                              ((-rows + i + 1) * rowH - 8);
         int btnWidth = _m_width / btnNum[i];
         int pix_wid = G_DASHBOARD_LAYOUT.m_skillButtonsSize[btnNum[i] - 1].width();
         for (int j = 0; j < btnNum[i]; j++) {

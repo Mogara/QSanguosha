@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 {
 "progressBar": [[0, "image/system/controls/progress-0.png"], [100, "image/system/controls/progress-100.png"]],
 "votesNum-default": "image/system/number/%1.png",
@@ -56,7 +75,7 @@
 // general default directories
 "playerGeneralIcon-default-0": ["image/generals/avatar/%1.png", [71, 28, 134, 134], [40, 40]],
 "playerGeneralIcon-default-1": ["image/fullskin/generals/full/%1.png", [0, 0, 250, 289], [155, 179]],
-"playerGeneralIcon-default-2": ["image/fullskin/generals/full/%1.png", [37, 3, 213, 289]],
+"playerGeneralIcon-default-2": ["image/fullskin/generals/full/%1.png", [37, 3, 213, 255]],
 "playerGeneralIcon-default-4": ["image/fullskin/generals/full/%1.png", [60, 0, 125, 292], [77, 179]], //small avatar for photo
 "playerGeneralIcon-default-5": ["image/generals/avatar/%1.png", [71, 28, 134, 134], [70, 70]],  //small avatar for dashboard
 "playerGeneralIcon-default-6": ["image/fullskin/generals/full/%1.png", [65, 0, 250, 289], [155, 179]],  //primary avatar for photo
