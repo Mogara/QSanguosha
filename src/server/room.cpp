@@ -784,8 +784,13 @@ bool Room::doBroadcastNotify(const QList<ServerPlayer *> &players, QSanProtocol:
     return true;
 }
 
-bool Room::doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg) {
-    return doBroadcastNotify(m_players, command, arg);
+bool Room::doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg, ServerPlayer *except) {
+    foreach (ServerPlayer *player, m_players) {
+        if(player != except) {
+            doNotify(player, command, arg);
+        }
+    }
+    return true;
 }
 
 // the following functions for Lua

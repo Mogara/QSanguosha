@@ -37,7 +37,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_CHECK_VERSION] = &Client::checkVersion;
     m_callbacks[S_COMMAND_SETUP] = &Client::setup;
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Client::networkDelayTest;
-    callbacks["addPlayer"] = &Client::addPlayer;
+    m_callbacks[S_COMMAND_ADD_PLAYER] = &Client::addPlayer;
     callbacks["removePlayer"] = &Client::removePlayer;
     callbacks["startInXs"] = &Client::startInXs;
     callbacks["arrangeSeats"] = &Client::arrangeSeats;
@@ -342,13 +342,11 @@ void Client::processObsoleteServerPacket(const QString &cmd) {
 
 }
 
-void Client::addPlayer(const QString &player_info) {
-    QStringList texts = player_info.split(":");
-    QString name = texts.at(0);
-    QString base64 = texts.at(1);
-    QByteArray data = QByteArray::fromBase64(base64.toAscii());
-    QString screen_name = QString::fromUtf8(data);
-    QString avatar = texts.at(2);
+void Client::addPlayer(const Json::Value &player_info) {
+    if(!player_info.isArray() || player_info.size() < 3) return;
+    QString name = toQString(player_info[0]);
+    QString screen_name = toQString(player_info[1]);
+    QString avatar = toQString(player_info[2]);
 
     ClientPlayer *player = new ClientPlayer(this);
     player->setObjectName(name);

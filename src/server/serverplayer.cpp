@@ -298,6 +298,12 @@ void ServerPlayer::invoke(const char *method, const QString &arg) {
     unicast(QString("%1 %2").arg(method).arg(arg));
 }
 
+void ServerPlayer::notify(CommandType type, const Json::Value &arg){
+    QSanGeneralPacket packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, type);
+    packet.setMessageBody(arg);
+    unicast(QString::fromUtf8(packet.toString().c_str()));
+}
+
 QString ServerPlayer::reportHeader() const{
     QString name = objectName();
     return QString("%1 ").arg(name.isEmpty() ? tr("Anonymous") : name);
@@ -871,15 +877,15 @@ void ServerPlayer::introduceTo(ServerPlayer *player) {
     QString screen_name = screenName();
     QString avatar = property("avatar").toString();
 
-    QString introduce_str = QString("%1:%2:%3")
-                                    .arg(objectName())
-                                    .arg(QString(screen_name.toUtf8().toBase64()))
-                                    .arg(avatar);
+    Json::Value introduce_str(Json::arrayValue);
+    introduce_str.append(toJsonString(objectName()));
+    introduce_str.append(toJsonString(screen_name));
+    introduce_str.append(toJsonString(avatar));
 
     if (player)
-        player->invoke("addPlayer", introduce_str);
+        player->notify(S_COMMAND_ADD_PLAYER, introduce_str);
     else
-        room->broadcastInvoke("addPlayer", introduce_str, this);
+        room->doBroadcastNotify(S_COMMAND_ADD_PLAYER, introduce_str, this);
 
     if (hasShownGeneral1()) {
         foreach(const QString skill_name, head_skills.keys()) {

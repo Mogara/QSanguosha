@@ -89,7 +89,7 @@ public:
     void checkVersion(const Json::Value &server_version);
     void setup(const Json::Value &setup_str);
     void networkDelayTest(const Json::Value &);
-    void addPlayer(const QString &player_info);
+    void addPlayer(const Json::Value &player_info);
     void removePlayer(const QString &player_name);
     void startInXs(const QString &);
     void arrangeSeats(const QString &seats);
