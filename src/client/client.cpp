@@ -38,7 +38,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_SETUP] = &Client::setup;
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Client::networkDelayTest;
     m_callbacks[S_COMMAND_ADD_PLAYER] = &Client::addPlayer;
-    callbacks["removePlayer"] = &Client::removePlayer;
+    m_callbacks[S_COMMAND_REMOVE_PLAYER] = &Client::removePlayer;
     callbacks["startInXs"] = &Client::startInXs;
     callbacks["arrangeSeats"] = &Client::arrangeSeats;
     callbacks["warn"] = &Client::warn;
@@ -372,7 +372,8 @@ void Client::updateProperty(const Json::Value &arg) {
         
 }
 
-void Client::removePlayer(const QString &player_name) {
+void Client::removePlayer(const Json::Value &player_name_json) {
+    QString player_name = toQString(player_name_json);
     ClientPlayer *player = findChild<ClientPlayer *>(player_name);
     if (player) {
         player->setParent(NULL);

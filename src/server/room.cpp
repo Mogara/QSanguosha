@@ -2016,7 +2016,7 @@ void Room::reportDisconnection() {
                 speakCommand(player, leaveStr);
             }
 
-            broadcastInvoke("removePlayer", player->objectName());
+            doBroadcastNotify(S_COMMAND_REMOVE_PLAYER, toJsonString(player->objectName()));
         }
     } else {
         // fourth case
