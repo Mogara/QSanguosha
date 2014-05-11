@@ -25,8 +25,7 @@ public:
 
     friend class RoomThread;
 
-    typedef void (Room::*Callback)(ServerPlayer *, const QString &);
-    typedef bool (Room::*CallBack)(ServerPlayer *, const QSanProtocol::QSanGeneralPacket *);
+    typedef void (Room::*Callback)(ServerPlayer *, const Json::Value &);
     typedef bool (Room::*ResponseVerifyFunction)(ServerPlayer *, const Json::Value &, void *);
 
     explicit Room(QObject *parent, const QString &mode);
@@ -159,7 +158,7 @@ public:
     // Broadcast a event to a list of players by sending S_SERVER_NOTIFICATION packets. No replies should be expected from
     // the clients for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
     // will be rejected.
-    bool doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg);
+    bool doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg, ServerPlayer *except = NULL);
     bool doBroadcastNotify(const QList<ServerPlayer *> &players, QSanProtocol::CommandType command, const Json::Value &arg);
 
     bool doNotify(ServerPlayer *player, int command, const QString &arg);
@@ -338,16 +337,17 @@ public:
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
     void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
 
-    void toggleReadyCommand(ServerPlayer *player, const QString &);
+    void toggleReadyCommand(ServerPlayer *player, const Json::Value &);
     void speakCommand(ServerPlayer *player, const QString &arg);
-    void trustCommand(ServerPlayer *player, const QString &arg);
-    void pauseCommand(ServerPlayer *player, const QString &arg);
+    void speakCommand(ServerPlayer *player, const Json::Value &arg);
+    void trustCommand(ServerPlayer *player, const Json::Value &arg);
+    void pauseCommand(ServerPlayer *player, const Json::Value &arg);
     void processResponse(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *arg);
-    void addRobotCommand(ServerPlayer *player, const QString &arg);
-    void fillRobotsCommand(ServerPlayer *player, const QString &arg);
+    void addRobotCommand(ServerPlayer *player, const Json::Value &arg);
+    void fillRobotsCommand(ServerPlayer *player, const Json::Value &arg);
     void broadcastInvoke(const QSanProtocol::QSanPacket *packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
-    void networkDelayTestCommand(ServerPlayer *player, const QString &);
+    void networkDelayTestCommand(ServerPlayer *player, const Json::Value &);
     inline RoomState *getRoomState() { return &_m_roomState; }
     inline Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
     inline void resetCard(int cardId) { _m_roomState.resetCard(cardId); }
@@ -472,8 +472,7 @@ private:
     QSemaphore _m_semRoomMutex; // Provide per-room  (rather than per-player) level protection of any shared variables
 
 
-    QHash<QString, Callback> callbacks; // Legacy protocol callbacks
-    QHash<QSanProtocol::CommandType, CallBack> m_callbacks; // Stores the callbacks for client request. Do not use this
+    QHash<QSanProtocol::CommandType, Callback> m_callbacks; // Stores the callbacks for client request. Do not use this
                                                             // this map for anything else but S_CLIENT_REQUEST!!!!!
     QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
     // Stores the expected client response for each server request, any unmatched client response will be discarded.
@@ -508,9 +507,9 @@ private:
     QString askForOrder(ServerPlayer *player);
 
     //process client requests
-    bool processRequestCheat(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
-    bool processRequestSurrender(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
-    bool processRequestPreshow(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *packet);
+    void processRequestCheat(ServerPlayer *player, const Json::Value &arg);
+    void processRequestSurrender(ServerPlayer *player, const Json::Value &);
+    void processRequestPreshow(ServerPlayer *player, const Json::Value &arg);
 
     bool makeSurrender(ServerPlayer *player);
     bool makeCheat(ServerPlayer *player);

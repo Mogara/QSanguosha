@@ -319,9 +319,10 @@ void MainWindow::enterRoom() {
 }
 
 void MainWindow::gotoStartScene() {
-    QList<Server *> servers = findChildren<Server *>();
-    if (!servers.isEmpty())
-        servers.first()->deleteLater();
+    if(server != NULL){
+        server->deleteLater();
+        server = NULL;
+    }
 
     if (Self) {
         delete Self;

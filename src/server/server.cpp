@@ -27,6 +27,7 @@
 #include "customassigndialog.h"
 #include "miniscenarios.h"
 #include "SkinBank.h"
+#include "jsonutils.h"
 
 #include <QMessageBox>
 #include <QFormLayout>
@@ -680,10 +681,15 @@ Server::Server(QObject *parent)
 }
 
 void Server::broadcast(const QString &msg) {
-    QString to_sent = msg.toUtf8().toBase64();
-    to_sent = ".:" + to_sent;
+    Json::Value arg(Json::arrayValue);
+    arg[0] = ".";
+    arg[1] = msg.toStdString();
+
+    QSanProtocol::QSanGeneralPacket packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_SPEAK);
+    packet.setMessageBody(arg);
+
     foreach (Room *room, rooms)
-        room->broadcastInvoke("speak", to_sent);
+        room->broadcastInvoke(&packet);
 }
 
 bool Server::listen() {
@@ -725,8 +731,15 @@ void Server::processNewConnection(ClientSocket *socket) {
     }
 
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
-    socket->send("checkVersion " + Sanguosha->getVersion());
-    socket->send("setup " + Sanguosha->getSetupString());
+
+    QSanProtocol::QSanGeneralPacket version_packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_CHECK_VERSION);
+    version_packet.setMessageBody(QSanProtocol::Utils::toJsonString(Sanguosha->getVersion()));
+    socket->send(version_packet.toString().c_str());
+
+    QSanProtocol::QSanGeneralPacket setup_packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_SETUP);
+    setup_packet.setMessageBody(QSanProtocol::Utils::toJsonString(Sanguosha->getSetupString()));
+    socket->send(setup_packet.toString().c_str());
+
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 
     connect(socket, SIGNAL(message_got(const char *)), this, SLOT(processRequest(const char *)));
@@ -744,7 +757,9 @@ void Server::processRequest(const char *request) {
     QRegExp rx("(signupr?) (.+):(.+)(:.+)?\n");
     if (!rx.exactMatch(request)) {
         emit server_message(tr("Invalid signup string: %1").arg(request));
-        socket->send("warn INVALID_FORMAT");
+        QSanProtocol::QSanGeneralPacket packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_WARN);
+        packet.setMessageBody("INVALID_FORMAT");
+        socket->send(packet.toString().c_str());
         socket->disconnectFromHost();
         return;
     }
@@ -793,6 +808,10 @@ void Server::gameOver() {
     foreach (ServerPlayer *player, room->findChildren<ServerPlayer *>()) {
         name2objname.remove(player->screenName(), player->objectName());
         players.remove(player->objectName());
+    }
+
+    if(room == current){
+        current = NULL;
     }
 
     if(rooms.isEmpty()){

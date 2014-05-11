@@ -84,7 +84,7 @@ Replayer::Replayer(QObject *parent, const QString &filename)
         return;
 
     while (!device->atEnd()) {
-        QString line = device->readLine();
+        QString line = QString::fromUtf8(device->readLine());
         
         QStringList splited_line = line.split(" ");
         QString elapsed_str = splited_line.takeFirst();

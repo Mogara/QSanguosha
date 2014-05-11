@@ -87,8 +87,9 @@ string QSanProtocol::QSanGeneralPacket::toString() const{
     if (body != Json::nullValue)
         result[4] = body;
 
-    string msg = result.toStyledString();
-    msg.erase(remove_if(msg.begin(), msg.end(), (int(*)(int))isspace), msg.end());
+    Json::FastWriter writer;
+    string msg = writer.write(result);
+
     //truncate too long messages
     if (msg.length() > S_MAX_PACKET_SIZE)
         return msg.substr(0, S_MAX_PACKET_SIZE);

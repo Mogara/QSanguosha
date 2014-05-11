@@ -1225,8 +1225,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
                     break;
             }
             bool paused = pausing_text->isVisible();
-            QString message = QString("pause %1").arg((paused ? "false" : "true"));
-            ClientInstance->request(message);
+            ClientInstance->notifyServer(S_COMMAND_PAUSE, !paused);
             break;
         }
     case Qt::Key_F7: {

@@ -223,7 +223,7 @@ void ServerPlayer::kick(){
 }
 
 void ServerPlayer::getMessage(const char *message) {
-    QString request = message;
+    QString request = QString::fromUtf8(message);
     if (request.endsWith("\n"))
         request.chop(1);
 
@@ -239,7 +239,8 @@ void ServerPlayer::unicast(const QString &message) {
 
 void ServerPlayer::startNetworkDelayTest() {
     test_time = QDateTime::currentDateTime();
-    invoke("networkDelayTest");
+    QSanGeneralPacket packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_NETWORK_DELAY_TEST);
+    invoke(&packet);
 }
 
 qint64 ServerPlayer::endNetworkDelayTest() {
@@ -285,16 +286,22 @@ void ServerPlayer::sendMessage(const QString &message) {
 #ifndef QT_NO_DEBUG
         printf("%s", qPrintable(objectName()));
 #endif
-        socket->send(message);
+        socket->send(message.toUtf8());
     }
 }
 
 void ServerPlayer::invoke(const QSanPacket *packet) {
-    unicast(QString(packet->toString().c_str()));
+    unicast(QString::fromUtf8(packet->toString().c_str()));
 }
 
 void ServerPlayer::invoke(const char *method, const QString &arg) {
     unicast(QString("%1 %2").arg(method).arg(arg));
+}
+
+void ServerPlayer::notify(CommandType type, const Json::Value &arg){
+    QSanGeneralPacket packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, type);
+    packet.setMessageBody(arg);
+    unicast(QString::fromUtf8(packet.toString().c_str()));
 }
 
 QString ServerPlayer::reportHeader() const{
@@ -870,15 +877,15 @@ void ServerPlayer::introduceTo(ServerPlayer *player) {
     QString screen_name = screenName();
     QString avatar = property("avatar").toString();
 
-    QString introduce_str = QString("%1:%2:%3")
-                                    .arg(objectName())
-                                    .arg(QString(screen_name.toUtf8().toBase64()))
-                                    .arg(avatar);
+    Json::Value introduce_str(Json::arrayValue);
+    introduce_str.append(toJsonString(objectName()));
+    introduce_str.append(toJsonString(screen_name));
+    introduce_str.append(toJsonString(avatar));
 
     if (player)
-        player->invoke("addPlayer", introduce_str);
+        player->notify(S_COMMAND_ADD_PLAYER, introduce_str);
     else
-        room->broadcastInvoke("addPlayer", introduce_str, this);
+        room->doBroadcastNotify(S_COMMAND_ADD_PLAYER, introduce_str, this);
 
     if (hasShownGeneral1()) {
         foreach(const QString skill_name, head_skills.keys()) {
