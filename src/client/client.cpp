@@ -214,7 +214,7 @@ void Client::networkDelayTest(const Json::Value &) {
 
 void Client::replyToServer(CommandType command, const Json::Value &arg) {
     if (socket) {
-        QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_REPLY | S_DEST_ROOM, command);
+        Packet packet(S_SRC_CLIENT | S_TYPE_REPLY | S_DEST_ROOM, command);
         packet.m_localSerial = _m_lastServerSerial;
         packet.setMessageBody(arg);
         socket->send(packet.toString().c_str());
@@ -227,7 +227,7 @@ void Client::handleGameEvent(const Json::Value &arg) {
 
 void Client::requestToServer(CommandType command, const Json::Value &arg) {
     if (socket) {
-        QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_REQUEST | S_DEST_ROOM, command);
+        Packet packet(S_SRC_CLIENT | S_TYPE_REQUEST | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
         socket->send(packet.toString().c_str());
     }
@@ -235,7 +235,7 @@ void Client::requestToServer(CommandType command, const Json::Value &arg) {
 
 void Client::notifyServer(CommandType command, const Json::Value &arg) {
     if (socket) {
-        QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_ROOM, command);
+        Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
         socket->send(packet.toString().c_str());
     }
@@ -289,7 +289,7 @@ void Client::processServerPacket(const QString &cmd) {
 
 void Client::processServerPacket(const char *cmd) {
     if (m_isGameOver) return;
-    QSanGeneralPacket packet;
+    Packet packet;
     if (packet.parse(cmd)) {
         if (packet.getPacketType() == S_TYPE_NOTIFICATION) {
             Callback callback = m_callbacks[packet.getCommandType()];
@@ -309,7 +309,7 @@ void Client::processServerPacket(const char *cmd) {
         processObsoleteServerPacket(cmd);
 }
 
-bool Client::processServerRequest(const QSanGeneralPacket &packet) {
+bool Client::processServerRequest(const Packet &packet) {
     setStatus(NotActive);
     _m_lastServerSerial = packet.m_globalSerial;
     CommandType command = packet.getCommandType();

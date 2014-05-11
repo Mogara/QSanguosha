@@ -220,7 +220,7 @@ namespace QSanProtocol {
         }
     };
 
-    class QSanPacket {
+    class AbstractPacket {
     public:
         virtual bool parse(const std::string &) = 0;
         virtual std::string toString() const = 0;
@@ -231,12 +231,12 @@ namespace QSanProtocol {
         virtual CommandType getCommandType() const = 0;
     };
 
-    class QSanGeneralPacket: public QSanPacket {
+    class Packet: public AbstractPacket {
     public:
         //format: [global_serial, local_serial, packet_type, command_name, command_body]
         unsigned int m_globalSerial;
         unsigned int m_localSerial;
-        inline QSanGeneralPacket(int packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN) {
+        inline Packet(int packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN) {
             _m_globalSerial++;
             m_globalSerial = _m_globalSerial;
             m_localSerial = 0;

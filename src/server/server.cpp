@@ -685,7 +685,7 @@ void Server::broadcast(const QString &msg) {
     arg[0] = ".";
     arg[1] = msg.toStdString();
 
-    QSanProtocol::QSanGeneralPacket packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_SPEAK);
+    QSanProtocol::Packet packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_SPEAK);
     packet.setMessageBody(arg);
 
     foreach (Room *room, rooms)
@@ -732,11 +732,11 @@ void Server::processNewConnection(ClientSocket *socket) {
 
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
 
-    QSanProtocol::QSanGeneralPacket version_packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_CHECK_VERSION);
+    QSanProtocol::Packet version_packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_CHECK_VERSION);
     version_packet.setMessageBody(QSanProtocol::Utils::toJsonString(Sanguosha->getVersion()));
     socket->send(version_packet.toString().c_str());
 
-    QSanProtocol::QSanGeneralPacket setup_packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_SETUP);
+    QSanProtocol::Packet setup_packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_SETUP);
     setup_packet.setMessageBody(QSanProtocol::Utils::toJsonString(Sanguosha->getSetupString()));
     socket->send(setup_packet.toString().c_str());
 
@@ -757,7 +757,7 @@ void Server::processRequest(const char *request) {
     QRegExp rx("(signupr?) (.+):(.+)(:.+)?\n");
     if (!rx.exactMatch(request)) {
         emit server_message(tr("Invalid signup string: %1").arg(request));
-        QSanProtocol::QSanGeneralPacket packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_WARN);
+        QSanProtocol::Packet packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_WARN);
         packet.setMessageBody("INVALID_FORMAT");
         socket->send(packet.toString().c_str());
         socket->disconnectFromHost();

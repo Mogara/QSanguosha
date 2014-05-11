@@ -37,7 +37,7 @@ public:
     explicit ServerPlayer(Room *room);
 
     void setSocket(ClientSocket *socket);
-    void invoke(const QSanProtocol::QSanPacket *packet);
+    void invoke(const QSanProtocol::AbstractPacket *packet);
     void invoke(const char *method, const QString &arg = ".");
     void notify(QSanProtocol::CommandType type, const Json::Value &arg = Json::Value());
     void kick();
