@@ -2,6 +2,7 @@
 #include "recorder.h"
 #include "settings.h"
 #include "engine.h"
+#include "jsonutils.h"
 
 #include <QFile>
 #include <QMessageBox>
@@ -83,31 +84,47 @@ void RecAnalysis::initialize(QString dir) {
             continue;
         }
 
-        if (line.contains("arrangeSeats")) {
-            QStringList line_struct = line.split(QRegExp("\\s+"));
-            line_struct.removeAll(QString());
+        QSanGeneralPacket packet;
+        packet.parse(line.toUtf8().constData());
+
+        if (packet.getCommandType() == S_COMMAND_ARRANGE_SEATS) {
+            QStringList line_struct;
+            const Json::Value &body = packet.getMessageBody();
+            if(body.isArray()){
+                for(Json::Value::iterator i = body.begin(); i != body.end(); i++){
+                    QString line = Utils::toQString(*i);
+                    if(!line.isEmpty()){
+                        line_struct.append(line);
+                    }
+                }
+            }
             role_list = line_struct.last().split("+");
 
             continue;
         }
 
-        if (line.contains("addPlayer")) {
-            QStringList info_assemble = line.split(" ").last().split(":");
-            getPlayer(info_assemble.at(0))->m_screenName = QString::fromUtf8(QByteArray::fromBase64(info_assemble.at(1).toAscii()));
+        if (packet.getCommandType() == S_COMMAND_ADD_PLAYER) {
+            Json::Value body = packet.getMessageBody();
+            if(body.isArray() && body.size() >= 2){
+                getPlayer(Utils::toQString(body[0]))->m_screenName = Utils::toQString(body[1]);
+            }
             continue;
         }
 
-        if (line.contains("removePlayer")) {
-            QString name = line.split(" ").last();
+        if (packet.getCommandType() == S_COMMAND_REMOVE_PLAYER) {
+            QString name = Utils::toQString(packet.getMessageBody());
             m_recordMap.remove(name);
             continue;
         }
 
-        if (line.contains("speak")) {
-            QString speaker = line.split(":").first();
-            speaker.remove(0, speaker.lastIndexOf(" ") + 1);
-            QString words = line.split(":").last().remove(" ");
-            words = QString::fromUtf8(QByteArray::fromBase64(words.toAscii()));
+        if (packet.getCommandType() == S_COMMAND_SPEAK) {
+            const Json::Value &body = packet.getMessageBody();
+            if(!body.isArray() || body.size() < 3){
+                continue;
+            }
+
+            QString speaker = Utils::toQString(body[0]);
+            QString words = Utils::toQString(body[1]);
             m_recordChat += getPlayer(speaker)->m_screenName+": "+words;
             m_recordChat.append("<br/>");
 
