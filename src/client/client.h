@@ -83,8 +83,7 @@ public:
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
 
-    typedef void (Client::*Callback) (const QString &);
-    typedef void (Client::*CallBack) (const Json::Value &);
+    typedef void (Client::*Callback) (const Json::Value &);
 
     void checkVersion(const Json::Value &server_version);
     void setup(const Json::Value &setup_str);
@@ -227,9 +226,8 @@ protected:
 private:
     ClientSocket *socket;
     bool m_isGameOver;
-    QHash<QString, Callback> callbacks;
-    QHash<QSanProtocol::CommandType, CallBack> m_interactions;
-    QHash<QSanProtocol::CommandType, CallBack> m_callbacks;
+    QHash<QSanProtocol::CommandType, Callback> m_interactions;
+    QHash<QSanProtocol::CommandType, Callback> m_callbacks;
     QList<const ClientPlayer *> players;
     QStringList ban_packages;
     Recorder *recorder;

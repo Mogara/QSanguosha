@@ -292,13 +292,13 @@ void Client::processServerPacket(const char *cmd) {
     QSanGeneralPacket packet;
     if (packet.parse(cmd)) {
         if (packet.getPacketType() == S_TYPE_NOTIFICATION) {
-            CallBack callback = m_callbacks[packet.getCommandType()];
+            Callback callback = m_callbacks[packet.getCommandType()];
             if (callback) {
                 (this->*callback)(packet.getMessageBody());
             }
         } else if (packet.getPacketType() == S_TYPE_REQUEST) {
             if (replayer && packet.getPacketDescription() == 0x411 && packet.getCommandType() == S_COMMAND_CHOOSE_GENERAL) {
-                CallBack callback = m_interactions[S_COMMAND_CHOOSE_GENERAL];
+                Callback callback = m_interactions[S_COMMAND_CHOOSE_GENERAL];
                 if (callback)
                     (this->*callback)(packet.getMessageBody());
             }
@@ -323,7 +323,7 @@ bool Client::processServerRequest(const QSanGeneralPacket &packet) {
     }
     if (!replayer)
         setCountdown(countdown);
-    CallBack callback = m_interactions[command];
+    Callback callback = m_interactions[command];
     if (!callback) return false;
     (this->*callback)(msg);
     return true;
@@ -331,16 +331,7 @@ bool Client::processServerRequest(const QSanGeneralPacket &packet) {
 
 void Client::processObsoleteServerPacket(const QString &cmd) {
     // invoke methods
-    QStringList args = cmd.trimmed().split(" ");
-    QString method = args[0];
-
-    Callback callback = callbacks.value(method, NULL);
-    if (callback) {
-        QString arg_str = args[1];
-        (this->*callback)(arg_str);
-    } else
-        QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named \"%1\"").arg(method));
-
+    QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named \"%1\"").arg(cmd));
 }
 
 void Client::addPlayer(const Json::Value &player_info) {
