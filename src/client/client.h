@@ -92,7 +92,7 @@ public:
     void addPlayer(const Json::Value &player_info);
     void removePlayer(const Json::Value &player_name_json);
     void startInXs(const Json::Value &);
-    void arrangeSeats(const QString &seats);
+    void arrangeSeats(const Json::Value &seats_arr);
     void activate(const Json::Value &playerId);
     void startGame(const Json::Value &);
     void hpChange(const Json::Value &change_str);

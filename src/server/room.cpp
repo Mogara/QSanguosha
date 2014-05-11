@@ -2406,10 +2406,10 @@ void Room::swapSeat(ServerPlayer *a, ServerPlayer *b) {
 
     m_players.swap(seat1, seat2);
 
-    QStringList player_circle;
+    Json::Value player_circle(Json::arrayValue);
     foreach (ServerPlayer *player, m_players)
-        player_circle << player->objectName();
-    broadcastInvoke("arrangeSeats", player_circle.join("+"));
+        player_circle.append(toJsonString(player->objectName()));
+    doBroadcastNotify(S_COMMAND_ARRANGE_SEATS, player_circle);
 
     m_alivePlayers.clear();
     for (int i = 0; i < m_players.length(); i++) {
@@ -2445,11 +2445,11 @@ void Room::adjustSeats() {
         m_players.at(i)->setSeat(i + 1);
 
     // tell the players about the seat, and the first is always the lord
-    QStringList player_circle;
+    Json::Value player_circle(Json::arrayValue);
     foreach (ServerPlayer *player, m_players)
-        player_circle << player->objectName();
+        player_circle.append(toJsonString(player->objectName()));
 
-    broadcastInvoke("arrangeSeats", player_circle.join("+"));
+    doBroadcastNotify(S_COMMAND_ARRANGE_SEATS, player_circle);
 }
 
 int Room::getCardFromPile(const QString &card_pattern) {
@@ -3106,11 +3106,11 @@ void Room::marshal(ServerPlayer *player) {
             p->introduceTo(player);
     }
 
-    QStringList player_circle;
+    Json::Value player_circle(Json::arrayValue);
     foreach (ServerPlayer *player, m_players)
-        player_circle << player->objectName();
+        player_circle.append(toJsonString(player->objectName()));
 
-    player->invoke("arrangeSeats", player_circle.join("+"));
+    player->notify(S_COMMAND_ARRANGE_SEATS, player_circle);
     player->notify(S_COMMAND_START_IN_X_SECONDS, 0);
 
     foreach (ServerPlayer *p, m_players) {

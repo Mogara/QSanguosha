@@ -8,6 +8,7 @@
 #include "jsonutils.h"
 #include "SkinBank.h"
 #include "roomscene.h"
+#include "json/json.h"
 
 #include <QApplication>
 #include <QMessageBox>
@@ -40,7 +41,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_ADD_PLAYER] = &Client::addPlayer;
     m_callbacks[S_COMMAND_REMOVE_PLAYER] = &Client::removePlayer;
     m_callbacks[S_COMMAND_START_IN_X_SECONDS] = &Client::startInXs;
-    callbacks["arrangeSeats"] = &Client::arrangeSeats;
+    m_callbacks[S_COMMAND_ARRANGE_SEATS] = &Client::arrangeSeats;
     callbacks["warn"] = &Client::warn;
     m_callbacks[S_COMMAND_SPEAK] = &Client::speak;
 
@@ -556,8 +557,13 @@ void Client::startInXs(const Json::Value &left_seconds) {
     }
 }
 
-void Client::arrangeSeats(const QString &seats_str) {
-    QStringList player_names = seats_str.split("+");
+void Client::arrangeSeats(const Json::Value &seats_arr) {
+    QStringList player_names;
+    if(seats_arr.isArray()){
+        for(Json::Value::iterator i = seats_arr.begin(); i != seats_arr.end(); i++){
+            player_names << toQString(*i);
+        }
+    }
     players.clear();
 
     for (int i = 0; i < player_names.length(); i++) {
