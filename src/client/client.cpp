@@ -34,7 +34,7 @@ Client::Client(QObject *parent, const QString &filename)
     ClientInstance = this;
     m_isGameOver = false;
 
-    callbacks["checkVersion"] = &Client::checkVersion;
+    m_callbacks[S_COMMAND_CHECK_VERSION] = &Client::checkVersion;
     callbacks["setup"] = &Client::setup;
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Client::networkDelayTest;
     callbacks["addPlayer"] = &Client::addPlayer;
@@ -245,14 +245,15 @@ void Client::request(const QString &message) {
         socket->send(message.toUtf8());
 }
 
-void Client::checkVersion(const QString &server_version) {
+void Client::checkVersion(const Json::Value &server_version) {
+    QString version = toQString(server_version);
     QString version_number, mod_name;
-    if (server_version.contains(QChar(':'))) {
-        QStringList texts = server_version.split(QChar(':'));
+    if (version.contains(QChar(':'))) {
+        QStringList texts = version.split(QChar(':'));
         version_number = texts.value(0);
         mod_name = texts.value(1);
     } else {
-        version_number = server_version;
+        version_number = version;
         mod_name = "official";
     }
 

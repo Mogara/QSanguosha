@@ -27,6 +27,7 @@
 #include "customassigndialog.h"
 #include "miniscenarios.h"
 #include "SkinBank.h"
+#include "jsonutils.h"
 
 #include <QMessageBox>
 #include <QFormLayout>
@@ -730,7 +731,11 @@ void Server::processNewConnection(ClientSocket *socket) {
     }
 
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
-    socket->send(QString("checkVersion " + Sanguosha->getVersion()).toUtf8());
+
+    QSanProtocol::QSanGeneralPacket packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_CHECK_VERSION);
+    packet.setMessageBody(QSanProtocol::Utils::toJsonString(Sanguosha->getVersion()));
+    socket->send(packet.toString().c_str());
+
     socket->send(QString("setup " + Sanguosha->getSetupString()).toUtf8());
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 

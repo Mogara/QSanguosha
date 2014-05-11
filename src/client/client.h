@@ -86,7 +86,7 @@ public:
     typedef void (Client::*Callback) (const QString &);
     typedef void (Client::*CallBack) (const Json::Value &);
 
-    void checkVersion(const QString &server_version);
+    void checkVersion(const Json::Value &server_version);
     void setup(const QString &setup_str);
     void networkDelayTest(const Json::Value &);
     void addPlayer(const QString &player_info);
