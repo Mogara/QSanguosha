@@ -131,7 +131,15 @@ namespace QSanProtocol {
         S_COMMAND_FILL_ROBOTS,
         S_COMMAND_TRUST,
         S_COMMAND_PAUSE,
-        S_COMMAND_NETWORK_DELAY_TEST
+        S_COMMAND_NETWORK_DELAY_TEST,
+
+        S_COMMAND_CHECK_VERSION,
+        S_COMMAND_SETUP,
+        S_COMMAND_ADD_PLAYER,
+        S_COMMAND_REMOVE_PLAYER,
+        S_COMMAND_START_IN_X_SECONDS,
+        S_COMMAND_ARRANGE_SEATS,
+        S_COMMAND_WARN
     };
 
     enum GameEventType {
