@@ -25,8 +25,7 @@ public:
 
     friend class RoomThread;
 
-    typedef void (Room::*Callback)(ServerPlayer *, const QString &);
-    typedef void (Room::*CallBack)(ServerPlayer *, const Json::Value &);
+    typedef void (Room::*Callback)(ServerPlayer *, const Json::Value &);
     typedef bool (Room::*ResponseVerifyFunction)(ServerPlayer *, const Json::Value &, void *);
 
     explicit Room(QObject *parent, const QString &mode);
@@ -473,8 +472,7 @@ private:
     QSemaphore _m_semRoomMutex; // Provide per-room  (rather than per-player) level protection of any shared variables
 
 
-    QHash<QString, Callback> callbacks; // Legacy protocol callbacks
-    QHash<QSanProtocol::CommandType, CallBack> m_callbacks; // Stores the callbacks for client request. Do not use this
+    QHash<QSanProtocol::CommandType, Callback> m_callbacks; // Stores the callbacks for client request. Do not use this
                                                             // this map for anything else but S_CLIENT_REQUEST!!!!!
     QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
     // Stores the expected client response for each server request, any unmatched client response will be discarded.

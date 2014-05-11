@@ -2151,13 +2151,11 @@ void Room::processClientPacket(const QString &request) {
             player->setClientReplyString(request);
             processResponse(player, &packet);
         } else if (packet.getPacketType() == S_TYPE_REQUEST || packet.getPacketType() == S_TYPE_NOTIFICATION) {
-            CallBack callback = m_callbacks[packet.getCommandType()];
+            Callback callback = m_callbacks[packet.getCommandType()];
             if (!callback) return;
             (this->*callback)(player, packet.getMessageBody());
         }
     } else {
-        QStringList args = request.split(" ");
-        QString command = args.first();
         ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
         if (player == NULL) return;
 
@@ -2167,16 +2165,7 @@ void Room::processClientPacket(const QString &request) {
             return;
         }
 
-        command.append("Command");
-        Callback callback = callbacks.value(command, NULL);
-        if (callback) {
-            (this->*callback)(player, args.at(1));
-#ifndef QT_NO_DEBUG
-            // output client command only in debug version
-            emit room_message(player->reportHeader() + request);
-#endif
-        } else
-            emit room_message(tr("%1: %2 is not invokable").arg(player->reportHeader()).arg(command));
+        emit room_message(tr("%1: %2 is not invokable").arg(player->reportHeader()).arg(request));
     }
 }
 
