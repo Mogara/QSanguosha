@@ -223,7 +223,7 @@ void ServerPlayer::kick(){
 }
 
 void ServerPlayer::getMessage(const char *message) {
-    QString request = message;
+    QString request = QString::fromUtf8(message);
     if (request.endsWith("\n"))
         request.chop(1);
 
@@ -285,12 +285,12 @@ void ServerPlayer::sendMessage(const QString &message) {
 #ifndef QT_NO_DEBUG
         printf("%s", qPrintable(objectName()));
 #endif
-        socket->send(message);
+        socket->send(message.toUtf8());
     }
 }
 
 void ServerPlayer::invoke(const QSanPacket *packet) {
-    unicast(QString(packet->toString().c_str()));
+    unicast(QString::fromUtf8(packet->toString().c_str()));
 }
 
 void ServerPlayer::invoke(const char *method, const QString &arg) {

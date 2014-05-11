@@ -340,6 +340,7 @@ public:
 
     void toggleReadyCommand(ServerPlayer *player, const Json::Value &);
     void speakCommand(ServerPlayer *player, const QString &arg);
+    void speakCommand(ServerPlayer *player, const Json::Value &arg);
     void trustCommand(ServerPlayer *player, const Json::Value &arg);
     void pauseCommand(ServerPlayer *player, const Json::Value &arg);
     void processResponse(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *arg);

@@ -84,12 +84,11 @@ void NativeClientSocket::connectToHost() {
 
 void NativeClientSocket::getMessage() {
     while (socket->canReadLine()) {
-        buffer_t msg;
-        socket->readLine(msg, sizeof(msg));
+        QByteArray msg = socket->readLine();
 #ifndef QT_NO_DEBUG
-        printf("recv: %s", msg);
+        printf("recv: %s", msg.constData());
 #endif
-        emit message_got(msg);
+        emit message_got(msg.constData());
     }
 }
 
@@ -97,11 +96,11 @@ void NativeClientSocket::disconnectFromHost() {
     socket->disconnectFromHost();
 }
 
-void NativeClientSocket::send(const QString &message) {
-    socket->write(message.toAscii());
+void NativeClientSocket::send(const QByteArray &message) {
+    socket->write(message);
     socket->write("\n");
 #ifndef QT_NO_DEBUG
-    printf(": %s\n", message.toAscii().constData());
+    printf(": %s\n", message.constData());
 #endif
     socket->flush();
 }

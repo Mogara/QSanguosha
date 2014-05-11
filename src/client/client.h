@@ -111,7 +111,7 @@ public:
     void setMark(const Json::Value &mark_str);
     void showCard(const Json::Value &show_str);
     void log(const Json::Value &log_str);
-    void speak(const QString &speak_data);
+    void speak(const Json::Value &speak);
     void addHistory(const Json::Value &history);
     void moveFocus(const Json::Value &focus);
     void setEmotion(const Json::Value &set_str);

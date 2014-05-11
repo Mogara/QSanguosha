@@ -42,7 +42,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks["startInXs"] = &Client::startInXs;
     callbacks["arrangeSeats"] = &Client::arrangeSeats;
     callbacks["warn"] = &Client::warn;
-    callbacks["speak"] = &Client::speak;
+    m_callbacks[S_COMMAND_SPEAK] = &Client::speak;
 
     m_callbacks[S_COMMAND_GAME_START] = &Client::startGame;
     m_callbacks[S_COMMAND_GAME_OVER] = &Client::gameOver;
@@ -216,7 +216,7 @@ void Client::replyToServer(CommandType command, const Json::Value &arg) {
         QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_REPLY | S_DEST_ROOM, command);
         packet.m_localSerial = _m_lastServerSerial;
         packet.setMessageBody(arg);
-        socket->send(toQString(packet.toString()));
+        socket->send(packet.toString().c_str());
     }
 }
 
@@ -228,7 +228,7 @@ void Client::requestToServer(CommandType command, const Json::Value &arg) {
     if (socket) {
         QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_REQUEST | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
-        socket->send(toQString(packet.toString()));
+        socket->send(packet.toString().c_str());
     }
 }
 
@@ -236,13 +236,13 @@ void Client::notifyServer(CommandType command, const Json::Value &arg) {
     if (socket) {
         QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
-        socket->send(toQString(packet.toString()));
+        socket->send(packet.toString().c_str());
     }
 }
 
 void Client::request(const QString &message) {
     if (socket)
-        socket->send(message);
+        socket->send(message.toUtf8());
 }
 
 void Client::checkVersion(const QString &server_version) {
@@ -281,7 +281,7 @@ void Client::disconnectFromHost() {
 typedef char buffer_t[65535];
 
 void Client::processServerPacket(const QString &cmd) {
-    processServerPacket(cmd.toAscii().data());
+    processServerPacket(cmd.toUtf8().data());
 }
 
 void Client::processServerPacket(const char *cmd) {
@@ -993,8 +993,7 @@ void Client::speakToServer(const QString &text) {
     if (text.isEmpty())
         return;
 
-    QByteArray data = text.toUtf8().toBase64();
-    request(QString("speak %1").arg(QString(data)));
+    notifyServer(S_COMMAND_SPEAK, toJsonString(text));
 }
 
 void Client::addHistory(const Json::Value &history) {
@@ -1661,13 +1660,15 @@ void Client::log(const Json::Value &log_str) {
     }
 }
 
-void Client::speak(const QString &speak_data) {
-    QStringList words = speak_data.split(":");
-    QString who = words.at(0);
-    QString base64 = words.at(1);
+void Client::speak(const Json::Value &speak) {
+    if(!speak.isArray()) {
+        qDebug() << toQString(speak);
+        return;
+    }
 
-    QByteArray data = QByteArray::fromBase64(base64.toAscii());
-    QString text = QString::fromUtf8(data);
+    QString who = toQString(speak[0]);
+    QString text = toQString(speak[1]);
+
     emit text_spoken(text);
 
     if (who == ".") {

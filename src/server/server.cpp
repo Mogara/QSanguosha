@@ -680,10 +680,15 @@ Server::Server(QObject *parent)
 }
 
 void Server::broadcast(const QString &msg) {
-    QString to_sent = msg.toUtf8().toBase64();
-    to_sent = ".:" + to_sent;
+    Json::Value arg(Json::arrayValue);
+    arg[0] = ".";
+    arg[1] = msg.toStdString();
+
+    QSanProtocol::QSanGeneralPacket packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_SPEAK);
+    packet.setMessageBody(arg);
+
     foreach (Room *room, rooms)
-        room->broadcastInvoke("speak", to_sent);
+        room->broadcastInvoke(&packet);
 }
 
 bool Server::listen() {
@@ -725,8 +730,8 @@ void Server::processNewConnection(ClientSocket *socket) {
     }
 
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
-    socket->send("checkVersion " + Sanguosha->getVersion());
-    socket->send("setup " + Sanguosha->getSetupString());
+    socket->send(QString("checkVersion " + Sanguosha->getVersion()).toUtf8());
+    socket->send(QString("setup " + Sanguosha->getSetupString()).toUtf8());
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 
     connect(socket, SIGNAL(message_got(const char *)), this, SLOT(processRequest(const char *)));
@@ -744,7 +749,7 @@ void Server::processRequest(const char *request) {
     QRegExp rx("(signupr?) (.+):(.+)(:.+)?\n");
     if (!rx.exactMatch(request)) {
         emit server_message(tr("Invalid signup string: %1").arg(request));
-        socket->send("warn INVALID_FORMAT");
+        socket->send(QString("warn INVALID_FORMAT").toUtf8());
         socket->disconnectFromHost();
         return;
     }
