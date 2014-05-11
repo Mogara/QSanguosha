@@ -42,7 +42,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_REMOVE_PLAYER] = &Client::removePlayer;
     m_callbacks[S_COMMAND_START_IN_X_SECONDS] = &Client::startInXs;
     m_callbacks[S_COMMAND_ARRANGE_SEATS] = &Client::arrangeSeats;
-    callbacks["warn"] = &Client::warn;
+    m_callbacks[S_COMMAND_WARN] = &Client::warn;
     m_callbacks[S_COMMAND_SPEAK] = &Client::speak;
 
     m_callbacks[S_COMMAND_GAME_START] = &Client::startGame;
@@ -1263,7 +1263,8 @@ void Client::revivePlayer(const Json::Value &player_arg) {
 }
 
 
-void Client::warn(const QString &reason) {
+void Client::warn(const Json::Value &reason_json) {
+    QString reason = toQString(reason_json);
     QString msg;
     if (reason == "GAME_OVER")
         msg = tr("Game is over now");

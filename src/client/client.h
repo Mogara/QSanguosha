@@ -107,7 +107,7 @@ public:
     void killPlayer(const Json::Value &player_arg);
     void revivePlayer(const Json::Value &player_arg);
     void setDashboardShadow(const Json::Value &player_arg);
-    void warn(const QString &);
+    void warn(const Json::Value &);
     void setMark(const Json::Value &mark_str);
     void showCard(const Json::Value &show_str);
     void log(const Json::Value &log_str);

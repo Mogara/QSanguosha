@@ -757,7 +757,9 @@ void Server::processRequest(const char *request) {
     QRegExp rx("(signupr?) (.+):(.+)(:.+)?\n");
     if (!rx.exactMatch(request)) {
         emit server_message(tr("Invalid signup string: %1").arg(request));
-        socket->send(QString("warn INVALID_FORMAT").toUtf8());
+        QSanProtocol::QSanGeneralPacket packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_WARN);
+        packet.setMessageBody("INVALID_FORMAT");
+        socket->send(packet.toString().c_str());
         socket->disconnectFromHost();
         return;
     }
