@@ -431,7 +431,7 @@ void MainWindow::on_actionAbout_triggered() {
     const char *time = __TIME__;
     content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
 
-    QString project_url = "https://github.com/Fsu0413/QSanguosha-For-Hegemony";
+    QString project_url = "https://github.com/QSanguosha-Rara/QSanguosha-For-Hegemony";
     content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
     QString forum_url = "http://qsanguosha.org";
