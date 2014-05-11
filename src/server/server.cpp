@@ -810,6 +810,10 @@ void Server::gameOver() {
         players.remove(player->objectName());
     }
 
+    if(room == current){
+        current = NULL;
+    }
+
     if(rooms.isEmpty()){
         emit room_cleared();
     }
