@@ -104,6 +104,7 @@ public:
     bool EnableDoubleClick;
     bool EnableAutoSaveRecord;
     bool NetworkOnly;
+    bool EnableAutoPreshowInConsoleMode;
     int OperationTimeout;
     bool OperationNoLimit;
     bool EnableEffects;

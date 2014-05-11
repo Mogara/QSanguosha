@@ -624,7 +624,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>90</y>
+       <y>110</y>
        <width>451</width>
        <height>121</height>
       </rect>
@@ -740,6 +740,19 @@
        <bool>false</bool>
       </property>
      </widget>
+    </widget>
+    <widget class="QCheckBox" name="autoPreshowCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>231</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Enable auto preshow in console mode</string>
+     </property>
     </widget>
    </widget>
   </widget>

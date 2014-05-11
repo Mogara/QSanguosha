@@ -107,9 +107,10 @@ void GeneralSelector::loadGeneralTable() {
             if (!rx.exactMatch(line))
                 continue;
 
+            //SAMPLE: huatuo 41
             QStringList texts = rx.capturedTexts();
             QString general = texts.at(1);
-            int value = texts.at(3).toInt();
+            int value = texts.at(2).toInt();
 
             single_general_table.insert(general, value);
         }
@@ -128,6 +129,7 @@ void GeneralSelector::loadPairTable() {
             if (!rx.exactMatch(line))
                 continue;
 
+            //SAMPLE: taishici+sunce 60
             QStringList texts = rx.capturedTexts();
             QString first = texts.at(1);
             QString second = texts.at(2);

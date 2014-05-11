@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #include "room.h"
 #include "engine.h"
 #include "settings.h"
@@ -4095,18 +4114,24 @@ void Room::doAnimate(QSanProtocol::AnimateType type, const QString &arg1, const 
 void Room::preparePlayers() {
     foreach (ServerPlayer *player, m_players) {
         QString general1_name = tag[player->objectName()].toStringList().at(0);
-        if (player->property("Duanchang").toString() != "head")
+        if (player->property("Duanchang").toString() != "head") {
             foreach(const Skill *skill, Sanguosha->getGeneral(general1_name)->getVisibleSkillList(true, true))
                 player->addSkill(skill->objectName());
+        }
 
         QString general2_name = tag[player->objectName()].toStringList().at(1);
-        if (player->property("Duanchang").toString() != "deputy")
+        if (player->property("Duanchang").toString() != "deputy") {
             foreach(const Skill *skill, Sanguosha->getGeneral(general2_name)->getVisibleSkillList(true, false))
                 player->addSkill(skill->objectName(), false);
+        }
+        
+        Json::Value args;
+        args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+        doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
-            Json::Value args;
-            args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-            doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
+        notifyProperty(player, player, "flags", "AutoPreshowAvailable");
+        player->notifyPreshow();
+        notifyProperty(player, player, "flags", "-AutoPreshowAvailable");
 
         player->setGender(General::Sexless);
     }

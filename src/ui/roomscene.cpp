@@ -446,11 +446,23 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
     case S_GAME_EVENT_UPDATE_PRESHOW: {
             Q_ASSERT(arg[1].isObject());
             Json::Value::Members keys = arg[1].getMemberNames();
+            bool in_console_mode = true;
+            foreach (const ClientPlayer *player, ClientInstance->getPlayers()) {
+                if (player == Self) continue;
+                if (player->getState() != "robot") {
+                    in_console_mode = false;
+                    break;
+                }
+            }
+            const bool auto_preshow_available = Self->hasFlag("AutoPreshowAvailable");
             for (unsigned int i = 0; i < keys.size(); i++) {
                 const char *skill = keys[i].c_str();
                 const bool showed = arg[1][skill].asBool();
-                Self->setSkillPreshowed(skill, showed);
-                if (!showed) {
+                    
+                if (in_console_mode && Config.EnableAutoPreshowInConsoleMode && auto_preshow_available)
+                    ClientInstance->preshow(skill);
+                else {
+                    Self->setSkillPreshowed(skill, showed);
                     foreach(QSanSkillButton *btn, m_skillButtons) {
                         if (btn->getSkill()->objectName() == skill) {
                             btn->QGraphicsObject::setEnabled(true);

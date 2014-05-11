@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #include "configdialog.h"
 #include "ui_configdialog.h"
 #include "settings.h"
@@ -61,6 +80,8 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     QString record_path = Config.value("RecordSavePaths", "records/").toString();
     if (!record_path.startsWith(":"))
         ui->recordPathsSetupLineEdit->setText(record_path);
+
+    ui->autoPreshowCheckBox->setChecked(Config.EnableAutoPreshowInConsoleMode);
 
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
 
@@ -201,6 +222,9 @@ void ConfigDialog::saveConfig() {
 
     Config.NetworkOnly = ui->networkOnlyCheckBox->isChecked();
     Config.setValue("NetworkOnly", Config.NetworkOnly);
+
+    Config.EnableAutoPreshowInConsoleMode = ui->autoPreshowCheckBox->isChecked();
+    Config.setValue("EnableAutoPreshowInConsoleMode", Config.EnableAutoPreshowInConsoleMode);
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked() {
