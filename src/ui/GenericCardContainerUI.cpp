@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #include "GenericCardContainerUI.h"
 #include <QParallelAnimationGroup>
 #include <qpropertyanimation.h>
@@ -178,25 +197,21 @@ void PlayerCardContainer::updateAvatar() {
     const General *general = NULL;
     if (m_player) {
         general = m_player->getAvatarGeneral();
-        //@@todo:design the style of screen name for dashboard
-        if (!inherits("Dashboard"))
-            _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
-                                                  _m_layout->m_screenNameArea,
-                                                  Qt::AlignCenter,
-                                                  m_player->screenName());
-    } else if (!inherits("Dashboard"))
-            _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
-                                                  _m_layout->m_screenNameArea,
-                                                  Qt::AlignCenter,
-                                                  "");
+        _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
+                                              _m_layout->m_screenNameArea,
+                                              Qt::AlignCenter,
+                                              m_player->screenName());
+    } else
+        _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
+                                              _m_layout->m_screenNameArea,
+                                              Qt::AlignCenter,
+                                              QString());
 
     if (general != NULL) {
         _m_avatarArea->setToolTip(m_player->getHeadSkillDescription());
         QString name = general->objectName();
         QPixmap avatarIcon = _getAvatarIcon(name);
         QRect area = _m_layout->m_avatarArea;
-        if (inherits("Dashboard"))
-            area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 5);
         _paintPixmap(_m_avatarIcon, area, avatarIcon, _getAvatarParent());
         // this is just avatar general, perhaps game has not started yet.
         if (m_player->getGeneral() != NULL) {
@@ -252,8 +267,6 @@ void PlayerCardContainer::updateSmallAvatar() {
         QString name = general->objectName();
         QPixmap avatarIcon = _getAvatarIcon(name);
         QRect area = _m_layout->m_secondaryAvatarArea;
-        if (inherits("Dashboard"))
-            area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 5);
         _paintPixmap(_m_smallAvatarIcon, area, avatarIcon, _getAvatarParent());
         QString kingdom = m_player->getKingdom();
         _paintPixmap(_m_kingdomColorMaskIcon2, _m_layout->m_kingdomMaskArea2,

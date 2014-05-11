@@ -1201,3 +1201,92 @@ const Card *Dashboard::pendingCard() const{
     return pending_card;
 }
 
+void Dashboard::updateAvatar()
+{
+    const General *general = NULL;
+    if (m_player) {
+        general = m_player->getAvatarGeneral();
+        //@@todo:design the style of screen name for dashboard
+        /*
+        _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
+                                                  _m_layout->m_screenNameArea,
+                                                  Qt::AlignCenter,
+                                                  m_player->screenName());
+                                                  */
+    } /*
+        _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
+                                                  _m_layout->m_screenNameArea,
+                                                  Qt::AlignCenter,
+                                                  QString());
+                                                  */
+
+    if (general != NULL) {
+        _m_avatarArea->setToolTip(m_player->getHeadSkillDescription());
+        QString name = general->objectName();
+        QPixmap avatarIcon = _getAvatarIcon(name);
+        QRect area = _m_layout->m_avatarArea;
+        area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 3);
+        _paintPixmap(_m_avatarIcon, area, avatarIcon, _getAvatarParent());
+        // this is just avatar general, perhaps game has not started yet.
+        if (m_player->getGeneral() != NULL) {
+            QString kingdom = m_player->getKingdom();
+            _paintPixmap(_m_kingdomColorMaskIcon, _m_layout->m_kingdomMaskArea,
+                         G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, kingdom), this->_getAvatarParent());
+            _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
+                         _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, kingdom), this->_getAvatarParent());
+            QString name = Sanguosha->translate("&" + general->objectName());
+            if (name.startsWith("&"))
+                name = Sanguosha->translate(general->objectName());
+            _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem,
+                                                  _m_layout->m_avatarNameArea,
+                                                  Qt::AlignLeft | Qt::AlignJustify, name);
+        } else {
+            _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
+                         _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, QSanRoomSkin::S_SKIN_KEY_DEFAULT_SECOND),
+                         _getAvatarParent());
+        }
+    } else {
+        _paintPixmap(_m_avatarIcon, _m_layout->m_avatarArea,
+                     QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
+        _clearPixmap(_m_kingdomColorMaskIcon);
+        _clearPixmap(_m_kingdomIcon);
+        _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
+                     _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, QSanRoomSkin::S_SKIN_KEY_DEFAULT_SECOND),
+                     _getAvatarParent());
+        _m_avatarArea->setToolTip(QString());
+    }
+    _m_avatarIcon->show();
+    _adjustComponentZValues();
+}
+
+void Dashboard::updateSmallAvatar()
+{
+    const General *general = NULL;
+    if (m_player) general = m_player->getGeneral2();
+    if (general != NULL) {
+        _m_secondaryAvatarArea->setToolTip(m_player->getDeputySkillDescription());
+        QString name = general->objectName();
+        QPixmap avatarIcon = _getAvatarIcon(name);
+        QRect area = _m_layout->m_secondaryAvatarArea;
+        area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 3);
+        _paintPixmap(_m_smallAvatarIcon, area, avatarIcon, _getAvatarParent());
+        QString kingdom = m_player->getKingdom();
+        _paintPixmap(_m_kingdomColorMaskIcon2, _m_layout->m_kingdomMaskArea2,
+            G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, kingdom), this->_getAvatarParent());
+        QString show_name = Sanguosha->translate("&" + name);
+        if (show_name.startsWith("&"))
+            show_name = Sanguosha->translate(name);
+        _m_layout->m_smallAvatarNameFont.paintText(_m_secondaryAvatarNameItem,
+            _m_layout->m_secondaryAvatarNameArea,
+            Qt::AlignLeft | Qt::AlignJustify, show_name);
+    } else {
+        _paintPixmap(_m_smallAvatarIcon, _m_layout->m_secondaryAvatarArea,
+            QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
+        _clearPixmap(_m_kingdomColorMaskIcon2);
+        _clearPixmap(_m_kingdomIcon);
+        _m_secondaryAvatarArea->setToolTip(QString());
+    }
+    _m_smallAvatarIcon->show();
+    _adjustComponentZValues();
+}
+
