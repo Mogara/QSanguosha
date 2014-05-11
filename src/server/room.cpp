@@ -443,7 +443,7 @@ void Room::gameOver(const QString &winner) {
             QStringList handcards;
             foreach (const Card *card, player->getHandcards())
                 handcards << Sanguosha->getEngineCard(card->getId())->getLogName();
-            QString handcard = handcards.join(", ").toUtf8().toBase64();
+            QString handcard = handcards.join(", ");
             setPlayerProperty(player, "last_handcards", handcard);
         }
     }
@@ -661,7 +661,7 @@ bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, co
 }
 
 bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const Json::Value &arg, time_t timeOut, bool wait) {
-    QSanGeneralPacket packet(S_SRC_ROOM | S_TYPE_REQUEST | S_DEST_CLIENT, command);
+    Packet packet(S_SRC_ROOM | S_TYPE_REQUEST | S_DEST_CLIENT, command);
     packet.setMessageBody(arg);
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
     player->m_isClientResponseReady = false;
@@ -772,7 +772,7 @@ ServerPlayer *Room::getRaceResult(QList<ServerPlayer *> &players, QSanProtocol::
 }
 
 bool Room::doNotify(ServerPlayer *player, QSanProtocol::CommandType command, const Json::Value &arg) {
-    QSanGeneralPacket packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
+    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
     packet.setMessageBody(arg);
     player->invoke(&packet);
     return true;
@@ -795,7 +795,7 @@ bool Room::doBroadcastNotify(QSanProtocol::CommandType command, const Json::Valu
 
 // the following functions for Lua
 bool Room::doNotify(ServerPlayer *player, int command, const QString &arg) {
-    QSanGeneralPacket packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, (QSanProtocol::CommandType)command);
+    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, (QSanProtocol::CommandType)command);
     Json::Reader reader;
     Json::Value json_arg;
     std::string str = arg.toStdString();
@@ -822,8 +822,8 @@ void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer 
     broadcast(QString("%1 %2").arg(method).arg(arg), except);
 }
 
-void Room::broadcastInvoke(const QSanProtocol::QSanPacket *packet, ServerPlayer *except) {
-    broadcast(QString::fromUtf8(packet->toString().c_str()), except);
+void Room::broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except) {
+    broadcast(packet->toString(), except);
 }
 
 bool Room::getResult(ServerPlayer *player, time_t timeOut) {
@@ -2147,7 +2147,7 @@ void Room::processRequestPreshow(ServerPlayer *player, const Json::Value &arg) {
 }
 
 void Room::processClientPacket(const QString &request) {
-    QSanGeneralPacket packet;
+    Packet packet;
     //@todo: remove this thing after the new protocol is fully deployed
     if (packet.parse(request.toUtf8().constData())) {
         ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
@@ -2513,12 +2513,10 @@ void Room::speakCommand(ServerPlayer *player, const QString &arg) {
 void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
 #define _NO_BROADCAST_SPEAKING {\
     broadcast = false;\
-    QSanGeneralPacket packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);\
     Json::Value body(Json::arrayValue);\
     body[0] = toJsonString(player->objectName());\
     body[1] = arg;\
-    packet.setMessageBody(body);\
-    player->invoke(&packet);\
+    player->notify(S_COMMAND_SPEAK, body);\
 }
     bool broadcast = true;
     if (player && Config.EnableCheat) {
@@ -2544,7 +2542,7 @@ void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
             arg[0] = toJsonString(player->objectName());
             arg[1] = toJsonString(split);
 
-            QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
+            Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
             packet.setMessageBody(arg);
             player->invoke(&packet);
             foreach (ServerPlayer *p, m_alivePlayers) {
@@ -2559,7 +2557,7 @@ void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
                     arg[0] = toJsonString(p->objectName());
                     arg[1] = toJsonString(hand);
 
-                    QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
+                    Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
                     packet.setMessageBody(arg);
                     player->invoke(&packet);
                 }
@@ -2580,7 +2578,7 @@ void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
                         arg[0] = toJsonString(p->objectName());
                         arg[1] = toJsonString(hand);
 
-                        QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
+                        Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
                         packet.setMessageBody(arg);
                         player->invoke(&packet);
                     }
@@ -2605,7 +2603,7 @@ void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
                             arg[0] = toJsonString(p->objectName());
                             arg[1] = toJsonString(pile);
 
-                            QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
+                            Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
                             packet.setMessageBody(arg);
                             player->invoke(&packet);
                         }
@@ -2642,14 +2640,14 @@ void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
         body[0] = toJsonString(player->objectName());
         body[1] = arg;
 
-        QSanGeneralPacket packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
+        Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
         packet.setMessageBody(body);
         broadcastInvoke(&packet);
     }
 #undef _NO_BROADCAST_SPEAKING
 }
 
-void Room::processResponse(ServerPlayer *player, const QSanGeneralPacket *packet) {
+void Room::processResponse(ServerPlayer *player, const Packet *packet) {
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
     bool success = false;
     if (player == NULL)
@@ -3972,16 +3970,22 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move) {
 }
 
 void Room::abortGame(){
-    //Disconnect all the clients
-    foreach(ServerPlayer *player, m_players){
-        if(player->isOnline()){
-            trustCommand(player, Json::Value());
+    if(thread->isRunning()){
+        //Disconnect all the clients
+        foreach(ServerPlayer *player, m_players){
+            if(player->isOnline()){
+                trustCommand(player, Json::Value());
+            }
+            player->setSocket(NULL);
         }
-        player->setSocket(NULL);
-    }
 
-    //Notify the RoomThread to exit
-    tag["AbortGame"] = true;
+        //Notify the RoomThread to exit
+        tag["AbortGame"] = true;
+    }else{
+        //Notify the RoomThread to exit
+        tag["AbortGame"] = true;
+        //thread->start();
+    }
 }
 
 bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves, bool forceVisible, QList<ServerPlayer *> players) {
@@ -5064,7 +5068,7 @@ bool Room::makeCheat(ServerPlayer *player) {
         makeReviving(toQString(arg[1]));
     } else if (code == S_CHEAT_RUN_SCRIPT) {
         if (!arg[1].isString()) return false;
-        QByteArray data = QByteArray::fromBase64(arg[1].asCString());
+        QByteArray data(arg[1].asCString());
         data = qUncompress(data);
         doScript(data);
     } else if (code == S_CHEAT_GET_ONE_CARD) {

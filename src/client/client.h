@@ -58,9 +58,10 @@ public:
 
     void disconnectFromHost();
     void replyToServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
-    void requestToServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
+    void requestServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
     void notifyServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
-    void request(const QString &message);
+    void request(const QByteArray &raw);
+    inline void request(const QString &unicode){request(unicode.toUtf8());}
     void onPlayerResponseCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
     void setStatus(Status status);
     Status getStatus() const;
@@ -250,7 +251,7 @@ private:
 private slots:
     void processServerPacket(const QString &cmd);
     void processServerPacket(const char *cmd);
-    bool processServerRequest(const QSanProtocol::QSanGeneralPacket &packet);
+    bool processServerRequest(const QSanProtocol::Packet &packet);
     void processObsoleteServerPacket(const QString &cmd);
     void notifyRoleChange(const QString &new_role);
     void onPlayerChooseSuit();

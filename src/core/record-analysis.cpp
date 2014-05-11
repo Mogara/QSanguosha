@@ -84,7 +84,7 @@ void RecAnalysis::initialize(QString dir) {
             continue;
         }
 
-        QSanGeneralPacket packet;
+        Packet packet;
         packet.parse(line.toUtf8().constData());
 
         if (packet.getCommandType() == S_COMMAND_ARRANGE_SEATS) {

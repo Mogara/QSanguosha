@@ -639,7 +639,7 @@ QString Engine::getSetupString() const{
     if (Config.DisableChat)
         flags.append("M");
 
-    QString server_name = Config.ServerName.toUtf8().toBase64();
+    QString server_name = Config.ServerName;
     QStringList setup_items;
     setup_items << server_name
                 << Config.GameMode

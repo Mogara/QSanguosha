@@ -239,7 +239,7 @@ void ServerPlayer::unicast(const QString &message) {
 
 void ServerPlayer::startNetworkDelayTest() {
     test_time = QDateTime::currentDateTime();
-    QSanGeneralPacket packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_NETWORK_DELAY_TEST);
+    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_NETWORK_DELAY_TEST);
     invoke(&packet);
 }
 
@@ -290,8 +290,8 @@ void ServerPlayer::sendMessage(const QString &message) {
     }
 }
 
-void ServerPlayer::invoke(const QSanPacket *packet) {
-    unicast(QString::fromUtf8(packet->toString().c_str()));
+void ServerPlayer::invoke(const AbstractPacket *packet) {
+    unicast(packet->toString());
 }
 
 void ServerPlayer::invoke(const char *method, const QString &arg) {
@@ -299,9 +299,9 @@ void ServerPlayer::invoke(const char *method, const QString &arg) {
 }
 
 void ServerPlayer::notify(CommandType type, const Json::Value &arg){
-    QSanGeneralPacket packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, type);
+    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, type);
     packet.setMessageBody(arg);
-    unicast(QString::fromUtf8(packet.toString().c_str()));
+    unicast(packet.toString());
 }
 
 QString ServerPlayer::reportHeader() const{

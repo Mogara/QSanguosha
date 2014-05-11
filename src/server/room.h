@@ -342,10 +342,10 @@ public:
     void speakCommand(ServerPlayer *player, const Json::Value &arg);
     void trustCommand(ServerPlayer *player, const Json::Value &arg);
     void pauseCommand(ServerPlayer *player, const Json::Value &arg);
-    void processResponse(ServerPlayer *player, const QSanProtocol::QSanGeneralPacket *arg);
+    void processResponse(ServerPlayer *player, const QSanProtocol::Packet *arg);
     void addRobotCommand(ServerPlayer *player, const Json::Value &arg);
     void fillRobotsCommand(ServerPlayer *player, const Json::Value &arg);
-    void broadcastInvoke(const QSanProtocol::QSanPacket *packet, ServerPlayer *except = NULL);
+    void broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except = NULL);
     void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void networkDelayTestCommand(ServerPlayer *player, const Json::Value &);
     inline RoomState *getRoomState() { return &_m_roomState; }

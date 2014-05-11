@@ -1,9 +1,11 @@
 #ifndef _JSON_UTILS_H
 #define _JSON_UTILS_H
 
+
+#include "json/json.h"
+
 #include <string>
 #include <list>
-#include <json/json.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qlist.h>

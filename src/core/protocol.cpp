@@ -6,8 +6,8 @@
 using namespace std;
 using namespace QSanProtocol;
 
-unsigned int QSanProtocol::QSanGeneralPacket::_m_globalSerial = 0;
-const unsigned int QSanProtocol::QSanGeneralPacket::S_MAX_PACKET_SIZE = 65535;
+unsigned int QSanProtocol::Packet::_m_globalSerial = 0;
+const unsigned int QSanProtocol::Packet::S_MAX_PACKET_SIZE = 65535;
 const string QSanProtocol::Countdown::S_COUNTDOWN_MAGIC = "MG_COUNTDOWN";
 const char *QSanProtocol::S_PLAYER_SELF_REFERENCE_ID = "MG_SELF";
 
@@ -51,13 +51,13 @@ bool QSanProtocol::Utils::isIntArray(const Json::Value &jsonObject, unsigned int
     return true;
 }
 
-bool QSanProtocol::QSanGeneralPacket::tryParse(const string &s, int &val) {
+bool QSanProtocol::Packet::tryParse(const string &s, int &val) {
     istringstream iss(s);
     iss >> val;
     return true;
 }
 
-bool QSanProtocol::QSanGeneralPacket::parse(const string &s) {
+bool QSanProtocol::Packet::parse(const string &s) {
     if (s.length() > S_MAX_PACKET_SIZE) {
         return false;
     }
@@ -77,7 +77,9 @@ bool QSanProtocol::QSanGeneralPacket::parse(const string &s) {
     return true;
 }
 
-string QSanProtocol::QSanGeneralPacket::toString() const{
+
+//characters in JSON string representations are unicode-escaped. So we don't need Base64 here.
+QByteArray QSanProtocol::Packet::toUtf8() const{
     Json::Value result(Json::arrayValue);
     result[0] = m_globalSerial;
     result[1] = m_localSerial;
@@ -92,7 +94,12 @@ string QSanProtocol::QSanGeneralPacket::toString() const{
 
     //truncate too long messages
     if (msg.length() > S_MAX_PACKET_SIZE)
-        return msg.substr(0, S_MAX_PACKET_SIZE);
-    return msg;
+        msg = msg.substr(0, S_MAX_PACKET_SIZE);
+
+    return msg.c_str();
+}
+
+QString QSanProtocol::Packet::toString() const{
+    return QString::fromUtf8(toUtf8());
 }
 
