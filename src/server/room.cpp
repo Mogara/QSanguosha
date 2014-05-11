@@ -2513,12 +2513,10 @@ void Room::speakCommand(ServerPlayer *player, const QString &arg) {
 void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
 #define _NO_BROADCAST_SPEAKING {\
     broadcast = false;\
-    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);\
     Json::Value body(Json::arrayValue);\
     body[0] = toJsonString(player->objectName());\
     body[1] = arg;\
-    packet.setMessageBody(body);\
-    player->invoke(&packet);\
+    player->notify(S_COMMAND_SPEAK, body);\
 }
     bool broadcast = true;
     if (player && Config.EnableCheat) {

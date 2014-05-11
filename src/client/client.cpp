@@ -201,10 +201,11 @@ void Client::signup() {
     if (replayer)
         replayer->start();
     else {
-        QString base64 = Config.UserName.toUtf8().toBase64();
-        QString command = Config.value("EnableReconnection", false).toBool() ? "signupr" : "signup";
-        QString signup_str = QString("%1 %2:%3").arg(command).arg(base64).arg(Config.UserAvatar);
-        request(signup_str);
+        Json::Value arg(Json::arrayValue);
+        arg.append(Config.value("EnableReconnection", false).toBool());
+        arg.append(toJsonString(Config.UserName));
+        arg.append(toJsonString(Config.UserAvatar));
+        notifyServer(S_COMMAND_SIGNUP, arg);
     }
 }
 

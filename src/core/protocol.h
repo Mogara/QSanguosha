@@ -139,7 +139,8 @@ namespace QSanProtocol {
         S_COMMAND_REMOVE_PLAYER,
         S_COMMAND_START_IN_X_SECONDS,
         S_COMMAND_ARRANGE_SEATS,
-        S_COMMAND_WARN
+        S_COMMAND_WARN,
+        S_COMMAND_SIGNUP
     };
 
     enum GameEventType {
