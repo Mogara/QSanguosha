@@ -1,2 +1,2 @@
-sunce taishici                     80
-taishici sunce                     70
+sunce taishici							80
+taishici sunce                     		70
