@@ -1,4 +1,4 @@
---[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
+--[[********************************************************************
 	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
@@ -16,7 +16,7 @@
   See the LICENSE file for more details.
 
   QSanguosha-Hegemony Team	
-]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+**********************************************************************]]
 function sgs.ai_skill_invoke.wangxi(self, data)
 	local target = data:toPlayer()
 	if target and (self.player:isFriendWith(target) or self:isFriend(target)) then

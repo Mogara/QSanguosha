@@ -1,4 +1,4 @@
---[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
+--[[********************************************************************
 	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
@@ -16,7 +16,7 @@
   See the LICENSE file for more details.
 
   QSanguosha-Hegemony Team	
-]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+**********************************************************************]]
 local qingnang_skill = {}
 qingnang_skill.name = "qingnang"
 table.insert(sgs.ai_skills, qingnang_skill)

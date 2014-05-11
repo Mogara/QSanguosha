@@ -1,4 +1,4 @@
---[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
+--[[********************************************************************
 	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
@@ -16,7 +16,7 @@
   See the LICENSE file for more details.
 
   QSanguosha-Hegemony Team	
-]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+**********************************************************************]]
 
 -- This is the Smart AI, and it should be loaded and run at the server side
 

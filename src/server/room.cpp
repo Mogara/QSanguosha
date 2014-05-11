@@ -2344,8 +2344,7 @@ void Room::chooseGenerals() {
             player->setActualGeneral1Name(name);
             player->setRole(role);
             player->setGeneralName("anjiang");
-            foreach (ServerPlayer *p, getPlayers())
-                notifyProperty(p, player, "actual_general1", name);
+            notifyProperty(player, player, "actual_general1");
             foreach (ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general");
             notifyProperty(player, player, "general", name);
@@ -2356,8 +2355,7 @@ void Room::chooseGenerals() {
             names.append(name);
             player->setActualGeneral2Name(name);
             player->setGeneral2Name("anjiang");
-            foreach (ServerPlayer *p, getPlayers())
-                notifyProperty(p, player, "actual_general2", name);
+            notifyProperty(player, player, "actual_general2");
             foreach (ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general2");
             notifyProperty(player, player, "general2", name);

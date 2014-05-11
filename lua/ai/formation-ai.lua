@@ -1,4 +1,4 @@
---[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[
+--[[********************************************************************
 	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
@@ -16,7 +16,7 @@
   See the LICENSE file for more details.
 
   QSanguosha-Hegemony Team	
-]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+**********************************************************************]]
 sgs.ai_skill_invoke.tuntian = true
 sgs.ai_skill_invoke._tuntian = true
 
