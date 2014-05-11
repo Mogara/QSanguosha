@@ -458,12 +458,12 @@
         <translation>请选择一名武将</translation>
     </message>
     <message>
-        <location filename="../../src/ui/choosegeneralbox.cpp" line="188"/>
+        <location filename="../../src/ui/choosegeneralbox.cpp" line="191"/>
         <source>head_general</source>
         <translation>主将</translation>
     </message>
     <message>
-        <location filename="../../src/ui/choosegeneralbox.cpp" line="191"/>
+        <location filename="../../src/ui/choosegeneralbox.cpp" line="194"/>
         <source>deputy_general</source>
         <translation>副将</translation>
     </message>
