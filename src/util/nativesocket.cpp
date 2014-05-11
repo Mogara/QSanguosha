@@ -98,7 +98,10 @@ void NativeClientSocket::disconnectFromHost() {
 
 void NativeClientSocket::send(const QByteArray &message) {
     socket->write(message);
-    socket->write("\n");
+    if(!message.endsWith('\n')){
+        socket->write("\n");
+    }
+
 #ifndef QT_NO_DEBUG
     printf(": %s\n", message.constData());
 #endif
