@@ -90,8 +90,8 @@ public:
     void setup(const Json::Value &setup_str);
     void networkDelayTest(const Json::Value &);
     void addPlayer(const Json::Value &player_info);
-    void removePlayer(const QString &player_name);
-    void startInXs(const QString &);
+    void removePlayer(const Json::Value &player_name_json);
+    void startInXs(const Json::Value &);
     void arrangeSeats(const QString &seats);
     void activate(const Json::Value &playerId);
     void startGame(const Json::Value &);

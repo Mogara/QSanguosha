@@ -2370,11 +2370,11 @@ void Room::run() {
 
     if (using_countdown) {
         for (int i = Config.CountDownSeconds; i >= 0; i--) {
-            broadcastInvoke("startInXs", QString::number(i));
+            doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, i);
             sleep(1);
         }
     } else
-        broadcastInvoke("startInXs", "0");
+        doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, 0);
 
     if (scenario && !scenario->generalSelection())
         startGame();
@@ -3111,7 +3111,7 @@ void Room::marshal(ServerPlayer *player) {
         player_circle << player->objectName();
 
     player->invoke("arrangeSeats", player_circle.join("+"));
-    player->invoke("startInXs", "0");
+    player->notify(S_COMMAND_START_IN_X_SECONDS, 0);
 
     foreach (ServerPlayer *p, m_players) {
         notifyProperty(player, p, "general");
