@@ -976,8 +976,8 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
                 Q_ASSERT(false);
                 break;
         }
-        for (int j = 0; j < 4; j++) {
-            int index = i * 4 + j;
+        for (int j = 0; j < 5; j++) {
+            int index = i * 5 + j;
             QByteArray arr = key.toAscii();
             const char *sKey = arr.constData();
             tryParse(config[sKey][j][0], _m_dashboardLayout.m_skillTextColors[index]);
