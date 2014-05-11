@@ -167,7 +167,10 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     const int h = rect.height();
     painter->drawRect(QRect(x, y, w, h));
     painter->drawRect(QRect(x, y, w, top_dark_bar));
-    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, top_dark_bar), Qt::AlignCenter, single_result ? tr("Please select one general") : tr("Please select the same nationality generals"));
+    QString title = single_result ? tr("Please select one general") : tr("Please select the same nationality generals");
+    if (!single_result)
+        title.prepend(Sanguosha->translate(QString("SEAT(%1)").arg(Self->getSeat())) + " ");
+    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, top_dark_bar), Qt::AlignCenter, title);
     painter->restore();
     painter->setPen(G_COMMON_LAYOUT.m_chooseGeneralBoxBorderColor);
     painter->drawRect(QRect(x + 1, y + 1, w - 2, h - 2));
