@@ -732,11 +732,14 @@ void Server::processNewConnection(ClientSocket *socket) {
 
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
 
-    QSanProtocol::QSanGeneralPacket packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_CHECK_VERSION);
-    packet.setMessageBody(QSanProtocol::Utils::toJsonString(Sanguosha->getVersion()));
-    socket->send(packet.toString().c_str());
+    QSanProtocol::QSanGeneralPacket version_packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_CHECK_VERSION);
+    version_packet.setMessageBody(QSanProtocol::Utils::toJsonString(Sanguosha->getVersion()));
+    socket->send(version_packet.toString().c_str());
 
-    socket->send(QString("setup " + Sanguosha->getSetupString()).toUtf8());
+    QSanProtocol::QSanGeneralPacket setup_packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_SETUP);
+    setup_packet.setMessageBody(QSanProtocol::Utils::toJsonString(Sanguosha->getSetupString()));
+    socket->send(setup_packet.toString().c_str());
+
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 
     connect(socket, SIGNAL(message_got(const char *)), this, SLOT(processRequest(const char *)));
