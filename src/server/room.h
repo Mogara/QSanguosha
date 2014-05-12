@@ -5,6 +5,7 @@ class TriggerSkill;
 class ProhibitSkill;
 class Scenario;
 class TrickCard;
+class GeneralSelector;
 
 struct lua_State;
 struct LogMessage;
@@ -496,6 +497,8 @@ private:
     bool m_surrenderRequestReceived;
     bool _virtual;
     RoomState _m_roomState;
+
+    GeneralSelector *m_generalSelector;
 
     static QString generatePlayerName();
     void prepareForStart();

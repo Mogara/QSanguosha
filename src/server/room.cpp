@@ -79,6 +79,8 @@ Room::Room(QObject *parent, const QString &mode)
 
     //Destroy the room on RoomThread finished. Or it will be destroyed when Server is destroyed if the game hasn't started
     connect(thread, SIGNAL(finished()), this, SLOT(deleteLater()));
+
+    m_generalSelector = GeneralSelector::getInstance();
 }
 
 void Room::initCallbacks() {
@@ -2496,11 +2498,11 @@ int Room::getCardFromPile(const QString &card_pattern) {
 QString Room::_chooseDefaultGeneral(ServerPlayer *player) const{
     Q_ASSERT(!player->getSelected().isEmpty());
     QString choice;
-    GeneralSelector *selector = GeneralSelector::getInstance();
+
     if (player->getGeneral() != NULL) // choosing second general
-        choice = selector->selectSecond(player, player->getSelected());
+        choice = m_generalSelector->selectSecond(player, player->getSelected());
     else
-        choice = selector->selectFirst(player, player->getSelected());
+        choice = m_generalSelector->selectFirst(player, player->getSelected());
 
     Q_ASSERT(!choice.isEmpty());
     return choice;
