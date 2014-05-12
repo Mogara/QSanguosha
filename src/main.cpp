@@ -103,10 +103,10 @@ int main(int argc, char *argv[]) {
     Audio::init();
 #endif
 
-    MainWindow *main_window = new MainWindow;
+    MainWindow main_window;
 
-    Sanguosha->setParent(main_window);
-    main_window->show();
+    Sanguosha->setParent(&main_window);
+    main_window.show();
 
     foreach (QString arg, qApp->arguments()) {
         if (arg.startsWith("-connect:")) {
@@ -114,7 +114,7 @@ int main(int argc, char *argv[]) {
             Config.HostAddress = arg;
             Config.setValue("HostAddress", arg);
 
-            main_window->startConnection();
+            main_window.startConnection();
             break;
         }
     }
