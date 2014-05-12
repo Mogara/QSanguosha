@@ -2818,6 +2818,11 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
         }
         throw triggerEvent;
     }
+
+    if(card->isVirtualCard()){
+        delete card;
+    }
+
     return true;
 }
 
