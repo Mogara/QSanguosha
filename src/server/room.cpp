@@ -3162,7 +3162,7 @@ void Room::marshal(ServerPlayer *player) {
                 args2[0] = S_GAME_EVENT_ADD_SKILL;
                 args2[1] = toJsonString(player->objectName());
                 args2[2] = toJsonString(related_skill->objectName());
-                args2[3] = player->inHeadSkills(related_skill->objectName());;
+                args2[3] = player->inHeadSkills(related_skill->objectName());
                 doNotify(player, S_COMMAND_LOG_EVENT, args2);
             }
         }
