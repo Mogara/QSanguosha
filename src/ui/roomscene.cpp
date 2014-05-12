@@ -461,13 +461,16 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
                     break;
                 }
             }
-            const bool auto_preshow_available = Self->hasFlag("AutoPreshowAvailable");
+            bool auto_preshow_available = Self->hasFlag("AutoPreshowAvailable");
             for (unsigned int i = 0; i < keys.size(); i++) {
                 const char *skill = keys[i].c_str();
-                const bool showed = arg[1][skill].asBool();
+                bool showed = arg[1][skill].asBool();
                     
-                if (in_console_mode && Config.EnableAutoPreshowInConsoleMode && auto_preshow_available)
-                    ClientInstance->preshow(skill);
+                if (in_console_mode && Config.EnableAutoPreshowInConsoleMode && auto_preshow_available){
+                    const Skill *s = Sanguosha->getSkill(skill);
+                    if (s != NULL && s->canPreshow())
+                        ClientInstance->preshow(skill);
+                }
                 else {
                     Self->setSkillPreshowed(skill, showed);
                     if (!showed) {
