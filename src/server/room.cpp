@@ -1196,10 +1196,6 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
     while (isPaused()) {}
     notifyMoveFocus(player, S_COMMAND_CHOOSE_CARD);
 
-    if (getTag("Dongchaee").toString() == who->objectName()
-            && getTag("Dongchaer").toString() == player->objectName())
-        handcard_visible = true;
-
     if (handcard_visible && !who->isKongcheng()) {
         QList<int> handcards = who->handCards();
         Json::Value arg(Json::arrayValue);
@@ -4014,9 +4010,7 @@ void Room::abortGame(){
 
 bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves, bool forceVisible, QList<ServerPlayer *> players) {
     if (players.isEmpty()) players = m_players;
-    // process dongcha
-    ServerPlayer *dongchaee = findChild<ServerPlayer *>(tag.value("Dongchaee").toString());
-    ServerPlayer *dongchaer = findChild<ServerPlayer *>(tag.value("Dongchaer").toString());
+
     // Notify clients
     int moveId;
     if (isLostPhase)
@@ -4042,10 +4036,8 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                                   || cards_moves[i].from_place == Player::PlaceTable
                                   || cards_moves[i].to_place == Player::PlaceTable
                                   // any card from/to place table should be visible
-                                  || player->hasFlag("Global_GongxinOperator")
+                                  || player->hasFlag("Global_GongxinOperator");
                                   // the player put someone's cards to the drawpile
-                                  || (player != NULL && player == dongchaer && (cards_moves[i].isRelevant(dongchaee)));
-                                  // card from/to dongchaee is also visible to dongchaer
             arg[i + 1] = cards_moves[i].toJsonValue();
         }
         doNotify(player, isLostPhase ? S_COMMAND_LOSE_CARD : S_COMMAND_GET_CARD, arg);
