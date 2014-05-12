@@ -316,6 +316,8 @@ CONFIG(lua){
 #}
 
 TRANSLATIONS += builds/vs2010/sanguosha.ts
+TRANSLATIONS += builds/vs2012/sanguosha.ts
+TRANSLATIONS += sanguosha.ts
 
 #system("lrelease builds/vs2010/sanguosha.ts")
 

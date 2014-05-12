@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #include "room.h"
 #include "engine.h"
 #include "settings.h"
@@ -60,6 +79,8 @@ Room::Room(QObject *parent, const QString &mode)
 
     //Destroy the room on RoomThread finished. Or it will be destroyed when Server is destroyed if the game hasn't started
     connect(thread, SIGNAL(finished()), this, SLOT(deleteLater()));
+
+    m_generalSelector = GeneralSelector::getInstance();
 }
 
 void Room::initCallbacks() {
@@ -2325,8 +2346,7 @@ void Room::chooseGenerals() {
             player->setActualGeneral1Name(name);
             player->setRole(role);
             player->setGeneralName("anjiang");
-            foreach (ServerPlayer *p, getPlayers())
-                notifyProperty(p, player, "actual_general1", name);
+            notifyProperty(player, player, "actual_general1");
             foreach (ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general");
             notifyProperty(player, player, "general", name);
@@ -2337,8 +2357,7 @@ void Room::chooseGenerals() {
             names.append(name);
             player->setActualGeneral2Name(name);
             player->setGeneral2Name("anjiang");
-            foreach (ServerPlayer *p, getPlayers())
-                notifyProperty(p, player, "actual_general2", name);
+            notifyProperty(player, player, "actual_general2");
             foreach (ServerPlayer *p, getOtherPlayers(player))
                 notifyProperty(p, player, "general2");
             notifyProperty(player, player, "general2", name);
@@ -2479,11 +2498,11 @@ int Room::getCardFromPile(const QString &card_pattern) {
 QString Room::_chooseDefaultGeneral(ServerPlayer *player) const{
     Q_ASSERT(!player->getSelected().isEmpty());
     QString choice;
-    GeneralSelector *selector = GeneralSelector::getInstance();
+
     if (player->getGeneral() != NULL) // choosing second general
-        choice = selector->selectSecond(player, player->getSelected());
+        choice = m_generalSelector->selectSecond(player, player->getSelected());
     else
-        choice = selector->selectFirst(player, player->getSelected());
+        choice = m_generalSelector->selectFirst(player, player->getSelected());
 
     Q_ASSERT(!choice.isEmpty());
     return choice;
@@ -4104,9 +4123,14 @@ void Room::preparePlayers() {
             foreach(const Skill *skill, Sanguosha->getGeneral(general2_name)->getVisibleSkillList(true, false))
                 player->addSkill(skill->objectName(), false);
         }
+
         Json::Value args;
         args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
         doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
+
+        notifyProperty(player, player, "flags", "AutoPreshowAvailable");
+        player->notifyPreshow();
+        notifyProperty(player, player, "flags", "-AutoPreshowAvailable");
 
         player->setGender(General::Sexless);
     }

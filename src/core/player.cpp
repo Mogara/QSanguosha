@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #include "player.h"
 #include "engine.h"
 #include "room.h"
@@ -10,11 +29,9 @@ Player::Player(QObject *parent)
       m_gender(General::Sexless), hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
       phase(NotActive),
       weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
-      face_up(true), chained(false),
-      role_shown(false), pile_open(QMap<QString, QStringList>()),
+      face_up(true), chained(false), role_shown(false),
       actual_general1(NULL), actual_general2(NULL),
-      general1_showed(false), general2_showed(false),
-      head_skills(QMap<QString, bool>()),deputy_skills(QMap<QString, bool>())
+      general1_showed(false), general2_showed(false)
 {
 }
 

@@ -99,7 +99,7 @@ QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &_
 
 void GeneralSelector::loadGeneralTable() {
     QRegExp rx("(\\w+)\\s+(\\d+)");
-    QFile file("etc/general-value.txt");
+    QFile file("ai-selector/general-value.txt");
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream(&file);
         while (!stream.atEnd()) {
@@ -107,9 +107,10 @@ void GeneralSelector::loadGeneralTable() {
             if (!rx.exactMatch(line))
                 continue;
 
+            //SAMPLE: huatuo 41
             QStringList texts = rx.capturedTexts();
             QString general = texts.at(1);
-            int value = texts.at(3).toInt();
+            int value = texts.at(2).toInt();
 
             single_general_table.insert(general, value);
         }
@@ -128,6 +129,7 @@ void GeneralSelector::loadPairTable() {
             if (!rx.exactMatch(line))
                 continue;
 
+            //SAMPLE: taishici+sunce 60
             QStringList texts = rx.capturedTexts();
             QString first = texts.at(1);
             QString second = texts.at(2);
@@ -169,7 +171,8 @@ void GeneralSelector::caculateDeputyValue( const ServerPlayer *player, const QSt
             Q_ASSERT(general1 && general2);
             QString kingdom = general1->getKingdom();
             if (general2->getKingdom() != kingdom || general2->isLord()) continue;
-            int v = single_general_table.value(first, 0) + single_general_table.value(second, 0);
+            const int general2_value = single_general_table.value(second, 0);
+            int v = single_general_table.value(first, 0) + general2_value;
 
             if (!kingdom_list.isEmpty())
                 v += (kingdom_list.indexOf(kingdom) - 1);
@@ -179,6 +182,8 @@ void GeneralSelector::caculateDeputyValue( const ServerPlayer *player, const QSt
             if (general1->isCompanionWith(second)) v += 5;
 
             if (general1->isFemale()) v += ((kingdom == "wu") ? -3 : 1);
+
+            if (general1->hasSkill("baoling") && general2_value > 40) v -= 30;
 
             private_pair_value_table[player][key] = v;
         }

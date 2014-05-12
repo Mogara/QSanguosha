@@ -1,3 +1,22 @@
+--[[********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+**********************************************************************]]
 sgs.ai_skill_invoke.tuntian = true
 sgs.ai_skill_invoke._tuntian = true
 
@@ -360,6 +379,7 @@ sgs.ai_skill_invoke.qianhuan = function(self, data)
 	if data:toString() == "gethuan" then return true end
 	local use = self.player:getTag("qianhuan_data"):toCardUse()
 	if (use.from and self:isFriend(use.from)) then return false end --队友给自己出桃子不无懈（暂）
+	if use.to:isEmpty() then return false end
 	local to = use.to:first()
 	if to and to:objectName() == self.player:objectName() then
 		return not (use.from and (use.from:objectName() == to:objectName()

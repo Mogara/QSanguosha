@@ -270,14 +270,11 @@ namespace QSanProtocol {
         CommandType m_command;
         PacketDescription m_packetDescription;
         Json::Value m_msgBody;
-        inline virtual bool parseBody(const Json::Value &value) { m_msgBody = value; return true; }
-        virtual const Json::Value &constructBody() const{ return m_msgBody; }
+        inline void setBody(const Json::Value &value) { m_msgBody = value; }
+        const Json::Value &getBody() const{ return m_msgBody; }
 
         //helper functions
-        static bool tryParse(const std::string &result, int &val);
         static const unsigned int S_MAX_PACKET_SIZE;
-
-        Json::Reader m_jsonReader;
     };
 }
 

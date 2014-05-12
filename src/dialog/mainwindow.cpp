@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #include "mainwindow.h"
 #include "startscene.h"
 #include "roomscene.h"
@@ -431,7 +450,7 @@ void MainWindow::on_actionAbout_triggered() {
     const char *time = __TIME__;
     content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
 
-    QString project_url = "https://github.com/Fsu0413/QSanguosha-For-Hegemony";
+    QString project_url = "https://github.com/QSanguosha-Rara/QSanguosha-For-Hegemony";
     content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
     QString forum_url = "http://qsanguosha.org";

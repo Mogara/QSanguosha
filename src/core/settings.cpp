@@ -141,8 +141,9 @@ void Settings::init() {
 
     EnableAutoSaveRecord = value("EnableAutoSaveRecord", false).toBool();
     NetworkOnly = value("NetworkOnly", false).toBool();
+    RecordSavePaths = value("RecordSavePaths", "records/").toString();
 
-    RecordSavePaths = value("RecordSavePaths", "records/").toBool();;
+    EnableAutoPreshowInConsoleMode = value("EnableAutoPreshowInConsoleMode", false).toBool();
 
     lua_State *lua = Sanguosha->getLuaState();
     Config.ExtraHiddenGenerals = GetConfigFromLuaState(lua, "extra_hidden_generals").toStringList();

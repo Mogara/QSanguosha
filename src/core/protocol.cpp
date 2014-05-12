@@ -1,7 +1,5 @@
 #include "protocol.h"
 #include <json/json.h>
-#include <sstream>
-#include <algorithm>
 
 using namespace std;
 using namespace QSanProtocol;
@@ -51,19 +49,15 @@ bool QSanProtocol::Utils::isIntArray(const Json::Value &jsonObject, unsigned int
     return true;
 }
 
-bool QSanProtocol::Packet::tryParse(const string &s, int &val) {
-    istringstream iss(s);
-    iss >> val;
-    return true;
-}
-
 bool QSanProtocol::Packet::parse(const string &s) {
     if (s.length() > S_MAX_PACKET_SIZE) {
         return false;
     }
 
     Json::Value result;
-    bool success = m_jsonReader.parse(s, result);
+
+    Json::Reader reader;
+    bool success = reader.parse(s, result);
     if (!success || !Utils::isIntArray(result, 0, 3) || result.size() > 5)
         return false;
 
@@ -73,7 +67,7 @@ bool QSanProtocol::Packet::parse(const string &s) {
     m_command = (CommandType)result[3].asInt();
 
     if (result.size() == 5)
-        parseBody(result[4]);
+        setBody(result[4]);
     return true;
 }
 
@@ -85,7 +79,7 @@ QByteArray QSanProtocol::Packet::toUtf8() const{
     result[1] = m_localSerial;
     result[2] = m_packetDescription;
     result[3] = m_command;
-    const Json::Value &body = constructBody();
+    const Json::Value &body = getBody();
     if (body != Json::nullValue)
         result[4] = body;
 
