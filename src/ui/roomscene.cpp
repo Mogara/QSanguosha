@@ -131,10 +131,15 @@ RoomScene::RoomScene(QMainWindow *main_window)
     }
 
     response_skill = new ResponseSkill;
+    response_skill->setParent(this);
     showorpindian_skill = new ShowOrPindianSkill;
+    showorpindian_skill->setParent(this);
     discard_skill = new DiscardSkill;
+    discard_skill->setParent(this);
     yiji_skill = new YijiViewAsSkill;
+    yiji_skill->setParent(this);
     choose_skill = new ChoosePlayerSkill;
+    choose_skill->setParent(this);
 
     miscellaneous_menu = new QMenu(main_window);
 
