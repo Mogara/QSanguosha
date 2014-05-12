@@ -2735,7 +2735,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
             QStringList tarmod_detect;
             while (!((tarmod_detect = card_use.card->checkTargetModSkillShow(card_use)).isEmpty())){
                 QString to_show = askForChoice(card_use.from, "tarmod_show", tarmod_detect.join("+"), QVariant::fromValue(card_use));
-                card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+                card_use.from->showGeneral(card_use.from->inHeadSkills(to_show));
             }
 
             if (card->isKindOf("DelayedTrick") && card->isVirtualCard() && card->subcardsLength() == 1) {
@@ -4095,18 +4095,18 @@ void Room::doAnimate(QSanProtocol::AnimateType type, const QString &arg1, const 
 void Room::preparePlayers() {
     foreach (ServerPlayer *player, m_players) {
         QString general1_name = tag[player->objectName()].toStringList().at(0);
-        if (player->property("Duanchang").toString() != "head")
+        if (player->property("Duanchang").toString() != "head"){
             foreach(const Skill *skill, Sanguosha->getGeneral(general1_name)->getVisibleSkillList(true, true))
                 player->addSkill(skill->objectName());
-
+        }
         QString general2_name = tag[player->objectName()].toStringList().at(1);
-        if (player->property("Duanchang").toString() != "deputy")
+        if (player->property("Duanchang").toString() != "deputy"){
             foreach(const Skill *skill, Sanguosha->getGeneral(general2_name)->getVisibleSkillList(true, false))
                 player->addSkill(skill->objectName(), false);
-
-            Json::Value args;
-            args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
-            doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
+        }
+        Json::Value args;
+        args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+        doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
         player->setGender(General::Sexless);
     }
