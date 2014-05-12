@@ -274,7 +274,6 @@ namespace QSanProtocol {
         const Json::Value &getBody() const{ return m_msgBody; }
 
         //helper functions
-        static bool tryParse(const std::string &result, int &val);
         static const unsigned int S_MAX_PACKET_SIZE;
     };
 }

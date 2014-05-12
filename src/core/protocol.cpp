@@ -1,7 +1,5 @@
 #include "protocol.h"
 #include <json/json.h>
-#include <sstream>
-#include <algorithm>
 
 using namespace std;
 using namespace QSanProtocol;
@@ -48,12 +46,6 @@ bool QSanProtocol::Utils::isIntArray(const Json::Value &jsonObject, unsigned int
         if (!jsonObject[i].isInt())
             return false;
     }
-    return true;
-}
-
-bool QSanProtocol::Packet::tryParse(const string &s, int &val) {
-    istringstream iss(s);
-    iss >> val;
     return true;
 }
 
