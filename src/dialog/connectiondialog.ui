@@ -128,7 +128,7 @@
         <set>Qt::ImhNone</set>
        </property>
        <property name="maxLength">
-        <number>15</number>
+        <number>8</number>
        </property>
        <property name="frame">
         <bool>true</bool>
