@@ -7,8 +7,6 @@
 #include <QCoreApplication>
 #include <QTranslator>
 #include <QDir>
-#include <cstring>
-#include <QDateTime>
 #include <QProcess>
 
 #include "mainwindow.h"
@@ -16,7 +14,7 @@
 #include "server.h"
 #include "audio.h"
 
-#if defined(WIN32) && defined(VS2010)
+#ifdef USE_BREAKPAD
 #include "breakpad/client/windows/handler/exception_handler.h"
 
 using namespace google_breakpad;
