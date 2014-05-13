@@ -807,6 +807,8 @@ void Server::gameOver() {
         players.remove(player->objectName());
     }
 
+    room->deleteLater();
+
     if(room == current){
         current = NULL;
     }

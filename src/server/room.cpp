@@ -77,9 +77,6 @@ Room::Room(QObject *parent, const QString &mode)
     //Create RoomThread inside the thread where Room exists
     thread = new RoomThread(this);
 
-    //Destroy the room on RoomThread finished. Or it will be destroyed when Server is destroyed if the game hasn't started
-    connect(thread, SIGNAL(finished()), this, SLOT(deleteLater()));
-
     m_generalSelector = GeneralSelector::getInstance();
 }
 
