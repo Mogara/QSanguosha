@@ -2363,6 +2363,11 @@ void Room::chooseGenerals() {
 }
 
 void Room::run() {
+    if(tag["AbortGame"].toBool()){
+        emit game_over(QString());
+        return;
+    }
+
     // initialize random seed for later use
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
     Config.AIDelay = Config.OriginAIDelay;
@@ -4001,10 +4006,11 @@ void Room::abortGame(){
 
         //Notify the RoomThread to exit
         tag["AbortGame"] = true;
-    }else{
+    }else if(!isRunning()){
         //Notify the RoomThread to exit
         tag["AbortGame"] = true;
-        //thread->start();
+
+        start();
     }
 }
 
