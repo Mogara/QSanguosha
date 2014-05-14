@@ -1484,7 +1484,7 @@ public:
                 room->setTag(player->objectName(), change_list);
 
                 room->setPlayerProperty(player, "kingdom", dfowner->getKingdom());
-                room->setPlayerProperty(player, "role", HegemonyMode::getMappedRole(dfowner->getKingdom()));
+                room->setPlayerProperty(player, "role", HegemonyMode::GetMappedRole(dfowner->getKingdom()));
 
                 player->drawCards(1);
             }

@@ -1302,7 +1302,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event) {
             QString kingdom = getGeneral()->getKingdom();
             room->setPlayerProperty(this, "kingdom", kingdom);
 
-            QString role = HegemonyMode::getMappedRole(kingdom);
+            QString role = HegemonyMode::GetMappedRole(kingdom);
             int i = 1;
             bool has_lord = isAlive() && getGeneral()->isLord();
             if (!has_lord) {
@@ -1359,7 +1359,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event) {
             QString kingdom = getGeneral2()->getKingdom();
             room->setPlayerProperty(this, "kingdom", kingdom);
 
-            QString role = HegemonyMode::getMappedRole(kingdom);
+            QString role = HegemonyMode::GetMappedRole(kingdom);
             int i = 1;
             bool has_lord = isAlive() && getGeneral()->isLord();
             if (!has_lord) {
@@ -1431,7 +1431,7 @@ void ServerPlayer::hideGeneral(bool head_general) {
 
         if (!hasShownGeneral2()) {
             room->setPlayerProperty(this, "kingdom", "god");
-            room->setPlayerProperty(this, "role", HegemonyMode::getMappedRole("god"));
+            room->setPlayerProperty(this, "role", HegemonyMode::GetMappedRole("god"));
         }
     } else {
         if (getGeneral2Name() == "anjiang") return;
@@ -1467,7 +1467,7 @@ void ServerPlayer::hideGeneral(bool head_general) {
 
         if (!hasShownGeneral1()) {
             room->setPlayerProperty(this, "kingdom", "god");
-            room->setPlayerProperty(this, "role", HegemonyMode::getMappedRole("god"));
+            room->setPlayerProperty(this, "role", HegemonyMode::GetMappedRole("god"));
         }
     }
 
@@ -1518,7 +1518,7 @@ void ServerPlayer::removeGeneral(bool head_general) {
         if (!hasShownGeneral2()) {
             room->setPlayerProperty(this, "kingdom", kingdom);
 
-            QString role = HegemonyMode::getMappedRole(kingdom);
+            QString role = HegemonyMode::GetMappedRole(kingdom);
             int i = 1;
             bool has_lord = isAlive() && getGeneral()->isLord();
             if (!has_lord) {
@@ -1571,7 +1571,7 @@ void ServerPlayer::removeGeneral(bool head_general) {
         if (!hasShownGeneral1()) {
             room->setPlayerProperty(this, "kingdom", kingdom);
 
-            QString role = HegemonyMode::getMappedRole(kingdom);
+            QString role = HegemonyMode::GetMappedRole(kingdom);
             int i = 1;
             bool has_lord = isAlive() && getGeneral()->isLord();
             if (!has_lord) {

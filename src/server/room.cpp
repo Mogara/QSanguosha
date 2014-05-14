@@ -385,7 +385,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason) {
                     QString role = player->getKingdom();
                     if (role == "god")
                         role = Sanguosha->getGeneral(getTag(player->objectName()).toStringList().at(0))->getKingdom();
-                    role = HegemonyMode::getMappedRole(role);
+                    role = HegemonyMode::GetMappedRole(role);
                     broadcastProperty(player, "role", role);
                 } else
                     broadcastProperty(player, "role");
@@ -2334,7 +2334,7 @@ void Room::chooseGenerals() {
         QStringList names;
         if (player->getGeneral()) {
             QString name = player->getGeneralName();
-            QString role = HegemonyMode::getMappedRole(player->getGeneral()->getKingdom());
+            QString role = HegemonyMode::GetMappedRole(player->getGeneral()->getKingdom());
             names.append(name);
             player->setActualGeneral1Name(name);
             player->setRole(role);
@@ -2816,11 +2816,11 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
         }
         throw triggerEvent;
     }
-
-    if(card->isVirtualCard()){
+    /*
+    if (card->isVirtualCard()){
         delete card;
     }
-
+    */ //temporily revert this because it cause sudden exits
     return true;
 }
 

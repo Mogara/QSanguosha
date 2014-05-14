@@ -9,7 +9,6 @@ CONFIG += audio
 # choose luajit if you like it, the default is to use lua.
 CONFIG += lua
 
-
 SOURCES += \
     src/main.cpp \
     src/client/aux-skills.cpp \
@@ -221,7 +220,6 @@ win32{
 macx{
     ICON = resource/icon/sgs.icns
 }
-
 
 LIBS += -L.
 win32{
