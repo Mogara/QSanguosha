@@ -395,9 +395,7 @@ void RoomThread::run() {
 }
 
 static bool CompareByPriority(const TriggerSkill *a, const TriggerSkill *b) {
-    if (a->getDynamicPriority() == b->getDynamicPriority())
-        return b->inherits("WeaponSkill") || b->inherits("ArmorSkill") || b->inherits("GameRule");
-    return a->getDynamicPriority() > b->getDynamicPriority();
+    return a->getPriority() > b->getPriority();
 }
 
 bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *target, QVariant &data) {
@@ -413,19 +411,6 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
     try {
         QList<const TriggerSkill *> triggered;
         QList<const TriggerSkill *> &skills = skill_table[triggerEvent];
-        foreach (const TriggerSkill *skill, skills) {
-            double priority = skill->getPriority();
-            int len = room->getPlayers().length();
-            foreach (ServerPlayer *p, room->getAllPlayers(true)) {
-                if (p->hasSkill(skill->objectName())) {
-                    priority += (double)len / 100;
-                    break;
-                }
-                len--;
-            }
-            TriggerSkill *mutable_skill = const_cast<TriggerSkill *>(skill);
-            mutable_skill->setDynamicPriority(priority);
-        }
         qStableSort(skills.begin(), skills.end(), CompareByPriority);
 
         do {
@@ -435,16 +420,16 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                     if (skill->objectName() == "game_rule") {
                         while (room->isPaused()) {}
                         if (will_trigger.isEmpty()
-                                || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority()) {
+                                || skill->getPriority() == will_trigger.last()->getPriority()) {
                             will_trigger.append(skill);
                             trigger_who[target].append(skill);
-                        } else if(skill->getDynamicPriority() != will_trigger.last()->getDynamicPriority())
+                        } else if(skill->getPriority() != will_trigger.last()->getPriority())
                             break;
                         triggered.prepend(skill);
                     } else {
                         while (room->isPaused()) {}
                         if (will_trigger.isEmpty()
-                                || skill->getDynamicPriority() == will_trigger.last()->getDynamicPriority()) {
+                                || skill->getPriority() == will_trigger.last()->getPriority()) {
                             QMap<ServerPlayer *, QStringList> triggerSkillList = skill->triggerable(triggerEvent, room, target, data);
                             foreach (ServerPlayer *p, room->getPlayers())
                                 if (triggerSkillList.contains(p) && !triggerSkillList.value(p).isEmpty())
@@ -455,7 +440,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                                             trigger_who[p].append(trskill);
                                         }
                                     }
-                        } else if(skill->getDynamicPriority() != will_trigger.last()->getDynamicPriority())
+                        } else if(skill->getPriority() != will_trigger.last()->getPriority())
                             break;
 
                         triggered.prepend(skill);
@@ -466,21 +451,22 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
             if (!will_trigger.isEmpty()) {
                 will_trigger.clear();
-                foreach(ServerPlayer *p, trigger_who.keys()) {
-                    QList<const TriggerSkill *> who_skills = trigger_who.value(p);
+                foreach (ServerPlayer *p, room->getAllPlayers(true)) {
+                    if (!trigger_who.contains(p)) continue;
                     QList<const TriggerSkill *> already_triggered;
-                    if (who_skills.isEmpty()) continue;
-                    if (p && !p->hasShownAllGenerals())
-                        room->setPlayerFlag(p, "Global_askForSkillCost");           // TriggerOrder need protect
-                    bool has_compulsory = false;
-                    foreach (const TriggerSkill *skill, who_skills)
-                        if (skill->getFrequency() == Skill::Compulsory
-                                && (skill->isGlobal() || p->hasShownSkill(skill) || p->getAcquiredSkills().contains(skill->objectName()))) {
-                            has_compulsory = true;
-                            break;
-                        }
-
                     forever {
+                        QList<const TriggerSkill *> who_skills = trigger_who.value(p);
+                        if (who_skills.isEmpty()) break;
+                        if (p && !p->hasShownAllGenerals())
+                            room->setPlayerFlag(p, "Global_askForSkillCost");           // TriggerOrder need protect
+                        bool has_compulsory = false;
+                        foreach (const TriggerSkill *skill, who_skills)
+                            if (skill->getFrequency() == Skill::Compulsory
+                                    && (skill->isGlobal() || p->hasShownSkill(skill) || p->getAcquiredSkills().contains(skill->objectName()))) {
+                                has_compulsory = true;
+                                break;
+                            }
+
                         will_trigger.clear();
                         QStringList names, back_up;
                         QStringList _names;
@@ -527,40 +513,36 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                                 if (broken) break;
                         }
                         //-----------------------------------------------
-
-                        who_skills.clear();
+                        
+                        trigger_who.clear();
                         foreach (const TriggerSkill *skill, triggered) {
                             if (skill->objectName() == "game_rule") {
                                 while (room->isPaused()) {}
-                                if (skill->getDynamicPriority() == triggered.first()->getDynamicPriority()) {
-                                    if (target == p)
-                                        who_skills.append(skill);
-                                } else
-                                    break;
+                                continue;
                             } else {
                                 while (room->isPaused()) {}
-                                if (skill->getDynamicPriority() == triggered.first()->getDynamicPriority()) {
+                                if (skill->getPriority() == triggered.first()->getPriority()) {
                                     QMap<ServerPlayer *, QStringList> triggerSkillList = skill->triggerable(triggerEvent, room, target, data);
-                                    if (triggerSkillList.contains(p) && !triggerSkillList.value(p).isEmpty())
-                                        foreach(QString skill_name, triggerSkillList.value(p)) {
-                                            const TriggerSkill *trskill = Sanguosha->getTriggerSkill(skill_name);
-                                            if (trskill) {
-                                                will_trigger.append(trskill);
-                                                who_skills.append(trskill);
+                                    foreach (ServerPlayer *player, room->getAllPlayers(true))
+                                        if (triggerSkillList.contains(player) && !triggerSkillList.value(player).isEmpty())
+                                            foreach(QString skill_name, triggerSkillList.value(player)) {
+                                                const TriggerSkill *trskill = Sanguosha->getTriggerSkill(skill_name);
+                                                if (trskill) {
+                                                    trigger_who[player].append(trskill);
+                                                }
                                             }
-                                        }
                                 } else
                                     break;
                             }
                         }
 
                         foreach (const TriggerSkill* s, already_triggered)
-                            if (who_skills.contains(s))
-                                who_skills.removeOne(s);
+                            if (trigger_who[p].contains(s))
+                                trigger_who[p].removeOne(s);
 
                         if (has_compulsory){
                             has_compulsory = false;
-                            foreach (const TriggerSkill *s, who_skills){
+                            foreach (const TriggerSkill *s, trigger_who[p]){
                                 if (s->getFrequency() == Skill::Compulsory
                                         && (skill->isGlobal() || p->hasShownSkill(skill) || p->getAcquiredSkills().contains(skill->objectName()))) {
                                     has_compulsory = true;
@@ -574,6 +556,16 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         room->setPlayerFlag(p, "-Global_askForSkillCost"); // remove Flag
 
                     if (broken) break;
+                }
+                // @todo_Slob: for drawing cards when game starts -- stupid design of triggering no player!
+                // @todo_Slob: we needn't judge the priority of game_rule because of codes from Line. 418 to Line. 450
+                if (!broken) {
+                    if (!trigger_who[NULL].isEmpty())
+                        foreach (const TriggerSkill *skill, trigger_who[NULL])
+                            if (skill->cost(triggerEvent, room, target, data, NULL)) {
+                                broken = skill->effect(triggerEvent, room, target, data, NULL);
+                                if (broken) break;
+                            }
                 }
             }
 
@@ -624,19 +616,6 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill) {
     foreach (TriggerEvent triggerEvent, events) {
         QList<const TriggerSkill *> &table = skill_table[triggerEvent];
         table << skill;
-        foreach (const TriggerSkill *askill, table) {
-            double priority = askill->getPriority();
-            int len = room->getPlayers().length();
-            foreach (ServerPlayer *p, room->getAllPlayers(true)) {
-                if (p->hasSkill(askill->objectName())) {
-                    priority += (double)len / 100;
-                    break;
-                }
-                len--;
-            }
-            TriggerSkill *mutable_skill = const_cast<TriggerSkill *>(askill);
-            mutable_skill->setDynamicPriority(priority);
-        }
         qStableSort(table.begin(), table.end(), CompareByPriority);
     }
 

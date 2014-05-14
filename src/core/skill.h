@@ -137,9 +137,6 @@ public:
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
 
-    inline double getDynamicPriority() const{ return dynamic_priority; }
-    inline void setDynamicPriority(double value) { dynamic_priority = value; }
-
     inline bool isGlobal() const{ return global; }
 
     virtual ~TriggerSkill();
@@ -339,6 +336,7 @@ class WeaponSkill: public TriggerSkill {
 public:
     WeaponSkill(const QString &name);
 
+    virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 
@@ -348,6 +346,7 @@ class ArmorSkill: public TriggerSkill {
 public:
     ArmorSkill(const QString &name);
 
+    virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 

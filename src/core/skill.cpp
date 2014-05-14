@@ -287,7 +287,7 @@ QList<TriggerEvent> TriggerSkill::getTriggerEvents() const{
 }
 
 int TriggerSkill::getPriority() const{
-    return (frequency == Limited) ? 3 : 2;
+    return 3;
 }
 
 QMap<ServerPlayer *, QStringList> TriggerSkill::triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -581,7 +581,11 @@ WeaponSkill::WeaponSkill(const QString &name)
 {
 }
 
-bool WeaponSkill::triggerable(const ServerPlayer *target) const{
+int WeaponSkill::getPriority() const {
+    return 2;
+}
+
+bool WeaponSkill::triggerable(const ServerPlayer *target) const {
     if (target == NULL) return false;
     if (target->getMark("Equips_Nullified_to_Yourself") > 0) return false;
     return target->hasWeapon(objectName());
@@ -590,6 +594,10 @@ bool WeaponSkill::triggerable(const ServerPlayer *target) const{
 ArmorSkill::ArmorSkill(const QString &name)
     : TriggerSkill(name)
 {
+}
+
+int ArmorSkill::getPriority() const {
+    return 2;
 }
 
 bool ArmorSkill::triggerable(const ServerPlayer *target) const{
