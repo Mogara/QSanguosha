@@ -277,7 +277,7 @@ QString EventTriplet::toString() const{
                    .arg(_m_target ? _m_target->getGeneralName() : QString());
 }
 
-QString HegemonyMode::getMappedRole(const QString &role) {
+QString HegemonyMode::GetMappedRole(const QString &role) {
     static QMap<QString, QString> roles;
     if (roles.isEmpty()) {
         roles["wei"] = "lord";
