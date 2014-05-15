@@ -147,14 +147,6 @@ void MainWindow::restoreFromConfig() {
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
-    // Notify the server to clean up before the application exits. Otherwise threads may be destroyed while running
-    if(server && !server->isReadyToClose()){
-        connect(server, SIGNAL(room_cleared()), this, SLOT(close()));
-        emit about_to_close();
-        event->ignore();
-        return;
-    }
-
     Config.setValue("WindowSize", size());
     Config.setValue("WindowPosition", pos());
 }
@@ -198,7 +190,6 @@ void MainWindow::on_actionStart_Server_triggered() {
         return;
     }
 
-    connect(this, SIGNAL(about_to_close()), server, SIGNAL(about_to_close()));
     server->daemonize();
 
     ui->actionStart_Game->disconnect();
@@ -615,7 +606,6 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
         return;
     }
 
-    connect(this, SIGNAL(about_to_close()), server, SIGNAL(about_to_close()));
     server->createNewRoom();
 
     Config.HostAddress = "127.0.0.1";

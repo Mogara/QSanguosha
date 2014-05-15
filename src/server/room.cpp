@@ -74,9 +74,6 @@ Room::Room(QObject *parent, const QString &mode)
     DoLuaScript(L, QFile::exists("lua/ai/private-smart-ai.lua") ?
                 "lua/ai/private-smart-ai.lua" : "lua/ai/smart-ai.lua");
 
-    //Create RoomThread inside the thread where Room exists
-    thread = new RoomThread(this);
-
     m_generalSelector = GeneralSelector::getInstance();
 }
 
@@ -2360,11 +2357,6 @@ void Room::chooseGenerals() {
 }
 
 void Room::run() {
-    if(tag["AbortGame"].toBool()){
-        emit game_over(QString());
-        return;
-    }
-
     // initialize random seed for later use
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
     Config.AIDelay = Config.OriginAIDelay;
@@ -2392,6 +2384,7 @@ void Room::run() {
         }
     } else
         doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, 0);
+
 
     if (scenario && !scenario->generalSelection())
         startGame();
@@ -3235,6 +3228,8 @@ void Room::startGame() {
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
 
     _m_roomState.reset();
+
+    thread = new RoomThread(this);
     connect(thread, SIGNAL(started()), this, SIGNAL(game_start()));
 
     if (!_virtual) thread->start();
@@ -3988,26 +3983,6 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move) {
         foreach (int cardId, move.card_ids)
             cards.append(getCard(cardId));
         filterCards(player, cards, true);
-    }
-}
-
-void Room::abortGame(){
-    if(thread->isRunning()){
-        //Disconnect all the clients
-        foreach(ServerPlayer *player, m_players){
-            if(player->isOnline()){
-                trustCommand(player, Json::Value());
-            }
-            player->setSocket(NULL);
-        }
-
-        //Notify the RoomThread to exit
-        tag["AbortGame"] = true;
-    }else if(!isRunning()){
-        //Notify the RoomThread to exit
-        tag["AbortGame"] = true;
-
-        start();
     }
 }
 

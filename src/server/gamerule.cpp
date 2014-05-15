@@ -157,12 +157,6 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
 }
 
 bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-    if(room->getTag("AbortGame").toBool()){
-        room->removeTag("AbortGame");
-        room->gameOver(room->getCurrent()->objectName());
-        return true;
-    }
-
     if (room->getTag("SkipGameRule").toBool()) {
         room->removeTag("SkipGameRule");
         return false;

@@ -291,8 +291,6 @@ QString HegemonyMode::GetMappedRole(const QString &role) {
 RoomThread::RoomThread(Room *room)
     : room(room)
 {
-    setParent(room);
-
     //Create GameRule inside the thread where RoomThread exits
     game_rule = new GameRule(this);
 }
