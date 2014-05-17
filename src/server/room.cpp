@@ -30,6 +30,7 @@
 #include "structs.h"
 #include "miniscenarios.h"
 #include "generalselector.h"
+#include "lua.hpp"
 
 #include <QStringList>
 #include <QMessageBox>
@@ -75,6 +76,10 @@ Room::Room(QObject *parent, const QString &mode)
                 "lua/ai/private-smart-ai.lua" : "lua/ai/smart-ai.lua");
 
     m_generalSelector = GeneralSelector::getInstance();
+}
+
+Room::~Room(){
+    lua_close(L);
 }
 
 void Room::initCallbacks() {
