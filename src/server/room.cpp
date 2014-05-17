@@ -2189,15 +2189,18 @@ void Room::addRobotCommand(ServerPlayer *player, const Json::Value &) {
     if (player && !player->isOwner()) return;
     if (isFull()) return;
 
-    QStringList names = GetConfigFromLuaState(Sanguosha->getLuaState(), "robot_names").toStringList();
-    qShuffle(names);
+    static QStringList names;
+    if (names.isEmpty()) {
+        names = GetConfigFromLuaState(Sanguosha->getLuaState(), "robot_names").toStringList();
+        qShuffle(names);
+    }
 
     int n = 0;
     foreach (ServerPlayer *player, m_players) {
         if (player->getState() == "robot") {
             QString screenname = player->screenName();
             if (names.contains(screenname))
-                names.removeAll(screenname);
+                names.removeOne(screenname);
             else
                 n++;
         }
