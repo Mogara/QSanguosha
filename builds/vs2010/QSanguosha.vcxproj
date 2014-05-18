@@ -169,7 +169,7 @@
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <DisableSpecificWarnings>4100;4005</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4005;4267</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
