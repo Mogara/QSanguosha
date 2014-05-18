@@ -493,8 +493,6 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             ClientPlayer *player = ClientInstance->getPlayer(player_name);
             player->setGender(gender);
 
-            PlayerCardContainer *container = (PlayerCardContainer*)_getGenericCardContainer(Player::PlaceHand, player);
-            container->updateAvatar(); // For Lu Boyan
             break;
         }
     case S_GAME_EVENT_CHANGE_HERO: {
