@@ -57,6 +57,7 @@ void RecAnalysis::initialize(QString dir) {
         }
 
         Packet packet;
+        line.remove(QRegExp("^[0-9]+\\s*"));
         packet.parse(line.toUtf8().constData());
 
         if (packet.getCommandType() == S_COMMAND_SETUP){
