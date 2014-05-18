@@ -543,15 +543,25 @@ void TianxiangCard::onEffect(const CardEffectStruct &effect) const{
 class TianxiangViewAsSkill: public OneCardViewAsSkill {
 public:
     TianxiangViewAsSkill(): OneCardViewAsSkill("tianxiang") {
-        filter_pattern = ".|heart|.|hand!";
         response_pattern = "@@tianxiang";
     }
 
-    virtual const Card *viewAs(const Card *originalCard) const{
+    virtual const Card *viewAs(const Card *originalCard) const {
         TianxiangCard *tianxiangCard = new TianxiangCard;
         tianxiangCard->addSubcard(originalCard);
         tianxiangCard->setShowSkill(objectName());
         return tianxiangCard;
+    }
+
+    virtual bool viewFilter(const Card *to_select) const {
+        if (Self->isJilei(to_select)) return false;
+        QString pat;
+        if (Self->hasSkill("hongyan") && !Self->hasShownSkill("hongyan"))
+            pat = ".|heart,spade|.|hand";
+        else
+            pat = ".|heart|.|hand";
+        ExpPattern pattern(pat);
+        return pattern.match(Self, to_select);
     }
 };
 
@@ -562,7 +572,7 @@ public:
         view_as_skill = new TianxiangViewAsSkill;
     }
 
-    virtual bool canPreshow() const{
+    virtual bool canPreshow() const {
         return true;
     }
 
@@ -586,7 +596,7 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *xiaoqiao, QVariant &data, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *xiaoqiao, QVariant &data, ServerPlayer *) const {
         ServerPlayer *target = NULL;
         foreach (ServerPlayer *p, room->getAlivePlayers()){
             if (p->hasFlag("tianxiang_target")){
@@ -615,7 +625,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
+    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const {
         if (player == NULL) return QStringList();
         DamageStruct damage = data.value<DamageStruct>();
         if (player->isAlive() && damage.transfer && damage.transfer_reason == "tianxiang") {
@@ -626,9 +636,39 @@ public:
     }
 };
 
-class Hongyan: public FilterSkill {
+class Hongyan: public TriggerSkill {
 public:
-    Hongyan(): FilterSkill("hongyan") {
+    Hongyan(): TriggerSkill("hongyan") {
+        events << FinishRetrial;
+        frequency = Compulsory;
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *xiaoqiao, QVariant &data, ServerPlayer *) const {
+        JudgeStar judge = data.value<JudgeStar>();
+        QList<const Card *> cards = xiaoqiao->getCards("he");
+        cards << judge->card;
+        room->filterCards(xiaoqiao, cards, true);
+        judge->updateResult();
+        return false;
+    }
+
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        return player->hasShownSkill(this) ? false : room->askForSkillInvoke(player, objectName(), data);
+    }
+
+    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *, QVariant &data, ServerPlayer * &) const {
+        JudgeStar judge = data.value<JudgeStar>();
+
+        if (judge->card->getSuit() == Card::Spade) 
+            return QStringList(objectName());
+
+        return QStringList();
+    }
+};
+
+class HongyanFilter: public FilterSkill {
+public:
+    HongyanFilter(): FilterSkill("#hongyan") {
     }
 
     static WrappedCard *changeToHeart(int cardId) {
@@ -642,7 +682,7 @@ public:
     virtual bool viewFilter(const Card *to_select) const{
         Room *room = Sanguosha->currentRoom();
         foreach (ServerPlayer *p, room->getPlayers())
-            if (p->ownSkill(objectName()) && p->hasShownSkill(this))
+            if (p->ownSkill("hongyan") && p->hasShownSkill("hongyan"))
                 return to_select->getSuit() == Card::Spade;
         return false;
     }
@@ -1444,7 +1484,9 @@ void StandardPackage::addWuGenerals()
     xiaoqiao->addSkill(new Tianxiang);
     xiaoqiao->addSkill(new TianxiangDraw);
     xiaoqiao->addSkill(new Hongyan);
+    xiaoqiao->addSkill(new HongyanFilter);
     related_skills.insertMulti("tianxiang", "#tianxiang");
+    related_skills.insertMulti("hongyan", "#hongyan");
 
     General *taishici = new General(this, "taishici", "wu"); // WU 012
     taishici->addSkill(new Tianyi);
