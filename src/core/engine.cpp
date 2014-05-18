@@ -511,7 +511,6 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
         foreach (QString flag, flags)
             card->setFlags(flag);
     }
-    card->deleteLater();
     return card;
 }
 
