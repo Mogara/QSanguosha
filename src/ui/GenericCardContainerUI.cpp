@@ -314,11 +314,11 @@ void PlayerCardContainer::updateHp() {
     if (m_player->getHp() > 0 || m_player->getMaxHp() == 0)
         _m_saveMeIcon->setVisible(false);
 }
-
+/*
 static bool CompareByNumber(const Card *card1, const Card *card2) {
     return card1->getNumber() < card2->getNumber();
 }
-
+*/
 void PlayerCardContainer::updatePile(const QString &pile_name) {
     ClientPlayer *player = (ClientPlayer *)sender();
     const QList<int> &pile = player->getPile(pile_name);

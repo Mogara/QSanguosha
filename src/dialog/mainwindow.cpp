@@ -146,7 +146,7 @@ void MainWindow::restoreFromConfig() {
     ui->actionNever_nullify_my_trick->setEnabled(false);
 }
 
-void MainWindow::closeEvent(QCloseEvent *event) {
+void MainWindow::closeEvent(QCloseEvent *) {
     Config.setValue("WindowSize", size());
     Config.setValue("WindowPosition", pos());
 }
