@@ -1,3 +1,22 @@
+--[[********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+**********************************************************************]]
 -- translations for Basara mode
 
 return 
@@ -31,5 +50,8 @@ return
 	["#BasaraGeneralChosenDual"] = "你选择的武将为 %arg 和 %arg2",
 	["Hegemony"] = "国战",
 	["Roles"] = "身份",
-	["~anjiang"] = "死不瞑目啊……"
+	["~anjiang"] = "死不瞑目啊……",
+	
+	["@define:FirstShowReward"] = "是否摸两张牌作为首亮奖励？",
+	["#FirstShowReward"] = "%from 全场第一个亮将，可以摸两张牌"
 }

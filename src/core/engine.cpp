@@ -628,16 +628,12 @@ QString Engine::getSetupString() const{
         flags.append("C");
     if (Config.EnableCheat && Config.FreeChoose)
         flags.append("F");
-    if (Config.Enable2ndGeneral)
-        flags.append("S");
-    if (Config.EnableBasara)
-        flags.append("B");
-    if (Config.EnableHegemony)
-        flags.append("H");
     if (Config.EnableAI)
         flags.append("A");
     if (Config.DisableChat)
         flags.append("M");
+    if (Config.RewardTheFirstShowingPlayer)
+        flags.append("S");
 
     QString server_name = Config.ServerName;
     QStringList setup_items;

@@ -694,6 +694,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
         break;
     }
     case GeneralShown: {
+        if (Config.RewardTheFirstShowingPlayer && room->getTag("TheFirstToShowRewarded").isNull()) {
+            LogMessage log;
+            log.type = "#FirstShowReward";
+            log.from = player;
+            room->sendLog(log);
+            if (player->askForSkillInvoke("userdefine:FirstShowReward"))
+                player->drawCards(2);
+            room->setTag("TheFirstToShowRewarded", true);
+        }
         if (player->isAlive() && player->hasShownAllGenerals()) {
             if (player->getMark("CompanionEffect") > 0) {
                 QStringList choices;

@@ -136,6 +136,7 @@ private:
     QSpinBox *game_start_spinbox;
     QSpinBox *nullification_spinbox;
     QCheckBox *minimize_dialog_checkbox;
+    QCheckBox *reward_the_first_showing_player_checkbox;
     QCheckBox *ai_enable_checkbox;
     QSpinBox *ai_delay_spinbox;
     QCheckBox *ai_delay_altered_checkbox;

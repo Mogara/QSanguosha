@@ -92,9 +92,6 @@ void Settings::init() {
     FreeChoose = EnableCheat && value("FreeChoose", false).toBool();
     ForbidSIMC = value("ForbidSIMC", false).toBool();
     DisableChat = value("DisableChat", false).toBool();
-    Enable2ndGeneral = true;
-    EnableBasara = true;
-    EnableHegemony = true;
     Address = value("Address", QString()).toString();
     EnableAI = value("EnableAI", true).toBool();
     OriginAIDelay = value("OriginAIDelay", 1000).toInt();
@@ -104,6 +101,7 @@ void Settings::init() {
     LuckCardLimitation = value("LuckCardLimitation", 0).toInt();
     ServerPort = value("ServerPort", 9527u).toUInt();
     DisableLua = value("DisableLua", false).toBool();
+    RewardTheFirstShowingPlayer = value("RewardTheFirstShowingPlayer", false).toBool();
 
 #ifdef Q_OS_WIN32
     UserName = value("UserName", qgetenv("USERNAME")).toString();
@@ -116,7 +114,8 @@ void Settings::init() {
     ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
 
     HostAddress = value("HostAddress", "127.0.0.1").toString();
-    UserAvatar = value("UserAvatar", "zhouyu").toString();
+    //Set Cao Cao as default avatar to pay tribute to Moligaloo, the founder of QSanguosha.
+    UserAvatar = value("UserAvatar", "caocao").toString();
     HistoryIPs = value("HistoryIPs").toStringList();
     DetectorPort = value("DetectorPort", 9526u).toUInt();
     MaxCards = value("MaxCards", 15).toInt();

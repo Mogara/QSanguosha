@@ -311,6 +311,9 @@ QWidget *ServerDialog::createMiscTab() {
     luck_card_spinbox->setRange(0, 3);
     luck_card_spinbox->setValue(Config.LuckCardLimitation);
 
+    reward_the_first_showing_player_checkbox = new QCheckBox(tr("The first player to show general can draw 2 cards"));
+    reward_the_first_showing_player_checkbox->setChecked(Config.RewardTheFirstShowingPlayer);
+
     QGroupBox *ai_groupbox = new QGroupBox(tr("Artificial intelligence"));
     ai_groupbox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
@@ -349,7 +352,7 @@ QWidget *ServerDialog::createMiscTab() {
     tablayout->addLayout(HLay(new QLabel(tr("Nullification count down")), nullification_spinbox));
     tablayout->addLayout(HLay(minimize_dialog_checkbox, surrender_at_death_checkbox));
     tablayout->addLayout(HLay(luck_card_label, luck_card_spinbox));
-    tablayout->addWidget(luck_card_spinbox);
+    tablayout->addWidget(reward_the_first_showing_player_checkbox);
     tablayout->addWidget(ai_groupbox);
     tablayout->addStretch();
 
@@ -472,6 +475,7 @@ bool ServerDialog::config() {
     Config.CountDownSeconds = game_start_spinbox->value();
     Config.NullificationCountDown = nullification_spinbox->value();
     Config.EnableMinimizeDialog = minimize_dialog_checkbox->isChecked();
+    Config.RewardTheFirstShowingPlayer = reward_the_first_showing_player_checkbox->isChecked();
     Config.EnableAI = ai_enable_checkbox->isChecked();
     Config.OriginAIDelay = ai_delay_spinbox->value();
     Config.AIDelay = Config.OriginAIDelay;
@@ -500,6 +504,7 @@ bool ServerDialog::config() {
     Config.setValue("CountDownSeconds", game_start_spinbox->value());
     Config.setValue("NullificationCountDown", nullification_spinbox->value());
     Config.setValue("EnableMinimizeDialog", Config.EnableMinimizeDialog);
+    Config.setValue("RewardTheFirstShowingPlayer", Config.RewardTheFirstShowingPlayer);
     Config.setValue("EnableAI", Config.EnableAI);
     Config.setValue("OriginAIDelay", Config.OriginAIDelay);
     Config.setValue("AlterAIDelayAD", ai_delay_altered_checkbox->isChecked());
