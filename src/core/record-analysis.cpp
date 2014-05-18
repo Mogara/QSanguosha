@@ -109,7 +109,7 @@ void RecAnalysis::initialize(QString dir) {
         }
 
         if (packet.getCommandType() == S_COMMAND_ADD_PLAYER) {
-            Json::Value body = packet.getMessageBody();
+            const Json::Value &body = packet.getMessageBody();
             if (body.isArray() && body.size() >= 2){
                 getPlayer(toQString(body[0]))->m_screenName = toQString(body[1]);
             }
