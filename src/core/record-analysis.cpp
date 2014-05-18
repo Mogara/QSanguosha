@@ -8,6 +8,7 @@
 #include <QMessageBox>
 
 using namespace QSanProtocol;
+using namespace QSanProtocol::Utils;
 
 RecAnalysis::RecAnalysis(QString dir): m_recordPlayers(0), m_currentPlayer(NULL) {
     initialize(dir);
@@ -55,45 +56,50 @@ void RecAnalysis::initialize(QString dir) {
             continue;
         }
 
-        if (line.contains("setup")) {
-            QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSTBHAMN123a-r]*)(\\s+)?");
-            if (!rx.exactMatch(line))
-                continue;
-
-            QStringList texts = rx.capturedTexts();
-            m_recordGameMode = texts.at(2);
-            m_recordPlayers = texts.at(2).split("_").first().remove(QRegExp("[^0-9]")).toInt();
-            QStringList ban_packages = texts.at(5).split("+");
-            foreach (Package *package, Sanguosha->findChildren<Package *>()) {
-                if (!ban_packages.contains(package->objectName())
-                    && Sanguosha->getScenario(package->objectName()) == NULL)
-                    m_recordPackages << Sanguosha->translate(package->objectName());
-            }
-
-            QString flags = texts.at(6);
-            if (flags.contains("R")) m_recordServerOptions << tr("RandomSeats");
-            if (flags.contains("C")) m_recordServerOptions << tr("EnableCheat");
-            if (flags.contains("F")) m_recordServerOptions << tr("FreeChoose");
-            if (flags.contains("S")) m_recordServerOptions << tr("Enable2ndGeneral");
-            if (flags.contains("T")) m_recordServerOptions << tr("EnableSame");
-            if (flags.contains("N")) m_recordServerOptions << tr("EnableScene");
-            if (flags.contains("B")) m_recordServerOptions << tr("EnableBasara");
-            if (flags.contains("H")) m_recordServerOptions << tr("EnableHegemony");
-            if (flags.contains("A")) m_recordServerOptions << tr("EnableAI");
-
-            continue;
-        }
-
         Packet packet;
+        line.remove(QRegExp("^[0-9]+\\s*"));
         packet.parse(line.toUtf8().constData());
+
+        if (packet.getCommandType() == S_COMMAND_SETUP){
+            const Json::Value &body = packet.getMessageBody();
+            if (body.isString()){
+                QString l = toQString(body);
+                QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSTBHAMN123a-r]*)(\\s+)?");
+                if (!rx.exactMatch(l))
+                    continue;
+
+                QStringList texts = rx.capturedTexts();
+                m_recordGameMode = texts.at(2);
+                m_recordPlayers = texts.at(2).split("_").first().remove(QRegExp("[^0-9]")).toInt();
+                QStringList ban_packages = texts.at(5).split("+");
+                foreach (Package *package, Sanguosha->findChildren<Package *>()) {
+                    if (!ban_packages.contains(package->objectName())
+                        && Sanguosha->getScenario(package->objectName()) == NULL)
+                        m_recordPackages << Sanguosha->translate(package->objectName());
+                }
+
+                QString flags = texts.at(6);
+                if (flags.contains("R")) m_recordServerOptions << tr("RandomSeats");
+                if (flags.contains("C")) m_recordServerOptions << tr("EnableCheat");
+                if (flags.contains("F")) m_recordServerOptions << tr("FreeChoose");
+                if (flags.contains("S")) m_recordServerOptions << tr("Enable2ndGeneral");
+                if (flags.contains("T")) m_recordServerOptions << tr("EnableSame");
+                if (flags.contains("N")) m_recordServerOptions << tr("EnableScene");
+                if (flags.contains("B")) m_recordServerOptions << tr("EnableBasara");
+                if (flags.contains("H")) m_recordServerOptions << tr("EnableHegemony");
+                if (flags.contains("A")) m_recordServerOptions << tr("EnableAI");
+
+                continue;
+            }
+        }
 
         if (packet.getCommandType() == S_COMMAND_ARRANGE_SEATS) {
             QStringList line_struct;
             const Json::Value &body = packet.getMessageBody();
-            if(body.isArray()){
-                for(Json::Value::iterator i = body.begin(); i != body.end(); i++){
-                    QString line = Utils::toQString(*i);
-                    if(!line.isEmpty()){
+            if (body.isArray()){
+                for (Json::Value::iterator i = body.begin(); i != body.end(); i++){
+                    QString line = toQString(*i);
+                    if (!line.isEmpty()){
                         line_struct.append(line);
                     }
                 }
@@ -104,27 +110,27 @@ void RecAnalysis::initialize(QString dir) {
         }
 
         if (packet.getCommandType() == S_COMMAND_ADD_PLAYER) {
-            Json::Value body = packet.getMessageBody();
-            if(body.isArray() && body.size() >= 2){
-                getPlayer(Utils::toQString(body[0]))->m_screenName = Utils::toQString(body[1]);
+            const Json::Value &body = packet.getMessageBody();
+            if (body.isArray() && body.size() >= 2){
+                getPlayer(toQString(body[0]))->m_screenName = toQString(body[1]);
             }
             continue;
         }
 
         if (packet.getCommandType() == S_COMMAND_REMOVE_PLAYER) {
-            QString name = Utils::toQString(packet.getMessageBody());
+            QString name = toQString(packet.getMessageBody());
             m_recordMap.remove(name);
             continue;
         }
 
         if (packet.getCommandType() == S_COMMAND_SPEAK) {
             const Json::Value &body = packet.getMessageBody();
-            if(!body.isArray() || body.size() < 3){
+            if (!body.isArray() || body.size() < 3){
                 continue;
             }
 
-            QString speaker = Utils::toQString(body[0]);
-            QString words = Utils::toQString(body[1]);
+            QString speaker = toQString(body[0]);
+            QString words = toQString(body[1]);
             m_recordChat += getPlayer(speaker)->m_screenName+": "+words;
             m_recordChat.append("<br/>");
 

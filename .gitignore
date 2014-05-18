@@ -63,3 +63,7 @@ msvc[pr]1[10]0.dll
 msvc[pr]1[10]0d.dll
 fmod.log
 *.vspscc
+dbghelp.dll
+Microsoft.DTfW.DHL.manifest
+vld_x86.dll
+vld_x64.dll

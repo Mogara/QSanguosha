@@ -592,6 +592,11 @@ public:
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         if (player == NULL) return QStringList();
 
+        if (triggerEvent == EventPhaseStart){
+            if (player->getPhase() != Player::RoundStart)
+                return QStringList();
+        }
+
         foreach (ServerPlayer *p, room->getPlayers()){
             if (p->getMark("tianfu_kanpo") > 0 && p->hasSkill("kanpo")){
                 p->setMark("tianfu_kanpo", 0);
@@ -599,11 +604,7 @@ public:
             }
         }
 
-        if (triggerEvent == EventPhaseStart){
-            if (player->getPhase() != Player::RoundStart)
-                return QStringList();
-        }
-        else if (triggerEvent == EventLoseSkill && data.toString() == "tianfu"){
+        if (triggerEvent == EventLoseSkill && data.toString() == "tianfu"){
             return QStringList();
         }
         else if (triggerEvent == GeneralHidden && player->ownSkill(this) && player->inHeadSkills(objectName()) == data.toBool()){

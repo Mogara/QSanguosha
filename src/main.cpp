@@ -26,7 +26,7 @@ static bool callback(const wchar_t *dump_path, const wchar_t *id,
     if (succeeded && QFile::exists("QSanSMTPClient.exe")){
         char *ID = new char[65535];
         memset(ID, 0, sizeof(ID));
-        WideCharToMultiByte(CP_ACP, 0, id, -1, ID, wcslen(id), NULL, NULL);
+        WideCharToMultiByte(CP_ACP, 0, id, -1, ID, 65535, NULL, FALSE);
         QProcess *process = new QProcess(qApp);
         QStringList args;
         args << QString(ID) + ".dmp";

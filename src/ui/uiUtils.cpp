@@ -47,6 +47,8 @@ void QSanUiUtils::paintShadow(QPainter *painter, const QImage &image, QColor sha
 #undef _OLD_PIXEL
     QImage result(newImage, cols, rows, QImage::Format_ARGB32);
     painter->drawImage(x, y, result);
+    delete[] newImage;
+    newImage = NULL;
 }
 
 void QSanUiUtils::paintShadow(QPainter *painter, const QImage &image, QColor shadowColor, int radius, double decade, const QRect boundingBox) {
