@@ -291,7 +291,7 @@ void QSanSkillButton::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 void QSanSkillButton::setEnabled(bool enabled) {
-    if (_m_state == S_STATE_CANPRESHOW) return;
+    if (_m_skill->canPreshow() && !Self->hasShownSkill(_m_skill)) return;
     QSanButton::setEnabled(enabled);
 }
 
