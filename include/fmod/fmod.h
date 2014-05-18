@@ -15,7 +15,7 @@
     0xaaaabbcc -> aaaa = major version number.  bb = minor version number.  cc = development version number.
 */
 
-#define FMOD_VERSION    0x00044433
+#define FMOD_VERSION    0x00044434
 
 /*
     Compiler specific settings.
@@ -71,6 +71,7 @@ typedef struct FMOD_DSPCONNECTION FMOD_DSPCONNECTION;
 typedef struct FMOD_POLYGON		  FMOD_POLYGON;
 typedef struct FMOD_GEOMETRY	  FMOD_GEOMETRY;
 typedef struct FMOD_SYNCPOINT	  FMOD_SYNCPOINT;
+typedef struct FMOD_ASYNCREADINFO FMOD_ASYNCREADINFO;
 typedef unsigned int              FMOD_MODE;
 typedef unsigned int              FMOD_TIMEUNIT;
 typedef unsigned int              FMOD_INITFLAGS;
@@ -288,7 +289,7 @@ typedef struct
     FMOD_FILE_ASYNCCANCELCALLBACK
 ]
 */
-typedef struct
+struct FMOD_ASYNCREADINFO
 {
     void           *handle;         /* [r] The file handle that was filled out in the open callback. */
     unsigned int    offset;         /* [r] Seek position, make sure you read from this file offset. */
@@ -300,7 +301,9 @@ typedef struct
     FMOD_RESULT     result;         /* [r/w] Result code, FMOD_OK tells the system it is ready to consume the data.  Set this last!  Default value = FMOD_ERR_NOTREADY. */
 
     void           *userdata;       /* [r] User data pointer. */
-} FMOD_ASYNCREADINFO;
+
+    const void    (*done)(FMOD_ASYNCREADINFO *info, FMOD_RESULT result);    /* FMOD file system wake up function.  Use instead of 'result' with FMOD_INIT_ASYNCREAD_FAST to get semaphore based performance improvement.  Call this when user file read is finished.  Pass result of file read as a parameter. */
+};
 
 
 /*
@@ -748,6 +751,7 @@ typedef enum
 #define FMOD_INIT_PS3_DISABLEDTS             0x10000000 /* PS3 only - Disable DTS output mode selection */
 #define FMOD_INIT_PS3_DISABLEDOLBYDIGITAL    0x20000000 /* PS3 only - Disable Dolby Digital output mode selection */
 #define FMOD_INIT_7POINT1_DOLBYMAPPING       0x40000000 /* PS3/PS4 only - FMOD uses the WAVEFORMATEX Microsoft 7.1 speaker mapping where the last 2 pairs of speakers are 'rears' then 'sides', but on PS3/PS4 these are mapped to 'surrounds' and 'backs'.  Use this flag to swap fmod's last 2 pair of speakers on PS3/PS4 to avoid needing to do a special case for these platforms. */
+#define FMOD_INIT_ASYNCREAD_FAST             0x80000000 /* All platforms - Rather than setting FMOD_ASYNCREADINFO::result, call FMOD_ASYNCREADINFO::done to enable a semaphore based wait inside fmod, rather than the older method which can incur up to 10ms delay per read. */
 /* [DEFINE_END] */
 
 
