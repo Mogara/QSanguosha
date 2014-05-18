@@ -34,9 +34,9 @@
   +新函数：QList<int> Room::getCardIdsOnTable(const Card *)
    用于获取正在结算当中的牌在处理区的部分
    
-  +开放x64平台下的编译
+  +开放Windows x64平台下的编译
   
-  +可以使用VS2012进行编译
+  +可以使用VS2012进行编译（暂无法编译X64）
 
   New Features/Enhancements:
   +新增加了许多电脑名字，均衡名字的出现次数
