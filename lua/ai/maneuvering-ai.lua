@@ -105,8 +105,8 @@ function sgs.ai_armor_value.Vine(player, self)
 	if self.player:hasSkills(sgs.lose_equip_skill) then return 3.8 end
 	if not self:damageIsEffective(player, sgs.DamageStruct_Fire) then return 6 end
 
-	local fslash = sgs.Sanguosha:cloneCard("fire_slash")
-	local tslash = sgs.Sanguosha:cloneCard("thunder_slash")
+	local fslash = sgs.cloneCard("fire_slash")
+	local tslash = sgs.cloneCard("thunder_slash")
 	if player:isChained() and (not self:isGoodChainTarget(player, self.player, nil, nil, fslash) or not self:isGoodChainTarget(player, self.player, nil, nil, tslash)) then return -2 end
 
 	for _, enemy in ipairs(self:getEnemies(player)) do

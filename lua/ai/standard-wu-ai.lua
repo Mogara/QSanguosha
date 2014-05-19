@@ -245,7 +245,7 @@ kurou_skill.getTurnUseCard = function(self, inclusive)
 		or (self.player:getHp() - self.player:getHandcardNum() >= 2)) then
 		return kuroucard
 	end
-	local slash = sgs.Sanguosha:cloneCard("slash")
+	local slash = sgs.cloneCard("slash")
 	if (self.player:getWeapon() and self.player:getWeapon():isKindOf("Crossbow")) or self.player:hasSkill("paoxiao") then
 		for _, enemy in ipairs(self.enemies) do
 			if self.player:canSlash(enemy, nil, true) and self:slashIsEffective(slash, enemy)

@@ -74,7 +74,7 @@ end
 
 sgs.ai_skill_playerchosen.qianxi = function(self, targets)
 	local enemies = {}
-	local slash = self:getCard("Slash") or sgs.Sanguosha:cloneCard("slash")
+	local slash = self:getCard("Slash") or sgs.cloneCard("slash")
 	local isRed = (self.player:getTag("qianxi"):toString() == "red")
 
 	for _, target in sgs.qlist(targets) do
@@ -415,7 +415,7 @@ end
 sgs.ai_skill_use_func.HongfaCard = function(card, use, self)
 	local ids = self.player:getLord():getPile("heavenly_army")
 	for _, id in sgs.qlist(ids) do
-		local slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_SuitToBeDecided, -1)
+		local slash = sgs.cloneCard("slash", sgs.Card_SuitToBeDecided, -1)
 		slash:addSubcard(id)
 		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 		self:useCardSlash(slash, dummy_use)

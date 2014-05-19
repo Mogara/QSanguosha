@@ -133,7 +133,7 @@ function sgs.getDefenseSlash(player, self)
 		defense = 0
 	end
 
-	local jink = sgs.Sanguosha:cloneCard("jink")
+	local jink = sgs.cloneCard("jink")
 	if player:isCardLimited(jink, sgs.Card_MethodUse) then defense = 0 end
 
 	if player:hasFlag("QianxiTarget") then
@@ -221,7 +221,7 @@ end
 
 function SmartAI:slashProhibit(card, enemy, from)
 	local mode = self.room:getMode()
-	card = card or sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+	card = card or sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 	from = from or self.player
 	local nature = card:isKindOf("FireSlash") and sgs.DamageStruct_Fire
 					or card:isKindOf("ThunderSlash") and sgs.DamageStruct_Thunder
@@ -310,7 +310,7 @@ end
 function SmartAI:slashIsAvailable(player, slash) -- @todo: param of slashIsAvailable
 	player = player or self.player
 	slash = slash or self:getCard("Slash", player)
-	if not slash or not slash:isKindOf("Slash") then slash = sgs.Sanguosha:cloneCard("slash") end
+	if not slash or not slash:isKindOf("Slash") then slash = sgs.cloneCard("slash") end
 	assert(slash)
 	return slash:isAvailable(player)
 end
@@ -584,7 +584,7 @@ sgs.ai_skill_use.slash = function(self, prompt)
 end
 
 sgs.ai_skill_playerchosen.slash_extra_targets = function(self, targets)
-	local slash = sgs.Sanguosha:cloneCard("slash")
+	local slash = sgs.cloneCard("slash")
 	targets = sgs.QList2Table(targets)
 	self:sort(targets, "defenseSlash")
 	for _, target in ipairs(targets) do
@@ -596,7 +596,7 @@ sgs.ai_skill_playerchosen.slash_extra_targets = function(self, targets)
 end
 
 sgs.ai_skill_playerchosen.zero_card_as_slash = function(self, targets)
-	local slash = sgs.Sanguosha:cloneCard("slash")
+	local slash = sgs.cloneCard("slash")
 	local targetlist = sgs.QList2Table(targets)
 	local arrBestHp, canAvoidSlash, forbidden = {}, {}, {}
 	self:sort(targetlist, "defenseSlash")
@@ -663,7 +663,7 @@ sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 		local effect = data:toSlashEffect()
 		slash = effect.slash
 	else
-		slash = sgs.Sanguosha:cloneCard("slash")
+		slash = sgs.cloneCard("slash")
 	end
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
@@ -716,7 +716,7 @@ sgs.ai_use_priority.Slash = 2.6
 function SmartAI:canHit(to, from, conservative)
 	from = from or self.room:getCurrent()
 	to = to or self.player
-	local jink = sgs.Sanguosha:cloneCard("jink")
+	local jink = sgs.cloneCard("jink")
 	if to:isCardLimited(jink, sgs.Card_MethodUse) then return true end
 	if self:canLiegong(to, from) then return true end
 	if not self:isFriend(to, from) then
@@ -1211,8 +1211,8 @@ function turnUse_spear(self, inclusive, skill_name)
 	local card_id2 = newcards[2]:getEffectiveId()
 
 	if newcards[1]:isBlack() and newcards[2]:isBlack() then
-		local black_slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuitBlack)
-		local nosuit_slash = sgs.Sanguosha:cloneCard("slash")
+		local black_slash = sgs.cloneCard("slash", sgs.Card_NoSuitBlack)
+		local nosuit_slash = sgs.cloneCard("slash")
 
 		self:sort(self.enemies, "defenseSlash")
 		for _, enemy in ipairs(self.enemies) do
@@ -1375,7 +1375,7 @@ sgs.ai_skill_cardask.aoe = function(self, data, pattern, target, name)
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
 
 	local aoe
-	if type(data) == "userdata" then aoe = data:toCardEffect().card else aoe = sgs.Sanguosha:cloneCard(name) end
+	if type(data) == "userdata" then aoe = data:toCardEffect().card else aoe = sgs.cloneCard(name) end
 	assert(aoe ~= nil)
 	local menghuo = self.room:findPlayerBySkillName("huoshou")
 	local attacker = target
@@ -1713,7 +1713,7 @@ function SmartAI:getValuableCard(who)
 	end
 
 	if defhorse and not self:doNotDiscard(who, "e")
-		and not (self.player:hasWeapon("KylinBow") and self.player:canSlash(who) and self:slashIsEffective(sgs.Sanguosha:cloneCard("slash"), who, self.player)
+		and not (self.player:hasWeapon("KylinBow") and self.player:canSlash(who) and self:slashIsEffective(sgs.cloneCard("slash"), who, self.player)
 				and (getCardsNum("Jink", who, self.player) < 1 or sgs.card_lack[who:objectName()].Jink == 1 )) then
 		return defhorse:getEffectiveId()
 	end
@@ -2705,7 +2705,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 
 	if weapon and (self:getCardsNum("Slash") > 0 and self:slashIsAvailable() or not SelfisCurrent) then
 		local current_range = (self.player:getWeapon() and sgs.weapon_range[self.player:getWeapon():getClassName()]) or 1
-		local nosuit_slash = sgs.Sanguosha:cloneCard("slash", sgs.Card_NoSuit, 0)
+		local nosuit_slash = sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 		local slash = SelfisCurrent and self:getCard("Slash") or nosuit_slash
 
 		self:sort(self.enemies, "defense")
