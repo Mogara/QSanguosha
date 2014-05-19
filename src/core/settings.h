@@ -72,9 +72,6 @@ public:
     bool FreeChoose;
     bool ForbidSIMC;
     bool DisableChat;
-    bool Enable2ndGeneral;
-    bool EnableBasara;
-    bool EnableHegemony;
     QString Address;
     bool EnableAI;
     int AIDelay;
@@ -88,6 +85,8 @@ public:
 
     QStringList ExtraHiddenGenerals;
     QStringList RemovedHiddenGenerals;
+
+    bool RewardTheFirstShowingPlayer;
 
     // client side
     QString HostAddress;

@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #include "startscene.h"
 #include "engine.h"
 #include "audio.h"
@@ -121,12 +140,8 @@ void StartScene::printServerInfo() {
     if (Config.EnableCheat)
         server_log->append(Config.FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
 
-    server_log->append(Config.EnableBasara ?
-                           tr("Basara Mode is enabled") :
-                           tr("Basara Mode is disabled"));
-    server_log->append(Config.EnableHegemony ?
-                           tr("Hegemony Mode is enabled") :
-                           tr("Hegemony Mode is disabled"));
+    if (Config.RewardTheFirstShowingPlayer)
+        server_log->append(tr("The reward of showing general first is enabled"));
 
     if (Config.EnableAI) {
         server_log->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));

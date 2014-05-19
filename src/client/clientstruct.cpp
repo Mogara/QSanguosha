@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #include "clientstruct.h"
 #include "engine.h"
 #include "client.h"
@@ -30,7 +49,7 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
 }
 
 bool ServerInfoStruct::parse(const QString &str) {
-    QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSTBHAMN123a-r]*)");
+    QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFAMS]*)");
     if (!rx.exactMatch(str)) {
         // older version, just take the player count
         int count = str.split(":").at(1).toInt();
@@ -68,6 +87,7 @@ bool ServerInfoStruct::parse(const QString &str) {
         FreeChoose = EnableCheat && flags.contains("F");
         EnableAI = flags.contains("A");
         DisableChat = flags.contains("M");
+        FirstShowingReward = flags.contains("S");
     }
 
     return true;
@@ -83,6 +103,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack) {
     enable_cheat_label = new QLabel;
     free_choose_label = new QLabel;
     enable_ai_label = new QLabel;
+    fisrt_showing_reward_label = new QLabel;
     time_limit_label = new QLabel;
 
     list_widget = new QListWidget;
@@ -99,6 +120,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack) {
     layout->addRow(tr("Enable cheat"), enable_cheat_label);
     layout->addRow(tr("Free choose"), free_choose_label);
     layout->addRow(tr("Enable AI"), enable_ai_label);
+    layout->addRow(tr("Enable First Showing Reward"), fisrt_showing_reward_label);
     layout->addRow(tr("Operation time"), time_limit_label);
     layout->addRow(tr("Extension packages"), list_widget);
 
@@ -123,6 +145,7 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
     enable_cheat_label->setText(info.EnableCheat ? tr("Enabled") : tr("Disabled"));
     free_choose_label->setText(info.FreeChoose ? tr("Enabled") : tr("Disabled"));
     enable_ai_label->setText(info.EnableAI ? tr("Enabled") : tr("Disabled"));
+    fisrt_showing_reward_label->setText(info.FirstShowingReward ? tr("Enabled") : tr("Disabled"));
 
     if (info.OperationTimeout == 0)
         time_limit_label->setText(tr("No limit"));
@@ -163,6 +186,8 @@ void ServerInfoWidget::clear() {
     random_seat_label->clear();
     enable_cheat_label->clear();
     free_choose_label->clear();
+    enable_ai_label->clear();
+    fisrt_showing_reward_label->clear();
     time_limit_label->clear();
     list_widget->clear();
 }

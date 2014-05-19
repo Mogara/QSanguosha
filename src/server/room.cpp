@@ -352,7 +352,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason) {
     LogMessage log;
     log.type = killer ? (killer == victim ? "#Suicide" : "#Murder") : "#Contingency";
     log.to << victim;
-    log.arg = Config.EnableHegemony ? victim->getKingdom() : victim->getRole();
+    log.arg = victim->getKingdom();
     log.from = killer;
     sendLog(log);
 
@@ -383,14 +383,11 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason) {
 
         if (expose_roles) {
             foreach (ServerPlayer *player, m_alivePlayers) {
-                if (Config.EnableHegemony) {
-                    QString role = player->getKingdom();
-                    if (role == "god")
-                        role = Sanguosha->getGeneral(getTag(player->objectName()).toStringList().at(0))->getKingdom();
-                    role = HegemonyMode::GetMappedRole(role);
-                    broadcastProperty(player, "role", role);
-                } else
-                    broadcastProperty(player, "role");
+                QString role = player->getKingdom();
+                if (role == "god")
+                    role = Sanguosha->getGeneral(getTag(player->objectName()).toStringList().at(0))->getKingdom();
+                role = HegemonyMode::GetMappedRole(role);
+                broadcastProperty(player, "role", role);
             }
 
             if (Config.AlterAIDelayAD)
@@ -504,12 +501,6 @@ void Room::gameOver(const QString &winner) {
         Config.GameMode = name;
         Config.setValue("GameMode", name);
         removeTag("NextGameMode");
-    }
-    if (!getTag("NextGameSecondGeneral").isNull()) {
-        bool enable = getTag("NextGameSecondGeneral").toBool();
-        Config.Enable2ndGeneral = enable;
-        Config.setValue("Enable2ndGeneral", enable);
-        removeTag("NextGameSecondGeneral");
     }
 
     Json::Value arg(Json::arrayValue);
@@ -2641,10 +2632,6 @@ void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
             _NO_BROADCAST_SPEAKING
             QString name = sentence.mid(13);
             setTag("NextGameMode", name);
-        } else if (sentence.startsWith(".SecondGeneral=")) {
-            _NO_BROADCAST_SPEAKING
-            QString prop = sentence.mid(15);
-            setTag("NextGameSecondGeneral", !prop.isEmpty() && prop != "0" && prop != "false");
         } else if (sentence == ".Pause") {
             _NO_BROADCAST_SPEAKING
             pauseCommand(player, "true");
