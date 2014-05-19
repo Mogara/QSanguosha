@@ -257,6 +257,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     log_box_widget = addWidget(log_box);
     log_box_widget->setObjectName("log_box_widget");
     log_box_widget->setZValue(-1.0);
+    log_box_widget->setParent(this);
     connect(ClientInstance, SIGNAL(log_received(QStringList)), log_box, SLOT(appendLog(QStringList)));
 
     prompt_box = new Window(tr("QSanguosha"), QSize(480, 200));
@@ -330,6 +331,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(return_to_start_scene, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
 
     animations = new EffectAnimation();
+    animations->setParent(this);
 
     pausing_item = new QGraphicsRectItem;
     pausing_text = new QGraphicsSimpleTextItem(tr("Paused ..."));

@@ -21,6 +21,7 @@ class Photo: public PlayerCardContainer {
 
 public:
     explicit Photo();
+    ~Photo();
     const ClientPlayer *getPlayer() const;
     void speak(const QString &content);
     virtual void repaintAll();
