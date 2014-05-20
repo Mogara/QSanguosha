@@ -4169,6 +4169,15 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
             Q_ASSERT(filter);
             filterSkills.append(filter);
         }
+        if (player->hasSkill(skill->objectName()) && skill->inherits("TriggerSkill")) {
+            const TriggerSkill *trigger = qobject_cast<const TriggerSkill *>(skill);
+            const ViewAsSkill *vsskill = trigger->getViewAsSkill();
+            if (vsskill && vsskill->inherits("FilterSkill")) {
+                const FilterSkill *filter = qobject_cast<const FilterSkill *>(vsskill);
+                Q_ASSERT(filter);
+                filterSkills.append(filter);
+            }
+        }
     }
     if (filterSkills.size() == 0) return;
 

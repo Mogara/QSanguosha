@@ -388,6 +388,13 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
         const Skill *skill = Sanguosha->getSkill(skill_name);
         bool refilter = skill->inherits("FilterSkill");
 
+        if (!refilter && skill->inherits("TriggerSkill")) {
+            const TriggerSkill *trigger = qobject_cast<const TriggerSkill *>(skill);
+            const ViewAsSkill *vsskill = trigger->getViewAsSkill();
+            if (vsskill && vsskill->inherits("FilterSkill"))
+                refilter = true;
+        }
+
         if (refilter)
             room->filterCards(player, player->getCards("he"), triggerEvent == EventLoseSkill);
 

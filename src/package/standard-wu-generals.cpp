@@ -655,11 +655,42 @@ public:
     }
 };
 
+class HongyanFilter: public FilterSkill {
+public:
+    HongyanFilter(): FilterSkill("hongyan") {
+    }
+
+    static WrappedCard *changeToHeart(int cardId) {
+        WrappedCard *new_card = Sanguosha->getWrappedCard(cardId);
+        new_card->setSkillName("hongyan");
+        new_card->setSuit(Card::Heart);
+        new_card->setModified(true);
+        return new_card;
+    }
+
+    virtual bool viewFilter(const Card *to_select) const{
+        Room *room = Sanguosha->currentRoom();
+        foreach (ServerPlayer *p, room->getPlayers())
+            if (p->ownSkill(objectName()) && p->hasShownSkill(objectName()))
+                return to_select->getSuit() == Card::Spade;
+        return false;
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        return changeToHeart(originalCard->getEffectiveId());
+    }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
+        return -2;
+    }
+};
+
 class Hongyan: public TriggerSkill {
 public:
     Hongyan(): TriggerSkill("hongyan") {
         events << FinishRetrial;
         frequency = Compulsory;
+        view_as_skill = new HongyanFilter;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *xiaoqiao, QVariant &data, ServerPlayer *) const {
@@ -682,36 +713,6 @@ public:
             return QStringList(objectName());
 
         return QStringList();
-    }
-};
-
-class HongyanFilter: public FilterSkill {
-public:
-    HongyanFilter(): FilterSkill("#hongyan") {
-    }
-
-    static WrappedCard *changeToHeart(int cardId) {
-        WrappedCard *new_card = Sanguosha->getWrappedCard(cardId);
-        new_card->setSkillName("hongyan");
-        new_card->setSuit(Card::Heart);
-        new_card->setModified(true);
-        return new_card;
-    }
-
-    virtual bool viewFilter(const Card *to_select) const{
-        Room *room = Sanguosha->currentRoom();
-        foreach (ServerPlayer *p, room->getPlayers())
-            if (p->ownSkill("hongyan") && p->hasShownSkill("hongyan"))
-                return to_select->getSuit() == Card::Spade;
-        return false;
-    }
-
-    virtual const Card *viewAs(const Card *originalCard) const{
-        return changeToHeart(originalCard->getEffectiveId());
-    }
-
-    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
-        return -2;
     }
 };
 
@@ -1503,9 +1504,7 @@ void StandardPackage::addWuGenerals()
     xiaoqiao->addSkill(new Tianxiang);
     xiaoqiao->addSkill(new TianxiangDraw);
     xiaoqiao->addSkill(new Hongyan);
-    xiaoqiao->addSkill(new HongyanFilter);
     related_skills.insertMulti("tianxiang", "#tianxiang");
-    related_skills.insertMulti("hongyan", "#hongyan");
 
     General *taishici = new General(this, "taishici", "wu"); // WU 012
     taishici->addSkill(new Tianyi);
