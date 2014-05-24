@@ -64,7 +64,6 @@ void RoleComboBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QW
         QPixmap pix;
         pix.load(QString("image/system/roles/%1.png").arg(fixed_role));
         painter->drawPixmap(0, 0, pix);
-        update();
         return;
     }
     QStringList kingdoms = Sanguosha->getKingdoms();
