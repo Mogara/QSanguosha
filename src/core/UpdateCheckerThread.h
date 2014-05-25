@@ -27,7 +27,6 @@ struct UpdateInfoStruct {
     QString version_number;
     bool is_patch;
     QString address;
-    QStringList whats_new;
 };
 
 class UpdateCheckerThread: public QThread {

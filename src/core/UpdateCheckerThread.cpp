@@ -23,6 +23,8 @@
 #include <QNetworkReply>
 #include <QRegExp>
 #include <QEventLoop>
+#include <QTextCodec>
+#include <QFile>
 
 UpdateCheckerThread::UpdateCheckerThread()
 {
@@ -31,11 +33,15 @@ UpdateCheckerThread::UpdateCheckerThread()
 void UpdateCheckerThread::run() {
     QNetworkAccessManager *mgr = new QNetworkAccessManager;
     const QString URL = "https://raw.githubusercontent.com/QSanguosha-Rara/QSanguosha-For-Hegemony/Qt-4.8/info/UpdateInfo";
+    const QString URL2 = "https://raw.githubusercontent.com/QSanguosha-Rara/QSanguosha-For-Hegemony/Qt-4.8/info/whatsnew.html";
     QEventLoop loop;
     QNetworkReply *reply = mgr->get(QNetworkRequest(QUrl(URL)));
+    QNetworkReply *reply2 = mgr->get(QNetworkRequest(QUrl(URL2)));
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(terminate()));
-    connect(this, SIGNAL(terminated()), this, SLOT(deleteLater()));
+    connect(this, SIGNAL(terminated()), reply, SLOT(deleteLater()));
+    connect(this, SIGNAL(terminated()), reply2, SLOT(deleteLater()));
+    connect(this, SIGNAL(terminated()), mgr, SLOT(deleteLater()));
 
     loop.exec();
 
@@ -65,7 +71,21 @@ void UpdateCheckerThread::run() {
         const QString value = texts.at(1);
         emit storeKeyAndValue(key, value);
     }
-    reply->deleteLater();
-    delete mgr;
+    const QString FILE_NAME = "info.html";
+    QFile file(FILE_NAME);
+    if( !file.open(QIODevice::WriteOnly | QIODevice::Text) )  
+    {  
+        qDebug() << "Cannot open the file: " << FILE_NAME;  
+        return;  
+    }
+    QTextStream out(&file);    
+    QString codeContent = reply2->readAll();    
+
+    QTextCodec *codec = QTextCodec::codecForHtml(codeContent.toLatin1());    
+    codeContent = codec->toUnicode(codeContent.toLatin1());    
+    out.setCodec(codec);  
+    out << codeContent << endl;    
+    file.close();
+
     terminate();
 }

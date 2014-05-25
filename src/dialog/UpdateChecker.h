@@ -22,9 +22,9 @@
 
 #include <QWidget>
 #include <QLabel>
-#include <QListWidget>
+#include <QTextEdit>
 
-#include "UpdateCheckThread.h"
+#include "UpdateCheckerThread.h"
 
 class UpdateChecker: public QWidget 
 {
@@ -39,7 +39,7 @@ public:
 private:
     QLabel *state_label;
     QLabel *address_label;
-    QListWidget *list_widget;
+    QTextEdit *page;
 };
 
 #endif

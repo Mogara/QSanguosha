@@ -94,7 +94,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     UpdateCheckerThread *thread = new UpdateCheckerThread;
     connect(thread, SIGNAL(storeKeyAndValue(const QString &, const QString &)), this, SLOT(storeKeyAndValue(const QString &, const QString &)));
-    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+    connect(thread, SIGNAL(terminated()), thread, SLOT(deleteLater()));
     thread->start();
 
     connection_dialog = new ConnectionDialog(this);
@@ -854,19 +854,17 @@ void MainWindow::storeKeyAndValue( const QString &key, const QString &value )
 {
     if ("VersionNumber" == key) {
         QString v = value;
-        if (value.endsWith("Patch")) {
+        if (value.contains("Patch")) {
             update_info.is_patch = true;
-            v.chop(5);
+            v.chop(6);
         } else
             update_info.is_patch = false;
 
-        update_info.version_number = value;
+        update_info.version_number = v;
         if (Sanguosha->getVersionNumber() < value)
             setWindowTitle(tr("New Version Available") + "  " + windowTitle());
     } else if ("Address" == key)
         update_info.address = value;
-    else if ("WhatsNew" == key)
-        update_info.whats_new << value;
     if (!update_info.address.isNull() && !update_info.version_number.isNull())
         ui->actionCheckUpdate->setEnabled(true);
 }
@@ -878,6 +876,7 @@ void MainWindow::on_actionCheckUpdate_triggered()
 
     QHBoxLayout *layout = new QHBoxLayout;
     UpdateChecker *widget = new UpdateChecker;
+    connect(dialog, SIGNAL(finished(int)), widget, SLOT(deleteLater()));
     widget->fill(update_info);
     layout->addWidget(widget);
     dialog->setLayout(layout);
