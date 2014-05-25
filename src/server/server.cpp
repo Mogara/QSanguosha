@@ -367,6 +367,7 @@ void ServerDialog::ensureEnableAI() {
 
 QGroupBox *ServerDialog::createGameModeBox() {
     QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
+    mode_box->setParent(this);
     mode_group = new QButtonGroup;
 
     QObjectList item_list;

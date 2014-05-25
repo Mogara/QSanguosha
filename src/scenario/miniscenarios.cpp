@@ -347,6 +347,10 @@ MiniScene::MiniScene(const QString &name)
     rule = new MiniSceneRule(this);
 }
 
+MiniScene::~MiniScene(){
+    delete rule;
+}
+
 void MiniScene::setupCustom(QString name) const{
     if (name == QString()) name = "custom_scenario";
     name.prepend("etc/customScenes/");

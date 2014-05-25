@@ -27,6 +27,7 @@ SOURCES += \
     src/core/settings.cpp \
     src/core/skill.cpp \
     src/core/structs.cpp \
+    src/core/UpdateCheckerThread.cpp \
     src/core/util.cpp \
     src/core/WrappedCard.cpp \
     src/dialog/AboutUs.cpp \
@@ -118,6 +119,7 @@ HEADERS += \
     src/core/settings.h \
     src/core/skill.h \
     src/core/structs.h \
+    src/core/UpdateCheckerThread.h \
     src/core/util.h \
     src/core/WrappedCard.h \
     src/dialog/AboutUs.h \
@@ -223,11 +225,11 @@ macx{
 
 LIBS += -L.
 win32{
-	!contains(QMAKE_HOST.arch, x86_64) {
-		LIBS += -L"$$_PRO_FILE_PWD_/lib/win32"
-	} else {
-		LIBS += -L"$$_PRO_FILE_PWD_/lib/win64"
-	}
+    !contains(QMAKE_HOST.arch, x86_64) {
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/win32"
+    } else {
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/win64"
+    }
 }
 
 CONFIG(audio){

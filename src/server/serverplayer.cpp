@@ -43,6 +43,13 @@ ServerPlayer::ServerPlayer(Room *room)
         semas[i] = new QSemaphore(0);
 }
 
+ServerPlayer::~ServerPlayer(){
+    for (int i = 0; i < S_NUM_SEMAPHORES; i ++)
+        delete semas[i];
+
+    delete[] semas;
+}
+
 void ServerPlayer::drawCard(const Card *card) {
     handcards << card;
 }

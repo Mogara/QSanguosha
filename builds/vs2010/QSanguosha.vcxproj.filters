@@ -751,10 +751,10 @@
     <ClCompile Include="..\..\src\core\UpdateCheckerThread.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_UpdateCheckThread.cpp">
+    <ClCompile Include="Debug\moc_UpdateCheckerThread.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Release\moc_UpdateCheckThread.cpp">
+    <ClCompile Include="Release\moc_UpdateCheckerThread.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\dialog\UpdateChecker.cpp">
@@ -987,7 +987,7 @@
     <CustomBuild Include="..\..\src\server\generalselector.h">
       <Filter>server</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\core\UpdateCheckThread.h">
+    <CustomBuild Include="..\..\src\core\UpdateCheckerThread.h">
       <Filter>core</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\UpdateChecker.h">

@@ -128,6 +128,7 @@ void Engine::addTranslationEntry(const char *key, const char *value) {
 
 Engine::~Engine() {
     lua_close(lua);
+    delete m_customScene;
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif

@@ -38,9 +38,9 @@
 
 using namespace google_breakpad;
 
-static bool callback(const wchar_t *dump_path, const wchar_t *id,
-                     void *context, EXCEPTION_POINTERS *exinfo,
-                     MDRawAssertionInfo *assertion,
+static bool callback(const wchar_t *, const wchar_t *id,
+                     void *, EXCEPTION_POINTERS *,
+                     MDRawAssertionInfo *,
                      bool succeeded) {
     if (succeeded && QFile::exists("QSanSMTPClient.exe")){
         char *ID = new char[65535];
@@ -62,10 +62,12 @@ int main(int argc, char *argv[]) {
 #else
 int main(int argc, char *argv[]) {
 #endif
+    QCoreApplication *app;
+
     if (argc > 1 && strcmp(argv[1], "-server") == 0)
-        new QCoreApplication(argc, argv);
+        app = new QCoreApplication(argc, argv);
     else
-        new QApplication(argc, argv);
+        app = new QApplication(argc, argv);
 
 #ifdef Q_OS_MAC
 #ifdef QT_NO_DEBUG
@@ -136,6 +138,8 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    return qApp->exec();
+    int r = qApp->exec();
+    delete app;
+    return r;
 }
 
