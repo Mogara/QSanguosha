@@ -1,3 +1,22 @@
+/********************************************************************
+	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team	
+*********************************************************************/
 #include "UpdateChecker.h"
 #include "engine.h"
 
@@ -9,6 +28,7 @@ UpdateChecker::UpdateChecker()
     state_label = new QLabel(this);
     address_label = new QLabel(this);
     page = new QTextEdit(this);
+    page->setObjectName("whatsnew");
     page->setReadOnly(true);
 
     QFormLayout *layout = new QFormLayout;
@@ -22,26 +42,34 @@ UpdateChecker::UpdateChecker()
 void UpdateChecker::fill( UpdateInfoStruct info )
 {
     QString state;
+    bool lastest = false;
     if (info.version_number > Sanguosha->getVersionNumber()) {
         QString postfix = " : " + info.version_number;
         if (info.is_patch)
             state = tr("New Patch Available") + postfix;
         else
             state = tr("New Client Available") + postfix;
-    } else
+    } else {
         state = tr("Lastest Version Already");
+        lastest = true;
+    }
     state_label->setText(state);
 
-    address_label->setOpenExternalLinks(true);
-    address_label->setText(QString("<a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(info.address));
+    if (lastest)
+        address_label->hide();
+    else {
+        address_label->setOpenExternalLinks(true);
+        address_label->setText(QString("<a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(info.address));
+    }
 
     QFile file("info.html");
-    if (file.open(QIODevice::ReadOnly)) {
+    if (!lastest && file.open(QIODevice::ReadOnly)) {
         QTextStream stream(&file);
         stream.setCodec("UTF-8");
         QString content = stream.readAll();
         page->setHtml(content);
-    }
+    } else
+        page->hide();
 }
 
 void UpdateChecker::clear()

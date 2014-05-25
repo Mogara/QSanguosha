@@ -21,6 +21,10 @@ QTextEdit[description="true"]{
     background-color: rgba(255,255,255,255);
 }
 
+QTextEdit#whatsnew{
+	background-image: url(image/system/simpleBg/whatsnew.png);
+}
+
 QTextEdit QScrollBar:vertical  {
      margin: 22px 0 22px 0;
 }
@@ -35,7 +39,7 @@ QScrollBar:sub-page
      background-color: rgba(0,0,0,255);
 }
 
- QScrollBar::add-line:vertical  {
+QScrollBar::add-line:vertical  {
 
      background-color: rgba(43,45,31,255);
      height: 15px;
@@ -68,7 +72,7 @@ QScrollBar::down-arrow:vertical
     border-image: url(image/system/button/scroll-down-arrow.png);
 }
 
- QLineEdit#chat_edit{
+QLineEdit#chat_edit{
     background-color: rgba(20,20,20,255);
     color: white;
     border: 10px transparent;
