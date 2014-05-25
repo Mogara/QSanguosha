@@ -38,7 +38,7 @@ void UpdateCheckerThread::run() {
     QNetworkReply *reply = mgr->get(QNetworkRequest(QUrl(URL)));
     QNetworkReply *reply2 = mgr->get(QNetworkRequest(QUrl(URL2)));
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(terminate()));
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop, SLOT(quit()));
     connect(this, SIGNAL(terminated()), reply, SLOT(deleteLater()));
     connect(this, SIGNAL(terminated()), reply2, SLOT(deleteLater()));
     connect(this, SIGNAL(terminated()), mgr, SLOT(deleteLater()));
