@@ -30,6 +30,7 @@
 #include "pixmapanimation.h"
 #include "record-analysis.h"
 #include "AboutUs.h"
+#include "UpdateChecker.h"
 
 #include <qmath.h>
 #include <QGraphicsView>
@@ -847,6 +848,8 @@ void MainWindow::on_actionManage_Ban_IP_triggered(){
     dlg->show();
 }
 
+
+
 void MainWindow::storeKeyAndValue( const QString &key, const QString &value )
 {
     if ("VersionNumber" == key) {
@@ -860,7 +863,24 @@ void MainWindow::storeKeyAndValue( const QString &key, const QString &value )
         update_info.version_number = value;
         if (Sanguosha->getVersionNumber() < value)
             setWindowTitle(tr("New Version Available") + "  " + windowTitle());
-
     } else if ("Address" == key)
         update_info.address = value;
+    else if ("WhatsNew" == key)
+        update_info.whats_new << value;
+    if (!update_info.address.isNull() && !update_info.version_number.isNull())
+        ui->actionCheckUpdate->setEnabled(true);
+}
+
+void MainWindow::on_actionCheckUpdate_triggered()
+{
+    QDialog *dialog = new QDialog(this);
+    dialog->setWindowTitle(tr("Check Update"));
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    UpdateChecker *widget = new UpdateChecker;
+    widget->fill(update_info);
+    layout->addWidget(widget);
+    dialog->setLayout(layout);
+
+    dialog->show();
 }

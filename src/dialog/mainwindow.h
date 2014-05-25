@@ -94,6 +94,7 @@ private slots:
     void on_actionGeneral_Overview_triggered();
     void on_actionStart_Server_triggered();
     void on_actionExit_triggered();
+    void on_actionCheckUpdate_triggered();
 
     void checkVersion(const QString &server_version, const QString &server_mod);
     void networkError(const QString &error_msg);

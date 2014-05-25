@@ -17,29 +17,29 @@
 
   QSanguosha-Hegemony Team	
 *********************************************************************/
-#ifndef _UPDATE_CHECKER_THREAD
-#define _UPDATE_CHECKER_THREAD
+#ifndef _UPDATE_CHECKER
+#define _UPDATE_CHECKER
 
-#include <QThread>
-#include <QStringList>
+#include <QWidget>
+#include <QLabel>
+#include <QListWidget>
 
-struct UpdateInfoStruct {
-    QString version_number;
-    bool is_patch;
-    QString address;
-    QStringList whats_new;
-};
+#include "UpdateCheckThread.h"
 
-class UpdateCheckerThread: public QThread {
+class UpdateChecker: public QWidget 
+{
     Q_OBJECT
 
 public:
-    explicit UpdateCheckerThread();
-    virtual void run();
+    explicit UpdateChecker();
 
-signals:
-    void storeKeyAndValue(const QString &key, const QString &value);
+    void fill(UpdateInfoStruct info);
+    void clear();
 
+private:
+    QLabel *state_label;
+    QLabel *address_label;
+    QListWidget *list_widget;
 };
 
 #endif

@@ -67,6 +67,7 @@
     <addaction name="separator"/>
     <addaction name="actionAcknowledgement_2"/>
     <addaction name="separator"/>
+    <addaction name="actionCheckUpdate"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -383,6 +384,14 @@
   <action name="actionManage_Ban_IP">
    <property name="text">
     <string>Manage Ban IP</string>
+   </property>
+  </action>
+  <action name="actionCheckUpdate">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>CheckUpdate</string>
    </property>
   </action>
  </widget>
