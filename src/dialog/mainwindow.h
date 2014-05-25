@@ -4,7 +4,7 @@
 #include "engine.h"
 #include "connectiondialog.h"
 #include "configdialog.h"
-#include "UpdateCheckThread.h"
+#include "UpdateCheckerThread.h"
 
 #include <QMainWindow>
 #include <QSettings>

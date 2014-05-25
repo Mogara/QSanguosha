@@ -17,7 +17,7 @@
 
   QSanguosha-Hegemony Team	
 *********************************************************************/
-#include "UpdateCheckThread.h"
+#include "UpdateCheckerThread.h"
 #include "mainwindow.h"
 
 #include <QNetworkReply>
