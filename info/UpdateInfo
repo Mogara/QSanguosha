@@ -1,28 +1,2 @@
-/********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
-
-  This file is part of QSanguosha-Hegemony.
-
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
-
-  See the LICENSE file for more details.
-  
-  This file is used to notify the clients of new available version.
-  You should fill in update information in the following format:
-  InfoName|InfoValue
-  
-  WARNING:DO THINK TWICE BEFORE UPDATE THIS FILE. ANY HASTY 
-  MODIFICATION MAY LEAD TO UNPREDICTABLE CONSEQUENCES FOR USERS.
-
-  QSanguosha-Hegemony Team	
-*********************************************************************/
-VersionNumber|0.7.3Patch
+VersionNumber|0.7.2
 Address|http://qsanguosha.org
