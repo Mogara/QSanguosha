@@ -91,6 +91,11 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
     scene = NULL;
 
+    UpdateCheckerThread *thread = new UpdateCheckerThread;
+    connect(thread, SIGNAL(storeKeyAndValue(const QString &, const QString &)), this, SLOT(storeKeyAndValue(const QString &, const QString &)));
+    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+    thread->start();
+
     connection_dialog = new ConnectionDialog(this);
     connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
     connect(connection_dialog, SIGNAL(accepted()), this, SLOT(startConnection()));
@@ -840,4 +845,22 @@ void MainWindow::on_actionManage_Ban_IP_triggered(){
 
     BanIPDialog *dlg = new BanIPDialog(this, server);
     dlg->show();
+}
+
+void MainWindow::storeKeyAndValue( const QString &key, const QString &value )
+{
+    if ("VersionNumber" == key) {
+        QString v = value;
+        if (value.endsWith("Patch")) {
+            update_info.is_patch = true;
+            v.chop(5);
+        } else
+            update_info.is_patch = false;
+
+        update_info.version_number = value;
+        if (Sanguosha->getVersionNumber() < value)
+            setWindowTitle(tr("New Version Available") + "  " + windowTitle());
+
+    } else if ("Address" == key)
+        update_info.address = value;
 }

@@ -4,6 +4,7 @@
 #include "engine.h"
 #include "connectiondialog.h"
 #include "configdialog.h"
+#include "UpdateCheckThread.h"
 
 #include <QMainWindow>
 #include <QSettings>
@@ -62,6 +63,7 @@ private:
     ConfigDialog *config_dialog;
     QSystemTrayIcon *systray;
     Server *server;
+    UpdateInfoStruct update_info;
 
     void restoreFromConfig();
 
@@ -102,6 +104,8 @@ private slots:
     void changeBackground();
     void changeTableBg();
     void on_actionManage_Ban_IP_triggered();
+
+    void storeKeyAndValue(const QString &key, const QString &value);
 
 signals:
     void about_to_close();
