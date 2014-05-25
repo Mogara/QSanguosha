@@ -38,9 +38,9 @@
 
 using namespace google_breakpad;
 
-static bool callback(const wchar_t *dump_path, const wchar_t *id,
-                     void *context, EXCEPTION_POINTERS *exinfo,
-                     MDRawAssertionInfo *assertion,
+static bool callback(const wchar_t *, const wchar_t *id,
+                     void *, EXCEPTION_POINTERS *,
+                     MDRawAssertionInfo *,
                      bool succeeded) {
     if (succeeded && QFile::exists("QSanSMTPClient.exe")){
         char *ID = new char[65535];
