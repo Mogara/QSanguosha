@@ -20,12 +20,12 @@ void EffectAnimation::fade(QGraphicsItem *map) {
         effectOut(map);
         effect = registered.value(map);
         if (effect) effect->deleteLater();
-        registered.insert(map, new FadeEffect(true));
+        registered.insert(map, new FadeEffect(true, this));
         return;
     }
 
     map->show();
-    FadeEffect *fade = new FadeEffect(true);
+    FadeEffect *fade = new FadeEffect(true, this);
     map->setGraphicsEffect(fade);
     effects.insert(map, fade);
 }
@@ -36,11 +36,11 @@ void EffectAnimation::emphasize(QGraphicsItem *map, bool stay) {
         effectOut(map);
         effect = registered.value(map);
         if (effect) effect->deleteLater();
-        registered.insert(map, new EmphasizeEffect(stay));
+        registered.insert(map, new EmphasizeEffect(stay, this));
         return;
     }
 
-    EmphasizeEffect *emphasize = new EmphasizeEffect(stay);
+    EmphasizeEffect *emphasize = new EmphasizeEffect(stay, this);
     map->setGraphicsEffect(emphasize);
     effects.insert(map, emphasize);
 }
@@ -51,11 +51,11 @@ void EffectAnimation::sendBack(QGraphicsItem *map) {
         effectOut(map);
         effect = registered.value(map);
         if (effect) effect->deleteLater();
-        registered.insert(map, new SentbackEffect(true));
+        registered.insert(map, new SentbackEffect(true, this));
         return;
     }
 
-    SentbackEffect *sendBack = new SentbackEffect(true);
+    SentbackEffect *sendBack = new SentbackEffect(true, this);
     map->setGraphicsEffect(sendBack);
     effects.insert(map, sendBack);
 }
@@ -90,8 +90,9 @@ void EffectAnimation::deleteEffect(QAnimatedEffect *effect) {
     }
 }
 
-EmphasizeEffect::EmphasizeEffect(bool stay, QObject *) {
+EmphasizeEffect::EmphasizeEffect(bool stay, QObject *parent) {
     this->setObjectName("emphasizer");
+    this->setParent(parent);
     index = 0;
     this->stay = stay;
     QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
@@ -141,9 +142,10 @@ void QAnimatedEffect::setStay(bool stay) {
     }
 }
 
-SentbackEffect::SentbackEffect(bool stay, QObject *) {
-    grayed = 0;
+SentbackEffect::SentbackEffect(bool stay, QObject *parent) {
+    grayed = NULL;
     this->setObjectName("backsender");
+    this->setParent(parent);
     index = 0;
     this->stay = stay;
 
@@ -195,11 +197,15 @@ void SentbackEffect::draw(QPainter *painter) {
 }
 
 SentbackEffect::~SentbackEffect() {
-    delete grayed;
+    if (grayed){
+        delete grayed;
+        grayed = NULL;
+    }
 }
 
-FadeEffect::FadeEffect(bool stay, QObject *) {
+FadeEffect::FadeEffect(bool stay, QObject *parent) {
     this->setObjectName("fader");
+    this->setParent(parent);
     index = 0;
     this->stay = stay;
 

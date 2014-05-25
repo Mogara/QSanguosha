@@ -14,6 +14,7 @@
 #include <QLabel>
 #include <QGraphicsProxyWidget>
 #include <QFile>
+#include <QPixmapCache>
 
 using namespace std;
 using namespace QSanProtocol::Utils;
@@ -97,7 +98,6 @@ const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT = "general
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON = "generalCardItemCompanionIcon-%1";
 
 QSanSkinFactory* QSanSkinFactory::_sm_singleton = NULL;
-QHash<QString, QPixmap> QSanPixmapCache::_m_pixmapBank;
 QHash<QString, int *> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
 
 IQSanComponentSkin::QSanSimpleTextFont::QSanSimpleTextFont() {
@@ -461,30 +461,39 @@ bool IQSanComponentSkin::AnchoredRect::tryParse(Json::Value value) {
 }
 
 // Load pixmap from a file and map it to the given key.
-const QPixmap &QSanPixmapCache::getPixmap(const QString &key, const QString &fileName) {
-    if (!_m_pixmapBank.contains(key)) {
-        if (fileName == "deprecated") {
-            _m_pixmapBank[key] = QPixmap(1, 1);
-        } else {
-            bool success = !fileName.isEmpty() && _m_pixmapBank[key].load(fileName);
-            if (!success) {
-                /*qWarning("Unable to open resource file \"%s\" for key \"%s\"\n",
-                         fileName.toAscii().constData(),
-                         key.toAscii().constData());*/
-                _m_pixmapBank[key] = QPixmap(1, 1); // make Qt happy
-            }
+QPixmap QSanPixmapCache::getPixmap(const QString &key, const QString &fileName) {
+    static QPixmap empty(1, 1);
+    QPixmap cached;
+    if (QPixmapCache::find(key, &cached)) {
+        return cached;
+    }
+
+    if (fileName == "deprecated") {
+        QPixmapCache::insert(key, empty);
+    } else {
+        QPixmap pixmap;
+        bool success = !fileName.isEmpty() && pixmap.load(fileName);
+        if (!success) {
+            /*qWarning("Unable to open resource file \"%s\" for key \"%s\"\n",
+                     fileName.toAscii().constData(),
+                     key.toAscii().constData());*/
+            QPixmapCache::insert(key, empty); // make Qt happy
+        }else{
+            QPixmapCache::insert(key, pixmap);
+            return pixmap;
         }
     }
-    return _m_pixmapBank[key];
+
+    return empty;
 }
 
 // Load pixmap from a file.
-const QPixmap &QSanPixmapCache::getPixmap(const QString &fileName) {
+QPixmap QSanPixmapCache::getPixmap(const QString &fileName) {
     return getPixmap(fileName, fileName);
 }
 
 bool QSanPixmapCache::contains(const QString &key) {
-    return _m_pixmapBank.contains(key);
+    return QPixmapCache::find(key);
 }
 
 bool IQSanComponentSkin::_loadImageConfig(const Json::Value &config) {

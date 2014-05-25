@@ -494,6 +494,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         if (skill->isGlobal() || (p && p->ownSkill(name) && p->hasShownSkill(name))) // if hasShown, then needn't protect
                             if (p && p->hasFlag("Global_askForSkillCost"))
                                 room->setPlayerFlag(p, "-Global_askForSkillCost");
+                        already_triggered.append(skill);
                         bool do_effect = false;
                         if (skill->cost(triggerEvent, room, target, data, p)) {
                             do_effect = true;
@@ -502,7 +503,6 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         }
                         if (p && !p->hasFlag("Global_askForSkillCost") && !p->hasShownAllGenerals())          // for next time
                             room->setPlayerFlag(p, "Global_askForSkillCost");
-                        already_triggered.append(skill);
                         //-----------------------------------------------
 
                         //----------------------------------------------- TriggerSkill::effect

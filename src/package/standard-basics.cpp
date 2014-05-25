@@ -93,7 +93,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         bool has_changed = false;
         QString skill_name = getSkillName();
         if (!skill_name.isEmpty()) {
-            const Skill *skill = Sanguosha->getSkill(skill_name);
+            const ViewAsSkill *skill = Sanguosha->getViewAsSkill(skill_name);
             if (skill && !skill->inherits("FilterSkill"))
                 has_changed = true;
         }

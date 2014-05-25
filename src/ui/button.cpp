@@ -151,8 +151,11 @@ void Button::timerEvent(QTimerEvent *) {
 Button::~Button() {
     delete outimg;
     outimg = NULL;
-
-    de->deleteLater();
-    effect->deleteLater();
+    delete title;
+    title = NULL;
+    delete de;
+    de = NULL;
+    delete effect;
+    effect = NULL;
 }
 

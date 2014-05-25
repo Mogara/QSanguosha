@@ -352,7 +352,7 @@ end
 function sgs.ai_cardneed.luoyi(to, card, self)
 	local slash_num = 0
 	local target
-	local slash = sgs.Sanguosha:cloneCard("slash")
+	local slash = sgs.cloneCard("slash")
 
 	local cards = to:getHandcards()
 	local need_slash = true
@@ -507,7 +507,7 @@ sgs.ai_skill_use["@@shensu1"] = function(self, prompt)
 
 	for _, enemy in ipairs(self.enemies) do
 		local def = sgs.getDefenseSlash(enemy, self)
-		local slash = sgs.Sanguosha:cloneCard("slash")
+		local slash = sgs.cloneCard("slash")
 		local eff = self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
 
 		if not self.player:canSlash(enemy, slash, false) then
@@ -520,7 +520,7 @@ sgs.ai_skill_use["@@shensu1"] = function(self, prompt)
 
 	for _, enemy in ipairs(self.enemies) do
 		local def = sgs.getDefense(enemy)
-		local slash = sgs.Sanguosha:cloneCard("slash")
+		local slash = sgs.cloneCard("slash")
 		local eff = self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
 
 		if not self.player:canSlash(enemy, slash, false) then
@@ -595,7 +595,7 @@ sgs.ai_skill_use["@@shensu2"] = function(self, prompt, method)
 
 	for _, enemy in ipairs(self.enemies) do
 		local def = sgs.getDefense(enemy)
-		local slash = sgs.Sanguosha:cloneCard("slash")
+		local slash = sgs.cloneCard("slash")
 		local eff = self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
 
 		if not self.player:canSlash(enemy, slash, false) then

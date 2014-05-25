@@ -32,8 +32,10 @@ Bin/
 /builds/vs201[02]/*.user
 /builds/vs201[02]/ipch
 *.opensdf
-/QSanSMTPClient/QSanSMTPClient/*.user
-/QSanSMTPClient/QSanSMTPClient/ipch
+/QSanSMTPClient_build/QSanSMTPClient/*.user
+/QSanSMTPClient_build/QSanSMTPClient/ipch
+QSanSMTPClient.exe
+QSanSMTPClient.qm
 tags
 /extensions
 *~

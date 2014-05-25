@@ -19,13 +19,10 @@
 class QSanPixmapCache {
 public:
     // Load pixmap from a file and map it to the given key.
-    static const QPixmap &getPixmap(const QString &key, const QString &fileName);
+    static QPixmap getPixmap(const QString &key, const QString &fileName);
     // Load pixmap from a existing key.
-    static const QPixmap &getPixmap(const QString &key);
+    static QPixmap getPixmap(const QString &key);
     static bool contains(const QString &key);
-
-private:
-    static QHash<QString, QPixmap> _m_pixmapBank;
 };
 
 class IQSanComponentSkin { // interface class

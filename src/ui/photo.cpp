@@ -52,6 +52,13 @@ Photo::Photo(): PlayerCardContainer() {
     _createControls();
 }
 
+Photo::~Photo(){
+    if (emotion_item){
+        delete emotion_item;
+        emotion_item = NULL;
+    }
+}
+
 void Photo::refresh() {
     PlayerCardContainer::refresh();
     if (!m_player) return;

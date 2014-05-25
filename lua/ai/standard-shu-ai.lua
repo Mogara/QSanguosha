@@ -88,7 +88,7 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 					local t1 = dummy_use.to:first()
 					if dummy_use.to:length() > 1 then continue
 					elseif t1:getHp() == 1 or sgs.card_lack[t1:objectName()]["Jink"] == 1
-							or t1:isCardLimited(sgs.Sanguosha:cloneCard("jink"), sgs.Card_MethodResponse) then continue
+							or t1:isCardLimited(sgs.cloneCard("jink"), sgs.Card_MethodResponse) then continue
 					end
 				elseif (card:isKindOf("Snatch") or card:isKindOf("Dismantlement")) and self:getEnemyNumBySeat(self.player, friend) > 0 then
 					local hasDelayedTrick
@@ -145,7 +145,7 @@ wusheng_skill.getTurnUseCard = function(self, inclusive)
 	for _, card in ipairs(cards) do
 		if card:isRed() and not card:isKindOf("Slash")
 			and not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player)
-			and (self:getUseValue(card) < sgs.ai_use_value.Slash or inclusive or sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, sgs.Sanguosha:cloneCard("slash")) > 0) then
+			and (self:getUseValue(card) < sgs.ai_use_value.Slash or inclusive or sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, sgs.cloneCard("slash")) > 0) then
 			red_card = card
 			break
 		end

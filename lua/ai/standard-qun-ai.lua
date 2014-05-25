@@ -167,7 +167,7 @@ function SmartAI:getLijianCard()
 end
 
 function SmartAI:findLijianTarget(card_name, use)
-	local duel = sgs.Sanguosha:cloneCard("duel")
+	local duel = sgs.cloneCard("duel")
 
 	local findFriend_maxSlash = function(self, first)
 		local maxSlash = 0
@@ -309,7 +309,7 @@ local luanji_skill = {}
 luanji_skill.name = "luanji"
 table.insert(sgs.ai_skills, luanji_skill)
 luanji_skill.getTurnUseCard = function(self)
-	local archery = sgs.Sanguosha:cloneCard("archery_attack")
+	local archery = sgs.cloneCard("archery_attack")
 
 	local first_found, second_found = false, false
 	local first_card, second_card
@@ -359,7 +359,7 @@ sgs.ai_skill_invoke.shuangxiong = function(self, data)
 	if self.player:isSkipped(sgs.Player_Play) or (self.player:getHp() < 2 and not (self:getCardsNum("Slash") > 1 and self.player:getHandcardNum() >= 3)) or #self.enemies == 0 then
 		return false
 	end
-	local duel = sgs.Sanguosha:cloneCard("duel")
+	local duel = sgs.cloneCard("duel")
 
 	local dummy_use = { isDummy = true }
 	self:useTrickCard(duel, dummy_use)
@@ -546,7 +546,7 @@ end
 function SmartAI:findLeijiTarget(player, leiji_value, slasher)
 	if not player:hasShownSkill("leiji") then return end
 	if slasher then
-		if not self:slashIsEffective(sgs.Sanguosha:cloneCard("slash"), player, slasher, slasher:hasWeapon("QinggangSword")) then return nil end
+		if not self:slashIsEffective(sgs.cloneCard("slash"), player, slasher, slasher:hasWeapon("QinggangSword")) then return nil end
 		if slasher:hasShownSkill("liegong") and slasher:getPhase() == sgs.Player_Play and self:isEnemy(player, slasher)
 			and (player:getHandcardNum() >= slasher:getHp() or player:getHandcardNum() <= slasher:getAttackRange()) then
 			return nil
@@ -711,7 +711,7 @@ sgs.ai_skill_playerchosen.shuangren = function(self, targets)
 	local max_card = self:getMaxCard()
 	local max_point = max_card:getNumber()
 
-	local slash = sgs.Sanguosha:cloneCard("slash")
+	local slash = sgs.cloneCard("slash")
 	local dummy_use = { isDummy = true }
 	self.player:setFlags("slashNoDistanceLimit")
 	self:useBasicCard(slash, dummy_use)
@@ -867,7 +867,7 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 	end
 
 	local dummy_use = {isDummy = true, to = sgs.SPlayerList()}
-	local slash = sgs.Sanguosha:cloneCard("Slash")
+	local slash = sgs.cloneCard("Slash")
 	self:useBasicCard(slash, dummy_use)
 	if (dummy_use.card and dummy_use.to:length() > 0) then
 		for _, p in sgs.qlist(dummy_use.to) do

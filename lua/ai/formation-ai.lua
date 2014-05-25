@@ -396,7 +396,7 @@ local function will_discard_zhendu(self)
 		if current:getMark("drank") > 0 and not need_damage then return -1 end
 		if (getKnownCard(current, self.player, "Slash") > 0 or (getCardsNum("Slash", current, self.player) >= 1 and current:getHandcardNum() >= 2))
 			and (not self:damageIsEffective(current, nil, self.player) or current:getHp() > 2 or (getCardsNum("Peach", current, self.player) > 1 and not self:isWeak(current))) then
-			local slash = sgs.Sanguosha:cloneCard("slash")
+			local slash = sgs.cloneCard("slash")
 			local trend = 3
 			if current:hasWeapon("axe") then trend = trend - 1
 			elseif current:hasShownSkills("liegong|tieqi|wushuang|niaoxiang") then trend = trend - 0.4 end
