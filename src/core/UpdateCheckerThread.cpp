@@ -29,18 +29,35 @@ UpdateCheckerThread::UpdateCheckerThread()
 }
 
 void UpdateCheckerThread::run() {
-    QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
+    QNetworkAccessManager *mgr = new QNetworkAccessManager;
     const QString URL = "https://raw.githubusercontent.com/QSanguosha-Rara/QSanguosha-For-Hegemony/Qt-4.8/info/UpdateInfo";
     QEventLoop loop;
     QNetworkReply *reply = mgr->get(QNetworkRequest(QUrl(URL)));
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(terminate()));
+    connect(this, SIGNAL(finished()), mgr, SLOT(deleteLater()));
 
     loop.exec();
 
+    bool is_comment = false;
+
     while (!reply->atEnd()) {
         QString line = reply->readLine();
-        QStringList texts = line.split("|");
+
+        //simple comment support
+        if (line.startsWith("//")) continue;
+        if (!is_comment && line.startsWith("/*")) 
+            is_comment = true;
+        if (is_comment) {
+            line.trimmed();
+            if (line.contains("*/")) 
+                //I wanna use QString::endsWith here, but the mothod always returns false.
+                //@@todo:Refine It Later
+                is_comment = false;
+            continue;
+        }
+
+        QStringList texts = line.split("|", QString::SkipEmptyParts);
 
         Q_ASSERT(texts.size() == 2);
 
@@ -48,5 +65,6 @@ void UpdateCheckerThread::run() {
         const QString value = texts.at(1);
         emit storeKeyAndValue(key, value);
     }
+    reply->deleteLater();
     terminate();
 }
