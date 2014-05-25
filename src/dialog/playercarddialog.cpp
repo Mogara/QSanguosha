@@ -162,6 +162,7 @@ QWidget *PlayerCardDialog::createEquipArea() {
     }
 
     if (layout->count() == 0) {
+        delete layout;
         PlayerCardButton *no_equip = new PlayerCardButton(tr("No equip"));
         no_equip->setEnabled(false);
         no_equip->setObjectName("noequip_button");
@@ -188,6 +189,7 @@ QWidget *PlayerCardDialog::createJudgingArea() {
     }
 
     if (layout->count() == 0) {
+        delete layout;
         PlayerCardButton *button = new PlayerCardButton(tr("No judging cards"));
         button->setEnabled(false);
         button->setObjectName("nojuding_button");

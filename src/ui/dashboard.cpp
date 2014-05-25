@@ -492,7 +492,7 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, const bool 
             // If there is already a button there, then we haven't removed the last skill before attaching
             // a new one. The server must have sent the requests out of order. So crash.
             Q_ASSERT(_m_equipSkillBtns[i] == NULL);
-            _m_equipSkillBtns[i] = new QSanInvokeSkillButton();
+            _m_equipSkillBtns[i] = new QSanInvokeSkillButton(this);
             _m_equipSkillBtns[i]->setSkill(skill);
             connect(_m_equipSkillBtns[i], SIGNAL(clicked()), this, SLOT(_onEquipSelectChanged()));
             connect(_m_equipSkillBtns[i], SIGNAL(enable_changed()), this, SLOT(_onEquipSelectChanged()));
