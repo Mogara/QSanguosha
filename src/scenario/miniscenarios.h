@@ -37,6 +37,7 @@ class MiniScene: public Scenario {
 public:
     static const char *S_KEY_MINISCENE;
     MiniScene(const QString &name);
+    ~MiniScene();
     void setupCustom(QString name) const;
     virtual void onTagSet(Room *room, const QString &key) const;
     virtual void assign(QStringList &generals, QStringList &roles) const{

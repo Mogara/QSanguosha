@@ -1027,6 +1027,11 @@ QSanSkinFactory &QSanSkinFactory::getInstance() {
     return *_sm_singleton;
 }
 
+QSanSkinFactory::~QSanSkinFactory(){
+    if (_sm_singleton != NULL)
+        delete _sm_singleton;
+}
+
 const QSanSkinScheme &QSanSkinFactory::getCurrentSkinScheme() {
     return this->_sm_currentSkin;
 }

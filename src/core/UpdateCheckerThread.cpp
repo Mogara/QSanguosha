@@ -35,7 +35,7 @@ void UpdateCheckerThread::run() {
     QNetworkReply *reply = mgr->get(QNetworkRequest(QUrl(URL)));
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(terminate()));
-    connect(this, SIGNAL(finished()), mgr, SLOT(deleteLater()));
+    connect(this, SIGNAL(terminated()), this, SLOT(deleteLater()));
 
     loop.exec();
 
@@ -66,5 +66,6 @@ void UpdateCheckerThread::run() {
         emit storeKeyAndValue(key, value);
     }
     reply->deleteLater();
+    delete mgr;
     terminate();
 }

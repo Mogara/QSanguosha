@@ -431,6 +431,8 @@ protected:
 
 class QSanSkinFactory {
 public:
+    ~QSanSkinFactory();
+
     static QSanSkinFactory &getInstance();
     const QString &getCurrentSkinName() const;
     const QSanSkinScheme &getCurrentSkinScheme();
