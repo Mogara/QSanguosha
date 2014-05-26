@@ -25,8 +25,6 @@
 #include <QEventLoop>
 #include <QTextCodec>
 #include <QFile>
-//debug
-#include <QMessageBox>
 
 UpdateCheckerThread::UpdateCheckerThread()
 {
@@ -83,8 +81,6 @@ void UpdateCheckerThread::run() {
     QTextStream out(&file);    
     QString codeContent = reply2->readAll();    
 
-    //debug
-    QMessageBox::information(NULL, "jfkdls", codeContent);
 
     QTextCodec *codec = QTextCodec::codecForHtml(codeContent.toAscii());    
     codeContent = codec->toUnicode(codeContent.toAscii());    
