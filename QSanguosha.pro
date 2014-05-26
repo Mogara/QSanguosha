@@ -43,6 +43,7 @@ SOURCES += \
     src/dialog/packagingeditor.cpp \
     src/dialog/playercarddialog.cpp \
     src/dialog/rule-summary.cpp \
+    src/dialog/UpdateChecker.cpp \
     src/package/exppattern.cpp \
     src/package/formation.cpp \
     src/package/momentum.cpp \
@@ -135,6 +136,7 @@ HEADERS += \
     src/dialog/packagingeditor.h \
     src/dialog/playercarddialog.h \
     src/dialog/rule-summary.h \
+    src/dialog/UpdateChecker.h \
     src/package/exppattern.h \
     src/package/formation.h \
     src/package/momentum.h \
