@@ -25,6 +25,8 @@
 #include <QEventLoop>
 #include <QTextCodec>
 #include <QFile>
+//debug
+#include <QMessageBox>
 
 UpdateCheckerThread::UpdateCheckerThread()
 {
@@ -32,8 +34,8 @@ UpdateCheckerThread::UpdateCheckerThread()
 
 void UpdateCheckerThread::run() {
     QNetworkAccessManager *mgr = new QNetworkAccessManager;
-    const QString URL = "https://raw.githubusercontent.com/QSanguosha-Rara/QSanguosha-For-Hegemony/Qt-4.8/info/UpdateInfo";
-    const QString URL2 = "https://raw.githubusercontent.com/QSanguosha-Rara/QSanguosha-For-Hegemony/Qt-4.8/info/whatsnew.html";
+    QString URL = "https://raw.githubusercontent.com/QSanguosha-Rara/QSanguosha-For-Hegemony/Qt-4.8/info/UpdateInfo";
+    QString URL2 = "https://raw.githubusercontent.com/QSanguosha-Rara/QSanguosha-For-Hegemony/Qt-4.8/info/whatsnew.html";
     QEventLoop loop;
     QNetworkReply *reply = mgr->get(QNetworkRequest(QUrl(URL)));
     QNetworkReply *reply2 = mgr->get(QNetworkRequest(QUrl(URL2)));
@@ -67,13 +69,13 @@ void UpdateCheckerThread::run() {
 
         Q_ASSERT(texts.size() == 2);
 
-        const QString key = texts.at(0);
-        const QString value = texts.at(1);
+        QString key = texts.at(0);
+        QString value = texts.at(1);
         emit storeKeyAndValue(key, value);
     }
-    const QString FILE_NAME = "info.html";
+    QString FILE_NAME = "info.html";
     QFile file(FILE_NAME);
-    if( !file.open(QIODevice::WriteOnly | QIODevice::Text) )  
+    if( !file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) )  
     {  
         qDebug() << "Cannot open the file: " << FILE_NAME;  
         return;  
@@ -81,10 +83,13 @@ void UpdateCheckerThread::run() {
     QTextStream out(&file);    
     QString codeContent = reply2->readAll();    
 
-    QTextCodec *codec = QTextCodec::codecForHtml(codeContent.toLatin1());    
-    codeContent = codec->toUnicode(codeContent.toLatin1());    
+    //debug
+    QMessageBox::information(NULL, "jfkdls", codeContent);
+
+    QTextCodec *codec = QTextCodec::codecForHtml(codeContent.toAscii());    
+    codeContent = codec->toUnicode(codeContent.toAscii());    
     out.setCodec(codec);  
-    out << codeContent << endl;    
+    out << codeContent << endl;
     file.close();
 
     terminate();
