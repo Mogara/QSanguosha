@@ -634,7 +634,7 @@ void PlayerCardContainer::addEquips(QList<CardItem *> &equips) {
         anim->setEndValue(_m_layout->m_equipAreas[index].topLeft());
         anim->setDuration(200);
         _m_equipAnim[index]->addAnimation(anim);
-        anim = new QPropertyAnimation(_m_equipRegions[index], "opacity");
+        anim = new QPropertyAnimation(_m_equipRegions[index], "opacity", this);
         anim->setEndValue(255);
         anim->setDuration(200);
         _m_equipAnim[index]->addAnimation(anim);
@@ -858,7 +858,7 @@ void PlayerCardContainer::_createControls() {
         _m_equipRegions[i]->setPos(_m_layout->m_equipAreas[i].topLeft());
         _m_equipRegions[i]->setParentItem(_getEquipParent());
         _m_equipRegions[i]->hide();
-        _m_equipAnim[i] = new QParallelAnimationGroup;
+        _m_equipAnim[i] = new QParallelAnimationGroup(this);
     }
 
     _m_markItem = new QGraphicsTextItem(_getMarkParent());

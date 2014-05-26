@@ -159,6 +159,8 @@ void MainWindow::closeEvent(QCloseEvent *) {
 
 MainWindow::~MainWindow() {
     delete ui;
+    if (scene != NULL)
+        scene->deleteLater();
 }
 
 void MainWindow::gotoScene(QGraphicsScene *scene) {

@@ -49,6 +49,7 @@ class ChooseGeneralBox: public QGraphicsObject {
 
 public:
     explicit ChooseGeneralBox();
+    ~ChooseGeneralBox();
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
     QRectF boundingRect() const;
