@@ -233,11 +233,22 @@ win32{
         LIBS += -L"$$_PRO_FILE_PWD_/lib/win64"
     }
 }
+macx{
+    LIBS += -L"$$_PRO_FILE_PWD_/lib/mac"
+}
+unix{
+    !contains(QMAKE_HOST.arch, x86_64)  {
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x86"
+    } else {
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x64"
+    }
+}
 
 CONFIG(audio){
     DEFINES += AUDIO_SUPPORT
     INCLUDEPATH += include/fmod
-    LIBS += -lfmodex
+    CONFIG(debug, debug|release): LIBS += -lfmodexL
+    else:LIBS += -lfmodex
     SOURCES += src/core/audio.cpp
 }
 
@@ -329,8 +340,7 @@ OTHER_FILES += \
     acknowledgement/list.png \
     acknowledgement/back.png
 
-symbian: LIBS += -lfreetype
-else:unix|win32: LIBS += -L$$PWD/lib/ -lfreetype
+LIBS += -lfreetype
 
 INCLUDEPATH += $$PWD/include/freetype
 DEPENDPATH += $$PWD/include/freetype
