@@ -226,12 +226,15 @@ macx{
 }
 
 LIBS += -L.
-win32{
+win32-msvc*{
     !contains(QMAKE_HOST.arch, x86_64) {
-        LIBS += -L"$$_PRO_FILE_PWD_/lib/win32"
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/win/x86"
     } else {
-        LIBS += -L"$$_PRO_FILE_PWD_/lib/win64"
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/win/x64"
     }
+}
+win32-g++{
+    LIBS += -L"$$_PRO_FILE_PWD_/lib/win/MinGW"
 }
 macx{
     LIBS += -L"$$_PRO_FILE_PWD_/lib/mac"
