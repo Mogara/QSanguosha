@@ -706,10 +706,10 @@ public:
         return player->hasShownSkill(this) ? false : room->askForSkillInvoke(player, objectName(), data);
     }
 
-    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *, QVariant &data, ServerPlayer * &) const {
+    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const {
         JudgeStar judge = data.value<JudgeStar>();
 
-        if (judge->card->getSuit() == Card::Spade) 
+        if (judge->who == player && judge->card->getSuit() == Card::Spade) 
             return QStringList(objectName());
 
         return QStringList();
