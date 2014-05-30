@@ -80,6 +80,8 @@ Room::Room(QObject *parent, const QString &mode)
 
 Room::~Room(){
     lua_close(L);
+    if (thread != NULL)
+        delete thread;
 }
 
 void Room::initCallbacks() {
@@ -5224,7 +5226,7 @@ QList<ServerPlayer *> Room::getLieges(const QString &kingdom, ServerPlayer *lord
     if (lord && lord->getRole() == "careerist") return QList<ServerPlayer *>();
     QList<ServerPlayer *> lieges;
     foreach (ServerPlayer *player, getAllPlayers()) {
-        if (player != lord && player->getKingdom() == kingdom && player->getRole() != "careerist")
+        if (player != lord && player->hasShownOneGeneral() && player->getKingdom() == kingdom && player->getRole() != "careerist")
             lieges << player;
     }
 

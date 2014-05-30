@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
     }
 
     int r = qApp->exec();
-    delete app;
+    app->deleteLater();
     return r;
 }
 

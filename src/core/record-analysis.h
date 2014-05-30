@@ -14,6 +14,7 @@ class RecAnalysis: public QObject {
 
 public:
     explicit RecAnalysis(QString dir = QString());
+    ~RecAnalysis();
 
     static const unsigned int M_ALL_PLAYER = 0xFFFF;
     enum DesignationType {

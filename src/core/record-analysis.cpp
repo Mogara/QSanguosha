@@ -250,6 +250,11 @@ void RecAnalysis::initialize(QString dir) {
     setDesignation();
 }
 
+RecAnalysis::~RecAnalysis(){
+    foreach (PlayerRecordStruct *s, m_recordMap)
+        delete s;
+}
+
 PlayerRecordStruct *RecAnalysis::getPlayerRecord(const Player *player) const{
     if (m_recordMap.keys().contains(player->objectName()))
         return m_recordMap[player->objectName()];

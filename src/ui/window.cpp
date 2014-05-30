@@ -13,7 +13,6 @@ Window::Window(const QString &title, const QSizeF &size, const QString &path)
 {
     setFlags(ItemIsMovable);
 
-    QPixmap *bg;
     if (!path.isEmpty())
         bg = new QPixmap(path);
     else
@@ -60,6 +59,11 @@ Window::Window(const QString &title, const QSizeF &size, const QString &path)
 
     titleItem = new QGraphicsTextItem(this);
     setTitle(title);
+}
+
+Window::~Window(){
+    delete bg;
+    delete outimg;
 }
 
 void Window::addContent(const QString &content) {

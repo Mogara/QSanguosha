@@ -107,6 +107,10 @@ ChooseGeneralBox::ChooseGeneralBox()
     animations = new EffectAnimation;
 }
 
+ChooseGeneralBox::~ChooseGeneralBox(){
+    delete animations;
+}
+
 void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
     //============================================================
     //||========================================================||

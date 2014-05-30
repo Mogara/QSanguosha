@@ -91,13 +91,20 @@ GameRule::GameRule(QObject *parent)
            << StartJudge << FinishRetrial << FinishJudge
            << ChoiceMade << GeneralShown;
 
-    QList<const Skill *> list;
+    QList<Skill *> list;
     list << new GameRule_AskForGeneralShow;
     list << new GameRule_AskForArraySummon;
-    foreach(const Skill *skill, list)
-        if (Sanguosha->getSkill(skill->objectName()))
-            list.removeOne(skill);
-    Sanguosha->addSkills(list);
+    QList<const Skill *> list_copy;
+    foreach (Skill *s, list)
+        list_copy << s;
+
+    foreach (Skill *s, list){
+        if (Sanguosha->getSkill(s->objectName())){
+            list_copy.removeOne(s);
+            delete s;
+        }
+    }
+    Sanguosha->addSkills(list_copy);
 }
 
 QStringList GameRule::triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer * &ask_who) const{

@@ -43,6 +43,7 @@ SOURCES += \
     src/dialog/packagingeditor.cpp \
     src/dialog/playercarddialog.cpp \
     src/dialog/rule-summary.cpp \
+    src/dialog/UpdateChecker.cpp \
     src/package/exppattern.cpp \
     src/package/formation.cpp \
     src/package/momentum.cpp \
@@ -135,6 +136,7 @@ HEADERS += \
     src/dialog/packagingeditor.h \
     src/dialog/playercarddialog.h \
     src/dialog/rule-summary.h \
+    src/dialog/UpdateChecker.h \
     src/package/exppattern.h \
     src/package/formation.h \
     src/package/momentum.h \
@@ -224,18 +226,32 @@ macx{
 }
 
 LIBS += -L.
-win32{
+win32-msvc*{
     !contains(QMAKE_HOST.arch, x86_64) {
-        LIBS += -L"$$_PRO_FILE_PWD_/lib/win32"
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/win/x86"
     } else {
-        LIBS += -L"$$_PRO_FILE_PWD_/lib/win64"
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/win/x64"
+    }
+}
+win32-g++{
+    LIBS += -L"$$_PRO_FILE_PWD_/lib/win/MinGW"
+}
+macx{
+    LIBS += -L"$$_PRO_FILE_PWD_/lib/mac"
+}
+unix{
+    !contains(QMAKE_HOST.arch, x86_64)  {
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x86"
+    } else {
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x64"
     }
 }
 
 CONFIG(audio){
     DEFINES += AUDIO_SUPPORT
     INCLUDEPATH += include/fmod
-    LIBS += -lfmodex
+    CONFIG(debug, debug|release): LIBS += -lfmodexL
+    else:LIBS += -lfmodex
     SOURCES += src/core/audio.cpp
 }
 
@@ -327,8 +343,7 @@ OTHER_FILES += \
     acknowledgement/list.png \
     acknowledgement/back.png
 
-symbian: LIBS += -lfreetype
-else:unix|win32: LIBS += -L$$PWD/lib/ -lfreetype
+LIBS += -lfreetype
 
 INCLUDEPATH += $$PWD/include/freetype
 DEPENDPATH += $$PWD/include/freetype

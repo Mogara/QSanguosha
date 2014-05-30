@@ -285,14 +285,14 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     m_tableBg = new QGraphicsPixmapItem(NULL, this);
     m_tableBg->setZValue(-100000);
-
+    /*
     QHBoxLayout *skill_dock_layout = new QHBoxLayout;
     QMargins margins = skill_dock_layout->contentsMargins();
     margins.setTop(0);
     margins.setBottom(5);
     skill_dock_layout->setContentsMargins(margins);
     skill_dock_layout->addStretch();
-
+    */
     m_rolesBoxBackground.load("image/system/state.png");
     m_rolesBox = new QGraphicsPixmapItem;
     addItem(m_rolesBox);
@@ -360,6 +360,10 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     pindian_from_card = NULL;
     pindian_to_card = NULL;
+}
+
+RoomScene::~RoomScene(){
+    QSanSkinFactory::destroyInstance();
 }
 
 void RoomScene::handleGameEvent(const Json::Value &arg) {
@@ -3047,8 +3051,8 @@ void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *>
     table->setRowCount(players.length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    RecAnalysis *record = new RecAnalysis(ClientInstance->getReplayPath());
-    QMap<QString, PlayerRecordStruct *> record_map = record->getRecordMap();
+    RecAnalysis record(ClientInstance->getReplayPath());
+    QMap<QString, PlayerRecordStruct *> record_map = record.getRecordMap();
 
     static QStringList labels;
     if (labels.isEmpty()) {

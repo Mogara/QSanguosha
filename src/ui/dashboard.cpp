@@ -45,7 +45,7 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     _m_leftFrame = _m_rightFrame = _m_middleFrame = NULL;
     _m_rightFrameBg = _m_rightFrameBase = _m_magatamasBase =
         _m_headGeneralFrame = _m_deputyGeneralFrame = NULL;
-    animations = new EffectAnimation();
+    animations = new EffectAnimation;
     pending_card = NULL;
     for (int i = 0; i < 4; i++) {
         _m_equipSkillBtns[i] = NULL;
@@ -72,6 +72,10 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     _createExtraButtons();
 
     _m_sort_menu = new QMenu(RoomSceneInstance->mainWindow());
+}
+
+Dashboard::~Dashboard(){
+    delete animations;
 }
 
 void Dashboard::refresh() {
@@ -492,8 +496,9 @@ QSanSkillButton *Dashboard::addSkillButton(const QString &skillName, const bool 
             // If there is already a button there, then we haven't removed the last skill before attaching
             // a new one. The server must have sent the requests out of order. So crash.
             Q_ASSERT(_m_equipSkillBtns[i] == NULL);
-            _m_equipSkillBtns[i] = new QSanInvokeSkillButton();
+            _m_equipSkillBtns[i] = new QSanInvokeSkillButton(this);
             _m_equipSkillBtns[i]->setSkill(skill);
+            _m_equipSkillBtns[i]->setVisible(false);
             connect(_m_equipSkillBtns[i], SIGNAL(clicked()), this, SLOT(_onEquipSelectChanged()));
             connect(_m_equipSkillBtns[i], SIGNAL(enable_changed()), this, SLOT(_onEquipSelectChanged()));
             QSanSkillButton *btn = _m_equipSkillBtns[i];

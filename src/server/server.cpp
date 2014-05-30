@@ -103,7 +103,7 @@ QWidget *ServerDialog::createPackageTab() {
     disable_lua_checkbox->setChecked(Config.DisableLua);
     disable_lua_checkbox->setToolTip(tr("<font color=%1>The setting takes effect after reboot</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
 
-    extension_group = new QButtonGroup;
+    extension_group = new QButtonGroup(this);
     extension_group->setExclusive(false);
 
     QStringList extensions = Sanguosha->getExtensions();
@@ -227,7 +227,7 @@ QWidget *ServerDialog::createAdvancedTab() {
 }
 
 QWidget *ServerDialog::createConversionTab() {
-    conversions_group = new QButtonGroup;
+    conversions_group = new QButtonGroup(this);
     conversions_group->setExclusive(false);
 
     QGroupBox *formation_conversions = new QGroupBox(tr("Formation Conversions"));
@@ -368,7 +368,7 @@ void ServerDialog::ensureEnableAI() {
 QGroupBox *ServerDialog::createGameModeBox() {
     QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
     mode_box->setParent(this);
-    mode_group = new QButtonGroup;
+    mode_group = new QButtonGroup(this);
 
     QObjectList item_list;
 

@@ -102,7 +102,7 @@ void GenericCardContainer::_doUpdate() {
 }
 
 void GenericCardContainer::_playMoveCardsAnimation(QList<CardItem *> &cards, bool destroyCards) {
-    QParallelAnimationGroup *animation = new QParallelAnimationGroup;
+    QParallelAnimationGroup *animation = new QParallelAnimationGroup(this);
     foreach (CardItem *card_item, cards) {
         if (destroyCards)
             connect(card_item, SIGNAL(movement_animation_finished()), this, SLOT(_destroyCard()));
@@ -630,11 +630,11 @@ void PlayerCardContainer::addEquips(QList<CardItem *> &equips) {
         _m_equipRegions[index]->show();
         _m_equipAnim[index]->stop();
         _m_equipAnim[index]->clear();
-        QPropertyAnimation *anim = new QPropertyAnimation(_m_equipRegions[index], "pos");
+        QPropertyAnimation *anim = new QPropertyAnimation(_m_equipRegions[index], "pos", this);
         anim->setEndValue(_m_layout->m_equipAreas[index].topLeft());
         anim->setDuration(200);
         _m_equipAnim[index]->addAnimation(anim);
-        anim = new QPropertyAnimation(_m_equipRegions[index], "opacity");
+        anim = new QPropertyAnimation(_m_equipRegions[index], "opacity", this);
         anim->setEndValue(255);
         anim->setDuration(200);
         _m_equipAnim[index]->addAnimation(anim);
@@ -661,12 +661,12 @@ QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds) {
         _mutexEquipAnim.lock();
         _m_equipAnim[index]->stop();
         _m_equipAnim[index]->clear();
-        QPropertyAnimation *anim = new QPropertyAnimation(_m_equipRegions[index], "pos");
+        QPropertyAnimation *anim = new QPropertyAnimation(_m_equipRegions[index], "pos", this);
         anim->setEndValue(_m_layout->m_equipAreas[index].topLeft()
                           + QPoint(_m_layout->m_equipAreas[index].width() / 2, 0));
         anim->setDuration(200);
         _m_equipAnim[index]->addAnimation(anim);
-        anim = new QPropertyAnimation(_m_equipRegions[index], "opacity");
+        anim = new QPropertyAnimation(_m_equipRegions[index], "opacity", this);
         anim->setEndValue(0);
         anim->setDuration(200);
         _m_equipAnim[index]->addAnimation(anim);
@@ -858,7 +858,7 @@ void PlayerCardContainer::_createControls() {
         _m_equipRegions[i]->setPos(_m_layout->m_equipAreas[i].topLeft());
         _m_equipRegions[i]->setParentItem(_getEquipParent());
         _m_equipRegions[i]->hide();
-        _m_equipAnim[i] = new QParallelAnimationGroup;
+        _m_equipAnim[i] = new QParallelAnimationGroup(this);
     }
 
     _m_markItem = new QGraphicsTextItem(_getMarkParent());

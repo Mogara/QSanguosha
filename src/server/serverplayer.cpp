@@ -48,6 +48,7 @@ ServerPlayer::~ServerPlayer(){
         delete semas[i];
 
     delete[] semas;
+    delete trust_ai;
 }
 
 void ServerPlayer::drawCard(const Card *card) {

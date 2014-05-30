@@ -97,7 +97,7 @@ const char *QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_DEST_SEAT = "chooseGener
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT = "generalCardItemCompanionFont-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON = "generalCardItemCompanionIcon-%1";
 
-QSanSkinFactory* QSanSkinFactory::_sm_singleton = NULL;
+QSanSkinFactory *QSanSkinFactory::_sm_singleton = NULL;
 QHash<QString, int *> IQSanComponentSkin::QSanSimpleTextFont::_m_fontBank;
 
 IQSanComponentSkin::QSanSimpleTextFont::QSanSimpleTextFont() {
@@ -1027,9 +1027,11 @@ QSanSkinFactory &QSanSkinFactory::getInstance() {
     return *_sm_singleton;
 }
 
-QSanSkinFactory::~QSanSkinFactory(){
-    if (_sm_singleton != NULL)
+void QSanSkinFactory::destroyInstance(){
+    if (_sm_singleton != NULL){
         delete _sm_singleton;
+        _sm_singleton = NULL;
+    }
 }
 
 const QSanSkinScheme &QSanSkinFactory::getCurrentSkinScheme() {
