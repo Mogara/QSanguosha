@@ -47,7 +47,6 @@ public:
     enum SortType { ByType, BySuit, ByNumber };
 
     Dashboard(QGraphicsItem *button_widget);
-    ~Dashboard();
 
     virtual QRectF boundingRect() const;
     void refresh();
