@@ -469,12 +469,12 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         QStringList names, back_up;
                         QStringList _names;
                         foreach (const TriggerSkill *skill, who_skills) {
-                            QString name = skill->objectName();
-                            _names.append(name);
-                            if (names.contains(name))
-                                back_up << name;
+                            QString skill_name = skill->objectName();
+                            _names.append(skill_name);
+                            if (names.contains(skill_name))
+                                back_up << skill_name;
                             else
-                                names << name;
+                                names << skill_name;
                         }
 
                         if (names.isEmpty()) break;
