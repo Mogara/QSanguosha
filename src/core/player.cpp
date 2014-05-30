@@ -741,15 +741,14 @@ bool Player::canSlash(const Player *other, const Card *slash, bool distance_limi
 
     Slash *newslash = new Slash(Card::NoSuit, 0);
     newslash->deleteLater();
-#define THIS_SLASH (slash == NULL ? newslash : slash)
-    if (isProhibited(other, THIS_SLASH, others))
+
+    if (isProhibited(other, slash == NULL ? newslash : slash, others))
         return false;
 
     if (distance_limit)
-        return distanceTo(other, rangefix) <= getAttackRange() + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, this, THIS_SLASH);
+        return distanceTo(other, rangefix) <= getAttackRange() + Sanguosha->correctCardTarget(TargetModSkill::DistanceLimit, this, slash == NULL ? newslash : slash);
     else
         return true;
-#undef THIS_SLASH
 }
 
 bool Player::canSlash(const Player *other, bool distance_limit, int rangefix, const QList<const Player *> &others) const{
