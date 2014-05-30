@@ -45,7 +45,7 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     _m_leftFrame = _m_rightFrame = _m_middleFrame = NULL;
     _m_rightFrameBg = _m_rightFrameBase = _m_magatamasBase =
         _m_headGeneralFrame = _m_deputyGeneralFrame = NULL;
-    animations = new EffectAnimation();
+    animations = new EffectAnimation;
     pending_card = NULL;
     for (int i = 0; i < 4; i++) {
         _m_equipSkillBtns[i] = NULL;
@@ -72,6 +72,10 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     _createExtraButtons();
 
     _m_sort_menu = new QMenu(RoomSceneInstance->mainWindow());
+}
+
+Dashboard::~Dashboard(){
+    delete animations;
 }
 
 void Dashboard::refresh() {

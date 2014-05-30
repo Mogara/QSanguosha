@@ -285,14 +285,14 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     m_tableBg = new QGraphicsPixmapItem(NULL, this);
     m_tableBg->setZValue(-100000);
-
+    /*
     QHBoxLayout *skill_dock_layout = new QHBoxLayout;
     QMargins margins = skill_dock_layout->contentsMargins();
     margins.setTop(0);
     margins.setBottom(5);
     skill_dock_layout->setContentsMargins(margins);
     skill_dock_layout->addStretch();
-
+    */
     m_rolesBoxBackground.load("image/system/state.png");
     m_rolesBox = new QGraphicsPixmapItem;
     addItem(m_rolesBox);
