@@ -149,13 +149,13 @@ void Button::timerEvent(QTimerEvent *) {
 }
 
 Button::~Button() {
-    delete effect;
+    effect->deleteLater();
     effect = NULL;
     delete outimg;
     outimg = NULL;
     delete title;
     title = NULL;
-    delete de;
+    de->deleteLater();
     de = NULL;
 }
 
