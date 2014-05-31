@@ -33,8 +33,8 @@ UpdateCheckerThread::UpdateCheckerThread()
 void UpdateCheckerThread::run() {
     QNetworkAccessManager *mgr = new QNetworkAccessManager;
     //temp url for test
-    QString URL = "http://qsanguosha.ml/info/UpdateInfo";
-    QString URL2 = "http://qsanguosha.ml/info/whatsnew.html";
+    QString URL = "http://ver.qsanguosha.org/UpdateInfo";
+    QString URL2 = "http://ver.qsanguosha.org/whatsnew.html";
     QEventLoop loop;
     QNetworkReply *reply = mgr->get(QNetworkRequest(QUrl(URL)));
     QNetworkReply *reply2 = mgr->get(QNetworkRequest(QUrl(URL2)));
