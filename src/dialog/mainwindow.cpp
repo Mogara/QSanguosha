@@ -165,6 +165,7 @@ MainWindow::~MainWindow() {
     view->deleteLater();
     if (scene != NULL)
         scene->deleteLater();
+    QSanSkinFactory::destroyInstance();
 }
 
 void MainWindow::gotoScene(QGraphicsScene *scene) {

@@ -366,10 +366,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     pindian_to_card = NULL;
 }
 
-RoomScene::~RoomScene(){
-    QSanSkinFactory::destroyInstance();
-}
-
 void RoomScene::handleGameEvent(const Json::Value &arg) {
     GameEventType eventType = (GameEventType)arg[0].asInt();
     switch (eventType) {
