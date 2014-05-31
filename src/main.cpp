@@ -62,12 +62,10 @@ int main(int argc, char *argv[]) {
 #else
 int main(int argc, char *argv[]) {
 #endif
-    QCoreApplication *app;
-
     if (argc > 1 && strcmp(argv[1], "-server") == 0)
-        app = new QCoreApplication(argc, argv);
+        new QCoreApplication(argc, argv);
     else
-        app = new QApplication(argc, argv);
+        new QApplication(argc, argv);
 
 #ifdef Q_OS_MAC
 #ifdef QT_NO_DEBUG
@@ -138,8 +136,6 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    int r = qApp->exec();
-    app->deleteLater();
-    return r;
+    return qApp->exec();
 }
 
