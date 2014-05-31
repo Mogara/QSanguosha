@@ -287,6 +287,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     m_tableBg = new QGraphicsPixmapItem(NULL, this);
 #else
     m_tableBg = new QGraphicsPixmapItem();
+    addItem(m_tableBg);
 #endif
     m_tableBg->setZValue(-100000);
     /*
