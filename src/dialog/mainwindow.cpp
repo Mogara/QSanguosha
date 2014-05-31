@@ -97,6 +97,8 @@ MainWindow::MainWindow(QWidget *parent)
 //@to-do: terminated() is removed from QThread in Qt 5
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     connect(thread, SIGNAL(terminated()), thread, SLOT(deleteLater()));
+#else
+    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 #endif
     thread->start();
 

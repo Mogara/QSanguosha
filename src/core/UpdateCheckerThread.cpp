@@ -46,6 +46,10 @@ void UpdateCheckerThread::run() {
     connect(this, SIGNAL(terminated()), reply, SLOT(deleteLater()));
     connect(this, SIGNAL(terminated()), reply2, SLOT(deleteLater()));
     connect(this, SIGNAL(terminated()), mgr, SLOT(deleteLater()));
+#else
+    connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
+    connect(this, SIGNAL(finished()), reply2, SLOT(deleteLater()));
+    connect(this, SIGNAL(finished()), mgr, SLOT(deleteLater()));
 #endif
 
     loop.exec();
