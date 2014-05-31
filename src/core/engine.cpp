@@ -526,7 +526,7 @@ SkillCard *Engine::cloneSkillCard(const QString &name) const{
 }
 
 QString Engine::getVersionNumber() const{
-    return "0.7.2";
+    return "0.7.1.9";
 }
 
 QString Engine::getVersion() const{
@@ -539,7 +539,7 @@ QString Engine::getVersion() const{
 }
 
 QString Engine::getVersionName() const{
-    return "V2Heg";
+    return "Heg";
 }
 
 QString Engine::getMODName() const{

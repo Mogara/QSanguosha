@@ -54,7 +54,7 @@ bool Skill::isAttachedLordSkill() const{
 }
 
 QString Skill::getDescription(bool inToolTip) const{
-    QString desc = "\n";
+    QString desc = "<br/>";
     if (!canPreshow())
         desc.prepend(QString("<font color=gray>(%1)</font>").arg(tr("this skill cannot preshow")));
 

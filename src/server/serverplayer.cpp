@@ -1402,6 +1402,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event) {
         QVariant _head = head_general;
         room->getThread()->trigger(GeneralShown, room, this, _head);
     }
+    room->filterCards(this, getCards("he"), true);
 }
 
 void ServerPlayer::hideGeneral(bool head_general) {
@@ -1489,6 +1490,8 @@ void ServerPlayer::hideGeneral(bool head_general) {
     Q_ASSERT(room->getThread() != NULL);
     QVariant _head = head_general;
     room->getThread()->trigger(GeneralHidden, room, this, _head);
+
+    room->filterCards(this, getCards("he"), true);
 }
 
 void ServerPlayer::removeGeneral(bool head_general) {
@@ -1612,6 +1615,8 @@ void ServerPlayer::removeGeneral(bool head_general) {
     Q_ASSERT(room->getThread() != NULL);
     QVariant _from = from_general;
     room->getThread()->trigger(GeneralRemoved, room, this, _from);
+
+    room->filterCards(this, getCards("he"), true);
 }
 
 void ServerPlayer::sendSkillsToOthers(bool head_skill /* = true */) {
