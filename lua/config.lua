@@ -91,6 +91,7 @@ config = {
 		"甄姬真姬" ,
 		"tangjs520" ,
 		"帷幕之下问心云" ,
-		"Procellarum"
+		"Procellarum" ,
+		"KenKic"
 	},
 }
