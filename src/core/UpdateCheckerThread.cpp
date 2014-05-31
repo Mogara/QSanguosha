@@ -40,9 +40,13 @@ void UpdateCheckerThread::run() {
     QNetworkReply *reply2 = mgr->get(QNetworkRequest(QUrl(URL2)));
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop, SLOT(quit()));
+
+    //@to-do: terminated() is removed from QThread
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     connect(this, SIGNAL(terminated()), reply, SLOT(deleteLater()));
     connect(this, SIGNAL(terminated()), reply2, SLOT(deleteLater()));
     connect(this, SIGNAL(terminated()), mgr, SLOT(deleteLater()));
+#endif
 
     loop.exec();
 
@@ -83,8 +87,8 @@ void UpdateCheckerThread::run() {
     QString codeContent = reply2->readAll();    
 
 
-    QTextCodec *codec = QTextCodec::codecForHtml(codeContent.toAscii());    
-    codeContent = codec->toUnicode(codeContent.toAscii());    
+    QTextCodec *codec = QTextCodec::codecForHtml(codeContent.toLatin1());    
+    codeContent = codec->toUnicode(codeContent.toLatin1());    
     out.setCodec(codec);  
     out << codeContent << endl;
     file.close();

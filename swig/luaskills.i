@@ -953,7 +953,7 @@ bool LuaViewAsSkill::isEnabledAtResponse(const Player *player, const QString &pa
 
     SWIG_NewPointerObj(L, player, SWIGTYPE_p_Player, 0);
 
-    lua_pushstring(L, pattern.toAscii());
+    lua_pushstring(L, pattern.toLatin1());
 
     int error = lua_pcall(L, 3, 1, 0);
     if (error) {

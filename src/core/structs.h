@@ -3,11 +3,11 @@
 
 class Room;
 class TriggerSkill;
-class ServerPlayer;
 class Card;
 class Slash;
 
 #include "player.h"
+#include "serverplayer.h"
 
 #include <QVariant>
 #include <json/json.h>

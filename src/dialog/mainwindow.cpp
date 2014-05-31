@@ -94,7 +94,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     UpdateCheckerThread *thread = new UpdateCheckerThread;
     connect(thread, SIGNAL(storeKeyAndValue(const QString &, const QString &)), this, SLOT(storeKeyAndValue(const QString &, const QString &)));
+//@to-do: terminated() is removed from QThread in Qt 5
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     connect(thread, SIGNAL(terminated()), thread, SLOT(deleteLater()));
+#endif
     thread->start();
 
     connection_dialog = new ConnectionDialog(this);
@@ -249,7 +252,11 @@ void MainWindow::startConnection() {
 }
 
 void MainWindow::on_actionReplay_triggered() {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+#else
+    QString location = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+#endif
     QString last_dir = Config.value("LastReplayDir").toString();
     if (!last_dir.isEmpty())
         location = last_dir;
@@ -661,7 +668,11 @@ void MainWindow::on_actionReplay_file_convert_triggered() {
 }
 
 void MainWindow::on_actionRecord_analysis_triggered() {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+#else
+    QString location = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+#endif
     QString filename = QFileDialog::getOpenFileName(this,
                                                     tr("Load replay record"),
                                                     location,

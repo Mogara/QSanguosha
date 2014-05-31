@@ -1679,7 +1679,7 @@ void ServerPlayer::notifyPreshow() {
     args[0] = S_GAME_EVENT_UPDATE_PRESHOW;
     Json::Value args1;
     foreach(const QString skill, head_skills.keys() + deputy_skills.keys()) {
-        args1[skill.toAscii().constData()] = head_skills.value(skill, false)
+        args1[skill.toLatin1().constData()] = head_skills.value(skill, false)
             || deputy_skills.value(skill, false);
     }
     args[1] = args1;
