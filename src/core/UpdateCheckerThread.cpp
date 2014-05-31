@@ -31,6 +31,7 @@ UpdateCheckerThread::UpdateCheckerThread()
 }
 
 void UpdateCheckerThread::run() {
+#if defined(WIN32) && (defined(VS2010) || defined(VS2012))
     QNetworkAccessManager *mgr = new QNetworkAccessManager;
     //temp url for test
     QString URL = "http://ver.qsanguosha.org/UpdateInfo";
@@ -90,6 +91,6 @@ void UpdateCheckerThread::run() {
     QByteArray codeContent = reply2->readAll();
     file.write(codeContent);
     file.close();
-
+#endif
     terminate();
 }
