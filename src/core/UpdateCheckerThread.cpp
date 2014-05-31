@@ -83,14 +83,8 @@ void UpdateCheckerThread::run() {
         qDebug() << "Cannot open the file: " << FILE_NAME;  
         return;  
     }
-    QTextStream out(&file);    
-    QString codeContent = reply2->readAll();    
-
-
-    QTextCodec *codec = QTextCodec::codecForHtml(codeContent.toLatin1());    
-    codeContent = codec->toUnicode(codeContent.toLatin1());    
-    out.setCodec(codec);  
-    out << codeContent << endl;
+    QByteArray codeContent = reply2->readAll();
+    file.write(codeContent);
     file.close();
 
     terminate();
