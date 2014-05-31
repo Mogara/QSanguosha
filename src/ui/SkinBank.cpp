@@ -147,7 +147,7 @@ bool IQSanComponentSkin::QSanShadowTextFont::tryParse(Json::Value arg) {
 }
 
 bool IQSanComponentSkin::isImageKeyDefined(const QString &key) const{
-    Json::Value val = _m_imageConfig[key.toAscii().constData()];
+    Json::Value val = _m_imageConfig[key.toLatin1().constData()];
     return val.isArray() || val.isString();
 }
 
@@ -218,7 +218,7 @@ QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName,
                                           QSanButton::ButtonState state) const{
     const char *key;
     QString qkey = QString(QSanRoomSkin::S_SKIN_KEY_BUTTON).arg(groupName);
-    QByteArray arr = qkey.toAscii();
+    QByteArray arr = qkey.toLatin1();
     key = arr.constData();
     if (!isImageKeyDefined(key)) return QString();
     QString path = toQString(_m_imageConfig[key]);
@@ -380,7 +380,7 @@ QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const Q
 
     if (fileName.isEmpty()) {
         fileName = toQString(_m_audioConfig[QString(S_SKIN_KEY_PLAYER_AUDIO_EFFECT)
-                             .arg(category).arg("default").toAscii().constData()]).arg(eventName);
+                             .arg(category).arg("default").toLatin1().constData()]).arg(eventName);
     }
     return fileName;
 }
@@ -475,8 +475,8 @@ QPixmap QSanPixmapCache::getPixmap(const QString &key, const QString &fileName) 
         bool success = !fileName.isEmpty() && pixmap.load(fileName);
         if (!success) {
             /*qWarning("Unable to open resource file \"%s\" for key \"%s\"\n",
-                     fileName.toAscii().constData(),
-                     key.toAscii().constData());*/
+                     fileName.toLatin1().constData(),
+                     key.toLatin1().constData());*/
             QPixmapCache::insert(key, empty); // make Qt happy
         }else{
             QPixmapCache::insert(key, pixmap);
@@ -528,7 +528,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
 
     if (!layoutConfigName.isNull()) {
         Json::Reader reader;
-        ifstream layoutFile(layoutConfigName.toAscii());
+        ifstream layoutFile(layoutConfigName.toLatin1());
         Json::Value layoutConfig;
         if (layoutFile.bad() || !reader.parse(layoutFile, layoutConfig) || !layoutConfig.isObject()) {
             errorMsg = QString("Error when reading layout config file \"%1\": \n%2")
@@ -542,7 +542,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
 
     if (!imageConfigName.isNull()) {
         Json::Reader reader;
-        ifstream imageFile(imageConfigName.toAscii());
+        ifstream imageFile(imageConfigName.toLatin1());
         Json::Value imageConfig;
         if (imageFile.bad()
             || !reader.parse(imageFile, imageConfig)
@@ -558,7 +558,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
 
     if (!audioConfigName.isNull()) {
         Json::Reader reader;
-        ifstream audioFile(audioConfigName.toAscii());
+        ifstream audioFile(audioConfigName.toLatin1());
         if (audioFile.bad()
             || !reader.parse(audioFile, _m_audioConfig)
             || !_m_audioConfig.isObject()) {
@@ -572,7 +572,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
 
     if (!animationConfigName.isNull()) {
         Json::Reader reader;
-        ifstream animFile(animationConfigName.toAscii());
+        ifstream animFile(animationConfigName.toLatin1());
         if (animFile.bad()
             || !reader.parse(animFile, _m_animationConfig)
             || !_m_animationConfig.isObject()) {
@@ -588,7 +588,7 @@ bool IQSanComponentSkin::load(const QString &layoutConfigName, const QString &im
 }
 
 QStringList IQSanComponentSkin::getAudioFileNames(const QString &key) const{
-    Json::Value result = _m_audioConfig[key.toAscii().constData()];
+    Json::Value result = _m_audioConfig[key.toLatin1().constData()];
     if (result.isNull())
         return QStringList();
     else if (result.isString())
@@ -619,9 +619,9 @@ QString IQSanComponentSkin::getRandomAudioFileName(const QString &key) const{
 QString IQSanComponentSkin::_readConfig(const Json::Value &dict, const QString &key,
                                         const QString &defaultValue) const{
     if (!dict.isObject()) return defaultValue;
-    Json::Value val = dict[key.toAscii().constData()];
+    Json::Value val = dict[key.toLatin1().constData()];
     if (!val.isString()) {
-        qWarning("Unable to read configuration: %s", key.toAscii().constData());
+        qWarning("Unable to read configuration: %s", key.toLatin1().constData());
         return defaultValue;
     }
     else return val.asCString();
@@ -633,7 +633,7 @@ QString IQSanComponentSkin::_readImageConfig(const QString &key, QRect &rect,
     clipping = false;
     scaled = false;
     if (!_m_imageConfig.isObject()) return defaultValue;
-    Json::Value val = _m_imageConfig[key.toAscii().constData()];
+    Json::Value val = _m_imageConfig[key.toLatin1().constData()];
     QString result;
     if (val.isString())
         result = val.asCString();
@@ -643,7 +643,7 @@ QString IQSanComponentSkin::_readImageConfig(const QString &key, QRect &rect,
         if (val.size() >= 3 && tryParse(val[3], newScale))
             scaled = true;
     } else {
-        qWarning("Unable to read configuration: %s", key.toAscii().constData());
+        qWarning("Unable to read configuration: %s", key.toLatin1().constData());
         return defaultValue;
     }
     return result;
@@ -987,7 +987,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         }
         for (int j = 0; j < 5; j++) {
             int index = i * 5 + j;
-            QByteArray arr = key.toAscii();
+            QByteArray arr = key.toLatin1();
             const char *sKey = arr.constData();
             tryParse(config[sKey][j][0], _m_dashboardLayout.m_skillTextColors[index]);
             tryParse(config[sKey][j][1], _m_dashboardLayout.m_skillTextShadowColors[index]);
@@ -1013,13 +1013,13 @@ const QSanRoomSkin &QSanSkinScheme::getRoomSkin() const{
 
 QSanSkinFactory &QSanSkinFactory::getInstance() {
     if (_sm_singleton == NULL) {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
         _sm_singleton = new QSanSkinFactory("skins/skinList.json");
 #endif
-#ifdef Q_WS_X11
+#ifdef Q_OS_X11
         _sm_singleton = new QSanSkinFactory("skins/skinListAlt.json");
 #endif
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
         // obviously Mac will be the same as X11
         _sm_singleton = new QSanSkinFactory("skins/skinListAlt.json");
 #endif
@@ -1042,13 +1042,13 @@ bool QSanSkinFactory::switchSkin(QString skinName) {
     if (skinName == _m_skinName) return false;
     bool success = false;
     if (_m_skinName != S_DEFAULT_SKIN_NAME) {
-        success = _sm_currentSkin.load(_m_skinList[S_DEFAULT_SKIN_NAME.toAscii().constData()]);
+        success = _sm_currentSkin.load(_m_skinList[S_DEFAULT_SKIN_NAME.toLatin1().constData()]);
         if (!success) qWarning("Cannot load default skin!");
     }
     if (skinName != S_DEFAULT_SKIN_NAME)
-        success = _sm_currentSkin.load(_m_skinList[skinName.toAscii().constData()]);
+        success = _sm_currentSkin.load(_m_skinList[skinName.toLatin1().constData()]);
     if (!success)
-        qWarning("Loading skin %s failed", skinName.toAscii().constData());
+        qWarning("Loading skin %s failed", skinName.toLatin1().constData());
     _m_skinName = skinName;
     return success;
 }

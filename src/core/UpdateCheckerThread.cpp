@@ -40,9 +40,17 @@ void UpdateCheckerThread::run() {
     QNetworkReply *reply2 = mgr->get(QNetworkRequest(QUrl(URL2)));
     connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), &loop, SLOT(quit()));
+
+    //@to-do: terminated() is removed from QThread
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     connect(this, SIGNAL(terminated()), reply, SLOT(deleteLater()));
     connect(this, SIGNAL(terminated()), reply2, SLOT(deleteLater()));
     connect(this, SIGNAL(terminated()), mgr, SLOT(deleteLater()));
+#else
+    connect(this, SIGNAL(finished()), reply, SLOT(deleteLater()));
+    connect(this, SIGNAL(finished()), reply2, SLOT(deleteLater()));
+    connect(this, SIGNAL(finished()), mgr, SLOT(deleteLater()));
+#endif
 
     loop.exec();
 
@@ -79,14 +87,8 @@ void UpdateCheckerThread::run() {
         qDebug() << "Cannot open the file: " << FILE_NAME;  
         return;  
     }
-    QTextStream out(&file);    
-    QString codeContent = reply2->readAll();    
-
-
-    QTextCodec *codec = QTextCodec::codecForHtml(codeContent.toAscii());    
-    codeContent = codec->toUnicode(codeContent.toAscii());    
-    out.setCodec(codec);  
-    out << codeContent << endl;
+    QByteArray codeContent = reply2->readAll();
+    file.write(codeContent);
     file.close();
 
     terminate();

@@ -44,7 +44,7 @@ To build QSanguosha in Linux or using MinGW
    swig -c++ -lua sanguosha.i
    cd ../lib/linux
    (x86)cd x86 (or) (x64)cd x64
-   sudo cp libfmodex*.so /var/lib (root password required)
+   sudo cp libfmodex*.so /usr/lib (root password required)
    sudo ldconfig
 
 (MinGW)

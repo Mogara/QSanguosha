@@ -25,7 +25,7 @@ function load_translations()
 		end
 	end
 end
-
+--[[
 function load_extensions(just_require)
 	local scripts = sgs.GetFileNames("extensions")
 	local package_names = {}
@@ -37,6 +37,24 @@ function load_extensions(just_require)
 			if not loaded.hidden then
 				table.insert(package_names, name)
 				sgs.Sanguosha:addPackage(loaded.extension)
+			end
+		end
+	end
+	local lua_packages = ""
+	if #package_names > 0 then lua_packages = table.concat(package_names, "+") end
+	sgs.SetConfig("LuaPackages", lua_packages)
+end
+]]
+function load_extensions()
+	local scripts = sgs.GetFileNames("extensions")
+	local package_names = {}
+	for _, script in ipairs(scripts) do
+		if script:match(".+%.lua$") then
+			local extensions = dofile("./extensions/" .. script)
+			for _, extension in ipairs(extensions) do
+				local name = extension:objectName()
+				table.insert(package_names, name)
+				sgs.Sanguosha:addPackage(extension)
 			end
 		end
 	end

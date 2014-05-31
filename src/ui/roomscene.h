@@ -127,7 +127,6 @@ class RoomScene: public QGraphicsScene {
 
 public:
     RoomScene(QMainWindow *main_window);
-    ~RoomScene();
     void changeTextEditBackground();
     void adjustItems();
     void showIndicator(const QString &from, const QString &to);

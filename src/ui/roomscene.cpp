@@ -283,7 +283,12 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     addItem(prompt_box);
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     m_tableBg = new QGraphicsPixmapItem(NULL, this);
+#else
+    m_tableBg = new QGraphicsPixmapItem();
+    addItem(m_tableBg);
+#endif
     m_tableBg->setZValue(-100000);
     /*
     QHBoxLayout *skill_dock_layout = new QHBoxLayout;
@@ -360,10 +365,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     pindian_from_card = NULL;
     pindian_to_card = NULL;
-}
-
-RoomScene::~RoomScene(){
-    QSanSkinFactory::destroyInstance();
 }
 
 void RoomScene::handleGameEvent(const Json::Value &arg) {
@@ -1354,7 +1355,11 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
 void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QGraphicsScene::contextMenuEvent(event);
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QGraphicsItem *item = itemAt(event->scenePos());
+#else
+    QGraphicsItem *item = itemAt(event->scenePos(), QTransform());
+#endif
     if (item && item->zValue() < -99999) { // @todo_P: tableBg?
         QMenu *menu = miscellaneous_menu;
         menu->clear();
@@ -2837,7 +2842,14 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only) 
         }
         return;
     }
+
+
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+#else
+    QString location = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+#endif
     QString filename = QFileDialog::getSaveFileName(main_window,
                                                     tr("Save replay record"),
                                                     location,
@@ -2876,7 +2888,7 @@ void ScriptExecutor::doScript() {
     if (box == NULL) return;
 
     QString script = box->toPlainText();
-    QByteArray data = script.toAscii();
+    QByteArray data = script.toLatin1();
     script = qCompress(data);
 
     ClientInstance->requestCheatRunScript(script);

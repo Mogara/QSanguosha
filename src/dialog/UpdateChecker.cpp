@@ -78,5 +78,3 @@ void UpdateChecker::clear()
     address_label->clear();
     page->clear();
 }
-
-

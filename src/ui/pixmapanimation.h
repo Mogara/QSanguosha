@@ -8,7 +8,7 @@ class PixmapAnimation: public QObject, public QGraphicsItem {
     Q_INTERFACES(QGraphicsItem)
 
 public:
-    PixmapAnimation(QGraphicsScene *scene = 0);
+    PixmapAnimation();
 
     QRectF boundingRect() const;
     void advance(int phase);
