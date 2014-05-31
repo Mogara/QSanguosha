@@ -46,8 +46,6 @@ tags
 /lua/ai/private-smart-ai.lua
 card_intention.txt
 *.sh
-/src/lua/print.c
-/src/lua/luac.c
 /Qt*4.dll
 /dmp/*.dmp
 *Thumbs.db

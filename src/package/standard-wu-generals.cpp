@@ -693,26 +693,27 @@ public:
         view_as_skill = new HongyanFilter;
     }
 
+    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const {
+        JudgeStar judge = data.value<JudgeStar>();
+
+        if (TriggerSkill::triggerable(player) && !player->hasShownSkill(this)
+            && judge->who == player && judge->card->getSuit() == Card::Spade) 
+            return QStringList(objectName());
+
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        return player->askForSkillInvoke(objectName(), data);
+    }
+
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *xiaoqiao, QVariant &data, ServerPlayer *) const {
         JudgeStar judge = data.value<JudgeStar>();
-        QList<const Card *> cards = xiaoqiao->getCards("he");
+        QList<const Card *> cards;
         cards << judge->card;
         room->filterCards(xiaoqiao, cards, true);
         judge->updateResult();
         return false;
-    }
-
-    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        return player->hasShownSkill(this) ? false : room->askForSkillInvoke(player, objectName(), data);
-    }
-
-    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const {
-        JudgeStar judge = data.value<JudgeStar>();
-
-        if (judge->who == player && judge->card->getSuit() == Card::Spade) 
-            return QStringList(objectName());
-
-        return QStringList();
     }
 };
 
