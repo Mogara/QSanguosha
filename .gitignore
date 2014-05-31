@@ -2,16 +2,12 @@ debug/
 release/
 ui_*
 Makefile*
-object_script*
 *.pro.user
 sanguosha.qm
 config.ini
 swig/sanguosha_wrap.cxx
 records/*
-users.db
-doc/*.html
 .DS_Store
-liblua5.1.dylib
 font/font.ttf
 QSanguosha.pro.user*
 QSanguosha.exe
@@ -24,9 +20,6 @@ lib/breakpad.lib
 builds/vs201[02]/Win32/
 builds/vs201[02]/x64/
 Bin/
-/lib/lua.lib
-/lib/jsoncpp.lib
-/lib/breakpad.lib
 *.sdf
 *.suo
 /builds/vs201[02]/*.user
@@ -36,7 +29,6 @@ Bin/
 /QSanSMTPClient_build/QSanSMTPClient/ipch
 QSanSMTPClient.exe
 QSanSMTPClient.qm
-tags
 /extensions
 *~
 *.kdev4
