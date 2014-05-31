@@ -19,8 +19,6 @@ public:
 
     virtual QRectF boundingRect() const;
 
-    virtual ~Button();
-
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -34,8 +32,8 @@ private:
     QSizeF size;
     bool mute;
     QFont font;
-    QImage *outimg;
-    QPixmap *title;
+    QPixmap title;
+    QImage outimg;
     QGraphicsPixmapItem *title_item;
     int glow;
     int timer_id;
