@@ -286,7 +286,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     m_tableBg = new QGraphicsPixmapItem(NULL, this);
 #else
-    m_tableBg = new QGraphicsPixmapItem;
+    m_tableBg = new QGraphicsPixmapItem();
 #endif
     m_tableBg->setZValue(-100000);
     /*
