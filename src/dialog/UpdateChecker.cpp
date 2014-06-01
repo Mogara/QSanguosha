@@ -43,7 +43,7 @@ void UpdateChecker::fill( UpdateInfoStruct info )
 {
     QString state;
     bool lastest = false;
-    if (info.version_number > Sanguosha->getVersionNumber()) {
+    if (info.version_number.toInt() > Sanguosha->getVersionNumber().toInt()) {
         QString postfix = " : " + info.version_number;
         if (info.is_patch)
             state = tr("New Patch Available") + postfix;
@@ -56,7 +56,7 @@ void UpdateChecker::fill( UpdateInfoStruct info )
     state_label->setText(state);
 
     if (lastest)
-        address_label->hide();
+        address_label->setText(tr("Lastest Version Already"));
     else {
         address_label->setOpenExternalLinks(true);
         address_label->setText(QString("<a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(info.address));
@@ -69,7 +69,7 @@ void UpdateChecker::fill( UpdateInfoStruct info )
         QString content = stream.readAll();
         page->setHtml(content);
     } else
-        page->hide();
+        page->setText(tr("Lastest Version Already"));
 }
 
 void UpdateChecker::clear()
