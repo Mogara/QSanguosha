@@ -57,3 +57,7 @@ vld_x86.dll
 vld_x64.dll
 info.html
 ssleay32.dll
+icu*.dll
+/Qt5*.dll
+libEGL.dll
+libGLESv2.dll
