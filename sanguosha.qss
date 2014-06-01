@@ -101,10 +101,6 @@ QPushButton[private_pile="true"]{
     color: white;
 }
 
-QDialog, QDialog *{
-	background-image: url(image/system/simpleBg/dialog.png);
-}
-
 QPushButton[game_control="true"]{
     border: 0px solid gray;
     font: 12px;
