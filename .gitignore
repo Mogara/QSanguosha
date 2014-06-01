@@ -17,13 +17,13 @@ lib/jsoncpp.lib
 lib/lua.lib
 lib/breakpad.lib
 /tools/
-builds/vs201[02]/Win32/
-builds/vs201[02]/x64/
+builds/vs201[023]/Win32/
+builds/vs201[023]/x64/
 Bin/
 *.sdf
 *.suo
-/builds/vs201[02]/*.user
-/builds/vs201[02]/ipch
+/builds/vs201[023]/*.user
+/builds/vs201[023]/ipch
 *.opensdf
 /QSanSMTPClient_build/QSanSMTPClient/*.user
 /QSanSMTPClient_build/QSanSMTPClient/ipch
