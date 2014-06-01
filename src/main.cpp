@@ -17,7 +17,7 @@
 
   QSanguosha-Hegemony Team	
 *********************************************************************/
-#if defined(WIN32) && (defined(VS2010) || defined(VS2012)) && !defined(QT_NO_DEBUG)
+#if defined(WIN32) && (defined(VS2010) || defined(VS2012) || defined(VS2013)) && !defined(QT_NO_DEBUG)
 #include <vld.h>
 #endif
 
