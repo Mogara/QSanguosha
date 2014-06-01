@@ -51,6 +51,9 @@ function load_extensions()
 	for _, script in ipairs(scripts) do
 		if script:match(".+%.lua$") then
 			local extensions = dofile("./extensions/" .. script)
+			if type(extensions) ~= "table" then
+				extensions = {extensions}
+			end
 			for _, extension in ipairs(extensions) do
 				local name = extension:objectName()
 				table.insert(package_names, name)
