@@ -196,8 +196,10 @@ void Collateral::onEffect(const CardEffectStruct &effect) const{
     QString prompt = QString("collateral-slash:%1:%2").arg(victim->objectName()).arg(source->objectName());
 
     if (victim->isDead()) {
-        if (source->isAlive() && killer->isAlive() && killer->getWeapon())
-            source->obtainCard(weapon);
+        if (source->isAlive() && killer->isAlive() && killer->getWeapon()){
+            CardMoveReason reason(CardMoveReason::S_REASON_GIVE, killer->objectName());
+            room->obtainCard(source, weapon, reason);
+        }
     }
     else if (source->isDead()) {
         if (killer->isAlive())
@@ -209,8 +211,10 @@ void Collateral::onEffect(const CardEffectStruct &effect) const{
             doCollateral(room, killer, victim, prompt);
         } else {
             if (!doCollateral(room, killer, victim, prompt)) {
-                if (killer->getWeapon())
-                    source->obtainCard(weapon);
+                if (killer->getWeapon()){
+                    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, killer->objectName());
+                    room->obtainCard(source, weapon, reason);
+                }
             }
         }
     }
