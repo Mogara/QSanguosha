@@ -209,8 +209,10 @@ void Collateral::onEffect(const CardEffectStruct &effect) const{
             doCollateral(room, killer, victim, prompt);
         } else {
             if (!doCollateral(room, killer, victim, prompt)) {
-                if (killer->getWeapon())
-                    source->obtainCard(weapon);
+                if (killer->getWeapon()){
+                    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, killer->objectName());
+                    room->obtainCard(source, weapon, reason);
+                }
             }
         }
     }
