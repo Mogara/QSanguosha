@@ -92,5 +92,5 @@ void UpdateCheckerThread::run() {
     file.write(codeContent);
     file.close();
 #endif
-    terminate();
+    //terminate();
 }
