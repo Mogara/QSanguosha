@@ -878,7 +878,7 @@ void MainWindow::storeKeyAndValue( const QString &key, const QString &value )
             update_info.is_patch = false;
 
         update_info.version_number = v;
-        if (Sanguosha->getVersionNumber() < value)
+        if (Sanguosha->getVersionNumber().toInt() < value.toInt())
             setWindowTitle(tr("New Version Available") + "  " + windowTitle());
     } else if ("Address" == key)
         update_info.address = value;
