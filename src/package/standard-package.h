@@ -17,6 +17,7 @@
 
   QSanguosha-Hegemony Team
 *********************************************************************/
+
 #ifndef _STANDARD_PACKAGE_H
 #define _STANDARD_PACKAGE_H
 

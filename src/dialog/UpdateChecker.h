@@ -1,5 +1,5 @@
 /********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
 
@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Hegemony Team
 *********************************************************************/
+
 #ifndef _UPDATE_CHECKER
 #define _UPDATE_CHECKER
 
@@ -26,7 +27,7 @@
 
 #include "UpdateCheckerThread.h"
 
-class UpdateChecker: public QWidget 
+class UpdateChecker: public QWidget
 {
     Q_OBJECT
 

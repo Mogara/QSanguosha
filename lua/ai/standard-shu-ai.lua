@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
-**********************************************************************]]
+  QSanguosha-Hegemony Team
+*********************************************************************]]
+
 function SmartAI:shouldUseRende()
 	if (self:hasCrossbowEffect() or self:getCardsNum("Crossbow") > 0) and self:getCardsNum("Slash") > 0 then
 		self:sort(self.enemies, "defense")
@@ -36,7 +37,7 @@ function SmartAI:shouldUseRende()
 		end
 	end
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:canSlash(self.player) and not self:slashProhibit(nil, self.player, enemy) 
+		if enemy:canSlash(self.player) and not self:slashProhibit(nil, self.player, enemy)
 			and self:hasCrossbowEffect(enemy) and getCardsNum("Slash", enemy) > 1 and self:getOverflow() <= 0 then
 			return false
 		end
@@ -602,10 +603,10 @@ sgs.ai_skill_use["@@fangquan"] = function(self, prompt)
 	end
 	if in_handcard then return self.fangquan_card_str end
 
-	local cards = sgs.QList2Table(self.player:getHandcards()) 
+	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByKeepValue(cards)
 	cards = sgs.reverse(cards)
-	
+
 	if self.fangquan_target then
 		for i = #cards, 1, -1 do
 			local card = cards[i]

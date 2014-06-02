@@ -1,5 +1,5 @@
 /********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
 
@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Hegemony Team
 *********************************************************************/
+
 #include "client.h"
 #include "settings.h"
 #include "engine.h"
@@ -378,10 +379,10 @@ void Client::updateProperty(const Json::Value &arg) {
     player->setProperty(arg[1].asCString(), toQString(arg[2]));
 
     //for shuangxiong { RoomScene::detachSkill(const QString &) }
-    if (arg[1] == "phase" && player->getPhase() == Player::Finish 
+    if (arg[1] == "phase" && player->getPhase() == Player::Finish
             && player->hasFlag("shuangxiong_postpone") && player == Self && !Self->ownSkill("shuangxiong"))
         emit skill_detached("shuangxiong");
-        
+
 }
 
 void Client::removePlayer(const Json::Value &player_name_json) {

@@ -1,5 +1,5 @@
 /********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
 
@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Hegemony Team
 *********************************************************************/
+
 #include "standard-wu-generals.h"
 #include "engine.h"
 #include "standard-basics.h"
@@ -697,7 +698,7 @@ public:
         JudgeStar judge = data.value<JudgeStar>();
 
         if (TriggerSkill::triggerable(player) && !player->hasShownSkill(this)
-            && judge->who == player && judge->card->getSuit() == Card::Spade) 
+            && judge->who == player && judge->card->getSuit() == Card::Spade)
             return QStringList(objectName());
 
         return QStringList();

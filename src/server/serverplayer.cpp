@@ -1,5 +1,5 @@
 /********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
 
@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Hegemony Team
 *********************************************************************/
+
 #include "serverplayer.h"
 #include "engine.h"
 #include "standard.h"
@@ -1217,7 +1218,7 @@ void ServerPlayer::gainAnExtraTurn() {
     Player::Phase orig_phase = Player::NotActive;
     if (current != NULL && current->isAlive())
         orig_phase = current->getPhase();
-    
+
     try {
         current->setPhase(Player::NotActive);
         room->broadcastProperty(current, "phase");

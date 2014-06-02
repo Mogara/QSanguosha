@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
-**********************************************************************]]
+  QSanguosha-Hegemony Team
+*********************************************************************]]
+
 sgs.ai_skill_invoke.tuntian = true
 sgs.ai_skill_invoke._tuntian = true
 
@@ -483,13 +484,13 @@ sgs.ai_skill_choice.DragonPhoenix = function(self, choices, data)
 		elseif (string.find(choices, "zhangliao")) then
 			return "zhangliao"
 		end
-		
+
 		table.removeOne(choices_t, "caohong")
 		table.removeOne(choices_t, "zangba")
 		table.removeOne(choices_t, "xuchu")
 		table.removeOne(choices_t, "dianwei")
 		table.removeOne(choices_t, "caoren")
-		
+
 	elseif (kingdom == "shu") then
 		if (string.find(choices, "mifuren")) then
 			return "mifuren"
@@ -502,14 +503,14 @@ sgs.ai_skill_choice.DragonPhoenix = function(self, choices, data)
 		elseif (string.find(choices, "jiangwanfeiyi")) then
 			return "jiangwanfeiyi"
 		end
-		
+
 		table.removeOne(choices_t, "liubei")
 		table.removeOne(choices_t, "guanyu")
 		table.removeOne(choices_t, "zhangfei")
 		table.removeOne(choices_t, "weiyan")
 		table.removeOne(choices_t, "zhurong")
 		table.removeOne(choices_t, "madai")
-		
+
 	elseif (kingdom == "wu") then
 		if (string.find(choices, "zhoutai")) then
 			return "zhoutai"
@@ -520,12 +521,12 @@ sgs.ai_skill_choice.DragonPhoenix = function(self, choices, data)
 		elseif (string.find(choices, "sunjian")) then
 			return "sunjian"
 		end
-		
+
 		table.removeOne(choices_t, "sunce")
 		table.removeOne(choices_t, "chenwudongxi")
 		table.removeOne(choices_t, "luxun")
 		table.removeOne(choices_t, "huanggai")
-		
+
 	elseif (kingdom == "qun") then
 		if (string.find(choices, "yuji")) then
 			return "yuji"
@@ -538,11 +539,11 @@ sgs.ai_skill_choice.DragonPhoenix = function(self, choices, data)
 		elseif (string.find(choices, "lord_zhangjiao")) then
 			return "lord_zhangjiao"
 		end
-		
+
 		table.removeOne(choices_t, "dongzhuo")
 		table.removeOne(choices_t, "tianfeng")
 		table.removeOne(choices_t, "zhangjiao")
-		
+
 	end
 	if #choices_t == 0 then choices_t = string.split(choices, "+") end
 	return choices_t[math.random(1, #choices_t)]

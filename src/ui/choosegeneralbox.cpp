@@ -1,5 +1,5 @@
 /********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
 
@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Hegemony Team
 *********************************************************************/
+
 #include "choosegeneralbox.h"
 #include "engine.h"
 #include "roomscene.h"
@@ -95,7 +96,7 @@ void GeneralCardItem::setFrozen(bool is_frozen) {
     }
 }
 
-ChooseGeneralBox::ChooseGeneralBox() 
+ChooseGeneralBox::ChooseGeneralBox()
     : general_number(0), single_result(false)
 {
     setFlag(ItemIsFocusable);
@@ -125,7 +126,7 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //||          |  g6  | |  g7  | |  g8  | |  g9  |           ||
     //||          |      | |      | |      | |      |           ||
     //||           ！！！！！！   ！！！！！！   ！！！！！！   ！！！！！！            ||
-    //||     ----------------------------------------------     ||                  
+    //||     ----------------------------------------------     ||
     //||                           \/                           ||
     //||                    ______   ______                     ||
     //||                   |      | |      |                    ||
@@ -135,7 +136,7 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //||                       __________                       ||
     //||                      |   鳩協   |                      ||
     //||                       ！！！！！！！！！！                       ||
-    //||               =========================                || 
+    //||               =========================                ||
     //||                                                        ||
     //============================================================
     //
@@ -150,7 +151,7 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //||            |                  |              ||
     //||            |                  |              ||
     //||            |                  |              ||
-    //||            |                  |              || 
+    //||            |                  |              ||
     //||            |                  |              ||
     //||            |                  |              ||
     //||            |                  |              ||
@@ -218,7 +219,7 @@ QRectF ChooseGeneralBox::boundingRect() const {
         height += (card_to_center_line + G_COMMON_LAYOUT.m_cardNormalHeight);
 
     if (single_result) return QRectF(0, 0, width, height);
-    
+
     height += G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line + split_line_to_card_seat;
 
     return QRectF(0, 0, width, height);
@@ -280,7 +281,7 @@ void ChooseGeneralBox::chooseGeneral(QStringList generals) {
             pos.setY(top_blank_width + card_height / 2);
         } else {
             if (items.length() % 2 == 1)
-                pos.setX(left_blank_width + card_width / 2 + card_to_center_line / 2 
+                pos.setX(left_blank_width + card_width / 2 + card_to_center_line / 2
                     + (card_width + card_to_center_line) * (i - first_row) + card_width / 2);
             else
                 pos.setX(left_blank_width + (card_width + card_to_center_line) * (i - first_row) + card_width / 2);
@@ -305,14 +306,14 @@ void ChooseGeneralBox::chooseGeneral(QStringList generals) {
 
     if (ServerInfo.OperationTimeout != 0) {
         if (!progress_bar) {
-	        progress_bar = new QSanCommandProgressBar();
-	        progress_bar->setMinimumWidth(200);
-	        progress_bar->setMaximumHeight(12);
-	        progress_bar->setTimerEnabled(true);
-	        progress_bar_item = new QGraphicsProxyWidget(this);
-	        progress_bar_item->setWidget(progress_bar);
-	        progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 30);
-	        connect(progress_bar, SIGNAL(timedOut()), this, SLOT(reply()));
+            progress_bar = new QSanCommandProgressBar();
+            progress_bar->setMinimumWidth(200);
+            progress_bar->setMaximumHeight(12);
+            progress_bar->setTimerEnabled(true);
+            progress_bar_item = new QGraphicsProxyWidget(this);
+            progress_bar_item->setWidget(progress_bar);
+            progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 30);
+            connect(progress_bar, SIGNAL(timedOut()), this, SLOT(reply()));
         }
         progress_bar->setCountdown(QSanProtocol::S_COMMAND_CHOOSE_GENERAL);
         progress_bar->show();

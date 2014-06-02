@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
-**********************************************************************]]
+  QSanguosha-Hegemony Team
+*********************************************************************]]
+
 sgs.ai_skill_invoke.jianxiong = function(self, data)
 	if self.jianxiong then self.jianxiong = nil return true end
 	return not self:needKongcheng(self.player, true)
@@ -199,13 +200,13 @@ end
 
 function ganglie_discard(self, discard_num, min_num, optional, include_equip, skillName)
 	local xiahou = self.room:findPlayerBySkillName(skillName)
-	
+
 	for _, card in sgs.qlist(self.player:getHandcards()) do
 		if isCard("Peach", card, self.player) then
 			return {}
 		end
 	end
-	
+
 	if xiahou and (not self:damageIsEffective(self.player, sgs.DamageStruct_Normal, xiahou) or self:getDamagedEffects(self.player, xiahou)) then return {} end
 	if xiahou and self:needToLoseHp(self.player, xiahou) then return {} end
 end
@@ -402,7 +403,7 @@ sgs.ai_skill_invoke.tiandu = function(self, data)
 	local judge = data:toJudge()
 	if judge.reason == "tuntian" then return false end
 	return not (self:needKongcheng() and self.player:isKongcheng())
-end 
+end
 
 function sgs.ai_slash_prohibit.tiandu(self, from, to)
 	if self:canLiegong(to, from) then return false end
@@ -1107,7 +1108,7 @@ sgs.dynamic_value.control_card.QuhuCard = true
 sgs.ai_skill_playerchosen.jieming = function(self, targets)
 	local friends = {}
 	local selected_target = self.player:getTag("jieming_target"):toStringList()
-	
+
 	for _, player in ipairs(self.friends) do
 		if player:isAlive() and not table.contains(selected_target, player:objectName()) then
 			table.insert(friends, player)

@@ -29,49 +29,6 @@ QTextEdit QScrollBar:vertical  {
      margin: 22px 0 22px 0;
 }
 
-QScrollBar:add-page
-{
-     background-color: rgba(0,0,0,255);
-}
-
-QScrollBar:sub-page
-{
-     background-color: rgba(0,0,0,255);
-}
-
-QScrollBar::add-line:vertical  {
-
-     background-color: rgba(43,45,31,255);
-     height: 15px;
-     subcontrol-position: bottom;
-     subcontrol-origin: margin;
- }
-
- QScrollBar::sub-line:vertical  {
-
-     background-color: rgba(43,45,31,255);
-     height: 15px;
-     subcontrol-position: top;
-     subcontrol-origin: margin;
- }
-
-QScrollBar::handle:vertical    {    
-    border : 2px solid gray;
-    border-radius: 6px;
-    background-color: solid gray;
-    min-height : 12px;
-}
-
-QScrollBar::up-arrow:vertical
-{
-    border-image: url(image/system/button/scroll-up-arrow.png);
-}
-
-QScrollBar::down-arrow:vertical
-{
-    border-image: url(image/system/button/scroll-down-arrow.png);
-}
-
 QLineEdit#chat_edit{
     background-color: rgba(20,20,20,255);
     color: white;
@@ -99,6 +56,10 @@ QPushButton[private_pile="true"]{
     background-color: rgba(43,63,53,200);
     border-radius: 1px;
     color: white;
+}
+
+QDialog, QDialog *{
+	background-image: url(image/system/simpleBg/dialog.png);
 }
 
 QPushButton[game_control="true"]{

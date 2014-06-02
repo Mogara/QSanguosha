@@ -1,5 +1,5 @@
 /********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
 
@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Hegemony Team
 *********************************************************************/
+
 #include "qsanbutton.h"
 #include "clientplayer.h"
 #include "SkinBank.h"
@@ -29,7 +30,7 @@
 #include "client.h"
 
 QSanButton::QSanButton(QGraphicsItem *parent)
-    : QGraphicsObject(parent), multi_state(false), first_state(true), _m_state(S_STATE_UP), _m_style(S_STYLE_PUSH), 
+    : QGraphicsObject(parent), multi_state(false), first_state(true), _m_state(S_STATE_UP), _m_style(S_STYLE_PUSH),
     _m_mouseEntered(false)
 {
     setSize(QSize(0, 0));

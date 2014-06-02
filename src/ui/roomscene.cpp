@@ -1,5 +1,5 @@
 /********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
 
@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Hegemony Team
 *********************************************************************/
+
 #include "roomscene.h"
 #include "settings.h"
 #include "carditem.h"
@@ -472,7 +473,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             for (unsigned int i = 0; i < keys.size(); i++) {
                 const char *skill = keys[i].c_str();
                 bool showed = arg[1][skill].asBool();
-                    
+
                 if (in_console_mode && Config.EnableAutoPreshowInConsoleMode && auto_preshow_available){
                     const Skill *s = Sanguosha->getSkill(skill);
                     if (s != NULL && s->canPreshow())

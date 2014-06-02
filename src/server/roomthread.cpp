@@ -1,5 +1,5 @@
 /********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
 
@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Hegemony Team
 *********************************************************************/
+
 #include "roomthread.h"
 #include "room.h"
 #include "engine.h"
@@ -511,7 +512,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                                 if (broken) break;
                         }
                         //-----------------------------------------------
-                        
+
                         trigger_who.clear();
                         foreach (const TriggerSkill *skill, triggered) {
                             if (skill->objectName() == "game_rule") {
