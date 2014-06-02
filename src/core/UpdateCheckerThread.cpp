@@ -35,8 +35,8 @@ void UpdateCheckerThread::run() {
 #if defined(WIN32) && (defined(VS2010) || defined(VS2012) || defined(VS2013))
     QNetworkAccessManager *mgr = new QNetworkAccessManager;
     //temp url for test
-    QString URL = "http://ver.qsanguosha.org/UpdateInfo";
-    QString URL2 = "http://ver.qsanguosha.org/whatsnew.html";
+    QString URL = "http://ver.qsanguosha.org/test/UpdateInfo";
+    QString URL2 = "http://ver.qsanguosha.org/test/whatsnew.html";
     QEventLoop loop;
     QNetworkReply *reply = mgr->get(QNetworkRequest(QUrl(URL)));
     QNetworkReply *reply2 = mgr->get(QNetworkRequest(QUrl(URL2)));
