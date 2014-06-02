@@ -88,6 +88,7 @@
       <AdditionalIncludeDirectories>..\..\src\breakpad\client\windows\;..\..\src\breakpad\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
+      <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
