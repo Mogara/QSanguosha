@@ -46,6 +46,39 @@ class LuaArmor;
 
 struct lua_State;
 
+class QSanVersionNumber{
+public:
+    enum VersionType{
+        alpha,
+        beta,
+        offical, 
+        other = -1
+    };
+
+    explicit QSanVersionNumber(const QString &ver_str);
+    QSanVersionNumber(int major, int minor, int sub, VersionType type = offical);
+
+    // Actually only these 2 operator overloads take effect here...
+    bool operator <(const QSanVersionNumber &arg2) const;
+    bool operator ==(const QSanVersionNumber &arg2) const;
+
+    // these 4 operator overloads are just for convenience...
+    bool operator >(const QSanVersionNumber &arg2) const;
+    bool operator !=(const QSanVersionNumber &arg2) const;
+    bool operator <=(const QSanVersionNumber &arg2) const;
+    bool operator >=(const QSanVersionNumber &arg2) const;
+
+    operator QString() const;
+    QString toString() const;
+    bool tryParse(const QString &ver_str);
+
+private:
+    int m_major;
+    int m_minor;
+    int m_sub;
+    VersionType m_type;
+};
+
 class Engine: public QObject {
     Q_OBJECT
 
@@ -69,17 +102,17 @@ public:
     // Method:    getVersionNumber
     // FullName:  Engine::getVersionNumber
     // Access:    public
-    // Returns:   QT_NAMESPACE::QString
+    // Returns:   QSanVersionNumber
     // Qualifier: const
     // Description: Get current version number.
     //
-    // Last Updated By Yanguam Siliagim
+    // Last Updated By Fsu0413
     // To update version number
     //
     // QSanguosha-Hegemony Team
-    // March 17 2014
+    // June 2 2014
     //************************************
-    QString getVersionNumber() const;
+    QSanVersionNumber getVersionNumber() const;
     QString getVersion() const;
     QString getVersionName() const;
     QString getMODName() const;
