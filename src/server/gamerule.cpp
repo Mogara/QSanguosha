@@ -1,5 +1,5 @@
 /********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
 
@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Hegemony Team
 *********************************************************************/
+
 #include "gamerule.h"
 #include "serverplayer.h"
 #include "room.h"
@@ -334,7 +335,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             }
             card_use = data.value<CardUseStruct>();
 
-            if (card_use.card && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty()) 
+            if (card_use.card && !(card_use.card->isVirtualCard() && card_use.card->getSubcards().isEmpty())
                     && !card_use.card->targetFixed() && card_use.to.isEmpty()) {
                 QList<int> table_cardids = room->getCardIdsOnTable(card_use.card);
                 if (!table_cardids.isEmpty()){

@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
-**********************************************************************]]
+  QSanguosha-Hegemony Team
+*********************************************************************]]
+
 function sgs.ai_skill_invoke.wangxi(self, data)
 	local target = data:toPlayer()
 	if target and (self.player:isFriendWith(target) or self:isFriend(target)) then
@@ -124,9 +125,9 @@ end
 sgs.ai_skill_use_func.CunsiCard = function(card, use, self)
 	local Self = self.player
 	local room = Self:getRoom()
-	
+
 	local all_shown = true
-	
+
 	for _, p in sgs.qlist(room:getOtherPlayers(Self)) do
 		if not p:hasShownAllGenerals() then
 			all_shown = false
@@ -146,7 +147,7 @@ sgs.ai_skill_use_func.CunsiCard = function(card, use, self)
 		if use.to then use.to:append(to) end
 	end
 	if use.card then return end
-	
+
 	if all_shown and #self.friends_noself == 0 then
 		use.card = card
 		if use.to then use.to:append(Self) end
@@ -384,14 +385,14 @@ sgs.ai_skill_invoke.hongfa_slash_resp = function(self, data)
 	local asked = data:toStringList()
 	local prompt = asked[2]
 	if self:askForCard("slash", prompt, 1) == "." then return false end
-	
+
 	local cards = self.player:getHandcards()
 	for _, card in sgs.qlist(cards) do
 		if isCard("Slash", card, self.player) then
 			return false
 		end
 	end
-	
+
 	return true
 end
 

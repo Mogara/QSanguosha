@@ -1,5 +1,5 @@
 /********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
 
@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Hegemony Team
 *********************************************************************/
+
 #include "UpdateCheckerThread.h"
 #include "mainwindow.h"
 
@@ -62,11 +63,11 @@ void UpdateCheckerThread::run() {
 
         //simple comment support
         if (line.startsWith("//")) continue;
-        if (!is_comment && line.startsWith("/*")) 
+        if (!is_comment && line.startsWith("/*"))
             is_comment = true;
         if (is_comment) {
             line.trimmed();
-            if (line.contains("*/")) 
+            if (line.contains("*/"))
                 //I wanna use QString::endsWith here, but the mothod always returns false.
                 //@@todo:Refine It Later
                 is_comment = false;
@@ -83,10 +84,10 @@ void UpdateCheckerThread::run() {
     }
     QString FILE_NAME = "info.html";
     QFile file(FILE_NAME);
-    if( !file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) )  
-    {  
-        qDebug() << "Cannot open the file: " << FILE_NAME;  
-        return;  
+    if( !file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate) )
+    {
+        qDebug() << "Cannot open the file: " << FILE_NAME;
+        return;
     }
     QByteArray codeContent = reply2->readAll();
     file.write(codeContent);

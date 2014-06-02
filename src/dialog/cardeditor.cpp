@@ -1,3 +1,23 @@
+/********************************************************************
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+  This file is part of QSanguosha-Hegemony.
+
+  This game is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 3.0 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  See the LICENSE file for more details.
+
+  QSanguosha-Hegemony Team
+*********************************************************************/
+
 #include "cardeditor.h"
 #include "mainwindow.h"
 #include "engine.h"
@@ -1028,7 +1048,7 @@ QLayout *CardEditor::createGeneralLayout(){
 
     QSpinBox *trans_hp_spinbox = new QSpinBox;
     trans_hp_spinbox->setRange(0, 6);
-    
+
     ratio_spinbox = new QSpinBox;
     ratio_spinbox->setRange(1, 1600);
     ratio_spinbox->setValue(100);
@@ -1050,7 +1070,7 @@ QLayout *CardEditor::createGeneralLayout(){
     layout->addRow(tr("Image ratio"), ratio_spinbox);
 
     QHBoxLayout *hlayout2 = new QHBoxLayout;
-    
+
     QPushButton *companion_font_button = new QPushButton;
     QFontDialog *companion_font_dialog = new QFontDialog(this);
 

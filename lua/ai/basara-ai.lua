@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
-**********************************************************************]]
+  QSanguosha-Hegemony Team
+*********************************************************************]]
+
 sgs.ai_skill_choice.TriggerOrder = function(self, choices, data)
 	self.TurnStartShowGeneral_Choice = nil
 	if string.find(choices, "jieming") then return "jieming" end
@@ -62,7 +63,7 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 			not_show[self.player:inHeadSkills(skill)] = true
 		end
 	end
-	
+
 	local show = {}
 	for _, skill in ipairs(must_show) do
 		if self.player:ownSkill(skill) and (not not_show[self.player:inHeadSkills(skill)]) then
@@ -78,7 +79,7 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 			end
 		end
 	end
-	
+
 	local should_show = false
 	local kingdom = self.player:getActualGeneral2():getKingdom()
 	if self.room:getLord(kingdom) then
@@ -86,7 +87,7 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 	elseif sgs.shown_kingdom[kingdom] < self.room:getPlayers():length() / 2 then
 		should_show = true
 	end
-	
+
 	if should_show then
 		if not_show[true] then
 			return getReturnValue(true)
@@ -128,6 +129,6 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 	if (self:getKingdomCount() > 0) and ((self:getKingdomCount() + 1) * 2 <= playerscount) then return choices[1] end
 	if self.player:aliveCount() <= 5 then return choices[1] end
 	return choices[math.random(1, #choices)]
-	
+
 ]]
 end

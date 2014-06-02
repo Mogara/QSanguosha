@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
-**********************************************************************]]
+  QSanguosha-Hegemony Team
+*********************************************************************]]
+
 sgs.ai_debug_func[sgs.EventPhaseStart].debugfunc=function(self, player, data)
 	if player:getPhase()== sgs.Player_Start then
 		debugFunc(self, self.room, player, data)

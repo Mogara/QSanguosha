@@ -17,6 +17,7 @@
 
   QSanguosha-Hegemony Team
 *********************************************************************/
+
 #ifndef _STANDARD_QUN_H
 #define _STANDARD_QUN_H
 

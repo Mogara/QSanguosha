@@ -1,5 +1,5 @@
 /********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
 
@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Hegemony Team
 *********************************************************************/
+
 #include "player.h"
 #include "engine.h"
 #include "room.h"
@@ -349,7 +350,7 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
     const Skill *skill = Sanguosha->getSkill(skill_name);
     if (skill == NULL)
         return false;
-    
+
     if (!skill->isVisible()){
         const Skill *skill = Sanguosha->getMainSkill(skill_name);
         if (skill != NULL)

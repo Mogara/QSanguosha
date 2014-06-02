@@ -1,5 +1,5 @@
 /********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
 
@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Hegemony Team
 *********************************************************************/
+
 #include "skill.h"
 #include "settings.h"
 #include "engine.h"
@@ -59,7 +60,7 @@ QString Skill::getDescription(bool inToolTip) const{
         desc.prepend(QString("<font color=gray>(%1)</font>").arg(tr("this skill cannot preshow")));
 
     QString skill_name = objectName();
-    
+
     if (objectName().contains("_")){
         skill_name = objectName().split("_").first();
     }

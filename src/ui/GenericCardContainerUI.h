@@ -1,5 +1,5 @@
 /********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
 
@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Hegemony Team
 *********************************************************************/
+
 #ifndef _GENERAL_CARD_CONTAINER_UI_H
 #define _GENERAL_CARD_CONTAINER_UI_H
 
@@ -113,7 +114,7 @@ public slots:
     //************************************
     // Method:    updatePile
     // FullName:  PlayerCardContainer::updatePile
-    // Access:    public 
+    // Access:    public
     // Returns:   void
     // Qualifier:
     // Parameter: const QString & pile_name

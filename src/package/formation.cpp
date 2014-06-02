@@ -1,5 +1,5 @@
 /********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
   This file is part of QSanguosha-Hegemony.
 
@@ -15,8 +15,9 @@
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Hegemony Team
 *********************************************************************/
+
 #include "formation.h"
 #include "standard-basics.h"
 #include "standard-tricks.h"
@@ -408,7 +409,7 @@ public:
         Room *room = caohong->getRoom();
 
         ServerPlayer *target = caohong->tag["huyuan_target"].value<ServerPlayer *>();
-        
+
         QList<ServerPlayer *> targets;
         foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (target->distanceTo(p) == 1 && caohong->canDiscard(p, "he"))
@@ -1176,7 +1177,7 @@ public:
                 player->setFlags("-fldf_removing");
                 return QStringList(objectName());
             }
-            
+
         }
 
         return QStringList();
