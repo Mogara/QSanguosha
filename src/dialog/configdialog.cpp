@@ -312,6 +312,6 @@ void ConfigDialog::on_toolTipBackgroundColorButton_clicked()
             QTextStream stream(&file);
             styleSheet = stream.readAll();
         }
-        qApp->setStyleSheet(styleSheet + QString("QToolTip{ border: 0px solid; background: %1; }").arg(Config.ToolTipBackgroundColor.name()));
+		qApp->setStyleSheet(styleSheet + QString("QToolTip{ border: 0px solid; background: %1; opacity: 200; }").arg(Config.ToolTipBackgroundColor.name()));
     }
 }
