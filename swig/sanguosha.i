@@ -1000,7 +1000,7 @@ public:
     Card *cloneCard(const Card *card) const;
     Card *cloneCard(const char *name, Card::Suit suit = Card::SuitToBeDecided, int number = -1) const;
     SkillCard *cloneSkillCard(const char *name) const;
-    QString getVersionNumber() const;
+    //QString getVersionNumber() const;
     QString getVersion() const;
     QString getVersionName() const;
     QString getMODName() const;

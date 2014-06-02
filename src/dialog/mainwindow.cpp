@@ -219,7 +219,7 @@ void MainWindow::on_actionStart_Server_triggered() {
     }
 }
 
-void MainWindow::checkVersion(const QString &server_version, const QString &server_mod) {
+void MainWindow::checkVersion(const QString &server_version_str, const QString &server_mod) {
     QString client_mod = Sanguosha->getMODName();
     if (client_mod != server_mod) {
         QMessageBox::warning(this, tr("Warning"), tr("Client MOD name is not same as the server!"));
@@ -227,7 +227,8 @@ void MainWindow::checkVersion(const QString &server_version, const QString &serv
     }
 
     Client *client = qobject_cast<Client *>(sender());
-    QString client_version = Sanguosha->getVersionNumber();
+    const QSanVersionNumber &client_version = Sanguosha->getVersionNumber();
+    QSanVersionNumber server_version(server_version_str);
 
     if (server_version == client_version) {
         client->signup();
@@ -878,8 +879,12 @@ void MainWindow::storeKeyAndValue( const QString &key, const QString &value )
         } else
             update_info.is_patch = false;
 
+        QSanVersionNumber latest_version = Sanguosha->getVersionNumber();
+        if (!v.isNull() && latest_version.tryParse(v))
+            v = latest_version;
+
         update_info.version_number = v;
-        if (Sanguosha->getVersionNumber().toInt() < value.toInt())
+        if (Sanguosha->getVersionNumber() < latest_version)
             setWindowTitle(tr("New Version Available") + "  " + windowTitle());
     } else if ("Address" == key)
         update_info.address = value;

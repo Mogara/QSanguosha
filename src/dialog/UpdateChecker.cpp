@@ -44,7 +44,7 @@ void UpdateChecker::fill( UpdateInfoStruct info )
 {
     QString state;
     bool lastest = false;
-    if (info.version_number.toInt() > Sanguosha->getVersionNumber().toInt()) {
+    if (info.version_number > Sanguosha->getVersionNumber()) {
         QString postfix = " : " + info.version_number;
         if (info.is_patch)
             state = tr("New Patch Available") + postfix;

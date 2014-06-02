@@ -60,6 +60,7 @@ void UpdateCheckerThread::run() {
 
     while (!reply->atEnd()) {
         QString line = reply->readLine();
+        line.replace('\n', "");
 
         //simple comment support
         if (line.startsWith("//")) continue;
