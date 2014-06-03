@@ -227,16 +227,38 @@ QRectF ChooseGeneralBox::boundingRect() const {
     return QRectF(0, 0, width, height);
 }
 
-void ChooseGeneralBox::chooseGeneral(QStringList generals) {
+static bool sortByKingdom(const QString &gen1, const QString &gen2){
+    static QMap<QString, int> kingdom_priority_map;
+    if (kingdom_priority_map.isEmpty()){
+        QStringList kingdoms = Sanguosha->getKingdoms();
+        //kingdoms << "god";
+        int i = 0;
+        foreach (QString kingdom, kingdoms){
+            kingdom_priority_map[kingdom] = i++;
+        }
+    }
+    const General *g1 = Sanguosha->getGeneral(gen1);
+    const General *g2 = Sanguosha->getGeneral(gen2);
+
+    return kingdom_priority_map[g1->getKingdom()] < kingdom_priority_map[g2->getKingdom()];
+}
+
+void ChooseGeneralBox::chooseGeneral(QStringList _generals) {
     //ÖØÐÂ»æÖÆ±³¾°
-    if (generals.contains("anjiang(lord)")) generals.removeAll("anjiang(lord)");
+    QStringList generals = _generals;
+    foreach (QString general, _generals){
+        if (general.endsWith("(lord)"))
+            generals.removeOne(general);
+    }
+
+    qSort(generals.begin(), generals.end(), sortByKingdom);
+
     general_number = generals.length();
     update();
 
     items.clear();
     selected.clear();
-    foreach(QString general, generals) {
-        if (general.endsWith("(lord)")) continue;
+    foreach (QString general, generals) {
         GeneralCardItem *general_item = new GeneralCardItem(general);
         general_item->setFlag(QGraphicsItem::ItemIsFocusable);
 
@@ -255,7 +277,6 @@ void ChooseGeneralBox::chooseGeneral(QStringList generals) {
         if (!single_result) {
             const General *hero = Sanguosha->getGeneral(general);
             foreach (QString other, generals) {
-                if (other.endsWith("(lord)")) continue;
                 if (general != other && hero->isCompanionWith(other)) {
                     general_item->showCompanion();
                     break;
