@@ -93,6 +93,7 @@ void GeneralCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 void GeneralCardItem::setFrozen(bool is_frozen) {
     if (frozen != is_frozen) {
         frozen = is_frozen;
+        setFlag(QGraphicsItem::ItemIsMovable, !frozen);
         update();
     }
 }
