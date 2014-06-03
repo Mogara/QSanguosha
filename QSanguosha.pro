@@ -16,6 +16,7 @@ SOURCES += \
     src/client/client.cpp \
     src/client/clientplayer.cpp \
     src/client/clientstruct.cpp \
+    src/core/banpair.cpp \
     src/core/card.cpp \
     src/core/engine.cpp \
     src/core/general.cpp \
@@ -107,6 +108,7 @@ HEADERS += \
     src/client/clientplayer.h \
     src/client/clientstruct.h \
     src/core/audio.h \
+    src/core/banpair.h \
     src/core/card.h \
     src/core/compiler-specific.h \
     src/core/engine.h \
@@ -332,11 +334,9 @@ CONFIG(lua){
 #    unix: LIBS += -L/usr/local/lib -lluajit-5.1
 #}
 
-TRANSLATIONS += builds/vs2010/sanguosha.ts
-TRANSLATIONS += builds/vs2012/sanguosha.ts
-TRANSLATIONS += sanguosha.ts
+TRANSLATIONS += builds/vs2013/sanguosha.ts
 
-#system("lrelease builds/vs2010/sanguosha.ts")
+#system("lrelease builds/vs2013/sanguosha.ts")
 
 OTHER_FILES += \
     sanguosha.qss \
