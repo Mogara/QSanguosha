@@ -24,6 +24,7 @@
 #include "SkinBank.h"
 #include "protocol.h"
 #include "choosegeneraldialog.h"
+#include "banpair.h"
 
 #include <QApplication>
 
@@ -368,10 +369,11 @@ void ChooseGeneralBox::adjustItems() {
                          == Sanguosha->getGeneral(selected.last()->objectName())->getKingdom());
     } else if (selected.length() == 1) {
         selected.first()->hideCompanion();
+        const General *seleted_general = Sanguosha->getGeneral(selected.first()->objectName());
         foreach(GeneralCardItem *card, items) {
-            const General *seleted_general = Sanguosha->getGeneral(selected.first()->objectName());
             const General *general = Sanguosha->getGeneral(card->objectName());
-            if (general->getKingdom() != seleted_general->getKingdom() || general->isLord()) {
+            if (BanPair::isBanned(seleted_general->objectName(), general->objectName()) 
+                    || (general->getKingdom() != seleted_general->getKingdom() || general->isLord())){
                 if (!card->isFrozen())
                     card->setFrozen(true);
                 card->hideCompanion();

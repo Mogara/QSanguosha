@@ -35,6 +35,7 @@
 #include <QRadioButton>
 #include <QCheckBox>
 #include <QTabWidget>
+#include <QMessageBox>
 
 using namespace QSanProtocol;
 
@@ -248,15 +249,15 @@ void ChooseGeneralDialog::freeChoose() {
     dialog->exec();
 }
 
-FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
-    : QDialog(parent), pair_choose(pair_choose)
+FreeChooseDialog::FreeChooseDialog(QWidget *parent, ButtonGroupType type)
+    : QDialog(parent), type(type)
 {
     setWindowTitle(tr("Free choose generals"));
 
     QTabWidget *tab_widget = new QTabWidget;
 
     group = new QButtonGroup(this);
-    group->setExclusive(!pair_choose);
+    group->setExclusive(type == Exclusive);
 
     QList<const General *> all_generals = Sanguosha->findChildren<const General *>();
     QMap<QString, QList<const General *> > map;
@@ -297,12 +298,12 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, bool pair_choose)
 
     setLayout(layout);
 
-    if (!pair_choose)
+    if (type == Exclusive)
         group->buttons().first()->click();
 }
 
 void FreeChooseDialog::chooseGeneral() {
-    if (pair_choose) {
+    if (type == Pair) {
         QList<QAbstractButton *> buttons = group->buttons();
         QString first, second;
         foreach (QAbstractButton *button, buttons) {
@@ -317,7 +318,17 @@ void FreeChooseDialog::chooseGeneral() {
                 break;
             }
         }
-        if (second.isEmpty()) emit general_chosen(first);
+        if (second.isEmpty()){
+            QMessageBox::information(this, tr("Information"), tr("You can only select 2 generals in Pairs mode."));
+            return;
+        }
+    } else if (type == Multi) {
+        QStringList general_names;
+        foreach (QAbstractButton *button, group->buttons()) {
+            if (button->isChecked())
+                general_names << button->objectName();
+        }
+        if (!general_names.isEmpty()) emit general_chosen(general_names.join("+"));
     } else {
         QAbstractButton *button = group->checkedButton();
         if (button) emit general_chosen(button->objectName());
@@ -343,10 +354,11 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals) {
                                .arg(Sanguosha->translate(general->getPackage()));
 
         QAbstractButton *button;
-        if (pair_choose)
-            button = new QCheckBox(text);
-        else
+        if (type == Exclusive)
             button = new QRadioButton(text);
+        else
+            button = new QCheckBox(text);
+            
         button->setObjectName(general_name);
         button->setToolTip(general->getSkillDescription(true));
         if (general->isLord())
@@ -368,30 +380,42 @@ QWidget *FreeChooseDialog::createTab(const QList<const General *> &generals) {
 
     tab->setLayout(tablayout);
 
-    if (pair_choose) {
+    if (type == Pair) {
         connect(group, SIGNAL(buttonClicked(QAbstractButton *)),
-                this, SLOT(uncheckExtraButton(QAbstractButton *)));
+                this, SLOT(disableButtons(QAbstractButton *)));
     }
 
     return tab;
 }
 
-void FreeChooseDialog::uncheckExtraButton(QAbstractButton *click_button) {
-    QAbstractButton *first = NULL;
+void FreeChooseDialog::disableButtons(QAbstractButton *) {
     QList<QAbstractButton *> buttons = group->buttons();
-    foreach (QAbstractButton *button, buttons) {
-        if (!button->isChecked())
-            continue;
-
-        if (button == click_button)
-            continue;
-
-        if (first == NULL)
-            first = button;
-        else {
-            first->setChecked(false);
-            break;
+    QList<QAbstractButton *> checked;
+    foreach (QAbstractButton *btn, buttons){
+        if (btn->isChecked())
+            checked << btn;
+    }
+    if (checked.length() == 2){
+        foreach (QAbstractButton *btn, buttons){
+            if (!btn->isChecked())
+                btn->setEnabled(false);
+            else
+                btn->setEnabled(true);
         }
     }
+    else if (checked.length() == 1){
+        QString checked_kingdom = Sanguosha->getGeneral(checked.first()->objectName())->getKingdom();
+        foreach (QAbstractButton *btn, buttons){
+            QString btn_kingdom = Sanguosha->getGeneral(btn->objectName())->getKingdom();
+            btn->setEnabled(checked_kingdom == btn_kingdom);
+        }
+    }
+    else if (checked.length() == 0){
+        foreach (QAbstractButton *btn, buttons){
+            btn->setEnabled(true);
+        }
+    }
+    else
+        Q_ASSERT(false);
 }
 

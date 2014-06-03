@@ -83,11 +83,7 @@ void Settings::init() {
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
     GameMode = value("GameMode", "02p").toString();
 
-    QStringList banpackagelist = value("BanPackages").toStringList();
-    setValue("BanPackages", banpackagelist);
-
-    BanPackages = value("BanPackages").toStringList();
-
+    BanPackages = value("BanPackages", "Test").toStringList();
     RandomSeat = value("RandomSeat", true).toBool();
     EnableCheat = value("EnableCheat", false).toBool();
     FreeChoose = EnableCheat && value("FreeChoose", false).toBool();
@@ -110,7 +106,7 @@ void Settings::init() {
     UserName = value("USERNAME", qgetenv("USER")).toString();
 #endif
 
-    if (UserName == "Admin" || UserName == "Administrator")
+    if (UserName == "root" || UserName == "Administrator")
         UserName = tr("Sanguosha-fans");
     ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
 

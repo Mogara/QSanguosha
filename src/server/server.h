@@ -163,6 +163,7 @@ private slots:
 
     void onOkButtonClicked();
     void onDetectButtonClicked();
+    void editBanlist();
 
     void doCustomAssign();
 };
@@ -225,6 +226,29 @@ private slots:
     void kickClicked();
 
     void save();
+};
+
+class BanlistDialog : public QDialog {
+    Q_OBJECT
+
+public:
+    BanlistDialog(QWidget *parent, bool view = false);
+
+private:
+    QList<QListWidget *>lists;
+    QListWidget *list;
+    int item;
+    QStringList ban_list;
+    QMap<QString, QStringList> banned_items;
+
+private slots:
+    void addGeneral(const QString &name);
+    void addPair(const QString &first, const QString &second);
+    void doAddButton();
+    void doRemoveButton();
+    void save();
+    void saveAll();
+    void switchTo(int item);
 };
 
 #endif

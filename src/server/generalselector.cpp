@@ -21,6 +21,7 @@
 #include "generalselector.h"
 #include "engine.h"
 #include "serverplayer.h"
+#include "banpair.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -75,7 +76,13 @@ QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &_
         general_to_be_deputy.remove(player);
     }
 
-    caculateDeputyValue(player, player->getGeneralName(), _candidates);
+    QStringList candidates = _candidates;
+    foreach (QString candidate, _candidates){
+        if (BanPair::isBanned(player->getGeneralName(), candidate))
+            candidates.removeOne(candidate);
+    }
+
+    caculateDeputyValue(player, player->getGeneralName(), candidates);
 
     QHash<QString, int> my_hash = private_pair_value_table[player];
     int max_score = my_hash.values().first();
@@ -144,7 +151,7 @@ void GeneralSelector::loadPairTable() {
     }
 }
 
-void GeneralSelector::caculatePairValues( const ServerPlayer *player, const QStringList &candidates )
+void GeneralSelector::caculatePairValues( const ServerPlayer *player, const QStringList &_candidates )
 {
     // preference
     QStringList kingdoms = Sanguosha->getKingdoms();
@@ -154,13 +161,26 @@ void GeneralSelector::caculatePairValues( const ServerPlayer *player, const QStr
     if (index != -1 && index != kingdoms.size() - 1)
         qSwap(kingdoms[index], kingdoms[index + 1]);
 
+    QStringList candidates = _candidates;
+    foreach(QString candidate, _candidates){
+        if (BanPair::isBanned(player->getGeneralName(), candidate))
+            candidates.removeOne(candidate);
+    }
+
     foreach(QString first, candidates) {
         caculateDeputyValue(player, first, candidates, kingdoms);
     }
 }
 
-void GeneralSelector::caculateDeputyValue( const ServerPlayer *player, const QString &first, const QStringList &candidates, const QStringList &kingdom_list )
+void GeneralSelector::caculateDeputyValue( const ServerPlayer *player, const QString &first, const QStringList &_candidates, const QStringList &kingdom_list )
 {
+    QStringList candidates = _candidates;
+    foreach(QString candidate, _candidates){
+        if (BanPair::isBanned(first, candidate)){
+            private_pair_value_table[player][QString("%1+%2").arg(first, candidate)] = -100;
+            candidates.removeOne(candidate);
+        }
+    }
     foreach(QString second, candidates) {
         if (first == second) continue;
         QString key = QString("%1+%2").arg(first, second);

@@ -604,6 +604,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\core\banpair.cpp" />
     <ClCompile Include="..\..\src\core\jsonutils.cpp" />
     <ClCompile Include="..\..\src\core\protocol.cpp" />
     <ClCompile Include="..\..\src\core\record-analysis.cpp" />
@@ -5789,6 +5790,9 @@
     <ProjectReference Include="lua.vcxproj">
       <Project>{2cfd36b2-a793-499c-8521-9286dcb027f7}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\core\banpair.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

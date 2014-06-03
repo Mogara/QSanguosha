@@ -766,6 +766,9 @@
     <ClCompile Include="Release\moc_UpdateCheckerThread.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\core\banpair.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1088,5 +1091,10 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\resource\icon.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\core\banpair.h">
+      <Filter>core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

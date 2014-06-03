@@ -31,6 +31,7 @@
 #include "structs.h"
 #include "lua-wrapper.h"
 #include "RoomState.h"
+#include "banpair.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -212,6 +213,8 @@ Engine::Engine()
     modes["08p"] = tr("8 players");
     modes["09p"] = tr("9 players");
     modes["10p"] = tr("10 players");
+
+    BanPair::loadBanPairs();
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
@@ -874,6 +877,11 @@ QStringList Engine::getLimitedGeneralNames() const{
                 }
             }
         }
+    }
+
+    QStringList banned_generals = Config.value("Banlist/Generals", "").toStringList();
+    foreach (QString banned, banned_generals){
+        general_names.removeOne(banned);
     }
 
     return general_names;
