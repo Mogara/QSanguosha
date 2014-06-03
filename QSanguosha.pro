@@ -7,7 +7,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
 CONFIG += audio
 
-# choose luajit if you like it, the default is to use lua.
 CONFIG += lua
 
 SOURCES += \
@@ -320,19 +319,6 @@ CONFIG(lua){
         src/lua/lapi.h
     INCLUDEPATH += src/lua
 }
-
-#CONFIG(luajit){
-#    HEADERS += \
-#        src/luajit/lauxlib.h \
-#        src/luajit/luaconf.h \
-#        src/luajit/lua.h \
-#        src/luajit/lua.hpp \
-#        src/luajit/luajit.h \
-#        src/luajit/lualib.h \
-#        src/luajit/luatools.h
-#    INCLUDEPATH += src/luajit
-#    unix: LIBS += -L/usr/local/lib -lluajit-5.1
-#}
 
 TRANSLATIONS += builds/vs2013/sanguosha.ts
 
