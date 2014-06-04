@@ -75,14 +75,14 @@ public:
 
 private:
     PlayerRecordStruct *getPlayer(QString object_name, const QString &addition_name = QString());
-    const unsigned int findPlayerOfDamage(int n) const;
-    const unsigned int findPlayerOfDamaged(int n) const;
-    const unsigned int findPlayerOfKills(int n) const;
-    const unsigned int findPlayerOfRecover(int n) const;
-    const unsigned int findPlayerOfDamage(int upper, int lower) const;
-    const unsigned int findPlayerOfDamaged(int upper, int lower) const;
-    const unsigned int findPlayerOfKills(int upper, int lower) const;
-    const unsigned int findPlayerOfRecover(int upper, int lower) const;
+    unsigned int findPlayerOfDamage(int n) const;
+    unsigned int findPlayerOfDamaged(int n) const;
+    unsigned int findPlayerOfKills(int n) const;
+    unsigned int findPlayerOfRecover(int n) const;
+    unsigned int findPlayerOfDamage(int upper, int lower) const;
+    unsigned int findPlayerOfDamaged(int upper, int lower) const;
+    unsigned int findPlayerOfKills(int upper, int lower) const;
+    unsigned int findPlayerOfRecover(int upper, int lower) const;
 
     QMap<QString, PlayerRecordStruct *> m_recordMap;
     QStringList m_recordPackages, m_recordWinners;

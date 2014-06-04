@@ -314,7 +314,7 @@ PlayerRecordStruct *RecAnalysis::getPlayer(QString object_name, const QString &a
     return m_recordMap[object_name];
 }
 
-const unsigned int RecAnalysis::findPlayerOfDamage(int n) const{
+unsigned int RecAnalysis::findPlayerOfDamage(int n) const{
     int result = 0;
     foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_damage >= n) result++;
@@ -323,7 +323,7 @@ const unsigned int RecAnalysis::findPlayerOfDamage(int n) const{
     return result / 2;
 }
 
-const unsigned int RecAnalysis::findPlayerOfDamaged(int n) const{
+unsigned int RecAnalysis::findPlayerOfDamaged(int n) const{
     int result = 0;
     foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_damaged >= n) result++;
@@ -332,7 +332,7 @@ const unsigned int RecAnalysis::findPlayerOfDamaged(int n) const{
     return result / 2;
 }
 
-const unsigned int RecAnalysis::findPlayerOfKills(int n) const{
+unsigned int RecAnalysis::findPlayerOfKills(int n) const{
     int result = 0;
     foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_kill >= n) result++;
@@ -341,7 +341,7 @@ const unsigned int RecAnalysis::findPlayerOfKills(int n) const{
     return result / 2;
 }
 
-const unsigned int RecAnalysis::findPlayerOfRecover(int n) const{
+unsigned int RecAnalysis::findPlayerOfRecover(int n) const{
     int result = 0;
     foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_recover >= n) result++;
@@ -350,7 +350,7 @@ const unsigned int RecAnalysis::findPlayerOfRecover(int n) const{
     return result / 2;
 }
 
-const unsigned int RecAnalysis::findPlayerOfDamage(int upper, int lower) const{
+unsigned int RecAnalysis::findPlayerOfDamage(int upper, int lower) const{
     int result = 0;
     foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_damage >= upper && s->m_damage <= lower) result++;
@@ -359,7 +359,7 @@ const unsigned int RecAnalysis::findPlayerOfDamage(int upper, int lower) const{
     return result / 2;
 }
 
-const unsigned int RecAnalysis::findPlayerOfDamaged(int upper, int lower) const{
+unsigned int RecAnalysis::findPlayerOfDamaged(int upper, int lower) const{
     int result = 0;
     foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_damaged >= upper && s->m_damaged <= lower) result++;
@@ -368,7 +368,7 @@ const unsigned int RecAnalysis::findPlayerOfDamaged(int upper, int lower) const{
     return result / 2;
 }
 
-const unsigned int RecAnalysis::findPlayerOfRecover(int upper, int lower) const{
+unsigned int RecAnalysis::findPlayerOfRecover(int upper, int lower) const{
     int result = 0;
     foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_recover >= upper && s->m_recover <= lower) result++;
@@ -377,7 +377,7 @@ const unsigned int RecAnalysis::findPlayerOfRecover(int upper, int lower) const{
     return result / 2;
 }
 
-const unsigned int RecAnalysis::findPlayerOfKills(int upper, int lower) const{
+unsigned int RecAnalysis::findPlayerOfKills(int upper, int lower) const{
     int result = 0;
     foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_kill >= upper && s->m_kill <= lower) result++;
