@@ -247,7 +247,7 @@ void ClientPlayer::setMark(const QString &mark, int value) {
         } \
     }
 
-    _SET_MARK(yongsi_test)
+        _SET_MARK(yongsi_test)
         _SET_MARK(jushou_test)
         _SET_MARK(max_cards_test)
         _SET_MARK(offensive_distance_test)
