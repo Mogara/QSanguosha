@@ -989,7 +989,11 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->hasShownSkill(this) || room->askForSkillInvoke(player, objectName());
+        if (!(player->hasShownSkill(this) || room->askForSkillInvoke(player, objectName()))){
+            player->tag.remove("lirang");
+            return false;
+        }
+        return true;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *kongrong, QVariant &data, ServerPlayer *) const{
