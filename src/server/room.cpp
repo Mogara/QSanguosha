@@ -5553,7 +5553,9 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
     }
 
     guojia->setFlags("Global_GongxinOperator");
-    moveCardTo(&dummy_card, target, Player::PlaceHand, reason, visible);
+    foreach(int id, dummy_card.getSubcards()){
+        moveCardTo(Sanguosha->getCard(id), target, Player::PlaceHand, reason, visible);
+    }
     guojia->setFlags("-Global_GongxinOperator");
 
     return true;

@@ -425,8 +425,10 @@ public:
             room->notifyMoveCards(true, moves, false, _guojia);
             room->notifyMoveCards(false, moves, false, _guojia);
 
-            DummyCard dummy(yiji_cards);
-            guojia->obtainCard(&dummy, false);
+
+            foreach(int id, yiji_cards){
+                guojia->obtainCard(Sanguosha->getCard(id), false);
+            }
         }
     }
 };
