@@ -437,7 +437,7 @@ public:
 class Yongjue : public TriggerSkill {
 public:
     Yongjue() : TriggerSkill("yongjue") {
-        events << CardUsed << CardsMoveOneTime;
+        events << CardUsed << CardResponded << CardsMoveOneTime;
     }
 
     virtual bool canPreshow() const {
@@ -447,24 +447,38 @@ public:
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         if (player == NULL || !player->isAlive()) return QStringList();
         QList<ServerPlayer *> owners = room->findPlayersBySkillName(objectName());
-        if (triggerEvent == CardUsed){
-            CardUseStruct use = data.value<CardUseStruct>();
-            if (use.from->getPhase() == Player::Play && use.from->getMark(objectName()) == 0){
-                if (!use.card->isKindOf("SkillCard"))
-                    use.from->addMark(objectName());
-                if (use.card->isKindOf("Slash")) {
-                    use.from->tag.remove("yongjue_card");
+        if (triggerEvent == CardUsed || triggerEvent == CardResponded){
+            ServerPlayer *from = NULL;
+            bool is_use = false;
+            const Card *card = NULL;
+            if (triggerEvent == CardUsed){
+                is_use = true;
+                CardUseStruct use = data.value<CardUseStruct>();
+                from = use.from;
+                card = use.card;
+            }
+            else {
+                CardResponseStruct resp = data.value<CardResponseStruct>();
+                is_use = resp.m_isUse;
+                from = resp.m_who;
+                card = resp.m_card;
+            }
+            if (from->getPhase() == Player::Play && from->getMark(objectName()) == 0){
+                if (!card->isKindOf("SkillCard"))
+                    from->addMark(objectName());
+                if (card->isKindOf("Slash")) {
+                    from->tag.remove("yongjue_card");
                     QList<int> ids;
-                    if (!use.card->isVirtualCard())
-                        ids << use.card->getEffectiveId();
-                    else if (use.card->subcardsLength() > 0)
-                        ids = use.card->getSubcards();
+                    if (!card->isVirtualCard())
+                        ids << card->getEffectiveId();
+                    else if (card->subcardsLength() > 0)
+                        ids = card->getSubcards();
                     if (!ids.isEmpty()){
                         QVariantList card_list;
                         foreach(int id, ids){
                             card_list << id;
                         }
-                        use.from->tag["yongjue_card"] = card_list;
+                        from->tag["yongjue_card"] = card_list;
                     }
                 }
             }
