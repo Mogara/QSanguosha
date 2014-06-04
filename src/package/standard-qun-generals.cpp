@@ -1004,6 +1004,7 @@ public:
             && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)) {
 
             QList<int> lirang_card = VariantList2IntList(kongrong->tag["lirang"].toList());
+            kongrong->tag.remove("lirang");
 
             CardMoveReason preview_reason(CardMoveReason::S_REASON_DISCARD, kongrong->objectName(), objectName(), QString());
             CardsMoveStruct lirang_preview(lirang_card, NULL, kongrong, Player::DiscardPile, Player::PlaceHand, preview_reason);
