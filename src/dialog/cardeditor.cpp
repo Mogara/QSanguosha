@@ -173,7 +173,9 @@ public:
         return title_text->toPlainText();
     }
 
-    void setFont(const QFont &font){
+    void setFont(const QFont &_font){
+        QFont font = _font;
+        font.setStyleHint(QFont::AnyStyle, QFont::PreferAntialias);
         title_text->setFont(font);
     }
 
@@ -264,7 +266,9 @@ public:
         return title_text->toPlainText();
     }
 
-    void setFont(const QFont &font){
+    void setFont(const QFont &_font){
+        QFont font = _font;
+        font.setStyleHint(QFont::AnyStyle, QFont::PreferAntialias);
         title_text->setFont(font);
     }
 
@@ -317,6 +321,15 @@ AATextItem::AATextItem(const QString &text, QGraphicsItem *parent)
 }
 
 void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
+    /*if (!hasFocus()){
+        painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+        QFont f = widget->font();
+        f.setStyleHint(QFont::AnyStyle, QFont::PreferAntialias);
+        widget->setFont(f);
+    }
+
+    QGraphicsTextItem::paint(painter, option, widget);*/
+    
     if (hasFocus()){
         QGraphicsTextItem::paint(painter, option, widget);
         return;
@@ -325,6 +338,17 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
     QPainterPath path;
     QFontMetrics fm(font());
+    QString s = toPlainText();
+    QStringList lines = s.split("\n", QString::SkipEmptyParts);
+
+
+    for (int i = 0; i < lines.length(); i++){
+        path.addText(document()->documentMargin(), fm.height() * (i + 1), font(), lines[i]);
+    }
+
+    //path.addText(document()->documentMargin(), fm.height(), font(), toPlainText());
+
+    /*
     QRegExp exp("(\\[b:[^\\[b:\\]]+\\])");
     QString text = toPlainText();
     exp.indexIn(text);
@@ -358,8 +382,9 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         }
         else
             path.addText(document()->documentMargin(), fm.height(), font(), string);
-    }
+    }*/
     painter->fillPath(path, defaultTextColor());
+    
 }
 
 void SkillBox::addSkill(const QString &text){
@@ -561,6 +586,7 @@ CardScene::CardScene()
     QGraphicsItemGroup *magatama_group = new QGraphicsItemGroup(NULL, this);
 #else
     QGraphicsItemGroup *magatama_group = new QGraphicsItemGroup;
+    addItem(magatama_group);
 #endif
 
     for (int i = 0; i < 7; i++){
