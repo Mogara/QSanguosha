@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _STANDARD_QUN_H
 #define _STANDARD_QUN_H
@@ -24,7 +24,7 @@
 #include "standard-package.h"
 #include "card.h"
 
-class QingnangCard: public SkillCard {
+class QingnangCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -35,7 +35,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class LijianCard: public SkillCard {
+class LijianCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -47,7 +47,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class LuanwuCard: public SkillCard {
+class LuanwuCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -57,7 +57,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class XiongyiCard: public SkillCard {
+class XiongyiCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -67,14 +67,14 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class HuoshuiCard: public SkillCard {
+class HuoshuiCard : public SkillCard {
     Q_OBJECT
 
 public:
     Q_INVOKABLE HuoshuiCard();
 };
 
-class QingchengCard: public SkillCard {
+class QingchengCard : public SkillCard {
     Q_OBJECT
 
 public:

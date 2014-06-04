@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _CHOOSE_GENERAL_BOX_H
 #define _CHOOSE_GENERAL_BOX_H
@@ -26,7 +26,7 @@
 #include "TimedProgressBar.h"
 #include "sprite.h"
 
-class GeneralCardItem: public CardItem {
+class GeneralCardItem : public CardItem {
     Q_OBJECT
 
 public:
@@ -45,7 +45,7 @@ private:
     bool has_companion;
 };
 
-class ChooseGeneralBox: public QGraphicsObject {
+class ChooseGeneralBox : public QGraphicsObject {
     Q_OBJECT
 
 public:
@@ -56,7 +56,7 @@ public:
     QRectF boundingRect() const;
     void clear();
 
-    inline void setSingleResult(const bool single_result) {    this->single_result = single_result;    };
+    inline void setSingleResult(const bool single_result) { this->single_result = single_result; };
 
 public slots:
     void chooseGeneral(QStringList generals);

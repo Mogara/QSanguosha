@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "connectiondialog.h"
 #include "ui_connectiondialog.h"
@@ -43,7 +43,7 @@ void ConnectionDialog::showAvatarList() {
     if (ui->avatarList->isVisible()) return;
     ui->avatarList->clear();
     QList<const General *> generals = Sanguosha->findChildren<const General *>();
-    foreach (const General *general, generals) {
+    foreach(const General *general, generals) {
         if (general->isTotallyHidden()) continue;
         QIcon icon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
         QString text = Sanguosha->translate(general->objectName());
@@ -54,7 +54,7 @@ void ConnectionDialog::showAvatarList() {
 }
 
 ConnectionDialog::ConnectionDialog(QWidget *parent)
-    : QDialog(parent), ui(new Ui::ConnectionDialog)
+: QDialog(parent), ui(new Ui::ConnectionDialog)
 {
     ui->setupUi(this);
 
@@ -66,7 +66,7 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
     ui->connectButton->setFocus();
 
     ui->avatarPixmap->setPixmap(G_ROOM_SKIN.getGeneralPixmap(Config.UserAvatar,
-                                QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
+        QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
 
     hideAvatarList();
 
@@ -107,7 +107,8 @@ void ConnectionDialog::on_changeAvatarButton_clicked() {
             hideAvatarList();
             setFixedWidth(ShrinkWidth);
         }
-    } else {
+    }
+    else {
         showAvatarList();
         setFixedWidth(ExpandWidth);
     }
@@ -135,7 +136,7 @@ void ConnectionDialog::on_clearHistoryButton_clicked() {
 void ConnectionDialog::on_detectLANButton_clicked() {
     UdpDetectorDialog *detector_dialog = new UdpDetectorDialog(this);
     connect(detector_dialog, SIGNAL(address_chosen(QString)),
-            ui->hostComboBox->lineEdit(), SLOT(setText(QString)));
+        ui->hostComboBox->lineEdit(), SLOT(setText(QString)));
 
     detector_dialog->exec();
 }
@@ -143,7 +144,7 @@ void ConnectionDialog::on_detectLANButton_clicked() {
 // -----------------------------------
 
 UdpDetectorDialog::UdpDetectorDialog(QDialog *parent)
-    : QDialog(parent)
+: QDialog(parent)
 {
     setWindowTitle(tr("Detect available server's addresses at LAN"));
     detect_button = new QPushButton(tr("Refresh"));

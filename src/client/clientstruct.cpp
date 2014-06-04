@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "clientstruct.h"
 #include "engine.h"
@@ -37,7 +37,7 @@ time_t ServerInfoStruct::getCommandTimeout(QSanProtocol::CommandType command, QS
     else if (command == QSanProtocol::S_COMMAND_CHOOSE_GENERAL)
         timeOut = OperationTimeout * 1500;
     else if (command == QSanProtocol::S_COMMAND_SKILL_GUANXING
-             || command == QSanProtocol::S_COMMAND_ARRANGE_GENERAL)
+        || command == QSanProtocol::S_COMMAND_ARRANGE_GENERAL)
         timeOut = OperationTimeout * 2000;
     else if (command == QSanProtocol::S_COMMAND_NULLIFICATION)
         timeOut = NullificationCountDown * 1000;
@@ -61,7 +61,8 @@ bool ServerInfoStruct::parse(const QString &str) {
     QStringList texts = rx.capturedTexts();
     if (texts.isEmpty()) {
         DuringGame = false;
-    } else {
+    }
+    else {
         DuringGame = true;
 
         Name = texts.at(1);
@@ -73,7 +74,7 @@ bool ServerInfoStruct::parse(const QString &str) {
         QStringList ban_packages = texts.at(5).split("+");
         QList<const Package *> packages = Sanguosha->findChildren<const Package *>();
         Extensions.clear();
-        foreach (const Package *package, packages) {
+        foreach(const Package *package, packages) {
             QString package_name = package->objectName();
             if (ban_packages.contains(package_name))
                 package_name = "!" + package_name;
@@ -128,7 +129,8 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack) {
     if (show_lack) {
         lack_label = new QLabel;
         layout->addRow(tr("Lack"), lack_label);
-    } else
+    }
+    else
         lack_label = NULL;
 
     setLayout(layout);
@@ -158,7 +160,7 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
     static QIcon enabled_icon("image/system/enabled.png");
     static QIcon disabled_icon("image/system/disabled.png");
 
-    foreach (QString extension, info.Extensions) {
+    foreach(QString extension, info.Extensions) {
         bool checked = !extension.startsWith("!");
         if (!checked)
             extension.remove("!");

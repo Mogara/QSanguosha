@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "record-analysis.h"
 #include "recorder.h"
@@ -30,7 +30,7 @@
 using namespace QSanProtocol;
 using namespace QSanProtocol::Utils;
 
-RecAnalysis::RecAnalysis(QString dir): m_recordPlayers(0), m_currentPlayer(NULL) {
+RecAnalysis::RecAnalysis(QString dir) : m_recordPlayers(0), m_currentPlayer(NULL) {
     initialize(dir);
 }
 
@@ -52,14 +52,15 @@ void RecAnalysis::initialize(QString dir) {
                 records_line << line;
             }
         }
-    } else {
+    }
+    else {
         QMessageBox::warning(NULL, tr("Warning"), tr("The file is unreadable"));
         return;
     }
     records_line.removeAll(QString());
 
     QStringList role_list;
-    foreach (QString line, records_line) {
+    foreach(QString line, records_line) {
         if (line.contains(QString(S_PLAYER_SELF_REFERENCE_ID))) {
             line = line.split("[").last().remove("]");
             line.remove(QRegExp("[^a-zA-Z0-9_,]"));
@@ -92,7 +93,7 @@ void RecAnalysis::initialize(QString dir) {
                 m_recordGameMode = texts.at(2);
                 m_recordPlayers = texts.at(2).split("_").first().remove(QRegExp("[^0-9]")).toInt();
                 QStringList ban_packages = texts.at(5).split("+");
-                foreach (Package *package, Sanguosha->findChildren<Package *>()) {
+                foreach(Package *package, Sanguosha->findChildren<Package *>()) {
                     if (!ban_packages.contains(package->objectName())
                         && Sanguosha->getScenario(package->objectName()) == NULL)
                         m_recordPackages << Sanguosha->translate(package->objectName());
@@ -151,21 +152,21 @@ void RecAnalysis::initialize(QString dir) {
 
             QString speaker = toQString(body[0]);
             QString words = toQString(body[1]);
-            m_recordChat += getPlayer(speaker)->m_screenName+": "+words;
+            m_recordChat += getPlayer(speaker)->m_screenName + ": " + words;
             m_recordChat.append("<br/>");
 
             continue;
         }
 
         if (line.contains("general")) {
-            foreach (QString object, m_recordMap.keys()) {
+            foreach(QString object, m_recordMap.keys()) {
                 if (line.contains(object)) {
                     QString general = line.split(",").last();
                     general.remove(QRegExp("[^a-z_]+"));
 
                     line.contains("general2") ?
-                            getPlayer(object)->m_general2Name = general :
-                            getPlayer(object)->m_generalName = general;
+                        getPlayer(object)->m_general2Name = general :
+                        getPlayer(object)->m_generalName = general;
                 }
             }
 
@@ -173,7 +174,7 @@ void RecAnalysis::initialize(QString dir) {
         }
 
         if (line.contains("state") && line.contains("robot")) {
-            foreach (QString object_name, m_recordMap.keys()) {
+            foreach(QString object_name, m_recordMap.keys()) {
                 if (line.contains(object_name)) {
                     getPlayer(object_name)->m_statue = "robot";
                     break;
@@ -252,7 +253,7 @@ void RecAnalysis::initialize(QString dir) {
 }
 
 RecAnalysis::~RecAnalysis(){
-    foreach (PlayerRecordStruct *s, m_recordMap)
+    foreach(PlayerRecordStruct *s, m_recordMap)
         delete s;
 }
 
@@ -292,12 +293,14 @@ PlayerRecordStruct *RecAnalysis::getPlayer(QString object_name, const QString &a
         m_recordMap[object_name] = m_recordMap[addition_name];
         m_recordMap[object_name]->m_additionName = addition_name;
         m_recordMap.remove(addition_name);
-    } else if (!m_recordMap.keys().contains(addition_name) && !addition_name.isEmpty()) {
+    }
+    else if (!m_recordMap.keys().contains(addition_name) && !addition_name.isEmpty()) {
         m_recordMap[object_name] = new PlayerRecordStruct;
         m_recordMap[object_name]->m_additionName = addition_name;
-    } else if (!m_recordMap.keys().contains(object_name)) {
+    }
+    else if (!m_recordMap.keys().contains(object_name)) {
         bool inQueue = false;
-        foreach (QString name, m_recordMap.keys()) {
+        foreach(QString name, m_recordMap.keys()) {
             if (m_recordMap[name]->m_additionName == object_name) {
                 object_name = name;
                 inQueue = true;
@@ -313,7 +316,7 @@ PlayerRecordStruct *RecAnalysis::getPlayer(QString object_name, const QString &a
 
 const unsigned int RecAnalysis::findPlayerOfDamage(int n) const{
     int result = 0;
-    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
+    foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_damage >= n) result++;
         result *= 2;
     }
@@ -322,7 +325,7 @@ const unsigned int RecAnalysis::findPlayerOfDamage(int n) const{
 
 const unsigned int RecAnalysis::findPlayerOfDamaged(int n) const{
     int result = 0;
-    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
+    foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_damaged >= n) result++;
         result *= 2;
     }
@@ -331,7 +334,7 @@ const unsigned int RecAnalysis::findPlayerOfDamaged(int n) const{
 
 const unsigned int RecAnalysis::findPlayerOfKills(int n) const{
     int result = 0;
-    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
+    foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_kill >= n) result++;
         result *= 2;
     }
@@ -340,7 +343,7 @@ const unsigned int RecAnalysis::findPlayerOfKills(int n) const{
 
 const unsigned int RecAnalysis::findPlayerOfRecover(int n) const{
     int result = 0;
-    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
+    foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_recover >= n) result++;
         result *= 2;
     }
@@ -349,7 +352,7 @@ const unsigned int RecAnalysis::findPlayerOfRecover(int n) const{
 
 const unsigned int RecAnalysis::findPlayerOfDamage(int upper, int lower) const{
     int result = 0;
-    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
+    foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_damage >= upper && s->m_damage <= lower) result++;
         result *= 2;
     }
@@ -358,7 +361,7 @@ const unsigned int RecAnalysis::findPlayerOfDamage(int upper, int lower) const{
 
 const unsigned int RecAnalysis::findPlayerOfDamaged(int upper, int lower) const{
     int result = 0;
-    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
+    foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_damaged >= upper && s->m_damaged <= lower) result++;
         result *= 2;
     }
@@ -367,7 +370,7 @@ const unsigned int RecAnalysis::findPlayerOfDamaged(int upper, int lower) const{
 
 const unsigned int RecAnalysis::findPlayerOfRecover(int upper, int lower) const{
     int result = 0;
-    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
+    foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_recover >= upper && s->m_recover <= lower) result++;
         result *= 2;
     }
@@ -376,7 +379,7 @@ const unsigned int RecAnalysis::findPlayerOfRecover(int upper, int lower) const{
 
 const unsigned int RecAnalysis::findPlayerOfKills(int upper, int lower) const{
     int result = 0;
-    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
+    foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_kill >= upper && s->m_kill <= lower) result++;
         result *= 2;
     }
@@ -390,14 +393,14 @@ void RecAnalysis::setDesignation() {
     initialDesignation();
 
     unsigned int rec_data = 0;
-    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
+    foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_turnCount == 0) rec_data++;
         rec_data *= 2;
     }
     addDesignation(tr("Soy"), NoOption, rec_data / 2, true, QString(), false, true);
 
     rec_data = 0;
-    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
+    foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_turnCount == 1 && m_currentPlayer == s) rec_data++;
         rec_data *= 2;
     }
@@ -406,12 +409,12 @@ void RecAnalysis::setDesignation() {
     addDesignation(tr("Burning Soul"), MostDamage | MostDamaged);
     addDesignation(tr("Regretful Lose"), MostDamage | ZeroKill, M_ALL_PLAYER, true, QString(), false, false, false, true);
     addDesignation(tr("Fall Short"), NoOption, findPlayerOfKills(m_recordPlayers - 2), m_recordWinners.contains("lord"),
-                   "renegade", false, false, false, true);
+        "renegade", false, false, false, true);
     addDesignation(tr("Wicked Kill"), LeastDamage | MostKill);
     addDesignation(tr("Peaceful Watcher"), ZeroDamage | LeastDamaged, findPlayerOfRecover(1));
     addDesignation(tr("MVP"), MostKill | MostDamage | MostRecover, findPlayerOfDamage(10) & findPlayerOfRecover(10),
-                   true, QString(), true, false, true);
-    addDesignation(tr("Useless alive"), ZeroDamage | ZeroDamaged | ZeroRecover|ZeroKill);
+        true, QString(), true, false, true);
+    addDesignation(tr("Useless alive"), ZeroDamage | ZeroDamaged | ZeroRecover | ZeroKill);
     addDesignation(tr("Awe Prestige"), MostKill | MostDamage, findPlayerOfKills(3), true, "lord", true);
 
     addDesignation(tr("Wisely Loyalist"), ZeroDamaged, M_ALL_PLAYER, true, "loyalist", true, false, true);
@@ -425,7 +428,7 @@ void RecAnalysis::setDesignation() {
 
     bool only = true;
     int count_kill = 0, count_dead = 0;
-    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
+    foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_kill == 1) count_kill++;
         if (!s->m_isAlive) count_dead++;
         if (s->m_kill > 1 || count_kill > 1 || count_dead > 1) {
@@ -454,7 +457,7 @@ void RecAnalysis::setDesignation() {
     addDesignation(tr("War Spirit"), MostDamaged, findPlayerOfDamaged(10), true, QString(), true, false, false, true);
 
     int loyal_num = 0, rebel_num = 0;
-    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
+    foreach(PlayerRecordStruct *s, m_recordMap.values()) {
         if (s->m_role == "loyalist" && s->m_isAlive) loyal_num++;
         if (s->m_role == "rebel" && s->m_isAlive) rebel_num++;
     }
@@ -463,14 +466,14 @@ void RecAnalysis::setDesignation() {
 }
 
 void RecAnalysis::addDesignation(const QString &designation,
-                                 unsigned long designation_union,
-                                 unsigned int data_requirement,
-                                 bool custom_condition,
-                                 const QString &addition_option_role,
-                                 bool need_alive,
-                                 bool need_dead,
-                                 bool need_win,
-                                 bool need_lose) {
+    unsigned long designation_union,
+    unsigned int data_requirement,
+    bool custom_condition,
+    const QString &addition_option_role,
+    bool need_alive,
+    bool need_dead,
+    bool need_win,
+    bool need_lose) {
     if (!custom_condition) return;
 
     QList<DesignationType> des_union;
@@ -485,11 +488,11 @@ void RecAnalysis::addDesignation(const QString &designation,
     for (int i = 0; i < m_recordMap.size(); i++)
         player_test_mask *= 2;
 
-    foreach (QString objectName, m_recordMap.keys()) {
+    foreach(QString objectName, m_recordMap.keys()) {
         player_test_mask /= 2;
         bool has_player = custom_condition;
-        foreach (DesignationType type, des_union)
-            if (!m_recordMap[objectName]->m_designEnum.contains(type)) { has_player = false; break; }
+        foreach(DesignationType type, des_union)
+        if (!m_recordMap[objectName]->m_designEnum.contains(type)) { has_player = false; break; }
 
         if (need_win
             && !m_recordWinners.contains(m_recordMap[objectName]->m_role)
@@ -499,7 +502,7 @@ void RecAnalysis::addDesignation(const QString &designation,
 
         if (need_lose
             && (m_recordWinners.contains(m_recordMap[objectName]->m_role)
-                || m_recordWinners.contains(objectName))) {
+            || m_recordWinners.contains(objectName))) {
             has_player = false;
         }
 
@@ -513,7 +516,8 @@ void RecAnalysis::addDesignation(const QString &designation,
                 QString role = addition_option_role;
                 role.remove("~");
                 has_player &= m_recordMap[objectName]->m_role != role;
-            } else
+            }
+            else
                 has_player &= m_recordMap[objectName]->m_role == addition_option_role;
         }
         if (need_alive)
@@ -534,8 +538,8 @@ void RecAnalysis::initialDesignation() {
     QStringList maxDamagePlayer, maxDamagedPlayer, maxRecoverPlayer, maxKillPlayer;
     QStringList leastDamagePlayer, leastDamagedPlayer, leastRecoverPlayer, leastKillPlayer;
 
-    foreach (PlayerRecordStruct *s, m_recordMap.values()) {
-        QString objectName =  m_recordMap.key(s);
+    foreach(PlayerRecordStruct *s, m_recordMap.values()) {
+        QString objectName = m_recordMap.key(s);
         if (s->m_damage >= max_damage && s->m_damage > 0) {
             if (s->m_damage > max_damage) {
                 max_damage = s->m_damage;
@@ -600,19 +604,19 @@ void RecAnalysis::initialDesignation() {
         if (s->m_kill == 0) s->m_designEnum << ZeroKill;
     }
 
-    foreach (QString player, maxDamagedPlayer) m_recordMap[player]->m_designEnum << MostDamaged;
-    foreach (QString player, maxDamagePlayer) m_recordMap[player]->m_designEnum << MostDamage;
-    foreach (QString player, maxRecoverPlayer) m_recordMap[player]->m_designEnum << MostRecover;
-    foreach (QString player, maxKillPlayer) m_recordMap[player]->m_designEnum << MostKill;
-    foreach (QString player, leastDamagedPlayer) m_recordMap[player]->m_designEnum << LeastDamaged;
-    foreach (QString player, leastDamagePlayer) m_recordMap[player]->m_designEnum << LeastDamage;
-    foreach (QString player, leastRecoverPlayer) m_recordMap[player]->m_designEnum << LeastRecover;
-    foreach (QString player, leastKillPlayer) m_recordMap[player]->m_designEnum << LeastKill;
+    foreach(QString player, maxDamagedPlayer) m_recordMap[player]->m_designEnum << MostDamaged;
+    foreach(QString player, maxDamagePlayer) m_recordMap[player]->m_designEnum << MostDamage;
+    foreach(QString player, maxRecoverPlayer) m_recordMap[player]->m_designEnum << MostRecover;
+    foreach(QString player, maxKillPlayer) m_recordMap[player]->m_designEnum << MostKill;
+    foreach(QString player, leastDamagedPlayer) m_recordMap[player]->m_designEnum << LeastDamaged;
+    foreach(QString player, leastDamagePlayer) m_recordMap[player]->m_designEnum << LeastDamage;
+    foreach(QString player, leastRecoverPlayer) m_recordMap[player]->m_designEnum << LeastRecover;
+    foreach(QString player, leastKillPlayer) m_recordMap[player]->m_designEnum << LeastKill;
 }
 
 PlayerRecordStruct::PlayerRecordStruct()
-    : m_statue("online"), m_turnCount(0), m_recover(0), m_damage(0),
-      m_damaged(0), m_kill(0), m_isAlive(true)
+: m_statue("online"), m_turnCount(0), m_recover(0), m_damage(0),
+m_damaged(0), m_kill(0), m_isAlive(true)
 {
 }
 

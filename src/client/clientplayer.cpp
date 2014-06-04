@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "clientplayer.h"
 #include "skill.h"
@@ -30,7 +30,7 @@
 ClientPlayer *Self = NULL;
 
 ClientPlayer::ClientPlayer(Client *client)
-    : Player(client), handcard_num(0)
+: Player(client), handcard_num(0)
 {
     mark_doc = new QTextDocument(this);
 }
@@ -46,21 +46,21 @@ int ClientPlayer::getHandcardNum() const{
 void ClientPlayer::addCard(const Card *card, Place place) {
     switch (place) {
     case PlaceHand: {
-            if (card) known_cards << card;
-            handcard_num++;
-            break;
-        }
+                        if (card) known_cards << card;
+                        handcard_num++;
+                        break;
+    }
     case PlaceEquip: {
-            WrappedCard *equip = Sanguosha->getWrappedCard(card->getEffectiveId());
-            setEquip(equip);
-            break;
-        }
+                         WrappedCard *equip = Sanguosha->getWrappedCard(card->getEffectiveId());
+                         setEquip(equip);
+                         break;
+    }
     case PlaceDelayedTrick: {
-            addDelayedTrick(card);
-            break;
-        }
+                                addDelayedTrick(card);
+                                break;
+    }
     default:
-            break;
+        break;
     }
 }
 
@@ -74,15 +74,17 @@ bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const{
         if (known_cards.length() != 1)
             return false;
         return known_cards.first()->getId() == card->getEffectiveId();
-    } else if (card->getSubcards().length() > 0) {
+    }
+    else if (card->getSubcards().length() > 0) {
         if (!contain) {
-            foreach (int card_id, card->getSubcards()) {
+            foreach(int card_id, card->getSubcards()) {
                 if (!known_cards.contains(Sanguosha->getCard(card_id)))
                     return false;
             }
             return known_cards.length() == card->getSubcards().length();
-        } else {
-            foreach (const Card *ncard, known_cards) {
+        }
+        else {
+            foreach(const Card *ncard, known_cards) {
                 if (!card->getSubcards().contains(ncard->getEffectiveId()))
                     return false;
             }
@@ -95,22 +97,22 @@ bool ClientPlayer::isLastHandCard(const Card *card, bool contain) const{
 void ClientPlayer::removeCard(const Card *card, Place place) {
     switch (place) {
     case PlaceHand: {
-            handcard_num--;
-            if (card)
-                known_cards.removeOne(card);
-            break;
-        }
+                        handcard_num--;
+                        if (card)
+                            known_cards.removeOne(card);
+                        break;
+    }
     case PlaceEquip:{
-            WrappedCard *equip = Sanguosha->getWrappedCard(card->getEffectiveId());
-            removeEquip(equip);
-            break;
-        }
+                        WrappedCard *equip = Sanguosha->getWrappedCard(card->getEffectiveId());
+                        removeEquip(equip);
+                        break;
+    }
     case PlaceDelayedTrick:{
-            removeDelayedTrick(card);
-            break;
-        }
+                               removeDelayedTrick(card);
+                               break;
+    }
     default:
-            break;
+        break;
     }
 }
 
@@ -120,7 +122,7 @@ QList<const Card *> ClientPlayer::getHandcards() const{
 
 void ClientPlayer::setCards(const QList<int> &card_ids) {
     known_cards.clear();
-    foreach (int cardId, card_ids)
+    foreach(int cardId, card_ids)
         known_cards.append(Sanguosha->getCard(cardId));
 }
 
@@ -143,7 +145,7 @@ void ClientPlayer::changePile(const QString &name, bool add, QList<int> card_ids
         }
     }
     else
-        foreach (int card_id, card_ids) {
+        foreach(int card_id, card_ids) {
             if (piles[name].isEmpty()) break;
             if (piles[name].contains(Card::S_UNKNOWN_CARD_ID) && !piles[name].contains(card_id))
                 piles[name].removeOne(Card::S_UNKNOWN_CARD_ID);
@@ -205,19 +207,20 @@ void ClientPlayer::setMark(const QString &mark, int value) {
 
         if (itor.key().startsWith("@") && itor.value() > 0) {
 #define _EXCLUDE_MARK(markname) {\
-                                    if (itor.key() == QString("@%1").arg(#markname)) {\
-                                        markname##_mark = itor.value();\
-                                        continue;\
-                                    }\
-                                }
+            if (itor.key() == QString("@%1").arg(#markname)) {
+            \
+                markname##_mark = itor.value(); \
+                continue; \
+            }\
+        }
 
-            _EXCLUDE_MARK(yongsi_test)
-            _EXCLUDE_MARK(jushou_test)
-            _EXCLUDE_MARK(max_cards_test)
-            _EXCLUDE_MARK(offensive_distance_test)
-            _EXCLUDE_MARK(defensive_distance_test)
+                _EXCLUDE_MARK(yongsi_test)
+                _EXCLUDE_MARK(jushou_test)
+                _EXCLUDE_MARK(max_cards_test)
+                _EXCLUDE_MARK(offensive_distance_test)
+                _EXCLUDE_MARK(defensive_distance_test)
 #undef _EXCLUDE_MARK
-            QString mark_text = QString("<img src='image/mark/%1.png' />").arg(itor.key());
+                QString mark_text = QString("<img src='image/mark/%1.png' />").arg(itor.key());
             if (itor.value() != 1)
                 mark_text.append(QString("%1").arg(itor.value()));
             if (this != Self)
@@ -228,27 +231,32 @@ void ClientPlayer::setMark(const QString &mark, int value) {
 
     // keep these marks at a certain place
 #define _SET_MARK(markname) {\
-                                if (markname##_mark > 0) {\
-                                    QString mark_text = QString("<img src='image/mark/test/@%1.png' />").arg(#markname);\
-                                    if (markname##_mark != 1) {\
-                                        mark_text.append(QString("%1").arg(markname##_mark));\
-                                    }\
-                                    if (this != Self) {\
-                                        mark_text.append("<br>");\
-                                        text.prepend(mark_text);\
-                                    } else {\
-                                       text.append(mark_text);\
-                                    }\
-                                }\
-                            }
+    if (markname##_mark > 0) {
+    \
+        QString mark_text = QString("<img src='image/mark/test/@%1.png' />").arg(#markname); \
+    if (markname##_mark != 1) {
+        \
+            mark_text.append(QString("%1").arg(markname##_mark)); \
+    }\
+        if (this != Self) {
+            \
+            mark_text.append("<br>"); \
+            text.prepend(mark_text); \
+        }
+        else {
+            \
+                text.append(mark_text); \
+        }\
+    }\
+    }
 
     _SET_MARK(yongsi_test)
-    _SET_MARK(jushou_test)
-    _SET_MARK(max_cards_test)
-    _SET_MARK(offensive_distance_test)
-    _SET_MARK(defensive_distance_test)
+        _SET_MARK(jushou_test)
+        _SET_MARK(max_cards_test)
+        _SET_MARK(offensive_distance_test)
+        _SET_MARK(defensive_distance_test)
 #undef _SET_MARK
-    mark_doc->setHtml(text);
+        mark_doc->setHtml(text);
 
     if (mark == "@duanchang")
         emit duanchang_invoked();

@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _STANDARD_WU_H
 #define _STANDARD_WU_H
@@ -25,7 +25,7 @@
 #include "card.h"
 #include "skill.h"
 
-class Yingzi: public DrawCardsSkill {
+class Yingzi : public DrawCardsSkill {
 public:
     Yingzi();
 
@@ -33,7 +33,7 @@ public:
     virtual int getDrawNum(ServerPlayer *player, int n) const;
 };
 
-class Yinghun: public PhaseChangeSkill {
+class Yinghun : public PhaseChangeSkill {
 public:
     Yinghun();
 
@@ -43,7 +43,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const;
 };
 
-class ZhihengCard: public SkillCard {
+class ZhihengCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -51,7 +51,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class KurouCard: public SkillCard {
+class KurouCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -60,7 +60,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class FanjianCard: public SkillCard {
+class FanjianCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -68,7 +68,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class LiuliCard: public SkillCard {
+class LiuliCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -78,7 +78,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class JieyinCard: public SkillCard {
+class JieyinCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -87,7 +87,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class TianxiangCard: public SkillCard {
+class TianxiangCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -96,7 +96,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class TianyiCard: public SkillCard {
+class TianyiCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -106,7 +106,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class HaoshiCard: public SkillCard {
+class HaoshiCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -116,7 +116,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class DimengCard: public SkillCard {
+class DimengCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -127,7 +127,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class ZhijianCard: public SkillCard {
+class ZhijianCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -137,7 +137,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class FenxunCard: public SkillCard {
+class FenxunCard : public SkillCard {
     Q_OBJECT
 
 public:

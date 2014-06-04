@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _PROTOCOL_H
 #define _PROTOCOL_H
@@ -131,7 +131,7 @@ namespace QSanProtocol {
         S_COMMAND_SET_KNOWN_CARDS,
         S_COMMAND_UPDATE_PILE,
         S_COMMAND_RESET_PILE,
-        S_COMMAND_UPDATE_HANDCARD_NUM ,
+        S_COMMAND_UPDATE_HANDCARD_NUM,
         S_COMMAND_UPDATE_STATE_ITEM,
         S_COMMAND_SPEAK,
         // the following 5 for 1v1 and 3v3, remove them later
@@ -227,7 +227,8 @@ namespace QSanProtocol {
                 val[0] = S_COUNTDOWN_MAGIC;
                 val[1] = (int)m_type;
                 return val;
-            } else {
+            }
+            else {
                 Json::Value val(Json::arrayValue);
                 val[0] = S_COUNTDOWN_MAGIC;
                 val[1] = (int)m_current;
@@ -255,7 +256,7 @@ namespace QSanProtocol {
         virtual CommandType getCommandType() const = 0;
     };
 
-    class Packet: public AbstractPacket {
+    class Packet : public AbstractPacket {
     public:
         //format: [global_serial, local_serial, packet_type, command_name, command_body]
         unsigned int m_globalSerial;

@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "standard.h"
 #include "room.h"
@@ -32,7 +32,7 @@ Card::CardType BasicCard::getTypeId() const{
 }
 
 TrickCard::TrickCard(Suit suit, int number)
-    : Card(suit, number), cancelable(true)
+: Card(suit, number), cancelable(true)
 {
     handling_method = Card::MethodUse;
 }
@@ -92,12 +92,12 @@ void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
 
     QList<CardsMoveStruct> exchangeMove;
     CardsMoveStruct move1(getEffectiveId(), target, Player::PlaceEquip,
-                          CardMoveReason(CardMoveReason::S_REASON_USE, target->objectName()));
+        CardMoveReason(CardMoveReason::S_REASON_USE, target->objectName()));
     exchangeMove.push_back(move1);
     if (equipped_id != Card::S_UNKNOWN_CARD_ID) {
-         CardsMoveStruct move2(equipped_id, NULL, Player::DiscardPile,
-                               CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
-         exchangeMove.push_back(move2);
+        CardsMoveStruct move2(equipped_id, NULL, Player::DiscardPile,
+            CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
+        exchangeMove.push_back(move2);
     }
     LogMessage log;
     log.from = target;
@@ -115,7 +115,8 @@ void EquipCard::onInstall(ServerPlayer *player) const{
     if (skill) {
         if (skill->inherits("ViewAsSkill")) {
             room->attachSkillToPlayer(player, this->objectName());
-        } else if (skill->inherits("TriggerSkill")) {
+        }
+        else if (skill->inherits("TriggerSkill")) {
             const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
             room->getThread()->addTriggerSkill(trigger_skill);
         }
@@ -135,7 +136,7 @@ QString GlobalEffect::getSubtype() const{
 void GlobalEffect::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *source = card_use.from;
     QList<ServerPlayer *> targets, all_players = room->getAllPlayers();
-    foreach (ServerPlayer *player, all_players) {
+    foreach(ServerPlayer *player, all_players) {
         const ProhibitSkill *skill = room->isProhibited(source, player, this);
         if (skill) {
             LogMessage log;
@@ -146,7 +147,8 @@ void GlobalEffect::onUse(Room *room, const CardUseStruct &card_use) const{
             room->sendLog(log);
 
             room->broadcastSkillInvoke(skill->objectName());
-        } else
+        }
+        else
             targets << player;
     }
 
@@ -159,7 +161,7 @@ bool GlobalEffect::isAvailable(const Player *player) const{
     bool canUse = false;
     QList<const Player *> players = player->getAliveSiblings();
     players << player;
-    foreach (const Player *p, players) {
+    foreach(const Player *p, players) {
         if (player->isProhibited(p, this))
             continue;
 
@@ -177,7 +179,7 @@ QString AOE::getSubtype() const{
 bool AOE::isAvailable(const Player *player) const{
     bool canUse = false;
     QList<const Player *> players = player->getAliveSiblings();
-    foreach (const Player *p, players) {
+    foreach(const Player *p, players) {
         if (player->isProhibited(p, this))
             continue;
 
@@ -191,7 +193,7 @@ bool AOE::isAvailable(const Player *player) const{
 void AOE::onUse(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *source = card_use.from;
     QList<ServerPlayer *> targets, other_players = room->getOtherPlayers(source);
-    foreach (ServerPlayer *player, other_players) {
+    foreach(ServerPlayer *player, other_players) {
         const ProhibitSkill *skill = room->isProhibited(source, player, this);
         if (skill) {
             LogMessage log;
@@ -202,7 +204,8 @@ void AOE::onUse(Room *room, const CardUseStruct &card_use) const{
             room->sendLog(log);
 
             room->broadcastSkillInvoke(skill->objectName());
-        } else
+        }
+        else
             targets << player;
     }
 
@@ -220,7 +223,7 @@ bool SingleTargetTrick::targetFilter(const QList<const Player *> &, const Player
 }
 
 DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
-    : TrickCard(suit, number), movable(movable)
+: TrickCard(suit, number), movable(movable)
 {
     judge.negative = true;
 }
@@ -285,9 +288,11 @@ void DelayedTrick::onEffect(const CardEffectStruct &effect) const{
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
             room->throwCard(this, reason, NULL);
         }
-    } else if (movable) {
+    }
+    else if (movable) {
         onNullified(effect.to);
-    } else {
+    }
+    else {
         if (room->getCardOwner(getEffectiveId()) == NULL) {
             CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, QString());
             room->throwCard(this, reason, NULL);
@@ -315,7 +320,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
 
         ServerPlayer *p = NULL;
 
-        foreach (ServerPlayer *player, players) {
+        foreach(ServerPlayer *player, players) {
             if (player->containsTrick(objectName()))
                 continue;
 
@@ -346,22 +351,23 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
                 break;
             }
 
-            foreach (ServerPlayer *p, room->getAllPlayers())
+            foreach(ServerPlayer *p, room->getAllPlayers())
                 thread->trigger(TargetChosen, room, p, data);
-            foreach (ServerPlayer *p, room->getAllPlayers())
+            foreach(ServerPlayer *p, room->getAllPlayers())
                 thread->trigger(TargetConfirmed, room, p, data);
             break;
         }
         if (p)
             onNullified(p);
-    } else {
+    }
+    else {
         CardMoveReason reason(CardMoveReason::S_REASON_NATURAL_ENTER, target->objectName());
         room->throwCard(this, reason, NULL);
     }
 }
 
 Weapon::Weapon(Suit suit, int number, int range)
-    : EquipCard(suit, number), range(range)
+: EquipCard(suit, number), range(range)
 {
 }
 
@@ -394,7 +400,7 @@ QString Armor::getCommonEffectName() const{
 }
 
 Horse::Horse(Suit suit, int number, int correct)
-    : EquipCard(suit, number), correct(correct)
+: EquipCard(suit, number), correct(correct)
 {
 }
 
@@ -413,7 +419,7 @@ QString Horse::getCommonEffectName() const{
 }
 
 OffensiveHorse::OffensiveHorse(Card::Suit suit, int number, int correct)
-    : Horse(suit, number, correct)
+: Horse(suit, number, correct)
 {
 }
 
@@ -422,7 +428,7 @@ QString OffensiveHorse::getSubtype() const{
 }
 
 DefensiveHorse::DefensiveHorse(Card::Suit suit, int number, int correct)
-    : Horse(suit, number, correct)
+: Horse(suit, number, correct)
 {
 }
 

@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "player.h"
 #include "engine.h"
@@ -26,13 +26,13 @@
 #include "settings.h"
 
 Player::Player(QObject *parent)
-    : QObject(parent), owner(false), general(NULL), general2(NULL),
-      m_gender(General::Sexless), hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
-      phase(NotActive),
-      weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
-      face_up(true), chained(false), role_shown(false),
-      actual_general1(NULL), actual_general2(NULL),
-      general1_showed(false), general2_showed(false)
+: QObject(parent), owner(false), general(NULL), general2(NULL),
+m_gender(General::Sexless), hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
+phase(NotActive),
+weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
+face_up(true), chained(false), role_shown(false),
+actual_general1(NULL), actual_general2(NULL),
+general1_showed(false), general2_showed(false)
 {
 }
 
@@ -129,8 +129,8 @@ void Player::setSeat(int seat) {
 bool Player::isAdjacentTo(const Player *another) const{
     int alive_length = 1 + getAliveSiblings().length();
     return qAbs(seat - another->seat) == 1
-            || (seat == 1 && another->seat == alive_length)
-            || (seat == alive_length && another->seat == 1);
+        || (seat == 1 && another->seat == alive_length)
+        || (seat == alive_length && another->seat == 1);
 }
 
 bool Player::isAlive() const{
@@ -163,7 +163,8 @@ void Player::setFlags(const QString &flag) {
         QString copy = flag;
         copy.remove(unset_symbol);
         flags.remove(copy);
-    } else {
+    }
+    else {
         flags.insert(flag);
     }
 }
@@ -361,7 +362,7 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
         if (!hasEquipSkill(skill_name)) {
             if (phase == Player::NotActive) {
                 const Player *current = NULL;
-                foreach (const Player *p, getAliveSiblings()) {
+                foreach(const Player *p, getAliveSiblings()) {
                     if (p->getPhase() != Player::NotActive) {
                         current = p;
                         break;
@@ -373,9 +374,9 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
         }
     }
     return head_skills.value(skill_name, false)
-           || deputy_skills.value(skill_name, false)
-           || head_acquired_skills.contains(skill_name)
-           || deputy_acquired_skills.contains(skill_name);
+        || deputy_skills.value(skill_name, false)
+        || head_acquired_skills.contains(skill_name)
+        || deputy_acquired_skills.contains(skill_name);
 }
 
 bool Player::hasSkill(const Skill *skill, bool include_lose) const{
@@ -383,9 +384,9 @@ bool Player::hasSkill(const Skill *skill, bool include_lose) const{
 }
 
 bool Player::hasSkills(const QString &skill_name, bool include_lose) const{
-    foreach (QString skill, skill_name.split("|")) {
+    foreach(QString skill, skill_name.split("|")) {
         bool checkpoint = true;
-        foreach (QString sk, skill.split("+")) {
+        foreach(QString sk, skill.split("+")) {
             if (!hasSkill(sk, include_lose)) {
                 checkpoint = false;
                 break;
@@ -452,7 +453,7 @@ QString Player::getPhaseString() const{
     case Finish: return "finish";
     case NotActive:
     default:
-            return "not_active";
+        return "not_active";
     }
 }
 
@@ -475,7 +476,7 @@ void Player::setPhaseString(const QString &phase_str) {
 void Player::setEquip(WrappedCard *equip) {
     const EquipCard *card = qobject_cast<const EquipCard *>(equip->getRealCard());
     Q_ASSERT(card != NULL);
-    switch(card->location()) {
+    switch (card->location()) {
     case EquipCard::WeaponLocation: weapon = equip; break;
     case EquipCard::ArmorLocation: armor = equip; break;
     case EquipCard::DefensiveHorseLocation: defensive_horse = equip; break;
@@ -486,7 +487,7 @@ void Player::setEquip(WrappedCard *equip) {
 void Player::removeEquip(WrappedCard *equip) {
     const EquipCard *card = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(equip->getId()));
     Q_ASSERT(card != NULL);
-    switch(card->location()) {
+    switch (card->location()) {
     case EquipCard::WeaponLocation: weapon = NULL; break;
     case EquipCard::ArmorLocation: armor = NULL; break;
     case EquipCard::DefensiveHorseLocation: defensive_horse = NULL; break;
@@ -507,7 +508,7 @@ bool Player::hasEquip(const Card *card) const{
     else
         ids << card->getId();
     if (ids.isEmpty()) return false;
-    foreach (int id, ids) {
+    foreach(int id, ids) {
         if (id != weapon_id && id != armor_id && id != def_id && id != off_id)
             return false;
     }
@@ -556,9 +557,9 @@ const EquipCard *Player::getEquip(int index) const{
     case 2: equip = defensive_horse; break;
     case 3: equip = offensive_horse; break;
     default:
-            return NULL;
+        return NULL;
     }
-    if(equip != NULL)
+    if (equip != NULL)
         return qobject_cast<const EquipCard *>(equip->getRealCard());
 
     return NULL;
@@ -588,7 +589,7 @@ bool Player::hasArmorEffect(const QString &armor_name) const{
 
 QList<const Card *> Player::getJudgingArea() const{
     QList<const Card *>cards;
-    foreach (int card_id, judging_area)
+    foreach(int card_id, judging_area)
         cards.append(Sanguosha->getCard(card_id));
     return cards;
 }
@@ -684,7 +685,7 @@ void Player::removeDelayedTrick(const Card *trick) {
 }
 
 bool Player::containsTrick(const QString &trick_name) const{
-    foreach (int trick_id, judging_area) {
+    foreach(int trick_id, judging_area) {
         WrappedCard *trick = Sanguosha->getWrappedCard(trick_id);
         if (trick->objectName() == trick_name)
             return true;
@@ -736,7 +737,7 @@ int Player::getMark(const QString &mark) const{
 }
 
 bool Player::canSlash(const Player *other, const Card *slash, bool distance_limit,
-                      int rangefix, const QList<const Player *> &others) const{
+    int rangefix, const QList<const Player *> &others) const{
     if (other == this || !other->isAlive())
         return false;
 
@@ -773,13 +774,13 @@ QList<int> Player::getPile(const QString &pile_name) const{
 
 QStringList Player::getPileNames() const{
     QStringList names;
-    foreach (QString pile_name, piles.keys())
+    foreach(QString pile_name, piles.keys())
         names.append(pile_name);
     return names;
 }
 
 QString Player::getPileName(int card_id) const {
-    foreach (QString pile_name, piles.keys()) {
+    foreach(QString pile_name, piles.keys()) {
         QList<int> pile = piles[pile_name];
         if (pile.contains(card_id))
             return pile_name;
@@ -803,8 +804,8 @@ void Player::addHistory(const QString &name, int times) {
 
 int Player::getSlashCount() const{
     return history.value("Slash", 0)
-           + history.value("ThunderSlash", 0)
-           + history.value("FireSlash", 0);
+        + history.value("ThunderSlash", 0)
+        + history.value("FireSlash", 0);
 }
 
 void Player::clearHistory() {
@@ -837,7 +838,7 @@ QSet<const TriggerSkill *> Player::getTriggerSkills() const{
     QSet<const TriggerSkill *> skillList;
     const QList<QString> skills = head_skills.keys() + deputy_skills.keys() + head_acquired_skills.toList() + deputy_acquired_skills.toList();
 
-    foreach (QString skill_name, skills) {
+    foreach(QString skill_name, skills) {
         const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
         if (skill && !hasEquipSkill(skill->objectName()))
             skillList << skill;
@@ -854,7 +855,7 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
     QList<const Skill *> skillList;
     const QList<QString> skills = head_skills.keys() + deputy_skills.keys() + head_acquired_skills.toList() + deputy_acquired_skills.toList();
 
-    foreach (QString skill_name, skills) {
+    foreach(QString skill_name, skills) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill
             && (include_equip || !hasEquipSkill(skill->objectName()))
@@ -863,8 +864,8 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
         if (skill->isVisible() && !visible_only){
             QList<const Skill *> related_skill = Sanguosha->getRelatedSkills(skill->objectName());
             foreach(const Skill *s, related_skill)
-                if (!skillList.contains(s) && !s->isVisible())
-                    skillList << s;
+            if (!skillList.contains(s) && !s->isVisible())
+                skillList << s;
         }
     }
 
@@ -874,7 +875,7 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
 QList<const Skill *> Player::getHeadSkillList(bool visible_only) const{
     QList<const Skill *> skillList;
 
-    foreach (QString skill_name, head_skills.keys()) {
+    foreach(QString skill_name, head_skills.keys()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill
             && (!hasEquipSkill(skill->objectName()))
@@ -888,7 +889,7 @@ QList<const Skill *> Player::getHeadSkillList(bool visible_only) const{
 QList<const Skill *> Player::getDeputySkillList(bool visible_only) const{
     QList<const Skill *> skillList;
 
-    foreach (QString skill_name, deputy_skills.keys()) {
+    foreach(QString skill_name, deputy_skills.keys()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill
             && (!hasEquipSkill(skill->objectName()))
@@ -915,7 +916,7 @@ QString Player::getSkillDescription(bool inToolTip) const{
     QString description = QString();
     QString color = inToolTip ? Config.SkillDescriptionInToolTipColor.name() : Config.SkillDescriptionInOverviewColor.name();
 
-    foreach (const Skill *skill, getVisibleSkillList()) {
+    foreach(const Skill *skill, getVisibleSkillList()) {
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription(inToolTip);
         desc.replace("\n", "<br/>");
@@ -929,7 +930,7 @@ QString Player::getSkillDescription(bool inToolTip) const{
 QString Player::getHeadSkillDescription() const {
     QString description = QString();
 
-    foreach (const Skill *skill, getVisibleSkillList()) {
+    foreach(const Skill *skill, getVisibleSkillList()) {
         if (!inHeadSkills(skill->objectName())) continue;
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription();
@@ -941,7 +942,7 @@ QString Player::getHeadSkillDescription() const {
 
 QString Player::getDeputySkillDescription() const {
     QString description = QString();
-    foreach (const Skill *skill, getVisibleSkillList()) {
+    foreach(const Skill *skill, getVisibleSkillList()) {
         if (inHeadSkills(skill->objectName())) continue;
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription();
@@ -974,7 +975,7 @@ void Player::setCardLimitation(const QString &limit_list, const QString &pattern
         QString symb = single_turn ? "$1" : "$0";
         _pattern = _pattern + symb;
     }
-    foreach (QString limit, limit_type) {
+    foreach(QString limit, limit_type) {
         Card::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
         card_limitation[method] << _pattern;
     }
@@ -985,7 +986,7 @@ void Player::removeCardLimitation(const QString &limit_list, const QString &patt
     QString _pattern = pattern;
     if (!_pattern.endsWith("$1") && !_pattern.endsWith("$0"))
         _pattern = _pattern + "$0";
-    foreach (QString limit, limit_type) {
+    foreach(QString limit, limit_type) {
         Card::HandlingMethod method = Sanguosha->getCardHandlingMethod(limit);
         card_limitation[method].removeOne(_pattern);
     }
@@ -994,10 +995,10 @@ void Player::removeCardLimitation(const QString &limit_list, const QString &patt
 void Player::clearCardLimitation(bool single_turn) {
     QList<Card::HandlingMethod> limit_type;
     limit_type << Card::MethodUse << Card::MethodResponse << Card::MethodDiscard
-               << Card::MethodRecast << Card::MethodPindian;
-    foreach (Card::HandlingMethod method, limit_type) {
+        << Card::MethodRecast << Card::MethodPindian;
+    foreach(Card::HandlingMethod method, limit_type) {
         QStringList limit_patterns = card_limitation[method];
-        foreach (QString pattern, limit_patterns) {
+        foreach(QString pattern, limit_patterns) {
             if (!single_turn || pattern.endsWith("$1"))
                 card_limitation[method].removeAll(pattern);
         }
@@ -1008,9 +1009,9 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
     if (method == Card::MethodNone)
         return false;
     if (card->getTypeId() == Card::TypeSkill && method == card->getHandlingMethod()) {
-        foreach (int card_id, card->getSubcards()) {
+        foreach(int card_id, card->getSubcards()) {
             const Card *c = Sanguosha->getCard(card_id);
-            foreach (QString pattern, card_limitation[method]) {
+            foreach(QString pattern, card_limitation[method]) {
                 QString _pattern = pattern.split("$").first();
                 if (isHandcard)
                     _pattern.replace("hand", ".");
@@ -1018,8 +1019,9 @@ bool Player::isCardLimited(const Card *card, Card::HandlingMethod method, bool i
                 if (p.match(this, c)) return true;
             }
         }
-    } else {
-        foreach (QString pattern, card_limitation[method]) {
+    }
+    else {
+        foreach(QString pattern, card_limitation[method]) {
             QString _pattern = pattern.split("$").first();
             if (isHandcard)
                 _pattern.replace("hand", ".");
@@ -1068,7 +1070,7 @@ int Player::getPlayerNumWithSameKingdom(const QString &_to_calculate /* = QStrin
     players << this;
 
     int num = 0;
-    foreach (const Player *p, players){
+    foreach(const Player *p, players){
         if (p->hasShownOneGeneral() && p->getKingdom() == to_calculate && (this == p || p->getRole() != "careerist"))
             num += 1;
     }
@@ -1083,33 +1085,33 @@ void Player::copyFrom(Player *p) {
     Player *b = this;
     Player *a = p;
 
-    b->marks                  = QMap<QString, int>(a->marks);
-    b->piles                  = QMap<QString, QList<int> >(a->piles);
-    b->head_acquired_skills   = QSet<QString>(a->head_acquired_skills);
+    b->marks = QMap<QString, int>(a->marks);
+    b->piles = QMap<QString, QList<int> >(a->piles);
+    b->head_acquired_skills = QSet<QString>(a->head_acquired_skills);
     b->deputy_acquired_skills = QSet<QString>(b->deputy_acquired_skills);
-    b->flags                  = QSet<QString>(a->flags);
-    b->history                = QHash<QString, int>(a->history);
-    b->m_gender               = a->m_gender;
+    b->flags = QSet<QString>(a->flags);
+    b->history = QHash<QString, int>(a->history);
+    b->m_gender = a->m_gender;
 
-    b->hp                     = a->hp;
-    b->max_hp                 = a->max_hp;
-    b->kingdom                = a->kingdom;
-    b->role                   = a->role;
-    b->seat                   = a->seat;
-    b->alive                  = a->alive;
+    b->hp = a->hp;
+    b->max_hp = a->max_hp;
+    b->kingdom = a->kingdom;
+    b->role = a->role;
+    b->seat = a->seat;
+    b->alive = a->alive;
 
-    b->phase                  = a->phase;
-    b->weapon                 = a->weapon;
-    b->armor                  = a->armor;
-    b->defensive_horse        = a->defensive_horse;
-    b->offensive_horse        = a->offensive_horse;
-    b->face_up                = a->face_up;
-    b->chained                = a->chained;
-    b->judging_area           = QList<int>(a->judging_area);
-    b->fixed_distance         = QHash<const Player *, int>(a->fixed_distance);
-    b->card_limitation        = QMap<Card::HandlingMethod, QStringList>(a->card_limitation);
+    b->phase = a->phase;
+    b->weapon = a->weapon;
+    b->armor = a->armor;
+    b->defensive_horse = a->defensive_horse;
+    b->offensive_horse = a->offensive_horse;
+    b->face_up = a->face_up;
+    b->chained = a->chained;
+    b->judging_area = QList<int>(a->judging_area);
+    b->fixed_distance = QHash<const Player *, int>(a->fixed_distance);
+    b->card_limitation = QMap<Card::HandlingMethod, QStringList>(a->card_limitation);
 
-    b->tag                    = QVariantMap(a->tag);
+    b->tag = QVariantMap(a->tag);
 }
 
 QList<const Player *> Player::getSiblings() const{
@@ -1123,7 +1125,7 @@ QList<const Player *> Player::getSiblings() const{
 
 QList<const Player *> Player::getAliveSiblings() const{
     QList<const Player *> siblings = getSiblings();
-    foreach (const Player *p, siblings) {
+    foreach(const Player *p, siblings) {
         if (!p->isAlive())
             siblings.removeOne(p);
     }
@@ -1167,9 +1169,9 @@ bool Player::hasShownSkill(const QString &skill_name) const{
 }
 
 bool Player::hasShownSkills(const QString &skill_name) const{
-    foreach (QString skill, skill_name.split("|")) {
+    foreach(QString skill, skill_name.split("|")) {
         bool checkpoint = true;
-        foreach (QString sk, skill.split("+")) {
+        foreach(QString sk, skill.split("+")) {
             if (!hasShownSkill(sk)) {
                 checkpoint = false;
                 break;
@@ -1278,13 +1280,13 @@ void Player::setSkillPreshowed(const QString &skill, bool preshowed) {
 
 void Player::setSkillsPreshowed(const QString &flags, bool preshowed) {
     if (flags.contains("h")) {
-        foreach (QString skill, head_skills.keys()) {
+        foreach(QString skill, head_skills.keys()) {
             if (!Sanguosha->getSkill(skill)->canPreshow()) continue;
             head_skills[skill] = preshowed;
         }
     }
     if (flags.contains("d")) {
-        foreach (QString skill, deputy_skills.keys()) {
+        foreach(QString skill, deputy_skills.keys()) {
             if (!Sanguosha->getSkill(skill)->canPreshow()) continue;
             deputy_skills[skill] = preshowed;
         }
@@ -1304,10 +1306,10 @@ bool Player::isHidden(const bool &head_general) const {
     const QList<const Skill *> skills = head_general ? getHeadSkillList() : getDeputySkillList();
     int count = 0;
     foreach(const Skill *skill, skills) {
-        if(skill->canPreshow() && hasPreshowedSkill(skill->objectName()))
+        if (skill->canPreshow() && hasPreshowedSkill(skill->objectName()))
             return false;
         else if (!skill->canPreshow())
-            ++ count;
+            ++count;
     }
     return count != skills.length();
 }
@@ -1349,7 +1351,7 @@ bool Player::willBeFriendWith(const Player *player) const {
                         break;
                     }
                     if (p->hasShownOneGeneral() && p->getRole() != "careerist")
-                        ++ i;
+                        ++i;
                 }
             }
         }
@@ -1380,8 +1382,8 @@ QString Player::getNextName() const {
 
 Player *Player::getLast() const {
     foreach(Player *p, parent()->findChildren<Player *>())
-        if (p->next == objectName())
-            return p;
+    if (p->next == objectName())
+        return p;
     return NULL;
 }
 
@@ -1397,5 +1399,5 @@ Player *Player::getNextAlive(int n) const{
 }
 
 Player *Player::getLastAlive(int n) const {
-   return getNextAlive(aliveCount() - n);
+    return getNextAlive(aliveCount() - n);
 }

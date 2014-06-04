@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _STRUCTS_H
 #define _STRUCTS_H
@@ -110,8 +110,8 @@ public:
     int m_reason;
     QString m_playerId; // the cause (not the source) of the movement, such as "lusu" when "dimeng", or "zhanghe" when "qiaobian"
     QString m_targetId; // To keep this structure lightweight, currently this is only used for UI purpose.
-                        // It will be set to empty if multiple targets are involved. NEVER use it for trigger condition
-                        // judgement!!! It will not accurately reflect the real reason.
+    // It will be set to empty if multiple targets are involved. NEVER use it for trigger condition
+    // judgement!!! It will not accurately reflect the real reason.
     QString m_skillName; // skill that triggers movement of the cards, such as "longdang", "dimeng"
     QString m_eventName; // additional arg such as "lebusishu" on top of "S_REASON_JUDGE"
     inline CardMoveReason() { m_reason = S_REASON_UNKNOWN; }
@@ -140,9 +140,9 @@ public:
 
     inline bool operator == (const CardMoveReason &other) const{
         return m_reason == other.m_reason
-               && m_playerId == other.m_playerId && m_targetId == other.m_targetId
-               && m_skillName == other.m_skillName
-               && m_eventName == other.m_eventName;
+            && m_playerId == other.m_playerId && m_targetId == other.m_targetId
+            && m_skillName == other.m_skillName
+            && m_eventName == other.m_eventName;
     }
 
     static const int S_REASON_UNKNOWN = 0x00;
@@ -190,7 +190,7 @@ public:
 
     //subcategory of put
     static const int S_REASON_NATURAL_ENTER = 0x1A;     //  a card with no-owner move into discardpile
-                                                        //  e.g. delayed trick enters discardpile
+    //  e.g. delayed trick enters discardpile
     static const int S_REASON_REMOVE_FROM_PILE = 0x2A;  //  cards moved out of game go back into discardpile
     static const int S_REASON_JUDGEDONE = 0x3A;         //  judge card move into discardpile
     static const int S_REASON_CHANGE_EQUIP = 0x4A;      //  replace existed equip
@@ -227,7 +227,7 @@ struct CardsMoveStruct {
     }
 
     inline CardsMoveStruct(const QList<int> &ids, Player *from, Player *to, Player::Place from_place,
-                           Player::Place to_place, CardMoveReason reason) {
+        Player::Place to_place, CardMoveReason reason) {
         this->card_ids = ids;
         this->from_place = from_place;
         this->to_place = to_place;
@@ -251,7 +251,7 @@ struct CardsMoveStruct {
     }
 
     inline CardsMoveStruct(int id, Player *from, Player *to, Player::Place from_place,
-                           Player::Place to_place, CardMoveReason reason) {
+        Player::Place to_place, CardMoveReason reason) {
         this->card_ids << id;
         this->from_place = from_place;
         this->to_place = to_place;
@@ -276,12 +276,12 @@ struct CardsMoveStruct {
 
     inline bool operator == (const CardsMoveStruct &other) const{
         return from == other.from && from_place == other.from_place
-               && from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
+            && from_pile_name == other.from_pile_name && from_player_name == other.from_player_name;
     }
 
     inline bool operator < (const CardsMoveStruct &other) const{
         return from < other.from || from_place < other.from_place
-               || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
+            || from_pile_name < other.from_pile_name || from_player_name < other.from_player_name;
     }
 
     QList<int> card_ids;
@@ -488,9 +488,9 @@ enum TriggerEvent {
 
     PreCardUsed,
     CardUsed,
-    TargetChoosing , //distinguish "choose target" and "confirm target"
+    TargetChoosing, //distinguish "choose target" and "confirm target"
     TargetConfirming,
-    TargetChosen ,
+    TargetChosen,
     TargetConfirmed,
     CardEffect,
     CardEffected,

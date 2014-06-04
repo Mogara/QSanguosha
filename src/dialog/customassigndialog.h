@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _CUSTOM_ASSIGN_DIALOG_H
 #define _CUSTOM_ASSIGN_DIALOG_H
@@ -35,11 +35,11 @@
 #include <QTextEdit>
 #include <QLineEdit>
 
-class LabelButton: public QLabel {
+class LabelButton : public QLabel {
     Q_OBJECT
 
 public:
-    LabelButton(): QLabel() {}
+    LabelButton() : QLabel() {}
 
     void mouseDoubleClickEvent(QMouseEvent *) { emit double_clicked(); }
     void mousePressEvent(QMouseEvent *) { emit clicked(); }
@@ -49,7 +49,7 @@ signals:
     void clicked();
 };
 
-class CustomAssignDialog: public QDialog {
+class CustomAssignDialog : public QDialog {
     Q_OBJECT
 
 public:
@@ -79,8 +79,8 @@ private:
     QCheckBox *rest_in_DP_box;
     QCheckBox *ended_by_pile, *single_turn, *before_next;
     QLabel *ended_by_pile_text, *ended_by_pile_text2,
-           *single_turn_text, *single_turn_text2,
-           *before_next_text, *before_next_text2;
+        *single_turn_text, *single_turn_text2,
+        *before_next_text, *before_next_text2;
     QPushButton *extra_skill_set;
     QPushButton *move_list_up_button, *move_list_down_button;
     QCheckBox *move_list_check, *move_pile_check;
@@ -176,7 +176,7 @@ signals:
 };
 
 
-class GeneralAssignDialog: public QDialog {
+class GeneralAssignDialog : public QDialog {
     Q_OBJECT
 
 public:
@@ -195,7 +195,7 @@ signals:
     void general_cleared();
 };
 
-class CardAssignDialog: public QDialog {
+class CardAssignDialog : public QDialog {
     Q_OBJECT
 
 public:
@@ -217,7 +217,7 @@ signals:
     void card_chosen(int card_id);
 };
 
-class SkillAssignDialog: public QDialog {
+class SkillAssignDialog : public QDialog {
     Q_OBJECT
 
 public:

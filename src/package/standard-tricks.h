@@ -1,29 +1,29 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _STANDARD_TRICK_H
 #define _STANDARD_TRICK_H
 
 #include "standard.h"
 
-class GodSalvation: public GlobalEffect {
+class GodSalvation : public GlobalEffect {
     Q_OBJECT
 
 public:
@@ -32,7 +32,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class AmazingGrace: public GlobalEffect {
+class AmazingGrace : public GlobalEffect {
     Q_OBJECT
 
 public:
@@ -45,7 +45,7 @@ private:
     void clearRestCards(Room *room) const;
 };
 
-class SavageAssault:public AOE {
+class SavageAssault :public AOE {
     Q_OBJECT
 
 public:
@@ -53,7 +53,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class ArcheryAttack: public AOE {
+class ArcheryAttack : public AOE {
     Q_OBJECT
 
 public:
@@ -61,7 +61,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class Collateral: public SingleTargetTrick {
+class Collateral : public SingleTargetTrick {
     Q_OBJECT
 
 public:
@@ -76,7 +76,7 @@ private:
     bool doCollateral(Room *room, ServerPlayer *killer, ServerPlayer *victim, const QString &prompt) const;
 };
 
-class ExNihilo: public SingleTargetTrick {
+class ExNihilo : public SingleTargetTrick {
     Q_OBJECT
 
 public:
@@ -86,7 +86,7 @@ public:
     virtual bool isAvailable(const Player *player) const;
 };
 
-class Duel: public SingleTargetTrick {
+class Duel : public SingleTargetTrick {
     Q_OBJECT
 
 public:
@@ -97,7 +97,7 @@ public:
     virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
-class Indulgence: public DelayedTrick {
+class Indulgence : public DelayedTrick {
     Q_OBJECT
 
 public:
@@ -107,7 +107,7 @@ public:
     virtual void takeEffect(ServerPlayer *target) const;
 };
 
-class SupplyShortage: public DelayedTrick {
+class SupplyShortage : public DelayedTrick {
     Q_OBJECT
 
 public:
@@ -119,7 +119,7 @@ public:
     virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
-class Lightning: public Disaster {
+class Lightning : public Disaster {
     Q_OBJECT
 
 public:
@@ -128,7 +128,7 @@ public:
     virtual void takeEffect(ServerPlayer *target) const;
 };
 
-class Nullification: public SingleTargetTrick {
+class Nullification : public SingleTargetTrick {
     Q_OBJECT
 
 public:
@@ -138,14 +138,14 @@ public:
     virtual bool isAvailable(const Player *player) const;
 };
 
-class HegNullification: public Nullification {
+class HegNullification : public Nullification {
     Q_OBJECT
 
 public:
     Q_INVOKABLE HegNullification(Card::Suit suit, int number);
 };
 
-class Snatch:public SingleTargetTrick {
+class Snatch :public SingleTargetTrick {
     Q_OBJECT
 
 public:
@@ -157,7 +157,7 @@ public:
     virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
-class Dismantlement: public SingleTargetTrick {
+class Dismantlement : public SingleTargetTrick {
     Q_OBJECT
 
 public:
@@ -169,7 +169,7 @@ public:
     virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
-class IronChain: public TrickCard {
+class IronChain : public TrickCard {
     Q_OBJECT
 
 public:
@@ -186,7 +186,7 @@ public:
     virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
-class FireAttack: public SingleTargetTrick {
+class FireAttack : public SingleTargetTrick {
     Q_OBJECT
 
 public:
@@ -198,7 +198,7 @@ public:
     virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
-class AwaitExhausted: public TrickCard{
+class AwaitExhausted : public TrickCard{
     Q_OBJECT
 
 public:
@@ -211,7 +211,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
-class KnownBoth: public SingleTargetTrick{
+class KnownBoth : public SingleTargetTrick{
     Q_OBJECT
 
 public:
@@ -225,7 +225,7 @@ public:
     virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
-class BefriendAttacking: public SingleTargetTrick{
+class BefriendAttacking : public SingleTargetTrick{
     Q_OBJECT
 
 public:

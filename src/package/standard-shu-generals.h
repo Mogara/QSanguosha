@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _STANDARD_SHU_H
 #define _STANDARD_SHU_H
@@ -25,7 +25,7 @@
 #include "card.h"
 #include "skill.h"
 
-class Mashu: public DistanceSkill {
+class Mashu : public DistanceSkill {
 public:
     Mashu(const QString &);
 
@@ -34,7 +34,7 @@ private:
     QString owner;
 };
 
-class RendeCard: public SkillCard {
+class RendeCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -42,7 +42,7 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class SavageAssaultAvoid: public TriggerSkill {
+class SavageAssaultAvoid : public TriggerSkill {
 public:
     SavageAssaultAvoid(const QString &);
 
@@ -53,7 +53,7 @@ private:
     QString avoid_skill;
 };
 
-class FangquanCard: public SkillCard {
+class FangquanCard : public SkillCard {
     Q_OBJECT
 
 public:

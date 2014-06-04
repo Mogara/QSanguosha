@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "playercarddialog.h"
 #include "carditem.h"
@@ -31,12 +31,12 @@
 #include <QHBoxLayout>
 
 PlayerCardButton::PlayerCardButton(const QString &name)
-    : QCommandLinkButton(name), scale(1.0)
+: QCommandLinkButton(name), scale(1.0)
 {
 }
 
 PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &flags,
-                                   bool handcard_visible, Card::HandlingMethod method, const QList<int> &disabled_ids)
+    bool handcard_visible, Card::HandlingMethod method, const QList<int> &disabled_ids)
     : player(player), handcard_visible(handcard_visible), method(method), disabled_ids(disabled_ids)
 {
     QVBoxLayout *vlayout1 = new QVBoxLayout, *vlayout2 = new QVBoxLayout;
@@ -81,7 +81,7 @@ QWidget *PlayerCardDialog::createAvatar() {
 QWidget *PlayerCardDialog::createHandcardButton() {
     if (!player->isKongcheng() && (Self == player || handcard_visible)) {
         QGroupBox *area = new QGroupBox(tr("Handcard area"));
-        QVBoxLayout *layout =  new QVBoxLayout;
+        QVBoxLayout *layout = new QVBoxLayout;
         QList<const Card *> cards = player->getHandcards();
         for (int i = 0; i < cards.length(); i += 2) {
             const Card *card = Sanguosha->getEngineCard(cards.at(i)->getId());
@@ -107,7 +107,8 @@ QWidget *PlayerCardDialog::createHandcardButton() {
                 hlayout->addWidget(button1);
                 hlayout->addWidget(button2);
                 layout->addLayout(hlayout);
-            } else {
+            }
+            else {
                 Q_ASSERT(button1 != NULL);
                 layout->addWidget(button1);
             }
@@ -123,7 +124,8 @@ QWidget *PlayerCardDialog::createHandcardButton() {
     if (num == 0) {
         button->setDescription(tr("This guy has no any hand cards"));
         button->setEnabled(false);
-    } else {
+    }
+    else {
         button->setDescription(tr("This guy has %1 hand card(s)").arg(num));
         button->setEnabled(method != Card::MethodDiscard || Self->canDiscard(player, "h"));
         mapper.insert(button, -1);
@@ -142,7 +144,7 @@ QWidget *PlayerCardDialog::createEquipArea() {
         PlayerCardButton *button = new PlayerCardButton(weapon->getFullName());
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(weapon->getId())->getSuit()));
         button->setEnabled(!disabled_ids.contains(weapon->getEffectiveId())
-                            && (method != Card::MethodDiscard || Self->canDiscard(player, weapon->getEffectiveId())));
+            && (method != Card::MethodDiscard || Self->canDiscard(player, weapon->getEffectiveId())));
         mapper.insert(button, weapon->getId());
         connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
         layout->addWidget(button);
@@ -153,7 +155,7 @@ QWidget *PlayerCardDialog::createEquipArea() {
         PlayerCardButton *button = new PlayerCardButton(armor->getFullName());
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(armor->getId())->getSuit()));
         button->setEnabled(!disabled_ids.contains(armor->getEffectiveId())
-                            && (method != Card::MethodDiscard || Self->canDiscard(player, armor->getEffectiveId())));
+            && (method != Card::MethodDiscard || Self->canDiscard(player, armor->getEffectiveId())));
         mapper.insert(button, armor->getId());
         connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
         layout->addWidget(button);
@@ -164,7 +166,7 @@ QWidget *PlayerCardDialog::createEquipArea() {
         PlayerCardButton *button = new PlayerCardButton(horse->getFullName() + tr("(+1 horse)"));
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(horse->getId())->getSuit()));
         button->setEnabled(!disabled_ids.contains(horse->getEffectiveId())
-                            && (method != Card::MethodDiscard || Self->canDiscard(player, horse->getEffectiveId())));
+            && (method != Card::MethodDiscard || Self->canDiscard(player, horse->getEffectiveId())));
         mapper.insert(button, horse->getId());
         connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
         layout->addWidget(button);
@@ -175,7 +177,7 @@ QWidget *PlayerCardDialog::createEquipArea() {
         PlayerCardButton *button = new PlayerCardButton(horse->getFullName() + tr("(-1 horse)"));
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(horse->getId())->getSuit()));
         button->setEnabled(!disabled_ids.contains(horse->getEffectiveId())
-                            && (method != Card::MethodDiscard || Self->canDiscard(player, horse->getEffectiveId())));
+            && (method != Card::MethodDiscard || Self->canDiscard(player, horse->getEffectiveId())));
         mapper.insert(button, horse->getId());
         connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
         layout->addWidget(button);
@@ -187,7 +189,8 @@ QWidget *PlayerCardDialog::createEquipArea() {
         no_equip->setEnabled(false);
         no_equip->setObjectName("noequip_button");
         return no_equip;
-    } else {
+    }
+    else {
         area->setLayout(layout);
         return area;
     }
@@ -197,13 +200,13 @@ QWidget *PlayerCardDialog::createJudgingArea() {
     QGroupBox *area = new QGroupBox(tr("Judging Area"));
     QVBoxLayout *layout = new QVBoxLayout;
     QList<const Card *> cards = player->getJudgingArea();
-    foreach (const Card *card, cards) {
+    foreach(const Card *card, cards) {
         const Card *real = Sanguosha->getEngineCard(card->getId());
         PlayerCardButton *button = new PlayerCardButton(real->getFullName());
         button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(real->getSuit()));
         layout->addWidget(button);
         button->setEnabled(!disabled_ids.contains(card->getEffectiveId())
-                            && (method != Card::MethodDiscard || Self->canDiscard(player, card->getEffectiveId())));
+            && (method != Card::MethodDiscard || Self->canDiscard(player, card->getEffectiveId())));
         mapper.insert(button, card->getId());
         connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
     }
@@ -214,7 +217,8 @@ QWidget *PlayerCardDialog::createJudgingArea() {
         button->setEnabled(false);
         button->setObjectName("nojuding_button");
         return button;
-    } else {
+    }
+    else {
         area->setLayout(layout);
         return area;
     }

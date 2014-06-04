@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _CARD_H
 #define _CARD_H
@@ -36,7 +36,7 @@ class CardItem;
 struct CardEffectStruct;
 struct CardUseStruct;
 
-class Card: public QObject {
+class Card : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString suit READ getSuitString CONSTANT)
     Q_PROPERTY(bool red READ isRed STORED false CONSTANT)
@@ -130,7 +130,7 @@ public:
     // @todo: the following two functions should be merged into one.
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self,
-                              int &maxVotes) const;
+        int &maxVotes) const;
     virtual bool isAvailable(const Player *player) const;
 
     inline virtual const Card *getRealCard() const{ return this; }
@@ -185,7 +185,7 @@ protected:
     mutable QStringList flags;
 };
 
-class SkillCard: public Card {
+class SkillCard : public Card {
     Q_OBJECT
 
 public:
@@ -202,7 +202,7 @@ protected:
     QString user_string;
 };
 
-class ArraySummonCard: public SkillCard {
+class ArraySummonCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -211,7 +211,7 @@ public:
     void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
-class DummyCard: public SkillCard {
+class DummyCard : public SkillCard {
     Q_OBJECT
 
 public:

@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _LUA_WRAPPER_H
 #define _LUA_WRAPPER_H
@@ -26,7 +26,7 @@
 
 typedef int LuaFunction;
 
-class LuaTriggerSkill: public TriggerSkill {
+class LuaTriggerSkill : public TriggerSkill {
     Q_OBJECT
 
 public:
@@ -34,7 +34,7 @@ public:
     inline void addEvent(TriggerEvent triggerEvent) { events << triggerEvent; }
     inline void setViewAsSkill(ViewAsSkill *view_as_skill) { this->view_as_skill = view_as_skill; }
     inline void setGlobal(bool global) { this->global = global; }
-    inline void setCanPreshow(bool preshow) {this->can_preshow = preshow; }
+    inline void setCanPreshow(bool preshow) { this->can_preshow = preshow; }
 
     virtual int getPriority() const;
     virtual bool canPreshow() const;
@@ -51,7 +51,7 @@ public:
     bool can_preshow;
 };
 
-class LuaBattleArraySkill: public BattleArraySkill {
+class LuaBattleArraySkill : public BattleArraySkill {
     Q_OBJECT
 
 public:
@@ -72,7 +72,7 @@ public:
     int priority;
 };
 
-class LuaViewAsSkill: public ViewAsSkill {
+class LuaViewAsSkill : public ViewAsSkill {
     Q_OBJECT
 
 public:
@@ -95,7 +95,7 @@ public:
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
 };
 
-class LuaFilterSkill: public FilterSkill {
+class LuaFilterSkill : public FilterSkill {
     Q_OBJECT
 
 public:
@@ -108,7 +108,7 @@ public:
     LuaFunction view_as;
 };
 
-class LuaDistanceSkill: public DistanceSkill {
+class LuaDistanceSkill : public DistanceSkill {
     Q_OBJECT
 
 public:
@@ -119,7 +119,7 @@ public:
     LuaFunction correct_func;
 };
 
-class LuaMaxCardsSkill: public MaxCardsSkill {
+class LuaMaxCardsSkill : public MaxCardsSkill {
     Q_OBJECT
 
 public:
@@ -132,7 +132,7 @@ public:
     LuaFunction fixed_func;
 };
 
-class LuaTargetModSkill: public TargetModSkill {
+class LuaTargetModSkill : public TargetModSkill {
     Q_OBJECT
 
 public:
@@ -147,7 +147,7 @@ public:
     LuaFunction extra_target_func;
 };
 
-class LuaAttackRangeSkill: public AttackRangeSkill{
+class LuaAttackRangeSkill : public AttackRangeSkill{
     Q_OBJECT
 
 public:
@@ -160,7 +160,7 @@ public:
     LuaFunction fixed_func;
 };
 
-class LuaSkillCard: public SkillCard {
+class LuaSkillCard : public SkillCard {
     Q_OBJECT
 
 public:
@@ -196,7 +196,7 @@ public:
     LuaFunction on_validate_in_response;
 };
 
-class LuaBasicCard: public BasicCard {
+class LuaBasicCard : public BasicCard {
     Q_OBJECT
 
 public:
@@ -237,7 +237,7 @@ private:
     QString class_name, subtype;
 };
 
-class LuaTrickCard: public TrickCard {
+class LuaTrickCard : public TrickCard {
     Q_OBJECT
 
 public:
@@ -278,8 +278,8 @@ public:
             case TypeGlobalEffect: return strcmp(cardType, "GlobalEffect") == 0; break;
             case TypeNormal:
             default:
-                    return false;
-                    break;
+                return false;
+                break;
             }
         }
     }
@@ -299,7 +299,7 @@ private:
     QString class_name, subtype;
 };
 
-class LuaWeapon: public Weapon {
+class LuaWeapon : public Weapon {
     Q_OBJECT
 
 public:
@@ -328,7 +328,7 @@ private:
     QString class_name;
 };
 
-class LuaArmor: public Armor {
+class LuaArmor : public Armor {
     Q_OBJECT
 
 public:

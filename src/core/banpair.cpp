@@ -1,3 +1,23 @@
+/********************************************************************
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+    This file is part of QSanguosha-Hegemony.
+
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    See the LICENSE file for more details.
+
+    QSanguosha-Hegemony Team
+    *********************************************************************/
+
 #include "banpair.h"
 #include "settings.h"
 
@@ -9,7 +29,7 @@ BanPair::BanPair() {
 }
 
 BanPair::BanPair(const QString &first, const QString &second)
-    : QPair<QString, QString>(first, second)
+: QPair<QString, QString>(first, second)
 {
     if (first > second) {
         qSwap(this->first, this->second);
@@ -41,7 +61,7 @@ void BanPair::loadBanPairs() {
     // special cases
     QStringList banlist = Config.value("Banlist/Pairs", "").toStringList();
 
-    foreach (QString line, banlist) {
+    foreach(QString line, banlist) {
         QStringList names = line.split("+");
         if (names.isEmpty())
             continue;
@@ -55,7 +75,8 @@ void BanPair::loadBanPairs() {
                 BanPair pair(first, second);
                 BanPairSet.insert(pair);
             }
-        } else if (names.length() == 1) {
+        }
+        else if (names.length() == 1) {
             AllBanSet.insert(first);
         }
     }
@@ -63,11 +84,11 @@ void BanPair::loadBanPairs() {
 
 void BanPair::saveBanPairs() {
     QStringList stream;
-    foreach (QString banned, AllBanSet)
+    foreach(QString banned, AllBanSet)
         stream << banned;
-    foreach (QString banned, SecondBanSet)
+    foreach(QString banned, SecondBanSet)
         stream << QString("+%1").arg(banned);
-    foreach (BanPair pair, BanPairSet)
+    foreach(BanPair pair, BanPairSet)
         stream << QString("%1+%2").arg(pair.first, pair.second);
     Config.setValue("Banlist/Pairs", stream);
 }

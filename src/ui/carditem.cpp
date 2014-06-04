@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "carditem.h"
 #include "engine.h"
@@ -72,14 +72,15 @@ void CardItem::setCard(const Card *card) {
         Q_ASSERT(engineCard != NULL);
         setObjectName(engineCard->objectName());
         setToolTip(engineCard->getDescription());
-    } else {
+    }
+    else {
         m_cardId = Card::S_UNKNOWN_CARD_ID;
         setObjectName("unknown");
     }
 }
 
 void CardItem::setEnabled(bool enabled) {
-     QSanSelectableItem::setEnabled(enabled);
+    QSanSelectableItem::setEnabled(enabled);
 }
 
 CardItem::~CardItem() {
@@ -97,7 +98,8 @@ void CardItem::changeGeneral(const QString &general_name) {
     if (general) {
         _m_isUnknownGeneral = false;
         setToolTip(general->getSkillDescription(true));
-    } else {
+    }
+    else {
         _m_isUnknownGeneral = true;
         setToolTip(QString());
     }
@@ -121,7 +123,8 @@ void CardItem::goBack(bool playAnimation, bool doFade) {
         getGoBackAnimation(doFade);
         if (m_currentAnimation != NULL)
             m_currentAnimation->start();
-    } else {
+    }
+    else {
         m_animationMutex.lock();
         if (m_currentAnimation != NULL) {
             m_currentAnimation->stop();
@@ -161,7 +164,8 @@ QAbstractAnimation *CardItem::getGoBackAnimation(bool doFade, bool smoothTransit
         group->addAnimation(disappear);
 
         m_currentAnimation = group;
-    } else {
+    }
+    else {
         m_currentAnimation = goback;
     }
     m_animationMutex.unlock();
@@ -200,7 +204,7 @@ void CardItem::setFrozen(bool is_frozen) {
 }
 
 CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id) {
-    foreach (CardItem *item, items) {
+    foreach(CardItem *item, items) {
         if (item->getCard() == NULL) {
             if (card_id == Card::S_UNKNOWN_CARD_ID)
                 return item;
@@ -252,7 +256,8 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
     if (hasFocus()) {
         event->accept();
         emit double_clicked();
-    } else
+    }
+    else
         emit toggle_discards();
 }
 
@@ -301,6 +306,6 @@ void CardItem::setFootnote(const QString &desc) {
     _m_footnoteImage.fill(Qt::transparent);
     QPainter painter(&_m_footnoteImage);
     font.paintText(&painter, QRect(QPoint(0, 0), rect.size()),
-                   (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);
+        (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);
 }
 

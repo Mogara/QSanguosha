@@ -1,28 +1,28 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "lua-wrapper.h"
 #include "util.h"
 
 LuaTriggerSkill::LuaTriggerSkill(const char *name, Frequency frequency, const char *limit_mark)
-    : TriggerSkill(name), can_trigger(0), on_cost(0), on_effect(0), priority(2)
+: TriggerSkill(name), can_trigger(0), on_cost(0), on_effect(0), priority(2)
 {
     this->frequency = frequency;
     this->limit_mark = limit_mark;
@@ -37,7 +37,7 @@ bool LuaTriggerSkill::canPreshow() const{
 }
 
 LuaBattleArraySkill::LuaBattleArraySkill(const char *name, Frequency frequency, const char *limit_mark, HegemonyMode::ArrayType array_type)
-    : BattleArraySkill(name, array_type)
+: BattleArraySkill(name, array_type)
 {
     this->frequency = frequency;
     this->limit_mark = limit_mark;
@@ -48,35 +48,35 @@ int LuaBattleArraySkill::getPriority() const{
 }
 
 LuaViewAsSkill::LuaViewAsSkill(const char *name, const char *response_pattern)
-    : ViewAsSkill(name), view_filter(0), view_as(0),
-      enabled_at_play(0), enabled_at_response(0), enabled_at_nullification(0)
+: ViewAsSkill(name), view_filter(0), view_as(0),
+enabled_at_play(0), enabled_at_response(0), enabled_at_nullification(0)
 {
     this->response_pattern = response_pattern;
 }
 
 LuaFilterSkill::LuaFilterSkill(const char *name)
-    : FilterSkill(name), view_filter(0), view_as(0)
+: FilterSkill(name), view_filter(0), view_as(0)
 {
 }
 
 LuaDistanceSkill::LuaDistanceSkill(const char *name)
-    : DistanceSkill(name), correct_func(0)
+: DistanceSkill(name), correct_func(0)
 {
 }
 
 LuaMaxCardsSkill::LuaMaxCardsSkill(const char *name)
-    : MaxCardsSkill(name), extra_func(0), fixed_func(0)
+: MaxCardsSkill(name), extra_func(0), fixed_func(0)
 {
 }
 
 LuaTargetModSkill::LuaTargetModSkill(const char *name, const char *pattern)
-    : TargetModSkill(name), residue_func(0), distance_limit_func(0), extra_target_func(0)
+: TargetModSkill(name), residue_func(0), distance_limit_func(0), extra_target_func(0)
 {
     this->pattern = pattern;
 }
 
 LuaAttackRangeSkill::LuaAttackRangeSkill(const char *name)
-    : AttackRangeSkill(name), extra_func(0), fixed_func(0)
+: AttackRangeSkill(name), extra_func(0), fixed_func(0)
 {
 }
 
@@ -84,8 +84,8 @@ static QHash<QString, const LuaSkillCard *> LuaSkillCards;
 static QHash<QString, QString> LuaSkillCardsSkillName;
 
 LuaSkillCard::LuaSkillCard(const char *name, const char *skillName)
-    : SkillCard(), filter(0), feasible(0),
-        about_to_use(0), on_use(0), on_effect(0), on_validate(0), on_validate_in_response(0)
+: SkillCard(), filter(0), feasible(0),
+about_to_use(0), on_use(0), on_effect(0), on_validate(0), on_validate_in_response(0)
 {
     if (name) {
         LuaSkillCards.insert(name, this);
@@ -146,7 +146,8 @@ LuaSkillCard *LuaSkillCard::Parse(const QString &str) {
         subcard_str = texts.at(2);
         user_string = texts.at(3);
         show_skill = texts.at(4);
-    } else if (e_rx.exactMatch(str)) {
+    }
+    else if (e_rx.exactMatch(str)) {
         texts = e_rx.capturedTexts();
         name = texts.at(1);
         suit = texts.at(2);
@@ -154,7 +155,8 @@ LuaSkillCard *LuaSkillCard::Parse(const QString &str) {
         subcard_str = texts.at(4);
         user_string = texts.at(5);
         show_skill = texts.at(6);
-    } else
+    }
+    else
         return NULL;
 
     const LuaSkillCard *c = LuaSkillCards.value(name, NULL);
@@ -199,12 +201,12 @@ LuaSkillCard *LuaSkillCard::Parse(const QString &str) {
 QString LuaSkillCard::toString(bool hidden) const{
     Q_UNUSED(hidden);
     return QString("#%1[%2:%3]:%4:%5&%6").arg(objectName())
-           .arg(getSuitString()).arg(getNumberString())
-           .arg(subcardString()).arg(user_string).arg(show_skill);
+        .arg(getSuitString()).arg(getNumberString())
+        .arg(subcardString()).arg(user_string).arg(show_skill);
 }
 
 LuaBasicCard::LuaBasicCard(Card::Suit suit, int number, const char *obj_name, const char *class_name, const char *subtype)
-    : BasicCard(suit, number), filter(0), feasible(0), available(0), about_to_use(0), on_use(0), on_effect(0)
+: BasicCard(suit, number), filter(0), feasible(0), available(0), about_to_use(0), on_use(0), on_effect(0)
 {
     setObjectName(obj_name);
     this->class_name = class_name;
@@ -231,8 +233,8 @@ LuaBasicCard *LuaBasicCard::clone(Card::Suit suit, int number) const{
 }
 
 LuaTrickCard::LuaTrickCard(Card::Suit suit, int number, const char *obj_name, const char *class_name, const char *subtype)
-    : TrickCard(suit, number), filter(0), feasible(0), available(0), is_cancelable(0),
-      about_to_use(0), on_use(0), on_effect(0), on_nullified(0)
+: TrickCard(suit, number), filter(0), feasible(0), available(0), is_cancelable(0),
+about_to_use(0), on_use(0), on_effect(0), on_nullified(0)
 {
     setObjectName(obj_name);
     this->class_name = class_name;
@@ -262,7 +264,7 @@ LuaTrickCard *LuaTrickCard::clone(Card::Suit suit, int number) const{
 }
 
 LuaWeapon::LuaWeapon(Card::Suit suit, int number, int range, const char *obj_name, const char *class_name)
-    : Weapon(suit, number, range)
+: Weapon(suit, number, range)
 {
     setObjectName(obj_name);
     this->class_name = class_name;
@@ -280,7 +282,7 @@ LuaWeapon *LuaWeapon::clone(Card::Suit suit, int number) const{
 }
 
 LuaArmor::LuaArmor(Card::Suit suit, int number, const char *obj_name, const char *class_name)
-    : Armor(suit, number)
+: Armor(suit, number)
 {
     setObjectName(obj_name);
     this->class_name = class_name;

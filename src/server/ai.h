@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _AI_H
 #define _AI_H
@@ -36,7 +36,7 @@ typedef int LuaFunction;
 #include <QString>
 #include <QObject>
 
-class AI: public QObject {
+class AI : public QObject {
     Q_OBJECT
     Q_ENUMS(Relation)
 
@@ -76,7 +76,7 @@ protected:
     ServerPlayer *self;
 };
 
-class TrustAI: public AI {
+class TrustAI : public AI {
     Q_OBJECT
 
 public:
@@ -107,7 +107,7 @@ private:
     ResponseSkill *response_skill;
 };
 
-class LuaAI: public TrustAI {
+class LuaAI : public TrustAI {
     Q_OBJECT
 
 public:

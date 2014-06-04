@@ -1,29 +1,29 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _STANDARD_BASICS_H
 #define _STANDARD_BASICS_H
 
 #include "standard.h"
 
-class Slash: public BasicCard {
+class Slash : public BasicCard {
     Q_OBJECT
 
 public:
@@ -47,7 +47,7 @@ protected:
     mutable int drank;
 };
 
-class NatureSlash: public Slash {
+class NatureSlash : public Slash {
     Q_OBJECT
 
 public:
@@ -55,21 +55,21 @@ public:
     virtual bool match(const QString &pattern) const;
 };
 
-class ThunderSlash: public NatureSlash {
+class ThunderSlash : public NatureSlash {
     Q_OBJECT
 
 public:
     Q_INVOKABLE ThunderSlash(Card::Suit suit, int number);
 };
 
-class FireSlash: public NatureSlash {
+class FireSlash : public NatureSlash {
     Q_OBJECT
 
 public:
     Q_INVOKABLE FireSlash(Card::Suit suit, int number);
 };
 
-class Jink: public BasicCard {
+class Jink : public BasicCard {
     Q_OBJECT
 
 public:
@@ -78,7 +78,7 @@ public:
     virtual bool isAvailable(const Player *player) const;
 };
 
-class Peach: public BasicCard {
+class Peach : public BasicCard {
     Q_OBJECT
 
 public:
@@ -89,7 +89,7 @@ public:
     virtual bool isAvailable(const Player *player) const;
 };
 
-class Analeptic: public BasicCard {
+class Analeptic : public BasicCard {
     Q_OBJECT
 
 public:

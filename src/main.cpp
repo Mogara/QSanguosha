@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #if defined(WIN32) && (defined(VS2010) || defined(VS2012) || defined(VS2013)) && !defined(QT_NO_DEBUG)
 #include <vld.h>
@@ -40,9 +40,9 @@
 using namespace google_breakpad;
 
 static bool callback(const wchar_t *, const wchar_t *id,
-                     void *, EXCEPTION_POINTERS *,
-                     MDRawAssertionInfo *,
-                     bool succeeded) {
+    void *, EXCEPTION_POINTERS *,
+    MDRawAssertionInfo *,
+    bool succeeded) {
     if (succeeded && QFile::exists("QSanSMTPClient.exe")){
         char *ID = new char[65535];
         memset(ID, 0, sizeof(ID));
@@ -59,7 +59,7 @@ static bool callback(const wchar_t *, const wchar_t *id,
 
 int main(int argc, char *argv[]) {
     ExceptionHandler eh(L"./dmp", NULL, callback, NULL,
-                        ExceptionHandler::HANDLER_ALL);
+        ExceptionHandler::HANDLER_ALL);
 #else
 int main(int argc, char *argv[]) {
 #endif
@@ -78,7 +78,8 @@ int main(int argc, char *argv[]) {
     QDir dir(QString("lua"));
     if (dir.exists() && (dir.exists(QString("config.lua")))) {
         // things look good and use current dir
-    } else {
+    }
+    else {
         QDir::setCurrent(qApp->applicationFilePath().replace("games", "share"));
     }
 #endif
@@ -126,7 +127,7 @@ int main(int argc, char *argv[]) {
     Sanguosha->setParent(&main_window);
     main_window.show();
 
-    foreach (QString arg, qApp->arguments()) {
+    foreach(QString arg, qApp->arguments()) {
         if (arg.startsWith("-connect:")) {
             arg.remove("-connect:");
             Config.HostAddress = arg;

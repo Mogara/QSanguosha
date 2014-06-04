@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _SKIN_BANK_H
 #define _SKIN_BANK_H
@@ -66,7 +66,7 @@ public:
         static QHash<QString, int *> _m_fontBank;
     };
 
-    class QSanShadowTextFont: public QSanSimpleTextFont {
+    class QSanShadowTextFont : public QSanSimpleTextFont {
     public:
         int m_shadowRadius;
         double m_shadowDecadeFactor;
@@ -96,7 +96,7 @@ public:
     static const char *S_SKIN_KEY_DEFAULT;
     static const char *S_SKIN_KEY_DEFAULT_SECOND;
     bool load(const QString &layoutConfigFileName, const QString &imageConfigFileName,
-              const QString &audioConfigFileName, const QString &animationConfigFileName);
+        const QString &audioConfigFileName, const QString &animationConfigFileName);
     QPixmap getPixmap(const QString &key, const QString &arg = QString()) const;
     QPixmap getPixmapFileName(const QString &key) const;
     QPixmap getPixmapFromFileName(const QString &fileName) const;
@@ -110,10 +110,10 @@ protected:
     virtual bool _loadImageConfig(const Json::Value &config);
     virtual bool _loadAnimationConfig(const Json::Value &config) = 0;
     QString _readConfig(const Json::Value &dictionary, const QString &key,
-                        const QString &defaultValue = QString()) const;
+        const QString &defaultValue = QString()) const;
     QString _readImageConfig(const QString &key, QRect &clipRegion, bool &clipping,
-                             QSize &newScale, bool scaled,
-                             const QString &defaultValue = QString()) const;
+        QSize &newScale, bool scaled,
+        const QString &defaultValue = QString()) const;
 
     Json::Value _m_imageConfig;
     Json::Value _m_audioConfig;
@@ -126,7 +126,7 @@ protected:
     static QHash<QString, int> S_HERO_SKIN_INDEX;
 };
 
-class QSanRoomSkin: public IQSanComponentSkin {
+class QSanRoomSkin : public IQSanComponentSkin {
 public:
     struct RoomLayout {
         int m_scenePadding;
@@ -227,7 +227,7 @@ public:
         QRect m_extraSkillTextArea;
     };
 
-    struct PhotoLayout: public PlayerCardContainerLayout {
+    struct PhotoLayout : public PlayerCardContainerLayout {
         int m_normalWidth;
         QRect m_mainFrameArea;
         QRect m_cardMoveRegion;
@@ -238,7 +238,7 @@ public:
         QSanShadowTextFont m_skillNameFont;
     };
 
-    struct DashboardLayout: public PlayerCardContainerLayout {
+    struct DashboardLayout : public PlayerCardContainerLayout {
         int m_leftWidth, m_rightWidth, m_magatamasBaseWidth;
         int m_floatingAreaHeight;
         int m_rswidth;
@@ -259,8 +259,8 @@ public:
         QColor m_skillTextShadowColors[QSanButton::S_NUM_BUTTON_STATES * QSanInvokeSkillButton::S_NUM_SKILL_TYPES];
 
         QSanShadowTextFont getSkillTextFont(QSanButton::ButtonState state,
-                                            QSanInvokeSkillButton::SkillType type,
-                                            QSanInvokeSkillButton::SkillButtonWidth width) const;
+            QSanInvokeSkillButton::SkillType type,
+            QSanInvokeSkillButton::SkillButtonWidth width) const;
     };
 
     struct CommonLayout {
@@ -326,8 +326,8 @@ public:
     QString getButtonPixmapPath(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state) const;
     QPixmap getButtonPixmap(const QString &groupName, const QString &buttonName, QSanButton::ButtonState state, const bool &first_state = true) const;
     QPixmap getSkillButtonPixmap(QSanButton::ButtonState state,
-                                 QSanInvokeSkillButton::SkillType type,
-                                 QSanInvokeSkillButton::SkillButtonWidth width) const;
+        QSanInvokeSkillButton::SkillType type,
+        QSanInvokeSkillButton::SkillButtonWidth width) const;
     QPixmap getCardMainPixmap(const QString &cardName) const;
     QPixmap getCardSuitPixmap(Card::Suit suit) const;
     QPixmap getCardNumberPixmap(int point, bool isBlack) const;
@@ -439,8 +439,8 @@ protected:
 };
 
 class QSanSkinScheme {
-// Why do we need another layer above room skin? Because we may add lobby, login interface
-// in the future; and we may need to assemble a set of different skins into a scheme.
+    // Why do we need another layer above room skin? Because we may add lobby, login interface
+    // in the future; and we may need to assemble a set of different skins into a scheme.
 public:
     bool load(Json::Value configs);
     const QSanRoomSkin& getRoomSkin() const;

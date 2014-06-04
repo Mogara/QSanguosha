@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "configdialog.h"
 #include "ui_configdialog.h"
@@ -29,7 +29,7 @@
 #include <QTextStream>
 
 ConfigDialog::ConfigDialog(QWidget *parent)
-    : QDialog(parent), ui(new Ui::ConfigDialog)
+: QDialog(parent), ui(new Ui::ConfigDialog)
 {
     ui->setupUi(this);
 
@@ -111,9 +111,9 @@ ConfigDialog::~ConfigDialog() {
 
 void ConfigDialog::on_browseBgButton_clicked() {
     QString filename = QFileDialog::getOpenFileName(this,
-                                                    tr("Select a background image"),
-                                                    "image/backdrop/",
-                                                    tr("Images (*.png *.bmp *.jpg)"));
+        tr("Select a background image"),
+        "image/backdrop/",
+        tr("Images (*.png *.bmp *.jpg)"));
 
     if (!filename.isEmpty()) {
         ui->bgPathLineEdit->setText(filename);
@@ -230,9 +230,9 @@ void ConfigDialog::saveConfig() {
 
 void ConfigDialog::on_browseBgMusicButton_clicked() {
     QString filename = QFileDialog::getOpenFileName(this,
-                                                    tr("Select a background music"),
-                                                    "audio/system",
-                                                    tr("Audio files (*.wav *.mp3 *.ogg)"));
+        tr("Select a background music"),
+        "audio/system",
+        tr("Audio files (*.wav *.mp3 *.ogg)"));
     if (!filename.isEmpty()) {
         ui->bgMusicPathLineEdit->setText(filename);
         Config.setValue("BackgroundMusic", filename);

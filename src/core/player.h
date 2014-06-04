@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _PLAYER_H
 #define _PLAYER_H
@@ -35,7 +35,7 @@ class DelayedTrick;
 class DistanceSkill;
 class TriggerSkill;
 
-class Player: public QObject {
+class Player : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QString screenname READ screenName WRITE setScreenName)
@@ -74,9 +74,11 @@ class Player: public QObject {
 
 public:
     enum Phase { RoundStart, Start, Judge, Draw, Play, Discard, Finish, NotActive, PhaseNone };
-    enum Place { PlaceHand, PlaceEquip, PlaceDelayedTrick, PlaceJudge,
-                 PlaceSpecial, DiscardPile, DrawPile, PlaceTable, PlaceUnknown,
-                 PlaceWuGu };
+    enum Place {
+        PlaceHand, PlaceEquip, PlaceDelayedTrick, PlaceJudge,
+        PlaceSpecial, DiscardPile, DrawPile, PlaceTable, PlaceUnknown,
+        PlaceWuGu
+    };
     enum Role { Lord, Loyalist, Rebel, Renegade };
 
     explicit Player(QObject *parent);
@@ -213,9 +215,9 @@ public:
     bool isDuanchang(const bool head = true) const;
 
     bool canSlash(const Player *other, const Card *slash, bool distance_limit = true,
-                  int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
+        int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     bool canSlash(const Player *other, bool distance_limit = true,
-                  int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
+        int rangefix = 0, const QList<const Player *> &others = QList<const Player *>()) const;
     int getCardCount(bool include_equip) const;
 
     QList<int> getPile(const QString &pile_name) const;

@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _GENERAL_CARD_CONTAINER_UI_H
 #define _GENERAL_CARD_CONTAINER_UI_H
@@ -38,12 +38,12 @@
 #include <qvariant.h>
 #include <qlabel.h>
 
-class GenericCardContainer: public QGraphicsObject {
+class GenericCardContainer : public QGraphicsObject {
     Q_OBJECT
 
 public:
     inline GenericCardContainer() { _m_highestZ = 10000; }
-    virtual QList<CardItem *> removeCardItems(const QList<int> &card_ids,  Player::Place place) = 0;
+    virtual QList<CardItem *> removeCardItems(const QList<int> &card_ids, Player::Place place) = 0;
     virtual void addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
     virtual QList<CardItem *> cloneCardItems(QList<int> card_ids);
 
@@ -70,7 +70,7 @@ signals:
     void animation_finished();
 };
 
-class PlayerCardContainer: public GenericCardContainer {
+class PlayerCardContainer : public GenericCardContainer {
     Q_OBJECT
 
 public:
@@ -95,14 +95,14 @@ public:
     virtual void killPlayer();
     virtual void revivePlayer();
     virtual QGraphicsItem *getMouseClickReceiver() = 0;
-    inline virtual QGraphicsItem *getMouseClickReceiver2() {    return NULL;    };
+    inline virtual QGraphicsItem *getMouseClickReceiver2() { return NULL; };
     virtual void updateAvatarTooltip();
 
     inline void hookMouseEvents();
 
     QPixmap paintByMask(QPixmap& source);
 
-    inline RoleComboBox *getRoleComboBox() const {    return _m_roleComboBox;    };
+    inline RoleComboBox *getRoleComboBox() const { return _m_roleComboBox; };
 
 public slots:
     virtual void updateAvatar();

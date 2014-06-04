@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "audio.h"
 #include "fmod.hpp"
@@ -33,7 +33,7 @@ static FMOD_CHANNEL *BGMChannel;
 
 class Sound {
 public:
-    Sound(const QString &filename): sound(NULL), channel(NULL) {
+    Sound(const QString &filename) : sound(NULL), channel(NULL) {
         FMOD_System_CreateSound(System, filename.toLatin1(), FMOD_DEFAULT, NULL, &sound);
     }
 
@@ -84,7 +84,8 @@ void Audio::play(const QString &filename) {
     if (sound == NULL) {
         sound = new Sound(filename);
         SoundCache.insert(filename, sound);
-    } else if (sound->isPlaying())
+    }
+    else if (sound->isPlaying())
         return;
 
     sound->play();
@@ -103,7 +104,7 @@ void Audio::stop() {
         if (result == FMOD_OK) channels << channel;
     }
 
-    foreach (FMOD_CHANNEL *channel, channels)
+    foreach(FMOD_CHANNEL *channel, channels)
         FMOD_Channel_Stop(channel);
 
     stopBGM();
@@ -135,7 +136,7 @@ QString Audio::getVersion() {
     FMOD_System_GetVersion(System, &version);
     // convert it to QString
     return QString("%1.%2.%3").arg((version & 0xFFFF0000) >> 16, 0, 16)
-                              .arg((version & 0xFF00) >> 8, 2, 16, QChar('0'))
-                              .arg((version & 0xFF), 2, 16, QChar('0'));
+        .arg((version & 0xFF00) >> 8, 2, 16, QChar('0'))
+        .arg((version & 0xFF), 2, 16, QChar('0'));
 }
 

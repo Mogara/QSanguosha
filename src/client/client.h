@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _CLIENT_H
 #define _CLIENT_H
@@ -32,7 +32,7 @@ class Recorder;
 class Replayer;
 class QTextDocument;
 
-class Client: public QObject {
+class Client : public QObject {
     Q_OBJECT
     Q_PROPERTY(Client::Status status READ getStatus WRITE setStatus)
 
@@ -81,7 +81,7 @@ public:
     void requestServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
     void notifyServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
     void request(const QByteArray &raw);
-    inline void request(const QString &unicode){request(unicode.toUtf8());}
+    inline void request(const QString &unicode){ request(unicode.toUtf8()); }
     void onPlayerResponseCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
     void setStatus(Status status);
     Status getStatus() const;
@@ -291,7 +291,7 @@ signals:
     void suits_got(const QStringList &suits);
     void options_got(const QString &skillName, const QStringList &options);
     void cards_got(const ClientPlayer *player, const QString &flags, const QString &reason, bool handcard_visible,
-                    Card::HandlingMethod method, QList<int> disabled_ids);
+        Card::HandlingMethod method, QList<int> disabled_ids);
     void roles_got(const QString &scheme, const QStringList &roles);
     void directions_got();
     void orders_got(QSanProtocol::Game3v3ChooseOrderCommand reason);

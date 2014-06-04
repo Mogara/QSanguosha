@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _DASHBOARD_H
 #define _DASHBOARD_H
@@ -40,7 +40,7 @@
 #include <QPropertyAnimation>
 
 
-class Dashboard: public PlayerCardContainer {
+class Dashboard : public PlayerCardContainer {
     Q_OBJECT
     Q_ENUMS(SortType)
 
@@ -163,7 +163,7 @@ protected:
     inline virtual QGraphicsItem *_getPileParent() { return _m_rightFrame; }
     inline virtual QGraphicsItem *_getProgressBarParent() { return _m_floatingArea; }
     inline virtual QGraphicsItem *_getFocusFrameParent() { return _m_rightFrame; }
-    inline virtual QGraphicsItem *_getDeathIconParent() { return _m_middleFrame;}
+    inline virtual QGraphicsItem *_getDeathIconParent() { return _m_middleFrame; }
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_DASHBOARD; }
 
     void _createRoleComboBox();
@@ -188,7 +188,7 @@ protected:
     // we can not draw bg directly _m_rightFrame because then it will always be
     // under avatar (since it's avatar's parent).
     QGraphicsPixmapItem *_m_rightFrameBase, *_m_rightFrameBg, *_m_magatamasBase,
-                        *_m_headGeneralFrame, *_m_deputyGeneralFrame;
+        *_m_headGeneralFrame, *_m_deputyGeneralFrame;
     QGraphicsItem *button_widget;
 
     CardItem *selected;

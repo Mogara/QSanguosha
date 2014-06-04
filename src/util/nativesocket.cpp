@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "nativesocket.h"
 #include "settings.h"
@@ -65,13 +65,13 @@ void NativeServerSocket::processNewConnection() {
 // ---------------------------------
 
 NativeClientSocket::NativeClientSocket()
-    : socket(new QTcpSocket(this))
+: socket(new QTcpSocket(this))
 {
     init();
 }
 
 NativeClientSocket::NativeClientSocket(QTcpSocket *socket)
-    : socket(socket)
+: socket(socket)
 {
     socket->setParent(this);
     init();
@@ -81,7 +81,7 @@ void NativeClientSocket::init() {
     connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
     connect(socket, SIGNAL(readyRead()), this, SLOT(getMessage()));
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)),
-            this, SLOT(raiseError(QAbstractSocket::SocketError)));
+        this, SLOT(raiseError(QAbstractSocket::SocketError)));
     connect(socket, SIGNAL(connected()), this, SIGNAL(connected()));
 }
 
@@ -93,7 +93,8 @@ void NativeClientSocket::connectToHost() {
         QStringList texts = Config.HostAddress.split(QChar(':'));
         address = texts.value(0);
         port = texts.value(1).toUShort();
-    } else {
+    }
+    else {
         address = Config.HostAddress;
         if (address == "127.0.0.1")
             port = Config.value("ServerPort", "9527").toString().toUShort();
@@ -118,7 +119,7 @@ void NativeClientSocket::disconnectFromHost() {
 
 void NativeClientSocket::send(const QByteArray &message) {
     socket->write(message);
-    if(!message.endsWith('\n')){
+    if (!message.endsWith('\n')){
         socket->write("\n");
     }
 
@@ -151,12 +152,12 @@ void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error) {
     case QAbstractSocket::ConnectionRefusedError:
         reason = tr("Connection was refused or timeout"); break;
     case QAbstractSocket::RemoteHostClosedError:{
-        if (Self && Self->hasFlag("is_kicked"))
-            reason = tr("You are kicked from server");
-        else
-            reason = tr("Remote host close this connection");
+                                                    if (Self && Self->hasFlag("is_kicked"))
+                                                        reason = tr("You are kicked from server");
+                                                    else
+                                                        reason = tr("Remote host close this connection");
 
-        break;
+                                                    break;
     }
     case QAbstractSocket::HostNotFoundError:
         reason = tr("Host not found"); break;

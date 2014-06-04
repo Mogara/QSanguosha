@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include <exppattern.h>
 
@@ -25,8 +25,8 @@ ExpPattern::ExpPattern(const QString &exp) {
 }
 
 bool ExpPattern::match(const Player *player, const Card *card) const{
-    foreach (QString one_exp, this->exp.split('#'))
-        if (this->matchOne(player, card, one_exp)) return true;
+    foreach(QString one_exp, this->exp.split('#'))
+    if (this->matchOne(player, card, one_exp)) return true;
 
     return false;
 }
@@ -42,12 +42,13 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
 
     bool checkpoint = false;
     QStringList card_types = factors.at(0).split(',');
-    foreach (QString or_name, card_types) {
+    foreach(QString or_name, card_types) {
         checkpoint = false;
-        foreach (QString name, or_name.split('+')) {
+        foreach(QString name, or_name.split('+')) {
             if (name == ".") {
                 checkpoint = true;
-            } else {
+            }
+            else {
                 bool isInt = false;
                 bool positive = true;
                 if (name.startsWith('^')) {
@@ -70,7 +71,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
 
     checkpoint = false;
     QStringList card_suits = factors.at(1).split(',');
-    foreach (QString suit, card_suits) {
+    foreach(QString suit, card_suits) {
         if (suit == ".") { checkpoint = true; break; }
         bool positive = true;
         if (suit.startsWith('^')) {
@@ -92,7 +93,7 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
     QStringList card_numbers = factors.at(2).split(',');
     int cdn = card->getNumber();
 
-    foreach (QString number, card_numbers) {
+    foreach(QString number, card_numbers) {
         if (number == ".") { checkpoint = true; break; }
         bool isInt = false;
         if (number.contains('~')) {
@@ -108,12 +109,14 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                 to = params.at(1).toInt();
 
             if (from <= cdn && cdn <= to) checkpoint = true;
-        } else if (number.toInt(&isInt) == cdn && isInt) {
+        }
+        else if (number.toInt(&isInt) == cdn && isInt) {
             checkpoint = true;
-        } else if ((number == "A" && cdn == 1)
-                   || (number == "J" && cdn == 11)
-                   || (number == "Q" && cdn == 12)
-                   || (number == "K" && cdn == 13)) {
+        }
+        else if ((number == "A" && cdn == 1)
+            || (number == "J" && cdn == 11)
+            || (number == "Q" && cdn == 12)
+            || (number == "K" && cdn == 13)) {
             checkpoint = true;
         }
         if (checkpoint) break;

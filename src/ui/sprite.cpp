@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "sprite.h"
 
@@ -28,7 +28,7 @@
 #include <QPainter>
 
 EffectAnimation::EffectAnimation()
-    : QObject()
+: QObject()
 {
     effects.clear();
     registered.clear();
@@ -118,7 +118,7 @@ EmphasizeEffect::EmphasizeEffect(bool stay, QObject *parent) {
     QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
     connect(anim, SIGNAL(valueChanged(QVariant)), this, SLOT(update()));
     anim->setEndValue(40);
-    anim->setDuration((40 - index)* 5);
+    anim->setDuration((40 - index) * 5);
     anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
@@ -130,9 +130,9 @@ void EmphasizeEffect::draw(QPainter *painter) {
     QPoint offset;
     QPixmap pixmap = sourcePixmap(Qt::LogicalCoordinates, &offset);
     const QRectF target = boundingRect().adjusted(s.width() * scale - 1,
-                                                  s.height() * scale,
-                                                  -s.width() * scale,
-                                                  -s.height() * scale);
+        s.height() * scale,
+        -s.width() * scale,
+        -s.height() * scale);
     const QRectF source(s.width() * 0.1, s.height() * 0.1, s.width(), s.height());
 
     painter->setRenderHint(QPainter::SmoothPixmapTransform);
@@ -143,9 +143,9 @@ QRectF EmphasizeEffect::boundingRectFor(const QRectF &sourceRect) const{
     qreal scale = 0.1;
     QRectF rect(sourceRect);
     rect.adjust(-sourceRect.width() * scale,
-                -sourceRect.height() * scale,
-                sourceRect.width() * scale,
-                sourceRect.height() * scale);
+        -sourceRect.height() * scale,
+        sourceRect.width() * scale,
+        sourceRect.height() * scale);
     return rect;
 }
 
@@ -180,9 +180,9 @@ QRectF SentbackEffect::boundingRectFor(const QRectF &sourceRect) const{
     qreal scale = 0.05;
     QRectF rect(sourceRect);
     rect.adjust(-sourceRect.width() * scale,
-                -sourceRect.height() * scale,
-                sourceRect.width() * scale,
-                sourceRect.height() * scale);
+        -sourceRect.height() * scale,
+        sourceRect.width() * scale,
+        sourceRect.height() * scale);
     return rect;
 }
 
@@ -211,7 +211,7 @@ void SentbackEffect::draw(QPainter *painter) {
 
     painter->drawPixmap(offset, pixmap);
     painter->setOpacity((40 - qAbs(index - 40)) / 80.0);
-    painter->drawImage(offset,*grayed);
+    painter->drawImage(offset, *grayed);
 
     return;
 }
@@ -232,7 +232,7 @@ FadeEffect::FadeEffect(bool stay, QObject *parent) {
     QPropertyAnimation *anim = new QPropertyAnimation(this, "index");
     connect(anim, SIGNAL(valueChanged(QVariant)), this, SLOT(update()));
     anim->setEndValue(40);
-    anim->setDuration((40 - index)* 5);
+    anim->setDuration((40 - index) * 5);
     anim->start(QAbstractAnimation::DeleteWhenStopped);
 }
 

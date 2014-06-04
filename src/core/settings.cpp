@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "settings.h"
 #include "photo.h"
@@ -46,11 +46,11 @@ const int Settings::S_JUDGE_LONG_DELAY = 800;
 
 Settings::Settings()
 #ifdef Q_OS_WIN32
-    : QSettings("config.ini", QSettings::IniFormat),
+: QSettings("config.ini", QSettings::IniFormat),
 #else
-    : QSettings("QSanguosha.org", "QSanguosha"),
+: QSettings("QSanguosha.org", "QSanguosha"),
 #endif
-                Rect(-ViewWidth / 2, -ViewHeight / 2, ViewWidth, ViewHeight)
+Rect(-ViewWidth / 2, -ViewHeight / 2, ViewWidth, ViewHeight)
 {
 }
 
@@ -63,7 +63,8 @@ void Settings::init() {
             BigFont.setFamily(font_family);
             SmallFont.setFamily(font_family);
             TinyFont.setFamily(font_family);
-        } else
+        }
+        else
             QMessageBox::warning(NULL, tr("Warning"), tr("Font file %1 could not be loaded!").arg(font_path));
 
         BigFont.setPixelSize(56);

@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "server.h"
 #include "settings.h"
@@ -54,7 +54,7 @@ static QLayout *HLay(QWidget *left, QWidget *right) {
 }
 
 ServerDialog::ServerDialog(QWidget *parent)
-    : QDialog(parent)
+: QDialog(parent)
 {
     setWindowTitle(tr("Start server"));
 
@@ -126,7 +126,7 @@ QWidget *ServerDialog::createPackageTab() {
 
     int i = 0, j = 0;
     int row = 0, column = 0;
-    foreach (QString extension, extensions) {
+    foreach(QString extension, extensions) {
         const Package *package = Sanguosha->findChild<const Package *>(extension);
         if (package == NULL)
             continue;
@@ -140,23 +140,23 @@ QWidget *ServerDialog::createPackageTab() {
 
         switch (package->getType()) {
         case Package::GeneralPack: {
-                row = i / 5;
-                column = i % 5;
-                i++;
+                                       row = i / 5;
+                                       column = i % 5;
+                                       i++;
 
-                layout1->addWidget(checkbox, row, column + 1);
-                break;
-            }
+                                       layout1->addWidget(checkbox, row, column + 1);
+                                       break;
+        }
         case Package::CardPack: {
-                row = j / 5;
-                column = j % 5;
-                j++;
+                                    row = j / 5;
+                                    column = j % 5;
+                                    j++;
 
-                layout2->addWidget(checkbox, row, column + 1);
-                break;
-            }
+                                    layout2->addWidget(checkbox, row, column + 1);
+                                    break;
+        }
         default:
-                break;
+            break;
         }
     }
 
@@ -267,14 +267,14 @@ QWidget *ServerDialog::createConversionTab() {
     bool enable_lord_zhangjiao = Config.value("GeneralConversions").toStringList().contains("zhangjiao");
     convert_zhangjiao_to_lord = new QCheckBox(tr("Convert Zhang Jiao to Lord Zhang Jiao"));
     convert_zhangjiao_to_lord->setChecked(enable_lord_zhangjiao);
-/*
-    add_peace_spell = new QCheckBox(tr("Add Peace Spell"));
-    add_peace_spell->setChecked(Config.value("CardConversions").toStringList().contains("+109"));
-    add_peace_spell->setDisabled(enable_lord_zhangjiao);
+    /*
+        add_peace_spell = new QCheckBox(tr("Add Peace Spell"));
+        add_peace_spell->setChecked(Config.value("CardConversions").toStringList().contains("+109"));
+        add_peace_spell->setDisabled(enable_lord_zhangjiao);
 
-    connect(convert_zhangjiao_to_lord, SIGNAL(toggled(bool)), add_peace_spell, SLOT(setChecked(bool)));
-    connect(convert_zhangjiao_to_lord, SIGNAL(toggled(bool)), add_peace_spell, SLOT(setDisabled(bool)));
-*/
+        connect(convert_zhangjiao_to_lord, SIGNAL(toggled(bool)), add_peace_spell, SLOT(setChecked(bool)));
+        connect(convert_zhangjiao_to_lord, SIGNAL(toggled(bool)), add_peace_spell, SLOT(setDisabled(bool)));
+        */
     conversions_group->addButton(convert_zhangjiao_to_lord);
     //conversions_group->addButton(add_peace_spell);
     momentum_layout->addWidget(convert_zhangjiao_to_lord);
@@ -407,7 +407,8 @@ QGroupBox *ServerDialog::createGameModeBox() {
         if (item->isWidgetType()) {
             QWidget *widget = qobject_cast<QWidget *>(item);
             side->addWidget(widget);
-        } else {
+        }
+        else {
             QLayout *item_layout = qobject_cast<QLayout *>(item);
             side->addLayout(item_layout);
         }
@@ -445,9 +446,9 @@ QLayout *ServerDialog::createButtonLayout() {
 void ServerDialog::onDetectButtonClicked() {
     QHostInfo vHostInfo = QHostInfo::fromName(QHostInfo::localHostName());
     QList<QHostAddress> vAddressList = vHostInfo.addresses();
-    foreach (QHostAddress address, vAddressList) {
+    foreach(QHostAddress address, vAddressList) {
         if (!address.isNull() && address != QHostAddress::LocalHost
-            && address.protocol() ==  QAbstractSocket::IPv4Protocol) {
+            && address.protocol() == QAbstractSocket::IPv4Protocol) {
             address_edit->setText(address.toString());
             return;
         }
@@ -525,7 +526,7 @@ bool ServerDialog::config() {
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
-    foreach (QAbstractButton *checkbox, checkboxes) {
+    foreach(QAbstractButton *checkbox, checkboxes) {
         if (!checkbox->isChecked()) {
             QString package_name = checkbox->objectName();
             Sanguosha->addBanPackage(package_name);
@@ -556,13 +557,13 @@ void ServerDialog::editBanlist() {
 }
 
 BanIPDialog::BanIPDialog(QWidget *parent, Server *theserver)
-    : QDialog(parent), server(theserver){
-/*
-    if (Sanguosha->currentRoom() == NULL){
+: QDialog(parent), server(theserver){
+    /*
+        if (Sanguosha->currentRoom() == NULL){
         QMessageBox::warning(this, tr("Warining!"), tr("Game is not started!"));
         return;
-    }
-*/
+        }
+        */
     QVBoxLayout *left_layout = new QVBoxLayout;
     QVBoxLayout *right_layout = new QVBoxLayout;
 
@@ -618,8 +619,8 @@ BanIPDialog::BanIPDialog(QWidget *parent, Server *theserver)
 }
 
 void BanIPDialog::loadIPList(){
-    foreach (Room *room, server->rooms){
-        foreach (ServerPlayer *p, room->getPlayers()){
+    foreach(Room *room, server->rooms){
+        foreach(ServerPlayer *p, room->getPlayers()){
             if (p->getState() != "offline" && p->getState() != "robot") {
                 sp_list << p;
             }
@@ -628,7 +629,7 @@ void BanIPDialog::loadIPList(){
 
     left->clear();
 
-    foreach (ServerPlayer *p, sp_list){
+    foreach(ServerPlayer *p, sp_list){
         QString parsed_string = QString("%1::%2").arg(p->screenName(), p->getIp());
         left->addItem(parsed_string);
     }
@@ -692,7 +693,7 @@ void BanlistDialog::switchTo(int item) {
 }
 
 BanlistDialog::BanlistDialog(QWidget *parent, bool view)
-    : QDialog(parent)
+: QDialog(parent)
 {
     setWindowTitle(tr("Select generals that are excluded"));
     setMinimumWidth(455);
@@ -830,7 +831,7 @@ void BanlistDialog::saveAll() {
 
 
 Server::Server(QObject *parent)
-    : QObject(parent)
+: QObject(parent)
 {
     server = new NativeServerSocket;
     server->setParent(this);
@@ -852,7 +853,7 @@ void Server::broadcast(const QString &msg) {
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
     packet.setMessageBody(arg);
 
-    foreach (Room *room, rooms)
+    foreach(Room *room, rooms)
         room->broadcastInvoke(&packet);
 }
 
@@ -928,7 +929,7 @@ void Server::processRequest(const char *request) {
     QString avatar = Utils::toQString(body[2]);
 
     if (is_reconnection) {
-        foreach (QString objname, name2objname.values(screen_name)) {
+        foreach(QString objname, name2objname.values(screen_name)) {
             ServerPlayer *player = players.value(objname);
             if (player && player->getState() == "offline" && !player->getRoom()->isFinished()) {
                 player->getRoom()->reconnect(player, socket);
@@ -959,7 +960,7 @@ void Server::gameOver() {
     Room *room = qobject_cast<Room *>(sender());
     rooms.remove(room);
 
-    foreach (ServerPlayer *player, room->findChildren<ServerPlayer *>()) {
+    foreach(ServerPlayer *player, room->findChildren<ServerPlayer *>()) {
         name2objname.remove(player->screenName(), player->objectName());
         players.remove(player->objectName());
     }

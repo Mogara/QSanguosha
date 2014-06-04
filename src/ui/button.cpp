@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "button.h"
 #include "audio.h"
@@ -29,7 +29,7 @@
 static QRectF ButtonRect(0, 0, 189, 46);
 
 Button::Button(const QString &label, qreal scale)
-    : label(label), size(ButtonRect.size() * scale), mute(true), font(Config.SmallFont)
+: label(label), size(ButtonRect.size() * scale), mute(true), font(Config.SmallFont)
 {
     title = QPixmap(size.toSize());
     outimg = QImage(size.toSize(), QImage::Format_ARGB32);
@@ -37,7 +37,7 @@ Button::Button(const QString &label, qreal scale)
 }
 
 Button::Button(const QString &label, const QSizeF &size)
-    : label(label), size(size), mute(true), font(Config.SmallFont)
+: label(label), size(size), mute(true), font(Config.SmallFont)
 {
     title = QPixmap(size.toSize());
     outimg = QImage(size.toSize(), QImage::Format_ARGB32);
@@ -161,7 +161,8 @@ void Button::timerEvent(QTimerEvent *) {
     update();
     if (hasFocus()) {
         if (glow < 5) glow++;
-    } else {
+    }
+    else {
         if (glow > 0)
             glow--;
         else if (timer_id) {

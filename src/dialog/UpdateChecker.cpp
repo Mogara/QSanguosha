@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "UpdateChecker.h"
 #include "engine.h"
@@ -40,7 +40,7 @@ UpdateChecker::UpdateChecker()
     setLayout(layout);
 }
 
-void UpdateChecker::fill( UpdateInfoStruct info )
+void UpdateChecker::fill(UpdateInfoStruct info)
 {
     QString state;
     bool lastest = false;
@@ -50,7 +50,8 @@ void UpdateChecker::fill( UpdateInfoStruct info )
             state = tr("New Patch Available") + postfix;
         else
             state = tr("New Client Available") + postfix;
-    } else {
+    }
+    else {
         state = tr("Lastest Version Already");
         lastest = true;
     }
@@ -69,7 +70,8 @@ void UpdateChecker::fill( UpdateInfoStruct info )
         stream.setCodec("UTF-8");
         QString content = stream.readAll();
         page->setHtml(content);
-    } else
+    }
+    else
         page->setText(tr("Lastest Version Already"));
 }
 

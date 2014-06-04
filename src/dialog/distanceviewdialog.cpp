@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "distanceviewdialog.h"
 
@@ -48,9 +48,9 @@ public:
         in_attack = new QLineEdit;
 
         QList<const DistanceSkill *> skills = Sanguosha->getDistanceSkills();
-        foreach (const DistanceSkill *skill, skills) {
+        foreach(const DistanceSkill *skill, skills) {
             bool show_skill = false;
-            foreach (const ClientPlayer *p, ClientInstance->getPlayers()) {
+            foreach(const ClientPlayer *p, ClientInstance->getPlayers()) {
                 if (p->hasSkill(skill->objectName())) {
                     show_skill = true;
                     break;
@@ -79,7 +79,7 @@ public:
 };
 
 DistanceViewDialog::DistanceViewDialog(QWidget *parent)
-    : QDialog(parent)
+: QDialog(parent)
 {
     setWindowTitle(tr("Distance view"));
 
@@ -105,7 +105,7 @@ DistanceViewDialog::DistanceViewDialog(QWidget *parent)
     layout->addRow(tr("Distance correct"), box);
 
     QFormLayout *box_layout = new QFormLayout;
-    foreach (QLineEdit *edit, ui->distance_edits)
+    foreach(QLineEdit *edit, ui->distance_edits)
         box_layout->addRow(Sanguosha->translate(edit->objectName()), edit);
 
     box->setLayout(box_layout);
@@ -132,28 +132,28 @@ void DistanceViewDialog::showDistance() {
     ui->to_seat->setText(QString::number(to->getSeat()));
 
     int left_distance = qAbs(from->getSeat()
-                             + ((from->getSeat() < to->getSeat()) ? from->aliveCount() : -from->aliveCount())
-                             - to->getSeat());
+        + ((from->getSeat() < to->getSeat()) ? from->aliveCount() : -from->aliveCount())
+        - to->getSeat());
     ui->left->setText(QString("|%1%2%3-%4|=%5")
-                              .arg(from->getSeat())
-                              .arg((from->getSeat()<to->getSeat()) ? "+" : "-")
-                              .arg(from->aliveCount())
-                              .arg(to->getSeat())
-                              .arg(left_distance));
+        .arg(from->getSeat())
+        .arg((from->getSeat() < to->getSeat()) ? "+" : "-")
+        .arg(from->aliveCount())
+        .arg(to->getSeat())
+        .arg(left_distance));
 
     int right_distance = qAbs(from->getSeat() - to->getSeat());
     ui->right->setText(QString("|%1-%2|=%3")
-                               .arg(from->getSeat())
-                               .arg(to->getSeat())
-                               .arg(right_distance));
+        .arg(from->getSeat())
+        .arg(to->getSeat())
+        .arg(right_distance));
 
     int min = qMin(left_distance, right_distance);
     ui->min->setText(QString("min(%1, %2)=%3")
-                             .arg(left_distance)
-                             .arg(right_distance)
-                             .arg(min));
+        .arg(left_distance)
+        .arg(right_distance)
+        .arg(min));
 
-    foreach (QLineEdit *edit, ui->distance_edits) {
+    foreach(QLineEdit *edit, ui->distance_edits) {
         const Skill *skill = Sanguosha->getSkill(edit->objectName());
         const DistanceSkill *distance_skill = qobject_cast<const DistanceSkill *>(skill);
         int correct = distance_skill->getCorrect(from, to);

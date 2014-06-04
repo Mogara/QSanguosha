@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "aux-skills.h"
 #include "client.h"
@@ -25,8 +25,7 @@
 #include "engine.h"
 
 DiscardSkill::DiscardSkill()
-    : ViewAsSkill("discard"), card(new DummyCard),
-      num(0), include_equip(false), is_discard(true)
+: ViewAsSkill("discard"), card(new DummyCard), num(0), include_equip(false), is_discard(true)
 {
     card->setParent(this);
 }
@@ -65,14 +64,15 @@ const Card *DiscardSkill::viewAs(const QList<const Card *> &cards) const{
         card->clearSubcards();
         card->addSubcards(cards);
         return card;
-    } else
+    }
+    else
         return NULL;
 }
 
 // -------------------------------------------
 
 ResponseSkill::ResponseSkill()
-    : OneCardViewAsSkill("response-skill")
+: OneCardViewAsSkill("response-skill")
 {
     request = Card::MethodResponse;
 }
@@ -113,7 +113,7 @@ bool ShowOrPindianSkill::matchPattern(const Player *player, const Card *card) co
 
 // -------------------------------------------
 
-class YijiCard: public RendeCard {
+class YijiCard : public RendeCard {
 public:
     YijiCard() {
         target_fixed = false;
@@ -132,7 +132,7 @@ private:
 };
 
 YijiViewAsSkill::YijiViewAsSkill()
-    : ViewAsSkill("yiji")
+: ViewAsSkill("yiji")
 {
     card = new YijiCard;
     card->setParent(this);
@@ -166,7 +166,7 @@ const Card *YijiViewAsSkill::viewAs(const QList<const Card *> &cards) const{
 
 // ------------------------------------------------
 
-class ChoosePlayerCard: public DummyCard {
+class ChoosePlayerCard : public DummyCard {
 public:
     ChoosePlayerCard() {
         target_fixed = false;
@@ -185,7 +185,7 @@ private:
 };
 
 ChoosePlayerSkill::ChoosePlayerSkill()
-    : ZeroCardViewAsSkill("choose_player")
+: ZeroCardViewAsSkill("choose_player")
 {
     card = new ChoosePlayerCard;
     card->setParent(this);

@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "generalselector.h"
 #include "engine.h"
@@ -52,7 +52,7 @@ QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &ca
     int max_score = my_hash.values().first();
     QString best_pair = my_hash.keys().first();
 
-    foreach (QString key, my_hash.keys()) {
+    foreach(QString key, my_hash.keys()) {
         int score = my_hash.value(key);
         if (score > max_score) {
             max_score = score;
@@ -77,7 +77,7 @@ QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &_
     }
 
     QStringList candidates = _candidates;
-    foreach (QString candidate, _candidates){
+    foreach(QString candidate, _candidates){
         if (BanPair::isBanned(player->getGeneralName(), candidate))
             candidates.removeOne(candidate);
     }
@@ -88,7 +88,7 @@ QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &_
     int max_score = my_hash.values().first();
     QString best_pair = my_hash.keys().first();
 
-    foreach (QString key, my_hash.keys()) {
+    foreach(QString key, my_hash.keys()) {
         int score = my_hash.value(key);
         if (score > max_score) {
             max_score = score;
@@ -151,7 +151,7 @@ void GeneralSelector::loadPairTable() {
     }
 }
 
-void GeneralSelector::caculatePairValues( const ServerPlayer *player, const QStringList &_candidates )
+void GeneralSelector::caculatePairValues(const ServerPlayer *player, const QStringList &_candidates)
 {
     // preference
     QStringList kingdoms = Sanguosha->getKingdoms();
@@ -172,7 +172,7 @@ void GeneralSelector::caculatePairValues( const ServerPlayer *player, const QStr
     }
 }
 
-void GeneralSelector::caculateDeputyValue( const ServerPlayer *player, const QString &first, const QStringList &_candidates, const QStringList &kingdom_list )
+void GeneralSelector::caculateDeputyValue(const ServerPlayer *player, const QString &first, const QStringList &_candidates, const QStringList &kingdom_list)
 {
     QStringList candidates = _candidates;
     foreach(QString candidate, _candidates){

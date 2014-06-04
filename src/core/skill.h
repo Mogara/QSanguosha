@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _SKILL_H
 #define _SKILL_H
@@ -32,7 +32,7 @@ class QDialog;
 #include <QMap>
 #include <QObject>
 
-class Skill: public QObject {
+class Skill : public QObject {
     Q_OBJECT
     Q_ENUMS(Frequency)
     Q_ENUMS(Location)
@@ -88,7 +88,7 @@ private:
     QStringList sources;
 };
 
-class ViewAsSkill: public Skill {
+class ViewAsSkill : public Skill {
     Q_OBJECT
 
 public:
@@ -107,7 +107,7 @@ protected:
     QString response_pattern;
 };
 
-class ZeroCardViewAsSkill: public ViewAsSkill {
+class ZeroCardViewAsSkill : public ViewAsSkill {
     Q_OBJECT
 
 public:
@@ -118,7 +118,7 @@ public:
     virtual const Card *viewAs() const = 0;
 };
 
-class OneCardViewAsSkill: public ViewAsSkill {
+class OneCardViewAsSkill : public ViewAsSkill {
     Q_OBJECT
 
 public:
@@ -130,18 +130,18 @@ public:
     virtual bool viewFilter(const Card *to_select) const;
     virtual const Card *viewAs(const Card *originalCard) const = 0;
 
-    protected:
-        QString filter_pattern;
+protected:
+    QString filter_pattern;
 };
 
-class FilterSkill: public OneCardViewAsSkill {
+class FilterSkill : public OneCardViewAsSkill {
     Q_OBJECT
 
 public:
     FilterSkill(const QString &name);
 };
 
-class TriggerSkill: public Skill {
+class TriggerSkill : public Skill {
     Q_OBJECT
 
 public:
@@ -172,7 +172,7 @@ private:
 
 class Scenario;
 
-class ScenarioRule: public TriggerSkill {
+class ScenarioRule : public TriggerSkill {
     Q_OBJECT
 
 public:
@@ -182,7 +182,7 @@ public:
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 
-class MasochismSkill: public TriggerSkill {
+class MasochismSkill : public TriggerSkill {
     Q_OBJECT
 
 public:
@@ -193,7 +193,7 @@ public:
     virtual void onDamaged(ServerPlayer *target, const DamageStruct &damage) const = 0;
 };
 
-class PhaseChangeSkill: public TriggerSkill {
+class PhaseChangeSkill : public TriggerSkill {
     Q_OBJECT
 
 public:
@@ -203,7 +203,7 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const = 0;
 };
 
-class DrawCardsSkill: public TriggerSkill {
+class DrawCardsSkill : public TriggerSkill {
     Q_OBJECT
 
 public:
@@ -213,7 +213,7 @@ public:
     virtual int getDrawNum(ServerPlayer *player, int n) const = 0;
 };
 
-class GameStartSkill: public TriggerSkill {
+class GameStartSkill : public TriggerSkill {
     Q_OBJECT
 
 public:
@@ -223,12 +223,12 @@ public:
     virtual void onGameStart(ServerPlayer *player) const = 0;
 };
 
-class BattleArraySkill: public TriggerSkill {
+class BattleArraySkill : public TriggerSkill {
     Q_OBJECT
 
 public:
 
-    BattleArraySkill(const QString &name,const HegemonyMode::ArrayType type);
+    BattleArraySkill(const QString &name, const HegemonyMode::ArrayType type);
 
     virtual void summonFriends(ServerPlayer *player) const;
 
@@ -237,7 +237,7 @@ private:
     HegemonyMode::ArrayType array_type;
 };
 
-class ArraySummonSkill: public ZeroCardViewAsSkill {
+class ArraySummonSkill : public ZeroCardViewAsSkill {
     Q_OBJECT
 
 public:
@@ -248,7 +248,7 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const;
 };
 
-class ProhibitSkill: public Skill { //to be deleted
+class ProhibitSkill : public Skill { //to be deleted
     Q_OBJECT
 
 public:
@@ -257,7 +257,7 @@ public:
     virtual bool isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const = 0;
 };
 
-class DistanceSkill: public Skill {
+class DistanceSkill : public Skill {
     Q_OBJECT
 
 public:
@@ -266,7 +266,7 @@ public:
     virtual int getCorrect(const Player *from, const Player *to) const = 0;
 };
 
-class MaxCardsSkill: public Skill {
+class MaxCardsSkill : public Skill {
     Q_OBJECT
 
 public:
@@ -276,7 +276,7 @@ public:
     virtual int getFixed(const Player *target) const;
 };
 
-class TargetModSkill: public Skill {
+class TargetModSkill : public Skill {
     Q_OBJECT
     Q_ENUMS(ModType)
 
@@ -298,7 +298,7 @@ protected:
     QString pattern;
 };
 
-class SlashNoDistanceLimitSkill: public TargetModSkill {
+class SlashNoDistanceLimitSkill : public TargetModSkill {
     Q_OBJECT
 
 public:
@@ -310,7 +310,7 @@ protected:
     QString name;
 };
 
-class AttackRangeSkill: public Skill{
+class AttackRangeSkill : public Skill{
     Q_OBJECT
 
 public:
@@ -322,7 +322,7 @@ public:
 
 
 // a nasty way for 'fake moves', usually used in the process of multi-card chosen
-class FakeMoveSkill: public TriggerSkill {
+class FakeMoveSkill : public TriggerSkill {
     Q_OBJECT
 
 public:
@@ -336,7 +336,7 @@ private:
     QString name;
 };
 
-class DetachEffectSkill: public TriggerSkill {
+class DetachEffectSkill : public TriggerSkill {
     Q_OBJECT
 
 public:
@@ -350,7 +350,7 @@ private:
     QString name, pile_name;
 };
 
-class WeaponSkill: public TriggerSkill {
+class WeaponSkill : public TriggerSkill {
     Q_OBJECT
 
 public:
@@ -360,7 +360,7 @@ public:
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 
-class ArmorSkill: public TriggerSkill {
+class ArmorSkill : public TriggerSkill {
     Q_OBJECT
 
 public:

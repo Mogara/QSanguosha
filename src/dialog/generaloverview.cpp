@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "generaloverview.h"
 #include "ui_generaloverview.h"
@@ -40,7 +40,7 @@ static QLayout *HLay(QWidget *left, QWidget *right) {
 }
 
 GeneralSearch::GeneralSearch(GeneralOverview *parent)
-    : QDialog(parent)
+: QDialog(parent)
 {
     setWindowTitle(tr("Search..."));
 
@@ -50,7 +50,7 @@ GeneralSearch::GeneralSearch(GeneralOverview *parent)
     setLayout(layout);
 
     connect(this, SIGNAL(search(bool, QString, QString, QStringList, QStringList, int, int, QStringList)),
-            parent, SLOT(startSearch(bool, QString, QString, QStringList, QStringList, int, int, QStringList)));
+        parent, SLOT(startSearch(bool, QString, QString, QStringList, QStringList, int, int, QStringList)));
 }
 
 QWidget *GeneralSearch::createInfoTab() {
@@ -133,7 +133,7 @@ QWidget *GeneralSearch::createInfoTab() {
     kingdom_box->setLayout(kingdom_layout);
 
     int i = 0;
-    foreach (QString kingdom, Sanguosha->getKingdoms()) {
+    foreach(QString kingdom, Sanguosha->getKingdoms()) {
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setObjectName(kingdom);
         checkbox->setIcon(QIcon(QString("image/kingdom/icon/%1.png").arg(kingdom)));
@@ -170,7 +170,7 @@ QWidget *GeneralSearch::createInfoTab() {
     QGridLayout *packages_layout = new QGridLayout;
 
     i = 0;
-    foreach (QString extension, extensions) {
+    foreach(QString extension, extensions) {
         const Package *package = Sanguosha->findChild<const Package *>(extension);
         if (package == NULL || package->getType() != Package::GeneralPack)
             continue;
@@ -215,19 +215,19 @@ void GeneralSearch::accept() {
     QString nickname = nickname_edit->text();
     QString name = name_edit->text();
     QStringList genders;
-    foreach (QAbstractButton *button, gender_buttons->buttons()) {
+    foreach(QAbstractButton *button, gender_buttons->buttons()) {
         if (button->isChecked())
             genders << button->objectName();
     }
     QStringList kingdoms;
-    foreach (QAbstractButton *button, kingdom_buttons->buttons()) {
+    foreach(QAbstractButton *button, kingdom_buttons->buttons()) {
         if (button->isChecked())
             kingdoms << button->objectName();
     }
     int lower = maxhp_lower_spinbox->value();
     int upper = qMax(lower, maxhp_upper_spinbox->value());
     QStringList packages;
-    foreach (QAbstractButton *button, package_buttons->buttons()) {
+    foreach(QAbstractButton *button, package_buttons->buttons()) {
         if (button->isChecked())
             packages << button->objectName();
     }
@@ -239,23 +239,23 @@ void GeneralSearch::clearAll() {
     include_hidden_checkbox->setChecked(true);
     nickname_edit->clear();
     name_edit->clear();
-    foreach (QAbstractButton *button, gender_buttons->buttons())
+    foreach(QAbstractButton *button, gender_buttons->buttons())
         button->setChecked(false);
-    foreach (QAbstractButton *button, kingdom_buttons->buttons())
+    foreach(QAbstractButton *button, kingdom_buttons->buttons())
         button->setChecked(false);
     maxhp_lower_spinbox->setValue(0);
     maxhp_upper_spinbox->setValue(0);
-    foreach (QAbstractButton *button, package_buttons->buttons())
+    foreach(QAbstractButton *button, package_buttons->buttons())
         button->setChecked(false);
 }
 
 void GeneralSearch::selectAllPackages() {
-    foreach (QAbstractButton *button, package_buttons->buttons())
+    foreach(QAbstractButton *button, package_buttons->buttons())
         button->setChecked(true);
 }
 
 void GeneralSearch::unselectAllPackages() {
-    foreach (QAbstractButton *button, package_buttons->buttons())
+    foreach(QAbstractButton *button, package_buttons->buttons())
         button->setChecked(false);
 }
 
@@ -269,7 +269,7 @@ GeneralOverview *GeneralOverview::getInstance(QWidget *main_window) {
 }
 
 GeneralOverview::GeneralOverview(QWidget *parent)
-    : QDialog(parent), ui(new Ui::GeneralOverview)
+: QDialog(parent), ui(new Ui::GeneralOverview)
 {
     ui->setupUi(this);
     origin_window_title = windowTitle();
@@ -291,7 +291,7 @@ GeneralOverview::GeneralOverview(QWidget *parent)
 
 void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool init) {
     QList<const General *> copy_generals;
-    foreach (const General *general, generals) {
+    foreach(const General *general, generals) {
         if (!general->isTotallyHidden())
             copy_generals.append(general);
     }
@@ -335,7 +335,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
 
         QString nickname = Sanguosha->translate("#" + general_name);
         if (nickname.startsWith("#") && general_name.contains("_"))
-            nickname = Sanguosha->translate("#" +general_name.split("_").last());
+            nickname = Sanguosha->translate("#" + general_name.split("_").last());
         QTableWidgetItem *nickname_item;
         if (!nickname.startsWith("#"))
             nickname_item = new QTableWidgetItem(nickname);
@@ -449,7 +449,8 @@ void GeneralOverview::addLines(const Skill *skill) {
 
         button->setEnabled(false);
         button_layout->addWidget(button);
-    } else {
+    }
+    else {
         QRegExp rx(".+/(\\w+\\d?).ogg");
         for (int i = 0; i < sources.length(); i++) {
             QString source = sources[i];
@@ -501,7 +502,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
     ui->changeHeroSkinButton->setVisible(hasSkin(general_name));
 
     QList<const Skill *> skills = general->getVisibleSkillList();
-    foreach (QString skill_name, general->getRelatedSkillNames()) {
+    foreach(QString skill_name, general->getRelatedSkillNames()) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill && skill->isVisible()) skills << skill;
     }
@@ -510,7 +511,7 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
 
     resetButtons();
 
-    foreach (const Skill *skill, skills)
+    foreach(const Skill *skill, skills)
         addLines(skill);
 
     QString last_word = Sanguosha->translate("~" + general->objectName());
@@ -528,10 +529,10 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
 
     if (general_name.contains("caocao")) {
         QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
-                                                                tr("Six dragons lead my chariot, "
-                                                                   "I will ride the wind with the greatest speed."
-                                                                   "With all of the feudal lords under my command,"
-                                                                   "to rule the world with one name!"));
+            tr("Six dragons lead my chariot, "
+            "I will ride the wind with the greatest speed."
+            "With all of the feudal lords under my command,"
+            "to rule the world with one name!"));
 
         button_layout->addWidget(win_button);
         addCopyAction(win_button);
@@ -598,9 +599,9 @@ void GeneralOverview::askChangeSkin() {
 }
 
 void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
-                                  const QStringList &kingdoms, int lower, int upper, const QStringList &packages) {
+    const QStringList &kingdoms, int lower, int upper, const QStringList &packages) {
     QList<const General *> generals;
-    foreach (const General *general, all_generals) {
+    foreach(const General *general, all_generals) {
         QString general_name = general->objectName();
         if (!include_hidden && Sanguosha->isGeneralHidden(general_name))
             continue;
@@ -644,7 +645,8 @@ void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, 
     }
     if (generals.isEmpty()) {
         QMessageBox::warning(this, tr("Warning"), tr("No generals are found"));
-    } else {
+    }
+    else {
         ui->returnButton->show();
         if (windowTitle() == origin_window_title)
             setWindowTitle(windowTitle() + " " + tr("Search..."));

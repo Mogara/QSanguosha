@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "general.h"
 #include "engine.h"
@@ -29,9 +29,9 @@
 #include <QFile>
 
 General::General(Package *package, const QString &name, const QString &kingdom,
-                 int double_max_hp, bool male, bool hidden, bool never_shown)
+    int double_max_hp, bool male, bool hidden, bool never_shown)
     : QObject(package), kingdom(kingdom), double_max_hp(double_max_hp), gender(male ? Male : Female),
-      hidden(hidden), never_shown(never_shown), head_max_hp_adjusted_value(0), deputy_max_hp_adjusted_value(0)
+    hidden(hidden), never_shown(never_shown), head_max_hp_adjusted_value(0), deputy_max_hp_adjusted_value(0)
 {
     static QChar lord_symbol('$');
     if (name.endsWith(lord_symbol)) {
@@ -39,7 +39,8 @@ General::General(Package *package, const QString &name, const QString &kingdom,
         copy.remove(lord_symbol);
         lord = true;
         setObjectName(copy);
-    } else {
+    }
+    else {
         lord = false;
         setObjectName(name);
     }
@@ -113,7 +114,7 @@ bool General::hasSkill(const QString &skill_name) const{
 
 QList<const Skill *> General::getSkillList(bool relate_to_place, bool head_only) const{
     QList<const Skill *> skills;
-    foreach (QString skill_name, skillname_list) {
+    foreach(QString skill_name, skillname_list) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
         Q_ASSERT(skill != NULL);
         if (relate_to_place && !skill->relateToPlace(!head_only))
@@ -125,7 +126,7 @@ QList<const Skill *> General::getSkillList(bool relate_to_place, bool head_only)
 
 QList<const Skill *> General::getVisibleSkillList(bool relate_to_place, bool head_only) const{
     QList<const Skill *> skills;
-    foreach (const Skill *skill, getSkillList(relate_to_place, head_only)) {
+    foreach(const Skill *skill, getSkillList(relate_to_place, head_only)) {
         if (skill->isVisible())
             skills << skill;
     }
@@ -139,7 +140,7 @@ QSet<const Skill *> General::getVisibleSkills(bool relate_to_place, bool head_on
 
 QSet<const TriggerSkill *> General::getTriggerSkills() const{
     QSet<const TriggerSkill *> skills;
-    foreach (QString skill_name, skillname_list) {
+    foreach(QString skill_name, skillname_list) {
         const TriggerSkill *skill = Sanguosha->getTriggerSkill(skill_name);
         if (skill)
             skills << skill;
@@ -167,9 +168,9 @@ QString General::getCompanions() const{
     if (isLord())
         return tr("%1 Generals").arg(Sanguosha->translate(getKingdom()));
     QStringList name;
-    foreach (QString general, companions)
+    foreach(QString general, companions)
         name << QString("%1").arg(Sanguosha->translate(general));
-    foreach (QString gnr, Sanguosha->getGeneralNames()) {
+    foreach(QString gnr, Sanguosha->getGeneralNames()) {
         if (!Sanguosha->getGeneral(gnr))
             continue;
         if (Sanguosha->getGeneral(gnr)->companions.contains(objectName()))
@@ -181,7 +182,7 @@ QString General::getCompanions() const{
 QString General::getSkillDescription(bool include_name, bool inToolTip) const{
     QString description;
 
-    foreach (const Skill *skill, getVisibleSkillList()) {
+    foreach(const Skill *skill, getVisibleSkillList()) {
         QString skill_name = Sanguosha->translate(skill->objectName());
         QString desc = skill->getDescription(inToolTip);
         desc.replace("\n", "<br/>");
@@ -210,7 +211,7 @@ QString General::getSkillDescription(bool include_name, bool inToolTip) const{
                 name.append("<img src='image/system/magatamas/half.png' height = 12/>");
             else {
                 name.append("<img src='image/system/magatamas/full-waken.png' height = 12/>");
-                waken ++;
+                waken++;
             }
         }
         if (waken < 0) {
@@ -255,7 +256,7 @@ bool General::isCompanionWith(const QString &name) const {
     if (kingdom != other->kingdom)
         return false;
     return lord || other->lord || companions.contains(name)
-           || other->companions.contains(objectName());
+        || other->companions.contains(objectName());
 }
 
 void General::setHeadMaxHpAdjustedValue(int adjusted_value /* = -1 */) {

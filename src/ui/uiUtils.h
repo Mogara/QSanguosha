@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #ifndef _UI_UTILS_H
 #define _UI_UTILS_H
@@ -53,15 +53,15 @@ namespace QSanUiUtils {
         //        Suggest whether the text is laid out horizontally or vertically.
         // @return True if succeed.
         bool paintQString(QPainter *painter, QString text,
-                          int *font, QColor color,
-                          QSize &fontSize, int spacing, int weight, QRect boundingBox,
-                          Qt::Orientation orient, Qt::Alignment align);
+            int *font, QColor color,
+            QSize &fontSize, int spacing, int weight, QRect boundingBox,
+            Qt::Orientation orient, Qt::Alignment align);
 
         // Currently, we online support horizotal layout for multiline text
         bool paintQStringMultiLine(QPainter *painter, QString text,
-                                   int *font, QColor color,
-                                   QSize &fontSize, int spacing, QRect boundingBox,
-                                   Qt::Alignment align);
+            int *font, QColor color,
+            QSize &fontSize, int spacing, QRect boundingBox,
+            Qt::Alignment align);
     }
 }
 

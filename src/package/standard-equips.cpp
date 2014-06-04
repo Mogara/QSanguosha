@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "standard-equips.h"
 #include "standard-package.h"
@@ -26,14 +26,14 @@
 #include "engine.h"
 
 Crossbow::Crossbow(Suit suit, int number)
-    : Weapon(suit, number, 1)
+: Weapon(suit, number, 1)
 {
     setObjectName("Crossbow");
 }
 
-class DoubleSwordSkill: public WeaponSkill {
+class DoubleSwordSkill : public WeaponSkill {
 public:
-    DoubleSwordSkill(): WeaponSkill("DoubleSword") {
+    DoubleSwordSkill() : WeaponSkill("DoubleSword") {
         events << TargetChosen;
     }
 
@@ -46,7 +46,7 @@ public:
         if (use.from != player)
             return false;
 
-        foreach (ServerPlayer *to, use.to) {
+        foreach(ServerPlayer *to, use.to) {
             if (((use.from->isMale() && to->isFemale()) || (use.from->isFemale() && to->isMale()))
                 && use.card->isKindOf("Slash")) {
                 if (use.from->askForSkillInvoke(objectName())) {
@@ -61,7 +61,7 @@ public:
                         if (!card) draw_card = true;
                     }
                     if (draw_card)
-                       use.from->drawCards(1);
+                        use.from->drawCards(1);
                 }
             }
         }
@@ -71,14 +71,14 @@ public:
 };
 
 DoubleSword::DoubleSword(Suit suit, int number)
-    : Weapon(suit, number, 2)
+: Weapon(suit, number, 2)
 {
     setObjectName("DoubleSword");
 }
 
-class QinggangSwordSkill: public WeaponSkill {
+class QinggangSwordSkill : public WeaponSkill {
 public:
-    QinggangSwordSkill(): WeaponSkill("QinggangSword") {
+    QinggangSwordSkill() : WeaponSkill("QinggangSword") {
         events << TargetChosen;
         frequency = Compulsory;
     }
@@ -87,7 +87,7 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (WeaponSkill::triggerable(use.from) && use.from == player && use.card->isKindOf("Slash")) {
             bool do_anim = false;
-            foreach (ServerPlayer *p, use.to.toSet()) {
+            foreach(ServerPlayer *p, use.to.toSet()) {
                 if (p->getMark("Equips_of_Others_Nullified_to_You") == 0) {
                     do_anim = (p->getArmor() && p->hasArmorEffect(p->getArmor()->objectName())) || p->hasArmorEffect("bazhen");
                     p->addQinggangTag(use.card);
@@ -101,19 +101,19 @@ public:
 };
 
 QinggangSword::QinggangSword(Suit suit, int number)
-    : Weapon(suit, number, 2)
+: Weapon(suit, number, 2)
 {
     setObjectName("QinggangSword");
 }
 
-class SpearSkill: public ViewAsSkill {
+class SpearSkill : public ViewAsSkill {
 public:
-    SpearSkill(): ViewAsSkill("Spear") {
+    SpearSkill() : ViewAsSkill("Spear") {
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         return player->getHandcardNum() >= 2 && Slash::IsAvailable(player)
-               && player->getMark("Equips_Nullified_to_Yourself") == 0;
+            && player->getMark("Equips_Nullified_to_Yourself") == 0;
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
@@ -137,14 +137,14 @@ public:
 };
 
 Spear::Spear(Suit suit, int number)
-    : Weapon(suit, number, 3)
+: Weapon(suit, number, 3)
 {
     setObjectName("Spear");
 }
 
-class AxeViewAsSkill: public ViewAsSkill {
+class AxeViewAsSkill : public ViewAsSkill {
 public:
-    AxeViewAsSkill(): ViewAsSkill("Axe") {
+    AxeViewAsSkill() : ViewAsSkill("Axe") {
         response_pattern = "@Axe";
     }
 
@@ -163,9 +163,9 @@ public:
     }
 };
 
-class AxeSkill: public WeaponSkill {
+class AxeSkill : public WeaponSkill {
 public:
-    AxeSkill(): WeaponSkill("Axe") {
+    AxeSkill() : WeaponSkill("Axe") {
         events << SlashMissed;
         view_as_skill = new AxeViewAsSkill;
     }
@@ -189,14 +189,14 @@ public:
 };
 
 Axe::Axe(Suit suit, int number)
-    : Weapon(suit, number, 3)
+: Weapon(suit, number, 3)
 {
     setObjectName("Axe");
 }
 
-class KylinBowSkill: public WeaponSkill {
+class KylinBowSkill : public WeaponSkill {
 public:
-    KylinBowSkill(): WeaponSkill("KylinBow") {
+    KylinBowSkill() : WeaponSkill("KylinBow") {
         events << DamageCaused;
     }
 
@@ -233,18 +233,18 @@ public:
 };
 
 KylinBow::KylinBow(Suit suit, int number)
-    : Weapon(suit, number, 5)
+: Weapon(suit, number, 5)
 {
     setObjectName("KylinBow");
 }
 
-class EightDiagramSkill: public ArmorSkill {
+class EightDiagramSkill : public ArmorSkill {
 public:
-    EightDiagramSkill(): ArmorSkill("EightDiagram") {
+    EightDiagramSkill() : ArmorSkill("EightDiagram") {
         events << CardAsked;
     }
 
-    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (!ArmorSkill::triggerable(player)) return QStringList();
         QString asked = data.toStringList().first();
         if (asked == "jink") return QStringList(objectName());
@@ -296,14 +296,14 @@ public:
 };
 
 EightDiagram::EightDiagram(Suit suit, int number)
-    : Armor(suit, number)
+: Armor(suit, number)
 {
     setObjectName("EightDiagram");
 }
 
-class IceSwordSkill: public WeaponSkill {
+class IceSwordSkill : public WeaponSkill {
 public:
-    IceSwordSkill(): WeaponSkill("IceSword") {
+    IceSwordSkill() : WeaponSkill("IceSword") {
         events << DamageCaused;
     }
 
@@ -314,36 +314,36 @@ public:
             && damage.to->getMark("Equips_of_Others_Nullified_to_You") == 0
             && !damage.to->isNude() && damage.by_user
             && !damage.chain && !damage.transfer && player->askForSkillInvoke("IceSword", data)) {
-                room->setEmotion(player, "weapon/ice_sword");
-                if (damage.from->canDiscard(damage.to, "he")) {
-                    int card_id = room->askForCardChosen(player, damage.to, "he", "IceSword", false, Card::MethodDiscard);
-                    room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
+            room->setEmotion(player, "weapon/ice_sword");
+            if (damage.from->canDiscard(damage.to, "he")) {
+                int card_id = room->askForCardChosen(player, damage.to, "he", "IceSword", false, Card::MethodDiscard);
+                room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
 
-                    if (damage.from->isAlive() && damage.to->isAlive() && damage.from->canDiscard(damage.to, "he")) {
-                        card_id = room->askForCardChosen(player, damage.to, "he", "IceSword", false, Card::MethodDiscard);
-                        room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
-                    }
+                if (damage.from->isAlive() && damage.to->isAlive() && damage.from->canDiscard(damage.to, "he")) {
+                    card_id = room->askForCardChosen(player, damage.to, "he", "IceSword", false, Card::MethodDiscard);
+                    room->throwCard(Sanguosha->getCard(card_id), damage.to, damage.from);
                 }
-                return true;
+            }
+            return true;
         }
         return false;
     }
 };
 
 IceSword::IceSword(Suit suit, int number)
-    : Weapon(suit, number, 2)
+: Weapon(suit, number, 2)
 {
     setObjectName("IceSword");
 }
 
-class RenwangShieldSkill: public ArmorSkill {
+class RenwangShieldSkill : public ArmorSkill {
 public:
-    RenwangShieldSkill(): ArmorSkill("RenwangShield") {
+    RenwangShieldSkill() : ArmorSkill("RenwangShield") {
         events << SlashEffected;
         frequency = Compulsory;
     }
 
-    virtual QStringList triggerable(TriggerEvent , Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (!ArmorSkill::triggerable(player)) return QStringList();
         SlashEffectStruct effect = data.value<SlashEffectStruct>();
         if (effect.slash->isBlack()) return QStringList(objectName());
@@ -367,14 +367,14 @@ public:
 };
 
 RenwangShield::RenwangShield(Suit suit, int number)
-    : Armor(suit, number)
+: Armor(suit, number)
 {
     setObjectName("RenwangShield");
 }
 
-class FanSkill: public OneCardViewAsSkill {
+class FanSkill : public OneCardViewAsSkill {
 public:
-    FanSkill(): OneCardViewAsSkill("Fan") {
+    FanSkill() : OneCardViewAsSkill("Fan") {
         filter_pattern = "%slash";
     }
 
@@ -396,24 +396,24 @@ public:
 };
 
 Fan::Fan(Suit suit, int number)
-    : Weapon(suit, number, 4)
+: Weapon(suit, number, 4)
 {
     setObjectName("Fan");
 }
 
 SixSwords::SixSwords(Suit suit, int number)
-    : Weapon(suit, number, 2)
+: Weapon(suit, number, 2)
 {
     setObjectName("SixSwords");
 }
 
-class SixSwordsSkill: public AttackRangeSkill{
+class SixSwordsSkill : public AttackRangeSkill{
 public:
-    SixSwordsSkill(): AttackRangeSkill("SixSwords"){
+    SixSwordsSkill() : AttackRangeSkill("SixSwords"){
     }
 
     virtual int getExtra(const Player *target, bool) const{
-        foreach (const Player *p, target->getAliveSiblings()){
+        foreach(const Player *p, target->getAliveSiblings()){
             if (p->hasWeapon("SixSwords") && p->isFriendWith(target) && p->getMark("Equips_Nullified_to_Yourself") == 0)
                 return 1;
         }
@@ -422,11 +422,11 @@ public:
     }
 };
 
-Triblade::Triblade(Card::Suit suit, int number): Weapon(suit, number, 3){
+Triblade::Triblade(Card::Suit suit, int number) : Weapon(suit, number, 3){
     setObjectName("Triblade");
 }
 
-TribladeSkillCard::TribladeSkillCard(): SkillCard(){
+TribladeSkillCard::TribladeSkillCard() : SkillCard(){
     setObjectName("Triblade");
 }
 
@@ -438,9 +438,9 @@ void TribladeSkillCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer
     room->damage(DamageStruct("Triblade", source, targets[0]));
 }
 
-class TribladeSkillVS: public OneCardViewAsSkill{
+class TribladeSkillVS : public OneCardViewAsSkill{
 public:
-    TribladeSkillVS(): OneCardViewAsSkill("Triblade"){
+    TribladeSkillVS() : OneCardViewAsSkill("Triblade"){
         response_pattern = "@@Triblade";
         filter_pattern = ".|.|.|hand!";
     }
@@ -452,39 +452,39 @@ public:
     }
 };
 
-class TribladeSkill: public WeaponSkill{
+class TribladeSkill : public WeaponSkill{
 public:
-    TribladeSkill(): WeaponSkill("Triblade"){
+    TribladeSkill() : WeaponSkill("Triblade"){
         events << Damage;
         view_as_skill = new TribladeSkillVS;
     }
 
-    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.to && damage.to->isAlive() && damage.card && damage.card->isKindOf("Slash")
             && damage.by_user && !damage.chain && !damage.transfer){
-                QList<ServerPlayer *> players;
-                foreach(ServerPlayer *p, room->getOtherPlayers(player))
-                    if (damage.to->distanceTo(p) == 1){
-                        players << p;
-                        room->setPlayerFlag(p, "TribladeCanBeSelected");
-                    }
-                if (players.isEmpty())
-                    return false;
-                room->askForUseCard(player, "@@Triblade", "@Triblade");
+            QList<ServerPlayer *> players;
+            foreach(ServerPlayer *p, room->getOtherPlayers(player))
+            if (damage.to->distanceTo(p) == 1){
+                players << p;
+                room->setPlayerFlag(p, "TribladeCanBeSelected");
+            }
+            if (players.isEmpty())
+                return false;
+            room->askForUseCard(player, "@@Triblade", "@Triblade");
         }
 
         foreach(ServerPlayer *p, room->getAllPlayers())
-            if (p->hasFlag("TribladeCanBeSelected"))
-                room->setPlayerFlag(p, "TribladeCanBeSelected");
+        if (p->hasFlag("TribladeCanBeSelected"))
+            room->setPlayerFlag(p, "TribladeCanBeSelected");
 
         return false;
     }
 };
 
-class VineSkill: public ArmorSkill {
+class VineSkill : public ArmorSkill {
 public:
-    VineSkill(): ArmorSkill("Vine") {
+    VineSkill() : ArmorSkill("Vine") {
         events << DamageInflicted << SlashEffected << CardEffected;
         frequency = Compulsory;
     }
@@ -495,11 +495,13 @@ public:
             SlashEffectStruct effect = data.value<SlashEffectStruct>();
             if (effect.nature == DamageStruct::Normal)
                 return QStringList(objectName());
-        } else if (triggerEvent == CardEffected) {
+        }
+        else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             if (effect.card->isKindOf("SavageAssault") || effect.card->isKindOf("ArcheryAttack"))
                 return QStringList(objectName());
-        } else if (triggerEvent == DamageInflicted) {
+        }
+        else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             if (damage.nature == DamageStruct::Fire)
                 return QStringList(objectName());
@@ -521,7 +523,8 @@ public:
 
             effect.to->setFlags("Global_NonSkillNullify");
             return true;
-        } else if (triggerEvent == CardEffected) {
+        }
+        else if (triggerEvent == CardEffected) {
             CardEffectStruct effect = data.value<CardEffectStruct>();
             room->setEmotion(player, "armor/vine");
             LogMessage log;
@@ -533,14 +536,15 @@ public:
 
             effect.to->setFlags("Global_NonSkillNullify");
             return true;
-        } else if (triggerEvent == DamageInflicted) {
+        }
+        else if (triggerEvent == DamageInflicted) {
             DamageStruct damage = data.value<DamageStruct>();
             room->setEmotion(player, "armor/vineburn");
             LogMessage log;
             log.type = "#VineDamage";
             log.from = player;
             log.arg = QString::number(damage.damage);
-            log.arg2 = QString::number(++ damage.damage);
+            log.arg2 = QString::number(++damage.damage);
             room->sendLog(log);
 
             data = QVariant::fromValue(damage);
@@ -551,14 +555,14 @@ public:
 };
 
 Vine::Vine(Suit suit, int number)
-    : Armor(suit, number)
+: Armor(suit, number)
 {
     setObjectName("Vine");
 }
 
-class SilverLionSkill: public ArmorSkill {
+class SilverLionSkill : public ArmorSkill {
 public:
-    SilverLionSkill(): ArmorSkill("SilverLion") {
+    SilverLionSkill() : ArmorSkill("SilverLion") {
         events << DamageInflicted << CardsMoveOneTime;
         frequency = Compulsory;
     }
@@ -568,7 +572,8 @@ public:
             DamageStruct damage = data.value<DamageStruct>();
             if (ArmorSkill::triggerable(player) && damage.damage > 1)
                 return QStringList(objectName());
-        } else if (player->hasFlag("SilverLionRecover")) {
+        }
+        else if (player->hasFlag("SilverLionRecover")) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.from != player || !move.from_places.contains(Player::PlaceEquip))
                 return QStringList(objectName());
@@ -597,7 +602,8 @@ public:
 
             damage.damage = 1;
             data = QVariant::fromValue(damage);
-        } else {
+        }
+        else {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
 
             for (int i = 0; i < move.card_ids.size(); i++) {
@@ -619,7 +625,7 @@ public:
 };
 
 SilverLion::SilverLion(Suit suit, int number)
-    : Armor(suit, number)
+: Armor(suit, number)
 {
     setObjectName("SilverLion");
 }
@@ -629,9 +635,9 @@ void SilverLion::onUninstall(ServerPlayer *player) const{
         player->setFlags("SilverLionRecover");
 }
 
-class HorseSkill: public DistanceSkill {
+class HorseSkill : public DistanceSkill {
 public:
-    HorseSkill():DistanceSkill("Horse"){
+    HorseSkill() :DistanceSkill("Horse"){
     }
 
     virtual int getCorrect(const Player *from, const Player *to) const{

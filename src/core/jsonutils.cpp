@@ -1,22 +1,22 @@
 /********************************************************************
     Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
 
-  This file is part of QSanguosha-Hegemony.
+    This file is part of QSanguosha-Hegemony.
 
-  This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
 
-  See the LICENSE file for more details.
+    See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
-*********************************************************************/
+    QSanguosha-Hegemony Team
+    *********************************************************************/
 
 #include "jsonutils.h"
 
@@ -44,7 +44,7 @@ Json::Value QSanProtocol::Utils::toJsonArray(const QString &s1, const Json::Valu
 
 Json::Value QSanProtocol::Utils::toJsonArray(const QList<int> &arg) {
     Json::Value val(Json::arrayValue);
-    foreach (int i, arg)
+    foreach(int i, arg)
         val.append(i);
     return val;
 }
@@ -52,7 +52,7 @@ Json::Value QSanProtocol::Utils::toJsonArray(const QList<int> &arg) {
 bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QList<int> &result) {
     if (!arg.isArray()) return false;
     for (unsigned int i = 0; i < arg.size(); i++)
-        if (!arg[i].isInt()) return false;
+    if (!arg[i].isInt()) return false;
     for (unsigned int i = 0; i < arg.size(); i++)
         result.append(arg[i].asInt());
     return true;
@@ -60,14 +60,14 @@ bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QList<int> &result) {
 
 Json::Value QSanProtocol::Utils::toJsonArray(const QList<QString> &arg) {
     Json::Value val(Json::arrayValue);
-    foreach (QString s, arg)
+    foreach(QString s, arg)
         val.append(toJsonString(s));
     return val;
 }
 
 Json::Value QSanProtocol::Utils::toJsonArray(const QStringList &arg) {
     Json::Value val(Json::arrayValue);
-    foreach (QString s, arg)
+    foreach(QString s, arg)
         val.append(toJsonString(s));
     return val;
 }
@@ -123,7 +123,7 @@ bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QString &result) {
 bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QStringList &result) {
     if (!arg.isArray()) return false;
     for (unsigned int i = 0; i < arg.size(); i++)
-        if (!arg[i].isString()) return false;
+    if (!arg[i].isString()) return false;
     for (unsigned int i = 0; i < arg.size(); i++)
         result.append(arg[i].asCString());
     return true;
