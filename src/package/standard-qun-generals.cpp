@@ -958,7 +958,7 @@ public:
 class Lirang : public TriggerSkill {
 public:
     Lirang() : TriggerSkill("lirang") {
-        events << BeforeCardsMove;
+        events << CardsMoveOneTime;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
@@ -972,7 +972,7 @@ public:
             int i = 0;
             QList<int> lirang_card;
             foreach(int card_id, move.card_ids) {
-                if (room->getCardOwner(card_id) == move.from
+                if (room->getCardPlace(card_id) == Player::DiscardPile
                     && (move.from_places[i] == Player::PlaceHand || move.from_places[i] == Player::PlaceEquip)) {
                     lirang_card << card_id;
                 }
@@ -980,6 +980,8 @@ public:
             }
             if (lirang_card.isEmpty())
                 return QStringList();
+
+            player->tag["lirang"] = IntList2VariantList(lirang_card);
 
             return QStringList(objectName());
         }
@@ -997,34 +999,46 @@ public:
         if (move.to_place == Player::DiscardPile
             && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD)) {
 
-            int i = 0;
-            QList<int> lirang_card;
-            foreach(int card_id, move.card_ids) {
-                if (room->getCardOwner(card_id) == move.from
-                    && (move.from_places[i] == Player::PlaceHand || move.from_places[i] == Player::PlaceEquip)) {
-                    lirang_card << card_id;
-                }
-                i++;
-            }
-            if (lirang_card.isEmpty())
-                return false;
+            QList<int> lirang_card = VariantList2IntList(kongrong->tag["lirang"].toList());
+
+            CardMoveReason preview_reason(CardMoveReason::S_REASON_DISCARD, kongrong->objectName(), objectName(), QString());
+            CardsMoveStruct lirang_preview(lirang_card, NULL, kongrong, Player::DiscardPile, Player::PlaceHand, preview_reason);
+            QList<CardsMoveStruct> lirang_preview_l;
+            lirang_preview_l << lirang_preview;
+            QList<ServerPlayer *> _kongrong;
+            _kongrong << kongrong;
+
+            room->notifyMoveCards(true, lirang_preview_l, false, _kongrong);
+            room->notifyMoveCards(false, lirang_preview_l, false, _kongrong);
 
             QList<int> original_lirang = lirang_card;
-            while (room->askForYiji(kongrong, lirang_card, objectName(), false, true, true, -1,
-                QList<ServerPlayer *>(), move.reason, "@lirang-distribute", true)) {
+            CardMoveReason lirang_reason(CardMoveReason::S_REASON_PREVIEWGIVE, kongrong->objectName());
+            while (room->askForYiji(kongrong, lirang_card, objectName(), true, true, true, -1,
+                QList<ServerPlayer *>(), lirang_reason, "@lirang-distribute", true)) {
+                CardsMoveStruct lirang_give_preview(QList<int>(), kongrong, NULL, Player::PlaceHand, Player::PlaceTable, preview_reason);
+                foreach(int id, original_lirang){
+                    if (room->getCardPlace(id) != Player::DiscardPile){
+                        lirang_give_preview.card_ids << id;
+                        lirang_card.removeOne(id);
+                    }
+                }
+
+                original_lirang = lirang_card;
+
+                QList<CardsMoveStruct> lirang_give_preview_l;
+                lirang_give_preview_l << lirang_give_preview;
+                room->notifyMoveCards(true, lirang_give_preview_l, true, _kongrong);
+                room->notifyMoveCards(false, lirang_give_preview_l, true, _kongrong);
                 if (kongrong->isDead()) break;
             }
 
-            QList<int> ids = move.card_ids;
-            i = 0;
-            foreach(int card_id, ids) {
-                if (original_lirang.contains(card_id) && !lirang_card.contains(card_id)) {
-                    move.card_ids.removeOne(card_id);
-                    move.from_places.removeAt(i);
-                }
-                i++;
+            if (!lirang_card.isEmpty()){
+                CardsMoveStruct lirang_return_preview(lirang_card, kongrong, NULL, Player::PlaceHand, Player::DiscardPile, preview_reason);
+                QList<CardsMoveStruct> lirang_return_preview_l;
+                lirang_return_preview_l << lirang_return_preview;
+                room->notifyMoveCards(true, lirang_return_preview_l, true, _kongrong);
+                room->notifyMoveCards(false, lirang_return_preview_l, false, _kongrong);
             }
-            data = QVariant::fromValue(move);
         }
         return false;
     }

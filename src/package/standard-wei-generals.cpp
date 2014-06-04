@@ -392,8 +392,9 @@ public:
         _guojia.append(guojia);
         QList<int> yiji_cards = room->getNCards(2, false);
 
-        CardsMoveStruct move(yiji_cards, NULL, guojia, Player::PlaceTable, Player::PlaceHand,
-            CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
+        CardMoveReason preview_reason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString());
+
+        CardsMoveStruct move(yiji_cards, NULL, guojia, Player::PlaceTable, Player::PlaceHand, preview_reason);
         QList<CardsMoveStruct> moves;
         moves.append(move);
         room->notifyMoveCards(true, moves, false, _guojia);
@@ -401,8 +402,7 @@ public:
 
         QList<int> origin_yiji = yiji_cards;
         while (room->askForYiji(guojia, yiji_cards, objectName(), true, false, true, -1, room->getAlivePlayers())) {
-            CardsMoveStruct move(QList<int>(), guojia, NULL, Player::PlaceHand, Player::PlaceTable,
-                CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
+            CardsMoveStruct move(QList<int>(), guojia, NULL, Player::PlaceHand, Player::PlaceTable, preview_reason);
             foreach(int id, origin_yiji) {
                 if (room->getCardPlace(id) != Player::DrawPile) {
                     move.card_ids << id;
@@ -419,8 +419,7 @@ public:
         }
 
         if (!yiji_cards.isEmpty()) {
-            CardsMoveStruct move(yiji_cards, guojia, NULL, Player::PlaceHand, Player::PlaceTable,
-                CardMoveReason(CardMoveReason::S_REASON_PREVIEW, guojia->objectName(), objectName(), QString()));
+            CardsMoveStruct move(yiji_cards, guojia, NULL, Player::PlaceHand, Player::PlaceTable, preview_reason);
             QList<CardsMoveStruct> moves;
             moves.append(move);
             room->notifyMoveCards(true, moves, false, _guojia);
