@@ -1161,7 +1161,7 @@ public:
         room->sendLog(log);
 
         QVariant dataforai = QVariant::fromValue(liushan);
-        if (!room->askForCard(use.from, ".Basic", "@xiangle-discard", dataforai))
+        if (!room->askForCard(use.from, ".Basic", "@xiangle-discard:" + liushan->objectName(), dataforai))
             liushan->addMark("xiangle");
 
         return false;
