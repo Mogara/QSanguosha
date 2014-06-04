@@ -337,14 +337,53 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
     painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
     QPainterPath path;
-    QFontMetrics fm(font());
     QString s = toPlainText();
     QStringList lines = s.split("\n", QString::SkipEmptyParts);
 
 
     for (int i = 0; i < lines.length(); i++){
-        path.addText(document()->documentMargin(), fm.height() * (i + 1), font(), lines[i]);
+        QString thisline = lines[i];
+        QStringList s1 = thisline.split(']', QString::SkipEmptyParts);
+        QStringList s_non_bold, s_bold;
+        foreach(QString s, s1){
+            if (!s.contains('[')){
+                s_non_bold << s;
+                s_bold << QString();
+            }
+            else if (!s.startsWith('[')){
+                QStringList s2 = s.split('[', QString::SkipEmptyParts);
+                s_non_bold << s2.first();
+                s_bold << s2.last();
+            }
+            else {
+                s = s.mid(1);
+                s_non_bold << QString();
+                s_bold << s;
+            }
+        }
+
+        QFont f = font();
+        f.setStyleHint(QFont::AnyStyle, QFont::PreferAntialias);
+        QFontMetrics fm(f);
+        QFont f_bold = f;
+        f_bold.setBold(true);
+        QFontMetrics fm_bold(f_bold);
+
+        int width = 0;
+        for (int j = 0; j < s_non_bold.length(); j++){
+            QString non_bold = s_non_bold[j];
+            int width_c_non_bold = fm.width(non_bold);
+            path.addText(document()->documentMargin() + width, fm.height() * (i + 1), f, non_bold);
+            width += width_c_non_bold;
+
+            QString bold = s_bold[j];
+            int width_c_bold = fm_bold.width(bold);
+            path.addText(document()->documentMargin() + width, fm.height() * (i + 1), f_bold, bold);
+            width += width_c_bold;
+        }
     }
+    painter->fillPath(path, defaultTextColor());
+
 
     //path.addText(document()->documentMargin(), fm.height(), font(), toPlainText());
 
@@ -383,7 +422,7 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         else
             path.addText(document()->documentMargin(), fm.height(), font(), string);
     }*/
-    painter->fillPath(path, defaultTextColor());
+    
     
 }
 
@@ -494,14 +533,10 @@ void SkillBox::insertSuit(int index){
 }
 
 void SkillBox::insertBoldText(const QString &bold_text){
-    QTextCharFormat format;
-    format.setFontWeight(QFont::Bold);
-
-    skill_description->textCursor().insertText("[b:", format);
-    skill_description->textCursor().insertText(bold_text, format);
-    skill_description->textCursor().insertText("]", format);
-
-    skill_description->textCursor().insertText(tr(","), QTextCharFormat());
+    skill_description->textCursor().insertText("[");
+    skill_description->textCursor().insertText(bold_text);
+    skill_description->textCursor().insertText(tr(","));
+    skill_description->textCursor().insertText("]");
 }
 
 QRectF SkillBox::boundingRect() const{
@@ -1179,6 +1214,9 @@ QWidget *CardEditor::createSkillBox(){
         suit_ComboBox->addItem(suit_icon, Sanguosha->translate(suit_name), suit_name);
     }
     layout->addRow(tr("Insert suit"), suit_ComboBox);
+    //temp solution
+    suit_ComboBox->setEnabled(false);
+    suit_ComboBox->setToolTip(tr("<font color=%1>This function cannot be used now, we will try to fix it.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
 
     connect(suit_ComboBox, SIGNAL(activated(int)), skill_box, SLOT(insertSuit(int)));
 
@@ -1192,10 +1230,7 @@ QWidget *CardEditor::createSkillBox(){
     layout->addRow(tr("Insert bold text"), bold_ComboBox);
 
     connect(bold_ComboBox, SIGNAL(activated(QString)), skill_box, SLOT(insertBoldText(QString)));
-    //temp solution
-    bold_ComboBox->setEnabled(false);
-    bold_ComboBox->setToolTip(tr("<font color=%1>This function cannot be used now, we will try to fix it.</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
-
+    
     box->setLayout(layout);
     return box;
 }
