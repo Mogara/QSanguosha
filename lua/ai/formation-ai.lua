@@ -323,10 +323,7 @@ sgs.ai_use_value.ShangyiCard = 4
 sgs.ai_use_priority.ShangyiCard = 9
 sgs.ai_card_intention.ShangyiCard = 50
 
-sgs.ai_skill_invoke.yicheng = function(self, data)
-	local player = data:toPlayer()
-	return true
-end
+sgs.ai_skill_invoke.yicheng = true
 
 sgs.ai_skill_discard.yicheng = function(self, discard_num, min_num, optional, include_equip)
 	local unpreferedCards = {}
@@ -380,6 +377,7 @@ sgs.ai_skill_invoke.qianhuan = function(self, data)
 	if data:toString() == "gethuan" then return true end
 	local use = self.player:getTag("qianhuan_data"):toCardUse()
 	if (use.from and self:isFriend(use.from)) then return false end --队友给自己出桃子不无懈（暂）
+	if use.card:isKindOf("Peach") then return false end
 	if use.to:isEmpty() then return false end
 	local to = use.to:first()
 	if to and to:objectName() == self.player:objectName() then
