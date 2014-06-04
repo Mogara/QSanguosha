@@ -1021,7 +1021,7 @@ public:
         else if (TriggerSkill::triggerable(player)) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.card_ids.length() == 1 && move.from_places.contains(Player::PlaceTable) && move.to_place == Player::DiscardPile
-                && move.reason.m_reason == CardMoveReason::S_REASON_USE) {
+                && move.reason.m_reason == CardMoveReason::S_REASON_USE && room->getCardPlace(move.card_ids[0]) == Player::DiscardPile) {
                 Card *card = Sanguosha->getCard(move.card_ids.first());
                 if (card->hasFlag("real_SA") && player != move.from)
                     return QStringList(objectName());

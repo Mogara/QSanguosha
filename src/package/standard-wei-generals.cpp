@@ -869,6 +869,7 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhanghe, QVariant &data, ServerPlayer *) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
+        zhanghe->skip(change.to);
         int index = 0;
         switch (change.to) {
         case Player::RoundStart:
@@ -886,7 +887,6 @@ public:
             QString use_prompt = QString("@qiaobian-%1").arg(index);
             room->askForUseCard(zhanghe, "@@qiaobian", use_prompt, index);
         }
-        zhanghe->skip(change.to);
         return false;
     }
 };

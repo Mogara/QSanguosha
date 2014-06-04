@@ -77,10 +77,9 @@ public:
     }
 };
 
-class KejiGlobal : public TriggerSkill{
+class KejiRecord : public TriggerSkill{
 public:
-    KejiGlobal() : TriggerSkill("keji-global"){
-        global = true;
+    KejiRecord() : TriggerSkill("#keji-record"){
         events << PreCardUsed << CardResponded;
         frequency = Compulsory;
     }
@@ -1398,7 +1397,7 @@ public:
     }
 };
 
-class Duanbing : public TriggerSkill {
+class Duanbing : public TriggerSkill {  // Slash::targetFilter()
 public:
     Duanbing() : TriggerSkill("duanbing") {
         frequency = Compulsory;
@@ -1485,6 +1484,8 @@ void StandardPackage::addWuGenerals()
 
     General *lvmeng = new General(this, "lvmeng", "wu"); // WU 003
     lvmeng->addSkill(new Keji);
+    lvmeng->addSkill(new KejiRecord);
+    related_skills.insertMulti("keji", "#keji-record");
 
     General *huanggai = new General(this, "huanggai", "wu"); // WU 004
     huanggai->addSkill(new Kurou);
@@ -1556,6 +1557,4 @@ void StandardPackage::addWuGenerals()
     addMetaObject<DimengCard>();
     addMetaObject<ZhijianCard>();
     addMetaObject<FenxunCard>();
-
-    skills << new KejiGlobal;
 }

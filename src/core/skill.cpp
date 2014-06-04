@@ -201,9 +201,7 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 {
 }
 
-bool ViewAsSkill::isAvailable(const Player *invoker,
-    CardUseStruct::CardUseReason reason,
-    const QString &pattern) const{
+bool ViewAsSkill::isAvailable(const Player *invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const{
     if (!invoker->ownSkill(objectName()) && !invoker->getAcquiredSkills().contains(objectName()) && !invoker->hasFlag(objectName())) // For Shuangxiong
         return false;
     switch (reason) {

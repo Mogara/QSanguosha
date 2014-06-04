@@ -437,7 +437,7 @@ public:
 class Yongjue : public TriggerSkill {
 public:
     Yongjue() : TriggerSkill("yongjue") {
-        events << CardUsed << BeforeCardsMove;
+        events << CardUsed << CardsMoveOneTime;
     }
 
     virtual bool canPreshow() const {
@@ -469,7 +469,7 @@ public:
                 }
             }
         }
-        else if (triggerEvent == BeforeCardsMove){
+        else if (triggerEvent == CardsMoveOneTime){
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.from != NULL && move.from->tag.contains("yongjue_card") && player == move.from
                 && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE)
@@ -478,7 +478,7 @@ public:
                 player->tag.remove("yongjue_card");
                 bool invoke = true;
                 foreach(QVariant id_v, card_list){
-                    if (!(move.card_ids.contains(id_v.toInt()) && room->getCardPlace(id_v.toInt()) == Player::PlaceTable)){
+                    if (!(move.card_ids.contains(id_v.toInt()) && room->getCardPlace(id_v.toInt()) == Player::DiscardPile)){
                         invoke = false;
                         break;
                     }
