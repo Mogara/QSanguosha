@@ -401,7 +401,9 @@ sgs.luoyi_keep_value = {
 
 sgs.ai_skill_invoke.tiandu = function(self, data)
 	local judge = data:toJudge()
-	if judge.reason == "tuntian" then return false end
+	if judge.reason == "tuntian" and judge.card:getSuit() ~= sgs.Card_Heart then
+		return false
+	end
 	return not (self:needKongcheng() and self.player:isKongcheng())
 end
 
