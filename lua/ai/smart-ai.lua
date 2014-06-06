@@ -3121,6 +3121,8 @@ function SmartAI:needRetrial(judge)
 
 		if who:hasArmorEffect("SilverLion") and who:getHp() > 1 then return false end
 
+		if who:hasArmorEffect("PeaceSpell") then return false end
+
 		if self:isFriend(who) then
 			if who:isChained() and self:isGoodChainTarget(who, self.player, sgs.DamageStruct_Thunder, 3) then return false end
 		else
