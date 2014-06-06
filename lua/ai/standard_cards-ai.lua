@@ -480,7 +480,7 @@ function SmartAI:useCardSlash(card, use)
 			end
 			if not use.isDummy then
 				local analeptic = self:searchForAnaleptic(use, target, use.card)
-				if analeptic and self:shouldUseAnaleptic(target, use.card) and analeptic:getEffectiveId() ~= card:getEffectiveId() then
+				if analeptic and self:shouldUseAnaleptic(target, use) and analeptic:getEffectiveId() ~= card:getEffectiveId() then
 					use.card = analeptic
 					if use.to then use.to = sgs.SPlayerList() end
 					return

@@ -125,6 +125,7 @@ function setInitialTables()
 	sgs.current_mode_players = { lord = 0, loyalist = 0, rebel = 0, renegade = 0 }
 	sgs.ai_type_name = 			{"Skill", "Basic", "Trick", "Equip"}
 	sgs.lose_equip_skill = "xiaoji"
+	sgs.lose_one_equip_skill = ""
 	sgs.need_kongcheng = "kongcheng"
 	sgs.masochism_skill = 		"yiji|fankui|jieming|ganglie|fangzhu|hengjiang|qianhuan"
 	sgs.wizard_skill = 		"guicai|guidao|tiandu"
@@ -2006,7 +2007,7 @@ function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_e
 			elseif self.player:hasSkill("bazhen") and card:isKindOf("Armor") then return 0
 			elseif card:isKindOf("Armor") then return 4
 			end
-		elseif self.player:hasSkills(sgs.lose_equip_skill) then return 5
+		elseif self.player:hasSkills(sgs.lose_one_equip_skill) then return 5
 		else return 0
 		end
 	end
@@ -2016,14 +2017,26 @@ function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_e
 	end
 
 	table.sort(cards, compare_func)
+	if include_equip and self.player:hasSkills(sgs.lose_equip_skill) then
+		for i, card in ipairs(cards) do
+			if card:getTypeId() == sgs.Card_TypeEquip then
+				table.remove(cards, i)
+				table.insert(cards, 1, card)
+				break
+			end
+		end
+	end
+
 	local least = min_num
 	if discard_num - min_num > 1 then
 		least = discard_num - 1
 	end
+
 	for _, card in ipairs(cards) do
 		if #to_discard >= discard_num then break end
 		if exchange or not self.player:isJilei(card) then table.insert(to_discard, card:getId()) end
 	end
+
 	return to_discard
 end
 

@@ -120,8 +120,16 @@ function sgs.ai_armor_value.Vine(player, self)
 	return 1
 end
 
-function SmartAI:shouldUseAnaleptic(target, slash)
-	if target:hasArmorEffect("SilverLion") and not self.player:hasWeapon("QinggangSword") then return end
+function SmartAI:shouldUseAnaleptic(target, card_use)
+	local slash = card_use.card
+	if target:hasArmorEffect("SilverLion") and not self.player:hasWeapon("QinggangSword") then return false end
+
+	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+		if p:hasShownSkill("qianhuan") and not p:getPile("sorcery"):isEmpty() and p:getKingdom() == target:getKingdom() and card_use.to:length() <= 1 then
+			return false
+		end
+	end
+
 	if target:hasShownSkill("xiangle") then
 		local basicnum = 0
 		for _, acard in sgs.qlist(self.player:getHandcards()) do
