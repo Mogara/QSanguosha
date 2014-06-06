@@ -34,8 +34,7 @@ class GeneralSelector : public QObject {
 
 public:
     static GeneralSelector *getInstance();
-    QString selectFirst(ServerPlayer *player, const QStringList &candidates);
-    QString selectSecond(ServerPlayer *player, const QStringList &candidates);
+	QStringList selectGenerals(ServerPlayer *player, const QStringList &candidates);
 
 private:
     GeneralSelector();
@@ -47,7 +46,6 @@ private:
     QHash<QString, int> single_general_table;
     QHash<QString, int> pair_table;
     QHash<const ServerPlayer *, QHash<QString, int> > private_pair_value_table;
-    QHash<const ServerPlayer *, QString> general_to_be_deputy;
 };
 
 #endif

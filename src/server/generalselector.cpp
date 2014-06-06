@@ -43,7 +43,7 @@ GeneralSelector::GeneralSelector() {
     loadPairTable();
 }
 
-QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &candidates) {
+QStringList GeneralSelector::selectGenerals(ServerPlayer *player, const QStringList &candidates) {
     if (private_pair_value_table[player].isEmpty())
         caculatePairValues(player, candidates);
 
@@ -65,44 +65,8 @@ QString GeneralSelector::selectFirst(ServerPlayer *player, const QStringList &ca
     QStringList pair = best_pair.split("+");
 
     Q_ASSERT(pair.size() == 2);
-    general_to_be_deputy[player] = pair.last(); //record for choosing deputy general
 
-    return pair.first();
-}
-
-QString GeneralSelector::selectSecond(ServerPlayer *player, const QStringList &_candidates) {
-    if (!general_to_be_deputy.value(player).isEmpty()) {
-        return general_to_be_deputy.value(player);
-        general_to_be_deputy.remove(player);
-    }
-
-    QStringList candidates = _candidates;
-    foreach(QString candidate, _candidates){
-        if (BanPair::isBanned(player->getGeneralName(), candidate))
-            candidates.removeOne(candidate);
-    }
-
-    caculateDeputyValue(player, player->getGeneralName(), candidates);
-
-    QHash<QString, int> my_hash = private_pair_value_table[player];
-    int max_score = my_hash.values().first();
-    QString best_pair = my_hash.keys().first();
-
-    foreach(QString key, my_hash.keys()) {
-        int score = my_hash.value(key);
-        if (score > max_score) {
-            max_score = score;
-            best_pair = key;
-        }
-    }
-
-    Q_ASSERT(!best_pair.isEmpty());
-
-    QStringList pair = best_pair.split("+");
-
-    Q_ASSERT(pair.size() == 2);
-
-    return pair.last();
+	return pair;
 }
 
 void GeneralSelector::loadGeneralTable() {
@@ -157,9 +121,11 @@ void GeneralSelector::caculatePairValues(const ServerPlayer *player, const QStri
     QStringList kingdoms = Sanguosha->getKingdoms();
     kingdoms.removeAll("god");
     qShuffle(kingdoms);
-    const int index = kingdoms.indexOf("qun");
-    if (index != -1 && index != kingdoms.size() - 1)
-        qSwap(kingdoms[index], kingdoms[index + 1]);
+	if (qrand() % 2 == 0) {
+		const int index = kingdoms.indexOf("qun");
+		if (index != -1 && index != kingdoms.size() - 1)
+			qSwap(kingdoms[index], kingdoms[index + 1]);
+	}
 
     QStringList candidates = _candidates;
     foreach(QString candidate, _candidates){

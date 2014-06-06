@@ -2348,15 +2348,18 @@ void Room::chooseGenerals() {
         if (player->getGeneral() != NULL) continue;
         Json::Value generalName = player->getClientReply();
         if (!player->m_isClientResponseReady || !generalName.isString()) {
-            _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
-            _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
+			QStringList default_generals = _chooseDefaultGenerals(player);
+			_setPlayerGeneral(player, default_generals.first(), true);
+			_setPlayerGeneral(player, default_generals.last(), false);
         }
         else {
             QStringList generals = toQString(generalName).split("+");
-            if (!_setPlayerGeneral(player, generals.first(), true))
-                _setPlayerGeneral(player, _chooseDefaultGeneral(player), true);
-            if (generals.length() != 2 || !_setPlayerGeneral(player, generals.last(), false))
-                _setPlayerGeneral(player, _chooseDefaultGeneral(player), false);
+			if (generals.length() != 2 || !_setPlayerGeneral(player, generals.first(), true)
+				|| !_setPlayerGeneral(player, generals.last(), false)) {
+				QStringList default_generals = _chooseDefaultGenerals(player);
+				_setPlayerGeneral(player, default_generals.first(), true);
+				_setPlayerGeneral(player, default_generals.last(), false);
+			}
         }
     }
 
@@ -2522,17 +2525,12 @@ int Room::getCardFromPile(const QString &card_pattern) {
     return -1;
 }
 
-QString Room::_chooseDefaultGeneral(ServerPlayer *player) const{
+QStringList Room::_chooseDefaultGenerals(ServerPlayer *player) const{
     Q_ASSERT(!player->getSelected().isEmpty());
-    QString choice;
+    QStringList generals = m_generalSelector->selectGenerals(player, player->getSelected());
 
-    if (player->getGeneral() != NULL) // choosing second general
-        choice = m_generalSelector->selectSecond(player, player->getSelected());
-    else
-        choice = m_generalSelector->selectFirst(player, player->getSelected());
-
-    Q_ASSERT(!choice.isEmpty());
-    return choice;
+    Q_ASSERT(!generals.isEmpty());
+	return generals;
 }
 
 bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, bool isFirst) {
