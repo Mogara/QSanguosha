@@ -463,7 +463,7 @@ public:
                 from = resp.m_who;
                 card = resp.m_card;
             }
-            if (from->getPhase() == Player::Play && from->getMark(objectName()) == 0){
+            if (from->getPhase() == Player::Play && from->getMark(objectName()) == 0 && is_use){
                 if (!card->isKindOf("SkillCard"))
                     from->addMark(objectName());
                 if (card->isKindOf("Slash")) {
