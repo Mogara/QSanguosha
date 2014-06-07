@@ -37,6 +37,7 @@
 #include "record-analysis.h"
 #include "jsonutils.h"
 #include "choosegeneralbox.h"
+#include "uiUtils.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -63,7 +64,6 @@
 #include <QCoreApplication>
 #include <QInputDialog>
 #include <qmath.h>
-#include "uiUtils.h"
 
 using namespace QSanProtocol;
 
@@ -367,6 +367,10 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     pindian_from_card = NULL;
     pindian_to_card = NULL;
+
+    _m_animationEngine = new QDeclarativeEngine(this);
+    _m_animationContext = new QDeclarativeContext(_m_animationEngine->rootContext(), this);
+    _m_animationComponent = new QDeclarativeComponent(_m_animationEngine, QUrl::fromLocalFile("animation-script/basic.qml"), this);
 }
 
 void RoomScene::handleGameEvent(const Json::Value &arg) {
@@ -3675,6 +3679,18 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
             connect(pma, SIGNAL(finished()), this, SLOT(removeLightBox()));
         }
     }
+	else if (word.startsWith("skill=")) {
+		QStringList strs = word.mid(6).split("-");
+		Q_ASSERT(strs.size() == 2);
+
+		_m_animationContext->setContextProperty("sceneWidth", sceneRect().width());
+		_m_animationContext->setContextProperty("sceneHeight", sceneRect().height());
+		_m_animationContext->setContextProperty("hero", strs.first());
+        QGraphicsObject *object = qobject_cast<QGraphicsObject *>(_m_animationComponent->create(_m_animationContext));
+		addItem(object);
+		bringToFront(object);
+		object->deleteLater();
+	}
     else {
         QFont font = Config.BigFont;
         if (reset_size) font.setPixelSize(100);

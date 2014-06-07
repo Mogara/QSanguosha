@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += network sql
+QT += network sql declarative
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
 CONFIG += audio
@@ -324,11 +324,7 @@ TRANSLATIONS += builds/vs2013/sanguosha.ts
 
 #system("lrelease builds/vs2013/sanguosha.ts")
 
-OTHER_FILES += \
-    sanguosha.qss \
-    acknowledgement/main.qml \
-    acknowledgement/list.png \
-    acknowledgement/back.png
+OTHER_FILES += sanguosha.qss
 
 LIBS += -lfreetype
 

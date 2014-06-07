@@ -49,7 +49,8 @@ return {
 	[":luanwu"] = "限定技，出牌阶段，你可以选择所有其他角色，这些角色各需对距离最小的另一名角色使用【杀】，否则失去1点体力。",
 	["@chaos"] = "乱武",
 	["@luanwu-slash"] = "请使用一张【杀】响应“乱武”",
-	["$LuanwuAnimate"] = "image=image/animate/luanwu.png",
+	--["$LuanwuAnimate"] = "image=image/animate/luanwu.png",
+	["$LuanwuAnimate"] = "skill=jiaxu-luanwu",
 	["#WanshaOne"] = "%from 的“%arg”被触发，只有 %from 才能救 %from",
 	["#WanshaTwo"] = "%from 的“%arg”被触发，只有 %from 和 %to 才能救 %to",
 

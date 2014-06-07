@@ -54,6 +54,9 @@ struct RoomLayout;
 #include <QHBoxLayout>
 #include <QMutex>
 #include <QStack>
+#include <QtDeclarative\QDeclarativeEngine>
+#include <QtDeclarative\QDeclarativeContext>
+#include <QtDeclarative\QDeclarativeComponent>
 
 class ScriptExecutor : public QDialog {
     Q_OBJECT
@@ -330,6 +333,11 @@ private:
     int _m_currentStage;
 
     QRectF _m_infoPlane;
+
+	// for animation effects
+    QDeclarativeEngine *_m_animationEngine;
+    QDeclarativeContext *_m_animationContext;
+    QDeclarativeComponent *_m_animationComponent;
 
 private slots:
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>());
