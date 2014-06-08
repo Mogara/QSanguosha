@@ -5143,7 +5143,7 @@ bool Room::makeCheat(ServerPlayer *player) {
     }
     else if (code == S_CHEAT_RUN_SCRIPT) {
         if (!arg[1].isString()) return false;
-        QByteArray data(arg[1].asCString());
+        QByteArray data = QByteArray::fromBase64(arg[1].asCString());
         data = qUncompress(data);
         doScript(data);
     }
