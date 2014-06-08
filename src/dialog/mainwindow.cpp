@@ -92,7 +92,7 @@ public:
 
 SoundTestBox::SoundTestBox(QWidget *parent /* = NULL */)
 :QDialog(parent){
-    QDir dir("audio/test");
+    QDir dir("audio/test/");
     QStringList entry_list = dir.entryList();
     entry_list.removeOne(".");
     entry_list.removeOne("..");
