@@ -92,7 +92,7 @@ public:
 
 SoundTestBox::SoundTestBox(QWidget *parent /* = NULL */)
 :QDialog(parent){
-    QDir dir("sound_test");
+    QDir dir("audio/test");
     QStringList entry_list = dir.entryList();
     entry_list.removeOne(".");
     entry_list.removeOne("..");
@@ -117,7 +117,7 @@ SoundTestBox::SoundTestBox(QWidget *parent /* = NULL */)
 
 void SoundTestBox::btn_clicked(){
     QObject *btn = sender();
-    QString name = "sound_test/" + btn->objectName();
+    QString name = "audio/test/" + btn->objectName();
     if (QFile::exists(name)){
         Audio::play(name);
     }
