@@ -1081,17 +1081,6 @@ QString Client::getReplayPath() const{
         return QString();
 }
 
-void Client::setLines(const QString &filename) {
-    QRegExp rx(".+/(\\w+\\d?).ogg");
-    if (rx.exactMatch(filename)) {
-        QString skill_name = rx.capturedTexts().at(1);
-
-        QChar last_char = skill_name[skill_name.length() - 1];
-        if (last_char.isDigit())
-            skill_name.chop(1);
-    }
-}
-
 QTextDocument *Client::getLinesDoc() const{
     return lines_doc;
 }

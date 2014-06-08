@@ -158,8 +158,6 @@ void Skill::playAudioEffect(int index) const{
             filename = sources.first();
 
         Sanguosha->playAudioEffect(filename);
-        if (ClientInstance)
-            ClientInstance->setLines(filename);
     }
 }
 
