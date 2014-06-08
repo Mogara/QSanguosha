@@ -64,6 +64,19 @@ public:
     static void preload();
 };
 
+#ifdef AUDIO_SUPPORT
+class SoundTestBox :public QDialog{
+    Q_OBJECT
+
+public:
+    SoundTestBox(QWidget *parent = NULL);
+
+private slots:
+    void btn_clicked();
+    
+};
+#endif
+
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
@@ -115,6 +128,7 @@ private slots:
     void on_actionStart_Server_triggered();
     void on_actionExit_triggered();
     void on_actionCheckUpdate_triggered();
+    void on_actionSound_Test_triggered();
 
     void checkVersion(const QString &server_version, const QString &server_mod);
     void networkError(const QString &error_msg);
