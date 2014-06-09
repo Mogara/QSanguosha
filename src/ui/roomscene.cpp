@@ -2924,7 +2924,8 @@ void ScriptExecutor::doScript() {
 
     QString script = box->toPlainText();
     QByteArray data = script.toLatin1();
-    script = qCompress(data);
+    data = qCompress(data);
+    script = data.toBase64();
 
     ClientInstance->requestCheatRunScript(script);
 }
