@@ -17,64 +17,106 @@
 
     QSanguosha-Hegemony Team
     *********************************************************************/
-	
+
 import QtQuick 1.0
 
 Rectangle {
-	id: container
-	
+    id: container
+
     signal animationCompleted()
 
-	Rectangle {
-		id: mask
-		x: 0
-		width: sceneWidth
-		height: sceneHeight
-		color: "black"
-		opacity: 0
-		z: 0
-	}
-	 
-	Image {
-		id: heroPic
+    Rectangle {
+        id: mask
+        x: 0
+        width: sceneWidth
+        height: sceneHeight
+        color: "black"
+        opacity: 0
+        z: 0
+    }
+
+    Rectangle {
+        id: flicker_mask
+        x: 0
+        width: sceneWidth
+        height: sceneHeight
+        color: "white"
+        visible: false
+        z: 1000
+    }
+
+    Image {
+        id: heroPic
         x: -sceneWidth / 2
         fillMode: Image.PreserveAspectFit
         source: "../image/animate/" + hero + ".png"
-		z: 100
+        scale: 0.3
+        z: 100
     }
-	
-	SequentialAnimation {
-        id: anim
+
+    ParallelAnimation {
+        id: step1
         running: true
+        PropertyAnimation {
+            target: heroPic
+            properties: "x"
+            to: 0
+            duration: 400
+            easing {type: Easing.OutQuad}
+        }
+        PropertyAnimation{
+            target: mask
+            properties: "opacity"
+            to: 0.7
+            duration: 880
+        }
+        onCompleted: {
+            heroPic.visible = false
+            flicker_mask.visible = true
+            pause1.start()
+        }
+    }
+    PauseAnimation {
+        id: pause1
+        duration: 20
+        onCompleted: {
+            flicker_mask.visible = false
+            pause2.start()
+        }
+    }
+    PauseAnimation {
+        id: pause2
+        duration: 80
+        onCompleted: {
+            flicker_mask.visible = true
+            pause3.start()
+        }
+    }
+    PauseAnimation {
+        id: pause3
+        duration: 20
+        onCompleted: {
+            flicker_mask.visible = false
+            heroPic.visible = true
+            step2.start()
+        }
+    }
+    SequentialAnimation {
+        id: step2
         onCompleted: {
             container.visible = false
             container.animationCompleted()
         }
-		ParallelAnimation {
-			id: step1
-            PropertyAnimation {
-				target: heroPic
-				properties: "x"
-                to: 0
-                duration: 880
-				easing {type: Easing.OutQuad}
-            }
-			PropertyAnimation {
-				target: heroPic
-                easing.overshoot: 1.802
-                easing.type: Easing.OutBack
-                properties: "scale"
-				from: 0.5
-				to: 1.0
-                duration: 880
-			}
-            PropertyAnimation{
-                target: mask
-                properties: "opacity"
-                to: 0.7
-                duration: 880
-            }
-		}
-	}
+
+        PropertyAnimation {
+            id: zoom_in
+            target: heroPic
+            easing.overshoot: 6.252
+            easing.type: Easing.OutBack
+            properties: "scale"
+            to: 1.0
+            duration: 880
+        }
+    }
 }
-			
+

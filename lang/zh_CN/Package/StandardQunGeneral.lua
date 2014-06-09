@@ -91,7 +91,8 @@ return {
 	["xiongyi"] = "雄异",
 	[":xiongyi"] = "限定技，出牌阶段，你可以令与你势力相同的所有角色各摸三张牌，然后若你的势力是角色最少的势力，你回复1点体力。",
 	["@arise"] = "雄异",
-	["$XiongyiAnimate"] = "image=image/animate/xiongyi.png",
+	--["$XiongyiAnimate"] = "image=image/animate/xiongyi.png",
+	["$XiongyiAnimate"] = "skill=mateng-xiongyi",
 	
 	["#kongrong"] = "凛然重义",
 	["kongrong"] = "孔融",
