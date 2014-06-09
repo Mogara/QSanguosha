@@ -324,7 +324,9 @@ TRANSLATIONS += builds/vs2013/sanguosha.ts
 
 #system("lrelease builds/vs2013/sanguosha.ts")
 
-OTHER_FILES += sanguosha.qss
+OTHER_FILES += \
+        sanguosha.qss \
+        animation-script/basic.qml
 
 LIBS += -lfreetype
 

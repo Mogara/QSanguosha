@@ -21,49 +21,59 @@
 import QtQuick 1.0
 
 Rectangle {
-    id: mask
-	x: 0
-    width: sceneWidth
-    height: sceneHeight
-    color: "black"
-    opacity: 0
+	id: container
+	
+    signal animationCompleted()
+
+	Rectangle {
+		id: mask
+		x: 0
+		width: sceneWidth
+		height: sceneHeight
+		color: "black"
+		opacity: 0
+		z: 0
+	}
 	 
 	Image {
 		id: heroPic
+        x: -sceneWidth / 2
         fillMode: Image.PreserveAspectFit
         source: "../image/animate/" + hero + ".png"
+		z: 100
     }
 	
 	SequentialAnimation {
-		running: true
+        id: anim
+        running: true
+        onCompleted: {
+            container.visible = false
+            container.animationCompleted()
+        }
 		ParallelAnimation {
-            running: true
 			id: step1
             PropertyAnimation {
-                running: true
 				target: heroPic
 				properties: "x"
-				to: sceneWidth / 2
-				duration: 880
+                to: 0
+                duration: 880
 				easing {type: Easing.OutQuad}
-			}
+            }
 			PropertyAnimation {
-                running: true
 				target: heroPic
                 easing.overshoot: 1.802
                 easing.type: Easing.OutBack
                 properties: "scale"
 				from: 0.5
 				to: 1.0
-				duration: 880
+                duration: 880
 			}
             PropertyAnimation{
-                running: true
                 target: mask
                 properties: "opacity"
-				to: 0.7
-				duration: 880
-			}
+                to: 0.7
+                duration: 880
+            }
 		}
 	}
 }

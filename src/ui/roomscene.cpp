@@ -3647,8 +3647,10 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
     QRect rect = main_window->rect();
     QGraphicsRectItem *lightbox = addRect(rect);
 
-    lightbox->setBrush(QColor(32, 32, 32, 204));
-    lightbox->setZValue(20001.0);
+    if (!word.startsWith("skill=")) {
+        lightbox->setBrush(QColor(32, 32, 32, 204));
+        lightbox->setZValue(20001.0);
+    }
 
     if (word.startsWith("image=")) {
         QSanSelectableItem *line = new QSanSelectableItem(word.mid(6));
@@ -3687,9 +3689,9 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
 		_m_animationContext->setContextProperty("sceneHeight", sceneRect().height());
 		_m_animationContext->setContextProperty("hero", strs.first());
         QGraphicsObject *object = qobject_cast<QGraphicsObject *>(_m_animationComponent->create(_m_animationContext));
+        connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
 		addItem(object);
 		bringToFront(object);
-		object->deleteLater();
 	}
     else {
         QFont font = Config.BigFont;
