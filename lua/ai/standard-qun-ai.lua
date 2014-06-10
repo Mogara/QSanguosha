@@ -35,7 +35,7 @@ qingnang_skill.getTurnUseCard = function(self)
 	end
 	table.sort(cards, compare_func)
 
-	local card_str = ("@QingnangCard=%d%s"):format(cards[1]:getId(), "&qingnang")
+	local card_str = ("@QingnangCard=%d&qingnang"):format(cards[1]:getId())
 	return sgs.Card_Parse(card_str)
 end
 
@@ -62,7 +62,7 @@ sgs.ai_view_as.jijiu = function(card, player, card_place)
 	local card_id = card:getEffectiveId()
 	if card_place ~= sgs.Player_PlaceSpecial and card:isRed() and player:getPhase() == sgs.Player_NotActive
 		and not player:hasFlag("Global_PreventPeach") then
-		return ("peach:jijiu[%s:%s]=%d%s"):format(suit, number, card_id, "&jijiu")
+		return ("peach:jijiu[%s:%s]=%d&jijiu"):format(suit, number, card_id)
 	end
 end
 
