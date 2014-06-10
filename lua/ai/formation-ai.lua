@@ -376,9 +376,10 @@ end
 sgs.ai_skill_invoke.qianhuan = function(self, data)
 	if data:toString() == "gethuan" then return true end
 	local use = self.player:getTag("qianhuan_data"):toCardUse()
-	if (use.from and self:isFriend(use.from)) then return false end --队友给自己出桃子不无懈（暂）
-	if use.card:isKindOf("Peach") then return false end
+	if (use.from and self:isFriend(use.from)) then return false end 
 	if use.to:isEmpty() then return false end
+	if use.card:isKindOf("Peach") then return false end
+	if (self.player:getPile("sorcery"):length() == 1)and not (use.card:isKindOf("Slash") or use.card:isKindOf("duel") or use.card:isKindOf("FireAttack")) then return false end
 	local to = use.to:first()
 	if to and to:objectName() == self.player:objectName() then
 		return not (use.from and (use.from:objectName() == to:objectName()
@@ -408,6 +409,7 @@ local function will_discard_zhendu(self)
 		end
 		if need_damage then return 3 end
 	elseif self:isEnemy(current) then
+		if current:getHp() == 1 then return 1 end
 		if need_damage or current:getHandcardNum() >= 2 then return -1 end
 		if getKnownCard(current, self.player, "Slash") == 0 and getCardsNum("Slash", current, self.player) < 0.5 then return 3.5 end
 	end
