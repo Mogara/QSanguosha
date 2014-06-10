@@ -22,10 +22,13 @@ function sgs.ai_skill_invoke.wangxi(self, data)
 	local target = data:toPlayer()
 	if target and (self.player:isFriendWith(target) or self:isFriend(target)) then
 		return not self:needKongcheng(target, true)
+	elseif target and  not ( target:hasWeapon("crossbow") or target:hasShownSkills("paoxiao|luanji|shuangxiong|qinnang|jizhi|xiaoji")	) then
+		return not self:needKongcheng(target, true)
 	else
 		return self:needKongcheng(target, true)
 	end
 end
+
 
 sgs.ai_choicemade_filter.skillInvoke.wangxi = function(self, player, promptlist)
 	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
@@ -297,6 +300,7 @@ end
 sgs.ai_skill_invoke.chuanxin = function(self, data)
 	local damage = data:toDamage()
 	return not self:isFriend(damage.to) and not self:hasHeavySlashDamage(self.player, damage.card, damage.to)
+	and not (damage.to:getHp() == 1 and not damage.to:getArmor() ) and not damage.to:hasShownSkill("niepan")
 end
 
 sgs.ai_skill_choice.chuanxin = "discard"
