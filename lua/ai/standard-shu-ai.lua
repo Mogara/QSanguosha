@@ -677,3 +677,11 @@ end
 function sgs.ai_cardneed.shenzhi(to, card)
 	return to:getHandcardNum() < to:getHp()
 end
+
+
+sgs.ai_skill_invoke.huoshou = function(self, data)
+return true
+end
+sgs.ai_skill_invoke.juxiang = function(self, data)
+return true
+end
