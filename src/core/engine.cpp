@@ -24,7 +24,6 @@
 #include "ai.h"
 #include "settings.h"
 #include "scenario.h"
-#include "lua.hpp"
 #include "audio.h"
 #include "protocol.h"
 #include "jsonutils.h"
@@ -32,7 +31,9 @@
 #include "lua-wrapper.h"
 #include "RoomState.h"
 #include "banpair.h"
+#include "miniscenarios.h"
 
+#include <lua.hpp>
 #include <QFile>
 #include <QTextStream>
 #include <QStringList>
@@ -40,8 +41,6 @@
 #include <QDir>
 #include <QFile>
 #include <QApplication>
-#include <scenario.h>
-#include <miniscenarios.h>
 
 QSanVersionNumber::QSanVersionNumber(const QString &str){
     if (!tryParse(str))

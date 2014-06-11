@@ -31,8 +31,8 @@
 #include "structs.h"
 #include "miniscenarios.h"
 #include "generalselector.h"
-#include "lua.hpp"
 
+#include <lua.hpp>
 #include <QStringList>
 #include <QMessageBox>
 #include <QHostAddress>
@@ -42,6 +42,7 @@
 #include <QDateTime>
 #include <QFile>
 #include <QTextStream>
+#include <QElapsedTimer>
 
 #ifndef QT_NO_DEBUG
 #include <QApplication>
@@ -4331,8 +4332,6 @@ void Room::setEmotion(ServerPlayer *target, const QString &emotion) {
     arg[1] = toJsonString(emotion.isEmpty() ? "." : emotion);
     doBroadcastNotify(S_COMMAND_SET_EMOTION, arg);
 }
-
-#include <QElapsedTimer>
 
 void Room::activate(ServerPlayer *player, CardUseStruct &card_use) {
     while (isPaused()) {}

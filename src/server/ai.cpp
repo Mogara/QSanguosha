@@ -22,10 +22,11 @@
 #include "serverplayer.h"
 #include "engine.h"
 #include "standard.h"
-#include "lua.hpp"
 #include "scenario.h"
 #include "aux-skills.h"
 #include "settings.h"
+
+#include <lua.hpp>
 
 AI::AI(ServerPlayer *player)
 : self(player)

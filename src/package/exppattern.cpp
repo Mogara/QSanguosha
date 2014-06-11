@@ -18,7 +18,7 @@
     QSanguosha-Hegemony Team
     *********************************************************************/
 
-#include <exppattern.h>
+#include "exppattern.h"
 
 ExpPattern::ExpPattern(const QString &exp) {
     this->exp = exp;

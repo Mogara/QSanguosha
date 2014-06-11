@@ -38,6 +38,7 @@
 #include "jsonutils.h"
 #include "choosegeneralbox.h"
 #include "uiUtils.h"
+#include "qsanbutton.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -63,7 +64,6 @@
 #include <QFormLayout>
 #include <QCoreApplication>
 #include <QInputDialog>
-#include <qmath.h>
 
 using namespace QSanProtocol;
 
@@ -72,8 +72,6 @@ RoomScene *RoomSceneInstance;
 void RoomScene::resetPiles() {
     // @todo: fix this...
 }
-
-#include "qsanbutton.h"
 
 RoomScene::RoomScene(QMainWindow *main_window)
 : main_window(main_window), game_started(false)

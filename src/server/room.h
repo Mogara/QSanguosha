@@ -34,7 +34,8 @@ struct LogMessage;
 #include "roomthread.h"
 #include "protocol.h"
 #include "RoomState.h"
-#include <qmutex.h>
+
+#include <QMutex>
 #include <QStack>
 
 class Room : public QThread {

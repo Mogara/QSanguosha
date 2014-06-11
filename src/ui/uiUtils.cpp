@@ -19,12 +19,14 @@
     *********************************************************************/
 
 #include "uiUtils.h"
-#include <qpixmap.h>
-#include <qimage.h>
-#include <qfile.h>
-#include <qdir.h>
-#include <qdesktopservices.h>
-#include <qmutex.h>
+
+#include <QPixmap>
+#include <QImage>
+#include <QFile>
+#include <QDir>
+#include <QDesktopServices>
+#include <QMutex>
+#include <ft2build.h>
 
 void QSanUiUtils::paintShadow(QPainter *painter, const QImage &image, QColor shadowColor, int radius, double decade, const int x, const int y) {
     const uchar *oldImage = image.bits();
@@ -88,7 +90,6 @@ void QSanUiUtils::makeGray(QPixmap &pixmap) {
     pixmap = QPixmap::fromImage(img);
 }
 
-#include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_BITMAP_H
 #include FT_OUTLINE_H

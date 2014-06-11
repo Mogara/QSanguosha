@@ -28,8 +28,8 @@
 #include "jsonutils.h"
 #include "SkinBank.h"
 #include "roomscene.h"
-#include "json/json.h"
 
+#include <json/json.h>
 #include <QApplication>
 #include <QMessageBox>
 #include <QCheckBox>

@@ -21,7 +21,7 @@
 #include "TimedProgressBar.h"
 #include "clientstruct.h"
 #include <QPainter>
-#include <SkinBank.h>
+#include "SkinBank.h"
 
 void TimedProgressBar::show() {
     m_mutex.lock();

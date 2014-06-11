@@ -32,8 +32,10 @@
 #include "record-analysis.h"
 #include "AboutUs.h"
 #include "UpdateChecker.h"
+#include "recorder.h"
+#include "audio.h"
 
-#include <qmath.h>
+#include <lua.hpp>
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QGraphicsPixmapItem>
@@ -49,6 +51,10 @@
 #include <QInputDialog>
 #include <QLabel>
 #include <QStatusBar>
+#include <QGroupBox>
+#include <QToolButton>
+#include <QCommandLinkButton>
+#include <QFormLayout>
 
 class FitView : public QGraphicsView {
 public:
@@ -673,12 +679,6 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
     startConnection();
 }
 
-#include <QGroupBox>
-#include <QToolButton>
-#include <QCommandLinkButton>
-#include <QFormLayout>
-#include "recorder.h"
-
 void MainWindow::on_actionReplay_file_convert_triggered() {
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Please select a replay file"),
@@ -833,8 +833,6 @@ void MainWindow::on_actionRecord_analysis_triggered() {
     rec_dialog->exec();
 }
 
-#include "audio.h"
-
 void MainWindow::on_actionAbout_fmod_triggered() {
     QString content = tr("FMOD is a proprietary audio library made by Firelight Technologies");
     content.append("<p align='center'> <img src='image/logo/fmod.png' /> </p> <br/>");
@@ -857,8 +855,6 @@ void MainWindow::on_actionAbout_fmod_triggered() {
 
     window->appear();
 }
-
-#include "lua.hpp"
 
 void MainWindow::on_actionAbout_Lua_triggered() {
     QString content = tr("Lua is a powerful, fast, lightweight, embeddable scripting language.");

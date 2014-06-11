@@ -21,10 +21,8 @@
 #ifndef _PROTOCOL_H
 #define _PROTOCOL_H
 
-#include <string>
-#include <list>
 #include <json/json.h>
-#include <QString>
+#include <string>
 #include <QByteArray>
 
 namespace QSanProtocol {

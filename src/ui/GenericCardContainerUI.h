@@ -32,11 +32,9 @@
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QMutex>
-
-#include <qparallelanimationgroup.h>
-#include <qgraphicseffect.h>
-#include <qvariant.h>
-#include <qlabel.h>
+#include <QParallelAnimationGroup>
+#include <QGraphicsEffect>
+#include <QLabel>
 
 class GenericCardContainer : public QGraphicsObject {
     Q_OBJECT

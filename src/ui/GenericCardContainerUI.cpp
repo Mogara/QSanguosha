@@ -19,19 +19,18 @@
     *********************************************************************/
 
 #include "GenericCardContainerUI.h"
-#include <QParallelAnimationGroup>
-#include <qpropertyanimation.h>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsProxyWidget>
-#include <QGraphicsColorizeEffect>
-#include <qpushbutton.h>
-#include <qtextdocument.h>
-#include <qmenu.h>
-#include <qlabel.h>
 #include "engine.h"
 #include "standard.h"
 #include "clientplayer.h"
 #include "roomscene.h"
+
+#include <QPropertyAnimation>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsProxyWidget>
+#include <QGraphicsColorizeEffect>
+#include <QPushButton>
+#include <QTextDocument>
+#include <QMenu>
 
 using namespace QSanProtocol;
 

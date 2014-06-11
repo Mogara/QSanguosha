@@ -19,7 +19,9 @@
     *********************************************************************/
 
 #include "protocol.h"
+
 #include <json/json.h>
+#include <QString>
 
 using namespace std;
 using namespace QSanProtocol;

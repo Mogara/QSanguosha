@@ -24,7 +24,7 @@
 #include <QObject>
 #include <QMap>
 #include <QIcon>
-#include "json/json.h"
+#include <json/json.h>
 
 class Room;
 class Player;

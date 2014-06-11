@@ -21,9 +21,6 @@
 #include "recorder.h"
 #include "client.h"
 
-#include <cstdlib>
-#include <cmath>
-
 #include <QFile>
 #include <QBuffer>
 #include <QMessageBox>

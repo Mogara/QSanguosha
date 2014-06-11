@@ -21,16 +21,12 @@
 #ifndef _JSON_UTILS_H
 #define _JSON_UTILS_H
 
-
-#include "json/json.h"
-
-#include <string>
-#include <list>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qlist.h>
-#include <qrect.h>
-#include <qcolor.h>
+#include <json/json.h>
+#include <QString>
+#include "QRect"
+#include "QSize"
+#include "QPoint"
+#include "QColor"
 
 namespace QSanProtocol
 {

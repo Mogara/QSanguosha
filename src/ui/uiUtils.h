@@ -23,8 +23,8 @@
 
 #include <QImage>
 #include <QColor>
-#include <qrect.h>
-#include <qpainter.h>
+#include <QRect>
+#include <QPainter>
 
 namespace QSanUiUtils {
     // This is in no way a generic diation fuction. It is some dirty trick that

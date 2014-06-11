@@ -19,10 +19,10 @@
     *********************************************************************/
 
 #include "audio.h"
-#include "fmod.hpp"
 #include "settings.h"
 
 #include <QCache>
+#include <fmod.hpp>
 
 class Sound;
 

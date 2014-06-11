@@ -24,6 +24,7 @@
 #include "standard-tricks.h"
 #include "client.h"
 #include "settings.h"
+#include "jsonutils.h"
 
 ZhihengCard::ZhihengCard() {
     target_fixed = true;
@@ -1132,7 +1133,6 @@ bool DimengCard::targetsFeasible(const QList<const Player *> &targets, const Pla
     return targets.length() == 2;
 }
 
-#include "jsonutils.h"
 void DimengCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets) const{
     ServerPlayer *a = targets.at(0);
     ServerPlayer *b = targets.at(1);

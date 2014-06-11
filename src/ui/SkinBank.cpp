@@ -25,7 +25,8 @@
 #include "engine.h"
 #include "settings.h"
 #include "clientstruct.h"
-#include <fstream>
+#include "settings.h"
+
 #include <QGraphicsPixmapItem>
 #include <QTextItem>
 #include <QStyleOptionGraphicsItem>
@@ -35,6 +36,7 @@
 #include <QGraphicsProxyWidget>
 #include <QFile>
 #include <QPixmapCache>
+#include <fstream> // @@todo: using QFile instead
 
 using namespace std;
 using namespace QSanProtocol::Utils;
@@ -1077,7 +1079,6 @@ bool QSanSkinFactory::switchSkin(QString skinName) {
     return success;
 }
 
-#include "settings.h"
 QSanSkinFactory::QSanSkinFactory(const char *fileName) {
     bool use_full = Config.value("UseFullSkin", false).toBool();
     QString suf = use_full ? "full" : QString();

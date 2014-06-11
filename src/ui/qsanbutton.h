@@ -24,8 +24,8 @@
 #include <QGraphicsObject>
 #include <QPixmap>
 #include <QRegion>
-#include <qrect.h>
-#include <qlist.h>
+#include <QRect>
+
 #include "skill.h"
 
 class QSanButton : public QGraphicsObject{
