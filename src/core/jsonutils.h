@@ -23,10 +23,10 @@
 
 #include <json/json.h>
 #include <QString>
-#include "QRect"
-#include "QSize"
-#include "QPoint"
-#include "QColor"
+#include <QRect>
+#include <QSize>
+#include <QPoint>
+#include <QColor>
 
 namespace QSanProtocol
 {
