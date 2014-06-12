@@ -35,7 +35,7 @@
 #include "audio.h"
 
 #ifdef USE_BREAKPAD
-#include "breakpad/client/windows/handler/exception_handler.h"
+#include <client/windows/handler/exception_handler.h>
 #include <QProcess>
 
 using namespace google_breakpad;
@@ -45,15 +45,13 @@ static bool callback(const wchar_t *, const wchar_t *id,
     MDRawAssertionInfo *,
     bool succeeded) {
     if (succeeded && QFile::exists("QSanSMTPClient.exe")){
-        char *ID = new char[65535];
+        char ID[65535];
         memset(ID, 0, sizeof(ID));
         wcstombs(ID, id, wcslen(id));
         QProcess *process = new QProcess(qApp);
         QStringList args;
         args << QString(ID) + ".dmp";
         process->start("QSanSMTPClient", args);
-        delete[] ID;
-        ID = NULL;
     }
     return succeeded;
 }
