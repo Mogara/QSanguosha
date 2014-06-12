@@ -121,7 +121,7 @@ function sgs.ai_armor_value.Vine(player, self)
 end
 
 function SmartAI:shouldUseAnaleptic(target, card_use)
-	local slash = card_use.card
+
 	if target:hasArmorEffect("SilverLion") and not self.player:hasWeapon("QinggangSword") then return false end
 
 	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
