@@ -640,7 +640,7 @@ public:
         if (choice == "jia3")
             index = 1;
 
-        room->broadcastSkillInvoke(choice, index);
+        room->broadcastSkillInvoke(objectName(), index);
 
         LogMessage log;
         log.type = "$Yingyang";
