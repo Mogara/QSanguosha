@@ -105,7 +105,7 @@ public:
         else
             target = damage.from;
         if (player->askForSkillInvoke(objectName(), QVariant::fromValue(target))){
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), (triggerEvent == Damage) ? 2 : 1);
             return true;
         }
 

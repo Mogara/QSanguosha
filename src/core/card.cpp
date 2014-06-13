@@ -874,6 +874,7 @@ ArraySummonCard::ArraySummonCard(const QString &name)
 : SkillCard()
 {
     setObjectName(name);
+    mute = true;
     target_fixed = true;
     handling_method = Card::MethodNone;
 }

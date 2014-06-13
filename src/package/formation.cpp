@@ -712,6 +712,7 @@ public:
 };
 
 ShangyiCard::ShangyiCard() {
+    mute = true;
 }
 
 bool ShangyiCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
@@ -739,6 +740,7 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
     }
 
     if (choice == "handcards") {
+        room->broadcastSkillInvoke("shangyi", 1);
         QList<int> blacks;
         foreach(int card_id, effect.to->handCards()){
             if (Sanguosha->getCard(card_id)->isBlack())
@@ -751,6 +753,7 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
         room->throwCard(to_discard, effect.to, effect.from);
     }
     else {
+        room->broadcastSkillInvoke("shangyi", 2);
         QStringList list = room->getTag(effect.to->objectName()).toStringList();
         foreach(QString name, list) {
             LogMessage log;
@@ -795,7 +798,7 @@ public:
         events << TargetChosen;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (!TriggerSkill::triggerable(player)) return QStringList();
         if (!player->hasShownSkill(this) || player->aliveCount() < 4) return QStringList();
         CardUseStruct use = data.value<CardUseStruct>();
@@ -803,6 +806,7 @@ public:
             for (int i = 0; i < use.to.length(); i++) {
                 ServerPlayer *victim = use.to.at(i);
                 if (use.from->inSiegeRelation(player, victim)) {
+                    room->broadcastSkillInvoke(objectName());
                     QVariantList jink_list = use.from->tag["Jink_" + use.card->toString()].toList();
                     if (jink_list.at(i).toInt() == 1)
                         jink_list.replace(i, QVariant(2));
