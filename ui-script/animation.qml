@@ -54,19 +54,32 @@ Rectangle {
         z: 100
     }
 
+    Text {
+        id: text
+        color: "white"
+        text: skill
+        font.family: "隶书"
+        style: Text.Outline
+        font.pointSize: 900
+        opacity: 0
+        z: 999
+        x: sceneWidth / 2
+        y: sceneHeight / 2
+    }
+
     ParallelAnimation {
         id: step1
         running: true
         PropertyAnimation {
             target: heroPic
-            properties: "x"
+            property: "x"
             to: 0
             duration: 400
-            easing {type: Easing.OutQuad}
+            easing.type: Easing.OutQuad
         }
         PropertyAnimation{
             target: mask
-            properties: "opacity"
+            property: "opacity"
             to: 0.7
             duration: 880
         }
@@ -113,10 +126,25 @@ Rectangle {
             target: heroPic
             easing.overshoot: 6.252
             easing.type: Easing.OutBack
-            properties: "scale"
+            property: "scale"
             to: 1.0
             duration: 880
         }
+        ParallelAnimation {
+            PropertyAnimation {
+                target: text
+                property: "opacity"
+                to: 1.0
+                duration: 800
+            }
+            PropertyAnimation {
+                target: text
+                property: "font.pointSize"
+                to: 90
+                duration: 800
+            }
+        }
+        PauseAnimation { duration: 1200 }
     }
 }
 

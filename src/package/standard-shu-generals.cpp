@@ -740,7 +740,7 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *pangtong, QVariant &data, ServerPlayer *) const{
         if (pangtong->askForSkillInvoke(objectName(), data)) {
             room->broadcastSkillInvoke(objectName());
-            room->doLightbox("$NiepanAnimate");
+            room->doSuperLightbox("pangtong", objectName());
             return true;
         }
         return false;
