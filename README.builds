@@ -1,3 +1,6 @@
+INFORMATION OF HOW TO BUILD THE REPOSITORY
+Tips: "~" stands for the folder where the repo is in.
+
 To build QSanguosha with VS2013
 
 1. Download the following packages:
@@ -6,9 +9,9 @@ To build QSanguosha with VS2013
    and then install them.
 
 2. Download the swigwin (swig for Windows, 3.0.2) http://sourceforge.net/projects/swig/files/swigwin/
-   Create a tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to tools/swig.
+   Create a ~/tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to ~/tools/swig.
 
-3. Open Qsanguosha.sln right under <Your source directory>/Qsanguosha/builds/vs2013, change the Configuration to Release Qt5|Win32.
+3. Open Qsanguosha.sln right under ~/builds/vs2013, change the Configuration to Release Qt5|Win32.
 
 4. Right click project "QSanguosha" in your Solution Explorer, select "Properties", go to "Debugging" tab, set "Working Directory" to "$(ProjectDir)..\..\" (do not enter the quote marks). Then select "OK".
 
@@ -40,7 +43,7 @@ To build QSanguosha in Linux or using MinGW
 
 2. (Linux)Download and install the swig from http://sourceforge.net/projects/swig/files/swig/ or software sources, make sure the version of swig is 3.0.1 or later.
 2. (MinGW)Download the swigwin (swig for Windows, 3.0.2) http://sourceforge.net/projects/swig/files/swigwin/
-   Create a tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to tools/swig.
+   Create a ~/tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to ~/tools/swig.
 
 3. Open a terminal here, type:
 (Linux)
