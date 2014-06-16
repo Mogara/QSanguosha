@@ -239,7 +239,7 @@ win32-g++{
     LIBS += -L"$$_PRO_FILE_PWD_/lib/win/MinGW"
 }
 macx{
-    LIBS += -L"$$_PRO_FILE_PWD_/lib/mac"
+    LIBS += -L"$$_PRO_FILE_PWD_/lib/mac/lib"
 }
 unix{
     !contains(QMAKE_HOST.arch, x86_64)  {

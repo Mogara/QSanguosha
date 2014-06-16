@@ -54,9 +54,9 @@ struct RoomLayout;
 #include <QHBoxLayout>
 #include <QMutex>
 #include <QStack>
-#include <QtDeclarative\QDeclarativeEngine>
-#include <QtDeclarative\QDeclarativeContext>
-#include <QtDeclarative\QDeclarativeComponent>
+#include <QtDeclarative/QDeclarativeEngine>
+#include <QtDeclarative/QDeclarativeContext>
+#include <QtDeclarative/QDeclarativeComponent>
 
 class ScriptExecutor : public QDialog {
     Q_OBJECT

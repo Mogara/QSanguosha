@@ -28,11 +28,16 @@
 #include <QTranslator>
 #include <QDateTime>
 
+
 #include "server.h"
 #include "settings.h"
 #include "engine.h"
 #include "mainwindow.h"
 #include "audio.h"
+
+#ifndef WINDOWS
+#include <QDir>
+#endif
 
 #ifdef USE_BREAKPAD
 #include <client/windows/handler/exception_handler.h>

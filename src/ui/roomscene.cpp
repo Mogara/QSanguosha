@@ -4024,7 +4024,7 @@ void RoomScene::doPindianAnimation() {
     else
         pindian_box->disappear();
 }
-
+/*
 static inline void AddRoleIcon(QMap<QChar, QPixmap> &map, char c, const QString &role) {
     QPixmap pixmap(QString("image/system/roles/small-%1.png").arg(role));
 
@@ -4034,7 +4034,7 @@ static inline void AddRoleIcon(QMap<QChar, QPixmap> &map, char c, const QString 
     QSanUiUtils::makeGray(pixmap);
     map[qc.toLower()] = pixmap;
 }
-
+*/
 void RoomScene::updateRolesBox() {
     double centerX = m_rolesBox->boundingRect().width() / 2;
     int n = role_items.length();
