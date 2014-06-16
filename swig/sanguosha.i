@@ -1239,7 +1239,7 @@ public:
     void broadcastSkillInvoke(const char *skillName, int type);
     void broadcastSkillInvoke(const char *skillName, bool isMale, int type);
     void doLightbox(const char *lightboxName, int duration = 2000);
-	void doSuperLightbox(const QString &heroName, const QString &skillName);
+	void doSuperLightbox(const char *heroName, const char *skillName);
     void doAnimate(int type, const char *arg1 = NULL, const char *arg2 = NULL, QList<ServerPlayer *> players = QList<ServerPlayer *>());
 
     void preparePlayers();
