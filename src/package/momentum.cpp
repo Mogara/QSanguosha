@@ -399,7 +399,7 @@ bool CunsiCard::targetFilter(const QList<const Player *> &targets, const Player 
 
 void CunsiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    room->doLightbox("$CunsiAnimate", 3000);
+    room->doSuperLightbox("mifuren", "cunsi");
     effect.from->removeGeneral(effect.from->inHeadSkills("cunsi"));
     room->acquireSkill(effect.to, "yongjue");
     room->setPlayerMark(effect.to, "@yongjue", 1);
@@ -835,7 +835,7 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
         if (player->askForSkillInvoke(objectName())){
             room->broadcastSkillInvoke(objectName());
-            room->doLightbox("$HengzhengAnimate", 4000);
+            room->doSuperLightbox("dongzhuo", objectName());
             return true;
         }
 
@@ -873,7 +873,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *) const {
         room->broadcastSkillInvoke(objectName());
-        room->doLightbox("$BaolingAnimate", 3000);
+        room->doSuperLightbox("dongzhuo", objectName());
         return true;
     }
 

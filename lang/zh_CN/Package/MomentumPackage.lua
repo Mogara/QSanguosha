@@ -40,7 +40,6 @@ return {
 	[":cunsi"] = "出牌阶段，你可以移除此武将牌并选择一名角色，令其获得\"勇决\"（每当与你势力相同的一名角色于其出牌阶段内使用的【杀】因结算完毕而置入弃牌堆后，若此【杀】为其于此阶段内使用的首张牌，其可以获得之），然后若其不为你，其摸两张牌。",
 	["yongjue"] = "勇决",
 	[":yongjue"] = "每当与你势力相同的一名角色于其出牌阶段内使用的【杀】因结算完毕而置入弃牌堆后，若此【杀】为其于此阶段内使用的首张牌，其可以获得之",
-	["$CunsiAnimate"] = "image=image/animate/cunsi.png",
 
 	["#sunce"] = "江东的小霸王",
 	["sunce"] = "孙策",
@@ -73,10 +72,8 @@ return {
 	["illustrator:dongzhuo"] = "巴萨小马",
 	["hengzheng"] = "横征",
 	[":hengzheng"] = "摸牌阶段开始时，若你的体力值为1或你没有手牌，你可以放弃摸牌，获得每名其他角色区域里的一张牌。",
-	["$HengzhengAnimate"] = "image=image/animate/hengzheng.png" ,
 	["baoling"] = "暴凌",
 	[":baoling"] = "主将技，锁定技，出牌阶段结束时，若此武将牌已明置且你有副将，你移除副将的武将牌，然后加3点体力上限，回复3点体力，获得\"崩坏\"。",
-	["$BaolingAnimate"] = "image=image/animate/baoling.png" ,
 	["benghuai"] = "崩坏",
 	[":benghuai"] = "锁定技，结束阶段开始时，若你不是体力值最小的角色，你选择一项：1.失去1点体力；2.减1点体力上限。",
 	["benghuai:hp"] = "崩坏体力" ,

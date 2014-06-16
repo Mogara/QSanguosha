@@ -368,7 +368,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     _m_animationEngine = new QDeclarativeEngine(this);
     _m_animationContext = new QDeclarativeContext(_m_animationEngine->rootContext(), this);
-    _m_animationComponent = new QDeclarativeComponent(_m_animationEngine, QUrl::fromLocalFile("animation-script/basic.qml"), this);
+    _m_animationComponent = new QDeclarativeComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation.qml"), this);
 }
 
 void RoomScene::handleGameEvent(const Json::Value &arg) {
@@ -3641,7 +3641,6 @@ void RoomScene::doAppearingAnimation(const QString &name, const QStringList &arg
 void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
     QString word = args.first();
     bool reset_size = word.startsWith("_mini_");
-    word = Sanguosha->translate(word);
 
     QRect rect = main_window->rect();
     QGraphicsRectItem *lightbox = addRect(rect);
@@ -3649,6 +3648,7 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
     if (!word.startsWith("skill=")) {
         lightbox->setBrush(QColor(32, 32, 32, 204));
         lightbox->setZValue(20001.0);
+		word = Sanguosha->translate(word);
     }
 
     if (word.startsWith("image=")) {
@@ -3681,12 +3681,13 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
         }
     }
 	else if (word.startsWith("skill=")) {
-		QStringList strs = word.mid(6).split("-");
-		Q_ASSERT(strs.size() == 2);
+		const QString hero = word.mid(6);
+		const QString skill = args.value(1, QString());
 
 		_m_animationContext->setContextProperty("sceneWidth", sceneRect().width());
 		_m_animationContext->setContextProperty("sceneHeight", sceneRect().height());
-		_m_animationContext->setContextProperty("hero", strs.first());
+		_m_animationContext->setContextProperty("hero", hero);
+		_m_animationContext->setContextProperty("skill", Sanguosha->translate(skill));
         QGraphicsObject *object = qobject_cast<QGraphicsObject *>(_m_animationComponent->create(_m_animationContext));
         connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
 		addItem(object);

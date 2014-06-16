@@ -66,7 +66,6 @@ return {
 	[":lianhuan"] = "你可以将一张梅花手牌当【铁索连环】使用；你能重铸梅花手牌。",
 	["niepan"] = "涅槃",
 	[":niepan"] = "限定技，当你处于濒死状态时，你可以弃置你区域里的所有牌，然后恢复至平置状态并重置，摸三张牌，将体力值回复至3点。",
-	["$NiepanAnimate"] = "image=image/animate/niepan.png",
 	["@nirvana"] = "涅槃",
 
 	["#wolong"] = "卧龙",

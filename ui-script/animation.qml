@@ -32,7 +32,7 @@ Rectangle {
         height: sceneHeight
         color: "black"
         opacity: 0
-        z: 0
+        z: 990
     }
 
     Rectangle {
@@ -51,7 +51,20 @@ Rectangle {
         fillMode: Image.PreserveAspectFit
         source: "../image/animate/" + hero + ".png"
         scale: 0.3
-        z: 100
+        z: 991
+    }
+
+    Text {
+        id: text
+        color: "white"
+        text: skill
+        font.family: "隶书"
+        style: Text.Outline
+        font.pointSize: 900
+        opacity: 0
+        z: 999
+        x: sceneWidth / 2
+        y: sceneHeight / 2
     }
 
     ParallelAnimation {
@@ -59,14 +72,14 @@ Rectangle {
         running: true
         PropertyAnimation {
             target: heroPic
-            properties: "x"
+            property: "x"
             to: 0
             duration: 400
-            easing {type: Easing.OutQuad}
+            easing.type: Easing.OutQuad
         }
         PropertyAnimation{
             target: mask
-            properties: "opacity"
+            property: "opacity"
             to: 0.7
             duration: 880
         }
@@ -113,10 +126,25 @@ Rectangle {
             target: heroPic
             easing.overshoot: 6.252
             easing.type: Easing.OutBack
-            properties: "scale"
+            property: "scale"
             to: 1.0
-            duration: 880
+            duration: 800
         }
+        ParallelAnimation {
+            PropertyAnimation {
+                target: text
+                property: "opacity"
+                to: 1.0
+                duration: 800
+            }
+            PropertyAnimation {
+                target: text
+                property: "font.pointSize"
+                to: 90
+                duration: 800
+            }
+        }
+        PauseAnimation { duration: 1700 }
     }
 }
 

@@ -127,11 +127,12 @@ void GeneralSelector::caculatePairValues(const ServerPlayer *player, const QStri
 	}
 
     QStringList candidates = _candidates;
-    foreach(QString candidate, _candidates){
-        if (BanPair::isBanned(player->getGeneralName(), candidate))
-            candidates.removeOne(candidate);
+    if (!player->getGeneralName().isEmpty()){
+        foreach(QString candidate, _candidates){
+            if (BanPair::isBanned(player->getGeneralName(), candidate))
+                candidates.removeOne(candidate);
+        }
     }
-
     foreach(QString first, candidates) {
         caculateDeputyValue(player, first, candidates, kingdoms);
     }

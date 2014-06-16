@@ -1,14 +1,17 @@
-To build QSanguosha with VS2010
+INFORMATION OF HOW TO BUILD THE REPOSITORY
+Tips: "~" stands for the folder where the repo is in.
+
+To build QSanguosha with VS2013
 
 1. Download the following packages:
-(1) QT libraries for Windows (Visual Studio 2010, 4.8.6) http://download.qt-project.org/official_releases/qt/4.8/4.8.6/qt-opensource-windows-x86-vs2010-4.8.6.exe
-(2) QT Visual Studio Add-in (for Qt 4) http://download.qt-project.org/official_releases/vsaddin/qt-vs-addin-1.1.11-opensource.exe
+(1) QT libraries for Windows (Visual Studio 2013, 5.3.0) http://download.qt-project.org/official_releases/qt/5.3/5.3.0/qt-opensource-windows-x86-msvc2013-5.3.0.exe
+(2) QT Visual Studio Add-in (for Qt 5) http://download.qt-project.org/official_releases/vsaddin/qt-vs-addin-1.2.3-opensource.exe
    and then install them.
 
-2. Download the swigwin (swig for Windows, 3.0.1) http://sourceforge.net/projects/swig/files/swigwin/
-   Create a tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to tools/swig.
+2. Download the swigwin (swig for Windows, 3.0.2) http://sourceforge.net/projects/swig/files/swigwin/
+   Create a ~/tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to ~/tools/swig.
 
-3. Open Qsanguosha.sln right under <Your source directory>/Qsanguosha/builds/vs2010, change the Configuration to Release|Win32.
+3. Open Qsanguosha.sln right under ~/builds/vs2013, change the Configuration to Release Qt5|Win32.
 
 4. Right click project "QSanguosha" in your Solution Explorer, select "Properties", go to "Debugging" tab, set "Working Directory" to "$(ProjectDir)..\..\" (do not enter the quote marks). Then select "OK".
 
@@ -16,27 +19,31 @@ To build QSanguosha with VS2010
 
 5. You are now able to build the solution. When compilation succeeded, the QSanguosha.exe is in ~/Bin folder. You should move this file to ~ folder.
 
-6. Copy 4 files from Qt libraries to ~, they are listed below:
-   QtCore4.dll
-   QtGui4.dll
-   QtNetwork4.dll
-   QtSql4.dll
+6. Copy 8 files from Qt libraries to ~, they are listed below:
+   Qt5Core.dll
+   Qt5Declarative.dll
+   Qt5Gui.dll
+   Qt5Network.dll
+   Qt5Script.dll
+   Qt5Sql.dll
+   Qt5Widgets.dll
+   Qt5XmlPatterns.dll
 
    Copy 2 files from VS redist to ~, they are listed below:
-   msvcp100.dll
-   msvcr100.dll
+   msvcp120.dll
+   msvcr120.dll
 
 7. Double-click the QSanguosha.exe and have fun!
 
 To build QSanguosha in Linux or using MinGW
 
-1. Download and install the libraries and Qt Creator from Qt offical website or software sources, make sure the version of Qt libraries is 4.8.6.
+1. Download and install the libraries and Qt Creator from Qt offical website or software sources, make sure the version of Qt libraries is 5.3.x.
    (I strongly recommand you download the libraries and Qt Creator from software sources in Linux, because the compliation causes a lot of time)
    (If you are using MinGW, make sure the version of MinGW is compatible with Qt Libraries)
 
-2. (Linux)Download and install the swig from http://sourceforge.net/projects/swig/files/swig/ or software sources, make sure the version of swig is 2.0.9 or later.
-2. (MinGW)Download the swigwin (swig for Windows, 3.0.1) http://sourceforge.net/projects/swig/files/swigwin/
-   Create a tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to tools/swig.
+2. (Linux)Download and install the swig from http://sourceforge.net/projects/swig/files/swig/ or software sources, make sure the version of swig is 3.0.1 or later.
+2. (MinGW)Download the swigwin (swig for Windows, 3.0.2) http://sourceforge.net/projects/swig/files/swigwin/
+   Create a ~/tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to ~/tools/swig.
 
 3. Open a terminal here, type:
 (Linux)
@@ -53,15 +60,19 @@ To build QSanguosha in Linux or using MinGW
 
 4. Open QSanguosha.pro, configure the project and make sure the project is compiled with g++. Change the configuration to Release.
 
-4.1 [optional] select Tools/External/QtLinguist/lrelease, copy ~/Builds/vs2010/sanguosha.qm to ~.
+4.1 [optional] select Tools/External/QtLinguist/lrelease, copy ~/Builds/vs2013/sanguosha.qm to ~.
 
 5. You are now able to build the solution. When compilation succeeded, the (MinGW)QSanguosha.exe or (Linux)QSanguosha is in ~/../Build-QSanguosha-**/ folder. You should move this file to ~ folder.
 
-6. (MinGW only)Copy 4 files from Qt libraries to ~, they are listed below:
-   QtCore4.dll
-   QtGui4.dll
-   QtNetwork4.dll
-   QtSql4.dll
+6. (MinGW only)Copy 8 files from Qt libraries to ~, they are listed below:
+   Qt5Core.dll
+   Qt5Declarative.dll
+   Qt5Gui.dll
+   Qt5Network.dll
+   Qt5Script.dll
+   Qt5Sql.dll
+   Qt5Widgets.dll
+   Qt5XmlPatterns.dll
 
    (MinGW only)Copy 3 files from MinGW bin folder to ~, they are listed below:
    libgcc_s_dw2-1.dll

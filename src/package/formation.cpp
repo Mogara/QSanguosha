@@ -1251,7 +1251,7 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         if (player->askForSkillInvoke(objectName(), data)){
             player->broadcastSkillInvoke(objectName());
-            room->doLightbox("$JizhaoAnimate", 3000);
+            room->doSuperLightbox("lord_liubei", objectName());
             player->loseMark(limit_mark);
             return true;
         }

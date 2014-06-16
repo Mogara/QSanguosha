@@ -472,9 +472,9 @@ LuanwuCard::LuanwuCard() {
 }
 
 void LuanwuCard::onUse(Room *room, const CardUseStruct &card_use) const{
-    card_use.from->loseAllMarks("@chaos");
+	room->removePlayerMark(card_use.from, "@chaos");
     room->broadcastSkillInvoke("luanwu");
-    room->doLightbox("$LuanwuAnimate", 3000);
+    room->doSuperLightbox("jiaxu", "luanwu");
 
     CardUseStruct new_use = card_use;
     new_use.to << room->getOtherPlayers(card_use.from);
@@ -863,7 +863,7 @@ void XiongyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     use.to = targets;
     room->removePlayerMark(use.from, "@arise");
     room->broadcastSkillInvoke("xiongyi");
-    room->doLightbox("$XiongyiAnimate", 4500);
+    room->doSuperLightbox("mateng", "xiongyi");
     SkillCard::onUse(room, use);
 }
 
