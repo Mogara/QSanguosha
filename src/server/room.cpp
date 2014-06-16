@@ -4131,7 +4131,7 @@ void Room::doSuperLightbox(const QString &heroName, const QString &skillName) {
 		return;
 
 	doAnimate(S_ANIMATE_LIGHTBOX, "skill=" + heroName, skillName);
-	thread->delay(3000);
+	thread->delay(4500);
 }
 
 void Room::doAnimate(QSanProtocol::AnimateType type, const QString &arg1, const QString &arg2,

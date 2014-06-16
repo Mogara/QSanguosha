@@ -32,7 +32,7 @@ Rectangle {
         height: sceneHeight
         color: "black"
         opacity: 0
-        z: 0
+        z: 990
     }
 
     Rectangle {
@@ -51,7 +51,7 @@ Rectangle {
         fillMode: Image.PreserveAspectFit
         source: "../image/animate/" + hero + ".png"
         scale: 0.3
-        z: 100
+        z: 991
     }
 
     Text {
@@ -128,7 +128,7 @@ Rectangle {
             easing.type: Easing.OutBack
             property: "scale"
             to: 1.0
-            duration: 880
+            duration: 800
         }
         ParallelAnimation {
             PropertyAnimation {
@@ -144,7 +144,7 @@ Rectangle {
                 duration: 800
             }
         }
-        PauseAnimation { duration: 1200 }
+        PauseAnimation { duration: 1700 }
     }
 }
 
