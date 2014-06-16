@@ -472,7 +472,7 @@ LuanwuCard::LuanwuCard() {
 }
 
 void LuanwuCard::onUse(Room *room, const CardUseStruct &card_use) const{
-	room->removePlayerMark(card_use.from, "@chaos");
+    room->removePlayerMark(card_use.from, "@chaos");
     room->broadcastSkillInvoke("luanwu");
     room->doSuperLightbox("jiaxu", "luanwu");
 

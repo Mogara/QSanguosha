@@ -2349,18 +2349,18 @@ void Room::chooseGenerals() {
         if (player->getGeneral() != NULL) continue;
         Json::Value generalName = player->getClientReply();
         if (!player->m_isClientResponseReady || !generalName.isString()) {
-			QStringList default_generals = _chooseDefaultGenerals(player);
-			_setPlayerGeneral(player, default_generals.first(), true);
-			_setPlayerGeneral(player, default_generals.last(), false);
+            QStringList default_generals = _chooseDefaultGenerals(player);
+            _setPlayerGeneral(player, default_generals.first(), true);
+            _setPlayerGeneral(player, default_generals.last(), false);
         }
         else {
             QStringList generals = toQString(generalName).split("+");
-			if (generals.length() != 2 || !_setPlayerGeneral(player, generals.first(), true)
-				|| !_setPlayerGeneral(player, generals.last(), false)) {
-				QStringList default_generals = _chooseDefaultGenerals(player);
-				_setPlayerGeneral(player, default_generals.first(), true);
-				_setPlayerGeneral(player, default_generals.last(), false);
-			}
+            if (generals.length() != 2 || !_setPlayerGeneral(player, generals.first(), true)
+                || !_setPlayerGeneral(player, generals.last(), false)) {
+                QStringList default_generals = _chooseDefaultGenerals(player);
+                _setPlayerGeneral(player, default_generals.first(), true);
+                _setPlayerGeneral(player, default_generals.last(), false);
+            }
         }
     }
 
@@ -2531,7 +2531,7 @@ QStringList Room::_chooseDefaultGenerals(ServerPlayer *player) const{
     QStringList generals = m_generalSelector->selectGenerals(player, player->getSelected());
 
     Q_ASSERT(!generals.isEmpty());
-	return generals;
+    return generals;
 }
 
 bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, bool isFirst) {
@@ -4127,11 +4127,11 @@ void Room::doLightbox(const QString &lightboxName, int duration) {
 }
 
 void Room::doSuperLightbox(const QString &heroName, const QString &skillName) {
-	if (Config.AIDelay == 0)
-		return;
+    if (Config.AIDelay == 0)
+        return;
 
-	doAnimate(S_ANIMATE_LIGHTBOX, "skill=" + heroName, skillName);
-	thread->delay(4500);
+    doAnimate(S_ANIMATE_LIGHTBOX, "skill=" + heroName, skillName);
+    thread->delay(4500);
 }
 
 void Room::doAnimate(QSanProtocol::AnimateType type, const QString &arg1, const QString &arg2,

@@ -334,7 +334,7 @@ private:
 
     QRectF _m_infoPlane;
 
-	// for animation effects
+    // for animation effects
     QDeclarativeEngine *_m_animationEngine;
     QDeclarativeContext *_m_animationContext;
     QDeclarativeComponent *_m_animationComponent;

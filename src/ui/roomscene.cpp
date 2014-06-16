@@ -3648,7 +3648,7 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
     if (!word.startsWith("skill=")) {
         lightbox->setBrush(QColor(32, 32, 32, 204));
         lightbox->setZValue(20001.0);
-		word = Sanguosha->translate(word);
+        word = Sanguosha->translate(word);
     }
 
     if (word.startsWith("image=")) {
@@ -3680,19 +3680,19 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
             connect(pma, SIGNAL(finished()), this, SLOT(removeLightBox()));
         }
     }
-	else if (word.startsWith("skill=")) {
-		const QString hero = word.mid(6);
-		const QString skill = args.value(1, QString());
+    else if (word.startsWith("skill=")) {
+        const QString hero = word.mid(6);
+        const QString skill = args.value(1, QString());
 
-		_m_animationContext->setContextProperty("sceneWidth", sceneRect().width());
-		_m_animationContext->setContextProperty("sceneHeight", sceneRect().height());
-		_m_animationContext->setContextProperty("hero", hero);
-		_m_animationContext->setContextProperty("skill", Sanguosha->translate(skill));
+        _m_animationContext->setContextProperty("sceneWidth", sceneRect().width());
+        _m_animationContext->setContextProperty("sceneHeight", sceneRect().height());
+        _m_animationContext->setContextProperty("hero", hero);
+        _m_animationContext->setContextProperty("skill", Sanguosha->translate(skill));
         QGraphicsObject *object = qobject_cast<QGraphicsObject *>(_m_animationComponent->create(_m_animationContext));
         connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
-		addItem(object);
-		bringToFront(object);
-	}
+        addItem(object);
+        bringToFront(object);
+    }
     else {
         QFont font = Config.BigFont;
         if (reset_size) font.setPixelSize(100);

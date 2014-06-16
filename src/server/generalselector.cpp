@@ -65,7 +65,7 @@ QStringList GeneralSelector::selectGenerals(ServerPlayer *player, const QStringL
 
     Q_ASSERT(pair.size() == 2);
 
-	return pair;
+    return pair;
 }
 
 void GeneralSelector::loadGeneralTable() {
@@ -120,11 +120,11 @@ void GeneralSelector::caculatePairValues(const ServerPlayer *player, const QStri
     QStringList kingdoms = Sanguosha->getKingdoms();
     kingdoms.removeAll("god");
     qShuffle(kingdoms);
-	if (qrand() % 2 == 0) {
-		const int index = kingdoms.indexOf("qun");
-		if (index != -1 && index != kingdoms.size() - 1)
-			qSwap(kingdoms[index], kingdoms[index + 1]);
-	}
+    if (qrand() % 2 == 0) {
+        const int index = kingdoms.indexOf("qun");
+        if (index != -1 && index != kingdoms.size() - 1)
+            qSwap(kingdoms[index], kingdoms[index + 1]);
+    }
 
     QStringList candidates = _candidates;
     if (!player->getGeneralName().isEmpty()){

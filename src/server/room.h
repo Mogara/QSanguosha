@@ -241,7 +241,7 @@ public:
     void broadcastSkillInvoke(const QString &skillName, int type);
     void broadcastSkillInvoke(const QString &skillName, bool isMale, int type);
     void doLightbox(const QString &lightboxName, int duration = 2000);
-	void doSuperLightbox(const QString &heroName, const QString &skillName);
+    void doSuperLightbox(const QString &heroName, const QString &skillName);
     void doAnimate(QSanProtocol::AnimateType type, const QString &arg1 = QString(), const QString &arg2 = QString(),
         QList<ServerPlayer *> players = QList<ServerPlayer *>());
 
