@@ -326,7 +326,7 @@ TRANSLATIONS += builds/vs2013/sanguosha.ts
 
 OTHER_FILES += \
         sanguosha.qss \
-        animation-script/basic.qml
+        ui-script/animation.qml
 
 LIBS += -lfreetype
 
