@@ -1022,6 +1022,7 @@ public:
         if (to->canDiscard(to, "e")) {
             int card_id = room->askForCardChosen(to, to, "e", objectName(), true, Card::MethodDiscard);
             room->throwCard(card_id, to);
+            room->broadcastSkillInvoke(objectName());
         }
         return false;
     }
