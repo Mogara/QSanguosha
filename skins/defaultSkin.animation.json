@@ -17,11 +17,6 @@
    "weapon/qinggang_sword", "weapon/moonspear",
    "weapon/spear"],
 
-"huashen": [
-7000,
-[[0, 1], [0.4, 1], [0.47, 0], [0.53, 0], [0.6, 1], [1, 1]]
-]
-
 }
 
 

@@ -166,17 +166,17 @@
     // the width of the region to disperse cards when the cards are to be moved to the special pile.
     "disperseWidth": 250,
     "markTextArea": [0, 0, 50, 50],
-    "roleComboBoxPos": [-32, 6],
+    "roleComboBoxPos": [-32, 4],
     "borderWidth": 6,
     "avatarImageType": 2,
     "secondaryAvatarImageType": 2,
     "primaryAvatarImageType": 2,
     "circleImageType": 1,
-    "secondaryAvatarArea": [129, -3, 128, 174],
+    "secondaryAvatarArea": [129, -3, 128, 153],
     "circleArea": [8, 10, 134, 134],
     "avatarNameArea": [26, -10, 60, 30],
-    "focusFrameArea": [0, -3, 128, 174],
-    "focusFrameArea2": [129, -3, 128, 174],
+    "focusFrameArea": [0, -3, 128, 153],
+    "focusFrameArea2": [129, -3, 128, 153],
     "secondaryAvatarNameArea": [154, -10, 60, 30],
     "avatarNameFont": ["simli", [18, 18, 1], 0, [255, 255, 255, 255], 0, 8, [0, 0], [50, 50, 50, 150]],
     "smallAvatarNameFont": ["simli", [18, 18, 1], 0, [255, 255, 255, 255], 0, 8, [0, 0], [50, 50, 50, 150]],
@@ -215,16 +215,16 @@
     "deathIconRegion": ["center", "center", [0, 0], [157, 102]],
     "drankMaskColor": [250, 0, 0, 115],
     "duanchangMaskColor": [255, 255, 255, 128],
-    "buttonSetSize": [106, 168],
-    "confirmButtonArea": [10, 4, 100, 160],
-    "cancelButtonArea": [6, 90, 72, 97],
-    "discardButtonArea": [70, 48, 33, 130],
+    "buttonSetSize": [106, 150],
+    "confirmButtonArea": [8, 3, 100, 160],
+    "cancelButtonArea": [8, 80, 72, 97],
+    "discardButtonArea": [70, 38, 33, 130],
     "trustButtonArea": [69, 136, 36, 35],
     "trustEffectColor": [38, 26, 66],
     "generalShadowColor": [0, 0, 0, 180],
     "hiddenMarkRegion": [4, -3, 124, 146],
     "hiddenMarkRegion2": [132, -3, 124, 146],
-    "seatIconRegion": [-31, 132, 29, 29]
+    "seatIconRegion": [-32, 118, 30, 30]
 },
 "skillButton":
 {
@@ -241,20 +241,20 @@
 "arrayFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]], // normalColor = [penColor, shadowColor]
                     [[255, 255, 255, 255], [0, 0, 0, 120]], // downColor = [penColor, shadowColor]
                     [[255, 255, 255, 255], [0, 0, 0, 120]], // disableColor = [penColor, shadowColor]
-                    [[255, 255, 255, 255], [0, 0, 0, 120]]], // hoverColor = [penColor, shadowColor]
+                    [[255, 255, 255, 255], [0, 0, 0, 120]], // hoverColor = [penColor, shadowColor]
+                    [[255, 255, 255, 255], [0, 0, 0, 120]]], // preshowColor = [penColor, shadowColor]
 "compulsoryFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
                         [[255, 255, 255, 255], [0, 0, 0, 120]],
                         [[255, 255, 255, 255], [0, 0, 0, 120]],
+                        [[255, 255, 255, 255], [0, 0, 0, 120]],
                         [[255, 255, 255, 255], [0, 0, 0, 120]]],
-"frequentFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
-                      [[255, 255, 255, 255], [0, 0, 0, 120]],
-                      [[255, 255, 255, 255], [0, 0, 0, 120]],
-                      [[255, 255, 255, 255], [0, 0, 0, 120]]],
 "oneoffFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
+                    [[255, 255, 255, 255], [0, 0, 0, 120]],
                     [[255, 255, 255, 255], [0, 0, 0, 120]],
                     [[255, 255, 255, 255], [0, 0, 0, 120]],
                     [[255, 255, 255, 255], [0, 0, 0, 120]]],
 "proactiveFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
+                       [[255, 255, 255, 255], [0, 0, 0, 120]],
                        [[255, 255, 255, 255], [0, 0, 0, 120]],
                        [[255, 255, 255, 255], [0, 0, 0, 120]],
                        [[255, 255, 255, 255], [0, 0, 0, 120]]]
