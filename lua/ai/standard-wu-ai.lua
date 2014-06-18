@@ -243,11 +243,21 @@ kurou_skill.getTurnUseCard = function(self, inclusive)
 	sgs.ai_use_priority.KurouCard = 6.8
 	local kuroucard = sgs.Card_Parse("@KurouCard=.&kurou")
 	
-	if ((self.player:getHp() > 3 and self.player:getLostHp() <= 1 and self:getOverflow(self.player, false) < 2)
-		or self:getOverflow(self.player, false) < -1) then
+	if ((self.player:getHp() > 3 and self.player:getLostHp() <= 1 and self:getOverflow(self.player, false) < 2) or self:getOverflow(self.player, false) < -1) then
+		return kuroucard
+	end
+	
+	if self.player:hasSkill("jieyin") and not self.player:hasUsed("JieyinCard") and not self.player:isWounded() then
+		local jiyou = self:getWoundedFriend(true)
+		if jiyou then
 			return kuroucard
 		end
 	end
+	
+	if (self.player:getHp() > 2 and self.player:getLostHp() <= 1 and self.player:hasSkill("xiaoji") and self.player:getCards("e"):length() > 1) then
+		return kuroucard
+	end
+	
 	local slash = sgs.cloneCard("slash")
 	if self:hasCrossbowEffect(self.player) then
 		for _, enemy in ipairs(self.enemies) do
