@@ -401,7 +401,7 @@ local function will_discard_zhendu(self)
 			if current:hasWeapon("axe") then trend = trend - 1
 			elseif current:hasShownSkills("liegong|tieqi|wushuang|niaoxiang") then trend = trend - 0.4 end
 			for _, enemy in ipairs(self.enemies) do
-				if current:canSlash(enemy) and not self:slashProhibit(slash, enemy, current)
+				if ((enemy:getHp() < 3 and enemy:getHandcardNum() < 3) or (enemy:getHandcardNum() < 2)) and current:canSlash(enemy) and not self:slashProhibit(slash, enemy, current)
 					and self:slashIsEffective(slash, enemy, current) and sgs.isGoodTarget(enemy, self.enemies, self, true) then
 					return trend
 				end
