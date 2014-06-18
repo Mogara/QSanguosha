@@ -421,8 +421,8 @@ luanwu_skill.getTurnUseCard = function(self)
 	local good, bad = 0, 0
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if self:isWeak(player) then
-			if self:isFriend(player) then bad = bad + 1
-			else good = good + 1
+			if self:isFriend(player) then bad = bad + 1.5
+			else good = good + 0.8
 			end
 		end
 	end
