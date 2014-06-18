@@ -1249,6 +1249,12 @@ end
 
 sgs.ai_skill_cardask["@xiaoguo"] = function(self, data)
 	local currentplayer = self.room:getCurrent()
+	
+	if self.player:getMark("Global_TurnCount") < 2 and not self.player:hasShownOneGeneral() and self:getOverflow(self.player, false) < 1 then
+		if not currentplayer:hasShownOneGeneral() then
+			return "."
+		end
+	end
 
 	local has_analeptic, has_slash, has_jink
 	for _, acard in sgs.qlist(self.player:getHandcards()) do

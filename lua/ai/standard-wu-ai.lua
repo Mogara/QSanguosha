@@ -243,6 +243,8 @@ kurou_skill.getTurnUseCard = function(self, inclusive)
 	sgs.ai_use_priority.KurouCard = 6.8
 	local kuroucard = sgs.Card_Parse("@KurouCard=.&kurou")
 	
+	if self.player:getMark("Global_TurnCount") < 2 and not self.player:hasShownOneGeneral() then return nil end
+	
 	if ((self.player:getHp() > 3 and self.player:getLostHp() <= 1 and self:getOverflow(self.player, false) < 2) or self:getOverflow(self.player, false) < -1) then
 		return kuroucard
 	end
