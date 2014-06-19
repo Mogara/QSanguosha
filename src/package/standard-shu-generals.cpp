@@ -1071,8 +1071,9 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *zhurong, QVariant &, ServerPlayer *) const{
-        if (zhurong->askForSkillInvoke(objectName())){
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *zhurong, QVariant &data, ServerPlayer *) const{
+        if (zhurong->askForSkillInvoke(objectName(), data)){
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, zhurong->objectName(), data.value<DamageStruct>().to->objectName());
             room->broadcastSkillInvoke(objectName(), 1);
             return true;
         }

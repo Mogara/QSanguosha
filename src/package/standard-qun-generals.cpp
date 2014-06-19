@@ -583,6 +583,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *pangde, QVariant &data, ServerPlayer *) const{
         if (pangde->askForSkillInvoke(objectName(), data)){
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, pangde->objectName(), data.value<SlashEffectStruct>().to->objectName());
             room->broadcastSkillInvoke(objectName());
             return true;
         }
@@ -742,6 +743,7 @@ public:
             caiwenji->tag.remove("beige_data");
 
             if (invoke){
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, caiwenji->objectName(), data.value<DamageStruct>().to->objectName());
                 room->broadcastSkillInvoke(objectName());
                 return true;
             }
@@ -1245,8 +1247,12 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *, ServerPlayer *panfeng, QVariant &data, ServerPlayer *) const{
-        return panfeng->askForSkillInvoke(objectName(), data);
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *panfeng, QVariant &data, ServerPlayer *) const{
+        if (panfeng->askForSkillInvoke(objectName(), data)){
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, panfeng->objectName(), data.value<DamageStruct>().to->objectName());
+            return true;
+        }
+        return false;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *panfeng, QVariant &data, ServerPlayer *) const{

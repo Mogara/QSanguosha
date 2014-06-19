@@ -73,6 +73,7 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *simayi, QVariant &data, ServerPlayer *) const {
         if (simayi->askForSkillInvoke(objectName(), data)) {
             room->broadcastSkillInvoke(objectName());
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, simayi->objectName(), data.value<DamageStruct>().from->objectName());
             return true;
         }
         return false;
@@ -140,6 +141,9 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         if (player->askForSkillInvoke(objectName(), data)){
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.from != NULL)
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), damage.from->objectName());
             room->broadcastSkillInvoke(objectName());
             return true;
         }
@@ -769,6 +773,8 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
         room->setTag("QiaobianTarget", QVariant::fromValue(from));
         ServerPlayer *to = room->askForPlayerChosen(zhanghe, tos, "qiaobian", "@qiaobian-to:::" + card->objectName());
         if (to){
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, from->objectName(), to->objectName());
+
             room->moveCardTo(card, from, to, place,
                 CardMoveReason(CardMoveReason::S_REASON_TRANSFER,
                 zhanghe->objectName(), "qiaobian", QString()));
@@ -1035,9 +1041,12 @@ void QuhuCard::onEffect(const CardEffectStruct &effect) const{
         }
 
         ServerPlayer *wolf = room->askForPlayerChosen(effect.from, wolves, "quhu", QString("@quhu-damage:%1").arg(effect.to->objectName()));
+
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, effect.to->objectName(), wolf->objectName());
         room->damage(DamageStruct("quhu", effect.to, wolf));
     }
     else {
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, effect.to->objectName(), effect.from->objectName());
         room->damage(DamageStruct("quhu", effect.to, effect.from));
     }
 }
@@ -1201,8 +1210,9 @@ public:
         return skill_list;
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
         if (room->askForCard(ask_who, ".Basic", "@xiaoguo", QVariant(), objectName())) {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ask_who->objectName(), player->objectName());
             room->broadcastSkillInvoke(objectName(), 1);
             return true;
         }

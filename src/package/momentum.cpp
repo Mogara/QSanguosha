@@ -105,6 +105,7 @@ public:
         else
             target = damage.from;
         if (player->askForSkillInvoke(objectName(), QVariant::fromValue(target))){
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), target->objectName());
             room->broadcastSkillInvoke(objectName(), (triggerEvent == Damage) ? 2 : 1);
             return true;
         }
@@ -148,6 +149,7 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
         ServerPlayer *current = room->getCurrent();
         if (current && player->askForSkillInvoke(objectName(), QVariant::fromValue((PlayerStar)current))){
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), current->objectName());
             room->broadcastSkillInvoke(objectName());
             return true;
         }
@@ -284,6 +286,7 @@ public:
             return false;
 
         ServerPlayer *victim = room->askForPlayerChosen(target, to_choose, objectName());
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, target->objectName(), victim->objectName());
 
         int index = 1;
         if (color == "black")
@@ -526,6 +529,7 @@ public:
             log.to << owner;
             log.arg = objectName();
             room->sendLog(log);
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, owner->objectName(), player->objectName());
             room->broadcastSkillInvoke(objectName());
             return true;
         }
@@ -796,6 +800,12 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
         if (player->askForSkillInvoke(objectName())){
+
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+                if (p->isChained())
+                    room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
+            }
+
             room->broadcastSkillInvoke(objectName());
             return true;
         }
@@ -958,8 +968,12 @@ public:
         return QStringList(objectName());
     }
 
-    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer *) const {
-        return player->askForSkillInvoke(objectName(), data);
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const {
+        if (player->askForSkillInvoke(objectName(), data)){
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), data.value<DamageStruct>().to->objectName());
+            return true;
+        }
+        return false;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *) const {
