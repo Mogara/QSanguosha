@@ -976,7 +976,8 @@ public:
             log.to = use.to;
             log.arg = use.card->objectName();
             room->sendLog(log);
-
+            
+            room->setEmotion(use.to.first(), "cancel");
 
             use.to.clear();
             data = QVariant::fromValue(use);

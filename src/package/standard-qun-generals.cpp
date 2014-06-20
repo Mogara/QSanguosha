@@ -562,6 +562,8 @@ public:
         log.arg = use.card->objectName();
         room->sendLog(log);
 
+        room->setEmotion(player, "cancel");
+
         use.to.removeOne(player);
         data = QVariant::fromValue(use);
         return false;
