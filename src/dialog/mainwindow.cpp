@@ -731,8 +731,8 @@ void MainWindow::on_actionRecord_analysis_triggered() {
     rec_dialog->resize(800, 500);
     QTableWidget *table = new QTableWidget;
 
-    RecAnalysis *record = new RecAnalysis(filename);
-    QMap<QString, PlayerRecordStruct *> record_map = record->getRecordMap();
+    RecAnalysis record(filename);
+    QMap<QString, PlayerRecordStruct *> record_map = record.getRecordMap();
     table->setColumnCount(11);
     table->setRowCount(record_map.keys().length());
     table->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -771,8 +771,8 @@ void MainWindow::on_actionRecord_analysis_triggered() {
         table->setItem(i, 3, item);
 
         item = new QTableWidgetItem;
-        bool is_win = record->getRecordWinners().contains(rec->m_role)
-            || record->getRecordWinners().contains(record_map.key(rec));
+        bool is_win = record.getRecordWinners().contains(rec->m_role)
+            || record.getRecordWinners().contains(record_map.key(rec));
         item->setText(is_win ? tr("Win") : tr("Lose"));
         table->setItem(i, 4, item);
 
@@ -805,17 +805,17 @@ void MainWindow::on_actionRecord_analysis_triggered() {
     table->resizeColumnsToContents();
 
     QLabel *label = new QLabel;
-    label->setText(tr("Packages:") + record->getRecordPackages().join(","));
+    label->setText(tr("Packages:") + record.getRecordPackages().join(","));
 
     QLabel *label_game_mode = new QLabel;
-    label_game_mode->setText(tr("GameMode:") + Sanguosha->getModeName(record->getRecordGameMode()));
+    label_game_mode->setText(tr("GameMode:") + Sanguosha->getModeName(record.getRecordGameMode()));
 
     QLabel *label_options = new QLabel;
-    label_options->setText(tr("ServerOptions:") + record->getRecordServerOptions().join(","));
+    label_options->setText(tr("ServerOptions:") + record.getRecordServerOptions().join(","));
 
     QTextEdit *chat_info = new QTextEdit;
     chat_info->setReadOnly(chat_info);
-    chat_info->setText(record->getRecordChat());
+    chat_info->setText(record.getRecordChat());
 
     QLabel *table_chat_title = new QLabel;
     table_chat_title->setText(tr("Chat Information:"));

@@ -41,7 +41,6 @@ SOURCES += \
     src/dialog/distanceviewdialog.cpp \
     src/dialog/generaloverview.cpp \
     src/dialog/mainwindow.cpp \
-    src/dialog/packagingeditor.cpp \
     src/dialog/playercarddialog.cpp \
     src/dialog/rule-summary.cpp \
     src/dialog/UpdateChecker.cpp \
@@ -135,7 +134,6 @@ HEADERS += \
     src/dialog/distanceviewdialog.h \
     src/dialog/generaloverview.h \
     src/dialog/mainwindow.h \
-    src/dialog/packagingeditor.h \
     src/dialog/playercarddialog.h \
     src/dialog/rule-summary.h \
     src/dialog/UpdateChecker.h \

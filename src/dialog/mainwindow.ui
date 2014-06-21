@@ -95,7 +95,6 @@
      <string>DIY</string>
     </property>
     <addaction name="actionCard_editor"/>
-    <addaction name="actionPackaging"/>
    </widget>
    <addaction name="menuGame"/>
    <addaction name="menuView"/>
