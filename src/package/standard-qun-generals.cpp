@@ -1010,6 +1010,15 @@ public:
             QList<int> lirang_card = VariantList2IntList(kongrong->tag["lirang"].toList());
             kongrong->tag.remove("lirang");
 
+            QList<int> lirang_copy = lirang_card;
+            foreach(int id, lirang_copy){
+                if (room->getCardPlace(id) != Player::DiscardPile)
+                    lirang_card.removeOne(id);
+            }
+
+            if (lirang_card.isEmpty())
+                return false;
+
             CardMoveReason preview_reason(CardMoveReason::S_REASON_DISCARD, kongrong->objectName(), objectName(), QString());
             CardsMoveStruct lirang_preview(lirang_card, NULL, kongrong, Player::DiscardPile, Player::PlaceHand, preview_reason);
             QList<CardsMoveStruct> lirang_preview_l;
