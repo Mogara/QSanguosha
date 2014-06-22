@@ -27,12 +27,12 @@ config = {
 		"BeginnerSlob" ,
 		"Fsu0413" ,
 		"hmqgg" ,
-		"lrl026" ,
-		"Jia" ,
+		--"lrl026" ,
+		--"Jia" ,
 		"36Li" ,
 		"Fu Nima" ,
-		"Z ZH" ,
-		"82" ,
+		--"Z ZH" ,
+		--"82" ,
 	} ,
 
 	kingdoms = { "wei", "qun", "shu", "wu", "god" },
@@ -112,6 +112,7 @@ config = {
 		"tangjs520" ,
 		"帷幕之下问心云" ,
 		"Procellarum" ,
-		"KenKic"
+		"KenKic" ,
+		"叶落孤舟"
 	},
 }
