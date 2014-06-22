@@ -1378,8 +1378,6 @@ function SmartAI:sortByCardNeed(cards, inverse)
 	table.sort(cards, compare_func)
 end
 
-
-
 function sgs.findIntersectionSkills(first, second)
 	if type(first) == "string" then first = first:split("|") end
 	if type(second) == "string" then second = second:split("|") end
@@ -2391,7 +2389,7 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 
 		if flags:match("j") then
 			local tricks = who:getCards("j")
-			local lightning, yanxiao
+			local lightning
 			for _, trick in sgs.qlist(tricks) do
 				if trick:isKindOf("Lightning") and (not isDiscard or self.player:canDiscard(who, trick:getId())) then
 					lightning = trick:getId()
@@ -2399,9 +2397,6 @@ function SmartAI:askForCardChosen(who, flags, reason, method)
 			end
 			if self:hasWizard(self.enemies, true) and lightning then
 				return lightning
-			end
-			if yanxiao then
-				return yanxiao
 			end
 		end
 

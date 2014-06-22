@@ -40,8 +40,8 @@ private:
     GeneralSelector();
     void loadGeneralTable();
     void loadPairTable();
-    void caculatePairValues(const ServerPlayer *player, const QStringList &candidates);
-    void caculateDeputyValue(const ServerPlayer *player, const QString &first, const QStringList &candidates, const QStringList &kingdom_list = QStringList());
+    void calculatePairValues(const ServerPlayer *player, const QStringList &candidates);
+    void calculateDeputyValue(const ServerPlayer *player, const QString &first, const QStringList &candidates, const QStringList &kingdom_list = QStringList());
 
     QHash<QString, int> single_general_table;
     QHash<QString, int> pair_table;

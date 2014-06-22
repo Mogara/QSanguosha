@@ -44,7 +44,7 @@ GeneralSelector::GeneralSelector() {
 
 QStringList GeneralSelector::selectGenerals(ServerPlayer *player, const QStringList &candidates) {
     if (private_pair_value_table[player].isEmpty())
-        caculatePairValues(player, candidates);
+        calculatePairValues(player, candidates);
 
     QHash<QString, int> my_hash = private_pair_value_table[player];
 
@@ -91,30 +91,33 @@ void GeneralSelector::loadGeneralTable() {
 }
 
 void GeneralSelector::loadPairTable() {
-    QRegExp rx("(\\w+)\\s+(\\w+)\\s+(\\d+)");
-    QFile file("ai-selector/pair-value.txt");
-    if (file.open(QIODevice::ReadOnly)) {
-        QTextStream stream(&file);
-        while (!stream.atEnd()) {
-            QString line = stream.readLine();
-            if (!rx.exactMatch(line))
-                continue;
+	QRegExp rx("(\\w+)\\s+(\\w+)\\s+(\\d+)\\s+(\\d+)");
+	QFile file("ai-selector/pair-value.txt");
+	if (file.open(QIODevice::ReadOnly)) {
+		QTextStream stream(&file);
+		while (!stream.atEnd()) {
+			QString line = stream.readLine();
+			if (!rx.exactMatch(line))
+				continue;
 
-            //SAMPLE: taishici+sunce 60
-            QStringList texts = rx.capturedTexts();
-            QString first = texts.at(1);
-            QString second = texts.at(2);
-            int value = texts.at(3).toInt();
+			//SAMPLE: huangyueying zhangfei							25 24
+			QStringList texts = rx.capturedTexts();
+			QString first = texts.at(1);
+			QString second = texts.at(2);
+			int value_f = texts.at(3).toInt();
+			int value_b = texts.at(4).toInt();
 
-            QString key = QString("%1+%2").arg(first).arg(second);
-            pair_table.insert(key, value);
-        }
+			QString key_f = QString("%1+%2").arg(first).arg(second);
+			pair_table.insert(key_f, value_f);
+			QString key_b = QString("%1+%2").arg(second).arg(first);
+			pair_table.insert(key_b, value_b);
+		}
 
-        file.close();
-    }
+		file.close();
+	}
 }
 
-void GeneralSelector::caculatePairValues(const ServerPlayer *player, const QStringList &_candidates)
+void GeneralSelector::calculatePairValues(const ServerPlayer *player, const QStringList &_candidates)
 {
     // preference
     QStringList kingdoms = Sanguosha->getKingdoms();
@@ -134,11 +137,11 @@ void GeneralSelector::caculatePairValues(const ServerPlayer *player, const QStri
         }
     }
     foreach(QString first, candidates) {
-        caculateDeputyValue(player, first, candidates, kingdoms);
+        calculateDeputyValue(player, first, candidates, kingdoms);
     }
 }
 
-void GeneralSelector::caculateDeputyValue(const ServerPlayer *player, const QString &first, const QStringList &_candidates, const QStringList &kingdom_list)
+void GeneralSelector::calculateDeputyValue(const ServerPlayer *player, const QString &first, const QStringList &_candidates, const QStringList &kingdom_list)
 {
     QStringList candidates = _candidates;
     foreach(QString candidate, _candidates){
@@ -164,13 +167,29 @@ void GeneralSelector::caculateDeputyValue(const ServerPlayer *player, const QStr
             if (!kingdom_list.isEmpty())
                 v += (kingdom_list.indexOf(kingdom) - 1);
 
-            if ((general1->getMaxHpHead() + general2->getMaxHpDeputy()) % 2) v -= 2;
+			const int max_hp = general1->getMaxHpHead() + general2->getMaxHpDeputy();
+            if (max_hp % 2) v -= 1;
 
-            if (general1->isCompanionWith(second)) v += 5;
+            if (general1->isCompanionWith(second)) v += 3;
 
-            if (general1->isFemale()) v += ((kingdom == "wu") ? -3 : 1);
+			if (general1->isFemale()) {
+				if ("wu" == kingdom)
+					v -= 2;
+				else if (kingdom != "qun")
+					v += 1;
+			}
+			else if ("qun" == kingdom)
+				v += 1;
 
-            if (general1->hasSkill("baoling") && general2_value > 40) v -= 30;
+            if (general1->hasSkill("baoling") && general2_value > 6) v -= 5;
+
+			if (max_hp < 8) {
+				QSet<QString> need_high_max_hp_skills;
+				need_high_max_hp_skills << "zhiheng" << "zaiqi" << "yinghun" << "kurou";
+				foreach(const Skill *skill, general1->getVisibleSkills() + general2->getVisibleSkills()) {
+					if (need_high_max_hp_skills.contains(skill->objectName())) v -= 5;
+				}
+			}
 
             private_pair_value_table[player][key] = v;
         }
