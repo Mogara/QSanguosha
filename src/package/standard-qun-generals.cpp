@@ -839,12 +839,12 @@ public:
         else
             room->setPlayerProperty(target, "Duanchang", "deputy");
 
-        QList<const Skill *> skills = choice == "head_general" ? target->getHeadSkillList()
-            : target->getDeputySkillList();
-        foreach(const Skill *skill, skills)
-        if (skill->getLocation() == Skill::Right && !skill->isAttachedLordSkill())
-            room->detachSkillFromPlayer(target, skill->objectName(), !target->hasShownSkill(skill));
-
+        QList<const Skill *> skills = choice == "head_general" ? target->getGeneral()->getVisibleSkillList()
+            : target->getGeneral2()->getVisibleSkillList();
+        foreach(const Skill *skill, skills){
+            if (!skill->isAttachedLordSkill())
+                room->detachSkillFromPlayer(target, skill->objectName(), !target->hasShownSkill(skill));
+        }
         if (death.damage->from->isAlive())
             death.damage->from->gainMark("@duanchang");
 

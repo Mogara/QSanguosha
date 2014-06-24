@@ -31,7 +31,7 @@
 #include <QFile>
 
 Skill::Skill(const QString &name, Frequency frequency)
-: frequency(frequency), limit_mark(QString()), default_choice("no"), relate_to_place(QString()), attached_lord_skill(false)
+: frequency(frequency), limit_mark(QString()), relate_to_place(QString()), attached_lord_skill(false)
 {
     static QChar lord_symbol('$');
 
@@ -109,10 +109,6 @@ bool Skill::isVisible() const{
     return !objectName().startsWith("#");
 }
 
-QString Skill::getDefaultChoice(ServerPlayer *) const{
-    return default_choice;
-}
-
 int Skill::getEffectIndex(const ServerPlayer *, const Card *) const{
     return -1;
 }
@@ -132,10 +128,6 @@ void Skill::initMediaSource() {
         if (QFile::exists(effect_file))
             sources << effect_file;
     }
-}
-
-Skill::Location Skill::getLocation() const{
-    return parent() ? Right : Left;
 }
 
 void Skill::playAudioEffect(int index) const{

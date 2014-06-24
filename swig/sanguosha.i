@@ -1064,7 +1064,6 @@ extern Engine *Sanguosha;
 class Skill: public QObject {
 public:
     enum Frequency { Frequent, NotFrequent, Compulsory, Limited, Wake };
-    enum Location { Left, Right };
 
     explicit Skill(const char *name, Frequency frequent = NotFrequent);
 
@@ -1073,10 +1072,7 @@ public:
     QString getDescription(bool yellow = true) const;
     bool isVisible() const;
 
-    virtual QString getDefaultChoice(ServerPlayer *player) const;
     virtual int getEffectIndex(const ServerPlayer *player, const Card *card) const;
-
-    virtual Location getLocation() const;
 
     void playAudioEffect(int index = -1) const;
     Frequency getFrequency() const;

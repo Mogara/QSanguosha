@@ -169,14 +169,7 @@ bool TrustAI::askForSkillInvoke(const QString &, const QVariant &) {
     return false;
 }
 
-QString TrustAI::askForChoice(const QString &skill_name, const QString &choice, const QVariant &) {
-    const Skill *skill = Sanguosha->getSkill(skill_name);
-    if (skill) {
-        QString default_choice = skill->getDefaultChoice(self);
-        if (choice.contains(default_choice))
-            return default_choice;
-    }
-
+QString TrustAI::askForChoice(const QString &, const QString &choice, const QVariant &) {
     QStringList choices = choice.split("+");
     return choices.at(qrand() % choices.length());
 }
