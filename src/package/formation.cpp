@@ -606,7 +606,7 @@ public:
         }
 
         foreach(ServerPlayer *p, room->getPlayers()){
-            if (p->getMark("tianfu_kanpo") > 0 && p->hasSkill("kanpo")){
+            if (p->getMark("tianfu_kanpo") > 0 && p->hasSkill("kanpo") && !p->hasInnateSkill("kanpo")){
                 p->setMark("tianfu_kanpo", 0);
                 room->detachSkillFromPlayer(p, "kanpo", true, true);
             }
@@ -629,7 +629,7 @@ public:
         foreach(ServerPlayer *jiangwei, jiangweis) {
             if (!jiangwei->hasShownSkill(this)) return QStringList();
             ServerPlayer *current = room->getCurrent();
-            if (current && current->isAlive() && current->getPhase() != Player::NotActive && jiangwei->inFormationRalation(current)){
+            if (current && current->isAlive() && current->getPhase() != Player::NotActive && jiangwei->inFormationRalation(current) && !jiangwei->hasInnateSkill("kanpo")){
                 jiangwei->setMark("tianfu_kanpo", 1);
                 room->attachSkillToPlayer(jiangwei, "kanpo");
             }
