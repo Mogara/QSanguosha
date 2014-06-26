@@ -215,6 +215,7 @@ namespace FMOD
         FMOD_RESULT F_API get3DCustomRolloff     (FMOD_VECTOR **points, int *numpoints);
         FMOD_RESULT F_API setSubSound            (int index, Sound *subsound);
         FMOD_RESULT F_API getSubSound            (int index, Sound **subsound);
+        FMOD_RESULT F_API getSubSoundParent      (Sound **parentsound);
         FMOD_RESULT F_API setSubSoundSentence    (int *subsoundlist, int numsubsounds);
         FMOD_RESULT F_API getName                (char *name, int namelen);
         FMOD_RESULT F_API getLength              (unsigned int *length, FMOD_TIMEUNIT lengthtype);
