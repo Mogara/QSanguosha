@@ -36,25 +36,27 @@ public:
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if (triggerEvent == TargetChosen){
-            if (!WeaponSkill::triggerable(player))
+            if (!WeaponSkill::triggerable(use.from))
                 return QStringList();
 
-            if (use.from != NULL && use.from->hasWeapon(objectName()) && use.to.contains(player) && use.card->isKindOf("Slash")){
+            if (use.to.contains(player) && use.card->isKindOf("Slash")){
                 ask_who = use.from;
                 return QStringList(objectName());
             }
         }
         else {
-            if (use.to.contains(player) && use.card->isKindOf("Slash")){
-                QStringList blade_use = player->property("blade_use").toStringList();
-                if (!blade_use.contains(use.card->toString()))
-                    return QStringList();
+            if (use.card->isKindOf("Slash")){
+                foreach(ServerPlayer *p, use.to){
+                    QStringList blade_use = p->property("blade_use").toStringList();
+                    if (!blade_use.contains(use.card->toString()))
+                        return QStringList();
 
-                blade_use.removeOne(use.card->toString());
-                room->setPlayerProperty(player, "blade_use", blade_use);
+                    blade_use.removeOne(use.card->toString());
+                    room->setPlayerProperty(p, "blade_use", blade_use);
 
-                if (blade_use.isEmpty())
-                    room->setPlayerMark(player, "@blade", 0);
+                    if (blade_use.isEmpty())
+                        room->setPlayerMark(p, "@blade", 0);
+                }
             }
         }
         return QStringList();
