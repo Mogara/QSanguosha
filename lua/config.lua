@@ -58,6 +58,7 @@ config = {
 		"StandardCard",
 		"FormationEquip",
 		"MomentumEquip" ,
+		"StrategicAdvantage" ,
 
 		"Standard",
 		"Formation",

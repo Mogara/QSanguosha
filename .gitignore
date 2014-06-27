@@ -39,6 +39,7 @@ card_intention.txt
 *.sh
 /Qt*4.dll
 /dmp/*.dmp
+/dmp/*/
 *Thumbs.db
 *.tmp
 libgcc_s_dw2-1.dll

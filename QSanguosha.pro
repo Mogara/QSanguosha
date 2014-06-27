@@ -56,6 +56,7 @@ SOURCES += \
     src/package/standard-wu-generals.cpp \
     src/package/standard-wei-generals.cpp \
     src/package/standard-package.cpp \
+    src/package/strategic-advantage.cpp \
     src/package/package.cpp \
     src/scenario/miniscenarios.cpp \
     src/scenario/scenario.cpp \
@@ -149,6 +150,7 @@ HEADERS += \
     src/package/standard-shu-generals.h \
     src/package/standard-wu-generals.h \
     src/package/standard-wei-generals.h \
+    src/package/strategic-advantage.h \
     src/package/standard-package.h \
     src/scenario/miniscenarios.h \
     src/scenario/scenario.h \
