@@ -183,6 +183,17 @@ QWidget *PlayerCardDialog::createEquipArea() {
         layout->addWidget(button);
     }
 
+    WrappedCard *treasure = player->getTreasure();
+    if (treasure) {
+        PlayerCardButton *button = new PlayerCardButton(treasure->getFullName());
+        button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(treasure->getId())->getSuit()));
+        button->setEnabled(!disabled_ids.contains(treasure->getEffectiveId())
+            && (method != Card::MethodDiscard || Self->canDiscard(player, treasure->getEffectiveId())));
+        mapper.insert(button, treasure->getId());
+        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
+        layout->addWidget(button);
+    }
+
     if (layout->count() == 0) {
         delete layout;
         PlayerCardButton *no_equip = new PlayerCardButton(tr("No equip"));
