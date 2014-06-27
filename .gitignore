@@ -8,7 +8,6 @@ config.ini
 swig/sanguosha_wrap.cxx
 records/*
 .DS_Store
-font/font.ttf
 QSanguosha.pro.user*
 QSanguosha.exe
 QSanguosha
