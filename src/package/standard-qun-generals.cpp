@@ -403,7 +403,7 @@ public:
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (player != NULL){
-            JudgeStar judge = data.value<JudgeStar>();
+            JudgeStruct *judge = data.value<JudgeStruct *>();
             if (judge->reason == "shuangxiong"){
                 judge->pattern = judge->card->isRed() ? "red" : "black";
                 if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
@@ -414,7 +414,7 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer *) const{
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct *judge = data.value<JudgeStruct *>();
         judge->who->obtainCard(judge->card);
 
         return false;
@@ -610,7 +610,7 @@ public:
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (!TriggerSkill::triggerable(player)) return QStringList();
-        CardStar card_star = data.value<CardResponseStruct>().m_card;
+        const Card *card_star = data.value<CardResponseStruct>().m_card;
         if (card_star->isKindOf("Jink")) return QStringList(objectName());
         return QStringList();
     }
@@ -632,7 +632,7 @@ public:
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhangjiao, QVariant &data, ServerPlayer *) const{
         CardStar card_star = data.value<CardResponseStruct>().m_card;
         if (card_star->isKindOf("Jink")) {
-            PlayerStar target = zhangjiao->tag["leiji-target"].value<PlayerStar>();
+            ServerPlayer *target = zhangjiao->tag["leiji-target"].value<ServerPlayer *>();
             if (target) {
 
                 JudgeStruct judge;
@@ -679,7 +679,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct *judge = data.value<JudgeStruct *>();
 
         QStringList prompt_list;
         prompt_list << "@guidao-card" << judge->who->objectName()
@@ -728,7 +728,7 @@ public:
             return skill_list;
         }
         else {
-            JudgeStar judge = data.value<JudgeStar>();
+            JudgeStruct *judge = data.value<JudgeStruct *>();
             if (judge->reason != objectName()) return skill_list;
             judge->pattern = QString::number(int(judge->card->getSuit()));
             return skill_list;
@@ -825,7 +825,7 @@ public:
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         DeathStruct death = data.value<DeathStruct>();
         ServerPlayer *target = death.damage->from;
-        QString choice = room->askForChoice(player, objectName(), "head_general+deputy_general", QVariant::fromValue((PlayerStar)target));
+        QString choice = room->askForChoice(player, objectName(), "head_general+deputy_general", QVariant::fromValue((ServerPlayer *)target));
         LogMessage log;
         log.type = choice == "head_general" ? "#DuanchangLoseHeadSkills" : "#DuanchangLoseDeputySkills";
         log.from = player;
@@ -1176,7 +1176,7 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *tianfeng, QVariant &, ServerPlayer *) const{
-        PlayerStar to = tianfeng->tag["sijian_target"].value<PlayerStar>();
+        ServerPlayer *to = tianfeng->tag["sijian_target"].value<ServerPlayer *>();
         tianfeng->tag.remove("sijian_target");
         if (to && tianfeng->canDiscard(to, "he")) {
             int card_id = room->askForCardChosen(tianfeng, to, "he", objectName(), false, Card::MethodDiscard);
@@ -1277,7 +1277,7 @@ public:
                 equiplist << QString::number(i);
         }
 
-        int equip_index = room->askForChoice(panfeng, "kuangfu_equip", equiplist.join("+"), QVariant::fromValue((PlayerStar)target)).toInt();
+        int equip_index = room->askForChoice(panfeng, "kuangfu_equip", equiplist.join("+"), QVariant::fromValue((ServerPlayer *)target)).toInt();
         const Card *card = target->getEquip(equip_index);
         int card_id = card->getEffectiveId();
 

@@ -902,7 +902,7 @@ public:
             if (!damage.card || !damage.card->isKindOf("SavageAssault"))
                 return QStringList();
 
-            ServerPlayer *menghuo = room->getTag("HuoshouSource").value<PlayerStar>();
+            ServerPlayer *menghuo = room->getTag("HuoshouSource").value<ServerPlayer *>();
             damage.from = menghuo->isAlive() ? menghuo : NULL;
             data = QVariant::fromValue(damage);
         }
@@ -926,7 +926,7 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         room->notifySkillInvoked(player, objectName());
-        room->setTag("HuoshouSource", QVariant::fromValue((PlayerStar)player));
+        room->setTag("HuoshouSource", QVariant::fromValue((ServerPlayer *)player));
 
         return false;
     }
@@ -1188,7 +1188,7 @@ void FangquanCard::onEffect(const CardEffectStruct &effect) const{
     log.to << player;
     room->sendLog(log);
 
-    room->setTag("FangquanTarget", QVariant::fromValue((PlayerStar)player));
+    room->setTag("FangquanTarget", QVariant::fromValue((ServerPlayer *)player));
 }
 
 class FangquanViewAsSkill : public OneCardViewAsSkill {
@@ -1286,7 +1286,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *liushan) const{
         Room *room = liushan->getRoom();
-        PlayerStar target = room->getTag("FangquanTarget").value<PlayerStar>();
+        ServerPlayer *target = room->getTag("FangquanTarget").value<ServerPlayer *>();
         room->removeTag("FangquanTarget");
         target->gainAnExtraTurn();
         return false;

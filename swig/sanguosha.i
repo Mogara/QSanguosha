@@ -679,8 +679,6 @@ struct JudgeStruct {
     bool time_consuming;
 };
 
-typedef JudgeStruct *JudgeStar;
-
 struct PindianStruct {
     PindianStruct();
 
@@ -693,8 +691,6 @@ struct PindianStruct {
     QString reason;
     bool success;
 };
-
-typedef PindianStruct *PindianStar;
 
 struct PhaseChangeStruct {
     PhaseChangeStruct();
@@ -1200,7 +1196,7 @@ public:
     bool cardEffect(const CardEffectStruct &effect);
     bool isJinkEffected(ServerPlayer *user, const Card *jink);
     void judge(JudgeStruct &judge_struct);
-    void sendJudgeResult(const JudgeStar judge);
+    void sendJudgeResult(const JudgeStruct *judge);
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord(const char *kingdom) const;
     void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides);
@@ -1214,7 +1210,7 @@ public:
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
-    void retrial(const Card *card, ServerPlayer *player, JudgeStar judge,
+    void retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge,
                  const char *skill_name, bool exchange = false);
 
     bool doNotify(ServerPlayer *player, int command, const char *arg);

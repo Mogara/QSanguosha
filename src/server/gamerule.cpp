@@ -659,7 +659,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
     case StartJudge: {
                          int card_id = room->drawCard();
 
-                         JudgeStar judge = data.value<JudgeStar>();
+                         JudgeStruct *judge = data.value<JudgeStruct *>();
                          judge->card = Sanguosha->getCard(card_id);
 
                          LogMessage log;
@@ -676,7 +676,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                          break;
     }
     case FinishRetrial: {
-                            JudgeStar judge = data.value<JudgeStar>();
+                            JudgeStruct *judge = data.value<JudgeStruct *>();
 
                             LogMessage log;
                             log.type = "$JudgeResult";
@@ -696,7 +696,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                             break;
     }
     case FinishJudge: {
-                          JudgeStar judge = data.value<JudgeStar>();
+                          JudgeStruct *judge = data.value<JudgeStruct *>();
 
                           if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) {
                               CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, judge->who->objectName(), QString(), judge->reason);

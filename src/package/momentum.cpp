@@ -148,7 +148,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
         ServerPlayer *current = room->getCurrent();
-        if (current && player->askForSkillInvoke(objectName(), QVariant::fromValue((PlayerStar)current))){
+        if (current && player->askForSkillInvoke(objectName(), QVariant::fromValue((ServerPlayer *)current))){
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), current->objectName());
             room->broadcastSkillInvoke(objectName());
             return true;
@@ -254,7 +254,7 @@ public:
         if (triggerEvent == EventPhaseStart && TriggerSkill::triggerable(player)
             && player->getPhase() == Player::Start) return QStringList(objectName());
         else if (triggerEvent == FinishJudge) {
-            JudgeStar judge = data.value<JudgeStar>();
+            JudgeStruct *judge = data.value<JudgeStruct *>();
             if (judge->reason != objectName() || !player->isAlive()) return QStringList();
 
             QString color = judge->card->isRed() ? "red" : "black";
@@ -621,7 +621,7 @@ public:
         QMap<ServerPlayer *, QStringList> skill_list;
         if (player == NULL) return skill_list;
         QList<ServerPlayer *> sunces = room->findPlayersBySkillName(objectName());
-        PindianStar pindian = data.value<PindianStar>();
+        PindianStruct *pindian = data.value<PindianStruct *>();
         foreach(ServerPlayer *sunce, sunces)
         if (pindian->from == sunce || pindian->to == sunce)
             skill_list.insert(sunce, QStringList(objectName()));
@@ -635,7 +635,7 @@ public:
 
     virtual bool effect(TriggerEvent, Room* room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const{
         ServerPlayer *sunce = ask_who;
-        PindianStar pindian = data.value<PindianStar>();
+        PindianStruct *pindian = data.value<PindianStruct *>();
         bool isFrom = pindian->from == sunce;
 
         QString choice = room->askForChoice(sunce, objectName(), "jia3+jian3", data);

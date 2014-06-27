@@ -103,7 +103,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct *judge = data.value<JudgeStruct *>();
 
         QStringList prompt_list;
         prompt_list << "@guicai-card" << judge->who->objectName()
@@ -353,7 +353,7 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *guojia, QVariant &data, ServerPlayer *) const{
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct *judge = data.value<JudgeStruct *>();
         if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
             guojia->obtainCard(judge->card);
         return false;
@@ -507,7 +507,7 @@ public:
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         if (player != NULL) {
-            JudgeStar judge = data.value<JudgeStar>();
+            JudgeStruct *judge = data.value<JudgeStruct *>();
             if (judge->reason == "luoshen") {
                 if (judge->isGood()) {
                     QVariantList luoshen_list = player->tag["luoshen"].toList();
@@ -524,7 +524,7 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhenji, QVariant &data, ServerPlayer *) const{
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct *judge = data.value<JudgeStruct *>();
         CardMoveReason reason(CardMoveReason::S_REASON_JUDGEDONE, zhenji->objectName(), QString(), judge->reason);
         room->moveCardTo(judge->card, NULL, Player::PlaceTable, reason, true);
 
@@ -744,7 +744,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
         if (targets.isEmpty())
             return;
 
-        PlayerStar from = targets.first();
+        ServerPlayer *from = targets.first();
         if (!from->hasEquip() && from->getJudgingArea().isEmpty())
             return;
 

@@ -856,7 +856,7 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        PlayerStar p = player->tag["yicheng_target"].value<PlayerStar>();
+        ServerPlayer *p = player->tag["yicheng_target"].value<ServerPlayer *>();
         player->tag.remove("yicheng_target");
         if (p) {
             p->drawCards(1);

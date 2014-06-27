@@ -87,7 +87,7 @@ public:
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         if (player != NULL && player->isAlive()){
-            CardStar card = NULL;
+            const Card *card = NULL;
             if (triggerEvent == PreCardUsed)
                 card = data.value<CardUseStruct>().card;
             else
@@ -323,7 +323,7 @@ public:
         QString prompt = "@liuli:" + use.from->objectName();
         room->setPlayerFlag(use.from, "LiuliSlashSource");
         // a temp nasty trick
-        daqiao->tag["liuli-card"] = QVariant::fromValue((CardStar)use.card); // for the server (AI)
+        daqiao->tag["liuli-card"] = QVariant::fromValue((const Card *)use.card); // for the server (AI)
         room->setPlayerProperty(daqiao, "liuli", use.card->toString()); // for the client (UI)
         const Card *c = room->askForUseCard(daqiao, "@@liuli", prompt, -1, Card::MethodDiscard);
         daqiao->tag.remove("liuli-card");
@@ -526,7 +526,7 @@ bool Yinghun::cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, S
 
 bool Yinghun::onPhaseChange(ServerPlayer *sunjian) const{
     Room *room = sunjian->getRoom();
-    PlayerStar to = sunjian->tag["yinghun_target"].value<PlayerStar>();
+    ServerPlayer *to = sunjian->tag["yinghun_target"].value<ServerPlayer *>();
     if (to) {
         int x = sunjian->getLostHp();
 
@@ -700,7 +700,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct *judge = data.value<JudgeStruct *>();
 
         if (TriggerSkill::triggerable(player) && !player->hasShownSkill(this)
             && judge->who == player && judge->card->getSuit() == Card::Spade)
@@ -714,7 +714,7 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *xiaoqiao, QVariant &data, ServerPlayer *) const {
-        JudgeStar judge = data.value<JudgeStar>();
+        JudgeStruct *judge = data.value<JudgeStruct *>();
         QList<const Card *> cards;
         cards << judge->card;
         room->filterCards(xiaoqiao, cards, true);
@@ -1453,7 +1453,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *dingfeng, QVariant &data, ServerPlayer* &) const{
-        if (dingfeng == NULL || dingfeng->tag["FenxunTarget"].value<PlayerStar>() == NULL) return QStringList();
+        if (dingfeng == NULL || dingfeng->tag["FenxunTarget"].value<ServerPlayer *>() == NULL) return QStringList();
         if (triggerEvent == EventPhaseChanging) {
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to != Player::NotActive)
@@ -1464,7 +1464,7 @@ public:
             if (death.who != dingfeng)
                 return QStringList();
         }
-        ServerPlayer *target = dingfeng->tag["FenxunTarget"].value<PlayerStar>();
+        ServerPlayer *target = dingfeng->tag["FenxunTarget"].value<ServerPlayer *>();
 
         if (target) {
             room->setFixedDistance(dingfeng, target, -1);
