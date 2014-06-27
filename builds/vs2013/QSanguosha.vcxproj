@@ -1556,7 +1556,16 @@
     <ClCompile Include="..\..\src\server\room.cpp" />
     <ClCompile Include="..\..\src\ui\roomscene.cpp" />
     <ClCompile Include="..\..\src\server\roomthread.cpp" />
-    <ClCompile Include="..\..\swig\sanguosha_wrap.cxx" />
+    <ClCompile Include="..\..\swig\sanguosha_wrap.cxx">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">4100;4005;4189;</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">4100;4005;4189;</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">4100;4005;4189;</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">4100;4005;4189;</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">4100;4005;4189;4267</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">4100;4005;4189;4267</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">4100;4005;4189;4267</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">4100;4005;4189;4267</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="..\..\src\dialog\rule-summary.cpp" />
     <ClCompile Include="..\..\src\scenario\scenario.cpp" />
     <ClCompile Include="..\..\src\scenario\scenerule.cpp" />
