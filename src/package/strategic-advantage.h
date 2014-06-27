@@ -24,6 +24,13 @@
 #include "package.h"
 #include "standard.h"
 
+class Blade : public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Blade(Card::Suit suit, int number);
+};
+
 class JadeSeal : public Treasure{
     Q_OBJECT
 

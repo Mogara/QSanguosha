@@ -370,7 +370,10 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
                 }
                 if (current && current->hasShownSkill("huoshui") && !(skill && (skill->isAttachedLordSkill() || hasShownSkill(skill))))
                     return false;
+
             }
+            if (getMark("@blade") > 0 && !(skill && (skill->isAttachedLordSkill() || hasShownSkill(skill))))
+                return false;
         }
     }
     return head_skills.value(skill_name, false)

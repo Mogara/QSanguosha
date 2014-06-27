@@ -19,6 +19,62 @@
     *********************************************************************/
 
 #include "strategic-advantage.h"
+#include "skill.h"
+
+Blade::Blade(Card::Suit suit, int number)
+: Weapon(suit, number, 3){
+    setObjectName("Blade");
+}
+
+class BladeSkill : public WeaponSkill{
+public:
+    BladeSkill(): WeaponSkill("Blade"){
+        events << TargetChosen << CardFinished;
+        frequency = Compulsory;
+    }
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (triggerEvent == TargetChosen){
+            if (!WeaponSkill::triggerable(player))
+                return QStringList();
+
+            if (use.from != NULL && use.from->hasWeapon(objectName()) && use.to.contains(player) && use.card->isKindOf("Slash")){
+                ask_who = use.from;
+                return QStringList(objectName());
+            }
+        }
+        else {
+            if (use.to.contains(player) && use.card->isKindOf("Slash")){
+                QStringList blade_use = player->property("blade_use").toStringList();
+                if (!blade_use.contains(use.card->toString()))
+                    return QStringList();
+
+                blade_use.removeOne(use.card->toString());
+                room->setPlayerProperty(player, "blade_use", blade_use);
+
+                if (blade_use.isEmpty())
+                    room->setPlayerMark(player, "@blade", 0);
+            }
+        }
+        return QStringList();
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+        QStringList blade_use = player->property("blade_use").toStringList();
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (blade_use.contains(use.card->toString()))
+            return false;
+
+        blade_use << use.card->toString();
+        room->setPlayerProperty(player, "blade_use", blade_use);
+        
+        if (!player->hasShownAllGenerals())
+            room->setPlayerMark(player, "@blade", 1);
+
+        return false;
+    }
+};
 
 JadeSeal::JadeSeal(Card::Suit suit, int number)
 : Treasure(suit, number){
@@ -32,11 +88,14 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
     cards
         << new JadeSeal(Card::Spade, 2)
         << new JadeSeal(Card::Spade, 3)
-        << new JadeSeal(Card::Spade, 4);
+        << new JadeSeal(Card::Spade, 4)
+        << new Blade(Card::Spade, 5);
 
     foreach(Card *c, cards){
         c->setParent(this);
     }
+
+    skills << new BladeSkill;
 }
 
 
