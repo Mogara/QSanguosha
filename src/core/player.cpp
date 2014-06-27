@@ -29,7 +29,7 @@ Player::Player(QObject *parent)
 : QObject(parent), owner(false), general(NULL), general2(NULL),
 m_gender(General::Sexless), hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
 phase(NotActive),
-weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL),
+weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), treasure(NULL),
 face_up(true), chained(false), role_shown(false),
 actual_general1(NULL), actual_general2(NULL),
 general1_showed(false), general2_showed(false)
@@ -481,6 +481,7 @@ void Player::setEquip(WrappedCard *equip) {
     case EquipCard::ArmorLocation: armor = equip; break;
     case EquipCard::DefensiveHorseLocation: defensive_horse = equip; break;
     case EquipCard::OffensiveHorseLocation: offensive_horse = equip; break;
+    case EquipCard::TreasureLocation: treasure = equip; break;
     }
 }
 
@@ -492,16 +493,18 @@ void Player::removeEquip(WrappedCard *equip) {
     case EquipCard::ArmorLocation: armor = NULL; break;
     case EquipCard::DefensiveHorseLocation: defensive_horse = NULL; break;
     case EquipCard::OffensiveHorseLocation: offensive_horse = NULL; break;
+    case EquipCard::TreasureLocation: treasure = NULL; break;
     }
 }
 
 bool Player::hasEquip(const Card *card) const{
     Q_ASSERT(card != NULL);
-    int weapon_id = -1, armor_id = -1, def_id = -1, off_id = -1;
+    int weapon_id = -1, armor_id = -1, def_id = -1, off_id = -1, tr_id = -1;
     if (weapon) weapon_id = weapon->getEffectiveId();
     if (armor) armor_id = armor->getEffectiveId();
     if (defensive_horse) def_id = defensive_horse->getEffectiveId();
     if (offensive_horse) off_id = offensive_horse->getEffectiveId();
+    if (treasure) tr_id = treasure->getEffectiveId();
     QList<int> ids;
     if (card->isVirtualCard())
         ids << card->getSubcards();
@@ -509,14 +512,14 @@ bool Player::hasEquip(const Card *card) const{
         ids << card->getId();
     if (ids.isEmpty()) return false;
     foreach(int id, ids) {
-        if (id != weapon_id && id != armor_id && id != def_id && id != off_id)
+        if (id != weapon_id && id != armor_id && id != def_id && id != off_id && id != tr_id)
             return false;
     }
     return true;
 }
 
 bool Player::hasEquip() const{
-    return weapon != NULL || armor != NULL || defensive_horse != NULL || offensive_horse != NULL;
+    return weapon != NULL || armor != NULL || defensive_horse != NULL || offensive_horse != NULL || treasure != NULL;
 }
 
 WrappedCard *Player::getWeapon() const{
@@ -535,6 +538,10 @@ WrappedCard *Player::getOffensiveHorse() const{
     return offensive_horse;
 }
 
+WrappedCard *Player::getTreasure() const{
+    return treasure;
+}
+
 QList<const Card *> Player::getEquips() const{
     QList<const Card *> equips;
     if (weapon)
@@ -545,6 +552,8 @@ QList<const Card *> Player::getEquips() const{
         equips << defensive_horse;
     if (offensive_horse)
         equips << offensive_horse;
+    if (treasure)
+        equips << treasure;
 
     return equips;
 }
@@ -556,6 +565,7 @@ const EquipCard *Player::getEquip(int index) const{
     case 1: equip = armor; break;
     case 2: equip = defensive_horse; break;
     case 3: equip = offensive_horse; break;
+    case 4: equip = treasure; break;
     default:
         return NULL;
     }
@@ -585,6 +595,13 @@ bool Player::hasArmorEffect(const QString &armor_name) const{
         return real_armor->objectName() == armor_name || real_armor->isKindOf(armor_name.toStdString().c_str());
     }
     return false;
+}
+
+bool Player::hasTreasure(const QString &treasure_name) const{
+    if (!treasure || getMark("Equips_Nullified_to_Yourself") > 0) return false;
+    if (treasure->objectName() == treasure_name || treasure->isKindOf(treasure_name.toStdString().c_str())) return true;
+    const Card *real_treasure = Sanguosha->getEngineCard(treasure->getEffectiveId());
+    return real_treasure->objectName() == treasure_name || real_treasure->isKindOf(treasure_name.toStdString().c_str());
 }
 
 QList<const Card *> Player::getJudgingArea() const{
@@ -764,6 +781,7 @@ int Player::getCardCount(bool include_equip) const{
         if (armor != NULL) count++;
         if (defensive_horse != NULL) count++;
         if (offensive_horse != NULL) count++;
+        if (treasure != NULL) count++;
     }
     return count;
 }
@@ -829,6 +847,11 @@ bool Player::hasEquipSkill(const QString &skill_name) const{
     if (armor) {
         const Armor *armorc = qobject_cast<const Armor *>(armor->getRealCard());
         if (Sanguosha->getSkill(armorc) && Sanguosha->getSkill(armorc)->objectName() == skill_name)
+            return true;
+    }
+    if (treasure) {
+        const Treasure *treasurec = qobject_cast<const Treasure *>(treasure->getRealCard());
+        if (Sanguosha->getSkill(treasurec) && Sanguosha->getSkill(treasurec)->objectName() == skill_name)
             return true;
     }
     return false;
@@ -1105,6 +1128,7 @@ void Player::copyFrom(Player *p) {
     b->armor = a->armor;
     b->defensive_horse = a->defensive_horse;
     b->offensive_horse = a->offensive_horse;
+    b->treasure = a->treasure;
     b->face_up = a->face_up;
     b->chained = a->chained;
     b->judging_area = QList<int>(a->judging_area);

@@ -867,18 +867,20 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
     for (int i = 0; i < 2; i++) {
         Json::Value playerConfig;
         PlayerCardContainerLayout *layout;
+        int equipRegionNum = 4;
         if (i == 0) {
             layout = &_m_photoLayout;
             playerConfig = layoutConfig[S_SKIN_KEY_PHOTO];
         }
         else {
             layout = &_m_dashboardLayout;
+            equipRegionNum++;
             playerConfig = layoutConfig[S_SKIN_KEY_DASHBOARD];
         }
 
         tryParse(playerConfig["normalHeight"], layout->m_normalHeight);
         tryParse(playerConfig["handCardNumIconArea"], layout->m_handCardArea);
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < equipRegionNum; j++)
             tryParse(playerConfig["equipAreas"][j], layout->m_equipAreas[j]);
         tryParse(playerConfig["equipImageArea"], layout->m_equipImageArea);
         tryParse(playerConfig["equipTextArea"], layout->m_equipTextArea);

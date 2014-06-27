@@ -58,6 +58,18 @@ QPushButton[private_pile="true"]{
     color: white;
 }
 
+QMenu[treasure = true] {
+    background-color: rgba(64, 52, 0, 200);
+    border-radius: 5px;
+    color: white;
+}
+
+QPushButton[treasure = true] {
+    background-color: rgba(64, 52, 0, 200);
+    border-radius: 5px;
+    color: white;
+}
+
 QDialog, QDialog *{
 	background-image: url(image/system/simpleBg/dialog.png);
 }

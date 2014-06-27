@@ -155,7 +155,7 @@ public:
         QRect m_handCardArea;
 
         // equips
-        QRect m_equipAreas[4];
+        QRect m_equipAreas[5];
         QRect m_equipImageArea;
         QRect m_equipTextArea;
         QRect m_equipSuitArea;

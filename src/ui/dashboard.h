@@ -223,9 +223,9 @@ protected:
     const FilterSkill *filter;
 
     // for equip skill/selections
-    PixmapAnimation *_m_equipBorders[4];
-    QSanSkillButton *_m_equipSkillBtns[4];
-    bool _m_isEquipsAnimOn[4];
+    PixmapAnimation *_m_equipBorders[5];
+    QSanSkillButton *_m_equipSkillBtns[5];
+    bool _m_isEquipsAnimOn[5];
     //QList<QSanSkillButton *> _m_button_recycle;
 
     void _createEquipBorderAnimations();

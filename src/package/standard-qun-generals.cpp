@@ -1249,7 +1249,7 @@ public:
         ServerPlayer *target = damage.to;
         if (damage.card && damage.card->isKindOf("Slash") && target->hasEquip() && !damage.chain && !damage.transfer && !damage.to->hasFlag("Global_DFDebut")) {
             QStringList equiplist;
-            for (int i = 0; i <= 3; i++) {
+            for (int i = 0; i < 5; i++) {
                 if (!target->getEquip(i)) continue;
                 if (panfeng->canDiscard(target, target->getEquip(i)->getEffectiveId()) || panfeng->getEquip(i) == NULL)
                     return QStringList(objectName());
@@ -1271,7 +1271,7 @@ public:
         ServerPlayer *target = damage.to;
 
         QStringList equiplist;
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 0; i < 5; i++) {
             if (!target->getEquip(i)) continue;
             if (panfeng->canDiscard(target, target->getEquip(i)->getEffectiveId()) || panfeng->getEquip(i) == NULL)
                 equiplist << QString::number(i);

@@ -443,3 +443,14 @@ EquipCard::Location Horse::location() const{
         return OffensiveHorseLocation;
 }
 
+QString Treasure::getSubtype() const{
+    return "treasure";
+}
+
+EquipCard::Location Treasure::location() const{
+    return TreasureLocation;
+}
+
+QString Treasure::getCommonEffectName() const{
+    return "treasure";
+}

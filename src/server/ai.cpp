@@ -148,6 +148,7 @@ bool TrustAI::useCard(const Card *card) {
         case EquipCard::ArmorLocation: return !self->getArmor();
         case EquipCard::OffensiveHorseLocation: return !self->getOffensiveHorse();
         case EquipCard::DefensiveHorseLocation: return !self->getDefensiveHorse();
+        case EquipCard::TreasureLocation: return !self->getTreasure();
         default:
             return true;
         }
