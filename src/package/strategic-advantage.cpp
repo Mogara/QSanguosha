@@ -84,7 +84,7 @@ JadeSeal::JadeSeal(Card::Suit suit, int number)
 }
 
 StrategicAdvantagePackage::StrategicAdvantagePackage()
-: Package("strategic-advantage", Package::CardPack){
+: Package("strategic_advantage", Package::CardPack){
     QList<Card *> cards;
 
     cards
