@@ -28,6 +28,7 @@
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
 #include "client.h"
+#include "roomscene.h"
 
 QSanButton::QSanButton(QGraphicsItem *parent)
 : QGraphicsObject(parent), multi_state(false), first_state(true), _m_state(S_STATE_UP), _m_style(S_STYLE_PUSH),
@@ -369,7 +370,6 @@ void QSanInvokeSkillDock::setWidth(int width) {
     _m_width = width;
 }
 
-#include "roomscene.h"
 void QSanInvokeSkillDock::update() {
     int numButtons = _m_buttons.length();
     int rows = (numButtons == 0) ? 0 : (numButtons - 1) / 2 + 1;
