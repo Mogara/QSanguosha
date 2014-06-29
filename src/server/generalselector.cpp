@@ -22,6 +22,7 @@
 #include "engine.h"
 #include "serverplayer.h"
 #include "banpair.h"
+#include "settings.h"
 
 #include <QFile>
 #include <QTextStream>
@@ -88,6 +89,26 @@ void GeneralSelector::loadGeneralTable() {
 
         file.close();
     }
+	foreach(QString pack, Config.value("LuaPackages", QString()).toString().split("+")) {
+		QFile file(QString("ai-selector/%1-general-value.txt").arg(pack));
+		if (file.exists() && file.open(QIODevice::ReadOnly)) {
+			QTextStream stream(&file);
+			while (!stream.atEnd()) {
+				QString line = stream.readLine();
+				if (!rx.exactMatch(line))
+					continue;
+
+				//SAMPLE: huatuo 41
+				QStringList texts = rx.capturedTexts();
+				QString general = texts.at(1);
+				int value = texts.at(2).toInt();
+
+				single_general_table.insert(general, value);
+			}
+
+			file.close();
+		}
+	}
 }
 
 void GeneralSelector::loadPairTable() {
@@ -114,6 +135,31 @@ void GeneralSelector::loadPairTable() {
 		}
 
 		file.close();
+	}
+	foreach(QString pack, Config.value("LuaPackages", QString()).toString().split("+")) {
+		QFile file(QString("ai-selector/%1-pair-value.txt").arg(pack));
+		if (file.exists() && file.open(QIODevice::ReadOnly)) {
+			QTextStream stream(&file);
+			while (!stream.atEnd()) {
+				QString line = stream.readLine();
+				if (!rx.exactMatch(line))
+					continue;
+
+				//SAMPLE: huangyueying zhangfei							25 24
+				QStringList texts = rx.capturedTexts();
+				QString first = texts.at(1);
+				QString second = texts.at(2);
+				int value_f = texts.at(3).toInt();
+				int value_b = texts.at(4).toInt();
+
+				QString key_f = QString("%1+%2").arg(first).arg(second);
+				pair_table.insert(key_f, value_f);
+				QString key_b = QString("%1+%2").arg(second).arg(first);
+				pair_table.insert(key_b, value_b);
+			}
+
+			file.close();
+		}
 	}
 }
 
