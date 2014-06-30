@@ -659,9 +659,7 @@ function sgs.ai_skill_pindian.lieren(minusecard, self, requestor)
 	return self:getMaxCard(self.player):getId()
 end
 
-sgs.ai_skill_invoke.shushen = function(self, targets)
-	return true
-end
+sgs.ai_skill_invoke.shushen = true
 
 sgs.ai_skill_playerchosen.shushen = function(self, targets)
 	if #self.friends_noself == 0 then return nil end
@@ -681,9 +679,6 @@ function sgs.ai_cardneed.shenzhi(to, card)
 	return to:getHandcardNum() < to:getHp()
 end
 
-sgs.ai_skill_invoke.huoshou = function(self, data)
-return true
-end
-sgs.ai_skill_invoke.juxiang = function(self, data)
-return true
-end
+sgs.ai_skill_invoke.huoshou = true
+
+sgs.ai_skill_invoke.juxiang = true
