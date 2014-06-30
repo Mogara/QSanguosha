@@ -96,10 +96,12 @@ div#footer {
   padding-top: 0.5em;
   margin-top: 4.0em;
 }
+
 div#footer-text {
   float: left;
   padding-bottom: 0.5em;
 }
+
 div#footer-badges {
   float: right;
   padding-bottom: 0.5em;
@@ -317,25 +319,6 @@ div.hdlist.compact tr {
 
 span.footnote, span.footnoteref {
   vertical-align: super;
-}
-
-#footnotes {
-  margin: 20px 0 20px 0;
-  padding: 7px 0 0 0;
-}
-
-#footnotes div.footnote {
-  margin: 0 0 5px 0;
-}
-
-#footnotes hr {
-  border: none;
-  border-top: 1px solid silver;
-  height: 1px;
-  text-align: left;
-  margin-left: 0;
-  width: 20%;
-  min-width: 100px;
 }
 
 div.colist td {
