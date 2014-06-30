@@ -115,8 +115,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(Self, SIGNAL(general2_changed()), dashboard, SLOT(updateSmallAvatar()));
     connect(dashboard, SIGNAL(card_selected(const Card *)), this, SLOT(enableTargets(const Card *)));
     connect(dashboard, SIGNAL(card_to_use()), this, SLOT(doOkButton()));
-    //connect(dashboard, SIGNAL(add_equip_skill(const Skill *, bool)), this, SLOT(addSkillButton(const Skill *, bool)));
-    //connect(dashboard, SIGNAL(remove_equip_skill(QString)), this, SLOT(detachSkill(QString)));
 
     connect(Self, SIGNAL(pile_changed(QString)), dashboard, SLOT(updatePile(QString)));
 
@@ -235,9 +233,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     chat_edit_widget->setObjectName("chat_edit_widget");
     chat_edit_widget->setZValue(-2.0);
     connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
-#if QT_VERSION >= 0x040700
     chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
-#endif
 
     chat_widget = new ChatWidget();
     chat_widget->setZValue(-0.1);
@@ -289,14 +285,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     addItem(m_tableBg);
 #endif
     m_tableBg->setZValue(-100000);
-    /*
-    QHBoxLayout *skill_dock_layout = new QHBoxLayout;
-    QMargins margins = skill_dock_layout->contentsMargins();
-    margins.setTop(0);
-    margins.setBottom(5);
-    skill_dock_layout->setContentsMargins(margins);
-    skill_dock_layout->addStretch();
-    */
+
     m_rolesBoxBackground.load("image/system/state.png");
     m_rolesBox = new QGraphicsPixmapItem;
     addItem(m_rolesBox);
@@ -3455,7 +3444,6 @@ void RoomScene::onGameStart() {
     if (!Self->hasFlag("marshalling"))
         log_box->append(QString(tr("<font color='%1'>---------- Game Start ----------</font>").arg(Config.TextEditColor.name())));
 
-    //connect(Self, SIGNAL(skill_state_changed(QString)), this, SLOT(skillStateChange(QString)));
 #ifdef AUDIO_SUPPORT
     if (Config.EnableBgMusic) {
         // start playing background music
@@ -3860,18 +3848,6 @@ void RoomScene::recoverGeneral(int index, const QString &name) {
     }
 }
 
-/*void RoomScene::skillStateChange(const QString &skill_name) {
-    static QStringList button_remain;
-    if (button_remain.isEmpty())
-    button_remain << "shuangxiong";
-    if (button_remain.contains(skill_name)) {
-    const Skill *skill = Sanguosha->getSkill(skill_name);
-    addSkillButton(skill);
-    } else if (skill_name.startsWith('-') && button_remain.contains(skill_name.mid(1))) {
-    detachSkill(skill_name.mid(1));
-    }
-    }*/
-
 void RoomScene::trust() {
     if (Self->getState() != "trust")
         doCancelButton();
@@ -4025,17 +4001,7 @@ void RoomScene::doPindianAnimation() {
     else
         pindian_box->disappear();
 }
-/*
-static inline void AddRoleIcon(QMap<QChar, QPixmap> &map, char c, const QString &role) {
-    QPixmap pixmap(QString("image/system/roles/small-%1.png").arg(role));
 
-    QChar qc(c);
-    map[qc.toUpper()] = pixmap;
-
-    QSanUiUtils::makeGray(pixmap);
-    map[qc.toLower()] = pixmap;
-}
-*/
 void RoomScene::updateRolesBox() {
     double centerX = m_rolesBox->boundingRect().width() / 2;
     int n = role_items.length();
