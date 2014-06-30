@@ -1082,8 +1082,8 @@ bool QSanSkinFactory::switchSkin(QString skinName) {
 }
 
 QSanSkinFactory::QSanSkinFactory(const char *fileName) {
-    S_DEFAULT_SKIN_NAME = suf + "default";
-    S_COMPACT_SKIN_NAME = suf + "compact";
+    S_DEFAULT_SKIN_NAME = "default";
+    S_COMPACT_SKIN_NAME = "compact";
 
     Json::Reader reader;
     ifstream file(fileName);
