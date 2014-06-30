@@ -8,18 +8,10 @@ div#footer {
   font-family: Arial,Helvetica,sans-serif;
 }
 
-/* Serif font. */
-div.sectionbody {
-  font-family: Georgia,"Times New Roman",Times,serif;
-}
-
-/* Monospace font. */
-tt {
-  font-size: inherit;
-}
-
 body {
-  margin: 1em 5% 1em 5%;
+  margin: 1em;
+  background: url(../image/system/simpleBg/dialog.png) repeat;
+  font-family: "Microsoft YaHei",Georgia,"Times New Roman",Times,serif;
 }
 
 a {
@@ -132,6 +124,11 @@ div.admonitionblock {
 
 div.content { /* Block element content. */
   color: navy;
+  padding:0.5em;
+}
+
+div.content img{
+  width:99%;
 }
 
 /* Block element titles. */
