@@ -32,7 +32,7 @@ RuleSummary::RuleSummary(QWidget *parent)
 : QDialog(parent)
 {
     setWindowTitle(tr("Rule Summary"));
-    resize(800, 600);
+    resize(843, 600);
 
     list = new QListWidget;
     list->setMaximumWidth(100);
