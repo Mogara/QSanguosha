@@ -60,6 +60,10 @@ h3 + * {
   clear: left;
 }
 
+#header h1{
+  line-height: 1em;
+}
+
 div.sectionbody {
   margin-left: 0;
 }
