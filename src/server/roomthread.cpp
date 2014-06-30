@@ -486,13 +486,13 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         if (names.isEmpty()) break;
 
                         if ((names.length() > 1 || !back_up.isEmpty()) && !has_compulsory)
-                            names << "trigger_none";
+                            names.prepend("trigger_none"); // default choice should do nothing
 
                         QString name;
                         if (p != NULL)
                             name = room->askForChoice(p, "TriggerOrder", names.join("+"), data);
                         else
-                            name = names.first();
+                            name = names.last();
                         if (name == "trigger_none") break;
                         const TriggerSkill *skill = who_skills[_names.indexOf(name)];
 

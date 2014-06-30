@@ -1677,7 +1677,7 @@ bool ServerPlayer::askForGeneralShow(bool one) {
 
     if (!one && choices.length() == 2)
         choices << "show_both_generals";
-    choices << "cancel";
+    choices.prepend("cancel"); // default choice should do nothing
 
     QString choice = room->askForChoice(this, "TurnStartShowGeneral", choices.join("+"));
 
