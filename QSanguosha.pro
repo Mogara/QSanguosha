@@ -3,11 +3,7 @@
 # -------------------------------------------------
 TARGET = QSanguosha
 QT += network sql declarative
-greaterThan(QT_MAJOR_VERSION, 4){
-    QT += widgets webkitwidgets
-}else{
-    QT += webkit
-}
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
 CONFIG += audio
 

@@ -25,7 +25,6 @@
 
 class QListWidget;
 class QTextEdit;
-class QWebView;
 
 class RuleSummary : public QDialog {
     Q_OBJECT
@@ -35,7 +34,7 @@ public:
 
 private:
     QListWidget *list;
-    QWebView *content_box;
+    QTextEdit *content_box;
 
 private slots:
     void loadContent(int row);

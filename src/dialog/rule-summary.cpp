@@ -27,20 +27,19 @@
 #include <QHBoxLayout>
 #include <QFile>
 #include <QTextStream>
-#include <QWebView>
-#include <QFileInfo>
 
 RuleSummary::RuleSummary(QWidget *parent)
 : QDialog(parent)
 {
     setWindowTitle(tr("Rule Summary"));
-    resize(843, 600);
+    resize(853, 600);
 
     list = new QListWidget;
     list->setMinimumWidth(90);
     list->setMaximumWidth(100);
 
-    content_box = new QWebView;
+    content_box = new QTextEdit;
+    content_box->setReadOnly(true);
     content_box->setProperty("description", true);
 
     QHBoxLayout *layout = new QHBoxLayout;
@@ -66,7 +65,12 @@ RuleSummary::RuleSummary(QWidget *parent)
 
 void RuleSummary::loadContent(int row) {
     QString name = list->item(row)->data(Qt::UserRole).toString();
-    QString filename = "file:///" + QFileInfo(QString("rule/%1.html").arg(name)).absoluteFilePath();
-    content_box->load(QUrl(filename));
+    QString filename = QString("rule/%1.html").arg(name);
+    QFile file(filename);
+    if (file.open(QIODevice::ReadOnly)) {
+       QTextStream stream(&file);
+        stream.setCodec("UTF-8");
+        QString content = stream.readAll();
+        content_box->setHtml(content);
+    }
 }
-
