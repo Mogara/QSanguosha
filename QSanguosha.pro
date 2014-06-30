@@ -2,8 +2,12 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += network sql declarative webkit
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += network sql declarative
+greaterThan(QT_MAJOR_VERSION, 4){
+    QT += widgets webkitwidgets
+}else{
+    QT += webkit
+}
 TEMPLATE = app
 CONFIG += audio
 
