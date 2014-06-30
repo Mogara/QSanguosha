@@ -18,10 +18,11 @@
     QSanguosha-Hegemony Team
     *********************************************************************/
 
-#include <magatamasItem.h>
+#include "magatamasItem.h"
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
 #include "SkinBank.h"
+#include "sprite.h"
 
 MagatamasBoxItem::MagatamasBoxItem()
 : QGraphicsObject(NULL)
@@ -103,7 +104,6 @@ void MagatamasBoxItem::update() {
     QGraphicsItem::update();
 }
 
-#include "sprite.h"
 void MagatamasBoxItem::_doHpChangeAnimation(int newHp) {
     if (newHp >= m_hp) return;
 
