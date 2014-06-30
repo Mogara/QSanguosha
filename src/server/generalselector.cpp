@@ -90,9 +90,9 @@ void GeneralSelector::loadGeneralTable() {
         file.close();
     }
 	foreach(QString pack, Config.value("LuaPackages", QString()).toString().split("+")) {
-		QFile file(QString("ai-selector/%1-general-value.txt").arg(pack));
-		if (file.exists() && file.open(QIODevice::ReadOnly)) {
-			QTextStream stream(&file);
+		QFile lua_file(QString("extensions/ai-selector/%1-general-value.txt").arg(pack));
+		if (lua_file.exists() && lua_file.open(QIODevice::ReadOnly)) {
+			QTextStream stream(&lua_file);
 			while (!stream.atEnd()) {
 				QString line = stream.readLine();
 				if (!rx.exactMatch(line))
@@ -106,7 +106,7 @@ void GeneralSelector::loadGeneralTable() {
 				single_general_table.insert(general, value);
 			}
 
-			file.close();
+			lua_file.close();
 		}
 	}
 }
@@ -137,9 +137,9 @@ void GeneralSelector::loadPairTable() {
 		file.close();
 	}
 	foreach(QString pack, Config.value("LuaPackages", QString()).toString().split("+")) {
-		QFile file(QString("ai-selector/%1-pair-value.txt").arg(pack));
-		if (file.exists() && file.open(QIODevice::ReadOnly)) {
-			QTextStream stream(&file);
+		QFile lua_file(QString("extensions/ai-selector/%1-pair-value.txt").arg(pack));
+		if (lua_file.exists() && lua_file.open(QIODevice::ReadOnly)) {
+			QTextStream stream(&lua_file);
 			while (!stream.atEnd()) {
 				QString line = stream.readLine();
 				if (!rx.exactMatch(line))
@@ -158,7 +158,7 @@ void GeneralSelector::loadPairTable() {
 				pair_table.insert(key_b, value_b);
 			}
 
-			file.close();
+			lua_file.close();
 		}
 	}
 }
