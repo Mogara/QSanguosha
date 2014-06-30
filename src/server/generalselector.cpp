@@ -89,78 +89,78 @@ void GeneralSelector::loadGeneralTable() {
 
         file.close();
     }
-	foreach(QString pack, Config.value("LuaPackages", QString()).toString().split("+")) {
-		QFile lua_file(QString("extensions/ai-selector/%1-general-value.txt").arg(pack));
-		if (lua_file.exists() && lua_file.open(QIODevice::ReadOnly)) {
-			QTextStream stream(&lua_file);
-			while (!stream.atEnd()) {
-				QString line = stream.readLine();
-				if (!rx.exactMatch(line))
-					continue;
+    foreach(QString pack, Config.value("LuaPackages", QString()).toString().split("+")) {
+        QFile lua_file(QString("extensions/ai-selector/%1-general-value.txt").arg(pack));
+        if (lua_file.exists() && lua_file.open(QIODevice::ReadOnly)) {
+            QTextStream stream(&lua_file);
+            while (!stream.atEnd()) {
+                QString line = stream.readLine();
+                if (!rx.exactMatch(line))
+                    continue;
 
-				//SAMPLE: huatuo 41
-				QStringList texts = rx.capturedTexts();
-				QString general = texts.at(1);
-				int value = texts.at(2).toInt();
+                //SAMPLE: huatuo 41
+                QStringList texts = rx.capturedTexts();
+                QString general = texts.at(1);
+                int value = texts.at(2).toInt();
 
-				single_general_table.insert(general, value);
-			}
+                single_general_table.insert(general, value);
+            }
 
-			lua_file.close();
-		}
-	}
+            lua_file.close();
+        }
+    }
 }
 
 void GeneralSelector::loadPairTable() {
-	QRegExp rx("(\\w+)\\s+(\\w+)\\s+(\\d+)\\s+(\\d+)");
-	QFile file("ai-selector/pair-value.txt");
-	if (file.open(QIODevice::ReadOnly)) {
-		QTextStream stream(&file);
-		while (!stream.atEnd()) {
-			QString line = stream.readLine();
-			if (!rx.exactMatch(line))
-				continue;
+    QRegExp rx("(\\w+)\\s+(\\w+)\\s+(\\d+)\\s+(\\d+)");
+    QFile file("ai-selector/pair-value.txt");
+    if (file.open(QIODevice::ReadOnly)) {
+        QTextStream stream(&file);
+        while (!stream.atEnd()) {
+            QString line = stream.readLine();
+            if (!rx.exactMatch(line))
+                continue;
 
-			//SAMPLE: huangyueying zhangfei							25 24
-			QStringList texts = rx.capturedTexts();
-			QString first = texts.at(1);
-			QString second = texts.at(2);
-			int value_f = texts.at(3).toInt();
-			int value_b = texts.at(4).toInt();
+            //SAMPLE: huangyueying zhangfei                         25 24
+            QStringList texts = rx.capturedTexts();
+            QString first = texts.at(1);
+            QString second = texts.at(2);
+            int value_f = texts.at(3).toInt();
+            int value_b = texts.at(4).toInt();
 
-			QString key_f = QString("%1+%2").arg(first).arg(second);
-			pair_table.insert(key_f, value_f);
-			QString key_b = QString("%1+%2").arg(second).arg(first);
-			pair_table.insert(key_b, value_b);
-		}
+            QString key_f = QString("%1+%2").arg(first).arg(second);
+            pair_table.insert(key_f, value_f);
+            QString key_b = QString("%1+%2").arg(second).arg(first);
+            pair_table.insert(key_b, value_b);
+        }
 
-		file.close();
-	}
-	foreach(QString pack, Config.value("LuaPackages", QString()).toString().split("+")) {
-		QFile lua_file(QString("extensions/ai-selector/%1-pair-value.txt").arg(pack));
-		if (lua_file.exists() && lua_file.open(QIODevice::ReadOnly)) {
-			QTextStream stream(&lua_file);
-			while (!stream.atEnd()) {
-				QString line = stream.readLine();
-				if (!rx.exactMatch(line))
-					continue;
+        file.close();
+    }
+    foreach(QString pack, Config.value("LuaPackages", QString()).toString().split("+")) {
+        QFile lua_file(QString("extensions/ai-selector/%1-pair-value.txt").arg(pack));
+        if (lua_file.exists() && lua_file.open(QIODevice::ReadOnly)) {
+            QTextStream stream(&lua_file);
+            while (!stream.atEnd()) {
+                QString line = stream.readLine();
+                if (!rx.exactMatch(line))
+                    continue;
 
-				//SAMPLE: huangyueying zhangfei							25 24
-				QStringList texts = rx.capturedTexts();
-				QString first = texts.at(1);
-				QString second = texts.at(2);
-				int value_f = texts.at(3).toInt();
-				int value_b = texts.at(4).toInt();
+                //SAMPLE: huangyueying zhangfei                         25 24
+                QStringList texts = rx.capturedTexts();
+                QString first = texts.at(1);
+                QString second = texts.at(2);
+                int value_f = texts.at(3).toInt();
+                int value_b = texts.at(4).toInt();
 
-				QString key_f = QString("%1+%2").arg(first).arg(second);
-				pair_table.insert(key_f, value_f);
-				QString key_b = QString("%1+%2").arg(second).arg(first);
-				pair_table.insert(key_b, value_b);
-			}
+                QString key_f = QString("%1+%2").arg(first).arg(second);
+                pair_table.insert(key_f, value_f);
+                QString key_b = QString("%1+%2").arg(second).arg(first);
+                pair_table.insert(key_b, value_b);
+            }
 
-			lua_file.close();
-		}
-	}
+            lua_file.close();
+        }
+    }
 }
 
 void GeneralSelector::calculatePairValues(const ServerPlayer *player, const QStringList &_candidates)
@@ -213,29 +213,29 @@ void GeneralSelector::calculateDeputyValue(const ServerPlayer *player, const QSt
             if (!kingdom_list.isEmpty())
                 v += (kingdom_list.indexOf(kingdom) - 1);
 
-			const int max_hp = general1->getMaxHpHead() + general2->getMaxHpDeputy();
+            const int max_hp = general1->getMaxHpHead() + general2->getMaxHpDeputy();
             if (max_hp % 2) v -= 1;
 
             if (general1->isCompanionWith(second)) v += 3;
 
-			if (general1->isFemale()) {
-				if ("wu" == kingdom)
-					v -= 2;
-				else if (kingdom != "qun")
-					v += 1;
-			}
-			else if ("qun" == kingdom)
-				v += 1;
+            if (general1->isFemale()) {
+                if ("wu" == kingdom)
+                    v -= 2;
+                else if (kingdom != "qun")
+                    v += 1;
+            }
+            else if ("qun" == kingdom)
+                v += 1;
 
             if (general1->hasSkill("baoling") && general2_value > 6) v -= 5;
 
-			if (max_hp < 8) {
-				QSet<QString> need_high_max_hp_skills;
-				need_high_max_hp_skills << "zhiheng" << "zaiqi" << "yinghun" << "kurou";
-				foreach(const Skill *skill, general1->getVisibleSkills() + general2->getVisibleSkills()) {
-					if (need_high_max_hp_skills.contains(skill->objectName())) v -= 5;
-				}
-			}
+            if (max_hp < 8) {
+                QSet<QString> need_high_max_hp_skills;
+                need_high_max_hp_skills << "zhiheng" << "zaiqi" << "yinghun" << "kurou";
+                foreach(const Skill *skill, general1->getVisibleSkills() + general2->getVisibleSkills()) {
+                    if (need_high_max_hp_skills.contains(skill->objectName())) v -= 5;
+                }
+            }
 
             private_pair_value_table[player][key] = v;
         }
