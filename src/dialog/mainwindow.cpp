@@ -94,7 +94,6 @@ public:
 };
 
 #ifdef AUDIO_SUPPORT
-#include "audio.h"
 
 SoundTestBox::SoundTestBox(QWidget *parent /* = NULL */)
 :QDialog(parent){
