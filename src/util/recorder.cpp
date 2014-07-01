@@ -134,31 +134,6 @@ QByteArray Replayer::PNG2TXT(const QString filename) {
     return data;
 }
 
-QString &Replayer::commandProceed(QString &cmd) {
-    static QStringList split_flags;
-    if (split_flags.isEmpty())
-        split_flags << ":" << "+" << "_" << "->";
-
-    foreach(QString flag, split_flags) {
-        QStringList messages = cmd.split(flag);
-        if (messages.length() > 1) {
-            QStringList message_analyse;
-            foreach(QString message, messages)
-                message_analyse << commandProceed(message);
-            cmd = "[" + message_analyse.join(",") + "]";
-        }
-        else {
-            bool ok = false;
-            cmd.toInt(&ok);
-
-            if (!cmd.startsWith("\"") && !cmd.startsWith("[") && !ok)
-                cmd = "\"" + cmd + "\"";
-        }
-    }
-
-    return cmd;
-}
-
 int Replayer::getDuration() const{
     return pairs.last().elapsed / 1000.0;
 }
@@ -215,19 +190,19 @@ void Replayer::toggle() {
 void Replayer::run() {
     int last = 0;
 
-    QStringList nondelays;
-    nondelays << "addPlayer" << "removePlayer" << "speak";
+    static QList<CommandType> nondelays;
+    if (nondelays.isEmpty())
+        nondelays << S_COMMAND_ADD_PLAYER << S_COMMAND_REMOVE_PLAYER << S_COMMAND_SPEAK;
 
     foreach(Pair pair, pairs) {
         int delay = qMin(pair.elapsed - last, 2500);
         last = pair.elapsed;
 
+        Packet packet;
         bool delayed = true;
-        foreach(QString nondelay, nondelays) {
-            if (pair.cmd.startsWith(nondelay)) {
+        if (packet.parse(pair.cmd.toLatin1().constData())){
+            if (nondelays.contains(packet.getCommandType()))
                 delayed = false;
-                break;
-            }
         }
 
         if (delayed) {

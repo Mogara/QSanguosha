@@ -56,7 +56,6 @@ public:
     explicit Replayer(QObject *parent, const QString &filename);
     static QByteArray PNG2TXT(const QString filename);
 
-    QString &commandProceed(QString &cmd);
     int getDuration() const;
     qreal getSpeed();
 
