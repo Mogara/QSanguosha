@@ -106,8 +106,8 @@ public:
     virtual bool viewFilter(const Card *card) const{
         const Player *lord = Self->getLord();
         if (lord == NULL || !lord->hasLordSkill("shouyue") || !lord->hasShownGeneral1())
-        if (!card->isRed())
-            return false;
+            if (!card->isRed())
+                return false;
 
         if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY) {
             Slash *slash = new Slash(Card::SuitToBeDecided, -1);
@@ -207,7 +207,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        if (!player->hasSkill("guanxing"))
+        if (!player->hasSkill("guanxing")){
             if (player->askForSkillInvoke(objectName())) {
                 LogMessage log;
                 log.type = "#InvokeSkill";
@@ -218,11 +218,17 @@ public:
                 player->showGeneral(false);
                 return true;
             }
-        if (!player->hasSkill("yizhi"))
+            else
+                return false;
+        }
+        if (!player->hasSkill("yizhi")){
             if (player->askForSkillInvoke(objectName())) {
                 room->broadcastSkillInvoke(objectName());
                 return true;
             }
+            else
+                return false;
+        }
         // if it runs here, it means player own both two skill;
         if (player->askForSkillInvoke(objectName())) {
             bool show1 = player->hasShownSkill(this);
@@ -241,7 +247,8 @@ public:
                 if (show1) {
                     room->broadcastSkillInvoke(objectName());
                     return true;
-                } else {
+                }
+                else {
                     room->broadcastSkillInvoke("yizhi");
                     onPhaseChange(player);
                     return false;
@@ -254,7 +261,8 @@ public:
                 player->showGeneral(false);
                 onPhaseChange(player);
                 return false;
-            } else {
+            }
+            else {
                 room->broadcastSkillInvoke(objectName());
                 return true;
             }
@@ -345,15 +353,15 @@ public:
 
         switch (Sanguosha->currentRoomState()->getCurrentCardUseReason()) {
         case CardUseStruct::CARD_USE_REASON_PLAY: {
-                                                      return card->isKindOf("Jink");
+            return card->isKindOf("Jink");
         }
         case CardUseStruct::CARD_USE_REASON_RESPONSE:
         case CardUseStruct::CARD_USE_REASON_RESPONSE_USE: {
-                                                              QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
-                                                              if (pattern == "slash")
-                                                                  return card->isKindOf("Jink");
-                                                              else if (pattern == "jink")
-                                                                  return card->isKindOf("Slash");
+            QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+            if (pattern == "slash")
+                return card->isKindOf("Jink");
+            else if (pattern == "jink")
+                return card->isKindOf("Slash");
         }
         default:
             return false;
