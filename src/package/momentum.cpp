@@ -1003,7 +1003,6 @@ public:
 FengshiSummon::FengshiSummon()
     : ArraySummonCard("fengshi")
 {
-    m_skillName = "fengshi";
 }
 
 class Fengshi : public BattleArraySkill {
