@@ -1664,7 +1664,7 @@ void ServerPlayer::disconnectSkillsFromOthers(bool head_skill /* = true */) {
 
 }
 
-bool ServerPlayer::askForGeneralShow(bool one) {
+bool ServerPlayer::askForGeneralShow(bool one, bool refusable) {
     if (hasShownAllGenerals())
         return false;
 
@@ -1677,7 +1677,8 @@ bool ServerPlayer::askForGeneralShow(bool one) {
 
     if (!one && choices.length() == 2)
         choices << "show_both_generals";
-    choices.prepend("cancel"); // default choice should do nothing
+    if (refusable)
+        choices.prepend("cancel"); // default choice should do nothing
 
     QString choice = room->askForChoice(this, "TurnStartShowGeneral", choices.join("+"));
 
@@ -1750,6 +1751,15 @@ using namespace HegemonyMode;
 
 void ServerPlayer::summonFriends(const ArrayType type) {
     if (aliveCount() < 4) return;
+    LogMessage log;
+    log.type = "#InvokeSkill";
+    log.from = this;
+    log.arg = "GameRule_AskForArraySummon";
+    room->sendLog(log);
+    LogMessage log2;
+    log2.type = "#SummonType";
+    log2.arg = type == Siege ? "summon_type_siege" : "summon_type_formation";
+    room->sendLog(log2);
     switch (type) {
     case Siege: {
                     if (isFriendWith(getNextAlive()) && isFriendWith(getLastAlive())) return;
@@ -1760,8 +1770,16 @@ void ServerPlayer::summonFriends(const ArrayType type) {
                         if (!target->hasShownOneGeneral()) {
                             if (!target->willBeFriendWith(this))
                                 prompt += "!";
-                            if (room->askForSkillInvoke(target, prompt) && target->askForGeneralShow())
+                            bool success = room->askForSkillInvoke(target, prompt);
+                            LogMessage log;
+                            log.type = "#SummonResult";
+                            log.from = target;
+                            log.arg = success ? "summon_success" : "summon_failed";
+                            room->sendLog(log);
+                            if (success) {
+                                target->askForGeneralShow();
                                 failed = false;
+                            }
                         }
                     }
                     if (!isFriendWith(getLastAlive())) {
@@ -1769,8 +1787,16 @@ void ServerPlayer::summonFriends(const ArrayType type) {
                         if (!target->hasShownOneGeneral()) {
                             if (!target->willBeFriendWith(this))
                                 prompt += "!";
-                            if (room->askForSkillInvoke(target, prompt) && target->askForGeneralShow() && failed)
+                            bool success = room->askForSkillInvoke(target, prompt);
+                            LogMessage log;
+                            log.type = "#SummonResult";
+                            log.from = target;
+                            log.arg = success ? "summon_success" : "summon_failed";
+                            room->sendLog(log);
+                            if (success) {
+                                target->askForGeneralShow();
                                 failed = false;
+                            }
                         }
                     }
                     if (failed)
@@ -1788,14 +1814,22 @@ void ServerPlayer::summonFriends(const ArrayType type) {
                             QString prompt = "FormationSummon";
                             if (!target->willBeFriendWith(this))
                                 prompt += "!";
-                            if (!room->askForSkillInvoke(target, prompt)
-                                || !target->askForGeneralShow()) {
+
+                            bool success = room->askForSkillInvoke(target, prompt);
+                            LogMessage log;
+                            log.type = "#SummonResult";
+                            log.from = target;
+                            log.arg = success ? "summon_success" : "summon_failed";
+                            room->sendLog(log);
+
+                            if (success) {
+                                target->askForGeneralShow();
+                                failed = false;
+                            } else {
                                 asked = i;
                                 break;
                             }
-                            else if (failed) failed = false;
-                        }
-                        else {
+                        } else {
                             asked = i;
                             break;
                         }
@@ -1807,13 +1841,22 @@ void ServerPlayer::summonFriends(const ArrayType type) {
                         if (isFriendWith(target))
                             continue;
                         else {
-                            if (target->willBeFriendWith(this)) {
+                            if (!target->hasShownOneGeneral()) {
                                 QString prompt = "FormationSummon";
                                 if (!target->willBeFriendWith(this))
                                     prompt += "!";
-                                if (room->askForSkillInvoke(target, prompt)
-                                    && target->askForGeneralShow() && failed)
+
+                                bool success = room->askForSkillInvoke(target, prompt);
+                                LogMessage log;
+                                log.type = "#SummonResult";
+                                log.from = target;
+                                log.arg = success ? "summon_success" : "summon_failed";
+                                room->sendLog(log);
+
+                                if (success) {
+                                    target->askForGeneralShow();
                                     failed = false;
+                                }
                             }
                             break;
                         }

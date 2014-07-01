@@ -208,7 +208,7 @@ class ArraySummonCard : public SkillCard {
 public:
     Q_INVOKABLE ArraySummonCard(const QString &name);
 
-    void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    const Card *validate(CardUseStruct &card_use) const;
 };
 
 class DummyCard : public SkillCard {

@@ -952,9 +952,15 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
     }
 
     if (invoked) {
-        Json::Value msg = toJsonArray(skill_name, player->objectName());
-        doBroadcastNotify(S_COMMAND_INVOKE_SKILL, msg);
-        notifySkillInvoked(player, skill_name);
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        if (skill && skill->inherits("TriggerSkill")) {
+            const TriggerSkill *tr_skill = qobject_cast<const TriggerSkill *>(skill);
+            if (tr_skill && !tr_skill->isGlobal()) {
+                Json::Value msg = toJsonArray(skill_name, player->objectName());
+                doBroadcastNotify(S_COMMAND_INVOKE_SKILL, msg);
+                notifySkillInvoked(player, skill_name);
+            }
+        }
     }
 
     QVariant decisionData = QVariant::fromValue("skillInvoke:" + skill_name + ":" + (invoked ? "yes" : "no"));

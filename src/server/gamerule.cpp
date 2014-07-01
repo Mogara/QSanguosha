@@ -36,7 +36,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        player->askForGeneralShow(false);
+        player->askForGeneralShow(false, true);
         return false;
     }
 

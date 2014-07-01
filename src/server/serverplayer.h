@@ -188,7 +188,7 @@ public:
     void removeGeneral(bool head_general = true);
     void sendSkillsToOthers(bool head_skill = true);
     void disconnectSkillsFromOthers(bool head_skill = true);
-    bool askForGeneralShow(bool one = true);
+    bool askForGeneralShow(bool one = true, bool refusable = false);
     void notifyPreshow();
 
     bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;

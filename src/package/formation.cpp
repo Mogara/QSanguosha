@@ -435,7 +435,6 @@ public:
 HeyiSummon::HeyiSummon()
 : ArraySummonCard("heyi")
 {
-    m_skillName = "heyi";
 }
 
 class Heyi : public BattleArraySkill {
@@ -583,7 +582,6 @@ public:
 TianfuSummon::TianfuSummon()
 : ArraySummonCard("tianfu")
 {
-    m_skillName = "tianfu";
 }
 
 class Tianfu : public BattleArraySkill {
@@ -792,7 +790,6 @@ public:
 NiaoxiangSummon::NiaoxiangSummon()
 : ArraySummonCard("niaoxiang")
 {
-    m_skillName = "niaoxiang";
 }
 
 class Niaoxiang : public BattleArraySkill {
