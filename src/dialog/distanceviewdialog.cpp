@@ -79,7 +79,7 @@ public:
 };
 
 DistanceViewDialog::DistanceViewDialog(QWidget *parent)
-: QDialog(parent)
+    : QDialog(parent)
 {
     setWindowTitle(tr("Distance view"));
 

@@ -25,7 +25,7 @@
 #include <QMessageBox>
 
 MyPixmapItem::MyPixmapItem(const QPixmap &pixmap, QGraphicsItem *parentItem)
-: QGraphicsPixmapItem(pixmap, parentItem)
+    : QGraphicsPixmapItem(pixmap, parentItem)
 {
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
@@ -133,7 +133,7 @@ void MyPixmapItem::initEasyTextPos() {
 }
 
 ChatWidget::ChatWidget()
-: base_pixmap("image/system/chatface/base.png")
+    : base_pixmap("image/system/chatface/base.png")
 {
     setFlags(ItemIsFocusable);
     setAcceptHoverEvents(true);

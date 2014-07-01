@@ -39,7 +39,7 @@ CardOverview *CardOverview::getInstance(QWidget *main_window) {
 }
 
 CardOverview::CardOverview(QWidget *parent)
-: QDialog(parent), ui(new Ui::CardOverview)
+    : QDialog(parent), ui(new Ui::CardOverview)
 {
     ui->setupUi(this);
 

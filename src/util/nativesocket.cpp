@@ -65,13 +65,13 @@ void NativeServerSocket::processNewConnection() {
 // ---------------------------------
 
 NativeClientSocket::NativeClientSocket()
-: socket(new QTcpSocket(this))
+    : socket(new QTcpSocket(this))
 {
     init();
 }
 
 NativeClientSocket::NativeClientSocket(QTcpSocket *socket)
-: socket(socket)
+    : socket(socket)
 {
     socket->setParent(this);
     init();
@@ -152,12 +152,12 @@ void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error) {
     case QAbstractSocket::ConnectionRefusedError:
         reason = tr("Connection was refused or timeout"); break;
     case QAbstractSocket::RemoteHostClosedError:{
-                                                    if (Self && Self->hasFlag("is_kicked"))
-                                                        reason = tr("You are kicked from server");
-                                                    else
-                                                        reason = tr("Remote host close this connection");
+        if (Self && Self->hasFlag("is_kicked"))
+            reason = tr("You are kicked from server");
+        else
+            reason = tr("Remote host close this connection");
 
-                                                    break;
+        break;
     }
     case QAbstractSocket::HostNotFoundError:
         reason = tr("Host not found"); break;

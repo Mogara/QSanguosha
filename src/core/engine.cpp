@@ -48,7 +48,7 @@ QSanVersionNumber::QSanVersionNumber(const QString &str){
 }
 
 QSanVersionNumber::QSanVersionNumber(int major, int minor, int sub, VersionType type)
-: m_major(major), m_minor(minor), m_sub(sub), m_type(type){
+    : m_major(major), m_minor(minor), m_sub(sub), m_type(type){
 
 }
 
@@ -436,7 +436,7 @@ const Skill *Engine::getMainSkill(const QString &skill_name) const{
     if (!skill || skill->isVisible() || related_skills.keys().contains(skill_name)) return skill;
     foreach(QString key, related_skills.keys()) {
         foreach(QString name, related_skills.values(key))
-        if (name == skill_name) return getSkill(key);
+            if (name == skill_name) return getSkill(key);
     }
     return skill;
 }

@@ -32,7 +32,7 @@ Card::CardType BasicCard::getTypeId() const{
 }
 
 TrickCard::TrickCard(Suit suit, int number)
-: Card(suit, number), cancelable(true)
+    : Card(suit, number), cancelable(true)
 {
     handling_method = Card::MethodUse;
 }
@@ -223,7 +223,7 @@ bool SingleTargetTrick::targetFilter(const QList<const Player *> &, const Player
 }
 
 DelayedTrick::DelayedTrick(Suit suit, int number, bool movable)
-: TrickCard(suit, number), movable(movable)
+    : TrickCard(suit, number), movable(movable)
 {
     judge.negative = true;
 }
@@ -367,7 +367,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
 }
 
 Weapon::Weapon(Suit suit, int number, int range)
-: EquipCard(suit, number), range(range)
+    : EquipCard(suit, number), range(range)
 {
 }
 
@@ -400,7 +400,7 @@ QString Armor::getCommonEffectName() const{
 }
 
 Horse::Horse(Suit suit, int number, int correct)
-: EquipCard(suit, number), correct(correct)
+    : EquipCard(suit, number), correct(correct)
 {
 }
 
@@ -419,7 +419,7 @@ QString Horse::getCommonEffectName() const{
 }
 
 OffensiveHorse::OffensiveHorse(Card::Suit suit, int number, int correct)
-: Horse(suit, number, correct)
+    : Horse(suit, number, correct)
 {
 }
 
@@ -428,7 +428,7 @@ QString OffensiveHorse::getSubtype() const{
 }
 
 DefensiveHorse::DefensiveHorse(Card::Suit suit, int number, int correct)
-: Horse(suit, number, correct)
+    : Horse(suit, number, correct)
 {
 }
 

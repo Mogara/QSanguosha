@@ -28,7 +28,7 @@
 #include <QPalette>
 
 ClientLogBox::ClientLogBox(QWidget *parent)
-: QTextEdit(parent)
+    : QTextEdit(parent)
 {
     setReadOnly(true);
 }

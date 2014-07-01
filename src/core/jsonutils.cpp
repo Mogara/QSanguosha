@@ -52,7 +52,7 @@ Json::Value QSanProtocol::Utils::toJsonArray(const QList<int> &arg) {
 bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QList<int> &result) {
     if (!arg.isArray()) return false;
     for (unsigned int i = 0; i < arg.size(); i++)
-    if (!arg[i].isInt()) return false;
+        if (!arg[i].isInt()) return false;
     for (unsigned int i = 0; i < arg.size(); i++)
         result.append(arg[i].asInt());
     return true;
@@ -123,7 +123,7 @@ bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QString &result) {
 bool QSanProtocol::Utils::tryParse(const Json::Value &arg, QStringList &result) {
     if (!arg.isArray()) return false;
     for (unsigned int i = 0; i < arg.size(); i++)
-    if (!arg[i].isString()) return false;
+        if (!arg[i].isString()) return false;
     for (unsigned int i = 0; i < arg.size(); i++)
         result.append(arg[i].asCString());
     return true;

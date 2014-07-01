@@ -29,7 +29,7 @@ BanPair::BanPair() {
 }
 
 BanPair::BanPair(const QString &first, const QString &second)
-: QPair<QString, QString>(first, second)
+    : QPair<QString, QString>(first, second)
 {
     if (first > second) {
         qSwap(this->first, this->second);

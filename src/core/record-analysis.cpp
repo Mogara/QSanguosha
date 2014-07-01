@@ -492,7 +492,7 @@ void RecAnalysis::addDesignation(const QString &designation,
         player_test_mask /= 2;
         bool has_player = custom_condition;
         foreach(DesignationType type, des_union)
-        if (!m_recordMap[objectName]->m_designEnum.contains(type)) { has_player = false; break; }
+            if (!m_recordMap[objectName]->m_designEnum.contains(type)) { has_player = false; break; }
 
         if (need_win
             && !m_recordWinners.contains(m_recordMap[objectName]->m_role)
@@ -615,8 +615,8 @@ void RecAnalysis::initialDesignation() {
 }
 
 PlayerRecordStruct::PlayerRecordStruct()
-: m_statue("online"), m_turnCount(0), m_recover(0), m_damage(0),
-m_damaged(0), m_kill(0), m_isAlive(true)
+    : m_statue("online"), m_turnCount(0), m_recover(0), m_damage(0),
+    m_damaged(0), m_kill(0), m_isAlive(true)
 {
 }
 

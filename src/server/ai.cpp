@@ -29,14 +29,14 @@
 #include <lua.hpp>
 
 AI::AI(ServerPlayer *player)
-: self(player)
+    : self(player)
 {
     room = player->getRoom();
 }
 
 typedef QPair<QString, QString> RolePair;
 
-struct RoleMapping : public QMap<RolePair, AI::Relation> {
+struct RoleMapping : public QMap < RolePair, AI::Relation > {
     void set(const QString &role1, const QString &role2, AI::Relation relation, bool bidirectional = false) {
         insert(qMakePair(role1, role2), relation);
         if (bidirectional)
@@ -92,7 +92,7 @@ QList<ServerPlayer *> AI::getEnemies() const{
     QList<ServerPlayer *> players = room->getOtherPlayers(self);
     QList<ServerPlayer *> enemies;
     foreach(ServerPlayer *p, players)
-    if (isEnemy(p)) enemies << p;
+        if (isEnemy(p)) enemies << p;
 
     return enemies;
 }
@@ -101,7 +101,7 @@ QList<ServerPlayer *> AI::getFriends() const{
     QList<ServerPlayer *> players = room->getOtherPlayers(self);
     QList<ServerPlayer *> friends;
     foreach(ServerPlayer *p, players)
-    if (isFriend(p)) friends << p;
+        if (isFriend(p)) friends << p;
 
     return friends;
 }
@@ -111,7 +111,7 @@ void AI::filterEvent(TriggerEvent, ServerPlayer *, const QVariant &) {
 }
 
 TrustAI::TrustAI(ServerPlayer *player)
-: AI(player)
+    : AI(player)
 {
     response_skill = new ResponseSkill;
 }
@@ -138,12 +138,12 @@ bool TrustAI::useCard(const Card *card) {
         const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
         switch (equip->location()) {
         case EquipCard::WeaponLocation: {
-                                            WrappedCard *weapon = self->getWeapon();
-                                            if (weapon == NULL)
-                                                return true;
-                                            const Weapon *new_weapon = qobject_cast<const Weapon *>(equip);
-                                            const Weapon *ole_weapon = qobject_cast<const Weapon *>(weapon->getRealCard());
-                                            return new_weapon->getRange() > ole_weapon->getRange();
+            WrappedCard *weapon = self->getWeapon();
+            if (weapon == NULL)
+                return true;
+            const Weapon *new_weapon = qobject_cast<const Weapon *>(equip);
+            const Weapon *ole_weapon = qobject_cast<const Weapon *>(weapon->getRealCard());
+            return new_weapon->getRange() > ole_weapon->getRange();
         }
         case EquipCard::ArmorLocation: return !self->getArmor();
         case EquipCard::OffensiveHorseLocation: return !self->getOffensiveHorse();
@@ -198,7 +198,7 @@ const Card *TrustAI::askForCard(const QString &pattern, const QString &prompt, c
     response_skill->setPattern(pattern);
     QList<const Card *> cards = self->getHandcards();
     foreach(const Card *card, cards)
-    if (response_skill->matchPattern(self, card)) return card;
+        if (response_skill->matchPattern(self, card)) return card;
 
     return NULL;
 }
@@ -270,7 +270,7 @@ void TrustAI::askForGuanxing(const QList<int> &cards, QList<int> &up, QList<int>
 }
 
 LuaAI::LuaAI(ServerPlayer *player)
-: TrustAI(player), callback(0)
+    : TrustAI(player), callback(0)
 {
 }
 

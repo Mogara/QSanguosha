@@ -53,9 +53,9 @@ static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL,
 CustomAssignDialog *CustomInstance = NULL;
 
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
-: QDialog(parent),
-choose_general2(false),
-is_ended_by_pile(false), is_single_turn(false), is_before_next(false)
+    : QDialog(parent),
+    choose_general2(false),
+    is_ended_by_pile(false), is_single_turn(false), is_before_next(false)
 {
     setWindowTitle(tr("Custom mini scene"));
 
@@ -1662,8 +1662,8 @@ void GeneralAssignDialog::clearGeneral() {
 //------------------------------
 
 CardAssignDialog::CardAssignDialog(QWidget *parent, QString card_type, QString class_name, QList<int> excluded)
-: QDialog(parent), card_type(card_type), class_name(class_name),
-excluded_card(excluded)
+    : QDialog(parent), card_type(card_type), class_name(class_name),
+    excluded_card(excluded)
 {
     setWindowTitle(tr("Custom Card Chosen"));
     QVBoxLayout *vlayout = new QVBoxLayout;
@@ -1755,7 +1755,7 @@ void CardAssignDialog::updateCardList() {
 //-----------------------------------
 
 SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString player_name, QStringList &player_skills)
-: QDialog(parent), update_skills(player_skills)
+    : QDialog(parent), update_skills(player_skills)
 {
     setWindowTitle(tr("Skill Chosen"));
     QHBoxLayout *layout = new QHBoxLayout;

@@ -181,8 +181,8 @@ public:
         if (triggerEvent == TurnStart) {
             room->setPlayerMark(player, "@hengjiang", 0);
             foreach(ServerPlayer *p, room->getAllPlayers())
-            if (p->getMark("HengjiangInvoke") > 0)
-                room->setPlayerMark(p, "HengjiangInvoke", 0);
+                if (p->getMark("HengjiangInvoke") > 0)
+                    room->setPlayerMark(p, "HengjiangInvoke", 0);
         }
         else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
@@ -194,10 +194,11 @@ public:
             PhaseChangeStruct change = data.value<PhaseChangeStruct>();
             if (change.to != Player::NotActive) return skill_list;
             QList<ServerPlayer *> zangbas;
-            foreach(ServerPlayer *p, room->getAllPlayers())
-            if (p->getMark("HengjiangInvoke") > 0) {
-                room->setPlayerMark(p, "HengjiangInvoke", 0);
-                zangbas << p;
+            foreach(ServerPlayer *p, room->getAllPlayers()){
+                if (p->getMark("HengjiangInvoke") > 0) {
+                    room->setPlayerMark(p, "HengjiangInvoke", 0);
+                    zangbas << p;
+                }
             }
             if (zangbas.isEmpty()) return skill_list;
             if (player->getMark("@hengjiang") > 0) {
@@ -360,8 +361,8 @@ public:
                 return (data.toBool() == player->inHeadSkills(objectName())) ? QStringList(objectName()) : QStringList();
         }
         else if (data.toString() == "mifuren" && player->getMark(objectName()) > 0)
-        if (player->isWounded())
-            return QStringList(objectName());
+            if (player->isWounded())
+                return QStringList(objectName());
 
         return QStringList();
     }
@@ -623,8 +624,8 @@ public:
         QList<ServerPlayer *> sunces = room->findPlayersBySkillName(objectName());
         PindianStruct *pindian = data.value<PindianStruct *>();
         foreach(ServerPlayer *sunce, sunces)
-        if (pindian->from == sunce || pindian->to == sunce)
-            skill_list.insert(sunce, QStringList(objectName()));
+            if (pindian->from == sunce || pindian->to == sunce)
+                skill_list.insert(sunce, QStringList(objectName()));
 
         return skill_list;
     }
@@ -790,11 +791,12 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const {
-        if (PhaseChangeSkill::triggerable(player) && player->getPhase() == Player::Finish && player->isChained())
-            foreach(ServerPlayer *p, room->getAllPlayers())
-        if (p->isChained() && player->canDiscard(p, "he"))
-            return QStringList(objectName());
-
+        if (PhaseChangeSkill::triggerable(player) && player->getPhase() == Player::Finish && player->isChained()){
+            foreach(ServerPlayer *p, room->getAllPlayers()){
+                if (p->isChained() && player->canDiscard(p, "he"))
+                    return QStringList(objectName());
+            }
+        }
         return QStringList();
     }
 
@@ -816,14 +818,14 @@ public:
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
         foreach(ServerPlayer *p, room->getAllPlayers())
-        if (p->isChained() && player->canDiscard(p, "he")) {
+            if (p->isChained() && player->canDiscard(p, "he")) {
             if (player != p){
                 int card_id = room->askForCardChosen(player, p, "he", objectName(), false, Card::MethodDiscard);
                 room->throwCard(card_id, p, player);
             }
             else
                 room->askForDiscard(player, objectName(), 1, 1, false, true);
-        }
+            }
         return false;
     }
 };
@@ -836,8 +838,8 @@ public:
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const {
         if (PhaseChangeSkill::triggerable(player) && player->getPhase() == Player::Draw && (player->isKongcheng() || player->getHp() == 1))
             foreach(ServerPlayer *p, room->getOtherPlayers(player))
-        if (!p->isAllNude())
-            return QStringList(objectName());
+            if (!p->isAllNude())
+                return QStringList(objectName());
 
         return QStringList();
     }
@@ -854,10 +856,11 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        foreach(ServerPlayer *p, room->getOtherPlayers(player))
-        if (!p->isAllNude()) {
-            int card_id = room->askForCardChosen(player, p, "hej", objectName());
-            room->obtainCard(player, card_id, false);
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+            if (!p->isAllNude()) {
+                int card_id = room->askForCardChosen(player, p, "hej", objectName());
+                room->obtainCard(player, card_id, false);
+            }
         }
         return true;
     }
@@ -922,8 +925,8 @@ public:
         if (player->getPhase() == Player::Finish) {
             QList<ServerPlayer *> players = room->getOtherPlayers(player);
             foreach(ServerPlayer *p, players)
-            if (player->getHp() > p->getHp())
-                return QStringList(objectName());
+                if (player->getHp() > p->getHp())
+                    return QStringList(objectName());
         }
 
         return QStringList();
@@ -998,7 +1001,7 @@ public:
 };
 
 FengshiSummon::FengshiSummon()
-: ArraySummonCard("fengshi")
+    : ArraySummonCard("fengshi")
 {
     m_skillName = "fengshi";
 }
@@ -1017,12 +1020,15 @@ public:
         if (!TriggerSkill::triggerable(player)) return QStringList();
         if (!player->hasShownSkill(this) || player->aliveCount() < 4) return QStringList();
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("Slash"))
-            foreach(ServerPlayer *to, use.to)
-        if (use.from->inSiegeRelation(player, to))
-        if (to->canDiscard(to, "e")) {
-            ask_who = player;
-            return QStringList(objectName());
+        if (use.card->isKindOf("Slash")){
+            foreach(ServerPlayer *to, use.to){
+                if (use.from->inSiegeRelation(player, to)){
+                    if (to->canDiscard(to, "e")) {
+                        ask_who = player;
+                        return QStringList(objectName());
+                    }
+                }
+            }
         }
 
         return QStringList();
@@ -1030,13 +1036,16 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const {
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card->isKindOf("Slash"))
-            foreach(ServerPlayer *to, use.to)
-        if (use.from->inSiegeRelation(player, to))
-        if (to->canDiscard(to, "e")) {
-            int card_id = room->askForCardChosen(to, to, "e", objectName(), true, Card::MethodDiscard);
-            room->throwCard(card_id, to);
-            room->broadcastSkillInvoke(objectName());
+        if (use.card->isKindOf("Slash")){
+            foreach(ServerPlayer *to, use.to){
+                if (use.from->inSiegeRelation(player, to)){
+                    if (to->canDiscard(to, "e")) {
+                        int card_id = room->askForCardChosen(to, to, "e", objectName(), true, Card::MethodDiscard);
+                        room->throwCard(card_id, to);
+                        room->broadcastSkillInvoke(objectName());
+                    }
+                }
+            }
         }
         return false;
     }
@@ -1418,11 +1427,11 @@ void WendaoCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) 
     }
     if (tpys == NULL)
         foreach(int id, room->getDiscardPile()){
-            if (Sanguosha->getCard(id)->isKindOf("PeaceSpell")){
-                tpys = Sanguosha->getCard(id);
-                break;
-            }
+        if (Sanguosha->getCard(id)->isKindOf("PeaceSpell")){
+            tpys = Sanguosha->getCard(id);
+            break;
         }
+    }
 
     if (tpys == NULL)
         return;
@@ -1448,7 +1457,7 @@ public:
 };
 
 MomentumPackage::MomentumPackage()
-: Package("momentum")
+    : Package("momentum")
 {
     General *lidian = new General(this, "lidian", "wei", 3); // WEI 017
     lidian->addCompanion("yuejin");

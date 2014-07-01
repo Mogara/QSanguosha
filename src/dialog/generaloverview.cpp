@@ -40,7 +40,7 @@ static QLayout *HLay(QWidget *left, QWidget *right) {
 }
 
 GeneralSearch::GeneralSearch(GeneralOverview *parent)
-: QDialog(parent)
+    : QDialog(parent)
 {
     setWindowTitle(tr("Search..."));
 
@@ -269,7 +269,7 @@ GeneralOverview *GeneralOverview::getInstance(QWidget *main_window) {
 }
 
 GeneralOverview::GeneralOverview(QWidget *parent)
-: QDialog(parent), ui(new Ui::GeneralOverview)
+    : QDialog(parent), ui(new Ui::GeneralOverview)
 {
     ui->setupUi(this);
     origin_window_title = windowTitle();

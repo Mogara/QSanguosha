@@ -104,8 +104,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         room->setPlayerFlag(player, "-slashTargetFix");
         room->setPlayerFlag(player, "-slashTargetFixToOne");
         foreach(ServerPlayer *target, room->getAlivePlayers())
-        if (target->hasFlag("SlashAssignee"))
-            room->setPlayerFlag(target, "-SlashAssignee");
+            if (target->hasFlag("SlashAssignee"))
+                room->setPlayerFlag(target, "-SlashAssignee");
     }
 
     /* actually it's not proper to put the codes here.
@@ -148,8 +148,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             foreach(ServerPlayer *p, use.to)
                 targets_const << qobject_cast<const Player *>(p);
             foreach(ServerPlayer *p, room->getAlivePlayers())
-            if (!use.to.contains(p) && use.card->targetFilter(targets_const, p, use.from))
-                targets_ts << p;
+                if (!use.to.contains(p) && use.card->targetFilter(targets_const, p, use.from))
+                    targets_ts << p;
             if (targets_ts.isEmpty())
                 break;
 
@@ -309,7 +309,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
 }
 
 NatureSlash::NatureSlash(Suit suit, int number, DamageStruct::Nature nature)
-: Slash(suit, number)
+    : Slash(suit, number)
 {
     this->nature = nature;
 }
@@ -323,13 +323,13 @@ bool NatureSlash::match(const QString &pattern) const{
 }
 
 ThunderSlash::ThunderSlash(Suit suit, int number)
-: NatureSlash(suit, number, DamageStruct::Thunder)
+    : NatureSlash(suit, number, DamageStruct::Thunder)
 {
     setObjectName("thunder_slash");
 }
 
 FireSlash::FireSlash(Suit suit, int number)
-: NatureSlash(suit, number, DamageStruct::Fire)
+    : NatureSlash(suit, number, DamageStruct::Fire)
 {
     setObjectName("fire_slash");
 }
@@ -380,7 +380,7 @@ bool Peach::isAvailable(const Player *player) const{
 }
 
 Analeptic::Analeptic(Card::Suit suit, int number)
-: BasicCard(suit, number)
+    : BasicCard(suit, number)
 {
     setObjectName("analeptic");
     target_fixed = true;

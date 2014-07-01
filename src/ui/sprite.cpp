@@ -27,7 +27,7 @@
 #include <QPainter>
 
 EffectAnimation::EffectAnimation()
-: QObject()
+    : QObject()
 {
     effects.clear();
     registered.clear();

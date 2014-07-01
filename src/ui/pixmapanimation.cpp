@@ -30,7 +30,7 @@
 const int PixmapAnimation::S_DEFAULT_INTERVAL = 50;
 
 PixmapAnimation::PixmapAnimation()
-: QGraphicsItem(0)
+    : QGraphicsItem(0)
 {
 }
 

@@ -36,42 +36,42 @@ QVariant GetValueFromLuaState(lua_State *L, const char *table_name, const char *
     QVariant data;
     switch (lua_type(L, -1)) {
     case LUA_TSTRING: {
-                          data = QString::fromUtf8(lua_tostring(L, -1));
-                          lua_pop(L, 1);
-                          break;
+        data = QString::fromUtf8(lua_tostring(L, -1));
+        lua_pop(L, 1);
+        break;
     }
     case LUA_TNUMBER: {
-                          data = lua_tonumber(L, -1);
-                          lua_pop(L, 1);
-                          break;
+        data = lua_tonumber(L, -1);
+        lua_pop(L, 1);
+        break;
     }
     case LUA_TTABLE: {
-                         lua_rawgeti(L, -1, 1);
-                         bool isArray = !lua_isnil(L, -1);
-                         lua_pop(L, 1);
+        lua_rawgeti(L, -1, 1);
+        bool isArray = !lua_isnil(L, -1);
+        lua_pop(L, 1);
 
-                         if (isArray) {
-                             QStringList list;
+        if (isArray) {
+            QStringList list;
 
-                             size_t size = lua_rawlen(L, -1);
-                             for (size_t i = 0; i < size; i++) {
-                                 lua_rawgeti(L, -1, i + 1);
-                                 QString element = QString::fromUtf8(lua_tostring(L, -1));
-                                 lua_pop(L, 1);
-                                 list << element;
-                             }
-                             data = list;
-                         }
-                         else {
-                             QVariantMap map;
-                             int t = lua_gettop(L);
-                             for (lua_pushnil(L); lua_next(L, t); lua_pop(L, 1)) {
-                                 const char *key = lua_tostring(L, -2);
-                                 const char *value = lua_tostring(L, -1);
-                                 map[key] = value;
-                             }
-                             data = map;
-                         }
+            size_t size = lua_rawlen(L, -1);
+            for (size_t i = 0; i < size; i++) {
+                lua_rawgeti(L, -1, i + 1);
+                QString element = QString::fromUtf8(lua_tostring(L, -1));
+                lua_pop(L, 1);
+                list << element;
+            }
+            data = list;
+        }
+        else {
+            QVariantMap map;
+            int t = lua_gettop(L);
+            for (lua_pushnil(L); lua_next(L, t); lua_pop(L, 1)) {
+                const char *key = lua_tostring(L, -2);
+                const char *value = lua_tostring(L, -1);
+                map[key] = value;
+            }
+            data = map;
+        }
     }
     default:
         break;

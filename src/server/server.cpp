@@ -54,7 +54,7 @@ static QLayout *HLay(QWidget *left, QWidget *right) {
 }
 
 ServerDialog::ServerDialog(QWidget *parent)
-: QDialog(parent)
+    : QDialog(parent)
 {
     setWindowTitle(tr("Start server"));
 
@@ -140,20 +140,20 @@ QWidget *ServerDialog::createPackageTab() {
 
         switch (package->getType()) {
         case Package::GeneralPack: {
-                                       row = i / 5;
-                                       column = i % 5;
-                                       i++;
+            row = i / 5;
+            column = i % 5;
+            i++;
 
-                                       layout1->addWidget(checkbox, row, column + 1);
-                                       break;
+            layout1->addWidget(checkbox, row, column + 1);
+            break;
         }
         case Package::CardPack: {
-                                    row = j / 5;
-                                    column = j % 5;
-                                    j++;
+            row = j / 5;
+            column = j % 5;
+            j++;
 
-                                    layout2->addWidget(checkbox, row, column + 1);
-                                    break;
+            layout2->addWidget(checkbox, row, column + 1);
+            break;
         }
         default:
             break;
@@ -557,7 +557,7 @@ void ServerDialog::editBanlist() {
 }
 
 BanIPDialog::BanIPDialog(QWidget *parent, Server *theserver)
-: QDialog(parent), server(theserver){
+    : QDialog(parent), server(theserver){
     /*
         if (Sanguosha->currentRoom() == NULL){
         QMessageBox::warning(this, tr("Warining!"), tr("Game is not started!"));
@@ -693,7 +693,7 @@ void BanlistDialog::switchTo(int item) {
 }
 
 BanlistDialog::BanlistDialog(QWidget *parent, bool view)
-: QDialog(parent)
+    : QDialog(parent)
 {
     setWindowTitle(tr("Select generals that are excluded"));
     setMinimumWidth(455);
@@ -831,7 +831,7 @@ void BanlistDialog::saveAll() {
 
 
 Server::Server(QObject *parent)
-: QObject(parent)
+    : QObject(parent)
 {
     server = new NativeServerSocket;
     server->setParent(this);

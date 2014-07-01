@@ -28,7 +28,7 @@
 #include <QPauseAnimation>
 
 IndicatorItem::IndicatorItem(const QPointF &start, const QPointF &real_finish, Player *player)
-: start(start), finish(start), real_finish(real_finish)
+    : start(start), finish(start), real_finish(real_finish)
 {
     color = Sanguosha->getKingdomColor(player->getKingdom());
     width = player->isLord() ? 4 : 3;

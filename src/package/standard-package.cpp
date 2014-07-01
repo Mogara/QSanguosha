@@ -23,7 +23,7 @@
 #include "card.h"
 
 StandardPackage::StandardPackage()
-: Package("standard")
+    : Package("standard")
 {
     addWeiGenerals();
     addShuGenerals();

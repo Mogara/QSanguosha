@@ -39,14 +39,14 @@
 using namespace QSanProtocol::Utils;
 
 LogMessage::LogMessage()
-: from(NULL)
+    : from(NULL)
 {
 }
 
 QString LogMessage::toString() const{
     QStringList tos;
     foreach(ServerPlayer *player, to)
-    if (player != NULL) tos << player->objectName();
+        if (player != NULL) tos << player->objectName();
 
     return QString("%1:%2->%3:%4:%5:%6")
         .arg(type)
@@ -58,7 +58,7 @@ QString LogMessage::toString() const{
 Json::Value LogMessage::toJsonValue() const{
     QStringList tos;
     foreach(ServerPlayer *player, to)
-    if (player != NULL) tos << player->objectName();
+        if (player != NULL) tos << player->objectName();
 
     QStringList log;
     log << type << (from ? from->objectName() : "") << tos.join("+") << card_str << arg << arg2;
@@ -67,12 +67,12 @@ Json::Value LogMessage::toJsonValue() const{
 }
 
 DamageStruct::DamageStruct()
-: from(NULL), to(NULL), card(NULL), damage(1), nature(Normal), chain(false), transfer(false), by_user(true), reason(QString()), transfer_reason(QString()), prevented(false)
+    : from(NULL), to(NULL), card(NULL), damage(1), nature(Normal), chain(false), transfer(false), by_user(true), reason(QString()), transfer_reason(QString()), prevented(false)
 {
 }
 
 DamageStruct::DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *to, int damage, DamageStruct::Nature nature)
-: chain(false), transfer(false), by_user(true), reason(QString()), transfer_reason(QString()), prevented(false)
+    : chain(false), transfer(false), by_user(true), reason(QString()), transfer_reason(QString()), prevented(false)
 {
     this->card = card;
     this->from = from;
@@ -82,7 +82,7 @@ DamageStruct::DamageStruct(const Card *card, ServerPlayer *from, ServerPlayer *t
 }
 
 DamageStruct::DamageStruct(const QString &reason, ServerPlayer *from, ServerPlayer *to, int damage, DamageStruct::Nature nature)
-: card(NULL), chain(false), transfer(false), by_user(true), transfer_reason(QString()), prevented(false)
+    : card(NULL), chain(false), transfer(false), by_user(true), transfer_reason(QString()), prevented(false)
 {
     this->from = from;
     this->to = to;
@@ -100,32 +100,32 @@ QString DamageStruct::getReason() const{
 }
 
 CardEffectStruct::CardEffectStruct()
-: card(NULL), from(NULL), to(NULL)
+    : card(NULL), from(NULL), to(NULL)
 {
 }
 
 SlashEffectStruct::SlashEffectStruct()
-: jink_num(1), slash(NULL), jink(NULL), from(NULL), to(NULL), drank(0), nature(DamageStruct::Normal)
+    : jink_num(1), slash(NULL), jink(NULL), from(NULL), to(NULL), drank(0), nature(DamageStruct::Normal)
 {
 }
 
 DyingStruct::DyingStruct()
-: who(NULL), damage(NULL)
+    : who(NULL), damage(NULL)
 {
 }
 
 DeathStruct::DeathStruct()
-: who(NULL), damage(NULL)
+    : who(NULL), damage(NULL)
 {
 }
 
 RecoverStruct::RecoverStruct()
-: recover(1), who(NULL), card(NULL)
+    : recover(1), who(NULL), card(NULL)
 {
 }
 
 PindianStruct::PindianStruct()
-: from(NULL), to(NULL), from_card(NULL), to_card(NULL), success(false)
+    : from(NULL), to(NULL), from_card(NULL), to_card(NULL), success(false)
 {
 }
 
@@ -134,8 +134,8 @@ bool PindianStruct::isSuccess() const{
 }
 
 JudgeStruct::JudgeStruct()
-: who(NULL), card(NULL), pattern("."), good(true), time_consuming(false),
-negative(false), play_animation(true), _m_result(TRIAL_RESULT_UNKNOWN)
+    : who(NULL), card(NULL), pattern("."), good(true), time_consuming(false),
+    negative(false), play_animation(true), _m_result(TRIAL_RESULT_UNKNOWN)
 {
 }
 
@@ -166,12 +166,12 @@ bool JudgeStruct::isGood(const Card *card) const{
 }
 
 PhaseChangeStruct::PhaseChangeStruct()
-: from(Player::NotActive), to(Player::NotActive)
+    : from(Player::NotActive), to(Player::NotActive)
 {
 }
 
 CardUseStruct::CardUseStruct()
-: card(NULL), from(NULL), m_isOwnerUse(true), m_addHistory(true)
+    : card(NULL), from(NULL), m_isOwnerUse(true), m_addHistory(true)
 {
 }
 
@@ -290,7 +290,7 @@ QString HegemonyMode::GetMappedRole(const QString &role) {
 }
 
 RoomThread::RoomThread(Room *room)
-: room(room)
+    : room(room)
 {
     //Create GameRule inside the thread where RoomThread exits
     game_rule = new GameRule(this);
@@ -320,10 +320,10 @@ void RoomThread::constructTriggerTable() {
 void RoomThread::actionNormal(GameRule *game_rule) {
     try {
         forever{
-        trigger(TurnStart, room, room->getCurrent());
-        if (room->isFinished()) break;
-        room->setCurrent(qobject_cast<ServerPlayer *>(room->getCurrent()->getNextAlive()));
-    }
+            trigger(TurnStart, room, room->getCurrent());
+            if (room->isFinished()) break;
+            room->setCurrent(qobject_cast<ServerPlayer *>(room->getCurrent()->getNextAlive()));
+        }
     }
     catch (TriggerEvent triggerEvent) {
         if (triggerEvent == TurnBroken)
@@ -434,15 +434,16 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         if (will_trigger.isEmpty()
                             || skill->getPriority() == will_trigger.last()->getPriority()) {
                             QMap<ServerPlayer *, QStringList> triggerSkillList = skill->triggerable(triggerEvent, room, target, data);
-                            foreach(ServerPlayer *p, room->getPlayers())
-                            if (triggerSkillList.contains(p) && !triggerSkillList.value(p).isEmpty())
-                                foreach(QString skill_name, triggerSkillList.value(p)) {
+                            foreach(ServerPlayer *p, room->getPlayers()){
+                                if (triggerSkillList.contains(p) && !triggerSkillList.value(p).isEmpty())
+                                    foreach(QString skill_name, triggerSkillList.value(p)) {
                                     const TriggerSkill *trskill = Sanguosha->getTriggerSkill(skill_name);
                                     if (trskill) {
                                         will_trigger.append(trskill);
                                         trigger_who[p].append(trskill);
                                     }
                                 }
+                            }
                         }
                         else if (skill->getPriority() != will_trigger.last()->getPriority())
                             break;
@@ -464,13 +465,13 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         if (p && !p->hasShownAllGenerals())
                             room->setPlayerFlag(p, "Global_askForSkillCost");           // TriggerOrder need protect
                         bool has_compulsory = false;
-                        foreach(const TriggerSkill *skill, who_skills)
-                        if (skill->getFrequency() == Skill::Compulsory
-                            && (skill->isGlobal() || p->hasShownSkill(skill) || p->getAcquiredSkills().contains(skill->objectName()))) {
-                            has_compulsory = true;
-                            break;
+                        foreach(const TriggerSkill *skill, who_skills){
+                            if (skill->getFrequency() == Skill::Compulsory
+                                && (skill->isGlobal() || p->hasShownSkill(skill) || p->getAcquiredSkills().contains(skill->objectName()))) {
+                                has_compulsory = true;
+                                break;
+                            }
                         }
-
                         will_trigger.clear();
                         QStringList names, back_up;
                         QStringList _names;
@@ -498,8 +499,8 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
                         //----------------------------------------------- TriggerSkill::cost
                         if (skill->isGlobal() || (p && p->ownSkill(name) && p->hasShownSkill(name))) // if hasShown, then needn't protect
-                        if (p && p->hasFlag("Global_askForSkillCost"))
-                            room->setPlayerFlag(p, "-Global_askForSkillCost");
+                            if (p && p->hasFlag("Global_askForSkillCost"))
+                                room->setPlayerFlag(p, "-Global_askForSkillCost");
                         already_triggered.append(skill);
                         bool do_effect = false;
                         if (skill->cost(triggerEvent, room, target, data, p)) {
@@ -528,14 +529,16 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                                 while (room->isPaused()) {}
                                 if (skill->getPriority() == triggered.first()->getPriority()) {
                                     QMap<ServerPlayer *, QStringList> triggerSkillList = skill->triggerable(triggerEvent, room, target, data);
-                                    foreach(ServerPlayer *player, room->getAllPlayers(true))
-                                    if (triggerSkillList.contains(player) && !triggerSkillList.value(player).isEmpty())
-                                        foreach(QString skill_name, triggerSkillList.value(player)) {
-                                            const TriggerSkill *trskill = Sanguosha->getTriggerSkill(skill_name);
-                                            if (trskill) {
-                                                trigger_who[player].append(trskill);
+                                    foreach(ServerPlayer *player, room->getAllPlayers(true)){
+                                        if (triggerSkillList.contains(player) && !triggerSkillList.value(player).isEmpty()){
+                                            foreach(QString skill_name, triggerSkillList.value(player)) {
+                                                const TriggerSkill *trskill = Sanguosha->getTriggerSkill(skill_name);
+                                                if (trskill) {
+                                                    trigger_who[player].append(trskill);
+                                                }
                                             }
                                         }
+                                    }
                                 }
                                 else
                                     break;
@@ -543,8 +546,8 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         }
 
                         foreach(const TriggerSkill* s, already_triggered)
-                        if (trigger_who[p].contains(s))
-                            trigger_who[p].removeOne(s);
+                            if (trigger_who[p].contains(s))
+                                trigger_who[p].removeOne(s);
 
                         if (has_compulsory){
                             has_compulsory = false;
@@ -558,19 +561,21 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         }
                     }
 
-                    if (p && p->hasFlag("Global_askForSkillCost"))
-                        room->setPlayerFlag(p, "-Global_askForSkillCost"); // remove Flag
+                        if (p && p->hasFlag("Global_askForSkillCost"))
+                            room->setPlayerFlag(p, "-Global_askForSkillCost"); // remove Flag
 
                     if (broken) break;
                 }
                 // @todo_Slob: for drawing cards when game starts -- stupid design of triggering no player!
                 // @todo_Slob: we needn't judge the priority of game_rule because of codes from Line. 418 to Line. 450
                 if (!broken) {
-                    if (!trigger_who[NULL].isEmpty())
-                        foreach(const TriggerSkill *skill, trigger_who[NULL])
-                    if (skill->cost(triggerEvent, room, target, data, NULL)) {
-                        broken = skill->effect(triggerEvent, room, target, data, NULL);
-                        if (broken) break;
+                    if (!trigger_who[NULL].isEmpty()){
+                        foreach(const TriggerSkill *skill, trigger_who[NULL]){
+                            if (skill->cost(triggerEvent, room, target, data, NULL)) {
+                                broken = skill->effect(triggerEvent, room, target, data, NULL);
+                                if (broken) break;
+                            }
+                        }
                     }
                 }
             }

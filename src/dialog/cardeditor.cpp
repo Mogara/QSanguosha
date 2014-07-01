@@ -40,7 +40,7 @@
 #include <QClipboard>
 
 BlackEdgeTextItem::BlackEdgeTextItem()
-:skip(0), color(Qt::white), outline(3)
+    :skip(0), color(Qt::white), outline(3)
 {
     setFlags(ItemIsMovable | ItemIsFocusable);
 }
@@ -112,8 +112,7 @@ void BlackEdgeTextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem 
     QFontMetrics metric(font);
     int height = metric.height() - metric.descent() + skip;
 
-    int i;
-    for (i = 0; i<text.length(); i++){
+    for (int i = 0; i < text.length(); i++){
 
         QString text;
         text.append(this->text.at(i));
@@ -194,9 +193,9 @@ public:
         case Qt::Key_Up: delta_y = -1; break;
         case Qt::Key_Down: delta_y = 1; break;
         case Qt::Key_Delete:{
-                                if (DeleteAction)
-                                    DeleteAction->trigger();
-                                return;
+            if (DeleteAction)
+                DeleteAction->trigger();
+            return;
         }
 
         default:
@@ -316,7 +315,7 @@ void SkillBox::setKingdom(const QString &kingdom){
 }
 
 AATextItem::AATextItem(const QString &text, QGraphicsItem *parent)
-:QGraphicsTextItem(text, parent)
+    :QGraphicsTextItem(text, parent)
 {
 }
 
@@ -326,10 +325,10 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         QFont f = widget->font();
         f.setStyleHint(QFont::AnyStyle, QFont::PreferAntialias);
         widget->setFont(f);
-    }
+        }
 
-    QGraphicsTextItem::paint(painter, option, widget);*/
-    
+        QGraphicsTextItem::paint(painter, option, widget);*/
+
     if (hasFocus()){
         QGraphicsTextItem::paint(painter, option, widget);
         return;
@@ -396,34 +395,34 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     QStringList all_strs;
     QStringList operated;
     foreach(QString str, strs + nor_strs) {
-        int removed_length = 0;
-        QString text_copy = text;
-        int i = text.indexOf(str);
-        int l = str.size();
-        for (int ind = 0; ind < operated.count(str); ++ind) {
-            text_copy.remove(str);
-            removed_length += l;
-            i = text_copy.indexOf(str) + removed_length;
-        }
-        all_strs.insert(i, str);
+    int removed_length = 0;
+    QString text_copy = text;
+    int i = text.indexOf(str);
+    int l = str.size();
+    for (int ind = 0; ind < operated.count(str); ++ind) {
+    text_copy.remove(str);
+    removed_length += l;
+    i = text_copy.indexOf(str) + removed_length;
+    }
+    all_strs.insert(i, str);
     }
 
     QRegExp bold("\\[b:(.+)\\]");
     foreach(QString string, all_strs) {
-        if (bold.exactMatch(string)) {
-            bold.indexIn(string);
-            static QFont bfont;
-            if (!bfont.bold()) {
-                bfont = font();
-                bfont.setBold(true);
-            }
-            path.addText(document()->documentMargin(), fm.height(), bfont, bold.cap());
-        }
-        else
-            path.addText(document()->documentMargin(), fm.height(), font(), string);
+    if (bold.exactMatch(string)) {
+    bold.indexIn(string);
+    static QFont bfont;
+    if (!bfont.bold()) {
+    bfont = font();
+    bfont.setBold(true);
+    }
+    path.addText(document()->documentMargin(), fm.height(), bfont, bold.cap());
+    }
+    else
+    path.addText(document()->documentMargin(), fm.height(), font(), string);
     }*/
-    
-    
+
+
 }
 
 void SkillBox::addSkill(const QString &text){
@@ -547,7 +546,7 @@ void SkillBox::paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *){
 }
 
 AvatarRectItem::AvatarRectItem(qreal width, qreal height, const QRectF &box_rect, int font_size)
-:QGraphicsRectItem(0, 0, width, height)
+    :QGraphicsRectItem(0, 0, width, height)
 {
     QPen thick_pen(Qt::black);
     thick_pen.setWidth(4);
@@ -591,7 +590,7 @@ void AvatarRectItem::setName(const QString &name){
 }
 
 CardScene::CardScene()
-:QGraphicsScene(QRectF(0, 0, 366, 514)), menu(NULL), max_hp(0), trans_max_hp(0)
+    :QGraphicsScene(QRectF(0, 0, 366, 514)), menu(NULL), max_hp(0), trans_max_hp(0)
 {
     photo = NULL;
     frame = new QGraphicsPixmapItem;
@@ -1230,7 +1229,7 @@ QWidget *CardEditor::createSkillBox(){
     layout->addRow(tr("Insert bold text"), bold_ComboBox);
 
     connect(bold_ComboBox, SIGNAL(activated(QString)), skill_box, SLOT(insertBoldText(QString)));
-    
+
     box->setLayout(layout);
     return box;
 }

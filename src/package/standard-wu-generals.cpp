@@ -677,8 +677,8 @@ public:
     virtual bool viewFilter(const Card *to_select) const{
         Room *room = Sanguosha->currentRoom();
         foreach(ServerPlayer *p, room->getPlayers())
-        if (p->ownSkill(objectName()) && p->hasShownSkill(objectName()))
-            return to_select->getSuit() == Card::Spade;
+            if (p->ownSkill(objectName()) && p->hasShownSkill(objectName()))
+                return to_select->getSuit() == Card::Spade;
         return false;
     }
 

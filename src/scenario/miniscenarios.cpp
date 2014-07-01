@@ -29,7 +29,7 @@ const char *MiniSceneRule::S_EXTRA_OPTION_REST_IN_DISCARD_PILE = "restInDiscardP
 const QString MiniSceneRule::_S_DEFAULT_HERO = "sujiang";
 
 MiniSceneRule::MiniSceneRule(Scenario *scenario)
-: ScenarioRule(scenario)
+    : ScenarioRule(scenario)
 {
     events << GameStart << EventPhaseStart << FetchDrawPileCard;
 }
@@ -349,7 +349,7 @@ void MiniSceneRule::loadSetting(QString path) {
 }
 
 MiniScene::MiniScene(const QString &name)
-: Scenario(name)
+    : Scenario(name)
 {
     rule = new MiniSceneRule(this);
 }

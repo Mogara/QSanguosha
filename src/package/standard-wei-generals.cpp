@@ -339,8 +339,8 @@ public:
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         JudgeStruct *judge = data.value<JudgeStruct *>();
         if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
-        if (TriggerSkill::triggerable(player))
-            return QStringList(objectName());
+            if (TriggerSkill::triggerable(player))
+                return QStringList(objectName());
         return QStringList();
     }
 
@@ -482,8 +482,8 @@ public:
         zhenji->tag.remove(objectName());
         QList<int> subcards;
         foreach(int id, card_list)
-        if (room->getCardPlace(id) == Player::PlaceTable && !subcards.contains(id))
-            subcards << id;
+            if (room->getCardPlace(id) == Player::PlaceTable && !subcards.contains(id))
+                subcards << id;
         if (subcards.length() != 0){
             DummyCard dummy(subcards);
             zhenji->obtainCard(&dummy);
@@ -1204,8 +1204,8 @@ public:
         if (player != NULL && player->getPhase() == Player::Finish) {
             QList<ServerPlayer *> yuejins = room->findPlayersBySkillName(objectName());
             foreach(ServerPlayer *yuejin, yuejins)
-            if (player != yuejin && yuejin->canDiscard(yuejin, "h"))
-                skill_list.insert(yuejin, QStringList(objectName()));
+                if (player != yuejin && yuejin->canDiscard(yuejin, "h"))
+                    skill_list.insert(yuejin, QStringList(objectName()));
         }
         return skill_list;
     }

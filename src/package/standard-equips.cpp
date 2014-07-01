@@ -26,7 +26,7 @@
 #include "engine.h"
 
 Crossbow::Crossbow(Suit suit, int number)
-: Weapon(suit, number, 1)
+    : Weapon(suit, number, 1)
 {
     setObjectName("Crossbow");
 }
@@ -71,7 +71,7 @@ public:
 };
 
 DoubleSword::DoubleSword(Suit suit, int number)
-: Weapon(suit, number, 2)
+    : Weapon(suit, number, 2)
 {
     setObjectName("DoubleSword");
 }
@@ -101,7 +101,7 @@ public:
 };
 
 QinggangSword::QinggangSword(Suit suit, int number)
-: Weapon(suit, number, 2)
+    : Weapon(suit, number, 2)
 {
     setObjectName("QinggangSword");
 }
@@ -137,7 +137,7 @@ public:
 };
 
 Spear::Spear(Suit suit, int number)
-: Weapon(suit, number, 3)
+    : Weapon(suit, number, 3)
 {
     setObjectName("Spear");
 }
@@ -189,7 +189,7 @@ public:
 };
 
 Axe::Axe(Suit suit, int number)
-: Weapon(suit, number, 3)
+    : Weapon(suit, number, 3)
 {
     setObjectName("Axe");
 }
@@ -233,7 +233,7 @@ public:
 };
 
 KylinBow::KylinBow(Suit suit, int number)
-: Weapon(suit, number, 5)
+    : Weapon(suit, number, 5)
 {
     setObjectName("KylinBow");
 }
@@ -303,7 +303,7 @@ public:
 };
 
 EightDiagram::EightDiagram(Suit suit, int number)
-: Armor(suit, number)
+    : Armor(suit, number)
 {
     setObjectName("EightDiagram");
 }
@@ -338,7 +338,7 @@ public:
 };
 
 IceSword::IceSword(Suit suit, int number)
-: Weapon(suit, number, 2)
+    : Weapon(suit, number, 2)
 {
     setObjectName("IceSword");
 }
@@ -374,7 +374,7 @@ public:
 };
 
 RenwangShield::RenwangShield(Suit suit, int number)
-: Armor(suit, number)
+    : Armor(suit, number)
 {
     setObjectName("RenwangShield");
 }
@@ -403,13 +403,13 @@ public:
 };
 
 Fan::Fan(Suit suit, int number)
-: Weapon(suit, number, 4)
+    : Weapon(suit, number, 4)
 {
     setObjectName("Fan");
 }
 
 SixSwords::SixSwords(Suit suit, int number)
-: Weapon(suit, number, 2)
+    : Weapon(suit, number, 2)
 {
     setObjectName("SixSwords");
 }
@@ -471,10 +471,11 @@ public:
         if (damage.to && damage.to->isAlive() && damage.card && damage.card->isKindOf("Slash")
             && damage.by_user && !damage.chain && !damage.transfer){
             QList<ServerPlayer *> players;
-            foreach(ServerPlayer *p, room->getOtherPlayers(player))
-            if (damage.to->distanceTo(p) == 1){
-                players << p;
-                room->setPlayerFlag(p, "TribladeCanBeSelected");
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+                if (damage.to->distanceTo(p) == 1){
+                    players << p;
+                    room->setPlayerFlag(p, "TribladeCanBeSelected");
+                }
             }
             if (players.isEmpty())
                 return false;
@@ -482,8 +483,8 @@ public:
         }
 
         foreach(ServerPlayer *p, room->getAllPlayers())
-        if (p->hasFlag("TribladeCanBeSelected"))
-            room->setPlayerFlag(p, "TribladeCanBeSelected");
+            if (p->hasFlag("TribladeCanBeSelected"))
+                room->setPlayerFlag(p, "TribladeCanBeSelected");
 
         return false;
     }
@@ -562,7 +563,7 @@ public:
 };
 
 Vine::Vine(Suit suit, int number)
-: Armor(suit, number)
+    : Armor(suit, number)
 {
     setObjectName("Vine");
 }
@@ -632,7 +633,7 @@ public:
 };
 
 SilverLion::SilverLion(Suit suit, int number)
-: Armor(suit, number)
+    : Armor(suit, number)
 {
     setObjectName("SilverLion");
 }

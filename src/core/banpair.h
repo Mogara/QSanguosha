@@ -25,7 +25,7 @@
 #include <QPair>
 #include <QListWidget>
 
-struct BanPair : public QPair<QString, QString> {
+struct BanPair : public QPair < QString, QString > {
     BanPair();
     BanPair(const QString &first, const QString &second);
 

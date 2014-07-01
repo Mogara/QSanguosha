@@ -77,7 +77,7 @@ void QSanSelectableItem::setPixmap(const QPixmap &pixmap) {
 }
 
 QSanSelectableItem::QSanSelectableItem(bool center_as_origin)
-: markable(false), marked(false)
+    : markable(false), marked(false)
 {
     if (center_as_origin) {
         resetTransform();

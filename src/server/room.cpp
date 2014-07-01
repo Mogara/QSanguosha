@@ -56,12 +56,12 @@ using namespace QSanProtocol;
 using namespace QSanProtocol::Utils;
 
 Room::Room(QObject *parent, const QString &mode)
-: QThread(parent), mode(mode), current(NULL), pile1(Sanguosha->getRandomCards()),
-m_drawPile(&pile1), m_discardPile(&pile2),
-game_started(false), game_finished(false), game_paused(false), L(NULL), thread(NULL),
-_m_semRaceRequest(0), _m_semRoomMutex(1),
-_m_raceStarted(false), provided(NULL), has_provided(false),
-m_surrenderRequestReceived(false), _virtual(false), _m_roomState(false)
+    : QThread(parent), mode(mode), current(NULL), pile1(Sanguosha->getRandomCards()),
+    m_drawPile(&pile1), m_discardPile(&pile2),
+    game_started(false), game_finished(false), game_paused(false), L(NULL), thread(NULL),
+    _m_semRaceRequest(0), _m_semRoomMutex(1),
+    _m_raceStarted(false), provided(NULL), has_provided(false),
+    m_surrenderRequestReceived(false), _virtual(false), _m_roomState(false)
 {
     static int s_global_room_id = 0;
     _m_Id = s_global_room_id++;
@@ -369,8 +369,8 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason) {
     thread->trigger(GameOverJudge, this, victim, data);
 
     foreach(ServerPlayer *p, players_with_victim)
-    if (p->isAlive() || p == victim)
-        thread->trigger(Death, this, p, data);
+        if (p->isAlive() || p == victim)
+            thread->trigger(Death, this, p, data);
 
     doNotify(victim, S_COMMAND_SET_DASHBOARD_SHADOW, toJsonString(victim->objectName()));
 
@@ -900,10 +900,11 @@ bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, CommandType com
     //for protecting anjiang
     //============================================
     bool verify = false;
-    foreach(ServerPlayer *p, players)
-    if (p->hasFlag("Global_askForSkillCost")) {
-        verify = true;
-        break;
+    foreach(ServerPlayer *p, players){
+        if (p->hasFlag("Global_askForSkillCost")) {
+            verify = true;
+            break;
+        }
     }
     QList<ServerPlayer *> new_players;
     new_players = verify ? getAllPlayers() : players;
@@ -5524,7 +5525,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
             return false;
 
         foreach(int id, ids)
-        if (!cards.contains(id)) return false;
+            if (!cards.contains(id)) return false;
 
         ServerPlayer *who = findChild<ServerPlayer *>(toQString(clientReply[1]));
         if (!who)

@@ -29,7 +29,7 @@
 #include <QGraphicsDropShadowEffect>
 
 Window::Window(const QString &title, const QSizeF &size, const QString &path)
-: size(size), keep_when_disappear(false)
+    : size(size), keep_when_disappear(false)
 {
     setFlags(ItemIsMovable);
 

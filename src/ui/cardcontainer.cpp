@@ -29,7 +29,7 @@
 #include <QGraphicsSceneMouseEvent>
 
 CardContainer::CardContainer()
-: scene_width(0), item_count(0)
+    : scene_width(0), item_count(0)
 {
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
@@ -289,7 +289,7 @@ void CardContainer::view(const ClientPlayer *player) {
 }
 
 GuanxingBox::GuanxingBox()
-: CardContainer()
+    : CardContainer()
 {
 }
 

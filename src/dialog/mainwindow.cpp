@@ -96,7 +96,7 @@ public:
 #ifdef AUDIO_SUPPORT
 
 SoundTestBox::SoundTestBox(QWidget *parent /* = NULL */)
-:QDialog(parent){
+    :QDialog(parent){
     QDir dir("audio/test/");
     QStringList entry_list = dir.entryList();
     entry_list.removeOne(".");
@@ -131,7 +131,7 @@ void SoundTestBox::btn_clicked(){
 #endif
 
 MainWindow::MainWindow(QWidget *parent)
-: QMainWindow(parent), ui(new Ui::MainWindow), server(NULL)
+    : QMainWindow(parent), ui(new Ui::MainWindow), server(NULL)
 {
     ui->setupUi(this);
     setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
@@ -206,7 +206,7 @@ void MainWindow::restoreFromConfig() {
 void MainWindow::closeEvent(QCloseEvent *) {
     Config.setValue("WindowSize", size());
     Config.setValue("WindowPosition", pos());
-    Config.setValue("WindowState", (int) windowState());
+    Config.setValue("WindowState", (int)windowState());
 }
 
 MainWindow::~MainWindow() {
@@ -611,7 +611,7 @@ void MainWindow::on_actionRule_Summary_triggered()
 }
 
 BroadcastBox::BroadcastBox(Server *server, QWidget *parent)
-: QDialog(parent), server(server)
+    : QDialog(parent), server(server)
 {
     setWindowTitle(tr("Broadcast"));
 

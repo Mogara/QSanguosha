@@ -34,10 +34,10 @@ using namespace QSanProtocol::Utils;
 const int ServerPlayer::S_NUM_SEMAPHORES = 6;
 
 ServerPlayer::ServerPlayer(Room *room)
-: Player(room), m_isClientResponseReady(false), m_isWaitingReply(false),
-socket(NULL), room(room), event_received(false),
-ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL),
-_m_phases_index(0), _m_clientResponse(Json::nullValue)
+    : Player(room), m_isClientResponseReady(false), m_isWaitingReply(false),
+    socket(NULL), room(room), event_received(false),
+    ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL),
+    _m_phases_index(0), _m_clientResponse(Json::nullValue)
 {
     semas = new QSemaphore *[S_NUM_SEMAPHORES];
     for (int i = 0; i < S_NUM_SEMAPHORES; i++)
@@ -343,47 +343,47 @@ QString ServerPlayer::reportHeader() const{
 void ServerPlayer::removeCard(const Card *card, Place place) {
     switch (place) {
     case PlaceHand: {
-                        handcards.removeOne(card);
-                        break;
+        handcards.removeOne(card);
+        break;
     }
     case PlaceEquip: {
-                         const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
-                         if (equip == NULL)
-                             equip = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card->getEffectiveId()));
-                         Q_ASSERT(equip != NULL);
-                         equip->onUninstall(this);
+        const EquipCard *equip = qobject_cast<const EquipCard *>(card->getRealCard());
+        if (equip == NULL)
+            equip = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card->getEffectiveId()));
+        Q_ASSERT(equip != NULL);
+        equip->onUninstall(this);
 
-                         WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
-                         removeEquip(wrapped);
+        WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
+        removeEquip(wrapped);
 
-                         bool show_log = true;
-                         foreach(QString flag, flags)
-                         if (flag.endsWith("_InTempMoving")) {
-                             show_log = false;
-                             break;
-                         }
-                         if (show_log) {
-                             LogMessage log;
-                             log.type = "$Uninstall";
-                             log.card_str = wrapped->toString();
-                             log.from = this;
-                             room->sendLog(log);
-                         }
-                         break;
+        bool show_log = true;
+        foreach(QString flag, flags)
+            if (flag.endsWith("_InTempMoving")) {
+            show_log = false;
+            break;
+            }
+        if (show_log) {
+            LogMessage log;
+            log.type = "$Uninstall";
+            log.card_str = wrapped->toString();
+            log.from = this;
+            room->sendLog(log);
+        }
+        break;
     }
     case PlaceDelayedTrick: {
-                                removeDelayedTrick(card);
-                                break;
+        removeDelayedTrick(card);
+        break;
     }
     case PlaceSpecial: {
-                           int card_id = card->getEffectiveId();
-                           QString pile_name = getPileName(card_id);
+        int card_id = card->getEffectiveId();
+        QString pile_name = getPileName(card_id);
 
-                           //@todo: sanity check required
-                           if (!pile_name.isEmpty())
-                               piles[pile_name].removeOne(card_id);
+        //@todo: sanity check required
+        if (!pile_name.isEmpty())
+            piles[pile_name].removeOne(card_id);
 
-                           break;
+        break;
     }
     default:
         break;
@@ -393,19 +393,19 @@ void ServerPlayer::removeCard(const Card *card, Place place) {
 void ServerPlayer::addCard(const Card *card, Place place) {
     switch (place) {
     case PlaceHand: {
-                        handcards << card;
-                        break;
+        handcards << card;
+        break;
     }
     case PlaceEquip: {
-                         WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
-                         const EquipCard *equip = qobject_cast<const EquipCard *>(wrapped->getRealCard());
-                         setEquip(wrapped);
-                         equip->onInstall(this);
-                         break;
+        WrappedCard *wrapped = Sanguosha->getWrappedCard(card->getEffectiveId());
+        const EquipCard *equip = qobject_cast<const EquipCard *>(wrapped->getRealCard());
+        setEquip(wrapped);
+        equip->onInstall(this);
+        break;
     }
     case PlaceDelayedTrick: {
-                                addDelayedTrick(card);
-                                break;
+        addDelayedTrick(card);
+        break;
     }
     default:
         break;
@@ -1307,16 +1307,16 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event) {
 
         if (property("Duanchang").toString() != "head")
             foreach(const Skill *skill, getHeadSkillList()) {
-                if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
-                    && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
-                    && hasShownSkill(skill)) {
-                    Json::Value arg(Json::arrayValue);
-                    arg[0] = toJsonString(objectName());
-                    arg[1] = toJsonString(skill->getLimitMark());
-                    arg[2] = 1;
-                    room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
-                }
+            if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
+                && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
+                && hasShownSkill(skill)) {
+                Json::Value arg(Json::arrayValue);
+                arg[0] = toJsonString(objectName());
+                arg[1] = toJsonString(skill->getLimitMark());
+                arg[2] = 1;
+                room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
             }
+        }
 
         if (!hasShownGeneral2()) {
             QString kingdom = getGeneral()->getKingdom();
@@ -1363,7 +1363,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event) {
 
         sendSkillsToOthers(false);
 
-        if (property("Duanchang").toString() != "deputy")
+        if (property("Duanchang").toString() != "deputy"){
             foreach(const Skill *skill, getDeputySkillList()) {
                 if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
                     && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
@@ -1375,6 +1375,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event) {
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
                 }
             }
+        }
 
         if (!hasShownGeneral1()) {
             QString kingdom = getGeneral2()->getKingdom();
@@ -1536,10 +1537,10 @@ void ServerPlayer::removeGeneral(bool head_general) {
         setSkillsPreshowed("h", false);
         disconnectSkillsFromOthers();
 
-        foreach(const Skill *skill, getHeadSkillList())
-        if (skill)
-            room->detachSkillFromPlayer(this, skill->objectName(), true);
-
+        foreach(const Skill *skill, getHeadSkillList()){
+            if (skill)
+                room->detachSkillFromPlayer(this, skill->objectName(), true);
+        }
         if (!hasShownGeneral2()) {
             room->setPlayerProperty(this, "kingdom", kingdom);
 
@@ -1590,10 +1591,10 @@ void ServerPlayer::removeGeneral(bool head_general) {
         setSkillsPreshowed("d", false);
         disconnectSkillsFromOthers(false);
 
-        foreach(const Skill *skill, getDeputySkillList())
-        if (skill)
-            room->detachSkillFromPlayer(this, skill->objectName());
-
+        foreach(const Skill *skill, getDeputySkillList()){
+            if (skill)
+                room->detachSkillFromPlayer(this, skill->objectName());
+        }
         if (!hasShownGeneral1()) {
             room->setPlayerProperty(this, "kingdom", kingdom);
 
@@ -1762,108 +1763,110 @@ void ServerPlayer::summonFriends(const ArrayType type) {
     room->sendLog(log2);
     switch (type) {
     case Siege: {
-                    if (isFriendWith(getNextAlive()) && isFriendWith(getLastAlive())) return;
-                    QString prompt = "SiegeSummon";
-                    bool failed = true;
-                    if (!isFriendWith(getNextAlive())) {
-                        ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(2));
-                        if (!target->hasShownOneGeneral()) {
-                            if (!target->willBeFriendWith(this))
-                                prompt += "!";
-                            bool success = room->askForSkillInvoke(target, prompt);
-                            LogMessage log;
-                            log.type = "#SummonResult";
-                            log.from = target;
-                            log.arg = success ? "summon_success" : "summon_failed";
-                            room->sendLog(log);
-                            if (success) {
-                                target->askForGeneralShow();
-                                failed = false;
-                            }
-                        }
-                    }
-                    if (!isFriendWith(getLastAlive())) {
-                        ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(2));
-                        if (!target->hasShownOneGeneral()) {
-                            if (!target->willBeFriendWith(this))
-                                prompt += "!";
-                            bool success = room->askForSkillInvoke(target, prompt);
-                            LogMessage log;
-                            log.type = "#SummonResult";
-                            log.from = target;
-                            log.arg = success ? "summon_success" : "summon_failed";
-                            room->sendLog(log);
-                            if (success) {
-                                target->askForGeneralShow();
-                                failed = false;
-                            }
-                        }
-                    }
-                    if (failed)
-                        room->setPlayerFlag(this, "Global_SummonFailed");
-                    break;
+        if (isFriendWith(getNextAlive()) && isFriendWith(getLastAlive())) return;
+        QString prompt = "SiegeSummon";
+        bool failed = true;
+        if (!isFriendWith(getNextAlive())) {
+            ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(2));
+            if (!target->hasShownOneGeneral()) {
+                if (!target->willBeFriendWith(this))
+                    prompt += "!";
+                bool success = room->askForSkillInvoke(target, prompt);
+                LogMessage log;
+                log.type = "#SummonResult";
+                log.from = target;
+                log.arg = success ? "summon_success" : "summon_failed";
+                room->sendLog(log);
+                if (success) {
+                    target->askForGeneralShow();
+                    failed = false;
+                }
+            }
+        }
+        if (!isFriendWith(getLastAlive())) {
+            ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(2));
+            if (!target->hasShownOneGeneral()) {
+                if (!target->willBeFriendWith(this))
+                    prompt += "!";
+                bool success = room->askForSkillInvoke(target, prompt);
+                LogMessage log;
+                log.type = "#SummonResult";
+                log.from = target;
+                log.arg = success ? "summon_success" : "summon_failed";
+                room->sendLog(log);
+                if (success) {
+                    target->askForGeneralShow();
+                    failed = false;
+                }
+            }
+        }
+        if (failed)
+            room->setPlayerFlag(this, "Global_SummonFailed");
+        break;
     } case Formation: {
-                    int n = aliveCount();
-                    int asked = n;
-                    bool failed = true;
-                    for (int i = 1; i < n; ++i) {
-                        ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(i));
-                        if (isFriendWith(target))
-                            continue;
-                        else if (!target->hasShownOneGeneral()) {
-                            QString prompt = "FormationSummon";
-                            if (!target->willBeFriendWith(this))
-                                prompt += "!";
+        int n = aliveCount();
+        int asked = n;
+        bool failed = true;
+        for (int i = 1; i < n; ++i) {
+            ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(i));
+            if (isFriendWith(target))
+                continue;
+            else if (!target->hasShownOneGeneral()) {
+                QString prompt = "FormationSummon";
+                if (!target->willBeFriendWith(this))
+                    prompt += "!";
 
-                            bool success = room->askForSkillInvoke(target, prompt);
-                            LogMessage log;
-                            log.type = "#SummonResult";
-                            log.from = target;
-                            log.arg = success ? "summon_success" : "summon_failed";
-                            room->sendLog(log);
+                bool success = room->askForSkillInvoke(target, prompt);
+                LogMessage log;
+                log.type = "#SummonResult";
+                log.from = target;
+                log.arg = success ? "summon_success" : "summon_failed";
+                room->sendLog(log);
 
-                            if (success) {
-                                target->askForGeneralShow();
-                                failed = false;
-                            } else {
-                                asked = i;
-                                break;
-                            }
-                        } else {
-                            asked = i;
-                            break;
-                        }
-                    }
-
-                    n -= asked;
-                    for (int i = 1; i < n; ++i) {
-                        ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(i));
-                        if (isFriendWith(target))
-                            continue;
-                        else {
-                            if (!target->hasShownOneGeneral()) {
-                                QString prompt = "FormationSummon";
-                                if (!target->willBeFriendWith(this))
-                                    prompt += "!";
-
-                                bool success = room->askForSkillInvoke(target, prompt);
-                                LogMessage log;
-                                log.type = "#SummonResult";
-                                log.from = target;
-                                log.arg = success ? "summon_success" : "summon_failed";
-                                room->sendLog(log);
-
-                                if (success) {
-                                    target->askForGeneralShow();
-                                    failed = false;
-                                }
-                            }
-                            break;
-                        }
-                    }
-                    if (failed)
-                        room->setPlayerFlag(this, "Global_SummonFailed");
+                if (success) {
+                    target->askForGeneralShow();
+                    failed = false;
+                }
+                else {
+                    asked = i;
                     break;
+                }
+            }
+            else {
+                asked = i;
+                break;
+            }
+        }
+
+        n -= asked;
+        for (int i = 1; i < n; ++i) {
+            ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(i));
+            if (isFriendWith(target))
+                continue;
+            else {
+                if (!target->hasShownOneGeneral()) {
+                    QString prompt = "FormationSummon";
+                    if (!target->willBeFriendWith(this))
+                        prompt += "!";
+
+                    bool success = room->askForSkillInvoke(target, prompt);
+                    LogMessage log;
+                    log.type = "#SummonResult";
+                    log.from = target;
+                    log.arg = success ? "summon_success" : "summon_failed";
+                    room->sendLog(log);
+
+                    if (success) {
+                        target->askForGeneralShow();
+                        failed = false;
+                    }
+                }
+                break;
+            }
+        }
+        if (failed)
+            room->setPlayerFlag(this, "Global_SummonFailed");
+        break;
     }
     }
 }
@@ -1889,7 +1892,7 @@ bool ServerPlayer::event(QEvent *event) {
 }
 
 ServerPlayerEvent::ServerPlayerEvent(char *property_name, QVariant &value)
-: QEvent(QEvent::User), property_name(property_name), value(value)
+    : QEvent(QEvent::User), property_name(property_name), value(value)
 {
 
 }

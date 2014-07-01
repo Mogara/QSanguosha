@@ -27,7 +27,7 @@
 #include "jsonutils.h"
 
 AmazingGrace::AmazingGrace(Suit suit, int number)
-: GlobalEffect(suit, number)
+    : GlobalEffect(suit, number)
 {
     setObjectName("amazing_grace");
     has_preact = true;
@@ -78,7 +78,7 @@ void AmazingGrace::onEffect(const CardEffectStruct &effect) const{
 }
 
 GodSalvation::GodSalvation(Suit suit, int number)
-: GlobalEffect(suit, number)
+    : GlobalEffect(suit, number)
 {
     setObjectName("god_salvation");
 }
@@ -99,7 +99,7 @@ void GodSalvation::onEffect(const CardEffectStruct &effect) const{
 }
 
 SavageAssault::SavageAssault(Suit suit, int number)
-: AOE(suit, number)
+    : AOE(suit, number)
 {
     setObjectName("savage_assault");
 }
@@ -123,7 +123,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const{
 }
 
 ArcheryAttack::ArcheryAttack(Card::Suit suit, int number)
-: AOE(suit, number)
+    : AOE(suit, number)
 {
     setObjectName("archery_attack");
 }
@@ -146,7 +146,7 @@ void ArcheryAttack::onEffect(const CardEffectStruct &effect) const{
 }
 
 Collateral::Collateral(Card::Suit suit, int number)
-: SingleTargetTrick(suit, number)
+    : SingleTargetTrick(suit, number)
 {
     setObjectName("collateral");
 }
@@ -246,7 +246,7 @@ void Collateral::onEffect(const CardEffectStruct &effect) const{
 }
 
 Nullification::Nullification(Suit suit, int number)
-: SingleTargetTrick(suit, number)
+    : SingleTargetTrick(suit, number)
 {
     target_fixed = true;
     setObjectName("nullification");
@@ -267,14 +267,14 @@ bool Nullification::isAvailable(const Player *) const{
 }
 
 HegNullification::HegNullification(Suit suit, int number)
-: Nullification(suit, number)
+    : Nullification(suit, number)
 {
     target_fixed = true;
     setObjectName("heg_nullification");
 }
 
 ExNihilo::ExNihilo(Suit suit, int number)
-: SingleTargetTrick(suit, number)
+    : SingleTargetTrick(suit, number)
 {
     setObjectName("ex_nihilo");
     target_fixed = true;
@@ -296,7 +296,7 @@ void ExNihilo::onEffect(const CardEffectStruct &effect) const{
 }
 
 Duel::Duel(Suit suit, int number)
-: SingleTargetTrick(suit, number)
+    : SingleTargetTrick(suit, number)
 {
     setObjectName("duel");
 }
@@ -406,7 +406,7 @@ QStringList Duel::checkTargetModSkillShow(const CardUseStruct &use) const{
 }
 
 Snatch::Snatch(Suit suit, int number)
-: SingleTargetTrick(suit, number)
+    : SingleTargetTrick(suit, number)
 {
     setObjectName("snatch");
 }
@@ -532,7 +532,7 @@ QStringList Snatch::checkTargetModSkillShow(const CardUseStruct &use) const{
 }
 
 Dismantlement::Dismantlement(Suit suit, int number)
-: SingleTargetTrick(suit, number)
+    : SingleTargetTrick(suit, number)
 {
     setObjectName("dismantlement");
 }
@@ -606,7 +606,7 @@ QStringList Dismantlement::checkTargetModSkillShow(const CardUseStruct &use) con
 }
 
 IronChain::IronChain(Card::Suit suit, int number)
-: TrickCard(suit, number)
+    : TrickCard(suit, number)
 {
     setObjectName("iron_chain");
     can_recast = true;
@@ -960,7 +960,7 @@ QStringList BefriendAttacking::checkTargetModSkillShow(const CardUseStruct &use)
 }
 
 FireAttack::FireAttack(Card::Suit suit, int number)
-: SingleTargetTrick(suit, number)
+    : SingleTargetTrick(suit, number)
 {
     setObjectName("fire_attack");
 }
@@ -1045,7 +1045,7 @@ QStringList FireAttack::checkTargetModSkillShow(const CardUseStruct &use) const{
 }
 
 Indulgence::Indulgence(Suit suit, int number)
-: DelayedTrick(suit, number)
+    : DelayedTrick(suit, number)
 {
     setObjectName("indulgence");
 
@@ -1067,7 +1067,7 @@ void Indulgence::takeEffect(ServerPlayer *target) const{
 }
 
 SupplyShortage::SupplyShortage(Card::Suit suit, int number)
-: DelayedTrick(suit, number)
+    : DelayedTrick(suit, number)
 {
     setObjectName("supply_shortage");
 
@@ -1142,7 +1142,7 @@ QStringList SupplyShortage::checkTargetModSkillShow(const CardUseStruct &use) co
 }
 
 Disaster::Disaster(Card::Suit suit, int number)
-: DelayedTrick(suit, number, true)
+    : DelayedTrick(suit, number, true)
 {
     target_fixed = true;
 }

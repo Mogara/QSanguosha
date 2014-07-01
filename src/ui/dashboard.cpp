@@ -37,7 +37,7 @@
 using namespace QSanProtocol;
 
 Dashboard::Dashboard(QGraphicsItem *widget)
-: button_widget(widget), selected(NULL), view_as_skill(NULL), filter(NULL)
+    : button_widget(widget), selected(NULL), view_as_skill(NULL), filter(NULL)
 {
     Q_ASSERT(button_widget);
     _dlayout = &G_DASHBOARD_LAYOUT;
@@ -955,14 +955,15 @@ void Dashboard::reverseSelection() {
     if (!view_as_skill) return;
 
     QList<CardItem *> selected_items;
-    foreach(CardItem *item, m_handCards)
-    if (item->isSelected()) {
-        item->clickItem();
-        selected_items << item;
+    foreach(CardItem *item, m_handCards){
+        if (item->isSelected()) {
+            item->clickItem();
+            selected_items << item;
+        }
     }
     foreach(CardItem *item, m_handCards)
-    if (item->isEnabled() && !selected_items.contains(item))
-        item->clickItem();
+        if (item->isEnabled() && !selected_items.contains(item))
+            item->clickItem();
     adjustCards();
 }
 

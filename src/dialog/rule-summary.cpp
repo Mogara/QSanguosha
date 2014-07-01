@@ -29,7 +29,7 @@
 #include <QTextStream>
 
 RuleSummary::RuleSummary(QWidget *parent)
-: QDialog(parent)
+    : QDialog(parent)
 {
     setWindowTitle(tr("Rule Summary"));
     resize(853, 600);
@@ -68,7 +68,7 @@ void RuleSummary::loadContent(int row) {
     QString filename = QString("rule/%1.html").arg(name);
     QFile file(filename);
     if (file.open(QIODevice::ReadOnly)) {
-       QTextStream stream(&file);
+        QTextStream stream(&file);
         stream.setCodec("UTF-8");
         QString content = stream.readAll();
         content_box->setHtml(content);

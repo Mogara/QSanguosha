@@ -54,7 +54,7 @@ void ConnectionDialog::showAvatarList() {
 }
 
 ConnectionDialog::ConnectionDialog(QWidget *parent)
-: QDialog(parent), ui(new Ui::ConnectionDialog)
+    : QDialog(parent), ui(new Ui::ConnectionDialog)
 {
     ui->setupUi(this);
 
@@ -144,7 +144,7 @@ void ConnectionDialog::on_detectLANButton_clicked() {
 // -----------------------------------
 
 UdpDetectorDialog::UdpDetectorDialog(QDialog *parent)
-: QDialog(parent)
+    : QDialog(parent)
 {
     setWindowTitle(tr("Detect available server's addresses at LAN"));
     detect_button = new QPushButton(tr("Refresh"));

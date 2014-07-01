@@ -29,7 +29,7 @@
 using namespace QSanProtocol;
 
 Recorder::Recorder(QObject *parent)
-: QObject(parent)
+    : QObject(parent)
 {
     watch.start();
 }
@@ -85,8 +85,8 @@ QImage Recorder::TXT2PNG(QByteArray txtData) {
 }
 
 Replayer::Replayer(QObject *parent, const QString &filename)
-: QThread(parent), m_commandSeriesCounter(1),
-filename(filename), speed(1.0), playing(true)
+    : QThread(parent), m_commandSeriesCounter(1),
+    filename(filename), speed(1.0), playing(true)
 {
     QIODevice *device = NULL;
     if (filename.endsWith(".png")) {

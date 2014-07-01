@@ -26,13 +26,13 @@
 #include "settings.h"
 
 Player::Player(QObject *parent)
-: QObject(parent), owner(false), general(NULL), general2(NULL),
-m_gender(General::Sexless), hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
-phase(NotActive),
-weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), treasure(NULL),
-face_up(true), chained(false), role_shown(false),
-actual_general1(NULL), actual_general2(NULL),
-general1_showed(false), general2_showed(false)
+    : QObject(parent), owner(false), general(NULL), general2(NULL),
+    m_gender(General::Sexless), hp(-1), max_hp(-1), state("online"), seat(0), alive(true),
+    phase(NotActive),
+    weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), treasure(NULL),
+    face_up(true), chained(false), role_shown(false),
+    actual_general1(NULL), actual_general2(NULL),
+    general1_showed(false), general2_showed(false)
 {
 }
 
@@ -890,8 +890,8 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
         if (skill->isVisible() && !visible_only){
             QList<const Skill *> related_skill = Sanguosha->getRelatedSkills(skill->objectName());
             foreach(const Skill *s, related_skill)
-            if (!skillList.contains(s) && !s->isVisible())
-                skillList << s;
+                if (!skillList.contains(s) && !s->isVisible())
+                    skillList << s;
         }
     }
 
@@ -1409,8 +1409,8 @@ QString Player::getNextName() const {
 
 Player *Player::getLast() const {
     foreach(Player *p, parent()->findChildren<Player *>())
-    if (p->next == objectName())
-        return p;
+        if (p->next == objectName())
+            return p;
     return NULL;
 }
 

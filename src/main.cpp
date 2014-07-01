@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
         styleSheet = stream.readAll();
     }
     qApp->setStyleSheet(styleSheet + QString("QToolTip{ border: 0px solid; background: %1; opacity: 190; }")
-                                         .arg(Config.ToolTipBackgroundColor.name()));
+        .arg(Config.ToolTipBackgroundColor.name()));
 
 #ifdef AUDIO_SUPPORT
     Audio::init();

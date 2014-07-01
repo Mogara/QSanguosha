@@ -29,7 +29,7 @@
 #include <QTextStream>
 
 ConfigDialog::ConfigDialog(QWidget *parent)
-: QDialog(parent), ui(new Ui::ConfigDialog)
+    : QDialog(parent), ui(new Ui::ConfigDialog)
 {
     ui->setupUi(this);
 
@@ -313,7 +313,7 @@ void ConfigDialog::on_toolTipBackgroundColorButton_clicked()
             QTextStream stream(&file);
             styleSheet = stream.readAll();
         }
-		qApp->setStyleSheet(styleSheet + QString("QToolTip{ border: 0px solid; background: %1; opacity: 190; }")
-											 .arg(Config.ToolTipBackgroundColor.name()));
+        qApp->setStyleSheet(styleSheet + QString("QToolTip{ border: 0px solid; background: %1; opacity: 190; }")
+            .arg(Config.ToolTipBackgroundColor.name()));
     }
 }

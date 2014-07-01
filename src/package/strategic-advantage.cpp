@@ -22,13 +22,13 @@
 #include "skill.h"
 
 Blade::Blade(Card::Suit suit, int number)
-: Weapon(suit, number, 3){
+    : Weapon(suit, number, 3){
     setObjectName("Blade");
 }
 
 class BladeSkill : public WeaponSkill{
 public:
-    BladeSkill(): WeaponSkill("Blade"){
+    BladeSkill() : WeaponSkill("Blade"){
         events << TargetChosen << CardFinished;
         frequency = Compulsory;
     }
@@ -70,7 +70,7 @@ public:
 
         blade_use << use.card->toString();
         room->setPlayerProperty(player, "blade_use", blade_use);
-        
+
         if (!player->hasShownAllGenerals())
             room->setPlayerMark(player, "@blade", 1);
 
@@ -79,12 +79,12 @@ public:
 };
 
 JadeSeal::JadeSeal(Card::Suit suit, int number)
-: Treasure(suit, number){
+    : Treasure(suit, number){
     setObjectName("JadeSeal");
 }
 
 StrategicAdvantagePackage::StrategicAdvantagePackage()
-: Package("strategic_advantage", Package::CardPack){
+    : Package("strategic_advantage", Package::CardPack){
     QList<Card *> cards;
 
     cards

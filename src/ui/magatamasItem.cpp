@@ -25,14 +25,14 @@
 #include "sprite.h"
 
 MagatamasBoxItem::MagatamasBoxItem()
-: QGraphicsObject(NULL)
+    : QGraphicsObject(NULL)
 {
     m_hp = 0;
     m_maxHp = 0;
 }
 
 MagatamasBoxItem::MagatamasBoxItem(QGraphicsItem *parent)
-: QGraphicsObject(parent)
+    : QGraphicsObject(parent)
 {
     m_hp = 0;
     m_maxHp = 0;

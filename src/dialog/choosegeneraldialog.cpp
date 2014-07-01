@@ -40,7 +40,7 @@
 using namespace QSanProtocol;
 
 OptionButton::OptionButton(QString icon_path, const QString &caption, QWidget *parent)
-: QToolButton(parent)
+    : QToolButton(parent)
 {
     QPixmap pixmap(icon_path);
     QIcon icon(pixmap);
@@ -63,7 +63,7 @@ void OptionButton::mouseDoubleClickEvent(QMouseEvent *) {
 }
 
 ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidget *parent, bool view_only, const QString &title)
-: QDialog(parent)
+    : QDialog(parent)
 {
     m_freeChooseDialog = NULL;
     if (title.isEmpty())
@@ -255,7 +255,7 @@ void ChooseGeneralDialog::freeChoose() {
 }
 
 FreeChooseDialog::FreeChooseDialog(QWidget *parent, ButtonGroupType type)
-: QDialog(parent), type(type)
+    : QDialog(parent), type(type)
 {
     setWindowTitle(tr("Free choose generals"));
 

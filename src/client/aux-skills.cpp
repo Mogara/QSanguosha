@@ -25,7 +25,7 @@
 #include "engine.h"
 
 DiscardSkill::DiscardSkill()
-: ViewAsSkill("discard"), card(new DummyCard), num(0), include_equip(false), is_discard(true)
+    : ViewAsSkill("discard"), card(new DummyCard), num(0), include_equip(false), is_discard(true)
 {
     card->setParent(this);
 }
@@ -72,7 +72,7 @@ const Card *DiscardSkill::viewAs(const QList<const Card *> &cards) const{
 // -------------------------------------------
 
 ResponseSkill::ResponseSkill()
-: OneCardViewAsSkill("response-skill")
+    : OneCardViewAsSkill("response-skill")
 {
     request = Card::MethodResponse;
 }
@@ -132,7 +132,7 @@ private:
 };
 
 YijiViewAsSkill::YijiViewAsSkill()
-: ViewAsSkill("yiji")
+    : ViewAsSkill("yiji")
 {
     card = new YijiCard;
     card->setParent(this);
@@ -185,7 +185,7 @@ private:
 };
 
 ChoosePlayerSkill::ChoosePlayerSkill()
-: ZeroCardViewAsSkill("choose_player")
+    : ZeroCardViewAsSkill("choose_player")
 {
     card = new ChoosePlayerCard;
     card->setParent(this);

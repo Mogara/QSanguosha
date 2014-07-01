@@ -28,7 +28,7 @@
 #include <QTextStream>
 
 AboutUsDialog::AboutUsDialog(QWidget *parent)
-: QDialog(parent)
+    : QDialog(parent)
 {
     setWindowTitle(tr("About Us"));
     resize(800, 600);

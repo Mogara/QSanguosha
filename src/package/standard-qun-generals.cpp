@@ -107,7 +107,7 @@ public:
             CardUseStruct use = data.value<CardUseStruct>();
             if (use.card->isKindOf("Duel")) {
                 foreach(ServerPlayer *lvbu, room->getAllPlayers())
-                if (lvbu->getMark("WushuangTarget") > 0) room->setPlayerMark(lvbu, "WushuangTarget", 0);
+                    if (lvbu->getMark("WushuangTarget") > 0) room->setPlayerMark(lvbu, "WushuangTarget", 0);
             }
             return QStringList();
         }
@@ -723,8 +723,8 @@ public:
 
             QList<ServerPlayer *> caiwenjis = room->findPlayersBySkillName(objectName());
             foreach(ServerPlayer *caiwenji, caiwenjis)
-            if (caiwenji->canDiscard(caiwenji, "he"))
-                skill_list.insert(caiwenji, QStringList(objectName()));
+                if (caiwenji->canDiscard(caiwenji, "he"))
+                    skill_list.insert(caiwenji, QStringList(objectName()));
             return skill_list;
         }
         else {
@@ -769,27 +769,27 @@ public:
         Card::Suit suit = (Card::Suit)(judge.pattern.toInt());
         switch (suit) {
         case Card::Heart: {
-                              RecoverStruct recover;
-                              recover.who = caiwenji;
-                              room->recover(player, recover);
+            RecoverStruct recover;
+            recover.who = caiwenji;
+            room->recover(player, recover);
 
-                              break;
+            break;
         }
         case Card::Diamond: {
-                                player->drawCards(2);
-                                break;
+            player->drawCards(2);
+            break;
         }
         case Card::Club: {
-                             if (damage.from && damage.from->isAlive())
-                                 room->askForDiscard(damage.from, "beige_discard", 2, 2, false, true);
+            if (damage.from && damage.from->isAlive())
+                room->askForDiscard(damage.from, "beige_discard", 2, 2, false, true);
 
-                             break;
+            break;
         }
         case Card::Spade: {
-                              if (damage.from && damage.from->isAlive())
-                                  damage.from->turnOver();
+            if (damage.from && damage.from->isAlive())
+                damage.from->turnOver();
 
-                              break;
+            break;
         }
         default:
             break;
@@ -862,8 +862,8 @@ void XiongyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     QList<ServerPlayer *> targets;
     targets << use.from;
     foreach(ServerPlayer *p, room->getOtherPlayers(use.from))
-    if (!targets.contains(p) && p->isFriendWith(use.from))
-        targets << p;
+        if (!targets.contains(p) && p->isFriendWith(use.from))
+            targets << p;
     use.to = targets;
     room->removePlayerMark(use.from, "@arise");
     room->broadcastSkillInvoke("xiongyi");

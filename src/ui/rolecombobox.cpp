@@ -107,7 +107,7 @@ QRectF RoleComboBox::boundingRect() const {
 }
 
 RoleComboBox::RoleComboBox(QGraphicsItem *photo, bool circle)
-: QGraphicsObject(photo), circle(circle), expanding(false)
+    : QGraphicsObject(photo), circle(circle), expanding(false)
 {
     QStringList kingdoms = Sanguosha->getKingdoms();
     kingdoms.removeAll("god");

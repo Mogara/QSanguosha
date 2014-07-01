@@ -29,7 +29,7 @@
 #include <QApplication>
 
 GeneralCardItem::GeneralCardItem(const QString &general_name)
-: CardItem(general_name), has_companion(false)
+    : CardItem(general_name), has_companion(false)
 {
     setAcceptHoverEvents(true);
 }
@@ -99,7 +99,7 @@ void GeneralCardItem::setFrozen(bool is_frozen) {
 }
 
 ChooseGeneralBox::ChooseGeneralBox()
-: general_number(0), single_result(false)
+    : general_number(0), single_result(false)
 {
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);

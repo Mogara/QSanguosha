@@ -31,7 +31,7 @@
 #include <QHBoxLayout>
 
 PlayerCardButton::PlayerCardButton(const QString &name)
-: QCommandLinkButton(name), scale(1.0)
+    : QCommandLinkButton(name), scale(1.0)
 {
 }
 

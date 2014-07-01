@@ -102,12 +102,12 @@ public:
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer * &ask_who) const{
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        if (judge->who != NULL && judge->who->isAlive() && judge->who->hasSkill("tuntian"))
-        if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge){
-            ask_who = judge->who;
-            return QStringList(objectName());
+        if (judge->who != NULL && judge->who->isAlive() && judge->who->hasSkill("tuntian")){
+            if (judge->reason == "tuntian" && judge->isGood() && room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge){
+                ask_who = judge->who;
+                return QStringList(objectName());
+            }
         }
-
         return QStringList();
     }
 
@@ -295,8 +295,8 @@ public:
         if (player == NULL || player->isDead()) return skill_list;
         QList<ServerPlayer *> dengais = room->findPlayersBySkillName(objectName());
         foreach(ServerPlayer *dengai, dengais)
-        if (!dengai->getPile("field").isEmpty() && dengai->isFriendWith(player))
-            skill_list.insert(dengai, QStringList(objectName()));
+            if (!dengai->getPile("field").isEmpty() && dengai->isFriendWith(player))
+                skill_list.insert(dengai, QStringList(objectName()));
         return skill_list;
     }
 
@@ -433,7 +433,7 @@ public:
 };
 
 HeyiSummon::HeyiSummon()
-: ArraySummonCard("heyi")
+    : ArraySummonCard("heyi")
 {
 }
 
@@ -452,10 +452,11 @@ public:
         if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
             if (death.who->hasSkill(objectName())) {
-                foreach(ServerPlayer *p, room->getAllPlayers())
-                if (p->getMark("feiying") > 0) {
-                    room->setPlayerMark(p, "feiying", 0);
-                    room->detachSkillFromPlayer(p, "feiying", true, true);
+                foreach(ServerPlayer *p, room->getAllPlayers()){
+                    if (p->getMark("feiying") > 0) {
+                        room->setPlayerMark(p, "feiying", 0);
+                        room->detachSkillFromPlayer(p, "feiying", true, true);
+                    }
                 }
                 return QStringList();
             }
@@ -467,21 +468,21 @@ public:
             }
         }
         foreach(ServerPlayer *p, room->getAllPlayers())
-        if (p->getMark("feiying") > 0) {
+            if (p->getMark("feiying") > 0) {
             room->setPlayerMark(p, "feiying", 0);
             room->detachSkillFromPlayer(p, "feiying", true, true);
-        }
+            }
 
         if (room->alivePlayerCount() < 4) return QStringList();
         QList<ServerPlayer *> caohongs = room->findPlayersBySkillName(objectName());
         foreach(ServerPlayer *caohong, caohongs)
-        if (caohong->hasShownSkill(this)) {
+            if (caohong->hasShownSkill(this)) {
             foreach(ServerPlayer *p, room->getOtherPlayers(caohong))
-            if (caohong->inFormationRalation(p)) {
+                if (caohong->inFormationRalation(p)) {
                 room->setPlayerMark(p, "feiying", 1);
                 room->attachSkillToPlayer(p, "feiying");
+                }
             }
-        }
 
         return QStringList();
     }
@@ -569,8 +570,8 @@ public:
             }
         }
         else if (triggerEvent == EventPhaseStart && player->getPhase() == Player::Start)
-        if (!player->hasSkill("guanxing"))
-            return QStringList("guanxing");
+            if (!player->hasSkill("guanxing"))
+                return QStringList("guanxing");
         return QStringList();
     }
 
@@ -580,7 +581,7 @@ public:
 };
 
 TianfuSummon::TianfuSummon()
-: ArraySummonCard("tianfu")
+    : ArraySummonCard("tianfu")
 {
 }
 
@@ -788,7 +789,7 @@ public:
 };
 
 NiaoxiangSummon::NiaoxiangSummon()
-: ArraySummonCard("niaoxiang")
+    : ArraySummonCard("niaoxiang")
 {
 }
 
@@ -876,8 +877,8 @@ public:
         QList<ServerPlayer *> yujis = room->findPlayersBySkillName(objectName());
         if (triggerEvent == Damaged && player->isAlive()) {
             foreach(ServerPlayer *yuji, yujis)
-            if (player->isFriendWith(yuji))
-                skill_list.insert(yuji, QStringList(objectName()));
+                if (player->isFriendWith(yuji))
+                    skill_list.insert(yuji, QStringList(objectName()));
         }
         else if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
@@ -973,7 +974,7 @@ public:
             log.to = use.to;
             log.arg = use.card->objectName();
             room->sendLog(log);
-            
+
             room->setEmotion(use.to.first(), "cancel");
 
             use.to.clear();
@@ -997,8 +998,8 @@ public:
         if (player->getPhase() != Player::Play) return skill_list;
         QList<ServerPlayer *> hetaihous = room->findPlayersBySkillName(objectName());
         foreach(ServerPlayer *hetaihou, hetaihous)
-        if (hetaihou->canDiscard(hetaihou, "h") && hetaihou != player)
-            skill_list.insert(hetaihou, QStringList(objectName()));
+            if (hetaihou->canDiscard(hetaihou, "h") && hetaihou != player)
+                skill_list.insert(hetaihou, QStringList(objectName()));
         return skill_list;
     }
 
@@ -1055,21 +1056,23 @@ public:
             ServerPlayer *current = room->getCurrent();
             if (current && (current->isAlive() || death.who == current) && current->getPhase() != Player::NotActive){
                 foreach(ServerPlayer *p, room->getAllPlayers())
-                if (TriggerSkill::triggerable(p) && death.damage->from == p)
-                    room->setPlayerMark(p, objectName(), 1);
+                    if (TriggerSkill::triggerable(p) && death.damage->from == p)
+                        room->setPlayerMark(p, objectName(), 1);
             }
 
             return skill_list;
         }
-        else
-        if (player->getPhase() == Player::NotActive)
-            foreach(ServerPlayer *p, room->getAllPlayers())
-        if (p->getMark(objectName()) > 0 && TriggerSkill::triggerable(p)) {
-            room->setPlayerMark(p, objectName(), 0);
-            if (p->isAlive())
-                skill_list.insert(p, QStringList(objectName()));
+        else {
+            if (player->getPhase() == Player::NotActive){
+                foreach(ServerPlayer *p, room->getAllPlayers()){
+                    if (p->getMark(objectName()) > 0 && TriggerSkill::triggerable(p)) {
+                        room->setPlayerMark(p, objectName(), 0);
+                        if (p->isAlive())
+                            skill_list.insert(p, QStringList(objectName()));
+                    }
+                }
+            }
         }
-
         return skill_list;
     }
 
@@ -1287,7 +1290,7 @@ public:
 
 
 FormationPackage::FormationPackage()
-: Package("formation")
+    : Package("formation")
 {
     General *dengai = new General(this, "dengai", "wei"); // WEI 015
     dengai->addSkill(new Tuntian);
