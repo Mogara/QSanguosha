@@ -202,23 +202,28 @@ public:
         return false;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
-        return (TriggerSkill::triggerable(player) && player->getPhase() == Player::Start) ? QStringList(objectName()) : QStringList();
+    virtual bool triggerable(const ServerPlayer *player) const{
+        return TriggerSkill::triggerable(player) && player->getPhase() == Player::Start;
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         if (!player->hasSkill("guanxing"))
-        if (player->askForSkillInvoke(objectName())) {
-            room->broadcastSkillInvoke("yizhi");
-            player->showGeneral(false);
-            return true;
-        }
+            if (player->askForSkillInvoke(objectName())) {
+                LogMessage log;
+                log.type = "#InvokeSkill";
+                log.from = player;
+                log.arg = objectName();
+                room->sendLog(log);
+                room->broadcastSkillInvoke("yizhi");
+                player->showGeneral(false);
+                return true;
+            }
         if (!player->hasSkill("yizhi"))
-        if (player->askForSkillInvoke(objectName())) {
-            room->broadcastSkillInvoke(objectName());
-            return true;
-        }
-        // if it runs to here, it means player own both two skill;
+            if (player->askForSkillInvoke(objectName())) {
+                room->broadcastSkillInvoke(objectName());
+                return true;
+            }
+        // if it runs here, it means player own both two skill;
         if (player->askForSkillInvoke(objectName())) {
             bool show1 = player->hasShownSkill(this);
             bool show2 = player->hasShownSkill("yizhi");
@@ -232,12 +237,11 @@ public:
             if (choices.length() != 3)
                 choices << "cancel";
             QString choice = room->askForChoice(player, "GuanxingShowGeneral", choices.join("+"));
-            if (choice == "cancel"){
+            if (choice == "cancel") {
                 if (show1) {
                     room->broadcastSkillInvoke(objectName());
                     return true;
-                }
-                else {
+                } else {
                     room->broadcastSkillInvoke("yizhi");
                     onPhaseChange(player);
                     return false;
@@ -245,13 +249,12 @@ public:
             }
             if (choice != "show_head_general")
                 player->showGeneral(false);
-            if (choice == "show_deputy_general" && !show1){
+            if (choice == "show_deputy_general" && !show1) {
                 room->broadcastSkillInvoke("yizhi");
                 player->showGeneral(false);
                 onPhaseChange(player);
                 return false;
-            }
-            else {
+            } else {
                 room->broadcastSkillInvoke(objectName());
                 return true;
             }

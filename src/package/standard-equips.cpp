@@ -253,9 +253,16 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        if (room->askForSkillInvoke(player, "EightDiagram")) {
-            if (player->hasArmorEffect("bazhen"))
+        if (room->askForSkillInvoke(player, objectName())) {
+            if (player->hasArmorEffect("bazhen")) {
+                LogMessage log;
+                log.type = "#InvokeSkill";
+                log.from = player;
+                log.arg = objectName();
+                room->sendLog(log);
+
                 player->showGeneral(player->inHeadSkills("bazhen"));
+            }
             return true;
         }
         return false;
