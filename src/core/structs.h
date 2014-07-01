@@ -512,25 +512,20 @@ enum TriggerEvent {
     NumOfEvents
 };
 
-typedef const Card *CardStar;
-typedef ServerPlayer *PlayerStar;
-typedef JudgeStruct *JudgeStar;
-typedef PindianStruct *PindianStar;
-
 Q_DECLARE_METATYPE(DamageStruct)
 Q_DECLARE_METATYPE(CardEffectStruct)
 Q_DECLARE_METATYPE(SlashEffectStruct)
 Q_DECLARE_METATYPE(CardUseStruct)
 Q_DECLARE_METATYPE(CardsMoveStruct)
 Q_DECLARE_METATYPE(CardsMoveOneTimeStruct)
-Q_DECLARE_METATYPE(CardStar)
-Q_DECLARE_METATYPE(PlayerStar)
 Q_DECLARE_METATYPE(DyingStruct)
 Q_DECLARE_METATYPE(DeathStruct)
 Q_DECLARE_METATYPE(RecoverStruct)
-Q_DECLARE_METATYPE(JudgeStar)
-Q_DECLARE_METATYPE(PindianStar)
 Q_DECLARE_METATYPE(PhaseChangeStruct)
 Q_DECLARE_METATYPE(CardResponseStruct)
+Q_DECLARE_METATYPE(const Card *)
+Q_DECLARE_METATYPE(ServerPlayer *)
+Q_DECLARE_METATYPE(JudgeStruct *)
+Q_DECLARE_METATYPE(PindianStruct *)
 #endif
 

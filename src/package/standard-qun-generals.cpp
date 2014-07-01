@@ -630,7 +630,7 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhangjiao, QVariant &data, ServerPlayer *) const{
-        CardStar card_star = data.value<CardResponseStruct>().m_card;
+        const Card *card_star = data.value<CardResponseStruct>().m_card;
         if (card_star->isKindOf("Jink")) {
             ServerPlayer *target = zhangjiao->tag["leiji-target"].value<ServerPlayer *>();
             if (target) {

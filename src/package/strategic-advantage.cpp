@@ -62,7 +62,7 @@ public:
         return QStringList();
     }
 
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         QStringList blade_use = player->property("blade_use").toStringList();
         CardUseStruct use = data.value<CardUseStruct>();
         if (blade_use.contains(use.card->toString()))
