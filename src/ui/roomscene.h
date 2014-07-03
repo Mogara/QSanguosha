@@ -54,10 +54,11 @@ struct RoomLayout;
 #include <QHBoxLayout>
 #include <QMutex>
 #include <QStack>
+#ifndef Q_OS_WINRT
 #include <QtDeclarative/QDeclarativeEngine>
 #include <QtDeclarative/QDeclarativeContext>
 #include <QtDeclarative/QDeclarativeComponent>
-
+#endif
 class ScriptExecutor : public QDialog {
     Q_OBJECT
 
@@ -191,7 +192,7 @@ public slots:
 
     void doTimeout();
 
-    inline QPointF tableCenterPos() { return m_tableCenterPos; };
+    inline QPointF tableCenterPos() { return m_tableCenterPos; }
 
     void doGongxin(const QList<int> &card_ids, bool enable_heart, QList<int> enabled_ids);
 
@@ -334,10 +335,12 @@ private:
 
     QRectF _m_infoPlane;
 
+#ifndef Q_OS_WINRT
     // for animation effects
     QDeclarativeEngine *_m_animationEngine;
     QDeclarativeContext *_m_animationContext;
     QDeclarativeComponent *_m_animationComponent;
+#endif
 
 private slots:
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>());

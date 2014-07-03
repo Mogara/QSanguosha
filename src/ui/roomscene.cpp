@@ -354,10 +354,11 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     pindian_from_card = NULL;
     pindian_to_card = NULL;
-
+#ifndef Q_OS_WINRT
     _m_animationEngine = new QDeclarativeEngine(this);
     _m_animationContext = new QDeclarativeContext(_m_animationEngine->rootContext(), this);
     _m_animationComponent = new QDeclarativeComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation.qml"), this);
+#endif
 }
 
 void RoomScene::handleGameEvent(const Json::Value &arg) {
@@ -3669,6 +3670,7 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
             connect(pma, SIGNAL(finished()), this, SLOT(removeLightBox()));
         }
     }
+#ifndef Q_OS_WINRT
     else if (word.startsWith("skill=")) {
         const QString hero = word.mid(6);
         const QString skill = args.value(1, QString());
@@ -3682,6 +3684,7 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
         addItem(object);
         bringToFront(object);
     }
+#endif
     else {
         QFont font = Config.BigFont;
         if (reset_size) font.setPixelSize(100);

@@ -2,7 +2,8 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += network sql declarative
+QT += network sql
+!winrt:QT += declarative
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
 CONFIG += audio
@@ -230,19 +231,28 @@ macx{
 LIBS += -L.
 win32-msvc*{
     !contains(QMAKE_HOST.arch, x86_64) {
+        DEFINES += WIN32
         LIBS += -L"$$_PRO_FILE_PWD_/lib/win/x86"
     } else {
+        DEFINES += WIN64
         LIBS += -L"$$_PRO_FILE_PWD_/lib/win/x64"
     }
 }
 win32-g++{
+    DEFINES += WIN32
     LIBS += -L"$$_PRO_FILE_PWD_/lib/win/MinGW"
 }
+winrt*{
+    DEFINES += WINRT
+    LIBS += -L"$$_PRO_FILE_PWD_/lib/winrt"
+}
 macx{
+    DEFINES += MAC
     LIBS += -L"$$_PRO_FILE_PWD_/lib/mac/lib"
 }
 unix{
-    !contains(QMAKE_HOST.arch, x86_64)  {
+    DEFINES += LINUX
+    !contains(QMAKE_HOST.arch, x86_64) {
         LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x86"
     } else {
         LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x64"

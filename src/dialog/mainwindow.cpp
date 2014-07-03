@@ -255,8 +255,11 @@ void MainWindow::on_actionStart_Server_triggered() {
     server->daemonize();
 
     ui->actionStart_Game->disconnect();
+#ifdef QT_NO_PROCESS
+    ui->actionStart_Game->setEnabled(false);
+#else
     connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
-
+#endif
     StartScene *start_scene = qobject_cast<StartScene *>(scene);
     if (start_scene) {
         start_scene->switchToServer(server);
@@ -444,7 +447,9 @@ void MainWindow::gotoStartScene() {
 }
 
 void MainWindow::startGameInAnotherInstance() {
+#ifndef QT_NO_PROCESS
     QProcess::startDetached(QApplication::applicationFilePath(), QStringList());
+#endif
 }
 
 void MainWindow::on_actionGeneral_Overview_triggered() {
