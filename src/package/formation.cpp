@@ -1414,10 +1414,18 @@ public:
         if (!damage->card || !damage->card->isKindOf("Slash")) return false;
 
         QMap<QString, int> kingdoms;
-        kingdoms["wei"] = dfowner->getPlayerNumWithSameKingdom("wei");
-        kingdoms["shu"] = dfowner->getPlayerNumWithSameKingdom("shu");
-        kingdoms["wu"] = dfowner->getPlayerNumWithSameKingdom("wu");
-        kingdoms["qun"] = dfowner->getPlayerNumWithSameKingdom("qun");
+        bool has_careerist = false;
+        foreach(ServerPlayer *p, room->getAlivePlayers()){
+            if (p->getRole() == "careerist"){
+                has_careerist = true;
+                continue;
+            }
+            if (!kingdoms.keys().contains(p->getKingdom()))
+                kingdoms[p->getKingdom()] = 0;
+
+            kingdoms[p->getKingdom()]++;
+        }
+        
         kingdoms["god"] = 2147483647;
 
         QString kingdom_least = "god";
@@ -1425,13 +1433,16 @@ public:
         foreach(QString kingdom, kingdoms.keys()){
             if (kingdom == "god")
                 continue;
-            if (kingdoms[kingdom] == 0)
+            if (kingdoms[kingdom] <= 0)
                 continue;
             if (kingdoms[kingdom] < kingdoms[kingdom_least])
                 kingdom_least = kingdom;
         }
 
         if (kingdoms[dfowner->getKingdom()] != kingdoms[kingdom_least])
+            return false;
+
+        if (has_careerist && kingdoms[dfowner->getKingdom()] >= 2)
             return false;
 
         QStringList generals = Sanguosha->getLimitedGeneralNames();
