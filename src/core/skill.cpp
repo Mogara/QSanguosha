@@ -569,17 +569,18 @@ DetachEffectSkill::DetachEffectSkill(const QString &skillname, const QString &pi
     events << EventLoseSkill;
 }
 
-QStringList DetachEffectSkill::triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &, ServerPlayer * &) const{
-    return (target != NULL) ? QStringList(objectName()) : QStringList();
+QStringList DetachEffectSkill::triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &data, ServerPlayer * &) const{
+    if (target && data.toString() == name)
+        return QStringList(objectName());
+    return QStringList();
 }
 
-bool DetachEffectSkill::effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-    if (data.toString() == name) {
-        if (!pile_name.isEmpty())
-            player->clearOnePrivatePile(pile_name);
-        else
-            onSkillDetached(room, player);
-    }
+bool DetachEffectSkill::effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+    if (!pile_name.isEmpty())
+        player->clearOnePrivatePile(pile_name);
+    else
+        onSkillDetached(room, player);
+
     return false;
 }
 
