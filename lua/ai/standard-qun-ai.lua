@@ -746,7 +746,7 @@ function sgs.ai_skill_pindian.shuangren(minusecard, self, requestor)
 	return self:isFriend(requestor) and self:getMinCard() or (maxcard:getNumber() < 6 and minusecard or maxcard)
 end
 
-sgs.ai_skill_playerchosen["shuangren-slash"] = sgs.ai_skill_playerchosen.zero_card_as_slash
+sgs.ai_skill_playerchosen["shuangren_slash"] = sgs.ai_skill_playerchosen.zero_card_as_slash
 sgs.ai_playerchosen_intention.shuangren = 20
 sgs.ai_cardneed.shuangren = sgs.ai_cardneed.bignumber
 

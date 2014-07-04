@@ -1951,17 +1951,12 @@ function SmartAI:askForChoice(skill_name, choices, data)
 	elseif type(choice) == "function" then
 		return choice(self, choices, data)
 	else
-		local skill = sgs.Sanguosha:getSkill(skill_name)
-		if skill and choices:match(skill:getDefaultChoice(self.player)) then
-			return skill:getDefaultChoice(self.player)
-		else
-			local choice_table = choices:split("+")
-			for index, achoice in ipairs(choice_table) do
-				if achoice == "benghuai" then table.remove(choice_table, index) break end
-			end
-			local r = math.random(1, #choice_table)
-			return choice_table[r]
+		local choice_table = choices:split("+")
+		for index, achoice in ipairs(choice_table) do
+			if achoice == "benghuai" then table.remove(choice_table, index) break end
 		end
+		local r = math.random(1, #choice_table)
+		return choice_table[r]
 	end
 end
 
