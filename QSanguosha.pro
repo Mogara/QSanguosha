@@ -250,7 +250,7 @@ macx{
     DEFINES += MAC
     LIBS += -L"$$_PRO_FILE_PWD_/lib/mac/lib"
 }
-unix{
+linux{
     DEFINES += LINUX
     !contains(QMAKE_HOST.arch, x86_64) {
         LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x86"
