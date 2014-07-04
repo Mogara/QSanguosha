@@ -8,6 +8,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
 CONFIG += audio
 
+android:DEFINES += "\"getlocaledecpoint()='.'\""
+
 CONFIG += lua
 
 SOURCES += \
@@ -251,11 +253,18 @@ macx{
     LIBS += -L"$$_PRO_FILE_PWD_/lib/mac/lib"
 }
 linux{
-    DEFINES += LINUX
-    !contains(QMAKE_HOST.arch, x86_64) {
-        LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x86"
-    } else {
-        LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x64"
+    android{
+        DEFINES += ANDROID
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/android/arm/lib"
+    }
+    else {
+        DEFINES += LINUX
+        !contains(QMAKE_HOST.arch, x86_64) {
+            LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x86"
+        }
+        else {
+            LIBS += -L"$$_PRO_FILE_PWD_/lib/linux/x64"
+        }
     }
 }
 
