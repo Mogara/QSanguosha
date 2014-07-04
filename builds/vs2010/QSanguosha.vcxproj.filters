@@ -760,6 +760,15 @@
     <ClCompile Include="..\..\src\core\banpair.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\package\strategic-advantage.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_strategic-advantage.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_strategic-advantage.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -983,6 +992,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\core\UpdateCheckerThread.h">
       <Filter>core</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\strategic-advantage.h">
+      <Filter>package</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
