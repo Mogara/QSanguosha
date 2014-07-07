@@ -328,7 +328,7 @@ sgs.ai_skill_invoke.luoyi = function(self,data)
 		if card:isKindOf("Slash") then
 			for _,enemy in ipairs(self.enemies) do
 				if self.player:canSlash(enemy, card, true) and self:slashIsEffective(card, enemy) and self:objectiveLevel(enemy) > 3 and sgs.isGoodTarget(enemy, self.enemies, self) then
-					if getCardsNum("Jink", enemy) < 1 or (self.player:hasWeapon("Axe") and self.player:getCards("he"):length() > 4) then
+					if (not enemy:hasArmorEffect("SilverLion") or self.player:hasWeapon("QinggangSword")) and (getCardsNum("Jink", enemy) < 1 or (self.player:hasWeapon("Axe") and self.player:getCards("he"):length() > 4)) then
 						slashtarget = slashtarget + 1
 					end
 				end
@@ -337,6 +337,7 @@ sgs.ai_skill_invoke.luoyi = function(self,data)
 		if card:isKindOf("Duel") then
 			for _, enemy in ipairs(self.enemies) do
 				if self:getCardsNum("Slash") >= getCardsNum("Slash", enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
+				and not enemy:hasArmorEffect("SilverLion")
 				and self:objectiveLevel(enemy) > 3 and self:damageIsEffective(enemy) then
 					dueltarget = dueltarget + 1
 				end
@@ -1249,7 +1250,7 @@ end
 
 sgs.ai_skill_cardask["@xiaoguo"] = function(self, data)
 	local currentplayer = self.room:getCurrent()
-	
+
 	if self.player:getMark("Global_TurnCount") < 2 and not self.player:hasShownOneGeneral() and self:getOverflow(self.player, false) < 1 then
 		if not currentplayer:hasShownOneGeneral() then
 			return "."
