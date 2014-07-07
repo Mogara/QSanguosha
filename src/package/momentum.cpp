@@ -404,6 +404,7 @@ bool CunsiCard::targetFilter(const QList<const Player *> &targets, const Player 
 void CunsiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     room->doSuperLightbox("mifuren", "cunsi");
+	room->setEmotion(effect.from, "remove");
     effect.from->removeGeneral(effect.from->inHeadSkills("cunsi"));
     room->acquireSkill(effect.to, "yongjue");
     room->setPlayerMark(effect.to, "@yongjue", 1);
@@ -891,7 +892,8 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
-        player->removeGeneral(false);
+		room->setEmotion(player, "remove");
+		player->removeGeneral(false);
         room->setPlayerProperty(player, "maxhp", player->getMaxHp() + 3);
 
         LogMessage log;
@@ -993,7 +995,8 @@ public:
         }
         else {
             room->broadcastSkillInvoke(objectName(), 2);
-            damage.to->removeGeneral(false);
+			room->setEmotion(damage.to, "remove");
+			damage.to->removeGeneral(false);
         }
 
         return true;
