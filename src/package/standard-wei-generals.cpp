@@ -28,6 +28,7 @@
 class Jianxiong : public MasochismSkill {
 public:
     Jianxiong() : MasochismSkill("jianxiong") {
+        frequency = Frequent;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
@@ -363,6 +364,7 @@ public:
 class Yiji : public MasochismSkill {
 public:
     Yiji() : MasochismSkill("yiji") {
+        frequency = Frequent;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
@@ -931,6 +933,7 @@ public:
 class Jushou : public PhaseChangeSkill {
 public:
     Jushou() : PhaseChangeSkill("jushou") {
+        frequency = Frequent;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
@@ -1133,6 +1136,7 @@ class Xingshang : public TriggerSkill {
 public:
     Xingshang() : TriggerSkill("xingshang") {
         events << Death;
+        frequency = Frequent;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{

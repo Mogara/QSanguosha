@@ -824,6 +824,7 @@ class Yicheng : public TriggerSkill {
 public:
     Yicheng() : TriggerSkill("yicheng") {
         events << TargetConfirmed;
+        frequency = Frequent;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{

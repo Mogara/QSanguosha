@@ -867,6 +867,7 @@ class Buqu : public TriggerSkill {
 public:
     Buqu() : TriggerSkill("buqu") {
         events << PostHpReduced << AskForPeachesDone;
+        frequency = Frequent;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &, ServerPlayer* &) const{
@@ -1284,6 +1285,7 @@ class Guzheng : public TriggerSkill {
 public:
     Guzheng() : TriggerSkill("guzheng") {
         events << EventPhaseEnd;
+        frequency = Frequent;
     }
 
     virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{

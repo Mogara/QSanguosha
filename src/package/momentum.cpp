@@ -244,6 +244,7 @@ class Qianxi : public TriggerSkill {
 public:
     Qianxi() : TriggerSkill("qianxi") {
         events << EventPhaseStart << FinishJudge;
+        frequency = Frequent;
     }
 
     virtual bool canPreshow() const {
@@ -345,6 +346,7 @@ class Guixiu : public TriggerSkill {
 public:
     Guixiu() : TriggerSkill("guixiu") {
         events << GameStart << GeneralShown << GeneralRemoved;
+        frequency = Frequent;
     }
 
     virtual bool canPreshow() const {
@@ -442,6 +444,7 @@ class Yongjue : public TriggerSkill {
 public:
     Yongjue() : TriggerSkill("yongjue") {
         events << CardUsed << CardResponded << CardsMoveOneTime;
+        frequency = Frequent;
     }
 
     virtual bool canPreshow() const {
@@ -616,6 +619,7 @@ class Yingyang : public TriggerSkill {
 public:
     Yingyang() : TriggerSkill("yingyang") {
         events << PindianVerifying;
+        frequency = Frequent;
     }
 
     virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const {
@@ -833,6 +837,7 @@ public:
 class Hengzheng : public PhaseChangeSkill {
 public:
     Hengzheng() : PhaseChangeSkill("hengzheng") {
+        frequency = Frequent;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const {
@@ -871,6 +876,7 @@ public:
     Baoling() : TriggerSkill("baoling") {
         events << EventPhaseEnd;
         relate_to_place = "head";
+        frequency = Compulsory;
     }
 
     virtual bool canPreshow() const {
@@ -1053,6 +1059,7 @@ public:
 class Wuxin : public PhaseChangeSkill {
 public:
     Wuxin() : PhaseChangeSkill("wuxin") {
+        frequency = Frequent;
     }
 
     virtual bool canPreshow() const {

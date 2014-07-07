@@ -574,6 +574,7 @@ class Mengjin : public TriggerSkill {
 public:
     Mengjin() :TriggerSkill("mengjin") {
         events << SlashMissed;
+        frequency = Frequent;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
@@ -963,6 +964,7 @@ class Lirang : public TriggerSkill {
 public:
     Lirang() : TriggerSkill("lirang") {
         events << CardsMoveOneTime;
+        frequency = Frequent;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
@@ -1065,10 +1067,6 @@ public:
 class Shuangren : public PhaseChangeSkill {
 public:
     Shuangren() : PhaseChangeSkill("shuangren") {
-    }
-
-    virtual bool canPreshow() const {
-        return true;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *jiling, QVariant &, ServerPlayer * &) const{
@@ -1241,6 +1239,7 @@ class Kuangfu : public TriggerSkill {
 public:
     Kuangfu() : TriggerSkill("kuangfu") {
         events << Damage;
+        frequency = Frequent;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *panfeng, QVariant &data, ServerPlayer* &) const{

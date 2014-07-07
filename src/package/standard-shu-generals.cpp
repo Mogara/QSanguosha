@@ -457,6 +457,7 @@ class Tieqi : public TriggerSkill {
 public:
     Tieqi() : TriggerSkill("tieqi") {
         events << TargetChosen;
+        frequency = Frequent;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const {
@@ -946,6 +947,7 @@ public:
 class Zaiqi : public PhaseChangeSkill {
 public:
     Zaiqi() : PhaseChangeSkill("zaiqi") {
+        frequency = Frequent;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *menghuo, QVariant &, ServerPlayer* &) const{
@@ -1379,7 +1381,9 @@ public:
 class Shenzhi : public PhaseChangeSkill {
 public:
     Shenzhi() : PhaseChangeSkill("shenzhi") {
-
+        frequency = Frequent;
+        //This skill can't be frequent in game actually.
+        //because the frequency = Frequent has no effect in UI currently, we use this to reduce the AI delay
     }
 
     virtual bool canPreshow() const {
