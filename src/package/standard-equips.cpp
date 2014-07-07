@@ -713,7 +713,7 @@ void StandardCardPackage::addEquipSkills(){
     skills << new DoubleSwordSkill << new QinggangSwordSkill << new IceSwordSkill
         << new SpearSkill << new FanSkill << new AxeSkill << new KylinBowSkill
         << new TribladeSkill << new EightDiagramSkill << new RenwangShieldSkill
-        << new VineSkill << new SilverLionSkill;
+        << new VineSkill << new SilverLionSkill << new SixSwordsSkill;
 
     addMetaObject<TribladeSkillCard>();
 
