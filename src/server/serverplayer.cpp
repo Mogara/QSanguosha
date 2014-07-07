@@ -1512,6 +1512,8 @@ void ServerPlayer::hideGeneral(bool head_general) {
 void ServerPlayer::removeGeneral(bool head_general) {
     QString general_name, from_general;
 
+    room->setEmotion(this, "remove");
+
     if (head_general) {
         if (!hasShownGeneral1())
             showGeneral();   //zoushi?
