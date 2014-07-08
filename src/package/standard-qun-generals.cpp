@@ -840,8 +840,8 @@ public:
         else
             room->setPlayerProperty(target, "Duanchang", "deputy");
 
-        QList<const Skill *> skills = choice == "head_general" ? target->getGeneral()->getVisibleSkillList()
-            : target->getGeneral2()->getVisibleSkillList();
+        QList<const Skill *> skills = choice == "head_general" ? target->getActualGeneral1()->getVisibleSkillList()
+            : target->getActualGeneral2()->getVisibleSkillList();
         foreach(const Skill *skill, skills){
             if (!skill->isAttachedLordSkill())
                 room->detachSkillFromPlayer(target, skill->objectName(), !target->hasShownSkill(skill));
