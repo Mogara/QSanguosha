@@ -28,9 +28,10 @@
 #define LUA_ANSI
 #endif
 
-
+#ifndef WINRT
 #if !defined(LUA_ANSI) && defined(_WIN32) && !defined(_WIN32_WCE)
 #define LUA_WIN		/* enable goodies for regular Windows platforms */
+#endif
 #endif
 
 #if defined(LUA_WIN)
