@@ -34,6 +34,7 @@ SOURCES += \
     src/core/UpdateCheckerThread.cpp \
     src/core/util.cpp \
     src/core/WrappedCard.cpp \
+    src/core/version.cpp \
     src/dialog/AboutUs.cpp \
     src/dialog/cardeditor.cpp \
     src/dialog/cardoverview.cpp \
@@ -128,6 +129,7 @@ HEADERS += \
     src/core/UpdateCheckerThread.h \
     src/core/util.h \
     src/core/WrappedCard.h \
+    src/core/version.h \
     src/dialog/AboutUs.h \
     src/dialog/cardeditor.h \
     src/dialog/cardoverview.h \

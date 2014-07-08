@@ -1,0 +1,57 @@
+/********************************************************************
+    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+
+    This file is part of QSanguosha-Hegemony.
+
+    This game is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 3.0 of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    See the LICENSE file for more details.
+
+    QSanguosha-Hegemony Team
+    *********************************************************************/
+
+#ifndef VERSION_H
+#define VERSION_H
+
+class QSanVersionNumber{
+public:
+    enum VersionType{
+        alpha,
+        beta,
+        offical,
+        other = -1
+    };
+
+    explicit QSanVersionNumber(const QString &ver_str);
+    QSanVersionNumber(int major, int minor, int sub, VersionType type = offical);
+
+    // Actually only these 2 operator overloads take effect here...
+    bool operator <(const QSanVersionNumber &arg2) const;
+    bool operator ==(const QSanVersionNumber &arg2) const;
+
+    // these 4 operator overloads are just for convenience...
+    bool operator >(const QSanVersionNumber &arg2) const;
+    bool operator !=(const QSanVersionNumber &arg2) const;
+    bool operator <=(const QSanVersionNumber &arg2) const;
+    bool operator >=(const QSanVersionNumber &arg2) const;
+
+    operator QString() const;
+    QString toString() const;
+    bool tryParse(const QString &ver_str);
+
+private:
+    int m_major;
+    int m_minor;
+    int m_sub;
+    VersionType m_type;
+};
+
+#endif // VERSION_H
