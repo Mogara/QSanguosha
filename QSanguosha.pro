@@ -246,7 +246,7 @@ win32-g++{
     DEFINES += WIN32
     LIBS += -L"$$_PRO_FILE_PWD_/lib/win/MinGW"
 }
-winrt*{
+winrt{
     DEFINES += WINRT
     LIBS += -L"$$_PRO_FILE_PWD_/lib/winrt"
 }

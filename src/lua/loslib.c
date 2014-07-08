@@ -79,7 +79,13 @@
 
 static int os_execute (lua_State *L) {
   const char *cmd = luaL_optstring(L, 1, NULL);
-  int stat = system(cmd);
+  int stat =
+#ifndef WINRT
+    system(cmd)
+#else
+    NULL
+#endif
+    ;
   if (cmd != NULL)
     return luaL_execresult(L, stat);
   else {
@@ -114,7 +120,13 @@ static int os_tmpname (lua_State *L) {
 
 
 static int os_getenv (lua_State *L) {
-  lua_pushstring(L, getenv(luaL_checkstring(L, 1)));  /* if NULL push nil */
+  lua_pushstring(L,
+#ifndef WINRT
+                 getenv(luaL_checkstring(L, 1))
+#else
+                 NULL
+#endif
+                 );  /* if NULL push nil */
   return 1;
 }
 
