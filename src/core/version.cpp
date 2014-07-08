@@ -19,6 +19,8 @@
     *********************************************************************/
 
 #include "version.h"
+#include <QRegExp>
+#include <QStringList>
 
 QSanVersionNumber::QSanVersionNumber(const QString &str){
     if (!tryParse(str))

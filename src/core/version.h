@@ -21,6 +21,8 @@
 #ifndef VERSION_H
 #define VERSION_H
 
+#include <QString>
+
 class QSanVersionNumber{
 public:
     enum VersionType{
