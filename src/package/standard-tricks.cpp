@@ -170,7 +170,7 @@ bool Collateral::targetFilter(const QList<const Player *> &targets,
     const Player *to_select, const Player *Self) const{
     if (!targets.isEmpty()) {
         // @todo: fix this. We should probably keep the codes here, but change the code in
-        // roomscene such that if it is collateral, then targetFilter's result is overrode
+        // roomscene such that if it is collateral, then targetFilter's result is overriden
         Q_ASSERT(targets.length() <= 2);
         if (targets.length() == 2) return false;
         const Player *slashFrom = targets[0];
