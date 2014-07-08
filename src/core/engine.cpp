@@ -32,7 +32,6 @@
 #include "RoomState.h"
 #include "banpair.h"
 #include "miniscenarios.h"
-#include "version.h"
 
 #include <lua.hpp>
 #include <QFile>
