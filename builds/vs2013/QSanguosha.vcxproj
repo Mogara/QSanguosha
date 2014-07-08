@@ -608,6 +608,7 @@
     <ClCompile Include="..\..\src\core\structs.cpp" />
     <ClCompile Include="..\..\src\core\UpdateCheckerThread.cpp" />
     <ClCompile Include="..\..\src\core\util.cpp" />
+    <ClCompile Include="..\..\src\core\version.cpp" />
     <ClCompile Include="..\..\src\core\WrappedCard.cpp" />
     <ClCompile Include="..\..\src\dialog\AboutUs.cpp" />
     <ClCompile Include="..\..\src\dialog\UpdateChecker.cpp" />
@@ -5764,6 +5765,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\core\banpair.h" />
+    <ClInclude Include="..\..\src\core\version.h" />
     <CustomBuild Include="..\..\src\package\strategic-advantage.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
@@ -5797,7 +5799,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
-	</CustomBuild>
+    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

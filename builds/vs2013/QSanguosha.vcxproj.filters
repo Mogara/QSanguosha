@@ -764,6 +764,9 @@
     <ClCompile Include="Release\moc_strategic-advantage.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\core\version.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1087,6 +1090,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\core\banpair.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\version.h">
       <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
