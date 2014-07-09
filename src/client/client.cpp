@@ -1743,11 +1743,20 @@ void Client::moveFocus(const Json::Value &focus) {
         }
     }
 
-    // focus[1] is the moveFocus reason, which is now removed.
-    Json::ArrayIndex countdown_index = focus.size() >= 3 ? 2 : 1;
-    if (countdown.tryParse(focus[countdown_index])) {
-        emit focus_moved(players, countdown);
+    if (focus.size() == 1) {//default countdown
+        countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
+        countdown.m_current = 0;
+        countdown.m_max = ServerInfo.getCommandTimeout(S_COMMAND_UNKNOWN, S_CLIENT_INSTANCE);
     }
+    else {
+        // focus[1] is the moveFocus reason, which is now removed.
+        Json::ArrayIndex countdown_index = focus.size() >= 3 ? 2 : 1;
+        if (!countdown.tryParse(focus[countdown_index])) {
+            return;
+        }
+    }
+
+    emit focus_moved(players, countdown);
 }
 
 void Client::setEmotion(const Json::Value &set_str) {
