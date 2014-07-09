@@ -3489,7 +3489,7 @@ void RoomScene::_cancelAllFocus() {
 
 void RoomScene::moveFocus(const QStringList &players, Countdown countdown) {
     _cancelAllFocus();
-    foreach(QString player, players) {
+    foreach(const QString &player, players) {
         Photo *photo = name2photo[player];
         if (!photo) {
             Q_ASSERT(player == Self->objectName());

@@ -730,9 +730,9 @@ ServerPlayer *Room::doBroadcastRaceRequest(QList<ServerPlayer *> &players, QSanP
     countdown.m_max = timeOut;
     countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
     if (command == S_COMMAND_NULLIFICATION)
-        notifyMoveFocus(getAllPlayers(), command, countdown);
+        notifyMoveFocus(getAllPlayers(), countdown);
     else
-        notifyMoveFocus(players, command, countdown);
+        notifyMoveFocus(players, countdown);
     foreach(ServerPlayer *player, players)
         doRequest(player, command, player->m_commandArgs, timeOut, false);
 
@@ -881,8 +881,7 @@ bool Room::notifyMoveFocus(ServerPlayer *player) {
     players.append(player);
     Countdown countdown;
     countdown.m_type = Countdown::S_COUNTDOWN_NO_LIMIT;
-    notifyMoveFocus(players, S_COMMAND_MOVE_FOCUS, countdown);
-    return notifyMoveFocus(players, S_COMMAND_MOVE_FOCUS, countdown);
+    return notifyMoveFocus(players, countdown);
 }
 
 bool Room::notifyMoveFocus(ServerPlayer *player, CommandType command) {
@@ -891,10 +890,10 @@ bool Room::notifyMoveFocus(ServerPlayer *player, CommandType command) {
     Countdown countdown;
     countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
     countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
-    return notifyMoveFocus(players, S_COMMAND_MOVE_FOCUS, countdown);
+    return notifyMoveFocus(players, countdown);
 }
 
-bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, CommandType command, Countdown countdown) {
+bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, const Countdown &countdown) {
     Json::Value arg(Json::arrayValue);
     //============================================
     //for protecting anjiang
@@ -906,14 +905,18 @@ bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, CommandType com
             break;
         }
     }
-    QList<ServerPlayer *> new_players;
-    new_players = verify ? getAllPlayers() : players;
+
+    if (!verify) {
+        int n = players.size();
+        for (int i = 0; i < n; i++)
+            arg[0][i] = toJsonString(players.at(i)->objectName());
+    }
+    else {
+        arg[0] = 0; // all alive players
+    }
     //============================================
-    int n = new_players.size();
-    for (int i = 0; i < n; i++)
-        arg[0][i] = toJsonString(new_players[i]->objectName());
-    arg[1] = (int)command;
-    arg[2] = countdown.toJsonValue();
+
+    arg[1] = countdown.toJsonValue();
     return doBroadcastNotify(S_COMMAND_MOVE_FOCUS, arg);
 }
 
@@ -4426,7 +4429,7 @@ void Room::askForLuckCard() {
         Countdown countdown;
         countdown.m_max = ServerInfo.getCommandTimeout(S_COMMAND_LUCK_CARD, S_CLIENT_INSTANCE);
         countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
-        notifyMoveFocus(players, S_COMMAND_LUCK_CARD, countdown);
+        notifyMoveFocus(players, countdown);
 
         doBroadcastRequest(players, S_COMMAND_LUCK_CARD);
 
@@ -4972,7 +4975,7 @@ QList<const Card *> Room::askForPindianRace(ServerPlayer *from, ServerPlayer *to
     Countdown countdown;
     countdown.m_max = ServerInfo.getCommandTimeout(S_COMMAND_PINDIAN, S_CLIENT_INSTANCE);
     countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
-    notifyMoveFocus(QList<ServerPlayer *>() << from << to, S_COMMAND_PINDIAN, countdown);
+    notifyMoveFocus(QList<ServerPlayer *>() << from << to, countdown);
 
     const Card *from_card = NULL, *to_card = NULL;
 
