@@ -74,6 +74,19 @@ bool QSanProtocol::Utils::isIntArray(const Json::Value &jsonObject, unsigned int
     return true;
 }
 
+QSanProtocol::Packet::Packet(int packetDescription, CommandType command) :
+    m_globalSerial(0), m_localSerial(0),
+    m_packetDescription(static_cast<PacketDescription>(packetDescription)),
+    m_command(command),
+    m_msgBody(Json::nullValue)
+{
+}
+
+unsigned int QSanProtocol::Packet::createGlobalSerial() {
+   m_globalSerial = ++_m_globalSerial;
+   return m_globalSerial;
+}
+
 bool QSanProtocol::Packet::parse(const string &s) {
     if (s.length() > S_MAX_PACKET_SIZE) {
         return false;

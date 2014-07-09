@@ -687,7 +687,7 @@ bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, co
     player->setClientReply(Json::Value::null);
     player->setClientReplyString(QString());
     player->m_isWaitingReply = true;
-    player->m_expectedReplySerial = packet.m_globalSerial;
+    player->m_expectedReplySerial = packet.createGlobalSerial();
     if (m_requestResponsePair.contains(command))
         player->m_expectedReplyCommand = m_requestResponsePair[command];
     else
