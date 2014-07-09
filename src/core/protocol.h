@@ -212,7 +212,7 @@ namespace QSanProtocol {
             S_COUNTDOWN_USE_SPECIFIED,
             S_COUNTDOWN_USE_DEFAULT
         } m_type;
-        static const std::string S_COUNTDOWN_MAGIC;
+
         time_t m_current;
         time_t m_max;
         inline Countdown(CountdownType type = S_COUNTDOWN_NO_LIMIT, time_t current = 0, time_t max = 0)
@@ -222,15 +222,13 @@ namespace QSanProtocol {
             if (m_type == S_COUNTDOWN_NO_LIMIT
                 || m_type == S_COUNTDOWN_USE_DEFAULT) {
                 Json::Value val(Json::arrayValue);
-                val[0] = S_COUNTDOWN_MAGIC;
-                val[1] = (int)m_type;
+                val[0] = (int)m_type;
                 return val;
             }
             else {
                 Json::Value val(Json::arrayValue);
-                val[0] = S_COUNTDOWN_MAGIC;
-                val[1] = (int)m_current;
-                val[2] = (int)m_max;
+                val[0] = (int)m_current;
+                val[1] = (int)m_max;
                 return val;
             }
         }

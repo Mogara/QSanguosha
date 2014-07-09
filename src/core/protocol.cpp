@@ -28,22 +28,23 @@ using namespace QSanProtocol;
 
 unsigned int QSanProtocol::Packet::_m_globalSerial = 0;
 const unsigned int QSanProtocol::Packet::S_MAX_PACKET_SIZE = 65535;
-const string QSanProtocol::Countdown::S_COUNTDOWN_MAGIC = "MG_COUNTDOWN";
 const char *QSanProtocol::S_PLAYER_SELF_REFERENCE_ID = "MG_SELF";
 
 bool QSanProtocol::Countdown::tryParse(const Json::Value &val) {
-    if (!val.isArray() || (val.size() != 2 && val.size() != 3) ||
-        !val[0].isString() || val[0].asString() != S_COUNTDOWN_MAGIC)
+    if (!val.isArray())
         return false;
-    if (val.size() == 3) {
-        if (!Utils::isIntArray(val, 1, 2)) return false;
-        m_current = (time_t)val[1].asInt();
-        m_max = (time_t)val[2].asInt();
+
+    Json::ArrayIndex offset = val[0].isString() ? 1 : 0;
+
+    if (val.size() - offset == 2) {
+        if (!Utils::isIntArray(val, offset, offset + 1)) return false;
+        m_current = (time_t)val[offset].asInt();
+        m_max = (time_t)val[offset + 1].asInt();
         m_type = S_COUNTDOWN_USE_SPECIFIED;
         return true;
     }
-    else if (val.size() == 2) {
-        CountdownType type = (CountdownType)val[1].asInt();
+    else if (val.size() - offset == 1) {
+        CountdownType type = (CountdownType)val[offset].asInt();
         if (type != S_COUNTDOWN_NO_LIMIT && type != S_COUNTDOWN_USE_DEFAULT)
             return false;
         else m_type = type;
