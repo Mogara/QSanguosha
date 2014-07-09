@@ -90,7 +90,7 @@ ChooseGeneralDialog::ChooseGeneralDialog(const QStringList &general_names, QWidg
     bool tooManyGenerals = (generals.length() > G_COMMON_LAYOUT.m_chooseGeneralBoxSwitchIconSizeThreshold);
     bool no_icon = false;
     QSize icon_size;
-    QSanRoomSkin::GeneralIconSize icon_type;
+    QSanRoomSkin::GeneralIconSize icon_type = QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE;
     if (tooManyManyGenerals) {
         no_icon = true;
     }
