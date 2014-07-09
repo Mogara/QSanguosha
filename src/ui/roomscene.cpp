@@ -1547,7 +1547,7 @@ void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, con
     bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids) {
     PlayerCardDialog *dialog = new PlayerCardDialog(player, flags, handcard_visible, method, disabled_ids);
     dialog->setWindowTitle(Sanguosha->translate(reason));
-    connect(dialog, SIGNAL(card_id_chosen(int)), ClientInstance, SLOT(onPlayerChooseCard(int)));
+    connect(dialog, SIGNAL(idSelected(int)), ClientInstance, SLOT(onPlayerChooseCard(int)));
     connect(dialog, SIGNAL(rejected()), ClientInstance, SLOT(onPlayerChooseCard()));
     delete m_choiceDialog;
     m_choiceDialog = dialog;

@@ -23,17 +23,12 @@
 #include "standard.h"
 #include "engine.h"
 #include "client.h"
+#include "cardbutton.h"
 
 #include <QCommandLinkButton>
 #include <QVBoxLayout>
-#include <QGroupBox>
 #include <QLabel>
 #include <QHBoxLayout>
-
-PlayerCardButton::PlayerCardButton(const QString &name)
-    : QCommandLinkButton(name), scale(1.0)
-{
-}
 
 PlayerCardDialog::PlayerCardDialog(const ClientPlayer *player, const QString &flags,
     bool handcard_visible, Card::HandlingMethod method, const QList<int> &disabled_ids)
@@ -83,165 +78,88 @@ QWidget *PlayerCardDialog::createAvatar() {
 }
 
 QWidget *PlayerCardDialog::createHandcardButton() {
-    if (!player->isKongcheng() && (Self == player || handcard_visible)) {
-        QGroupBox *area = new QGroupBox(tr("Handcard area"));
-        QVBoxLayout *layout = new QVBoxLayout;
-        QList<const Card *> cards = player->getHandcards();
-        for (int i = 0; i < cards.length(); i += 2) {
-            const Card *card = Sanguosha->getEngineCard(cards.at(i)->getId());
-            PlayerCardButton *button1 = new PlayerCardButton(card->getFullName());
-            button1->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
+	if (!player->isKongcheng() && (Self == player || handcard_visible)) {
+		QGroupBox *area = new QGroupBox(tr("Handcard area"));
+		QVBoxLayout *layout = new QVBoxLayout;
+		QList<const Card *> cards = player->getHandcards();
+		for (int i = 0; i < cards.length(); i += 2) {
+			const Card *card = Sanguosha->getEngineCard(cards.at(i)->getId());
+			CardButton *button1 = new CardButton(card);
+			button1->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
+			connect(button1, SIGNAL(idSelected(int)), this, SLOT(idSelected(int)));
 
-            mapper.insert(button1, card->getId());
-            connect(button1, SIGNAL(clicked()), this, SLOT(emitId()));
+			CardButton *button2 = NULL;
+			if (i < cards.length() - 1) {
+				card = Sanguosha->getEngineCard(cards.at(i + 1)->getId());
+				button2 = new CardButton(card);
+				button2->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
 
-            PlayerCardButton *button2 = NULL;
-            if (i < cards.length() - 1) {
-                card = Sanguosha->getEngineCard(cards.at(i + 1)->getId());;
-                button2 = new PlayerCardButton(card->getFullName());
-                button2->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
+				connect(button1, SIGNAL(idSelected(int)), this, SLOT(idSelected(int)));
+			}
+			if (button1 && button2) {
+				QHBoxLayout *hlayout = new QHBoxLayout;
+				button1->setScale(0.65);
+				button2->setScale(0.65);
+				hlayout->addWidget(button1);
+				hlayout->addWidget(button2);
+				layout->addLayout(hlayout);
+			}
+			else {
+				Q_ASSERT(button1 != NULL);
+				layout->addWidget(button1);
+			}
+		}
 
-                mapper.insert(button2, card->getId());
-                connect(button2, SIGNAL(clicked()), this, SLOT(emitId()));
-            }
-            if (button1 && button2) {
-                QHBoxLayout *hlayout = new QHBoxLayout;
-                button1->setScale(0.65);
-                button2->setScale(0.65);
-                hlayout->addWidget(button1);
-                hlayout->addWidget(button2);
-                layout->addLayout(hlayout);
-            }
-            else {
-                Q_ASSERT(button1 != NULL);
-                layout->addWidget(button1);
-            }
-        }
+		area->setLayout(layout);
+		return area;
+	}
 
-        area->setLayout(layout);
-        return area;
-    }
+	CardButton *button = new CardButton(NULL);
+	button->setText(tr("Handcard"));
+	button->setObjectName("handcard_button");
+	int num = player->getHandcardNum();
+	if (num == 0) {
+		button->setDescription(tr("This guy has no any hand cards"));
+		button->setEnabled(false);
+	}
+	else {
+		button->setDescription(tr("This guy has %1 hand card(s)").arg(num));
+		button->setEnabled(method != Card::MethodDiscard || Self->canDiscard(player, "h"));
+		connect(button, SIGNAL(idSelected(int)), this, SLOT(idSelected(int)));
+	}
 
-    PlayerCardButton *button = new PlayerCardButton(tr("Handcard"));
-    button->setObjectName("handcard_button");
-    int num = player->getHandcardNum();
-    if (num == 0) {
-        button->setDescription(tr("This guy has no any hand cards"));
-        button->setEnabled(false);
-    }
-    else {
-        button->setDescription(tr("This guy has %1 hand card(s)").arg(num));
-        button->setEnabled(method != Card::MethodDiscard || Self->canDiscard(player, "h"));
-        mapper.insert(button, -1);
-        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
-    }
+	return button;
+}
 
-    return button;
+QGroupBox *PlayerCardDialog::createButtonArea(const CardList &list, const QString &title, const QString &noCardText) {
+	QGroupBox *area = new QGroupBox(title);
+	QVBoxLayout *layout = new QVBoxLayout;
+	area->setLayout(layout);
+
+	if (list.isEmpty()) {
+		CardButton *button = new CardButton(NULL);
+		button->setText(noCardText);
+		button->setEnabled(false);
+		layout->addWidget(button);
+	}
+	else {
+		foreach(const Card *card, list) {
+			CardButton *button = new CardButton(card);
+			layout->addWidget(button);
+			button->setEnabled(!disabled_ids.contains(card->getEffectiveId())
+				&& (method != Card::MethodDiscard || Self->canDiscard(player, card->getEffectiveId())));
+			QObject::connect(button, SIGNAL(idSelected(int)), this, SIGNAL(idSelected(int)));
+		}
+	}
+
+	return area;
 }
 
 QWidget *PlayerCardDialog::createEquipArea() {
-    QGroupBox *area = new QGroupBox(tr("Equip area"));
-    QVBoxLayout *layout = new QVBoxLayout;
-
-    WrappedCard *weapon = player->getWeapon();
-    if (weapon) {
-        PlayerCardButton *button = new PlayerCardButton(weapon->getFullName());
-        button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(weapon->getId())->getSuit()));
-        button->setEnabled(!disabled_ids.contains(weapon->getEffectiveId())
-            && (method != Card::MethodDiscard || Self->canDiscard(player, weapon->getEffectiveId())));
-        mapper.insert(button, weapon->getId());
-        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
-        layout->addWidget(button);
-    }
-
-    WrappedCard *armor = player->getArmor();
-    if (armor) {
-        PlayerCardButton *button = new PlayerCardButton(armor->getFullName());
-        button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(armor->getId())->getSuit()));
-        button->setEnabled(!disabled_ids.contains(armor->getEffectiveId())
-            && (method != Card::MethodDiscard || Self->canDiscard(player, armor->getEffectiveId())));
-        mapper.insert(button, armor->getId());
-        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
-        layout->addWidget(button);
-    }
-
-    WrappedCard *horse = player->getDefensiveHorse();
-    if (horse) {
-        PlayerCardButton *button = new PlayerCardButton(horse->getFullName() + tr("(+1 horse)"));
-        button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(horse->getId())->getSuit()));
-        button->setEnabled(!disabled_ids.contains(horse->getEffectiveId())
-            && (method != Card::MethodDiscard || Self->canDiscard(player, horse->getEffectiveId())));
-        mapper.insert(button, horse->getId());
-        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
-        layout->addWidget(button);
-    }
-
-    horse = player->getOffensiveHorse();
-    if (horse) {
-        PlayerCardButton *button = new PlayerCardButton(horse->getFullName() + tr("(-1 horse)"));
-        button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(horse->getId())->getSuit()));
-        button->setEnabled(!disabled_ids.contains(horse->getEffectiveId())
-            && (method != Card::MethodDiscard || Self->canDiscard(player, horse->getEffectiveId())));
-        mapper.insert(button, horse->getId());
-        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
-        layout->addWidget(button);
-    }
-
-    WrappedCard *treasure = player->getTreasure();
-    if (treasure) {
-        PlayerCardButton *button = new PlayerCardButton(treasure->getFullName());
-        button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(Sanguosha->getEngineCard(treasure->getId())->getSuit()));
-        button->setEnabled(!disabled_ids.contains(treasure->getEffectiveId())
-            && (method != Card::MethodDiscard || Self->canDiscard(player, treasure->getEffectiveId())));
-        mapper.insert(button, treasure->getId());
-        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
-        layout->addWidget(button);
-    }
-
-    if (layout->count() == 0) {
-        delete layout;
-        PlayerCardButton *no_equip = new PlayerCardButton(tr("No equip"));
-        no_equip->setEnabled(false);
-        no_equip->setObjectName("noequip_button");
-        return no_equip;
-    }
-    else {
-        area->setLayout(layout);
-        return area;
-    }
+	return createButtonArea(player->getEquips(), tr("Equip area"), tr("No equip"));
 }
 
 QWidget *PlayerCardDialog::createJudgingArea() {
-    QGroupBox *area = new QGroupBox(tr("Judging Area"));
-    QVBoxLayout *layout = new QVBoxLayout;
-    QList<const Card *> cards = player->getJudgingArea();
-    foreach(const Card *card, cards) {
-        const Card *real = Sanguosha->getEngineCard(card->getId());
-        PlayerCardButton *button = new PlayerCardButton(real->getFullName());
-        button->setIcon(G_ROOM_SKIN.getCardSuitPixmap(real->getSuit()));
-        layout->addWidget(button);
-        button->setEnabled(!disabled_ids.contains(card->getEffectiveId())
-            && (method != Card::MethodDiscard || Self->canDiscard(player, card->getEffectiveId())));
-        mapper.insert(button, card->getId());
-        connect(button, SIGNAL(clicked()), this, SLOT(emitId()));
-    }
-
-    if (layout->count() == 0) {
-        delete layout;
-        PlayerCardButton *button = new PlayerCardButton(tr("No judging cards"));
-        button->setEnabled(false);
-        button->setObjectName("nojuding_button");
-        return button;
-    }
-    else {
-        area->setLayout(layout);
-        return area;
-    }
-}
-
-void PlayerCardDialog::emitId() {
-    int id = mapper.value(sender(), -2);
-    if (id != -2)
-        emit card_id_chosen(id);
+	return createButtonArea(player->getJudgingArea(), tr("Judging area"), tr("No judging cards"));
 }
 

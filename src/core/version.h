@@ -18,8 +18,8 @@
     QSanguosha-Hegemony Team
     *********************************************************************/
 
-#ifndef VERSION_H
-#define VERSION_H
+#ifndef _VERSION_H
+#define _VERSION_H
 
 #include <QString>
 
@@ -56,4 +56,4 @@ private:
     VersionType m_type;
 };
 
-#endif // VERSION_H
+#endif // _VERSION_H

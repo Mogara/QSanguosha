@@ -611,6 +611,7 @@
     <ClCompile Include="..\..\src\core\version.cpp" />
     <ClCompile Include="..\..\src\core\WrappedCard.cpp" />
     <ClCompile Include="..\..\src\dialog\AboutUs.cpp" />
+    <ClCompile Include="..\..\src\dialog\cardbutton.cpp" />
     <ClCompile Include="..\..\src\dialog\UpdateChecker.cpp" />
     <ClCompile Include="..\..\src\package\formation.cpp" />
     <ClCompile Include="..\..\src\package\momentum.cpp" />
@@ -1104,6 +1105,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Release\moc_cardbutton.cpp" />
     <ClCompile Include="Release\moc_cardcontainer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">true</ExcludedFromBuild>
@@ -5766,6 +5768,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\core\banpair.h" />
     <ClInclude Include="..\..\src\core\version.h" />
+    <CustomBuild Include="..\..\src\dialog\cardbutton.h" />
     <CustomBuild Include="..\..\src\package\strategic-advantage.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>

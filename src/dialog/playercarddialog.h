@@ -25,7 +25,7 @@
 
 #include <QDialog>
 #include <QMap>
-#include <QCommandLinkButton>
+#include <QGroupBox>
 
 class MagatamaWidget : public QWidget {
     Q_OBJECT
@@ -46,36 +46,19 @@ public:
         const QList<int> &disabled_ids = QList<int>());
 
 private:
+	QGroupBox *createButtonArea(const CardList &list, const QString &title, const QString &noCardText);
     QWidget *createAvatar();
     QWidget *createHandcardButton();
     QWidget *createEquipArea();
     QWidget *createJudgingArea();
 
     const ClientPlayer *player;
-    QMap<QObject *, int> mapper;
     bool handcard_visible;
     Card::HandlingMethod method;
     QList<int> disabled_ids;
 
-private slots:
-    void emitId();
-
 signals:
-    void card_id_chosen(int card_id);
-};
-
-class PlayerCardButton : public QCommandLinkButton {
-public:
-    explicit PlayerCardButton(const QString &name);
-    virtual QSize sizeHint() const{
-        QSize size = QCommandLinkButton::sizeHint();
-        return QSize(size.width() * scale, size.height());
-    }
-
-    inline void setScale(double scale) { this->scale = scale; }
-
-private:
-    double scale;
+    void idSelected(int card_id);
 };
 
 #endif
