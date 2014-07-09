@@ -251,7 +251,7 @@ public:
             move.card_ids << room->askForCardChosen(source, targets[i].value<ServerPlayer *>(), "h", objectName());
             move.to = source;
             move.to_place = Player::PlaceHand;
-            room->moveCardsAtomic(moves, false);
+            room->moveCardsAtomic(move, false);
         }
         
         return true;
@@ -711,7 +711,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
             move.card_ids << room->askForCardChosen(zhanghe, targets[i].value<ServerPlayer *>(), "h", objectName());
             move.to = zhanghe;
             move.to_place = Player::PlaceHand;
-            room->moveCardsAtomic(moves, false);
+            room->moveCardsAtomic(move, false);
         }
     }
     else if (phase == Player::Play) {
