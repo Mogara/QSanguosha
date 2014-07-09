@@ -83,7 +83,6 @@ public:
     virtual void onDamaged(ServerPlayer *simayi, const DamageStruct &damage) const{
         ServerPlayer *from = damage.from;
         Room *room = simayi->getRoom();
-        QVariant data = QVariant::fromValue(from);
         if (!from->isNude()) {
             int card_id = room->askForCardChosen(simayi, from, "he", objectName());
             CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, simayi->objectName());
@@ -154,8 +153,7 @@ public:
     virtual void onDamaged(ServerPlayer *xiahou, const DamageStruct &damage) const{
         ServerPlayer *from = damage.from;
         Room *room = xiahou->getRoom();
-        QVariant data = QVariant::fromValue(damage);
-
+        
         JudgeStruct judge;
         judge.pattern = ".|heart";
         judge.good = false;
@@ -236,7 +234,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         room->askForUseCard(player, "@@tuxi", "@tuxi-card");
-        if (player->hasFlag("tuxi") && player->tag.contains("tuxi_invoke"))
+        if (player->hasFlag(objectName()) && player->tag.contains(objectName()))
             return true;
 
         return false;
@@ -248,21 +246,14 @@ public:
 
         Room *room = source->getRoom();
 
-        QList<CardsMoveStruct> moves;
-        CardsMoveStruct move1;
-        move1.card_ids << room->askForCardChosen(source, targets[0].value<ServerPlayer *>(), "h", "tuxi");
-        move1.to = source;
-        move1.to_place = Player::PlaceHand;
-        moves.push_back(move1);
-        if (targets.length() == 2) {
-            CardsMoveStruct move2;
-            move2.card_ids << room->askForCardChosen(source, targets[1].value<ServerPlayer *>(), "h", "tuxi");
-            move2.to = source;
-            move2.to_place = Player::PlaceHand;
-            moves.push_back(move2);
+        for (int i = 0; i < targets.length(); i++) {
+            CardsMoveStruct move;
+            move.card_ids << room->askForCardChosen(source, targets[i].value<ServerPlayer *>(), "h", objectName());
+            move.to = source;
+            move.to_place = Player::PlaceHand;
+            room->moveCardsAtomic(move, false);
         }
-        room->moveCardsAtomic(moves, false);
-
+        
         return true;
     }
 };
@@ -270,26 +261,17 @@ public:
 class Luoyi : public TriggerSkill {
 public:
     Luoyi() : TriggerSkill("luoyi") {
-        events << DrawNCards << DamageCaused << PreCardUsed;
+        events << DrawNCards << DamageCaused;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
-        if (triggerEvent == DrawNCards) {
-            if (TriggerSkill::triggerable(player))
-                return QStringList(objectName());
-        }
-        else if (triggerEvent == PreCardUsed) {
-            if (player != NULL && player->isAlive() && player->hasFlag("luoyi")){
-                CardUseStruct use = data.value<CardUseStruct>();
-                if (use.card != NULL && (use.card->isKindOf("Slash") || use.card->isKindOf("Duel"))){
-                    room->setCardFlag(use.card, objectName());
-                }
-            }
+        if (triggerEvent == DrawNCards && TriggerSkill::triggerable(player)) {
+            return QStringList(objectName());
         }
         else if (triggerEvent == DamageCaused) {
-            if (player != NULL && player->isAlive() && player->hasFlag("luoyi")){
+            if (player != NULL && player->isAlive() && player->hasFlag(objectName())){
                 DamageStruct damage = data.value<DamageStruct>();
-                if (damage.card != NULL && damage.card->hasFlag("luoyi") && !damage.chain && !damage.transfer && damage.by_user){
+                if (damage.card != NULL && damage.from->hasFlag(objectName()) && !damage.chain && !damage.transfer && damage.by_user){
                     return QStringList(objectName());
                 }
             }
@@ -339,9 +321,8 @@ public:
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
-            if (TriggerSkill::triggerable(player))
-                return QStringList(objectName());
+        if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge && TriggerSkill::triggerable(player)) {
+            return QStringList(objectName());
         return QStringList();
     }
 
@@ -451,9 +432,8 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
-        if (player->getPhase() == Player::Start){
-            if (TriggerSkill::triggerable(player))
-                return QStringList(objectName());
+        if (player->getPhase() == Player::Start && TriggerSkill::triggerable(player)){
+            return QStringList(objectName());
         }
         return QStringList();
     }
@@ -467,8 +447,8 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhenji, QVariant &, ServerPlayer *) const{
-        JudgeStruct judge;
         forever{
+            JudgeStruct judge;
             judge.pattern = ".|black";
             judge.good = true;
             judge.reason = objectName();
@@ -477,7 +457,7 @@ public:
             judge.time_consuming = true;
 
             room->judge(judge);
-            if ((judge.isGood() && !zhenji->askForSkillInvoke(objectName())) || judge.isBad())
+            if (judge.isBad() || !zhenji->askForSkillInvoke(objectName()){
                 break;
         }
         QList<int> card_list = VariantList2IntList(zhenji->tag[objectName()].toList());
@@ -486,6 +466,7 @@ public:
         foreach(int id, card_list)
             if (room->getCardPlace(id) == Player::PlaceTable && !subcards.contains(id))
                 subcards << id;
+        }
         if (subcards.length() != 0){
             DummyCard dummy(subcards);
             zhenji->obtainCard(&dummy);
@@ -716,8 +697,7 @@ bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Play
     if (phase == Player::Draw)
         return targets.length() < 2 && to_select != Self && !to_select->isKongcheng();
     else if (phase == Player::Play)
-        return targets.isEmpty()
-        && (!to_select->getJudgingArea().isEmpty() || !to_select->getEquips().isEmpty());
+        return targets.isEmpty() && !to_select->getCards("ej").isEmpty();
     return false;
 }
 
@@ -726,28 +706,20 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
     if (phase == Player::Draw) {
         if (targets.isEmpty())
             return;
-
-        QList<CardsMoveStruct> moves;
-        CardsMoveStruct move1;
-        move1.card_ids << room->askForCardChosen(zhanghe, targets[0], "h", "qiaobian");
-        move1.to = zhanghe;
-        move1.to_place = Player::PlaceHand;
-        moves.push_back(move1);
-        if (targets.length() == 2) {
-            CardsMoveStruct move2;
-            move2.card_ids << room->askForCardChosen(zhanghe, targets[1], "h", "qiaobian");
-            move2.to = zhanghe;
-            move2.to_place = Player::PlaceHand;
-            moves.push_back(move2);
+        for (int i = 0; i < targets.length(); i++) {
+            CardsMoveStruct move;
+            move.card_ids << room->askForCardChosen(zhanghe, targets[i].value<ServerPlayer *>(), "h", objectName());
+            move.to = zhanghe;
+            move.to_place = Player::PlaceHand;
+            room->moveCardsAtomic(move, false);
         }
-        room->moveCardsAtomic(moves, false);
     }
     else if (phase == Player::Play) {
         if (targets.isEmpty())
             return;
 
         ServerPlayer *from = targets.first();
-        if (!from->hasEquip() && from->getJudgingArea().isEmpty())
+        if (!from->getCards("ej").isEmpty())
             return;
 
         int card_id = room->askForCardChosen(zhanghe, from, "ej", "qiaobian");
