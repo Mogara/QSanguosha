@@ -881,7 +881,6 @@ bool Room::notifyMoveFocus(ServerPlayer *player) {
     players.append(player);
     Countdown countdown;
     countdown.m_type = Countdown::S_COUNTDOWN_NO_LIMIT;
-    notifyMoveFocus(players, S_COMMAND_MOVE_FOCUS, countdown);
     return notifyMoveFocus(players, S_COMMAND_MOVE_FOCUS, countdown);
 }
 
