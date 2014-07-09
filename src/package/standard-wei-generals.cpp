@@ -83,12 +83,10 @@ public:
     virtual void onDamaged(ServerPlayer *simayi, const DamageStruct &damage) const{
         ServerPlayer *from = damage.from;
         Room *room = simayi->getRoom();
-        QVariant data = QVariant::fromValue(from);
         if (!from->isNude()) {
             int card_id = room->askForCardChosen(simayi, from, "he", objectName());
             CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, simayi->objectName());
-            room->obtainCard(simayi, Sanguosha->getCard(card_id),
-                reason, room->getCardPlace(card_id) != Player::PlaceHand);
+            room->obtainCard(simayi, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
         }
     }
 };
@@ -154,7 +152,6 @@ public:
     virtual void onDamaged(ServerPlayer *xiahou, const DamageStruct &damage) const{
         ServerPlayer *from = damage.from;
         Room *room = xiahou->getRoom();
-        QVariant data = QVariant::fromValue(damage);
 
         JudgeStruct judge;
         judge.pattern = ".|heart";
@@ -339,9 +336,8 @@ public:
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge)
-            if (TriggerSkill::triggerable(player))
-                return QStringList(objectName());
+        if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge && TriggerSkill::triggerable(player))
+            return QStringList(objectName());
         return QStringList();
     }
 
@@ -468,16 +464,16 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhenji, QVariant &, ServerPlayer *) const{
         JudgeStruct judge;
-        forever{
-            judge.pattern = ".|black";
-            judge.good = true;
-            judge.reason = objectName();
-            judge.play_animation = false;
-            judge.who = zhenji;
-            judge.time_consuming = true;
+        judge.pattern = ".|black";
+        judge.good = true;
+        judge.reason = objectName();
+        judge.play_animation = false;
+        judge.who = zhenji;
+        judge.time_consuming = true;
 
+        forever {
             room->judge(judge);
-            if ((judge.isGood() && !zhenji->askForSkillInvoke(objectName())) || judge.isBad())
+            if (judge.isBad() || !zhenji->askForSkillInvoke(objectName()))
                 break;
         }
         QList<int> card_list = VariantList2IntList(zhenji->tag[objectName()].toList());
@@ -716,8 +712,7 @@ bool QiaobianCard::targetFilter(const QList<const Player *> &targets, const Play
     if (phase == Player::Draw)
         return targets.length() < 2 && to_select != Self && !to_select->isKongcheng();
     else if (phase == Player::Play)
-        return targets.isEmpty()
-        && (!to_select->getJudgingArea().isEmpty() || !to_select->getEquips().isEmpty());
+        return targets.isEmpty() && (!to_select->getJudgingArea().isEmpty() || !to_select->getEquips().isEmpty());
     return false;
 }
 
@@ -747,7 +742,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
             return;
 
         ServerPlayer *from = targets.first();
-        if (!from->hasEquip() && from->getJudgingArea().isEmpty())
+        if (from->getCards("ej").isEmpty())
             return;
 
         int card_id = room->askForCardChosen(zhanghe, from, "ej", "qiaobian");
