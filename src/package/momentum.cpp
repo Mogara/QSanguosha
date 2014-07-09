@@ -1051,9 +1051,19 @@ public:
             foreach(ServerPlayer *to, use.to){
                 if (use.from->inSiegeRelation(player, to)){
                     if (to->canDiscard(to, "e")) {
-                        int card_id = room->askForCardChosen(to, to, "e", objectName(), true, Card::MethodDiscard);
-                        room->throwCard(card_id, to);
                         room->broadcastSkillInvoke(objectName());
+                        room->notifySkillInvoked(player, objectName());
+                        if (room->askForCard(to, ".|.|.|equipped!", "@fengshi-discard") == NULL){
+                            QList<const Card *> equips = to->getEquips();
+                            QList<const Card *> equips_candiscard;
+                            foreach(const Card *e, equips){
+                                if (to->canDiscard(to, e->getEffectiveId()))
+                                    equips_candiscard << e;
+                            }
+
+                            const Card *rand_c = equips_candiscard.at(qrand() % equips_candiscard.length());
+                            room->throwCard(rand_c, to);
+                        }
                     }
                 }
             }
