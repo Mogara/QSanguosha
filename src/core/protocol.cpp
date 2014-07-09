@@ -31,7 +31,7 @@ const unsigned int QSanProtocol::Packet::S_MAX_PACKET_SIZE = 65535;
 const string QSanProtocol::Countdown::S_COUNTDOWN_MAGIC = "MG_COUNTDOWN";
 const char *QSanProtocol::S_PLAYER_SELF_REFERENCE_ID = "MG_SELF";
 
-bool QSanProtocol::Countdown::tryParse(Json::Value val) {
+bool QSanProtocol::Countdown::tryParse(const Json::Value &val) {
     if (!val.isArray() || (val.size() != 2 && val.size() != 3) ||
         !val[0].isString() || val[0].asString() != S_COUNTDOWN_MAGIC)
         return false;
