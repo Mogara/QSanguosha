@@ -125,7 +125,7 @@ QWidget *PlayerCardDialog::createHandcardButton() {
     else {
         button->setDescription(tr("This guy has %1 hand card(s)").arg(num));
         button->setEnabled(method != Card::MethodDiscard || Self->canDiscard(player, "h"));
-        connect(button, SIGNAL(idSelected(int)), this, SLOT(idSelected(int)));
+        connect(button, SIGNAL(idSelected(int)), this, SIGNAL(idSelected(int)));
     }
 
     return button;
