@@ -1296,6 +1296,12 @@ void Dashboard::updateSmallAvatar()
             _m_layout->m_secondaryAvatarNameArea,
             Qt::AlignLeft | Qt::AlignJustify, show_name);
     }
+    else if (m_player->getAvatarGeneral() && m_player->getAvatarGeneral()->getKingdom() != "god") {
+        QPixmap avatarIcon = _getAvatarIcon("deputy-" + m_player->getAvatarGeneral()->getKingdom());
+        QRect area = _m_layout->m_secondaryAvatarArea;
+        area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 3);
+        _paintPixmap(_m_smallAvatarIcon, area, avatarIcon, _getAvatarParent());
+    }
     else {
         _paintPixmap(_m_smallAvatarIcon, _m_layout->m_secondaryAvatarArea,
             QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
