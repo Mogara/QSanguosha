@@ -31,8 +31,9 @@
 #include "roomscene.h"
 
 QSanButton::QSanButton(QGraphicsItem *parent)
-    : QGraphicsObject(parent), multi_state(false), first_state(true), _m_state(S_STATE_UP), _m_style(S_STYLE_PUSH),
-    _m_mouseEntered(false)
+    : QGraphicsObject(parent), _m_state(S_STATE_UP), _m_style(S_STYLE_PUSH),
+      _m_mouseEntered(false),
+      multi_state(false), first_state(true)
 {
     setSize(QSize(0, 0));
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
@@ -44,8 +45,9 @@ QSanButton::QSanButton(QGraphicsItem *parent)
 }
 
 QSanButton::QSanButton(const QString &groupName, const QString &buttonName, QGraphicsItem *parent, const bool &multi_state)
-    : QGraphicsObject(parent), multi_state(multi_state), first_state(true), _m_state(S_STATE_UP), _m_style(S_STYLE_PUSH),
-    _m_groupName(groupName), _m_buttonName(buttonName), _m_mouseEntered(false)
+    : QGraphicsObject(parent), _m_state(S_STATE_UP), _m_style(S_STYLE_PUSH),
+    _m_groupName(groupName), _m_buttonName(buttonName), _m_mouseEntered(false),
+    multi_state(multi_state), first_state(true)
 {
     const int state_count = multi_state ? (int)S_NUM_BUTTON_STATES * 2 : (int)S_NUM_BUTTON_STATES;
     for (int i = 0; i < state_count; i++) {
@@ -154,7 +156,7 @@ void QSanButton::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     QPointF point = event->pos();
     if (!insideButton(point)) return;
 
-    if (_m_style == S_STYLE_TOGGLE && !multi_state
+    if ((_m_style == S_STYLE_TOGGLE && !multi_state)
         || _m_state == S_STATE_DISABLED
         || _m_state == S_STATE_CANPRESHOW) return;
     setState(S_STATE_DOWN);

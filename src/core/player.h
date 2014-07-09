@@ -338,8 +338,7 @@ private:
 
     const General *actual_general1, *actual_general2;
 
-    bool general1_showed;
-    bool general2_showed;
+    bool general1_showed, general2_showed;
 
     Phase phase;
     WrappedCard *weapon, *armor, *defensive_horse, *offensive_horse, *treasure;
