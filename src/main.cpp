@@ -52,7 +52,14 @@ static bool callback(const wchar_t *, const wchar_t *id,
     if (succeeded && QFile::exists("QSanSMTPClient.exe")){
         char ID[65535];
         memset(ID, 0, sizeof(ID));
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#endif
         wcstombs(ID, id, wcslen(id));
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
         QProcess *process = new QProcess(qApp);
         QStringList args;
         args << QString(ID) + ".dmp";
