@@ -1732,9 +1732,11 @@ void Client::moveFocus(const Json::Value &focus) {
 
     Q_ASSERT(focus.isArray() && focus.size() == 3);
     tryParse(focus[0], players);
-    // focus[1] is the moveFocus reason, which is unused for now.
-    countdown.tryParse(focus[2]);
-    emit focus_moved(players, countdown);
+    // focus[1] is the moveFocus reason, which is now removed.
+    Json::ArrayIndex countdown_index = focus.size() >= 3 ? 2 : 1;
+    if (countdown.tryParse(focus[countdown_index])) {
+        emit focus_moved(players, countdown);
+    }
 }
 
 void Client::setEmotion(const Json::Value &set_str) {
