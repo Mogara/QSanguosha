@@ -893,7 +893,7 @@ bool Room::notifyMoveFocus(ServerPlayer *player, CommandType command) {
     return notifyMoveFocus(players, countdown);
 }
 
-bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, Countdown countdown) {
+bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, const Countdown &countdown) {
     Json::Value arg(Json::arrayValue);
     //============================================
     //for protecting anjiang
