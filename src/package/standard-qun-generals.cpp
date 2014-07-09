@@ -502,7 +502,7 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
 
     if (luanwu_targets.isEmpty() || !room->askForUseSlashTo(effect.to, luanwu_targets, "@luanwu-slash")){
         room->loseHp(effect.to);
-        room->getThread()->delay(Config.AIDelay / 2);
+        room->getThread()->delay(Config.AIDelay);
     }
 }
 
@@ -514,7 +514,7 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        Card *card = new LuanwuCard;
+        LuanwuCard *card = new LuanwuCard;
         card->setShowSkill(objectName());
         return card;
     }
@@ -747,6 +747,7 @@ public:
 
             if (invoke){
                 room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, caiwenji->objectName(), data.value<DamageStruct>().to->objectName());
+                room->notifySkillInvoked(caiwenji, objectName());
                 room->broadcastSkillInvoke(objectName());
                 return true;
             }

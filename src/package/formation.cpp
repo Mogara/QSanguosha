@@ -807,6 +807,7 @@ public:
             for (int i = 0; i < use.to.length(); i++) {
                 ServerPlayer *victim = use.to.at(i);
                 if (use.from->inSiegeRelation(player, victim)) {
+                    room->notifySkillInvoked(player, objectName());
                     room->broadcastSkillInvoke(objectName());
                     QVariantList jink_list = use.from->tag["Jink_" + use.card->toString()].toList();
                     if (jink_list.at(i).toInt() == 1)
@@ -1008,6 +1009,7 @@ public:
         ServerPlayer *hetaihou = ask_who;
         if (hetaihou && room->askForDiscard(hetaihou, objectName(), 1, 1, true, false, "@zhendu-discard")){
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, hetaihou->objectName(), player->objectName());
+            room->notifySkillInvoked(player, objectName());
             room->broadcastSkillInvoke(objectName());
             return true;
         }

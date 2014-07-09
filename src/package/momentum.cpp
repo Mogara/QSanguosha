@@ -403,9 +403,13 @@ bool CunsiCard::targetFilter(const QList<const Player *> &targets, const Player 
     return targets.isEmpty();
 }
 
+void CunsiCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    room->doSuperLightbox("mifuren", "cunsi");
+    Card::onUse(room, card_use);
+}
+
 void CunsiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    room->doSuperLightbox("mifuren", "cunsi");
     effect.from->removeGeneral(effect.from->inHeadSkills("cunsi"));
     room->acquireSkill(effect.to, "yongjue");
     room->setPlayerMark(effect.to, "@yongjue", 1);
@@ -535,6 +539,9 @@ public:
             room->sendLog(log);
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, owner->objectName(), player->objectName());
             room->broadcastSkillInvoke(objectName());
+            if (owner != player)
+                room->notifySkillInvoked(owner, objectName());
+
             return true;
         }
         return false;
@@ -717,8 +724,10 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room* room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
-        bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
-        if (invoke){
+        if (player->hasShownSkill(this) || room->askForSkillInvoke(player, objectName())){
+            if (player->hasShownSkill(this))
+                room->notifySkillInvoked(player, objectName());
+
             room->broadcastSkillInvoke(objectName());
             return true;
         }
@@ -745,17 +754,12 @@ public:
         return false;
     }
 
-    virtual bool triggerable(const ServerPlayer *player) const {
-        if (player != NULL && player->getPhase() == Player::NotActive && player->getMark("hunshang") > 0)
-            return true;
-        return false;
-    }
-
-    virtual bool effect(TriggerEvent, Room* room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        player->setMark("hunshang", 0);
-        room->handleAcquireDetachSkills(player, "-yinghun_sunce|-yingzi_sunce", true);
-
-        return false;
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
+        if (player != NULL && player->getPhase() == Player::NotActive && player->getMark("hunshang") > 0){
+            player->setMark("hunshang", 0);
+            room->handleAcquireDetachSkills(player, "-yinghun_sunce|-yingzi_sunce", true);
+        }
+        return QStringList();
     }
 };
 
@@ -783,7 +787,7 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        Card *card = new DuanxieCard;
+        DuanxieCard *card = new DuanxieCard;
         card->setShowSkill(objectName());
         return card;
     }
@@ -841,11 +845,12 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const {
-        if (PhaseChangeSkill::triggerable(player) && player->getPhase() == Player::Draw && (player->isKongcheng() || player->getHp() == 1))
-            foreach(ServerPlayer *p, room->getOtherPlayers(player))
-            if (!p->isAllNude())
-                return QStringList(objectName());
-
+        if (PhaseChangeSkill::triggerable(player) && player->getPhase() == Player::Draw && (player->isKongcheng() || player->getHp() == 1)){
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+                if (!p->isAllNude())
+                    return QStringList(objectName());
+            }
+        }
         return QStringList();
     }
 
@@ -883,16 +888,17 @@ public:
         return false;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const {
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const {
         if (TriggerSkill::triggerable(player) && player->getPhase() == Player::Play && player->hasShownSkill(this))
             return (player->getActualGeneral2Name().contains("sujiang")) ? QStringList() : QStringList(objectName());
 
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *) const {
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
         room->broadcastSkillInvoke(objectName());
         room->doSuperLightbox("dongzhuo", objectName());
+        room->notifySkillInvoked(player, objectName());
         return true;
     }
 
