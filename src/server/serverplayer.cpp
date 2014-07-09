@@ -35,7 +35,7 @@ const int ServerPlayer::S_NUM_SEMAPHORES = 6;
 
 ServerPlayer::ServerPlayer(Room *room)
     : Player(room), m_isClientResponseReady(false), m_isWaitingReply(false),
-    socket(NULL), room(room), event_received(false),
+    event_received(false), socket(NULL), room(room),
     ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL),
     _m_phases_index(0), _m_clientResponse(Json::nullValue)
 {
@@ -1397,7 +1397,8 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event) {
                 }
             }
 
-            if (!has_lord && i > (room->getPlayers().length() / 2) || (has_lord && getLord(true)->isDead()))
+            if ((!has_lord && i > (room->getPlayers().length() / 2))
+                || (has_lord && getLord(true)->isDead()))
                 role = "careerist";
 
             room->setPlayerProperty(this, "role", role);

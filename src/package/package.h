@@ -36,6 +36,8 @@ public:
     virtual bool willThrow() const{
         return true;
     }
+
+    virtual ~CardPattern() {}
 };
 
 class Package : public QObject {

@@ -74,7 +74,7 @@ void RoomScene::resetPiles() {
 }
 
 RoomScene::RoomScene(QMainWindow *main_window)
-    : main_window(main_window), game_started(false)
+    : game_started(false), main_window(main_window)
 {
     setParent(main_window);
 

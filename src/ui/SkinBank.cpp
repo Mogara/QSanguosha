@@ -656,7 +656,7 @@ QString IQSanComponentSkin::_readConfig(const Json::Value &dict, const QString &
 
 QString IQSanComponentSkin::_readImageConfig(const QString &key, QRect &rect,
     bool &clipping, QSize &newScale,
-    bool scaled, const QString &defaultValue) const{
+    bool &scaled, const QString &defaultValue) const{
     clipping = false;
     scaled = false;
     if (!_m_imageConfig.isObject()) return defaultValue;

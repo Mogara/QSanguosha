@@ -379,7 +379,8 @@ void GuanxingBox::adjust() {
     bool odd_row = true;
     if (!one_row && count % 2) {
         const qreal y = item->y() + card_height / 2;
-        if (y >= 45 + card_height && y <= 45 + card_height * 2 + blank || y >= 45 + card_height * 3 + blank * 3) odd_row = false;
+        if ((y >= 45 + card_height && y <= 45 + card_height * 2 + blank)
+            || y >= 45 + card_height * 3 + blank * 3) odd_row = false;
     }
     const int start_x = 25 + (odd_row ? 0 : (card_width / 2 + blank / 2));
     int c = (item->x() + item->boundingRect().width() / 2 - start_x) / card_width;

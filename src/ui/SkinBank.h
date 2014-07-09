@@ -112,7 +112,7 @@ protected:
     QString _readConfig(const Json::Value &dictionary, const QString &key,
         const QString &defaultValue = QString()) const;
     QString _readImageConfig(const QString &key, QRect &clipRegion, bool &clipping,
-        QSize &newScale, bool scaled,
+        QSize &newScale, bool &scaled,
         const QString &defaultValue = QString()) const;
 
     Json::Value _m_imageConfig;
