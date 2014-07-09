@@ -36,6 +36,7 @@ SOURCES += \
     src/core/WrappedCard.cpp \
     src/core/version.cpp \
     src/dialog/AboutUs.cpp \
+    src/dialog/cardbutton.cpp \
     src/dialog/cardeditor.cpp \
     src/dialog/cardoverview.cpp \
     src/dialog/choosegeneraldialog.cpp \
@@ -131,6 +132,7 @@ HEADERS += \
     src/core/WrappedCard.h \
     src/core/version.h \
     src/dialog/AboutUs.h \
+    src/dialog/cardbutton.h \
     src/dialog/cardeditor.h \
     src/dialog/cardoverview.h \
     src/dialog/choosegeneraldialog.h \

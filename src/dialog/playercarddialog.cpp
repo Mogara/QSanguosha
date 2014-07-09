@@ -78,88 +78,88 @@ QWidget *PlayerCardDialog::createAvatar() {
 }
 
 QWidget *PlayerCardDialog::createHandcardButton() {
-	if (!player->isKongcheng() && (Self == player || handcard_visible)) {
-		QGroupBox *area = new QGroupBox(tr("Handcard area"));
-		QVBoxLayout *layout = new QVBoxLayout;
-		QList<const Card *> cards = player->getHandcards();
-		for (int i = 0; i < cards.length(); i += 2) {
-			const Card *card = Sanguosha->getEngineCard(cards.at(i)->getId());
-			CardButton *button1 = new CardButton(card);
-			button1->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
-			connect(button1, SIGNAL(idSelected(int)), this, SLOT(idSelected(int)));
+    if (!player->isKongcheng() && (Self == player || handcard_visible)) {
+        QGroupBox *area = new QGroupBox(tr("Handcard area"));
+        QVBoxLayout *layout = new QVBoxLayout;
+        QList<const Card *> cards = player->getHandcards();
+        for (int i = 0; i < cards.length(); i += 2) {
+            const Card *card = Sanguosha->getEngineCard(cards.at(i)->getId());
+            CardButton *button1 = new CardButton(card);
+            button1->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
+            connect(button1, SIGNAL(idSelected(int)), this, SLOT(idSelected(int)));
 
-			CardButton *button2 = NULL;
-			if (i < cards.length() - 1) {
-				card = Sanguosha->getEngineCard(cards.at(i + 1)->getId());
-				button2 = new CardButton(card);
-				button2->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
+            CardButton *button2 = NULL;
+            if (i < cards.length() - 1) {
+                card = Sanguosha->getEngineCard(cards.at(i + 1)->getId());
+                button2 = new CardButton(card);
+                button2->setIcon(G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
 
-				connect(button1, SIGNAL(idSelected(int)), this, SLOT(idSelected(int)));
-			}
-			if (button1 && button2) {
-				QHBoxLayout *hlayout = new QHBoxLayout;
-				button1->setScale(0.65);
-				button2->setScale(0.65);
-				hlayout->addWidget(button1);
-				hlayout->addWidget(button2);
-				layout->addLayout(hlayout);
-			}
-			else {
-				Q_ASSERT(button1 != NULL);
-				layout->addWidget(button1);
-			}
-		}
+                connect(button1, SIGNAL(idSelected(int)), this, SLOT(idSelected(int)));
+            }
+            if (button1 && button2) {
+                QHBoxLayout *hlayout = new QHBoxLayout;
+                button1->setScale(0.65);
+                button2->setScale(0.65);
+                hlayout->addWidget(button1);
+                hlayout->addWidget(button2);
+                layout->addLayout(hlayout);
+            }
+            else {
+                Q_ASSERT(button1 != NULL);
+                layout->addWidget(button1);
+            }
+        }
 
-		area->setLayout(layout);
-		return area;
-	}
+        area->setLayout(layout);
+        return area;
+    }
 
-	CardButton *button = new CardButton(NULL);
-	button->setText(tr("Handcard"));
-	button->setObjectName("handcard_button");
-	int num = player->getHandcardNum();
-	if (num == 0) {
-		button->setDescription(tr("This guy has no any hand cards"));
-		button->setEnabled(false);
-	}
-	else {
-		button->setDescription(tr("This guy has %1 hand card(s)").arg(num));
-		button->setEnabled(method != Card::MethodDiscard || Self->canDiscard(player, "h"));
-		connect(button, SIGNAL(idSelected(int)), this, SLOT(idSelected(int)));
-	}
+    CardButton *button = new CardButton(NULL);
+    button->setText(tr("Handcard"));
+    button->setObjectName("handcard_button");
+    int num = player->getHandcardNum();
+    if (num == 0) {
+        button->setDescription(tr("This guy has no any hand cards"));
+        button->setEnabled(false);
+    }
+    else {
+        button->setDescription(tr("This guy has %1 hand card(s)").arg(num));
+        button->setEnabled(method != Card::MethodDiscard || Self->canDiscard(player, "h"));
+        connect(button, SIGNAL(idSelected(int)), this, SLOT(idSelected(int)));
+    }
 
-	return button;
+    return button;
 }
 
 QGroupBox *PlayerCardDialog::createButtonArea(const CardList &list, const QString &title, const QString &noCardText) {
-	QGroupBox *area = new QGroupBox(title);
-	QVBoxLayout *layout = new QVBoxLayout;
-	area->setLayout(layout);
+    QGroupBox *area = new QGroupBox(title);
+    QVBoxLayout *layout = new QVBoxLayout;
+    area->setLayout(layout);
 
-	if (list.isEmpty()) {
-		CardButton *button = new CardButton(NULL);
-		button->setText(noCardText);
-		button->setEnabled(false);
-		layout->addWidget(button);
-	}
-	else {
-		foreach(const Card *card, list) {
-			CardButton *button = new CardButton(card);
-			layout->addWidget(button);
-			button->setEnabled(!disabled_ids.contains(card->getEffectiveId())
-				&& (method != Card::MethodDiscard || Self->canDiscard(player, card->getEffectiveId())));
-			QObject::connect(button, SIGNAL(idSelected(int)), this, SIGNAL(idSelected(int)));
-		}
-	}
+    if (list.isEmpty()) {
+        CardButton *button = new CardButton(NULL);
+        button->setText(noCardText);
+        button->setEnabled(false);
+        layout->addWidget(button);
+    }
+    else {
+        foreach(const Card *card, list) {
+            CardButton *button = new CardButton(card);
+            layout->addWidget(button);
+            button->setEnabled(!disabled_ids.contains(card->getEffectiveId())
+                && (method != Card::MethodDiscard || Self->canDiscard(player, card->getEffectiveId())));
+            QObject::connect(button, SIGNAL(idSelected(int)), this, SIGNAL(idSelected(int)));
+        }
+    }
 
-	return area;
+    return area;
 }
 
 QWidget *PlayerCardDialog::createEquipArea() {
-	return createButtonArea(player->getEquips(), tr("Equip area"), tr("No equip"));
+    return createButtonArea(player->getEquips(), tr("Equip area"), tr("No equip"));
 }
 
 QWidget *PlayerCardDialog::createJudgingArea() {
-	return createButtonArea(player->getJudgingArea(), tr("Judging area"), tr("No judging cards"));
+    return createButtonArea(player->getJudgingArea(), tr("Judging area"), tr("No judging cards"));
 }
 

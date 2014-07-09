@@ -46,7 +46,7 @@ public:
         const QList<int> &disabled_ids = QList<int>());
 
 private:
-	QGroupBox *createButtonArea(const CardList &list, const QString &title, const QString &noCardText);
+    QGroupBox *createButtonArea(const CardList &list, const QString &title, const QString &noCardText);
     QWidget *createAvatar();
     QWidget *createHandcardButton();
     QWidget *createEquipArea();

@@ -767,6 +767,15 @@
     <ClCompile Include="..\..\src\core\version.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="Debug\moc_cardbutton.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_cardbutton.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\cardbutton.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1083,6 +1092,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\package\strategic-advantage.h">
       <Filter>package</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\cardbutton.h">
+      <Filter>dialog</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
