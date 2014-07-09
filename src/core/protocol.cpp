@@ -99,8 +99,8 @@ bool QSanProtocol::Packet::parse(const string &s) {
     if (!success || !Utils::isIntArray(result, 0, 3) || result.size() > 5)
         return false;
 
-    m_globalSerial = (unsigned int)result[0].asInt();
-    m_localSerial = (unsigned int)result[1].asInt();
+    m_globalSerial = result[0].asUInt();
+    m_localSerial = result[1].asUInt();
     m_packetDescription = static_cast<PacketDescription>(result[2].asInt());
     m_command = (CommandType)result[3].asInt();
 
