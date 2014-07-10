@@ -346,7 +346,9 @@ CONFIG(lua){
 
 TRANSLATIONS += builds/vs2013/sanguosha.ts
 
-#system("lrelease builds/vs2013/sanguosha.ts")
+!exists($$PWD/sanguosha.qm) {
+    system("lrelease builds/vs2013/sanguosha.ts -qm $$PWD/sanguosha.qm")
+}
 
 OTHER_FILES += \
         sanguosha.qss \
