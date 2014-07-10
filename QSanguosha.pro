@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += network sql
+QT += network
 !winrt:QT += declarative
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
@@ -236,6 +236,7 @@ macx{
 
 LIBS += -L.
 win32-msvc*{
+    DEFINES += _CRT_SECURE_NO_WARNINGS
     !contains(QMAKE_HOST.arch, x86_64) {
         DEFINES += WIN32
         LIBS += -L"$$_PRO_FILE_PWD_/lib/win/x86"
@@ -356,5 +357,3 @@ else: LIBS += -lfreetype
 
 INCLUDEPATH += $$PWD/include/freetype
 DEPENDPATH += $$PWD/include/freetype
-
-DEFINES += _CRT_SECURE_NO_WARNINGS
