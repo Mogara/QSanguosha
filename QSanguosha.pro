@@ -351,7 +351,8 @@ OTHER_FILES += \
         sanguosha.qss \
         ui-script/animation.qml
 
-LIBS += -lfreetype
+win32-msvc*: LIBS += -lfreetype253
+else: LIBS += -lfreetype
 
 INCLUDEPATH += $$PWD/include/freetype
 DEPENDPATH += $$PWD/include/freetype
