@@ -1730,7 +1730,7 @@ void Client::moveFocus(const Json::Value &focus) {
     QStringList players;
     Countdown countdown;
 
-    Q_ASSERT(focus.isArray() && focus.size() == 3);
+    Q_ASSERT(focus.isArray());
 
     if (focus[0].isArray()) {
         tryParse(focus[0], players);
