@@ -687,7 +687,7 @@ bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, co
     player->setClientReply(Json::Value::null);
     player->setClientReplyString(QString());
     player->m_isWaitingReply = true;
-    player->m_expectedReplySerial = packet.m_globalSerial;
+    player->m_expectedReplySerial = packet.createGlobalSerial();
     if (m_requestResponsePair.contains(command))
         player->m_expectedReplyCommand = m_requestResponsePair[command];
     else
@@ -889,7 +889,13 @@ bool Room::notifyMoveFocus(ServerPlayer *player, CommandType command) {
     players.append(player);
     Countdown countdown;
     countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
-    countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
+    if (countdown.m_max == ServerInfo.getCommandTimeout(S_COMMAND_UNKNOWN, S_CLIENT_INSTANCE)) {
+        countdown.m_type = Countdown::S_COUNTDOWN_USE_DEFAULT;
+    }
+    else {
+        countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
+    }
+
     return notifyMoveFocus(players, countdown);
 }
 
@@ -916,7 +922,10 @@ bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, const Countdown
     }
     //============================================
 
-    arg[1] = countdown.toJsonValue();
+    if (countdown.m_type != Countdown::S_COUNTDOWN_USE_DEFAULT) {
+        arg[1] = countdown.toJsonValue();
+    }
+
     return doBroadcastNotify(S_COMMAND_MOVE_FOCUS, arg);
 }
 

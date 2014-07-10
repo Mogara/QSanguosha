@@ -257,14 +257,9 @@ namespace QSanProtocol {
         //format: [global_serial, local_serial, packet_type, command_name, command_body]
         unsigned int m_globalSerial;
         unsigned int m_localSerial;
-        inline Packet(int packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN) {
-            _m_globalSerial++;
-            m_globalSerial = _m_globalSerial;
-            m_localSerial = 0;
-            m_packetDescription = static_cast<PacketDescription>(packetDescription);
-            m_command = command;
-            m_msgBody = Json::nullValue;
-        }
+
+        Packet(int packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN);
+        unsigned int createGlobalSerial();
         inline void setMessageBody(const Json::Value &value) { m_msgBody = value; }
         inline Json::Value &getMessageBody() { return m_msgBody; }
         inline const Json::Value &getMessageBody() const{ return m_msgBody; }
