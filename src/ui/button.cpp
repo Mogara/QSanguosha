@@ -82,12 +82,12 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
 	QRectF rect = boundingRect();
 
 	QColor textColor, edgeColor, boxColor;
-    textColor = edgeColor = Qt::white;
-    boxColor = Qt::black;
+        textColor = edgeColor = Qt::white;
+        boxColor = Qt::black;
 
 	if (hasFocus()) {
-        textColor = ReverseColor(textColor);
-        boxColor = ReverseColor(boxColor);
+            textColor = ReverseColor(textColor);
+            boxColor = ReverseColor(boxColor);
 	}
 
 	boxColor.setAlphaF(0.8);
@@ -99,8 +99,8 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
 	painter->setPen(pen);
 	painter->drawRect(rect);
 
-    pen.setColor(textColor);
-    painter->setPen(pen);
+        pen.setColor(textColor);
+        painter->setPen(pen);
 	painter->setFont(font);
 	painter->drawText(rect, Qt::AlignCenter, label);
 }
