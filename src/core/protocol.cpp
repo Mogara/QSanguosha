@@ -74,6 +74,19 @@ bool QSanProtocol::Utils::isIntArray(const Json::Value &jsonObject, unsigned int
     return true;
 }
 
+QSanProtocol::Packet::Packet(int packetDescription, CommandType command) :
+    m_globalSerial(0), m_localSerial(0),
+    m_packetDescription(static_cast<PacketDescription>(packetDescription)),
+    m_command(command),
+    m_msgBody(Json::nullValue)
+{
+}
+
+unsigned int QSanProtocol::Packet::createGlobalSerial() {
+   m_globalSerial = ++_m_globalSerial;
+   return m_globalSerial;
+}
+
 bool QSanProtocol::Packet::parse(const string &s) {
     if (s.length() > S_MAX_PACKET_SIZE) {
         return false;
@@ -86,8 +99,8 @@ bool QSanProtocol::Packet::parse(const string &s) {
     if (!success || !Utils::isIntArray(result, 0, 3) || result.size() > 5)
         return false;
 
-    m_globalSerial = (unsigned int)result[0].asInt();
-    m_localSerial = (unsigned int)result[1].asInt();
+    m_globalSerial = result[0].asUInt();
+    m_localSerial = result[1].asUInt();
     m_packetDescription = static_cast<PacketDescription>(result[2].asInt());
     m_command = (CommandType)result[3].asInt();
 
