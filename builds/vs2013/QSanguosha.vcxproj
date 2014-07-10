@@ -187,7 +187,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtSql;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtDeclarative;$(QTDIR)\include\QtSql;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>debug\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -211,7 +211,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmaind.lib;..\..\lib\win\x86\fmodexL.lib;..\..\lib\win\x86\freetype253_D.lib;..\..\lib\breakpad.lib;QtSqld4.lib;QtDeclaratived4.lib;QtGuid4.lib;QtNetworkd4.lib;QtCored4.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;..\..\lib\win\x86\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;..\..\lib\win\x86\fmodexL.lib;..\..\lib\win\x86\freetype253_D.lib;..\..\lib\breakpad.lib;QtDeclaratived4.lib;QtGuid4.lib;QtNetworkd4.lib;QtCored4.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;..\..\lib\win\x86\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -240,7 +240,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtDeclarative;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>debug\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -264,7 +264,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmaind.lib;..\..\lib\win\x86\fmodexL.lib;..\..\lib\win\x86\freetype253_D.lib;..\..\lib\breakpad.lib;Qt5Cored.lib;Qt5Declaratived.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5Sqld.lib;Qt5Widgetsd.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;..\..\lib\win\x86\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;..\..\lib\win\x86\fmodexL.lib;..\..\lib\win\x86\freetype253_D.lib;..\..\lib\breakpad.lib;Qt5Cored.lib;Qt5Declaratived.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5Widgetsd.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;..\..\lib\win\x86\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -293,7 +293,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtSql;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtDeclarative;$(QTDIR)\include\QtSql;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>debug\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -317,7 +317,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmaind.lib;..\..\lib\win\x64\fmodexL.lib;..\..\lib\win\x64\freetype253_D.lib;..\..\lib\breakpad.lib;..\..\lib\lua.lib;..\..\lib\jsoncpp.lib;QtSqld4.lib;QtDeclaratived4.lib;QtGuid4.lib;QtNetworkd4.lib;QtCored4.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;..\..\lib\win\x64\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;..\..\lib\win\x64\fmodexL.lib;..\..\lib\win\x64\freetype253_D.lib;..\..\lib\breakpad.lib;..\..\lib\lua.lib;..\..\lib\jsoncpp.lib;QtDeclaratived4.lib;QtGuid4.lib;QtNetworkd4.lib;QtCored4.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;..\..\lib\win\x64\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -346,7 +346,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtDeclarative;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>debug\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -370,7 +370,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmaind.lib;..\..\lib\win\x64\fmodexL.lib;..\..\lib\win\x64\freetype253_D.lib;..\..\lib\breakpad.lib;..\..\lib\lua.lib;..\..\lib\jsoncpp.lib;Qt5Cored.lib;Qt5Declaratived.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5Sqld.lib;Qt5Widgetsd.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;..\..\lib\win\x64\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;..\..\lib\win\x64\fmodexL.lib;..\..\lib\win\x64\freetype253_D.lib;..\..\lib\breakpad.lib;..\..\lib\lua.lib;..\..\lib\jsoncpp.lib;Qt5Cored.lib;Qt5Declaratived.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5Widgetsd.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;..\..\lib\win\x64\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -399,7 +399,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtSql;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtDeclarative;$(QTDIR)\include\QtSql;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>release\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -420,7 +420,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmain.lib;..\..\lib\win\x86\fmodex.lib;..\..\lib\win\x86\freetype253.lib;..\..\lib\breakpad.lib;QtSql4.lib;QtDeclarative4.lib;QtGui4.lib;QtNetwork4.lib;QtCore4.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmain.lib;..\..\lib\win\x86\fmodex.lib;..\..\lib\win\x86\freetype253.lib;..\..\lib\breakpad.lib;QtDeclarative4.lib;QtGui4.lib;QtNetwork4.lib;QtCore4.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -449,7 +449,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtDeclarative;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>release\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -470,7 +470,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmain.lib;..\..\lib\win\x86\fmodex.lib;..\..\lib\win\x86\freetype253.lib;..\..\lib\breakpad.lib;Qt5Core.lib;Qt5Declarative.lib;Qt5Gui.lib;Qt5Network.lib;Qt5Sql.lib;Qt5Widgets.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmain.lib;..\..\lib\win\x86\fmodex.lib;..\..\lib\win\x86\freetype253.lib;..\..\lib\breakpad.lib;Qt5Core.lib;Qt5Declarative.lib;Qt5Gui.lib;Qt5Network.lib;Qt5Widgets.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -499,7 +499,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtSql;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtDeclarative;$(QTDIR)\include\QtSql;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>release\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -520,7 +520,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmain.lib;..\..\lib\win\x64\fmodex.lib;..\..\lib\win\x64\freetype253.lib;..\..\lib\breakpad.lib;QtSql4.lib;QtDeclarative4.lib;QtGui4.lib;QtNetwork4.lib;QtCore4.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmain.lib;..\..\lib\win\x64\fmodex.lib;..\..\lib\win\x64\freetype253.lib;..\..\lib\breakpad.lib;QtDeclarative4.lib;QtGui4.lib;QtNetwork4.lib;QtCore4.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -550,7 +550,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\breakpad;..\..\src\breakpad\client\windows;..\..\src\breakpad\client\windows\handler;..\..\include\freetype;..\..\src\jsoncpp\include;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtNetwork;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtDeclarative;$(QTDIR)\include\QtSql;$(QTDIR)\include\QtWidgets;$(QTDIR)\include;..\..\include;..\..\src\client;..\..\src\core;..\..\src\dialog;..\..\src\package;..\..\src\scenario;..\..\src\server;..\..\src\ui;..\..\src\util;..\..\src\lua;..\..\include\fmod;.\debug;.\GeneratedFiles;..\..\include\vld;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>release\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -571,7 +571,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmain.lib;..\..\lib\win\x64\fmodex.lib;..\..\lib\win\x64\freetype253.lib;..\..\lib\breakpad.lib;Qt5Core.lib;Qt5Declarative.lib;Qt5Gui.lib;Qt5Network.lib;Qt5Sql.lib;Qt5Widgets.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmain.lib;..\..\lib\win\x64\fmodex.lib;..\..\lib\win\x64\freetype253.lib;..\..\lib\breakpad.lib;Qt5Core.lib;Qt5Declarative.lib;Qt5Gui.lib;Qt5Network.lib;Qt5Widgets.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
