@@ -192,7 +192,7 @@ public:
     inline virtual RoomState *getRoomState() { return &_m_roomState; }
     inline virtual Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
 
-    inline void setCountdown(QSanProtocol::Countdown countdown) {
+    inline void setCountdown(const QSanProtocol::Countdown &countdown) {
         m_mutexCountdown.lock();
         m_countdown = countdown;
         m_mutexCountdown.unlock();
