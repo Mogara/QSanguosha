@@ -1214,9 +1214,9 @@ void Player::preshowSkill(const QString &skill_name) {
     if (hasShownSkill(skill_name))
         return;
 
-    if (head_skills.keys().contains(skill_name))
+    if (head_skills.contains(skill_name))
         head_skills[skill_name] = !head_skills.value(skill_name);
-    if (deputy_skills.keys().contains(skill_name))
+    if (deputy_skills.contains(skill_name))
         deputy_skills[skill_name] = !deputy_skills.value(skill_name);
 }
 
