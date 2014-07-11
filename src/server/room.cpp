@@ -3641,6 +3641,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
 
     notifyMoveCards(true, cards_moves, forceMoveVisible);
     // First, process remove card
+    bool drawpile_changed = false;
     for (int i = 0; i < cards_moves.size(); i++) {
         CardsMoveStruct &cards_move = cards_moves[i];
         for (int j = 0; j < cards_move.card_ids.size(); j++) {
@@ -3659,7 +3660,11 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             }
         }
         if (cards_move.from_place == Player::DrawPile)
-            doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
+            drawpile_changed = true;
+    }
+
+    if (drawpile_changed) {
+        doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
     }
 
     foreach(CardsMoveStruct move, cards_moves)
@@ -3735,6 +3740,7 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
 
     notifyMoveCards(true, cards_moves, false);
     // First, process remove card
+    bool drawpile_changed = false;
     for (int i = 0; i < cards_moves.size(); i++) {
         CardsMoveStruct &cards_move = cards_moves[i];
         for (int j = 0; j < cards_move.card_ids.size(); j++) {
@@ -3753,7 +3759,11 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
             }
         }
         if (cards_move.from_place == Player::DrawPile)
-            doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
+            drawpile_changed = true;
+    }
+
+    if(drawpile_changed) {
+        doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
     }
 
     foreach(CardsMoveStruct move, cards_moves)
@@ -3777,9 +3787,9 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
             const Card *card = Sanguosha->getCard(card_id);
             card->setFlags("-visible");
             m_drawPile->append(card_id);
-            doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
         }
     }
+    doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
 
     //trigger event
     moveOneTimes = _mergeMoves(cards_moves);
@@ -3869,6 +3879,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
         cards_move.to = NULL;
     }
 
+    bool drawpile_changed = false;
     for (int i = 0; i < cards_moves.size(); i++) {
         CardsMoveStruct &cards_move = cards_moves[i];
         for (int j = 0; j < cards_move.card_ids.size(); j++) {
@@ -3889,7 +3900,11 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             setCardMapping(card_id, NULL, Player::PlaceTable);
         }
         if (cards_move.from_place == Player::DrawPile)
-            doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
+            drawpile_changed = true;
+    }
+
+    if (drawpile_changed) {
+        doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
     }
 
     foreach(CardsMoveStruct move, cards_moves)
