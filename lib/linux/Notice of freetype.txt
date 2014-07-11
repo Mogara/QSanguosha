@@ -1,0 +1,1 @@
+We don't need to put libfreetype.a/so here, because most of the Linux Distributions have the libfreetype library.

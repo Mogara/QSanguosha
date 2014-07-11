@@ -1053,7 +1053,7 @@ public:
                     if (to->canDiscard(to, "e")) {
                         room->broadcastSkillInvoke(objectName());
                         room->notifySkillInvoked(player, objectName());
-                        if (room->askForCard(to, ".|.|.|equipped!", "@fengshi-discard") == NULL){
+                        if (room->askForCard(to, ".|.|.|equipped!", "@fengshi-discard:" + player->objectName() + ":" + use.from->objectName()) == NULL){
                             QList<const Card *> equips = to->getEquips();
                             QList<const Card *> equips_candiscard;
                             foreach(const Card *e, equips){

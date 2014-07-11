@@ -25,8 +25,6 @@
 
 #include <QGraphicsObject>
 #include <QFont>
-#include <QFontMetrics>
-#include <QGraphicsDropShadowEffect>
 
 class Button : public QGraphicsObject{
     Q_OBJECT
@@ -45,21 +43,11 @@ protected:
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
-    virtual void timerEvent(QTimerEvent *);
-
 private:
     QString label;
     QSizeF size;
     bool mute;
     QFont font;
-    QPixmap title;
-    QImage outimg;
-    QGraphicsPixmapItem *title_item;
-    int glow;
-    int timer_id;
-
-    QGraphicsDropShadowEffect *de;
-    QGraphicsDropShadowEffect *effect;
 
     void init();
 

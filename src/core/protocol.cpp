@@ -76,8 +76,8 @@ bool QSanProtocol::Utils::isIntArray(const Json::Value &jsonObject, unsigned int
 
 QSanProtocol::Packet::Packet(int packetDescription, CommandType command) :
     m_globalSerial(0), m_localSerial(0),
-    m_packetDescription(static_cast<PacketDescription>(packetDescription)),
     m_command(command),
+    m_packetDescription(static_cast<PacketDescription>(packetDescription)),
     m_msgBody(Json::nullValue)
 {
 }
