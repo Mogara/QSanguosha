@@ -20,6 +20,8 @@
 
 #include "button.h"
 #include "engine.h"
+#include "SkinBank.h"
+#include "jsonutils.h"
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
@@ -27,13 +29,13 @@
 static QRectF ButtonRect(0, 0, 189, 46);
 
 Button::Button(const QString &label, qreal scale)
-    : label(label), size(ButtonRect.size() * scale), mute(true), font(Config.SmallFont)
+    : label(label), size(ButtonRect.size() * scale), mute(true), font_name("SimLi"), font_size(Config.SmallFont.pixelSize())
 {
     init();
 }
 
 Button::Button(const QString &label, const QSizeF &size)
-    : label(label), size(size), mute(true), font(Config.SmallFont)
+    : label(label), size(size), mute(true), font_name("SimLi"), font_size(Config.SmallFont.pixelSize())
 {
     init();
 }
@@ -49,8 +51,12 @@ void Button::setMute(bool mute) {
     this->mute = mute;
 }
 
-void Button::setFont(const QFont &font) {
-    this->font = font;
+void Button::setFontName(const QString &name) {
+    this->font_name = name;
+}
+
+void Button::setFontSize(const int &size) {
+    this->font_size = size;
 }
 
 void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
@@ -99,8 +105,18 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
     painter->setPen(pen);
     painter->drawRect(rect);
 
-    pen.setColor(textColor);
-    painter->setPen(pen);
-    painter->setFont(font);
-    painter->drawText(rect, Qt::AlignCenter, label);
+    using namespace QSanProtocol::Utils;
+    IQSanComponentSkin::QSanSimpleTextFont ft;
+    Json::Value val(Json::arrayValue);
+    val[0] = toJsonString(font_name);
+    val[1] = font_size;
+    val[2] = 2;
+
+    val[3] = Json::Value(Json::arrayValue);
+    val[3][0] = textColor.red();
+    val[3][1] = textColor.green();
+    val[3][2] = textColor.blue();
+
+    ft.tryParse(val);
+    ft.paintText(painter, rect.toRect(), Qt::AlignCenter, label);
 }

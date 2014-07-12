@@ -103,7 +103,7 @@ Button *Window::addCloseButton(const QString &label) {
     Button *ok_button = new Button(label, 0.6);
     QFont font = Config.TinyFont;
     font.setBold(true);
-    ok_button->setFont(font);
+    ok_button->setFontSize(font.pixelSize());
     ok_button->setParentItem(this);
 
     qreal x = size.width() - ok_button->boundingRect().width() - 25;
