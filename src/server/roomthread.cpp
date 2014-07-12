@@ -289,6 +289,17 @@ QString HegemonyMode::GetMappedRole(const QString &kingdom) {
     return roles[kingdom];
 }
 
+QString HegemonyMode::GetMappedKingdom(const QString &role) {
+    static QMap<QString, QString> kingdoms;
+    if (kingdoms.isEmpty()){
+        kingdoms["lord"] = "wei";
+        kingdoms["loyalist"] = "shu";
+        kingdoms["rebel"] = "wu";
+        kingdoms["renegade"] = "qun";
+    }
+    return kingdoms[role];
+}
+
 RoomThread::RoomThread(Room *room)
     : room(room)
 {

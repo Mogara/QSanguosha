@@ -761,8 +761,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             if (player->isLord()) {
                 QString kingdom = player->getKingdom();
                 foreach(ServerPlayer *p, room->getPlayers()) {
-                    if (p->getKingdom() == kingdom && p->getRole() == "careerist")
+                    if (p->getKingdom() == kingdom && p->getRole() == "careerist"){
                         room->setPlayerProperty(p, "role", HegemonyMode::GetMappedRole(kingdom));
+                        room->broadcastProperty(p, "kingdom");
+                    }
                 }
             }
         }

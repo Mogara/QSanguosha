@@ -23,6 +23,7 @@
 
 namespace HegemonyMode {
     QString GetMappedRole(const QString &kingdom);
+    QString GetMappedKingdom(const QString &role);
 
     enum ArrayType {
         Siege,

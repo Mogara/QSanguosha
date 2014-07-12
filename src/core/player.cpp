@@ -308,6 +308,8 @@ void Player::setRole(const QString &role) {
         emit role_changed(role);
         if (role == "careerist")
             emit kingdom_changed("careerist");
+        else
+            emit kingdom_changed(HegemonyMode::GetMappedKingdom(role));
     }
 }
 
