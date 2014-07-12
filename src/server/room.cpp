@@ -3294,17 +3294,16 @@ void Room::startGame() {
     if (!_virtual) thread->start();
 }
 
-bool Room::notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *propertyOwner, const char *propertyName, const QString &value) {
+bool Room::notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *propertyOwner, const char *propertyName, QString value) {
     if (propertyOwner == NULL) return false;
-    QString real_value = value;
-    if (real_value.isNull()) real_value = propertyOwner->property(propertyName).toString();
+    if (value.isNull()) value = propertyOwner->property(propertyName).toString();
     Json::Value arg(Json::arrayValue);
     if (propertyOwner == playerToNotify)
         arg[0] = toJsonString(QString(QSanProtocol::S_PLAYER_SELF_REFERENCE_ID));
     else
         arg[0] = toJsonString(propertyOwner->objectName());
     arg[1] = propertyName;
-    arg[2] = toJsonString(real_value);
+    arg[2] = toJsonString(value);
     return doNotify(playerToNotify, S_COMMAND_SET_PROPERTY, arg);
 }
 

@@ -918,10 +918,14 @@ void ServerPlayer::introduceTo(ServerPlayer *player) {
     introduce_str.append(toJsonString(screen_name));
     introduce_str.append(toJsonString(avatar));
 
-    if (player)
+    if (player) {
         player->notify(S_COMMAND_ADD_PLAYER, introduce_str);
-    else
+        room->notifyProperty(player, this, "state");
+    }
+    else {
         room->doBroadcastNotify(S_COMMAND_ADD_PLAYER, introduce_str, this);
+        room->broadcastProperty(this, "state");
+    }
 
     if (hasShownGeneral1()) {
         foreach(const QString skill_name, head_skills.keys()) {

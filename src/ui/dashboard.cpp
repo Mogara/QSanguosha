@@ -654,9 +654,14 @@ void Dashboard::skillButtonDeactivated() {
 }
 
 void Dashboard::selectAll() {
+    selectCards(".");
+}
+
+void Dashboard::selectCards(const QString &pattern) {
     if (view_as_skill) {
         unselectAll();
         foreach(CardItem *card_item, m_handCards) {
+            if (!card_item->getCard()->match(pattern)) continue;
             selectCard(card_item, true);
             pendings << card_item;
         }

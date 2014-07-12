@@ -376,7 +376,7 @@ end
 sgs.ai_skill_invoke.qianhuan = function(self, data)
 	if data:toString() == "gethuan" then return true end
 	local use = self.player:getTag("qianhuan_data"):toCardUse()
-	if (use.from and self:isFriend(use.from)) then return false end 
+	if (use.from and self:isFriend(use.from)) then return false end
 	if use.to:isEmpty() then return false end
 	if use.card:isKindOf("Peach") then return false end
 	if (self.player:getPile("sorcery"):length() == 1)and not (use.card:isKindOf("Slash") or use.card:isKindOf("duel") or use.card:isKindOf("FireAttack")) then return false end
@@ -571,6 +571,7 @@ sgs.ai_skill_discard.DragonPhoenix = function(self, discard_num, min_num, option
 			elseif card:isKindOf("Armor") then
 				if self.player:hasSkill("bazhen") then return 0
 				else return 4 end
+			else return 0 --@to-do: add the corrsponding value of Treasure
 			end
 		else
 			if self.player:getMark("@qianxi_red") > 0 and card:isRed() and not card:isKindOf("Peach") then return 0 end

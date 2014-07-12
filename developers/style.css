@@ -40,7 +40,7 @@ strong {
   color: #083194;
 }
 
-tt {
+tt, p {
   font-size: inherit;
   color: navy;
 }
