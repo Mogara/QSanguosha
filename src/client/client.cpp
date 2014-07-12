@@ -1736,7 +1736,7 @@ void Client::moveFocus(const Json::Value &focus) {
         tryParse(focus[0], players);
     }
     else {
-        foreach (const ClientPlayer *player, this->players) {
+        foreach(const ClientPlayer *player, this->players) {
             if (player->isAlive()) {
                 players << player->objectName();
             }

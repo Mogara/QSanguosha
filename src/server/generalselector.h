@@ -34,7 +34,7 @@ class GeneralSelector : public QObject {
 
 public:
     static GeneralSelector *getInstance();
-	QStringList selectGenerals(ServerPlayer *player, const QStringList &candidates);
+    QStringList selectGenerals(ServerPlayer *player, const QStringList &candidates);
 
 private:
     GeneralSelector();

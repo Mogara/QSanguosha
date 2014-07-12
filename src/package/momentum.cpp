@@ -411,6 +411,7 @@ void CunsiCard::onUse(Room *room, const CardUseStruct &card_use) const{
 void CunsiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
     effect.from->removeGeneral(effect.from->inHeadSkills("cunsi"));
+    room->setPlayerMark(effect.from, "cunsi", 1);
     room->acquireSkill(effect.to, "yongjue");
     room->setPlayerMark(effect.to, "@yongjue", 1);
     if (effect.to != effect.from)
@@ -550,11 +551,7 @@ public:
     virtual bool effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         DummyCard dummy(move.card_ids);
-        move.card_ids.clear();
-        data = QVariant::fromValue(move);
-
         player->obtainCard(&dummy);
-
         return false;
     }
 };
