@@ -1999,6 +1999,7 @@ function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_e
 			elseif card:isKindOf("DefensiveHorse") then return 3
 			elseif self.player:hasSkill("bazhen") and card:isKindOf("Armor") then return 0
 			elseif card:isKindOf("Armor") then return 4
+			else return 0 --@to-do: add the corrsponding value of Treasure
 			end
 		elseif self.player:hasSkills(sgs.lose_one_equip_skill) then return 5
 		else return 0
