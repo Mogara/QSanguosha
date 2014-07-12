@@ -1378,9 +1378,10 @@ public:
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.from == player && use.card->isKindOf("Slash")){
             foreach(ServerPlayer *to, use.to){
-                if (to->canDiscard(to, "he") && player->askForSkillInvoke(objectName(), QVariant::fromValue(to)))
-				    room->setEmotion(use.from, "weapon/dragonphoenix");
+                if (to->canDiscard(to, "he") && player->askForSkillInvoke(objectName(), QVariant::fromValue(to))){
+                    room->setEmotion(use.from, "weapon/dragonphoenix");
                     room->askForDiscard(to, objectName(), 1, 1, false, true, "@dragonphoenix-discard");
+                }
             }
         }
         return false;
@@ -1429,7 +1430,7 @@ public:
 
             kingdoms[p->getKingdom()]++;
         }
-        
+
         kingdoms["god"] = 2147483647;
 
         QString kingdom_least = "god";
@@ -1479,7 +1480,7 @@ public:
         bool invoke = room->askForSkillInvoke(dfowner, "DragonPhoenix", data) && room->askForSkillInvoke(player, "DragonPhoenix", "revive");
         Config.AIDelay = aidelay;
         if (invoke){
-			room->setEmotion(dfowner, "weapon/dragonphoenix");
+            room->setEmotion(dfowner, "weapon/dragonphoenix");
             room->setPlayerProperty(player, "Duanchang", "");
             QString to_change;
             AI *ai = player->getAI();
