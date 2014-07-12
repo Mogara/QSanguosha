@@ -278,7 +278,7 @@ QString EventTriplet::toString() const{
         .arg(_m_target ? _m_target->getGeneralName() : QString());
 }
 
-QString HegemonyMode::GetMappedRole(const QString &role) {
+QString HegemonyMode::GetMappedRole(const QString &kingdom) {
     static QMap<QString, QString> roles;
     if (roles.isEmpty()) {
         roles["wei"] = "lord";
@@ -286,7 +286,7 @@ QString HegemonyMode::GetMappedRole(const QString &role) {
         roles["wu"] = "rebel";
         roles["qun"] = "renegade";
     }
-    return roles[role];
+    return roles[kingdom];
 }
 
 RoomThread::RoomThread(Room *room)

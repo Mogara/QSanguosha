@@ -22,7 +22,7 @@
 #define _NAMESPACE_H
 
 namespace HegemonyMode {
-    QString GetMappedRole(const QString &role);
+    QString GetMappedRole(const QString &kingdom);
 
     enum ArrayType {
         Siege,
