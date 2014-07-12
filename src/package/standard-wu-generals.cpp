@@ -1201,7 +1201,7 @@ public:
     }
 };
 
-ZhijianCard::ZhijianCard() {
+ZhijianCard::ZhijianCard() {  //there is no "mute = true", why is this skill card mute?
     will_throw = false;
     handling_method = Card::MethodNone;
 }
