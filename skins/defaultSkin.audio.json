@@ -5,6 +5,7 @@
     "playerAudioEffect-common-weapon": "audio/card/common/weapon.ogg",
     "playerAudioEffect-common-armor": "audio/card/common/armor.ogg",
     "playerAudioEffect-common-horse": "audio/card/common/horse.ogg",
+    "playerAudioEffect-common-treasure": "audio/card/common/armor.ogg",
 
     "playerAudioEffect-equip-default": "audio/equip/%1.ogg",
 

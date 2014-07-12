@@ -21,19 +21,11 @@
 #ifndef _CARDBUTTON_H
 #define _CARDBUTTON_H
 
-#include <QtGlobal>
-
-#ifdef Q_OS_WIN
 #include <QCommandLinkButton>
-typedef QCommandLinkButton CommandLinkButton;
-#else
-#include <QPushButton>
-typedef QPushButton CommandLinkButton;
-#endif
 
 class Card;
 
-class CardButton : public CommandLinkButton
+class CardButton : public QCommandLinkButton
 {
     Q_OBJECT
 public:

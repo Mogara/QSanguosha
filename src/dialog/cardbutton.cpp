@@ -35,7 +35,7 @@ CardButton::CardButton(const Card *card)
 }
 
 QSize CardButton::sizeHint() const {
-    QSize size = CommandLinkButton::sizeHint();
+    QSize size = QCommandLinkButton::sizeHint();
     return QSize(size.width() * scale, size.height());
 }
 
