@@ -33,6 +33,7 @@ config = {
 		"Fu Nima" ,
 		--"Z ZH" ,
 		--"82" ,
+		"takashiro" ,
 	} ,
 
 	kingdoms = { "wei", "qun", "shu", "wu", "god" },
