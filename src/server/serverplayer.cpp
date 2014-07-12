@@ -1099,10 +1099,10 @@ void ServerPlayer::marshal(ServerPlayer *player) const{
         room->notifyProperty(player, this, "kingdom", "god");
     }
 
-    foreach(QString flag, flags)
+    foreach(const QString &flag, flags)
         room->notifyProperty(player, this, "flags", flag);
 
-    foreach(QString item, history.keys()) {
+    foreach(const QString &item, history.keys()) {
         int value = history.value(item);
         if (value > 0) {
 
