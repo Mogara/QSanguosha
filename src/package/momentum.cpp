@@ -346,7 +346,6 @@ class Guixiu : public TriggerSkill {
 public:
     Guixiu() : TriggerSkill("guixiu") {
         events << GameStart << GeneralShown << GeneralRemoved;
-        global = true;
         frequency = Frequent;
     }
 
@@ -356,7 +355,8 @@ public:
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (triggerEvent == GameStart) {
-            room->setPlayerMark(player, objectName(), 1); // for guixiu2
+            if (TriggerSkill::triggerable(player))
+                room->setPlayerMark(player, objectName(), 1); // for guixiu2
         }
         else if (triggerEvent == GeneralShown) {
             if (TriggerSkill::triggerable(player))
@@ -418,10 +418,9 @@ void CunsiCard::onEffect(const CardEffectStruct &effect) const{
         effect.to->drawCards(2);
 }
 
-class Cunsi : public ZeroCardViewAsSkill {
+class CunsiVS : public ZeroCardViewAsSkill {
 public:
-    Cunsi() : ZeroCardViewAsSkill("cunsi") {
-        frequency = Limited;
+    CunsiVS() : ZeroCardViewAsSkill("cunsi") {
     }
 
     virtual const Card *viewAs() const{
@@ -431,11 +430,25 @@ public:
     }
 };
 
+class Cunsi : public TriggerSkill {
+public:
+    Cunsi() : TriggerSkill("cunsi") {
+        events << GameStart << EventAcquireSkill;
+        view_as_skill = new CunsiVS;
+        frequency = Limited;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
+        if (!player || !player->isAlive() || !player->ownSkill(this)) return QStringList();
+        room->getThread()->addTriggerSkill(Sanguosha->getTriggerSkill("yongjue"));
+        return QStringList();
+    }
+};
+
 class Yongjue : public TriggerSkill {
 public:
     Yongjue() : TriggerSkill("yongjue") {
         events << CardUsed << CardResponded << CardsMoveOneTime;
-        global = true;
         frequency = Frequent;
     }
 
@@ -538,8 +551,11 @@ public:
     virtual bool effect(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         DummyCard dummy(move.card_ids);
+        move.card_ids.clear();
+        data = QVariant::fromValue(move);
 
         player->obtainCard(&dummy);
+
         return false;
     }
 };
