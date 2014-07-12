@@ -3180,7 +3180,7 @@ void RoomScene::killPlayer(const QString &who) {
         dashboard->update();
         general = Self->getGeneral();
         item2player.remove(dashboard);
-        if (Self->getMark("yongjue") > 0)
+        if (general->objectName().contains("sujiang") && Self->getMark("cunsi") > 0)
             general = Sanguosha->getGeneral("mifuren");
     }
     else {
@@ -3190,13 +3190,13 @@ void RoomScene::killPlayer(const QString &who) {
         photo->update();
         item2player.remove(photo);
         general = photo->getPlayer()->getGeneral();
-        if (photo->getPlayer()->getMark("yongjue") > 0)
+        if (general->objectName().contains("sujiang") && photo->getPlayer()->getMark("cunsi") > 0)
             general = Sanguosha->getGeneral("mifuren");
     }
 
     if (Config.EnableEffects && Config.EnableLastWord && !Self->hasFlag("marshalling"))
         general->lastWord();
-    
+
     m_roomMutex.unlock();
 }
 
