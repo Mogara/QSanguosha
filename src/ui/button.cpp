@@ -79,28 +79,28 @@ static QColor ReverseColor(const QColor &color) {
 }
 
 void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
-	QRectF rect = boundingRect();
+    QRectF rect = boundingRect();
 
-	QColor textColor, edgeColor, boxColor;
-        textColor = edgeColor = Qt::white;
-        boxColor = Qt::black;
+    QColor textColor, edgeColor, boxColor;
+    textColor = edgeColor = Qt::white;
+    boxColor = Qt::black;
 
-	if (hasFocus()) {
-            textColor = ReverseColor(textColor);
-            boxColor = ReverseColor(boxColor);
-	}
+    if (hasFocus()) {
+        textColor = ReverseColor(textColor);
+        boxColor = ReverseColor(boxColor);
+    }
 
-	boxColor.setAlphaF(0.8);
+    boxColor.setAlphaF(0.8);
 
-	painter->fillRect(rect, boxColor);
+    painter->fillRect(rect, boxColor);
 
-	QPen pen(edgeColor);
-	pen.setWidth(2);
-	painter->setPen(pen);
-	painter->drawRect(rect);
+    QPen pen(edgeColor);
+    pen.setWidth(2);
+    painter->setPen(pen);
+    painter->drawRect(rect);
 
-        pen.setColor(textColor);
-        painter->setPen(pen);
-	painter->setFont(font);
-	painter->drawText(rect, Qt::AlignCenter, label);
+    pen.setColor(textColor);
+    painter->setPen(pen);
+    painter->setFont(font);
+    painter->drawText(rect, Qt::AlignCenter, label);
 }

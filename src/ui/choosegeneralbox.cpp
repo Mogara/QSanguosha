@@ -363,7 +363,7 @@ void ChooseGeneralBox::_adjust() {
         //º¢Ö½£¬»ØÈ¥°É
     }
     else if ((selected.length() == 2 && !Sanguosha->getGeneral(selected.first()->objectName())->isLord() && selected.first() == item && item->x() > boundingRect().center().x())
-                                                                                                            || (selected.last() == item && item->x() < boundingRect().center().x()))
+        || (selected.last() == item && item->x() < boundingRect().center().x()))
         qSwap(selected[0], selected[1]);
     else if (items.contains(item) && item->y() > middle_y) {
         if (selected.length() > 1) return;

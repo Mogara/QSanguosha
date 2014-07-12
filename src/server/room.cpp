@@ -3762,7 +3762,7 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
             drawpile_changed = true;
     }
 
-    if(drawpile_changed) {
+    if (drawpile_changed) {
         doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
     }
 

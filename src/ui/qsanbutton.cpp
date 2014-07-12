@@ -32,8 +32,7 @@
 
 QSanButton::QSanButton(QGraphicsItem *parent)
     : QGraphicsObject(parent), _m_state(S_STATE_UP), _m_style(S_STYLE_PUSH),
-      _m_mouseEntered(false),
-      multi_state(false), first_state(true)
+    _m_mouseEntered(false), multi_state(false), first_state(true)
 {
     setSize(QSize(0, 0));
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

@@ -160,7 +160,6 @@ private:
     QCheckBox *convert_zhangjiao_to_lord;
 
 private slots:
-
     void onOkButtonClicked();
     void onDetectButtonClicked();
     void editBanlist();

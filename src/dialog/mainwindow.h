@@ -73,7 +73,6 @@ public:
 
 private slots:
     void btn_clicked();
-    
 };
 #endif
 

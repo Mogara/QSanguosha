@@ -471,7 +471,7 @@ public:
         judge.who = zhenji;
         judge.time_consuming = true;
 
-        forever {
+        forever{
             room->judge(judge);
             if (judge.isBad() || !zhenji->askForSkillInvoke(objectName()))
                 break;
