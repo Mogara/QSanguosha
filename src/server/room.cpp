@@ -3186,6 +3186,11 @@ void Room::marshal(ServerPlayer *player) {
     player->notify(S_COMMAND_START_IN_X_SECONDS, 0);
 
     foreach(ServerPlayer *p, m_players) {
+        /* don't notify generals of the player himself here, for kingdom can be set inside Player::setGeneral
+           only when it's empty, that is, kingdom can be set in this way only once. */
+        if(p == player)
+            continue;
+
         notifyProperty(player, p, "general");
 
         if (p->getGeneral2())
