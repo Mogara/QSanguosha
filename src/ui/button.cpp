@@ -29,13 +29,13 @@
 static QRectF ButtonRect(0, 0, 189, 46);
 
 Button::Button(const QString &label, qreal scale)
-    : label(label), size(ButtonRect.size() * scale), mute(true), font_name("SimLi"), font_size(Config.SmallFont.pixelSize())
+    : label(label), size(ButtonRect.size() * scale), mute(true), font_name("wqy-microhei"), font_size(Config.SmallFont.pixelSize())
 {
     init();
 }
 
 Button::Button(const QString &label, const QSizeF &size)
-    : label(label), size(size), mute(true), font_name("SimLi"), font_size(Config.SmallFont.pixelSize())
+    : label(label), size(size), mute(true), font_name("wqy-microhei"), font_size(Config.SmallFont.pixelSize())
 {
     init();
 }
