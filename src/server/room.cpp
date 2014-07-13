@@ -805,9 +805,12 @@ bool Room::doBroadcastNotify(const QList<ServerPlayer *> &players, QSanProtocol:
 }
 
 bool Room::doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg, ServerPlayer *except) {
+    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
+    packet.setMessageBody(arg);
+
     foreach(ServerPlayer *player, m_players) {
         if (player != except) {
-            doNotify(player, command, arg);
+            player->invoke(&packet);
         }
     }
     return true;
@@ -932,7 +935,7 @@ bool Room::notifyMoveFocus(const QList<ServerPlayer *> &focuses, const Countdown
 
 bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data) {
     while (isPaused()) {}
-    notifyMoveFocus(player, S_COMMAND_INVOKE_SKILL);
+    notifyMoveFocus(player, S_COMMAND_INVOKE_SKILL, player);
 
     bool invoked = false;
     AI *ai = player->getAI();
@@ -994,7 +997,7 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
         answer = validChoices.first();
     }
     else {
-        notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
+        notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE, player);
 
         AI *ai = player->getAI();
         if (ai) {
