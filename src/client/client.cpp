@@ -882,6 +882,7 @@ void Client::askForCardOrUseCard(const Json::Value &cardUsage) {
 
 void Client::askForSkillInvoke(const Json::Value &arg) {
     if (!isStringArray(arg, 0, 1)) return;
+
     QString skill_name = toQString(arg[0]);
     QString data = toQString(arg[1]);
 
@@ -1442,8 +1443,6 @@ void Client::clearAG(const Json::Value &) {
 
 void Client::askForSinglePeach(const Json::Value &arg) {
     if (!arg.isArray() || arg.size() != 2 || !arg[0].isString() || !arg[1].isInt()) return;
-
-    moveFocus(Self->objectName(), S_COMMAND_ASK_PEACH);
 
     ClientPlayer *dying = getPlayer(toQString(arg[0]));
     int peaches = arg[1].asInt();
