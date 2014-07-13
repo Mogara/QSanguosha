@@ -984,31 +984,31 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
 QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data) {
     while (isPaused()) {}
 
-    notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
 
     QStringList validChoices = choices.split("+");
     Q_ASSERT(!validChoices.isEmpty());
 
-    AI *ai = player->getAI();
+    if (validChoices.length() == 1)
+        return validChoices.first();
+
+    notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
+
     QString answer;
-    if (validChoices.size() == 1)
-        answer = validChoices.first();
+    AI *ai = player->getAI();
+    if (ai) {
+        answer = ai->askForChoice(skill_name, choices, data);
+        thread->delay();
+    }
     else {
-        if (ai) {
-            answer = ai->askForChoice(skill_name, choices, data);
-            thread->delay();
+        bool success = doRequest(player, S_COMMAND_MULTIPLE_CHOICE, toJsonArray(skill_name, choices), true);
+        Json::Value clientReply = player->getClientReply();
+        if (!success || !clientReply.isString()) {
+            answer = ".";
+            if (skill_name == "TurnStartShowGeneral")
+                answer = "cancel";
         }
-        else {
-            bool success = doRequest(player, S_COMMAND_MULTIPLE_CHOICE, toJsonArray(skill_name, choices), true);
-            Json::Value clientReply = player->getClientReply();
-            if (!success || !clientReply.isString()) {
-                answer = ".";
-                if (skill_name == "TurnStartShowGeneral")
-                    answer = "cancel";
-            }
-            else
-                answer = toQString(clientReply);
-        }
+        else
+            answer = toQString(clientReply);
     }
 
     if (!validChoices.contains(answer))
