@@ -92,7 +92,7 @@ void Button::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         axis.setX(1);
         angle = -15;
     } else {
-        scale = new QGraphicsScale(this);
+        scale = new QGraphicsScale;
         QPropertyAnimation *xScale_animation = new QPropertyAnimation(scale, "xScale", this);
         xScale_animation->setDuration(100);
         xScale_animation->setStartValue(1);
@@ -111,7 +111,7 @@ void Button::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         return;
     }
 
-    rotation = new QGraphicsRotation(this);
+    rotation = new QGraphicsRotation;
     QPropertyAnimation *rotation_animation = new QPropertyAnimation(rotation, "angle", this);
     rotation_animation->setDuration(100);
     rotation_animation->setStartValue(0);
