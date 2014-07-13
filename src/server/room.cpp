@@ -988,31 +988,33 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
     QStringList validChoices = choices.split("+");
     Q_ASSERT(!validChoices.isEmpty());
 
-    if (validChoices.length() == 1)
-        return validChoices.first();
-
-    notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
-
     QString answer;
-    AI *ai = player->getAI();
-    if (ai) {
-        answer = ai->askForChoice(skill_name, choices, data);
-        thread->delay();
+    if (validChoices.length() == 1) {
+        answer = validChoices.first();
     }
     else {
-        bool success = doRequest(player, S_COMMAND_MULTIPLE_CHOICE, toJsonArray(skill_name, choices), true);
-        Json::Value clientReply = player->getClientReply();
-        if (!success || !clientReply.isString()) {
-            answer = ".";
-            if (skill_name == "TurnStartShowGeneral")
-                answer = "cancel";
-        }
-        else
-            answer = toQString(clientReply);
-    }
+        notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
 
-    if (!validChoices.contains(answer))
-        answer = validChoices[0];
+        AI *ai = player->getAI();
+        if (ai) {
+            answer = ai->askForChoice(skill_name, choices, data);
+            thread->delay();
+        }
+        else {
+            bool success = doRequest(player, S_COMMAND_MULTIPLE_CHOICE, toJsonArray(skill_name, choices), true);
+            Json::Value clientReply = player->getClientReply();
+            if (!success || !clientReply.isString()) {
+                answer = ".";
+                if (skill_name == "TurnStartShowGeneral")
+                    answer = "cancel";
+            }
+            else
+                answer = toQString(clientReply);
+        }
+
+        if (!validChoices.contains(answer))
+            answer = validChoices[0];
+    }
 
     // To avoid infinite recursion
     if (skill_name != "TriggerOrder") {
