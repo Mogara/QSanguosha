@@ -2485,8 +2485,8 @@ void Room::swapSeat(ServerPlayer *a, ServerPlayer *b) {
         }
 
         broadcastProperty(player, "seat");
-
         player->setNext(m_players.at((i + 1) % m_players.length()));
+        broadcastProperty(player, "next");
     }
 }
 

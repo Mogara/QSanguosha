@@ -878,11 +878,6 @@ QList<ServerPlayer *> ServerPlayer::getVictims() const{
     return victims;
 }
 
-void ServerPlayer::setNext(ServerPlayer *next) {
-    Player::setNext(next);
-    room->broadcastProperty(this, "next");
-}
-
 int ServerPlayer::getGeneralMaxHp() const{
     int max_hp = 0;
 

@@ -591,6 +591,16 @@ void Client::arrangeSeats(const Json::Value &seats_arr) {
         Q_ASSERT(player != NULL);
 
         player->setSeat(i + 1);
+        if(i > 0) {
+            ClientPlayer *prev_player = findChild<ClientPlayer *>(player_names.at(i - 1));
+            prev_player->setNext(player->objectName());
+
+            if (i == player_names.length() - 1) {
+                ClientPlayer *first_player = findChild<ClientPlayer *>(player_names.first());
+                player->setNext(first_player->objectName());
+            }
+        }
+
         players << player;
     }
 

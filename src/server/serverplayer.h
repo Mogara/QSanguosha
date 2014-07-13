@@ -125,8 +125,6 @@ public:
     void startRecord();
     void saveRecord(const QString &filename);
 
-    void setNext(ServerPlayer *next);
-
     // 3v3 methods
     void addToSelected(const QString &general);
     QStringList getSelected() const;
