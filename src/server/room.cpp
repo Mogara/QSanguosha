@@ -61,7 +61,8 @@ Room::Room(QObject *parent, const QString &mode)
     game_started(false), game_finished(false), game_paused(false), L(NULL), thread(NULL),
     _m_semRaceRequest(0), _m_semRoomMutex(1),
     _m_raceStarted(false), provided(NULL), has_provided(false),
-    m_surrenderRequestReceived(false), _virtual(false), _m_roomState(false)
+    m_surrenderRequestReceived(false), _virtual(false), _m_roomState(false),
+    _m_isFirstSurrenderRequest(true)
 {
     static int s_global_room_id = 0;
     _m_Id = s_global_room_id++;
