@@ -876,17 +876,17 @@ bool Room::getResult(ServerPlayer *player, time_t timeOut) {
     return validResult;
 }
 
-bool Room::notifyMoveFocus(ServerPlayer *player) {
+bool Room::notifyMoveFocus(ServerPlayer *focus, ServerPlayer *except) {
     QList<ServerPlayer *> players;
-    players.append(player);
+    players.append(focus);
     Countdown countdown;
     countdown.m_type = Countdown::S_COUNTDOWN_NO_LIMIT;
-    return notifyMoveFocus(players, countdown);
+    return notifyMoveFocus(players, countdown, except);
 }
 
-bool Room::notifyMoveFocus(ServerPlayer *player, CommandType command) {
+bool Room::notifyMoveFocus(ServerPlayer *focus, CommandType command, ServerPlayer *except) {
     QList<ServerPlayer *> players;
-    players.append(player);
+    players.append(focus);
     Countdown countdown;
     countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
     if (countdown.m_max == ServerInfo.getCommandTimeout(S_COMMAND_UNKNOWN, S_CLIENT_INSTANCE)) {
@@ -896,29 +896,29 @@ bool Room::notifyMoveFocus(ServerPlayer *player, CommandType command) {
         countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
     }
 
-    return notifyMoveFocus(players, countdown);
+    return notifyMoveFocus(players, countdown, except);
 }
 
-bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, const Countdown &countdown) {
+bool Room::notifyMoveFocus(const QList<ServerPlayer *> &focuses, const Countdown &countdown, ServerPlayer *except) {
     Json::Value arg(Json::arrayValue);
     //============================================
     //for protecting anjiang
     //============================================
     bool verify = false;
-    foreach(ServerPlayer *p, players){
-        if (p->hasFlag("Global_askForSkillCost")) {
+    foreach(ServerPlayer *focus, focuses) {
+        if (focus->hasFlag("Global_askForSkillCost")) {
             verify = true;
             break;
         }
     }
 
     if (!verify) {
-        int n = players.size();
+        int n = focuses.size();
         for (int i = 0; i < n; i++)
-            arg[0][i] = toJsonString(players.at(i)->objectName());
+            arg[0][i] = toJsonString(focuses.at(i)->objectName());
     }
     else {
-        arg[0] = 0; // all alive players
+        arg[0] = QSanProtocol::S_ALL_ALIVE_PLAYERS;
     }
     //============================================
 
@@ -926,7 +926,7 @@ bool Room::notifyMoveFocus(const QList<ServerPlayer *> &players, const Countdown
         arg[1] = countdown.toJsonValue();
     }
 
-    return doBroadcastNotify(S_COMMAND_MOVE_FOCUS, arg);
+    return doBroadcastNotify(S_COMMAND_MOVE_FOCUS, arg, except);
 }
 
 bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data) {
@@ -983,6 +983,7 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
 
 QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, const QString &choices, const QVariant &data) {
     while (isPaused()) {}
+
     notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
 
     QStringList validChoices = choices.split("+");
@@ -1587,7 +1588,7 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
 
 const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying) {
     while (isPaused()) {}
-    notifyMoveFocus(player, S_COMMAND_ASK_PEACH);
+    notifyMoveFocus(player, S_COMMAND_ASK_PEACH, player);
     _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
 
     const Card *card = NULL;

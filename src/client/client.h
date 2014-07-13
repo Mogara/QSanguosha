@@ -192,6 +192,8 @@ public:
     inline virtual RoomState *getRoomState() { return &_m_roomState; }
     inline virtual Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
 
+    void moveFocus(const QString &focus, QSanProtocol::CommandType command);
+
     inline void setCountdown(const QSanProtocol::Countdown &countdown) {
         m_mutexCountdown.lock();
         m_countdown = countdown;

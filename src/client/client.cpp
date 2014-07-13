@@ -1443,6 +1443,8 @@ void Client::clearAG(const Json::Value &) {
 void Client::askForSinglePeach(const Json::Value &arg) {
     if (!arg.isArray() || arg.size() != 2 || !arg[0].isString() || !arg[1].isInt()) return;
 
+    moveFocus(Self->objectName(), S_COMMAND_ASK_PEACH);
+
     ClientPlayer *dying = getPlayer(toQString(arg[0]));
     int peaches = arg[1].asInt();
 
@@ -1767,6 +1769,17 @@ void Client::moveFocus(const Json::Value &focus) {
     }
 
     emit focus_moved(players, countdown);
+}
+
+void Client::moveFocus(const QString &focus, CommandType command) {
+    QStringList focuses;
+    focuses.append(focus);
+
+    Countdown countdown;
+    countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
+    countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
+
+    emit focus_moved(focuses, countdown);
 }
 
 void Client::setEmotion(const Json::Value &set_str) {

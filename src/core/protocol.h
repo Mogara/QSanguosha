@@ -205,6 +205,8 @@ namespace QSanProtocol {
     //static consts
     extern const char *S_PLAYER_SELF_REFERENCE_ID;
 
+    extern const int S_ALL_ALIVE_PLAYERS;
+
     class Countdown {
     public:
         enum CountdownType {
