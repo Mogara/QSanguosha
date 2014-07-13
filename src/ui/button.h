@@ -24,7 +24,7 @@
 #include "settings.h"
 
 #include <QGraphicsObject>
-#include <QFont>
+#include <QGraphicsRotation>
 
 class Button : public QGraphicsObject{
     Q_OBJECT
@@ -51,7 +51,11 @@ private:
     QString font_name;
     int font_size;
 
+    QGraphicsRotation *rotation;
+    QGraphicsScale *scale;
+
     void init();
+    void reset();
 
 signals:
     void clicked();

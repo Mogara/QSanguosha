@@ -25,17 +25,22 @@
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
+#include <QPropertyAnimation>
 
 static QRectF ButtonRect(0, 0, 189, 46);
 
 Button::Button(const QString &label, qreal scale)
-    : label(label), size(ButtonRect.size() * scale), mute(true), font_name("wqy-microhei"), font_size(Config.SmallFont.pixelSize())
+    : label(label), size(ButtonRect.size() * scale), mute(true),
+      font_name("wqy-microhei"), font_size(Config.SmallFont.pixelSize()),
+      rotation(NULL), scale(NULL)
 {
     init();
 }
 
 Button::Button(const QString &label, const QSizeF &size)
-    : label(label), size(size), mute(true), font_name("wqy-microhei"), font_size(Config.SmallFont.pixelSize())
+    : label(label), size(size), mute(true),
+      font_name("wqy-microhei"), font_size(Config.SmallFont.pixelSize()),
+      rotation(NULL), scale(NULL)
 {
     init();
 }
@@ -64,12 +69,68 @@ void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
 }
 
 void Button::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-    event->accept();
+    qreal width = boundingRect().width(), height = boundingRect().height();
+    QVector3D axis(0, 0, 0), origin(width / 2.0, height / 2.0, 0);
+    qreal angle = 0;
+    QPointF pos = event->pos();
+    QList<QGraphicsTransform *> transformations;
+
+    if (pos.x() > width - 20) {
+        origin.setX(0);
+        axis.setY(1);
+        angle = 15;
+    } else if (pos.x() < 20) {
+        origin.setX(width);
+        axis.setY(1);
+        angle = -15;
+    } else if (pos.y() < 10) {
+        origin.setY(height);
+        axis.setX(1);
+        angle = 15;
+    } else if (pos.y() > height - 10) {
+        origin.setY(0);
+        axis.setX(1);
+        angle = -15;
+    } else {
+        scale = new QGraphicsScale(this);
+        QPropertyAnimation *xScale_animation = new QPropertyAnimation(scale, "xScale", this);
+        xScale_animation->setDuration(100);
+        xScale_animation->setStartValue(1);
+        xScale_animation->setEndValue(0.95);
+        QPropertyAnimation *yScale_animation = new QPropertyAnimation(scale, "yScale", this);
+        yScale_animation->setDuration(100);
+        yScale_animation->setStartValue(1);
+        yScale_animation->setEndValue(0.95);
+
+        scale->setOrigin(QVector3D(width / 2.0, height / 2.0, 0));
+        transformations << scale;
+
+        setTransformations(transformations);
+        xScale_animation->start(QAbstractAnimation::DeleteWhenStopped);
+        yScale_animation->start(QAbstractAnimation::DeleteWhenStopped);
+        return;
+    }
+
+    rotation = new QGraphicsRotation(this);
+    QPropertyAnimation *rotation_animation = new QPropertyAnimation(rotation, "angle", this);
+    rotation_animation->setDuration(100);
+    rotation_animation->setStartValue(0);
+    rotation_animation->setEndValue(angle);
+
+    rotation->setAxis(axis);
+    rotation->setOrigin(origin);
+    transformations << rotation;
+
+    setTransformations(transformations);
+    rotation_animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *) {
-    if (!mute) Sanguosha->playSystemAudioEffect("button-down");
-    emit clicked();
+void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+    if (boundingRect().contains(event->pos())) {
+        if (!mute) Sanguosha->playSystemAudioEffect("button-down");
+        emit clicked();
+    }
+    reset();
 }
 
 QRectF Button::boundingRect() const{
@@ -119,4 +180,39 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
 
     ft.tryParse(val);
     ft.paintText(painter, rect.toRect(), Qt::AlignCenter, label);
+}
+
+void Button::reset() {
+    QList<QGraphicsTransform *> transformations;
+    qreal width = boundingRect().width(), height = boundingRect().height();
+    QVector3D origin(width / 2.0, height / 2.0, 0);
+
+    if (scale) {
+        QPropertyAnimation *xScale_animation = new QPropertyAnimation(scale, "xScale", this);
+        xScale_animation->setDuration(100);
+        xScale_animation->setEndValue(1);
+        QPropertyAnimation *yScale_animation = new QPropertyAnimation(scale, "yScale", this);
+        yScale_animation->setDuration(100);
+        yScale_animation->setEndValue(1);
+
+        scale->setOrigin(origin);
+        transformations << scale;
+
+        setTransformations(transformations);
+        xScale_animation->start(QAbstractAnimation::DeleteWhenStopped);
+        yScale_animation->start(QAbstractAnimation::DeleteWhenStopped);
+    }
+
+    if (rotation) {
+        QPropertyAnimation *rotation_animation = new QPropertyAnimation(rotation, "angle", this);
+        rotation_animation->setDuration(100);
+        rotation_animation->setEndValue(0);
+
+        rotation->setAxis(QVector3D(0, 0, 0));
+        rotation->setOrigin(origin);
+        transformations << rotation;
+
+        setTransformations(transformations);
+        rotation_animation->start(QAbstractAnimation::DeleteWhenStopped);
+    }
 }
