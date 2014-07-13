@@ -341,6 +341,33 @@ void Card::setSkillName(const QString &name) {
 
 QString Card::getDescription(bool yellow) const{
     QString desc = Sanguosha->translate(":" + objectName());
+    if (desc == ":" + objectName())
+        return desc;
+    foreach(QString skill_type, Sanguosha->getSkillColorMap().keys()) {
+        QString to_replace = Sanguosha->translate(skill_type);
+        if (to_replace == skill_type) continue;
+        QString color_str = Sanguosha->getSkillColor(skill_type).name();
+        if (desc.contains(to_replace))
+            desc.replace(to_replace, QString("<font color=%1><b>%2</b></font>").arg(color_str)
+            .arg(to_replace));
+    }
+
+    for (int i = 0; i < 6; i++) {
+        Card::Suit suit = (Card::Suit)i;
+        QString str = Card::Suit2String(suit);
+        QString to_replace = Sanguosha->translate(str);
+        bool red = suit == Card::Heart
+            || suit == Card::Diamond
+            || suit == Card::NoSuitRed;
+        if (to_replace == str) continue;
+        if (desc.contains(to_replace)) {
+            if (red)
+                desc.replace(to_replace, QString("<font color=#FF0000>%1</font>").arg(Sanguosha->translate(str + "_char")));
+            else
+                desc.replace(to_replace, QString("<font color=#000000><span style=background-color:white>%1</span></font>").arg(Sanguosha->translate(str + "_char")));
+        }
+    }
+
     desc.replace("\n", "<br/>");
     return tr("<font color=%1><b>[%2]</b> %3</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(getName()).arg(desc);
 }

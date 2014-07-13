@@ -83,6 +83,11 @@ JadeSeal::JadeSeal(Card::Suit suit, int number)
     setObjectName("JadeSeal");
 }
 
+ProtectHeartMirror::ProtectHeartMirror(Card::Suit suit, int number)
+    : Armor(suit, number){
+    setObjectName("ProtectHeartMirror");
+}
+
 StrategicAdvantagePackage::StrategicAdvantagePackage()
     : Package("strategic_advantage", Package::CardPack){
     QList<Card *> cards;
@@ -91,7 +96,12 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         << new JadeSeal(Card::Spade, 2)
         << new JadeSeal(Card::Spade, 3)
         << new JadeSeal(Card::Spade, 4)
-        << new Blade(Card::Spade, 5);
+        << new Blade(Card::Spade, 5)
+        << new Blade(Card::Spade, 6)
+        << new Blade(Card::Spade, 7)
+        << new ProtectHeartMirror(Card::Spade, 8)
+        << new ProtectHeartMirror(Card::Spade, 9)
+        << new ProtectHeartMirror(Card::Spade, 10);
 
     foreach(Card *c, cards){
         c->setParent(this);

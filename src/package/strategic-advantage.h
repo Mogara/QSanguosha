@@ -38,6 +38,13 @@ public:
     Q_INVOKABLE JadeSeal(Card::Suit suit, int number);
 };
 
+class ProtectHeartMirror : public Armor{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ProtectHeartMirror(Card::Suit suit, int number);
+};
+
 class StrategicAdvantagePackage : public Package{
     Q_OBJECT
 
