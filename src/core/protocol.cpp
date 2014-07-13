@@ -30,6 +30,8 @@ unsigned int QSanProtocol::Packet::_m_globalSerial = 0;
 const unsigned int QSanProtocol::Packet::S_MAX_PACKET_SIZE = 65535;
 const char *QSanProtocol::S_PLAYER_SELF_REFERENCE_ID = "MG_SELF";
 
+const int QSanProtocol::S_ALL_ALIVE_PLAYERS = 0;
+
 bool QSanProtocol::Countdown::tryParse(const Json::Value &val) {
     if (!val.isArray())
         return false;

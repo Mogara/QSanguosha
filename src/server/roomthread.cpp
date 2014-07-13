@@ -501,7 +501,9 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                             names.prepend("trigger_none"); // default choice should do nothing
 
                         QString name;
-                        if (p != NULL)
+                        if (names.length() == 1)
+                            name = names.first();
+                        else if (p != NULL)
                             name = room->askForChoice(p, "TriggerOrder", names.join("+"), data);
                         else
                             name = names.last();

@@ -211,9 +211,9 @@ public:
     bool verifyNullificationResponse(ServerPlayer *, const Json::Value &, void *);
 
     // Notification functions
-    bool notifyMoveFocus(ServerPlayer *player);
-    bool notifyMoveFocus(ServerPlayer *player, QSanProtocol::CommandType command);
-    bool notifyMoveFocus(const QList<ServerPlayer *> &players, const QSanProtocol::Countdown &countdown);
+    bool notifyMoveFocus(ServerPlayer *focus, ServerPlayer *except = NULL);
+    bool notifyMoveFocus(ServerPlayer *focus, QSanProtocol::CommandType command, ServerPlayer *except = NULL);
+    bool notifyMoveFocus(const QList<ServerPlayer *> &focuses, const QSanProtocol::Countdown &countdown, ServerPlayer *except = NULL);
 
     // Notify client side to move cards from one place to another place. A movement should always be completed by
     // calling notifyMoveCards in pairs, one with isLostPhase equaling true followed by one with isLostPhase
