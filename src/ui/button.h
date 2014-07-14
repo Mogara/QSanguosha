@@ -49,9 +49,8 @@ class Button : public QGraphicsObject{
     Q_OBJECT
 
 public:
-    explicit Button(const QString &label, qreal scale = 1.0);
-    explicit Button(const QString &label, const QSizeF &size);
-    void setMute(bool mute);
+    explicit Button(const QString &label, qreal scale = 1.0, bool compact = false);
+    explicit Button(const QString &label, const QSizeF &size, bool compact = false);
     void setFontName(const QString &name);
     void setFontSize(const int &size);
 
@@ -63,20 +62,20 @@ protected:
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
-    virtual void dragLeaveEvent(QGraphicsSceneDragDropEvent *event);
 
 private:
 
     QString label;
     QSizeF size;
-    bool mute;
     QString font_name;
     int font_size;
-    bool down;
+    bool compact;
 
     QGraphicsRotation *rotation;
     QGraphicsScale *scale;
     Title *title;
+
+    QPixmap icon;
 
     void init();
     void reset();
