@@ -26,6 +26,25 @@
 #include <QGraphicsObject>
 #include <QGraphicsRotation>
 
+class Title : public QGraphicsObject {
+    Q_OBJECT
+
+    friend class Button;
+
+public:
+    virtual QRectF boundingRect() const;
+
+protected:
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+private:
+    explicit Title(QGraphicsObject *parent, const QString &text, const QString &font_name, const int &font_size);
+
+    QString text;
+    QString font_name;
+    int font_size;
+};
+
 class Button : public QGraphicsObject{
     Q_OBJECT
 
@@ -40,19 +59,24 @@ public:
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+    virtual void dragLeaveEvent(QGraphicsSceneDragDropEvent *event);
 
 private:
+
     QString label;
     QSizeF size;
     bool mute;
     QString font_name;
     int font_size;
+    bool down;
 
     QGraphicsRotation *rotation;
     QGraphicsScale *scale;
+    Title *title;
 
     void init();
     void reset();

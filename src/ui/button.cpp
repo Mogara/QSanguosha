@@ -26,13 +26,14 @@
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
 #include <QPropertyAnimation>
+#include <QFile>
 
-static QRectF ButtonRect(0, 0, 189, 46);
+static QRectF ButtonRect(0, 0, 184, 184);
 
 Button::Button(const QString &label, qreal scale)
     : label(label), size(ButtonRect.size() * scale), mute(true),
       font_name("wqy-microhei"), font_size(Config.SmallFont.pixelSize()),
-      rotation(NULL), scale(NULL)
+      down(false), rotation(NULL), scale(NULL), title(NULL)
 {
     init();
 }
@@ -40,16 +41,25 @@ Button::Button(const QString &label, qreal scale)
 Button::Button(const QString &label, const QSizeF &size)
     : label(label), size(size), mute(true),
       font_name("wqy-microhei"), font_size(Config.SmallFont.pixelSize()),
-      rotation(NULL), scale(NULL)
+      down(false), rotation(NULL), scale(NULL), title(NULL)
 {
     init();
 }
 
 void Button::init() {
-    setFlags(ItemIsFocusable);
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    setAcceptsHoverEvents(true);
+#else
     setAcceptHoverEvents(true);
+#endif
+
+    setAcceptDrops(true);
+
     setAcceptedMouseButtons(Qt::LeftButton);
+
+    title = new Title(this, label, font_name, font_size);
+    title->setPos(8, boundingRect().height() - title->boundingRect().height() - 8);
+    title->hide();
 }
 
 void Button::setMute(bool mute) {
@@ -64,11 +74,8 @@ void Button::setFontSize(const int &size) {
     this->font_size = size;
 }
 
-void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
-    setFocus(Qt::MouseFocusReason);
-}
-
 void Button::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    down = true;
     qreal width = boundingRect().width(), height = boundingRect().height();
     QVector3D axis(0, 0, 0), origin(width / 2.0, height / 2.0, 0);
     qreal angle = 0;
@@ -125,61 +132,47 @@ void Button::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     rotation_animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
-    if (boundingRect().contains(event->pos())) {
+void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *) {
+    if (down) {
+        reset();
         if (!mute) Sanguosha->playSystemAudioEffect("button-down");
         emit clicked();
     }
+}
+
+void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
+    title->show();
+}
+
+void Button::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
+    title->hide();
+}
+
+void Button::dragLeaveEvent(QGraphicsSceneDragDropEvent *) {
     reset();
+    down = false;
 }
 
 QRectF Button::boundingRect() const{
     return QRectF(QPointF(), size);
 }
 
-static QColor ReverseColor(const QColor &color) {
-    int r = 0xFF - color.red();
-    int g = 0xFF - color.green();
-    int b = 0xFF - color.blue();
-
-    return QColor::fromRgb(r, g, b);
-}
-
 void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
     QRectF rect = boundingRect();
 
-    QColor textColor, edgeColor, boxColor;
-    textColor = edgeColor = Qt::white;
-    boxColor = Qt::black;
-
-    if (hasFocus()) {
-        textColor = ReverseColor(textColor);
-        boxColor = ReverseColor(boxColor);
-    }
-
-    boxColor.setAlphaF(0.8);
+    QColor boxColor(120, 212, 120), edgeColor(255, 255, 255, 80);
 
     painter->fillRect(rect, boxColor);
 
     QPen pen(edgeColor);
-    pen.setWidth(2);
+    pen.setWidth(1);
     painter->setPen(pen);
     painter->drawRect(rect);
 
-    using namespace QSanProtocol::Utils;
-    IQSanComponentSkin::QSanSimpleTextFont ft;
-    Json::Value val(Json::arrayValue);
-    val[0] = toJsonString(font_name);
-    val[1] = font_size;
-    val[2] = 2;
-
-    val[3] = Json::Value(Json::arrayValue);
-    val[3][0] = textColor.red();
-    val[3][1] = textColor.green();
-    val[3][2] = textColor.blue();
-
-    ft.tryParse(val);
-    ft.paintText(painter, rect.toRect(), Qt::AlignCenter, label);
+    const QString path = QString("image/system/button/icon/%1.png").arg(label);
+    if (QFile::exists(path)) {
+        painter->drawPixmap(rect.toRect(), QPixmap(path));
+    }
 }
 
 void Button::reset() {
@@ -215,4 +208,31 @@ void Button::reset() {
         setTransformations(transformations);
         rotation_animation->start(QAbstractAnimation::DeleteWhenStopped);
     }
+}
+
+Title::Title(QGraphicsObject *parent, const QString &text, const QString &font_name, const int &font_size)
+: QGraphicsObject(parent), text(text), font_name(font_name), font_size(font_size)
+{
+}
+
+QRectF Title::boundingRect() const {
+    return QRectF(0, 0, font_size * text.length(), font_size);
+}
+
+void Title::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
+    QColor textColor = Qt::white;
+    using namespace QSanProtocol::Utils;
+    IQSanComponentSkin::QSanSimpleTextFont ft;
+    Json::Value val(Json::arrayValue);
+    val[0] = toJsonString(font_name);
+    val[1] = font_size;
+    val[2] = 2;
+
+    val[3] = Json::Value(Json::arrayValue);
+    val[3][0] = textColor.red();
+    val[3][1] = textColor.green();
+    val[3][2] = textColor.blue();
+
+    ft.tryParse(val);
+    ft.paintText(painter, boundingRect().toRect(), Qt::AlignCenter, text);
 }

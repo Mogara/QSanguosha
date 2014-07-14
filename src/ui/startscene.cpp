@@ -31,16 +31,16 @@ StartScene::StartScene()
 {
     // game logo
     logo = new QSanSelectableItem("image/logo/logo.png", true);
-    logo->moveBy(0, -Config.Rect.height() / 4);
+    logo->moveBy(-logo->boundingRect().width() / 2 - 28, 0);
     addItem(logo);
 
     //the website URL
-    QFont website_font(Config.SmallFont);
+    /*QFont website_font(Config.SmallFont);
     website_font.setStyle(QFont::StyleItalic);
     QGraphicsSimpleTextItem *website_text = addSimpleText("http://qsanguosha.org", website_font);
     website_text->setBrush(Qt::white);
     website_text->setPos(Config.Rect.width() / 2 - website_text->boundingRect().width(),
-        Config.Rect.height() / 2 - website_text->boundingRect().height());
+        Config.Rect.height() / 2 - website_text->boundingRect().height());*/
     server_log = NULL;
 }
 
@@ -53,10 +53,12 @@ void StartScene::addButton(QAction *action) {
 
     QRectF rect = button->boundingRect();
     int n = buttons.length();
-    if (n < 5)
-        button->setPos(-rect.width() - 5, (n - 1) * (rect.height() * 1.2));
+    qreal center_x = rect.width() + 4 + 28;
+    qreal top_y = - (2 * rect.height()) - (4 * 3);
+    if (n < 4)
+        button->setPos(center_x - rect.width() - 4, top_y + n * (rect.height() + 8));
     else
-        button->setPos(5, (n - 6) * (rect.height() * 1.2));
+        button->setPos(center_x + 4, top_y + (n - 4) * (rect.height() + 8));
 
     buttons << button;
 }
