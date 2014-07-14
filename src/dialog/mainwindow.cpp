@@ -27,7 +27,6 @@
 #include "cardoverview.h"
 #include "ui_mainwindow.h"
 #include "rule-summary.h"
-#include "window.h"
 #include "pixmapanimation.h"
 #include "record-analysis.h"
 #include "AboutUs.h"
@@ -131,11 +130,10 @@ void SoundTestBox::btn_clicked(){
 #endif
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), server(NULL)
+    : QMainWindow(parent), scene(NULL), ui(new Ui::MainWindow), server(NULL), about_window(NULL)
 {
     ui->setupUi(this);
     setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
-    scene = NULL;
 
     UpdateCheckerThread *thread = new UpdateCheckerThread;
     connect(thread, SIGNAL(storeKeyAndValue(const QString &, const QString &)), this, SLOT(storeKeyAndValue(const QString &, const QString &)));
@@ -475,57 +473,60 @@ void MainWindow::on_actionNever_nullify_my_trick_toggled(bool checked) {
 }
 
 void MainWindow::on_actionAbout_triggered() {
-    // Cao Cao's pixmap
-    QString content = "<center><img src='image/system/shencc.png'> <br /> </center>";
+    if (about_window == NULL) {
+        // Cao Cao's pixmap
+        QString content = "<center><img src='image/system/shencc.png'> <br /> </center>";
 
-    // Cao Cao' poem
-    QString poem = tr("Disciples dressed in blue, my heart worries for you. You are the cause, of this song without pause");
-    content.append(QString("<p align='right'><i>%1</i></p>").arg(poem));
+        // Cao Cao' poem
+        QString poem = tr("Disciples dressed in blue, my heart worries for you. You are the cause, of this song without pause");
+        content.append(QString("<p align='right'><i>%1</i></p>").arg(poem));
 
-    // Cao Cao's signature
-    QString signature = tr("\"A Short Song\" by Cao Cao");
-    content.append(QString("<p align='right'><i>%1</i></p>").arg(signature));
+        // Cao Cao's signature
+        QString signature = tr("\"A Short Song\" by Cao Cao");
+        content.append(QString("<p align='right'><i>%1</i></p>").arg(signature));
 
-    QString email = "moligaloo@gmail.com";
-    content.append(tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
-        "totally written in C++ Qt GUI framework <br />"
-        "My Email: <a href='mailto:%1' style = \"color:#0072c1; \">%1</a> <br/>"
-        "My QQ: 365840793 <br/>"
-        "My Weibo: http://weibo.com/moligaloo <br/>").arg(email));
+        QString email = "moligaloo@gmail.com";
+        content.append(tr("This is the open source clone of the popular <b>Sanguosha</b> game,"
+                          "totally written in C++ Qt GUI framework <br />"
+                          "My Email: <a href='mailto:%1' style = \"color:#0072c1; \">%1</a> <br/>"
+                          "My QQ: 365840793 <br/>"
+                          "My Weibo: http://weibo.com/moligaloo <br/>").arg(email));
 
-    QString config;
+        QString config;
 
 #ifdef QT_NO_DEBUG
-    config = "release";
+        config = "release";
 #else
-    config = "debug";
+        config = "debug";
 #endif
 
-    content.append(tr("Current version: %1 %2 (%3)<br/>")
-        .arg(Sanguosha->getVersion())
-        .arg(config)
-        .arg(Sanguosha->getVersionName()));
+        content.append(tr("Current version: %1 %2 (%3)<br/>")
+                       .arg(Sanguosha->getVersion())
+                       .arg(config)
+                       .arg(Sanguosha->getVersionName()));
 
-    const char *date = __DATE__;
-    const char *time = __TIME__;
-    content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
+        const char *date = __DATE__;
+        const char *time = __TIME__;
+        content.append(tr("Compilation time: %1 %2 <br/>").arg(date).arg(time));
 
-    QString project_url = "https://github.com/QSanguosha-Rara/QSanguosha-For-Hegemony";
-    content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
+        QString project_url = "https://github.com/QSanguosha-Rara/QSanguosha-For-Hegemony";
+        content.append(tr("Source code: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(project_url));
 
-    QString forum_url = "http://qsanguosha.org";
-    content.append(tr("Forum: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(forum_url));
+        QString forum_url = "http://qsanguosha.org";
+        content.append(tr("Forum: <a href='%1' style = \"color:#0072c1; \">%1</a> <br/>").arg(forum_url));
 
-    Window *window = new Window(tr("About QSanguosha"), QSize(420, 465));
-    scene->addItem(window);
-    window->setZValue(32766);
+        about_window = new Window(tr("About QSanguosha"), QSize(420, 465));
+        scene->addItem(about_window);
+        about_window->setZValue(32766);
 
-    window->addContent(content);
-    window->addCloseButton(tr("OK"));
-    window->shift(scene->inherits("RoomScene") ? scene->width() : 0,
-        scene->inherits("RoomScene") ? scene->height() : 0);
+        about_window->addContent(content);
+        about_window->addCloseButton(tr("OK"));
+        about_window->shift(scene->inherits("RoomScene") ? scene->width() : 0,
+                            scene->inherits("RoomScene") ? scene->height() : 0);
+        about_window->keepWhenDisappear();
+    }
 
-    window->appear();
+    about_window->appear();
 }
 
 void MainWindow::on_actionAbout_Us_triggered() {

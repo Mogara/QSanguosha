@@ -25,6 +25,7 @@
 #include "connectiondialog.h"
 #include "configdialog.h"
 #include "UpdateCheckerThread.h"
+#include "window.h"
 
 #include <QMainWindow>
 #include <QSettings>
@@ -95,6 +96,7 @@ private:
     ConfigDialog *config_dialog;
     QSystemTrayIcon *systray;
     Server *server;
+    Window *about_window;
     UpdateInfoStruct update_info;
 
     void restoreFromConfig();
