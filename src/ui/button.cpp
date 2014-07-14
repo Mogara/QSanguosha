@@ -28,12 +28,12 @@
 #include <QPropertyAnimation>
 #include <QFile>
 
-static QRectF ButtonRect(0, 0, 174, 174);
+static QRectF ButtonRect(0, 0, 154, 154);
 static QRectF CompactButtonRect(0, 0, 189, 46);
 
 Button::Button(const QString &label, qreal scale, bool compact)
     : label(label), size((compact ? CompactButtonRect.size() : ButtonRect.size()) * scale),
-      font_name("wqy-microhei"), font_size(Config.SmallFont.pixelSize()),
+      font_name("wqy-microhei"), font_size(Config.TinyFont.pixelSize()),
       compact(compact), rotation(NULL), scale(NULL), title(NULL)
 {
     init();
@@ -41,7 +41,7 @@ Button::Button(const QString &label, qreal scale, bool compact)
 
 Button::Button(const QString &label, const QSizeF &size, bool compact)
     : label(label), size(size),
-      font_name("wqy-microhei"), font_size(Config.SmallFont.pixelSize()),
+      font_name("wqy-microhei"), font_size(Config.TinyFont.pixelSize()),
       compact(compact), rotation(NULL), scale(NULL), title(NULL)
 {
     init();
@@ -167,7 +167,7 @@ static QColor ReverseColor(const QColor &color) {
 }
 
 void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
-    painter->setRenderHint(QPainter::Antialiasing);
+    painter->setRenderHint(QPainter::HighQualityAntialiasing);
     QRectF rect = boundingRect();
 
     QColor edgeColor = Qt::white, boxColor;
@@ -256,7 +256,7 @@ Title::Title(QGraphicsObject *parent, const QString &text, const QString &font_n
 }
 
 QRectF Title::boundingRect() const {
-    return QRectF(0, 0, font_size * text.length(), font_size);
+    return QRectF(0, 0, font_size * text.length(), font_size + 1);
 }
 
 void Title::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
