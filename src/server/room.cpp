@@ -880,15 +880,15 @@ bool Room::getResult(ServerPlayer *player, time_t timeOut) {
     return validResult;
 }
 
-bool Room::notifyMoveFocus(ServerPlayer *focus, ServerPlayer *except) {
+bool Room::notifyMoveFocus(ServerPlayer *focus) {
     QList<ServerPlayer *> players;
     players.append(focus);
     Countdown countdown;
     countdown.m_type = Countdown::S_COUNTDOWN_NO_LIMIT;
-    return notifyMoveFocus(players, countdown, except);
+    return notifyMoveFocus(players, countdown, focus);
 }
 
-bool Room::notifyMoveFocus(ServerPlayer *focus, CommandType command, ServerPlayer *except) {
+bool Room::notifyMoveFocus(ServerPlayer *focus, CommandType command) {
     QList<ServerPlayer *> players;
     players.append(focus);
     Countdown countdown;
@@ -900,7 +900,7 @@ bool Room::notifyMoveFocus(ServerPlayer *focus, CommandType command, ServerPlaye
         countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
     }
 
-    return notifyMoveFocus(players, countdown, except);
+    return notifyMoveFocus(players, countdown, focus);
 }
 
 bool Room::notifyMoveFocus(const QList<ServerPlayer *> &focuses, const Countdown &countdown, ServerPlayer *except) {
@@ -935,7 +935,7 @@ bool Room::notifyMoveFocus(const QList<ServerPlayer *> &focuses, const Countdown
 
 bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, const QVariant &data) {
     while (isPaused()) {}
-    notifyMoveFocus(player, S_COMMAND_INVOKE_SKILL, player);
+    notifyMoveFocus(player, S_COMMAND_INVOKE_SKILL);
 
     bool invoked = false;
     AI *ai = player->getAI();
@@ -997,7 +997,7 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
         answer = validChoices.first();
     }
     else {
-        notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE, player);
+        notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
 
         AI *ai = player->getAI();
         if (ai) {
@@ -1594,7 +1594,7 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
 
 const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying) {
     while (isPaused()) {}
-    notifyMoveFocus(player, S_COMMAND_ASK_PEACH, player);
+    notifyMoveFocus(player, S_COMMAND_ASK_PEACH);
     _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
 
     const Card *card = NULL;
