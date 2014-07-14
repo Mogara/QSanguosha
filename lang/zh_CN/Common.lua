@@ -101,6 +101,7 @@ CommonTranslationTable = {
 	["armor"] = "防具",
 	["defensive_horse"] = "+1坐骑",
 	["offensive_horse"] = "-1坐骑",
+	["treasure"] = "宝物",
 	
 	["luck_card"] = "手气卡",
 

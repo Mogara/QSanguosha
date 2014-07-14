@@ -2525,6 +2525,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
     if (newStatus != Client::NotActive && newStatus != oldStatus && newStatus != Client::AskForGeneralChosen) {
         QApplication::alert(main_window);
         connect(dashboard, SIGNAL(progressBarTimedOut()), this, SLOT(doTimeout()));
+        _cancelAllFocus();
         dashboard->showProgressBar(ClientInstance->getCountdown());
     }
 }

@@ -61,7 +61,8 @@ Room::Room(QObject *parent, const QString &mode)
     game_started(false), game_finished(false), game_paused(false), L(NULL), thread(NULL),
     _m_semRaceRequest(0), _m_semRoomMutex(1),
     _m_raceStarted(false), provided(NULL), has_provided(false),
-    m_surrenderRequestReceived(false), _virtual(false), _m_roomState(false)
+    m_surrenderRequestReceived(false), _virtual(false), _m_roomState(false),
+    _m_isFirstSurrenderRequest(true)
 {
     static int s_global_room_id = 0;
     _m_Id = s_global_room_id++;
@@ -804,9 +805,12 @@ bool Room::doBroadcastNotify(const QList<ServerPlayer *> &players, QSanProtocol:
 }
 
 bool Room::doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg, ServerPlayer *except) {
+    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
+    packet.setMessageBody(arg);
+
     foreach(ServerPlayer *player, m_players) {
         if (player != except) {
-            doNotify(player, command, arg);
+            player->invoke(&packet);
         }
     }
     return true;
@@ -876,15 +880,15 @@ bool Room::getResult(ServerPlayer *player, time_t timeOut) {
     return validResult;
 }
 
-bool Room::notifyMoveFocus(ServerPlayer *focus, ServerPlayer *except) {
+bool Room::notifyMoveFocus(ServerPlayer *focus) {
     QList<ServerPlayer *> players;
     players.append(focus);
     Countdown countdown;
     countdown.m_type = Countdown::S_COUNTDOWN_NO_LIMIT;
-    return notifyMoveFocus(players, countdown, except);
+    return notifyMoveFocus(players, countdown, focus);
 }
 
-bool Room::notifyMoveFocus(ServerPlayer *focus, CommandType command, ServerPlayer *except) {
+bool Room::notifyMoveFocus(ServerPlayer *focus, CommandType command) {
     QList<ServerPlayer *> players;
     players.append(focus);
     Countdown countdown;
@@ -896,7 +900,7 @@ bool Room::notifyMoveFocus(ServerPlayer *focus, CommandType command, ServerPlaye
         countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
     }
 
-    return notifyMoveFocus(players, countdown, except);
+    return notifyMoveFocus(players, countdown, focus);
 }
 
 bool Room::notifyMoveFocus(const QList<ServerPlayer *> &focuses, const Countdown &countdown, ServerPlayer *except) {
@@ -1590,7 +1594,7 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
 
 const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying) {
     while (isPaused()) {}
-    notifyMoveFocus(player, S_COMMAND_ASK_PEACH, player);
+    notifyMoveFocus(player, S_COMMAND_ASK_PEACH);
     _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
 
     const Card *card = NULL;
