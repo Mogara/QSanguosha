@@ -31,7 +31,10 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
     : QDialog(parent)
 {
     setWindowTitle(tr("About Us"));
-    resize(800, 600);
+    lua_State *L = Sanguosha->getLuaState();
+    int width = GetValueFromLuaState(L, "about_us", "width").toInt();
+    int height = GetValueFromLuaState(L, "about_us", "height").toInt();
+    resize(width, height);
 
     setStyleSheet("QToolTip{ border: 0px solid; background: white; }");
 
@@ -50,10 +53,10 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
     setLayout(layout);
 
     QStringList developers = GetConfigFromLuaState(Sanguosha->getLuaState(), "developers").toStringList();
-    developers.prepend(tr("QSanguosha-Hegemony-V2"));
+    developers.prepend("homepage");
 
     foreach(QString name, developers) {
-        QListWidgetItem *item = new QListWidgetItem(name, list);
+        QListWidgetItem *item = new QListWidgetItem(Sanguosha->translate(name), list);
         item->setData(Qt::UserRole, name);
     }
 
@@ -65,12 +68,19 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
 
 void AboutUsDialog::loadContent(int row) {
     QString name = list->item(row)->data(Qt::UserRole).toString();
-    QString filename = QString("developers/%1.htm").arg(name);
-    QFile file(filename);
-    if (file.open(QIODevice::ReadOnly)) {
-        QTextStream stream(&file);
-        stream.setCodec("UTF-8");
-        QString content = stream.readAll();
-        content_box->setHtml(content);
+    if (name == "homepage") {
+        lua_State *L = Sanguosha->getLuaState();
+        QString page = GetValueFromLuaState(L, "about_us", "homepage").toString();
+        content_box->setHtml(page);
+    }
+    else {
+        QString filename = QString("developers/%1.htm").arg(name);
+        QFile file(filename);
+        if (file.open(QIODevice::ReadOnly)) {
+            QTextStream stream(&file);
+            stream.setCodec("UTF-8");
+            QString content = stream.readAll();
+            content_box->setHtml(content);
+        }
     }
 }

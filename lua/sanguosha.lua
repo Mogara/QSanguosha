@@ -24,6 +24,7 @@ package.path = package.path .. ";./lua/lib/?.lua"
 
 dofile "lua/utilities.lua"
 dofile "lua/sgs_ex.lua"
+dofile "lua/about_us.lua"
 
 function load_translation(file)
 	local t = dofile(file)
@@ -95,4 +96,6 @@ if not done_loading then
 	load_translations()
 	done_loading = sgs.QVariant(true)
 	sgs.Sanguosha:setProperty("DoneLoading", done_loading)
+	
+	createHomePage()
 end
