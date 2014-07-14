@@ -390,11 +390,10 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason) {
         if (expose_roles) {
             foreach(ServerPlayer *player, m_alivePlayers) {
                 QString role = player->getKingdom();
-                if (role == "god") {
+                if (role == "god")
                     role = Sanguosha->getGeneral(getTag(player->objectName()).toStringList().at(0))->getKingdom();
-                    role = HegemonyMode::GetMappedRole(role);
-                    broadcastProperty(player, "role", role);
-                }
+                role = HegemonyMode::GetMappedRole(role);
+                broadcastProperty(player, "role", role);
             }
 
             if (Config.AlterAIDelayAD)
