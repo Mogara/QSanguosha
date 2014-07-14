@@ -3195,7 +3195,7 @@ void Room::marshal(ServerPlayer *player) {
     foreach(ServerPlayer *p, m_players) {
         /* don't notify generals of the player himself here, for kingdom can be set inside Player::setGeneral
            only when it's empty, that is, kingdom can be set in this way only once. */
-        if(p == player)
+        if (p == player)
             continue;
 
         notifyProperty(player, p, "general");
@@ -5531,49 +5531,62 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
     notifyMoveFocus(guojia, S_COMMAND_SKILL_YIJI);
 
     ServerPlayer *target = NULL;
-
     QList<int> ids;
     AI *ai = guojia->getAI();
-    if (ai) {
-        int card_id;
-        ServerPlayer *who = ai->askForYiji(cards, skill_name, card_id);
-        if (!who)
+    do {
+        if (ai) {
+            int card_id;
+            ServerPlayer *who = ai->askForYiji(cards, skill_name, card_id);
+            if (!who)
+                break;
+            else {
+                target = who;
+                ids << card_id;
+            }
+        }
+        else {
+            Json::Value arg(Json::arrayValue);
+            arg[0] = toJsonArray(cards);
+            arg[1] = optional;
+            arg[2] = max_num;
+            QStringList player_names;
+            foreach(ServerPlayer *player, players)
+                player_names << player->objectName();
+            arg[3] = toJsonArray(player_names);
+            if (!prompt.isEmpty())
+                arg[4] = toJsonString(prompt);
+            bool success = doRequest(guojia, S_COMMAND_SKILL_YIJI, arg, true);
+
+            //Validate client response
+            Json::Value clientReply = guojia->getClientReply();
+            if (!success || !clientReply.isArray() || clientReply.size() != 2)
+                break;
+
+            if (!tryParse(clientReply[0], ids) || !clientReply[1].isString())
+                break;
+
+            foreach(int id, ids)
+                if (!cards.contains(id))
+                    break;
+
+            ServerPlayer *who = findChild<ServerPlayer *>(toQString(clientReply[1]));
+            if (!who)
+                break;
+            else
+                target = who;
+        }
+    } while (false);
+
+    if (target == NULL){
+        if (optional)
             return false;
         else {
-            target = who;
-            ids << card_id;
+            ids.clear();
+            ids << cards.at(qrand() % cards.length());
+            target = players.at(qrand() % players.length());
         }
     }
-    else {
-        Json::Value arg(Json::arrayValue);
-        arg[0] = toJsonArray(cards);
-        arg[1] = optional;
-        arg[2] = max_num;
-        QStringList player_names;
-        foreach(ServerPlayer *player, players)
-            player_names << player->objectName();
-        arg[3] = toJsonArray(player_names);
-        if (!prompt.isEmpty())
-            arg[4] = toJsonString(prompt);
-        bool success = doRequest(guojia, S_COMMAND_SKILL_YIJI, arg, true);
 
-        //Validate client response
-        Json::Value clientReply = guojia->getClientReply();
-        if (!success || !clientReply.isArray() || clientReply.size() != 2)
-            return false;
-
-        if (!tryParse(clientReply[0], ids) || !clientReply[1].isString())
-            return false;
-
-        foreach(int id, ids)
-            if (!cards.contains(id)) return false;
-
-        ServerPlayer *who = findChild<ServerPlayer *>(toQString(clientReply[1]));
-        if (!who)
-            return false;
-        else
-            target = who;
-    }
     Q_ASSERT(target != NULL);
 
     DummyCard dummy_card;

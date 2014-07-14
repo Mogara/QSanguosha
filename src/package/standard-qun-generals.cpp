@@ -1000,6 +1000,8 @@ public:
             player->tag.remove("lirang");
             return false;
         }
+        if (!player->hasShownSkill(this))
+            player->setMark("lirang_notcancelable", 1);
         return true;
     }
 
@@ -1022,7 +1024,7 @@ public:
             if (lirang_card.isEmpty())
                 return false;
 
-            CardMoveReason preview_reason(CardMoveReason::S_REASON_DISCARD, kongrong->objectName(), objectName(), QString());
+            CardMoveReason preview_reason(CardMoveReason::S_REASON_PREVIEW, kongrong->objectName(), objectName(), QString());
             CardsMoveStruct lirang_preview(lirang_card, NULL, kongrong, Player::DiscardPile, Player::PlaceHand, preview_reason);
             QList<CardsMoveStruct> lirang_preview_l;
             lirang_preview_l << lirang_preview;
@@ -1034,8 +1036,14 @@ public:
 
             QList<int> original_lirang = lirang_card;
             CardMoveReason lirang_reason(CardMoveReason::S_REASON_PREVIEWGIVE, kongrong->objectName());
-            while (room->askForYiji(kongrong, lirang_card, objectName(), true, true, true, -1,
+            bool lirang_cancelable = true;
+            if (kongrong->getMark("lirang_notcancelable") > 0){
+                kongrong->setMark("lirang_notcancelable", 0);
+                lirang_cancelable = false;
+            }
+            while (room->askForYiji(kongrong, lirang_card, objectName(), true, true, lirang_cancelable, -1,
                 QList<ServerPlayer *>(), lirang_reason, "@lirang-distribute", true)) {
+                lirang_cancelable = true;
                 CardsMoveStruct lirang_give_preview(QList<int>(), kongrong, NULL, Player::PlaceHand, Player::PlaceTable, preview_reason);
                 foreach(int id, original_lirang){
                     if (room->getCardPlace(id) != Player::DiscardPile){
