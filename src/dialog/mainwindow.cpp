@@ -418,9 +418,7 @@ void MainWindow::gotoStartScene() {
         << ui->actionConfigure
         << ui->actionGeneral_Overview
         << ui->actionCard_Overview
-        << ui->actionRule_Summary
-        << ui->actionAbout
-        << ui->actionAbout_Us;
+        << ui->actionAbout;
 
     foreach(QAction *action, actions)
         start_scene->addButton(action);
