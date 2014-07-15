@@ -252,6 +252,13 @@ local pages = {
 		"容我打个广告",
 		'<a href="http://tieba.baidu.com/f?ie=utf8&kw=36李&fr=itb_favo&fp=favo">百度36李吧欢迎你</a>'
 	}
+	
+	{
+		[0] = "lzxqqqq",
+		"一只忧郁的月兔，来自月球的新奇物种，目前在用它拙劣的技术尝试和AI互动。",
+		"性格非常的温顺，只要你喂它口感适宜新鲜美味的萌妹纸就会非常的听话~",
+		"最近沉迷于Dota2和DiabloIII不可自拔……",
+	}
 }
 
 sgs.LoadTranslationTable {
