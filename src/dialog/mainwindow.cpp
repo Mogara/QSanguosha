@@ -134,6 +134,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    setMouseTracking(true);
 
     UpdateCheckerThread *thread = new UpdateCheckerThread;
     connect(thread, SIGNAL(storeKeyAndValue(const QString &, const QString &)), this, SLOT(storeKeyAndValue(const QString &, const QString &)));
@@ -182,7 +184,47 @@ MainWindow::MainWindow(QWidget *parent)
     addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);
 
+    int width = size().width();
+
+    QToolButton *minButton = new QToolButton(this);
+    QToolButton *closeButton= new QToolButton(this);
+
+    QPixmap minPix  = style()->standardPixmap(QStyle::SP_TitleBarMinButton);
+    QPixmap closePix = style()->standardPixmap(QStyle::SP_TitleBarCloseButton);
+
+    minButton->setIcon(minPix);
+    closeButton->setIcon(closePix);
+
+    minButton->setGeometry(width - 46, 5, 20, 20);
+    closeButton->setGeometry(width - 25, 6, 20, 20);
+
+    minButton->setToolTip(tr("MinButton"));
+    connect(minButton, SIGNAL(clicked()), this, SLOT(lower()));
+    closeButton->setToolTip(tr("CloseButton"));
+    connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
+
+    minButton->setStyleSheet("background-color:transparent;");
+    closeButton->setStyleSheet("background-color:transparent;");
+
     systray = NULL;
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event) {  
+    if (event->button() == Qt::LeftButton) {
+        mouse_press = true;
+        move_point = event->pos();
+    }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event) {
+    if (mouse_press) {
+        QPoint move_pos = event->globalPos();
+        this->move(move_pos - move_point);
+    }
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
+    mouse_press = false;
 }
 
 void MainWindow::restoreFromConfig() {

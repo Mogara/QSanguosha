@@ -31,7 +31,7 @@ StartScene::StartScene()
 {
     // game logo
     logo = new QSanSelectableItem("image/logo/logo.png", true);
-    logo->moveBy(-logo->boundingRect().width() / 2 - 88, 0);
+    logo->moveBy(-Config.Rect.width() / 4, 0);
     addItem(logo);
 
     //the website URL
@@ -52,7 +52,7 @@ void StartScene::addButton(QAction *action) {
 
     QRectF rect = button->boundingRect();
     int n = buttons.length();
-    qreal center_x = rect.width() + 4 + 88;
+    qreal center_x = Config.Rect.width() / 4;
     qreal top_y = - (2 * rect.height()) - (4 * 3);
     if (n < 4)
         button->setPos(center_x - rect.width() - 4, top_y + n * (rect.height() + 8));
