@@ -119,7 +119,7 @@ void Settings::init() {
     MaxCards = value("MaxCards", 15).toInt();
 
     EnableHotKey = value("EnableHotKey", true).toBool();
-    NeverNullifyMyTrick = value("NeverNullifyMyTrick", true).toBool();
+    NeverNullifyMyTrick = value("NeverNullifyMyTrick", false).toBool(); // disabled by default because of the new diaochan
     EnableMinimizeDialog = value("EnableMinimizeDialog", false).toBool();
     EnableAutoTarget = value("EnableAutoTarget", true).toBool();
     EnableIntellectualSelection = value("EnableIntellectualSelection", true).toBool();

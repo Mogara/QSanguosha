@@ -471,11 +471,10 @@ public:
         judge.who = zhenji;
         judge.time_consuming = true;
 
-        forever{
+        do {
             room->judge(judge);
-            if (judge.isBad() || !zhenji->askForSkillInvoke(objectName()))
-                break;
-        }
+        } while (judge.isGood() && zhenji->askForSkillInvoke(objectName()));
+
         QList<int> card_list = VariantList2IntList(zhenji->tag[objectName()].toList());
         zhenji->tag.remove(objectName());
         QList<int> subcards;
