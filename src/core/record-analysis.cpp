@@ -46,9 +46,8 @@ void RecAnalysis::initialize(QString dir) {
     else if (dir.endsWith(".qsgs")) {
         QFile file(dir);
         if (file.open(QIODevice::ReadOnly)) {
-            QTextStream stream(&file);
-            while (!stream.atEnd()) {
-                QString line = stream.readLine();
+            while (!file.atEnd()) {
+                QString line = QString::fromUtf8(file.readLine());
                 records_line << line;
             }
         }
