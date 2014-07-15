@@ -217,8 +217,6 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
 
 void Button::reset() {
     QList<QGraphicsTransform *> transformations;
-    qreal width = boundingRect().width(), height = boundingRect().height();
-    QVector3D origin(width / 2.0, height / 2.0, 0);
 
     if (scale) {
         QPropertyAnimation *xScale_animation = new QPropertyAnimation(scale, "xScale", this);
@@ -228,7 +226,6 @@ void Button::reset() {
         yScale_animation->setDuration(100);
         yScale_animation->setEndValue(1);
 
-        scale->setOrigin(origin);
         transformations << scale;
 
         setTransformations(transformations);
@@ -241,8 +238,6 @@ void Button::reset() {
         rotation_animation->setDuration(100);
         rotation_animation->setEndValue(0);
 
-        rotation->setAxis(QVector3D(0, 0, 0));
-        rotation->setOrigin(origin);
         transformations << rotation;
 
         setTransformations(transformations);
