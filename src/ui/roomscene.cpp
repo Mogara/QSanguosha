@@ -64,6 +64,7 @@
 #include <QFormLayout>
 #include <QCoreApplication>
 #include <QInputDialog>
+#include <QScrollBar>
 
 using namespace QSanProtocol;
 
@@ -224,6 +225,13 @@ RoomScene::RoomScene(QMainWindow *main_window)
     chat_box->setReadOnly(true);
     chat_box->setTextColor(Config.TextEditColor);
     connect(ClientInstance, SIGNAL(line_spoken(QString)), this, SLOT(appendChatBox(QString)));
+
+    QScrollBar *bar = chat_box->verticalScrollBar();
+    QFile file("style-sheet/scroll.qss");
+    if (file.open(QIODevice::ReadOnly)) {
+        QTextStream stream(&file);
+        bar->setStyleSheet(stream.readAll());
+    }
 
     // chat edit
     chat_edit = new QLineEdit;

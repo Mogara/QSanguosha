@@ -136,13 +136,13 @@ end
 
 function HTMLTable.getFileHead(title)
 	local part1 = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"'
-    ..'"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">'
-	..'<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">'
+		..'"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">'
+		..'<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">'
 	
 	local part2_1 = HTMLTable.encloseInTag(title, "table")
 	
-	local part2_2 = '<link rel="stylesheet" type="text/css" href="developers/style.css" />'
-	..'<script src="developers/script.js"></script>'
+	local part2_2 = '<link rel="stylesheet" type="text/css" href="style-sheet/page.css" />'
+		..'<script src="ui-script/page.js"></script>'
 	
 	local part2 = HTMLTable.encloseInTag(part2_1 .. part2_2, "head")
 	

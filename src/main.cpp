@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
         return qApp->exec();
     }
 
-    QFile file("sanguosha.qss");
+    QFile file("style-sheet/sanguosha.qss");
     QString styleSheet;
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream(&file);
