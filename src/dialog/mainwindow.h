@@ -99,6 +99,12 @@ private:
     Window *about_window;
     UpdateInfoStruct update_info;
 
+    QPoint move_point;
+    bool mouse_press;
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+
     void restoreFromConfig();
 
 public slots:
