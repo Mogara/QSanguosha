@@ -210,3 +210,17 @@ function createHomePage()
 	table.insert(about_us.homepage, HTMLTable.getFileFoot())
 	about_us.homepage = table.concat(about_us.homepage)
 end
+
+pages = {
+	{
+		[0] = "Yanguam",
+		"又名啦啦SLG，虽名为拉拉，但是只喜欢男性。奇葩开发者一枚，无资质无实力，高中在读。",
+		"用残缺的汉语语法和山寨腔调的汉语发音混迹中文论坛，喜欢伪装成大神出现在各个角落。"
+	},
+	
+	{
+		[0] = "BeginnerSlob",
+		"三流程序员，大学狗，一心想要做出自己的东西而加入神杀。",
+		"简单的说就是不拘小节（这根本就是散漫吧啊喂！"
+	}
+}
