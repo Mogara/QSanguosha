@@ -1,0 +1,99 @@
+QProgressBar{
+    color : solid gray;
+    border: 2px solid gray;
+    border-radius: 5px;
+    background: transparent;
+    padding: 0px;
+    text-align: center;
+}
+
+QProgressBar::chunk{
+    background: #B22222;
+}
+
+QTextEdit{
+    border: 1px solid gray;
+    background-color: rgba(0,0,0,80);
+}
+
+QTextEdit[description="true"] {
+    border: 10px;
+    border-image: none;
+    background-color: rgba(255,255,255,255);
+}
+
+QTextEdit#whatsnew{
+	background-image: url(image/system/simpleBg/whatsnew.png);
+}
+
+QLineEdit#chat_edit{
+    background-color: rgba(20,20,20,255);
+    color: white;
+    border: 10px transparent;
+    height: 20px;
+    border-image: url(image/system/border.png)10 10 10 10;
+ }
+
+QStatusBar::item {
+     border: 0px solid grey;
+ }
+ 
+QStatusBar{
+    background-image: url(image/system/skill-dock.png);
+    color:white;
+}
+
+QMenu[private_pile="true"]{
+    background-color: rgba(43,63,53,200);
+    border-radius: 1px;
+    color: white;
+}
+
+QPushButton[private_pile="true"]{
+    background-color: rgba(43,63,53,200);
+    border-radius: 1px;
+    color: white;
+}
+
+QMenu[treasure = true] {
+    background-color: rgba(64, 52, 0, 200);
+    border-radius: 5px;
+    color: white;
+}
+
+QPushButton[treasure = true] {
+    background-color: rgba(64, 52, 0, 200);
+    border-radius: 5px;
+    color: white;
+}
+
+QDialog, QDialog *{
+	background-image: url(image/system/simpleBg/dialog.png);
+}
+
+QPushButton[game_control="true"]{
+    border: 0px solid gray;
+    font: 12px;
+    border-radius: 5px;
+    padding: 6px 12px 6px 12px;
+}
+
+QPushButton#pause{
+    background-image: url(image/system/button/pause.png);
+}
+
+QPushButton#play{
+    background-image: url(image/system/button/play.png);
+}
+
+QPushButton#slow-down{
+    background-image: url(image/system/button/slow-down.png);
+}
+
+QPushButton#speed-up{
+    background-image: url(image/system/button/speed-up.png);
+}
+
+QPushButton#uniform{
+    background-image: url(image/system/button/uniform.png);
+}
