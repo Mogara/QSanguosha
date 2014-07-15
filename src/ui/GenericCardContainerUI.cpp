@@ -407,7 +407,7 @@ void PlayerCardContainer::showPile() {
         const ClientPlayer *player = getPlayer();
         if (!player) return;
         QList<int> card_ids = player->getPile(button->objectName());
-        if (card_ids.isEmpty()) return;
+        if (card_ids.isEmpty() || card_ids.contains(-1)) return;
         RoomSceneInstance->doGongxin(card_ids, false, QList<int>());
     }
 }
