@@ -24,8 +24,6 @@
 #include <QListWidget>
 #include <QTextBrowser>
 #include <QHBoxLayout>
-#include <QFile>
-#include <QTextStream>
 
 AboutUsDialog::AboutUsDialog(QWidget *parent)
     : QDialog(parent)
@@ -52,8 +50,7 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
 
     setLayout(layout);
 
-    QStringList developers = GetConfigFromLuaState(Sanguosha->getLuaState(), "developers").toStringList();
-    developers.prepend("homepage");
+    QStringList developers = GetValueFromLuaState(L, "about_us", "developers").toStringList();
 
     foreach(QString name, developers) {
         QListWidgetItem *item = new QListWidgetItem(Sanguosha->translate(name), list);
@@ -68,19 +65,7 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
 
 void AboutUsDialog::loadContent(int row) {
     QString name = list->item(row)->data(Qt::UserRole).toString();
-    if (name == "homepage") {
-        lua_State *L = Sanguosha->getLuaState();
-        QString page = GetValueFromLuaState(L, "about_us", "homepage").toString();
-        content_box->setHtml(page);
-    }
-    else {
-        QString filename = QString("developers/%1.htm").arg(name);
-        QFile file(filename);
-        if (file.open(QIODevice::ReadOnly)) {
-            QTextStream stream(&file);
-            stream.setCodec("UTF-8");
-            QString content = stream.readAll();
-            content_box->setHtml(content);
-        }
-    }
+    lua_State *L = Sanguosha->getLuaState();
+    QString page = GetValueFromLuaState(L, "about_us", name.toLatin1().constData()).toString();
+    content_box->setHtml(page);
 }

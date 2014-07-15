@@ -22,20 +22,6 @@
 -- and it is a little different from config.ini
 
 config = {
-	developers = {
-		"Yanguam" ,
-		"BeginnerSlob" ,
-		"Fsu0413" ,
-		"hmqgg" ,
-		--"lrl026" ,
-		--"Jia" ,
-		"36Li" ,
-		"Fu Nima" ,
-		--"Z ZH" ,
-		--"82" ,
-		"takashiro" ,
-	} ,
-
 	kingdoms = { "wei", "qun", "shu", "wu", "god" },
 	kingdom_colors = {
 		wei = "#547998",

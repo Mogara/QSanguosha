@@ -117,7 +117,9 @@ end
 
 function HTMLTable.createListingBlock(title, ...)
 	title = HTMLTable.encloseInTagsOfDivClass(title, "title")
-	content = HTMLTable.encloseEachElementInTags({...}, "tt", "pre")
+	local contents = {...}
+	--if type(arg[1]) == "table" then contents = arg[1] end
+	content = HTMLTable.encloseEachElementInTags(contents, "tt", "pre")
 	content = HTMLTable.encloseInTagsOfDivClass(content, "content")
 	return HTMLTable.encloseInTagsOfDivClass(title .. content, "listingblock")
 end
@@ -192,11 +194,11 @@ about_us.homepage = ""
 
 function createHomePage()
 	about_us.homepage = {}
-	table.insert(about_us.homepage, HTMLTable.getFileHead("QSanguosha-Hegemony-V2"))
-	table.insert(about_us.homepage, HTMLTable.encloseInTagsOfDivId(HTMLTable.encloseInTag("QSanguosha-Hegemony-V2", "h1"), "header"))
+	table.insert(about_us.homepage, HTMLTable.getFileHead("QSanguosha-Hegemony"))
+	table.insert(about_us.homepage, HTMLTable.encloseInTagsOfDivId(HTMLTable.encloseInTag("QSanguosha-Hegemony", "h1"), "header"))
 	local sectionbody = {}
 	table.insert(sectionbody, HTMLTable.createListingBlock("<br>简介", 
-		"QSanguosha-Hegemony-V2是一个基于太阳神三国杀V2的开源项目，为了实现游卡官方国战而努力。"))
+		"QSanguosha-Hegemony是一个基于太阳神三国杀V2的开源项目，为了实现游卡官方国战而努力。"))
 	table.insert(sectionbody, HTMLTable.createListingBlock("开发人员", "程序：" .. table.concat(programmers, " "),
 		"AI：" .. table.concat(ai_designers, " "), "美工：" .. table.concat(art_designers, " ")))
 	table.insert(sectionbody, HTMLTable.createListingBlock("特别鸣谢", getQunInfo("太阳神三国杀国战联机群", 
@@ -211,10 +213,10 @@ function createHomePage()
 	about_us.homepage = table.concat(about_us.homepage)
 end
 
-pages = {
+local pages = {
 	{
 		[0] = "Yanguam",
-		"又名啦啦SLG，虽名为拉拉，但是只喜欢男性。奇葩开发者一枚，无资质无实力，高中在读。",
+		"虽名为拉拉，但是只喜欢男性。奇葩开发者一枚，无资质无实力，高中在读。",
 		"用残缺的汉语语法和山寨腔调的汉语发音混迹中文论坛，喜欢伪装成大神出现在各个角落。"
 	},
 	
@@ -222,5 +224,64 @@ pages = {
 		[0] = "BeginnerSlob",
 		"三流程序员，大学狗，一心想要做出自己的东西而加入神杀。",
 		"简单的说就是不拘小节（这根本就是散漫吧啊喂！"
+	},
+	
+	{
+		[0] = "Fsu0413",
+		"喜欢你妹大神的Fsu0413，没事闲的时候愿意写点代码，偶然间发现神杀可以写LUA扩展包而加入神杀LUA组，从0开始学习神杀接口编程。",
+		"目前已经找到工作，驾照也考下来了，可是……不知到时候工作会不会忙……我会尽量抽空为神杀国战更新代码的。"
+	},
+	
+	{
+		[0] = "takashiro",
+		"弃神杀许久后突然又被国战勾起了开杀的欲望的高城君被神杀国战的代码和界面所感染，由Fs君带入Rara团队。",
+		"是一只内心时常骚动但又总是要憋很久才有明着骚的勇气的即将进入研一的新生，希望未来能够成为一名优秀的码农。",
+		"开发群每天都可以很开心地潜水..."
+	},
+	
+	{
+		[0] = "hmqgg",
+		"药不能停的高三党。。一直仰慕各位大神",
+		"ps P站号37492141"
+	},
+	
+	{
+		[0] = "36li",
+		"别拦我，我已经放弃治疗了",
+		"渣美工一枚，没事别找我",
+		"容我打个广告",
+		'<a href="http://tieba.baidu.com/f?ie=utf8&kw=36李&fr=itb_favo&fp=favo">百度36李吧欢迎你'
 	}
 }
+
+sgs.LoadTranslationTable {
+	
+	["homepage"] = "太阳神三国杀·国战",
+	
+	["Yanguam"] = "啦啦SLG",
+	["BeginnerSlob"] = "女王受·虫",
+	["36li"] = "36李"
+}
+	
+
+about_us.developers = {"homepage"}
+
+function createDeveloperPages()
+	for _, t in ipairs(pages) do
+		local page = {}
+		local owner = t[0]
+		table.insert(about_us.developers, owner)
+		table.insert(page, HTMLTable.getFileHead(owner))
+		table.insert(page, HTMLTable.encloseInTagsOfDivId(HTMLTable.encloseInTag(sgs.Sanguosha:translate(owner), "h1"), "header"))
+		local listingblock = HTMLTable.createListingBlock("<br><br><br>" .. HTMLTable.getImg(("./image/system/developers/%s.jpg"):format(owner), nil, owner) .. "<br>简介", table.unpack(t))
+		local sectionbody = HTMLTable.encloseInTagsOfDivClass(listingblock, "sectionbody")
+		table.insert(page, HTMLTable.encloseInTagsOfDivId(sectionbody, "preamble", "content"))
+		table.insert(page, HTMLTable.getFileFoot())
+		about_us[owner] = table.concat(page)
+	end
+end
+
+function createAboutUsPages()
+	createHomePage()
+	createDeveloperPages()
+end

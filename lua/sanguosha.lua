@@ -97,5 +97,5 @@ if not done_loading then
 	done_loading = sgs.QVariant(true)
 	sgs.Sanguosha:setProperty("DoneLoading", done_loading)
 	
-	createHomePage()
+	createAboutUsPages()
 end
