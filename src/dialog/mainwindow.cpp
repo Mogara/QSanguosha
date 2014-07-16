@@ -159,7 +159,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
-    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setMouseTracking(true);
 
@@ -212,46 +212,108 @@ MainWindow::MainWindow(QWidget *parent)
 
     int width = size().width();
 
-    QToolButton *minButton = new QToolButton(this);
-    QToolButton *closeButton= new QToolButton(this);
+    minButton = new QToolButton(this);
+    maxButton = new QToolButton(this);
+    normalButton = new QToolButton(this);
+    closeButton= new QToolButton(this);
     
     QPixmap minPix  = style()->standardPixmap(QStyle::SP_TitleBarMinButton);
+    QPixmap maxPix  = style()->standardPixmap(QStyle::SP_TitleBarMaxButton);
+    QPixmap normalPix  = style()->standardPixmap(QStyle::SP_TitleBarNormalButton);
     QPixmap closePix = style()->standardPixmap(QStyle::SP_TitleBarCloseButton);
     
     minButton->setIcon(minPix);
+    maxButton->setIcon(maxPix);
+    normalButton->setIcon(normalPix);
     closeButton->setIcon(closePix);
     
-    minButton->setGeometry(width - 46, 5, 20, 20);
+    minButton->setGeometry(width - 67, 5, 20, 20);
+    maxButton->setGeometry(width - 46, 5, 20, 20);
+    normalButton->setGeometry(width - 46, 5, 20, 20);
     closeButton->setGeometry(width - 25, 5, 20, 20);
     
     minButton->setToolTip(tr("MinButton"));
     connect(minButton, SIGNAL(clicked()), this, SLOT(showMinimized()));
+    maxButton->setToolTip(tr("MaxButton"));
+    connect(maxButton, SIGNAL(clicked()), this, SLOT(showMaximized()));
+    normalButton->setToolTip(tr("NormalButton"));
+    connect(normalButton, SIGNAL(clicked()), this, SLOT(showNormal()));
     closeButton->setToolTip(tr("CloseButton"));
     connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
-
+    
     minButton->setStyleSheet("background-color:transparent;");
+    maxButton->setStyleSheet("background-color:transparent;");
+    normalButton->setStyleSheet("background-color:transparent;");
     closeButton->setStyleSheet("background-color:transparent;");
+    
+    bool max = windowState() & Qt::WindowMaximized;
+    if (max) {
+        maxButton->setVisible(false);
+        normalButton->setVisible(true);
+    } else {
+        maxButton->setVisible(true);
+        normalButton->setVisible(false);
+    }
 
     systray = NULL;
 }
 
-void MainWindow::mousePressEvent(QMouseEvent *event) {  
-    if (event->button() == Qt::LeftButton) {
-        mouse_press = true;
-        move_point = event->globalPos() - pos();
-        event->accept();
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    if (windowState() & Qt::WindowMaximized)
+        return;
+    bool can_move = true;
+    if (view && view->scene()) {
+        if (view->scene()->inherits("StartScene")) {
+            StartScene *scene = qobject_cast<StartScene *>(view->scene());
+            QPointF pos = view->mapToScene(event->pos());
+            if (scene->itemAt(pos, QTransform()))
+                can_move = false;
+        } else if (view->scene()->inherits("RoomScene")) {
+            RoomScene *scene = qobject_cast<RoomScene *>(view->scene());
+            QPointF pos = view->mapToScene(event->pos());
+            if (scene->itemAt(pos, QTransform()) && scene->itemAt(pos, QTransform())->zValue() > -100000)
+                can_move = false;
+        }
+    }
+    if (can_move) {
+        if (event->button() == Qt::LeftButton) {
+            mouse_press = true;
+            move_point = event->globalPos() - pos();
+            event->accept();
+        }
     }
 }
 
-void MainWindow::mouseMoveEvent(QMouseEvent *event) {
-    if (mouse_press && (event->buttons() && Qt::LeftButton)) {
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    if (windowState() & Qt::WindowMaximized)
+        return;
+    if (mouse_press && (event->buttons() & Qt::LeftButton)) {
         move(event->globalPos() - move_point);
         event->accept();
     }
 }
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *) {
+void MainWindow::mouseReleaseEvent(QMouseEvent *)
+{
     mouse_press = false;
+}
+
+void MainWindow::changeEvent(QEvent *event)
+{
+    if (event->type() == QEvent::WindowStateChange) {
+        if (maxButton && normalButton) {
+            if (windowState() & Qt::WindowMaximized) {
+                maxButton->setVisible(false);
+                normalButton->setVisible(true);
+            } else {
+                maxButton->setVisible(true);
+                normalButton->setVisible(false);
+            }
+        }
+    }
+    QMainWindow::changeEvent(event);
 }
 
 void MainWindow::restoreFromConfig() {

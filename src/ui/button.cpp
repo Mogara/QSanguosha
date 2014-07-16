@@ -66,6 +66,8 @@ void Button::init() {
         title->hide();
     } else
         setFlags(ItemIsFocusable);
+
+    connect(this, SIGNAL(enabledChanged()), this, SLOT(onEnabledChanged()));
 }
 
 void Button::setFontName(const QString &name) {
@@ -270,4 +272,9 @@ void Title::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *
 
     ft.tryParse(val);
     ft.paintText(painter, boundingRect().toRect(), Qt::AlignCenter, text);
+}
+
+void Button::onEnabledChanged()
+{
+    setOpacity(isEnabled() ? 1.0 : 0.2);
 }

@@ -22,9 +22,10 @@
 #define _CHOOSE_GENERAL_BOX_H
 
 #include "carditem.h"
-#include "qsanbutton.h"
 #include "TimedProgressBar.h"
 #include "sprite.h"
+
+class Button;
 
 class GeneralCardItem : public CardItem {
     Q_OBJECT
@@ -78,7 +79,7 @@ private:
     //data index
     static const int S_DATA_INITIAL_HOME_POS = 9527;
 
-    QSanButton *confirm;
+    Button *confirm;
     QGraphicsProxyWidget *progress_bar_item;
     QSanCommandProgressBar *progress_bar;
 

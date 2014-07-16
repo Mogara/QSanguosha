@@ -87,6 +87,10 @@ public:
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
+    void changeEvent(QEvent *event);
+
+    QPoint move_point;
+    bool mouse_press;
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
@@ -102,8 +106,10 @@ private:
     Window *about_window;
     UpdateInfoStruct update_info;
 
-    QPoint move_point;
-    bool mouse_press;
+    QToolButton *minButton;
+    QToolButton *maxButton;
+    QToolButton *normalButton;
+    QToolButton *closeButton;
 
     void restoreFromConfig();
 
