@@ -115,7 +115,6 @@ namespace QSanProtocol {
         S_COMMAND_LOG_SKILL,
         S_COMMAND_UPDATE_CARD,
         S_COMMAND_CARD_LIMITATION,
-        S_COMMAND_DISABLE_SHOW ,
         S_COMMAND_ADD_HISTORY,
         S_COMMAND_SET_EMOTION,
         S_COMMAND_FILL_AMAZING_GRACE,
@@ -133,7 +132,6 @@ namespace QSanProtocol {
         S_COMMAND_UPDATE_HANDCARD_NUM,
         S_COMMAND_UPDATE_STATE_ITEM,
         S_COMMAND_SPEAK,
-        // the following 5 for 1v1 and 3v3, remove them later
         S_COMMAND_ARRANGE_GENERAL,
         S_COMMAND_FILL_GENERAL,
         S_COMMAND_TAKE_GENERAL,
@@ -144,16 +142,13 @@ namespace QSanProtocol {
         S_COMMAND_LUCK_CARD,
         S_COMMAND_VIEW_GENERALS,
         S_COMMAND_SET_DASHBOARD_SHADOW,
-
         S_COMMAND_PRESHOW,
-
         S_COMMAND_TOGGLE_READY,
         S_COMMAND_ADD_ROBOT,
         S_COMMAND_FILL_ROBOTS,
         S_COMMAND_TRUST,
         S_COMMAND_PAUSE,
         S_COMMAND_NETWORK_DELAY_TEST,
-
         S_COMMAND_CHECK_VERSION,
         S_COMMAND_SETUP,
         S_COMMAND_ADD_PLAYER,
@@ -161,7 +156,8 @@ namespace QSanProtocol {
         S_COMMAND_START_IN_X_SECONDS,
         S_COMMAND_ARRANGE_SEATS,
         S_COMMAND_WARN,
-        S_COMMAND_SIGNUP
+        S_COMMAND_SIGNUP,
+        S_COMMAND_DISABLE_SHOW
     };
 
     enum GameEventType {
