@@ -225,7 +225,7 @@ MainWindow::MainWindow(QWidget *parent)
     closeButton->setGeometry(width - 25, 5, 20, 20);
     
     minButton->setToolTip(tr("MinButton"));
-    connect(minButton, SIGNAL(clicked()), this, SLOT(lower()));
+    connect(minButton, SIGNAL(clicked()), this, SLOT(showMinimized()));
     closeButton->setToolTip(tr("CloseButton"));
     connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
 
