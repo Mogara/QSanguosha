@@ -38,8 +38,7 @@ public:
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return pattern.contains("peach") && !player->hasFlag("Global_PreventPeach")
-            && player->getPhase() == Player::NotActive && player->canDiscard(player, "he");
+        return pattern.contains("peach") && !player->hasFlag("Global_PreventPeach") && player->getPhase() == Player::NotActive;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -321,6 +320,7 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const{
         Duel *duel = new Duel(originalCard->getSuit(), originalCard->getNumber());
         duel->addSubcard(originalCard);
+        //duel->setShowSkill("shuangxiong"); // use ShuangxiongViewAsSkill don't cause showing general
         duel->setSkillName("_shuangxiong");
         return duel;
     }
