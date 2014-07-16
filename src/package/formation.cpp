@@ -529,13 +529,15 @@ public:
             return QStringList();
         }
 
-        QList<ServerPlayer *> jiangweis = room->findPlayersBySkillName(objectName());
-        foreach(ServerPlayer *jiangwei, jiangweis) {
-            if (!jiangwei->hasShownSkill(this)) return QStringList();
-            ServerPlayer *current = room->getCurrent();
-            if (current && current->isAlive() && current->getPhase() != Player::NotActive && jiangwei->inFormationRalation(current) && !jiangwei->hasInnateSkill("kanpo")){
-                jiangwei->setMark("tianfu_kanpo", 1);
-                room->attachSkillToPlayer(jiangwei, "kanpo");
+        ServerPlayer *current = room->getCurrent();
+        if (current && current->isAlive() && current->getPhase() != Player::NotActive) {
+            QList<ServerPlayer *> jiangweis = room->findPlayersBySkillName(objectName());
+            foreach(ServerPlayer *jiangwei, jiangweis) {
+                if (!jiangwei->hasShownSkill(this)) return QStringList();
+                if (jiangwei->inFormationRalation(current) && !jiangwei->hasInnateSkill("kanpo")) {
+                    jiangwei->setMark("tianfu_kanpo", 1);
+                    room->attachSkillToPlayer(jiangwei, "kanpo");
+                }
             }
         }
 
