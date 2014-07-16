@@ -158,11 +158,38 @@ public:
     }
 };
 
+ZiliangCard::ZiliangCard(){
+    target_fixed = true;
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
+
+void ZiliangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    source->tag["ziliang"] = subcards.first();
+}
+
+class ZiliangVS : public OneCardViewAsSkill{
+public:
+    ZiliangVS() : OneCardViewAsSkill("ziliang"){
+        response_pattern = "@@ziliang";
+        filter_pattern = ".|.|.|field";
+        expand_pile = "field";
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        ZiliangCard *c = new ZiliangCard;
+        c->addSubcard(originalCard);
+        c->setShowSkill(objectName());
+        return c;
+    }
+};
+
 class Ziliang : public TriggerSkill {
 public:
     Ziliang() : TriggerSkill("ziliang") {
         events << Damaged;
         relate_to_place = "deputy";
+        view_as_skill = new ZiliangVS;
     }
 
     virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
@@ -177,10 +204,10 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const{
         ServerPlayer *player = ask_who;
-        if (room->askForSkillInvoke(player, objectName(), data)){
-            room->broadcastSkillInvoke(objectName());
+        player->tag.remove("ziliang");
+        player->tag["ziliang-aidata"] = data;
+        if (room->askForUseCard(player, "@@ziliang", "@ziliang-give", -1, Card::MethodNone))
             return true;
-        }
 
         return false;
     }
@@ -189,13 +216,10 @@ public:
         ServerPlayer *dengai = ask_who;
         if (!dengai) return false;
 
-        QList<int> ids = dengai->getPile("field");
-        room->fillAG(ids, dengai);
-        int aidelay = Config.AIDelay;
-        Config.AIDelay = 0;
-        int id = room->askForAG(dengai, ids, false, objectName());
-        Config.AIDelay = aidelay;
-        room->clearAG(dengai);
+        bool ok = false;
+        int id = dengai->tag["ziliang"].toInt(&ok);
+
+        if (!ok) return false;
 
         if (player == dengai) {
             LogMessage log;
@@ -1223,6 +1247,7 @@ FormationPackage::FormationPackage()
     liubei->addSkill(new Jizhao);
 
     addMetaObject<HuyuanCard>();
+    addMetaObject<ZiliangCard>();
     addMetaObject<TiaoxinCard>();
     addMetaObject<ShangyiCard>();
     addMetaObject<HeyiSummon>();

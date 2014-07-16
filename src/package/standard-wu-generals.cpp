@@ -151,7 +151,7 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        Card *card = new KurouCard;
+        KurouCard *card = new KurouCard;
         card->setShowSkill(objectName());
         return card;
     }
@@ -1238,7 +1238,7 @@ public:
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
-        ZhijianCard *zhijian_card = new ZhijianCard();
+        ZhijianCard *zhijian_card = new ZhijianCard;
         zhijian_card->addSubcard(originalCard);
         zhijian_card->setShowSkill(objectName());
         return zhijian_card;
