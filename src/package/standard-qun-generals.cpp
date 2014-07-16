@@ -1314,9 +1314,9 @@ HuoshuiCard::HuoshuiCard() {
     target_fixed = true;
 }
 
-class Huoshui : public ZeroCardViewAsSkill {
+class HuoshuiVS : public ZeroCardViewAsSkill {
 public:
-    Huoshui() : ZeroCardViewAsSkill("huoshui") {
+    HuoshuiVS() : ZeroCardViewAsSkill("huoshui") {
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -1324,9 +1324,21 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        Card *card = new HuoshuiCard;
+        HuoshuiCard *card = new HuoshuiCard;
         card->setShowSkill(objectName());
         return card;
+    }
+};
+
+class Huoshui : public TriggerSkill {
+public:
+    Huoshui() : TriggerSkill("huoshui") {
+        events << GeneralShown << GeneralHidden << GeneralRemoved << EventPhaseStart << Death << EventAcquireSkill << EventLoseSkill;
+    }
+
+    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        //todo...
+        return QMap<ServerPlayer *, QStringList>();
     }
 };
 

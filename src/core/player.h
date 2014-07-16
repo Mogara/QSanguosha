@@ -105,6 +105,10 @@ public:
     bool hasShownRole() const;
     void setShownRole(bool shown);
 
+    void setDisableShow(const QString &flags, const QString &reason);
+    void removeDisableShow(const QString &reason);
+    QStringList disableShow(bool head) const;
+
     int getMaxCards() const;
 
     QString getKingdom() const;
@@ -349,6 +353,10 @@ private:
     QString next;
 
     QMap<Card::HandlingMethod, QStringList> card_limitation;
+
+    QStringList disable_show; 
+    // head and/or deputy, reason
+    // example: "hd,Blade"
 
 signals:
     void general_changed();

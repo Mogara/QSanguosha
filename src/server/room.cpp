@@ -1719,8 +1719,7 @@ void Room::removePlayerMark(ServerPlayer *player, const QString &mark, int remov
     setPlayerMark(player, mark, value);
 }
 
-void Room::setPlayerCardLimitation(ServerPlayer *player, const QString &limit_list,
-    const QString &pattern, bool single_turn) {
+void Room::setPlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern, bool single_turn) {
     player->setCardLimitation(limit_list, pattern, single_turn);
 
     Json::Value arg(Json::arrayValue);
@@ -1731,8 +1730,7 @@ void Room::setPlayerCardLimitation(ServerPlayer *player, const QString &limit_li
     doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
 }
 
-void Room::removePlayerCardLimitation(ServerPlayer *player, const QString &limit_list,
-    const QString &pattern) {
+void Room::removePlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern) {
     player->removeCardLimitation(limit_list, pattern);
 
     Json::Value arg(Json::arrayValue);
@@ -1752,6 +1750,28 @@ void Room::clearPlayerCardLimitation(ServerPlayer *player, bool single_turn) {
     arg[2] = Json::Value::null;
     arg[3] = single_turn;
     doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
+}
+
+void Room::setPlayerDisableShow(ServerPlayer *player, const QString &flags, const QString &reason) {
+    player->setDisableShow(flags, reason);
+
+    Json::Value arg(Json::arrayValue);
+    arg[0] = toJsonString(player->objectName());
+    arg[1] = true;
+    arg[2] = toJsonString(flags);
+    arg[3] = toJsonString(reason);
+    doBroadcastNotify(S_COMMAND_DISABLE_SHOW, arg);
+}
+
+void Room::removePlayerDisableShow(ServerPlayer *player, const QString &reason) {
+    player->removeDisableShow(reason);
+
+    Json::Value arg(Json::arrayValue);
+    arg[0] = toJsonString(player->objectName());
+    arg[1] = false;
+    arg[2] = Json::Value::null;
+    arg[3] = toJsonString(reason);
+    doBroadcastNotify(S_COMMAND_DISABLE_SHOW, arg);
 }
 
 void Room::setCardFlag(const Card *card, const QString &flag, ServerPlayer *who) {
