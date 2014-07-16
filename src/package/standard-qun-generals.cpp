@@ -1334,11 +1334,54 @@ class Huoshui : public TriggerSkill {
 public:
     Huoshui() : TriggerSkill("huoshui") {
         events << GeneralShown << GeneralHidden << GeneralRemoved << EventPhaseStart << Death << EventAcquireSkill << EventLoseSkill;
+        view_as_skill = new HuoshuiVS;
+    }
+
+    void doHuoshui(Room *room, ServerPlayer *zoushi, bool set) const{
+        if (set && zoushi->tag["huoshui"].toBool() == false){
+            foreach(ServerPlayer *p, room->getOtherPlayers(zoushi)){
+                room->setPlayerDisableShow(p, "hd", "huoshui");
+            }
+            zoushi->tag["huoshui"] = true;
+        }
+        else if (!set && zoushi->tag["huoshui"].toBool() == true) {
+            foreach(ServerPlayer *p, room->getOtherPlayers(zoushi)){
+                room->removePlayerDisableShow(p, "huoshui");
+            }
+            zoushi->tag["huoshui"] = false;
+        }
     }
 
     virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
-        //todo...
-        return QMap<ServerPlayer *, QStringList>();
+        QMap<ServerPlayer *, QStringList> r;
+        if (player == NULL)
+            return r;
+        if (triggerEvent != Death && !player->isAlive())
+            return r;
+        ServerPlayer *c = room->getCurrent();
+        if (c == NULL || (triggerEvent != EventPhaseStart && c->getPhase() == Player::NotActive) || c != player)
+            return r;
+
+        if ((triggerEvent == GeneralShown || triggerEvent == EventPhaseStart || triggerEvent == EventAcquireSkill) && !player->hasShownSkill(this))
+            return r;
+        if ((triggerEvent == GeneralShown || triggerEvent == GeneralHidden) && (!player->ownSkill(this) || player->inHeadSkills(this) != data.toBool()))
+            return r;
+        if (triggerEvent == GeneralRemoved && data.toString() != "zoushi")
+            return r;
+        if (triggerEvent == EventPhaseStart && !(player->getPhase() == Player::RoundStart || player->getPhase() == Player::NotActive))
+            return r;
+        if (triggerEvent == Death && (data.value<DeathStruct>().who != player || !player->hasShownSkill(this)))
+            return r;
+        if ((triggerEvent == EventAcquireSkill || triggerEvent == EventLoseSkill) && data.toString() != objectName())
+            return r;
+
+        bool set = false;
+        if (triggerEvent == GeneralShown || triggerEvent == EventAcquireSkill || (triggerEvent == EventPhaseStart && player->getPhase() == Player::RoundStart))
+            set = true;
+
+        doHuoshui(room, player, set);
+
+        return r;
     }
 };
 

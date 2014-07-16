@@ -144,7 +144,7 @@ void Player::setDisableShow(const QString &flags, const QString &reason){
 void Player::removeDisableShow(const QString &reason){
     QStringList remove_list;
     foreach(QString dis_str, disable_show){
-        const QString &dis_reason = dis_str.split(',').at(1);
+        QString dis_reason = dis_str.split(',').at(1);
         if (dis_reason == reason)
             remove_list << dis_str;
     }
@@ -404,7 +404,7 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
             return hasSkill(main_skill);
     }
 
-    if (!include_lose && !hasEquipSkill(skill_name) && !getAcquiredSkills().contains(skill_name) && ownSkill(skill_name) && !disableShow(inHeadSkills(skill_name)).isEmpty())
+    if (!include_lose && !hasEquipSkill(skill_name) && !getAcquiredSkills().contains(skill_name) && ownSkill(skill_name) && !hasShownSkill(skill_name) && !disableShow(inHeadSkills(skill_name)).isEmpty())
         return false;
 
     return head_skills.value(skill_name, false)
