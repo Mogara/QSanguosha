@@ -1362,101 +1362,6 @@ sgs.ai_use_priority.EightDiagram = 0.8
 sgs.ai_use_priority.RenwangShield = 0.85
 sgs.ai_use_priority.DefensiveHorse = 2.75
 
-
-function SmartAI:willUseAOE(card)
-	if not card then self.room:writeToConsole(debug.traceback()) return false end
-	local good, bad = 0, 0
-	
-	if self.role == "lord" then ---魏
-		good = good + 2
-	elseif self.role == "loyalist" and card:isKindOf("SavageAssault")  then ---蜀
-		good = good + 1
-	elseif self.role == "rebel" then ---吴
-		good = good - 1
-	elseif self.role == "renegade" and card:isKindOf("ArcheryAttack") then ---群
-		good = good + 1
-	end	
-	
-	local caocao = self.room:findPlayerBySkillName("jianxiong")	
-	if 	caocao and not self:isWeak(caocao) then
-		if self:isFriend(caocao) then 
-		good = good + 1
-		else
-		bad = bad + 1
-		end 
-	end	
-	
-	local menghuo = self.room:findPlayerBySkillName("huoshou")
-	if 	menghuo and card:isKindOf("SavageAssault") then
-		if self:isFriend(menghuo) then 
-		good = good + 1
-		else
-		menghuoAtt = true
-		end 
-	end	
-	
-	local zhurong = self.room:findPlayerBySkillName("juxiang")
-	if 	zhurong and card:isKindOf("SavageAssault") then
-		if self:isFriend(zhurong) then 
-		good = good + 1
-		else
-		bad = bad + 3
-		end 
-	end	
-	
-	local zhangjiao = self.room:findPlayerBySkillName("leiji")
-	if 	zhangjiao and card:isKindOf("ArcheryAttack") and (zhangjiao:getHandcardNum() >2 or zhangjiao:hasArmorEffect("EightDiagram")) then 
-		if self:isFriend(zhangjiao) then 
-		good = good + 1
-		else
-		bad = bad + 1
-		end 
-	end	
-	
-	local willdie = sgs.SPlayerList()
-	for _,player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if self:isWeak(player) then
-			willdie:append(player)
-		end
-	end
-	for _,player in sgs.qlist(willdie) do
-		if player:hasArmorEffect("Vine") 
-			or card:isKindOf("SavageAssault") and player:hasShownSkills("huoshou|juxiang|weimu")	
-			or card:isKindOf("ArcheryAttack")  and (player:hasShownSkill("bazhen") or player:hasArmorEffect("EightDiagram") )then
-			table.removeOne(willdie,player)
-		end
-	end
-	for _,player in sgs.qlist(willdie) do
-		if self:isFriend(player) then
-			bad = bad + 3
-			if getCardsNum("Peach", player, self.player) > 0 then 
-			 bad = bad - 1
-			end
-		else 
-			good = good + 3 
-		end
-	end
-	for _,player in sgs.qlist(willdie) do
-		if menghuoAtt and menghuo:isFriend(player) and self:isEnemy(menghuo) then
-			good = good + 2 
-		end
-	end
-	
-	if self.player:hasSkill("jizhi|suishi") then good = good + 1 end
-	
-	return good > bad
-end
-function SmartAI:useCardArcheryAttack(card, use)
-	if self:willUseAOE(card) then
-		use.card = card
-	end
-end
-function SmartAI:useCardSavageAssault(card, use)
-	if self:willUseAOE(card) then
-		use.card = card
-	end
-end
-
 sgs.dynamic_value.damage_card.ArcheryAttack = true
 sgs.dynamic_value.damage_card.SavageAssault = true
 
@@ -2993,7 +2898,7 @@ function SmartAI:useCardAwaitExhausted(AwaitExhausted, use)
 	use.card = AwaitExhausted
 	return
 end
-sgs.ai_use_priority.AwaitExhausted = 0.2
+sgs.ai_use_priority.AwaitExhausted = 2.8
 sgs.ai_use_value.AwaitExhausted = 5
 sgs.ai_keep_value.AwaitExhausted = 1
 sgs.ai_card_intention.AwaitExhausted = function(self, card, from, tos)

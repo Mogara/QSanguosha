@@ -36,7 +36,14 @@ bool QSanProtocol::Countdown::tryParse(const Json::Value &val) {
     if (!val.isArray())
         return false;
 
-    Json::ArrayIndex offset = val[0].isString() ? 1 : 0;
+    //compatible with old JSON representation of Countdown
+    Json::ArrayIndex offset = 0;
+    if (val[0].isString()) {
+        if (val[0].asString() == "MG_COUNTDOWN")
+            offset = 1;
+        else
+            return false;
+    }
 
     if (val.size() - offset == 2) {
         if (!Utils::isIntArray(val, offset, offset + 1)) return false;
@@ -45,7 +52,7 @@ bool QSanProtocol::Countdown::tryParse(const Json::Value &val) {
         m_type = S_COUNTDOWN_USE_SPECIFIED;
         return true;
     }
-    else if (val.size() - offset == 1) {
+    else if (val.size() - offset == 1 && val[offset].isInt()) {
         CountdownType type = (CountdownType)val[offset].asInt();
         if (type != S_COUNTDOWN_NO_LIMIT && type != S_COUNTDOWN_USE_DEFAULT)
             return false;
