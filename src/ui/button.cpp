@@ -34,7 +34,8 @@ static QRectF CompactButtonRect(0, 0, 189, 46);
 Button::Button(const QString &label, qreal scale, bool compact)
     : label(label), size((compact ? CompactButtonRect.size() : ButtonRect.size()) * scale),
       font_name("wqy-microhei"), font_size(Config.TinyFont.pixelSize()),
-      compact(compact), rotation(NULL), scale(NULL), title(NULL)
+      compact(compact), down(false), mouse_area(Outside),
+      rotation(NULL), scale(NULL), title(NULL)
 {
     init();
 }
@@ -42,12 +43,14 @@ Button::Button(const QString &label, qreal scale, bool compact)
 Button::Button(const QString &label, const QSizeF &size, bool compact)
     : label(label), size(size),
       font_name("wqy-microhei"), font_size(Config.TinyFont.pixelSize()),
-      compact(compact), rotation(NULL), scale(NULL), title(NULL)
+      compact(compact), down(false), mouse_area(Outside),
+      rotation(NULL), scale(NULL), title(NULL)
 {
     init();
 }
 
-void Button::init() {
+void Button::init()
+{
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     setAcceptsHoverEvents(true);
 #else
@@ -64,103 +67,77 @@ void Button::init() {
         title = new Title(this, label, font_name, font_size);
         title->setPos(8, boundingRect().height() - title->boundingRect().height() - 8);
         title->hide();
-    } else
+    } else {
         setFlags(ItemIsFocusable);
+    }
 
     connect(this, SIGNAL(enabledChanged()), this, SLOT(onEnabledChanged()));
 }
 
-void Button::setFontName(const QString &name) {
+void Button::setFontName(const QString &name)
+{
     this->font_name = name;
 }
 
-void Button::setFontSize(const int &size) {
+void Button::setFontSize(const int &size)
+{
     this->font_size = size;
 }
 
-void Button::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-    if (compact) return;
-    qreal width = boundingRect().width(), height = boundingRect().height();
-    QVector3D axis(0, 0, 0), origin(width / 2.0, height / 2.0, 0);
-    qreal angle = 0;
+void Button::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
     QPointF pos = event->pos();
-    QList<QGraphicsTransform *> transformations;
-
-    if (pos.x() > width - 30) {
-        origin.setX(0);
-        axis.setY(1);
-        angle = 15;
-    } else if (pos.x() < 30) {
-        origin.setX(width);
-        axis.setY(1);
-        angle = -15;
-    } else if (pos.y() < 30) {
-        origin.setY(height);
-        axis.setX(1);
-        angle = 15;
-    } else if (pos.y() > height - 30) {
-        origin.setY(0);
-        axis.setX(1);
-        angle = -15;
-    } else {
-        scale = new QGraphicsScale;
-        QPropertyAnimation *xScale_animation = new QPropertyAnimation(scale, "xScale", this);
-        xScale_animation->setDuration(100);
-        xScale_animation->setStartValue(1);
-        xScale_animation->setEndValue(0.95);
-        QPropertyAnimation *yScale_animation = new QPropertyAnimation(scale, "yScale", this);
-        yScale_animation->setDuration(100);
-        yScale_animation->setStartValue(1);
-        yScale_animation->setEndValue(0.95);
-
-        scale->setOrigin(QVector3D(width / 2.0, height / 2.0, 0));
-        transformations << scale;
-
-        setTransformations(transformations);
-        xScale_animation->start(QAbstractAnimation::DeleteWhenStopped);
-        yScale_animation->start(QAbstractAnimation::DeleteWhenStopped);
-        return;
+    bool inside = boundingRect().contains(pos);
+    if (down && !inside) {
+        down = false;
+        reset();
+    } else if(inside && boundingRect().contains(event->buttonDownPos(Qt::LeftButton))) {
+        down = true;
+        if (mouse_area != getMouseArea(pos))
+            doTransform(pos);
     }
-
-    rotation = new QGraphicsRotation;
-    QPropertyAnimation *rotation_animation = new QPropertyAnimation(rotation, "angle", this);
-    rotation_animation->setDuration(100);
-    rotation_animation->setStartValue(0);
-    rotation_animation->setEndValue(angle);
-
-    rotation->setAxis(axis);
-    rotation->setOrigin(origin);
-    transformations << rotation;
-
-    setTransformations(transformations);
-    rotation_animation->start(QAbstractAnimation::DeleteWhenStopped);
+    mouse_area = getMouseArea(pos);
+    QGraphicsObject::mouseMoveEvent(event);
 }
 
-void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
-    if (!compact) reset();
-    if (boundingRect().contains(event->pos()))
+void Button::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    down = true;
+    doTransform(event->pos());
+}
+
+void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
+{
+    reset();
+    if (down) {
+        down = false;
         emit clicked();
+    }
 }
 
-void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
+void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *)
+{
     if (compact)
         setFocus(Qt::MouseFocusReason);
     else
         title->show();
 }
 
-void Button::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
+void Button::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
+{
     if (compact)
         clearFocus();
     else
         title->hide();
 }
 
-QRectF Button::boundingRect() const{
+QRectF Button::boundingRect() const
+{
     return QRectF(QPointF(), size);
 }
 
-static QColor ReverseColor(const QColor &color) {
+static QColor ReverseColor(const QColor &color)
+{
     int r = 0xFF - color.red();
     int g = 0xFF - color.green();
     int b = 0xFF - color.blue();
@@ -168,7 +145,8 @@ static QColor ReverseColor(const QColor &color) {
     return QColor::fromRgb(r, g, b);
 }
 
-void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
+void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+{
     painter->setRenderHint(QPainter::HighQualityAntialiasing);
     QRectF rect = boundingRect();
 
@@ -217,8 +195,84 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
         painter->drawPixmap(rect.toRect(), icon);
 }
 
-void Button::reset() {
-    QList<QGraphicsTransform *> transformations;
+void Button::doTransform(const QPointF &pos)
+{
+    if (compact) return;
+    qreal width = boundingRect().width();
+    qreal height = boundingRect().height();
+    QVector3D axis(0, 0, 0);
+    QVector3D origin(width / 2.0, height / 2.0, 0);
+    qreal angle = 0;
+
+    QList<QGraphicsTransform *> transforms;
+
+    switch (getMouseArea(pos)) {
+    case Right: {
+        origin.setX(0);
+        axis.setY(1);
+        angle = 15;
+        break;
+    }
+    case Left: {
+        origin.setX(width);
+        axis.setY(1);
+        angle = -15;
+        break;
+    }
+    case Top: {
+        origin.setY(height);
+        axis.setX(1);
+        angle = 15;
+        break;
+    }
+    case Bottom: {
+        origin.setY(0);
+        axis.setX(1);
+        angle = -15;
+        break;
+    }
+    default: {
+        scale = new QGraphicsScale;
+        QPropertyAnimation *xScale_animation = new QPropertyAnimation(scale, "xScale", this);
+        xScale_animation->setDuration(100);
+        xScale_animation->setStartValue(1);
+        xScale_animation->setEndValue(0.95);
+        QPropertyAnimation *yScale_animation = new QPropertyAnimation(scale, "yScale", this);
+        yScale_animation->setDuration(100);
+        yScale_animation->setStartValue(1);
+        yScale_animation->setEndValue(0.95);
+
+        scale->setOrigin(QVector3D(width / 2.0, height / 2.0, 0));
+
+        transforms << scale;
+
+        setTransformations(transforms);
+        xScale_animation->start(QAbstractAnimation::DeleteWhenStopped);
+        yScale_animation->start(QAbstractAnimation::DeleteWhenStopped);
+        return;
+    }
+    }
+
+    rotation = new QGraphicsRotation;
+    QPropertyAnimation *rotation_animation = new QPropertyAnimation(rotation, "angle", this);
+    rotation_animation->setDuration(100);
+    rotation_animation->setStartValue(0);
+    rotation_animation->setEndValue(angle);
+
+    rotation->setAxis(axis);
+    rotation->setOrigin(origin);
+
+    transforms << rotation;
+
+    setTransformations(transforms);
+    rotation_animation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void Button::reset()
+{
+    if (compact) return;
+
+    QList<QGraphicsTransform *> transforms;
 
     if (scale) {
         QPropertyAnimation *xScale_animation = new QPropertyAnimation(scale, "xScale", this);
@@ -228,9 +282,9 @@ void Button::reset() {
         yScale_animation->setDuration(100);
         yScale_animation->setEndValue(1);
 
-        transformations << scale;
+        transforms << scale;
 
-        setTransformations(transformations);
+        setTransformations(transforms);
         xScale_animation->start(QAbstractAnimation::DeleteWhenStopped);
         yScale_animation->start(QAbstractAnimation::DeleteWhenStopped);
     }
@@ -240,11 +294,28 @@ void Button::reset() {
         rotation_animation->setDuration(100);
         rotation_animation->setEndValue(0);
 
-        transformations << rotation;
+        transforms << rotation;
 
-        setTransformations(transformations);
+        setTransformations(transforms);
         rotation_animation->start(QAbstractAnimation::DeleteWhenStopped);
     }
+}
+
+Button::MouseArea Button::getMouseArea(const QPointF &pos) const
+{
+    QRectF rect = boundingRect();
+    if (!boundingRect().contains(pos))
+        return Outside;
+    else if (pos.x() > rect.width() - 30)
+        return Right;
+    else if (pos.x() < 30)
+        return Left;
+    else if (pos.y() < 30)
+        return Top;
+    else if (pos.y() > rect.height() - 30)
+        return Bottom;
+
+    return Center;
 }
 
 Title::Title(QGraphicsObject *parent, const QString &text, const QString &font_name, const int &font_size)
@@ -252,11 +323,13 @@ Title::Title(QGraphicsObject *parent, const QString &text, const QString &font_n
 {
 }
 
-QRectF Title::boundingRect() const {
+QRectF Title::boundingRect() const
+{
     return QRectF(0, 0, font_size * text.length(), font_size + 1);
 }
 
-void Title::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
+void Title::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+{
     QColor textColor = Qt::white;
     using namespace QSanProtocol::Utils;
     IQSanComponentSkin::QSanSimpleTextFont ft;

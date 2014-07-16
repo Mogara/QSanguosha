@@ -58,6 +58,7 @@ public:
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -65,11 +66,23 @@ protected:
 
 private:
 
+    enum MouseArea {
+        Right,
+        Left,
+        Top,
+        Bottom,
+        Center,
+
+        Outside
+    };
+
     QString label;
     QSizeF size;
     QString font_name;
     int font_size;
     bool compact;
+    bool down;
+    MouseArea mouse_area;
 
     QGraphicsRotation *rotation;
     QGraphicsScale *scale;
@@ -78,7 +91,9 @@ private:
     QPixmap icon;
 
     void init();
+    void doTransform(const QPointF &pos);
     void reset();
+    MouseArea getMouseArea(const QPointF &pos) const;
 
 signals:
     void clicked();
