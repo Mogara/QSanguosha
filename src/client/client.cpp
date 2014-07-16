@@ -87,6 +87,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_callbacks[S_COMMAND_ANIMATE] = &Client::animate;
     m_callbacks[S_COMMAND_FIXED_DISTANCE] = &Client::setFixedDistance;
     m_callbacks[S_COMMAND_CARD_LIMITATION] = &Client::cardLimitation;
+    m_callbacks[S_COMMAND_DISABLE_SHOW] = &Client::disableShow;
     m_callbacks[S_COMMAND_NULLIFICATION_ASKED] = &Client::setNullification;
     m_callbacks[S_COMMAND_ENABLE_SURRENDER] = &Client::enableSurrender;
     m_callbacks[S_COMMAND_EXCHANGE_KNOWN_CARDS] = &Client::exchangeKnownCards;
@@ -700,6 +701,22 @@ void Client::cardLimitation(const Json::Value &limit) {
         else
             Self->removeCardLimitation(limit_list, pattern);
     }
+}
+
+void Client::disableShow(const Json::Value &args) {
+    if (!args.isArray() || args.size() != 4) return;
+
+    ClientPlayer *p = getPlayer(toQString(args[0]));
+    bool set = args[1].asBool();
+    QString reason = toQString(args[3]);
+    if (set){
+        QString flags = toQString(args[2]);
+        p->setDisableShow(flags, reason);
+    }
+    else
+        p->removeDisableShow(reason);
+
+    //emit disableshow_changed();  //for UI to update the RoomScene
 }
 
 void Client::setNullification(const Json::Value &str) {

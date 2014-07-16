@@ -88,11 +88,11 @@ public:
     void setPlayerMark(ServerPlayer *player, const QString &mark, int value);
     void addPlayerMark(ServerPlayer *player, const QString &mark, int add_num = 1);
     void removePlayerMark(ServerPlayer *player, const QString &mark, int remove_num = 1);
-    void setPlayerCardLimitation(ServerPlayer *player, const QString &limit_list,
-        const QString &pattern, bool single_turn);
-    void removePlayerCardLimitation(ServerPlayer *player, const QString &limit_list,
-        const QString &pattern);
+    void setPlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern, bool single_turn);
+    void removePlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern);
     void clearPlayerCardLimitation(ServerPlayer *player, bool single_turn);
+    void setPlayerDisableShow(ServerPlayer *player, const QString &flags, const QString &reason);
+    void removePlayerDisableShow(ServerPlayer *player, const QString &reason);
     void setCardFlag(const Card *card, const QString &flag, ServerPlayer *who = NULL);
     void setCardFlag(int card_id, const QString &flag, ServerPlayer *who = NULL);
     void clearCardFlag(const Card *card, ServerPlayer *who = NULL);
@@ -112,7 +112,7 @@ public:
     QList<int> getNCards(int n, bool update_pile_number = true);
     ServerPlayer *getLord(const QString &kingdom) const;
     void askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, GuanxingType guanxing_type = GuanxingBothSides);
-    int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids = QList<int>(), const QString &skill_name = "gongxin");
+    int doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> enabled_ids = QList<int>(), const QString &skill_name = "shangyi");
     int drawCard();
     void fillAG(const QList<int> &card_ids, ServerPlayer *who = NULL, const QList<int> &disabled_ids = QList<int>());
     void takeAG(ServerPlayer *player, int card_id, bool move_cards = true);

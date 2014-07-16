@@ -137,6 +137,7 @@ public:
     void skillInvoked(const Json::Value &invoke_str);
     void animate(const Json::Value &animate_str);
     void cardLimitation(const Json::Value &limit);
+    void disableShow(const Json::Value &args);
     void setNullification(const Json::Value &str);
     void enableSurrender(const Json::Value &enabled);
     void exchangeKnownCards(const Json::Value &players);

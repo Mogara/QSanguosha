@@ -127,6 +127,49 @@ void Player::setSeat(int seat) {
     this->seat = seat;
 }
 
+void Player::setDisableShow(const QString &flags, const QString &reason){
+    if (flags.contains('h')){
+        if (disableShow(true).contains(reason))
+            return;
+    }
+    if (flags.contains('d')){
+        if (disableShow(false).contains(reason))
+            return;
+    }
+
+    QString dis_str = flags + ',' + reason;
+    disable_show << dis_str;
+}
+
+void Player::removeDisableShow(const QString &reason){
+    QStringList remove_list;
+    foreach(QString dis_str, disable_show){
+        const QString &dis_reason = dis_str.split(',').at(1);
+        if (dis_reason == reason)
+            remove_list << dis_str;
+    }
+
+    foreach(QString to_remove, remove_list){
+        disable_show.removeOne(to_remove);
+    }
+}
+
+QStringList Player::disableShow(bool head) const{
+    QChar head_flag = 'h';
+    if (!head)
+        head_flag = 'd';
+
+    QStringList r;
+    foreach(QString dis_str, disable_show){
+        QStringList dis_list = dis_str.split(',');
+        if (dis_list.at(0).contains(head_flag))
+            r << dis_list.at(1);
+    }
+
+    return r;
+}
+
+
 bool Player::isAdjacentTo(const Player *another) const{
     int alive_length = 1 + getAliveSiblings().length();
     return qAbs(seat - another->seat) == 1
@@ -356,29 +399,14 @@ bool Player::hasSkill(const QString &skill_name, bool include_lose) const{
         return false;
 
     if (!skill->isVisible()){
-        const Skill *skill = Sanguosha->getMainSkill(skill_name);
-        if (skill != NULL)
-            return hasSkill(skill);
+        const Skill *main_skill = Sanguosha->getMainSkill(skill_name);
+        if (main_skill != NULL)
+            return hasSkill(main_skill);
     }
 
-    if (!include_lose) {
-        if (!hasEquipSkill(skill_name)) {
-            if (phase == Player::NotActive) {
-                const Player *current = NULL;
-                foreach(const Player *p, getAliveSiblings()) {
-                    if (p->getPhase() != Player::NotActive) {
-                        current = p;
-                        break;
-                    }
-                }
-                if (current && current->hasShownSkill("huoshui") && !(skill && (skill->isAttachedLordSkill() || hasShownSkill(skill))))
-                    return false;
+    if (!include_lose && !hasEquipSkill(skill_name) && !getAcquiredSkills().contains(skill_name) && ownSkill(skill_name) && !disableShow(inHeadSkills(skill_name)).isEmpty())
+        return false;
 
-            }
-            if (getMark("@blade") > 0 && !(skill && (skill->isAttachedLordSkill() || hasShownSkill(skill))))
-                return false;
-        }
-    }
     return head_skills.value(skill_name, false)
         || deputy_skills.value(skill_name, false)
         || head_acquired_skills.contains(skill_name)
@@ -1165,6 +1193,9 @@ QList<const Player *> Player::getAliveSiblings() const{
 bool Player::hasShownSkill(const Skill *skill) const{
     if (skill == NULL)
         return false;
+
+    if (head_acquired_skills.contains(skill->objectName()) || deputy_acquired_skills.contains(skill->objectName()))
+        return true;
 
     if (skill->inherits("ArmorSkill") || skill->inherits("WeaponSkill"))
         return true;
