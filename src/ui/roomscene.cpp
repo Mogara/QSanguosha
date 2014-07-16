@@ -2876,19 +2876,27 @@ void RoomScene::saveReplayRecord(const bool auto_save, const bool network_only) 
         return;
     }
 
+    QString location = Config.value("LastReplayDir").toString();
+    if (location.isEmpty()) {
+        #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+            location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+        #else
+            location = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+        #endif
+    }
 
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QString location = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-#else
-    QString location = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-#endif
     QString filename = QFileDialog::getSaveFileName(main_window,
         tr("Save replay record"),
         location,
         tr("QSanguosha Replay File(*.qsgs);; Image replay file (*.png)"));
 
-    if (!filename.isEmpty()) ClientInstance->save(filename);
+    if (!filename.isEmpty()) {
+        ClientInstance->save(filename);
+
+        QFileInfo file_info(filename);
+        last_dir = file_info.absoluteDir().path();
+        Config.setValue("LastReplayDir", last_dir);
+    }
 }
 
 ScriptExecutor::ScriptExecutor(QWidget *parent)
