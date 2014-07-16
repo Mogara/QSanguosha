@@ -25,6 +25,7 @@
 #include "protocol.h"
 #include "choosegeneraldialog.h"
 #include "banpair.h"
+#include "button.h"
 
 #include <QApplication>
 
@@ -103,8 +104,9 @@ ChooseGeneralBox::ChooseGeneralBox()
 {
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
-    confirm = new QSanButton("choose-general-box", "confirm", this);
+    confirm = new Button(tr("confirm"), 0.6, true);
     confirm->setEnabled(ClientInstance->getReplayer());
+    confirm->setParentItem(this);
     connect(confirm, SIGNAL(clicked()), this, SLOT(reply()));
     progress_bar = NULL;
     animations = new EffectAnimation;

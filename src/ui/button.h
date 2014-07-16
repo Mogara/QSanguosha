@@ -82,6 +82,10 @@ private:
 
 signals:
     void clicked();
+
+private slots:
+    void onEnabledChanged();
+
 };
 
 #endif
