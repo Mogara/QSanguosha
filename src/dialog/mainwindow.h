@@ -88,9 +88,17 @@ public:
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void changeEvent(QEvent *event);
+    void resizeEvent(QResizeEvent *event);
+    void repaintButtons();
 
-    QPoint move_point;
-    bool mouse_press;
+    bool isLeftPressDown;
+    QPoint movePosition;
+
+    static const int S_PADDING = 2;
+    enum Direction { Up, Down, Left, Right, LeftTop, LeftBottom, RightTop, RightBottom, None = -1 };
+
+    bool isZoomReady;
+    Direction dir;
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
@@ -112,6 +120,7 @@ private:
     QToolButton *closeButton;
 
     void restoreFromConfig();
+    void region(const QPoint &cursorGlobalPoint);
 
 public slots:
     void startConnection();

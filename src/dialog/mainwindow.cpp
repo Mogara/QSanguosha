@@ -111,10 +111,6 @@ public:
         if (main_window)
             main_window->setBackgroundBrush(true);
     }
-
-private:
-    bool mouse_press;
-    QPoint move_point;
 };
 
 #ifdef AUDIO_SUPPORT
@@ -162,6 +158,8 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setMouseTracking(true);
+    setMinimumWidth(800);
+    setMinimumHeight(580);
 
     UpdateCheckerThread *thread = new UpdateCheckerThread;
     connect(thread, SIGNAL(storeKeyAndValue(const QString &, const QString &)), this, SLOT(storeKeyAndValue(const QString &, const QString &)));
@@ -210,8 +208,6 @@ MainWindow::MainWindow(QWidget *parent)
     addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);
 
-    int width = size().width();
-
     minButton = new QToolButton(this);
     maxButton = new QToolButton(this);
     normalButton = new QToolButton(this);
@@ -226,12 +222,7 @@ MainWindow::MainWindow(QWidget *parent)
     maxButton->setIcon(maxPix);
     normalButton->setIcon(normalPix);
     closeButton->setIcon(closePix);
-    
-    minButton->setGeometry(width - 67, 5, 20, 20);
-    maxButton->setGeometry(width - 46, 5, 20, 20);
-    normalButton->setGeometry(width - 46, 5, 20, 20);
-    closeButton->setGeometry(width - 25, 5, 20, 20);
-    
+
     minButton->setToolTip(tr("MinButton"));
     connect(minButton, SIGNAL(clicked()), this, SLOT(showMinimized()));
     maxButton->setToolTip(tr("MaxButton"));
@@ -240,20 +231,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(normalButton, SIGNAL(clicked()), this, SLOT(showNormal()));
     closeButton->setToolTip(tr("CloseButton"));
     connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
-    
+
     minButton->setStyleSheet("background-color:transparent;");
     maxButton->setStyleSheet("background-color:transparent;");
     normalButton->setStyleSheet("background-color:transparent;");
     closeButton->setStyleSheet("background-color:transparent;");
     
-    bool max = windowState() & Qt::WindowMaximized;
-    if (max) {
-        maxButton->setVisible(false);
-        normalButton->setVisible(true);
-    } else {
-        maxButton->setVisible(true);
-        normalButton->setVisible(false);
-    }
+    repaintButtons();
 
     systray = NULL;
 }
@@ -262,25 +246,33 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if (windowState() & Qt::WindowMaximized)
         return;
-    bool can_move = true;
-    if (view && view->scene()) {
-        if (view->scene()->inherits("StartScene")) {
-            StartScene *scene = qobject_cast<StartScene *>(view->scene());
-            QPointF pos = view->mapToScene(event->pos());
-            if (scene->itemAt(pos, QTransform()))
-                can_move = false;
-        } else if (view->scene()->inherits("RoomScene")) {
-            RoomScene *scene = qobject_cast<RoomScene *>(view->scene());
-            QPointF pos = view->mapToScene(event->pos());
-            if (scene->itemAt(pos, QTransform()) && scene->itemAt(pos, QTransform())->zValue() > -100000)
-                can_move = false;
-        }
-    }
-    if (can_move) {
-        if (event->button() == Qt::LeftButton) {
-            mouse_press = true;
-            move_point = event->globalPos() - pos();
-            event->accept();
+    if (event->button() == Qt::LeftButton) {
+        if (isZoomReady) {
+            isLeftPressDown = true;
+            if (dir != None) {
+                releaseMouse();
+                setCursor(QCursor(Qt::ArrowCursor));
+            }
+        } else {
+            bool can_move = true;
+            if (view && view->scene()) {
+                if (view->scene()->inherits("StartScene")) {
+                    StartScene *scene = qobject_cast<StartScene *>(view->scene());
+                    QPointF pos = view->mapToScene(event->pos());
+                    if (scene->itemAt(pos, QTransform()))
+                        can_move = false;
+                } else if (view->scene()->inherits("RoomScene")) {
+                    RoomScene *scene = qobject_cast<RoomScene *>(view->scene());
+                    QPointF pos = view->mapToScene(event->pos());
+                    if (scene->itemAt(pos, QTransform()) && scene->itemAt(pos, QTransform())->zValue() > -100000)
+                        can_move = false;
+                }
+            }
+            if (can_move) {
+                isLeftPressDown = true;
+                movePosition = event->globalPos() - frameGeometry().topLeft();
+                event->accept();
+            }
         }
     }
 }
@@ -289,31 +281,88 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     if (windowState() & Qt::WindowMaximized)
         return;
-    if (mouse_press && (event->buttons() & Qt::LeftButton)) {
-        move(event->globalPos() - move_point);
+    QPoint gloPoint = event->globalPos();
+    if (isZoomReady && isLeftPressDown) {
+        QRect rect = this->rect();
+        QPoint tl = mapToGlobal(rect.topLeft());
+        QPoint rb = mapToGlobal(rect.bottomRight());
+
+        QRect rMove(tl, rb);
+
+        switch (dir) {
+        case Left:
+            if (rb.x() - gloPoint.x() <= minimumWidth())
+                rMove.setX(tl.x());
+            else
+                rMove.setX(gloPoint.x());
+            break;
+        case Right:
+            rMove.setWidth(gloPoint.x() - tl.x());
+            break;
+        case Up:
+            if (rb.y() - gloPoint.y() <= minimumHeight())
+                rMove.setY(tl.y());
+            else
+                rMove.setY(gloPoint.y());
+            break;
+        case Down:
+            rMove.setHeight(gloPoint.y() - tl.y());
+            break;
+        case LeftTop:
+            if (rb.x() - gloPoint.x() <= minimumWidth())
+                rMove.setX(tl.x());
+            else
+                rMove.setX(gloPoint.x());
+            if (rb.y() - gloPoint.y() <= minimumHeight())
+                rMove.setY(tl.y());
+            else
+                rMove.setY(gloPoint.y());
+            break;
+        case RightTop:
+            rMove.setWidth(gloPoint.x() - tl.x());
+            rMove.setY(gloPoint.y());
+            break;
+        case LeftBottom:
+            rMove.setX(gloPoint.x());
+            rMove.setHeight(gloPoint.y() - tl.y());
+            break;
+        case RightBottom:
+            rMove.setWidth(gloPoint.x() - tl.x());
+            rMove.setHeight(gloPoint.y() - tl.y());
+            break;
+        default:
+            break;
+        }
+        setGeometry(rMove);
+    } else if (isLeftPressDown && (event->buttons() & Qt::LeftButton)) {
+        move(event->globalPos() - movePosition);
         event->accept();
-    }
+    } else if (!isLeftPressDown)
+        region(gloPoint);
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *)
 {
-    mouse_press = false;
+    isLeftPressDown = false;
+    if (dir != None) {
+        releaseMouse();
+        setCursor(QCursor(Qt::ArrowCursor));
+    }
 }
 
 void MainWindow::changeEvent(QEvent *event)
 {
-    if (event->type() == QEvent::WindowStateChange) {
-        if (maxButton && normalButton) {
-            if (windowState() & Qt::WindowMaximized) {
-                maxButton->setVisible(false);
-                normalButton->setVisible(true);
-            } else {
-                maxButton->setVisible(true);
-                normalButton->setVisible(false);
-            }
-        }
-    }
+    if (event->type() == QEvent::WindowStateChange)
+        if (maxButton && normalButton)
+            repaintButtons();
     QMainWindow::changeEvent(event);
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    if (maxButton && normalButton)
+        repaintButtons();
+    QMainWindow::resizeEvent(event);
 }
 
 void MainWindow::restoreFromConfig() {
@@ -328,6 +377,67 @@ void MainWindow::restoreFromConfig() {
     ui->actionEnable_Hotkey->setChecked(Config.EnableHotKey);
     ui->actionNever_nullify_my_trick->setChecked(Config.NeverNullifyMyTrick);
     ui->actionNever_nullify_my_trick->setEnabled(false);
+}
+
+void MainWindow::region(const QPoint &cursorGlobalPoint)
+{
+    QRect rect = this->rect();
+    QPoint tl = mapToGlobal(rect.topLeft());
+    QPoint rb = mapToGlobal(rect.bottomRight());
+
+    int x = cursorGlobalPoint.x();
+    int y = cursorGlobalPoint.y();
+
+    if (tl.x() + S_PADDING >= x && tl.x() <= x && tl.y() + S_PADDING >= y && tl.y() <= y) {
+        dir = LeftTop;
+        setCursor(QCursor(Qt::SizeFDiagCursor));
+    } else if (x >= rb.x() - S_PADDING && x <= rb.x() && y >= rb.y() - S_PADDING && y <= rb.y()) {
+        dir = RightBottom;
+        setCursor(QCursor(Qt::SizeFDiagCursor));
+    } else if (x <= tl.x() + S_PADDING && x >= tl.x() && y >= rb.y() - S_PADDING && y <= rb.y()) {
+        dir = LeftBottom;
+        setCursor(QCursor(Qt::SizeBDiagCursor));
+    } else if (x <= rb.x() && x >= rb.x() - S_PADDING && y >= tl.y() && y <= tl.y() + S_PADDING) {
+        dir = RightTop;
+        setCursor(QCursor(Qt::SizeBDiagCursor));
+    } else if (x <= tl.x() + S_PADDING && x >= tl.x()) {
+        dir = Left;
+        setCursor(QCursor(Qt::SizeHorCursor));
+    } else if (x <= rb.x() && x >= rb.x() - S_PADDING) {
+        dir = Right;
+        setCursor(QCursor(Qt::SizeHorCursor));
+    } else if (y >= tl.y() && y <= tl.y() + S_PADDING) {
+        dir = Up;
+        setCursor(QCursor(Qt::SizeVerCursor));
+    } else if (y <= rb.y() && y >= rb.y() - S_PADDING) {
+        dir = Down;
+        setCursor(QCursor(Qt::SizeVerCursor));
+    } else {
+        dir = None;
+        setCursor(QCursor(Qt::ArrowCursor));
+    }
+    if (dir != None)
+        isZoomReady = true;
+    else
+        isZoomReady = false;
+}
+
+void MainWindow::repaintButtons()
+{
+    int width = this->width();
+    minButton->setGeometry(width - 67, 5, 20, 20);
+    maxButton->setGeometry(width - 46, 5, 20, 20);
+    normalButton->setGeometry(width - 46, 5, 20, 20);
+    closeButton->setGeometry(width - 25, 5, 20, 20);
+    
+    bool max = windowState() & Qt::WindowMaximized;
+    if (max) {
+        maxButton->setVisible(false);
+        normalButton->setVisible(true);
+    } else {
+        maxButton->setVisible(true);
+        normalButton->setVisible(false);
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent *) {
