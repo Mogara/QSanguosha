@@ -30,8 +30,7 @@ class GeneralCardItem : public CardItem {
     Q_OBJECT
 
 public:
-    GeneralCardItem(const QString &general_name);
-
+    friend class ChooseGeneralBox;
     void showCompanion();
     void hideCompanion();
 
@@ -42,6 +41,8 @@ protected:
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
+    GeneralCardItem(const QString &general_name);
+
     bool has_companion;
 };
 
