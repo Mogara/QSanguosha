@@ -1401,17 +1401,41 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
         thread->trigger(ChoiceMade, this, player, decisionData);
 
         if (method == Card::MethodUse) {
-            CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(), QString(), card->getSkillName(), QString());
-            moveCardTo(card, NULL, Player::PlaceTable, reason, true);
+            QList<int> card_ids;
+            if (card->isVirtualCard())
+                card_ids = card->getSubcards();
+            else
+                card_ids << card->getEffectiveId();
+            if (!card_ids.isEmpty()) {
+                CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(), QString(), card->getSkillName(), QString());
+                QList<CardsMoveStruct> moves;
+                foreach (int id, card_ids) {
+                    CardsMoveStruct move(id, NULL, Player::PlaceTable, reason);
+                    moves.append(move);
+                }
+                moveCardsAtomic(moves, true);
+            }
         }
         else if (method == Card::MethodDiscard) {
             CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName());
             moveCardTo(card, NULL, Player::DiscardPile, reason, pattern != "." && pattern != "..");
         }
         else if (method != Card::MethodNone && !isRetrial) {
-            CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->objectName());
-            reason.m_skillName = card->getSkillName();
-            moveCardTo(card, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
+            QList<int> card_ids;
+            if (card->isVirtualCard())
+                card_ids = card->getSubcards();
+            else
+                card_ids << card->getEffectiveId();
+            if (!card_ids.isEmpty()) {
+                CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->objectName());
+                reason.m_skillName = card->getSkillName();
+                QList<CardsMoveStruct> moves;
+                foreach (int id, card_ids) {
+                    CardsMoveStruct move(id, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
+                    moves.append(move);
+                }
+                moveCardsAtomic(moves, true);
+            }
         }
 
         if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {

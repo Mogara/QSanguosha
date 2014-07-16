@@ -187,7 +187,7 @@ bool Skill::relateToPlace(bool head) const{
 }
 
 ViewAsSkill::ViewAsSkill(const QString &name)
-    : Skill(name), response_pattern(QString())
+    : Skill(name), response_pattern(QString()), expand_pile(QString())
 {
 }
 

@@ -701,8 +701,10 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
         CardMoveReason reason(CardMoveReason::S_REASON_USE, player->objectName(), QString(), card_use.card->getSkillName(), QString());
         if (card_use.to.size() == 1)
             reason.m_targetId = card_use.to.first()->objectName();
-        CardsMoveStruct move(used_cards, NULL, Player::PlaceTable, reason);
-        moves.append(move);
+        foreach (int id, used_cards) {
+            CardsMoveStruct move(id, NULL, Player::PlaceTable, reason);
+            moves.append(move);
+        }
         room->moveCardsAtomic(moves, true);
     }
     else if (card_use.card->willThrow()) {

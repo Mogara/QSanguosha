@@ -93,8 +93,11 @@ public:
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
     static const ViewAsSkill *parseViewAsSkill(const Skill *skill);
 
+    inline QString getExpandPile() const{ return expand_pile; }
+
 protected:
     QString response_pattern;
+    QString expand_pile;
 };
 
 class ZeroCardViewAsSkill : public ViewAsSkill {

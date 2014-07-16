@@ -241,16 +241,17 @@ void JixiSnatchCard::onUse(Room *room, const CardUseStruct &card_use) const{
         room->setPlayerFlag(to, "JixiSnatchTarget");
 }
 
-class Jixi : public ZeroCardViewAsSkill {
+class Jixi: public OneCardViewAsSkill {
 public:
-    Jixi() : ZeroCardViewAsSkill("jixi") {
+    Jixi(): OneCardViewAsSkill("jixi") {
         relate_to_place = "head";
+        filter_pattern = ".|.|.|field";
+        expand_pile = "field";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        if (player->getPile("field").isEmpty())
-            return false;
-        foreach(int id, player->getPile("field")) {
+        return !player->getPile("field").isEmpty();
+        /*foreach(int id, player->getPile("field")) {
             Snatch *snatch = new Snatch(Card::SuitToBeDecided, -1);
             snatch->setSkillName("jixi");
             snatch->setShowSkill("jixi");
@@ -265,21 +266,25 @@ public:
                     continue;
                 return true;
             }
-        }
-        return false;
+        }*/
     }
 
-    virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
+    /*virtual bool isEnabledAtResponse(const Player *, const QString &pattern) const{
         return pattern == "@@jixi!";
-    }
+    }*/
 
-    virtual const Card *viewAs() const{
-        QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
+    virtual const Card *viewAs(const Card *originalCard) const{
+        /*QString pattern = Sanguosha->currentRoomState()->getCurrentCardUsePattern();
         if (pattern == "@@jixi!") {
             return new JixiSnatchCard;
         }
         else
-            return new JixiCard;
+            return new JixiCard;*/
+        Snatch *shun = new Snatch(originalCard->getSuit(), originalCard->getNumber());
+        shun->addSubcard(originalCard);
+        shun->setSkillName(objectName());
+        shun->setShowSkill(objectName());
+        return shun;
     }
 };
 

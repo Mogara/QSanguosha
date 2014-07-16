@@ -326,7 +326,7 @@ void Dashboard::addHandCards(QList<CardItem *> &card_items) {
     updateHandcardNum();
 }
 
-void Dashboard::_addHandCard(CardItem *card_item) {
+void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &footnote) {
     if (ClientInstance->getStatus() == Client::Playing)
         card_item->setEnabled(card_item->getCard()->isAvailable(Self));
     else
@@ -336,7 +336,14 @@ void Dashboard::_addHandCard(CardItem *card_item) {
     card_item->setRotation(0.0);
     card_item->setFlags(ItemIsFocusable);
     card_item->setZValue(0.1);
-    m_handCards << card_item;
+    if (!footnote.isEmpty()) {
+        card_item->setFootnote(footnote);
+        card_item->showFootnote();
+    }
+    if (prepend)
+        m_handCards.prepend(card_item);
+    else
+        m_handCards.append(card_item);
 
     connect(card_item, SIGNAL(clicked()), this, SLOT(onCardItemClicked()));
     connect(card_item, SIGNAL(double_clicked()), this, SLOT(onCardItemDoubleClicked()));
@@ -1015,6 +1022,9 @@ void Dashboard::startPending(const ViewAsSkill *skill) {
     pendings.clear();
     unselectAll();
 
+    if (skill && skill->inherits("ViewAsSkill") && !skill->getExpandPile().isEmpty())
+        expandPileCards(skill->getExpandPile());
+
     for (int i = 0; i < 5; i++) {
         if (_m_equipCards[i] != NULL)
             connect(_m_equipCards[i], SIGNAL(mark_changed()), this, SLOT(onMarkChanged()));
@@ -1026,6 +1036,10 @@ void Dashboard::startPending(const ViewAsSkill *skill) {
 
 void Dashboard::stopPending() {
     m_mutexEnableCards.lock();
+
+    if (view_as_skill && !view_as_skill->getExpandPile().isEmpty())
+        retractPileCards(view_as_skill->getExpandPile());
+
     view_as_skill = NULL;
     pending_card = NULL;
     emit card_selected(NULL);
@@ -1048,6 +1062,52 @@ void Dashboard::stopPending() {
     pendings.clear();
     adjustCards(true);
     m_mutexEnableCards.unlock();
+}
+
+void Dashboard::expandPileCards(const QString &pile_name) {
+    if (_m_pile_expanded.contains(pile_name)) return;
+    _m_pile_expanded << pile_name;
+    QList<int> pile = Self->getPile(pile_name);
+    if (pile_name == "heavenly_army")
+        foreach (const Player *p, Self->getAliveSiblings())
+            if (p->isLord() && p->hasShownSkill("hongfa"))
+                pile += p->getPile(pile_name);
+    if (pile.isEmpty()) return;
+    QList<CardItem *> card_items = _createCards(pile);
+    foreach (CardItem *card_item, card_items) {
+        card_item->setPos(mapFromScene(card_item->scenePos()));
+        card_item->setParentItem(this);
+    }
+    foreach (CardItem *card_item, card_items)
+        _addHandCard(card_item, true, Sanguosha->translate(pile_name));
+    adjustCards();
+    _playMoveCardsAnimation(card_items, false);
+    update();
+}
+
+void Dashboard::retractPileCards(const QString &pile_name) {
+    if (!_m_pile_expanded.contains(pile_name)) return;
+    _m_pile_expanded.removeOne(pile_name);
+    QList<int> pile = Self->getPile(pile_name);
+    if (pile_name == "heavenly_army")
+        foreach (const Player *p, Self->getAliveSiblings())
+            if (p->isLord() && p->hasShownSkill("hongfa"))
+                pile += p->getPile(pile_name);
+    if (pile.isEmpty()) return;
+    CardItem *card_item;
+    foreach (int card_id, pile) {
+        card_item = CardItem::FindItem(m_handCards, card_id);
+        if (card_item == selected) selected = NULL;
+        Q_ASSERT(card_item);
+        if (card_item) {
+            m_handCards.removeOne(card_item);
+            card_item->disconnect(this);
+            delete card_item;
+            card_item = NULL;
+        }
+    }
+    adjustCards();
+    update();
 }
 
 void Dashboard::onCardItemClicked() {
