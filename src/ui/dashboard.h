@@ -110,6 +110,9 @@ public:
     const ViewAsSkill *currentSkill() const;
     const Card *pendingCard() const;
 
+    void expandPileCards(const QString &pile_name);
+    void retractPileCards(const QString &pile_name);
+
     void selectCard(CardItem *item, bool isSelected);
 
     int getButtonWidgetWidth() const;
@@ -172,7 +175,7 @@ protected:
     bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
-    void _addHandCard(CardItem *card_item);
+    void _addHandCard(CardItem *card_item, bool prepend = false, const QString &footnote = QString());
     void _adjustCards();
     void _adjustCards(const QList<CardItem *> &list, int y);
 
@@ -222,6 +225,7 @@ protected:
     const Card *pending_card;
     const ViewAsSkill *view_as_skill;
     const FilterSkill *filter;
+    QStringList _m_pile_expanded;
 
     // for equip skill/selections
     PixmapAnimation *_m_equipBorders[5];

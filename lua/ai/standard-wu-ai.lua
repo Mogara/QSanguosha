@@ -419,10 +419,50 @@ local duoshi_skill = {}
 duoshi_skill.name = "duoshi"
 table.insert(sgs.ai_skills, duoshi_skill)
 duoshi_skill.getTurnUseCard = function(self, inclusive)
-	if self.player:usedTimes("DuoshiAE") >= 4 then return end
+
+    local DuoTime = 2
+	if self.player:hasSkills("fenming|zhiheng|fenxun|keji") then
+		DuoTime = 1
+	end	
+	if self.player:hasSkills("hongyan|yingzi") then
+		DuoTime = 3
+	end	
+	if self.player:hasSkills("xiaoji|haoshi") then
+		DuoTime = 4
+	end
+	for _, player in ipairs(self.friends) do
+		if player:hasShownSkills("xiaoji|haoshi") then
+			DuoTime = 4
+			break
+		end
+	end
+	
+	if (self.player:usedTimes("DuoshiAE") >= DuoTime and self:getOverflow() <= 0) or self.player:usedTimes("DuoshiAE") >= 4 	then return end
+	
+	
 	if sgs.turncount <= 1 and #self.friends_noself == 0 and not self:isWeak() and self:getOverflow() <= 0 then return end
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
+
+	
+	if (self:hasCrossbowEffect() or self:getCardsNum("Crossbow") > 0) and self:getCardsNum("Slash") > 0 then
+		self:sort(self.enemies, "defense")
+		for _, enemy in ipairs(self.enemies) do
+			local inAttackRange = self.player:distanceTo(enemy) == 1 or self.player:distanceTo(enemy) == 2
+									and self:getCardsNum("OffensiveHorse") > 0 and not self.player:getOffensiveHorse()										
+			if inAttackRange  and sgs.isGoodTarget(enemy, self.enemies, self) then
+				local slashs = self:getCards("Slash")
+				local slash_count = 0
+				for _, slash in ipairs(slashs) do
+					if not self:slashProhibit(slash, enemy) and self:slashIsEffective(slash, enemy) then
+						slash_count = slash_count + 1
+					end
+				end
+				if slash_count >= enemy:getHp() then return end
+			end
+		end
+	end
+	
 
 	local red_card
 	if self.player:getHandcardNum() <= 2 then return end
@@ -438,13 +478,22 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 					if dummy_use.card then shouldUse = false end
 				end
 			end
-
+			
 			if self:getUseValue(card) > sgs.ai_use_value.AwaitExhausted and card:isKindOf("TrickCard") then
 				local dummy_use = { isDummy = true }
 				self:useTrickCard(card, dummy_use)
 				if dummy_use.card then shouldUse = false end
 			end
-
+			
+			if card:getSuit() == sgs.Card_Diamond and self.player:hasSkill("guose") then shouldUse = false 	end
+				
+			for _, player in ipairs(self.friends) do
+	        	if player:hasShownSkill("xiaoji") and player:getCards("e"):length() > 0 then
+				shouldUse = true 
+				break
+				end
+			end
+			
 			if shouldUse and not card:isKindOf("Peach") then
 				red_card = card
 				break
@@ -520,6 +569,7 @@ function sgs.ai_cardneed.guose(to, card)
 end
 
 sgs.ai_suit_priority.guose= "club|spade|heart|diamond"
+
 
 sgs.ai_skill_use["@@liuli"] = function(self, prompt, method)
 	local others = self.room:getOtherPlayers(self.player)

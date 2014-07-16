@@ -19,12 +19,13 @@
 *********************************************************************]]
 
 function SmartAI:shouldUseRende()
-	if (self:hasCrossbowEffect() or self:getCardsNum("Crossbow") > 0) and self:getCardsNum("Slash") > 0 then
+	if (self:hasCrossbowEffect() or self:getCardsNum("Crossbow") > 0 or self.player:hasSkill("paoxiao") ) and self:getCardsNum("Slash") > 0 	then
 		self:sort(self.enemies, "defense")
 		for _, enemy in ipairs(self.enemies) do
 			local inAttackRange = self.player:distanceTo(enemy) == 1 or self.player:distanceTo(enemy) == 2
 									and self:getCardsNum("OffensiveHorse") > 0 and not self.player:getOffensiveHorse()
-			if inAttackRange and sgs.isGoodTarget(enemy, self.enemies, self) then
+			local inPaoxiaoAttackRange =  self.player:distanceTo(enemy) <= self.player:getAttackRange()	and	self.player:hasSkill("paoxiao")											
+			if (inAttackRange or inPaoxiaoAttackRange) and sgs.isGoodTarget(enemy, self.enemies, self) then
 				local slashs = self:getCards("Slash")
 				local slash_count = 0
 				for _, slash in ipairs(slashs) do
@@ -35,6 +36,9 @@ function SmartAI:shouldUseRende()
 				if slash_count >= enemy:getHp() then return false end
 			end
 		end
+	end
+	if self.player:hasSkill("kongcheng") and not self.player:isKongcheng() then
+		return true
 	end
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:canSlash(self.player) and not self:slashProhibit(nil, self.player, enemy)
@@ -47,13 +51,14 @@ function SmartAI:shouldUseRende()
 			return true
 		end
 	end
-	if ((self.player:hasSkill("rende") and self.player:getMark("rende") < 3)
-		or self:getOverflow() > 0) then
+	if (self.player:hasSkill("rende") and self.player:getMark("rende") < 3) or self:getOverflow() > 0  then
 		return true
+	else
+	    if self.player:hasSkill("rende") and self.player:getMark("rende") >= 3 and  self.player:getHandcardNum()<=2 and self:getOverflow()<=0then 
+		return false
+		end
 	end
-	if self.player:getLostHp() < 2 then
-		return true
-	end
+			
 end
 
 local rende_skill = {}

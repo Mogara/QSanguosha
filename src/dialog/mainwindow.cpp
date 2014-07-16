@@ -151,7 +151,8 @@ void SoundTestBox::btn_clicked(){
 #endif
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), scene(NULL), ui(new Ui::MainWindow), server(NULL), about_window(NULL)
+    : QMainWindow(parent), scene(NULL), ui(new Ui::MainWindow), server(NULL), about_window(NULL),
+      minButton(NULL), maxButton(NULL), normalButton(NULL), closeButton(NULL)
 {
     ui->setupUi(this);
     setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
@@ -353,15 +354,13 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *)
 void MainWindow::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::WindowStateChange)
-        if (maxButton && normalButton)
-            repaintButtons();
+        repaintButtons();
     QMainWindow::changeEvent(event);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    if (maxButton && normalButton)
-        repaintButtons();
+    repaintButtons();
     QMainWindow::resizeEvent(event);
 }
 
@@ -424,6 +423,8 @@ void MainWindow::region(const QPoint &cursorGlobalPoint)
 
 void MainWindow::repaintButtons()
 {
+    if (!minButton || !maxButton || !normalButton || !closeButton)
+        return;
     int width = this->width();
     minButton->setGeometry(width - 67, 5, 20, 20);
     maxButton->setGeometry(width - 46, 5, 20, 20);
