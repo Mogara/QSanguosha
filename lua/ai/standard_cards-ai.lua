@@ -2898,7 +2898,7 @@ function SmartAI:useCardAwaitExhausted(AwaitExhausted, use)
 	use.card = AwaitExhausted
 	return
 end
-sgs.ai_use_priority.AwaitExhausted = 2.8
+sgs.ai_use_priority.AwaitExhausted = 0.2
 sgs.ai_use_value.AwaitExhausted = 5
 sgs.ai_keep_value.AwaitExhausted = 1
 sgs.ai_card_intention.AwaitExhausted = function(self, card, from, tos)
