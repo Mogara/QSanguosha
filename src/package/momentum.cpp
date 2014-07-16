@@ -1142,7 +1142,7 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const{
         Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
         slash->addSubcard(originalCard);
-        slash->setSkillName("hongfa");
+        slash->setSkillName(objectName());
         return slash;
     }
 };
