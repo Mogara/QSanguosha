@@ -267,12 +267,12 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         if (view->scene()->inherits("StartScene")) {
             StartScene *scene = qobject_cast<StartScene *>(view->scene());
             QPointF pos = view->mapToScene(event->pos());
-            if (scene->itemAt(pos))
+            if (scene->itemAt(pos, QTransform()))
                 can_move = false;
         } else if (view->scene()->inherits("RoomScene")) {
             RoomScene *scene = qobject_cast<RoomScene *>(view->scene());
             QPointF pos = view->mapToScene(event->pos());
-            if (scene->itemAt(pos) && scene->itemAt(pos)->zValue() > -100000)
+            if (scene->itemAt(pos, QTransform()) && scene->itemAt(pos, QTransform())->zValue() > -100000)
                 can_move = false;
         }
     }
