@@ -62,6 +62,27 @@ public:
         setRenderHints(QPainter::TextAntialiasing | QPainter::Antialiasing);
     }
 
+    virtual void mousePressEvent(QMouseEvent *event) {
+        MainWindow *parent = qobject_cast<MainWindow *>(parentWidget());
+        if (parent)
+            parent->mousePressEvent(event);
+        QGraphicsView::mousePressEvent(event);
+    }
+
+    virtual void mouseMoveEvent(QMouseEvent *event) {
+        MainWindow *parent = qobject_cast<MainWindow *>(parentWidget());
+        if (parent)
+            parent->mouseMoveEvent(event);
+        QGraphicsView::mouseMoveEvent(event);
+    }
+
+    virtual void mouseReleaseEvent(QMouseEvent *event) {
+        MainWindow *parent = qobject_cast<MainWindow *>(parentWidget());
+        if (parent)
+            parent->mouseReleaseEvent(event);
+        QGraphicsView::mouseReleaseEvent(event);
+    }
+
     virtual void resizeEvent(QResizeEvent *event) {
         QGraphicsView::resizeEvent(event);
         MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
@@ -90,6 +111,10 @@ public:
         if (main_window)
             main_window->setBackgroundBrush(true);
     }
+
+private:
+    bool mouse_press;
+    QPoint move_point;
 };
 
 #ifdef AUDIO_SUPPORT
@@ -135,6 +160,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    setAttribute(Qt::WA_TranslucentBackground);
     setMouseTracking(true);
 
     UpdateCheckerThread *thread = new UpdateCheckerThread;
@@ -188,16 +214,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     QToolButton *minButton = new QToolButton(this);
     QToolButton *closeButton= new QToolButton(this);
-
+    
     QPixmap minPix  = style()->standardPixmap(QStyle::SP_TitleBarMinButton);
     QPixmap closePix = style()->standardPixmap(QStyle::SP_TitleBarCloseButton);
-
+    
     minButton->setIcon(minPix);
     closeButton->setIcon(closePix);
-
+    
     minButton->setGeometry(width - 46, 5, 20, 20);
-    closeButton->setGeometry(width - 25, 6, 20, 20);
-
+    closeButton->setGeometry(width - 25, 5, 20, 20);
+    
     minButton->setToolTip(tr("MinButton"));
     connect(minButton, SIGNAL(clicked()), this, SLOT(lower()));
     closeButton->setToolTip(tr("CloseButton"));
@@ -212,18 +238,19 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::mousePressEvent(QMouseEvent *event) {  
     if (event->button() == Qt::LeftButton) {
         mouse_press = true;
-        move_point = event->pos();
+        move_point = event->globalPos() - pos();
+        event->accept();
     }
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event) {
-    if (mouse_press) {
-        QPoint move_pos = event->globalPos();
-        this->move(move_pos - move_point);
+    if (mouse_press && (event->buttons() && Qt::LeftButton)) {
+        move(event->globalPos() - move_point);
+        event->accept();
     }
 }
 
-void MainWindow::mouseReleaseEvent(QMouseEvent *event) {
+void MainWindow::mouseReleaseEvent(QMouseEvent *) {
     mouse_press = false;
 }
 

@@ -84,6 +84,9 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void setBackgroundBrush(bool center_as_origin);
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
@@ -101,9 +104,6 @@ private:
 
     QPoint move_point;
     bool mouse_press;
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
 
     void restoreFromConfig();
 
