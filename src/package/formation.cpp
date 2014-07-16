@@ -502,6 +502,12 @@ public:
             if (player->getPhase() != Player::RoundStart)
                 return QStringList();
         }
+        else if (triggerEvent == Death) {
+            DeathStruct death = data.value<DeathStruct>();
+            if (player != death.who) {
+                return QStringList();
+            }
+        }
 
         foreach(ServerPlayer *p, room->getPlayers()){
             if (p->getMark("tianfu_kanpo") > 0 && p->hasSkill("kanpo") && !p->hasInnateSkill("kanpo")){
