@@ -144,7 +144,7 @@ void Player::setDisableShow(const QString &flags, const QString &reason){
 void Player::removeDisableShow(const QString &reason){
     QStringList remove_list;
     foreach(QString dis_str, disable_show){
-        const QString dis_reason = dis_str.split(',').at(1);
+        const QString &dis_reason = dis_str.split(',').at(1);
         if (dis_reason == reason)
             remove_list << dis_str;
     }
