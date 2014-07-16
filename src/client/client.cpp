@@ -339,21 +339,23 @@ void Client::processServerPacket(const char *cmd) {
 
 bool Client::processServerRequest(const Packet &packet) {
     setStatus(NotActive);
+
     _m_lastServerSerial = packet.m_globalSerial;
     CommandType command = packet.getCommandType();
     Json::Value msg = packet.getMessageBody();
-    Countdown countdown;
-    countdown.m_current = 0;
-    if (!msg.isArray() || msg.size() <= 1
-        || !countdown.tryParse(msg[msg.size() - 1])) {
+
+    if (!replayer) {
+        Countdown countdown;
+        countdown.m_current = 0;
         countdown.m_type = Countdown::S_COUNTDOWN_USE_DEFAULT;
         countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
-    }
-    if (!replayer)
         setCountdown(countdown);
+    }
+
     Callback callback = m_interactions[command];
     if (!callback) return false;
     (this->*callback)(msg);
+
     return true;
 }
 
