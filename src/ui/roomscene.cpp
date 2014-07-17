@@ -1523,7 +1523,7 @@ void RoomScene::chooseKingdom(const QStringList &kingdoms) {
 void RoomScene::chooseOption(const QString &skillName, const QStringList &options) {
     QApplication::alert(main_window);
     if (!main_window->isActiveWindow())
-        Sanguosha->playSystemAudioEffect("prelude");
+        Sanguosha->playSystemAudioEffect("pop-up");
 
     choose_options_box->setSkillName(skillName);
     choose_options_box->chooseGeneral(options);
