@@ -22,6 +22,7 @@
 #define _CARD_CONTAINER_H
 
 class ClientPlayer;
+class Button;
 
 #include "carditem.h"
 #include "GenericCardContainerUI.h"
@@ -66,7 +67,7 @@ public slots:
 
 protected:
     virtual bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
-    QSanButton *confirm_button;
+    Button *confirm_button;
     int scene_width;
     int item_count;
 
