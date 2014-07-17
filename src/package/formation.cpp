@@ -1086,26 +1086,28 @@ public:
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        int fldfid = -1;
+        const Card *dragonPhoenix = NULL;
+        int dragonPhoenixId = -1;
         foreach(int id, move.card_ids){
-            if (Sanguosha->getCard(id)->isKindOf("DragonPhoenix")){
-                fldfid = id;
+            const Card *card = Sanguosha->getCard(id);
+            if (card->isKindOf("DragonPhoenix")){
+                dragonPhoenixId = id;
+                dragonPhoenix = card;
                 break;
             }
         }
 
         if (triggerEvent == CardsMoveOneTime){
-            player->obtainCard(Sanguosha->getCard(fldfid));
+            player->obtainCard(dragonPhoenix);
         }
         else {
-            room->showCard(player, fldfid);
+            room->showCard(player, dragonPhoenixId);
             player->setFlags("fldf_removing");
-            move.from_places.removeAt(move.card_ids.indexOf(fldfid));
-            move.card_ids.removeOne(fldfid);
+            move.from_places.removeAt(move.card_ids.indexOf(dragonPhoenixId));
+            move.card_ids.removeOne(dragonPhoenixId);
             data = QVariant::fromValue(move);
-            QList<int> to_move;
-            to_move << fldfid;
-            room->moveCardsToEndOfDrawpile(to_move);
+
+            room->moveCardTo(dragonPhoenix, NULL, Player::DrawPileBottom);
         }
         return false;
     }
