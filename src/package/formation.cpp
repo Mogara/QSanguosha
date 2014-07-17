@@ -137,9 +137,9 @@ public:
     }
 };
 
-class Jixi: public OneCardViewAsSkill {
+class Jixi : public OneCardViewAsSkill {
 public:
-    Jixi(): OneCardViewAsSkill("jixi") {
+    Jixi() : OneCardViewAsSkill("jixi") {
         relate_to_place = "head";
         filter_pattern = ".|.|.|field";
         expand_pile = "field";
@@ -366,23 +366,24 @@ public:
                 }
             }
         }
-        foreach(ServerPlayer *p, room->getAllPlayers())
+        foreach(ServerPlayer *p, room->getAllPlayers()){
             if (p->getMark("feiying") > 0) {
-            room->setPlayerMark(p, "feiying", 0);
-            room->detachSkillFromPlayer(p, "feiying", true, true);
+                room->setPlayerMark(p, "feiying", 0);
+                room->detachSkillFromPlayer(p, "feiying", true, true);
             }
-
+        }
         if (room->alivePlayerCount() < 4) return QStringList();
         QList<ServerPlayer *> caohongs = room->findPlayersBySkillName(objectName());
-        foreach(ServerPlayer *caohong, caohongs)
+        foreach(ServerPlayer *caohong, caohongs) {
             if (caohong->hasShownSkill(this)) {
-            foreach(ServerPlayer *p, room->getOtherPlayers(caohong))
-                if (caohong->inFormationRalation(p)) {
-                room->setPlayerMark(p, "feiying", 1);
-                room->attachSkillToPlayer(p, "feiying");
+                foreach(ServerPlayer *p, room->getOtherPlayers(caohong)) {
+                    if (caohong->inFormationRalation(p)) {
+                        room->setPlayerMark(p, "feiying", 1);
+                        room->attachSkillToPlayer(p, "feiying");
+                    }
                 }
             }
-
+        }
         return QStringList();
     }
 };
@@ -502,6 +503,12 @@ public:
             if (player->getPhase() != Player::RoundStart)
                 return QStringList();
         }
+        else if (triggerEvent == Death) {
+            DeathStruct death = data.value<DeathStruct>();
+            if (player != death.who) {
+                return QStringList();
+            }
+        }
 
         foreach(ServerPlayer *p, room->getPlayers()){
             if (p->getMark("tianfu_kanpo") > 0 && p->hasSkill("kanpo") && !p->hasInnateSkill("kanpo")){
@@ -523,13 +530,14 @@ public:
             return QStringList();
         }
 
-        QList<ServerPlayer *> jiangweis = room->findPlayersBySkillName(objectName());
-        foreach(ServerPlayer *jiangwei, jiangweis) {
-            if (!jiangwei->hasShownSkill(this)) return QStringList();
-            ServerPlayer *current = room->getCurrent();
-            if (current && current->isAlive() && current->getPhase() != Player::NotActive && jiangwei->inFormationRalation(current) && !jiangwei->hasInnateSkill("kanpo")){
-                jiangwei->setMark("tianfu_kanpo", 1);
-                room->attachSkillToPlayer(jiangwei, "kanpo");
+        ServerPlayer *current = room->getCurrent();
+        if (current && current->isAlive() && current->getPhase() != Player::NotActive) {
+            QList<ServerPlayer *> jiangweis = room->findPlayersBySkillName(objectName());
+            foreach(ServerPlayer *jiangwei, jiangweis) {
+                if (jiangwei->hasShownSkill(this) && jiangwei->inFormationRalation(current) && !jiangwei->hasInnateSkill("kanpo")) {
+                    jiangwei->setMark("tianfu_kanpo", 1);
+                    room->attachSkillToPlayer(jiangwei, "kanpo");
+                }
             }
         }
 
