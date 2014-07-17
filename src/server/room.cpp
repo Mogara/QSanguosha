@@ -3707,14 +3707,21 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
                 cards_move.from->removeCard(card, cards_move.from_place);
 
             switch (cards_move.from_place) {
-            case Player::DiscardPile: m_discardPile->removeOne(card_id); break;
-            case Player::DrawPile: m_drawPile->removeOne(card_id); break;
-            case Player::PlaceSpecial: table_cards.removeOne(card_id); break;
+            case Player::DiscardPile:
+                m_discardPile->removeOne(card_id);
+                break;
+            case Player::DrawPile:
+            case Player::DrawPileBottom:
+                m_drawPile->removeOne(card_id);
+                break;
+            case Player::PlaceSpecial:
+                table_cards.removeOne(card_id);
+                break;
             default:
                 break;
             }
         }
-        if (cards_move.from_place == Player::DrawPile)
+        if (cards_move.from_place == Player::DrawPile || cards_move.from_place == Player::DrawPileBottom)
             drawpile_changed = true;
     }
 
@@ -3751,6 +3758,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             switch (cards_move.to_place) {
             case Player::DiscardPile: m_discardPile->prepend(card_id); break;
             case Player::DrawPile: m_drawPile->prepend(card_id); break;
+            case Player::DrawPileBottom: m_drawPile->append(card_id); break;
             case Player::PlaceSpecial: table_cards.append(card_id); break;
             default:
                 break;
@@ -3806,14 +3814,21 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
                 cards_move.from->removeCard(card, cards_move.from_place);
 
             switch (cards_move.from_place) {
-            case Player::DiscardPile: m_discardPile->removeOne(card_id); break;
-            case Player::DrawPile: m_drawPile->removeOne(card_id); break;
-            case Player::PlaceSpecial: table_cards.removeOne(card_id); break;
+            case Player::DiscardPile:
+                m_discardPile->removeOne(card_id);
+                break;
+            case Player::DrawPile:
+            case Player::DrawPileBottom:
+                m_drawPile->removeOne(card_id);
+                break;
+            case Player::PlaceSpecial:
+                table_cards.removeOne(card_id);
+                break;
             default:
                 break;
             }
         }
-        if (cards_move.from_place == Player::DrawPile)
+        if (cards_move.from_place == Player::DrawPile || cards_move.from_place == Player::DrawPileBottom)
             drawpile_changed = true;
     }
 
@@ -3945,16 +3960,23 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
                 cards_move.from->removeCard(card, cards_move.from_place);
 
             switch (cards_move.from_place) {
-            case Player::DiscardPile: m_discardPile->removeOne(card_id); break;
-            case Player::DrawPile: m_drawPile->removeOne(card_id); break;
-            case Player::PlaceSpecial: table_cards.removeOne(card_id); break;
+            case Player::DiscardPile:
+                m_discardPile->removeOne(card_id);
+                break;
+            case Player::DrawPile:
+            case Player::DrawPileBottom:
+                m_drawPile->removeOne(card_id);
+                break;
+            case Player::PlaceSpecial:
+                table_cards.removeOne(card_id);
+                break;
             default:
                 break;
             }
 
             setCardMapping(card_id, NULL, Player::PlaceTable);
         }
-        if (cards_move.from_place == Player::DrawPile)
+        if (cards_move.from_place == Player::DrawPile || cards_move.from_place == Player::DrawPileBottom)
             drawpile_changed = true;
     }
 
@@ -4061,6 +4083,7 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
             switch (cards_move.to_place) {
             case Player::DiscardPile: m_discardPile->prepend(card_id); break;
             case Player::DrawPile: m_drawPile->prepend(card_id); break;
+            case Player::DrawPileBottom: m_drawPile->append(card_id); break;
             case Player::PlaceSpecial: table_cards.append(card_id); break;
             default:
                 break;

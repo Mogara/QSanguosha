@@ -169,6 +169,7 @@ bool TablePile::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStru
         card_item->setHomeOpacity(1.0);
         card_item->showFootnote();
         if (moveInfo.from_place == Player::DrawPile
+            || moveInfo.from_place == Player::DrawPileBottom
             || moveInfo.from_place == Player::PlaceJudge
             || moveInfo.from_place == Player::PlaceTable) {
             card_item->setOpacity(0.0);
