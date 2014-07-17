@@ -3756,10 +3756,18 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
                 cards_move.to->addCard(card, cards_move.to_place);
 
             switch (cards_move.to_place) {
-            case Player::DiscardPile: m_discardPile->prepend(card_id); break;
-            case Player::DrawPile: m_drawPile->prepend(card_id); break;
-            case Player::DrawPileBottom: m_drawPile->append(card_id); break;
-            case Player::PlaceSpecial: table_cards.append(card_id); break;
+            case Player::DiscardPile:
+                m_discardPile->prepend(card_id);
+                break;
+            case Player::DrawPile:
+                m_drawPile->prepend(card_id);
+                break;
+            case Player::DrawPileBottom:
+                m_drawPile->append(card_id);
+                break;
+            case Player::PlaceSpecial:
+                table_cards.append(card_id);
+                break;
             default:
                 break;
             }
@@ -4081,10 +4089,18 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
                 cards_move.to->addCard(card, cards_move.to_place);
 
             switch (cards_move.to_place) {
-            case Player::DiscardPile: m_discardPile->prepend(card_id); break;
-            case Player::DrawPile: m_drawPile->prepend(card_id); break;
-            case Player::DrawPileBottom: m_drawPile->append(card_id); break;
-            case Player::PlaceSpecial: table_cards.append(card_id); break;
+            case Player::DiscardPile:
+                m_discardPile->prepend(card_id);
+                break;
+            case Player::DrawPile:
+                m_drawPile->prepend(card_id);
+                break;
+            case Player::DrawPileBottom:
+                m_drawPile->append(card_id);
+                break;
+            case Player::PlaceSpecial:
+                table_cards.append(card_id);
+                break;
             default:
                 break;
             }
