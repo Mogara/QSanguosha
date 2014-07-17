@@ -80,7 +80,7 @@ QRectF ChooseOptionsBox::boundingRect() const
     return QRectF(0, 0, width, height);
 }
 
-void ChooseOptionsBox::chooseGeneral(QStringList options)
+void ChooseOptionsBox::chooseOption(QStringList options)
 {
     //ÖØÐÂ»æÖÆ±³¾°
     options_number = options.length();
@@ -130,7 +130,8 @@ void ChooseOptionsBox::chooseGeneral(QStringList options)
     }
 }
 
-void ChooseOptionsBox::reply() {
+void ChooseOptionsBox::reply()
+{
     if (progress_bar != NULL){
         progress_bar->hide();
         progress_bar->deleteLater();
@@ -138,7 +139,8 @@ void ChooseOptionsBox::reply() {
     clear();
 }
 
-void ChooseOptionsBox::clear() {
+void ChooseOptionsBox::clear()
+{
     foreach(Button *button, buttons)
         button->deleteLater();
 

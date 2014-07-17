@@ -1526,7 +1526,7 @@ void RoomScene::chooseOption(const QString &skillName, const QStringList &option
         Sanguosha->playSystemAudioEffect("pop-up");
 
     choose_options_box->setSkillName(skillName);
-    choose_options_box->chooseGeneral(options);
+    choose_options_box->chooseOption(options);
 }
 
 void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, const QString &reason,

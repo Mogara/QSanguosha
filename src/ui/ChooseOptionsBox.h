@@ -39,7 +39,7 @@ public:
     inline void setSkillName(const QString &skillName) { skill_name = skillName; };
 
 public slots:
-    void chooseGeneral(QStringList generals);
+    void chooseOption(QStringList options);
     void reply();
 
 private:
