@@ -40,6 +40,7 @@ class GuanxingBox;
 class QSanButton;
 class QGroupBox;
 class ChooseGeneralBox;
+class ChooseOptionsBox;
 struct RoomLayout;
 
 #include <QGraphicsScene>
@@ -255,6 +256,8 @@ private:
     GuanxingBox *guanxing_box;
 
     ChooseGeneralBox *choose_general_box;
+
+    ChooseOptionsBox *choose_options_box;
 
     QList<CardItem *> gongxin_items;
 

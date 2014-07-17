@@ -1356,7 +1356,7 @@ void Client::askForChoice(const Json::Value &ask_str) {
     QString skill_name = toQString(ask_str[0]);
     QStringList options = toQString(ask_str[1]).split("+");
     emit options_got(skill_name, options);
-    setStatus(ExecDialog);
+    setStatus(AskForChoice);
 }
 
 void Client::askForCardChosen(const Json::Value &ask_str) {

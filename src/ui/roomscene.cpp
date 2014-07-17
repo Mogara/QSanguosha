@@ -37,6 +37,7 @@
 #include "record-analysis.h"
 #include "jsonutils.h"
 #include "choosegeneralbox.h"
+#include "ChooseOptionsBox.h"
 #include "uiUtils.h"
 #include "qsanbutton.h"
 
@@ -198,6 +199,12 @@ RoomScene::RoomScene(QMainWindow *main_window)
     addItem(choose_general_box);
     choose_general_box->setZValue(30000.0);
     choose_general_box->moveBy(-120, 0);
+
+    choose_options_box = new ChooseOptionsBox;
+    choose_options_box->hide();
+    addItem(choose_options_box);
+    choose_options_box->setZValue(30000.0);
+    choose_options_box->moveBy(-120, 0);
 
     card_container = new CardContainer();
     card_container->hide();
@@ -917,6 +924,7 @@ void RoomScene::updateTable() {
     card_container->setPos(m_tableCenterPos - QPointF(card_container->boundingRect().width() / 2, card_container->boundingRect().height() / 2));
     guanxing_box->setPos(m_tableCenterPos - QPointF(guanxing_box->boundingRect().width() / 2, guanxing_box->boundingRect().height() / 2));
     choose_general_box->setPos(m_tableCenterPos - QPointF(choose_general_box->boundingRect().width() / 2, choose_general_box->boundingRect().height() / 2));
+    choose_options_box->setPos(m_tableCenterPos - QPointF(choose_options_box->boundingRect().width() / 2, choose_options_box->boundingRect().height() / 2));
     prompt_box->setPos(m_tableCenterPos);
     pausing_text->setPos(m_tableCenterPos - pausing_text->boundingRect().center());
     pausing_item->setRect(sceneRect());
@@ -1513,43 +1521,12 @@ void RoomScene::chooseKingdom(const QStringList &kingdoms) {
 }
 
 void RoomScene::chooseOption(const QString &skillName, const QStringList &options) {
-    QDialog *dialog = new QDialog;
-    QVBoxLayout *layout = new QVBoxLayout;
-    QString title = Sanguosha->translate(skillName);
-    dialog->setWindowTitle(title);
-    layout->addWidget(new QLabel(tr("Please choose:")));
+    QApplication::alert(main_window);
+    if (!main_window->isActiveWindow())
+        Sanguosha->playSystemAudioEffect("prelude");
 
-    foreach(QString option, options) {
-        QCommandLinkButton *button = new QCommandLinkButton;
-        QString text = QString("%1:%2").arg(skillName).arg(option);
-        QString translated = Sanguosha->translate(text);
-        if (text == translated)
-            translated = Sanguosha->translate(option);
-
-        button->setObjectName(option);
-        button->setText(translated);
-
-        QString original_tooltip = QString(":%1").arg(text);
-        QString tooltip = Sanguosha->translate(original_tooltip);
-        if (tooltip == original_tooltip) {
-            original_tooltip = QString(":%1").arg(option);
-            tooltip = Sanguosha->translate(original_tooltip);
-        }
-        if (tooltip != original_tooltip) button->setToolTip(QString("<font color=%1>%2</font>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(tooltip));
-
-        connect(button, SIGNAL(clicked()), dialog, SLOT(accept()));
-        connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerMakeChoice()));
-
-        layout->addWidget(button);
-    }
-
-    dialog->setObjectName(options.first());
-    connect(dialog, SIGNAL(rejected()), ClientInstance, SLOT(onPlayerMakeChoice()));
-
-    dialog->setLayout(layout);
-    Sanguosha->playSystemAudioEffect("pop-up");
-    delete m_choiceDialog;
-    m_choiceDialog = dialog;
+    choose_options_box->setSkillName(skillName);
+    choose_options_box->chooseGeneral(options);
 }
 
 void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, const QString &reason,
@@ -2307,17 +2284,17 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
     switch (newStatus & Client::ClientStatusBasicMask) {
     case Client::NotActive: {
         if (oldStatus == Client::ExecDialog) {
-            if (m_choiceDialog != NULL && m_choiceDialog->isVisible()) {
+            if (m_choiceDialog != NULL && m_choiceDialog->isVisible())
                 m_choiceDialog->hide();
-            }
-        }
-        else if (oldStatus == Client::AskForGuanxing || oldStatus == Client::AskForGongxin) {
+        } else if (oldStatus == Client::AskForGuanxing || oldStatus == Client::AskForGongxin) {
             guanxing_box->clear();
             if (!card_container->retained())
                 card_container->clear();
-        }
-        else if (oldStatus == Client::AskForGeneralChosen)
+        } else if (oldStatus == Client::AskForGeneralChosen) {
             choose_general_box->clear();
+        } else if (oldStatus == Client::AskForGeneralChosen) {
+            choose_options_box->clear();
+        }
         prompt_box->disappear();
         ClientInstance->getPromptDoc()->clear();
 
@@ -2523,6 +2500,13 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
         break;
     }
+    case Client::AskForChoice: {
+        ok_button->setEnabled(false);
+        cancel_button->setEnabled(false);
+        discard_button->setEnabled(false);
+
+        break;
+    }
     }
     if (newStatus != oldStatus && newStatus != Client::Playing && newStatus != Client::NotActive)
         QApplication::alert(QApplication::focusWidget());
@@ -2531,7 +2515,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         return;
 
     // do timeout
-    if (newStatus != Client::NotActive && newStatus != oldStatus && newStatus != Client::AskForGeneralChosen) {
+    if (newStatus != Client::NotActive && newStatus != oldStatus
+        && newStatus != Client::AskForGeneralChosen && newStatus != Client::AskForChoice) {
         QApplication::alert(main_window);
         connect(dashboard, SIGNAL(progressBarTimedOut()), this, SLOT(doTimeout()));
         _cancelAllFocus();

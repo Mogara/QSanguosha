@@ -40,27 +40,28 @@ class Client : public QObject {
 
 public:
     enum Status {
-        NotActive = 0x00,
-        Responding = 0x01,
-        Playing = 0x02,
-        Discarding = 0x03,
-        Exchanging = 0x04,
-        ExecDialog = 0x05,
-        AskForSkillInvoke = 0x06,
-        AskForAG = 0x07,
-        AskForPlayerChoose = 0x08,
-        AskForYiji = 0x09,
-        AskForGuanxing = 0x0A,
-        AskForGongxin = 0x0B,
-        AskForShowOrPindian = 0x0C,
-        AskForGeneralChosen = 0x0D,
-        AskForArrangement = 0x0E,
+        NotActive = 0x0000,
+        Responding = 0x0001,
+        Playing = 0x0002,
+        Discarding = 0x0003,
+        Exchanging = 0x0004,
+        ExecDialog = 0x0005,
+        AskForSkillInvoke = 0x0006,
+        AskForAG = 0x0007,
+        AskForPlayerChoose = 0x0008,
+        AskForYiji = 0x0009,
+        AskForGuanxing = 0x000A,
+        AskForGongxin = 0x000B,
+        AskForShowOrPindian = 0x000C,
+        AskForGeneralChosen = 0x000D,
+        AskForArrangement = 0x000E,
+        AskForChoice = 0x000F,
 
-        RespondingUse = 0x11,
-        RespondingForDiscard = 0x21,
-        RespondingNonTrigger = 0x31,
+        RespondingUse = 0x0101,
+        RespondingForDiscard = 0x0201,
+        RespondingNonTrigger = 0x0301,
 
-        ClientStatusBasicMask = 0x0F
+        ClientStatusBasicMask = 0x00FF
     };
 
     explicit Client(QObject *parent, const QString &filename = QString());
