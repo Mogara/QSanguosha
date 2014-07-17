@@ -247,6 +247,7 @@ win32-msvc*{
         DEFINES += WIN64
         LIBS += -L"$$_PRO_FILE_PWD_/lib/win/x64"
     }
+    CONFIG(debug, debug|release): INCLUDEPATH += include/vld
 }
 win32-g++{
     DEFINES += WIN32
@@ -275,6 +276,7 @@ linux{
         }
     }
 }
+g++: DEFINES += GPP
 
 CONFIG(audio){
     DEFINES += AUDIO_SUPPORT
