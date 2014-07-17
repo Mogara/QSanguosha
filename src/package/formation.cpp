@@ -1042,7 +1042,7 @@ public:
             return QStringList();
 
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.to_place == Player::DrawPile)
+        if (move.to_place == Player::DrawPileBottom)
             return QStringList();
         int fldfid = -1;
         foreach(int id, move.card_ids){
@@ -1123,7 +1123,7 @@ public:
             return QStringList();
 
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.to_place == Player::DrawPile){
+        if (move.to_place == Player::DrawPileBottom){
             int fldfid = -1;
             foreach(int id, move.card_ids){
                 if (Sanguosha->getCard(id)->isKindOf("DragonPhoenix")){

@@ -3771,7 +3771,7 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
 
 void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
     QList<CardsMoveStruct> moves;
-    CardsMoveStruct move(card_ids, NULL, Player::DrawPile, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
+    CardsMoveStruct move(card_ids, NULL, Player::DrawPileBottom, CardMoveReason(CardMoveReason::S_REASON_UNKNOWN, QString()));
     moves << move;
 
     QList<CardsMoveStruct> cards_moves = _breakDownCardMoves(moves);
@@ -4817,7 +4817,7 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
 
 void Room::setCardMapping(int card_id, ServerPlayer *owner, Player::Place place) {
     owner_map.insert(card_id, owner);
-    place_map.insert(card_id, place);
+    place_map.insert(card_id, place == Player::DrawPileBottom ? Player::DrawPile : place);
 }
 
 ServerPlayer *Room::getCardOwner(int card_id) const{

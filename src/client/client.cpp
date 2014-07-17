@@ -423,7 +423,7 @@ bool Client::_getSingleCard(int card_id, CardsMoveStruct move) {
     if (move.to)
         move.to->addCard(card, move.to_place);
     else {
-        if (move.to_place == Player::DrawPile)
+        if (move.to_place == Player::DrawPile || move.to_place == Player::DrawPileBottom)
             pile_num++;
         // @todo: synchronize discard pile when "marshal"
         else if (move.to_place == Player::DiscardPile)

@@ -83,6 +83,7 @@ CommonTranslationTable = {
 	["female"] = "女性",
 	["discardPile"] = "弃牌堆",
 	["drawPileTop"] = "牌堆顶",
+	["drawPileBottom"] = "牌堆底",
 
 	["use upon"] = "对",
 	["yourself"] = "你",
@@ -102,7 +103,7 @@ CommonTranslationTable = {
 	["defensive_horse"] = "+1坐骑",
 	["offensive_horse"] = "-1坐骑",
 	["treasure"] = "宝物",
-	
+
 	["luck_card"] = "手气卡",
 
 	["wei"] = "魏",
@@ -158,6 +159,7 @@ CommonTranslationTable = {
 	["$JileiShowAllCards"] = "%from 展示了不能弃置的手牌 %card",
 	["$PutCard"] = "%from 的 %card 被置于牌堆顶",
 	["#PutCard"] = "%from 的 %arg 张牌被置于牌堆顶",
+	["$PutCardToDrawPileBottom"] = "%from 的 %card 被置于牌堆底",
 	["normal_nature"] = "无属性",
 	["fire_nature"] = "火焰属性",
 	["thunder_nature"] = "雷电属性",
@@ -235,7 +237,7 @@ CommonTranslationTable = {
 	["SEAT(8)"] = "八号位",
 	["SEAT(9)"] = "九号位",
 	["SEAT(10)"] = "十号位",
-	
+
 	["#DanlaoAvoid"] = "“%arg2”效果被触发，【%arg】 对 %from 无效",
 }
 
