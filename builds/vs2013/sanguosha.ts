@@ -63,7 +63,7 @@
     <message>
         <location filename="../../src/server/server.cpp" line="734"/>
         <source>Add ...</source>
-        <translation>添加……</translation>
+        <translation>添加 ...</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="735"/>
@@ -3534,7 +3534,7 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="../../src/server/server.cpp" line="90"/>
         <source>Banlist ...</source>
-        <translation>禁表……</translation>
+        <translation>禁表 ...</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="109"/>
