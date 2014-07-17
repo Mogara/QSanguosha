@@ -160,6 +160,7 @@ CommonTranslationTable = {
 	["$PutCard"] = "%from 的 %card 被置于牌堆顶",
 	["#PutCard"] = "%from 的 %arg 张牌被置于牌堆顶",
 	["$PutCardToDrawPileBottom"] = "%from 的 %card 被置于牌堆底",
+	["#PutCardToDrawPileBottom"] = "%from 的 %arg 张牌被置于牌堆底",
 	["normal_nature"] = "无属性",
 	["fire_nature"] = "火焰属性",
 	["thunder_nature"] = "雷电属性",
