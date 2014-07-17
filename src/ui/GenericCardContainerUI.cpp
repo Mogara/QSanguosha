@@ -473,15 +473,24 @@ void PlayerCardContainer::refresh() {
         rightDisableShowLock->setVisible(false);
     }
     else if (m_player) {
-        if (_m_faceTurnedIcon) _m_faceTurnedIcon->setVisible(!m_player->faceUp());
-        if (_m_faceTurnedIcon2) _m_faceTurnedIcon2->setVisible(!m_player->faceUp());
-        if (_m_chainIcon) _m_chainIcon->setVisible(m_player->isChained());
-        if (_m_duanchangMask) _m_duanchangMask->setVisible(m_player->isDuanchang(true));
-        if (_m_duanchangMask2) _m_duanchangMask2->setVisible(m_player->isDuanchang(false));
-        if (_m_actionIcon) _m_actionIcon->setVisible(m_player->hasFlag("actioned"));
-        if (_m_deathIcon) _m_deathIcon->setVisible(m_player->isDead());
-        if (leftDisableShowLock) leftDisableShowLock->setVisible(!m_player->disableShow(true).isEmpty());
-        if (rightDisableShowLock) rightDisableShowLock->setVisible(!m_player->disableShow(false).isEmpty());
+        if (_m_faceTurnedIcon)
+            _m_faceTurnedIcon->setVisible(!m_player->faceUp());
+        if (_m_faceTurnedIcon2)
+            _m_faceTurnedIcon2->setVisible(!m_player->faceUp());
+        if (_m_chainIcon)
+            _m_chainIcon->setVisible(m_player->isChained());
+        if (_m_duanchangMask)
+            _m_duanchangMask->setVisible(m_player->isDuanchang(true));
+        if (_m_duanchangMask2)
+            _m_duanchangMask2->setVisible(m_player->isDuanchang(false));
+        if (_m_actionIcon)
+            _m_actionIcon->setVisible(m_player->hasFlag("actioned"));
+        if (_m_deathIcon)
+            _m_deathIcon->setVisible(m_player->isDead());
+        if (leftDisableShowLock)
+            leftDisableShowLock->setVisible(!m_player->hasShownGeneral1() && !m_player->disableShow(true).isEmpty());
+        if (rightDisableShowLock)
+            rightDisableShowLock->setVisible(!m_player->hasShownGeneral2() && !m_player->disableShow(false).isEmpty());
     }
     updateHandcardNum();
     _adjustComponentZValues();
