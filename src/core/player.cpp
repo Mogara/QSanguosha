@@ -914,15 +914,15 @@ QList<const Skill *> Player::getSkillList(bool include_equip, bool visible_only)
 
     foreach(QString skill_name, skills) {
         const Skill *skill = Sanguosha->getSkill(skill_name);
-        if (skill
-            && (include_equip || !hasEquipSkill(skill->objectName()))
-            && (!visible_only || skill->isVisible()))
-            skillList << skill;
-        if (skill->isVisible() && !visible_only){
-            QList<const Skill *> related_skill = Sanguosha->getRelatedSkills(skill->objectName());
-            foreach(const Skill *s, related_skill)
-                if (!skillList.contains(s) && !s->isVisible())
-                    skillList << s;
+        if (skill != NULL) {
+            if ((include_equip || !hasEquipSkill(skill->objectName())) && (!visible_only || skill->isVisible()))
+                skillList << skill;
+            if (skill->isVisible() && !visible_only) {
+                QList<const Skill *> related_skill = Sanguosha->getRelatedSkills(skill->objectName());
+                foreach(const Skill *s, related_skill)
+                    if (!skillList.contains(s) && !s->isVisible())
+                        skillList << s;
+            }
         }
     }
 
@@ -1385,6 +1385,8 @@ bool Player::ownSkill(const Skill *skill) const{
 
 bool Player::isFriendWith(const Player *player) const {
     Q_ASSERT(player);
+    if (player == NULL)
+        return false;
     if (!hasShownOneGeneral() || !player->hasShownOneGeneral())
         return false;                // ��δ�����򲻴����κ���ͬ�����佫���Լ�Ҳ���ǣ�
 
@@ -1398,7 +1400,10 @@ bool Player::isFriendWith(const Player *player) const {
 }
 
 bool Player::willBeFriendWith(const Player *player) const {
-    if (this == player) return true;
+    if (this == player)
+        return true;
+    if (player == NULL)
+        return false;
     if (!hasShownOneGeneral()) {
         QString kingdom = getActualGeneral1()->getKingdom();
         int i = 1;

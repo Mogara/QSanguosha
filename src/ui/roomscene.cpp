@@ -1947,7 +1947,7 @@ void RoomScene::keepGetCardLog(const CardsMoveStruct &move) {
         if (hide > 0)
             log_box->appendLog("#MoveNCards", from_general, tos, QString(), QString::number(hide));
     }
-    if (move.from_place == Player::PlaceHand && move.to_place == Player::PlaceHand) {
+    if (move.from_place == Player::PlaceHand && move.to_place == Player::PlaceHand && move.from && move.to) {
         QString from_general = move.from->objectName();
         QStringList tos;
         tos << move.to->objectName();
@@ -3851,6 +3851,8 @@ void RoomScene::takeGeneral(const QString &who, const QString &name, const QStri
     }
 
     Q_ASSERT(general_item);
+    if (general_item == NULL)
+        return;
 
     general_item->disconnect(this);
     general_items.removeOne(general_item);

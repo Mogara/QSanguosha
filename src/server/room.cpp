@@ -1096,8 +1096,7 @@ bool Room::askForNullification(const Card *trick, ServerPlayer *from, ServerPlay
     return _askForNullification(trick, from, to, positive, aiHelper);
 }
 
-bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to,
-    bool positive, _NullificationAiHelper aiHelper) {
+bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive, _NullificationAiHelper aiHelper) {
     while (isPaused()) {}
 
     _m_roomState.setCurrentCardUseReason(CardUseStruct::CARD_USE_REASON_RESPONSE_USE);
@@ -1165,8 +1164,8 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
 
     if (card == NULL)
         return _askForNullification(trick, from, to, positive, aiHelper);
-
-    doAnimate(S_ANIMATE_NULLIFICATION, repliedPlayer->objectName(), to->objectName());
+    if (to != NULL)
+        doAnimate(S_ANIMATE_NULLIFICATION, repliedPlayer->objectName(), to->objectName());
     useCard(CardUseStruct(card, repliedPlayer, QList<ServerPlayer *>()));
     bool isHegNullification = false;
     QString heg_nullification_selection;
@@ -1409,7 +1408,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             if (!card_ids.isEmpty()) {
                 CardMoveReason reason(CardMoveReason::S_REASON_LETUSE, player->objectName(), QString(), card->getSkillName(), QString());
                 QList<CardsMoveStruct> moves;
-                foreach (int id, card_ids) {
+                foreach(int id, card_ids) {
                     CardsMoveStruct move(id, NULL, Player::PlaceTable, reason);
                     moves.append(move);
                 }
@@ -1430,7 +1429,7 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 CardMoveReason reason(CardMoveReason::S_REASON_RESPONSE, player->objectName());
                 reason.m_skillName = card->getSkillName();
                 QList<CardsMoveStruct> moves;
-                foreach (int id, card_ids) {
+                foreach(int id, card_ids) {
                     CardsMoveStruct move(id, NULL, isProvision ? Player::PlaceTable : Player::DiscardPile, reason);
                     moves.append(move);
                 }
