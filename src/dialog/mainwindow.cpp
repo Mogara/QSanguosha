@@ -224,18 +224,20 @@ MainWindow::MainWindow(QWidget *parent)
     normalButton->setIcon(normalPix);
     closeButton->setIcon(closePix);
 
-    minButton->setToolTip(tr("MinButton"));
+    minButton->setToolTip(tr("<font color=%1>Minimize</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
     connect(minButton, SIGNAL(clicked()), this, SLOT(showMinimized()));
-    maxButton->setToolTip(tr("MaxButton"));
+    maxButton->setToolTip(tr("<font color=%1>Maximize</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
     connect(maxButton, SIGNAL(clicked()), this, SLOT(showMaximized()));
-    normalButton->setToolTip(tr("NormalButton"));
+    normalButton->setToolTip(tr("<font color=%1>Restore downward</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
     connect(normalButton, SIGNAL(clicked()), this, SLOT(showNormal()));
-    closeButton->setToolTip(tr("CloseButton"));
+    closeButton->setToolTip(tr("<font color=%1>Close</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
     connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
 
-    minButton->setStyleSheet("background-color:transparent;");
-    maxButton->setStyleSheet("background-color:transparent;");
-    normalButton->setStyleSheet("background-color:transparent;");
+    const QString styleSheet = "background-color:transparent;";
+
+    minButton->setStyleSheet(styleSheet);
+    maxButton->setStyleSheet(styleSheet);
+    normalButton->setStyleSheet(styleSheet);
     closeButton->setStyleSheet("background-color:transparent;");
     
     repaintButtons();
