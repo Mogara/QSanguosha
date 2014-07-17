@@ -205,7 +205,7 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const{
         ServerPlayer *player = ask_who;
         player->tag.remove("ziliang");
-        player->tag["ziliang-aidata"] = data;
+        player->tag["ziliang_aidata"] = data;
         if (room->askForUseCard(player, "@@ziliang", "@ziliang-give", -1, Card::MethodNone))
             return true;
 

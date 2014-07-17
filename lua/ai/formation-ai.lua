@@ -62,6 +62,34 @@ sgs.ai_view_as.jixi = function(card, player, card_place)
 	end
 end
 
+local getZiliangCard = function(self, damage)
+	if not (damage.to:getPhase() == sgs.Player_NotActive and self:needKongcheng(damage.to, true)) then
+		local ids = sgs.QList2Table(self.player:getPile("field"))
+		local cards = {}
+		for _, id in ipairs(ids) do table.insert(cards, sgs.Sanguosha:getCard(id)) end
+		for _, card in ipairs(cards) do
+			if card:isKindOf("Peach") then return card:getEffectiveId() end
+		end
+		for _, card in ipairs(cards) do
+			if card:isKindOf("Jink") then return card:getEffectiveId() end
+		end
+		self:sortByKeepValue(cards, true)
+		return cards[1]:getEffectiveId()
+	else
+		return nil
+	end
+end
+
+sgs.ai_skill_use["@@ziliang"] = function(self)
+	local damage = self.player:getTag("ziliang_aidata"):toDamage()
+	local id = getZiliangCard(self, damage)
+	if id then
+		return "@ZiliangCard=" .. tostring(id) .. "&ziliang"
+	end
+	return "."
+end
+
+--[[
 function sgs.ai_skill_invoke.ziliang(self, data)
 	self.ziliang_id = nil
 	local damage = data:toDamage()
@@ -95,7 +123,7 @@ sgs.ai_choicemade_filter.skillInvoke.ziliang = function(self, player, promptlist
 		sgs.updateIntention(player, damage.to, intention)
 	end
 end
-
+]]
 local function huyuan_validate(self, equip_type, is_handcard)
 	local targets = {}
 	if is_handcard then targets = self.friends else targets = self.friends_noself end
