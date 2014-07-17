@@ -238,7 +238,7 @@ MainWindow::MainWindow(QWidget *parent)
     minButton->setStyleSheet(styleSheet);
     maxButton->setStyleSheet(styleSheet);
     normalButton->setStyleSheet(styleSheet);
-    closeButton->setStyleSheet("background-color:transparent;");
+    closeButton->setStyleSheet(styleSheet);
     
     repaintButtons();
 
