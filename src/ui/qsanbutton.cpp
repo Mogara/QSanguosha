@@ -397,7 +397,7 @@ void QSanInvokeSkillDock::update() {
             button->setPos(btnWidth * j + adj_value, rowTop);
         }
     }
-    delete btnNum;
+    delete[] btnNum;
     QGraphicsObject::update();
 }
 
