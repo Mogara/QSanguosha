@@ -24,6 +24,7 @@
 #include "engine.h"
 #include "client.h"
 #include "roomscene.h"
+#include "button.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
@@ -33,7 +34,8 @@ CardContainer::CardContainer()
 {
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
-    confirm_button = new QSanButton("choose-general-box", "confirm", this);
+    confirm_button = new Button(tr("confirm"), 0.6, true);
+    confirm_button->setParentItem(this);
     confirm_button->hide();
     connect(confirm_button, SIGNAL(clicked()), this, SLOT(clear()));
 }
@@ -251,7 +253,6 @@ void CardContainer::startGongxin(const QList<int> &enabled_ids) {
 }
 
 void CardContainer::addConfirmButton() {
-    confirm_button->initializeMousePosition();
     confirm_button->show();
 }
 

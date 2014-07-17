@@ -86,23 +86,6 @@ public:
     virtual void setEnabled(bool enabled);
     bool isDown();
 
-    //************************************
-    // Method:    initializeMousePosition
-    // FullName:  QSanButton::initializeMousePosition
-    // Access:    public
-    // Returns:   void
-    // Qualifier:
-    // Description: Reset _m_mouseEntered for sometimes the button disappears suddenly.
-    //              We call the method before showing a button hidden by us.
-    //
-    // Last Updated By Yanguam Siliagim
-    // To fix no-response when click "confirm" in pile box
-    //
-    // QSanguosha-Hegemony Team
-    // March 14 2014
-    //************************************
-    inline void initializeMousePosition() { _m_mouseEntered = false; };
-
 public slots:
     void click();
 
