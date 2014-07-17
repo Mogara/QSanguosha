@@ -328,7 +328,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     }
     return_to_start_scene = new Button(tr("Return to main menu"), 1.0, true);
     addItem(return_to_start_scene);
-    return_to_start_scene->setZValue(100000);
+    return_to_start_scene->setZValue(10000);
     return_to_start_scene->setTransform(QTransform::fromTranslate(-return_to_start_scene->boundingRect().width() / 2, -return_to_start_scene->boundingRect().height() / 2), true);
     connect(return_to_start_scene, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
 
