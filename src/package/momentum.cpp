@@ -1142,8 +1142,8 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const{
         Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
         slash->addSubcard(originalCard);
-        slash->setSkillName(objectName());
-        //slash->setSkillName("hongfa");
+        //slash->setSkillName(objectName());
+        slash->setSkillName("hongfa");
         return slash;
     }
 };
@@ -1154,7 +1154,7 @@ HongfaCard::HongfaCard() {
     handling_method = Card::MethodNone;
 }
 
-void HongfaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void HongfaCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const{
     source->tag["hongfa_prevent"] = subcards.first();
 }
 
@@ -1261,7 +1261,7 @@ public:
     virtual int getEffectIndex(const ServerPlayer *, const Card *card) const{
         if (card->isKindOf("Slash"))
             return 1;
-        return 0;
+        return 2;
     }
 };
 

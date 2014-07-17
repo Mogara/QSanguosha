@@ -164,7 +164,7 @@ ZiliangCard::ZiliangCard(){
     handling_method = Card::MethodNone;
 }
 
-void ZiliangCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void ZiliangCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const{
     source->tag["ziliang"] = subcards.first();
 }
 
