@@ -95,6 +95,7 @@ const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_MASK = "generalCircleMask-%1
 const char *QSanRoomSkin::S_SKIN_KEY_HIDDEN_MARK = "hiddenMark";
 const char *QSanRoomSkin::S_SKIN_KEY_HEAD_ICON = "headIcon";
 const char *QSanRoomSkin::S_SKIN_KEY_DEPUTY_ICON = "deputyIcon";
+const char *QSanRoomSkin::S_SKIN_KEY_DISABLE_SHOW_LOCK = "%1DisableShowLock";
 
 //CardContainer
 const char *QSanRoomSkin::S_SKIN_KEY_CARD_CONTAINER_TOP = "cardContainerTop";
@@ -954,6 +955,8 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         tryParse(playerConfig["extraSkillArea"], layout->m_extraSkillArea);
         layout->m_extraSkillFont.tryParse(playerConfig["extraSkillFont"]);
         tryParse(playerConfig["extraSkillTextArea"], layout->m_extraSkillTextArea);
+        tryParse(playerConfig["leftDisableShowLockArea"], layout->leftDisableShowLockArea);
+        tryParse(playerConfig["rightDisableShowLockArea"], layout->rightDisableShowLockArea);
     }
 
 

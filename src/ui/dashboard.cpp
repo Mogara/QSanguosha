@@ -37,32 +37,33 @@
 using namespace QSanProtocol;
 
 Dashboard::Dashboard(QGraphicsItem *widget)
-    : button_widget(widget), selected(NULL), view_as_skill(NULL), filter(NULL)
+    : // At this stage, we cannot decide the dashboard size yet, the whole
+      // point in creating them here is to allow PlayerCardContainer to
+      // anchor all controls and widgets to the correct frame.
+      //
+      // Note that 20 is just a random plug-in so that we can proceed with
+      // control creation, the actual width is updated when setWidth() is
+      // called by its graphics parent.
+      _m_width(G_DASHBOARD_LAYOUT.m_leftWidth + G_DASHBOARD_LAYOUT.m_rightWidth + 20),
+      _m_leftFrame(NULL), _m_rightFrame(NULL), _m_middleFrame(NULL),
+      _m_rightFrameBase(NULL), _m_rightFrameBg(NULL), _m_magatamasBase(NULL),
+      _m_headGeneralFrame(NULL), _m_deputyGeneralFrame(NULL),
+      button_widget(widget), selected(NULL), _dlayout(&G_DASHBOARD_LAYOUT), animations(new EffectAnimation),
+      _m_hidden_mark1(NULL), _m_hidden_mark2(NULL),
+      _m_head_icon(NULL), _m_deputy_icon(NULL),
+      pending_card(NULL), view_as_skill(NULL), filter(NULL)
+
 {
     Q_ASSERT(button_widget);
-    _dlayout = &G_DASHBOARD_LAYOUT;
-    _m_layout = _dlayout;
-    m_player = Self;
-    _m_leftFrame = _m_rightFrame = _m_middleFrame = NULL;
-    _m_rightFrameBg = _m_rightFrameBase = _m_magatamasBase =
-        _m_headGeneralFrame = _m_deputyGeneralFrame = NULL;
-    animations = new EffectAnimation;
-    pending_card = NULL;
     for (int i = 0; i < 5; i++) {
         _m_equipSkillBtns[i] = NULL;
         _m_isEquipsAnimOn[i] = false;
     }
-    _m_hidden_mark1 = _m_hidden_mark2 = NULL;
-    _m_head_icon = _m_deputy_icon = NULL;
-    // At this stage, we cannot decide the dashboard size yet, the whole
-    // point in creating them here is to allow PlayerCardContainer to
-    // anchor all controls and widgets to the correct frame.
-    //
-    // Note that 20 is just a random plug-in so that we can proceed with
-    // control creation, the actual width is updated when setWidth() is
-    // called by its graphics parent.
-    //
-    _m_width = G_DASHBOARD_LAYOUT.m_leftWidth + G_DASHBOARD_LAYOUT.m_rightWidth + 20;
+
+    _m_layout = _dlayout;
+    m_player = Self;
+    leftDisableShowLock = NULL;
+    rightDisableShowLock = NULL;
 
     _createLeft();
     _createMiddle();
@@ -245,6 +246,7 @@ void Dashboard::_createRight() {
 
     _paintPixmap(_m_head_icon, G_DASHBOARD_LAYOUT.m_headIconRegion, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HEAD_ICON), _m_rightFrame);
     _paintPixmap(_m_deputy_icon, G_DASHBOARD_LAYOUT.m_deputyIconRegion, _getPixmap(QSanRoomSkin::S_SKIN_KEY_DEPUTY_ICON), _m_rightFrame);
+
 }
 
 void Dashboard::_updateFrames() {
@@ -1318,8 +1320,8 @@ void Dashboard::updateAvatar()
             if (name.startsWith("&"))
                 name = Sanguosha->translate(general->objectName());
             _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem,
-                _m_layout->m_avatarNameArea,
-                Qt::AlignLeft | Qt::AlignJustify, name);
+            _m_layout->m_avatarNameArea,
+            Qt::AlignLeft | Qt::AlignJustify, name);
         }
         else {
             _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,

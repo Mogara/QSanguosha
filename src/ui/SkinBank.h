@@ -189,6 +189,8 @@ public:
         QSanShadowTextFont m_handCardFont;
         QRect m_screenNameArea;
         QSanShadowTextFont m_screenNameFont;
+        QRect leftDisableShowLockArea;
+        QRect rightDisableShowLockArea;
 
         // progress bar and other controls
         bool m_isProgressBarHorizontal;
@@ -406,6 +408,7 @@ public:
     static const char *S_SKIN_KEY_HIDDEN_MARK;
     static const char *S_SKIN_KEY_HEAD_ICON;
     static const char *S_SKIN_KEY_DEPUTY_ICON;
+    static const char *S_SKIN_KEY_DISABLE_SHOW_LOCK;
 
     //CardContainer
 

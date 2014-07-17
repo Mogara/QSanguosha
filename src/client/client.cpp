@@ -717,8 +717,6 @@ void Client::disableShow(const Json::Value &args) {
     }
     else
         p->removeDisableShow(reason);
-
-    //emit disableshow_changed();  //for UI to update the RoomScene
 }
 
 void Client::setNullification(const Json::Value &str) {

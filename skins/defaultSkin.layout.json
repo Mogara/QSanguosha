@@ -158,7 +158,9 @@
     "extraSkillArea": [32, 96, 56, 20],
     "extraSkillFont": ["SimLi", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
     "extraSkillTextArea": [32, 93, 56, 20],
-    "seatIconRegion": [4, 1, 23, 16]
+    "seatIconRegion": [4, 1, 23, 16],
+	"leftDisableShowLockArea": [0, 0, 100, 122],
+	"rightDisableShowLockArea": [0, 0, 100, 122] //todo: adjust them
 },
 "dashboard":
 {
@@ -243,7 +245,9 @@
     "generalShadowColor": [0, 0, 0, 180],
     "hiddenMarkRegion": [4, -3, 124, 146],
     "hiddenMarkRegion2": [132, -3, 124, 146],
-    "seatIconRegion": [-32, 118, 30, 30]
+    "seatIconRegion": [-32, 118, 30, 30],
+	"leftDisableShowLockArea": [15, 9, 100, 122],
+	"rightDisableShowLockArea": [144, 9, 100, 122]
 },
 "skillButton":
 {

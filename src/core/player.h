@@ -369,6 +369,7 @@ signals:
     void owner_changed(bool owner);
     void head_state_changed();
     void deputy_state_changed();
+    void disable_show_changed();
 };
 
 #endif

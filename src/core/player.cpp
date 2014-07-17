@@ -139,6 +139,7 @@ void Player::setDisableShow(const QString &flags, const QString &reason){
 
     QString dis_str = flags + ',' + reason;
     disable_show << dis_str;
+    emit disable_show_changed();
 }
 
 void Player::removeDisableShow(const QString &reason){
@@ -149,9 +150,13 @@ void Player::removeDisableShow(const QString &reason){
             remove_list << dis_str;
     }
 
+    if (remove_list.isEmpty()) return;
+
     foreach(QString to_remove, remove_list){
         disable_show.removeOne(to_remove);
     }
+
+    emit disable_show_changed();
 }
 
 QStringList Player::disableShow(bool head) const{

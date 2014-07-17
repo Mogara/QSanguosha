@@ -457,6 +457,7 @@ void PlayerCardContainer::_updateEquips() {
 
 void PlayerCardContainer::refresh() {
     if (!m_player || !m_player->getGeneral() || !m_player->isAlive()) {
+
         _m_faceTurnedIcon->setVisible(false);
         if (_m_faceTurnedIcon2)
             _m_faceTurnedIcon2->setVisible(false);
@@ -468,6 +469,8 @@ void PlayerCardContainer::refresh() {
             _m_duanchangMask2->setVisible(false);
         _m_actionIcon->setVisible(false);
         _m_saveMeIcon->setVisible(false);
+        leftDisableShowLock->setVisible(false);
+        rightDisableShowLock->setVisible(false);
     }
     else if (m_player) {
         if (_m_faceTurnedIcon) _m_faceTurnedIcon->setVisible(!m_player->faceUp());
@@ -477,6 +480,8 @@ void PlayerCardContainer::refresh() {
         if (_m_duanchangMask2) _m_duanchangMask2->setVisible(m_player->isDuanchang(false));
         if (_m_actionIcon) _m_actionIcon->setVisible(m_player->hasFlag("actioned"));
         if (_m_deathIcon) _m_deathIcon->setVisible(m_player->isDead());
+        if (leftDisableShowLock) leftDisableShowLock->setVisible(!m_player->disableShow(true).isEmpty());
+        if (rightDisableShowLock) rightDisableShowLock->setVisible(!m_player->disableShow(false).isEmpty());
     }
     updateHandcardNum();
     _adjustComponentZValues();
@@ -519,6 +524,12 @@ void PlayerCardContainer::repaintAll() {
     _m_hpBox->setImageArea(_m_layout->m_magatamaImageArea);
     _m_hpBox->update();
 
+    QPixmap lock = _getPixmap(QSanRoomSkin::S_SKIN_KEY_DISABLE_SHOW_LOCK);
+    _paintPixmap(leftDisableShowLock, _m_layout->leftDisableShowLockArea,
+                 lock, _getAvatarParent());
+    _paintPixmap(rightDisableShowLock, _m_layout->rightDisableShowLockArea,
+                 lock, _getAvatarParent());
+
     _adjustComponentZValues();
     refresh();
 }
@@ -541,6 +552,7 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player) {
         connect(player, SIGNAL(pile_changed(QString)), this, SLOT(updatePile(QString)));
         connect(player, SIGNAL(kingdom_changed(QString)), _m_roleComboBox, SLOT(fix(QString)));
         connect(player, SIGNAL(hp_changed()), this, SLOT(updateHp()));
+        connect(player, SIGNAL(disable_show_changed()), this, SLOT(refresh()));
 
         QTextDocument *textDoc = m_player->getMarkDoc();
         Q_ASSERT(_m_markItem);
@@ -775,6 +787,8 @@ PlayerCardContainer::PlayerCardContainer() {
     m_player = NULL;
     _m_selectedFrame = _m_selectedFrame2 = NULL;
 
+    leftDisableShowLock = rightDisableShowLock = NULL;
+
     for (int i = 0; i < 5; i++) {
         _m_equipCards[i] = NULL;
         _m_equipRegions[i] = NULL;
@@ -847,6 +861,12 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_markItem);
     _layUnder(_m_progressBarItem);
     _layUnder(_m_roleComboBox);
+    _layUnder(_m_secondaryAvatarNameItem);
+    _layUnder(_m_avatarNameItem);
+    _layUnder(_m_kingdomColorMaskIcon);
+    _layUnder(_m_kingdomColorMaskIcon2);
+    _layUnder(leftDisableShowLock);
+    _layUnder(rightDisableShowLock);
     //it's meaningless to judge which icon should be on top
     _layUnder(_m_chainIcon);
     _layUnder(_m_hpBox);
@@ -855,11 +875,7 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_actionIcon);
     _layUnder(_m_saveMeIcon);
     _layUnder(_m_phaseIcon);
-    _layUnder(_m_secondaryAvatarNameItem);
-    _layUnder(_m_avatarNameItem);
     _layUnder(_m_kingdomIcon);
-    _layUnder(_m_kingdomColorMaskIcon);
-    _layUnder(_m_kingdomColorMaskIcon2);
     _layUnder(_m_screenNameItem);
     for (int i = 0; i < 5; i++)
         _layUnder(_m_equipRegions[i]);

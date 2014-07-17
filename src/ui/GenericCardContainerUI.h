@@ -93,14 +93,14 @@ public:
     virtual void killPlayer();
     virtual void revivePlayer();
     virtual QGraphicsItem *getMouseClickReceiver() = 0;
-    inline virtual QGraphicsItem *getMouseClickReceiver2() { return NULL; };
+    inline virtual QGraphicsItem *getMouseClickReceiver2() { return NULL; }
     virtual void updateAvatarTooltip();
 
     inline void hookMouseEvents();
 
     QPixmap paintByMask(QPixmap& source);
 
-    inline RoleComboBox *getRoleComboBox() const { return _m_roleComboBox; };
+    inline RoleComboBox *getRoleComboBox() const { return _m_roleComboBox; }
 
 public slots:
     virtual void updateAvatar();
@@ -210,6 +210,8 @@ protected:
     QGraphicsPixmapItem *_m_phaseIcon;
     QGraphicsPixmapItem *_m_extraSkillBg;
     QGraphicsPixmapItem *_m_extraSkillText;
+    QGraphicsPixmapItem *leftDisableShowLock;
+    QGraphicsPixmapItem *rightDisableShowLock;
     QGraphicsTextItem *_m_markItem;
     QGraphicsPixmapItem *_m_selectedFrame, *_m_selectedFrame2;
     QMap<QString, QGraphicsProxyWidget *> _m_privatePiles;
