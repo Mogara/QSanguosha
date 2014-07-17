@@ -137,9 +137,9 @@ public:
     }
 };
 
-class Jixi: public OneCardViewAsSkill {
+class Jixi : public OneCardViewAsSkill {
 public:
-    Jixi(): OneCardViewAsSkill("jixi") {
+    Jixi() : OneCardViewAsSkill("jixi") {
         relate_to_place = "head";
         filter_pattern = ".|.|.|field";
         expand_pile = "field";
@@ -366,23 +366,24 @@ public:
                 }
             }
         }
-        foreach(ServerPlayer *p, room->getAllPlayers())
+        foreach(ServerPlayer *p, room->getAllPlayers()){
             if (p->getMark("feiying") > 0) {
                 room->setPlayerMark(p, "feiying", 0);
                 room->detachSkillFromPlayer(p, "feiying", true, true);
             }
-
+        }
         if (room->alivePlayerCount() < 4) return QStringList();
         QList<ServerPlayer *> caohongs = room->findPlayersBySkillName(objectName());
-        foreach(ServerPlayer *caohong, caohongs)
+        foreach(ServerPlayer *caohong, caohongs) {
             if (caohong->hasShownSkill(this)) {
-            foreach(ServerPlayer *p, room->getOtherPlayers(caohong))
-                if (caohong->inFormationRalation(p)) {
-                    room->setPlayerMark(p, "feiying", 1);
-                    room->attachSkillToPlayer(p, "feiying");
+                foreach(ServerPlayer *p, room->getOtherPlayers(caohong)) {
+                    if (caohong->inFormationRalation(p)) {
+                        room->setPlayerMark(p, "feiying", 1);
+                        room->attachSkillToPlayer(p, "feiying");
+                    }
                 }
             }
-
+        }
         return QStringList();
     }
 };
