@@ -1201,9 +1201,10 @@ public:
         QMap<ServerPlayer *, QStringList> skill_list;
         if (player != NULL && player->getPhase() == Player::Finish) {
             QList<ServerPlayer *> yuejins = room->findPlayersBySkillName(objectName());
-            foreach(ServerPlayer *yuejin, yuejins)
-                if (player != yuejin && yuejin->canDiscard(yuejin, "h"))
+            foreach(ServerPlayer *yuejin, yuejins){
+                if (yuejin != NULL && player != yuejin && yuejin->canDiscard(yuejin, "h"))
                     skill_list.insert(yuejin, QStringList(objectName()));
+            }
         }
         return skill_list;
     }

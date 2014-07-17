@@ -238,6 +238,9 @@ void QSanSkillButton::onMouseClick() {
 
 void QSanSkillButton::setSkill(const Skill *skill) {
     Q_ASSERT(skill != NULL);
+    if (skill == NULL)
+        return;
+
     _m_skill = skill;
     // This is a nasty trick because the server side decides to choose a nasty design
     // such that sometimes the actual viewas skill is nested inside a trigger skill.

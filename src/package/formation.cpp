@@ -906,9 +906,10 @@ public:
         if (player == NULL) return skill_list;
         if (player->getPhase() != Player::Play) return skill_list;
         QList<ServerPlayer *> hetaihous = room->findPlayersBySkillName(objectName());
-        foreach(ServerPlayer *hetaihou, hetaihous)
+        foreach(ServerPlayer *hetaihou, hetaihous) {
             if (hetaihou->canDiscard(hetaihou, "h") && hetaihou != player)
                 skill_list.insert(hetaihou, QStringList(objectName()));
+        }
         return skill_list;
     }
 

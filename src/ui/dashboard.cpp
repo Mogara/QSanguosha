@@ -1343,7 +1343,8 @@ void Dashboard::updateAvatar()
 void Dashboard::updateSmallAvatar()
 {
     const General *general = NULL;
-    if (m_player) general = m_player->getGeneral2();
+    if (m_player)
+        general = m_player->getGeneral2();
     if (general != NULL) {
         _m_secondaryAvatarArea->setToolTip(m_player->getDeputySkillDescription());
         QString name = general->objectName();
