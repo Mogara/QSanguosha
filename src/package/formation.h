@@ -86,6 +86,14 @@ public:
     Q_INVOKABLE NiaoxiangSummon();
 };
 
+class QianhuanCard : public SkillCard{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE QianhuanCard();
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
 class FormationPackage : public Package {
     Q_OBJECT
 

@@ -774,10 +774,37 @@ public:
     }
 };
 
+QianhuanCard::QianhuanCard(){
+    target_fixed = true;
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
+
+void QianhuanCard::use(Room *, ServerPlayer *source, QList<ServerPlayer *> &) const{
+    source->tag["qianhuan_cancel"] = subcards.first();
+}
+
+class QianhuanVS : public OneCardViewAsSkill{
+public:
+    QianhuanVS() : OneCardViewAsSkill("qianhuan"){
+        filter_pattern = ".|.|.|sorcery";
+        response_pattern = "@@qianhuan";
+        expand_pile = "sorcery";
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        QianhuanCard *c = new QianhuanCard;
+        c->addSubcard(originalCard);
+        c->setShowSkill(objectName());
+        return c;
+    }
+};
+
 class Qianhuan : public TriggerSkill {
 public:
     Qianhuan() : TriggerSkill("qianhuan") {
         events << Damaged << TargetConfirming;
+        view_as_skill = new QianhuanVS;
     }
 
     virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
@@ -808,28 +835,32 @@ public:
         if (yuji == NULL)
             return false;
         yuji->tag["qianhuan_data"] = data;
-        QString prompt;
 
-        if (triggerEvent == Damaged)
-            prompt = "gethuan";
+        bool invoke = false;
+
+        if (triggerEvent == Damaged){
+            if (yuji->askForSkillInvoke(objectName(), "gethuan")){
+                invoke = true;
+                room->broadcastSkillInvoke(objectName());
+            }
+        }
         else {
+            QString prompt;
             QStringList prompt_list;
-            prompt_list << "canceltarget";
+            prompt_list << "@qianhuan-cancel";
             CardUseStruct use = data.value<CardUseStruct>();
             prompt_list << "";
             prompt_list << use.to.first()->objectName();
             prompt_list << use.card->objectName();
             prompt = prompt_list.join(":");
+            yuji->tag.remove("qianhuan_cancel");
+            if (room->askForUseCard(yuji, "@@qianhuan", prompt, -1, Card::MethodNone))
+                invoke = true;
         }
 
-        bool invoke = yuji->askForSkillInvoke(objectName(), prompt);
         yuji->tag.remove("qianhuan_data");
-        if (invoke){
-            room->broadcastSkillInvoke(objectName());
-            return true;
-        }
 
-        return false;
+        return invoke;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const{
@@ -853,41 +884,33 @@ public:
         }
         else if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
-            room->notifySkillInvoked(yuji, objectName());
             QList<int> ids = yuji->getPile("sorcery");
-            int id = -1;
-            if (ids.length() > 1) {
-                int aidelay = Config.AIDelay;
-                Config.AIDelay = 0;
-                room->fillAG(ids, yuji);
-                id = room->askForAG(yuji, ids, false, objectName());
-                room->clearAG(yuji);
-                Config.AIDelay = aidelay;
-            }
-            else {
-                id = ids.first();
-            }
-            CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), objectName(), QString());
-            room->throwCard(Sanguosha->getCard(id), reason, NULL);
 
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, yuji->objectName(), use.to.first()->objectName());
+            bool ok = false;
+            int id = yuji->tag["qianhuan_cancel"].toInt(&ok);
+            if (id != -1 && ok){
+                CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), objectName(), QString());
+                room->throwCard(Sanguosha->getCard(id), reason, NULL);
 
-            LogMessage log;
-            if (use.from) {
-                log.type = "$CancelTarget";
-                log.from = use.from;
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, yuji->objectName(), use.to.first()->objectName());
+
+                LogMessage log;
+                if (use.from) {
+                    log.type = "$CancelTarget";
+                    log.from = use.from;
+                }
+                else {
+                    log.type = "$CancelTargetNoUser";
+                }
+                log.to = use.to;
+                log.arg = use.card->objectName();
+                room->sendLog(log);
+
+                room->setEmotion(use.to.first(), "cancel");
+
+                use.to.clear();
+                data = QVariant::fromValue(use);
             }
-            else {
-                log.type = "$CancelTargetNoUser";
-            }
-            log.to = use.to;
-            log.arg = use.card->objectName();
-            room->sendLog(log);
-
-            room->setEmotion(use.to.first(), "cancel");
-
-            use.to.clear();
-            data = QVariant::fromValue(use);
         }
 
         return false;
@@ -1262,6 +1285,7 @@ FormationPackage::FormationPackage()
     addMetaObject<HeyiSummon>();
     addMetaObject<TianfuSummon>();
     addMetaObject<NiaoxiangSummon>();
+    addMetaObject<QianhuanCard>();
 
     skills << new Feiying;
 }
