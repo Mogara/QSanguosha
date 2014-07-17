@@ -776,6 +776,12 @@
     <ClCompile Include="..\..\src\dialog\cardbutton.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ui\ChooseOptionsBox.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_ChooseOptionsBox.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1095,6 +1101,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\cardbutton.h">
       <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\ChooseOptionsBox.h">
+      <Filter>ui</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
