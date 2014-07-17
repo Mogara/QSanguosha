@@ -458,8 +458,15 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::gotoScene(QGraphicsScene *scene) {
-    if (this->scene)
+    if (this->scene) {
         this->scene->deleteLater();
+
+        if (about_window) {
+            about_window->deleteLater();
+            about_window = NULL;
+        }
+    }
+
     this->scene = scene;
     view->setScene(scene);
     /* @todo: Need a better way to replace the magic number '4' */
