@@ -1294,7 +1294,7 @@ ADD_PACKAGE(Formation)
 
 
 DragonPhoenix::DragonPhoenix(Suit suit, int number)
-: Weapon(suit, number, 2)
+    : Weapon(suit, number, 2)
 {
     setObjectName("DragonPhoenix");
 }
