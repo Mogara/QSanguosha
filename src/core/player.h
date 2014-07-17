@@ -77,7 +77,7 @@ public:
     enum Place {
         PlaceHand, PlaceEquip, PlaceDelayedTrick, PlaceJudge,
         PlaceSpecial, DiscardPile, DrawPile, PlaceTable, PlaceUnknown,
-        PlaceWuGu
+        PlaceWuGu, DrawPileBottom
     };
     enum Role { Lord, Loyalist, Rebel, Renegade };
 
