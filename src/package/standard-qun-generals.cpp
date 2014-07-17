@@ -297,7 +297,7 @@ public:
 
 class ShuangxiongViewAsSkill : public OneCardViewAsSkill {
 public:
-    ShuangxiongViewAsSkill() :OneCardViewAsSkill("shuangxiong") {
+    ShuangxiongViewAsSkill() :OneCardViewAsSkill("shuangxiong") { //Client::updateProperty() / RoomScene::detachSkill()
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{

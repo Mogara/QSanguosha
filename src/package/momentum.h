@@ -54,6 +54,14 @@ public:
     Q_INVOKABLE FengshiSummon();
 };
 
+class HongfaCard : public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE HongfaCard();
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
 class WendaoCard : public SkillCard {
     Q_OBJECT
 

@@ -1115,7 +1115,7 @@ public:
 
 class HongfaSlash : public OneCardViewAsSkill {
 public:
-    HongfaSlash() : OneCardViewAsSkill("hongfa_slash") {
+    HongfaSlash() : OneCardViewAsSkill("hongfa_slash") { //RoomScene::retractPileCards()
         attached_lord_skill = true;
         expand_pile = "heavenly_army";
         filter_pattern = ".|.|.|heavenly_army";
@@ -1143,7 +1143,34 @@ public:
         Slash *slash = new Slash(originalCard->getSuit(), originalCard->getNumber());
         slash->addSubcard(originalCard);
         slash->setSkillName(objectName());
+        //slash->setSkillName("hongfa");
         return slash;
+    }
+};
+
+HongfaCard::HongfaCard() {
+    target_fixed = true;
+    will_throw = false;
+    handling_method = Card::MethodNone;
+}
+
+void HongfaCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    source->tag["hongfa_prevent"] = subcards.first();
+}
+
+class HongfaVS : public OneCardViewAsSkill{
+public:
+    HongfaVS() : OneCardViewAsSkill("hongfa"){
+        response_pattern = "@@hongfa";
+        filter_pattern = ".|.|.|heavenly_army";
+        expand_pile = "heavenly_army";
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        HongfaCard *c = new HongfaCard;
+        c->addSubcard(originalCard);
+        c->setShowSkill(objectName());
+        return c;
     }
 };
 
@@ -1152,10 +1179,7 @@ public:
     Hongfa() : TriggerSkill("hongfa$") {
         events << EventPhaseStart << PreHpLost << GeneralShown << GeneralHidden << GeneralRemoved << Death;
         frequency = Compulsory;
-    }
-
-    virtual bool canPreshow() const {
-        return false;
+        view_as_skill = new HongfaVS;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const {
@@ -1206,10 +1230,8 @@ public:
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
         if (triggerEvent == EventPhaseStart) return true;
         if (triggerEvent == PreHpLost) {
-            if (player->askForSkillInvoke(objectName())){
-                room->broadcastSkillInvoke(objectName(), 2);
-                return true;
-            }
+            player->tag.remove("hongfa_prevent");
+            return room->askForUseCard(player, "@@hongfa", "@hongfa-prevent", -1, Card::MethodNone);
         }
         return false;
     }
@@ -1222,11 +1244,11 @@ public:
             return false;
         }
         else {
-            room->fillAG(player->getPile("heavenly_army"), player);
-            int card_id = room->askForAG(player, player->getPile("heavenly_army"), false, "hongfa");
-            room->clearAG(player);
+            bool ok = false;
+            int card_id = player->tag["hongfa_prevent"].toInt(&ok);
+            player->tag.remove("hongfa_prevent");
 
-            if (card_id != -1) {
+            if (ok && card_id != -1) {
                 CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), objectName(), QString());
                 room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
                 return true;
@@ -1345,17 +1367,18 @@ MomentumPackage::MomentumPackage()
     zhangren->addSkill(new Chuanxin);
     zhangren->addSkill(new Fengshi);
 
+    General *lord_zhangjiao = new General(this, "lord_zhangjiao$", "qun");
+    lord_zhangjiao->addSkill(new Wuxin);
+    lord_zhangjiao->addSkill(new Hongfa);
+    lord_zhangjiao->addSkill(new Wendao);
+
     skills << new Yongjue << new YongjueStart << new Benghuai << new HongfaSlash << new Yinghun_Sunce << new Yingzi_Sunce;
 
     addMetaObject<CunsiCard>();
     addMetaObject<DuanxieCard>();
     addMetaObject<FengshiSummon>();
+    addMetaObject<HongfaCard>();
     addMetaObject<WendaoCard>();
-
-    General *lord_zhangjiao = new General(this, "lord_zhangjiao$", "qun");
-    lord_zhangjiao->addSkill(new Wuxin);
-    lord_zhangjiao->addSkill(new Hongfa);
-    lord_zhangjiao->addSkill(new Wendao);
 }
 
 ADD_PACKAGE(Momentum)
