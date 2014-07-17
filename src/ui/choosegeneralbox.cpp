@@ -104,7 +104,7 @@ ChooseGeneralBox::ChooseGeneralBox()
 {
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
-    confirm = new Button(tr("confirm"), 0.6, true);
+    confirm = new Button(tr("fight"), 0.6, true);
     confirm->setEnabled(ClientInstance->getReplayer());
     confirm->setParentItem(this);
     connect(confirm, SIGNAL(clicked()), this, SLOT(reply()));
