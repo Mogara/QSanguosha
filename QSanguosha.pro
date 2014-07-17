@@ -96,6 +96,7 @@ SOURCES += \
     src/ui/TimedProgressBar.cpp \
     src/ui/uiUtils.cpp \
     src/ui/window.cpp \
+    src/ui/ChooseOptionsBox.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
@@ -106,7 +107,7 @@ SOURCES += \
     src/jsoncpp/src/json_internalmap.inl \
     src/jsoncpp/src/json_internalarray.inl \
     swig/sanguosha_wrap.cxx \
-    src/ui/ChooseOptionsBox.cpp
+
 HEADERS += \
     src/client/aux-skills.h \
     src/client/client.h \
@@ -193,6 +194,7 @@ HEADERS += \
     src/ui/TimedProgressBar.h \
     src/ui/uiUtils.h \
     src/ui/window.h \
+    src/ui/ChooseOptionsBox.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \
@@ -208,7 +210,6 @@ HEADERS += \
     src/jsoncpp/include/json/config.h \
     src/jsoncpp/include/json/autolink.h \
     src/jsoncpp/include/json/assertions.h \
-    src/ui/ChooseOptionsBox.h
 
 FORMS += \
     src/dialog/cardoverview.ui \
