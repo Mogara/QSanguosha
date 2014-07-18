@@ -97,6 +97,15 @@ void ChooseOptionsBox::chooseOption(QStringList options)
         button->setObjectName(option);
         buttons << button;
         button->setParentItem(this);
+
+        QString original_tooltip = QString(":%1").arg(title);
+        QString tooltip = Sanguosha->translate(original_tooltip);
+        if (tooltip == original_tooltip) {
+            original_tooltip = QString(":%1").arg(option);
+            tooltip = Sanguosha->translate(original_tooltip);
+        }
+        if (tooltip != original_tooltip)
+            button->setToolTip(QString("<font color=%1>%2</font>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(tooltip));
         connect(button, SIGNAL(clicked()), this, SLOT(reply()));
         connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerMakeChoice()));
     }
