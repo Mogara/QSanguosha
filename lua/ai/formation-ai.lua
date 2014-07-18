@@ -68,7 +68,7 @@ local getZiliangCard = function(self, damage)
 		local cards = {}
 		for _, id in ipairs(ids) do table.insert(cards, sgs.Sanguosha:getCard(id)) end
 		for _, card in ipairs(cards) do
-			if card:isKindOf("Peach") then return card:getEffectiveId() end
+			if card:isKindOf("Peach") or card:isKindOf("Analeptic") then return card:getEffectiveId() end
 		end
 		for _, card in ipairs(cards) do
 			if card:isKindOf("Jink") then return card:getEffectiveId() end

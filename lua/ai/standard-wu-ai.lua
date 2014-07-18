@@ -485,7 +485,7 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 				if dummy_use.card then shouldUse = false end
 			end
 			
-			if card:getSuit() == sgs.Card_Diamond and self.player:hasSkill("guose") then shouldUse = false 	end
+			if card:getSuit() == sgs.Card_Diamond and self.player:hasSkill("guose") then sgs.ai_use_priority.AwaitExhausted = 0.2 end
 				
 			for _, player in ipairs(self.friends) do
 	        	if player:hasShownSkill("xiaoji") and player:getCards("e"):length() > 0 then
