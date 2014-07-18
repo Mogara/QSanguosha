@@ -148,7 +148,7 @@ void ServerPlayer::throwAllMarks(bool visible_only) {
         marks.clear();
 }
 
-void ServerPlayer::clearOnePrivatePile(QString pile_name) {
+void ServerPlayer::clearOnePrivatePile(const QString &pile_name) {
     if (!piles.contains(pile_name))
         return;
     QList<int> &pile = piles[pile_name];
