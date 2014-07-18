@@ -39,7 +39,7 @@ jixi_skill.getTurnUseCard = function(self)
 
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 			if (self.player:distanceTo(player, 1) <= 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, jixisnatch))
-				--[[and not self.room:isProhibited(self.player, player, jixisnatch)]] and self:hasTrickEffective(jixisnatch, player) then
+				and not self.room:isProhibited(self.player, player, jixisnatch) and self:hasTrickEffective(jixisnatch, player) then
 
 				local suit = snatch:getSuitString()
 				local number = snatch:getNumberString()
@@ -322,6 +322,28 @@ local shangyi_skill = {}
 shangyi_skill.name = "shangyi"
 table.insert(sgs.ai_skills, shangyi_skill)
 shangyi_skill.getTurnUseCard = function(self)
+
+	local notshown,shown,f,e = 0,0,0,0
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if  not p:hasShownOneGeneral() then
+			notshown = notshown + 1
+		end
+		if p:hasShownOneGeneral() then
+			shown = shown + 1
+			if p:getKingdom() == self.player:getKingdom() then
+				f = f + 1
+			else
+				e = e + 1
+			end	
+		end
+	end
+	if self.room:alivePlayerCount() > 3 then 
+		if (shown < 2 ) 
+			and not self.player:hasShownOneGeneral() then
+			return nil 
+		end
+	end
+
 	local card_str = ("@ShangyiCard=.&shangyi")
 	local shangyi_card = sgs.Card_Parse(card_str)
 	assert(shangyi_card)
