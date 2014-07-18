@@ -317,6 +317,32 @@ sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
 	return "."
 end
 
+sgs.ai_skill_invoke.tuxi = function(self, data)
+	local notshown,shown,f,e = 0,0,0,0
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if  not p:hasShownOneGeneral() then
+			notshown = notshown + 1
+		end
+		if p:hasShownOneGeneral() then
+			shown = shown + 1
+			if p:getKingdom() == self.player:getKingdom() then
+				f = f + 1
+			else
+				e = e + 1
+			end	
+		end
+	end
+	
+	if self.room:alivePlayerCount() > 3 then 
+		if (shown < 3 or  e > f + 2) 
+			and not self.player:hasShownOneGeneral() and not self:isWeak() then
+			return false 
+		end
+	end	
+	
+	return true
+end
+
 sgs.ai_skill_invoke.luoyi = function(self,data)
 	if self.player:isSkipped(sgs.Player_Play) then return false end
 	local cards = self.player:getHandcards()
@@ -484,6 +510,29 @@ function sgs.ai_cardneed.qingguo(to, card)
 end
 
 sgs.ai_skill_invoke.luoshen = function(self, data)
+	sgs.ai_skill_invoke.luoshen = function(self, data)
+
+	local notshown,shown,f,e = 0,0,0,0
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if  not p:hasShownOneGeneral() then
+			notshown = notshown + 1
+		end
+		if p:hasShownOneGeneral() then
+			shown = shown + 1
+			if p:getKingdom() == self.player:getKingdom() then
+				f = f + 1
+			else
+				e = e + 1
+			end	
+		end
+	end
+	if self.room:alivePlayerCount() > 3 then 
+		if (shown < 3) 
+			and not self.player:hasShownOneGeneral() and not self:isWeak() then
+			return false 
+		end
+	end
+	
 	if self:willSkipPlayPhase() then
 		local erzhang = self.room:findPlayerBySkillName("guzheng")
 		if erzhang and self:isEnemy(erzhang) then return false end
@@ -1044,6 +1093,28 @@ quhu_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_use_func.QuhuCard = function(QHCard, use, self)
+	
+	local notshown,shown,f,e = 0,0,0,0
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if  not p:hasShownOneGeneral() then
+			notshown = notshown + 1
+		end
+		if p:hasShownOneGeneral() then
+			shown = shown + 1
+			if p:getKingdom() == self.player:getKingdom() then
+				f = f + 1
+			else
+				e = e + 1
+			end	
+		end
+	end
+	if self.room:alivePlayerCount() > 3 then 
+		if (shown < 3 or  e > f + 2)  
+			and not self.player:hasShownOneGeneral()  then
+			return nil 
+		end
+	end
+	
 	if #self.enemies == 0 then return end
 	local max_card = self:getMaxCard()
 	local max_point = max_card:getNumber()

@@ -56,10 +56,10 @@ end
 sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 
 	local firstshow = ("luanji|jizhi"):split("|")	
-	local needshow = ("shushen|shoucheng|yicheng|qianhuan|cunsi|chuanxin"):split("|")	
+	local needshow = ("yicheng|qianhuan|chuanxin|suishi"):split("|")	
 	local woundedshow = ("zaiqi|yinghun|hunshang|hengzheng"):split("|")
 	local friendshow = ("yicheng|qianhuan|duoshi|rende|jieyin|xiongyi"):split("|")
-		
+	
 	local notshown,shown,f,e = 0,0,0,0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
 		if  not p:hasShownOneGeneral() then

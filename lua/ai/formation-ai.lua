@@ -329,6 +329,29 @@ shangyi_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_use_func.ShangyiCard = function(card, use, self)
+
+
+	local notshown,shown,f,e = 0,0,0,0
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if  not p:hasShownOneGeneral() then
+			notshown = notshown + 1
+		end
+		if p:hasShownOneGeneral() then
+			shown = shown + 1
+			if p:getKingdom() == self.player:getKingdom() then
+				f = f + 1
+			else
+				e = e + 1
+			end	
+		end
+	end
+	if self.room:alivePlayerCount() > 3 then 
+		if (shown < 2 ) 
+			and not self.player:hasShownOneGeneral() then
+			return nil 
+		end
+	end
+
 	if self.player:hasUsed("ShangyiCard") then return end
 	self:sort(self.enemies, "handcard")
 

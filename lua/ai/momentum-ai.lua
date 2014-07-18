@@ -17,6 +17,31 @@
 
   QSanguosha-Hegemony Team
 *********************************************************************]]
+sgs.ai_skill_invoke.xunxun = function(self, data)
+	local notshown,shown,f,e = 0,0,0,0
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if  not p:hasShownOneGeneral() then
+			notshown = notshown + 1
+		end
+		if p:hasShownOneGeneral() then
+			shown = shown + 1
+			if p:getKingdom() == self.player:getKingdom() then
+				f = f + 1
+			else
+				e = e + 1
+			end	
+		end
+	end
+	
+	if self.room:alivePlayerCount() > 3 then 
+		if (shown < 3 or  e > f + 1) 
+			and not self.player:hasShownOneGeneral() and not self:isWeak() then
+			return false 
+		end
+	end	
+	
+	return true
+end
 
 function sgs.ai_skill_invoke.wangxi(self, data)
 	local target = data:toPlayer()
@@ -68,6 +93,29 @@ sgs.ai_choicemade_filter.skillInvoke.hengjiang = function(self, player, promptli
 end
 
 sgs.ai_skill_invoke.qianxi = function(self, data)
+	
+	local notshown,shown,f,e = 0,0,0,0
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if  not p:hasShownOneGeneral() then
+			notshown = notshown + 1
+		end
+		if p:hasShownOneGeneral() then
+			shown = shown + 1
+			if p:getKingdom() == self.player:getKingdom() then
+				f = f + 1
+			else
+				e = e + 1
+			end	
+		end
+	end
+	
+	if self.room:alivePlayerCount() > 3 then 
+		if (shown < 3 or  e > f + 2) 
+			and not self.player:hasShownOneGeneral()  then
+			return false 
+		end
+	end
+
 	for _, p in ipairs(self.enemies) do
 		if self.player:distanceTo(p) == 1 and not p:isKongcheng() then
 			return true
@@ -208,6 +256,28 @@ local duanxie_skill = {}
 duanxie_skill.name = "duanxie"
 table.insert(sgs.ai_skills, duanxie_skill)
 duanxie_skill.getTurnUseCard = function(self)
+	
+	local notshown,shown,f,e = 0,0,0,0
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if  not p:hasShownOneGeneral() then
+			notshown = notshown + 1
+		end
+		if p:hasShownOneGeneral() then
+			shown = shown + 1
+			if p:getKingdom() == self.player:getKingdom() then
+				f = f + 1
+			else
+				e = e + 1
+			end	
+		end
+	end
+	if self.room:alivePlayerCount() > 3 then 
+		if (shown < 3 or e > f + 2 ) 
+			and not self.player:hasShownOneGeneral() then
+			return nil 
+		end
+	end
+
 	if self.player:hasUsed("DuanxieCard") then return end
 	return sgs.Card_Parse("@DuanxieCard=.&duanxie")
 end
