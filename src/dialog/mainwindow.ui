@@ -144,7 +144,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>C:/Users/Administrator/.designer/image/system/settings.png</normaloff>C:/Users/Administrator/.designer/image/system/settings.png</iconset>
+<normaloff>../image/system/settings.png</normaloff>../image/system/settings.png</iconset>
    </property>
    <property name="text">
     <string>Configure</string>
