@@ -151,7 +151,8 @@ void SoundTestBox::btn_clicked(){
 #endif
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), scene(NULL), ui(new Ui::MainWindow), server(NULL), about_window(NULL),
+    : QMainWindow(parent), isLeftPressDown(false),
+      scene(NULL), ui(new Ui::MainWindow), server(NULL), about_window(NULL),
       minButton(NULL), maxButton(NULL), normalButton(NULL), closeButton(NULL)
 {
     ui->setupUi(this);
