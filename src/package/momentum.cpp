@@ -1048,8 +1048,21 @@ public:
             foreach(ServerPlayer *to, use.to){
                 if (use.from->inSiegeRelation(player, to)){
                     if (to->canDiscard(to, "e")) {
+                        LogMessage log;
+                        if (player->hasSkill(this)) {
+                            log.from = player;
+                        } else if (player->getNextAlive() == to) {
+                            log.from = qobject_cast<ServerPlayer *>(player->getNextAlive(2));
+                        } else if (player->getLastAlive() == to) {
+                            log.from = qobject_cast<ServerPlayer *>(player->getLastAlive(2));
+                        }
+                        log.arg = objectName();
+                        log.type = "#TriggerSkill";
+                        room->sendLog(log);
+
                         room->broadcastSkillInvoke(objectName());
                         room->notifySkillInvoked(player, objectName());
+
                         if (room->askForCard(to, ".|.|.|equipped!", "@fengshi-discard:" + player->objectName() + ":" + use.from->objectName()) == NULL){
                             QList<const Card *> equips = to->getEquips();
                             QList<const Card *> equips_candiscard;
