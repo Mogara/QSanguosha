@@ -314,29 +314,6 @@ local lianhuan_skill = {}
 lianhuan_skill.name = "lianhuan"
 table.insert(sgs.ai_skills, lianhuan_skill)
 lianhuan_skill.getTurnUseCard = function(self)
-	
-	local notshown,shown,f,e = 0,0,0,0
-	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownOneGeneral() then
-			notshown = notshown + 1
-		end
-		if p:hasShownOneGeneral() then
-			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
-				f = f + 1
-			else
-				e = e + 1
-			end	
-		end
-	end
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  e > f + 1) 
-			and not self.player:hasShownOneGeneral()  then
-			return nil 
-		end
-	end	
-
-
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
 
@@ -396,28 +373,6 @@ local huoji_skill = {}
 huoji_skill.name = "huoji"
 table.insert(sgs.ai_skills, huoji_skill)
 huoji_skill.getTurnUseCard = function(self)
-
-	local notshown,shown,f,e = 0,0,0,0
-	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownOneGeneral() then
-			notshown = notshown + 1
-		end
-		if p:hasShownOneGeneral() then
-			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
-				f = f + 1
-			else
-				e = e + 1
-			end	
-		end
-	end
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  e > f + 1) 
-			and not self.player:hasShownOneGeneral()  then
-			return nil 
-		end
-	end	
-
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
 
@@ -737,30 +692,3 @@ end
 sgs.ai_skill_invoke.huoshou = true
 
 sgs.ai_skill_invoke.juxiang = true
-
-
-sgs.ai_skill_invoke.guanxing = function(self, data)
-	local notshown,shown,f,e = 0,0,0,0
-	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownOneGeneral() then
-			notshown = notshown + 1
-		end
-		if p:hasShownOneGeneral() then
-			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
-				f = f + 1
-			else
-				e = e + 1
-			end	
-		end
-	end
-	
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  e > f + 1) and not self.player:getJudgingArea():isEmpty() 
-			and not self.player:hasShownOneGeneral() and not self:isWeak() then
-			return false 
-		end
-	end	
-	
-	return true
-end
