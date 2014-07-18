@@ -252,6 +252,7 @@ win32-msvc*{
 win32-g++{
     DEFINES += WIN32
     LIBS += -L"$$_PRO_FILE_PWD_/lib/win/MinGW"
+    DEFINES += GPP
 }
 winrt{
     DEFINES += WINRT
@@ -276,7 +277,6 @@ linux{
         }
     }
 }
-g++: DEFINES += GPP
 
 CONFIG(audio){
     DEFINES += AUDIO_SUPPORT
