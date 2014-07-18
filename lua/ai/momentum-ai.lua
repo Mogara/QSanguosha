@@ -385,72 +385,62 @@ sgs.ai_use_priority.WendaoCard = sgs.ai_use_priority.ZhihengCard
 
 sgs.ai_skill_invoke.hongfa = true
 
-sgs.ai_skill_invoke.hongfa_slash_resp = function(self, data)
-	local asked = data:toStringList()
-	local prompt = asked[2]
-	if self:askForCard("slash", prompt, 1) == "." then return false end
-
-	local cards = self.player:getHandcards()
-	for _, card in sgs.qlist(cards) do
-		if isCard("Slash", card, self.player) then
-			return false
-		end
+local getHongfaCard = function(pile)
+	for _, c in ipairs(pile) do
+		if sgs.Sanguosha:getCard(c):objectName() == "PeaceSpell" then return c end
 	end
-
-	return true
+	for _, c in ipairs(pile) do
+		if sgs.Sanguosha:getCard(c):objectName() ~= "DragonPhoenix" then return c end
+	end
+	if #pile > 0 then return pile[1] end
+	return nil
 end
 
 local hongfa_slash_skill = {}
 hongfa_slash_skill.name = "hongfa_slash"
 table.insert(sgs.ai_skills, hongfa_slash_skill)
-hongfa_slash_skill.getTurnUseCard = function(self)
-	self.HongfaSlashCard_target = nil
-	self.HongfaCard_id = nil
-	if not self:slashIsAvailable() then return end
-	if self.player:hasUsed("HongfaCard") then return end
-	local lord = self.player:getLord()
-	if lord and lord:hasLordSkill("hongfa") and not lord:getPile("heavenly_army"):isEmpty() then
-		local hongfa_slash = sgs.Card_Parse("@HongfaCard=.&hongfa_slash")
-		assert(hongfa_slash)
-		return hongfa_slash
-	end
-	return
-end
-
-sgs.ai_skill_use_func.HongfaCard = function(card, use, self)
-	local ids = self.player:getLord():getPile("heavenly_army")
-	for _, id in sgs.qlist(ids) do
-		local slash = sgs.cloneCard("slash", sgs.Card_SuitToBeDecided, -1)
-		slash:addSubcard(id)
-		local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
-		self:useCardSlash(slash, dummy_use)
-		if dummy_use.card and dummy_use.to:length() > 0 then
-			use.card = card
-			if not use.isDummy then
-				local t = {}
-				for _, to in sgs.qlist(dummy_use.to) do
-					table.insert(t, to:objectName())
-				end
-				self.HongfaCard_target = table.concat(t, "+")
-				self.HongfaCard_id = id
-			end
-		end
+hongfa_slash_skill.getTurnUseCard = function(self, inclusive)
+	local zj = self.room:getLord("qun")
+	if (not zj or zj:getPile("heavenly_army"):isEmpty() or not zj:isFriendWith(self.player)) then return end
+	local ints = sgs.QList2Table(zj:getPile("heavenly_army"))
+	
+	local int = getHongfaCard(ints)
+	if int then 
+		local card = sgs.Sanguosha:getCard(int)
+		local suit = card:getSuitString()
+		local number = card:getNumberString()
+		local card_id = card:getEffectiveId()
+		local card_str = string.format("slash:hongfa[%s:%s]=%d&", suit, number, card_id)
+		local slash = sgs.Card_Parse(card_str)
+		assert(slash)
+		return slash
 	end
 end
 
-sgs.ai_skill_use["@@hongfa_slash!"] = function(self, prompt)
-	assert(self.HongfaCard_target)
-	return "@HongfaSlashCard=.&hongfa_slash->" .. self.HongfaCard_target
-end
-
-sgs.ai_skill_askforag.hongfa = function(self, card_ids)
-	if self.HongfaCard_id then
-		return self.HongfaCard_id
+sgs.ai_view_as.hongfa_slash = function(card, player, card_place)
+	local zj = player:getLord()
+	if (not zj or zj:getPile("heavenly_army"):isEmpty() or not zj:isFriendWith(player)) then return end
+	local ints = sgs.QList2Table(zj:getPile("heavenly_army"))
+	
+	local int = getHongfaCard(ints)
+	if int then 
+		local card = sgs.Sanguosha:getCard(int)
+		local suit = card:getSuitString()
+		local number = card:getNumberString()
+		local card_id = card:getEffectiveId()
+		local card_str = string.format("slash:hongfa[%s:%s]=%d&", suit, number, card_id)
+		return card_str
 	end
-	return card_ids[1]
 end
 
-sgs.ai_use_priority.HongfaCard = sgs.ai_use_priority.Slash
+sgs.ai_skill_use["@@hongfa"] = function(self)
+	local ints = sgs.QList2Table(self.player:getPile("heavenly_army"))
+	local int = getHongfaCard(ints)
+	if int then
+		return "@HongfaCard=" .. tostring(int) .. "&hongfa"
+	end
+	return "."
+end
 
 sgs.ai_slash_prohibit.PeaceSpell = function(self, from, enemy, card)
 	if enemy:hasArmorEffect("PeaceSpell") and card:isKindOf("NatureSlash") then return true end
