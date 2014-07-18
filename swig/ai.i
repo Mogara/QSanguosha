@@ -96,16 +96,6 @@ public:
     LuaFunction callback;
 };
 
-// for some AI use
-/*class Shit:public BasicCard{
-public:
-    Shit(Card::Suit suit, int number);
-    virtual QString getSubtype() const;
-    virtual void onMove(const CardMoveStruct &move) const;
-
-    static bool HasShit(const Card *card);
-};*/
-
 %{
 
 bool LuaAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) {
@@ -123,7 +113,8 @@ bool LuaAI::askForSkillInvoke(const QString &skill_name, const QVariant &data) {
         const char *error_msg = lua_tostring(L, -1);
         lua_pop(L, 1);
         room->output(error_msg);
-    } else {
+    }
+    else {
         bool invoke = lua_toboolean(L, -1);
         lua_pop(L, 1);
         return invoke;
@@ -148,7 +139,7 @@ QString LuaAI::askForChoice(const QString &skill_name, const QString &choices, c
         room->output(result);
         return TrustAI::askForChoice(skill_name, choices, data);
     }
-   return result;
+    return result;
 }
 
 void LuaAI::activate(CardUseStruct &card_use) {
@@ -173,7 +164,7 @@ AI *Room::cloneAI(ServerPlayer *player) {
     if (L == NULL)
         return new TrustAI(player);
 
-    if(!Config.EnableAI)
+    if (!Config.EnableAI)
         return new TrustAI(player);
 
     lua_getglobal(L, "CloneAI");
@@ -185,7 +176,8 @@ AI *Room::cloneAI(ServerPlayer *player) {
         const char *error_msg = lua_tostring(L, -1);
         lua_pop(L, 1);
         output(error_msg);
-    } else {
+    }
+    else {
         void *ai_ptr;
         int result = SWIG_ConvertPtr(L, -1, &ai_ptr, SWIGTYPE_p_AI, 0);
         lua_pop(L, 1);
