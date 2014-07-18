@@ -159,8 +159,8 @@
     "extraSkillFont": ["SimLi", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
     "extraSkillTextArea": [32, 93, 56, 20],
     "seatIconRegion": [4, 1, 23, 16],
-	"leftDisableShowLockArea": [0, 0, 100, 122],
-	"rightDisableShowLockArea": [0, 0, 100, 122] //todo: adjust them
+	"leftDisableShowLockArea": [16, 59, 50, 61],
+	"rightDisableShowLockArea": [93, 59, 50, 61]
 },
 "dashboard":
 {
