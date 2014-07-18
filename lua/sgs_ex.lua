@@ -627,33 +627,44 @@ function sgs.CreateArraySummonSkill(spec)
 	return skill
 end
 
-function sgs.CreateWeapon(spec)
+function sgs.CreateEquipCard(spec)
+	assert(type(spec.location) == "number" and spec.location ~= sgs.EquipCard_DefensiveHorseLocation and spec.location ~= sgs.EquipCard_OffensiveHorseLocation)
 	assert(type(spec.name) == "string" or type(spec.class_name) == "string")
 	if not spec.name then spec.name = spec.class_name
 	elseif not spec.class_name then spec.class_name = spec.name end
 	if spec.suit then assert(type(spec.suit) == "number") end
 	if spec.number then assert(type(spec.number) == "number") end
-	assert(type(spec.range) == "number")
-	local card = sgs.LuaWeapon(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.range, spec.name, spec.class_name)
-
+	if spec.location == sgs.EquipCard_WeaponLocation then assert(type(spec.range) == "number") end
+	
+	local card = nil
+	if spec.location == sgs.EquipCard_WeaponLocation then
+		card = sgs.LuaWeapon(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.range, spec.name, spec.class_name)
+	elseif spec.location == sgs.EquipCard_ArmorLocation then
+		card = sgs.LuaArmor(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name)
+	elseif spec.location == sgs.EquipCard_TreasureLocation then
+		card = sgs.LuaTreasure(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name)
+	end
+	assert(card ~= nil)
+	
 	card.on_install = spec.on_install
 	card.on_uninstall = spec.on_uninstall
 
 	return card
 end
 
+function sgs.CreateWeapon(spec)
+	spec.location = sgs.EquipCard_WeaponLocation
+	return sgs.CreateEquipCard(spec)
+end
+
 function sgs.CreateArmor(spec)
-	assert(type(spec.name) == "string" or type(spec.class_name) == "string")
-	if not spec.name then spec.name = spec.class_name
-	elseif not spec.class_name then spec.class_name = spec.name end
-	if spec.suit then assert(type(spec.suit) == "number") end
-	if spec.number then assert(type(spec.number) == "number") end
-	local card = sgs.LuaArmor(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name)
+	spec.location = sgs.EquipCard_ArmorLocation
+	return sgs.CreateEquipCard(spec)
+end
 
-	card.on_install = spec.on_install
-	card.on_uninstall = spec.on_uninstall
-
-	return card
+function sgs.CreateTreasure(spec)
+	spec.location = sgs.EquipCard_TreasureLocation
+	return sgs.CreateEquipCard(spec)
 end
 
 function sgs.LoadTranslationTable(t)

@@ -1051,9 +1051,11 @@ public:
                         LogMessage log;
                         if (player->hasSkill(this)) {
                             log.from = player;
-                        } else if (player->getNextAlive() == to) {
+                        }
+                        else if (player->getNextAlive() == to) {
                             log.from = qobject_cast<ServerPlayer *>(player->getNextAlive(2));
-                        } else if (player->getLastAlive() == to) {
+                        }
+                        else if (player->getLastAlive() == to) {
                             log.from = qobject_cast<ServerPlayer *>(player->getLastAlive(2));
                         }
                         log.arg = objectName();

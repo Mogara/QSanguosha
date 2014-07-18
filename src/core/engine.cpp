@@ -244,6 +244,13 @@ void Engine::addPackage(Package *package) {
             if (!luaArmors.keys().contains(lcard->getClassName()))
                 luaArmors.insert(lcard->getClassName(), lcard->clone());
         }
+        else if (card->isKindOf("LuaTreasure")) {
+            const LuaTreasure *lcard = qobject_cast<const LuaTreasure *>(card);
+            Q_ASSERT(lcard != NULL);
+            luaTreasure_className2objectName.insert(lcard->getClassName(), lcard->objectName());
+            if (!luaTreasures.keys().contains(lcard->getClassName()))
+                luaTreasures.insert(lcard->getClassName(), lcard->clone());
+        }
         else {
             QString class_name = card->metaObject()->className();
             metaobjects.insert(class_name, card->metaObject());
@@ -511,6 +518,17 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
     else if (luaArmor_className2objectName.values().contains(name)) {
         QString class_name = luaArmor_className2objectName.key(name, name);
         const LuaArmor *lcard = luaArmors.value(class_name, NULL);
+        if (!lcard) return NULL;
+        card = lcard->clone(suit, number);
+    }
+    else if (luaTreasure_className2objectName.keys().contains(name)) {
+        const LuaTreasure *lcard = luaTreasures.value(name, NULL);
+        if (!lcard) return NULL;
+        card = lcard->clone(suit, number);
+    }
+    else if (luaTreasure_className2objectName.values().contains(name)) {
+        QString class_name = luaTreasure_className2objectName.key(name, name);
+        const LuaTreasure *lcard = luaTreasures.value(class_name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
     }

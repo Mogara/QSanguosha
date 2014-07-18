@@ -131,6 +131,14 @@ public:
     virtual QString getSubtype() const;
 };
 
+class Treasure : public EquipCard {
+public:
+    Treasure(Card::Suit suit, int number);
+    virtual QString getSubtype() const;
+    virtual Location location() const;
+    virtual QString getCommonEffectName() const;
+};
+
 class Slash: public BasicCard {
 public:
     Slash(Card::Suit suit, int number);
