@@ -300,3 +300,21 @@ LuaArmor *LuaArmor::clone(Card::Suit suit, int number) const{
     return new_card;
 }
 
+
+LuaTreasure::LuaTreasure(Card::Suit suit, int number, const char *obj_name, const char *class_name)
+    : Treasure(suit, number)
+{
+    setObjectName(obj_name);
+    this->class_name = class_name;
+}
+
+LuaTreasure *LuaTreasure::clone(Card::Suit suit, int number) const{
+    if (suit == Card::SuitToBeDecided) suit = this->getSuit();
+    if (number == -1) number = this->getNumber();
+    LuaTreasure *new_card = new LuaTreasure(suit, number, objectName().toStdString().c_str(), class_name.toStdString().c_str());
+
+    new_card->on_install = on_install;
+    new_card->on_uninstall = on_uninstall;
+
+    return new_card;
+}

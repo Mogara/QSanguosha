@@ -44,6 +44,7 @@ class LuaBasicCard;
 class LuaTrickCard;
 class LuaWeapon;
 class LuaArmor;
+class LuaTreasure;
 
 struct lua_State;
 
@@ -240,6 +241,8 @@ private:
     QHash<QString, const LuaWeapon*> luaWeapons;
     QHash<QString, QString> luaArmor_className2objectName;
     QHash<QString, const LuaArmor *> luaArmors;
+    QHash<QString, QString> luaTreasure_className2objectName;
+    QHash<QString, const LuaTreasure *> luaTreasures;
 
     QMultiMap<QString, QString> sp_convert_pairs;
 };
