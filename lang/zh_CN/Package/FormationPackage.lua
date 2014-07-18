@@ -80,7 +80,7 @@ return {
 	["qianhuan:gethuan"] = "是否发动技能“千幻”将牌堆顶一张牌移出游戏成为“幻”？" ,
 	--["qianhuan:canceltarget"] = "是否发动技能“千幻”取消 %arg 的目标 %dest？" ,
 	["sorcery"] = "幻",
-	["@qianhuan-cancel"] = "你可以发动“千幻”，取消 %arg 的目标 %dest",
+	["@qianhuan-cancel"] = "你可以发动“千幻”，取消【%arg】的目标 %dest",
 	["~qianhuan"] = "选择一张\"幻\"→点击确定",
 	
 	["#hetaihou"] = "弄权之蛇蝎",

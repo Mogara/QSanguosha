@@ -77,7 +77,7 @@ public:
     void throwAllCards();
     void bury();
     void throwAllMarks(bool visible_only = true);
-    void clearOnePrivatePile(QString pile_name);
+    void clearOnePrivatePile(const QString &pile_name);
     void clearPrivatePiles();
     void drawCards(int n, const QString &reason = QString());
     bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant());
