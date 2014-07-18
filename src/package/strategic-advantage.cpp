@@ -55,7 +55,7 @@ public:
                     room->setPlayerProperty(p, "blade_use", blade_use);
 
                     if (blade_use.isEmpty())
-                        room->removePlayerDisableShow(player, "Blade");
+                        room->removePlayerDisableShow(p, "Blade");
                 }
             }
         }
