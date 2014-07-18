@@ -70,15 +70,6 @@ void ToolTipBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWid
                          QPointF(65, 20)};
     painter->drawPolygon(points, 8);
     painter->drawText(52, 37, 179, 9999, Qt::TextWordWrap, text);
-    /*tip_label = new QGraphicsTextItem(text, this);
-    tip_label->setPos(51, 36);
-    tip_label->show();*/
-    /*tip_label->setWindowFlags(Qt::SubWindow | Qt::FramelessWindowHint);
-    tip_label->setAttribute(Qt::WA_TranslucentBackground);
-    tip_label->setGeometry(QRect(1, 16, 329, 27*4));  //四倍行距
-    tip_label->setWordWrap(true);
-    tip_label->move(boundingRect().right(), boundingRect().bottom());
-    tip_label->setAlignment(Qt::AlignTop);*/
 }
 
 void ToolTipBox::showToolTip()
@@ -90,47 +81,7 @@ void ToolTipBox::hideToolTip()
 {
     hide();
 }
-/*public:
-    TipBox(QGraphicsItem *parent, const QString &text): QGraphicsWidget(parent)
-    {
-        //setFixedSize(180, 70);
-        setWindowFlags(Qt::SubWindow | Qt::FramelessWindowHint);
-        setOpacity(0.2);
-        setAttribute(Qt::WA_TranslucentBackground);
-        tip_label = new QLabel(text);
-        tip_label->setGeometry(QRect(328, 240, 329, 27*4));  //四倍行距
-        tip_label->setWordWrap(true);
-        tip_label->setAlignment(Qt::AlignTop);
-        //tip_label->move(1, 16);
-        //tip_label->setFixedSize(this->width()-2, this->height()-17);
-    }
 
-    virtual void paintEvent(QPaintEvent *)
-    {
-        QLinearGradient linear2(rect().topLeft(), rect().bottomLeft());
-        linear2.setColorAt(0, QColor(247, 247, 250));
-        linear2.setColorAt(0.5, QColor(240, 242, 247));
-        linear2.setColorAt(1, QColor(233, 233, 242));
- 
-        QPainter painter2(;
-        painter2.setPen(Qt::black);
-        painter2.setBrush(linear2);
-        static const QPointF points[8] = {QPointF(15, 0),
-                                          QPointF(15, 15),
-                                          QPointF(0, 15),
-                                          QPointF(0, this->height()-1),
-                                          QPointF(this->width()-1, this->height()-1),
-                                          QPointF(this->width()-1, 15),
-                                          QPointF(30, 15),
-                                          QPointF(15, 0)};
-        painter2.drawPolygon(points, 8);
-    }
-
-private:
-    QString text;
-    QLabel *tip_label;
-};
-*/
 ChooseOptionsBox::ChooseOptionsBox()
     : options_number(0), skill_name(QString())
 {
