@@ -23,8 +23,32 @@
 
 #include "TimedProgressBar.h"
 #include "sprite.h"
+#include <QGraphicsTextItem>
 
 class Button;
+
+class ToolTipBox : public QGraphicsObject {
+    Q_OBJECT
+
+public:
+    explicit ToolTipBox(const QString &text);
+
+    virtual QRectF boundingRect() const;
+
+protected:
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+private:
+    QString text;
+    QSizeF size;
+    QGraphicsTextItem *tip_label;
+
+    void init();
+
+public slots:
+    void showToolTip();
+    void hideToolTip();
+};
 
 class ChooseOptionsBox : public QGraphicsObject {
     Q_OBJECT

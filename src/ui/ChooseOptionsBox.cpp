@@ -27,6 +27,110 @@
 
 #include <QApplication>
 
+ToolTipBox::ToolTipBox(const QString &text)
+    : text(text), size(0, 0), tip_label(NULL)
+{
+    init();
+}
+
+void ToolTipBox::init()
+{
+    int line = (text.length() + 13) / 14;
+    int y = line * 15 + 13;
+    size = QSize(180, y);
+    setOpacity(0.8);
+}
+
+QRectF ToolTipBox::boundingRect() const
+{
+    QPointF point = mapFromScene(parentItem()->scenePos());
+    point += QPointF(50, 20);
+    return QRectF(point, size);
+}
+
+void ToolTipBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+{
+    painter->setRenderHint(QPainter::HighQualityAntialiasing);
+    QRectF rect = boundingRect();
+
+    QLinearGradient linear2(rect.topLeft(), rect.bottomLeft());
+    linear2.setColorAt(0, QColor(247, 247, 250));
+    linear2.setColorAt(0.5, QColor(240, 242, 247));
+    linear2.setColorAt(1, QColor(233, 233, 242));
+
+    painter->setPen(Qt::black);
+    painter->setBrush(linear2);
+    QPointF points[8] = {QPointF(65, 20),
+                         QPointF(65, 35),
+                         QPointF(50, 35),
+                         QPointF(50, size.height()+20),
+                         QPointF(size.width()+50, size.height()+20),
+                         QPointF(size.width()+50, 35),
+                         QPointF(80, 35),
+                         QPointF(65, 20)};
+    painter->drawPolygon(points, 8);
+    painter->drawText(52, 37, 179, 9999, Qt::TextWordWrap, text);
+    /*tip_label = new QGraphicsTextItem(text, this);
+    tip_label->setPos(51, 36);
+    tip_label->show();*/
+    /*tip_label->setWindowFlags(Qt::SubWindow | Qt::FramelessWindowHint);
+    tip_label->setAttribute(Qt::WA_TranslucentBackground);
+    tip_label->setGeometry(QRect(1, 16, 329, 27*4));  //四倍行距
+    tip_label->setWordWrap(true);
+    tip_label->move(boundingRect().right(), boundingRect().bottom());
+    tip_label->setAlignment(Qt::AlignTop);*/
+}
+
+void ToolTipBox::showToolTip()
+{
+    show();
+}
+
+void ToolTipBox::hideToolTip()
+{
+    hide();
+}
+/*public:
+    TipBox(QGraphicsItem *parent, const QString &text): QGraphicsWidget(parent)
+    {
+        //setFixedSize(180, 70);
+        setWindowFlags(Qt::SubWindow | Qt::FramelessWindowHint);
+        setOpacity(0.2);
+        setAttribute(Qt::WA_TranslucentBackground);
+        tip_label = new QLabel(text);
+        tip_label->setGeometry(QRect(328, 240, 329, 27*4));  //四倍行距
+        tip_label->setWordWrap(true);
+        tip_label->setAlignment(Qt::AlignTop);
+        //tip_label->move(1, 16);
+        //tip_label->setFixedSize(this->width()-2, this->height()-17);
+    }
+
+    virtual void paintEvent(QPaintEvent *)
+    {
+        QLinearGradient linear2(rect().topLeft(), rect().bottomLeft());
+        linear2.setColorAt(0, QColor(247, 247, 250));
+        linear2.setColorAt(0.5, QColor(240, 242, 247));
+        linear2.setColorAt(1, QColor(233, 233, 242));
+ 
+        QPainter painter2(;
+        painter2.setPen(Qt::black);
+        painter2.setBrush(linear2);
+        static const QPointF points[8] = {QPointF(15, 0),
+                                          QPointF(15, 15),
+                                          QPointF(0, 15),
+                                          QPointF(0, this->height()-1),
+                                          QPointF(this->width()-1, this->height()-1),
+                                          QPointF(this->width()-1, 15),
+                                          QPointF(30, 15),
+                                          QPointF(15, 0)};
+        painter2.drawPolygon(points, 8);
+    }
+
+private:
+    QString text;
+    QLabel *tip_label;
+};
+*/
 ChooseOptionsBox::ChooseOptionsBox()
     : options_number(0), skill_name(QString())
 {
@@ -87,6 +191,7 @@ void ChooseOptionsBox::chooseOption(QStringList options)
     update();
 
     buttons.clear();
+    int z = 100;
     foreach (QString option, options) {
         QString title = QString("%1:%2").arg(skill_name).arg(option);
         QString tranlated = Sanguosha->translate(title);
@@ -104,10 +209,18 @@ void ChooseOptionsBox::chooseOption(QStringList options)
             original_tooltip = QString(":%1").arg(option);
             tooltip = Sanguosha->translate(original_tooltip);
         }
-        if (tooltip != original_tooltip)
-            button->setToolTip(QString("<font color=%1>%2</font>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(tooltip));
         connect(button, SIGNAL(clicked()), this, SLOT(reply()));
         connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerMakeChoice()));
+        button->setZValue(--z);
+        if (tooltip != original_tooltip) {
+            //button->setToolTip(QString("<font color=%1>%2</font>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(tooltip));
+            ToolTipBox *tip_box = new ToolTipBox(tooltip);
+            tip_box->hide();
+            tip_box->setParentItem(button);
+            tip_box->setZValue(10000);
+            connect(button, SIGNAL(hover_entered()), tip_box, SLOT(showToolTip()));
+            connect(button, SIGNAL(hover_left()), tip_box, SLOT(hideToolTip()));
+        }
     }
 
     setPos(RoomSceneInstance->tableCenterPos() - QPointF(boundingRect().width() / 2, boundingRect().height() / 2));

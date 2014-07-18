@@ -517,7 +517,7 @@
 <context>
     <name>ChooseOptionsBox</name>
     <message>
-        <location filename="../../src/ui/ChooseOptionsBox.cpp" line="65"/>
+        <location filename="../../src/ui/ChooseOptionsBox.cpp" line="169"/>
         <source>Please choose:</source>
         <translation>请选择:</translation>
     </message>
