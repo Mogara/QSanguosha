@@ -37,9 +37,7 @@ function SmartAI:shouldUseRende()
 			end
 		end
 	end
-	if self.player:hasSkill("kongcheng") and not self.player:isKongcheng() then
-		return true
-	end
+	
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:canSlash(self.player) and not self:slashProhibit(nil, self.player, enemy)
 			and self:hasCrossbowEffect(enemy) and getCardsNum("Slash", enemy) > 1 and self:getOverflow() <= 0 then
@@ -58,6 +56,13 @@ function SmartAI:shouldUseRende()
 		return false
 		end
 	end
+	
+	if 	self.player:hasSkill("kongcheng") and self.player:hasSkill("rende") and (self.player:getMark("rende") >= 3 or self.player:getHandcardNum()<3 )then
+		sgs.ai_use_priority.RendeCard = 0.1
+	end
+	if self.player:hasSkill("kongcheng") and not self.player:isKongcheng() then
+		return true
+	end
 			
 end
 
@@ -75,7 +80,7 @@ end
 sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(cards, true)
-
+	
 	for i = 1, #cards do
 		local card, friend = self:getCardNeedPlayer(cards)
 		if card and friend then
