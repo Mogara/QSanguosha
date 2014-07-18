@@ -199,6 +199,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     foreach(QAction *action, actions)
         start_scene->addButton(action);
+    
+    ui->menuSumMenu->setAttribute(Qt::WA_TranslucentBackground);
+    ui->menuGame->setAttribute(Qt::WA_TranslucentBackground);
+    ui->menuView->setAttribute(Qt::WA_TranslucentBackground);
+    ui->menuOptions->setAttribute(Qt::WA_TranslucentBackground);
+    ui->menuDIY->setAttribute(Qt::WA_TranslucentBackground);
+    ui->menuCheat->setAttribute(Qt::WA_TranslucentBackground);
+    ui->menuHelp->setAttribute(Qt::WA_TranslucentBackground);
+
     view = new FitView(scene);
 
     setCentralWidget(view);
@@ -240,8 +249,30 @@ MainWindow::MainWindow(QWidget *parent)
     maxButton->setStyleSheet(styleSheet);
     normalButton->setStyleSheet(styleSheet);
     closeButton->setStyleSheet(styleSheet);
+
+    menuBar()->hide();
+
+    menu = new QPushButton(this);
+    menu->setMenu(ui->menuSumMenu);
+    menu->setIcon(QPixmap("image/system/button/config.png"));
+    menu->setStyleSheet("background-color:transparent; QPushButton::menu-indicator{image:None;}");
+    menu->setToolTip(tr("<font color=%1>Config</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+
+    ui->menuSumMenu->setStyleSheet("color: black;"
+                                   "background-color: white;"
+                                   "selection-color: white;"
+                                   "selection-background-color: black;"
+                                   "border-style: outset;"
+                                   "border-width: 2px;"
+                                   "border-color: gray;");
     
     repaintButtons();
+
+    QGraphicsDropShadowEffect *shadow_effect = new QGraphicsDropShadowEffect(this);
+    shadow_effect->setOffset(-5, 5);
+    shadow_effect->setColor(Qt::gray);
+    shadow_effect->setBlurRadius(8);
+    ui->menuSumMenu->setGraphicsEffect(shadow_effect);
 
     systray = NULL;
 }
@@ -426,13 +457,14 @@ void MainWindow::region(const QPoint &cursorGlobalPoint)
 
 void MainWindow::repaintButtons()
 {
-    if (!minButton || !maxButton || !normalButton || !closeButton)
+    if (!minButton || !maxButton || !normalButton || !closeButton || !menu)
         return;
     int width = this->width();
     minButton->setGeometry(width - 67, 5, 20, 20);
     maxButton->setGeometry(width - 46, 5, 20, 20);
     normalButton->setGeometry(width - 46, 5, 20, 20);
     closeButton->setGeometry(width - 25, 5, 20, 20);
+    menu->setGeometry(width - 88, 5, 20, 20);
     
     bool max = windowState() & Qt::WindowMaximized;
     if (max) {

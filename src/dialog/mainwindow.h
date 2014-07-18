@@ -118,6 +118,7 @@ private:
     QToolButton *maxButton;
     QToolButton *normalButton;
     QToolButton *closeButton;
+    QPushButton *menu;
 
     void restoreFromConfig();
     void region(const QPoint &cursorGlobalPoint);
