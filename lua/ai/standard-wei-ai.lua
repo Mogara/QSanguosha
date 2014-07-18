@@ -510,7 +510,7 @@ function sgs.ai_cardneed.qingguo(to, card)
 end
 
 sgs.ai_skill_invoke.luoshen = function(self, data)
-	sgs.ai_skill_invoke.luoshen = function(self, data)
+
 
 	local notshown,shown,f,e = 0,0,0,0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
