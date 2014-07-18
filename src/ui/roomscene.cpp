@@ -468,7 +468,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
         break;
     }
     case S_GAME_EVENT_UPDATE_PRESHOW: {
-        Q_ASSERT(arg[1].isObject());
+        //Q_ASSERT(arg[1].isObject());
         Json::Value::Members keys = arg[1].getMemberNames();
         bool in_console_mode = true;
         foreach(const ClientPlayer *player, ClientInstance->getPlayers()) {

@@ -394,6 +394,23 @@ QGroupBox *ServerDialog::createGameModeBox() {
         if (itor.key() == Config.GameMode)
             button->setChecked(true);
     }
+
+    //mini scenes
+    QRadioButton *mini_scenes = new QRadioButton(tr("Mini Scenes"));
+    mini_scenes->setObjectName("custom_scenario");
+    mode_group->addButton(mini_scenes);
+
+    if (Config.GameMode == "custom_scenario")
+        mini_scenes->setChecked(true);
+
+    mini_scene_button = new QPushButton(tr("Custom Mini Scene"));
+    connect(mini_scene_button, SIGNAL(clicked()), this, SLOT(doCustomAssign()));
+
+    mini_scene_button->setEnabled(true);
+
+    item_list << mini_scenes;
+    item_list << mini_scene_button;
+
     // ============
 
     QVBoxLayout *left = new QVBoxLayout;
@@ -461,8 +478,6 @@ void ServerDialog::onOkButtonClicked() {
 
 void ServerDialog::doCustomAssign() {
     CustomAssignDialog *dialog = new CustomAssignDialog(this);
-
-    connect(dialog, SIGNAL(scenario_changed()), this, SLOT(setMiniCheckBox()));
     dialog->exec();
 }
 

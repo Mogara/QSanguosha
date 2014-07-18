@@ -1115,7 +1115,7 @@ const Player *Player::getLord(bool include_death) const{
     QList<const Player *> sib = include_death ? getSiblings() : getAliveSiblings();
     sib << this;
     foreach(const Player *p, sib){
-        if (p->getGeneral()->isLord() && p->getKingdom() == kingdom)
+        if (p->getGeneral() && p->getGeneral()->isLord() && p->getKingdom() == kingdom)
             return p;
     }
 

@@ -2054,25 +2054,30 @@ int Room::drawCard() {
 
 void Room::prepareForStart() {
     if (scenario) {
-        QStringList generals, roles;
-        scenario->assign(generals, roles);
+        QStringList generals, generals2, roles;
+        scenario->assign(generals, generals2, roles);
 
-        bool expose_roles = scenario->exposeRoles();
         for (int i = 0; i < m_players.length(); i++) {
             ServerPlayer *player = m_players[i];
-            if (generals.size() > i && !generals[i].isNull()) {
-                player->setGeneralName(generals[i]);
-                broadcastProperty(player, "general");
+            if (generals.size() > i && !generals[i].isNull() && !generals2[i].isNull()) {
+                QStringList names;
+                names.append(generals[i]);
+                names.append(generals2[i]);
+                this->setTag(player->objectName(), QVariant::fromValue(names));
+                player->setGeneralName("anjiang");
+                player->setGeneral2Name("anjiang");
+                player->setActualGeneral1Name(generals[i]);
+                player->setActualGeneral2Name(generals2[i]);
+                if (roles[i] == "unknown") {
+                    QString kingdom = Sanguosha->getGeneral(generals[i])->getKingdom();
+                    if (kingdom == "wei") player->setRole("lord");
+                    else if (kingdom == "shu") player->setRole("loyalist");
+                    else if (kingdom == "wu") player->setRole("renegade");
+                    else if (kingdom == "qun") player->setRole("rebel");
+                    else if (kingdom == "god") player->setRole("careerist");
+                    else player->setRole("kingdom");
+                }
             }
-
-            player->setRole(roles.at(i));
-            if (player->isLord())
-                broadcastProperty(player, "role");
-
-            if (expose_roles)
-                broadcastProperty(player, "role");
-            else
-                notifyProperty(player, player, "role");
         }
     }
     else {

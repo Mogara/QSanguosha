@@ -295,22 +295,23 @@ function SmartAI:isGoodChainPartner(player)
 	return false
 end
 
-function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
-	if not who:isChained() then return false end
+function SmartAI:isGoodChainTarget(who, source, nature, damagecount, card)
+	if not who:isChained() then return not self:isFriend(who) end
 	source = source or self.player
 	nature = nature or sgs.DamageStruct_Fire
 
 	damagecount = damagecount or 1
-	if slash and slash:isKindOf("Slash") then
-		nature = slash:isKindOf("FireSlash") and sgs.DamageStruct_Fire
-					or slash:isKindOf("ThunderSlash") and sgs.DamageStruct_Thunder
+	if card and card:isKindOf("Slash") then
+		nature = card:isKindOf("FireSlash") and sgs.DamageStruct_Fire
+					or card:isKindOf("ThunderSlash") and sgs.DamageStruct_Thunder
 					or sgs.DamageStruct_Normal
-		damagecount = self:hasHeavySlashDamage(source, slash, who, true)
+		damagecount = self:hasHeavySlashDamage(source, card, who, true)
 	elseif nature == sgs.DamageStruct_Fire then
 		if who:hasArmorEffect("Vine") then damagecount = damagecount + 1 end
 	end
 
 	if not self:damageIsEffective(who, nature, source) then return end
+	if card and card:isKindOf("FireAttack") and not self:hasTrickEffective(card, who, self.player) then return end
 
 	if who:hasArmorEffect("SilverLion") then damagecount = 1 end
 
@@ -351,10 +352,11 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 	if nature == sgs.DamageStruct_Normal then return good >= bad end
 
 	for _, player in sgs.qlist(self.room:getAllPlayers()) do
-		if player:objectName() ~= who:objectName() and player:isChained() and self:damageIsEffective(player, nature, source) then
+		if player:objectName() ~= who:objectName() and player:isChained() and self:damageIsEffective(player, nature, source)
+			and not (card and card:isKindOf("FireAttack") and not self:hasTrickEffective(card, who, self.player)) then
 			local getvalue = getChainedPlayerValue(player, 0)
 			if kills == #self.enemies and sgs.getDefenseSlash(player, self) < 2 then
-				if slash then self.room:setCardFlag(slash, "AIGlobal_KillOff") end
+				if card then self.room:setCardFlag(card, "AIGlobal_KillOff") end
 				return true
 			end
 			if self:isFriend(player) then
@@ -368,7 +370,7 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, slash)
 		end
 	end
 
-	if slash and F_count == 1 and E_count == 1 and the_enemy and the_enemy:isKongcheng() and the_enemy:getHp() == 1 then
+	if card and F_count == 1 and E_count == 1 and the_enemy and the_enemy:isKongcheng() and the_enemy:getHp() == 1 then
 		for _, c in ipairs(self:getCards("Slash")) do
 			if not c:isKindOf("NatureSlash") and not self:slashProhibit(c, the_enemy, source) then return end
 		end

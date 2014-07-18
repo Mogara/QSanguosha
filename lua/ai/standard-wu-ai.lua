@@ -838,6 +838,8 @@ sgs.xiaoji_keep_value = {
 	DefensiveHorse = 5
 }
 
+sgs.ai_cardneed.xiaoji = sgs.ai_cardneed.equip
+
 sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 	local x = self.player:getLostHp()
 	local n = x - 1
@@ -1172,7 +1174,7 @@ sgs.ai_skill_use_func.TianyiCard = function(TYCard, use, self)
 	local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
 
 	local slash = self:getCard("Slash")
-	local dummy_use = { isDummy = true }
+	local dummy_use = { isDummy = true, extra_target = 1, to = sgs.SPlayerList() }
 	self.player:setFlags("slashNoDistanceLimit")
 	if slash then self:useBasicCard(slash, dummy_use) end
 	self.player:setFlags("-slashNoDistanceLimit")
@@ -1203,18 +1205,20 @@ sgs.ai_skill_use_func.TianyiCard = function(TYCard, use, self)
 			end
 		end
 		if #self.enemies < 1 then return end
-		self:sort(self.friends_noself, "handcard")
-		for index = #self.friends_noself, 1, -1 do
-			local friend = self.friends_noself[index]
-			if not friend:isKongcheng() then
-				local friend_min_card = self:getMinCard(friend)
-				local friend_min_point = friend_min_card and friend_min_card:getNumber() or 100
-				if friend:hasShownSkill("yingyang") then friend_min_point = math.max(1, friend_min_point - 3) end
-				if max_point > friend_min_point then
-					self.tianyi_card = max_card:getId()
-					use.card = TYCard
-					if use.to then use.to:append(friend) end
-					return
+		if dummy_use.to:length() > 1 then
+			self:sort(self.friends_noself, "handcard")
+			for index = #self.friends_noself, 1, -1 do
+				local friend = self.friends_noself[index]
+				if not friend:isKongcheng() then
+					local friend_min_card = self:getMinCard(friend)
+					local friend_min_point = friend_min_card and friend_min_card:getNumber() or 100
+					if friend:hasShownSkill("yingyang") then friend_min_point = math.max(1, friend_min_point - 3) end
+					if max_point > friend_min_point then
+						self.tianyi_card = max_card:getId()
+						use.card = TYCard
+						if use.to then use.to:append(friend) end
+						return
+					end
 				end
 			end
 		end
@@ -1228,20 +1232,22 @@ sgs.ai_skill_use_func.TianyiCard = function(TYCard, use, self)
 			end
 		end
 
-		for index = #self.friends_noself, 1, -1 do
-			local friend = self.friends_noself[index]
-			if not friend:isKongcheng() then
-				if max_point >= 7 then
-					self.tianyi_card = max_card:getId()
-					use.card = TYCard
-					if use.to then use.to:append(friend) end
-					return
+		if dummy_use.to:length() > 1 then
+			for index = #self.friends_noself, 1, -1 do
+				local friend = self.friends_noself[index]
+				if not friend:isKongcheng() then
+					if max_point >= 7 then
+						self.tianyi_card = max_card:getId()
+						use.card = TYCard
+						if use.to then use.to:append(friend) end
+						return
+					end
 				end
 			end
 		end
 	end
 
-	local cards = sgs.QList2Table(self.player:getHandcards())
+	cards = sgs.QList2Table(cards)
 	self:sortByUseValue(cards, true)
 	if zhugeliang and self:isFriend(zhugeliang) and zhugeliang:getHandcardNum() == 1
 		and zhugeliang:objectName() ~= self.player:objectName() and self:getEnemyNumBySeat(self.player, zhugeliang) >= 1 then

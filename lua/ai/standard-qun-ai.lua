@@ -495,7 +495,12 @@ sgs.ai_skill_cardask["@guidao-card"]=function(self, data)
 	local needTokeep = judge.card:getSuit() ~= sgs.Card_Spade
 						and sgs.ai_AOE_data and self:playerGetRound(judge.who) < self:playerGetRound(self.player) and self:findLeijiTarget(self.player, 50)
 						and (self:getCardsNum("Jink") > 0 or self:hasEightDiagramEffect()) and self:getFinalRetrial() == 1
-
+	if not needTokeep then
+		local who = judge.who
+		if who:getPhase() == sgs.Player_Judge and not who:getJudgingArea():isEmpty() and who:containsTrick("lightning") and judge.reason ~= "lightning" then
+			needTokeep = true
+		end
+	end
 	local keptspade, keptblack = 0, 0
 	if needTokeep then
 		if self.player:hasSkill("leiji") then keptspade = 2 end

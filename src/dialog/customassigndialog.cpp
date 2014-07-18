@@ -88,13 +88,6 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
         item_map[i] = item;
     }
 
-    role_ComboBox = new QComboBox;
-    role_ComboBox->addItem(tr("Unknown"), "unknown");
-    role_ComboBox->addItem(tr("Lord"), "lord");
-    role_ComboBox->addItem(tr("Loyalist"), "loyalist");
-    role_ComboBox->addItem(tr("Renegade"), "renegade");
-    role_ComboBox->addItem(tr("Rebel"), "rebel");
-
     for (int i = 0; i < num_ComboBox->currentIndex() + 2; i++)
         list->addItem(item_map[i]);
     list->setCurrentItem(item_map[0]);
@@ -241,7 +234,6 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     QPushButton *defaultLoadButton = new QPushButton(tr("Default load"));
     defaultLoadButton->setObjectName("default_load");
 
-    vlayout->addWidget(role_ComboBox);
     vlayout->addWidget(num_ComboBox);
     QHBoxLayout *label_lay = new QHBoxLayout;
     label_lay->addWidget(general_box);
@@ -343,7 +335,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     mainlayout->addLayout(layout);
     setLayout(mainlayout);
 
-    connect(role_ComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateRole(int)));
+    connect(nationalities, SIGNAL(currentIndexChanged(int)), this, SLOT(updateKingdom(int)));
     connect(list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
         this, SLOT(on_list_itemSelectionChanged(QListWidgetItem *)));
     connect(move_list_up_button, SIGNAL(clicked()), this, SLOT(exchangeListItem()));
@@ -807,11 +799,11 @@ void CustomAssignDialog::getPlayerMarks(int index) {
     marks_count->setValue(player_marks[player_name][mark_name]);
 }
 
-void CustomAssignDialog::updateRole(int index) {
+void CustomAssignDialog::updateKingdom(int index) {
     QString name = list->currentItem()->data(Qt::UserRole).toString();
-    QString role = role_ComboBox->itemData(index).toString();
-    setListText(name, role, list->currentRow());
-    role_mapping[name] = role;
+    QString kingdom = nationalities->itemData(index).toString();
+    setListText(name, kingdom, list->currentRow());
+    role_mapping[name] = kingdom;
 }
 
 void CustomAssignDialog::removeEquipCard() {
@@ -1045,10 +1037,10 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current) 
         general_label2->setPixmap(QPixmap(QString("image/system/disabled.png")));
 
     if (!role_mapping[player_name].isEmpty()) {
-        for (int i = 0; i < role_ComboBox->count(); i++) {
-            if (role_mapping[player_name] == role_ComboBox->itemData(i).toString()) {
-                role_ComboBox->setCurrentIndex(i);
-                updateRole(i);
+        for (int i = 0; i < nationalities->count(); i++) {
+            if (role_mapping[player_name] == nationalities->itemData(i).toString()) {
+                nationalities->setCurrentIndex(i);
+                updateKingdom(i);
                 break;
             }
         }
@@ -1377,43 +1369,6 @@ bool CustomAssignDialog::save(QString path) {
         return false;
     }
 
-    QMap<QString, int> role_index;
-    role_index["loyalist"] = 0;
-    role_index["lord"] = 0;
-    role_index["rebel"] = 1;
-    role_index["renegade"] = 2;
-
-    int role_index_check = -1;
-    bool has_lord = false, has_diff_roles = false;
-    for (int index = 0; index < list->count(); index++) {
-        QString name = list->item(index)->data(Qt::UserRole).toString();
-        if (!has_diff_roles) {
-            int role_int = role_index.value(role_mapping[name], 3);
-            if (role_int != 3) {
-                if (role_index_check != -1 && role_int != role_index_check) {
-                    has_diff_roles = true;
-                }
-                else if (role_index_check == -1) {
-                    role_index_check = role_int;
-                }
-            }
-        }
-
-        if (role_mapping[name] == "lord") {
-            if (has_lord) {
-                QMessageBox::warning(this, tr("Warning"), tr("Two many lords in the game"));
-                return false;
-            }
-            else
-                has_lord = true;
-        }
-    }
-
-    if (!has_diff_roles) {
-        QMessageBox::warning(this, tr("Warning"), tr("No different camps in the game"));
-        return false;
-    }
-
     QString line;
 
     set_options << random_roles_box->isChecked() << rest_in_DP_box->isChecked();
@@ -1457,15 +1412,11 @@ bool CustomAssignDialog::save(QString path) {
         else
             line.append(QString("general:%1 ").arg(general_mapping[name]));
 
-        if (free_choose_general2[name])
+        if (free_choose_general2[name] || general2_mapping[name].isEmpty())
             line.append("general2:select ");
         else if (!general2_mapping[name].isEmpty())
             line.append(QString("general2:%1 ").arg(general2_mapping[name]));
 
-        if (role_mapping[name] == "unknown") {
-            QMessageBox::warning(this, tr("Warning"), tr("%1's role cannot be unknown").arg(Sanguosha->translate(name)));
-            return false;
-        }
         line.append(QString("role:%1 ").arg(role_mapping[name]));
         if (starter == name) line.append("starter:true ");
         if (!player_marks[name].isEmpty()) {

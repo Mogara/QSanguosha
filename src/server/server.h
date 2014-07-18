@@ -132,6 +132,7 @@ private:
     QCheckBox *disable_chat_checkbox;
     QLabel *hegemony_maxchoice_label;
     QSpinBox *hegemony_maxchoice_spinbox;
+    QPushButton *mini_scene_button;
     QLineEdit *address_edit;
     QLineEdit *port_edit;
     QSpinBox *game_start_spinbox;
@@ -165,6 +166,7 @@ private slots:
     void editBanlist();
 
     void doCustomAssign();
+
 };
 
 class Scenario;

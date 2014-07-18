@@ -192,6 +192,12 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
     // Handle global events
     if (player == NULL) {
         if (triggerEvent == GameStart) {
+            if (room->getMode() == "custom_scenario") {
+                foreach(ServerPlayer *p, room->getPlayers()) {
+                    p->showGeneral(true, false);
+                    p->showGeneral(false, false);
+                }
+            }
             foreach(ServerPlayer *player, room->getPlayers()) {
                 Q_ASSERT(player->getGeneral() != NULL);
                 if (player->getGeneral()->getKingdom() == "god" && player->getGeneralName() != "anjiang") {

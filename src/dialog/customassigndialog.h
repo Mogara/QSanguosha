@@ -65,7 +65,7 @@ protected:
 
 private:
     QListWidget *list, *equip_list, *hand_list, *judge_list, *pile_list;
-    QComboBox *role_ComboBox, *num_ComboBox, *marks_ComboBox;
+    QComboBox *num_ComboBox, *marks_ComboBox;
     QCheckBox  *starter_box;
     LabelButton *general_label, *general_label2;
     QCheckBox *max_hp_prompt, *hp_prompt;
@@ -112,7 +112,7 @@ private:
 
     QMap<QString, int> kingdom_index;
 private slots:
-    void updateRole(int index);
+    void updateKingdom(int index);
     void updateNumber(int num);
     void updateListItems();
     void updatePileInfo(int row = -2);
