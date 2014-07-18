@@ -5219,7 +5219,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
     return choice;
 }
 
-QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, QString default_choice, bool single_result) {
+QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, const QString &_default_choice, bool single_result) {
     while (isPaused()) {}
     notifyMoveFocus(player, S_COMMAND_CHOOSE_GENERAL);
 
@@ -5228,6 +5228,8 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, Q
 
     if (!single_result && generals.length() == 2)
         return generals.join("+");
+
+    QString default_choice = _default_choice;
 
     if (default_choice.isEmpty()) {
         default_choice = generals.at(qrand() % generals.length());
@@ -5255,7 +5257,7 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, Q
     return default_choice;
 }
 
-QString Room::askForGeneral(ServerPlayer *player, const QString &generals, QString default_choice, bool single_result) {
+QString Room::askForGeneral(ServerPlayer *player, const QString &generals, const QString &default_choice, bool single_result) {
     return askForGeneral(player, generals.split("+"), default_choice, single_result); // For Lua only!!!
 }
 

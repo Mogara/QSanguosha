@@ -3899,9 +3899,9 @@ function SmartAI:aoeIsEffective(card, to, source)
 	if to:hasArmorEffect("Vine") then
 		return false
 	end
-	if self.room:isProhibited(self.player, to, card) then
+	--[[if self.room:isProhibited(self.player, to, card) then
 		return false
-	end
+	end]]
 	if to:isLocked(card) then
 		return false
 	end
@@ -3957,7 +3957,7 @@ function SmartAI:exclude(players, card, from)
 	end
 
 	for _, player in ipairs(players) do
-		if not self.room:isProhibited(from, player, card) then
+		--if not self.room:isProhibited(from, player, card) then
 			local should_insert = true
 			if limit then
 				should_insert = from:distanceTo(player, range_fix) <= limit
@@ -3965,7 +3965,7 @@ function SmartAI:exclude(players, card, from)
 			if should_insert then
 				table.insert(excluded, player)
 			end
-		end
+		--end
 	end
 	return excluded
 end
@@ -4118,7 +4118,7 @@ end
 function SmartAI:hasTrickEffective(card, to, from)
 	from = from or self.room:getCurrent()
 	to = to or self.player
-	if self.room:isProhibited(from, to, card) then return false end
+	--if self.room:isProhibited(from, to, card) then return false end
 
 	if to:hasShownSkill("hongyan") and card:isKindOf("Lightning") then return false end
 	if to:hasShownSkill("qianxun") and card:isKindOf("Snatch") then return false end
@@ -4147,9 +4147,9 @@ function SmartAI:useTrickCard(card, use)
 		local avail = #others
 		local avail_friends = 0
 		for _, other in ipairs(others) do
-			if self.room:isProhibited(self.player, other, card) then
+			--[[if self.room:isProhibited(self.player, other, card) then
 				avail = avail - 1
-			elseif self:isFriend(other) then
+			else]]if self:isFriend(other) then
 				avail_friends = avail_friends + 1
 			end
 		end

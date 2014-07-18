@@ -405,7 +405,7 @@ function SmartAI:useCardIronChain(card, use)
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
 		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName()))
-			and not enemy:isChained() and not self.room:isProhibited(self.player, enemy, card)
+			and not enemy:isChained() --[[and not self.room:isProhibited(self.player, enemy, card)]]
 			and self:hasTrickEffective(card, enemy) and not (self:objectiveLevel(enemy) <= 3)
 			and not self:getDamagedEffects(enemy) and not self:needToLoseHp(enemy) and sgs.isGoodTarget(enemy, self.enemies, self) then
 			table.insert(enemytargets, enemy)
@@ -543,7 +543,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 		if enemy:hasShownSkill("mingshi") and not self.player:hasShownAllGenerals() then
 			damage = damage - 1
 		end
-		return self:objectiveLevel(enemy) > 3 and damage > 0 and not enemy:isKongcheng() and not self.room:isProhibited(self.player, enemy, fire_attack)
+		return self:objectiveLevel(enemy) > 3 and damage > 0 and not enemy:isKongcheng() --[[and not self.room:isProhibited(self.player, enemy, fire_attack)]]
 				and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(enemy, self.player, damage)
 				and self:hasTrickEffective(fire_attack, enemy)
 				and sgs.isGoodTarget(enemy, self.enemies, self)
@@ -568,7 +568,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 
 	if (not use.current_targets or not table.contains(use.current_targets, self.player:objectName()))
 		and can_FireAttack_self and self.player:isChained() and self:isGoodChainTarget(self.player)
-		and self.player:getHandcardNum() > 1 and not self.room:isProhibited(self.player, self.player, fire_attack)
+		and self.player:getHandcardNum() > 1 --[[and not self.room:isProhibited(self.player, self.player, fire_attack)]]
 		and self:damageIsEffective(self.player, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(self.player)
 		and self:hasTrickEffective(fire_attack, self.player) then
 
