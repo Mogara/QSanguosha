@@ -756,7 +756,7 @@ sgs.ai_skill_invoke.guanxing = function(self, data)
 	end
 	
 	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  e > f + 1) and not self.player:getJudgingArea():isEmpty() 
+		if (shown < 3 or  e > f + 1) and self.player:getJudgingArea():isEmpty() 
 			and not self.player:hasShownOneGeneral() and not self:isWeak() then
 			return false 
 		end
