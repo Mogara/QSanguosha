@@ -198,7 +198,7 @@ void ChooseOptionsBox::chooseOption(QStringList options)
             progress_bar->setTimerEnabled(true);
             progress_bar_item = new QGraphicsProxyWidget(this);
             progress_bar_item->setWidget(progress_bar);
-            progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 26);
+            progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 20);
             connect(progress_bar, SIGNAL(timedOut()), this, SLOT(reply()));
         }
         progress_bar->setCountdown(QSanProtocol::S_COMMAND_MULTIPLE_CHOICE);
