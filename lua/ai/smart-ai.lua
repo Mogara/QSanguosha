@@ -3201,6 +3201,18 @@ function SmartAI:needRetrial(judge)
 			return judge:isGood()
 		end
 	end
+	
+	if reason == "tuntian" then
+		if self:isFriend(who) then
+			if self.player:objectName() == who:objectName() then 
+				return not self:isWeak()
+			else
+				return not judge:isGood()
+			end
+		else
+			return judge:isGood()
+		end
+	end
 
 	if reason == "beige" then return true end
 
@@ -5017,7 +5029,7 @@ function SmartAI:willShowForAttack()
 	end
 	
 	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  e > f + 2) 
+		if (shown < 3 or  e < f ) 
 			and not self.player:hasShownOneGeneral() then
 			return false 
 		end
