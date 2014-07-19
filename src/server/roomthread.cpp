@@ -497,12 +497,15 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
                         if (names.isEmpty()) break;
 
-                        if ((names.length() > 1 || !back_up.isEmpty()) && !has_compulsory)
+                        if (!has_compulsory)
                             names.prepend("trigger_none"); // default choice should do nothing
 
                         QString name;
-                        if (names.length() == 1)
-                            name = names.first();
+                        if (names.length() == 2){
+                            name = names.last();
+                            if (name.contains("AskForGeneralShow") && p != NULL)
+                                name = room->askForChoice(p, "TriggerOrder", names.join("+"), data);
+                        }
                         else if (p != NULL)
                             name = room->askForChoice(p, "TriggerOrder", names.join("+"), data);
                         else
