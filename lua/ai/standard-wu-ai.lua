@@ -455,8 +455,8 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 	end
 	
 	sunshangxiang = false
-	if self.player:hasSkills("xiaoji") and player:getCards("e"):length() > 0 then
-		sunshangxiang = 4
+	if self.player:hasSkills("xiaoji") and self.player:getCards("e"):length() > 0 then
+		sunshangxiang = true
 	end
 	for _, player in ipairs(self.friends) do
 	     if player:hasShownSkill("xiaoji") and player:getCards("e"):length() > 0 then
@@ -1915,11 +1915,3 @@ sgs.ai_use_priority.FenxunCard = 8
 sgs.ai_card_intention.FenxunCard = 50
 
 
-sgs.ai_skill_invoke.keji = function(self, data)
-	
-	if not ( self:willShowForDefence() and self.player:hasSkill("tianxiang") ) then
-		return false 
-	end
-	
-	return true
-end
