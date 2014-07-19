@@ -2054,8 +2054,8 @@ int Room::drawCard() {
 
 void Room::prepareForStart() {
     if (scenario) {
-        QStringList generals, generals2, roles;
-        scenario->assign(generals, generals2, roles);
+        QStringList generals, generals2, kingdoms;
+        scenario->assign(generals, generals2, kingdoms);
 
         for (int i = 0; i < m_players.length(); i++) {
             ServerPlayer *player = m_players[i];
@@ -2068,15 +2068,20 @@ void Room::prepareForStart() {
                 player->setGeneral2Name("anjiang");
                 player->setActualGeneral1Name(generals[i]);
                 player->setActualGeneral2Name(generals2[i]);
-                if (roles[i] == "unknown") {
-                    QString kingdom = Sanguosha->getGeneral(generals[i])->getKingdom();
-                    if (kingdom == "wei") player->setRole("lord");
-                    else if (kingdom == "shu") player->setRole("loyalist");
-                    else if (kingdom == "wu") player->setRole("renegade");
-                    else if (kingdom == "qun") player->setRole("rebel");
-                    else if (kingdom == "god") player->setRole("careerist");
-                    else player->setRole("kingdom");
+                QString kingdom = kingdoms[i] != "default" ? kingdoms[i] : Sanguosha->getGeneral(generals[i])->getKingdom();
+                player->setKingdom(kingdom);
+                QString role = HegemonyMode::GetMappedRole(kingdom);
+                player->setRole(role);
+
+                notifyProperty(player, player, "actual_general1");
+                notifyProperty(player, player, "actual_general2");
+                foreach(ServerPlayer *p, getOtherPlayers(player)) {
+                        notifyProperty(p, player, "general");
+                        notifyProperty(p, player, "general2");
                 }
+                notifyProperty(player, player, "general", generals[i]);
+                notifyProperty(player, player, "general2", generals2[i]);
+                notifyProperty(player, player, "role", role);
             }
         }
     }

@@ -285,7 +285,10 @@ QString HegemonyMode::GetMappedRole(const QString &kingdom) {
         roles["shu"] = "loyalist";
         roles["wu"] = "rebel";
         roles["qun"] = "renegade";
+        roles["god"] = "careerist";
     }
+    if (roles[kingdom].isEmpty())
+        return kingdom;
     return roles[kingdom];
 }
 
@@ -297,6 +300,8 @@ QString HegemonyMode::GetMappedKingdom(const QString &role) {
         kingdoms["rebel"] = "wu";
         kingdoms["renegade"] = "qun";
     }
+    if (kingdoms[role].isEmpty())
+        return role;
     return kingdoms[role];
 }
 

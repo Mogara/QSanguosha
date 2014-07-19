@@ -87,7 +87,7 @@ private:
     QCheckBox *choose_nationality;
     QComboBox *nationalities;
 
-    QMap<QString, QString> role_mapping, general_mapping, general2_mapping;
+    QMap<QString, QString> general_mapping, general2_mapping;
     QMap<int, QString> player_mapping;
     QMap<int, QListWidgetItem *> item_map;
 
@@ -118,7 +118,7 @@ private slots:
     void updatePileInfo(int row = -2);
     void updatePlayerInfo(QString name);
     void updatePlayerHpInfo(QString name);
-    void updateAllRoles(bool toggled = false);
+    void updateAllKingdoms(bool toggled = false);
     void updatePlayerExSkills(QStringList update_skills);
 
     void freeChoose(bool toggled);

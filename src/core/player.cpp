@@ -351,6 +351,7 @@ void Player::setState(const QString &state) {
 }
 
 void Player::setRole(const QString &role) {
+    if (role.isEmpty()) return;
     if (this->role != role) {
         this->role = role;
         emit role_changed(role);

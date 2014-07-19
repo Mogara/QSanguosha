@@ -34,7 +34,7 @@ MiniSceneRule::MiniSceneRule(Scenario *scenario)
     events << GameStart << EventPhaseStart << FetchDrawPileCard;
 }
 
-void MiniSceneRule::assign(QStringList &generals, QStringList &generals2, QStringList &roles) const{
+void MiniSceneRule::assign(QStringList &generals, QStringList &generals2, QStringList &kingdoms) const{
     for (int i = 0; i < players.length(); i++) {
         QMap<QString, QString> sp = players.at(i);
         QString name = sp["general"];
@@ -43,7 +43,8 @@ void MiniSceneRule::assign(QStringList &generals, QStringList &generals2, QStrin
         if (name2 == "select") name2 = _S_DEFAULT_HERO;
         generals << name;
         generals2 << name2;
-        roles << sp["role"];
+        QString k = sp["nationality"].isEmpty() ? "default" : sp["nationality"];
+        kingdoms << k;
     }
 }
 
