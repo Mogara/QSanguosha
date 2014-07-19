@@ -5219,7 +5219,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
     return choice;
 }
 
-QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, const QString &_default_choice, bool single_result) {
+QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, const QString &_default_choice, bool single_result, const QString &skill_name, const QVariant &data) {
     while (isPaused()) {}
     notifyMoveFocus(player, S_COMMAND_CHOOSE_GENERAL);
 
@@ -5241,7 +5241,12 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, c
         }
     }
 
-    if (player->isOnline()) {
+    AI *ai = player->getAI();
+    if (ai != NULL && single_result && !skill_name.isEmpty()) {
+        QString general = ai->askForChoice(skill_name, generals.join("+"), data);
+        thread->delay();
+    }
+    else if (player->isOnline()) {
         Json::Value options;
         options[0] = toJsonArray(generals);
         options[1] = single_result;
@@ -5257,8 +5262,8 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, c
     return default_choice;
 }
 
-QString Room::askForGeneral(ServerPlayer *player, const QString &generals, const QString &default_choice, bool single_result) {
-    return askForGeneral(player, generals.split("+"), default_choice, single_result); // For Lua only!!!
+QString Room::askForGeneral(ServerPlayer *player, const QString &generals, const QString &default_choice, bool single_result, const QString &skill_name, const QVariant &data) {
+    return askForGeneral(player, generals.split("+"), default_choice, single_result, skill_name, data); // For Lua only!!!
 }
 
 bool Room::makeCheat(ServerPlayer *player) {

@@ -1414,12 +1414,7 @@ public:
         if (invoke){
             room->setEmotion(dfowner, "weapon/dragonphoenix");
             room->setPlayerProperty(player, "Duanchang", "");
-            QString to_change;
-            AI *ai = player->getAI();
-            if (ai)
-                to_change = room->askForChoice(player, objectName(), avaliable_generals.join("+"), dfowner->getKingdom());
-            else
-                to_change = room->askForGeneral(player, avaliable_generals);
+            QString to_change = room->askForGeneral(player, avaliable_generals, QString(), true, objectName(), dfowner->getKingdom());
 
             if (!to_change.isEmpty()){
                 QStringList change_list;

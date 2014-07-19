@@ -1398,37 +1398,20 @@ bool QingchengCard::targetFilter(const QList<const Player *> &targets, const Pla
 void QingchengCard::onEffect(const CardEffectStruct &effect) const{
     ServerPlayer *player = effect.from, *to = effect.to;
     Room *room = player->getRoom();
-    bool head = true;
-    if (player->getAI()){
-        QStringList choices;
-        if (!to->isLord() && !to->getGeneralName().contains("sujiang"))
-            choices << "head_general";
-        if (!to->getGeneral2Name().contains("sujiang"))
-            choices << "deputy_general";
 
-        QString choice;
-        if (!choices.isEmpty()){
-            choice = room->askForChoice(player, "qingcheng", choices.join("+"));
-            head = (choice == "head_general");
-        }
-        else
-            return;
-    }
-    else {
-        QStringList choices;
-        if (!to->isLord() && !to->getGeneralName().contains("sujiang"))
-            choices << to->getGeneral()->objectName();
-        if (!to->getGeneral2Name().contains("sujiang"))
-            choices << to->getGeneral2()->objectName();
+    QStringList choices;
+    if (!to->isLord() && !to->getGeneralName().contains("sujiang"))
+        choices << to->getGeneral()->objectName();
+    if (!to->getGeneral2Name().contains("sujiang"))
+        choices << to->getGeneral2()->objectName();
 
-        if (choices.length() == 0)
-            return;
-        QString choice = choices.first();
-        if (choices.length() == 2)
-            choice = room->askForGeneral(player, choices, choices.first(), true);
-        head = (choice == to->getGeneral()->objectName());
-    }
-    to->hideGeneral(head);
+    if (choices.length() == 0)
+        return;
+    QString choice = choices.first();
+    if (choices.length() == 2)
+        choice = room->askForGeneral(player, choices, choices.first(), true, objectName());
+
+    to->hideGeneral(choice == to->getGeneral()->objectName());
 }
 
 class Qingcheng : public OneCardViewAsSkill {
