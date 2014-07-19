@@ -965,7 +965,7 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 end
 
 sgs.ai_skill_choice.qingcheng = function(self, choices)
-	return sgs.qingcheng 
+	return sgs.qingcheng
 end
 
 
