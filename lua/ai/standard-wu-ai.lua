@@ -22,17 +22,15 @@ local zhiheng_skill = {}
 zhiheng_skill.name = "zhiheng"
 table.insert(sgs.ai_skills, zhiheng_skill)
 zhiheng_skill.getTurnUseCard = function(self)
+	if not (self:willShowForDefence() and self:willShowForAttack())then
+		return nil 
+	end
 	if not self.player:hasUsed("ZhihengCard") then
 		return sgs.Card_Parse("@ZhihengCard=.&zhiheng")
 	end
 end
 
 sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
-
-	if not (self:willShowForDefence() and self:willShowForAttack())then
-		return nil 
-	end
-
 	if self.player:getHp() < 3 then
 		local zcards = self.player:getCards("he")
 		local use_slash, keep_jink, keep_analeptic, keep_weapon = false, false, false
