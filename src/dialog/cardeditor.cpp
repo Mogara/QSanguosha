@@ -320,15 +320,6 @@ AATextItem::AATextItem(const QString &text, QGraphicsItem *parent)
 }
 
 void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget){
-    /*if (!hasFocus()){
-        painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
-        QFont f = widget->font();
-        f.setStyleHint(QFont::AnyStyle, QFont::PreferAntialias);
-        widget->setFont(f);
-        }
-
-        QGraphicsTextItem::paint(painter, option, widget);*/
-
     if (hasFocus()){
         QGraphicsTextItem::paint(painter, option, widget);
         return;
@@ -396,60 +387,10 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
                 path.addText(margin + width, fm.height() * (line + 1), f_bold, str); //use fm.height not fm_bold.height, for sometimes the bold characters are not as high as the non-bold ones
                 width += width_c;
             }
-            /*
-            QString non_bold = s_non_bold[j];
-            int width_c_non_bold = fm.width(non_bold);
-            path.addText(margin + width, fm.height() * (line + 1), f, non_bold);
-            width += width_c_non_bold;
-            QString bold = s_bold[j];
-            int width_c_bold = fm_bold.width(bold);
-            path.addText(margin + width, fm.height() * (line + 1), f_bold, bold);
-            width += width_c_bold;
-            */
         }
         ++line;
     }
     painter->fillPath(path, defaultTextColor());
-
-    //path.addText(document()->documentMargin(), fm.height(), font(), toPlainText());
-
-    /*
-    QRegExp exp("(\\[b:[^\\[b:\\]]+\\])");
-    QString text = toPlainText();
-    exp.indexIn(text);
-    QStringList strs = exp.capturedTexts();
-    QStringList nor_strs = text.split(exp, QString::SkipEmptyParts);
-    QStringList all_strs;
-    QStringList operated;
-    foreach(QString str, strs + nor_strs) {
-    int removed_length = 0;
-    QString text_copy = text;
-    int i = text.indexOf(str);
-    int l = str.size();
-    for (int ind = 0; ind < operated.count(str); ++ind) {
-    text_copy.remove(str);
-    removed_length += l;
-    i = text_copy.indexOf(str) + removed_length;
-    }
-    all_strs.insert(i, str);
-    }
-
-    QRegExp bold("\\[b:(.+)\\]");
-    foreach(QString string, all_strs) {
-    if (bold.exactMatch(string)) {
-    bold.indexIn(string);
-    static QFont bfont;
-    if (!bfont.bold()) {
-    bfont = font();
-    bfont.setBold(true);
-    }
-    path.addText(document()->documentMargin(), fm.height(), bfont, bold.cap());
-    }
-    else
-    path.addText(document()->documentMargin(), fm.height(), font(), string);
-    }*/
-
-
 }
 
 void SkillBox::addSkill(const QString &text){
