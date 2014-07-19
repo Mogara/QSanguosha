@@ -75,7 +75,7 @@ private:
     static const int top_dark_bar = 27;
     static const int top_blank_width = 42;
     static const int bottom_blank_width = 25;
-    static const int card_bottom_to_split_line = 15;
+    static const int interval = 15;
     static const int left_blank_width = 37;
 
     QGraphicsProxyWidget *progress_bar_item;

@@ -130,7 +130,10 @@ QRectF ChooseOptionsBox::boundingRect() const
 {
     const int width = default_button_width + left_blank_width * 2;
 
-    const int height = top_blank_width + options_number * default_button_height + (options_number - 1) * card_bottom_to_split_line + bottom_blank_width;
+    int height = top_blank_width + options_number * default_button_height + (options_number - 1) * interval + bottom_blank_width;
+
+    if (ServerInfo.OperationTimeout != 0)
+        height += 12;
 
     return QRectF(0, 0, width, height);
 }
@@ -182,7 +185,7 @@ void ChooseOptionsBox::chooseOption(QStringList options)
 
         QPointF pos;
         pos.setX(left_blank_width);
-        pos.setY(top_blank_width + default_button_height * i + (i - 1) * card_bottom_to_split_line + default_button_height / 2);
+        pos.setY(top_blank_width + default_button_height * i + (i - 1) * interval + default_button_height / 2);
 
         button->setPos(pos);
     }
@@ -190,15 +193,15 @@ void ChooseOptionsBox::chooseOption(QStringList options)
     if (ServerInfo.OperationTimeout != 0) {
         if (!progress_bar) {
             progress_bar = new QSanCommandProgressBar();
-            progress_bar->setMinimumWidth(200);
+            progress_bar->setMaximumWidth(boundingRect().width() - 16);
             progress_bar->setMaximumHeight(12);
             progress_bar->setTimerEnabled(true);
             progress_bar_item = new QGraphicsProxyWidget(this);
             progress_bar_item->setWidget(progress_bar);
-            progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 30);
+            progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 26);
             connect(progress_bar, SIGNAL(timedOut()), this, SLOT(reply()));
         }
-        progress_bar->setCountdown(QSanProtocol::S_COMMAND_CHOOSE_GENERAL);
+        progress_bar->setCountdown(QSanProtocol::S_COMMAND_MULTIPLE_CHOICE);
         progress_bar->show();
     }
 }
