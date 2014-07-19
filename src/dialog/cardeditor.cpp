@@ -348,6 +348,7 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     f_bold.setBold(true);
     QFontMetrics fm_bold(f_bold);
 
+    int line = 0;
     for (int i = 0; i < lines.length(); i++){
         QString thisline = lines[i];
         QStringList s1 = thisline.split(']', QString::SkipEmptyParts);
@@ -372,18 +373,41 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         int width = 0;
         for (int j = 0; j < s_non_bold.length(); j++){
             QString non_bold = s_non_bold[j];
+            for (int k = 0; k < non_bold.length(); k++){
+                QChar c = non_bold[k];
+                int width_c = fm.width(c);
+                if (width + width_c > doc->size().width()){
+                    ++line;
+                    width = 0;
+                }
+                path.addText(margin + width, fm.height() * (line + 1), f, QString(c));
+                width += width_c;
+            }
+            QString bold = s_bold[j];
+            for (int k = 0; k < bold.length(); k++){
+                QChar c = bold[k];
+                int width_c = fm_bold.width(c);
+                if (width + width_c > doc->size().width()){
+                    ++line;
+                    width = 0;
+                }
+                path.addText(margin + width, fm.height() * (line + 1), f_bold, QString(c)); //use fm.height not fm_bold.height, for sometimes the bold characters are not as high as the non-bold ones
+                width += width_c;
+            }
+            /*
+            QString non_bold = s_non_bold[j];
             int width_c_non_bold = fm.width(non_bold);
-            path.addText(margin + width, fm.height() * (i + 1), f, non_bold);
+            path.addText(margin + width, fm.height() * (line + 1), f, non_bold);
             width += width_c_non_bold;
-
             QString bold = s_bold[j];
             int width_c_bold = fm_bold.width(bold);
-            path.addText(margin + width, fm.height() * (i + 1), f_bold, bold);
+            path.addText(margin + width, fm.height() * (line + 1), f_bold, bold);
             width += width_c_bold;
+            */
         }
+        ++line;
     }
     painter->fillPath(path, defaultTextColor());
-
 
     //path.addText(document()->documentMargin(), fm.height(), font(), toPlainText());
 
