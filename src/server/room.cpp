@@ -1660,6 +1660,55 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying) {
     return result;
 }
 
+QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, QMap<const ServerPlayer *, QStringList> &skills, bool optional, const QVariant &data) {
+    while (isPaused()) {}
+
+    Q_ASSERT(!skills.isEmpty());
+
+    QString answer;
+    QStringList all;
+    foreach(const QStringList &list, skills)
+        all << list;
+
+    if (skills.values().length() == 1) {
+        answer = skills.values().first().first();
+    } else {
+        notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
+
+        AI *ai = player->getAI();
+
+        if (ai) {
+            answer = ai->askForChoice(reason, all.join("+"), data);
+            thread->delay();
+        } else {
+            Json::Value args;
+
+            args[0] = toJsonString(reason);
+
+            Json::Value map;
+
+            foreach(const ServerPlayer *owner, skills.keys()) {
+                map[owner->objectName().toLatin1().constData()] = toJsonArray(skills.value(owner));
+            }
+
+            args[1] = map;
+            args[2] = optional;
+
+            bool success = doRequest(player, S_COMMAND_MULTIPLE_CHOICE, args, true);
+            Json::Value clientReply = player->getClientReply();
+            if (!success || !clientReply.isString())
+                answer = "cancel";
+            else
+                answer = toQString(clientReply);
+        }
+
+        if (!all.contains(answer))
+            answer = all[0];
+    }
+
+    return answer;
+}
+
 void Room::addPlayerHistory(ServerPlayer *player, const QString &key, int times) {
     if (player) {
         if (key == ".")
