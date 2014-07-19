@@ -5000,6 +5000,57 @@ function SmartAI:setSkillsPreshowed()
 	end
 end
 
+function SmartAI:willShowForAttack()
+	local notshown,shown,f,e = 0,0,0,0
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if  not p:hasShownOneGeneral() then
+			notshown = notshown + 1
+		end
+		if p:hasShownOneGeneral() then
+			shown = shown + 1
+			if p:getKingdom() == self.player:getKingdom() then
+				f = f + 1
+			else
+				e = e + 1
+			end	
+		end
+	end
+	
+	if self.room:alivePlayerCount() > 3 then 
+		if (shown < 3 or  e > f + 2) 
+			and not self.player:hasShownOneGeneral() then
+			return false 
+		end
+	end
+	return true
+end
+
+function SmartAI:willShowForDefence()
+	local notshown,shown,f,e = 0,0,0,0
+	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
+		if  not p:hasShownOneGeneral() then
+			notshown = notshown + 1
+		end
+		if p:hasShownOneGeneral() then
+			shown = shown + 1
+			if p:getKingdom() == self.player:getKingdom() then
+				f = f + 1
+			else
+				e = e + 1
+			end	
+		end
+	end
+	
+	if self.room:alivePlayerCount() > 3 then 
+		if (shown < 3 or  f < 2 ) 
+			and not self.player:hasShownOneGeneral() and not self:isWeak() then
+			return false 
+		end
+	end
+	return true
+end
+
+
 dofile "lua/ai/debug-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"
 dofile "lua/ai/maneuvering-ai.lua"

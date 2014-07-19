@@ -18,28 +18,9 @@
   QSanguosha-Hegemony Team
 *********************************************************************]]
 sgs.ai_skill_invoke.xunxun = function(self, data)
-	local notshown,shown,f,e = 0,0,0,0
-	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownOneGeneral() then
-			notshown = notshown + 1
-		end
-		if p:hasShownOneGeneral() then
-			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
-				f = f + 1
-			else
-				e = e + 1
-			end	
-		end
-	end
-	
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  e > f + 1) 
-			and not self.player:hasShownOneGeneral() and not self:isWeak() then
-			return false 
-		end
+	if not self:willShowForDefence() then
+		return false 
 	end	
-	
 	return true
 end
 
@@ -94,26 +75,8 @@ end
 
 sgs.ai_skill_invoke.qianxi = function(self, data)
 	
-	local notshown,shown,f,e = 0,0,0,0
-	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownOneGeneral() then
-			notshown = notshown + 1
-		end
-		if p:hasShownOneGeneral() then
-			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
-				f = f + 1
-			else
-				e = e + 1
-			end	
-		end
-	end
-	
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  e > f + 2) 
-			and not self.player:hasShownOneGeneral()  then
-			return false 
-		end
+	if not self:willShowForAttack() then
+		return false 
 	end
 
 	for _, p in ipairs(self.enemies) do
@@ -257,25 +220,8 @@ duanxie_skill.name = "duanxie"
 table.insert(sgs.ai_skills, duanxie_skill)
 duanxie_skill.getTurnUseCard = function(self)
 	
-	local notshown,shown,f,e = 0,0,0,0
-	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownOneGeneral() then
-			notshown = notshown + 1
-		end
-		if p:hasShownOneGeneral() then
-			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
-				f = f + 1
-			else
-				e = e + 1
-			end	
-		end
-	end
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or e > f + 2 ) 
-			and not self.player:hasShownOneGeneral() then
-			return nil 
-		end
+	if not self:willShowForAttack() then
+		return nil 
 	end
 
 	if self.player:hasUsed("DuanxieCard") then return end

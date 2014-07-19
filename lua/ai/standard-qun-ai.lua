@@ -301,25 +301,8 @@ sgs.ai_use_priority.LijianCard = 4
 sgs.dynamic_value.damage_card.LijianCard = true
 
 sgs.ai_skill_invoke.biyue = function(self, data)
-	local notshown,shown,f,e = 0,0,0,0
-	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownOneGeneral() then
-			notshown = notshown + 1
-		end
-		if p:hasShownOneGeneral() then
-			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
-				f = f + 1
-			else
-				e = e + 1
-			end	
-		end
-	end
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  e > f + 1) 
-			and not self.player:hasShownOneGeneral() and not self:isWeak() then
-			return false 
-		end
+	if not self:willShowForDefence() then
+		return false 
 	end
 	return not self:needKongcheng(self.player, true)
 end
@@ -709,28 +692,9 @@ sgs.ai_use_priority.XiongyiCard = 9.31
 sgs.ai_skill_invoke.mingshi = true
 
 sgs.ai_skill_invoke.lirang = function(self, data)
-	local notshown,shown,f,e = 0,0,0,0
-	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownOneGeneral() then
-			notshown = notshown + 1
-		end
-		if p:hasShownOneGeneral() then
-			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
-				f = f + 1
-			else
-				e = e + 1
-			end	
-		end
+	if not self:willShowForAttack() then
+		return false 
 	end
-	
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  e > f ) 
-			and not self.player:hasShownOneGeneral() then
-			return false 
-		end
-	end	
-	
 	return true
 end
 
@@ -759,25 +723,8 @@ end
 
 sgs.ai_skill_playerchosen.shuangren = function(self, targets)
 
-local notshown,shown,f,e = 0,0,0,0
-	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownOneGeneral() then
-			notshown = notshown + 1
-		end
-		if p:hasShownOneGeneral() then
-			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
-				f = f + 1
-			else
-				e = e + 1
-			end	
-		end
-	end
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 ) 
-			and not self.player:hasShownOneGeneral() then
-			return "." 
-		end
+	if not self:willShowForAttack() then
+		return "." 
 	end	
 
 	if self.player:isKongcheng() then return "." end

@@ -29,28 +29,9 @@ end
 
 sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 
-	local notshown,shown,f,e = 0,0,0,0
-	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownOneGeneral() then
-			notshown = notshown + 1
-		end
-		if p:hasShownOneGeneral() then
-			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
-				f = f + 1
-			else
-				e = e + 1
-			end	
-		end
+	if not self:willShowForDefence() then
+		return nil 
 	end
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  e > f + 1)  and not self:isWeak()
-			and not self.player:hasShownOneGeneral()  then
-			return nil 
-		end
-	end	
-	local unpreferedCards = {}
-	local cards = sgs.QList2Table(self.player:getHandcards())
 
 	if self.player:getHp() < 3 then
 		local zcards = self.player:getCards("he")
@@ -181,25 +162,8 @@ qixi_skill.name = "qixi"
 table.insert(sgs.ai_skills, qixi_skill)
 qixi_skill.getTurnUseCard = function(self,inclusive)
 	
-	local notshown,shown,f,e = 0,0,0,0
-	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownOneGeneral() then
-			notshown = notshown + 1
-		end
-		if p:hasShownOneGeneral() then
-			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
-				f = f + 1
-			else
-				e = e + 1
-			end	
-		end
-	end
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  e > f + 1)  and not self:isWeak() 
-			and not self.player:hasShownOneGeneral()  then
-			return nil 
-		end
+	if not self:willShowForAttack() then
+		return nil 
 	end
 	
 	local cards = self.player:getCards("he")
@@ -283,25 +247,8 @@ kurou_skill.name = "kurou"
 table.insert(sgs.ai_skills, kurou_skill)
 kurou_skill.getTurnUseCard = function(self, inclusive)
 	
-	local notshown,shown,f,e = 0,0,0,0
-	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownOneGeneral() then
-			notshown = notshown + 1
-		end
-		if p:hasShownOneGeneral() then
-			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
-				f = f + 1
-			else
-				e = e + 1
-			end	
-		end
-	end
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  e > f + 1)  and not self:isWeak() 
-			and not self.player:hasShownOneGeneral()  then
-			return nil 
-		end
+	if not self:willShowForAttack() then
+		return nil 
 	end
 	
 	self.player:setFlags("-Kurou_toDie")
@@ -386,26 +333,8 @@ sgs.ai_use_priority.KurouCard = 6.8
 
 sgs.ai_skill_invoke.yingzi = function(self, data)
 	
-	local notshown,shown,f,e = 0,0,0,0
-	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownOneGeneral() then
-			notshown = notshown + 1
-		end
-		if p:hasShownOneGeneral() then
-			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
-				f = f + 1
-			else
-				e = e + 1
-			end	
-		end
-	end
-	
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  e > f + 1) 
-			and not self.player:hasShownOneGeneral() and not self:isWeak() then
-			return false 
-		end
+	if not self:willShowForAttack() then
+		return false 
 	end
 	
 	if self.player:hasSkill("haoshi") then
@@ -525,6 +454,21 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 		end
 	end
 	
+	sunshangxiang = false
+	if self.player:hasSkills("xiaoji") and player:getCards("e"):length() > 0 then
+		sunshangxiang = 4
+	end
+	for _, player in ipairs(self.friends) do
+	     if player:hasShownSkill("xiaoji") and player:getCards("e"):length() > 0 then
+			sunshangxiang = true 
+			break
+		end
+	end
+	
+	if not self:willShowForDefence() and not sunshangxiang then
+		return nil 
+	end
+	
 	if (self.player:usedTimes("DuoshiAE") >= DuoTime and self:getOverflow() <= 0) or self.player:usedTimes("DuoshiAE") >= 4 	then return end
 	
 	
@@ -550,7 +494,6 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 			end
 		end
 	end
-	
 
 	local red_card
 	if self.player:getHandcardNum() <= 2 then return end
@@ -603,6 +546,11 @@ local guose_skill = {}
 guose_skill.name = "guose"
 table.insert(sgs.ai_skills, guose_skill)
 guose_skill.getTurnUseCard = function(self, inclusive)
+
+	if not self:willShowForAttack() then
+		return nil 
+	end
+
 	local cards = self.player:getCards("he")
 	cards=sgs.QList2Table(cards)
 
@@ -1216,25 +1164,8 @@ tianyi_skill.name = "tianyi"
 table.insert(sgs.ai_skills, tianyi_skill)
 tianyi_skill.getTurnUseCard = function(self)
 
-	local notshown,shown,f,e = 0,0,0,0
-	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
-		if  not p:hasShownOneGeneral() then
-			notshown = notshown + 1
-		end
-		if p:hasShownOneGeneral() then
-			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
-				f = f + 1
-			else
-				e = e + 1
-			end	
-		end
-	end
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 ) 
-			and not self.player:hasShownOneGeneral()  then
-			return nil 
-		end
+	if not self:willShowForAttack() then
+		return nil 
 	end
 
 	if not self.player:hasUsed("TianyiCard") and not self.player:isKongcheng() then return sgs.Card_Parse("@TianyiCard=.&tianyi") end
@@ -1741,6 +1672,10 @@ sgs.ai_use_priority.ZhijianCard = sgs.ai_use_priority.RendeCard + 0.1  -- 刘备
 sgs.ai_cardneed.zhijian = sgs.ai_cardneed.equip
 
 sgs.ai_skill_invoke.guzheng = function(self, data)
+	if not self:willShowForAttack() then
+		return false 
+	end
+
 	local player = self.room:getCurrent()
 	local invoke = (self:isFriend(player) and not self:needKongcheng(player, true))
 					or (data:toInt() >= 3 or (data:toInt() == 2 and not player:hasShownSkills(sgs.cardneed_skill)))
