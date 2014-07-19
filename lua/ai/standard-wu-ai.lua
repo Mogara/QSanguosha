@@ -29,7 +29,7 @@ end
 
 sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 
-	if not self:willShowForDefence() then
+	if not (self:willShowForDefence() and self:willShowForAttack())then
 		return nil 
 	end
 
@@ -1914,3 +1914,12 @@ sgs.ai_use_value.FenxunCard = 5.5
 sgs.ai_use_priority.FenxunCard = 8
 sgs.ai_card_intention.FenxunCard = 50
 
+
+sgs.ai_skill_invoke.keji = function(self, data)
+	
+	if not ( self:willShowForDefence() and self.player:hasSkill("tianxiang") ) then
+		return false 
+	end
+	
+	return true
+end
