@@ -724,11 +724,6 @@ sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 end
 
 sgs.ai_skill_playerchosen.shuangren = function(self, targets)
-
-	if not self:willShowForAttack() then
-		return nil 
-	end	
-
 	if self.player:isKongcheng() then return nil end
 	self:sort(self.enemies, "handcard")
 	local max_card = self:getMaxCard()
@@ -740,6 +735,10 @@ sgs.ai_skill_playerchosen.shuangren = function(self, targets)
 	self:useBasicCard(slash, dummy_use)
 	self.player:setFlags("-slashNoDistanceLimit")
 
+	if not self:willShowForAttack() then
+		return nil 
+	end	
+	
 	if dummy_use.card then
 		for _, enemy in ipairs(self.enemies) do
 			if not (enemy:hasShownSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then

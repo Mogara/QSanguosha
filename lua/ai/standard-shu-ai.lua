@@ -315,10 +315,6 @@ lianhuan_skill.name = "lianhuan"
 table.insert(sgs.ai_skills, lianhuan_skill)
 lianhuan_skill.getTurnUseCard = function(self)
 	
-	if not self:willShowForAttack() then
-		return nil 
-	end
-		
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
 
@@ -352,6 +348,9 @@ lianhuan_skill.getTurnUseCard = function(self)
 		end
 	end
 
+	if not self:willShowForAttack() then
+		return nil 
+	end
 	if not card then return nil end
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
@@ -378,11 +377,6 @@ local huoji_skill = {}
 huoji_skill.name = "huoji"
 table.insert(sgs.ai_skills, huoji_skill)
 huoji_skill.getTurnUseCard = function(self)
-
-	if not self:willShowForAttack() then
-		return nil 
-	end
-
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
 
@@ -415,6 +409,9 @@ huoji_skill.getTurnUseCard = function(self)
 		end
 	end
 
+	if not self:willShowForAttack() then
+		return nil 
+	end
 	if not card then return nil end
 	local suit = card:getSuitString()
 	local number = card:getNumberString()

@@ -221,7 +221,7 @@ table.insert(sgs.ai_skills, duanxie_skill)
 duanxie_skill.getTurnUseCard = function(self)
 	
 	if not self:willShowForAttack() then
-		return nil 
+		return 
 	end
 
 	if self.player:hasUsed("DuanxieCard") then return end

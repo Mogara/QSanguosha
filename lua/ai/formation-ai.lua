@@ -251,7 +251,7 @@ tiaoxin_skill.name = "tiaoxin"
 table.insert(sgs.ai_skills, tiaoxin_skill)
 tiaoxin_skill.getTurnUseCard = function(self)
 	if not self:willShowForAttack() then
-		return nil 
+		return  
 	end
 	if self.player:hasUsed("TiaoxinCard") then return end
 	return sgs.Card_Parse("@TiaoxinCard=.&tiaoxin")
@@ -325,9 +325,6 @@ local shangyi_skill = {}
 shangyi_skill.name = "shangyi"
 table.insert(sgs.ai_skills, shangyi_skill)
 shangyi_skill.getTurnUseCard = function(self)
-	if not self:willShowForAttack() then
-		return nil 
-	end
 	local card_str = ("@ShangyiCard=.&shangyi")
 	local shangyi_card = sgs.Card_Parse(card_str)
 	assert(shangyi_card)
@@ -335,6 +332,9 @@ shangyi_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_use_func.ShangyiCard = function(card, use, self)
+	if not self:willShowForAttack() then
+		return
+	end
 	if self.player:hasUsed("ShangyiCard") then return end
 	self:sort(self.enemies, "handcard")
 

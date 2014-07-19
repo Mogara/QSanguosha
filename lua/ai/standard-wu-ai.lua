@@ -21,11 +21,7 @@ local zhiheng_skill = {}
 zhiheng_skill.name = "zhiheng"
 table.insert(sgs.ai_skills, zhiheng_skill)
 zhiheng_skill.getTurnUseCard = function(self)
-	if not self:willShowForAttack() and not self:willShowForDefence() then
-		return nil 
-	end
-
-	if not self.player:hasUsed("ZhihengCard") then
+	if ( self:willShowForAttack() or self:willShowForDefence() ) and not self.player:hasUsed("ZhihengCard") then
 		return sgs.Card_Parse("@ZhihengCard=.&zhiheng")
 	end
 end
@@ -162,11 +158,7 @@ local qixi_skill = {}
 qixi_skill.name = "qixi"
 table.insert(sgs.ai_skills, qixi_skill)
 qixi_skill.getTurnUseCard = function(self,inclusive)
-	
-	if not self:willShowForAttack() then
-		return nil 
-	end
-	
+
 	local cards = self.player:getCards("he")
 	cards = sgs.QList2Table(cards)
 
@@ -210,6 +202,10 @@ qixi_skill.getTurnUseCard = function(self,inclusive)
 				if dummy_use.card then shouldUse = false end
 			end
 
+			if not self:willShowForAttack() then
+				shouldUse = false 
+			end
+						
 			if shouldUse then
 				black_card = card
 				break
@@ -247,14 +243,14 @@ local kurou_skill = {}
 kurou_skill.name = "kurou"
 table.insert(sgs.ai_skills, kurou_skill)
 kurou_skill.getTurnUseCard = function(self, inclusive)
+
+	self.player:setFlags("-Kurou_toDie")
+	sgs.ai_use_priority.KurouCard = 6.8
+	local kuroucard = sgs.Card_Parse("@KurouCard=.&kurou")
 	
 	if not self:willShowForAttack() then
 		return nil 
 	end
-	
-	self.player:setFlags("-Kurou_toDie")
-	sgs.ai_use_priority.KurouCard = 6.8
-	local kuroucard = sgs.Card_Parse("@KurouCard=.&kurou")
 	
 	if self.player:getMark("Global_TurnCount") < 2 and not self.player:hasShownOneGeneral() then return nil end
 	
@@ -455,21 +451,6 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 		end
 	end
 	
-	sunshangxiang = false
-	if self.player:hasSkills("xiaoji") and self.player:getCards("e"):length() > 0 then
-		sunshangxiang = true
-	end
-	for _, player in ipairs(self.friends) do
-	     if player:hasShownSkill("xiaoji") and player:getCards("e"):length() > 0 then
-			sunshangxiang = true 
-			break
-		end
-	end
-	
-	if not self:willShowForDefence() and not sunshangxiang then
-		return nil 
-	end
-	
 	if (self.player:usedTimes("DuoshiAE") >= DuoTime and self:getOverflow() <= 0) or self.player:usedTimes("DuoshiAE") >= 4 	then return end
 	
 	
@@ -518,12 +499,21 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 			end
 			
 			if card:getSuit() == sgs.Card_Diamond and self.player:hasSkill("guose") then sgs.ai_use_priority.AwaitExhausted = 0.2 end
-				
+			
+
+			local sunshangxiang = false
+			if self.player:hasSkills("xiaoji") and self.player:getCards("e"):length() > 0 then
+				sunshangxiang = true
+			end
 			for _, player in ipairs(self.friends) do
-	        	if player:hasShownSkill("xiaoji") and player:getCards("e"):length() > 0 then
-				shouldUse = true 
-				break
+				if player:hasShownSkill("xiaoji") and player:getCards("e"):length() > 0 then
+					sunshangxiang = true 
+					break
 				end
+			end
+	
+			if not self:willShowForDefence() and not sunshangxiang then
+				shouldUse = false 
 			end
 			
 			if shouldUse and not card:isKindOf("Peach") then
@@ -547,10 +537,6 @@ local guose_skill = {}
 guose_skill.name = "guose"
 table.insert(sgs.ai_skills, guose_skill)
 guose_skill.getTurnUseCard = function(self, inclusive)
-
-	if not self:willShowForAttack() then
-		return nil 
-	end
 
 	local cards = self.player:getCards("he")
 	cards=sgs.QList2Table(cards)
@@ -584,7 +570,11 @@ guose_skill.getTurnUseCard = function(self, inclusive)
 				elseif self.player:hasEquip(acard) and not has_weapon then shouldUse = false
 				end
 			end
-
+			
+			if not self:willShowForAttack() then
+				shouldUse = false
+			end
+			
 			if shouldUse then
 				card = acard
 				break
@@ -1164,12 +1154,7 @@ local tianyi_skill = {}
 tianyi_skill.name = "tianyi"
 table.insert(sgs.ai_skills, tianyi_skill)
 tianyi_skill.getTurnUseCard = function(self)
-
-	if not self:willShowForAttack() then
-		return nil 
-	end
-
-	if not self.player:hasUsed("TianyiCard") and not self.player:isKongcheng() then return sgs.Card_Parse("@TianyiCard=.&tianyi") end
+	if self:willShowForAttack() and not self.player:hasUsed("TianyiCard") and not self.player:isKongcheng() then return sgs.Card_Parse("@TianyiCard=.&tianyi") end
 end
 
 sgs.ai_skill_use_func.TianyiCard = function(TYCard, use, self)
@@ -1673,14 +1658,11 @@ sgs.ai_use_priority.ZhijianCard = sgs.ai_use_priority.RendeCard + 0.1  -- 刘备
 sgs.ai_cardneed.zhijian = sgs.ai_cardneed.equip
 
 sgs.ai_skill_invoke.guzheng = function(self, data)
-	if not self:willShowForAttack() then
-		return false 
-	end
-
 	local player = self.room:getCurrent()
 	local invoke = (self:isFriend(player) and not self:needKongcheng(player, true))
 					or (data:toInt() >= 3 or (data:toInt() == 2 and not player:hasShownSkills(sgs.cardneed_skill)))
 					or (self:isEnemy(player) and self:needKongcheng(player, true))
+					or (self:willShowForAttack() or self:willShowForDefence() )
 	return invoke
 end
 
