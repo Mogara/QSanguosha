@@ -319,7 +319,6 @@ public:
     void moveCardsToEndOfDrawpile(QList<int> card_ids);
     void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ignoreChanges = true);
     void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanges = true);
-    QList<CardsMoveStruct> _breakDownCardMoves(QList<CardsMoveStruct> &cards_moves);
 
     // interactive methods
     void activate(ServerPlayer *player, CardUseStruct &card_use);
@@ -548,6 +547,7 @@ private:
         ServerPlayer *m_to;
     };
     bool _askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive, _NullificationAiHelper helper);
+    QList<CardsMoveStruct> _breakDownCardMoves(QList<CardsMoveStruct> &cards_moves);
 
 private slots:
     void reportDisconnection();
