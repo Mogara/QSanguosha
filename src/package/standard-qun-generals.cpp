@@ -1409,7 +1409,7 @@ void QingchengCard::onEffect(const CardEffectStruct &effect) const{
         return;
     QString choice = choices.first();
     if (choices.length() == 2)
-        choice = room->askForGeneral(player, choices, choices.first(), true, objectName());
+        choice = room->askForGeneral(player, choices, QString(), true, "qingcheng");
 
     to->hideGeneral(choice == to->getGeneral()->objectName());
 }

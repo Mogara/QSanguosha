@@ -224,7 +224,7 @@ function SmartAI:slashProhibit(card, enemy, from)
 	card = card or sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 	from = from or self.player
 
-	if self.room:isProhibited(from, enemy, card) then return true end
+	--if self.room:isProhibited(from, enemy, card) then return true end
 	local nature = card:isKindOf("FireSlash") and sgs.DamageStruct_Fire
 					or card:isKindOf("ThunderSlash") and sgs.DamageStruct_Thunder
 	for _, askill in sgs.qlist(enemy:getVisibleSkillList()) do

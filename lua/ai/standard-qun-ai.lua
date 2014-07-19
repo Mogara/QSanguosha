@@ -934,7 +934,7 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 	if zhoutai and zhoutai:getPile("buqu"):length() > 1 and zhoutai:hasShownAllGenerals() then
 		use.card = card
 		if not use.isDummy and use.to then
-			sgs.ai_skill_choice.qingcheng = (zhoutai:inHeadSkills("buqu") and "head_general" or "deputy_general")
+			sgs.qingcheng = "zhoutai"
 			use.to:append(zhoutai)
 		end
 		return
@@ -952,7 +952,7 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 				if (p:hasShownSkill(skill_name)) then
 					use.card = card
 					if ((not use.isDummy) and use.to) then
-						sgs.ai_skill_choice.qingcheng = (p:inHeadSkills(skill_name) and "head_general" or "deputy_general")
+						sgs.qingcheng = (p:inHeadSkills(skill_name) and p:getGeneral():objectName() or p:getGeneral2():objectName())
 						use.to:append(p)
 					end
 					return
@@ -962,6 +962,10 @@ sgs.ai_skill_use_func.QingchengCard = function(card, use, self)
 	end
 
 	return
+end
+
+sgs.ai_skill_choice.qingcheng = function(self, choices)
+	return sgs.qingcheng 
 end
 
 
@@ -979,9 +983,9 @@ function huoshui_skill.getTurnUseCard(self)
 	return card
 end
 function sgs.ai_skill_use_func.HuoshuiCard(card, use, self)
-	if (math.random() < 0.1) then
+	if (math.random() < 0.15) then
 		use.card = card
 	end
 end
 
-sgs.ai_use_priority.HuoshuiCard = 3
+sgs.ai_use_priority.HuoshuiCard = 10
