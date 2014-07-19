@@ -727,7 +727,7 @@ sgs.ai_skill_playerchosen.shuangren = function(self, targets)
 		return nil 
 	end	
 
-	if self.player:isKongcheng() then return "." end
+	if self.player:isKongcheng() then return nil end
 	self:sort(self.enemies, "handcard")
 	local max_card = self:getMaxCard()
 	local max_point = max_card:getNumber()
