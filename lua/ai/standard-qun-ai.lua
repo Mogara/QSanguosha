@@ -425,11 +425,13 @@ luanwu_skill.getTurnUseCard = function(self)
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if self:isWeak(player) then
 			if self:isFriend(player) then bad = bad + 1.5
-			else good = good + 0.8
+			elseif player:hasShownOneGeneral() then  good = good + 0.8
+			else good = good + 0.4
 			end
 		end
 	end
-	if good == 0 then return end
+	local alive = self.room:alivePlayerCount()
+	if good < alive/4 then return end
 
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		local hp = math.max(player:getHp(), 1)
