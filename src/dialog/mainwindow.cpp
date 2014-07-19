@@ -263,16 +263,10 @@ MainWindow::MainWindow(QWidget *parent)
                                    "selection-color: white;"
                                    "selection-background-color: black;"
                                    "border-style: outset;"
-                                   "border-width: 2px;"
+                                   "border-width: 0px 2px 2px 0px;"
                                    "border-color: gray;");
     
     repaintButtons();
-
-    QGraphicsDropShadowEffect *shadow_effect = new QGraphicsDropShadowEffect(this);
-    shadow_effect->setOffset(-5, 5);
-    shadow_effect->setColor(Qt::gray);
-    shadow_effect->setBlurRadius(8);
-    ui->menuSumMenu->setGraphicsEffect(shadow_effect);
 
     systray = NULL;
 }
