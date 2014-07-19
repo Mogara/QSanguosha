@@ -375,23 +375,25 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
             QString non_bold = s_non_bold[j];
             for (int k = 0; k < non_bold.length(); k++){
                 QChar c = non_bold[k];
-                int width_c = fm.width(c);
+                QString str = c;
+                int width_c = fm.width(str);
                 if (width + width_c > doc->size().width()){
                     ++line;
                     width = 0;
                 }
-                path.addText(margin + width, fm.height() * (line + 1), f, QString(c));
+                path.addText(margin + width, fm.height() * (line + 1), f, str);
                 width += width_c;
             }
             QString bold = s_bold[j];
             for (int k = 0; k < bold.length(); k++){
-                QChar c = bold[k];
-                int width_c = fm_bold.width(c);
+                QChar c = bold[k]; 
+                QString str = c;
+                int width_c = fm_bold.width(str);
                 if (width + width_c > doc->size().width()){
                     ++line;
                     width = 0;
                 }
-                path.addText(margin + width, fm.height() * (line + 1), f_bold, QString(c)); //use fm.height not fm_bold.height, for sometimes the bold characters are not as high as the non-bold ones
+                path.addText(margin + width, fm.height() * (line + 1), f_bold, str); //use fm.height not fm_bold.height, for sometimes the bold characters are not as high as the non-bold ones
                 width += width_c;
             }
             /*
