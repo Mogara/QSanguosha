@@ -45,7 +45,7 @@ Dashboard::Dashboard(QGraphicsItem *widget)
       // control creation, the actual width is updated when setWidth() is
       // called by its graphics parent.
       _m_width(G_DASHBOARD_LAYOUT.m_leftWidth + G_DASHBOARD_LAYOUT.m_rightWidth + 20),
-      _m_leftFrame(NULL), _m_rightFrame(NULL), _m_middleFrame(NULL),
+      _m_leftFrame(NULL), _m_middleFrame(NULL), _m_rightFrame(NULL),
       _m_rightFrameBase(NULL), _m_rightFrameBg(NULL), _m_magatamasBase(NULL),
       _m_headGeneralFrame(NULL), _m_deputyGeneralFrame(NULL),
       button_widget(widget), selected(NULL), _dlayout(&G_DASHBOARD_LAYOUT), animations(new EffectAnimation),
