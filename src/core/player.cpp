@@ -1112,6 +1112,8 @@ void Player::removeQinggangTag(const Card *card) {
 }
 
 const Player *Player::getLord(bool include_death) const{
+    if (getActualGeneral1() && getActualGeneral1()->isLord())
+        return this;
     QList<const Player *> sib = include_death ? getSiblings() : getAliveSiblings();
     sib << this;
     foreach(const Player *p, sib){

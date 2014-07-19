@@ -763,17 +763,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                 room->removePlayerMark(player, "HalfMaxHpLeft");
             }
         }
-        if (data.toBool()) {
-            if (player->isLord()) {
-                QString kingdom = player->getKingdom();
-                foreach(ServerPlayer *p, room->getPlayers()) {
-                    if (p->getKingdom() == kingdom && p->getRole() == "careerist"){
-                        room->setPlayerProperty(p, "role", HegemonyMode::GetMappedRole(kingdom));
-                        room->broadcastProperty(p, "kingdom");
-                    }
-                }
-            }
-        }
     }
     default:
         break;
@@ -810,12 +799,11 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
     if (players.length() == 1) {
         if (!win_player->hasShownOneGeneral())
             win_player->showGeneral(true, false);
-        foreach(ServerPlayer *p, room->getPlayers()) {
+        foreach (ServerPlayer *p, room->getPlayers()) {
             if (win_player->isFriendWith(p))
                 winners << p->objectName();
         }
-    }
-    else {
+    } else {
         bool has_diff_kingdoms = false;
         foreach(ServerPlayer *p, players) {
             foreach(ServerPlayer *p2, players) {
@@ -840,7 +828,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
         }
         if (!has_diff_kingdoms) { // ÅÐ¶ÏÒ°ÐÄ¼Ò
             QMap<QString, int> kingdoms;
-            QStringList lords;
+            QSet<QString> lords;
             foreach(ServerPlayer *p, room->getPlayers())
                 if (p->isLord() || p->getActualGeneral1()->isLord())
                     if (p->isAlive())
@@ -852,7 +840,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
                 else
                     kingdom = p->getActualGeneral1()->getKingdom();
                 if (lords.contains(kingdom)) continue;
-                if (room->getLord(kingdom) && room->getLord(kingdom)->isDead())
+                if (room->getLord(kingdom, true) && room->getLord(kingdom, true)->isDead())
                     kingdoms[kingdom] += 10;
                 else
                     kingdoms[kingdom] ++;

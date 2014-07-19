@@ -4897,9 +4897,9 @@ QList<int> Room::getCardIdsOnTable(const Card *virtual_card) const{
     return QList<int>();
 }
 
-ServerPlayer *Room::getLord(const QString &kingdom) const{
+ServerPlayer *Room::getLord(const QString &kingdom, bool include_death) const{
     foreach(ServerPlayer *player, m_players) {
-        if (player->getGeneral()->isLord() && player->isAlive() && player->getKingdom() == kingdom)
+        if (player->getGeneral()->isLord() && (include_death || player->isAlive()) && player->getKingdom() == kingdom)
             return player;
     }
 

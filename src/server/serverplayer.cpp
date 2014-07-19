@@ -1416,6 +1416,17 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event) {
         QVariant _head = head_general;
         room->getThread()->trigger(GeneralShown, room, this, _head);
     }
+
+    if (isLord()) {
+        QString kingdom = getKingdom();
+        foreach(ServerPlayer *p, room->getPlayers()) {
+            if (p->getKingdom() == kingdom && p->getRole() == "careerist"){
+                room->setPlayerProperty(p, "role", HegemonyMode::GetMappedRole(kingdom));
+                room->broadcastProperty(p, "kingdom");
+            }
+        }
+    }
+
     room->filterCards(this, getCards("he"), true);
 }
 
