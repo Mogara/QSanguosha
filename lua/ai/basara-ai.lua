@@ -58,7 +58,7 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 	local firstshow = ("luanji|jizhi"):split("|")	
 	local needshow = ("yicheng|qianhuan|chuanxin|suishi"):split("|")	
 	local woundedshow = ("zaiqi|yinghun|hunshang|hengzheng"):split("|")
-	local friendshow = ("yicheng|qianhuan|duoshi|rende|jieyin|xiongyi"):split("|")
+	local followshow = ("duoshi|rende|jieyin|xiongyi|shouyue|hongfa"):split("|")
 	
 	local notshown,shown,f,e = 0,0,0,0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
@@ -79,11 +79,6 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 		local cho = { "show_head_general", "show_deputy_general", "show_both_generals"}
 		return cho[math.random(1, #cho)]
 	end
-
-	if  f < 2 and not self.player:hasShownOneGeneral() then
-		return "cancel"
-	end
-
 	
 	if shown == 0 then 
 		for _, skill in ipairs(firstshow) do
@@ -96,8 +91,8 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 			end
 		end
 	end	
-	
-	if f > 2 or e - f < 2 then 
+		
+	if shown > 2 and (f > 2 or e - f < 2) then 
 		for _, skill in ipairs(needshow) do
 			if self.player:hasSkill(skill) then
 				if self.player:inHeadSkills(skill) then 
@@ -121,7 +116,7 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 		end
 	end		
 	
-	for _, skill in ipairs(friendshow) do
+	for _, skill in ipairs(followshow) do
 		for _,p in sgs.qlist(self.room:getOtherPlayers(player)) do 
 			if p:hasShownSkill(skill) and p:getKingdom() == self.player:getKingdom() and not self.player:hasShownOneGeneral()  then 
 				local cho = { "show_head_general", "show_deputy_general", "show_both_generals"}

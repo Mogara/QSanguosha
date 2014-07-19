@@ -310,19 +310,14 @@ function SmartAI:findTuxiTarget()
 end
 
 sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
+	if not self:willShowForAttack() then
+		return "." 
+	end
 	local targets = self:findTuxiTarget()
 	if type(targets) == "table" and #targets > 0 then
 		return ("@TuxiCard=.&tuxi->" .. table.concat(targets, "+"))
 	end
 	return "."
-end
-
-sgs.ai_skill_invoke.tuxi = function(self, data)
-	if not self:willShowForAttack() then
-		return false 
-	end
-	
-	return true
 end
 
 sgs.ai_skill_invoke.luoyi = function(self,data)
