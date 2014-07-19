@@ -337,8 +337,16 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     painter->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
     QPainterPath path;
     QString s = toPlainText();
+    QTextDocument *doc = document();
+    qreal margin = doc->documentMargin();
     QStringList lines = s.split("\n", QString::SkipEmptyParts);
 
+    QFont f = font();
+    f.setStyleHint(QFont::AnyStyle, QFont::PreferAntialias);
+    QFontMetrics fm(f);
+    QFont f_bold = f;
+    f_bold.setBold(true);
+    QFontMetrics fm_bold(f_bold);
 
     for (int i = 0; i < lines.length(); i++){
         QString thisline = lines[i];
@@ -361,23 +369,16 @@ void AATextItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
             }
         }
 
-        QFont f = font();
-        f.setStyleHint(QFont::AnyStyle, QFont::PreferAntialias);
-        QFontMetrics fm(f);
-        QFont f_bold = f;
-        f_bold.setBold(true);
-        QFontMetrics fm_bold(f_bold);
-
         int width = 0;
         for (int j = 0; j < s_non_bold.length(); j++){
             QString non_bold = s_non_bold[j];
             int width_c_non_bold = fm.width(non_bold);
-            path.addText(document()->documentMargin() + width, fm.height() * (i + 1), f, non_bold);
+            path.addText(margin + width, fm.height() * (i + 1), f, non_bold);
             width += width_c_non_bold;
 
             QString bold = s_bold[j];
             int width_c_bold = fm_bold.width(bold);
-            path.addText(document()->documentMargin() + width, fm.height() * (i + 1), f_bold, bold);
+            path.addText(margin + width, fm.height() * (i + 1), f_bold, bold);
             width += width_c_bold;
         }
     }
