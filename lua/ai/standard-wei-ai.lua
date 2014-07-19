@@ -1061,15 +1061,14 @@ local quhu_skill = {}
 quhu_skill.name = "quhu"
 table.insert(sgs.ai_skills, quhu_skill)
 quhu_skill.getTurnUseCard = function(self)
+	if not self:willShowForAttack() then
+		return nil 
+	end
 	if not self.player:hasUsed("QuhuCard") and not self.player:isKongcheng() then return sgs.Card_Parse("@QuhuCard=.&quhu") end
 end
 
 sgs.ai_skill_use_func.QuhuCard = function(QHCard, use, self)
-	
-	if not self:willShowForAttack() then
-		return false 
-	end
-	
+		
 	if #self.enemies == 0 then return end
 	local max_card = self:getMaxCard()
 	local max_point = max_card:getNumber()

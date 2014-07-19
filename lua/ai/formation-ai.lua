@@ -250,6 +250,9 @@ local tiaoxin_skill = {}
 tiaoxin_skill.name = "tiaoxin"
 table.insert(sgs.ai_skills, tiaoxin_skill)
 tiaoxin_skill.getTurnUseCard = function(self)
+	if not self:willShowForAttack() then
+		return nil 
+	end
 	if self.player:hasUsed("TiaoxinCard") then return end
 	return sgs.Card_Parse("@TiaoxinCard=.&tiaoxin")
 end
@@ -648,3 +651,12 @@ sgs.ai_skill_discard.DragonPhoenix = function(self, discard_num, min_num, option
 		if not self.player:isJilei(card) then return {card:getEffectiveId()} end
 	end
 end
+
+sgs.ai_skill_invoke.shengxi = function(self, data)
+	if not self:willShowForDefence() then
+		return false 
+	end
+	return true
+end
+
+

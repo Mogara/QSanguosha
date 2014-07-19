@@ -724,7 +724,7 @@ end
 sgs.ai_skill_playerchosen.shuangren = function(self, targets)
 
 	if not self:willShowForAttack() then
-		return "." 
+		return nil 
 	end	
 
 	if self.player:isKongcheng() then return "." end
