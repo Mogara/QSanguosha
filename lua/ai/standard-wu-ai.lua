@@ -1898,4 +1898,9 @@ sgs.ai_use_value.FenxunCard = 5.5
 sgs.ai_use_priority.FenxunCard = 8
 sgs.ai_card_intention.FenxunCard = 50
 
-
+sgs.ai_skill_invoke.keji = function(self, data)
+	if not self:willShowForDefence() and not self.player:hasSkill("tianxiang") then 	
+		return false 
+	end	
+	return true
+end

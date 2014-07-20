@@ -55,8 +55,8 @@ return {
 	[":hunshang"] = "副将技，此武将牌上单独的阴阳鱼个数-1；副将技，准备阶段开始时，若你的体力值为1，你于此回合内拥有\"英姿\"和\"英魂\"。",
 	["yingzi_sunce"] = "英姿",
 	["yinghun_sunce"] = "英魂",
-	["yinghun_sunce:d1tx"] = "摸一张牌，然后弃置X张牌",
-	["yinghun_sunce:dxt1"] = "摸X张牌，然后弃置一张牌",
+	["yinghun_sunce:d1tx"] = "摸一弃X",
+	["yinghun_sunce:dxt1"] = "摸X弃一",
 
 	["#chenwudongxi"] = "壮怀激烈",
 	["chenwudongxi"] = "陈武＆董袭",
