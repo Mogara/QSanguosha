@@ -55,7 +55,7 @@ end
 
 sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 
-	local firstshow = ("luanji|qianhuan"):split("|")	
+	local firstshow = ("luanji"):split("|")	
 	local showboth = ("luanji+shuangxiong|luanji+huoshui|luoshen+fangzhu"):split("|")	
 	local needshow = ("yicheng|qianhuan|chuanxin|suishi"):split("|")	
 	local woundedshow = ("zaiqi|yinghun|hunshang|hengzheng"):split("|")
