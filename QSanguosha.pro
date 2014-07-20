@@ -107,6 +107,7 @@ SOURCES += \
     src/jsoncpp/src/json_internalmap.inl \
     src/jsoncpp/src/json_internalarray.inl \
     swig/sanguosha_wrap.cxx \
+    src/ui/ChooseTriggerOrderBox.cpp
 
 HEADERS += \
     src/client/aux-skills.h \
@@ -210,6 +211,7 @@ HEADERS += \
     src/jsoncpp/include/json/config.h \
     src/jsoncpp/include/json/autolink.h \
     src/jsoncpp/include/json/assertions.h \
+    src/ui/ChooseTriggerOrderBox.h
 
 FORMS += \
     src/dialog/cardoverview.ui \

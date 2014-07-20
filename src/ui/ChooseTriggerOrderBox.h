@@ -17,44 +17,15 @@
 
     QSanguosha-Hegemony Team
     *********************************************************************/
+/*
+#ifndef CHOOSETRIGGERORDERBOX_H
+#define CHOOSETRIGGERORDERBOX_H
 
-#ifndef _CHOOSE_OPTIONS_BOX_H
-#define _CHOOSE_OPTIONS_BOX_H
-
-#include "TimedProgressBar.h"
-#include "sprite.h"
-#include <QGraphicsTextItem>
-
-class Button;
-
-class ToolTipBox : public QGraphicsObject {
+class ChooseTriggerOrderBox : public QGraphicsObject {
     Q_OBJECT
 
 public:
-    explicit ToolTipBox(const QString &text);
-
-    virtual QRectF boundingRect() const;
-
-protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
-private:
-    QString text;
-    QSizeF size;
-    QGraphicsTextItem *tip_label;
-
-    void init();
-
-public slots:
-    void showToolTip();
-    void hideToolTip();
-};
-
-class ChooseOptionsBox : public QGraphicsObject {
-    Q_OBJECT
-
-public:
-    explicit ChooseOptionsBox();
+    explicit ChooseTriggerOrderBox();
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
     QRectF boundingRect() const;
@@ -63,12 +34,10 @@ public:
     inline void setSkillName(const QString &skillName) { skill_name = skillName; }
 
 public slots:
-    void chooseOption(const QStringList &options);
+    void chooseOption(const QString &reason, const QStringList &options, const bool optional);
     void reply();
 
 private:
-    int options_number;
-    QString skill_name;
     QList<Button *> buttons;
     static const int default_button_width = 100;
     static const int default_button_height = 30;
@@ -78,8 +47,16 @@ private:
     static const int interval = 15;
     static const int left_blank_width = 37;
 
+    QString reason;
+    QStringList options;
+    bool optional;
+
+    Button *cancel;
     QGraphicsProxyWidget *progress_bar_item;
     QSanCommandProgressBar *progress_bar;
+
+    int getGeneralNum() const;
 };
 
-#endif // _CHOOSE_OPTIONS_BOX_H
+#endif // CHOOSETRIGGERORDERBOX_H
+*/
