@@ -322,13 +322,23 @@ luanji_skill.getTurnUseCard = function(self)
 		local cards = self.player:getHandcards()
 		local same_suit = false
 		cards = sgs.QList2Table(cards)
+		local useAll = false
+		for _, enemy in ipairs(self.enemies) do
+			if enemy:getHp() == 1 and not enemy:hasArmorEffect("Vine")  then 
+			useAll = true
+			end
+		end	
 		for _, fcard in ipairs(cards) do
-			if not (isCard("Peach", fcard, self.player) or isCard("ExNihilo", fcard, self.player) or isCard("AOE", fcard, self.player)) then
+			local fvalueCard = (isCard("Peach", fcard, self.player) or isCard("ExNihilo", fcard, self.player) or isCard("archery_attack", fcard, self.player))
+			if useAll then fvalueCard = (isCard("archery_attack", fcard, self.player)) end
+			if  not fvalueCard then
 				first_card = fcard
 				first_found = true
 				for _, scard in ipairs(cards) do
+					local svalueCard = (isCard("Peach", scard, self.player) or isCard("ExNihilo", scard, self.player) or isCard("archery_attack", scard, self.player))
+					if useAll then svalueCard = (isCard("archery_attack", scard, self.player)) end
 					if first_card ~= scard and scard:getSuit() == first_card:getSuit()
-						and not (isCard("Peach", scard, self.player) or isCard("ExNihilo", scard, self.player) or isCard("AOE", scard, self.player)) then
+						and not svalueCard then
 
 						local card_str = ("archery_attack:luanji[%s:%s]=%d+%d&luanji"):format("to_be_decided", 0, first_card:getId(), scard:getId())
 						local archeryattack = sgs.Card_Parse(card_str)
@@ -935,7 +945,7 @@ local huoshui_skill = {}
 huoshui_skill.name = "huoshui"
 table.insert(sgs.ai_skills, huoshui_skill)
 function huoshui_skill.getTurnUseCard(self)
-	if self.player:hasShownSkill(sgs.Sanguosha:getSkill("huoshui")) then return nil end
+	if not self:willShowForAttack() or self.player:hasShownSkill(sgs.Sanguosha:getSkill("huoshui")) then return nil end
 	local card = sgs.Card_Parse("@HuoshuiCard=.&huoshui")
 	assert(card)
 	return card
