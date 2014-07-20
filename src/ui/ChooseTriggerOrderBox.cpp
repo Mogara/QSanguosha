@@ -17,8 +17,8 @@
 
     QSanguosha-Hegemony Team
     *********************************************************************/
-
-#include "ChooseOptionsBox.h"
+/*
+#include "ChooseTriggerOrderBox.h"
 #include "engine.h"
 #include "roomscene.h"
 #include "protocol.h"
@@ -27,83 +27,29 @@
 
 #include <QApplication>
 
-ToolTipBox::ToolTipBox(const QString &text)
-    : text(text), size(0, 0), tip_label(NULL)
-{
-    init();
-}
-
-void ToolTipBox::init()
-{
-    int line = (text.length() + 13) / 14;
-    int y = line * 15 + 13;
-    size = QSize(180, y);
-    setOpacity(0.8);
-}
-
-QRectF ToolTipBox::boundingRect() const
-{
-    QPointF point = mapFromScene(parentItem()->scenePos());
-    point += QPointF(50, 20);
-    return QRectF(point, size);
-}
-
-void ToolTipBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
-{
-    painter->setRenderHint(QPainter::HighQualityAntialiasing);
-    QRectF rect = boundingRect();
-
-    QLinearGradient linear2(rect.topLeft(), rect.bottomLeft());
-    linear2.setColorAt(0, QColor(247, 247, 250));
-    linear2.setColorAt(0.5, QColor(240, 242, 247));
-    linear2.setColorAt(1, QColor(233, 233, 242));
-
-    painter->setPen(Qt::black);
-    painter->setBrush(linear2);
-    QPointF points[8] = {QPointF(65, 20),
-                         QPointF(65, 35),
-                         QPointF(50, 35),
-                         QPointF(50, size.height()+20),
-                         QPointF(size.width()+50, size.height()+20),
-                         QPointF(size.width()+50, 35),
-                         QPointF(80, 35),
-                         QPointF(65, 20)};
-    painter->drawPolygon(points, 8);
-    painter->drawText(52, 37, 179, 9999, Qt::TextWordWrap, text);
-}
-
-void ToolTipBox::showToolTip()
-{
-    show();
-}
-
-void ToolTipBox::hideToolTip()
-{
-    hide();
-}
-
-ChooseOptionsBox::ChooseOptionsBox()
-    : options_number(0), progress_bar(NULL)
+ChooseTriggerOrderBox::ChooseTriggerOrderBox()
+    : optional(true), progress_bar(NULL)
 {
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
 }
 
-void ChooseOptionsBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+int ChooseTriggerOrderBox::getGeneralNum() const
 {
-    //====================
-    //||================||
-    //||   请选择一项   ||
-    //||    _______     ||
-    //||   |   1   |    ||
-    //||    -------     ||
-    //||    _______     ||
-    //||   |   2   |    ||
-    //||    -------     ||
-    //||    _______     ||
-    //||   |   3   |    ||
-    //||    -------     ||
-    //====================
+    if (options.isEmpty())
+        return 0;
+
+    int count = 0;
+    if (options.contains("GameRule_AskForGeneralShowHead"))
+        ++ count;
+    if (options.contains("GameRule_AskForGeneralShowDeputy"))
+        ++ count;
+
+    return count;
+}
+
+void ChooseTriggerOrderBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+{
     painter->save();
     painter->setBrush(QBrush(G_COMMON_LAYOUT.m_chooseGeneralBoxBackgroundColor));
     QRectF rect = boundingRect();
@@ -113,34 +59,41 @@ void ChooseOptionsBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     const int h = rect.height();
     painter->drawRect(QRect(x, y, w, h));
     painter->drawRect(QRect(x, y, w, top_dark_bar));
-    QString title = QString();
-    if (skill_name != "TriggerOrder" && skill_name != "TurnStartShowGeneral") {
-        title.append(" ");
-        title.append(tr("Please choose:"));
-    }
-    title.prepend(Sanguosha->translate(skill_name));
-    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, top_dark_bar), Qt::AlignCenter, title);
+    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, top_dark_bar), Qt::AlignCenter | Qt::AlignJustify, Sanguosha->translate(reason));
     painter->restore();
     painter->setPen(G_COMMON_LAYOUT.m_chooseGeneralBoxBorderColor);
     painter->drawRect(QRect(x + 1, y + 1, w - 2, h - 2));
 }
 
-QRectF ChooseOptionsBox::boundingRect() const
+QRectF ChooseTriggerOrderBox::boundingRect() const
 {
-    const int width = default_button_width + left_blank_width * 2;
+    const int generalNum = getGeneralNum();
+    const QSize generalSize = G_ROOM_SKIN.getGeneralPixmap(Self->getAvatarGeneral()->objectName() ,
+                                                           G_DASHBOARD_LAYOUT.m_primaryAvatarSize()).size();
+    const int width = generalSize * qMax(generalNum, 1) + left_blank_width * 2;
 
-    int height = top_blank_width + options_number * default_button_height + (options_number - 1) * interval + bottom_blank_width;
+    int height = top_blank_width
+            + (options.size() - generalNum) * default_button_height
+            + (options.size() - generalNum - 1) * interval
+            + bottom_blank_width;
 
     if (ServerInfo.OperationTimeout != 0)
         height += 12;
 
+    if (generalNum > 0)
+        height += generalSize.height() + interval;
+
+    if (optional)
+        height += cancel->boundingRect().height() + interval;
+
     return QRectF(0, 0, width, height);
 }
 
-void ChooseOptionsBox::chooseOption(const QStringList &options)
+void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringList &options, const bool optional)
 {
-    //重新绘制背景
-    options_number = options.length();
+    this->reason = reason;
+    this->options = options;
+    this->optional = optional;
     update();
 
     buttons.clear();
@@ -205,7 +158,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
     }
 }
 
-void ChooseOptionsBox::reply()
+void ChooseTriggerOrderBox::reply()
 {
     if (progress_bar != NULL){
         progress_bar->hide();
@@ -214,14 +167,13 @@ void ChooseOptionsBox::reply()
     clear();
 }
 
-void ChooseOptionsBox::clear()
+void ChooseTriggerOrderBox::clear()
 {
     foreach(Button *button, buttons)
         button->deleteLater();
 
     buttons.clear();
 
-    update();
-
     hide();
 }
+*/

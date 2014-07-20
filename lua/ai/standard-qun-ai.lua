@@ -313,6 +313,7 @@ local luanji_skill = {}
 luanji_skill.name = "luanji"
 table.insert(sgs.ai_skills, luanji_skill)
 luanji_skill.getTurnUseCard = function(self)
+	sgs.ai_use_priority.ArcheryAttack = 9.2
 	local archery = sgs.cloneCard("archery_attack")
 
 	local first_found, second_found = false, false
@@ -321,13 +322,23 @@ luanji_skill.getTurnUseCard = function(self)
 		local cards = self.player:getHandcards()
 		local same_suit = false
 		cards = sgs.QList2Table(cards)
+		local useAll = false
+		for _, enemy in ipairs(self.enemies) do
+			if enemy:getHp() == 1 and not enemy:hasArmorEffect("Vine")  then 
+			useAll = true
+			end
+		end	
 		for _, fcard in ipairs(cards) do
-			if not (isCard("Peach", fcard, self.player) or isCard("ExNihilo", fcard, self.player) or isCard("AOE", fcard, self.player)) then
+			local fvalueCard = (isCard("Peach", fcard, self.player) or isCard("ExNihilo", fcard, self.player) or isCard("archery_attack", fcard, self.player))
+			if useAll then fvalueCard = (isCard("archery_attack", fcard, self.player)) end
+			if  not fvalueCard then
 				first_card = fcard
 				first_found = true
 				for _, scard in ipairs(cards) do
+					local svalueCard = (isCard("Peach", scard, self.player) or isCard("ExNihilo", scard, self.player) or isCard("archery_attack", scard, self.player))
+					if useAll then svalueCard = (isCard("archery_attack", scard, self.player)) end
 					if first_card ~= scard and scard:getSuit() == first_card:getSuit()
-						and not (isCard("Peach", scard, self.player) or isCard("ExNihilo", scard, self.player) or isCard("AOE", scard, self.player)) then
+						and not svalueCard then
 
 						local card_str = ("archery_attack:luanji[%s:%s]=%d+%d&luanji"):format("to_be_decided", 0, first_card:getId(), scard:getId())
 						local archeryattack = sgs.Card_Parse(card_str)
@@ -360,9 +371,13 @@ luanji_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_invoke.shuangxiong = function(self, data)
+	sgs.ai_use_priority.Duel = 9.1
 	if self.player:isSkipped(sgs.Player_Play) or (self.player:getHp() < 2 and not (self:getCardsNum("Slash") > 1 and self.player:getHandcardNum() >= 3)) or #self.enemies == 0 then
 		return false
 	end
+	if self.player:hasSkill("luanji") and self.player:getHandcardNum() >= 5 then return false end
+	if not self:willShowForAttack() and self.player:getHandcardNum() < 4 then return false end
+	
 	local duel = sgs.cloneCard("duel")
 
 	local dummy_use = { isDummy = true }
@@ -425,11 +440,13 @@ luanwu_skill.getTurnUseCard = function(self)
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if self:isWeak(player) then
 			if self:isFriend(player) then bad = bad + 1.5
-			else good = good + 0.8
+			elseif player:hasShownOneGeneral() then  good = good + 0.8
+			else good = good + 0.4
 			end
 		end
 	end
-	if good == 0 then return end
+	local alive = self.room:alivePlayerCount()
+	if good < alive/4 then return end
 
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		local hp = math.max(player:getHp(), 1)
@@ -471,7 +488,12 @@ end
 
 sgs.dynamic_value.damage_card.LuanwuCard = true
 
-sgs.ai_skill_invoke.weimu = true
+sgs.ai_skill_invoke.weimu = function(self, data)
+	if not self:willShowForDefence() then
+		return false 
+	end
+	return true
+end
 
 sgs.ai_skill_invoke.wansha = function(self, data)
 	return data:toDying().who:getKingdom() ~= "qun"
@@ -722,12 +744,7 @@ sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
 end
 
 sgs.ai_skill_playerchosen.shuangren = function(self, targets)
-
-	if not self:willShowForAttack() then
-		return "." 
-	end	
-
-	if self.player:isKongcheng() then return "." end
+	if self.player:isKongcheng() then return nil end
 	self:sort(self.enemies, "handcard")
 	local max_card = self:getMaxCard()
 	local max_point = max_card:getNumber()
@@ -738,6 +755,10 @@ sgs.ai_skill_playerchosen.shuangren = function(self, targets)
 	self:useBasicCard(slash, dummy_use)
 	self.player:setFlags("-slashNoDistanceLimit")
 
+	if not self:willShowForAttack() then
+		return nil 
+	end	
+	
 	if dummy_use.card then
 		for _, enemy in ipairs(self.enemies) do
 			if not (enemy:hasShownSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
@@ -924,7 +945,7 @@ local huoshui_skill = {}
 huoshui_skill.name = "huoshui"
 table.insert(sgs.ai_skills, huoshui_skill)
 function huoshui_skill.getTurnUseCard(self)
-	if self.player:hasShownSkill(sgs.Sanguosha:getSkill("huoshui")) then return nil end
+	if not self:willShowForAttack() or self.player:hasShownSkill(sgs.Sanguosha:getSkill("huoshui")) then return nil end
 	local card = sgs.Card_Parse("@HuoshuiCard=.&huoshui")
 	assert(card)
 	return card

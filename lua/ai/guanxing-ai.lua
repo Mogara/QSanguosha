@@ -302,6 +302,10 @@ local function GuanXing(self, cards)
 				if isCard("Slash", gcard, self.player) then
 					insert = true
 				end
+			elseif self.player:hasSkills("jizhi") then	
+				if isCard("TrickCard", gcard, self.player) then
+					insert = true
+				end
 			elseif isCard("Peach", gcard, self.player) and (self.player:isWounded()  or self:getCardsNum("Peach") == 0) then
 				insert = true
 			elseif not willSkipPlayPhase and isCard("ExNihilo", gcard, self.player) then

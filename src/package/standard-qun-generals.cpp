@@ -1390,8 +1390,7 @@ QingchengCard::QingchengCard() {
 }
 
 bool QingchengCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
-    if ((to_select->isLord() || to_select->getGeneralName().contains("sujiang"))
-        && to_select->getGeneral2Name().contains("sujiang")) return false;
+    if ((to_select->isLord() || to_select->getGeneralName().contains("sujiang")) && to_select->getGeneral2() != NULL && to_select->getGeneral2Name().contains("sujiang")) return false;
     return targets.isEmpty() && to_select != Self && to_select->hasShownAllGenerals();
 }
 
@@ -1402,7 +1401,7 @@ void QingchengCard::onEffect(const CardEffectStruct &effect) const{
     QStringList choices;
     if (!to->isLord() && !to->getGeneralName().contains("sujiang"))
         choices << to->getGeneral()->objectName();
-    if (!to->getGeneral2Name().contains("sujiang"))
+    if (to->getGeneral2() != NULL && !to->getGeneral2Name().contains("sujiang"))
         choices << to->getGeneral2()->objectName();
 
     if (choices.length() == 0)
