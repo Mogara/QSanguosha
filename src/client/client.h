@@ -56,6 +56,7 @@ public:
         AskForGeneralChosen = 0x000D,
         AskForArrangement = 0x000E,
         AskForChoice = 0x000F,
+        AskForTriggerOrder = 0x0010,
 
         RespondingUse = 0x0101,
         RespondingForDiscard = 0x0201,
@@ -176,6 +177,7 @@ public:
     void askForGongxin(const Json::Value &);
     void askForSurrender(const Json::Value &);
     void askForLuckCard(const Json::Value &);
+    void askForTriggerOrder(const Json::Value &);
     void handleGameEvent(const Json::Value &);
     //3v3 & 1v1
     void askForOrder(const Json::Value &);
@@ -298,6 +300,7 @@ signals:
     void roles_got(const QString &scheme, const QStringList &roles);
     void directions_got();
     void orders_got(QSanProtocol::Game3v3ChooseOrderCommand reason);
+    void triggers_got(const QString &reason, const QStringList &options, const bool optional);
 
     void seats_arranged(const QList<const ClientPlayer *> &seats);
     void hp_changed(const QString &who, int delta, DamageStruct::Nature nature, bool losthp);

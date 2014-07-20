@@ -1666,35 +1666,45 @@ QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, QM
     Q_ASSERT(!skills.isEmpty());
 
     QString answer;
-    QStringList all;
-    foreach(const QStringList &list, skills)
-        all << list;
+    QStringList all_pairs;
+    foreach(const ServerPlayer *p, skills.keys()) {
+        foreach (const QString &str, skills.value(p))
+            all_pairs << QString("%1:%2").arg(p->objectName()).arg(str);
+    }
 
     if (skills.values().length() == 1) {
         answer = skills.values().first().first();
     } else {
-        notifyMoveFocus(player, S_COMMAND_MULTIPLE_CHOICE);
+        notifyMoveFocus(player, S_COMMAND_TRIGGER_ORDER);
 
         AI *ai = player->getAI();
 
         if (ai) {
-            answer = ai->askForChoice(reason, all.join("+"), data);
+            //Temporary method to keep compatible with existing AI system
+            QStringList all_skills;
+            foreach(const QStringList &list, skills.values())
+                all_skills << list;
+
+            const QString reply = ai->askForChoice(reason, all_skills.join("+"), data);
+            QString owner;
+            foreach(const QStringList &list, skills.values()) {
+                if (list.contains(reply))
+                    owner = skills.key(reply)->objectName();
+            }
+
+            if (!owner.isEmpty())
+                answer = QString("%1:%2").arg(owner).arg(reply);
+
             thread->delay();
         } else {
             Json::Value args;
+            //example: "["turn_start", ["sgs1:tiandu", "sgs1:tuntian", "sgs2:slobsb"], true]"
 
             args[0] = toJsonString(reason);
-
-            Json::Value map;
-
-            foreach(const ServerPlayer *owner, skills.keys()) {
-                map[owner->objectName().toLatin1().constData()] = toJsonArray(skills.value(owner));
-            }
-
-            args[1] = map;
+            args[1] = toJsonArray(all_pairs);
             args[2] = optional;
 
-            bool success = doRequest(player, S_COMMAND_MULTIPLE_CHOICE, args, true);
+            bool success = doRequest(player, S_COMMAND_TRIGGER_ORDER, args, true);
             Json::Value clientReply = player->getClientReply();
             if (!success || !clientReply.isString())
                 answer = "cancel";
@@ -1702,8 +1712,8 @@ QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, QM
                 answer = toQString(clientReply);
         }
 
-        if (!all.contains(answer))
-            answer = all[0];
+        if (!all_pairs.contains(answer))
+            answer = all_pairs[0];
     }
 
     return answer;

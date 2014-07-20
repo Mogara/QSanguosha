@@ -1645,6 +1645,16 @@ void RoomScene::chooseDirection() {
     m_choiceDialog = dialog;
 }
 
+void RoomScene::chooseTriggerOrder(const QString &reason, const QStringList &options, const bool optional)
+{
+    QApplication::alert(main_window);
+    if (!main_window->isActiveWindow())
+        Sanguosha->playSystemAudioEffect("pop-up");
+
+    choose_options_box->setSkillName(skillName);
+    choose_options_box->chooseOption(options);
+}
+
 void RoomScene::toggleDiscards() {
     CardOverview *overview = new CardOverview;
     overview->setWindowTitle(tr("Discarded pile"));
@@ -2507,6 +2517,13 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         break;
     }
     case Client::AskForChoice: {
+        ok_button->setEnabled(false);
+        cancel_button->setEnabled(false);
+        discard_button->setEnabled(false);
+
+        break;
+    }
+    case Client::AskForTriggerOrder: {
         ok_button->setEnabled(false);
         cancel_button->setEnabled(false);
         discard_button->setEnabled(false);

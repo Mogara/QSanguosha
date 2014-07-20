@@ -130,6 +130,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_interactions[S_COMMAND_CHOOSE_ORDER] = &Client::askForOrder;
     m_interactions[S_COMMAND_SURRENDER] = &Client::askForSurrender;
     m_interactions[S_COMMAND_LUCK_CARD] = &Client::askForLuckCard;
+    m_interactions[S_COMMAND_TRIGGER_ORDER] = &Client::askForTriggerOrder;
 
     m_callbacks[S_COMMAND_FILL_AMAZING_GRACE] = &Client::fillAG;
     m_callbacks[S_COMMAND_TAKE_AMAZING_GRACE] = &Client::takeAG;
@@ -1385,6 +1386,22 @@ void Client::askForDirection(const Json::Value &) {
     setStatus(ExecDialog);
 }
 
+void Client::askForTriggerOrder(const Json::Value &ask_str)
+{
+    if (!ask_str.isArray() || ask_str.size() != 3
+            || !ask_str[0].isString() || !ask_str[1].isArray()
+            || !ask_str[2].isBool()) return;
+
+    QString reason = toQString(ask_str[0]);
+
+    QStringList choices;
+    tryParse(ask_str[1], choices);
+
+    bool optional = ask_str[2].asBool();
+
+    emit triggers_got(reason, choices, optional);
+    setStatus(AskForTriggerOrder);
+}
 
 void Client::setMark(const Json::Value &mark_str) {
     if (!mark_str.isArray() || mark_str.size() != 3) return;

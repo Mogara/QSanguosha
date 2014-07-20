@@ -157,7 +157,8 @@ namespace QSanProtocol {
         S_COMMAND_ARRANGE_SEATS,
         S_COMMAND_WARN,
         S_COMMAND_SIGNUP,
-        S_COMMAND_DISABLE_SHOW
+        S_COMMAND_DISABLE_SHOW,
+        S_COMMAND_TRIGGER_ORDER
     };
 
     enum GameEventType {
