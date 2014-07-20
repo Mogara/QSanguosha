@@ -55,8 +55,8 @@ end
 
 sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 
-	local firstshow = ("luanji|jizhi"):split("|")	
-	local showboth = ("luanji+shuangxiong|luanji+huoshui"):split("|")	
+	local firstshow = ("luanji"):split("|")	
+	local showboth = ("luanji+shuangxiong|luanji+huoshui|luoshen+fangzhu"):split("|")	
 	local needshow = ("yicheng|qianhuan|chuanxin|suishi"):split("|")	
 	local woundedshow = ("zaiqi|yinghun|hunshang|hengzheng"):split("|")
 	local followshow = ("duoshi|rende|jieyin|xiongyi|shouyue|hongfa"):split("|")
@@ -81,6 +81,12 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 		return cho[math.random(1, #cho)]
 	end
 	
+	for _, skill in ipairs(showboth) do
+		if self.player:hasSkills(skill) then
+			return "show_both_generals"
+		end
+	end
+	
 	if shown == 0 then 
 		for _, skill in ipairs(firstshow) do
 			if self.player:hasSkill(skill) then
@@ -92,12 +98,6 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 			end
 		end
 	end	
-	
-	for _, skill in ipairs(showboth) do
-		if self.player:hasSkills(skill) then
-			return "show_both_generals"
-		end
-	end
 		
 	if shown > 2 and (f > 2 or e - f < 2) then 
 		for _, skill in ipairs(needshow) do

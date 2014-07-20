@@ -700,6 +700,7 @@ sgs.ai_skill_invoke.huoshou = true
 
 sgs.ai_skill_invoke.juxiang = true
 
+sgs.ai_skill_invoke.kongcheng = true
 
 sgs.ai_skill_invoke.guanxing = function(self, data)
 	if not self:willShowForDefence() and not self:willShowForAttack() and self.player:getJudgingArea():isEmpty() then 	

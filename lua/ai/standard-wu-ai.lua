@@ -118,18 +118,31 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 				if not dummy_use.card then table.insert(unpreferedCards, card:getId()) end
 			end
 		end
-
-		if self.player:getWeapon() and self.player:getHandcardNum() < 3 then
+		
+		local maxEquipNum = 9
+		local insertEquipNum = 0 
+		if self.player:hasSkill("xiaoji") then maxEquipNum = 1 end 
+		
+		if self.player:getWeapon() and self.player:getHandcardNum() < 3 and insertEquipNum < maxEquipNum then
 			table.insert(unpreferedCards, self.player:getWeapon():getId())
+			insertEquipNum = insertEquipNum + 1
 		end
 
-		if self:needToThrowArmor() then
+		if self:needToThrowArmor() and insertEquipNum < maxEquipNum then
 			table.insert(unpreferedCards, self.player:getArmor():getId())
+			insertEquipNum = insertEquipNum + 1
 		end
 
-		if self.player:getOffensiveHorse() and self.player:getWeapon() then
+		if self.player:getOffensiveHorse() and self.player:getWeapon() and insertEquipNum < maxEquipNum then
 			table.insert(unpreferedCards, self.player:getOffensiveHorse():getId())
+			insertEquipNum = insertEquipNum + 1
 		end
+		
+		if self.player:getDefensiveHorse() and self.player:hasSkill("xiaoji") and insertEquipNum < maxEquipNum then
+			table.insert(unpreferedCards, getDefensiveHorse():getId())
+			insertEquipNum = insertEquipNum + 1
+		end
+		
 	end
 
 	local use_cards = {}
@@ -1898,4 +1911,9 @@ sgs.ai_use_value.FenxunCard = 5.5
 sgs.ai_use_priority.FenxunCard = 8
 sgs.ai_card_intention.FenxunCard = 50
 
-
+sgs.ai_skill_invoke.keji = function(self, data)
+	if not self:willShowForDefence() and not self.player:hasSkill("tianxiang") then 	
+		return false 
+	end	
+	return true
+end
