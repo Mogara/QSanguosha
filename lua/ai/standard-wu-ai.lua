@@ -1662,7 +1662,8 @@ sgs.ai_skill_invoke.guzheng = function(self, data)
 	local invoke = (self:isFriend(player) and not self:needKongcheng(player, true))
 					or (data:toInt() >= 3 or (data:toInt() == 2 and not player:hasShownSkills(sgs.cardneed_skill)))
 					or (self:isEnemy(player) and self:needKongcheng(player, true))
-					or (self:willShowForAttack() or self:willShowForDefence() )
+					or (self:willShowForAttack() and data:toInt() >= 2 )
+					or (self:willShowForDefence() and data:toInt() >= 3 )
 	return invoke
 end
 

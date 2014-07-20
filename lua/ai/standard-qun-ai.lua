@@ -313,6 +313,7 @@ local luanji_skill = {}
 luanji_skill.name = "luanji"
 table.insert(sgs.ai_skills, luanji_skill)
 luanji_skill.getTurnUseCard = function(self)
+	sgs.ai_use_priority.ArcheryAttack = 9.2
 	local archery = sgs.cloneCard("archery_attack")
 
 	local first_found, second_found = false, false
@@ -360,9 +361,13 @@ luanji_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_invoke.shuangxiong = function(self, data)
+	sgs.ai_use_priority.Duel = 9.1
 	if self.player:isSkipped(sgs.Player_Play) or (self.player:getHp() < 2 and not (self:getCardsNum("Slash") > 1 and self.player:getHandcardNum() >= 3)) or #self.enemies == 0 then
 		return false
 	end
+	if self.player:hasSkill("luanji") and self.player:getHandcardNum() >= 5 then return false end
+	if not self:willShowForAttack() and not self.player:getHandcardNum() >= 4 then return false end
+	
 	local duel = sgs.cloneCard("duel")
 
 	local dummy_use = { isDummy = true }
@@ -473,7 +478,12 @@ end
 
 sgs.dynamic_value.damage_card.LuanwuCard = true
 
-sgs.ai_skill_invoke.weimu = true
+sgs.ai_skill_invoke.weimu = function(self, data)
+	if not self:willShowForDefence() then
+		return false 
+	end
+	return true
+end
 
 sgs.ai_skill_invoke.wansha = function(self, data)
 	return data:toDying().who:getKingdom() ~= "qun"
