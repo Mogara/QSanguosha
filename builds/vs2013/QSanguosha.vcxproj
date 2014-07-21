@@ -625,6 +625,7 @@
     <ClCompile Include="..\..\src\package\strategic-advantage.cpp" />
     <ClCompile Include="..\..\src\ui\choosegeneralbox.cpp" />
     <ClCompile Include="..\..\src\ui\ChooseOptionsBox.cpp" />
+    <ClCompile Include="..\..\src\ui\ChooseTriggerOrderBox.cpp" />
     <ClCompile Include="..\..\src\ui\TablePile.cpp" />
     <ClCompile Include="..\..\src\ui\GenericCardContainerUI.cpp" />
     <ClCompile Include="..\..\src\ui\magatamasItem.cpp" />
@@ -709,7 +710,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">true</ExcludedFromBuild>
     </ClCompile>
-        <ClCompile Include="Debug\moc_ChooseOptionsBox.cpp" >
+    <ClCompile Include="Debug\moc_ChooseOptionsBox.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_ChooseTriggerOrderBox.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">true</ExcludedFromBuild>
@@ -1166,7 +1173,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Release\moc_ChooseOptionsBox.cpp" >
+    <ClCompile Include="Release\moc_ChooseOptionsBox.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Release\moc_ChooseTriggerOrderBox.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">true</ExcludedFromBuild>
@@ -1680,238 +1693,10 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\core\compiler-specific.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\core\jsonutils.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\core\namespace.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\core\protocol.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
+    <ClInclude Include="..\..\src\core\compiler-specific.h" />
+    <ClInclude Include="..\..\src\core\jsonutils.h" />
+    <ClInclude Include="..\..\src\core\namespace.h" />
+    <ClInclude Include="..\..\src\core\protocol.h" />
     <CustomBuild Include="..\..\src\ui\TablePile.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -2064,64 +1849,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\core\structs.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
+    <ClInclude Include="..\..\src\core\structs.h" />
     <CustomBuild Include="..\..\src\ui\magatamasItem.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
@@ -2564,180 +2292,9 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\core\util.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\SkinBank.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\ui\uiUtils.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
+    <ClInclude Include="..\..\src\core\util.h" />
+    <ClInclude Include="..\..\src\ui\SkinBank.h" />
+    <ClInclude Include="..\..\src\ui\uiUtils.h" />
     <CustomBuild Include="..\..\src\server\generalselector.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -2772,354 +2329,12 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
     </CustomBuild>
-    <CustomBuild Include="GeneratedFiles\ui_cardoverview.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="GeneratedFiles\ui_configdialog.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="GeneratedFiles\ui_connectiondialog.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="GeneratedFiles\ui_generaloverview.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="GeneratedFiles\ui_mainwindow.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\core\audio.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
+    <ClInclude Include="GeneratedFiles\ui_cardoverview.h" />
+    <ClInclude Include="GeneratedFiles\ui_configdialog.h" />
+    <ClInclude Include="GeneratedFiles\ui_connectiondialog.h" />
+    <ClInclude Include="GeneratedFiles\ui_generaloverview.h" />
+    <ClInclude Include="GeneratedFiles\ui_mainwindow.h" />
+    <ClInclude Include="..\..\src\core\audio.h" />
     <CustomBuild Include="..\..\src\client\aux-skills.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
@@ -3800,64 +3015,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\package\exppattern.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
+    <ClInclude Include="..\..\src\package\exppattern.h" />
     <CustomBuild Include="..\..\src\server\gamerule.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
@@ -4606,64 +3764,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\scenario\scenerule.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
+    <ClInclude Include="..\..\src\scenario\scenerule.h" />
     <CustomBuild Include="..\..\src\server\server.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
@@ -5074,529 +4175,34 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\swig\ai.i">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\swig\card.i">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\swig\list.i">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\swig\luaskills.i">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\swig\native.i">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\swig\naturalvar.i">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\swig\qvariant.i">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="..\..\swig\sanguosha.i">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
-    <CustomBuild Include="sanguosha.ts">
+    <None Include="..\..\swig\ai.i">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\swig\card.i">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\swig\list.i">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\swig\luaskills.i">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\swig\native.i">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\swig\naturalvar.i">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\swig\qvariant.i">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="..\..\swig\sanguosha.i">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="sanguosha.ts">
       <SubType>Designer</SubType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">
-      </AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Performing Custom Build Tools</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Performing Custom Build Tools</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">
-      </AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
-      </AdditionalInputs>
-    </CustomBuild>
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\dialog\cardoverview.ui">
@@ -5792,6 +4398,40 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\core\banpair.h" />
     <ClInclude Include="..\..\src\core\version.h" />
+    <CustomBuild Include="..\..\src\ui\ChooseTriggerOrderBox.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Debug\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Debug\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Debug\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Debug\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Moc%27ing ChooseTriggerOrderBox.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Moc%27ing ChooseTriggerOrderBox.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Moc%27ing ChooseTriggerOrderBox.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Moc%27ing ChooseTriggerOrderBox.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Debug\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Debug\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Debug\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Debug\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Moc%27ing ChooseTriggerOrderBox.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Moc%27ing ChooseTriggerOrderBox.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Moc%27ing ChooseTriggerOrderBox.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Moc%27ing ChooseTriggerOrderBox.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
+    </CustomBuild>
     <CustomBuild Include="..\..\src\ui\ChooseOptionsBox.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
@@ -5825,7 +4465,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
-      </CustomBuild>
+    </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\cardbutton.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath);%(AdditionalInputs)</AdditionalInputs>
