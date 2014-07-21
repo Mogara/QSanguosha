@@ -25,7 +25,7 @@ sgs.ai_skill_choice.CompanionEffect = function(self, choice, data)
 	else return "draw" end
 end
 
-sgs.ai_skill_invoke["userdefine:firstShowReward"] = true
+sgs.ai_skill_invoke["userdefine:FirstShowReward"] = true
 
 --[[
 sgs.ai_skill_choice.heg_nullification = function(self, choice, data)
