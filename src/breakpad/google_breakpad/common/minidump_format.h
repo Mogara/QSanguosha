@@ -724,8 +724,8 @@ typedef struct {
   uint32_t process_kernel_time;  /* seconds of kernel CPU time */
 
   /* The following fields are not present in MINIDUMP_MISC_INFO but are
-   * in MINIDUMP_MISC_INFO_2.  When this struct is populated, these value
-   * may not be set.  Use flags1 or size_of_info to determine whether these
+   * in MINIDUMP_MISC_INFO_2.  When this struct is populated, these values
+   * may not be set.  Use flags1 and size_of_info to determine whether these
    * values are present.  These are only valid when flags1 contains
    * MD_MISCINFO_FLAGS1_PROCESSOR_POWER_INFO. */
   uint32_t processor_max_mhz;
@@ -735,8 +735,8 @@ typedef struct {
   uint32_t processor_current_idle_state;
 
   /* The following fields are not present in MINIDUMP_MISC_INFO_2 but are
-   * in MINIDUMP_MISC_INFO_3.  When this struct is populated, these value
-   * may not be set.  Use flags1 or size_of_info to determine whether these
+   * in MINIDUMP_MISC_INFO_3.  When this struct is populated, these values
+   * may not be set.  Use flags1 and size_of_info to determine whether these
    * values are present. */
    
   /* The following field is only valid if flags1 contains
@@ -757,16 +757,17 @@ typedef struct {
   MDTimeZoneInformation time_zone;
 
   /* The following fields are not present in MINIDUMP_MISC_INFO_3 but are
-   * in MINIDUMP_MISC_INFO_4.  When this struct is populated, these value
-   * may not be set.  Use size_of_info to determine whether these values are 
-   * present. */
+   * in MINIDUMP_MISC_INFO_4.  When this struct is populated, these values
+   * may not be set.  Use flags1 and size_of_info to determine whether these
+   * values are present. */
 
-  /* The following 2 fields are only valid if
-   * size_of_info is >= MD_MISCINFO4_SIZE */
+  /* The following 2 fields are only valid if flags1 contains
+   * MD_MISCINFO_FLAGS1_BUILDSTRING. */
   uint16_t build_string[MD_MAX_PATH];  /* UTF-16-encoded, 0-terminated */
   uint16_t dbg_bld_str[40];            /* UTF-16-encoded, 0-terminated */
-} MDRawMiscInfo;  /* MINIDUMP_MISC_INFO, MINIDUMP_MISC_INFO2,
-                   * MINIDUMP_MISC_INFO3, MINIDUMP_MISC_INFO4 */
+} MDRawMiscInfo;  /* MINIDUMP_MISC_INFO, MINIDUMP_MISC_INFO_2,
+                   * MINIDUMP_MISC_INFO_3, MINIDUMP_MISC_INFO_4,
+                   * MINIDUMP_MISC_INFO_N */
 
 static const size_t MD_MISCINFO_SIZE =
     offsetof(MDRawMiscInfo, processor_max_mhz);
@@ -793,6 +794,8 @@ typedef enum {
       /* MINIDUMP_MISC3_TIMEZONE */
   MD_MISCINFO_FLAGS1_PROTECTED_PROCESS     = 0x00000080,
       /* MINIDUMP_MISC3_PROTECTED_PROCESS */
+  MD_MISCINFO_FLAGS1_BUILDSTRING           = 0x00000100,
+      /* MINIDUMP_MISC4_BUILDSTRING */
 } MDMiscInfoFlags1;
 
 /*
