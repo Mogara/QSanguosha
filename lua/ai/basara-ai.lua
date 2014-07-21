@@ -17,31 +17,15 @@
 
   QSanguosha-Hegemony Team
 *********************************************************************]]
---[[
-sgs.ai_skill_choice.TriggerOrder = function(self, choices, data)
-	self.TurnStartShowGeneral_Choice = nil
-	if string.find(choices, "jieming") then return "jieming" end
-	local skillnames = choices:split("+")
-	table.removeOne(skillnames, "trigger_none")
-	for _, skillname in ipairs(skillnames) do
-		if self:askForSkillInvoke(skillname, data) then
-			return skillname
-		end
-	end
-	if string.find(choices, "trigger_none") then
-		return "trigger_none"
-	end
-	return skillnames[math.random(1, #skillnames)]
-end
---]]
+
 sgs.ai_skill_invoke["userdefine:halfmaxhp"] = true
 
 sgs.ai_skill_choice.CompanionEffect = function(self, choice, data)
-	if self:isWeak() and string.find(choice, "recover") then return "recover"
+	if ( self:isWeak() or self:needKongcheng(self.player, true) ) and string.find(choice, "recover") then return "recover"
 	else return "draw" end
 end
 
-sgs.ai_skill_invoke["userdefine:FirstShowReward"] = true
+sgs.ai_skill_invoke["userdefine:firstShowReward"] = true
 
 --[[
 sgs.ai_skill_choice.heg_nullification = function(self, choice, data)
@@ -52,16 +36,47 @@ end
 ]]
 
 
-
 sgs.ai_skill_choice.TriggerOrder = function(self, choices,data)
 
-if string.find(choices, "GameRule_AskForGeneralShowHead") or  string.find(choices, "GameRule_AskForGeneralShowDeputy") then
+	local canShowHead = string.find(choices, "GameRule_AskForGeneralShowHead") 
+	local canShowDeputy = string.find(choices, "GameRule_AskForGeneralShowDeputy")
 
-	local firstshow = ("luanji"):split("|")	
-	local showboth = ("luanji+shuangxiong|luanji+huoshui|luoshen+fangzhu"):split("|")	
-	local needshow = ("yicheng|qianhuan|chuanxin|suishi"):split("|")	
-	local woundedshow = ("zaiqi|yinghun|hunshang|hengzheng"):split("|")
-	local followshow = ("duoshi|rende|jieyin|xiongyi|shouyue|hongfa"):split("|")
+	local skillTrigger = false
+	local skillnames = choices:split("+")
+	table.removeOne(skillnames, "GameRule_AskForGeneralShowHead") 
+	table.removeOne(skillnames, "GameRule_AskForGeneralShowDeputy") 
+	table.removeOne(skillnames, "cancel") 
+	if skillnames ~= {} then 
+		skillTrigger = true
+	end
+
+	if skillTrigger then
+		if string.find(choices, "jieming") then return "jieming" end 
+		if string.find(choices, "fankui") and string.find(choices, "ganglie") then return "fankui" end
+		if string.find(choices, "xunxun") and string.find(choices, "ganglie") then return "ganglie" end
+
+		
+		for _, skillname in ipairs(skillnames) do
+			if self:askForSkillInvoke(skillname, data) then
+				return skillname
+			end
+		end
+		if string.find(choices, "cancel") 
+			and not canShowHead 
+			and not canShowDeputy then
+			return "cancel"
+		end
+		return skillnames[math.random(1, #skillnames)]
+	end
+	
+	
+	local firstShow = ("luanji"):split("|")	
+	local bothShow = ("luanji+shuangxiong|luanji+huoshui|luoshen+fangzhu"):split("|")	
+	local needShowForAttack = ("chuanxin|suishi"):split("|")	
+	local needShowForHelp = ("sushen|cunsi|yicheng|qianhuan"):split("|")	
+	local needShowForLead = ("yicheng|qianhuan"):split("|")
+	local woundedShow = ("zaiqi|yinghun|hunshang|hengzheng"):split("|")
+	local followShow = ("duoshi|rende|jieyin|xiongyi|shouyue|hongfa"):split("|")
 	
 	local notshown,shown,f,e = 0,0,0,0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
@@ -78,39 +93,58 @@ if string.find(choices, "GameRule_AskForGeneralShowHead") or  string.find(choice
 		end
 	end
 	
-	if notshown == 1  and not self.player:hasShownOneGeneral()  then 
-		local cho = { "GameRule_AskForGeneralShowHead", "GameRule_AskForGeneralShowDeputy"}
-		return cho[math.random(1, #cho)]
-	end
-	
-	for _, skill in ipairs(showboth) do
+	for _, skill in ipairs(bothShow) do
 		if self.player:hasSkills(skill) then
-			if self.player:hasShownGeneral2() or not self.player:hasShownOneGeneral() then
+			if canShowHead then
 				return "GameRule_AskForGeneralShowHead"
-			elseif self.player:hasShownGeneral1() then	
+			elseif canShowDeputy then	
 				return "GameRule_AskForGeneralShowDeputy"
 			end	
 		end
 	end
 	
 	if shown == 0 then 
-		for _, skill in ipairs(firstshow) do
+		for _, skill in ipairs(firstShow) do
 			if self.player:hasSkill(skill) then
-				if self.player:inHeadSkills(skill) then 
+				if self.player:inHeadSkills(skill) and canShowHead then 
 					return "GameRule_AskForGeneralShowHead"
-				else	
+				elseif canShowDeputy then 
 					return "GameRule_AskForGeneralShowDeputy"
 				end
 			end
 		end
 	end	
 		
-	if shown > 2 and (f > 2 or e - f < 2) then 
-		for _, skill in ipairs(needshow) do
+	if shown > 0 and e > 0 and e - f < 3 then 
+		for _, skill in ipairs(needShowForAttack) do
 			if self.player:hasSkill(skill) then
-				if self.player:inHeadSkills(skill) then 
+				if self.player:inHeadSkills(skill) and canShowHead then 
 					return "GameRule_AskForGeneralShowHead"
-				else	
+				elseif canShowDeputy then 
+					return "GameRule_AskForGeneralShowDeputy"
+				end
+			end
+		end
+	end	
+	
+	if shown > 1 and f > 0 and e > 0 then 
+		for _, skill in ipairs(needShowForHelp) do
+			if self.player:hasSkill(skill) then
+				if self.player:inHeadSkills(skill) and canShowHead then 
+					return "GameRule_AskForGeneralShowHead"
+				elseif canShowDeputy then 
+					return "GameRule_AskForGeneralShowDeputy"
+				end
+			end
+		end
+	end	
+	
+	if shown > 0 and notshown > self.room:alivePlayerCount()/2 then 
+		for _, skill in ipairs(needShowForLead) do
+			if self.player:hasSkill(skill) then
+				if self.player:inHeadSkills(skill) and canShowHead then 
+					return "GameRule_AskForGeneralShowHead"
+				elseif canShowDeputy then 
 					return "GameRule_AskForGeneralShowDeputy"
 				end
 			end
@@ -118,18 +152,29 @@ if string.find(choices, "GameRule_AskForGeneralShowHead") or  string.find(choice
 	end	
 		
 	if self.player:getLostHp() >= 2 then 
-		for _, skill in ipairs(woundedshow) do
+		for _, skill in ipairs(woundedShow) do
 			if self.player:hasSkill(skill) then
-				if self.player:inHeadSkills(skill) then 
+				if self.player:inHeadSkills(skill) and canShowHead then 
 					return "GameRule_AskForGeneralShowHead"
-				else	
+				elseif canShowDeputy then 
 					return "GameRule_AskForGeneralShowDeputy"
 				end
 			end
 		end
 	end		
 	
-	for _, skill in ipairs(followshow) do
+	for _, skill in ipairs(followShow) do
+		if self.player:hasSkill(skill) then 
+			for _, skill in ipairs(needShowForLead) do
+				if self.player:hasSkill(skill) then
+					if canShowHead then 
+						return "GameRule_AskForGeneralShowHead"
+					elseif canShowDeputy then 
+						return "GameRule_AskForGeneralShowDeputy"
+					end
+				end
+			end
+		end	
 		for _,p in sgs.qlist(self.room:getOtherPlayers(player)) do 
 			if p:hasShownSkill(skill) and p:getKingdom() == self.player:getKingdom() and not self.player:hasShownOneGeneral()  then 
 				local cho = { "GameRule_AskForGeneralShowHead", "GameRule_AskForGeneralShowDeputy"}
@@ -138,23 +183,11 @@ if string.find(choices, "GameRule_AskForGeneralShowHead") or  string.find(choice
 		end
 	end		
 
-else
-	
-	if string.find(choices, "jieming") then return "jieming" end
-	local skillnames = choices:split("+")
-	table.removeOne(skillnames, "cancel")	
-	for _, skillname in ipairs(skillnames) do
-		if self:askForSkillInvoke(skillname, data) then
-			return skillname
-		end
+	if notshown == 1  and not self.player:hasShownOneGeneral()  then 
+		local cho = { "GameRule_AskForGeneralShowHead", "GameRule_AskForGeneralShowDeputy"}
+		return cho[math.random(1, #cho)]
 	end
-	if string.find(choices, "cancel") then
-		return "cancel"
-	end
-	return skillnames[math.random(1, #skillnames)]
-	
-end
-			
+		
 	return "cancel"
 end
 
