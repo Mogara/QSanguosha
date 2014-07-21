@@ -63,14 +63,34 @@ GeneralButton::GeneralButton(QGraphicsObject *parent, const QString &general, co
 void GeneralButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     painter->setRenderHint(QPainter::HighQualityAntialiasing);
-    QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_DASHBOARD_PRIMARY);
-    painter->setBrush(pixmap);
+    QPixmap generalImg = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_DASHBOARD_PRIMARY);
+    painter->setBrush(generalImg);
     painter->drawRoundedRect(boundingRect(), 5, 10, Qt::RelativeSize);
+
+    const General *general = Sanguosha->getGeneral(generalName);
+    Q_ASSERT(general);
+
+    QPixmap nameBg = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, general->getKingdom());
+    painter->drawPixmap(0, 5, nameBg);
+
+    if (Self->getGeneral() == general || Self->getGeneral2() == general) {
+        QString key = (Self->getGeneral() == general) ? QSanRoomSkin::S_SKIN_KEY_HEAD_ICON : QSanRoomSkin::S_SKIN_KEY_DEPUTY_ICON;
+        QPixmap positionIcon = G_ROOM_SKIN.getPixmap(key, QSanRoomSkin::S_SKIN_KEY_DASHBOARD);
+        painter->drawPixmap(2, 5, positionIcon);
+    }
+
+    QString name = Sanguosha->translate("&" + general->objectName());
+    if (name.startsWith("&"))
+        name = Sanguosha->translate(general->objectName());
+    G_DASHBOARD_LAYOUT.m_avatarNameFont.paintText(painter,
+    QRect(10, 5, nameBg.width() - 10, nameBg.height()),
+    Qt::AlignLeft | Qt::AlignJustify, name);
 }
 
 QRectF GeneralButton::boundingRect() const
 {
     static QSize size = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_DASHBOARD_PRIMARY).size();
+    return QRectF(QPoint(0, 0), size);
 }
 
 ChooseTriggerOrderBox::ChooseTriggerOrderBox()
@@ -86,9 +106,9 @@ int ChooseTriggerOrderBox::getGeneralNum() const
         return 0;
 
     int count = 0;
-    if (options.contains("GameRule_AskForGeneralShowHead"))
+    if (options.contains(QString("%1:%2").arg(Self->objectName()).arg("GameRule_AskForGeneralShowHead")))
         ++ count;
-    if (options.contains("GameRule_AskForGeneralShowDeputy"))
+    if (options.contains(QString("%1:%2").arg(Self->objectName()).arg("GameRule_AskForGeneralShowDeputy")))
         ++ count;
 
     return count;
@@ -114,9 +134,11 @@ void ChooseTriggerOrderBox::paint(QPainter *painter, const QStyleOptionGraphicsI
 QRectF ChooseTriggerOrderBox::boundingRect() const
 {
     const int generalNum = getGeneralNum();
-    const QSize generalSize = G_ROOM_SKIN.getGeneralPixmap(Self->getAvatarGeneral()->objectName(),
+    static const QSize generalSize = G_ROOM_SKIN.getGeneralPixmap(Self->getAvatarGeneral()->objectName(),
                                                            QSanRoomSkin::S_GENERAL_ICON_SIZE_DASHBOARD_PRIMARY).size();
-    const int width = generalSize.width() * qMax(generalNum, 1) + left_blank_width * 2;
+    int width = generalSize.width() + left_blank_width * 2;
+    if (generalNum == 2)
+        width += generalSize.width() + interval;
 
     int height = top_blank_width
             + (options.size() - generalNum) * default_button_height
@@ -142,8 +164,38 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
     this->optional = optional;
     update();
 
-    buttons.clear();
+    const int generalCount = getGeneralNum();
+    const int generalTop = top_blank_width
+            + (options.size() - generalCount) * default_button_height
+            + (options.size() - generalCount) * interval;
+
+    switch (generalCount) {
+    case 2: {
+        GeneralButton *head = new GeneralButton(this, Self->getGeneral()->objectName(), true);
+        head->setObjectName(QString("%1:%2").arg(Self->objectName()).arg("GameRule_AskForGeneralShowHead"));
+        generalButtons << head;
+        head->setPos(left_blank_width, generalTop);
+
+        GeneralButton *deputy = new GeneralButton(this, Self->getGeneral()->objectName(), true);
+        deputy->setObjectName(QString("%1:%2").arg(Self->objectName()).arg("GameRule_AskForGeneralShowDeputy"));
+        generalButtons << deputy;
+        deputy->setPos(head->boundingRect().right() + interval, generalTop);
+        break;
+    }
+    case 1: {
+        const QString general = options.contains(QString("%1:%2").arg(Self->objectName()).arg("GameRule_AskForGeneralShowHead")) ? Self->getGeneralName() :
+                                                                                                                                    Self->getGeneral2Name();
+        GeneralButton *generalButton = new GeneralButton(this, general, true);
+        generalButtons << generalButton;
+        generalButton->setPos(left_blank_width, generalTop);
+        break;
+    }
+    default:
+        break;
+    }
+
     foreach (const QString &option, options) {
+
     }
 
     /*int z = 100;
@@ -181,8 +233,8 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
     setPos(RoomSceneInstance->tableCenterPos() - QPointF(boundingRect().width() / 2, boundingRect().height() / 2));
     show();
 
-    for (int i = 0; i < buttons.length(); ++i) {
-        TriggerOptionButton *button = buttons.at(i);
+    for (int i = 0; i < optionButtons.length(); ++i) {
+        TriggerOptionButton *button = optionButtons.at(i);
 
         QPointF pos;
         pos.setX(left_blank_width);
@@ -218,10 +270,10 @@ void ChooseTriggerOrderBox::reply()
 
 void ChooseTriggerOrderBox::clear()
 {
-    foreach(TriggerOptionButton *button, buttons)
+    foreach(TriggerOptionButton *button, optionButtons)
         button->deleteLater();
 
-    buttons.clear();
+    optionButtons.clear();
 
     hide();
 }

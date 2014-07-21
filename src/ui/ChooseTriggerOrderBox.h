@@ -75,7 +75,8 @@ public slots:
     void reply();
 
 private:
-    QList<TriggerOptionButton *> buttons;
+    QList<TriggerOptionButton *> optionButtons;
+    QList<GeneralButton *> generalButtons;
     static const int default_button_width = 100;
     static const int default_button_height = 30;
     static const int top_dark_bar = 27;
