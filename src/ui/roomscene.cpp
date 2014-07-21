@@ -2307,7 +2307,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 card_container->clear();
         } else if (oldStatus == Client::AskForGeneralChosen) {
             choose_general_box->clear();
-        } else if (oldStatus == Client::AskForGeneralChosen) {
+        } else if (oldStatus == Client::AskForChoice) {
             choose_options_box->clear();
         }
         prompt_box->disappear();

@@ -207,6 +207,7 @@ void ChooseOptionsBox::reply()
     if (progress_bar != NULL){
         progress_bar->hide();
         progress_bar->deleteLater();
+        progress_bar = NULL;
     }
     clear();
 }

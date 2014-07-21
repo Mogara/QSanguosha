@@ -1362,6 +1362,7 @@ function sgs.ai_skill_invoke.buqu(self, data)
 end
 
 sgs.ai_skill_invoke.haoshi = function(self, data)
+
 	local extra = 0
 	local draw_skills = { ["yingzi"] = 1, ["luoyi"] = -1 }
 	for skill_name, n in ipairs(draw_skills) do
@@ -1375,6 +1376,7 @@ sgs.ai_skill_invoke.haoshi = function(self, data)
 		end
 	end
 	if self.player:getHandcardNum() + extra <= 3 then return true end
+	if not self:willShowForDefence() and not self:willShowForAttack() then return false end
 
 	local beggar
 	local otherPlayers = sgs.QList2Table(self.room:getOtherPlayers(self.player))
@@ -1388,7 +1390,7 @@ sgs.ai_skill_invoke.haoshi = function(self, data)
 			return true
 		end
 	end
-	return
+	return false
 end
 
 sgs.ai_skill_use["@@haoshi!"] = function(self, prompt)
@@ -1662,7 +1664,7 @@ sgs.ai_skill_invoke.guzheng = function(self, data)
 	local invoke = (self:isFriend(player) and not self:needKongcheng(player, true))
 					or (data:toInt() >= 3 or (data:toInt() == 2 and not player:hasShownSkills(sgs.cardneed_skill)))
 					or (self:isEnemy(player) and self:needKongcheng(player, true))
-					or (self:willShowForAttack() and data:toInt() >= 2 )
+					or (self:willShowForAttack() and data:toInt() >= 3 )
 					or (self:willShowForDefence() and data:toInt() >= 3 )
 	return invoke
 end

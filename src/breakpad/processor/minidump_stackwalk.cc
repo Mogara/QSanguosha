@@ -205,8 +205,30 @@ static void PrintStack(const CallStack *stack, const string &cpu) {
       const StackFrameAMD64 *frame_amd64 =
         reinterpret_cast<const StackFrameAMD64*>(frame);
 
+      if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_RAX)
+        sequence = PrintRegister64("rax", frame_amd64->context.rax, sequence);
+      if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_RDX)
+        sequence = PrintRegister64("rdx", frame_amd64->context.rdx, sequence);
+      if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_RCX)
+        sequence = PrintRegister64("rcx", frame_amd64->context.rcx, sequence);
       if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_RBX)
         sequence = PrintRegister64("rbx", frame_amd64->context.rbx, sequence);
+      if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_RSI)
+        sequence = PrintRegister64("rsi", frame_amd64->context.rsi, sequence);
+      if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_RDI)
+        sequence = PrintRegister64("rdi", frame_amd64->context.rdi, sequence);
+      if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_RBP)
+        sequence = PrintRegister64("rbp", frame_amd64->context.rbp, sequence);
+      if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_RSP)
+        sequence = PrintRegister64("rsp", frame_amd64->context.rsp, sequence);
+      if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_R8)
+        sequence = PrintRegister64("r8", frame_amd64->context.r8, sequence);
+      if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_R9)
+        sequence = PrintRegister64("r9", frame_amd64->context.r9, sequence);
+      if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_R10)
+        sequence = PrintRegister64("r10", frame_amd64->context.r10, sequence);
+      if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_R11)
+        sequence = PrintRegister64("r11", frame_amd64->context.r11, sequence);
       if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_R12)
         sequence = PrintRegister64("r12", frame_amd64->context.r12, sequence);
       if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_R13)
@@ -217,10 +239,6 @@ static void PrintStack(const CallStack *stack, const string &cpu) {
         sequence = PrintRegister64("r15", frame_amd64->context.r15, sequence);
       if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_RIP)
         sequence = PrintRegister64("rip", frame_amd64->context.rip, sequence);
-      if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_RSP)
-        sequence = PrintRegister64("rsp", frame_amd64->context.rsp, sequence);
-      if (frame_amd64->context_validity & StackFrameAMD64::CONTEXT_VALID_RBP)
-        sequence = PrintRegister64("rbp", frame_amd64->context.rbp, sequence);
     } else if (cpu == "sparc") {
       const StackFrameSPARC *frame_sparc =
         reinterpret_cast<const StackFrameSPARC*>(frame);

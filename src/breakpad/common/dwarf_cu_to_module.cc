@@ -46,7 +46,11 @@
 #include <stdio.h>
 
 #include <algorithm>
-#include <set>
+#if defined(_LIBCPP_VERSION)
+#include <unordered_set>
+#else
+#include <tr1/unordered_set>
+#endif
 #include <utility>
 
 #include "common/dwarf_line_to_module.h"
@@ -55,8 +59,12 @@ namespace google_breakpad {
 
 using std::map;
 using std::pair;
-using std::set;
 using std::sort;
+#if defined(_LIBCPP_VERSION)
+using std::unordered_set;
+#else
+using std::tr1::unordered_set;
+#endif
 using std::vector;
 
 // Data provided by a DWARF specification DIE.
@@ -118,7 +126,7 @@ struct DwarfCUToModule::FilePrivate {
   // so this set will actually hold yet another copy of the string (although
   // everything will still work). To improve memory consumption portably,
   // we will probably need to use pointers to strings held in this set.
-  set<string> common_strings;
+  unordered_set<string> common_strings;
 
   // A map from offsets of DIEs within the .debug_info section to
   // Specifications describing those DIEs. Specification references can
@@ -337,7 +345,7 @@ void DwarfCUToModule::GenericDIEHandler::ProcessAttributeReference(
 }
 
 string DwarfCUToModule::GenericDIEHandler::AddStringToPool(const string &str) {
-  pair<set<string>::iterator, bool> result =
+  pair<unordered_set<string>::iterator, bool> result =
     cu_context_->file_context->file_private_->common_strings.insert(str);
   return *result.first;
 }
@@ -531,7 +539,7 @@ void DwarfCUToModule::FuncHandler::Finish() {
   if (low_pc_ < high_pc_) {
     // Create a Module::Function based on the data we've gathered, and
     // add it to the functions_ list.
-    Module::Function *func = new Module::Function;
+    scoped_ptr<Module::Function> func(new Module::Function);
     // Malformed DWARF may omit the name, but all Module::Functions must
     // have names.
     if (!name_.empty()) {
@@ -546,7 +554,7 @@ void DwarfCUToModule::FuncHandler::Finish() {
     if (func->address) {
        // If the function address is zero this is a sign that this function
        // description is just empty debug data and should just be discarded.
-       cu_context_->functions.push_back(func);
+       cu_context_->functions.push_back(func.release());
      }
   } else if (inline_) {
     AbstractOrigin origin(name_);
