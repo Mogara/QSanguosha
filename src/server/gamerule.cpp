@@ -41,7 +41,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
-        return (player->getPhase() == Player::Start && !player->hasShownAllGenerals() && player->disableShow(true).isEmpty()) ? QStringList(objectName()) : QStringList();
+        return (player->getPhase() == Player::Start && !player->hasShownGeneral1() && player->disableShow(true).isEmpty()) ? QStringList(objectName()) : QStringList();
     }
 };
 
@@ -58,7 +58,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
-        return (player->getPhase() == Player::Start && !player->hasShownAllGenerals() && player->disableShow(false).isEmpty()) ? QStringList(objectName()) : QStringList();
+        return (player->getPhase() == Player::Start && !player->hasShownGeneral2() && player->disableShow(false).isEmpty()) ? QStringList(objectName()) : QStringList();
     }
 };
 
