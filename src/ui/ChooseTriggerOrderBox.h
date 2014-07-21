@@ -17,9 +17,42 @@
 
     QSanguosha-Hegemony Team
     *********************************************************************/
-/*
+
 #ifndef CHOOSETRIGGERORDERBOX_H
 #define CHOOSETRIGGERORDERBOX_H
+
+class OptionButton : public QGraphicsObject {
+    Q_OBJECT
+
+    friend class ChooseTriggerOrderBox;
+
+protected:
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
+    QRectF boundingRect() const;
+
+private:
+    explicit OptionButton(QGraphicsObject *parent, const QString &general, const QString &skill, const int width);
+
+    QString skillName;
+    QString generalName;
+    int width;
+};
+
+class GeneralButton : public QGraphicsObject {
+    Q_OBEJCT
+
+    friend class ChooseTriggerOrderBox;
+
+protected:
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
+    QRectF boundingRect() const;
+
+private:
+    explicit GeneralButton(QGraphicsObject *parent, const QString &general, const bool isHead);
+
+    QString generalName;
+    bool isHead;
+};
 
 class ChooseTriggerOrderBox : public QGraphicsObject {
     Q_OBJECT
@@ -38,7 +71,7 @@ public slots:
     void reply();
 
 private:
-    QList<Button *> buttons;
+    QList<OptionButton *> buttons;
     static const int default_button_width = 100;
     static const int default_button_height = 30;
     static const int top_dark_bar = 27;
@@ -53,10 +86,9 @@ private:
 
     Button *cancel;
     QGraphicsProxyWidget *progress_bar_item;
-    QSanCommandProgressBar *progress_bar;
+    QSanCommandProgressBar *progressBar;
 
     int getGeneralNum() const;
 };
 
 #endif // CHOOSETRIGGERORDERBOX_H
-*/

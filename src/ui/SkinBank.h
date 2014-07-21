@@ -306,6 +306,9 @@ public:
 
         //General Card Item
         QRect m_generalCardItemCompanionPromptRegion;
+
+        //Option Button
+        QSanShadowTextFont optionButtonText;
     };
 
     enum GeneralIconSize {

@@ -17,7 +17,7 @@
 
     QSanguosha-Hegemony Team
     *********************************************************************/
-/*
+
 #include "ChooseTriggerOrderBox.h"
 #include "engine.h"
 #include "roomscene.h"
@@ -27,8 +27,54 @@
 
 #include <QApplication>
 
+OptionButton::OptionButton(QGraphicsObject *parent, const QString &general, const QString &skill, const int width)
+    : QGraphicsObject(parent), generalName(general), skillName(skill), width(width)
+{
+}
+
+void OptionButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+{
+    painter->setRenderHint(QPainter::HighQualityAntialiasing);
+    painter->save();
+    painter->setBrush(Sanguosha->getKingdomColor(Self->getGeneral()->getKingdom()));
+    painter->setPen(Qt::yellow);
+    QRectF rect = boundingRect();
+    painter->drawRoundedRect(rect, 50, 10, Qt::RelativeSize);
+    painter->restore();
+
+    QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
+    QRect pixmapRect(QPoint(4, (rect.height() - pixmap.height()) / 2), pixmap.size());
+    painter->setBrush(QBrush(pixmap));
+    painter->drawRoundedRect(pixmapRect, 20, 20, Qt::RelativeSize);
+
+    QRect textArea(QPoint(pixmap.width() + 4, 0), rect.bottomRight());
+    G_COMMON_LAYOUT.optionButtonText.paintText(painter, textArea, Qt::AlignCenter, skillName);
+}
+
+QRectF OptionButton::boundingRect() const {
+    return QRectF(0, 0, width, width / 2);
+}
+
+GeneralButton::GeneralButton(QGraphicsObject *parent, const QString &general, const bool isHead)
+    : QGraphicsObject(parent), generalName(general), isHead(isHead)
+{
+}
+
+void GeneralButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+{
+    painter->setRenderHint(QPainter::HighQualityAntialiasing);
+    QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_DASHBOARD_PRIMARY);
+    painter->setBrush(pixmap);
+    painter->drawRoundedRect(boundingRect(), 5, 10, Qt::RelativeSize);
+}
+
+QRectF GeneralButton::boundingRect() const
+{
+
+}
+
 ChooseTriggerOrderBox::ChooseTriggerOrderBox()
-    : optional(true), progress_bar(NULL)
+    : optional(true), progressBar(NULL)
 {
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
@@ -97,6 +143,10 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
     update();
 
     buttons.clear();
+    foreach (const QString &option, options) {
+        if ()
+    }
+
     int z = 100;
     foreach (QString option, options) {
         QString title = QString("%1:%2").arg(skill_name).arg(option);
@@ -143,26 +193,26 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
     }
 
     if (ServerInfo.OperationTimeout != 0) {
-        if (!progress_bar) {
-            progress_bar = new QSanCommandProgressBar();
-            progress_bar->setMaximumWidth(boundingRect().width() - 16);
-            progress_bar->setMaximumHeight(12);
-            progress_bar->setTimerEnabled(true);
+        if (!progressBar) {
+            progressBar = new QSanCommandProgressBar();
+            progressBar->setMaximumWidth(boundingRect().width() - 16);
+            progressBar->setMaximumHeight(12);
+            progressBar->setTimerEnabled(true);
             progress_bar_item = new QGraphicsProxyWidget(this);
-            progress_bar_item->setWidget(progress_bar);
+            progress_bar_item->setWidget(progressBar);
             progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 20);
-            connect(progress_bar, SIGNAL(timedOut()), this, SLOT(reply()));
+            connect(progressBar, SIGNAL(timedOut()), this, SLOT(reply()));
         }
-        progress_bar->setCountdown(QSanProtocol::S_COMMAND_MULTIPLE_CHOICE);
-        progress_bar->show();
+        progressBar->setCountdown(QSanProtocol::S_COMMAND_MULTIPLE_CHOICE);
+        progressBar->show();
     }
 }
 
 void ChooseTriggerOrderBox::reply()
 {
-    if (progress_bar != NULL){
-        progress_bar->hide();
-        progress_bar->deleteLater();
+    if (progressBar != NULL){
+        progressBar->hide();
+        progressBar->deleteLater();
     }
     clear();
 }
@@ -176,4 +226,3 @@ void ChooseTriggerOrderBox::clear()
 
     hide();
 }
-*/

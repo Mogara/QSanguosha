@@ -1689,7 +1689,7 @@ QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, QM
             QString owner;
             foreach(const QStringList &list, skills.values()) {
                 if (list.contains(reply))
-                    owner = skills.key(reply)->objectName();
+                    owner = skills.key(list)->objectName();
             }
 
             if (!owner.isEmpty())

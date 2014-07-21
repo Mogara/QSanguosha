@@ -1651,7 +1651,6 @@ void RoomScene::chooseTriggerOrder(const QString &reason, const QStringList &opt
     if (!main_window->isActiveWindow())
         Sanguosha->playSystemAudioEffect("pop-up");
 
-    choose_options_box->setSkillName(skillName);
     choose_options_box->chooseOption(options);
 }
 

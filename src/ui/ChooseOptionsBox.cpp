@@ -143,8 +143,6 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
     options_number = options.length();
     update();
 
-    buttons.clear();
-    int z = 100;
     foreach (QString option, options) {
         QString title = QString("%1:%2").arg(skill_name).arg(option);
         QString tranlated = Sanguosha->translate(title);
@@ -164,7 +162,6 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
         }
         connect(button, SIGNAL(clicked()), this, SLOT(reply()));
         connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerMakeChoice()));
-        button->setZValue(--z);
         if (tooltip != original_tooltip) {
             //button->setToolTip(QString("<font color=%1>%2</font>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(tooltip));
             ToolTipBox *tip_box = new ToolTipBox(tooltip);

@@ -846,6 +846,8 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
 
     tryParse(config["generalCardItemCompanionPromptRegion"], _m_commonLayout.m_generalCardItemCompanionPromptRegion);
 
+    _m_commonLayout.optionButtonText.tryParse(config["optionButtonText"]);
+
     config = layoutConfig[S_SKIN_KEY_ROOM];
     tryParse(config["chatBoxHeightPercentage"], _m_roomLayout.m_chatBoxHeightPercentage);
     tryParse(config["chatTextBoxHeight"], _m_roomLayout.m_chatTextBoxHeight);
