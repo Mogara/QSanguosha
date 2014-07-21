@@ -310,19 +310,14 @@ function SmartAI:findTuxiTarget()
 end
 
 sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
+	if not self:willShowForAttack() then
+		return "." 
+	end
 	local targets = self:findTuxiTarget()
 	if type(targets) == "table" and #targets > 0 then
 		return ("@TuxiCard=.&tuxi->" .. table.concat(targets, "+"))
 	end
 	return "."
-end
-
-sgs.ai_skill_invoke.tuxi = function(self, data)
-	if not self:willShowForAttack() then
-		return false 
-	end
-	
-	return true
 end
 
 sgs.ai_skill_invoke.luoyi = function(self,data)
@@ -517,6 +512,11 @@ sgs.ai_suit_priority.qingguo= "diamond|heart|club|spade"
 sgs.ai_skill_use["@@shensu1"] = function(self, prompt)
 	self:updatePlayers()
 	self:sort(self.enemies, "defenseSlash")
+	
+	if not self:willShowForAttack() then
+		return "."
+	end
+	
 	if self.player:containsTrick("lightning") and self.player:getCards("j"):length() == 1
 		and self:hasWizard(self.friends) and not self:hasWizard(self.enemies, true) then
 		return "."
@@ -562,6 +562,10 @@ sgs.ai_skill_use["@@shensu2"] = function(self, prompt, method)
 	self:updatePlayers()
 	self:sort(self.enemies, "defenseSlash")
 
+	if not self:willShowForAttack() then
+		return "."
+	end
+	
 	local selfSub = self.player:getHp() - self.player:getHandcardNum()
 
 	local cards = self.player:getCards("he")
@@ -756,11 +760,6 @@ sgs.ai_skill_playerchosen.qiaobian = function(self, targets)
 end
 
 sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, include_equip)
-
-	if not self:willShowForAttack() then
-		return {}
-	end
-	
 	local current_phase = self.player:getMark("qiaobianPhase")
 	local to_discard = {}
 	self:updatePlayers()
@@ -795,6 +794,9 @@ sgs.ai_skill_discard.qiaobian = function(self, discard_num, min_num, optional, i
 		end
 	end
 	if not card then return {} end
+	if not self:willShowForAttack() then
+		return {}
+	end
 	table.insert(to_discard, card:getEffectiveId())
 
 	if current_phase == sgs.Player_Judge and not self.player:isSkipped(sgs.Player_Judge) then
@@ -1066,15 +1068,11 @@ local quhu_skill = {}
 quhu_skill.name = "quhu"
 table.insert(sgs.ai_skills, quhu_skill)
 quhu_skill.getTurnUseCard = function(self)
-	if not self.player:hasUsed("QuhuCard") and not self.player:isKongcheng() then return sgs.Card_Parse("@QuhuCard=.&quhu") end
+	if self:willShowForAttack() and not self.player:hasUsed("QuhuCard") and not self.player:isKongcheng() then return sgs.Card_Parse("@QuhuCard=.&quhu") end
 end
 
 sgs.ai_skill_use_func.QuhuCard = function(QHCard, use, self)
-	
-	if not self:willShowForAttack() then
-		return false 
-	end
-	
+		
 	if #self.enemies == 0 then return end
 	local max_card = self:getMaxCard()
 	local max_point = max_card:getNumber()

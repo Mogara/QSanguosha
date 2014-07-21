@@ -122,8 +122,7 @@ public:
     void sendLog(const LogMessage &log);
     void showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer = NULL);
     void showAllCards(ServerPlayer *player, ServerPlayer *to = NULL);
-    void retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge,
-        const QString &skill_name, bool exchange = false);
+    void retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, const QString &skill_name, bool exchange = false);
 
     // Ask a player to send a server request and returns the client response. Call is blocking until client
     // replies or server times out, whichever is earlier.
@@ -319,7 +318,6 @@ public:
     void moveCardsToEndOfDrawpile(QList<int> card_ids);
     void moveCards(CardsMoveStruct cards_move, bool forceMoveVisible, bool ignoreChanges = true);
     void moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible, bool ignoreChanges = true);
-    QList<CardsMoveStruct> _breakDownCardMoves(QList<CardsMoveStruct> &cards_moves);
 
     // interactive methods
     void activate(ServerPlayer *player, CardUseStruct &card_use);
@@ -359,6 +357,7 @@ public:
     QString askForGeneral(ServerPlayer *player, const QStringList &generals, const QString &default_choice = QString(), bool single_result = true, const QString &skill_name = QString(), const QVariant &data = QVariant());
     QString askForGeneral(ServerPlayer *player, const QString &generals, const QString &default_choice = QString(), bool single_result = true, const QString &skill_name = QString(), const QVariant &data = QVariant());
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
+    QString askForTriggerOrder(ServerPlayer *player, const QString &reason, QMap<const ServerPlayer *, QStringList> &skills, bool optional = true, const QVariant &data = QVariant());
     void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
 
     void toggleReadyCommand(ServerPlayer *player, const Json::Value &);
@@ -548,6 +547,7 @@ private:
         ServerPlayer *m_to;
     };
     bool _askForNullification(const Card *trick, ServerPlayer *from, ServerPlayer *to, bool positive, _NullificationAiHelper helper);
+    QList<CardsMoveStruct> _breakDownCardMoves(QList<CardsMoveStruct> &cards_moves);
 
 private slots:
     void reportDisconnection();

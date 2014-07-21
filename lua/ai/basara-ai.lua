@@ -17,7 +17,7 @@
 
   QSanguosha-Hegemony Team
 *********************************************************************]]
-
+--[[
 sgs.ai_skill_choice.TriggerOrder = function(self, choices, data)
 	self.TurnStartShowGeneral_Choice = nil
 	if string.find(choices, "jieming") then return "jieming" end
@@ -33,7 +33,7 @@ sgs.ai_skill_choice.TriggerOrder = function(self, choices, data)
 	end
 	return skillnames[math.random(1, #skillnames)]
 end
-
+--]]
 sgs.ai_skill_invoke["userdefine:halfmaxhp"] = true
 
 sgs.ai_skill_choice.CompanionEffect = function(self, choice, data)
@@ -53,12 +53,15 @@ end
 
 
 
-sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
+sgs.ai_skill_choice.TriggerOrder = function(self, choices,data)
 
-	local firstshow = ("luanji|jizhi"):split("|")	
+if string.find(choices, "GameRule_AskForGeneralShowHead") or  string.find(choices, "GameRule_AskForGeneralShowDeputy") then
+
+	local firstshow = ("luanji"):split("|")	
+	local showboth = ("luanji+shuangxiong|luanji+huoshui|luoshen+fangzhu"):split("|")	
 	local needshow = ("yicheng|qianhuan|chuanxin|suishi"):split("|")	
 	local woundedshow = ("zaiqi|yinghun|hunshang|hengzheng"):split("|")
-	local friendshow = ("yicheng|qianhuan|duoshi|rende|jieyin|xiongyi"):split("|")
+	local followshow = ("duoshi|rende|jieyin|xiongyi|shouyue|hongfa"):split("|")
 	
 	local notshown,shown,f,e = 0,0,0,0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
@@ -74,36 +77,41 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 			end	
 		end
 	end
-
+	
 	if notshown == 1  and not self.player:hasShownOneGeneral()  then 
-		local cho = { "show_head_general", "show_deputy_general", "show_both_generals"}
+		local cho = { "GameRule_AskForGeneralShowHead", "GameRule_AskForGeneralShowDeputy"}
 		return cho[math.random(1, #cho)]
 	end
-
-	if  f < 2 and not self.player:hasShownOneGeneral() then
-		return "cancel"
+	
+	for _, skill in ipairs(showboth) do
+		if self.player:hasSkills(skill) then
+			if self.player:hasShownGeneral2() or not self.player:hasShownOneGeneral() then
+				return "GameRule_AskForGeneralShowHead"
+			elseif self.player:hasShownGeneral1() then	
+				return "GameRule_AskForGeneralShowDeputy"
+			end	
+		end
 	end
-
 	
 	if shown == 0 then 
 		for _, skill in ipairs(firstshow) do
 			if self.player:hasSkill(skill) then
 				if self.player:inHeadSkills(skill) then 
-					return "show_head_general"
+					return "GameRule_AskForGeneralShowHead"
 				else	
-					return "show_deputy_general"
+					return "GameRule_AskForGeneralShowDeputy"
 				end
 			end
 		end
 	end	
-	
-	if f > 2 or e - f < 2 then 
+		
+	if shown > 2 and (f > 2 or e - f < 2) then 
 		for _, skill in ipairs(needshow) do
 			if self.player:hasSkill(skill) then
 				if self.player:inHeadSkills(skill) then 
-					return "show_head_general"
+					return "GameRule_AskForGeneralShowHead"
 				else	
-					return "show_deputy_general"
+					return "GameRule_AskForGeneralShowDeputy"
 				end
 			end
 		end
@@ -113,26 +121,41 @@ sgs.ai_skill_choice.TurnStartShowGeneral = function(self, choices)
 		for _, skill in ipairs(woundedshow) do
 			if self.player:hasSkill(skill) then
 				if self.player:inHeadSkills(skill) then 
-					return "show_head_general"
+					return "GameRule_AskForGeneralShowHead"
 				else	
-					return "show_deputy_general"
+					return "GameRule_AskForGeneralShowDeputy"
 				end
 			end
 		end
 	end		
 	
-	for _, skill in ipairs(friendshow) do
+	for _, skill in ipairs(followshow) do
 		for _,p in sgs.qlist(self.room:getOtherPlayers(player)) do 
 			if p:hasShownSkill(skill) and p:getKingdom() == self.player:getKingdom() and not self.player:hasShownOneGeneral()  then 
-				local cho = { "show_head_general", "show_deputy_general", "show_both_generals"}
+				local cho = { "GameRule_AskForGeneralShowHead", "GameRule_AskForGeneralShowDeputy"}
 				return cho[math.random(1, #cho)]
 			end
 		end
 	end		
 
-	return "cancel"
-
+else
 	
+	if string.find(choices, "jieming") then return "jieming" end
+	local skillnames = choices:split("+")
+	table.removeOne(skillnames, "cancel")	
+	for _, skillname in ipairs(skillnames) do
+		if self:askForSkillInvoke(skillname, data) then
+			return skillname
+		end
+	end
+	if string.find(choices, "cancel") then
+		return "cancel"
+	end
+	return skillnames[math.random(1, #skillnames)]
+	
+end
+			
+	return "cancel"
 end
 
 

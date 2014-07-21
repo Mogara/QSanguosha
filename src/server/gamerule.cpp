@@ -28,20 +28,37 @@
 
 #include <QTime>
 
-class GameRule_AskForGeneralShow : public TriggerSkill {
+class GameRule_AskForGeneralShowHead : public TriggerSkill {
 public:
-    GameRule_AskForGeneralShow() : TriggerSkill("GameRule_AskForGeneralShow") {
+    GameRule_AskForGeneralShowHead() : TriggerSkill("GameRule_AskForGeneralShowHead") {
         events << EventPhaseStart;
         global = true;
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        player->askForGeneralShow(false, true);
+        player->showGeneral(true, true);
         return false;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
-        return (player->getPhase() == Player::Start && !player->hasShownAllGenerals()) ? QStringList(objectName()) : QStringList();
+        return (player->getPhase() == Player::Start && !player->hasShownAllGenerals() && player->disableShow(true).isEmpty()) ? QStringList(objectName()) : QStringList();
+    }
+};
+
+class GameRule_AskForGeneralShowDeputy : public TriggerSkill {
+public:
+    GameRule_AskForGeneralShowDeputy() : TriggerSkill("GameRule_AskForGeneralShowDeputy") {
+        events << EventPhaseStart;
+        global = true;
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        player->showGeneral(false, true);
+        return false;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
+        return (player->getPhase() == Player::Start && !player->hasShownAllGenerals() && player->disableShow(false).isEmpty()) ? QStringList(objectName()) : QStringList();
     }
 };
 
@@ -93,7 +110,8 @@ GameRule::GameRule(QObject *parent)
         << ChoiceMade << GeneralShown;
 
     QList<Skill *> list;
-    list << new GameRule_AskForGeneralShow;
+    list << new GameRule_AskForGeneralShowHead;
+    list << new GameRule_AskForGeneralShowDeputy;
     list << new GameRule_AskForArraySummon;
     QList<const Skill *> list_copy;
     foreach(Skill *s, list)
