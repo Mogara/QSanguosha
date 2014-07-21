@@ -21,7 +21,13 @@
 #ifndef CHOOSETRIGGERORDERBOX_H
 #define CHOOSETRIGGERORDERBOX_H
 
-class OptionButton : public QGraphicsObject {
+#include <QGraphicsObject>
+
+class Button;
+class QGraphicsProxyWidget;
+class QSanCommandProgressBar;
+
+class TriggerOptionButton : public QGraphicsObject {
     Q_OBJECT
 
     friend class ChooseTriggerOrderBox;
@@ -31,7 +37,7 @@ protected:
     QRectF boundingRect() const;
 
 private:
-    explicit OptionButton(QGraphicsObject *parent, const QString &general, const QString &skill, const int width);
+    explicit TriggerOptionButton(QGraphicsObject *parent, const QString &general, const QString &skill, const int width);
 
     QString skillName;
     QString generalName;
@@ -39,7 +45,7 @@ private:
 };
 
 class GeneralButton : public QGraphicsObject {
-    Q_OBEJCT
+    Q_OBJECT
 
     friend class ChooseTriggerOrderBox;
 
@@ -64,14 +70,12 @@ public:
     QRectF boundingRect() const;
     void clear();
 
-    inline void setSkillName(const QString &skillName) { skill_name = skillName; }
-
 public slots:
     void chooseOption(const QString &reason, const QStringList &options, const bool optional);
     void reply();
 
 private:
-    QList<OptionButton *> buttons;
+    QList<TriggerOptionButton *> buttons;
     static const int default_button_width = 100;
     static const int default_button_height = 30;
     static const int top_dark_bar = 27;

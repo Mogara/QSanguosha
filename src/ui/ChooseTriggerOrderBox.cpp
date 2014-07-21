@@ -27,12 +27,12 @@
 
 #include <QApplication>
 
-OptionButton::OptionButton(QGraphicsObject *parent, const QString &general, const QString &skill, const int width)
-    : QGraphicsObject(parent), generalName(general), skillName(skill), width(width)
+TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString &general, const QString &skill, const int width)
+    : QGraphicsObject(parent), skillName(skill), generalName(general), width(width)
 {
 }
 
-void OptionButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     painter->setRenderHint(QPainter::HighQualityAntialiasing);
     painter->save();
@@ -47,11 +47,11 @@ void OptionButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QW
     painter->setBrush(QBrush(pixmap));
     painter->drawRoundedRect(pixmapRect, 20, 20, Qt::RelativeSize);
 
-    QRect textArea(QPoint(pixmap.width() + 4, 0), rect.bottomRight());
+    QRect textArea(QPoint(pixmap.width() + 4, 0), rect.bottomRight().toPoint());
     G_COMMON_LAYOUT.optionButtonText.paintText(painter, textArea, Qt::AlignCenter, skillName);
 }
 
-QRectF OptionButton::boundingRect() const {
+QRectF TriggerOptionButton::boundingRect() const {
     return QRectF(0, 0, width, width / 2);
 }
 
@@ -70,7 +70,7 @@ void GeneralButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, Q
 
 QRectF GeneralButton::boundingRect() const
 {
-
+    static QSize size = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_DASHBOARD_PRIMARY).size();
 }
 
 ChooseTriggerOrderBox::ChooseTriggerOrderBox()
@@ -114,9 +114,9 @@ void ChooseTriggerOrderBox::paint(QPainter *painter, const QStyleOptionGraphicsI
 QRectF ChooseTriggerOrderBox::boundingRect() const
 {
     const int generalNum = getGeneralNum();
-    const QSize generalSize = G_ROOM_SKIN.getGeneralPixmap(Self->getAvatarGeneral()->objectName() ,
-                                                           G_DASHBOARD_LAYOUT.m_primaryAvatarSize()).size();
-    const int width = generalSize * qMax(generalNum, 1) + left_blank_width * 2;
+    const QSize generalSize = G_ROOM_SKIN.getGeneralPixmap(Self->getAvatarGeneral()->objectName(),
+                                                           QSanRoomSkin::S_GENERAL_ICON_SIZE_DASHBOARD_PRIMARY).size();
+    const int width = generalSize.width() * qMax(generalNum, 1) + left_blank_width * 2;
 
     int height = top_blank_width
             + (options.size() - generalNum) * default_button_height
@@ -144,10 +144,9 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
 
     buttons.clear();
     foreach (const QString &option, options) {
-        if ()
     }
 
-    int z = 100;
+    /*int z = 100;
     foreach (QString option, options) {
         QString title = QString("%1:%2").arg(skill_name).arg(option);
         QString tranlated = Sanguosha->translate(title);
@@ -177,13 +176,13 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
             connect(button, SIGNAL(hover_entered()), tip_box, SLOT(showToolTip()));
             connect(button, SIGNAL(hover_left()), tip_box, SLOT(hideToolTip()));
         }
-    }
+    }*/
 
     setPos(RoomSceneInstance->tableCenterPos() - QPointF(boundingRect().width() / 2, boundingRect().height() / 2));
     show();
 
     for (int i = 0; i < buttons.length(); ++i) {
-        Button *button = buttons.at(i);
+        TriggerOptionButton *button = buttons.at(i);
 
         QPointF pos;
         pos.setX(left_blank_width);
@@ -219,7 +218,7 @@ void ChooseTriggerOrderBox::reply()
 
 void ChooseTriggerOrderBox::clear()
 {
-    foreach(Button *button, buttons)
+    foreach(TriggerOptionButton *button, buttons)
         button->deleteLater();
 
     buttons.clear();
