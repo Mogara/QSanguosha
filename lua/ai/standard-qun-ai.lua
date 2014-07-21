@@ -618,10 +618,6 @@ function SmartAI:findLeijiTarget(player, leiji_value, slasher)
 end
 
 sgs.ai_skill_playerchosen.leiji = function(self, targets)
-	local xq = self.room:findPlayerBySkillName("tianxiang")
-	if xq and self:isEnemy(xq) and sgs.GetConfig("AIChat", true) and xq:getState() == "robot" then
-		xq:speak(sgs.Sanguosha:translate(self.player:getGeneralName()) .. "有种来劈我！")
-	end
 	self:updatePlayers()
 	return self:findLeijiTarget(self.player, 100, nil, 1)
 end

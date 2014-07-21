@@ -1972,7 +1972,7 @@ function SmartAI:filterEvent(event, player, data)
 				sgs.ai_setSkillsPreshowed = true
 			end
 			if player:getAI() then player:setSkillsPreshowed("hd", true) end
-			-- sgs.printFEList(player)
+			sgs.printFEList(player)
 		elseif player:getPhase() == sgs.Player_NotActive then
 			if sgs.recorder.player:objectName() == player:objectName() then sgs.turncount = sgs.turncount + 1 end
 		end
@@ -2051,6 +2051,7 @@ function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_e
 	if discard_num - min_num > 1 then
 		least = discard_num - 1
 	end
+	local temp, discardEquip = {}
 	for _, card in ipairs(cards) do
 		if exchange or not self.player:isJilei(card) then
 			place = self.room:getCardPlace(card:getEffectiveId())

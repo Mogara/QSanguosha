@@ -33,7 +33,7 @@ public:
     static const char *S_EXTRA_OPTION_REST_IN_DISCARD_PILE;
 
     MiniSceneRule(Scenario *scenario);
-    void assign(QStringList &generals, QStringList &generals2, QStringList &roles) const;
+    void assign(QStringList &generals, QStringList &generals2, QStringList &kingdoms) const;
     QStringList existedGenerals() const;
 
     virtual bool effect(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;

@@ -167,6 +167,8 @@ private slots:
 
     void doCustomAssign();
 
+    void updateButtonEnablility(QAbstractButton *button);
+
 };
 
 class Scenario;

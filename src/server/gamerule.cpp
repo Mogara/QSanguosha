@@ -218,6 +218,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             }
             foreach(ServerPlayer *player, room->getPlayers()) {
                 Q_ASSERT(player->getGeneral() != NULL);
+                /*
                 if (player->getGeneral()->getKingdom() == "god" && player->getGeneralName() != "anjiang") {
                     QString new_kingdom = room->askForKingdom(player);
                     room->setPlayerProperty(player, "kingdom", new_kingdom);
@@ -228,6 +229,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                     log.arg = new_kingdom;
                     room->sendLog(log);
                 }
+                */
                 foreach(const Skill *skill, player->getVisibleSkillList()) {
                     if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
                         && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName()))) {

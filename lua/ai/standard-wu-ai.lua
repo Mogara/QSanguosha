@@ -262,26 +262,26 @@ kurou_skill.getTurnUseCard = function(self, inclusive)
 	local kuroucard = sgs.Card_Parse("@KurouCard=.&kurou")
 	
 	if not self:willShowForAttack() then
-		return nil 
+		return nil
 	end
-	
+
 	if self.player:getMark("Global_TurnCount") < 2 and not self.player:hasShownOneGeneral() then return nil end
-	
+
 	if ((self.player:getHp() > 3 and self.player:getLostHp() <= 1 and self:getOverflow(self.player, false) < 2) or self:getOverflow(self.player, false) < -1) then
 		return kuroucard
 	end
-	
+
 	if self.player:hasSkill("jieyin") and not self.player:hasUsed("JieyinCard") and not self.player:isWounded() then
 		local jiyou = self:getWoundedFriend(true)
 		if jiyou then
 			return kuroucard
 		end
 	end
-	
+
 	if (self.player:getHp() > 2 and self.player:getLostHp() <= 1 and self.player:hasSkill("xiaoji") and self.player:getCards("e"):length() > 1) then
 		return kuroucard
 	end
-	
+
 	local slash = sgs.cloneCard("slash")
 	if self:hasCrossbowEffect(self.player) then
 		for _, enemy in ipairs(self.enemies) do
@@ -342,11 +342,11 @@ sgs.ai_use_priority.KurouCard = 6.8
 
 
 sgs.ai_skill_invoke.yingzi = function(self, data)
-	
+
 	if not self:willShowForAttack() then
-		return false 
+		return false
 	end
-	
+
 	if self.player:hasSkill("haoshi") then
 		local num = self.player:getHandcardNum()
 		local skills = self.player:getVisibleSkillList()
@@ -447,13 +447,13 @@ duoshi_skill.name = "duoshi"
 table.insert(sgs.ai_skills, duoshi_skill)
 duoshi_skill.getTurnUseCard = function(self, inclusive)
 
-    local DuoTime = 2
+	local DuoTime = 2
 	if self.player:hasSkills("fenming|zhiheng|fenxun|keji") then
 		DuoTime = 1
-	end	
+	end
 	if self.player:hasSkills("hongyan|yingzi") then
 		DuoTime = 3
-	end	
+	end
 	if self.player:hasSkills("xiaoji|haoshi") then
 		DuoTime = 4
 	end
@@ -463,20 +463,20 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 			break
 		end
 	end
-	
+
 	if (self.player:usedTimes("DuoshiAE") >= DuoTime and self:getOverflow() <= 0) or self.player:usedTimes("DuoshiAE") >= 4 	then return end
-	
-	
+
+
 	if sgs.turncount <= 1 and #self.friends_noself == 0 and not self:isWeak() and self:getOverflow() <= 0 then return end
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
 
-	
+
 	if (self:hasCrossbowEffect() or self:getCardsNum("Crossbow") > 0) and self:getCardsNum("Slash") > 0 then
 		self:sort(self.enemies, "defense")
 		for _, enemy in ipairs(self.enemies) do
 			local inAttackRange = self.player:distanceTo(enemy) == 1 or self.player:distanceTo(enemy) == 2
-									and self:getCardsNum("OffensiveHorse") > 0 and not self.player:getOffensiveHorse()										
+									and self:getCardsNum("OffensiveHorse") > 0 and not self.player:getOffensiveHorse()
 			if inAttackRange  and sgs.isGoodTarget(enemy, self.enemies, self) then
 				local slashs = self:getCards("Slash")
 				local slash_count = 0
@@ -504,13 +504,13 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 					if dummy_use.card then shouldUse = false end
 				end
 			end
-			
+
 			if self:getUseValue(card) > sgs.ai_use_value.AwaitExhausted and card:isKindOf("TrickCard") then
 				local dummy_use = { isDummy = true }
 				self:useTrickCard(card, dummy_use)
 				if dummy_use.card then shouldUse = false end
 			end
-			
+
 			if card:getSuit() == sgs.Card_Diamond and self.player:hasSkill("guose") then sgs.ai_use_priority.AwaitExhausted = 0.2 end
 			
 
@@ -1361,36 +1361,9 @@ function sgs.ai_skill_invoke.buqu(self, data)
 	return true
 end
 
-local function getLowerBoundOfHandcard(self)
-	local least = math.huge
-	local players = self.room:getOtherPlayers(self.player)
-	for _, player in sgs.qlist(players) do
-		least = math.min(player:getHandcardNum(), least)
-	end
-
-	return least
-end
-
-local function getBeggar(self)
-	local least = getLowerBoundOfHandcard(self)
-
-	self:sort(self.friends_noself)
-	for _, friend in ipairs(self.friends_noself) do
-		if friend:getHandcardNum() == least then
-			return friend
-		end
-	end
-
-	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if player:getHandcardNum() == least then
-			return player
-		end
-	end
-end
-
 sgs.ai_skill_invoke.haoshi = function(self, data)
 	local extra = 0
-	local draw_skills = { ["yingzi"] = 1, ["luoyi"] = -1, ["dujin"] = math.floor(self.player:getEquips():length() / 2 + 1) }
+	local draw_skills = { ["yingzi"] = 1, ["luoyi"] = -1 }
 	for skill_name, n in ipairs(draw_skills) do
 		if self.player:hasSkill(skill_name) then
 			local skill = sgs.Sanguosha:getSkill(skill_name)
@@ -1401,16 +1374,30 @@ sgs.ai_skill_invoke.haoshi = function(self, data)
 			end
 		end
 	end
-	if self.player:getHandcardNum() + extra <= 1 then
-		return true
-	end
+	if self.player:getHandcardNum() + extra <= 3 then return true end
 
-	local beggar = getBeggar(self)
-	return self:isFriend(beggar)
+	local beggar
+	local otherPlayers = sgs.QList2Table(self.room:getOtherPlayers(self.player))
+	self:sort(otherPlayers, "handcard")
+	local leastNum = otherPlayers[1]:getHandcardNum()
+
+	self:sort(self.friends_noself)
+	for _, friend in ipairs(self.friends_noself) do
+		if friend:getHandcardNum() == leastNum then
+			self.haoshi_target = friend
+			return true
+		end
+	end
+	return
 end
 
 sgs.ai_skill_use["@@haoshi!"] = function(self, prompt)
-	local beggar = getBeggar(self)
+	local target = self.haoshi_target
+	if not self.haoshi_target then
+		local otherPlayers = sgs.QList2Table(self.room:getOtherPlayers(self.player))
+		self:sort(otherPlayers, "handcard")
+		target = otherPlayers[1]
+	end
 
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
@@ -1420,7 +1407,7 @@ sgs.ai_skill_use["@@haoshi!"] = function(self, prompt)
 		table.insert(card_ids, cards[i]:getEffectiveId())
 	end
 
-	return "@HaoshiCard=" .. table.concat(card_ids, "+") .. "&haoshi->" .. beggar:objectName()
+	return "@HaoshiCard=" .. table.concat(card_ids, "+") .. "&haoshi->" .. target:objectName()
 end
 
 sgs.ai_card_intention.HaoshiCard = -80

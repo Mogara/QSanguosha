@@ -1318,7 +1318,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event) {
         }
 
         if (!hasShownGeneral2()) {
-            QString kingdom = getGeneral()->getKingdom();
+            QString kingdom = room->getMode() == "custom_scenario" ? getKingdom() : getGeneral()->getKingdom();
             room->setPlayerProperty(this, "kingdom", kingdom);
 
             QString role = HegemonyMode::GetMappedRole(kingdom);

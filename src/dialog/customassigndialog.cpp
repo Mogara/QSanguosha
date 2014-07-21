@@ -72,15 +72,15 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
             num_ComboBox->addItem(tr("%1 persons").arg(QString::number(i + 2)), i + 2);
 
         QString player = (i == 0 ? "Player" : "AI");
-        QString text = (i == 0 ? QString("%1[%2]").arg(Sanguosha->translate(player)).arg(tr("Unknown")) :
+        QString text = (i == 0 ? QString("%1[%2]").arg(Sanguosha->translate(player)).arg(tr("default")) :
             QString("%1%2[%3]")
             .arg(Sanguosha->translate(player))
             .arg(QString::number(i))
-            .arg(tr("Unknown")));
+            .arg(tr("default")));
         if (i != 0)
             player.append(QString::number(i));
         player_mapping[i] = player;
-        role_mapping[player] = "unknown";
+        assign_nationality[player] = "default";
         set_nationality[player] = false;
 
         QListWidgetItem *item = new QListWidgetItem(text);
@@ -358,7 +358,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(choose_nationality, SIGNAL(toggled(bool)), nationalities, SLOT(setEnabled(bool)));
     connect(choose_nationality, SIGNAL(toggled(bool)), this, SLOT(setNationalityEnable(bool)));
     connect(nationalities, SIGNAL(currentIndexChanged(int)), this, SLOT(setNationality(int)));
-    connect(random_roles_box, SIGNAL(toggled(bool)), this, SLOT(updateAllRoles(bool)));
+    connect(random_roles_box, SIGNAL(toggled(bool)), this, SLOT(updateAllKingdoms(bool)));
     connect(extra_skill_set, SIGNAL(clicked()), this, SLOT(doSkillSelect()));
     connect(hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerHp(int)));
     connect(max_hp_spin, SIGNAL(valueChanged(int)), this, SLOT(getPlayerMaxHp(int)));
@@ -389,8 +389,7 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
     QString first_name = first->data(Qt::UserRole).toString();
     QString second_name = second->data(Qt::UserRole).toString();
 
-    QString role = role_mapping[first_name], general = general_mapping[first_name],
-        general2 = general2_mapping[first_name];
+    QString general = general_mapping[first_name], general2 = general2_mapping[first_name];
     QList<int> judges(player_judges[first_name]), equips(player_equips[first_name]), hands(player_handcards[first_name]);
     int hp = player_hp[first_name], maxhp = player_maxhp[first_name], start_draw = player_start_draw[first_name];
     bool turned = player_turned[first_name], chained = player_chained[first_name],
@@ -400,7 +399,6 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
     bool setting_nationality = set_nationality.value(first_name, false);
     QString assigned_nationality = assign_nationality.value(first_name, "");
 
-    role_mapping[first_name] = role_mapping[second_name];
     general_mapping[first_name] = general_mapping[second_name];
     general2_mapping[first_name] = general2_mapping[second_name];
     player_judges[first_name].clear();
@@ -423,7 +421,6 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
     set_nationality[first_name] = set_nationality[second_name];
     assign_nationality[first_name] = set_nationality[second_name];
 
-    role_mapping[second_name] = role;
     general_mapping[second_name] = general;
     general2_mapping[second_name] = general2;
     player_judges[second_name].clear();
@@ -447,10 +444,10 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
     assign_nationality[second_name] = assigned_nationality;
 }
 
-QString CustomAssignDialog::setListText(QString name, QString role, int index) {
-    QString text = random_roles_box->isChecked() ? QString("[%1]").arg(Sanguosha->translate(role)) :
+QString CustomAssignDialog::setListText(QString name, QString kingdom, int index) {
+    QString text = random_roles_box->isChecked() ? QString("[%1]").arg(Sanguosha->translate(kingdom)) :
         QString("%1[%2]").arg(Sanguosha->translate(name))
-        .arg(Sanguosha->translate(role));
+        .arg(Sanguosha->translate(kingdom));
 
     if (index >= 0)
         list->item(index)->setText(text);
@@ -464,10 +461,14 @@ void CustomAssignDialog::updateListItems() {
         if (i != 0)
             name.append(QString::number(i));
 
-        if (role_mapping[name].isEmpty()) role_mapping[name] = "unknown";
-        QListWidgetItem *item = new QListWidgetItem(setListText(name, role_mapping[name]));
-        item->setData(Qt::UserRole, name);
-        item_map[i] = item;
+        if (assign_nationality[name].isEmpty() || assign_nationality[name] == "default")
+            set_nationality[name] = false;
+        else {
+            set_nationality[name] = true;
+            QListWidgetItem *item = new QListWidgetItem(setListText(name, assign_nationality[name]));
+            item->setData(Qt::UserRole, name);
+            item_map[i] = item;
+        }
     }
 }
 
@@ -603,12 +604,22 @@ void CustomAssignDialog::updateNumber(int num) {
 void CustomAssignDialog::setNationalityEnable(bool toggled) {
     QString name = list->currentItem()->data(Qt::UserRole).toString();
     set_nationality[name] = toggled;
-    assign_nationality[name] = nationalities->itemData(nationalities->currentIndex()).toString();
+    if (toggled == true) {
+        QString kingdom = nationalities->itemData(nationalities->currentIndex()).toString();
+        assign_nationality[name] = kingdom;
+        setListText(name, kingdom, list->currentRow());
+    }
+    else {
+        assign_nationality[name] = "default";
+        setListText(name, "default", list->currentRow());
+    }
 }
 
 void CustomAssignDialog::setNationality(int index) {
     QString name = list->currentItem()->data(Qt::UserRole).toString();
-    assign_nationality[name] = nationalities->itemData(index).toString();
+    QString kingdom = nationalities->itemData(index).toString();
+    assign_nationality[name] = kingdom;
+    setListText(name, kingdom, list->currentRow());
 }
 
 void CustomAssignDialog::updatePlayerInfo(QString name) {
@@ -727,11 +738,11 @@ void CustomAssignDialog::updatePlayerHpInfo(QString name) {
     }
 }
 
-void CustomAssignDialog::updateAllRoles(bool) {
+void CustomAssignDialog::updateAllKingdoms(bool) {
     for (int i = 0; i < list->count(); i++) {
         QString name = player_mapping[i];
-        QString role = role_mapping[name];
-        item_map[i]->setText(setListText(name, role, i));
+        QString kingdom = assign_nationality[name];
+        item_map[i]->setText(setListText(name, kingdom, i));
     }
 }
 
@@ -801,9 +812,9 @@ void CustomAssignDialog::getPlayerMarks(int index) {
 
 void CustomAssignDialog::updateKingdom(int index) {
     QString name = list->currentItem()->data(Qt::UserRole).toString();
-    QString kingdom = nationalities->itemData(index).toString();
+    QString kingdom = set_nationality[name] == true ? nationalities->itemData(index).toString() : "default";
     setListText(name, kingdom, list->currentRow());
-    role_mapping[name] = kingdom;
+    assign_nationality[name] = kingdom;
 }
 
 void CustomAssignDialog::removeEquipCard() {
@@ -1036,9 +1047,9 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current) 
     else
         general_label2->setPixmap(QPixmap(QString("image/system/disabled.png")));
 
-    if (!role_mapping[player_name].isEmpty()) {
+    if (!assign_nationality[player_name].isEmpty()) {
         for (int i = 0; i < nationalities->count(); i++) {
-            if (role_mapping[player_name] == nationalities->itemData(i).toString()) {
+            if (assign_nationality[player_name] == nationalities->itemData(i).toString()) {
                 nationalities->setCurrentIndex(i);
                 updateKingdom(i);
                 break;
@@ -1152,7 +1163,6 @@ void CustomAssignDialog::load() {
 
     set_pile.clear();
     item_map.clear();
-    role_mapping.clear();
     general_mapping.clear();
     general2_mapping.clear();
     player_maxhp.clear();
@@ -1228,8 +1238,6 @@ void CustomAssignDialog::load() {
             if (keys.first().size() < 1) continue;
             player.insert(keys.at(0), keys.at(1));
         }
-
-        if (player["role"] != QString()) role_mapping[name] = player["role"];
 
         if (player["general"] == "select")
             free_choose_general[name] = true;
@@ -1403,12 +1411,8 @@ bool CustomAssignDialog::save(QString path) {
     for (int i = 0; i < list->count(); i++) {
         QString name = (i == 0) ? "Player" : QString("AI%1").arg(QString::number(i));
 
-        if (free_choose_general[name])
+        if (free_choose_general[name] || general_mapping[name].isEmpty())
             line.append("general:select ");
-        else if (general_mapping[name].isEmpty()) {
-            QMessageBox::warning(this, tr("Warning"), tr("%1's general cannot be empty").arg(Sanguosha->translate(name)));
-            return false;
-        }
         else
             line.append(QString("general:%1 ").arg(general_mapping[name]));
 
@@ -1417,7 +1421,6 @@ bool CustomAssignDialog::save(QString path) {
         else if (!general2_mapping[name].isEmpty())
             line.append(QString("general2:%1 ").arg(general2_mapping[name]));
 
-        line.append(QString("role:%1 ").arg(role_mapping[name]));
         if (starter == name) line.append("starter:true ");
         if (!player_marks[name].isEmpty()) {
             line.append("marks:");
