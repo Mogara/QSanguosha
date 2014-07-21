@@ -137,8 +137,8 @@ int MainWindow::askForUploading() {
 
         MimeMessage message;
         message.setSender(new EmailAddress("QSGSH@qq.com", UserName));
-        message.addRecipient(new EmailAddress("QSGSH@qq.com", "QSanguosha-Hegemony Team"));
-        message.setSubject("Crash Report 0.7.2");
+        message.addRecipient(new EmailAddress("dev@QSanguosha.org", "QSanguosha-Hegemony Team"));
+        message.setSubject("Crash Report 0.8.0");
 
         MimeText text;
         text.setText("Hi!\n This is a mail with an error report. Sender's system:" + getSystemVersion());
