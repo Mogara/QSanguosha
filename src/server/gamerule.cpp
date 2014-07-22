@@ -164,13 +164,13 @@ void GameRule::onPhaseProceed(ServerPlayer *player) const{
             room->setPlayerFlag(player, "-Global_FirstRound");
         }
 
-        qnum.setValue(num);
+        qnum = num;
         Q_ASSERT(room->getThread() != NULL);
         room->getThread()->trigger(DrawNCards, room, player, qnum);
         num = qnum.toInt();
         if (num > 0)
             player->drawCards(num);
-        qnum.setValue(num);
+        qnum = num;
         room->getThread()->trigger(AfterDrawNCards, room, player, qnum);
         break;
     }
