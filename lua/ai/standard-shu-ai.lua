@@ -452,7 +452,12 @@ sgs.kanpo_suit_value = {
 	club = 3.9
 }
 
-sgs.ai_skill_invoke.bazhen = sgs.ai_skill_invoke.EightDiagram
+sgs.ai_skill_invoke.bazhen = function(self, data)
+	if (not self:willShowForDefence() and self:getCardsNum("Jink") > 0)then 
+		return false 
+	end	
+	return sgs.ai_skill_invoke.EightDiagram
+end
 
 function sgs.ai_armor_value.bazhen(card)
 	if not card then return 4 end
