@@ -96,7 +96,7 @@
 
 // generals defined later will override default path and also previously defined generals
 "playerGeneralIcon-anjiang-0": ["image/generals/big/anjiang.png", [40, 60, 134, 134], [40, 40]],
-"playerGeneralIcon-anjiang-2": "image/generals/big/anjiang.png",
+"playerGeneralIcon-anjiang-2": ["image/generals/big/anjiang.png", [0, 0, 213, 255]],
 "playerGeneralIcon-anjiang-4": ["image/fullskin/generals/full/anjiang.png", [63, 0, 124, 289], [77, 179]],
 "playerGeneralIcon-anjiang-5": ["image/generals/big/anjiang.png", [0, 0, 134, 134], [70, 70]],
 "playerGeneralIcon-anjiang-6": ["image/fullskin/generals/full/anjiang.png", [63, 0, 250, 289], [155, 179]],
@@ -104,7 +104,7 @@
 "playerGeneralIcon-anjiang-8": "image/generals/kof/anjiang.png",
 
 "playerGeneralIcon-yanliangwenchou-0": ["image/generals/big/yanliangwenchou.png", [0, 0, 213, 213], [40, 40]],
-"playerGeneralIcon-yanliangwenchou-2": "image/generals/big/yanliangwenchou.png",
+"playerGeneralIcon-yanliangwenchou-2": ["image/generals/big/yanliangwenchou.png", [0, 0, 213, 255]],
 "playerGeneralIcon-yanliangwenchou-4": ["image/fullskin/generals/fulldual/yanliangwenchou.png", [0, 0, 124, 289], [77, 179]],
 "playerGeneralIcon-yanliangwenchou-5": ["image/generals/big/yanliangwenchou.png", [0, 0, 134, 134], [70, 70]],
 "playerGeneralIcon-yanliangwenchou-6": ["image/fullskin/generals/fulldual/yanliangwenchou.png", [0, 0, 250, 289], [155, 179]],
@@ -112,7 +112,7 @@
 "playerGeneralIcon-yanliangwenchou-8": "image/generals/kof/yanliangwenchou.png",
 
 "playerGeneralIcon-erzhang-0": ["image/generals/big/erzhang.png", [0, 0, 213, 213], [40, 40]],
-"playerGeneralIcon-erzhang-2": "image/generals/big/erzhang.png",
+"playerGeneralIcon-erzhang-2": ["image/generals/big/erzhang.png", [0, 0, 213, 255]],
 "playerGeneralIcon-erzhang-4": ["image/fullskin/generals/fulldual/erzhang.png", [0, 0, 124, 289], [77, 179]],
 "playerGeneralIcon-erzhang-5": ["image/generals/big/erzhang.png", [0, 0, 134, 134], [70, 70]],
 "playerGeneralIcon-erzhang-6": ["image/fullskin/generals/fulldual/erzhang.png", [0, 0, 250, 289], [155, 179]],
@@ -120,7 +120,7 @@
 "playerGeneralIcon-erzhang-8": "image/generals/kof/erzhang.png",
 
 "playerGeneralIcon-jiangwanfeiyi-0": ["image/generals/big/jiangwanfeiyi.png", [0, 0, 213, 213], [40, 40]],
-"playerGeneralIcon-jiangwanfeiyi-2": "image/generals/big/jiangwanfeiyi.png",
+"playerGeneralIcon-jiangwanfeiyi-2": ["image/generals/big/jiangwanfeiyi.png", [0, 0, 213, 255]],
 "playerGeneralIcon-jiangwanfeiyi-4": ["image/fullskin/generals/fulldual/jiangwanfeiyi.png", [0, 0, 124, 289], [77, 179]],
 "playerGeneralIcon-jiangwanfeiyi-5": ["image/generals/big/jiangwanfeiyi.png", [0, 0, 134, 134], [70, 70]],
 "playerGeneralIcon-jiangwanfeiyi-6": ["image/fullskin/generals/fulldual/jiangwanfeiyi.png", [0, 0, 250, 289], [155, 179]],
@@ -128,7 +128,7 @@
 "playerGeneralIcon-jiangwanfeiyi-8": "image/generals/kof/jiangwanfeiyi.png",
 
 "playerGeneralIcon-chenwudongxi-0": ["image/generals/big/chenwudongxi.png", [0, 0, 213, 213], [40, 40]],
-"playerGeneralIcon-chenwudongxi-2": "image/generals/big/chenwudongxi.png",
+"playerGeneralIcon-chenwudongxi-2": ["image/generals/big/chenwudongxi.png", [0, 0, 213, 255]],
 "playerGeneralIcon-chenwudongxi-4": ["image/fullskin/generals/fulldual/chenwudongxi.png", [0, 0, 124, 289], [77, 179]],
 "playerGeneralIcon-chenwudongxi-5": ["image/generals/big/chenwudongxi.png", [0, 0, 134, 134], [70, 70]],
 "playerGeneralIcon-chenwudongxi-6": ["image/fullskin/generals/fulldual/chenwudongxi.png", [0, 0, 250, 289], [155, 179]],
