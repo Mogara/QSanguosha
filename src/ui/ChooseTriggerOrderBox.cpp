@@ -280,7 +280,7 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
         const bool isHead = options.contains(QString("%1:%2").arg(Self->objectName()).arg("GameRule_AskForGeneralShowHead"));
         const QString general = isHead ? Self->getGeneralName() : Self->getGeneral2Name();
         GeneralButton *generalButton = new GeneralButton(this, general, true);
-        QString objectName = "GameRule_AskForGeneralShow";
+        QString objectName = QString("%1:%2").arg(Self->objectName()).arg("GameRule_AskForGeneralShow");
         objectName.append(isHead ? "Head" : "Deputy");
         generalButton->setObjectName(objectName);
         generalButtons << generalButton;
