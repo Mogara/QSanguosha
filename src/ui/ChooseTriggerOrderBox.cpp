@@ -349,6 +349,7 @@ void ChooseTriggerOrderBox::clear()
     if (progressBar != NULL){
         progressBar->hide();
         progressBar->deleteLater();
+        progressBar = NULL;
     }
 
     foreach(TriggerOptionButton *button, optionButtons)

@@ -502,10 +502,6 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
                         if (names.isEmpty()) break;
 
-                        bool optional = true;
-                        if (!has_compulsory)
-                            optional = false;
-
                         QString name;
                         if (names.length() == 1){
                             name = names.first();
