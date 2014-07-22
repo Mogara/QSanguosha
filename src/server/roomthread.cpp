@@ -516,7 +516,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                                 reason = "GameRule:TurnStart";
                             SPlayerDataMap map;
                             map[p] = names;
-                            name = room->askForTriggerOrder(p, "GameRule:TurnStart", map, !has_compulsory, data);
+                            name = room->askForTriggerOrder(p, reason, map, !has_compulsory, data);
                         } else {
                             name = names.last();
                         }
