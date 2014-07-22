@@ -209,12 +209,12 @@ void IQSanComponentSkin::QSanShadowTextFont::paintText(QPainter *painter, QRect 
         pos.width() - m_shadowRadius * 2, pos.height() - m_shadowRadius * 2),
         align, text);
     if (m_shadowRadius < 0 || (m_shadowRadius == 0 && m_shadowOffset.x() == 0 && m_shadowOffset.y() == 0)) {
-        painter->drawImage(0, 0, image);
+        painter->drawImage(pos.topLeft(), image);
         return;
     }
     // now, overlay foreground on shadow
     QSanUiUtils::paintShadow(painter, image, m_shadowColor, m_shadowRadius, m_shadowDecadeFactor, pos);
-    painter->drawImage(pos.topLeft(), image); //pos, image);
+    painter->drawImage(pos.topLeft(), image);
 }
 
 void IQSanComponentSkin::QSanShadowTextFont::paintText(QGraphicsPixmapItem *pixmapItem,
