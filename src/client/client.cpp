@@ -936,9 +936,8 @@ void Client::askForSkillInvoke(const Json::Value &arg) {
     setStatus(AskForSkillInvoke);
 }
 
-void Client::onPlayerMakeChoice() {
-    QString option = sender()->objectName();
-    replyToServer(S_COMMAND_MULTIPLE_CHOICE, toJsonString(option));
+void Client::onPlayerMakeChoice(const QString &choice) {
+    replyToServer(S_COMMAND_MULTIPLE_CHOICE, toJsonString(choice));
     setStatus(NotActive);
 }
 
@@ -1027,10 +1026,9 @@ void Client::onPlayerChoosePlayer(const Player *player) {
     setStatus(NotActive);
 }
 
-void Client::onPlayerChooseTriggerOrder()
+void Client::onPlayerChooseTriggerOrder(const QString &choice)
 {
-    QString option = sender()->objectName();
-    replyToServer(S_COMMAND_TRIGGER_ORDER, toJsonString(option));
+    replyToServer(S_COMMAND_TRIGGER_ORDER, toJsonString(choice));
     setStatus(NotActive);
 }
 

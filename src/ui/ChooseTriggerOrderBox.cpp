@@ -180,7 +180,7 @@ ChooseTriggerOrderBox::ChooseTriggerOrderBox()
     cancel->hide();
     cancel->setParentItem(this);
     cancel->setObjectName("cancel");
-    connect(cancel, SIGNAL(clicked()), this, SLOT(clear()));
+    connect(cancel, SIGNAL(clicked()), this, SLOT(reply()));
 
     generalButtonSize = G_ROOM_SKIN.getGeneralPixmap("caocao", QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE).size() * 0.6;
 }
@@ -249,7 +249,7 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
 
     const int generalCount = getGeneralNum();
 
-    int width;
+    int width = generalButtonSize.width();
     int generalHeight = 0;
 
     switch (generalCount) {
@@ -274,16 +274,18 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
         break;
     }
     case 1: {
-        const QString general = options.contains(QString("%1:%2").arg(Self->objectName()).arg("GameRule_AskForGeneralShowHead")) ? Self->getGeneralName() :
-                                                                                                                                    Self->getGeneral2Name();
+        const bool isHead = options.contains(QString("%1:%2").arg(Self->objectName()).arg("GameRule_AskForGeneralShowHead"));
+        const QString general = isHead ? Self->getGeneralName() : Self->getGeneral2Name();
         GeneralButton *generalButton = new GeneralButton(this, general, true);
+        QString objectName = "GameRule_AskForGeneralShow";
+        objectName.append(isHead ? "Head" : "Deputy");
+        generalButton->setObjectName(objectName);
         generalButtons << generalButton;
         const int generalTop = top_blank_width
                 + (options.size() - generalCount) * optionButtonHeight
                 + (options.size() - generalCount) * interval;
         generalButton->setPos(left_blank_width, generalTop);
 
-        width = generalButton->boundingRect().width();
         generalHeight = generalButton->boundingRect().height();
         break;
     }
@@ -311,18 +313,16 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
         pos.setY(y);
 
         button->setPos(pos);
-        connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerChooseTriggerOrder()));
-        connect(button, SIGNAL(clicked()), this, SLOT(clear()));
+        connect(button, SIGNAL(clicked()), this, SLOT(reply()));
         y += button->boundingRect().height() + interval;
     }
 
     foreach (GeneralButton *button, generalButtons) {
-        connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerChooseTriggerOrder()));
-        connect(button, SIGNAL(clicked()), this, SLOT(clear()));
+        connect(button, SIGNAL(clicked()), this, SLOT(reply()));
     }
 
     if (optional) {
-        cancel->moveBy((boundingRect().width() - cancel->boundingRect().width()) / 2,
+        cancel->setPos((boundingRect().width() - cancel->boundingRect().width()) / 2,
                        y + generalHeight + interval);
         cancel->show();
     }
@@ -330,14 +330,14 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
 
     if (ServerInfo.OperationTimeout != 0) {
         if (!progressBar) {
-            progressBar = new QSanCommandProgressBar();
+            progressBar = new QSanCommandProgressBar;
             progressBar->setMaximumWidth(boundingRect().width() - 16);
             progressBar->setMaximumHeight(12);
             progressBar->setTimerEnabled(true);
             progress_bar_item = new QGraphicsProxyWidget(this);
             progress_bar_item->setWidget(progressBar);
             progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 20);
-            connect(progressBar, SIGNAL(timedOut()), this, SLOT(clear()));
+            connect(progressBar, SIGNAL(timedOut()), this, SLOT(reply()));
         }
         progressBar->setCountdown(QSanProtocol::S_COMMAND_TRIGGER_ORDER);
         progressBar->show();
@@ -364,4 +364,17 @@ void ChooseTriggerOrderBox::clear()
     cancel->hide();
 
     hide();
+}
+
+void ChooseTriggerOrderBox::reply()
+{
+    QString choice = sender()->objectName();
+    if (choice.isEmpty()) {
+        if (optional)
+            choice = "cancel";
+        else
+            choice = options.first();
+    }
+    ClientInstance->onPlayerChooseTriggerOrder(choice);
+    clear();
 }

@@ -83,9 +83,10 @@ public:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
     virtual QRectF boundingRect() const;
     void chooseOption(const QString &reason, const QStringList &options, const bool optional);
+    void clear();
 
 public slots:
-    void clear();
+    void reply();
 
 private:
     QList<TriggerOptionButton *> optionButtons;

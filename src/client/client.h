@@ -227,11 +227,11 @@ public:
 public slots:
     void signup();
     void onPlayerChooseGeneral(const QString &_name);
-    void onPlayerMakeChoice();
+    void onPlayerMakeChoice(const QString &choice);
     void onPlayerChooseCard(int card_id = -2);
     void onPlayerChooseAG(int card_id);
     void onPlayerChoosePlayer(const Player *player);
-    void onPlayerChooseTriggerOrder();
+    void onPlayerChooseTriggerOrder(const QString &choice);
     void preshow(QString skill_name);
     void trust();
     void addRobot();

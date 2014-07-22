@@ -2324,14 +2324,6 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             choose_general_box->clear();
             break;
         }
-        case Client::AskForChoice: {
-            choose_options_box->clear();
-            break;
-        }
-        case Client::AskForTriggerOrder: {
-            chooseTriggerOrderBox->clear();
-            break;
-        }
         default:
             break;
         }
@@ -2391,8 +2383,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 if (skill->inherits("OneCardViewAsSkill") && Config.EnableIntellectualSelection)
                     dashboard->selectOnlyCard();
             }
-        }
-        else {
+        } else {
             if (pattern.endsWith("!"))
                 pattern = pattern.mid(0, pattern.length() - 1);
             response_skill->setPattern(pattern);

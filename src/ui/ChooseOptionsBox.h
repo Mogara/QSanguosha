@@ -60,13 +60,15 @@ public:
     QRectF boundingRect() const;
 
     inline void setSkillName(const QString &skillName) { skill_name = skillName; }
+    void clear();
 
 public slots:
     void chooseOption(const QStringList &options);
-    void clear();
+    void reply();
 
 private:
     int options_number;
+    QStringList options;
     QString skill_name;
     QList<Button *> buttons;
     static const int default_button_width = 100;

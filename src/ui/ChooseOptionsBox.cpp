@@ -140,6 +140,7 @@ QRectF ChooseOptionsBox::boundingRect() const
 void ChooseOptionsBox::chooseOption(const QStringList &options)
 {
     //ÖØÐÂ»æÖÆ±³¾°
+    this->options = options;
     options_number = options.length();
     update();
 
@@ -161,7 +162,6 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
             tooltip = Sanguosha->translate(original_tooltip);
         }
         connect(button, SIGNAL(clicked()), this, SLOT(reply()));
-        connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerMakeChoice()));
         if (tooltip != original_tooltip) {
             //button->setToolTip(QString("<font color=%1>%2</font>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(tooltip));
             ToolTipBox *tip_box = new ToolTipBox(tooltip);
@@ -200,6 +200,15 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
         progress_bar->setCountdown(QSanProtocol::S_COMMAND_MULTIPLE_CHOICE);
         progress_bar->show();
     }
+}
+
+void ChooseOptionsBox::reply()
+{
+    QString choice = sender()->objectName();
+    if (choice.isEmpty())
+        choice = options.first();
+    ClientInstance->onPlayerMakeChoice(choice);
+    clear();
 }
 
 void ChooseOptionsBox::clear()
