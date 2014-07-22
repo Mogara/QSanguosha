@@ -337,7 +337,7 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
             progress_bar_item = new QGraphicsProxyWidget(this);
             progress_bar_item->setWidget(progressBar);
             progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 20);
-            connect(progressBar, SIGNAL(timedOut()), this, SLOT(reply()));
+            connect(progressBar, SIGNAL(timedOut()), this, SLOT(clear()));
         }
         progressBar->setCountdown(QSanProtocol::S_COMMAND_TRIGGER_ORDER);
         progressBar->show();
