@@ -512,7 +512,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                             }
                         } else if (p != NULL) {
                             QString reason = "GameRule:TriggerOrder";
-                            if (names.length() == 2 && names.contains("AskForGeneralShowHead"))
+                            if (names.length() == 2 && names.contains("GameRule_AskForGeneralShowHead"))
                                 reason = "GameRule:TurnStart";
                             SPlayerDataMap map;
                             map[p] = names;
