@@ -195,25 +195,21 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
             progress_bar_item = new QGraphicsProxyWidget(this);
             progress_bar_item->setWidget(progress_bar);
             progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 20);
-            connect(progress_bar, SIGNAL(timedOut()), this, SLOT(reply()));
+            connect(progress_bar, SIGNAL(timedOut()), this, SLOT(clear()));
         }
         progress_bar->setCountdown(QSanProtocol::S_COMMAND_MULTIPLE_CHOICE);
         progress_bar->show();
     }
 }
 
-void ChooseOptionsBox::reply()
+void ChooseOptionsBox::clear()
 {
     if (progress_bar != NULL){
         progress_bar->hide();
         progress_bar->deleteLater();
         progress_bar = NULL;
     }
-    clear();
-}
 
-void ChooseOptionsBox::clear()
-{
     foreach(Button *button, buttons)
         button->deleteLater();
 

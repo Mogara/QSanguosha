@@ -502,20 +502,33 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
                         if (names.isEmpty()) break;
 
+                        bool optional = true;
                         if (!has_compulsory)
-                            names.prepend("trigger_none"); // default choice should do nothing
+                            optional = false;
 
                         QString name;
-                        if (names.length() == 2){
+                        if (names.length() == 1){
+                            name = names.first();
+                            if (name.contains("AskForGeneralShow") && p != NULL) {
+                                SPlayerDataMap map;
+                                map[p] = names;
+                                name = room->askForTriggerOrder(p, "GameRule:TurnStart", map, true, data);
+                            }
+                        } else if (p != NULL) {
+                            QString reason = "GameRule:TriggerOrder";
+                            if (names.length() == 2 && names.contains("AskForGeneralShowHead"))
+                                reason = "GameRule:TurnStart";
+                            SPlayerDataMap map;
+                            map[p] = names;
+                            name = room->askForTriggerOrder(p, "GameRule:TurnStart", map, !has_compulsory, data);
+                        } else {
                             name = names.last();
-                            if (name.contains("AskForGeneralShow") && p != NULL)
-                                name = room->askForChoice(p, "TriggerOrder", names.join("+"), data);
                         }
-                        else if (p != NULL)
-                            name = room->askForChoice(p, "TriggerOrder", names.join("+"), data);
-                        else
-                            name = names.last();
-                        if (name == "trigger_none") break;
+
+                        if (name == "cancel") break;
+                        if (name.contains(":"))
+                            name = name.split(":").last();
+
                         const TriggerSkill *skill = who_skills[_names.indexOf(name)];
 
                         //----------------------------------------------- TriggerSkill::cost

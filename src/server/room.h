@@ -38,6 +38,8 @@ struct LogMessage;
 #include <QMutex>
 #include <QStack>
 
+typedef QMap<const ServerPlayer *, QStringList> SPlayerDataMap;
+
 class Room : public QThread {
     Q_OBJECT
     Q_ENUMS(GuanxingType)
@@ -357,7 +359,7 @@ public:
     QString askForGeneral(ServerPlayer *player, const QStringList &generals, const QString &default_choice = QString(), bool single_result = true, const QString &skill_name = QString(), const QVariant &data = QVariant());
     QString askForGeneral(ServerPlayer *player, const QString &generals, const QString &default_choice = QString(), bool single_result = true, const QString &skill_name = QString(), const QVariant &data = QVariant());
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
-    QString askForTriggerOrder(ServerPlayer *player, const QString &reason, QMap<const ServerPlayer *, QStringList> &skills, bool optional = true, const QVariant &data = QVariant());
+    QString askForTriggerOrder(ServerPlayer *player, const QString &reason, SPlayerDataMap &skills, bool optional = true, const QVariant &data = QVariant());
     void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
 
     void toggleReadyCommand(ServerPlayer *player, const Json::Value &);

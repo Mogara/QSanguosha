@@ -32,15 +32,22 @@ class TriggerOptionButton : public QGraphicsObject {
 
     friend class ChooseTriggerOrderBox;
 
+signals:
+    void clicked();
+
 protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
-    QRectF boundingRect() const;
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
+    virtual QRectF boundingRect() const;
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
 private:
     explicit TriggerOptionButton(QGraphicsObject *parent, const QString &general, const QString &skill, const int width);
 
     QString skillName;
-    QString generalName;
+    QString playerName;
     int width;
 };
 
@@ -49,9 +56,16 @@ class GeneralButton : public QGraphicsObject {
 
     friend class ChooseTriggerOrderBox;
 
+signals:
+    void clicked();
+
 protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
-    QRectF boundingRect() const;
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
+    virtual QRectF boundingRect() const;
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
 private:
     explicit GeneralButton(QGraphicsObject *parent, const QString &general, const bool isHead);
@@ -66,19 +80,16 @@ class ChooseTriggerOrderBox : public QGraphicsObject {
 public:
     explicit ChooseTriggerOrderBox();
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
-    QRectF boundingRect() const;
-    void clear();
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
+    virtual QRectF boundingRect() const;
+    void chooseOption(const QString &reason, const QStringList &options, const bool optional);
 
 public slots:
-    void chooseOption(const QString &reason, const QStringList &options, const bool optional);
-    void reply();
+    void clear();
 
 private:
     QList<TriggerOptionButton *> optionButtons;
     QList<GeneralButton *> generalButtons;
-    static const int default_button_width = 100;
-    static const int default_button_height = 30;
     static const int top_dark_bar = 27;
     static const int top_blank_width = 42;
     static const int bottom_blank_width = 25;

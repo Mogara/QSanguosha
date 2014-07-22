@@ -71,10 +71,12 @@
 
     "generalBoxBgColor": [0, 0, 0, 220],
     "generalBoxBorderColor": [166, 150, 122],
-    "generalBoxTitleFont": ["SimHei", 16, 2, [228, 213, 160]],
+    "generalBoxTitleFont": ["wqy-microhei", 16, 2, [228, 213, 160]],
     "generalBoxDestSeatFont": ["SimSun", 12, 2, [105, 103, 91]],
 
-    "generalCardItemCompanionPromptRegion": [-1, 102, 95, 15]
+    "generalCardItemCompanionPromptRegion": [-1, 102, 95, 15],
+	
+	"optionButtonText": ["wqy-microhei", [18, 18, 1], 0, [255, 255, 255, 255], 0, 8, [0, 0], [50, 50, 50, 150]]
 },
 "room":
 {

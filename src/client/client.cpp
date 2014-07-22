@@ -1027,6 +1027,13 @@ void Client::onPlayerChoosePlayer(const Player *player) {
     setStatus(NotActive);
 }
 
+void Client::onPlayerChooseTriggerOrder()
+{
+    QString option = sender()->objectName();
+    replyToServer(S_COMMAND_TRIGGER_ORDER, toJsonString(option));
+    setStatus(NotActive);
+}
+
 void Client::trust() {
     notifyServer(S_COMMAND_TRUST);
 

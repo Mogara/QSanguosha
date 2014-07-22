@@ -38,6 +38,7 @@
 #include "jsonutils.h"
 #include "choosegeneralbox.h"
 #include "ChooseOptionsBox.h"
+#include "ChooseTriggerOrderBox.h"
 #include "uiUtils.h"
 #include "qsanbutton.h"
 
@@ -155,6 +156,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(directions_got()), this, SLOT(chooseDirection()));
     connect(ClientInstance, SIGNAL(orders_got(QSanProtocol::Game3v3ChooseOrderCommand)), this, SLOT(chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand)));
     connect(ClientInstance, SIGNAL(kingdoms_got(QStringList)), this, SLOT(chooseKingdom(QStringList)));
+    connect(ClientInstance, SIGNAL(triggers_got(QString,QStringList,bool)), this, SLOT(chooseTriggerOrder(QString,QStringList,bool)));
     connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer *>)), SLOT(arrangeSeats(QList<const ClientPlayer *>)));
     connect(ClientInstance, SIGNAL(status_changed(Client::Status, Client::Status)), this, SLOT(updateStatus(Client::Status, Client::Status)));
     connect(ClientInstance, SIGNAL(avatars_hiden()), this, SLOT(hideAvatars()));
@@ -205,6 +207,12 @@ RoomScene::RoomScene(QMainWindow *main_window)
     addItem(choose_options_box);
     choose_options_box->setZValue(30000.0);
     choose_options_box->moveBy(-120, 0);
+
+    chooseTriggerOrderBox = new ChooseTriggerOrderBox;
+    chooseTriggerOrderBox->hide();
+    addItem(chooseTriggerOrderBox);
+    chooseTriggerOrderBox->setZValue(30000.0);
+    chooseTriggerOrderBox->moveBy(-120, 0);
 
     card_container = new CardContainer();
     card_container->hide();
@@ -925,6 +933,7 @@ void RoomScene::updateTable() {
     guanxing_box->setPos(m_tableCenterPos - QPointF(guanxing_box->boundingRect().width() / 2, guanxing_box->boundingRect().height() / 2));
     choose_general_box->setPos(m_tableCenterPos - QPointF(choose_general_box->boundingRect().width() / 2, choose_general_box->boundingRect().height() / 2));
     choose_options_box->setPos(m_tableCenterPos - QPointF(choose_options_box->boundingRect().width() / 2, choose_options_box->boundingRect().height() / 2));
+    chooseTriggerOrderBox->setPos(m_tableCenterPos - QPointF(chooseTriggerOrderBox->boundingRect().width() / 2, chooseTriggerOrderBox->boundingRect().height() / 2));
     prompt_box->setPos(m_tableCenterPos);
     pausing_text->setPos(m_tableCenterPos - pausing_text->boundingRect().center());
     pausing_item->setRect(sceneRect());
@@ -1651,7 +1660,7 @@ void RoomScene::chooseTriggerOrder(const QString &reason, const QStringList &opt
     if (!main_window->isActiveWindow())
         Sanguosha->playSystemAudioEffect("pop-up");
 
-    choose_options_box->chooseOption(options);
+    chooseTriggerOrderBox->chooseOption(reason, options, optional);
 }
 
 void RoomScene::toggleDiscards() {
@@ -2298,18 +2307,35 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
     switch (newStatus & Client::ClientStatusBasicMask) {
     case Client::NotActive: {
-        if (oldStatus == Client::ExecDialog) {
+        switch (oldStatus) {
+        case Client::ExecDialog: {
             if (m_choiceDialog != NULL && m_choiceDialog->isVisible())
                 m_choiceDialog->hide();
-        } else if (oldStatus == Client::AskForGuanxing || oldStatus == Client::AskForGongxin) {
+            break;
+        }
+        case Client::AskForGuanxing:
+        case Client::AskForGongxin: {
             guanxing_box->clear();
             if (!card_container->retained())
                 card_container->clear();
-        } else if (oldStatus == Client::AskForGeneralChosen) {
-            choose_general_box->clear();
-        } else if (oldStatus == Client::AskForChoice) {
-            choose_options_box->clear();
+            break;
         }
+        case Client::AskForGeneralChosen: {
+            choose_general_box->clear();
+            break;
+        }
+        case Client::AskForChoice: {
+            choose_options_box->clear();
+            break;
+        }
+        case Client::AskForTriggerOrder: {
+            chooseTriggerOrderBox->clear();
+            break;
+        }
+        default:
+            break;
+        }
+
         prompt_box->disappear();
         ClientInstance->getPromptDoc()->clear();
 
@@ -2538,7 +2564,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
 
     // do timeout
     if (newStatus != Client::NotActive && newStatus != oldStatus
-        && newStatus != Client::AskForGeneralChosen && newStatus != Client::AskForChoice) {
+        && newStatus != Client::AskForGeneralChosen && newStatus != Client::AskForChoice && newStatus != Client::AskForTriggerOrder) {
         QApplication::alert(main_window);
         connect(dashboard, SIGNAL(progressBarTimedOut()), this, SLOT(doTimeout()));
         _cancelAllFocus();

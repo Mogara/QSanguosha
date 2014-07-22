@@ -1010,8 +1010,6 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
             Json::Value clientReply = player->getClientReply();
             if (!success || !clientReply.isString()) {
                 answer = ".";
-                if (skill_name == "TurnStartShowGeneral")
-                    answer = "cancel";
             }
             else
                 answer = toQString(clientReply);
@@ -1021,11 +1019,8 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
             answer = validChoices[0];
     }
 
-    // To avoid infinite recursion
-    if (skill_name != "TriggerOrder") {
-        QVariant decisionData = QVariant::fromValue("skillChoice:" + skill_name + ":" + answer);
-        thread->trigger(ChoiceMade, this, player, decisionData);
-    }
+    QVariant decisionData = QVariant::fromValue("skillChoice:" + skill_name + ":" + answer);
+    thread->trigger(ChoiceMade, this, player, decisionData);
     return answer;
 }
 
@@ -1660,7 +1655,7 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying) {
     return result;
 }
 
-QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, QMap<const ServerPlayer *, QStringList> &skills, bool optional, const QVariant &data) {
+QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, SPlayerDataMap &skills, bool optional, const QVariant &data) {
     while (isPaused()) {}
 
     Q_ASSERT(!skills.isEmpty());
@@ -1672,7 +1667,7 @@ QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, QM
             all_pairs << QString("%1:%2").arg(p->objectName()).arg(str);
     }
 
-    if (skills.values().length() == 1) {
+    if (!optional && skills.values().length() == 1 && skills.values().first().length() == 1) {
         answer = skills.values().first().first();
     } else {
         notifyMoveFocus(player, S_COMMAND_TRIGGER_ORDER);
@@ -1686,14 +1681,18 @@ QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, QM
                 all_skills << list;
 
             const QString reply = ai->askForChoice(reason, all_skills.join("+"), data);
-            QString owner;
-            foreach(const QStringList &list, skills.values()) {
-                if (list.contains(reply))
-                    owner = skills.key(list)->objectName();
-            }
+            if (reply == "cancel") {
+                answer = reply;
+            } else {
+                QString owner;
+                foreach(const QStringList &list, skills.values()) {
+                    if (list.contains(reply))
+                        owner = skills.key(list)->objectName();
+                }
 
-            if (!owner.isEmpty())
-                answer = QString("%1:%2").arg(owner).arg(reply);
+                if (!owner.isEmpty())
+                    answer = QString("%1:%2").arg(owner).arg(reply);
+            }
 
             thread->delay();
         } else {
@@ -1712,7 +1711,7 @@ QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, QM
                 answer = toQString(clientReply);
         }
 
-        if (!all_pairs.contains(answer))
+        if (answer != "cancel" && !all_pairs.contains(answer))
             answer = all_pairs[0];
     }
 

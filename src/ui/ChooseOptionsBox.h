@@ -58,13 +58,12 @@ public:
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
     QRectF boundingRect() const;
-    void clear();
 
     inline void setSkillName(const QString &skillName) { skill_name = skillName; }
 
 public slots:
     void chooseOption(const QStringList &options);
-    void reply();
+    void clear();
 
 private:
     int options_number;

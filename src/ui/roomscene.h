@@ -41,6 +41,7 @@ class QSanButton;
 class QGroupBox;
 class ChooseGeneralBox;
 class ChooseOptionsBox;
+class ChooseTriggerOrderBox;
 struct RoomLayout;
 
 #include <QGraphicsScene>
@@ -259,6 +260,8 @@ private:
     ChooseGeneralBox *choose_general_box;
 
     ChooseOptionsBox *choose_options_box;
+
+    ChooseTriggerOrderBox *chooseTriggerOrderBox;
 
     QList<CardItem *> gongxin_items;
 

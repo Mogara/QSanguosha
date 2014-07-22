@@ -25,47 +25,103 @@
 #include "button.h"
 #include "SkinBank.h"
 
-#include <QApplication>
+static qreal initialOpacity = 0.8;
+static int optionButtonHeight = 40;
+static QSize generalButtonSize;
 
 TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString &general, const QString &skill, const int width)
-    : QGraphicsObject(parent), skillName(skill), generalName(general), width(width)
+    : QGraphicsObject(parent), skillName(skill), playerName(general), width(width)
 {
+    setToolTip(Sanguosha->getSkill(skill)->getDescription());
+    setAcceptedMouseButtons(Qt::LeftButton);
+    setFlag(ItemIsFocusable);
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    setAcceptsHoverEvents(true);
+#else
+    setAcceptHoverEvents(true);
+#endif
+
+    setOpacity(initialOpacity);
 }
 
 void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     painter->setRenderHint(QPainter::HighQualityAntialiasing);
     painter->save();
-    painter->setBrush(Sanguosha->getKingdomColor(Self->getGeneral()->getKingdom()));
-    painter->setPen(Qt::yellow);
+    painter->setBrush(Qt::black);
+    painter->setPen(Sanguosha->getKingdomColor(Self->getGeneral()->getKingdom()));
     QRectF rect = boundingRect();
-    painter->drawRoundedRect(rect, 50, 10, Qt::RelativeSize);
+    painter->drawRoundedRect(rect, 10, 5, Qt::RelativeSize);
     painter->restore();
 
+    QString generalName;
+    const ClientPlayer *player = ClientInstance->getPlayer(playerName);
+    if (player->getHeadSkillList().contains(Sanguosha->getSkill(skillName)))
+        generalName = player->getGeneralName();
+    else
+        generalName = player->getGeneral2Name();
+
     QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
+    pixmap = pixmap.scaledToHeight(optionButtonHeight - 8, Qt::SmoothTransformation);
     QRect pixmapRect(QPoint(4, (rect.height() - pixmap.height()) / 2), pixmap.size());
-    painter->setBrush(QBrush(pixmap));
-    painter->drawRoundedRect(pixmapRect, 20, 20, Qt::RelativeSize);
+    painter->setBrush(pixmap);
+    painter->drawRoundedRect(pixmapRect, 5, 5);
 
     QRect textArea(QPoint(pixmap.width() + 4, 0), rect.bottomRight().toPoint());
-    G_COMMON_LAYOUT.optionButtonText.paintText(painter, textArea, Qt::AlignCenter, skillName);
+    G_COMMON_LAYOUT.optionButtonText.paintText(painter, textArea, Qt::AlignCenter, Sanguosha->translate(skillName));
 }
 
 QRectF TriggerOptionButton::boundingRect() const {
-    return QRectF(0, 0, width, width / 2);
+    return QRectF(0, 0, width, optionButtonHeight);
+}
+
+void TriggerOptionButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    event->accept();
+}
+
+void TriggerOptionButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *) {
+    emit clicked();
+}
+
+void TriggerOptionButton::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
+    animation->setEndValue(1.0);
+    animation->setDuration(100);
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void TriggerOptionButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
+    animation->setEndValue(initialOpacity);
+    animation->setDuration(100);
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 GeneralButton::GeneralButton(QGraphicsObject *parent, const QString &general, const bool isHead)
     : QGraphicsObject(parent), generalName(general), isHead(isHead)
 {
+    setToolTip(Sanguosha->getGeneral(general)->getSkillDescription(true));
+    setAcceptedMouseButtons(Qt::LeftButton);
+    setFlag(ItemIsFocusable);
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    setAcceptsHoverEvents(true);
+#else
+    setAcceptHoverEvents(true);
+#endif
+
+    setOpacity(initialOpacity);
 }
 
 void GeneralButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     painter->setRenderHint(QPainter::HighQualityAntialiasing);
-    QPixmap generalImg = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_DASHBOARD_PRIMARY);
-    painter->setBrush(generalImg);
-    painter->drawRoundedRect(boundingRect(), 5, 10, Qt::RelativeSize);
+    QPixmap generalImage = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE);
+    generalImage = generalImage.scaled(generalButtonSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    painter->setBrush(generalImage);
+    painter->drawRoundedRect(boundingRect(), 5, 5, Qt::RelativeSize);
 
     const General *general = Sanguosha->getGeneral(generalName);
     Q_ASSERT(general);
@@ -75,29 +131,58 @@ void GeneralButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, Q
 
     if (Self->getGeneral() == general || Self->getGeneral2() == general) {
         QString key = (Self->getGeneral() == general) ? QSanRoomSkin::S_SKIN_KEY_HEAD_ICON : QSanRoomSkin::S_SKIN_KEY_DEPUTY_ICON;
-        QPixmap positionIcon = G_ROOM_SKIN.getPixmap(key, QSanRoomSkin::S_SKIN_KEY_DASHBOARD);
-        painter->drawPixmap(2, 5, positionIcon);
+        QPixmap positionIcon = G_ROOM_SKIN.getPixmap(key);
+        painter->drawPixmap(2, 3, positionIcon);
     }
 
     QString name = Sanguosha->translate("&" + general->objectName());
     if (name.startsWith("&"))
         name = Sanguosha->translate(general->objectName());
     G_DASHBOARD_LAYOUT.m_avatarNameFont.paintText(painter,
-    QRect(10, 5, nameBg.width() - 10, nameBg.height()),
-    Qt::AlignLeft | Qt::AlignJustify, name);
+    QRect(15, 5, nameBg.width() - 15, nameBg.height()),
+    Qt::AlignLeft | Qt::AlignVCenter | Qt::AlignJustify, name);
 }
 
 QRectF GeneralButton::boundingRect() const
 {
-    static QSize size = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_DASHBOARD_PRIMARY).size();
-    return QRectF(QPoint(0, 0), size);
+    return QRectF(QPoint(0, 0), generalButtonSize);
+}
+
+void GeneralButton::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    event->accept();
+}
+
+void GeneralButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *) {
+    emit clicked();
+}
+
+void GeneralButton::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
+    animation->setEndValue(1.0);
+    animation->setDuration(100);
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void GeneralButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "opacity");
+    animation->setEndValue(initialOpacity);
+    animation->setDuration(100);
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 ChooseTriggerOrderBox::ChooseTriggerOrderBox()
-    : optional(true), progressBar(NULL)
+    : optional(true), cancel(new Button(tr("cancel"), 0.6, true)), progressBar(NULL)
 {
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
+
+    cancel->hide();
+    cancel->setParentItem(this);
+    cancel->setObjectName("cancel");
+    connect(cancel, SIGNAL(clicked()), this, SLOT(clear()));
+
+    generalButtonSize = G_ROOM_SKIN.getGeneralPixmap("caocao", QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE).size() * 0.6;
 }
 
 int ChooseTriggerOrderBox::getGeneralNum() const
@@ -134,14 +219,12 @@ void ChooseTriggerOrderBox::paint(QPainter *painter, const QStyleOptionGraphicsI
 QRectF ChooseTriggerOrderBox::boundingRect() const
 {
     const int generalNum = getGeneralNum();
-    static const QSize generalSize = G_ROOM_SKIN.getGeneralPixmap(Self->getAvatarGeneral()->objectName(),
-                                                           QSanRoomSkin::S_GENERAL_ICON_SIZE_DASHBOARD_PRIMARY).size();
-    int width = generalSize.width() + left_blank_width * 2;
+    int width = generalButtonSize.width() + left_blank_width * 2;
     if (generalNum == 2)
-        width += generalSize.width() + interval;
+        width += generalButtonSize.width() + interval;
 
     int height = top_blank_width
-            + (options.size() - generalNum) * default_button_height
+            + (options.size() - generalNum) * optionButtonHeight
             + (options.size() - generalNum - 1) * interval
             + bottom_blank_width;
 
@@ -149,7 +232,7 @@ QRectF ChooseTriggerOrderBox::boundingRect() const
         height += 12;
 
     if (generalNum > 0)
-        height += generalSize.height() + interval;
+        height += generalButtonSize.height() + interval;
 
     if (optional)
         height += cancel->boundingRect().height() + interval;
@@ -165,21 +248,29 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
     update();
 
     const int generalCount = getGeneralNum();
-    const int generalTop = top_blank_width
-            + (options.size() - generalCount) * default_button_height
-            + (options.size() - generalCount) * interval;
+
+    int width;
+    int generalHeight = 0;
 
     switch (generalCount) {
     case 2: {
         GeneralButton *head = new GeneralButton(this, Self->getGeneral()->objectName(), true);
         head->setObjectName(QString("%1:%2").arg(Self->objectName()).arg("GameRule_AskForGeneralShowHead"));
         generalButtons << head;
+
+        const int generalTop = top_blank_width
+                + (options.size() - generalCount) * optionButtonHeight
+                + (options.size() - generalCount) * interval;
         head->setPos(left_blank_width, generalTop);
 
-        GeneralButton *deputy = new GeneralButton(this, Self->getGeneral()->objectName(), true);
+        GeneralButton *deputy = new GeneralButton(this, Self->getGeneral2()->objectName(), true);
         deputy->setObjectName(QString("%1:%2").arg(Self->objectName()).arg("GameRule_AskForGeneralShowDeputy"));
         generalButtons << deputy;
-        deputy->setPos(head->boundingRect().right() + interval, generalTop);
+        deputy->setPos(head->pos().x() + head->boundingRect().width() + interval,
+                       generalTop);
+
+        width = deputy->pos().x() - head->pos().x() + deputy->boundingRect().width();
+        generalHeight = head->boundingRect().height();
         break;
     }
     case 1: {
@@ -187,7 +278,13 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
                                                                                                                                     Self->getGeneral2Name();
         GeneralButton *generalButton = new GeneralButton(this, general, true);
         generalButtons << generalButton;
+        const int generalTop = top_blank_width
+                + (options.size() - generalCount) * optionButtonHeight
+                + (options.size() - generalCount) * interval;
         generalButton->setPos(left_blank_width, generalTop);
+
+        width = generalButton->boundingRect().width();
+        generalHeight = generalButton->boundingRect().height();
         break;
     }
     default:
@@ -195,53 +292,41 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
     }
 
     foreach (const QString &option, options) {
+        QStringList pair = option.split(":");
+        if (pair.last().startsWith("GameRule_AskForGeneralShow"))
+            continue;
 
-    }
-
-    /*int z = 100;
-    foreach (QString option, options) {
-        QString title = QString("%1:%2").arg(skill_name).arg(option);
-        QString tranlated = Sanguosha->translate(title);
-        if (tranlated == title)
-            tranlated = Sanguosha->translate(option);
-        Button *button = new Button(tranlated, QSizeF(default_button_width, default_button_height), true);
-        button->setFlag(QGraphicsItem::ItemIsFocusable);
+        TriggerOptionButton *button = new TriggerOptionButton(this, pair.first(), pair.last(), width);
         button->setObjectName(option);
-        buttons << button;
-        button->setParentItem(this);
-
-        QString original_tooltip = QString(":%1").arg(title);
-        QString tooltip = Sanguosha->translate(original_tooltip);
-        if (tooltip == original_tooltip) {
-            original_tooltip = QString(":%1").arg(option);
-            tooltip = Sanguosha->translate(original_tooltip);
-        }
-        connect(button, SIGNAL(clicked()), this, SLOT(reply()));
-        connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerMakeChoice()));
-        button->setZValue(--z);
-        if (tooltip != original_tooltip) {
-            //button->setToolTip(QString("<font color=%1>%2</font>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(tooltip));
-            ToolTipBox *tip_box = new ToolTipBox(tooltip);
-            tip_box->hide();
-            tip_box->setParentItem(button);
-            tip_box->setZValue(10000);
-            connect(button, SIGNAL(hover_entered()), tip_box, SLOT(showToolTip()));
-            connect(button, SIGNAL(hover_left()), tip_box, SLOT(hideToolTip()));
-        }
-    }*/
+        optionButtons << button;
+    }
 
     setPos(RoomSceneInstance->tableCenterPos() - QPointF(boundingRect().width() / 2, boundingRect().height() / 2));
     show();
 
-    for (int i = 0; i < optionButtons.length(); ++i) {
-        TriggerOptionButton *button = optionButtons.at(i);
-
+    int y = top_blank_width;
+    foreach (TriggerOptionButton *button, optionButtons) {
         QPointF pos;
         pos.setX(left_blank_width);
-        pos.setY(top_blank_width + default_button_height * i + (i - 1) * interval + default_button_height / 2);
+        pos.setY(y);
 
         button->setPos(pos);
+        connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerChooseTriggerOrder()));
+        connect(button, SIGNAL(clicked()), this, SLOT(clear()));
+        y += button->boundingRect().height() + interval;
     }
+
+    foreach (GeneralButton *button, generalButtons) {
+        connect(button, SIGNAL(clicked()), ClientInstance, SLOT(onPlayerChooseTriggerOrder()));
+        connect(button, SIGNAL(clicked()), this, SLOT(clear()));
+    }
+
+    if (optional) {
+        cancel->moveBy((boundingRect().width() - cancel->boundingRect().width()) / 2,
+                       y + generalHeight + interval);
+        cancel->show();
+    }
+
 
     if (ServerInfo.OperationTimeout != 0) {
         if (!progressBar) {
@@ -254,26 +339,28 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
             progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 20);
             connect(progressBar, SIGNAL(timedOut()), this, SLOT(reply()));
         }
-        progressBar->setCountdown(QSanProtocol::S_COMMAND_MULTIPLE_CHOICE);
+        progressBar->setCountdown(QSanProtocol::S_COMMAND_TRIGGER_ORDER);
         progressBar->show();
     }
 }
 
-void ChooseTriggerOrderBox::reply()
+void ChooseTriggerOrderBox::clear()
 {
     if (progressBar != NULL){
         progressBar->hide();
         progressBar->deleteLater();
     }
-    clear();
-}
 
-void ChooseTriggerOrderBox::clear()
-{
     foreach(TriggerOptionButton *button, optionButtons)
         button->deleteLater();
 
+    foreach(GeneralButton *button, generalButtons)
+        button->deleteLater();
+
     optionButtons.clear();
+    generalButtons.clear();
+
+    cancel->hide();
 
     hide();
 }
