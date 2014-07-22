@@ -52,7 +52,7 @@ void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsIte
     painter->setBrush(Qt::black);
     painter->setPen(Sanguosha->getKingdomColor(Self->getGeneral()->getKingdom()));
     QRectF rect = boundingRect();
-    painter->drawRoundedRect(rect, 10, 5, Qt::RelativeSize);
+    painter->drawRoundedRect(rect, 5, 5);
     painter->restore();
 
     QString generalName;
@@ -63,13 +63,16 @@ void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsIte
         generalName = player->getGeneral2Name();
 
     QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
-    pixmap = pixmap.scaledToHeight(optionButtonHeight - 8, Qt::SmoothTransformation);
-    QRect pixmapRect(QPoint(4, (rect.height() - pixmap.height()) / 2), pixmap.size());
+    pixmap = pixmap.scaledToHeight(optionButtonHeight, Qt::SmoothTransformation);
+    QRect pixmapRect(QPoint(0, (rect.height() - pixmap.height()) / 2), pixmap.size());
     painter->setBrush(pixmap);
     painter->drawRoundedRect(pixmapRect, 5, 5);
 
-    QRect textArea(QPoint(pixmap.width() + 4, 0), rect.bottomRight().toPoint());
-    G_COMMON_LAYOUT.optionButtonText.paintText(painter, textArea, Qt::AlignCenter, Sanguosha->translate(skillName));
+    QRect textArea(optionButtonHeight, 0, width - optionButtonHeight,
+                   optionButtonHeight);
+    G_COMMON_LAYOUT.optionButtonText.paintText(painter, textArea,
+                                               Qt::AlignCenter,
+                                               Sanguosha->translate(skillName));
 }
 
 QRectF TriggerOptionButton::boundingRect() const {
@@ -132,14 +135,14 @@ void GeneralButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, Q
     if (Self->getGeneral() == general || Self->getGeneral2() == general) {
         QString key = (Self->getGeneral() == general) ? QSanRoomSkin::S_SKIN_KEY_HEAD_ICON : QSanRoomSkin::S_SKIN_KEY_DEPUTY_ICON;
         QPixmap positionIcon = G_ROOM_SKIN.getPixmap(key);
-        painter->drawPixmap(2, 3, positionIcon);
+        painter->drawPixmap(G_COMMON_LAYOUT.generalButtonPositionIconRegion, positionIcon);
     }
 
     QString name = Sanguosha->translate("&" + general->objectName());
     if (name.startsWith("&"))
         name = Sanguosha->translate(general->objectName());
     G_DASHBOARD_LAYOUT.m_avatarNameFont.paintText(painter,
-    QRect(15, 5, nameBg.width() - 15, nameBg.height()),
+    G_COMMON_LAYOUT.generalButtonNameRegion,
     Qt::AlignLeft | Qt::AlignVCenter | Qt::AlignJustify, name);
 }
 
