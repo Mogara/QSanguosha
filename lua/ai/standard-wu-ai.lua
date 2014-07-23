@@ -1672,12 +1672,15 @@ sgs.ai_use_priority.ZhijianCard = sgs.ai_use_priority.RendeCard + 0.1  -- 刘备
 sgs.ai_cardneed.zhijian = sgs.ai_cardneed.equip
 
 sgs.ai_skill_invoke.guzheng = function(self, data)
+	if not self.player:hasShownOneGeneral() then 
+		if not  (self:willShowForAttack() or self:willShowForDefence())  and data:toInt() >= 3  then 
+			return false 
+		end	
+	end
 	local player = self.room:getCurrent()
 	local invoke = (self:isFriend(player) and not self:needKongcheng(player, true))
 					or (data:toInt() >= 3 or (data:toInt() == 2 and not player:hasShownSkills(sgs.cardneed_skill)))
 					or (self:isEnemy(player) and self:needKongcheng(player, true))
-					or (self:willShowForAttack() and data:toInt() >= 3 )
-					or (self:willShowForDefence() and data:toInt() >= 3 )
 	return invoke
 end
 
