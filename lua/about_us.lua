@@ -27,7 +27,8 @@ programmers = {
 	'Fsu0413',
 	'女王受·虫',
 	'hmqgg',
-	'takashiro'
+	'takashiro' ,
+	'lrl026'
 }
 
 ai_designers = {
