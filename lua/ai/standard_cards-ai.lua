@@ -231,8 +231,6 @@ function SmartAI:slashProhibit(card, enemy, from)
 		if filter and type(filter) == "function" and filter(self, from, enemy, card) then return true end
 	end
 
-
-
 	if self:isFriend(enemy, from) then
 		if (card:isKindOf("FireSlash") or from:hasWeapon("Fan")) and enemy:hasArmorEffect("Vine")
 			and not (enemy:isChained() and self:isGoodChainTarget(enemy, from, nil, nil, card)) then return true end
@@ -296,34 +294,6 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 			can_convert = true
 		end
 		if not can_convert or not from:hasWeapon("Fan") then return false end
-	end
-
-	if slash:isKindOf("ThunderSlash") then
-		local f_slash = self:getCard("FireSlash")
-		if f_slash and self:hasHeavySlashDamage(from, f_slash, to, true) > self:hasHeavySlashDamage(from, slash, to, true)
-			and (not to:isChained() or self:isGoodChainTarget(to, from, sgs.DamageStruct_Fire, nil, f_slash)) then
-			return self:slashProhibit(f_slash, to, from)
-		end
-	elseif slash:isKindOf("FireSlash") then
-		local t_slash = self:getCard("ThunderSlash")
-		if t_slash and self:hasHeavySlashDamage(from, t_slash, to, true) > self:hasHeavySlashDamage(from, slash, to, true)
-			and (not to:isChained() or self:isGoodChainTarget(to, from, sgs.DamageStruct_Thunder, nil, t_slash)) then
-			return self:slashProhibit(t_slash, to, from)
-		end
-	end
-
-	if slash:isKindOf("ThunderSlash") then
-		local f_slash = self:getCard("FireSlash")
-		if f_slash and self:hasHeavySlashDamage(from, f_slash, to, true) > self:hasHeavySlashDamage(from, slash, to, true)
-			and (not to:isChained() or self:isGoodChainTarget(to, from, sgs.DamageStruct_Fire, nil, f_slash)) then
-			return self:slashProhibit(f_slash, to, from)
-		end
-	elseif slash:isKindOf("FireSlash") then
-		local t_slash = self:getCard("ThunderSlash")
-		if t_slash and self:hasHeavySlashDamage(from, t_slash, to, true) > self:hasHeavySlashDamage(from, slash, to, true)
-			and (not to:isChained() or self:isGoodChainTarget(to, from, sgs.DamageStruct_Thunder, nil, t_slash)) then
-			return self:slashProhibit(t_slash, to, from)
-		end
 	end
 
 	if slash:isKindOf("ThunderSlash") then
@@ -578,12 +548,10 @@ sgs.ai_skill_use.slash = function(self, prompt)
 	for _, slash in ipairs(slashes) do
 		local no_distance = sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, slash) > 50 or self.player:hasFlag("slashNoDistanceLimit")
 		for _, friend in ipairs(self.friends_noself) do
-			local slash_prohibit = false
-			slash_prohibit = self:slashProhibit(card, friend)
-			if not self:hasHeavySlashDamage(self.player, card, friend)
+			if not self:hasHeavySlashDamage(self.player, slash, friend)
 				and self.player:canSlash(friend, slash, not no_distance) and not self:slashProhibit(slash, friend)
 				and self:slashIsEffective(slash, friend)
-				and (self:findLeijiTarget(friend, 50, self.player) or (friend:hasShownSkill("jieming") and self.player:hasSkill("rende") and (huatuo and self:isFriend(huatuo))))
+				and (self:findLeijiTarget(friend, 50, self.player) or (friend:hasShownSkill("jieming") and self.player:hasSkill("rende")))
 				and not (self.player:hasFlag("slashTargetFix") and not friend:hasFlag("SlashAssignee")) then
 
 				useslash = slash
