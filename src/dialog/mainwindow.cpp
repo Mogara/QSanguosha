@@ -278,7 +278,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
         if (isZoomReady) {
             isLeftPressDown = true;
-            if (dir != None) {
+            if (direction != None) {
                 releaseMouse();
                 setCursor(QCursor(Qt::ArrowCursor));
             }
@@ -318,7 +318,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
         QRect rMove(tl, rb);
 
-        switch (dir) {
+        switch (direction) {
         case Left:
             if (rb.x() - gloPoint.x() <= minimumWidth())
                 rMove.setX(tl.x());
@@ -373,10 +373,18 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 void MainWindow::mouseReleaseEvent(QMouseEvent *)
 {
     isLeftPressDown = false;
-    if (dir != None) {
+    if (direction != None) {
         releaseMouse();
         setCursor(QCursor(Qt::ArrowCursor));
     }
+}
+
+void MainWindow::mouseDoubleClickEvent(QMouseEvent *)
+{
+    if (windowState() & Qt::WindowMaximized)
+        showNormal();
+    else
+        showMaximized();
 }
 
 void MainWindow::changeEvent(QEvent *event)
@@ -416,34 +424,34 @@ void MainWindow::region(const QPoint &cursorGlobalPoint)
     int y = cursorGlobalPoint.y();
 
     if (tl.x() + S_PADDING >= x && tl.x() <= x && tl.y() + S_PADDING >= y && tl.y() <= y) {
-        dir = LeftTop;
+        direction = LeftTop;
         setCursor(QCursor(Qt::SizeFDiagCursor));
     } else if (x >= rb.x() - S_PADDING && x <= rb.x() && y >= rb.y() - S_PADDING && y <= rb.y()) {
-        dir = RightBottom;
+        direction = RightBottom;
         setCursor(QCursor(Qt::SizeFDiagCursor));
     } else if (x <= tl.x() + S_PADDING && x >= tl.x() && y >= rb.y() - S_PADDING && y <= rb.y()) {
-        dir = LeftBottom;
+        direction = LeftBottom;
         setCursor(QCursor(Qt::SizeBDiagCursor));
     } else if (x <= rb.x() && x >= rb.x() - S_PADDING && y >= tl.y() && y <= tl.y() + S_PADDING) {
-        dir = RightTop;
+        direction = RightTop;
         setCursor(QCursor(Qt::SizeBDiagCursor));
     } else if (x <= tl.x() + S_PADDING && x >= tl.x()) {
-        dir = Left;
+        direction = Left;
         setCursor(QCursor(Qt::SizeHorCursor));
     } else if (x <= rb.x() && x >= rb.x() - S_PADDING) {
-        dir = Right;
+        direction = Right;
         setCursor(QCursor(Qt::SizeHorCursor));
     } else if (y >= tl.y() && y <= tl.y() + S_PADDING) {
-        dir = Up;
+        direction = Up;
         setCursor(QCursor(Qt::SizeVerCursor));
     } else if (y <= rb.y() && y >= rb.y() - S_PADDING) {
-        dir = Down;
+        direction = Down;
         setCursor(QCursor(Qt::SizeVerCursor));
     } else {
-        dir = None;
+        direction = None;
         setCursor(QCursor(Qt::ArrowCursor));
     }
-    if (dir != None)
+    if (direction != None)
         isZoomReady = true;
     else
         isZoomReady = false;

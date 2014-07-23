@@ -86,6 +86,7 @@ public:
     void setBackgroundBrush(bool center_as_origin);
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void changeEvent(QEvent *event);
     void resizeEvent(QResizeEvent *event);
@@ -98,7 +99,7 @@ public:
     enum Direction { Up, Down, Left, Right, LeftTop, LeftBottom, RightTop, RightBottom, None = -1 };
 
     bool isZoomReady;
-    Direction dir;
+    Direction direction;
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
