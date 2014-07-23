@@ -252,7 +252,7 @@ local pages = {
 		"别拦我，我已经放弃治疗了",
 		"渣美工一枚，没事别找我",
 		"容我打个广告",
-		'<a href="http://tieba.baidu.com/f?ie=utf8&kw=36李&fr=itb_favo&fp=favo">百度36李吧欢迎你</a>'
+		HTMLTable.getHref("百度36李吧欢迎你", "http://tieba.baidu.com/f?ie=utf8&kw=36李&fr=itb_favo&fp=favo")
 	},
 	
 	{
