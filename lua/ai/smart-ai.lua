@@ -4933,7 +4933,7 @@ function SmartAI:cantbeHurt(player, from, damageNum)
 		and from:getNextAlive():objectName() == player:objectName() then
 		local hengzheng = 0
 		for _, player in sgs.qlist(self.room:getOtherPlayers(from)) do
-			if from:isEnemy(player) and player:getCardCount() > 0 then hengzheng = hengzheng + 1
+			if from:isEnemy(player) and player:getCardCount() > 0 then hengzheng = hengzheng + 1 end
 		end
 		if hengzheng > 2 then return true end
 	end	
