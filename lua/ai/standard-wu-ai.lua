@@ -1091,7 +1091,7 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 	cards = sgs.QList2Table(cards)
 	self:sortByUseValue(cards, true)
 	for _, card in ipairs(cards) do
-		if not self.player:isCardLimited(card, method) and card:getSuit() == sgs.Card_Heart  then
+		if not self.player:isCardLimited(card, method) and (card:getSuit() == sgs.Card_Heart or (self.player:hasSkill("hongyan") and card:getSuit() == sgs.Card_Spade)) then
 			card_id = card:getId()
 			break
 		end
@@ -1139,7 +1139,7 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 		end
 	end
 
-	if dmg.damage > 1 and not self:isFriend(dmg.from) and not self.player:hasShownSkill("tianxiang") then 
+	if dmg.damage > 1 and not self.player:hasShownSkill("tianxiang") then 
 		return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. dmg.from:objectName()
 	end
 	
