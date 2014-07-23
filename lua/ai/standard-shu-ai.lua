@@ -49,21 +49,36 @@ function SmartAI:shouldUseRende()
 			return true
 		end
 	end
-	if (self.player:hasSkill("rende") and self.player:getMark("rende") < 3) or self:getOverflow() > 0  then
-		return true
-	else
-	    if self.player:hasSkill("rende") and self.player:getMark("rende") >= 3 and  self.player:getHandcardNum()<=2 and self:getOverflow()<=0then 
-		return false
+	
+	local keepNum = 1
+	if self.player:getMark("rende") == 0 then
+		if self.player:getHandcardNum() == 3 then
+			keepNum = 0
+		end
+		if self.player:getHandcardNum() > 3 then
+			keepNum = 3
 		end
 	end
-	
-	if 	self.player:hasSkill("kongcheng") and self.player:hasSkill("rende") and (self.player:getMark("rende") >= 3 or self.player:getHandcardNum()<3 )then
-		sgs.ai_use_priority.RendeCard = 0.1
+	if self.player:hasSkill("kongcheng") then
+		keepNum = 0
 	end
-	if self.player:hasSkill("kongcheng") and not self.player:isKongcheng() then
+		
+	if self:getOverflow() > 0  then
 		return true
 	end
-			
+	if self.player:getHandcardNum() > keepNum  then
+		return true
+	end
+	if self.player:getMark("rende") ~= 0 and self.player:getMark("rende") < 3
+		and (3 - self.player:getMark("rende")) >=  (self.player:getHandcardNum() - keepNum) then
+		return true
+	end
+	
+	if self.player:hasSkill("kongcheng") then 
+		return true
+	end
+
+	return false
 end
 
 local rende_skill = {}
@@ -148,6 +163,16 @@ local wusheng_skill = {}
 wusheng_skill.name = "wusheng"
 table.insert(sgs.ai_skills, wusheng_skill)
 wusheng_skill.getTurnUseCard = function(self, inclusive)
+
+	self:sort(self.enemies, "defense")
+	local useAll = false
+	for _, enemy in ipairs(self.enemies) do
+		if enemy:getHp() == 1 and not enemy:hasArmorEffect("EightDiagram") and self.player:distanceTo(enemy) <= self.player:getAttackRange()  then 
+			useAll = true
+			break
+		end
+	end
+
 	local cards = self.player:getCards("he")
 	cards = sgs.QList2Table(cards)
 
@@ -155,7 +180,7 @@ wusheng_skill.getTurnUseCard = function(self, inclusive)
 	self:sortByUseValue(cards, true)
 	for _, card in ipairs(cards) do
 		if card:isRed() and not card:isKindOf("Slash")
-			and not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player)
+			and( (not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player)) or useAll )
 			and (self:getUseValue(card) < sgs.ai_use_value.Slash or inclusive or sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, sgs.cloneCard("slash")) > 0) then
 			red_card = card
 			break

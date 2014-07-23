@@ -173,6 +173,9 @@ table.insert(sgs.ai_skills, qixi_skill)
 qixi_skill.getTurnUseCard = function(self,inclusive)
 
 	local cards = self.player:getCards("he")
+	if self.player:hasSkill("xiaoji") then 
+		local cards = self.player:getCards("e")
+	end
 	cards = sgs.QList2Table(cards)
 
 	local black_card
@@ -881,6 +884,11 @@ sgs.xiaoji_keep_value = {
 sgs.ai_cardneed.xiaoji = sgs.ai_cardneed.equip
 
 sgs.ai_skill_playerchosen.yinghun = function(self, targets)
+
+	if not self:willShowForAttack() and not self:willShowForDefence() then
+		return false 
+	end
+
 	local x = self.player:getLostHp()
 	local n = x - 1
 	self:updatePlayers()
@@ -1083,7 +1091,7 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 	cards = sgs.QList2Table(cards)
 	self:sortByUseValue(cards, true)
 	for _, card in ipairs(cards) do
-		if not self.player:isCardLimited(card, method) and card:getSuit() == sgs.Card_Heart and not card:isKindOf("Peach") then
+		if not self.player:isCardLimited(card, method) and card:getSuit() == sgs.Card_Heart  then
 			card_id = card:getId()
 			break
 		end
@@ -1131,6 +1139,10 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 		end
 	end
 
+	if dmg.damage > 1 and not self:isFriend(dmg.from) and not self.player:hasShownSkill("tianxiang") then 
+		return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. dmg.from:objectName()
+	end
+	
 	return "."
 end
 
@@ -1803,6 +1815,7 @@ local fenxun_skill = {}
 fenxun_skill.name = "fenxun"
 table.insert(sgs.ai_skills, fenxun_skill)
 fenxun_skill.getTurnUseCard = function(self)
+	if not self:willShowForAttack() then return end
 	if self.player:hasUsed("FenxunCard") then return end
 	if not self:slashIsAvailable() then return end
 	if #self.enemies == 0 then return end
