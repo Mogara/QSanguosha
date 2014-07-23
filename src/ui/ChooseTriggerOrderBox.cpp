@@ -203,6 +203,12 @@ ChooseTriggerOrderBox::ChooseTriggerOrderBox()
     connect(cancel, SIGNAL(clicked()), this, SLOT(reply()));
 
     generalButtonSize = G_ROOM_SKIN.getGeneralPixmap("caocao", QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE).size() * 0.6;
+
+    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
+    shadow->setOffset(4);
+    shadow->setBlurRadius(5);
+    shadow->setColor(QColor(0, 0, 0, 180));
+    setGraphicsEffect(shadow);
 }
 
 int ChooseTriggerOrderBox::getGeneralNum() const

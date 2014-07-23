@@ -30,6 +30,12 @@ ChooseOptionsBox::ChooseOptionsBox()
 {
     setFlag(ItemIsFocusable);
     setFlag(ItemIsMovable);
+
+    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
+    shadow->setOffset(4);
+    shadow->setBlurRadius(5);
+    shadow->setColor(QColor(0, 0, 0, 180));
+    setGraphicsEffect(shadow);
 }
 
 static int roundedRectRadius = 5;

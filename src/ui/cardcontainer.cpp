@@ -40,6 +40,12 @@ CardContainer::CardContainer()
     confirm_button->setParentItem(this);
     confirm_button->hide();
     connect(confirm_button, SIGNAL(clicked()), this, SLOT(clear()));
+
+    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
+    shadow->setOffset(4);
+    shadow->setBlurRadius(5);
+    shadow->setColor(QColor(0, 0, 0, 180));
+    setGraphicsEffect(shadow);
 }
 
 void CardContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
