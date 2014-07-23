@@ -44,7 +44,9 @@ protected:
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
 private:
-    explicit TriggerOptionButton(QGraphicsObject *parent, const QString &general, const QString &skill, const int width);
+    explicit TriggerOptionButton(QGraphicsObject *parent, const QString &player, const QString &skill, const int width);
+
+    QString getGeneralNameBySkill() const;
 
     QString skillName;
     QString playerName;
