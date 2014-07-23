@@ -95,6 +95,7 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
         if (room->getTag("WaitForPlayer").toBool())
             return true;
 
+        /*
         if (objectName().startsWith("_mini_")) {
             room->doLightbox(objectName(), 2000);
 
@@ -104,6 +105,7 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
             log.arg2 = objectName();
             room->sendLog(log);
         }
+        */
 
         QList<ServerPlayer *> players = room->getAllPlayers();
         while (players.first()->getState() == "robot")
@@ -147,7 +149,6 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
         for (int j = 0; j < players.length(); j++) {
             int i = int_list[j];
             ServerPlayer *sp = players.at(j);
-            room->setPlayerProperty(sp, "role", this->players[i]["role"]);
 
             QString general = this->players[i]["general"];
             if (general == "select") {
@@ -157,7 +158,6 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
                         foreach(const Skill *skill, sp->getGeneral()->getSkillList(true, true))
                             sp->loseSkill(skill->objectName());
                     }
-                    sp->setGeneral(NULL);
                     QString choice = sp->findReasonable(all);
                     available << choice;
                     all.removeOne(choice);
@@ -166,8 +166,13 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
                 all.append(available);
                 all.removeOne(general);
                 qShuffle(all);
+				sp->setActualGeneral1Name(general);
+                foreach (const Skill *skill, sp->getActualGeneral1()->getSkillList())
+                    sp->addSkill(skill->objectName());
+				room->notifyProperty(sp, sp, "actual_general1");;
+				room->notifyProperty(sp, sp, "general", general);
+
             }
-            room->changeHero(sp, general, false, false, false, false);
 
             general = this->players[i]["general2"];
             if (!general.isEmpty()) {
@@ -187,12 +192,15 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
                     all.append(available);
                     all.removeOne(general);
                     qShuffle(all);
+					sp->setActualGeneral2Name(general);
+                    foreach (const Skill *skill, sp->getActualGeneral2()->getSkillList())
+                        sp->addSkill(skill->objectName(), false);
+                    room->notifyProperty(sp, sp, "actual_general2");
+					room->notifyProperty(sp, sp, "general2", general);
                 }
-                if (general == sp->getGeneralName()) general = this->players.at(i)["general3"];
-                room->changeHero(sp, general, false, false, true, false);
             }
 
-            room->setPlayerProperty(sp, "kingdom", sp->getGeneral()->getKingdom());
+            room->setPlayerProperty(sp, "kingdom", sp->getActualGeneral1()->getKingdom());
 
             QString str = this->players.at(i)["maxhp"];
             if (str == QString()) str = QString::number(sp->getGeneralMaxHp());
@@ -281,6 +289,18 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
                     room->setPlayerMark(sp, keys[0], str.toInt());
                 }
             }
+            QString role = HegemonyMode::GetMappedRole(sp->getKingdom());
+            room->setPlayerProperty(sp, "role", role);
+            QStringList names;
+            names.append(sp->getActualGeneral1Name());
+            names.append(sp->getActualGeneral2Name());
+            room->setTag(sp->objectName(), QVariant::fromValue(names));
+        }
+
+
+        foreach(ServerPlayer *p, room->getPlayers()) {
+            p->showGeneral(true, false);
+            p->showGeneral(false, false);
         }
 
         room->setTag("WaitForPlayer", QVariant(true));
