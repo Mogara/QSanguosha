@@ -81,7 +81,7 @@ config = {
 		"Paracel_00发", --Paracel_007
 		"haveago823" , --haveatry823
 		"离人泪026", --lrl026
-		"墨宣砚韵",
+		"抹胸砚韵", --墨宣砚韵
 		"忧郁のlzxqqqq", --忧郁的月兔（lzxqqqq）
 		--"来一口-水饺",
 		--"甄钰月儿",
@@ -102,10 +102,10 @@ config = {
 		"普肉", --Procellarum
 		"大内总管KK", --KenKic
 		"叶落孤舟",
-		"大将军艹仁",
-		"Easy-To-Love",
-		"大休斯V", --小休斯
-		"清风弄错流年",
+		"晓月的微信", --晓月的泪痕
+		"Xasy-Po-Love", --Easy-To-Love（XPL）
+		"小修司V", --小休斯
+		"清风不屈一对10", --清风弄错流年
 		"高城和二", --takashiro
 		"tan∠ANY", --任意角的正切
 		"刘恒飞翔", --恒星飞翔
