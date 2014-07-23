@@ -734,22 +734,13 @@
     <ClCompile Include="..\..\src\server\generalselector.cpp">
       <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\core\UpdateCheckerThread.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\dialog\UpdateChecker.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_UpdateChecker.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="Debug\moc_UpdateCheckerThread.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="Release\moc_UpdateChecker.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_UpdateCheckerThread.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\banpair.cpp">
@@ -1011,9 +1002,6 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\server\generalselector.h">
       <Filter>server</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\core\UpdateCheckerThread.h">
-      <Filter>core</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\UpdateChecker.h">
       <Filter>dialog</Filter>
