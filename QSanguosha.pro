@@ -31,7 +31,6 @@ SOURCES += \
     src/core/settings.cpp \
     src/core/skill.cpp \
     src/core/structs.cpp \
-    src/core/UpdateCheckerThread.cpp \
     src/core/util.cpp \
     src/core/WrappedCard.cpp \
     src/core/version.cpp \
@@ -97,6 +96,7 @@ SOURCES += \
     src/ui/uiUtils.cpp \
     src/ui/window.cpp \
     src/ui/ChooseOptionsBox.cpp \
+    src/ui/ChooseTriggerOrderBox.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
@@ -106,8 +106,7 @@ SOURCES += \
     src/jsoncpp/src/json_reader.cpp \
     src/jsoncpp/src/json_internalmap.inl \
     src/jsoncpp/src/json_internalarray.inl \
-    swig/sanguosha_wrap.cxx \
-    src/ui/ChooseTriggerOrderBox.cpp
+    swig/sanguosha_wrap.cxx
 
 HEADERS += \
     src/client/aux-skills.h \
@@ -130,7 +129,6 @@ HEADERS += \
     src/core/settings.h \
     src/core/skill.h \
     src/core/structs.h \
-    src/core/UpdateCheckerThread.h \
     src/core/util.h \
     src/core/WrappedCard.h \
     src/core/version.h \
@@ -196,6 +194,7 @@ HEADERS += \
     src/ui/uiUtils.h \
     src/ui/window.h \
     src/ui/ChooseOptionsBox.h \
+    src/ui/ChooseTriggerOrderBox.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \
@@ -210,8 +209,7 @@ HEADERS += \
     src/jsoncpp/include/json/features.h \
     src/jsoncpp/include/json/config.h \
     src/jsoncpp/include/json/autolink.h \
-    src/jsoncpp/include/json/assertions.h \
-    src/ui/ChooseTriggerOrderBox.h
+    src/jsoncpp/include/json/assertions.h
 
 FORMS += \
     src/dialog/cardoverview.ui \

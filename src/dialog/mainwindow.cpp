@@ -54,6 +54,7 @@
 #include <QToolButton>
 #include <QCommandLinkButton>
 #include <QFormLayout>
+#include <QNetworkReply>
 
 class FitView : public QGraphicsView {
 public:
@@ -153,7 +154,8 @@ void SoundTestBox::btn_clicked(){
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), isLeftPressDown(false),
       scene(NULL), ui(new Ui::MainWindow), server(NULL), about_window(NULL),
-      minButton(NULL), maxButton(NULL), normalButton(NULL), closeButton(NULL)
+      minButton(NULL), maxButton(NULL), normalButton(NULL), closeButton(NULL),
+      versionInfomationReply(NULL), changeLogReply(NULL)
 {
     ui->setupUi(this);
     setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
@@ -163,15 +165,7 @@ MainWindow::MainWindow(QWidget *parent)
     setMinimumWidth(800);
     setMinimumHeight(580);
 
-    UpdateCheckerThread *thread = new UpdateCheckerThread;
-    connect(thread, SIGNAL(storeKeyAndValue(const QString &, const QString &)), this, SLOT(storeKeyAndValue(const QString &, const QString &)));
-    //@to-do: terminated() is removed from QThread in Qt 5
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    connect(thread, SIGNAL(terminated()), thread, SLOT(deleteLater()));
-#else
-    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-#endif
-    thread->start();
+    fetchUpdateInformation();
 
     connection_dialog = new ConnectionDialog(this);
     connect(ui->actionStart_Game, SIGNAL(triggered()), connection_dialog, SLOT(exec()));
@@ -455,6 +449,24 @@ void MainWindow::region(const QPoint &cursorGlobalPoint)
         isZoomReady = true;
     else
         isZoomReady = false;
+}
+
+void MainWindow::fetchUpdateInformation()
+{
+    QNetworkAccessManager *mgr = new QNetworkAccessManager;
+#ifdef QT_DEBUG
+    QString URL1 = "http://ver.qsanguosha.org/test/UpdateInfo";
+    QString URL2 = "http://ver.qsanguosha.org/test/whatsnew.html";
+#else
+    QString URL1 = "http://ver.qsanguosha.org/UpdateInfo";
+    QString URL2 = "http://ver.qsanguosha.org/whatsnew.html";
+#endif
+
+    versionInfomationReply = mgr->get(QNetworkRequest(QUrl(URL1)));
+    changeLogReply = mgr->get(QNetworkRequest(QUrl(URL2)));
+
+    connect(versionInfomationReply, SIGNAL(finished()), SLOT(onVersionInfomationGotten()));
+    connect(changeLogReply, SIGNAL(finished()), SLOT(onChangeLogGotten()));
 }
 
 void MainWindow::repaintButtons()
@@ -1193,31 +1205,54 @@ void MainWindow::on_actionManage_Ban_IP_triggered(){
     dlg->show();
 }
 
-
-
-void MainWindow::storeKeyAndValue(const QString &key, const QString &value)
+void MainWindow::onVersionInfomationGotten()
 {
-    if ("VersionNumber" == key) {
-        QString v = value;
-        if (value.contains("Patch")) {
-            update_info.is_patch = true;
-            v.chop(6);
+    while (!versionInfomationReply->atEnd()) {
+        QString line = versionInfomationReply->readLine();
+        line.replace('\n', "");
+
+        QStringList texts = line.split("|", QString::SkipEmptyParts);
+
+        Q_ASSERT(texts.size() == 2);
+
+        QString key = texts.at(0);
+        QString value = texts.at(1);
+        if ("VersionNumber" == key) {
+            QString v = value;
+            if (value.contains("Patch")) {
+                updateInfomation.is_patch = true;
+                v.chop(6);
+            } else {
+                updateInfomation.is_patch = false;
+            }
+
+            QSanVersionNumber latest_version = Sanguosha->getVersionNumber();
+            if (!v.isNull() && latest_version.tryParse(v))
+                v = latest_version;
+
+            updateInfomation.version_number = v;
+            if (Sanguosha->getVersionNumber() < latest_version)
+                setWindowTitle(tr("New Version Available") + "  " + windowTitle());
+        } else if ("Address" == key) {
+            updateInfomation.address = value;
         }
-        else
-            update_info.is_patch = false;
-
-        QSanVersionNumber latest_version = Sanguosha->getVersionNumber();
-        if (!v.isNull() && latest_version.tryParse(v))
-            v = latest_version;
-
-        update_info.version_number = v;
-        if (Sanguosha->getVersionNumber() < latest_version)
-            setWindowTitle(tr("New Version Available") + "  " + windowTitle());
+        if (!updateInfomation.address.isNull() && !updateInfomation.version_number.isNull())
+            ui->actionCheckUpdate->setEnabled(true);
     }
-    else if ("Address" == key)
-        update_info.address = value;
-    if (!update_info.address.isNull() && !update_info.version_number.isNull())
-        ui->actionCheckUpdate->setEnabled(true);
+}
+
+void MainWindow::onChangeLogGotten()
+{
+    QString fileName = "info.html";
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+    {
+        qDebug() << "Cannot open the file: " << fileName;
+        return;
+    }
+    QByteArray codeContent = changeLogReply->readAll();
+    file.write(codeContent);
+    file.close();
 }
 
 void MainWindow::on_actionCheckUpdate_triggered()
@@ -1228,7 +1263,7 @@ void MainWindow::on_actionCheckUpdate_triggered()
     QHBoxLayout *layout = new QHBoxLayout;
     UpdateChecker *widget = new UpdateChecker;
     connect(dialog, SIGNAL(finished(int)), widget, SLOT(deleteLater()));
-    widget->fill(update_info);
+    widget->fill(updateInfomation);
     layout->addWidget(widget);
     dialog->setLayout(layout);
 
