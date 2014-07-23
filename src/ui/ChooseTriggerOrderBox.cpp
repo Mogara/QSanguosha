@@ -213,7 +213,7 @@ void ChooseTriggerOrderBox::paint(QPainter *painter, const QStyleOptionGraphicsI
     const int h = rect.height();
     painter->drawRect(QRect(x, y, w, h));
     painter->drawRect(QRect(x, y, w, top_dark_bar));
-    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, top_dark_bar), Qt::AlignCenter | Qt::AlignJustify, Sanguosha->translate(reason));
+    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, top_dark_bar), Qt::AlignCenter, Sanguosha->translate(reason));
     painter->restore();
     painter->setPen(G_COMMON_LAYOUT.m_chooseGeneralBoxBorderColor);
     painter->drawRect(QRect(x + 1, y + 1, w - 2, h - 2));
