@@ -381,7 +381,6 @@ luanji_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_invoke.shuangxiong = function(self, data)
-	sgs.ai_use_priority.Duel = 9.1
 	if self.player:isSkipped(sgs.Player_Play) or (self.player:getHp() < 2 and not (self:getCardsNum("Slash") > 1 and self.player:getHandcardNum() >= 3)) or #self.enemies == 0 then
 		return false
 	end
@@ -415,6 +414,7 @@ local shuangxiong_skill = {}
 shuangxiong_skill.name = "shuangxiong"
 table.insert(sgs.ai_skills, shuangxiong_skill)
 shuangxiong_skill.getTurnUseCard = function(self)
+	if self.player:getMark("shuangxiong") ~= 0 then sgs.ai_use_priority.Duel = 9.1 end
 	if self.player:getMark("shuangxiong") == 0 then return nil end
 	local mark = self.player:getMark("shuangxiong")
 
