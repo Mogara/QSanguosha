@@ -56,4 +56,10 @@ private:
     VersionType m_type;
 };
 
+struct UpdateInfoStruct {
+    QString version_number;
+    bool is_patch;
+    QString address;
+};
+
 #endif // _VERSION_H

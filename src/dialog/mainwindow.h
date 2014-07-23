@@ -24,7 +24,6 @@
 #include "engine.h"
 #include "connectiondialog.h"
 #include "configdialog.h"
-#include "UpdateCheckerThread.h"
 #include "window.h"
 
 #include <QMainWindow>
@@ -45,6 +44,7 @@ class QTextEdit;
 class QToolButton;
 class QGroupBox;
 class RoomItem;
+class QNetworkReply;
 
 class BroadcastBox : public QDialog {
     Q_OBJECT
@@ -113,7 +113,7 @@ private:
     QSystemTrayIcon *systray;
     Server *server;
     Window *about_window;
-    UpdateInfoStruct update_info;
+    UpdateInfoStruct updateInfomation;
 
     QToolButton *minButton;
     QToolButton *maxButton;
@@ -121,8 +121,12 @@ private:
     QToolButton *closeButton;
     QPushButton *menu;
 
+    QNetworkReply *versionInfomationReply;
+    QNetworkReply *changeLogReply;
+
     void restoreFromConfig();
     void region(const QPoint &cursorGlobalPoint);
+    void fetchUpdateInformation();
 
 public slots:
     void startConnection();
@@ -163,7 +167,8 @@ private slots:
     void changeTableBg();
     void on_actionManage_Ban_IP_triggered();
 
-    void storeKeyAndValue(const QString &key, const QString &value);
+    void onVersionInfomationGotten();
+    void onChangeLogGotten();
 
 signals:
     void about_to_close();

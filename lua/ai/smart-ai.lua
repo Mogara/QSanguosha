@@ -4929,6 +4929,14 @@ function SmartAI:cantbeHurt(player, from, damageNum)
 			return true
 		end
 	end
+	if player:hasShownSkill("hengzheng") and player:getHandcardNum() ~= 0 and player:getHp() - damageNum == 1
+		and from:getNextAlive():objectName() == player:objectName() then
+		local hengzheng = 0
+		for _, player in sgs.qlist(self.room:getOtherPlayers(from)) do
+			if from:isEnemy(player) and player:getCardCount() > 0 then hengzheng = hengzheng + 1 end
+		end
+		if hengzheng > 2 then return true end
+	end	
 	return false
 end
 
@@ -5020,7 +5028,7 @@ function SmartAI:setSkillsPreshowed()
 end
 
 function SmartAI:willShowForAttack()
-	local notshown,shown,f,e = 0,0,0,0
+	local notshown, shown, f, e, eAtt = 0, 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
 		if  not p:hasShownOneGeneral() then
 			notshown = notshown + 1
@@ -5029,23 +5037,23 @@ function SmartAI:willShowForAttack()
 			shown = shown + 1
 			if p:getKingdom() == self.player:getKingdom() then
 				f = f + 1
-			else
+			else	
 				e = e + 1
-			end
+				if self:isWeak(p) and p:getHp() == 1 and self.player:distanceTo(p) <= self.player:getAttackRange() then eAtt= eAtt + 1 end
+			end			
 		end
 	end
-
-	if self.room:alivePlayerCount() > 3 then
-		if (shown < 3 or  e < f )
-			and not self.player:hasShownOneGeneral() then
-			return false
+	
+	if self.room:alivePlayerCount() > 3 and shown <= math.max(self.room:alivePlayerCount()/2,3) and not self.player:hasShownOneGeneral() then 
+		if e < f or eAtt <= 0 then
+			return false 
 		end
 	end
 	return true
 end
 
 function SmartAI:willShowForDefence()
-	local notshown,shown,f,e = 0,0,0,0
+	local notshown, shown, f, e, eAtt = 0, 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
 		if  not p:hasShownOneGeneral() then
 			notshown = notshown + 1
@@ -5056,14 +5064,14 @@ function SmartAI:willShowForDefence()
 				f = f + 1
 			else
 				e = e + 1
-			end
+				if self:isWeak(p) and p:getHp() == 1 and self.player:distanceTo(p) <= self.player:getAttackRange() then eAtt= eAtt + 1 end
+			end	
 		end
 	end
-
-	if self.room:alivePlayerCount() > 3 then
-		if (shown < 3 or  f < 2 )
-			and not self.player:hasShownOneGeneral() and not self:isWeak() then
-			return false
+	
+	if self.room:alivePlayerCount() > 3 and shown <= math.max(self.room:alivePlayerCount()/2,3) and not self.player:hasShownOneGeneral() then 
+		if f < 2 or not self:isWeak() then
+			return false 
 		end
 	end
 	return true

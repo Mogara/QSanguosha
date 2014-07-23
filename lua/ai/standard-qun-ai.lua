@@ -314,8 +314,18 @@ luanji_skill.name = "luanji"
 table.insert(sgs.ai_skills, luanji_skill)
 luanji_skill.getTurnUseCard = function(self)
 	sgs.ai_use_priority.ArcheryAttack = 9.2
-	local archery = sgs.cloneCard("archery_attack")
 
+	local willShow = false
+	for _, enemy in ipairs(self.enemies) do
+		if enemy:getHp() == 1 and not enemy:hasArmorEffect("Vine") then
+			willShow = true
+			break
+		end
+	end
+
+	if not self.player:hasShownSkill("luanji") and not willShow then return nil end
+
+	local archery = sgs.cloneCard("archery_attack")
 	local first_found, second_found = false, false
 	local first_card, second_card
 	if self.player:getHandcardNum() >= 2 then
@@ -813,6 +823,10 @@ sgs.ai_skill_playerchosen.shuangren = function(self, targets)
 	self.player:setFlags("-slashNoDistanceLimit")
 
 	if not self:willShowForAttack() then
+		return nil
+	end
+
+	if self.player:getMark("shuangxiong") ~= 0 and self.player:hasSkill("shuangxiong") then
 		return nil
 	end
 

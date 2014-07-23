@@ -22,10 +22,11 @@
 #define _UPDATE_CHECKER
 
 #include <QWidget>
-#include <QLabel>
-#include <QTextEdit>
 
-#include "UpdateCheckerThread.h"
+class QLabel;
+class QTextEdit;
+
+struct UpdateInfoStruct;
 
 class UpdateChecker : public QWidget
 {

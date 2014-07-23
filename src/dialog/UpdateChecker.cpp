@@ -20,7 +20,10 @@
 
 #include "UpdateChecker.h"
 #include "engine.h"
+#include "version.h"
 
+#include <QLabel>
+#include <QTextEdit>
 #include <QFormLayout>
 #include <QFile>
 
