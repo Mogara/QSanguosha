@@ -1239,6 +1239,7 @@ void MainWindow::onVersionInfomationGotten()
         if (!updateInfomation.address.isNull() && !updateInfomation.version_number.isNull())
             ui->actionCheckUpdate->setEnabled(true);
     }
+    versionInfomationReply->deleteLater();
 }
 
 void MainWindow::onChangeLogGotten()
@@ -1253,6 +1254,7 @@ void MainWindow::onChangeLogGotten()
     QByteArray codeContent = changeLogReply->readAll();
     file.write(codeContent);
     file.close();
+    changeLogReply->deleteLater();
 }
 
 void MainWindow::on_actionCheckUpdate_triggered()
