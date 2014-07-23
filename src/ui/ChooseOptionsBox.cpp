@@ -25,63 +25,6 @@
 #include "button.h"
 #include "SkinBank.h"
 
-#include <QApplication>
-
-ToolTipBox::ToolTipBox(const QString &text)
-    : text(text), size(0, 0), tip_label(NULL)
-{
-    init();
-}
-
-void ToolTipBox::init()
-{
-    int line = (text.length() + 13) / 14;
-    int y = line * 15 + 13;
-    size = QSize(180, y);
-    setOpacity(0.8);
-}
-
-QRectF ToolTipBox::boundingRect() const
-{
-    QPointF point = mapFromScene(parentItem()->scenePos());
-    point += QPointF(50, 20);
-    return QRectF(point, size);
-}
-
-void ToolTipBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
-{
-    painter->setRenderHint(QPainter::HighQualityAntialiasing);
-    QRectF rect = boundingRect();
-
-    QLinearGradient linear2(rect.topLeft(), rect.bottomLeft());
-    linear2.setColorAt(0, QColor(247, 247, 250));
-    linear2.setColorAt(0.5, QColor(240, 242, 247));
-    linear2.setColorAt(1, QColor(233, 233, 242));
-
-    painter->setPen(Qt::black);
-    painter->setBrush(linear2);
-    QPointF points[8] = {QPointF(65, 20),
-                         QPointF(65, 35),
-                         QPointF(50, 35),
-                         QPointF(50, size.height()+20),
-                         QPointF(size.width()+50, size.height()+20),
-                         QPointF(size.width()+50, 35),
-                         QPointF(80, 35),
-                         QPointF(65, 20)};
-    painter->drawPolygon(points, 8);
-    painter->drawText(52, 37, 179, 9999, Qt::TextWordWrap, text);
-}
-
-void ToolTipBox::showToolTip()
-{
-    show();
-}
-
-void ToolTipBox::hideToolTip()
-{
-    hide();
-}
-
 ChooseOptionsBox::ChooseOptionsBox()
     : options_number(0), progress_bar(NULL)
 {
@@ -93,7 +36,7 @@ void ChooseOptionsBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
 {
     //====================
     //||================||
-    //||   ÇëÑ¡ÔñÒ»Ïî   ||
+    //|| Please Choose: ||
     //||    _______     ||
     //||   |   1   |    ||
     //||    -------     ||
@@ -162,15 +105,10 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
             tooltip = Sanguosha->translate(original_tooltip);
         }
         connect(button, SIGNAL(clicked()), this, SLOT(reply()));
-        if (tooltip != original_tooltip) {
-            //button->setToolTip(QString("<font color=%1>%2</font>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(tooltip));
-            ToolTipBox *tip_box = new ToolTipBox(tooltip);
-            tip_box->hide();
-            tip_box->setParentItem(button);
-            tip_box->setZValue(10000);
-            connect(button, SIGNAL(hover_entered()), tip_box, SLOT(showToolTip()));
-            connect(button, SIGNAL(hover_left()), tip_box, SLOT(hideToolTip()));
-        }
+        if (tooltip != original_tooltip)
+            button->setToolTip(QString("<font color=%1>%2</font>")
+                               .arg(Config.SkillDescriptionInToolTipColor.name())
+                               .arg(tooltip));
     }
 
     setPos(RoomSceneInstance->tableCenterPos() - QPointF(boundingRect().width() / 2, boundingRect().height() / 2));
