@@ -252,7 +252,7 @@ local pages = {
 		"别拦我，我已经放弃治疗了",
 		"渣美工一枚，没事别找我",
 		"容我打个广告",
-		'<a href="http://tieba.baidu.com/f?ie=utf8&kw=36李&fr=itb_favo&fp=favo">百度36李吧欢迎你</a>'
+		HTMLTable.getHref("百度36李吧欢迎你", "http://tieba.baidu.com/f?ie=utf8&kw=36李&fr=itb_favo&fp=favo")
 	},
 	
 	{
@@ -260,12 +260,6 @@ local pages = {
 		"一只忧郁的月兔，来自月球的新奇物种，目前在用它拙劣的技术尝试和AI互动。",
 		"性格非常的温顺，只要你喂它口感适宜新鲜美味的萌妹纸就会非常的听话~",
 		"最近沉迷于Dota2和DiabloIII不可自拔……"
-	},
-	
-	{
-		[0] = "zyun7799",
-		"程序员编制里的非程序员，为了愉快地与电脑玩耍而愉快地学写代码。",
-		"“或许我永远不会把这当作正业，但是我可以很认真地不务正业。”——路过的正切君"
 	}
 }
 
@@ -275,8 +269,8 @@ sgs.LoadTranslationTable {
 	
 	["Yanguam"] = "啦啦SLG",
 	["BeginnerSlob"] = "女王受·虫",
-	["36li"] = "36李",
-	["zyun7799"] = "任意角的正切"
+	["36li"] = "36李"
+	
 }
 	
 
