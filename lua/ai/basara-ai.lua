@@ -35,8 +35,7 @@ sgs.ai_skill_choice.heg_nullification = function(self, choice, data)
 end
 ]]
 
-
-sgs.ai_skill_choice.TriggerOrder = function(self, choices,data)
+sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 
 	local canShowHead = string.find(choices, "GameRule_AskForGeneralShowHead") 
 	local canShowDeputy = string.find(choices, "GameRule_AskForGeneralShowDeputy")
@@ -46,7 +45,7 @@ sgs.ai_skill_choice.TriggerOrder = function(self, choices,data)
 	table.removeOne(skillnames, "GameRule_AskForGeneralShowHead") 
 	table.removeOne(skillnames, "GameRule_AskForGeneralShowDeputy") 
 	table.removeOne(skillnames, "cancel") 
-	if skillnames ~= {} then 
+	if #skillnames ~= 0 then 
 		skillTrigger = true
 	end
 
@@ -70,7 +69,7 @@ sgs.ai_skill_choice.TriggerOrder = function(self, choices,data)
 	end
 	
 	
-	local firstShow = ("luanji"):split("|")	
+	local firstShow = ("luanji|qianhuan"):split("|")	
 	local bothShow = ("luanji+shuangxiong|luanji+huoshui|luoshen+fangzhu"):split("|")	
 	local needShowForAttack = ("chuanxin|suishi"):split("|")	
 	local needShowForHelp = ("sushen|cunsi|yicheng|qianhuan"):split("|")	
@@ -78,7 +77,7 @@ sgs.ai_skill_choice.TriggerOrder = function(self, choices,data)
 	local woundedShow = ("zaiqi|yinghun|hunshang|hengzheng"):split("|")
 	local followShow = ("duoshi|rende|jieyin|xiongyi|shouyue|hongfa"):split("|")
 	
-	local notshown,shown,f,e = 0,0,0,0
+	local notshown, shown, f, e = 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
 		if  not p:hasShownOneGeneral() then
 			notshown = notshown + 1
@@ -191,17 +190,4 @@ sgs.ai_skill_choice.TriggerOrder = function(self, choices,data)
 	return "cancel"
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+sgs.ai_skill_choice["GameRule:TurnStart"] = sgs.ai_skill_choice["GameRule:TriggerOrder"]

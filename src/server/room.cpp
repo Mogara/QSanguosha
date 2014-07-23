@@ -1680,6 +1680,9 @@ QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, SP
             foreach(const QStringList &list, skills.values())
                 all_skills << list;
 
+            if (optional)
+                all_skills << "cancel";
+
             const QString reply = ai->askForChoice(reason, all_skills.join("+"), data);
             if (reply == "cancel") {
                 answer = reply;
