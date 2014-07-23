@@ -29,8 +29,8 @@ static qreal initialOpacity = 0.8;
 static int optionButtonHeight = 40;
 static QSize generalButtonSize;
 
-TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString &general, const QString &skill, const int width)
-    : QGraphicsObject(parent), skillName(skill), playerName(general), width(width)
+TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString &player, const QString &skill, const int width)
+    : QGraphicsObject(parent), skillName(skill), playerName(player), width(width)
 {
     setToolTip(Sanguosha->getSkill(skill)->getDescription());
     setAcceptedMouseButtons(Qt::LeftButton);
@@ -45,6 +45,27 @@ TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString 
     setOpacity(initialOpacity);
 }
 
+QString TriggerOptionButton::getGeneralNameBySkill() const
+{
+    QString generalName;
+    const ClientPlayer *player = ClientInstance->getPlayer(playerName);
+    if (skillName == "GameRule_AskForArraySummon") {
+        foreach(const Skill *skill, player->getVisibleSkillList()) {
+            if (!skill->inherits("BattleArraySkill")) continue;
+            if (player->inHeadSkills(skill))
+                generalName = player->getGeneralName();
+            else
+                generalName = player->getGeneral2Name();
+        }
+    } else {
+        if (player->inHeadSkills(skillName))
+            generalName = player->getGeneralName();
+        else
+            generalName = player->getGeneral2Name();
+    }
+    return generalName;
+}
+
 void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     painter->setRenderHint(QPainter::HighQualityAntialiasing);
@@ -55,12 +76,7 @@ void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsIte
     painter->drawRoundedRect(rect, 5, 5);
     painter->restore();
 
-    QString generalName;
-    const ClientPlayer *player = ClientInstance->getPlayer(playerName);
-    if (player->getHeadSkillList().contains(Sanguosha->getSkill(skillName)))
-        generalName = player->getGeneralName();
-    else
-        generalName = player->getGeneral2Name();
+    const QString generalName = getGeneralNameBySkill();
 
     QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
     pixmap = pixmap.scaledToHeight(optionButtonHeight, Qt::SmoothTransformation);
