@@ -70,14 +70,15 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 	
 	
 	local firstShow = ("luanji|qianhuan"):split("|")	
-	local bothShow = ("luanji+shuangxiong|luanji+huoshui|luoshen+fangzhu"):split("|")	
+	local bothShow = ("luanji+shuangxiong|luanji+huoshui|luoshen+fangzhu"):split("|")
+	local companionShow = ("rende+paoxiao|rende+wusheng|rende+sushen|longdan+xiangle|jianxiong+qiangxi|jianxiong+luoyi"):split("|")
 	local needShowForAttack = ("chuanxin|suishi"):split("|")	
 	local needShowForHelp = ("sushen|cunsi|yicheng|qianhuan"):split("|")	
 	local needShowForLead = ("yicheng|qianhuan"):split("|")
 	local woundedShow = ("zaiqi|yinghun|hunshang|hengzheng"):split("|")
-	local followShow = ("duoshi|rende|jieyin|xiongyi|shouyue|hongfa"):split("|")
+	local followShow = ("qianhuan|duoshi|rende|jieyin|xiongyi|shouyue|hongfa"):split("|")
 	
-	local notshown, shown, f, e = 0, 0, 0, 0
+	local notshown, shown, f, e, eAtt = 0, 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
 		if  not p:hasShownOneGeneral() then
 			notshown = notshown + 1
@@ -88,6 +89,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 				f = f + 1
 			else
 				e = e + 1
+				if self:isWeak(p) and p:getHp() == 1 and self.player:distanceTo(p) <= self.player:getAttackRange() then eAtt= eAtt + 1 end
 			end	
 		end
 	end
@@ -102,6 +104,18 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		end
 	end
 	
+	if self:isWeak() then 
+	for _, skill in ipairs(companionShow) do
+		if self.player:hasSkills(skill) then
+			if canShowHead then
+				return "GameRule_AskForGeneralShowHead"
+			elseif canShowDeputy then	
+				return "GameRule_AskForGeneralShowDeputy"
+			end	
+		end
+	end
+	end
+	
 	if shown == 0 then 
 		for _, skill in ipairs(firstShow) do
 			if self.player:hasSkill(skill) then
@@ -114,7 +128,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		end
 	end	
 		
-	if shown > 0 and e > 0 and e - f < 3 then 
+	if shown > 0 and eAtt > 0 and e - f < 3 and self.player:getJudgingArea():isEmpty() then 
 		for _, skill in ipairs(needShowForAttack) do
 			if self.player:hasSkill(skill) then
 				if self.player:inHeadSkills(skill) and canShowHead then 
