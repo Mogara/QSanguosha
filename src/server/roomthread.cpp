@@ -379,6 +379,11 @@ void RoomThread::run() {
     foreach(const TriggerSkill *triggerSkill, Sanguosha->getGlobalTriggerSkills())
         addTriggerSkill(triggerSkill);
 
+    if (room->getScenario() != NULL) {
+        const ScenarioRule *rule = room->getScenario()->getRule();
+        if (rule) addTriggerSkill(rule);
+    }
+
     QString winner = game_rule->getWinner(room->getPlayers().first());
     if (!winner.isNull()) {
         try {
@@ -434,7 +439,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
             trigger_who.clear();
             foreach(const TriggerSkill *skill, skills) {
                 if (!triggered.contains(skill)) {
-                    if (skill->objectName() == "game_rule") {
+                    if (skill->objectName() == "game_rule" || skill->objectName() == "custom_scenario") {
                         while (room->isPaused()) {}
                         if (will_trigger.isEmpty()
                             || skill->getPriority() == will_trigger.last()->getPriority()) {
@@ -503,7 +508,11 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         if (names.isEmpty()) break;
 
                         QString name;
-                        if (names.length() == 1){
+                        if (names.contains("game_rule"))
+                            name = "game_rule";
+                        else if (names.contains("custom_scenario"))
+                            name = "custom_scenario";
+                        else if (names.length() == 1) {
                             name = names.first();
                             if (name.contains("AskForGeneralShow") && p != NULL) {
                                 SPlayerDataMap map;

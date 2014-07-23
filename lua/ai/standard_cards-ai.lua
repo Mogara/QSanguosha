@@ -326,6 +326,20 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 		end
 	end
 
+	if slash:isKindOf("ThunderSlash") then
+		local f_slash = self:getCard("FireSlash")
+		if f_slash and self:hasHeavySlashDamage(from, f_slash, to, true) > self:hasHeavySlashDamage(from, slash, to, true)
+			and (not to:isChained() or self:isGoodChainTarget(to, from, sgs.DamageStruct_Fire, nil, f_slash)) then
+			return self:slashProhibit(f_slash, to, from)
+		end
+	elseif slash:isKindOf("FireSlash") then
+		local t_slash = self:getCard("ThunderSlash")
+		if t_slash and self:hasHeavySlashDamage(from, t_slash, to, true) > self:hasHeavySlashDamage(from, slash, to, true)
+			and (not to:isChained() or self:isGoodChainTarget(to, from, sgs.DamageStruct_Thunder, nil, t_slash)) then
+			return self:slashProhibit(t_slash, to, from)
+		end
+	end
+
 	return true
 end
 

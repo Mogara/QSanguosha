@@ -357,8 +357,14 @@ function SmartAI:objectiveLevel(player, tactics)
 				if sgs.isAnjiang(player) and player_kingdom == "unknown" then
 					if self:evaluateKingdom(player) == self_kingdom then return -1
 					elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
-					elseif self:evaluateKingdom(player) == "unknown" then return self:getOverflow() > 0 and 1 or 0
-					else return self:getOverflow() > 5 and 1 or 0
+					elseif self:evaluateKingdom(player) == "unknown" then
+						if self:getOverflow() > 0 then
+							if sgs.turncount <= 2 then return 3
+							else return 5
+							end
+						else return self:getOverflow() > 0 and 3 or 0
+						end
+					else return self:getOverflow() > 0 and 5 or 0
 					end
 				else return 5
 				end
@@ -3202,10 +3208,10 @@ function SmartAI:needRetrial(judge)
 			return judge:isGood()
 		end
 	end
-	
+
 	if reason == "tuntian" then
 		if self:isFriend(who) then
-			if self.player:objectName() == who:objectName() then 
+			if self.player:objectName() == who:objectName() then
 				return not self:isWeak()
 			else
 				return not judge:isGood()
@@ -5025,14 +5031,14 @@ function SmartAI:willShowForAttack()
 				f = f + 1
 			else
 				e = e + 1
-			end	
+			end
 		end
 	end
-	
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  e < f ) 
+
+	if self.room:alivePlayerCount() > 3 then
+		if (shown < 3 or  e < f )
 			and not self.player:hasShownOneGeneral() then
-			return false 
+			return false
 		end
 	end
 	return true
@@ -5050,14 +5056,14 @@ function SmartAI:willShowForDefence()
 				f = f + 1
 			else
 				e = e + 1
-			end	
+			end
 		end
 	end
-	
-	if self.room:alivePlayerCount() > 3 then 
-		if (shown < 3 or  f < 2 ) 
+
+	if self.room:alivePlayerCount() > 3 then
+		if (shown < 3 or  f < 2 )
 			and not self.player:hasShownOneGeneral() and not self:isWeak() then
-			return false 
+			return false
 		end
 	end
 	return true

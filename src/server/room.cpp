@@ -2129,20 +2129,14 @@ void Room::prepareForStart() {
                 player->setGeneral2Name("anjiang");
                 player->setActualGeneral1Name(generals[i]);
                 player->setActualGeneral2Name(generals2[i]);
-                QString kingdom = kingdoms[i] != "default" ? kingdoms[i] : Sanguosha->getGeneral(generals[i])->getKingdom();
-                player->setKingdom(kingdom);
-                QString role = HegemonyMode::GetMappedRole(kingdom);
-                player->setRole(role);
-
                 notifyProperty(player, player, "actual_general1");
                 notifyProperty(player, player, "actual_general2");
                 foreach(ServerPlayer *p, getOtherPlayers(player)) {
-                        notifyProperty(p, player, "general");
-                        notifyProperty(p, player, "general2");
+                    notifyProperty(p, player, "general");
+                    notifyProperty(p, player, "general2");
                 }
                 notifyProperty(player, player, "general", generals[i]);
                 notifyProperty(player, player, "general2", generals2[i]);
-                notifyProperty(player, player, "role", role);
             }
         }
     }
@@ -2505,6 +2499,8 @@ void Room::chooseGenerals() {
         if (player->getGeneral()) {
             QString name = player->getGeneralName();
             QString role = HegemonyMode::GetMappedRole(player->getGeneral()->getKingdom());
+            if (role.isEmpty())
+                role = player->getGeneral()->getKingdom();
             names.append(name);
             player->setActualGeneral1Name(name);
             player->setRole(role);
