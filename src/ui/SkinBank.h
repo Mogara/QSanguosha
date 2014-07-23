@@ -309,6 +309,10 @@ public:
 
         //Option Button
         QSanShadowTextFont optionButtonText;
+
+        //General Button
+        QRect generalButtonPositionIconRegion;
+        QRect generalButtonNameRegion;
     };
 
     enum GeneralIconSize {

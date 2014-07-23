@@ -76,7 +76,9 @@
 
     "generalCardItemCompanionPromptRegion": [-1, 102, 95, 15],
 	
-	"optionButtonText": ["wqy-microhei", [18, 18, 1], 0, [255, 255, 255, 255], 0, 8, [0, 0], [50, 50, 50, 150]]
+	"optionButtonText": ["wqy-microhei", [18, 18, 0], 0, [255, 255, 255, 255], 1, 10, [0, 0], [50, 50, 50, 200]],
+	"generalButtonPositionIconRegion": [-1, 2, 29, 24],
+	"generalButtonNameRegion": [26, 0, 60, 23]
 },
 "room":
 {
@@ -201,10 +203,10 @@
     "focusFrameArea": [0, -3, 128, 153],
     "focusFrameArea2": [129, -3, 128, 153],
     "secondaryAvatarNameArea": [154, -10, 60, 30],
-    "avatarNameFont": ["simli", [18, 18, 1], 0, [255, 255, 255, 255], 0, 8, [0, 0], [50, 50, 50, 150]],
-    "smallAvatarNameFont": ["simli", [18, 18, 1], 0, [255, 255, 255, 255], 0, 8, [0, 0], [50, 50, 50, 150]],
-    "headIconRegion": [2, -5, 29, 24],
-    "deputyIconRegion": [130, -5, 29, 24],
+    "avatarNameFont": ["simli", [18, 18, 0], 0, [255, 255, 255, 255], 1, 10, [0, 0], [50, 50, 50, 200]],
+    "smallAvatarNameFont": ["simli", [18, 18, 0], 0, [255, 255, 255, 255], 1, 10, [0, 0], [50, 50, 50, 200]],
+    "headIconRegion": [0, -5, 29, 24],
+    "deputyIconRegion": [128, -5, 29, 24],
     // must be in one of the following format:
     // [offsetX, offestY, sizeX, sizeY]
     // [childAnchor, parentAnchor, [offsetX, offsetY]]
