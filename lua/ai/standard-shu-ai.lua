@@ -105,6 +105,9 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 		end
 
 		if friend:objectName() == self.player:objectName() or not self.player:getHandcards():contains(card) then continue end
+		if self.player:hasSkill("kongcheng") and self.player:getHandcardNum() < 3 then 
+			use.card = sgs.Card_Parse("@RendeCard=" .. card:getId() .. "&rende")
+		end
 		if card:isAvailable(self.player) and (card:isKindOf("Slash") or card:isKindOf("Duel") or card:isKindOf("Snatch") or card:isKindOf("Dismantlement")) then
 			local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 			local cardtype = card:getTypeId()
