@@ -886,7 +886,7 @@ sgs.ai_cardneed.xiaoji = sgs.ai_cardneed.equip
 sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 
 	if not self:willShowForAttack() and not self:willShowForDefence() then
-		return false 
+		return nil 
 	end
 
 	local x = self.player:getLostHp()
