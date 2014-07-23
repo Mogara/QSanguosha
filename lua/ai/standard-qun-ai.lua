@@ -394,17 +394,19 @@ sgs.ai_skill_invoke.shuangxiong = function(self, data)
 
 	if (self.player:getHandcardNum() >= 3 and dummy_use.card) then
 		self.player:setFlags("ai_shuangxiong")
-		sgs.ai_use_priority.Duel = 4.2
+		sgs.ai_use_priority.Duel = 9.1
 		return true
 	end
 	return false
 end
 
+--[[
 sgs.ai_event_callback[sgs.EventPhaseStart].shuangxiong = function(self, player, data)
 	if player:getPhase() == sgs.Player_Discard and player:hasFlag("ai_shuangxiong") then
 		sgs.ai_use_priority.Duel = 2.9
 	end
 end
+--]]
 
 sgs.ai_cardneed.shuangxiong = function(to, card, self)
 	return not self:willSkipDrawPhase(to)
