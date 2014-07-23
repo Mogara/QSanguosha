@@ -97,13 +97,13 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
 
         /*
         if (objectName().startsWith("_mini_")) {
-            room->doLightbox(objectName(), 2000);
+        room->doLightbox(objectName(), 2000);
 
-            LogMessage log;
-            log.type = "#WelcomeToMiniScenario";
-            log.arg = objectName().mid(6);
-            log.arg2 = objectName();
-            room->sendLog(log);
+        LogMessage log;
+        log.type = "#WelcomeToMiniScenario";
+        log.arg = objectName().mid(6);
+        log.arg2 = objectName();
+        room->sendLog(log);
         }
         */
 
@@ -166,11 +166,11 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
                 all.append(available);
                 all.removeOne(general);
                 qShuffle(all);
-				sp->setActualGeneral1Name(general);
-                foreach (const Skill *skill, sp->getActualGeneral1()->getSkillList())
+                sp->setActualGeneral1Name(general);
+                foreach(const Skill *skill, sp->getActualGeneral1()->getSkillList())
                     sp->addSkill(skill->objectName());
-				room->notifyProperty(sp, sp, "actual_general1");;
-				room->notifyProperty(sp, sp, "general", general);
+                room->notifyProperty(sp, sp, "actual_general1");;
+                room->notifyProperty(sp, sp, "general", general);
 
             }
 
@@ -192,11 +192,11 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
                     all.append(available);
                     all.removeOne(general);
                     qShuffle(all);
-					sp->setActualGeneral2Name(general);
-                    foreach (const Skill *skill, sp->getActualGeneral2()->getSkillList())
+                    sp->setActualGeneral2Name(general);
+                    foreach(const Skill *skill, sp->getActualGeneral2()->getSkillList())
                         sp->addSkill(skill->objectName(), false);
                     room->notifyProperty(sp, sp, "actual_general2");
-					room->notifyProperty(sp, sp, "general2", general);
+                    room->notifyProperty(sp, sp, "general2", general);
                 }
             }
 
