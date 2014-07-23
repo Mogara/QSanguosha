@@ -1673,7 +1673,7 @@ sgs.ai_cardneed.zhijian = sgs.ai_cardneed.equip
 
 sgs.ai_skill_invoke.guzheng = function(self, data)
 	if not self.player:hasShownOneGeneral() then 
-		if not  (self:willShowForAttack() or self:willShowForDefence())  and data:toInt() >= 3  then 
+		if not  (self:willShowForAttack() or self:willShowForDefence())  and data:toInt() < 3  then 
 			return false 
 		end	
 	end
