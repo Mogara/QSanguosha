@@ -29,6 +29,8 @@
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 
+static int roundedRectRadius = 5;
+
 CardContainer::CardContainer()
     : scene_width(0), item_count(0)
 {
@@ -50,12 +52,13 @@ void CardContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *, Q
     const int y = rect.y();
     const int w = rect.width();
     const int h = rect.height();
-    painter->drawRect(QRect(x, y, w, h));
-    painter->drawRect(QRect(x, y, w, 45));
+    painter->drawRoundedRect(x, y, w, h, roundedRectRadius, roundedRectRadius);
+    painter->drawRoundedRect(x, y, w, 45, roundedRectRadius, roundedRectRadius);
     G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, 45), Qt::AlignCenter, tr("QSanguosha-Hegemony"));
     painter->restore();
     painter->setPen(G_COMMON_LAYOUT.m_chooseGeneralBoxBorderColor);
-    painter->drawRect(QRect(x + 1, y + 1, w - 2, h - 2));
+    painter->drawRoundedRect(x + 1, y + 1, w - 2, h - 2, roundedRectRadius,
+                             roundedRectRadius);
 
     const int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
@@ -474,12 +477,15 @@ void GuanxingBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWi
     const int y = rect.y();
     const int w = rect.width();
     const int h = rect.height();
-    painter->drawRect(QRect(x, y, w, h));
-    painter->drawRect(QRect(x, y, w, 45));
-    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, 45), Qt::AlignCenter, tr("Please arrange the cards"));
+    painter->drawRoundedRect(x, y, w, h, roundedRectRadius, roundedRectRadius);
+    painter->drawRoundedRect(x, y, w, 45, roundedRectRadius, roundedRectRadius);
+    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, 45),
+                                                          Qt::AlignCenter,
+                                                          tr("Please arrange the cards"));
     painter->restore();
     painter->setPen(G_COMMON_LAYOUT.m_chooseGeneralBoxBorderColor);
-    painter->drawRect(QRect(x + 1, y + 1, w - 2, h - 2));
+    painter->drawRoundedRect(x + 1, y + 1, w - 2, h - 2, roundedRectRadius,
+                             roundedRectRadius);
 
     const int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;

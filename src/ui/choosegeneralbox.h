@@ -58,7 +58,7 @@ public:
     QRectF boundingRect() const;
     void clear();
 
-    inline void setSingleResult(const bool single_result) { this->single_result = single_result; };
+    inline void setSingleResult(const bool single_result) { this->single_result = single_result; }
 
 public slots:
     void chooseGeneral(QStringList generals);

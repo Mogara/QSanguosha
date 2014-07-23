@@ -116,10 +116,12 @@ ChooseGeneralBox::~ChooseGeneralBox(){
     delete animations;
 }
 
+static int roundedRectRadius = 5;
+
 void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
     //============================================================
     //||========================================================||
-    //||                   请选择相同势力的武将                  ||
+    //||      Please select the same nationality generals       ||
     //||       ______   ______   ______   ______   ______       ||
     //||      |      | |      | |      | |      | |      |      ||
     //||      |  g1  | |  g2  | |  g3  | |  g4  | |  g5  |      ||
@@ -138,7 +140,7 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //||                   |      | |      |                    ||
     //||                    ——————   ——————                     ||
     //||                       __________                       ||
-    //||                      |   确定   |                      ||
+    //||                      |   fight  |                      ||
     //||                       ——————————                       ||
     //||               =========================                ||
     //||                                                        ||
@@ -146,7 +148,7 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //
     //
     //==================================================
-    //||               知己知彼观看主将                ||
+    //||             KnownBoth View Head              ||
     //||==============================================||
     //||                                              ||
     //||             __________________               ||
@@ -174,15 +176,21 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     const int y = rect.y();
     const int w = rect.width();
     const int h = rect.height();
-    painter->drawRect(QRect(x, y, w, h));
-    painter->drawRect(QRect(x, y, w, top_dark_bar));
-    QString title = single_result ? tr("Please select one general") : tr("Please select the same nationality generals");
+    painter->drawRoundedRect(x, y, w, h, roundedRectRadius, roundedRectRadius);
+    painter->drawRoundedRect(x, y, w, top_dark_bar, roundedRectRadius,
+                             roundedRectRadius);
+    QString title = single_result ? tr("Please select one general")
+                                  : tr("Please select the same nationality generals");
     if (!single_result)
-        title.prepend(Sanguosha->translate(QString("SEAT(%1)").arg(Self->getSeat())) + " ");
-    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, top_dark_bar), Qt::AlignCenter, title);
+        title.prepend(Sanguosha->translate(QString("SEAT(%1)").arg(Self->getSeat()))
+                      + " ");
+    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w,
+                                                                         top_dark_bar),
+                                                          Qt::AlignCenter, title);
     painter->restore();
     painter->setPen(G_COMMON_LAYOUT.m_chooseGeneralBoxBorderColor);
-    painter->drawRect(QRect(x + 1, y + 1, w - 2, h - 2));
+    painter->drawRoundedRect(x + 1, y + 1, w - 2, h - 2, roundedRectRadius,
+                             roundedRectRadius);
 
     if (single_result) return;
 
@@ -204,10 +212,12 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
 }
 
 QRectF ChooseGeneralBox::boundingRect() const {
-    //确定第一行和第二行容纳的武将数
+    //confirm the general count of the first and second row
     int first_row, second_row = 0;
 
-    //6将及以上分成两行，第二行牌数不超过第一行，两行牌差不超过1
+    //arrange them in two rows if there are more than 6 generals.
+    //Number of cards in the second row cannot be greater than that in the first row
+    //and the difference should not be greater than 1.
     if (general_number < 6)
         first_row = general_number;
     else {
@@ -246,7 +256,7 @@ static bool sortByKingdom(const QString &gen1, const QString &gen2){
 }
 
 void ChooseGeneralBox::chooseGeneral(QStringList _generals) {
-    //重新绘制背景
+    //repaint background
     QStringList generals = _generals;
     foreach(QString general, _generals){
         if (general.endsWith("(lord)"))
@@ -316,7 +326,7 @@ void ChooseGeneralBox::chooseGeneral(QStringList _generals) {
 
         card_item->setPos(25, 45);
         if (!single_result)
-            //把我家庭住址存下来，防止回不来
+            //store initial position
             card_item->setData(S_DATA_INITIAL_HOME_POS, pos);
         card_item->setHomePos(pos);
         card_item->goBack(true);
@@ -362,7 +372,7 @@ void ChooseGeneralBox::_adjust() {
         items << item;
         item->setHomePos(item->data(S_DATA_INITIAL_HOME_POS).toPointF());
         item->goBack(true);
-        //孩纸，回去吧
+        //the item is on the way
     }
     else if (selected.length() == 2 
             && ((!Sanguosha->getGeneral(selected.first()->objectName())->isLord()

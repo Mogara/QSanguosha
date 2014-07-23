@@ -32,6 +32,8 @@ ChooseOptionsBox::ChooseOptionsBox()
     setFlag(ItemIsMovable);
 }
 
+static int roundedRectRadius = 5;
+
 void ChooseOptionsBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     //====================
@@ -54,8 +56,9 @@ void ChooseOptionsBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     const int y = rect.y();
     const int w = rect.width();
     const int h = rect.height();
-    painter->drawRect(QRect(x, y, w, h));
-    painter->drawRect(QRect(x, y, w, top_dark_bar));
+    painter->drawRoundedRect(x, y, w, h, roundedRectRadius, roundedRectRadius);
+    painter->drawRoundedRect(x, y, w, top_dark_bar, roundedRectRadius,
+                             roundedRectRadius);
     QString title = QString();
     if (skill_name != "TriggerOrder" && skill_name != "TurnStartShowGeneral") {
         title.append(" ");
@@ -65,7 +68,8 @@ void ChooseOptionsBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, top_dark_bar), Qt::AlignCenter, title);
     painter->restore();
     painter->setPen(G_COMMON_LAYOUT.m_chooseGeneralBoxBorderColor);
-    painter->drawRect(QRect(x + 1, y + 1, w - 2, h - 2));
+    painter->drawRoundedRect(x + 1, y + 1, w - 2, h - 2, roundedRectRadius,
+                             roundedRectRadius);
 }
 
 QRectF ChooseOptionsBox::boundingRect() const
@@ -82,7 +86,7 @@ QRectF ChooseOptionsBox::boundingRect() const
 
 void ChooseOptionsBox::chooseOption(const QStringList &options)
 {
-    //ÖØÐÂ»æÖÆ±³¾°
+    //repaint background
     this->options = options;
     options_number = options.length();
     update();

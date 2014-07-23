@@ -28,6 +28,7 @@
 static qreal initialOpacity = 0.8;
 static int optionButtonHeight = 40;
 static QSize generalButtonSize;
+static int roundedRectRadius = 5;
 
 TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString &player, const QString &skill, const int width)
     : QGraphicsObject(parent), skillName(skill), playerName(player), width(width)
@@ -227,12 +228,13 @@ void ChooseTriggerOrderBox::paint(QPainter *painter, const QStyleOptionGraphicsI
     const int y = rect.y();
     const int w = rect.width();
     const int h = rect.height();
-    painter->drawRect(QRect(x, y, w, h));
-    painter->drawRect(QRect(x, y, w, top_dark_bar));
+    painter->drawRoundedRect(x, y, w, h, roundedRectRadius, roundedRectRadius);
+    painter->drawRoundedRect(x, y, w, top_dark_bar, roundedRectRadius,
+                             roundedRectRadius);
     G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, top_dark_bar), Qt::AlignCenter, Sanguosha->translate(reason));
     painter->restore();
     painter->setPen(G_COMMON_LAYOUT.m_chooseGeneralBoxBorderColor);
-    painter->drawRect(QRect(x + 1, y + 1, w - 2, h - 2));
+    painter->drawRoundedRect(x + 1, y + 1, w - 2, h - 2, roundedRectRadius, roundedRectRadius);
 }
 
 QRectF ChooseTriggerOrderBox::boundingRect() const
