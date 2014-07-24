@@ -785,6 +785,24 @@
     <ClCompile Include="Release\moc_ChooseTriggerOrderBox.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ui\GraphicsBox.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\GuanxingBox.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_GuanxingBox.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_GuanxingBox.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_GraphicsBox.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_GraphicsBox.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -952,9 +970,6 @@
     <CustomBuild Include="..\..\src\ui\magatamasItem.h">
       <Filter>ui</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\core\RoomState.h">
-      <Filter>core</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\core\WrappedCard.h">
       <Filter>core</Filter>
     </CustomBuild>
@@ -1033,6 +1048,12 @@
     <CustomBuild Include="..\..\src\ui\ChooseTriggerOrderBox.h">
       <Filter>ui</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\GraphicsBox.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\GuanxingBox.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\resource\icon.rc" />
@@ -1091,6 +1112,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\ui\uiUtils.h">
       <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\RoomState.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
