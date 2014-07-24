@@ -32,6 +32,17 @@ GeneralCardItem::GeneralCardItem(const QString &general_name)
     : CardItem(general_name), has_companion(false)
 {
     setAcceptHoverEvents(true);
+
+    const General *general = Sanguosha->getGeneral(general_name);
+    Q_ASSERT(general);
+
+    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
+    shadow->setOffset(0);
+    shadow->setBlurRadius(18);
+    shadow->setColor(Sanguosha->getKingdomColor(general->getKingdom()));
+    shadow->setEnabled(false);
+    setGraphicsEffect(shadow);
+    connect(this, SIGNAL(hoverChanged(bool)), shadow, SLOT(setEnabled(bool)));
 }
 
 void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
@@ -101,15 +112,11 @@ void GeneralCardItem::setFrozen(bool is_frozen) {
 ChooseGeneralBox::ChooseGeneralBox()
     : general_number(0), single_result(false),
       confirm(new Button(tr("fight"), 0.6, true)),
-      progress_bar(NULL), animations(new EffectAnimation)
+      progress_bar(NULL)
 {
     confirm->setEnabled(ClientInstance->getReplayer());
     confirm->setParentItem(this);
     connect(confirm, SIGNAL(clicked()), this, SLOT(reply()));
-}
-
-ChooseGeneralBox::~ChooseGeneralBox(){
-    delete animations;
 }
 
 void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
@@ -120,22 +127,22 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //||      |      | |      | |      | |      | |      |      ||
     //||      |  g1  | |  g2  | |  g3  | |  g4  | |  g5  |      ||
     //||      |      | |      | |      | |      | |      |      ||
-    //||       ！！！！！！   ！！！！！！   ！！！！！！   ！！！！！！   ！！！！！！       ||
+    //||       ------   ------   ------   ------   ------       ||
     //||           ______   ______   ______   ______            ||
     //||          |      | |      | |      | |      |           ||
     //||          |  g6  | |  g7  | |  g8  | |  g9  |           ||
     //||          |      | |      | |      | |      |           ||
-    //||           ！！！！！！   ！！！！！！   ！！！！！！   ！！！！！！            ||
+    //||           ------   ------   ------   ------            ||
     //||     ----------------------------------------------     ||
     //||                           \/                           ||
     //||                    ______   ______                     ||
     //||                   |      | |      |                    ||
     //||                   |  hg  | |  dg  |                    ||
     //||                   |      | |      |                    ||
-    //||                    ！！！！！！   ！！！！！！                     ||
+    //||                    ------   ------                     ||
     //||                       __________                       ||
     //||                      |   fight  |                      ||
-    //||                       ！！！！！！！！！！                       ||
+    //||                       ----------                       ||
     //||               =========================                ||
     //||                                                        ||
     //============================================================
@@ -156,7 +163,7 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //||            |                  |              ||
     //||            |                  |              ||
     //||            |                  |              ||
-    //||             ！！！！！！！！！！！！！！！！！！               ||
+    //||             ------------------               ||
     //||                                              ||
     //||             ==================               ||
     //||             ||   confirm    ||               ||
@@ -263,8 +270,6 @@ void ChooseGeneralBox::chooseGeneral(QStringList _generals) {
         }
 
         connect(general_item, SIGNAL(clicked()), this, SLOT(_onItemClicked()));
-        connect(general_item, SIGNAL(enter_hover()), this, SLOT(_onCardItemHover()));
-        connect(general_item, SIGNAL(leave_hover()), this, SLOT(_onCardItemLeaveHover()));
         connect(general_item, SIGNAL(general_changed()), this, SLOT(adjustItems()));
 
         if (!single_result) {
@@ -526,18 +531,4 @@ void ChooseGeneralBox::_onItemClicked() {
     }
 
     adjustItems();
-}
-
-void ChooseGeneralBox::_onCardItemHover() {
-    GeneralCardItem *card_item = qobject_cast<GeneralCardItem *>(sender());
-    if (!card_item || card_item->isFrozen()) return;
-
-    animations->emphasize(card_item);
-}
-
-void ChooseGeneralBox::_onCardItemLeaveHover() {
-    GeneralCardItem *card_item = qobject_cast<GeneralCardItem *>(sender());
-    if (!card_item || card_item->isFrozen()) return;
-
-    animations->effectOut(card_item);
 }

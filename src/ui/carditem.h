@@ -72,7 +72,7 @@ public:
     bool isEquipped() const;
 
     virtual void setFrozen(bool is_frozen);
-    inline bool isFrozen() { return frozen; };
+    inline bool isFrozen() { return frozen; }
 
     inline void showFootnote() { _m_showFootnote = true; }
     inline void hideFootnote() { _m_showFootnote = false; }
@@ -123,6 +123,7 @@ signals:
     void leave_hover();
     void movement_animation_finished();
     void general_changed();
+    void hoverChanged(const bool &enter);
 
 public slots:
     void changeGeneral(const QString &general_name);

@@ -23,7 +23,6 @@
 
 #include "carditem.h"
 #include "TimedProgressBar.h"
-#include "sprite.h"
 #include "GraphicsBox.h"
 
 class Button;
@@ -53,7 +52,6 @@ class ChooseGeneralBox : public GraphicsBox {
 
 public:
     explicit ChooseGeneralBox();
-    ~ChooseGeneralBox();
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const;
@@ -85,15 +83,11 @@ private:
     QGraphicsProxyWidget *progress_bar_item;
     QSanCommandProgressBar *progress_bar;
 
-    EffectAnimation *animations;
-
     void _initializeItems();
 
 private slots:
     void _adjust();
     void _onItemClicked();
-    void _onCardItemHover();
-    void _onCardItemLeaveHover();
 };
 
 #endif // _CHOOSE_GENERAL_BOX_H

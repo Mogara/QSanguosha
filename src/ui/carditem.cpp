@@ -263,10 +263,12 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 
 void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
     emit enter_hover();
+    emit hoverChanged(true);
 }
 
 void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
     emit leave_hover();
+    emit hoverChanged(false);
 }
 
 
