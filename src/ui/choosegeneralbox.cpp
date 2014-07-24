@@ -36,13 +36,8 @@ GeneralCardItem::GeneralCardItem(const QString &generalName)
     const General *general = Sanguosha->getGeneral(generalName);
     Q_ASSERT(general);
 
-    outerGlowEffect = new QGraphicsDropShadowEffect(this);
-    outerGlowEffect->setOffset(0);
-    outerGlowEffect->setBlurRadius(18);
-    outerGlowEffect->setColor(Sanguosha->getKingdomColor(general->getKingdom()));
-    outerGlowEffect->setEnabled(false);
-    setGraphicsEffect(outerGlowEffect);
-    connect(this, SIGNAL(hoverChanged(bool)), outerGlowEffect, SLOT(setEnabled(bool)));
+    setOuterGlowEffectEnabled(true);
+    setOuterGlowColor(Sanguosha->getKingdomColor(general->getKingdom()));
 }
 
 void GeneralCardItem::changeGeneral(const QString &generalName)
@@ -51,9 +46,7 @@ void GeneralCardItem::changeGeneral(const QString &generalName)
 
     const General *general = Sanguosha->getGeneral(generalName);
     Q_ASSERT(general);
-    QColor color = Sanguosha->getKingdomColor(general->getKingdom());
-    if (outerGlowEffect->color() != color)
-        outerGlowEffect->setColor(color);
+    setOuterGlowColor(Sanguosha->getKingdomColor(general->getKingdom()));
 }
 
 void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {

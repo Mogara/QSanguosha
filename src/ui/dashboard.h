@@ -30,7 +30,6 @@
 #include "TimedProgressBar.h"
 #include "GenericCardContainerUI.h"
 #include "pixmapanimation.h"
-#include "sprite.h"
 
 #include <QPushButton>
 #include <QComboBox>
@@ -48,7 +47,6 @@ public:
     enum SortType { ByType, BySuit, ByNumber };
 
     Dashboard(QGraphicsItem *button_widget);
-    ~Dashboard();
 
     virtual QRectF boundingRect() const;
     void refresh();
@@ -204,9 +202,6 @@ protected:
     QSanInvokeSkillDock *_m_rightSkillDock, *_m_leftSkillDock;
     const QSanRoomSkin::DashboardLayout *_dlayout;
 
-    //for animated effects
-    EffectAnimation *animations;
-
     //for avatar shadow layer
     QGraphicsRectItem *_m_shadow_layer1, *_m_shadow_layer2;
 
@@ -248,8 +243,6 @@ private slots:
     void onCardItemClicked();
     void onCardItemDoubleClicked();
     void onCardItemThrown();
-    void onCardItemHover();
-    void onCardItemLeaveHover();
     void onMarkChanged();
     void onHeadStateChanged();
     void onDeputyStateChanged();

@@ -47,8 +47,6 @@ private:
 
     bool hasCompanion;
 
-    QGraphicsDropShadowEffect *outerGlowEffect;
-
 public slots:
     virtual void changeGeneral(const QString &generalName);
 };
