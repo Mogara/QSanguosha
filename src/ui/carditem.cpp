@@ -92,9 +92,9 @@ CardItem::~CardItem() {
     m_animationMutex.unlock();
 }
 
-void CardItem::changeGeneral(const QString &general_name) {
-    setObjectName(general_name);
-    const General *general = Sanguosha->getGeneral(general_name);
+void CardItem::changeGeneral(const QString &generalName) {
+    setObjectName(generalName);
+    const General *general = Sanguosha->getGeneral(generalName);
     if (general) {
         _m_isUnknownGeneral = false;
         setToolTip(general->getSkillDescription(true));

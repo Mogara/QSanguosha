@@ -126,7 +126,7 @@ signals:
     void hoverChanged(const bool &enter);
 
 public slots:
-    void changeGeneral(const QString &general_name);
+    virtual void changeGeneral(const QString &generalName);
 };
 
 #endif

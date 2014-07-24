@@ -28,21 +28,32 @@
 
 #include <QApplication>
 
-GeneralCardItem::GeneralCardItem(const QString &general_name)
-    : CardItem(general_name), has_companion(false)
+GeneralCardItem::GeneralCardItem(const QString &generalName)
+    : CardItem(generalName), hasCompanion(false)
 {
     setAcceptHoverEvents(true);
 
-    const General *general = Sanguosha->getGeneral(general_name);
+    const General *general = Sanguosha->getGeneral(generalName);
     Q_ASSERT(general);
 
-    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
-    shadow->setOffset(0);
-    shadow->setBlurRadius(18);
-    shadow->setColor(Sanguosha->getKingdomColor(general->getKingdom()));
-    shadow->setEnabled(false);
-    setGraphicsEffect(shadow);
-    connect(this, SIGNAL(hoverChanged(bool)), shadow, SLOT(setEnabled(bool)));
+    outerGlowEffect = new QGraphicsDropShadowEffect(this);
+    outerGlowEffect->setOffset(0);
+    outerGlowEffect->setBlurRadius(18);
+    outerGlowEffect->setColor(Sanguosha->getKingdomColor(general->getKingdom()));
+    outerGlowEffect->setEnabled(false);
+    setGraphicsEffect(outerGlowEffect);
+    connect(this, SIGNAL(hoverChanged(bool)), outerGlowEffect, SLOT(setEnabled(bool)));
+}
+
+void GeneralCardItem::changeGeneral(const QString &generalName)
+{
+    CardItem::changeGeneral(generalName);
+
+    const General *general = Sanguosha->getGeneral(generalName);
+    Q_ASSERT(general);
+    QColor color = Sanguosha->getKingdomColor(general->getKingdom());
+    if (outerGlowEffect->color() != color)
+        outerGlowEffect->setColor(color);
 }
 
 void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
@@ -59,7 +70,7 @@ void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     else
         painter->drawPixmap(rect, G_ROOM_SKIN.getPixmap("generalCardBack"));
 
-    if (!has_companion) return;
+    if (!hasCompanion) return;
 
     QString kingdom = Sanguosha->getGeneral(objectName())->getKingdom();
     QPixmap icon = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON, kingdom);
@@ -69,14 +80,14 @@ void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
 }
 
 void GeneralCardItem::showCompanion() {
-    if (has_companion) return;
-    has_companion = true;
+    if (hasCompanion) return;
+    hasCompanion = true;
     update();
 }
 
 void GeneralCardItem::hideCompanion() {
-    if (!has_companion) return;
-    has_companion = false;
+    if (!hasCompanion) return;
+    hasCompanion = false;
     update();
 }
 
