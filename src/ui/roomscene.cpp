@@ -41,6 +41,7 @@
 #include "ChooseTriggerOrderBox.h"
 #include "uiUtils.h"
 #include "qsanbutton.h"
+#include "GuanxingBox.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>

@@ -4,7 +4,8 @@ Tips: "~" stands for the folder where the repo is in.
 To build QSanguosha with VS2013
 
 1. Download the following packages:
-(1) QT libraries for Windows (Visual Studio 2013, 5.3.0) http://download.qt-project.org/official_releases/qt/5.3/5.3.0/qt-opensource-windows-x86-msvc2013-5.3.0.exe
+(1) QT libraries for Windows (Visual Studio 2013, 5.3.1) x86: http://download.qt-project.org/official_releases/qt/5.3/5.3.1/qt-opensource-windows-x86-msvc2013-5.3.1.exe
+                                                         x64: http://download.qt-project.org/official_releases/qt/5.3/5.3.1/qt-opensource-windows-x86-msvc2013_64-5.3.1.exe
 (2) QT Visual Studio Add-in (for Qt 5) http://download.qt-project.org/official_releases/vsaddin/qt-vs-addin-1.2.3-opensource.exe
    and then install them.
 
@@ -39,7 +40,7 @@ To build QSanguosha in Mac OS X
 
 1. Install XCode from App Store and enable the command tools.
 
-2. Download and install the libraries and Qt Creator from http://download.qt-project.org/official_releases/qt/5.3/5.3.0/qt-opensource-mac-x64-clang-5.3.0.dmg
+2. Download and install the libraries and Qt Creator from http://download.qt-project.org/official_releases/qt/5.3/5.3.1/qt-opensource-mac-x64-clang-5.3.1.dmg
 
 3. Download the source code and install swig from http://sourceforge.net/projects/swig/files/swig/ and make sure the version of swig is 3.0.1 or later.
    Tips: unzip the source code tarball and open a terminal, type:
@@ -148,7 +149,7 @@ if you see all the non-system libraries is in @executable_path, it should succee
 
 To build QSanguosha in Linux or using MinGW
 
-1. Download and install the libraries and Qt Creator from Qt offical website or software sources, make sure the version of Qt libraries is 5.3.x.
+1. Download and install the libraries and Qt Creator from Qt offical website or software sources, make sure the version of Qt libraries is 5.3.1.
    (I strongly recommand you download the libraries and Qt Creator from software sources in Linux, because the compliation causes a lot of time)
    (If you are using MinGW, make sure the version of MinGW is compatible with Qt Libraries)
 

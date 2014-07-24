@@ -19,6 +19,10 @@
     *********************************************************************/
 
 #include "GuanxingBox.h"
+#include "roomscene.h"
+#include "engine.h"
+#include "client.h"
+#include "GraphicsBox.h"
 
 GuanxingBox::GuanxingBox()
     : CardContainer()
