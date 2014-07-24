@@ -514,7 +514,10 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 				if dummy_use.card then shouldUse = false end
 			end
 
-			if card:getSuit() == sgs.Card_Diamond and self.player:hasSkill("guose") then sgs.ai_use_priority.AwaitExhausted = 0.2 end
+			if card:getSuit() == sgs.Card_Diamond and self.player:hasSkill("guose") then 
+				self.player:setFlags("ai_duoshi")
+				sgs.ai_use_priority.AwaitExhausted = 0.2 
+			end
 			
 
 			local sunshangxiang = false
@@ -546,6 +549,12 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 		local await = sgs.Card_Parse(card_str)
 		assert(await)
 		return await
+	end
+end
+
+sgs.ai_event_callback[sgs.EventPhaseEnd].duoshi = function(self, player, data)
+	if player:getPhase() == sgs.Player_Play and player:hasFlag("ai_duoshi") then
+		sgs.ai_use_priority.AwaitExhausted = 2.8
 	end
 end
 
@@ -886,7 +895,7 @@ sgs.ai_cardneed.xiaoji = sgs.ai_cardneed.equip
 sgs.ai_skill_playerchosen.yinghun = function(self, targets)
 
 	if not self:willShowForAttack() and not self:willShowForDefence() then
-		return nil 
+		return nil
 	end
 
 	local x = self.player:getLostHp()

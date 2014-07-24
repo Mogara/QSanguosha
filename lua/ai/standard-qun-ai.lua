@@ -313,8 +313,10 @@ local luanji_skill = {}
 luanji_skill.name = "luanji"
 table.insert(sgs.ai_skills, luanji_skill)
 luanji_skill.getTurnUseCard = function(self)
-	sgs.ai_use_priority.ArcheryAttack = 9.2
-
+	if self.player:getHandcardNum() >= 3 then  
+		self.player:setFlags("ai_luanji")
+		sgs.ai_use_priority.ArcheryAttack = 9.2
+	end
 	local willShow = false
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:getHp() == 1 and not enemy:hasArmorEffect("Vine") then
@@ -380,6 +382,12 @@ luanji_skill.getTurnUseCard = function(self)
 	end
 end
 
+sgs.ai_event_callback[sgs.EventPhaseEnd].luanji = function(self, player, data)
+	if player:getPhase() == sgs.Player_Play and player:hasFlag("ai_luanji") then
+		sgs.ai_use_priority.ArcheryAttack = 3.5
+	end
+end
+
 sgs.ai_skill_invoke.shuangxiong = function(self, data)
 	if self.player:isSkipped(sgs.Player_Play) or (self.player:getHp() < 2 and not (self:getCardsNum("Slash") > 1 and self.player:getHandcardNum() >= 3)) or #self.enemies == 0 then
 		return false
@@ -400,14 +408,6 @@ sgs.ai_skill_invoke.shuangxiong = function(self, data)
 	return false
 end
 
---[[
-sgs.ai_event_callback[sgs.EventPhaseStart].shuangxiong = function(self, player, data)
-	if player:getPhase() == sgs.Player_Discard and player:hasFlag("ai_shuangxiong") then
-		sgs.ai_use_priority.Duel = 2.9
-	end
-end
---]]
-
 sgs.ai_cardneed.shuangxiong = function(to, card, self)
 	return not self:willSkipDrawPhase(to)
 end
@@ -416,7 +416,10 @@ local shuangxiong_skill = {}
 shuangxiong_skill.name = "shuangxiong"
 table.insert(sgs.ai_skills, shuangxiong_skill)
 shuangxiong_skill.getTurnUseCard = function(self)
-	if self.player:getMark("shuangxiong") ~= 0 then sgs.ai_use_priority.Duel = 9.1 end
+	if self.player:getMark("shuangxiong") ~= 0 then
+		self.player:setFlags("ai_shuangxiong")
+		sgs.ai_use_priority.Duel = 9.1 
+	end
 	if self.player:getMark("shuangxiong") == 0 then return nil end
 	local mark = self.player:getMark("shuangxiong")
 
@@ -442,6 +445,11 @@ shuangxiong_skill.getTurnUseCard = function(self)
 	return skillcard
 end
 
+sgs.ai_event_callback[sgs.EventPhaseEnd].shuangxiong = function(self, player, data)
+	if player:getPhase() == sgs.Player_Play and player:hasFlag("ai_shuangxiong") then
+		sgs.ai_use_priority.Duel = 2.9
+	end
+end
 
 luanwu_skill = {}
 luanwu_skill.name = "luanwu"
