@@ -97,8 +97,6 @@ private:
 
 signals:
     void clicked();
-    void hover_entered();
-    void hover_left();
 
 private slots:
     void onEnabledChanged();

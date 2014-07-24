@@ -121,8 +121,6 @@ void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *)
         setFocus(Qt::MouseFocusReason);
     else
         title->show();
-
-    emit hover_entered();
 }
 
 void Button::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
@@ -131,8 +129,6 @@ void Button::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
         clearFocus();
     else
         title->hide();
-
-    emit hover_left();
 }
 
 QRectF Button::boundingRect() const
