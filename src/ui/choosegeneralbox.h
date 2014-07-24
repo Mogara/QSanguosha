@@ -24,6 +24,7 @@
 #include "carditem.h"
 #include "TimedProgressBar.h"
 #include "sprite.h"
+#include "GraphicsBox.h"
 
 class Button;
 
@@ -47,14 +48,14 @@ private:
     bool has_companion;
 };
 
-class ChooseGeneralBox : public QGraphicsObject {
+class ChooseGeneralBox : public GraphicsBox {
     Q_OBJECT
 
 public:
     explicit ChooseGeneralBox();
     ~ChooseGeneralBox();
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const;
     void clear();
 
@@ -67,6 +68,7 @@ public slots:
 
 private:
     int general_number;
+    bool single_result;
     QList<GeneralCardItem *> items, selected;
     static const int top_dark_bar = 27;
     static const int top_blank_width = 42;
@@ -82,8 +84,6 @@ private:
     Button *confirm;
     QGraphicsProxyWidget *progress_bar_item;
     QSanCommandProgressBar *progress_bar;
-
-    bool single_result;
 
     EffectAnimation *animations;
 

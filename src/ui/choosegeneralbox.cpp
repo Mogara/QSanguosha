@@ -22,7 +22,6 @@
 #include "engine.h"
 #include "roomscene.h"
 #include "SkinBank.h"
-#include "protocol.h"
 #include "choosegeneraldialog.h"
 #include "banpair.h"
 #include "button.h"
@@ -100,31 +99,20 @@ void GeneralCardItem::setFrozen(bool is_frozen) {
 }
 
 ChooseGeneralBox::ChooseGeneralBox()
-    : general_number(0), single_result(false)
+    : general_number(0), single_result(false),
+      confirm(new Button(tr("fight"), 0.6, true)),
+      progress_bar(NULL), animations(new EffectAnimation)
 {
-    setFlag(ItemIsFocusable);
-    setFlag(ItemIsMovable);
-    confirm = new Button(tr("fight"), 0.6, true);
     confirm->setEnabled(ClientInstance->getReplayer());
     confirm->setParentItem(this);
     connect(confirm, SIGNAL(clicked()), this, SLOT(reply()));
-    progress_bar = NULL;
-    animations = new EffectAnimation;
-
-    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
-    shadow->setOffset(4);
-    shadow->setBlurRadius(5);
-    shadow->setColor(QColor(0, 0, 0, 180));
-    setGraphicsEffect(shadow);
 }
 
 ChooseGeneralBox::~ChooseGeneralBox(){
     delete animations;
 }
 
-static int roundedRectRadius = 5;
-
-void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
+void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     //============================================================
     //||========================================================||
     //||      Please select the same nationality generals       ||
@@ -175,37 +163,24 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //||             ==================               ||
     //||                                              ||
     //==================================================
-    painter->save();
-    painter->setBrush(QBrush(G_COMMON_LAYOUT.m_chooseGeneralBoxBackgroundColor));
-    QRectF rect = boundingRect();
-    const int x = rect.x();
-    const int y = rect.y();
-    const int w = rect.width();
-    const int h = rect.height();
-    painter->drawRoundedRect(x, y, w, h, roundedRectRadius, roundedRectRadius);
-    painter->drawRoundedRect(x, y, w, top_dark_bar, roundedRectRadius,
-                             roundedRectRadius);
-    QString title = single_result ? tr("Please select one general")
-                                  : tr("Please select the same nationality generals");
+    title = single_result ? tr("Please select one general")
+                          : tr("Please select the same nationality generals");
     if (!single_result)
         title.prepend(Sanguosha->translate(QString("SEAT(%1)").arg(Self->getSeat()))
                       + " ");
-    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w,
-                                                                         top_dark_bar),
-                                                          Qt::AlignCenter, title);
-    painter->restore();
-    painter->setPen(G_COMMON_LAYOUT.m_chooseGeneralBoxBorderColor);
-    painter->drawRoundedRect(x + 1, y + 1, w - 2, h - 2, roundedRectRadius,
-                             roundedRectRadius);
+    GraphicsBox::paint(painter, option, widget);
 
     if (single_result) return;
 
     int split_line_y = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line;
     if (general_number > 5)
         split_line_y += (card_to_center_line + G_COMMON_LAYOUT.m_cardNormalHeight);
+
     QPixmap line = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_SPLIT_LINE);
     const int line_length = boundingRect().width() - 2 * left_blank_width;
-    painter->drawPixmap(left_blank_width, split_line_y, line, (line.width() - line_length) / 2, y, line_length, line.height());
+    const QRectF rect = boundingRect();
+
+    painter->drawPixmap(left_blank_width, split_line_y, line, (line.width() - line_length) / 2, rect.y(), line_length, line.height());
 
     QPixmap seat = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_DEST_SEAT);
     QRect seat1_rect(rect.center().x() - G_COMMON_LAYOUT.m_cardNormalWidth - card_to_center_line - 2, split_line_y + split_line_to_card_seat - 2, G_COMMON_LAYOUT.m_cardNormalWidth + 4, G_COMMON_LAYOUT.m_cardNormalHeight + 4);

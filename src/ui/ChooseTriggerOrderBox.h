@@ -23,6 +23,8 @@
 
 #include <QGraphicsObject>
 
+#include "GraphicsBox.h"
+
 class Button;
 class QGraphicsProxyWidget;
 class QSanCommandProgressBar;
@@ -76,13 +78,13 @@ private:
     bool isHead;
 };
 
-class ChooseTriggerOrderBox : public QGraphicsObject {
+class ChooseTriggerOrderBox : public GraphicsBox {
     Q_OBJECT
 
 public:
     explicit ChooseTriggerOrderBox();
 
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual QRectF boundingRect() const;
     void chooseOption(const QString &reason, const QStringList &options, const bool optional);
     void clear();

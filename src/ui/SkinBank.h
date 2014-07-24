@@ -298,10 +298,12 @@ public:
         QHash<QString, QColor> m_rolesColor;
         QColor m_roleDarkColor;
 
+        //Graphics Box
+        QColor graphicsBoxBackgroundColor;
+        QColor graphicsBoxBorderColor;
+        QSanSimpleTextFont graphicsBoxTitleFont;
+
         //Choose General Box
-        QColor m_chooseGeneralBoxBackgroundColor;
-        QColor m_chooseGeneralBoxBorderColor;
-        QSanSimpleTextFont m_chooseGeneralBoxTitleFont;
         QSanSimpleTextFont m_chooseGeneralBoxDestSeatFont;
 
         //General Card Item

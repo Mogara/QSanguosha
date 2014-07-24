@@ -21,14 +21,12 @@
 #include "ChooseTriggerOrderBox.h"
 #include "engine.h"
 #include "roomscene.h"
-#include "protocol.h"
 #include "button.h"
 #include "SkinBank.h"
 
 static qreal initialOpacity = 0.8;
 static int optionButtonHeight = 40;
 static QSize generalButtonSize;
-static int roundedRectRadius = 5;
 
 TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString &player, const QString &skill, const int width)
     : QGraphicsObject(parent), skillName(skill), playerName(player), width(width)
@@ -194,21 +192,12 @@ void GeneralButton::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
 ChooseTriggerOrderBox::ChooseTriggerOrderBox()
     : optional(true), cancel(new Button(tr("cancel"), 0.6, true)), progressBar(NULL)
 {
-    setFlag(ItemIsFocusable);
-    setFlag(ItemIsMovable);
-
     cancel->hide();
     cancel->setParentItem(this);
     cancel->setObjectName("cancel");
     connect(cancel, SIGNAL(clicked()), this, SLOT(reply()));
 
     generalButtonSize = G_ROOM_SKIN.getGeneralPixmap("caocao", QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE).size() * 0.6;
-
-    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
-    shadow->setOffset(4);
-    shadow->setBlurRadius(5);
-    shadow->setColor(QColor(0, 0, 0, 180));
-    setGraphicsEffect(shadow);
 }
 
 int ChooseTriggerOrderBox::getGeneralNum() const
@@ -225,22 +214,10 @@ int ChooseTriggerOrderBox::getGeneralNum() const
     return count;
 }
 
-void ChooseTriggerOrderBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void ChooseTriggerOrderBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    painter->save();
-    painter->setBrush(QBrush(G_COMMON_LAYOUT.m_chooseGeneralBoxBackgroundColor));
-    QRectF rect = boundingRect();
-    const int x = rect.x();
-    const int y = rect.y();
-    const int w = rect.width();
-    const int h = rect.height();
-    painter->drawRoundedRect(x, y, w, h, roundedRectRadius, roundedRectRadius);
-    painter->drawRoundedRect(x, y, w, top_dark_bar, roundedRectRadius,
-                             roundedRectRadius);
-    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, top_dark_bar), Qt::AlignCenter, Sanguosha->translate(reason));
-    painter->restore();
-    painter->setPen(G_COMMON_LAYOUT.m_chooseGeneralBoxBorderColor);
-    painter->drawRoundedRect(x + 1, y + 1, w - 2, h - 2, roundedRectRadius, roundedRectRadius);
+    title = Sanguosha->translate(reason);
+    GraphicsBox::paint(painter, option, widget);
 }
 
 QRectF ChooseTriggerOrderBox::boundingRect() const

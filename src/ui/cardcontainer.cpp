@@ -25,46 +25,24 @@
 #include "client.h"
 #include "roomscene.h"
 #include "button.h"
+#include "GraphicsBox.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 
-static int roundedRectRadius = 5;
-
 CardContainer::CardContainer()
-    : scene_width(0), item_count(0)
+    : confirm_button(new Button(tr("confirm"), 0.6, true)),
+      scene_width(0), item_count(0)
 {
-    setFlag(ItemIsFocusable);
-    setFlag(ItemIsMovable);
-    confirm_button = new Button(tr("confirm"), 0.6, true);
     confirm_button->setParentItem(this);
     confirm_button->hide();
     connect(confirm_button, SIGNAL(clicked()), this, SLOT(clear()));
 
-    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
-    shadow->setOffset(4);
-    shadow->setBlurRadius(5);
-    shadow->setColor(QColor(0, 0, 0, 180));
-    setGraphicsEffect(shadow);
+    GraphicsBox::stylize(this);
 }
 
 void CardContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
-    painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-
-    painter->save();
-    painter->setBrush(QBrush(G_COMMON_LAYOUT.m_chooseGeneralBoxBackgroundColor));
-    QRectF rect = boundingRect();
-    const int x = rect.x();
-    const int y = rect.y();
-    const int w = rect.width();
-    const int h = rect.height();
-    painter->drawRoundedRect(x, y, w, h, roundedRectRadius, roundedRectRadius);
-    painter->drawRoundedRect(x, y, w, 45, roundedRectRadius, roundedRectRadius);
-    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, 45), Qt::AlignCenter, tr("QSanguosha-Hegemony"));
-    painter->restore();
-    painter->setPen(G_COMMON_LAYOUT.m_chooseGeneralBoxBorderColor);
-    painter->drawRoundedRect(x + 1, y + 1, w - 2, h - 2, roundedRectRadius,
-                             roundedRectRadius);
+    GraphicsBox::paintGraphicsBoxStyle(painter, tr("QSanguosha-Hegemony"), boundingRect());
 
     const int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
@@ -476,22 +454,7 @@ QRectF GuanxingBox::boundingRect() const {
 }
 
 void GuanxingBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
-    painter->save();
-    painter->setBrush(QBrush(G_COMMON_LAYOUT.m_chooseGeneralBoxBackgroundColor));
-    QRectF rect = boundingRect();
-    const int x = rect.x();
-    const int y = rect.y();
-    const int w = rect.width();
-    const int h = rect.height();
-    painter->drawRoundedRect(x, y, w, h, roundedRectRadius, roundedRectRadius);
-    painter->drawRoundedRect(x, y, w, 45, roundedRectRadius, roundedRectRadius);
-    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, 45),
-                                                          Qt::AlignCenter,
-                                                          tr("Please arrange the cards"));
-    painter->restore();
-    painter->setPen(G_COMMON_LAYOUT.m_chooseGeneralBoxBorderColor);
-    painter->drawRoundedRect(x + 1, y + 1, w - 2, h - 2, roundedRectRadius,
-                             roundedRectRadius);
+    GraphicsBox::paintGraphicsBoxStyle(painter, tr("Please arrange the cards"), boundingRect());
 
     const int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;

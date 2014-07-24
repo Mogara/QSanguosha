@@ -21,26 +21,14 @@
 #include "ChooseOptionsBox.h"
 #include "engine.h"
 #include "roomscene.h"
-#include "protocol.h"
 #include "button.h"
-#include "SkinBank.h"
 
 ChooseOptionsBox::ChooseOptionsBox()
     : options_number(0), progress_bar(NULL)
 {
-    setFlag(ItemIsFocusable);
-    setFlag(ItemIsMovable);
-
-    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
-    shadow->setOffset(4);
-    shadow->setBlurRadius(5);
-    shadow->setColor(QColor(0, 0, 0, 180));
-    setGraphicsEffect(shadow);
 }
 
-static int roundedRectRadius = 5;
-
-void ChooseOptionsBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
+void ChooseOptionsBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     //====================
     //||================||
@@ -55,27 +43,9 @@ void ChooseOptionsBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //||   |   3   |    ||
     //||    -------     ||
     //====================
-    painter->save();
-    painter->setBrush(QBrush(G_COMMON_LAYOUT.m_chooseGeneralBoxBackgroundColor));
-    QRectF rect = boundingRect();
-    const int x = rect.x();
-    const int y = rect.y();
-    const int w = rect.width();
-    const int h = rect.height();
-    painter->drawRoundedRect(x, y, w, h, roundedRectRadius, roundedRectRadius);
-    painter->drawRoundedRect(x, y, w, top_dark_bar, roundedRectRadius,
-                             roundedRectRadius);
-    QString title = QString();
-    if (skill_name != "TriggerOrder" && skill_name != "TurnStartShowGeneral") {
-        title.append(" ");
-        title.append(tr("Please choose:"));
-    }
-    title.prepend(Sanguosha->translate(skill_name));
-    G_COMMON_LAYOUT.m_chooseGeneralBoxTitleFont.paintText(painter, QRect(x, y, w, top_dark_bar), Qt::AlignCenter, title);
-    painter->restore();
-    painter->setPen(G_COMMON_LAYOUT.m_chooseGeneralBoxBorderColor);
-    painter->drawRoundedRect(x + 1, y + 1, w - 2, h - 2, roundedRectRadius,
-                             roundedRectRadius);
+
+    title = Sanguosha->translate(skill_name) + " " + tr("Please choose:");
+    GraphicsBox::paint(painter, option, widget);
 }
 
 QRectF ChooseOptionsBox::boundingRect() const

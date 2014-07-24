@@ -839,9 +839,11 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
         tryParse(config[QString(S_SKIN_KEY_ROLE_BOX_COLOR).arg(kingdom).toLatin1().constData()], _m_commonLayout.m_rolesColor[kingdom]);
     }
     tryParse(config["roleDarkColor"], _m_commonLayout.m_roleDarkColor);
-    tryParse(config["generalBoxBgColor"], _m_commonLayout.m_chooseGeneralBoxBackgroundColor);
-    tryParse(config["generalBoxBorderColor"], _m_commonLayout.m_chooseGeneralBoxBorderColor);
-    _m_commonLayout.m_chooseGeneralBoxTitleFont.tryParse(config["generalBoxTitleFont"]);
+
+    tryParse(config["graphicsBoxBgColor"], _m_commonLayout.graphicsBoxBackgroundColor);
+    tryParse(config["graphicsBoxBorderColor"], _m_commonLayout.graphicsBoxBorderColor);
+    _m_commonLayout.graphicsBoxTitleFont.tryParse(config["graphicsBoxTitleFont"]);
+
     _m_commonLayout.m_chooseGeneralBoxDestSeatFont.tryParse(config["generalBoxDestSeatFont"]);
 
     tryParse(config["generalCardItemCompanionPromptRegion"], _m_commonLayout.m_generalCardItemCompanionPromptRegion);

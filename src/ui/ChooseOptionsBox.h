@@ -22,18 +22,17 @@
 #define _CHOOSE_OPTIONS_BOX_H
 
 #include "TimedProgressBar.h"
-#include "sprite.h"
-#include <QGraphicsTextItem>
+#include "GraphicsBox.h"
 
 class Button;
 
-class ChooseOptionsBox : public QGraphicsObject {
+class ChooseOptionsBox : public GraphicsBox {
     Q_OBJECT
 
 public:
     explicit ChooseOptionsBox();
 
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const;
 
     inline void setSkillName(const QString &skillName) { skill_name = skillName; }
