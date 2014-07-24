@@ -1,5 +1,6 @@
 Open Source Sanguosha
 ==========
+[![Code Climate](https://codeclimate.com/github/QSanguosha-Rara/QSanguosha-For-Hegemony.png)](https://codeclimate.com/github/QSanguosha-Rara/QSanguosha-For-Hegemony)
 
 | Homepage:      | https://qsanguosha.org                        |
 |----------------|-----------------------------------------------|
