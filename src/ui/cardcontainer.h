@@ -21,7 +21,6 @@
 #ifndef _CARD_CONTAINER_H
 #define _CARD_CONTAINER_H
 
-class ClientPlayer;
 class Button;
 
 #include "carditem.h"
@@ -88,26 +87,4 @@ signals:
     void item_gongxined(int card_id);
 };
 
-class GuanxingBox : public CardContainer {
-    Q_OBJECT
-
-public:
-    GuanxingBox();
-    void clear();
-    void reply();
-    virtual QRectF boundingRect() const;
-
-protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
-public slots:
-    void doGuanxing(const QList<int> &card_ids, bool up_only);
-    void adjust();
-
-private:
-    QList<CardItem *> up_items, down_items;
-    bool up_only;
-};
-
 #endif
-

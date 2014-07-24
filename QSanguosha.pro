@@ -97,6 +97,8 @@ SOURCES += \
     src/ui/window.cpp \
     src/ui/ChooseOptionsBox.cpp \
     src/ui/ChooseTriggerOrderBox.cpp \
+    src/ui/GraphicsBox.cpp \
+    src/ui/GuanxingBox.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
@@ -106,8 +108,7 @@ SOURCES += \
     src/jsoncpp/src/json_reader.cpp \
     src/jsoncpp/src/json_internalmap.inl \
     src/jsoncpp/src/json_internalarray.inl \
-    swig/sanguosha_wrap.cxx \
-    src/ui/GraphicsBox.cpp
+    swig/sanguosha_wrap.cxx
 
 HEADERS += \
     src/client/aux-skills.h \
@@ -196,6 +197,8 @@ HEADERS += \
     src/ui/window.h \
     src/ui/ChooseOptionsBox.h \
     src/ui/ChooseTriggerOrderBox.h \
+    src/ui/GraphicsBox.h \
+    src/ui/GuanxingBox.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \
@@ -210,8 +213,7 @@ HEADERS += \
     src/jsoncpp/include/json/features.h \
     src/jsoncpp/include/json/config.h \
     src/jsoncpp/include/json/autolink.h \
-    src/jsoncpp/include/json/assertions.h \
-    src/ui/GraphicsBox.h
+    src/jsoncpp/include/json/assertions.h
 
 FORMS += \
     src/dialog/cardoverview.ui \
