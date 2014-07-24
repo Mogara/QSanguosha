@@ -258,9 +258,11 @@ void ChooseGeneralBox::chooseGeneral(QStringList _generals) {
 
     items.clear();
     selected.clear();
+    int z = generals.length();
     foreach(QString general, generals) {
         GeneralCardItem *general_item = new GeneralCardItem(general);
         general_item->setFlag(QGraphicsItem::ItemIsFocusable);
+        general_item->setZValue(z--);
 
         if (single_result)
             general_item->setFlag(QGraphicsItem::ItemIsMovable, false);
@@ -346,9 +348,6 @@ void ChooseGeneralBox::_adjust() {
     GeneralCardItem *item = qobject_cast<GeneralCardItem *>(sender());
     if (item == NULL) return;
 
-    const int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
-
-    const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
     int middle_y = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line;
     if (general_number > 5)
         middle_y += (card_to_center_line + G_COMMON_LAYOUT.m_cardNormalHeight);
@@ -371,22 +370,31 @@ void ChooseGeneralBox::_adjust() {
         selected << item;
     }
 
-    if (!selected.isEmpty()) {
-        int dest_seat_y = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line + split_line_to_card_seat + card_height / 2;
-        if (general_number > 5)
-            dest_seat_y += (card_to_center_line + card_height);
-        selected.first()->setHomePos(QPointF(boundingRect().center().x() - card_to_center_line - card_width / 2, dest_seat_y));
-        selected.first()->goBack(true);
-        if (selected.length() == 2) {
-            selected.last()->setHomePos(QPointF(boundingRect().center().x() + card_to_center_line + card_width / 2, dest_seat_y));
-            selected.last()->goBack(true);
-        }
-    }
-
     adjustItems();
 }
 
 void ChooseGeneralBox::adjustItems() {
+    if (!selected.isEmpty()) {
+        const int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
+        const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
+
+        int dest_seat_y = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight
+                + card_bottom_to_split_line + split_line_to_card_seat + card_height / 2
+                - 1;
+        if (general_number > 5)
+            dest_seat_y += (card_to_center_line + card_height);
+        selected.first()->setHomePos(QPointF(boundingRect().center().x()
+                                             - card_to_center_line - card_width / 2 - 2,
+                                             dest_seat_y));
+        selected.first()->goBack(true);
+        if (selected.length() == 2) {
+            selected.last()->setHomePos(QPointF(boundingRect().center().x()
+                                                + card_to_center_line + card_width / 2
+                                                - 1, dest_seat_y));
+            selected.last()->goBack(true);
+        }
+    }
+
     if (selected.length() == 2){
         foreach(GeneralCardItem *card, items)
             card->setFrozen(true);
@@ -503,31 +511,15 @@ void ChooseGeneralBox::_onItemClicked() {
         return;
     }
 
-    const int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
-    const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
-
     if (selected.contains(item)) {
         selected.removeOne(item);
         items << item;
         item->setHomePos(item->data(S_DATA_INITIAL_HOME_POS).toPointF());
         item->goBack(true);
-    }
-    else if (items.contains(item)) {
+    } else if (items.contains(item)) {
         if (selected.length() > 1) return;
         items.removeOne(item);
         selected << item;
-    }
-
-    if (!selected.isEmpty()) {
-        int dest_seat_y = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line + split_line_to_card_seat + card_height / 2;
-        if (general_number > 5)
-            dest_seat_y += (card_to_center_line + card_height);
-        selected.first()->setHomePos(QPointF(boundingRect().center().x() - card_to_center_line - card_width / 2, dest_seat_y));
-        selected.first()->goBack(true);
-        if (selected.length() == 2) {
-            selected.last()->setHomePos(QPointF(boundingRect().center().x() + card_to_center_line + card_width / 2, dest_seat_y));
-            selected.last()->goBack(true);
-        }
     }
 
     adjustItems();
