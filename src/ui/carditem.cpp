@@ -235,8 +235,10 @@ void CardItem::setOuterGlowEffectEnabled(const bool &willPlay)
         }
         connect(this, SIGNAL(hoverChanged(bool)), outerGlowEffect, SLOT(setEnabled(bool)));
     } else {
-        if (outerGlowEffect != NULL)
+        if (outerGlowEffect != NULL) {
             disconnect(this, SIGNAL(hoverChanged(bool)), outerGlowEffect, SLOT(setEnabled(bool)));
+            outerGlowEffect->setEnabled(false);
+        }
     }
     outerGlowEffectEnabled = willPlay;
 }
