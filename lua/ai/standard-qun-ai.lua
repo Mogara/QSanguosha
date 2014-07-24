@@ -393,7 +393,7 @@ sgs.ai_skill_invoke.shuangxiong = function(self, data)
 		return false
 	end
 	if self.player:hasSkill("luanji") and self.player:getHandcardNum() >= 5 then return false end
-	if not self:willShowForAttack() and self.player:getHandcardNum() < 4 then return false end
+	if not self:willShowForAttack() and self.player:getHandcardNum() < 5 then return false end
 
 	local duel = sgs.cloneCard("duel")
 
