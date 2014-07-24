@@ -461,14 +461,11 @@ void CustomAssignDialog::updateListItems() {
         if (i != 0)
             name.append(QString::number(i));
 
-        if (assign_nationality[name].isEmpty() || assign_nationality[name] == "default")
-            set_nationality[name] = false;
-        else {
-            set_nationality[name] = true;
-            QListWidgetItem *item = new QListWidgetItem(setListText(name, assign_nationality[name]));
-            item->setData(Qt::UserRole, name);
-            item_map[i] = item;
-        }
+        if (assign_nationality[name].isEmpty()) assign_nationality[name] = "default";
+        set_nationality[name] = assign_nationality[name] == "default" ? false : true;
+        QListWidgetItem *item = new QListWidgetItem(setListText(name, assign_nationality[name]));
+        item->setData(Qt::UserRole, name);
+        item_map[i] = item;
     }
 }
 
