@@ -375,7 +375,7 @@ local fanjian_skill = {}
 fanjian_skill.name = "fanjian"
 table.insert(sgs.ai_skills, fanjian_skill)
 fanjian_skill.getTurnUseCard = function(self)
-	if not player:willShowForAttack() then return nil end
+	if not self:willShowForAttack() then return nil end
 	if self.player:isKongcheng() then return nil end
 	if self.player:hasUsed("FanjianCard") then return nil end
 	return sgs.Card_Parse("@FanjianCard=.&fanjian")
