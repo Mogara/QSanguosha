@@ -28,21 +28,25 @@
 
 #include <QApplication>
 
-GeneralCardItem::GeneralCardItem(const QString &general_name)
-    : CardItem(general_name), has_companion(false)
+GeneralCardItem::GeneralCardItem(const QString &generalName)
+    : CardItem(generalName), hasCompanion(false)
 {
     setAcceptHoverEvents(true);
 
-    const General *general = Sanguosha->getGeneral(general_name);
+    const General *general = Sanguosha->getGeneral(generalName);
     Q_ASSERT(general);
 
-    QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
-    shadow->setOffset(0);
-    shadow->setBlurRadius(18);
-    shadow->setColor(Sanguosha->getKingdomColor(general->getKingdom()));
-    shadow->setEnabled(false);
-    setGraphicsEffect(shadow);
-    connect(this, SIGNAL(hoverChanged(bool)), shadow, SLOT(setEnabled(bool)));
+    setOuterGlowEffectEnabled(true);
+    setOuterGlowColor(Sanguosha->getKingdomColor(general->getKingdom()));
+}
+
+void GeneralCardItem::changeGeneral(const QString &generalName)
+{
+    CardItem::changeGeneral(generalName);
+
+    const General *general = Sanguosha->getGeneral(generalName);
+    Q_ASSERT(general);
+    setOuterGlowColor(Sanguosha->getKingdomColor(general->getKingdom()));
 }
 
 void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
@@ -59,7 +63,7 @@ void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     else
         painter->drawPixmap(rect, G_ROOM_SKIN.getPixmap("generalCardBack"));
 
-    if (!has_companion) return;
+    if (!hasCompanion) return;
 
     QString kingdom = Sanguosha->getGeneral(objectName())->getKingdom();
     QPixmap icon = G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON, kingdom);
@@ -69,14 +73,14 @@ void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
 }
 
 void GeneralCardItem::showCompanion() {
-    if (has_companion) return;
-    has_companion = true;
+    if (hasCompanion) return;
+    hasCompanion = true;
     update();
 }
 
 void GeneralCardItem::hideCompanion() {
-    if (!has_companion) return;
-    has_companion = false;
+    if (!hasCompanion) return;
+    hasCompanion = false;
     update();
 }
 
@@ -258,9 +262,11 @@ void ChooseGeneralBox::chooseGeneral(QStringList _generals) {
 
     items.clear();
     selected.clear();
+    int z = generals.length();
     foreach(QString general, generals) {
         GeneralCardItem *general_item = new GeneralCardItem(general);
         general_item->setFlag(QGraphicsItem::ItemIsFocusable);
+        general_item->setZValue(z--);
 
         if (single_result)
             general_item->setFlag(QGraphicsItem::ItemIsMovable, false);
@@ -346,9 +352,6 @@ void ChooseGeneralBox::_adjust() {
     GeneralCardItem *item = qobject_cast<GeneralCardItem *>(sender());
     if (item == NULL) return;
 
-    const int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
-
-    const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
     int middle_y = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line;
     if (general_number > 5)
         middle_y += (card_to_center_line + G_COMMON_LAYOUT.m_cardNormalHeight);
@@ -371,22 +374,31 @@ void ChooseGeneralBox::_adjust() {
         selected << item;
     }
 
-    if (!selected.isEmpty()) {
-        int dest_seat_y = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line + split_line_to_card_seat + card_height / 2;
-        if (general_number > 5)
-            dest_seat_y += (card_to_center_line + card_height);
-        selected.first()->setHomePos(QPointF(boundingRect().center().x() - card_to_center_line - card_width / 2, dest_seat_y));
-        selected.first()->goBack(true);
-        if (selected.length() == 2) {
-            selected.last()->setHomePos(QPointF(boundingRect().center().x() + card_to_center_line + card_width / 2, dest_seat_y));
-            selected.last()->goBack(true);
-        }
-    }
-
     adjustItems();
 }
 
 void ChooseGeneralBox::adjustItems() {
+    if (!selected.isEmpty()) {
+        const int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
+        const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
+
+        int dest_seat_y = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight
+                + card_bottom_to_split_line + split_line_to_card_seat + card_height / 2
+                - 1;
+        if (general_number > 5)
+            dest_seat_y += (card_to_center_line + card_height);
+        selected.first()->setHomePos(QPointF(boundingRect().center().x()
+                                             - card_to_center_line - card_width / 2 - 2,
+                                             dest_seat_y));
+        selected.first()->goBack(true);
+        if (selected.length() == 2) {
+            selected.last()->setHomePos(QPointF(boundingRect().center().x()
+                                                + card_to_center_line + card_width / 2
+                                                - 1, dest_seat_y));
+            selected.last()->goBack(true);
+        }
+    }
+
     if (selected.length() == 2){
         foreach(GeneralCardItem *card, items)
             card->setFrozen(true);
@@ -503,31 +515,15 @@ void ChooseGeneralBox::_onItemClicked() {
         return;
     }
 
-    const int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
-    const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
-
     if (selected.contains(item)) {
         selected.removeOne(item);
         items << item;
         item->setHomePos(item->data(S_DATA_INITIAL_HOME_POS).toPointF());
         item->goBack(true);
-    }
-    else if (items.contains(item)) {
+    } else if (items.contains(item)) {
         if (selected.length() > 1) return;
         items.removeOne(item);
         selected << item;
-    }
-
-    if (!selected.isEmpty()) {
-        int dest_seat_y = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line + split_line_to_card_seat + card_height / 2;
-        if (general_number > 5)
-            dest_seat_y += (card_to_center_line + card_height);
-        selected.first()->setHomePos(QPointF(boundingRect().center().x() - card_to_center_line - card_width / 2, dest_seat_y));
-        selected.first()->goBack(true);
-        if (selected.length() == 2) {
-            selected.last()->setHomePos(QPointF(boundingRect().center().x() + card_to_center_line + card_width / 2, dest_seat_y));
-            selected.last()->goBack(true);
-        }
     }
 
     adjustItems();

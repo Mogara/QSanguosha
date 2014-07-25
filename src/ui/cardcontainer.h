@@ -68,7 +68,9 @@ protected:
     virtual bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
     Button *confirm_button;
     int scene_width;
-    int item_count;
+    int itemCount;
+
+    static const int cardInterval = 3;
 
 private:
     QList<CardItem *> items;

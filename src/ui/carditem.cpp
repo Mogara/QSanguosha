@@ -31,6 +31,7 @@
 #include <QFocusEvent>
 #include <QParallelAnimationGroup>
 #include <QPropertyAnimation>
+#include <QGraphicsDropShadowEffect>
 
 void CardItem::_initialize() {
     setFlag(QGraphicsItem::ItemIsMovable);
@@ -45,6 +46,9 @@ void CardItem::_initialize() {
     frozen = false;
     resetTransform();
     setTransform(QTransform::fromTranslate(-_m_width / 2, -_m_height / 2), true);
+    outerGlowEffectEnabled = false;
+    outerGlowEffect = NULL;
+    outerGlowColor = Qt::white;
 }
 
 CardItem::CardItem(const Card *card) {
@@ -92,9 +96,9 @@ CardItem::~CardItem() {
     m_animationMutex.unlock();
 }
 
-void CardItem::changeGeneral(const QString &general_name) {
-    setObjectName(general_name);
-    const General *general = Sanguosha->getGeneral(general_name);
+void CardItem::changeGeneral(const QString &generalName) {
+    setObjectName(generalName);
+    const General *general = Sanguosha->getGeneral(generalName);
     if (general) {
         _m_isUnknownGeneral = false;
         setToolTip(general->getSkillDescription(true));
@@ -216,6 +220,45 @@ CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id) {
     }
 
     return NULL;
+}
+
+void CardItem::setOuterGlowEffectEnabled(const bool &willPlay)
+{
+    if (outerGlowEffectEnabled == willPlay) return;
+    if (willPlay) {
+        if (outerGlowEffect == NULL) {
+            outerGlowEffect = new QGraphicsDropShadowEffect(this);
+            outerGlowEffect->setOffset(0);
+            outerGlowEffect->setBlurRadius(18);
+            outerGlowEffect->setColor(outerGlowColor);
+            outerGlowEffect->setEnabled(false);
+            setGraphicsEffect(outerGlowEffect);
+        }
+        connect(this, SIGNAL(hoverChanged(bool)), outerGlowEffect, SLOT(setEnabled(bool)));
+    } else {
+        if (outerGlowEffect != NULL) {
+            disconnect(this, SIGNAL(hoverChanged(bool)), outerGlowEffect, SLOT(setEnabled(bool)));
+            outerGlowEffect->setEnabled(false);
+        }
+    }
+    outerGlowEffectEnabled = willPlay;
+}
+
+bool CardItem::isOuterGlowEffectEnabled() const
+{
+    return outerGlowEffectEnabled;
+}
+
+void CardItem::setOuterGlowColor(const QColor &color)
+{
+    if (!outerGlowEffect || outerGlowColor == color) return;
+    outerGlowColor = color;
+    outerGlowEffect->setColor(color);
+}
+
+QColor CardItem::getOuterGlowColor() const
+{
+    return outerGlowColor;
 }
 
 const int CardItem::_S_CLICK_JITTER_TOLERANCE = 1600;

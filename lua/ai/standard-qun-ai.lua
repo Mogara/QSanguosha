@@ -457,6 +457,7 @@ table.insert(sgs.ai_skills, luanwu_skill)
 luanwu_skill.getTurnUseCard = function(self)
 	if self.player:getMark("@chaos") <= 0 then return end
 	local good, bad = 0, 0
+	if self.player:hasShownSkill("baoling") then good = good + 0.8 end
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if self:isWeak(player) then
 			if self:isFriend(player) then bad = bad + 1.5

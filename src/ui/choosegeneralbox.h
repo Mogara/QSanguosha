@@ -26,6 +26,7 @@
 #include "GraphicsBox.h"
 
 class Button;
+class QGraphicsDropShadowEffect;
 
 class GeneralCardItem : public CardItem {
     Q_OBJECT
@@ -42,9 +43,12 @@ protected:
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    GeneralCardItem(const QString &general_name);
+    GeneralCardItem(const QString &generalName);
 
-    bool has_companion;
+    bool hasCompanion;
+
+public slots:
+    virtual void changeGeneral(const QString &generalName);
 };
 
 class ChooseGeneralBox : public GraphicsBox {

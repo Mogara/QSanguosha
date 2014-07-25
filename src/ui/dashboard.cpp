@@ -48,7 +48,7 @@ Dashboard::Dashboard(QGraphicsItem *widget)
       _m_leftFrame(NULL), _m_middleFrame(NULL), _m_rightFrame(NULL),
       _m_rightFrameBase(NULL), _m_rightFrameBg(NULL), _m_magatamasBase(NULL),
       _m_headGeneralFrame(NULL), _m_deputyGeneralFrame(NULL),
-      button_widget(widget), selected(NULL), _dlayout(&G_DASHBOARD_LAYOUT), animations(new EffectAnimation),
+      button_widget(widget), selected(NULL), _dlayout(&G_DASHBOARD_LAYOUT),
       _m_hidden_mark1(NULL), _m_hidden_mark2(NULL),
       _m_head_icon(NULL), _m_deputy_icon(NULL),
       pending_card(NULL), view_as_skill(NULL), filter(NULL)
@@ -74,10 +74,6 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     _createExtraButtons();
 
     _m_sort_menu = new QMenu(RoomSceneInstance->mainWindow());
-}
-
-Dashboard::~Dashboard(){
-    delete animations;
 }
 
 void Dashboard::refresh() {
@@ -350,8 +346,8 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
     connect(card_item, SIGNAL(clicked()), this, SLOT(onCardItemClicked()));
     connect(card_item, SIGNAL(double_clicked()), this, SLOT(onCardItemDoubleClicked()));
     connect(card_item, SIGNAL(thrown()), this, SLOT(onCardItemThrown()));
-    connect(card_item, SIGNAL(enter_hover()), this, SLOT(onCardItemHover()));
-    connect(card_item, SIGNAL(leave_hover()), this, SLOT(onCardItemLeaveHover()));
+
+    card_item->setOuterGlowEffectEnabled(true);
 }
 
 void Dashboard::_createRoleComboBox() {
@@ -866,6 +862,7 @@ QList<CardItem *> Dashboard::removeHandCards(const QList<int> &card_ids) {
             m_handCards.removeOne(card_item);
             card_item->hideFrame();
             card_item->disconnect(this);
+            card_item->setOuterGlowEffectEnabled(false);
             result.append(card_item);
         }
     }
@@ -1047,10 +1044,8 @@ void Dashboard::stopPending() {
     pending_card = NULL;
     emit card_selected(NULL);
 
-    foreach(CardItem *item, m_handCards) {
+    foreach(CardItem *item, m_handCards)
         item->setEnabled(false);
-        animations->effectOut(item);
-    }
 
     for (int i = 0; i < 5; i++) {
         CardItem *equip = _m_equipCards[i];
@@ -1158,8 +1153,6 @@ void Dashboard::updatePending() {
     foreach(CardItem *item, m_handCards) {
         if (!item->isSelected() || pendings.isEmpty())
             item->setEnabled(view_as_skill->viewFilter(pended, item->getCard()));
-        if (!item->isEnabled())
-            animations->effectOut(item);
     }
 
     for (int i = 0; i < 5; i++) {
@@ -1190,7 +1183,6 @@ void Dashboard::onCardItemDoubleClicked() {
     CardItem *card_item = qobject_cast<CardItem *>(sender());
     if (card_item) {
         if (!view_as_skill) selected = card_item;
-        animations->effectOut(card_item);
         emit card_to_use();
     }
 }
@@ -1201,20 +1193,6 @@ void Dashboard::onCardItemThrown() {
         if (!view_as_skill) selected = card_item;
         emit card_to_use();
     }
-}
-
-void Dashboard::onCardItemHover() {
-    QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
-    if (!card_item) return;
-
-    animations->emphasize(card_item);
-}
-
-void Dashboard::onCardItemLeaveHover() {
-    QGraphicsItem *card_item = qobject_cast<QGraphicsItem *>(sender());
-    if (!card_item) return;
-
-    animations->effectOut(card_item);
 }
 
 void Dashboard::onMarkChanged() {

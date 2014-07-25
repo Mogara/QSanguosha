@@ -32,7 +32,7 @@
 
 CardContainer::CardContainer()
     : confirm_button(new Button(tr("confirm"), 0.6, true)),
-      scene_width(0), item_count(0)
+      scene_width(0), itemCount(0)
 {
     confirm_button->setParentItem(this);
     confirm_button->hide();
@@ -46,11 +46,10 @@ void CardContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *, Q
 
     const int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
-    const int blank = 3;
     bool one_row = true;
-    int width = (card_width + blank) * items.length() - blank + 50;
+    int width = (card_width + cardInterval) * items.length() - cardInterval + 50;
     if (width * 1.5 > RoomSceneInstance->sceneRect().width()) {
-        width = (card_width + blank) * ((items.length() + 1) / 2) - blank + 50;
+        width = (card_width + cardInterval) * ((items.length() + 1) / 2) - cardInterval + 50;
         one_row = false;
     }
 
@@ -59,16 +58,16 @@ void CardContainer::paint(QPainter *painter, const QStyleOptionGraphicsItem *, Q
     for (int i = 0; i < items.length(); ++i) {
         int x, y = 0;
         if (i < first_row) {
-            x = 25 + (card_width + blank) * i;
+            x = 25 + (card_width + cardInterval) * i;
             y = 45;
         }
         else {
             if (items.length() % 2 == 1)
-                x = 25 + card_width / 2 + blank / 2
-                + (card_width + blank) * (i - first_row);
+                x = 25 + card_width / 2 + cardInterval / 2
+                + (card_width + cardInterval) * (i - first_row);
             else
-                x = 25 + (card_width + blank) * (i - first_row);
-            y = 45 + card_height + blank;
+                x = 25 + (card_width + cardInterval) * (i - first_row);
+            y = 45 + card_height + cardInterval;
         }
         painter->drawPixmap(x, y, card_width, card_height, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_DEST_SEAT));
     }
@@ -78,13 +77,12 @@ QRectF CardContainer::boundingRect() const{
     const int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
     bool one_row = true;
-    const int blank = 3;
-    int width = (card_width + blank) * item_count - blank + 50;
+    int width = (card_width + cardInterval) * itemCount - cardInterval + 50;
     if (width * 1.5 > (scene_width ? scene_width : 800)) {
-        width = (card_width + blank) * ((item_count + 1) / 2) - blank + 50;
+        width = (card_width + cardInterval) * ((itemCount + 1) / 2) - cardInterval + 50;
         one_row = false;
     }
-    int height = (one_row ? 1 : 2) * card_height + 90 + (one_row ? 0 : blank);
+    int height = (one_row ? 1 : 2) * card_height + 90 + (one_row ? 0 : cardInterval);
 
     return QRectF(0, 0, width, height);
 }
@@ -112,33 +110,32 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         card_items = _createCards(card_ids);
 
     items.append(card_items);
-    item_count = items.length();
+    itemCount = items.length();
     update();
 
-    const int blank = 3;
     int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;
     bool one_row = true;
-    int width = (card_width + blank) * item_count - blank + 50;
+    int width = (card_width + cardInterval) * itemCount - cardInterval + 50;
     if (width * 1.5 > scene_width) {
-        width = (card_width + blank) * ((item_count + 1) / 2) - blank + 50;
+        width = (card_width + cardInterval) * ((itemCount + 1) / 2) - cardInterval + 50;
         one_row = false;
     }
-    int first_row = one_row ? item_count : (item_count + 1) / 2;
+    int first_row = one_row ? itemCount : (itemCount + 1) / 2;
 
-    for (int i = 0; i < item_count; i++) {
+    for (int i = 0; i < itemCount; i++) {
         QPointF pos;
         if (i < first_row) {
-            pos.setX(25 + (card_width + blank) * i);
+            pos.setX(25 + (card_width + cardInterval) * i);
             pos.setY(45);
         }
         else {
-            if (item_count % 2 == 1)
-                pos.setX(25 + card_width / 2 + blank / 2
-                + (card_width + blank) * (i - first_row));
+            if (itemCount % 2 == 1)
+                pos.setX(25 + card_width / 2 + cardInterval / 2
+                + (card_width + cardInterval) * (i - first_row));
             else
-                pos.setX(25 + (card_width + blank) * (i - first_row));
-            pos.setY(45 + card_height + blank);
+                pos.setX(25 + (card_width + cardInterval) * (i - first_row));
+            pos.setY(45 + card_height + cardInterval);
         }
         CardItem *item = items[i];
         item->resetTransform();
@@ -147,7 +144,9 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         item->setOpacity(1.0);
         item->setHomeOpacity(1.0);
         item->setFlag(QGraphicsItem::ItemIsFocusable);
-        if (disabled_ids.contains(item->getCard()->getEffectiveId())) item->setEnabled(false);
+        if (disabled_ids.contains(item->getCard()->getEffectiveId()))
+            item->setEnabled(false);
+        item->setOuterGlowEffectEnabled(true);
         item->show();
     }
     confirm_button->setPos(boundingRect().center().x() - confirm_button->boundingRect().width() / 2, boundingRect().height() - 40);
@@ -240,6 +239,9 @@ void CardContainer::startGongxin(const QList<int> &enabled_ids) {
 }
 
 void CardContainer::addConfirmButton() {
+    foreach (CardItem *card, items)
+        card->setFlag(ItemIsMovable, false);
+
     confirm_button->show();
 }
 

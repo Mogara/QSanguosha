@@ -491,7 +491,7 @@ end
 
 sgs.ai_skill_invoke.luoshen = function(self, data)
 
-	if not self:willShowForAttack() then
+	if not self:willShowForAttack() and not self:willShowForDefence() and not self.player:hasSkill("fangzhu") then
 		return false 
 	end
 	

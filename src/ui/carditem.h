@@ -31,6 +31,7 @@
 
 class FilterSkill;
 class General;
+class QGraphicsDropShadowEffect;
 
 class CardItem : public QSanSelectableItem {
     Q_OBJECT
@@ -85,6 +86,12 @@ public:
 
     void clickItem() { emit clicked(); }
 
+    void setOuterGlowEffectEnabled(const bool &willPlay);
+    bool isOuterGlowEffectEnabled() const;
+
+    void setOuterGlowColor(const QColor &color);
+    QColor getOuterGlowColor() const;
+
 protected:
     void _initialize();
     QAbstractAnimation *m_currentAnimation;
@@ -112,6 +119,9 @@ private:
     int m_cardId;
     QString _m_frameType, _m_avatarName;
     QPointF home_pos;
+    bool outerGlowEffectEnabled;
+    QColor outerGlowColor;
+    QGraphicsDropShadowEffect *outerGlowEffect;
 
 signals:
     void toggle_discards();
@@ -126,7 +136,7 @@ signals:
     void hoverChanged(const bool &enter);
 
 public slots:
-    void changeGeneral(const QString &general_name);
+    virtual void changeGeneral(const QString &generalName);
 };
 
 #endif

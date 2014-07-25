@@ -1,5 +1,4 @@
 /*<![CDATA[*/
-window.onload = function(){asciidoc.footnotes();}
 var asciidoc = {  // Namespace.
 
 /////////////////////////////////////////////////////////////////////
@@ -24,11 +23,12 @@ toc: function (toclevels) {
 
   function getText(el) {
     var text = "";
-    for (var i = el.firstChild; i != null; i = i.nextSibling) {
-      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+    for (var i = el.firstChild; i !== null; i = i.nextSibling) {
+      if (i.nodeType === 3 /* Node.TEXT_NODE */) { // IE doesn't speak constants.
         text += i.data;
-      else if (i.firstChild != null)
+      } else if (i.firstChild !== null) {
         text += getText(i);
+      }
     }
     return text;
   }
@@ -46,16 +46,16 @@ toc: function (toclevels) {
     // nodeIterator API would be a better technique but not supported by all
     // browsers).
     var iterate = function (el) {
-      for (var i = el.firstChild; i != null; i = i.nextSibling) {
-        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+      for (var i = el.firstChild; i !== null; i = i.nextSibling) {
+        if (i.nodeType === 1 /* Node.ELEMENT_NODE */) {
           var mo = re.exec(i.tagName);
-          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) !== "float") {
             result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
           }
           iterate(i);
         }
       }
-    }
+    };
     iterate(el);
     return result;
   }
@@ -64,8 +64,9 @@ toc: function (toclevels) {
   var entries = tocEntries(document.getElementById("content"), toclevels);
   for (var i = 0; i < entries.length; ++i) {
     var entry = entries[i];
-    if (entry.element.id == "")
+    if (entry.element.id === "") {
       entry.element.id = "_toc_" + i;
+    }
     var a = document.createElement("a");
     a.href = "#" + entry.element.id;
     a.appendChild(document.createTextNode(entry.text));
@@ -74,8 +75,9 @@ toc: function (toclevels) {
     div.className = "toclevel" + entry.toclevel;
     toc.appendChild(div);
   }
-  if (entries.length == 0)
+  if (entries.length === 0) {
     toc.parentNode.removeChild(toc);
+  }
 },
 
 
@@ -93,12 +95,12 @@ footnotes: function () {
   var spans = cont.getElementsByTagName("span");
   var refs = {};
   var n = 0;
-  for (i=0; i<spans.length; i++) {
-    if (spans[i].className == "footnote") {
+  for (var i=0; i<spans.length; i++) {
+    if (spans[i].className === "footnote") {
       n++;
       // Use [\s\S] in place of . so multi-line matches work.
       // Because JavaScript has no s (dotall) regex flag.
-      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+      var note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
       noteholder.innerHTML +=
         "<div class='footnote' id='_footnote_" + n + "'>" +
         "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
@@ -107,15 +109,17 @@ footnotes: function () {
         "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
         "' title='View footnote' class='footnote'>" + n + "</a>]";
       var id =spans[i].getAttribute("id");
-      if (id != null) refs["#"+id] = n;
+      if (id !== null) {
+          refs["#"+id] = n;
+      }
     }
   }
-  if (n == 0)
+  if (n === 0) {
     noteholder.parentNode.removeChild(noteholder);
-  else {
+  } else {
     // Process footnoterefs.
     for (i=0; i<spans.length; i++) {
-      if (spans[i].className == "footnoteref") {
+      if (spans[i].className === "footnoteref") {
         var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
         href = href.match(/#.*/)[0];  // Because IE return full URL.
         n = refs[href];
@@ -127,5 +131,7 @@ footnotes: function () {
   }
 }
 
-}
+};
+
+window.onload = function(){asciidoc.footnotes();};
 /*]]>*/
