@@ -112,7 +112,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		end
 	end	
 	
-	if self.player:getMark("CompanionEffect") > 0 or self.player:getMark("HalfMaxHpLeft") > 0 then
+	if self.player:getMark("CompanionEffect") > 0 or (self.player:getMark("HalfMaxHpLeft") > 0 and self:willShowForDefence())then
 		if self:isWeak() then 
 			if canShowHead then
 				return "GameRule_AskForGeneralShowHead"
