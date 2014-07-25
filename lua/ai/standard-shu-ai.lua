@@ -157,7 +157,7 @@ sgs.ai_view_as.wusheng = function(card, player, card_place)
 	local suit = card:getSuitString()
 	local number = card:getNumberString()
 	local card_id = card:getEffectiveId()
-	if card_place ~= sgs.Player_PlaceSpecial and card:isRed() and not card:isKindOf("Peach") and not card:hasFlag("using") then
+	if card_place ~= sgs.Player_PlaceSpecial and (player:getLord() and player:getLord():hasShownSkill("shouyue") or card:isRed()) and not card:isKindOf("Peach") and not card:hasFlag("using") then
 		return ("slash:wusheng[%s:%s]=%d&wusheng"):format(suit, number, card_id)
 	end
 end
@@ -182,7 +182,7 @@ wusheng_skill.getTurnUseCard = function(self, inclusive)
 	local red_card
 	self:sortByUseValue(cards, true)
 	for _, card in ipairs(cards) do
-		if card:isRed() and not card:isKindOf("Slash")
+		if (self.player:getLord() and self.player:getLord():hasShownSkill("shouyue") or card:isRed()) and not card:isKindOf("Slash")
 			and( (not isCard("Peach", card, self.player) and not isCard("ExNihilo", card, self.player)) or useAll )
 			and (self:getUseValue(card) < sgs.ai_use_value.Slash or inclusive or sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_Residue, self.player, sgs.cloneCard("slash")) > 0) then
 			red_card = card
