@@ -143,7 +143,7 @@ sgs.ai_skill_use_func.CunsiCard = function(card, use, self)
 	local all_shown = true
 
 	for _, p in sgs.qlist(room:getOtherPlayers(Self)) do
-		if not p:hasShownAllGenerals() then
+		if not p:hasShownOneGeneral() then
 			all_shown = false
 			break
 		end
@@ -151,7 +151,7 @@ sgs.ai_skill_use_func.CunsiCard = function(card, use, self)
 
 	local to
 	for _, friend in ipairs(self.friends_noself) do
-		if self:evaluateKingdom(friend) == self.player:getKingdom() then
+		if self:evaluateKingdom(friend) == self.player:getKingdom() and ( self:isWeak(friend) or self.player:getLostHp() > 0 )then
 			to = friend
 			break
 		end
@@ -162,11 +162,13 @@ sgs.ai_skill_use_func.CunsiCard = function(card, use, self)
 	end
 	if use.card then return end
 
-	if all_shown and #self.friends_noself == 0 then
+	if all_shown and #self.friends_noself == 0 and self.player:getLostHp() > 0 then
 		use.card = card
 		if use.to then use.to:append(Self) end
 	end
 end
+
+sgs.ai_use_priority.CunsiCard = 11
 
 sgs.ai_skill_invoke.yongjue = true
 
