@@ -38,36 +38,7 @@ end
 sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 
 	local canShowHead = string.find(choices, "GameRule_AskForGeneralShowHead") 
-	local canShowDeputy = string.find(choices, "GameRule_AskForGeneralShowDeputy")
-
-	local skillTrigger = false
-	local skillnames = choices:split("+")
-	table.removeOne(skillnames, "GameRule_AskForGeneralShowHead") 
-	table.removeOne(skillnames, "GameRule_AskForGeneralShowDeputy") 
-	table.removeOne(skillnames, "cancel") 
-	if #skillnames ~= 0 then 
-		skillTrigger = true
-	end
-
-	if skillTrigger then
-		if string.find(choices, "jieming") then return "jieming" end 
-		if string.find(choices, "fankui") and string.find(choices, "ganglie") then return "fankui" end
-		if string.find(choices, "xunxun") and string.find(choices, "ganglie") then return "ganglie" end
-
-		
-		for _, skillname in ipairs(skillnames) do
-			if self:askForSkillInvoke(skillname, data) then
-				return skillname
-			end
-		end
-		if string.find(choices, "cancel") 
-			and not canShowHead 
-			and not canShowDeputy then
-			return "cancel"
-		end
-		return skillnames[math.random(1, #skillnames)]
-	end
-	
+	local canShowDeputy = string.find(choices, "GameRule_AskForGeneralShowDeputy")	
 	
 	local firstShow = ("luanji|qianhuan"):split("|")	
 	local bothShow = ("luanji+shuangxiong|luanji+huoshui"):split("|")
@@ -203,6 +174,13 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 					end
 				end
 			end
+			if (shown > 0 and e < notshown-1 ) or ( self.player:hasShownOneGeneral()) then 
+				if canShowHead then 
+					return "GameRule_AskForGeneralShowHead"
+				elseif canShowDeputy then 
+					return "GameRule_AskForGeneralShowDeputy"
+				end
+			end		
 		end	
 		for _,p in sgs.qlist(self.room:getOtherPlayers(player)) do 
 			if p:hasShownSkill(skill) and p:getKingdom() == self.player:getKingdom() and not self.player:hasShownOneGeneral() then 
@@ -228,7 +206,35 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 			return "GameRule_AskForGeneralShowDeputy"
 		end
 	end
+	
+	local skillTrigger = false
+	local skillnames = choices:split("+")
+	table.removeOne(skillnames, "GameRule_AskForGeneralShowHead") 
+	table.removeOne(skillnames, "GameRule_AskForGeneralShowDeputy") 
+	table.removeOne(skillnames, "cancel") 
+	if #skillnames ~= 0 then 
+		skillTrigger = true
+	end
+
+	if skillTrigger then
+		if string.find(choices, "jieming") then return "jieming" end 
+		if string.find(choices, "fankui") and string.find(choices, "ganglie") then return "fankui" end
+		if string.find(choices, "xunxun") and string.find(choices, "ganglie") then return "ganglie" end
+
 		
+		for _, skillname in ipairs(skillnames) do
+			if self:askForSkillInvoke(skillname, data) then
+				return skillname
+			end
+		end
+		if string.find(choices, "cancel") 
+			and not canShowHead 
+			and not canShowDeputy then
+			return "cancel"
+		end
+		return skillnames[math.random(1, #skillnames)]
+	end
+	
 	return "cancel"
 end
 
