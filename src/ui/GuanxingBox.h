@@ -37,11 +37,17 @@ protected:
 
 public slots:
     void doGuanxing(const QList<int> &card_ids, bool up_only);
-    void adjust();
+    
+private slots:
+    void onItemReleased();
+    void onItemClicked();
 
 private:
-    QList<CardItem *> up_items, down_items;
+    QList<CardItem *> upItems, downItems;
     bool up_only;
+    void adjust();
+    int itemNumberOfFirstRow() const;
+    bool isOneRow() const;
 };
 
 #endif // GUANXINGBOX_H
