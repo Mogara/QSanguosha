@@ -92,17 +92,8 @@ void GeneralCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
         general_changer->deleteLater();
         return;
     }
-    if (frozen) return;
 
-    QPointF totalMove = mapToParent(event->pos()) - _m_lastMousePressScenePos;
-    if (totalMove.x() * totalMove.x() + totalMove.y() * totalMove.y() < _S_MOVE_JITTER_TOLERANCE)
-        emit clicked();
-    else
-        emit released();
-
-    if (auto_back) {
-        goBack(true, false);
-    }
+    CardItem::mouseReleaseEvent(event);
 }
 
 void GeneralCardItem::setFrozen(bool is_frozen) {
