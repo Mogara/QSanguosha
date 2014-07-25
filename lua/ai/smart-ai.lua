@@ -2728,7 +2728,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 	local cardtogive = {}
 	local keptjink = 0
 	for _, acard in ipairs(cards) do
-		if isCard("Jink", acard, self.player) and keptjink < 1 then
+		if isCard("Jink", acard, self.player) and keptjink < 1 and not self.player:hasSkill("kongcheng") then
 			keptjink = keptjink + 1
 		else
 			table.insert(cardtogive, acard)
@@ -2746,8 +2746,8 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 		end
 	end
 
-	if (self.player:hasSkill("rende") and self.player:isWounded() and self.player:getMark("rende") < 3) then
-		if (self.player:getHandcardNum() < 3 and self.player:getMark("rende") == 0) then return end
+	if (self.player:hasSkill("rende") and self.player:isWounded() and self.player:getMark("rende") < 3) and not self.player:hasSkill("kongcheng") then
+		if (self.player:getHandcardNum() < 3 and self.player:getMark("rende") == 0 and self:getOverflow() <= 0) then return end
 	end
 
 	for _, friend in ipairs(friends) do
@@ -2766,6 +2766,28 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 		if friend:hasShownSkills("jijiu|jieyin") and friend:getHandcardNum() < 4 then
 			for _, hcard in ipairs(cards) do
 				if (hcard:isRed() and friend:hasShownSkill("jijiu")) or friend:hasShownSkill("jieyin") then
+					return hcard, friend
+				end
+			end
+		end
+	end
+	
+	self:sortByUseValue(cards, true)
+	for _, friend in ipairs(friends) do
+		if friend:hasShownSkills("jizhi")  then
+			for _, hcard in ipairs(cards) do
+				if hcard:isKindOf("TrickCard") then
+					return hcard, friend
+				end
+			end
+		end
+	end
+	
+	self:sortByUseValue(cards, true)
+	for _, friend in ipairs(friends) do
+		if friend:hasShownSkills("paoxiao")  then
+			for _, hcard in ipairs(cards) do
+				if hcard:isKindOf("Slash") then
 					return hcard, friend
 				end
 			end
