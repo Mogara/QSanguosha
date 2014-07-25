@@ -70,15 +70,14 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 	
 	
 	local firstShow = ("luanji|qianhuan"):split("|")	
-	local bothShow = ("luanji+shuangxiong|luanji+huoshui|luoshen+fangzhu"):split("|")
-	local companionShow = ("rende+paoxiao|rende+wusheng|rende+sushen|longdan+xiangle|jianxiong+qiangxi|jianxiong+luoyi"):split("|")
+	local bothShow = ("luanji+shuangxiong|luanji+huoshui"):split("|")
 	local needShowForAttack = ("chuanxin|suishi"):split("|")	
 	local needShowForHelp = ("sushen|cunsi|yicheng|qianhuan"):split("|")	
 	local needShowForLead = ("yicheng|qianhuan"):split("|")
 	local woundedShow = ("zaiqi|yinghun|hunshang|hengzheng"):split("|")
 	local followShow = ("qianhuan|duoshi|rende|jieyin|xiongyi|shouyue|hongfa"):split("|")
 	
-	local notshown, shown, f, e, eAtt = 0, 0, 0, 0, 0
+	local notshown, shown, allshown, f, e, eAtt = 0, 0, 0, 0, 0, 0
 	for _,p in sgs.qlist(self.room:getAlivePlayers()) do
 		if  not p:hasShownOneGeneral() then
 			notshown = notshown + 1
@@ -92,6 +91,35 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 				if self:isWeak(p) and p:getHp() == 1 and self.player:distanceTo(p) <= self.player:getAttackRange() then eAtt= eAtt + 1 end
 			end	
 		end
+		if p:hasShownAllGenerals() then
+			allshown = allshown + 1
+		end	
+	end
+		
+	if self.player:inHeadSkills("baoling") then
+		if (self:hasSkill("luanwu") and self.player:getMark("@chaos") ~= 0)
+			or (self:hasSkill("xiongyi") and self.player:getMark("@arise") ~= 0) then
+			canShowHead = false 
+		end
+	end	
+	if self.player:inHeadSkills("baoling") then
+		if (self.player:hasSkill("mingshi") and allshown >= (self.room:alivePlayerCount() - 1))
+			or (self:hasSkill("luanwu") and self.player:getMark("@chaos") == 0)
+			or (self:hasSkill("xiongyi") and self.player:getMark("@arise") == 0) then
+			if canShowHead then
+				return "GameRule_AskForGeneralShowHead"
+			end
+		end
+	end	
+	
+	if self.player:getMark("CompanionEffect") > 0 or self.player:getMark("HalfMaxHpLeft") > 0 then
+		if self:isWeak() then 
+			if canShowHead then
+				return "GameRule_AskForGeneralShowHead"
+			elseif canShowDeputy then	
+				return "GameRule_AskForGeneralShowDeputy"
+			end	
+		end
 	end
 	
 	for _, skill in ipairs(bothShow) do
@@ -103,20 +131,8 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 			end	
 		end
 	end
-	
-	if self:isWeak() then 
-	for _, skill in ipairs(companionShow) do
-		if self.player:hasSkills(skill) then
-			if canShowHead then
-				return "GameRule_AskForGeneralShowHead"
-			elseif canShowDeputy then	
-				return "GameRule_AskForGeneralShowDeputy"
-			end	
-		end
-	end
-	end
-	
-	if shown == 0 then 
+
+	if shown == 0 and self.player:getJudgingArea():isEmpty() then 
 		for _, skill in ipairs(firstShow) do
 			if self.player:hasSkill(skill) then
 				if self.player:inHeadSkills(skill) and canShowHead then 
@@ -189,16 +205,28 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 			end
 		end	
 		for _,p in sgs.qlist(self.room:getOtherPlayers(player)) do 
-			if p:hasShownSkill(skill) and p:getKingdom() == self.player:getKingdom() and not self.player:hasShownOneGeneral()  then 
-				local cho = { "GameRule_AskForGeneralShowHead", "GameRule_AskForGeneralShowDeputy"}
-				return cho[math.random(1, #cho)]
+			if p:hasShownSkill(skill) and p:getKingdom() == self.player:getKingdom() and not self.player:hasShownOneGeneral() then 
+				if canShowHead and canShowDeputy  then 
+					local cho = { "GameRule_AskForGeneralShowHead", "GameRule_AskForGeneralShowDeputy"}
+					return cho[math.random(1, #cho)]
+				elseif canShowHead then 
+					return "GameRule_AskForGeneralShowHead" 
+				elseif canShowDeputy then 
+					return "GameRule_AskForGeneralShowDeputy"
+				end
 			end
 		end
 	end		
 
-	if notshown == 1  and not self.player:hasShownOneGeneral()  then 
-		local cho = { "GameRule_AskForGeneralShowHead", "GameRule_AskForGeneralShowDeputy"}
-		return cho[math.random(1, #cho)]
+	if notshown == 1  and not self.player:hasShownOneGeneral() then 
+		if canShowHead and canShowDeputy  then 
+			local cho = { "GameRule_AskForGeneralShowHead", "GameRule_AskForGeneralShowDeputy"}
+			return cho[math.random(1, #cho)]
+		elseif canShowHead then 
+			return "GameRule_AskForGeneralShowHead" 
+		elseif canShowDeputy then 
+			return "GameRule_AskForGeneralShowDeputy"
+		end
 	end
 		
 	return "cancel"
