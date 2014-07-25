@@ -120,7 +120,7 @@ void GuanxingBox::onItemReleased()
 void GuanxingBox::onItemClicked()
 {
     CardItem *item = qobject_cast<CardItem *>(sender());
-    if (item == NULL) return;
+    if (item == NULL || up_only) return;
     
     if (upItems.contains(item)) {
         upItems.removeOne(item);
