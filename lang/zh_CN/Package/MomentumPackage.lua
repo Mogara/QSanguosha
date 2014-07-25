@@ -93,7 +93,8 @@ return {
 	["FengshiSummon"] = "锋矢",
 	
 	["#lord_zhangjiao"] = "时代的先驱",
-	["lord_zhangjiao"] = "张角",
+	["lord_zhangjiao"] = "张角（君）",
+	["&lord_zhangjiao"] = "张角" ,
 	["illustrator:lord_zhangjiao"] = "青骑士",
 	["wuxin"] = "悟心",
 	[":wuxin"] = "摸牌阶段开始时，你可以观看牌堆顶的X张牌（X为群势力角色数），然后你可以改变这些牌的顺序。",

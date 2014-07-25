@@ -93,7 +93,8 @@ return {
 	[":qiluan"] = "一名角色的回合结束后，若你于此回合内杀死过角色，你可以摸三张牌。", 
 	
 	["#lord_liubei"] = "龙横蜀汉",
-	["lord_liubei"] = "刘备",
+	["lord_liubei"] = "刘备（君）",
+	["&lord_liubei"] = "刘备" ,
 	["illustrator:lord_liubei"] = "LiuHeng",
 	["zhangwu"] = "章武",
 	[":zhangwu"] = "锁定技，每当【飞龙夺凤】置入弃牌堆或其他角色的装备区后，你获得之；" .. 
