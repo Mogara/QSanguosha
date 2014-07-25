@@ -147,7 +147,9 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         item->setOpacity(1.0);
         item->setHomeOpacity(1.0);
         item->setFlag(QGraphicsItem::ItemIsFocusable);
-        if (disabled_ids.contains(item->getCard()->getEffectiveId())) item->setEnabled(false);
+        if (disabled_ids.contains(item->getCard()->getEffectiveId()))
+            item->setEnabled(false);
+        item->setOuterGlowEffectEnabled(true);
         item->show();
     }
     confirm_button->setPos(boundingRect().center().x() - confirm_button->boundingRect().width() / 2, boundingRect().height() - 40);
@@ -240,6 +242,9 @@ void CardContainer::startGongxin(const QList<int> &enabled_ids) {
 }
 
 void CardContainer::addConfirmButton() {
+    foreach (CardItem *card, items)
+        card->setFlag(ItemIsMovable, false);
+
     confirm_button->show();
 }
 

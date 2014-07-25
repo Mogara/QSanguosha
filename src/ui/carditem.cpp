@@ -48,6 +48,7 @@ void CardItem::_initialize() {
     setTransform(QTransform::fromTranslate(-_m_width / 2, -_m_height / 2), true);
     outerGlowEffectEnabled = false;
     outerGlowEffect = NULL;
+    outerGlowColor = Qt::white;
 }
 
 CardItem::CardItem(const Card *card) {

@@ -348,7 +348,6 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
     connect(card_item, SIGNAL(thrown()), this, SLOT(onCardItemThrown()));
 
     card_item->setOuterGlowEffectEnabled(true);
-    card_item->setOuterGlowColor(Qt::white);
 }
 
 void Dashboard::_createRoleComboBox() {

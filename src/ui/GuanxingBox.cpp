@@ -83,6 +83,7 @@ void GuanxingBox::doGuanxing(const QList<int> &card_ids, bool up_only) {
         }
 
         card_item->resetTransform();
+        card_item->setOuterGlowEffectEnabled(true);
         card_item->setPos(25, 45);
         card_item->setHomePos(pos);
         card_item->goBack(true);
