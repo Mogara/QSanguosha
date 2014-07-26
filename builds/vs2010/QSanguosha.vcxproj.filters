@@ -808,8 +808,17 @@
     <ClCompile Include="Release\moc_GuanxingBox.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\scenario\jiange-defense.cpp">
+    <ClCompile Include="..\..\src\scenario\jiange-defense-scenario.cpp">
       <Filter>scenario</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_jiange-defense-scenario.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_jiange-defense-scenario.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\package\jiange-defense.cpp">
+      <Filter>package</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_jiange-defense.cpp">
       <Filter>Generated Files\Debug</Filter>
@@ -1056,8 +1065,11 @@
     <CustomBuild Include="..\..\src\ui\GuanxingBox.h">
       <Filter>ui</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\scenario\jiange-defense.h">
+    <CustomBuild Include="..\..\src\scenario\jiange-defense-scenario.h">
       <Filter>scenario</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\jiange-defense.h">
+      <Filter>package</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

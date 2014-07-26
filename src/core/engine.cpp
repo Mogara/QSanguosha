@@ -33,7 +33,7 @@
 #include "banpair.h"
 #include "miniscenarios.h"
 
-#include "jiange-defense.h"
+#include "jiange-defense-scenario.h"
 
 #include <lua.hpp>
 #include <QFile>

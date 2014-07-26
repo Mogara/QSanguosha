@@ -1,4 +1,4 @@
-#include "jiange-defense.h"
+#include "jiange-defense-scenario.h"
 #include "skill.h"
 #include "engine.h"
 #include "room.h"

@@ -476,27 +476,27 @@
 <context>
     <name>ChooseGeneralBox</name>
     <message>
-        <location filename="../../src/ui/choosegeneralbox.cpp" line="118"/>
+        <location filename="../../src/ui/choosegeneralbox.cpp" line="109"/>
         <source>fight</source>
         <translation>出战</translation>
     </message>
     <message>
-        <location filename="../../src/ui/choosegeneralbox.cpp" line="178"/>
+        <location filename="../../src/ui/choosegeneralbox.cpp" line="169"/>
         <source>Please select the same nationality generals</source>
         <translation>请选择相同势力的武将</translation>
     </message>
     <message>
-        <location filename="../../src/ui/choosegeneralbox.cpp" line="177"/>
+        <location filename="../../src/ui/choosegeneralbox.cpp" line="168"/>
         <source>Please select one general</source>
         <translation>请选择一名武将</translation>
     </message>
     <message>
-        <location filename="../../src/ui/choosegeneralbox.cpp" line="200"/>
+        <location filename="../../src/ui/choosegeneralbox.cpp" line="191"/>
         <source>head_general</source>
         <translation>主将</translation>
     </message>
     <message>
-        <location filename="../../src/ui/choosegeneralbox.cpp" line="203"/>
+        <location filename="../../src/ui/choosegeneralbox.cpp" line="194"/>
         <source>deputy_general</source>
         <translation>副将</translation>
     </message>
@@ -1473,22 +1473,22 @@
         <translation>托管中 ...</translation>
     </message>
     <message>
-        <location filename="../../src/ui/dashboard.cpp" line="932"/>
+        <location filename="../../src/ui/dashboard.cpp" line="931"/>
         <source>Sort handcards</source>
         <translation>整理手牌</translation>
     </message>
     <message>
-        <location filename="../../src/ui/dashboard.cpp" line="934"/>
+        <location filename="../../src/ui/dashboard.cpp" line="933"/>
         <source>Sort by type</source>
         <translation>按类型排序</translation>
     </message>
     <message>
-        <location filename="../../src/ui/dashboard.cpp" line="937"/>
+        <location filename="../../src/ui/dashboard.cpp" line="936"/>
         <source>Sort by suit</source>
         <translation>按花色排序</translation>
     </message>
     <message>
-        <location filename="../../src/ui/dashboard.cpp" line="940"/>
+        <location filename="../../src/ui/dashboard.cpp" line="939"/>
         <source>Sort by number</source>
         <translation>按点数排序</translation>
     </message>
@@ -1973,17 +1973,17 @@
 <context>
     <name>GuanxingBox</name>
     <message>
-        <location filename="../../src/ui/GuanxingBox.cpp" line="205"/>
+        <location filename="../../src/ui/GuanxingBox.cpp" line="242"/>
         <source>Please arrange the cards</source>
         <translation>请排列卡牌</translation>
     </message>
     <message>
-        <location filename="../../src/ui/GuanxingBox.cpp" line="236"/>
+        <location filename="../../src/ui/GuanxingBox.cpp" line="272"/>
         <source>cards on the top of the pile</source>
         <translation>置于牌堆顶的牌</translation>
     </message>
     <message>
-        <location filename="../../src/ui/GuanxingBox.cpp" line="239"/>
+        <location filename="../../src/ui/GuanxingBox.cpp" line="275"/>
         <source>cards at the bottom of the pile</source>
         <translation>置于牌堆底的牌</translation>
     </message>
