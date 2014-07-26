@@ -902,9 +902,9 @@ public:
     }
 };
 
-class JGXiaoshou : public PhaseChangeSkill{
+class JGChuanyun : public PhaseChangeSkill{
 public:
-    JGXiaoshou() : PhaseChangeSkill("jgxiaoshou") {
+    JGChuanyun() : PhaseChangeSkill("jgchuanyun") {
 
     }
 
@@ -927,18 +927,18 @@ public:
                 players << p;
         }
 
-        player->tag.remove("jgxiaoshou");
-        ServerPlayer *victim = room->askForPlayerChosen(player, players, objectName(), "@jgxiaoshou", true, true);
+        player->tag.remove("jgchuanyun");
+        ServerPlayer *victim = room->askForPlayerChosen(player, players, objectName(), "@jgchuanyun", true, true);
         if (victim != NULL) {
-            player->tag["jgxiaoshou"] = QVariant::fromValue(victim);
+            player->tag["jgchuanyun"] = QVariant::fromValue(victim);
             return true;
         }
         return false;
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        ServerPlayer *victim = target->tag["jgxiaoshou"].value<ServerPlayer *>();
-        target->tag.remove("jgxiaoshou");
+        ServerPlayer *victim = target->tag["jgchuanyun"].value<ServerPlayer *>();
+        target->tag.remove("jgchuanyun");
         if (victim != NULL)
             victim->getRoom()->damage(DamageStruct(objectName(), target, victim, 3));
 
@@ -1472,7 +1472,7 @@ JiangeDefensePackage::JiangeDefensePackage()
     caozhen->addSkill(new JGJingfan);
 
     General *xiahou = new General(this, "jg_xiahou", "wei", 4, true, true);
-    xiahou->addSkill(new JGXiaoshou);
+    xiahou->addSkill(new JGChuanyun);
     xiahou->addSkill(new JGLeili);
     xiahou->addSkill(new JGFengxing);
 
