@@ -288,7 +288,7 @@ function SmartAI:getTurnUse()
 					self.predictedRange = 10000
 				elseif dummy_use.card:isKindOf("Weapon") then
 					if not sgs.weapon_range[card:getClassName()] then
-						self.room:writeToConsole(card:getClassName())
+						self.room:writeToConsole("weapon_range" .. card:getClassName())
 					end
 					self.predictedRange = sgs.weapon_range[card:getClassName()] or 1
 					self.weaponUsed = true
@@ -2771,7 +2771,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 			end
 		end
 	end
-	
+
 	self:sortByUseValue(cards, true)
 	for _, friend in ipairs(friends) do
 		if friend:hasShownSkills("jizhi")  then
@@ -2782,7 +2782,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 			end
 		end
 	end
-	
+
 	self:sortByUseValue(cards, true)
 	for _, friend in ipairs(friends) do
 		if friend:hasShownSkills("paoxiao")  then
@@ -3320,15 +3320,34 @@ function SmartAI:getRetrialCardId(cards, judge, self_card)
 end
 
 function SmartAI:damageIsEffective(to, nature, from)
-	to = to or self.player
-	from = from or self.room:getCurrent()
-	nature = nature or sgs.DamageStruct_Normal
+	local damageStruct = {}
+	damageStruct.to = to or self.player
+	damageStruct.from = from or self.room:getCurrent()
+	damageStruct.nature = nature or sgs.DamageStruct_Normal
 
-	if to:hasShownSkill("mingshi") and not from:hasShownAllGenerals() then return false end
+	return self:damageIsEffective_(damageStruct)
+end
+
+function SmartAI:damageIsEffective_(damageStruct)
+	if type(damageStruct) ~= "table" then self.room:writeToConsole(debug.traceback()) return end
+	if not damageStruct.to then self.room:writeToConsole(debug.traceback()) return end
+	local to = damageStruct.to
+	local nature = damageStruct.nature or sgs.DamageStruct_Normal
+	local damage = damageStruct.damage or 1
+	local from = damageStruct.from
+
+	if type(to) == "table" then self.room:writeToConsole(debug.traceback()) return end
+
+	if to:hasShownSkill("mingshi") and from and not from:hasShownAllGenerals() then
+		damage = damage - 1
+		if damage < 1 then return false end
+	end
+
+	if to:hasArmorEffect("PeaceSpell") and nature ~= sgs.DamageStruct_Normal then return false end
 
 	for _, callback in ipairs(sgs.ai_damage_effect) do
 		if type(callback) == "function" then
-			local is_effective = callback(self, to, nature, from)
+			local is_effective = callback(self, damageStruct)
 			if not is_effective then return false end
 		end
 	end
@@ -3940,9 +3959,7 @@ function SmartAI:aoeIsEffective(card, to, source)
 	if to:hasArmorEffect("Vine") then
 		return false
 	end
-	--[[if self.room:isProhibited(self.player, to, card) then
-		return false
-	end]]
+
 	if to:isLocked(card) then
 		return false
 	end
@@ -3953,7 +3970,9 @@ function SmartAI:aoeIsEffective(card, to, source)
 		end
 	end
 
-	if not self:hasTrickEffective(card, to, source) or not self:damageIsEffective(to, sgs.DamageStruct_Normal, source) then
+	if to:hasShownSkill("weimu") and card:isBlack() then return false end
+
+	if not self:hasTrickEffective(card, to, source) or not self:damageIsEffective(to, source) then
 		return false
 	end
 	return true
@@ -4170,12 +4189,8 @@ function SmartAI:hasTrickEffective(card, to, from)
 	local nature = sgs.DamageStruct_Normal
 	if card:isKindOf("FireAttack") then nature = sgs.DamageStruct_Fire end
 
-	if (card:isKindOf("Duel") or card:isKindOf("FireAttack") or card:isKindOf("ArcheryAttack") or card:isKindOf("SavageAssault")) then
-		self.equipsToDec = sgs.getCardNumAtCertainPlace(card, from, sgs.Player_PlaceEquip)
-		local eff = self:damageIsEffective(to, nature, from)
-		self.equipsToDec = 0
-		if not eff then return false end
-	end
+	if (card:isKindOf("Duel") or card:isKindOf("FireAttack") or card:isKindOf("ArcheryAttack") or card:isKindOf("SavageAssault"))
+		and self:damageIsEffective(to, nature, from) then return false end
 	return true
 end
 
@@ -4958,7 +4973,7 @@ function SmartAI:cantbeHurt(player, from, damageNum)
 			if from:isEnemy(player) and player:getCardCount() > 0 then hengzheng = hengzheng + 1 end
 		end
 		if hengzheng > 2 then return true end
-	end	
+	end
 	return false
 end
 
@@ -5059,16 +5074,16 @@ function SmartAI:willShowForAttack()
 			shown = shown + 1
 			if p:getKingdom() == self.player:getKingdom() then
 				f = f + 1
-			else	
+			else
 				e = e + 1
 				if self:isWeak(p) and p:getHp() == 1 and self.player:distanceTo(p) <= self.player:getAttackRange() then eAtt= eAtt + 1 end
-			end			
+			end
 		end
 	end
-	
-	if self.room:alivePlayerCount() > 3 and shown <= math.max(self.room:alivePlayerCount()/2,3) and not self.player:hasShownOneGeneral() then 
+
+	if self.room:alivePlayerCount() > 3 and shown <= math.max(self.room:alivePlayerCount()/2,3) and not self.player:hasShownOneGeneral() then
 		if e < f or eAtt <= 0 then
-			return false 
+			return false
 		end
 	end
 	return true
@@ -5087,13 +5102,13 @@ function SmartAI:willShowForDefence()
 			else
 				e = e + 1
 				if self:isWeak(p) and p:getHp() == 1 and self.player:distanceTo(p) <= self.player:getAttackRange() then eAtt= eAtt + 1 end
-			end	
+			end
 		end
 	end
-	
-	if self.room:alivePlayerCount() > 3 and shown <= math.max(self.room:alivePlayerCount()/2,3) and not self.player:hasShownOneGeneral() then 
+
+	if self.room:alivePlayerCount() > 3 and shown <= math.max(self.room:alivePlayerCount()/2,3) and not self.player:hasShownOneGeneral() then
 		if f < 2 or not self:isWeak() then
-			return false 
+			return false
 		end
 	end
 	return true

@@ -24,7 +24,6 @@ function SmartAI:canAttack(enemy, attacker, nature)
 	local damage = 1
 	if nature == sgs.DamageStruct_Fire and not enemy:hasArmorEffect("SilverLion") then
 		if enemy:hasArmorEffect("Vine") then damage = damage + 1 end
-		if enemy:getMark("@gale") > 0 then damage = damage + 1 end
 	end
 	if #self.enemies == 1 then return true end
 	if self:getDamagedEffects(enemy, attacker) or (self:needToLoseHp(enemy, attacker, false, true) and #self.enemies > 1) or not sgs.isGoodTarget(enemy, self.enemies, self) then return false end
@@ -276,10 +275,20 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	}
 
 	local nature = natures[slash:getClassName()]
-	self.equipsToDec = sgs.getCardNumAtCertainPlace(slash, from, sgs.Player_PlaceEquip)
-	local eff = self:damageIsEffective(to, nature, from)
-	self.equipsToDec = 0
-	if not eff then return false end
+	local damage = {}
+	damage.from = from
+	damage.to = to
+	damage.nature = nature
+	damage.damage = 1
+	if not from:hasShownAllGenerals() and to:hasShownSkill("mingshi") then
+		local dummy_use = { to = sgs.SPlayerList() }
+		dummy_use.to:append(to)
+		local analeptic = self:searchForAnaleptic(dummy_use, to, slash)
+		if analeptic and self:shouldUseAnaleptic(to, dummy_use) and analeptic:getEffectiveId() ~= slash:getEffectiveId() then
+			damage.damage = damage.damage + 1
+		end
+	end
+	if not self:damageIsEffective_(damage) then return false end
 
 	if IgnoreArmor(from, to) or ignore_armor then
 		return true

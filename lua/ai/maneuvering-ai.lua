@@ -296,28 +296,43 @@ function SmartAI:isGoodChainPartner(player)
 end
 
 function SmartAI:isGoodChainTarget(who, source, nature, damagecount, card)
+	if not who then self.room:writeToConsole(debug.traceback()) return end
 	if not who:isChained() then return not self:isFriend(who) end
-	source = source or self.player
-	nature = nature or sgs.DamageStruct_Fire
+	local damageStruct = {}
+	damageStruct.to = who
+	damageStruct.from = source or self.player
+	damageStruct.nature = nature or sgs.DamageStruct_Fire
+	damageStruct.damage = damagecount or 1
+	damageStruct.card = card
+	return self:isGoodChainTarget_(damageStruct)
+end
 
-	damagecount = damagecount or 1
+function SmartAI:isGoodChainTarget_(damageStruct)
+	local to = damageStruct.to
+	if not to then self.room:writeToConsole(debug.traceback()) return end
+	if not to:isChained() then return not self:isFriend(to) end
+	local from = damageStruct.from or self.player
+	local nature = damageStruct.nature or sgs.DamageStruct_Fire
+	local damage = damageStruct.damage or 1
+	local card = damageStruct.card
+
 	if card and card:isKindOf("Slash") then
 		nature = card:isKindOf("FireSlash") and sgs.DamageStruct_Fire
 					or card:isKindOf("ThunderSlash") and sgs.DamageStruct_Thunder
 					or sgs.DamageStruct_Normal
-		damagecount = self:hasHeavySlashDamage(source, card, who, true)
+		damage = self:hasHeavySlashDamage(from, card, to, true)
 	elseif nature == sgs.DamageStruct_Fire then
-		if who:hasArmorEffect("Vine") then damagecount = damagecount + 1 end
+		if to:hasArmorEffect("Vine") then damage = damage + 1 end
 	end
 
-	if not self:damageIsEffective(who, nature, source) then return end
-	if card and card:isKindOf("FireAttack") and not self:hasTrickEffective(card, who, self.player) then return end
+	if not self:damageIsEffective_(damageStruct) then return end
+	if card and card:isKindOf("FireAttack") and not self:hasTrickEffective(card, to, self.player) then return end
 
-	if who:hasArmorEffect("SilverLion") then damagecount = 1 end
+	if to:hasArmorEffect("SilverLion") then damage = 1 end
 
 	local kills, the_enemy = 0
 	local good, bad, F_count, E_count = 0, 0, 0, 0
-	local peach_num = self.player:objectName() == source:objectName() and self:getCardsNum("Peach") or getCardsNum("Peach", source, self.player)
+	local peach_num = self.player:objectName() == from:objectName() and self:getCardsNum("Peach") or getCardsNum("Peach", from, self.player)
 
 	local function getChainedPlayerValue(target, dmg)
 		local newvalue = 0
@@ -326,25 +341,25 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, card)
 		if dmg and nature == sgs.DamageStruct_Fire then
 			if target:hasArmorEffect("Vine") then dmg = dmg + 1 end
 		end
-		if self:cantbeHurt(target, source, damagecount) then newvalue = newvalue - 100 end
-		if damagecount + (dmg or 0) >= target:getHp() then
+		if self:cantbeHurt(target, from, damage) then newvalue = newvalue - 100 end
+		if damage + (dmg or 0) >= target:getHp() then
 			newvalue = newvalue - 2
 			if self:isEnemy(target) then kills = kills + 1 end
 		else
-			if self:isEnemy(target) and source:getHandcardNum() < 2 and target:hasShownSkills("ganglie") and source:getHp() == 1
-				and self:damageIsEffective(source, nil, target) and peach_num < 1 then newvalue = newvalue - 100 end
+			if self:isEnemy(target) and from:getHandcardNum() < 2 and target:hasShownSkills("ganglie") and from:getHp() == 1
+				and self:damageIsEffective(from, nil, target) and peach_num < 1 then newvalue = newvalue - 100 end
 		end
 
 		if target:hasArmorEffect("SilverLion") then return newvalue - 1 end
-		return newvalue - damagecount - (dmg or 0)
+		return newvalue - damage - (dmg or 0)
 	end
 
 
-	local value = getChainedPlayerValue(who)
-	if self:isFriend(who) then
+	local value = getChainedPlayerValue(to)
+	if self:isFriend(to) then
 		good = value
 		F_count = F_count + 1
-	elseif self:isEnemy(who) then
+	else
 		bad = value
 		E_count = E_count + 1
 	end
@@ -352,8 +367,11 @@ function SmartAI:isGoodChainTarget(who, source, nature, damagecount, card)
 	if nature == sgs.DamageStruct_Normal then return good >= bad end
 
 	for _, player in sgs.qlist(self.room:getAllPlayers()) do
-		if player:objectName() ~= who:objectName() and player:isChained() and self:damageIsEffective(player, nature, source)
-			and not (card and card:isKindOf("FireAttack") and not self:hasTrickEffective(card, who, self.player)) then
+		local newDamageStruct = damageStruct
+		newDamageStruct.to = player
+		if nature == sgs.DamageStruct_Fire and player:hasArmorEffect("Vine") then newDamageStruct.damage = newDamageStruct.damage + 1 end
+		if player:objectName() ~= to:objectName() and player:isChained() and self:damageIsEffective_(newDamageStruct)
+			and not (card and card:isKindOf("FireAttack") and not self:hasTrickEffective(card, to, self.player)) then
 			local getvalue = getChainedPlayerValue(player, 0)
 			if kills == #self.enemies and sgs.getDefenseSlash(player, self) < 2 then
 				if card then self.room:setCardFlag(card, "AIGlobal_KillOff") end
