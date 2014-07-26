@@ -1534,7 +1534,6 @@ public:
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
             if (!p->isFriendWith(player)) {
                 p->throwAllEquips();
-                room->loseHp(p);
             }
         }
         return false;
