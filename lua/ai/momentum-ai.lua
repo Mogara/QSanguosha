@@ -19,8 +19,8 @@
 *********************************************************************]]
 sgs.ai_skill_invoke.xunxun = function(self, data)
 	if not self:willShowForDefence() then
-		return false 
-	end	
+		return false
+	end
 	return true
 end
 
@@ -74,9 +74,9 @@ sgs.ai_choicemade_filter.skillInvoke.hengjiang = function(self, player, promptli
 end
 
 sgs.ai_skill_invoke.qianxi = function(self, data)
-	
+
 	if not self:willShowForAttack() then
-		return false 
+		return false
 	end
 
 	for _, p in ipairs(self.enemies) do
@@ -221,9 +221,9 @@ local duanxie_skill = {}
 duanxie_skill.name = "duanxie"
 table.insert(sgs.ai_skills, duanxie_skill)
 duanxie_skill.getTurnUseCard = function(self)
-	
+
 	if not self:willShowForAttack() then
-		return 
+		return
 	end
 
 	if self.player:hasUsed("DuanxieCard") then return end
@@ -318,13 +318,13 @@ end
 sgs.ai_skill_invoke.chuanxin = function(self, data)
 	local damage = data:toDamage()
 
-	if  damage.to:hasShownSkill("niepan") and not damage.to:inHeadSkills("niepan") and  damage.to:getMark("@nirvana") ~= 0 then 
+	if  damage.to:hasShownSkill("niepan") and not damage.to:inHeadSkills("niepan") and  damage.to:getMark("@nirvana") ~= 0 then
 		return true
 	end
 
-	return not self:isFriend(damage.to) 
+	return not self:isFriend(damage.to)
 	and not self:hasHeavySlashDamage(self.player, damage.card, damage.to)
-	and not (damage.to:getHp() == 1 and not damage.to:getArmor()) 	
+	and not (damage.to:getHp() == 1 and not damage.to:getArmor())
 end
 
 sgs.ai_skill_choice.chuanxin = "discard"
@@ -427,9 +427,9 @@ hongfa_slash_skill.getTurnUseCard = function(self, inclusive)
 	local zj = self.room:getLord("qun")
 	if (not zj or zj:getPile("heavenly_army"):isEmpty() or not zj:isFriendWith(self.player)) then return end
 	local ints = sgs.QList2Table(zj:getPile("heavenly_army"))
-	
+
 	local int = getHongfaCard(ints)
-	if int then 
+	if int then
 		local card = sgs.Sanguosha:getCard(int)
 		local suit = card:getSuitString()
 		local number = card:getNumberString()
@@ -445,9 +445,9 @@ sgs.ai_view_as.hongfa_slash = function(card, player, card_place)
 	local zj = player:getLord()
 	if (not zj or zj:getPile("heavenly_army"):isEmpty() or not zj:isFriendWith(player)) then return end
 	local ints = sgs.QList2Table(zj:getPile("heavenly_army"))
-	
+
 	local int = getHongfaCard(ints)
-	if int then 
+	if int then
 		local card = sgs.Sanguosha:getCard(int)
 		local suit = card:getSuitString()
 		local number = card:getNumberString()
@@ -475,12 +475,6 @@ function sgs.ai_armor_value.PeaceSpell(player, self)
 	if getCardsNum("Peach", player, player) + getCardsNum("Analeptic", player, player) == 0 and player:getHp() == 1 then return 9 end
 	return 3.5
 end
-
-PeaceSpell_damageeffect = function(self, to, nature, from)
-	if to:hasArmorEffect("PeaceSpell") and nature ~= sgs.DamageStruct_Normal then return false end
-	return true
-end
-table.insert(sgs.ai_damage_effect, PeaceSpell_damageeffect)
 
 sgs.ai_use_priority.PeaceSpell = 0.75
 
