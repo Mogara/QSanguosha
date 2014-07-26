@@ -181,7 +181,7 @@ public:
     // static function
     static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b);
 
-    void showGeneral(bool head_general = true, bool trigger_event = true);
+    void showGeneral(bool head_general = true, bool trigger_event = true, bool sendLog = true);
     void hideGeneral(bool head_general = true);
     void removeGeneral(bool head_general = true);
     void sendSkillsToOthers(bool head_skill = true);
