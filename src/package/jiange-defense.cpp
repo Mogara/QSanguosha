@@ -779,6 +779,75 @@ public:
     }
 };
 
+class JGYizhong : public TriggerSkill{
+public:
+    JGYizhong() : TriggerSkill("jgyizhong") {
+        frequency = Compulsory;
+        events << SlashEffected;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
+        if (!TriggerSkill::triggerable(player) || player->getArmor() != NULL)
+            return QStringList();
+
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        return effect.slash->isBlack() ? QStringList(objectName()) : QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        room->notifySkillInvoked(player, objectName());
+        LogMessage log;
+        log.type = "#SkillNullify";
+        log.from = player;
+        log.arg = objectName();
+        log.arg2 = data.value<SlashEffectStruct>().slash->objectName();
+        room->sendLog(log);
+        return true;
+    }
+};
+
+class JGLingyu : public PhaseChangeSkill{
+public:
+    JGLingyu() : PhaseChangeSkill("jglingyu") {
+
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
+        if (TriggerSkill::triggerable(player)) {
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+                if (p->isFriendWith(player) && p->isWounded())
+                    return QStringList(objectName());
+            }
+        }
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        if (player->askForSkillInvoke(objectName())) {
+            player->turnOver();
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (p->isFriendWith(player) && p->isWounded()) {
+                RecoverStruct rec;
+                rec.recover = 1;
+                rec.who = player;
+                room->recover(p, rec);
+            }
+        }
+        return false;
+    }
+};
+
 
 JiangeDefensePackage::JiangeDefensePackage()
     : Package("jiange-defense", Package::MixedPack){
