@@ -340,7 +340,7 @@ public:
         bool discard = (c->getTypeId() == Card::TypeBasic);
 
         if (c->getTypeId() != Card::TypeBasic) {
-            player->setMark("jgzhinang", id); // For AI
+            target->setMark("jgzhinang", id); // For AI
             QList<ServerPlayer *> friends;
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
                 if (p->isFriendWith(target))
