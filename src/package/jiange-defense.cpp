@@ -184,7 +184,7 @@ public:
 
 class JGBiantianKF : public TriggerSkill{
 public:
-    JGBiantianKF() : TriggerSkill("#jgbiantian_kf") {
+    JGBiantianKF() : TriggerSkill("#jgbiantian-kf") {
         frequency = Compulsory;
         events << DamageForseen;
     }
@@ -221,7 +221,7 @@ public:
 
 class JGBiantianDW : public TriggerSkill{
 public:
-    JGBiantianDW() : TriggerSkill("#jgbiantian_dw") {
+    JGBiantianDW() : TriggerSkill("#jgbiantian-dw") {
         frequency = Compulsory;
         events << DamageForseen;
     }
