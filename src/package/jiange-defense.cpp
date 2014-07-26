@@ -72,8 +72,8 @@ public:
         return false;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
-        return (TriggerSkill::triggerable(player) && player->getPhase() == Player::Draw) ? QStringList(objectName()) : QStringList();
+    virtual bool triggerable(const ServerPlayer *player) const{
+        return TriggerSkill::triggerable(player) && player->getPhase() == Player::Draw;
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
