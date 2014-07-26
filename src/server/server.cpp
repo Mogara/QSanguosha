@@ -408,6 +408,16 @@ QGroupBox *ServerDialog::createGameModeBox() {
             button->setChecked(true);
     }
 
+    //jiange defense
+    QRadioButton *jiange_defense = new QRadioButton(tr("Jiange Defense"));
+    jiange_defense->setObjectName("jiange_defense");
+    mode_group->addButton(jiange_defense);
+
+    if (Config.GameMode == "jiange_defense")
+        jiange_defense->setChecked(true);
+
+    item_list << jiange_defense;
+
     //mini scenes
     QRadioButton *mini_scenes = new QRadioButton(tr("Mini Scenes"));
     mini_scenes->setObjectName("custom_scenario");

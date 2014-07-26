@@ -2116,7 +2116,7 @@ int Room::drawCard() {
 void Room::prepareForStart() {
     if (scenario) {
         QStringList generals, generals2, kingdoms;
-        scenario->assign(generals, generals2, kingdoms);
+        scenario->assign(generals, generals2, kingdoms, this);
 
         for (int i = 0; i < m_players.length(); i++) {
             ServerPlayer *player = m_players[i];
@@ -2137,6 +2137,7 @@ void Room::prepareForStart() {
                 }
                 notifyProperty(player, player, "general", generals[i]);
                 notifyProperty(player, player, "general2", generals2[i]);
+                setPlayerProperty(player, "kingdom", kingdoms[i]);
             }
         }
     }
@@ -5299,7 +5300,7 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, c
         if (!single_result) {
             QStringList heros = generals;
             heros.removeOne(default_choice);
-            default_choice += heros.at(qrand() % heros.length());
+            default_choice += "+" + heros.at(qrand() % heros.length());
         }
     }
 
@@ -5315,7 +5316,15 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, c
         bool success = doRequest(player, S_COMMAND_CHOOSE_GENERAL, options, true);
 
         Json::Value clientResponse = player->getClientReply();
-        if (!success || !clientResponse.isString() || (!Config.FreeChoose && !generals.contains(clientResponse.asCString())))
+        QStringList answer = QString(clientResponse.asCString()).split("+");
+        bool valid = true;
+        foreach (QString name, answer) {
+            if (!generals.contains(name)) {
+                valid = false;
+                break;
+            }
+        }
+        if (!success || !clientResponse.isString() || (!Config.FreeChoose && !valid))
             return default_choice;
         else
             return toQString(clientResponse);

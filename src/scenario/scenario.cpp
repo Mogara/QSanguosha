@@ -49,7 +49,7 @@ QString Scenario::getRoles() const{
     return roles;
 }
 
-void Scenario::assign(QStringList &generals, QStringList &/*generals2*/, QStringList &roles) const{
+void Scenario::assign(QStringList &generals, QStringList &, QStringList &roles, Room *) const{
     generals << lord << loyalists << rebels << renegades;
     qShuffle(generals);
 

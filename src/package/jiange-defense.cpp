@@ -22,6 +22,7 @@
 #include "skill.h"
 #include "engine.h"
 #include "standard-tricks.h"
+#include "standard-basics.h"
 
 class JGJizhen : public PhaseChangeSkill{
 public:
@@ -433,7 +434,7 @@ public:
 
 class JGYuhuo : public TriggerSkill{
 public:
-    JGYuhuo(const QString &owner) : TriggerSkill("jgyuhuo_" + owner) {
+    explicit JGYuhuo(const QString &owner) : TriggerSkill("jgyuhuo_" + owner) {
         setObjectName("jgyuhuo_" + owner);
         events << DamageInflicted;
         frequency = Compulsory;
@@ -592,7 +593,7 @@ public:
 
 class JGJiguan : public TriggerSkill{ //temp method
 public:
-    JGJiguan(const QString &owner) : TriggerSkill("jgjiguan_" + owner) {
+    explicit JGJiguan(const QString &owner) : TriggerSkill("jgjiguan_" + owner) {
         setObjectName("jgjiguan_" + owner);
         events << TargetConfirming;
         frequency = Compulsory;
@@ -779,12 +780,350 @@ public:
     }
 };
 
+class JGYizhong : public TriggerSkill{
+public:
+    JGYizhong() : TriggerSkill("jgyizhong") {
+        frequency = Compulsory;
+        events << SlashEffected;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
+        if (!TriggerSkill::triggerable(player) || player->getArmor() != NULL)
+            return QStringList();
+
+        SlashEffectStruct effect = data.value<SlashEffectStruct>();
+        return effect.slash->isBlack() ? QStringList(objectName()) : QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        room->notifySkillInvoked(player, objectName());
+        LogMessage log;
+        log.type = "#SkillNullify";
+        log.from = player;
+        log.arg = objectName();
+        log.arg2 = data.value<SlashEffectStruct>().slash->objectName();
+        room->sendLog(log);
+        return true;
+    }
+};
+
+class JGLingyu : public PhaseChangeSkill{
+public:
+    JGLingyu() : PhaseChangeSkill("jglingyu") {
+
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
+        if (TriggerSkill::triggerable(player)) {
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+                if (p->isFriendWith(player) && p->isWounded())
+                    return QStringList(objectName());
+            }
+        }
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        if (player->askForSkillInvoke(objectName())) {
+            player->turnOver();
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (p->isFriendWith(player) && p->isWounded()) {
+                RecoverStruct rec;
+                rec.recover = 1;
+                rec.who = player;
+                room->recover(p, rec);
+            }
+        }
+        return false;
+    }
+};
+
+class JGChiying : public TriggerSkill{
+public:
+    JGChiying() : TriggerSkill("jgchiying") {
+        events << DamageInflicted;
+        frequency = Compulsory;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        ServerPlayer *zidan = room->findPlayerBySkillName(objectName());
+        if (zidan != NULL && player != NULL && zidan->isFriendWith(player)) {
+            ask_who = zidan;
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.damage >= 2)
+                return QStringList(objectName());
+        }
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
+        return ask_who->hasShownSkill(objectName()) || ask_who->askForSkillInvoke(objectName());
+    }
+
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer *) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        //silverlion? log
+        damage.damage = 1;
+        data = QVariant::fromValue(damage);
+        return false;
+    }
+};
+
+class JGJingfan : public DistanceSkill{
+public:
+    JGJingfan() : DistanceSkill("zgjingfan") {
+
+    }
+
+    virtual int getCorrect(const Player *from, const Player *to) const{
+        if (from->isFriendWith(to))
+            return 0;
+
+        foreach(const Player *p, from->getAliveSiblings()) {
+            if (p->isFriendWith(from) && p != from && p->hasShownSkill(objectName()))
+                return -1;
+        }
+
+        return 0;
+    }
+};
+
+class JGXiaoshou : public PhaseChangeSkill{
+public:
+    JGXiaoshou() : PhaseChangeSkill("jgxiaoshou") {
+
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
+        if (!TriggerSkill::triggerable(player) || player->getPhase() != Player::Finish)
+            return QStringList();
+
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (!p->isFriendWith(player) && p->getHp() >= player->getHp())
+                return QStringList(objectName());
+        }
+
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        QList<ServerPlayer *> players;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (!p->isFriendWith(player) && p->getHp() >= player->getHp())
+                players << p;
+        }
+
+        player->tag.remove("jgxiaoshou");
+        ServerPlayer *victim = room->askForPlayerChosen(player, players, objectName(), "@jgxiaoshou", true, true);
+        if (victim != NULL) {
+            player->tag["jgxiaoshou"] = QVariant::fromValue(victim);
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        ServerPlayer *victim = target->tag["jgxiaoshou"].value<ServerPlayer *>();
+        target->tag.remove("jgxiaoshou");
+        if (victim != NULL)
+            victim->getRoom()->damage(DamageStruct(objectName(), target, victim, 3));
+
+        return false;
+    }
+};
+
+class JGLeili : public TriggerSkill{
+public:
+    JGLeili() : TriggerSkill("jgleili") {
+        events << Damage;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
+        if (!TriggerSkill::triggerable(player))
+            return QStringList();
+
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.card != NULL && damage.card->isKindOf("Slash"))
+            return QStringList(objectName());
+
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        QList<ServerPlayer *> players;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (!p->isFriendWith(player))
+                players << p;
+        }
+
+        player->tag.remove("jgleili");
+        ServerPlayer *victim = room->askForPlayerChosen(player, players, objectName(), "@jgleili", true, true);
+        if (victim != NULL) {
+            player->tag["jgleili"] = QVariant::fromValue(victim);
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        ServerPlayer *victim = player->tag["jgleili"].value<ServerPlayer *>();
+        player->tag.remove("jgleili");
+        if (victim != NULL)
+            room->damage(DamageStruct(objectName(), player, victim, 1, DamageStruct::Thunder));
+
+        return false;
+    }
+};
+
+class JGFengxing : public PhaseChangeSkill{
+public:
+    JGFengxing() : PhaseChangeSkill("jgfengxing") {
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->getPhase() == Player::Start;
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        QList<ServerPlayer *> players;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (!p->isFriendWith(player))
+                players << p;
+        }
+
+        player->tag.remove("jgfengxing");
+        ServerPlayer *victim = room->askForPlayerChosen(player, players, objectName(), "@jgfengxing", true/*, true*/);
+        if (victim != NULL) {
+            player->tag["jgfengxing"] = QVariant::fromValue(victim);
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        ServerPlayer *victim = target->tag["jgfengxing"].value<ServerPlayer *>();
+        target->tag.remove("jgfengxing");
+        if (victim != NULL) {
+            Slash *slash = new Slash(Card::NoSuit, 0);
+            slash->setSkillName("_" + objectName());
+            slash->setShowSkill(objectName());
+            CardUseStruct use;
+            use.card = slash;
+            use.from = target;
+            use.to << victim;
+            use.m_addHistory = false;
+            victim->getRoom()->useCard(use, false);
+        }
+        return false;
+    }
+};
 
 JiangeDefensePackage::JiangeDefensePackage()
-    : Package("jiange-defense", Package::MixedPack){
+    : Package("jiange-defense", Package::MixedPack) {
+
+    General *liubei = new General(this, "jg_liubei", "shu", 5, true, true);
+    liubei->addSkill(new JGJizhen);
+    liubei->addSkill(new JGLingfeng);
+
+    General *zhuge = new General(this, "jg_zhuge", "shu", 4, true, true);
+    zhuge->addSkill(new JGBiantian);
+    zhuge->addSkill(new JGBiantianDW);
+    zhuge->addSkill(new JGBiantianKF);
+    related_skills.insertMulti("jgbiantian", "#jgbiantian-dw");
+    related_skills.insertMulti("jgbiantian", "#jgbiantian-kf");
+    zhuge->addSkill("bazhen");
+
+    General *yueying = new General(this, "jg_yueying", "shu", 4, false, true);
+    yueying->addSkill(new JGGongshen);
+    yueying->addSkill(new JGZhinang);
+    yueying->addSkill(new JGJingmiao);
+    yueying->addSkill(new JGJingmiaoRecord);
+    related_skills.insertMulti("jgjingmiao", "#jgjingmiao-record");
+    
+    General *pangtong = new General(this, "jg_pangtong", "shu", 4, true, true);
+    pangtong->addSkill(new JGYuhuo("pangtong"));
+    pangtong->addSkill(new JGQiwu);
+    pangtong->addSkill(new JGQiwuRecord);
+    pangtong->addSkill(new JGTianyu);
+    related_skills.insertMulti("jgqiwu", "#jgqiwu-record");
+
+    General *qinglong = new General(this, "jg_qinglong_machine", "shu", 4, true, true);
+    qinglong->setGender(General::Sexless);
+    qinglong->addSkill(new JGJiguan("qinglong"));
+    qinglong->addSkill(new JGMojian);
+
+    General *baihu = new General(this, "jg_baihu_machine", "shu", 4, true, true);
+    baihu->setGender(General::Sexless);
+    baihu->addSkill(new JGJiguan("baihu"));
+    baihu->addSkill(new JGZhenwei);
+    baihu->addSkill(new JGBenlei);
+
+    General *zhuque = new General(this, "jg_zhuque_machine", "shu", 5, true, true);
+    zhuque->setGender(General::Sexless);
+    zhuque->addSkill(new JGJiguan("zhuque"));
+    zhuque->addSkill(new JGYuhuo("zhuque"));
+    zhuque->addSkill(new JGTianyun);
+
+    General *xuanwu = new General(this, "jg_xuanwu_machine", "shu", 5, true, true);
+    xuanwu->setGender(General::Sexless);
+    xuanwu->addSkill(new JGJiguan("xuanwu"));
+    xuanwu->addSkill(new JGYizhong);
+    xuanwu->addSkill(new JGLingyu);
+
+    //------------------------------------------------------------------------------------
+
+    General *caozhen = new General(this, "jg_caozhen", "wei", 5, true, true);
+    caozhen->addSkill(new JGChiying);
+    caozhen->addSkill(new JGJingfan);
+
+    General *xiahou = new General(this, "jg_xiahou", "wei", 4, true, true);
+    xiahou->addSkill(new JGXiaoshou);
+    xiahou->addSkill(new JGLeili);
+    xiahou->addSkill(new JGFengxing);
+
+    General *sima = new General(this, "jg_sima", "wei", 5, true, true);
+    //konghun
+    //fanshi
+    //xuanlei
+
+    General *zhanghe = new General(this, "jg_zhanghe", "wei", 4, true, true);
+    //huodi
+    //jueji
+
+    General *bian = new General(this, "jg_bian_machine", "wei", 4, true, true);
+    bian->setGender(General::Sexless);
+    bian->addSkill(new JGJiguan("bian"));
+    //didong
+
+    General *suanni = new General(this, "jg_suanni_machine", "wei", 3, true, true);
+    suanni->setGender(General::Sexless);
+    suanni->addSkill(new JGJiguan("suanni"));
+    //lianyu
+
+    General *taotie = new General(this, "jg_taotie_machine", "wei", 5, true, true);
+    taotie->setGender(General::Sexless);
+    taotie->addSkill(new JGJiguan("taotie"));
+    //tanshi
+    //tunshi
+
+    General *yazi = new General(this, "jg_yazi_machine", "wei", 4, true, true);
+    yazi->setGender(General::Sexless);
+    yazi->addSkill(new JGJiguan("yazi"));
+    //dixian
 
 }
 
 
 ADD_PACKAGE(JiangeDefense)
-

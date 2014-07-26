@@ -27,11 +27,9 @@
 
 class Mashu : public DistanceSkill {
 public:
-    Mashu(const QString &);
+    explicit Mashu(const QString &);
 
     virtual int getCorrect(const Player *from, const Player *) const;
-private:
-    QString owner;
 };
 
 class RendeCard : public SkillCard {
@@ -44,7 +42,7 @@ public:
 
 class SavageAssaultAvoid : public TriggerSkill {
 public:
-    SavageAssaultAvoid(const QString &);
+    explicit SavageAssaultAvoid(const QString &);
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const;
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
