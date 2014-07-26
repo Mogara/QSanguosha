@@ -27,12 +27,12 @@ public:
     JGJizhen() : PhaseChangeSkill("jgjizhen") {
         frequency = Compulsory;
     }
-    
+
     virtual bool canPreshow() const{
         return false;
     }
 
-    virtual QStringList triggerable(TriggerEvent /*triggerEvent*/, Room *room, ServerPlayer *player, QVariant &/*data*/, ServerPlayer* &/*ask_who*/) const{
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
         if (TriggerSkill::triggerable(player) && player->getPhase() == Player::Finish) {
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
                 if (p->isFriendWith(player) && p->isWounded())
@@ -42,7 +42,7 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent /*triggerEvent*/, Room * /*room*/, ServerPlayer *player, QVariant &/*data*/, ServerPlayer * /*ask_who*/ /* = NULL */) const{
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
     }
 
@@ -71,11 +71,11 @@ public:
         return false;
     }
 
-    virtual QStringList triggerable(TriggerEvent /*triggerEvent*/, Room * /*room*/, ServerPlayer *player, QVariant &/*data*/, ServerPlayer* &/*ask_who*/) const{
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
         return (TriggerSkill::triggerable(player) && player->getPhase() == Player::Draw) ? QStringList(objectName()) : QStringList();
     }
 
-    virtual bool cost(TriggerEvent /*triggerEvent*/, Room * /*room*/, ServerPlayer *player, QVariant &/*data*/, ServerPlayer * /*ask_who*/ /* = NULL */) const{
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         return player->askForSkillInvoke(objectName());
     }
 
@@ -107,6 +107,147 @@ public:
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, target->objectName(), victim->objectName());
             room->loseHp(victim, 1);
         }
+
+        return true;
+    }
+};
+
+class JGBiantian : public PhaseChangeSkill{
+public:
+    JGBiantian() : PhaseChangeSkill("jgbiantian") {
+        frequency = Compulsory;
+        events << EventPhaseStart << Death << EventLoseSkill << FinishJudge;
+    }
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
+        if (triggerEvent == EventPhaseStart && TriggerSkill::triggerable(player)) {
+            if (player->getPhase() == Player::RoundStart) {
+                foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                    p->loseAllMarks("@gale");
+                    p->loseAllMarks("@fog");
+                }
+            }
+            else if (player->getPhase() == Player::Start)
+                return QStringList(objectName());
+        }
+        else if (player != NULL && (triggerEvent == Death && player->hasSkill(objectName()) && data.value<DeathStruct>().who == player) 
+                || (triggerEvent == EventLoseSkill && data.toString() == objectName())) {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                p->loseAllMarks("@gale");
+                p->loseAllMarks("@fog");
+            }
+        }
+        else if (triggerEvent == FinishJudge) {
+            JudgeStruct *judge = data.value<JudgeStruct *>();
+            if (judge->reason == objectName())
+                judge->pattern = judge->card->isRed() ? "r" : "b";
+        }
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool effect(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        room->notifySkillInvoked(player, objectName());
+
+        JudgeStruct judge;
+        judge.play_animation = false;
+        judge.pattern = ".";
+        judge.good = true;
+        judge.reason = objectName();
+        judge.who = player;
+
+        room->judge(judge);
+
+        if (judge.pattern == "r") {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (!p->isFriendWith(player))
+                    p->gainMark("@gale", 1);
+            }
+        }
+        else if (judge.pattern == "b") {
+            foreach(ServerPlayer *p, room->getAlivePlayers()) {
+                if (p->isFriendWith(player))
+                    p->gainMark("@fog", 1);
+            }
+        }
+        else
+            Q_ASSERT(false);
+    }
+};
+
+class JGBiantianKF : public TriggerSkill{
+public:
+    JGBiantianKF() : TriggerSkill("#jgbiantian_kf") {
+        frequency = Compulsory;
+        events << DamageForseen;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        ServerPlayer *zhuge = room->findPlayerBySkillName("jgbiantian");
+        if (zhuge == NULL)
+            return QStringList();
+
+        ask_who = zhuge;
+
+        DamageStruct damage = data.value<DamageStruct>();
+        return (player != NULL && player->getMark("@gale") > 0 && damage.nature == DamageStruct::Fire) ? QStringList(objectName()) : QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
+        return ask_who->hasShownSkill("jgbiantian");
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        LogMessage log;
+        log.type = "#GalePower";
+        log.from = player;
+        log.arg = QString::number(damage.damage);
+        log.arg2 = QString::number(++damage.damage);
+        room->sendLog(log);
+
+        data = QVariant::fromValue(damage);
+
+        return false;
+    }
+};
+
+class JGBiantianDW : public TriggerSkill{
+public:
+    JGBiantianDW() : TriggerSkill("#jgbiantian_dw") {
+        frequency = Compulsory;
+        events << DamageForseen;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        ServerPlayer *zhuge = room->findPlayerBySkillName("jgbiantian");
+        if (zhuge == NULL)
+            return QStringList();
+
+        ask_who = zhuge;
+
+        DamageStruct damage = data.value<DamageStruct>();
+        return (player != NULL && player->getMark("@fog") > 0 && damage.nature != DamageStruct::Thunder) ? QStringList(objectName()) : QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
+        return ask_who->hasShownSkill("jgbiantian");
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        LogMessage log;
+        log.type = "#FogProtect";
+        log.from = player;
+        log.arg = QString::number(damage.damage);
+        if (damage.nature == DamageStruct::Normal)
+            log.arg2 = "normal_nature";
+        else if (damage.nature == DamageStruct::Fire)
+            log.arg2 = "fire_nature";
+        room->sendLog(log);
 
         return true;
     }
