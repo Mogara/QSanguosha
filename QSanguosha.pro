@@ -50,6 +50,7 @@ SOURCES += \
     src/dialog/UpdateChecker.cpp \
     src/package/exppattern.cpp \
     src/package/formation.cpp \
+    src/package/jiange-defense.cpp \
     src/package/momentum.cpp \
     src/package/standard.cpp \
     src/package/standard-basics.cpp \
@@ -150,6 +151,7 @@ HEADERS += \
     src/dialog/UpdateChecker.h \
     src/package/exppattern.h \
     src/package/formation.h \
+    src/package/jiange-defense.h \
     src/package/momentum.h \
     src/package/package.h \
     src/package/standard.h \

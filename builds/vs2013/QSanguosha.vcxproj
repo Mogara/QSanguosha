@@ -613,6 +613,7 @@
     <ClCompile Include="..\..\src\dialog\cardbutton.cpp" />
     <ClCompile Include="..\..\src\dialog\UpdateChecker.cpp" />
     <ClCompile Include="..\..\src\package\formation.cpp" />
+    <ClCompile Include="..\..\src\package\jiange-defense.cpp" />
     <ClCompile Include="..\..\src\package\momentum.cpp" />
     <ClCompile Include="..\..\src\package\standard-basics.cpp" />
     <ClCompile Include="..\..\src\package\standard-equips.cpp" />
@@ -838,6 +839,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Debug\moc_indicatoritem.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+	    <ClCompile Include="Debug\moc_jiange-defense.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">true</ExcludedFromBuild>
@@ -1312,6 +1319,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Release\moc_jiange-defense.cpp">
+	      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Release\moc_lua-wrapper.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">true</ExcludedFromBuild>
@@ -1614,7 +1627,7 @@
     <ClCompile Include="..\..\src\server\room.cpp" />
     <ClCompile Include="..\..\src\ui\roomscene.cpp" />
     <ClCompile Include="..\..\src\server\roomthread.cpp" />
-    <ClCompile Include="..\..\swig\sanguosha_wrap.cxx"/>
+    <ClCompile Include="..\..\swig\sanguosha_wrap.cxx" />
     <ClCompile Include="..\..\src\dialog\rule-summary.cpp" />
     <ClCompile Include="..\..\src\scenario\scenario.cpp" />
     <ClCompile Include="..\..\src\scenario\scenerule.cpp" />
@@ -1769,7 +1782,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
     </CustomBuild>
-    <ClInclude Include="..\..\src\core\RoomState.h"/>
+    <ClInclude Include="..\..\src\core\RoomState.h" />
     <CustomBuild Include="..\..\src\core\record-analysis.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -2248,8 +2261,8 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
     </CustomBuild>
     <ClInclude Include="..\..\src\core\util.h" />
-    <CustomBuild Include="..\..\src\ui\GraphicsBox.h" >
-          <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+    <CustomBuild Include="..\..\src\ui\GraphicsBox.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -2283,7 +2296,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\GuanxingBox.h">
-              <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -2307,6 +2320,40 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Moc%27ing GuanxingBox.h...</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Moc%27ing GuanxingBox.h...</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Moc%27ing GuanxingBox.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Release\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Release\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Release\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Release\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Release\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DNDEBUG -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\jiange-defense.h">
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Moc%27ing jiange-defense.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Moc%27ing jiange-defense.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Moc%27ing jiange-defense.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Moc%27ing jiange-defense.h...</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Debug\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Debug\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Debug\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Debug\moc_%(Filename).cpp</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Debug\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Debug\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Debug\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "Debug\moc_%(Filename).cpp"  -D_WINDOWS -DVS2013 -DUNICODE -DWIN32 -DWIN64 -DQT_LARGEFILE_SUPPORT -DAUDIO_SUPPORT -DQT_DLL -DQT_HAVE_MMX -DQT_HAVE_3DNOW -DQT_HAVE_SSE -DQT_HAVE_MMXEXT -DQT_HAVE_SSE2 -DQT_THREAD_SUPPORT -DUSE_BREAKPAD  "-I.\..\..\src\breakpad" "-I.\..\..\src\breakpad\client\windows" "-I.\..\..\src\breakpad\client\windows\handler" "-I.\..\..\include\freetype" "-I.\..\..\src\jsoncpp\include" "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtNetwork" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtSql" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include" "-I.\..\..\include" "-I.\..\..\src\client" "-I.\..\..\src\core" "-I.\..\..\src\dialog" "-I.\..\..\src\package" "-I.\..\..\src\scenario" "-I.\..\..\src\server" "-I.\..\..\src\ui" "-I.\..\..\src\util" "-I.\..\..\src\lua" "-I.\..\..\include\fmod" "-I.\debug" "-I.\GeneratedFiles" "-I.\..\..\include\vld"</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Moc%27ing jiange-defense.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Moc%27ing jiange-defense.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Moc%27ing jiange-defense.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Moc%27ing jiange-defense.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Release\moc_%(Filename).cpp</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Release\moc_%(Filename).cpp</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Release\moc_%(Filename).cpp</Outputs>

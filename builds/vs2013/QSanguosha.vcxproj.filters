@@ -803,6 +803,15 @@
     <ClCompile Include="Release\moc_GraphicsBox.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\package\jiange-defense.cpp">
+      <Filter>package</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_jiange-defense.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_jiange-defense.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1053,6 +1062,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\GuanxingBox.h">
       <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\package\jiange-defense.h">
+      <Filter>package</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
