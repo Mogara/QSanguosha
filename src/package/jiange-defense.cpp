@@ -1256,6 +1256,163 @@ public:
     }
 };
 
+class JGDidong : public PhaseChangeSkill{
+public:
+    JGDidong() : PhaseChangeSkill("jgdidong") {
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *player) const{
+        return TriggerSkill::triggerable(player) && player->getPhase() == Player::Finish;
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        QList<ServerPlayer *> players;
+        foreach(ServerPlayer *p, room->getAlivePlayers()) {
+            if (!p->isFriendWith(player))
+                players << p;
+        }
+
+        player->tag.remove("jgdidong");
+        ServerPlayer *victim = room->askForPlayerChosen(player, players, objectName(), "@jgdidong", true, true);
+        if (victim != NULL) {
+            player->tag["jgdidong"] = QVariant::fromValue(victim);
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        ServerPlayer *victim = target->tag["jgdidong"].value<ServerPlayer *>();
+        target->tag.remove("jgdidong");
+        if (victim != NULL)
+            victim->turnOver();
+
+        return false;
+    }
+};
+
+class JGLianyu : public PhaseChangeSkill{
+public:
+    JGLianyu() : PhaseChangeSkill("jglianyu") {
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->getPhase() == Player::Finish;
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        return player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+
+        QList<ServerPlayer *> players;
+        foreach(ServerPlayer *p, room->getAlivePlayers()) {
+            if (!p->isFriendWith(player)) {
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
+                players << p;
+            }
+        }
+
+        room->sortByActionOrder(players);
+        foreach(ServerPlayer *p, players)
+            room->damage(DamageStruct(objectName(), player, p, 1, DamageStruct::Fire));
+
+
+        return false;
+    }
+};
+
+class JGTanshi : public DrawCardsSkill{
+public:
+    JGTanshi() : DrawCardsSkill("jgtanshi") {
+        frequency = Compulsory;
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+    }
+
+    virtual int getDrawNum(ServerPlayer *, int n) const{
+        //log
+        return n - 1;
+    }
+};
+
+class JGTunshi : public PhaseChangeSkill{
+public:
+    JGTunshi() : PhaseChangeSkill("jgtunshi"){
+        frequency = Compulsory;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
+        if (!TriggerSkill::triggerable(player) || player->getPhase() != Player::Finish)
+            return QStringList();
+
+        foreach(ServerPlayer *p, room->getAlivePlayers()) {
+            if (!p->isFriendWith(player) && p->getHandcardNum() > player->getHandcardNum())
+                return QStringList(objectName());
+        }
+
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        Room *room = target->getRoom();
+        QList<ServerPlayer *> players;
+        foreach(ServerPlayer *p, room->getAlivePlayers()) {
+            if (!p->isFriendWith(target) && p->getHandcardNum() > target->getHandcardNum()) {
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, target->objectName(), p->objectName());
+                players << p;
+            }
+        }
+
+        room->sortByActionOrder(players);
+
+        foreach(ServerPlayer *p, players)
+            room->damage(DamageStruct(objectName(), target, p));
+
+        return false;
+    }
+};
+
+class JGDixian : public PhaseChangeSkill{
+public:
+    JGDixian() : PhaseChangeSkill("jgdixian") {
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *player) const{
+        return TriggerSkill::triggerable(player) && player->getPhase() == Player::Finish;
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        if (player->askForSkillInvoke(objectName())) {
+            player->turnOver();
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (!p->isFriendWith(player)) {
+                p->throwAllEquips();
+                room->loseHp(p);
+            }
+        }
+        return false;
+    }
+};
+
 JiangeDefensePackage::JiangeDefensePackage()
     : Package("jiange-defense", Package::MixedPack) {
 
