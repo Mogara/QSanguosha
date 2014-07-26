@@ -113,9 +113,9 @@ public:
     }
 };
 
-class JGBiantian : public PhaseChangeSkill{
+class JGBiantian : public TriggerSkill{
 public:
-    JGBiantian() : PhaseChangeSkill("jgbiantian") {
+    JGBiantian() : TriggerSkill("jgbiantian") {
         frequency = Compulsory;
         events << EventPhaseStart << Death << EventLoseSkill << FinishJudge;
     }
@@ -578,7 +578,8 @@ public:
         return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
         room->notifySkillInvoked(player, objectName());
         foreach(ServerPlayer *p, room->getOtherPlayers(player)){
             if (!p->isFriendWith(player) && !p->isChained())
@@ -645,7 +646,7 @@ public:
         return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+    virtual bool onPhaseChange(ServerPlayer *player) const{
         QList<ServerPlayer *> targets;
         foreach(ServerPlayer *p, room->getOtherPlayers(player)){
             if (!p->isFriendWith(player))
@@ -660,7 +661,8 @@ public:
         use.from = player;
         use.to = targets;
 
-        room->useCard(use);
+        player->getRoom()->useCard(use);
+
         return false;
     }
 };
