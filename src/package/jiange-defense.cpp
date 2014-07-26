@@ -22,6 +22,7 @@
 #include "skill.h"
 #include "engine.h"
 #include "standard-tricks.h"
+#include "standard-basics.h"
 
 class JGJizhen : public PhaseChangeSkill{
 public:
@@ -848,9 +849,189 @@ public:
     }
 };
 
+class JGChiying : public TriggerSkill{
+public:
+    JGChiying() : TriggerSkill("jgchiying") {
+        events << DamageInflicted;
+        frequency = Compulsory;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+        ServerPlayer *zidan = room->findPlayerBySkillName(objectName());
+        if (zidan != NULL && player != NULL && zidan->isFriendWith(player)) {
+            ask_who = zidan;
+            DamageStruct damage = data.value<DamageStruct>();
+            if (damage.damage >= 2)
+                return QStringList(objectName());
+        }
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
+        return ask_who->hasShownSkill(objectName()) || ask_who->askForSkillInvoke(objectName());
+    }
+
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer *) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        //silverlion? log
+        damage.damage = 1;
+        data = QVariant::fromValue(damage);
+        return false;
+    }
+};
+
+class JGJingfan : public DistanceSkill{
+public:
+    JGJingfan() : DistanceSkill("zgjingfan") {
+
+    }
+
+    virtual int getCorrect(const Player *from, const Player *to) const{
+        if (from->isFriendWith(to))
+            return 0;
+
+        foreach(const Player *p, from->getAliveSiblings()) {
+            if (p->isFriendWith(from) && p != from && p->hasShownSkill(objectName()))
+                return -1;
+        }
+
+        return 0;
+    }
+};
+
+class JGXiaoshou : public PhaseChangeSkill{
+public:
+    JGXiaoshou() : PhaseChangeSkill("jgxiaoshou") {
+
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
+        if (!TriggerSkill::triggerable(player) || player->getPhase() != Player::Finish)
+            return QStringList();
+
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (!p->isFriendWith(player) && p->getHp() >= player->getHp())
+                return QStringList(objectName());
+        }
+
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        QList<ServerPlayer *> players;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (!p->isFriendWith(player) && p->getHp() >= player->getHp())
+                players << p;
+        }
+
+        player->tag.remove("jgxiaoshou");
+        ServerPlayer *victim = room->askForPlayerChosen(player, players, objectName(), "@jgxiaoshou", true, true);
+        if (victim != NULL) {
+            player->tag["jgxiaoshou"] = QVariant::fromValue(victim);
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        ServerPlayer *victim = target->tag["jgxiaoshou"].value<ServerPlayer *>();
+        target->tag.remove("jgxiaoshou");
+        if (victim != NULL)
+            victim->getRoom()->damage(DamageStruct(objectName(), target, victim, 3));
+
+        return false;
+    }
+};
+
+class JGLeili : public TriggerSkill{
+public:
+    JGLeili() : TriggerSkill("jgleili") {
+        events << Damage;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
+        if (!TriggerSkill::triggerable(player))
+            return QStringList();
+
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.card != NULL && damage.card->isKindOf("Slash"))
+            return QStringList(objectName());
+
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        QList<ServerPlayer *> players;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (!p->isFriendWith(player))
+                players << p;
+        }
+
+        player->tag.remove("jgleili");
+        ServerPlayer *victim = room->askForPlayerChosen(player, players, objectName(), "@jgleili", true, true);
+        if (victim != NULL) {
+            player->tag["jgleili"] = QVariant::fromValue(victim);
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        ServerPlayer *victim = player->tag["jgleili"].value<ServerPlayer *>();
+        player->tag.remove("jgleili");
+        if (victim != NULL)
+            room->damage(DamageStruct(objectName(), player, victim, 1, DamageStruct::Thunder));
+
+        return false;
+    }
+};
+
+class JGFengxing : public PhaseChangeSkill{
+public:
+    JGFengxing() : PhaseChangeSkill("jgfengxing") {
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->getPhase() == Player::Start;
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        QList<ServerPlayer *> players;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (!p->isFriendWith(player))
+                players << p;
+        }
+
+        player->tag.remove("jgfengxing");
+        ServerPlayer *victim = room->askForPlayerChosen(player, players, objectName(), "@jgfengxing", true/*, true*/);
+        if (victim != NULL) {
+            player->tag["jgfengxing"] = QVariant::fromValue(victim);
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        ServerPlayer *victim = target->tag["jgfengxing"].value<ServerPlayer *>();
+        target->tag.remove("jgfengxing");
+        if (victim != NULL) {
+            Slash *slash = new Slash(Card::NoSuit, 0);
+            slash->setSkillName("_" + objectName());
+            slash->setShowSkill(objectName());
+            CardUseStruct use;
+            use.card = slash;
+            use.from = target;
+            use.to << victim;
+            use.m_addHistory = false;
+            victim->getRoom()->useCard(use, false);
+        }
+        return false;
+    }
+};
 
 JiangeDefensePackage::JiangeDefensePackage()
-    : Package("jiange-defense", Package::MixedPack){
+    : Package("jiange-defense", Package::MixedPack) {
 
 }
 
