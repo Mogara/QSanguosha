@@ -871,8 +871,10 @@ public:
         return ask_who->hasShownSkill(objectName()) || ask_who->askForSkillInvoke(objectName());
     }
 
-    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
+        room->notifySkillInvoked(ask_who, objectName());
         DamageStruct damage = data.value<DamageStruct>();
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ask_who->objectName(), player->objectName());
         //silverlion? log
         damage.damage = 1;
         data = QVariant::fromValue(damage);
@@ -1029,6 +1031,112 @@ public:
         return false;
     }
 };
+
+class JGKonghunRecord : public TriggerSkill{
+public:
+    JGKonghunRecord() : TriggerSkill("#jgkonghun-record") {
+        events << DamageDone;
+        frequency = Compulsory;
+    }
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        DamageStruct damage = data.value<DamageStruct>();
+        if (damage.from && damage.from->hasSkill("jgkonghun") && damage.reason == "jgkonghun") {
+            ask_who = damage.from;
+            return QStringList(objectName());
+        }
+
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
+        ask_who->addMark("jgkonghun", 1);
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *) const{
+        Q_ASSERT(false);
+        return false;
+    }
+};
+
+class JGKonghun : public PhaseChangeSkill{
+public:
+    JGKonghun() : PhaseChangeSkill("jgkonghun") {
+
+    }
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!TriggerSkill::triggerable(player) || player->getPhase() != Player::Play)
+            return QStringList();
+
+        int num = 0;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+            if (!p->isFriendWith(player))
+                ++num;
+        }
+
+        if (player->getLostHp() >= num)
+            return QStringList(objectName());
+
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+        player->setMark("jgkonghun", 0);
+        return player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+
+        QList<ServerPlayer *> players;
+        foreach(ServerPlayer *p, room->getAlivePlayers()){
+            if (!p->isFriendWith(player)){
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
+                players << p;
+            }
+        }
+
+        room->sortByActionOrder(players);
+        foreach(ServerPlayer *p, players)
+            room->damage(DamageStruct(objectName(), player, p, 1, DamageStruct::Thunder));
+
+        int n = player->getMark("zgkonghun");
+        player->setMark("zgkonghun", 0);
+
+        if (n > 0){
+            RecoverStruct rec;
+            rec.recover = n;
+            rec.who = player;
+            room->recover(player, rec);
+        }
+
+        return false;
+    }
+};
+
+class JGFanshi : public PhaseChangeSkill{
+public:
+    JGFanshi() : PhaseChangeSkill("jgfanshi"){
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->getPhase() == Player::Finish/* && target->hasShownSkill(this)*/;
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+        return player->hasShownSkill(this) && player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *target) const{
+        target->getRoom()->loseHp(target);
+        return false;
+    }
+};
+
+
 
 JiangeDefensePackage::JiangeDefensePackage()
     : Package("jiange-defense", Package::MixedPack) {
