@@ -885,7 +885,7 @@ public:
 
 class JGJingfan : public DistanceSkill{
 public:
-    JGJingfan() : DistanceSkill("zgjingfan") {
+    JGJingfan() : DistanceSkill("jgjingfan") {
 
     }
 
