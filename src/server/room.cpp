@@ -2126,17 +2126,19 @@ void Room::prepareForStart() {
                 names.append(generals2[i]);
                 this->setTag(player->objectName(), QVariant::fromValue(names));
                 player->setGeneralName("anjiang");
-                player->setGeneral2Name("anjiang");
                 player->setActualGeneral1Name(generals[i]);
-                player->setActualGeneral2Name(generals2[i]);
                 notifyProperty(player, player, "actual_general1");
-                notifyProperty(player, player, "actual_general2");
-                foreach(ServerPlayer *p, getOtherPlayers(player)) {
+                foreach(ServerPlayer *p, getOtherPlayers(player))
                     notifyProperty(p, player, "general");
-                    notifyProperty(p, player, "general2");
-                }
                 notifyProperty(player, player, "general", generals[i]);
-                notifyProperty(player, player, "general2", generals2[i]);
+                if (generals[i] != generals2[i]) {
+                    player->setGeneral2Name("anjiang");
+                    player->setActualGeneral2Name(generals2[i]);
+                    notifyProperty(player, player, "actual_general2");
+                    foreach(ServerPlayer *p, getOtherPlayers(player))
+                        notifyProperty(p, player, "general2");
+                    notifyProperty(player, player, "general2", generals2[i]);
+                }
                 setPlayerProperty(player, "kingdom", kingdoms[i]);
             }
         }

@@ -109,6 +109,6 @@ QString JiangeDefenseScenario::getRandomShuGhost() const{
 
 QString JiangeDefenseScenario::getRandomShuMachine() const{
     QStringList machines;
-    machines << "jg_qinglong_machine" << "jg_baohu_machine" << "jg_zhuque_machine" << "jg_xuanwu_machine";
+    machines << "jg_qinglong_machine" << "jg_baihu_machine" << "jg_zhuque_machine" << "jg_xuanwu_machine";
     return machines.at(qrand() % machines.length());
 }

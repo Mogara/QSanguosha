@@ -40,8 +40,10 @@ public:
         return false;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
-        return (player->getPhase() == Player::Start && !player->hasShownGeneral1() && player->disableShow(true).isEmpty()) ? QStringList(objectName()) : QStringList();
+    virtual bool triggerable(const ServerPlayer *player) const{
+        return player->getPhase() == Player::Start
+               && !player->hasShownGeneral1()
+               && player->disableShow(true).isEmpty();
     }
 };
 
@@ -57,8 +59,11 @@ public:
         return false;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer * &) const{
-        return (player->getPhase() == Player::Start && !player->hasShownGeneral2() && player->disableShow(false).isEmpty()) ? QStringList(objectName()) : QStringList();
+    virtual bool triggerable(const ServerPlayer *player) const{
+        return player->getPhase() == Player::Start
+               && player->getGeneral2()
+               && !player->hasShownGeneral2()
+               && player->disableShow(false).isEmpty();
     }
 };
 
@@ -831,7 +836,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
                     break;// 一个亮了，一个没亮，不是小伙伴，呵呵一笑。
                 }
                 if (!p->hasShownOneGeneral() && !p2->hasShownOneGeneral()) {
-                    if (p->getActualGeneral1()->getKingdom() != p2->getActualGeneral2()->getKingdom()) {
+                    if (p->getActualGeneral1()->getKingdom() != p2->getActualGeneral1()->getKingdom()) {
                         has_diff_kingdoms = true;
                         break;  // 两个都没亮，势力还不同，呵呵一笑
                     }
