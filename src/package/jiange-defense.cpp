@@ -1490,23 +1490,23 @@ JiangeDefensePackage::JiangeDefensePackage()
     General *bian = new General(this, "jg_bian_machine", "wei", 4, true, true);
     bian->setGender(General::Sexless);
     bian->addSkill(new JGJiguan("bian"));
-    //didong
+    bian->addSkill(new JGDidong);
 
     General *suanni = new General(this, "jg_suanni_machine", "wei", 3, true, true);
     suanni->setGender(General::Sexless);
     suanni->addSkill(new JGJiguan("suanni"));
-    //lianyu
+    suanni->addSkill(new JGLianyu);
 
     General *taotie = new General(this, "jg_taotie_machine", "wei", 5, true, true);
     taotie->setGender(General::Sexless);
     taotie->addSkill(new JGJiguan("taotie"));
-    //tanshi
-    //tunshi
+    taotie->addSkill(new JGTanshi);
+    taotie->addSkill(new JGTunshi);
 
     General *yazi = new General(this, "jg_yazi_machine", "wei", 4, true, true);
     yazi->setGender(General::Sexless);
     yazi->addSkill(new JGJiguan("yazi"));
-    //dixian
+    yazi->addSkill(new JGDixian);
 
 }
 
