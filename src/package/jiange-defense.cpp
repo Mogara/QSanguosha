@@ -1033,6 +1033,96 @@ public:
 JiangeDefensePackage::JiangeDefensePackage()
     : Package("jiange-defense", Package::MixedPack) {
 
+    General *liubei = new General(this, "jg_liubei", "shu", 5, true, true);
+    liubei->addSkill(new JGJizhen);
+    liubei->addSkill(new JGLingfeng);
+
+    General *zhuge = new General(this, "jg_zhuge", "shu", 4, true, true);
+    zhuge->addSkill(new JGBiantian);
+    zhuge->addSkill(new JGBiantianDW);
+    zhuge->addSkill(new JGBiantianKF);
+    related_skills.insertMulti("jgbiantian", "#jgbiantian-dw");
+    related_skills.insertMulti("jgbiantian", "#jgbiantian-kf");
+    zhuge->addSkill("bazhen");
+
+    General *yueying = new General(this, "jg_yueying", "shu", 4, false, true);
+    yueying->addSkill(new JGGongshen);
+    yueying->addSkill(new JGZhinang);
+    yueying->addSkill(new JGJingmiao);
+    yueying->addSkill(new JGJingmiaoRecord);
+    related_skills.insertMulti("jgjingmiao", "#jgjingmiao-record");
+    
+    General *pangtong = new General(this, "jg_pangtong", "shu", 4, true, true);
+    pangtong->addSkill(new JGYuhuo("pangtong"));
+    pangtong->addSkill(new JGQiwu);
+    pangtong->addSkill(new JGQiwuRecord);
+    pangtong->addSkill(new JGTianyu);
+    related_skills.insertMulti("jgqiwu", "#jgqiwu-record");
+
+    General *qinglong = new General(this, "jg_qinglong_machine", "shu", 4, true, true);
+    qinglong->setGender(General::Sexless);
+    qinglong->addSkill(new JGJiguan("qinglong"));
+    qinglong->addSkill(new JGMojian);
+
+    General *baihu = new General(this, "jg_baihu_machine", "shu", 4, true, true);
+    baihu->setGender(General::Sexless);
+    baihu->addSkill(new JGJiguan("baihu"));
+    baihu->addSkill(new JGZhenwei);
+    baihu->addSkill(new JGBenlei);
+
+    General *zhuque = new General(this, "jg_zhuque_machine", "shu", 5, true, true);
+    zhuque->setGender(General::Sexless);
+    zhuque->addSkill(new JGJiguan("zhuque"));
+    zhuque->addSkill(new JGYuhuo("zhuque"));
+    zhuque->addSkill(new JGTianyun);
+
+    General *xuanwu = new General(this, "jg_xuanwu_machine", "shu", 5, true, true);
+    xuanwu->setGender(General::Sexless);
+    xuanwu->addSkill(new JGJiguan("xuanwu"));
+    xuanwu->addSkill(new JGYizhong);
+    xuanwu->addSkill(new JGLingyu);
+
+    //------------------------------------------------------------------------------------
+
+    General *caozhen = new General(this, "jg_caozhen", "wei", 5, true, true);
+    caozhen->addSkill(new JGChiying);
+    caozhen->addSkill(new JGJingfan);
+
+    General *xiahou = new General(this, "jg_xiahou", "wei", 4, true, true);
+    xiahou->addSkill(new JGXiaoshou);
+    xiahou->addSkill(new JGLeili);
+    xiahou->addSkill(new JGFengxing);
+
+    General *sima = new General(this, "jg_sima", "wei", 5, true, true);
+    //konghun
+    //fanshi
+    //xuanlei
+
+    General *zhanghe = new General(this, "jg_zhanghe", "wei", 4, true, true);
+    //huodi
+    //jueji
+
+    General *bian = new General(this, "jg_bian_machine", "wei", 4, true, true);
+    bian->setGender(General::Sexless);
+    bian->addSkill(new JGJiguan("bian"));
+    //didong
+
+    General *suanni = new General(this, "jg_suanni_machine", "wei", 3, true, true);
+    suanni->setGender(General::Sexless);
+    suanni->addSkill(new JGJiguan("suanni"));
+    //lianyu
+
+    General *taotie = new General(this, "jg_taotie_machine", "wei", 5, true, true);
+    taotie->setGender(General::Sexless);
+    taotie->addSkill(new JGJiguan("taotie"));
+    //tanshi
+    //tunshi
+
+    General *yazi = new General(this, "jg_yazi_machine", "wei", 4, true, true);
+    yazi->setGender(General::Sexless);
+    yazi->addSkill(new JGJiguan("yazi"));
+    //dixian
+
 }
 
 
