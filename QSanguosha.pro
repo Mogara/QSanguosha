@@ -66,6 +66,7 @@ SOURCES += \
     src/scenario/miniscenarios.cpp \
     src/scenario/scenario.cpp \
     src/scenario/scenerule.cpp \
+    src/scenario/jiange-defense-scenario.cpp \
     src/server/ai.cpp \
     src/server/gamerule.cpp \
     src/server/generalselector.cpp \
@@ -167,6 +168,7 @@ HEADERS += \
     src/scenario/miniscenarios.h \
     src/scenario/scenario.h \
     src/scenario/scenerule.h \
+    src/scenario/jiange-defense-scenario.h \
     src/server/ai.h \
     src/server/gamerule.h \
     src/server/generalselector.h \
