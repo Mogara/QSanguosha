@@ -649,6 +649,8 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         QList<ServerPlayer *> targets;
+        Room *room = player->getRoom();
+
         foreach(ServerPlayer *p, room->getOtherPlayers(player)){
             if (!p->isFriendWith(player))
                 targets << p;
@@ -662,7 +664,7 @@ public:
         use.from = player;
         use.to = targets;
 
-        player->getRoom()->useCard(use);
+        room->useCard(use);
 
         return false;
     }
@@ -693,7 +695,7 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
         if (TriggerSkill::triggerable(player) && player->getPhase() == Player::Start){
             foreach(ServerPlayer *p, room->getOtherPlayers(player)){
                 if (!p->isFriendWith(player) && p->getGeneral()->objectName().contains("machine"))
@@ -704,7 +706,7 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer * ) const{
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
     }
 
@@ -738,7 +740,7 @@ public:
         return TriggerSkill::triggerable(target) && target->getHp() > 0;
     }
 
-    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         QList<ServerPlayer *> players;
         foreach(ServerPlayer *p, room->getOtherPlayers(player)){
             if (!p->isFriendWith(player))
