@@ -433,7 +433,8 @@ public:
 
 class JGYuhuo : public TriggerSkill{
 public:
-    JGYuhuo() : TriggerSkill("jgyuhuo"){
+    JGYuhuo(const QString &owner) : TriggerSkill("jgyuhuo_" + owner){
+        setObjectName("jgyuhuo_" + owner);
         events << DamageInflicted;
         frequency = Compulsory;
     }
