@@ -46,6 +46,7 @@ config = {
 		"FormationEquip",
 		"MomentumEquip" ,
 		"StrategicAdvantage" ,
+		"JiangeDefense",
 
 		"Standard",
 		"Formation",
