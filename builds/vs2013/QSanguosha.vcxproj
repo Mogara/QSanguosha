@@ -204,7 +204,7 @@
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <DisableSpecificWarnings>4100;4005</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4005;</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -257,7 +257,7 @@
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <DisableSpecificWarnings>4100;4005</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4005;</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -310,7 +310,7 @@
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <DisableSpecificWarnings>4100;4005;4267</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4005;4267</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -363,7 +363,7 @@
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <DisableSpecificWarnings>4100;4005;4267</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4005;4267</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -415,7 +415,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
-      <DisableSpecificWarnings>4100;4005</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4005;</DisableSpecificWarnings>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -465,7 +465,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
-      <DisableSpecificWarnings>4100;4005</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4005;</DisableSpecificWarnings>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -515,7 +515,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
-      <DisableSpecificWarnings>4100;4005;4267</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4005;4267</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
@@ -566,7 +566,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
-      <DisableSpecificWarnings>4100;4005;4267</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4005;4267</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
@@ -844,7 +844,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">true</ExcludedFromBuild>
     </ClCompile>
-	    <ClCompile Include="Debug\moc_jiange-defense.cpp">
+    <ClCompile Include="Debug\moc_jiange-defense.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">true</ExcludedFromBuild>
@@ -1320,7 +1320,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Release\moc_jiange-defense.cpp">
-	      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">true</ExcludedFromBuild>
