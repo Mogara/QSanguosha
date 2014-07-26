@@ -541,11 +541,12 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        room->notifySkillInvoked(player, objectName());
         RecoverStruct rec;
         rec.recover = 1;
         rec.who = player;
@@ -553,6 +554,39 @@ public:
         return false;
     }
 };
+
+class JGTianyu : public PhaseChangeSkill{
+public:
+    JGTianyu() : PhaseChangeSkill("jgtianyu"){
+        frequency = Compulsory;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
+        if (!TriggerSkill::triggerable(player))
+            return QStringList();
+
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+            if (!p->isFriendWith(player) && !p->isChained())
+                return QStringList(objectName());
+        }
+
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        room->notifySkillInvoked(player, objectName());
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+            if (!p->isFriendWith(player) && !p->isChained())
+                room->setPlayerProperty(p, "chained", true);
+        }
+        return false;
+    }
+};
+
 
 JiangeDefensePackage::JiangeDefensePackage()
     : Package("jiange-defense", Package::MixedPack){
