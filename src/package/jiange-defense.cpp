@@ -121,6 +121,10 @@ public:
         events << EventPhaseStart << Death << EventLoseSkill << FinishJudge;
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (triggerEvent == EventPhaseStart && TriggerSkill::triggerable(player)) {
             if (player->getPhase() == Player::RoundStart) {
@@ -189,6 +193,10 @@ public:
         events << DamageForseen;
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         ServerPlayer *zhuge = room->findPlayerBySkillName("jgbiantian");
         if (zhuge == NULL)
@@ -226,6 +234,10 @@ public:
         events << DamageForseen;
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         ServerPlayer *zhuge = room->findPlayerBySkillName("jgbiantian");
         if (zhuge == NULL)
@@ -260,6 +272,10 @@ public:
 class JGGongshen : public PhaseChangeSkill{
 public:
     JGGongshen() : PhaseChangeSkill("jggongshen") {
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
@@ -319,6 +335,10 @@ public:
 
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual bool triggerable(const ServerPlayer *player) const{
         return TriggerSkill::triggerable(player) && player->getPhase() == Player::Start;
     }
@@ -373,6 +393,10 @@ public:
         frequency = Compulsory;
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer* &) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if (use.card != NULL && use.from != NULL && use.card->isKindOf("Nullification"))
@@ -387,6 +411,10 @@ public:
     JGJingmiao() : TriggerSkill("jgjingmiao") {
         events << CardsMoveOneTime;
         frequency = Compulsory;
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
@@ -441,6 +469,10 @@ public:
         frequency = Compulsory;
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         return (TriggerSkill::triggerable(player) && data.value<DamageStruct>().nature == DamageStruct::Fire) ? QStringList(objectName()) : QStringList();
     }
@@ -467,6 +499,10 @@ public:
         global = true;
         events << CardUsed << CardResponded << CardFinished;
         frequency = Compulsory;
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
@@ -512,6 +548,10 @@ public:
     JGQiwu() : TriggerSkill("jgqiwu") {
         events << CardsMoveOneTime;
         frequency = Compulsory;
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
@@ -565,6 +605,10 @@ public:
         frequency = Compulsory;
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
         if (!TriggerSkill::triggerable(player))
             return QStringList();
@@ -598,6 +642,10 @@ public:
         setObjectName("jgjiguan_" + owner);
         events << TargetConfirming;
         frequency = Compulsory;
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
@@ -639,6 +687,10 @@ class JGMojian : public PhaseChangeSkill{
 public:
     JGMojian() : PhaseChangeSkill("jgmojian") {
         frequency = Compulsory;
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -697,6 +749,10 @@ public:
         frequency = Compulsory;
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
         if (TriggerSkill::triggerable(player) && player->getPhase() == Player::Start) {
             foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
@@ -736,6 +792,10 @@ class JGTianyun : public PhaseChangeSkill{
 public:
     JGTianyun() : PhaseChangeSkill("jgtianyun") {
 
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -788,6 +848,10 @@ public:
         events << SlashEffected;
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         if (!TriggerSkill::triggerable(player) || player->getArmor() != NULL)
             return QStringList();
@@ -816,6 +880,10 @@ class JGLingyu : public PhaseChangeSkill{
 public:
     JGLingyu() : PhaseChangeSkill("jglingyu") {
 
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
@@ -855,6 +923,10 @@ public:
     JGChiying() : TriggerSkill("jgchiying") {
         events << DamageInflicted;
         frequency = Compulsory;
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
@@ -908,6 +980,10 @@ public:
 
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
         if (!TriggerSkill::triggerable(player) || player->getPhase() != Player::Finish)
             return QStringList();
@@ -952,6 +1028,10 @@ public:
         events << Damage;
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (!TriggerSkill::triggerable(player))
             return QStringList();
@@ -993,6 +1073,10 @@ class JGFengxing : public PhaseChangeSkill{
 public:
     JGFengxing() : PhaseChangeSkill("jgfengxing") {
 
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
@@ -1040,6 +1124,10 @@ public:
         frequency = Compulsory;
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer* &ask_who) const{
         DamageStruct damage = data.value<DamageStruct>();
         if (damage.from && damage.from->hasSkill("jgkonghun") && damage.reason == "jgkonghun") {
@@ -1065,6 +1153,10 @@ class JGKonghun : public PhaseChangeSkill{
 public:
     JGKonghun() : PhaseChangeSkill("jgkonghun") {
 
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
@@ -1123,6 +1215,10 @@ public:
         frequency = Compulsory;
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual bool triggerable(const ServerPlayer *target) const{
         return TriggerSkill::triggerable(target) && target->getPhase() == Player::Finish/* && target->hasShownSkill(this)*/;
     }
@@ -1141,6 +1237,10 @@ class JGXuanlei : public PhaseChangeSkill{
 public:
     JGXuanlei() : PhaseChangeSkill("jgxuanlei") {
         frequency = Compulsory;
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
@@ -1183,6 +1283,10 @@ class JGHuodi : public PhaseChangeSkill{
 public:
     JGHuodi() : PhaseChangeSkill("jghuodi") {
 
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
@@ -1229,6 +1333,10 @@ public:
         events << DrawNCards;
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
         ServerPlayer *zhanghe = room->findPlayerBySkillName(objectName());
         if (zhanghe != NULL && zhanghe->isAlive() && !player->isFriendWith(zhanghe) && player->isWounded() && data.toInt() > 0) {
@@ -1260,6 +1368,10 @@ class JGDidong : public PhaseChangeSkill{
 public:
     JGDidong() : PhaseChangeSkill("jgdidong") {
 
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual bool triggerable(const ServerPlayer *player) const{
@@ -1298,6 +1410,10 @@ public:
 
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual bool triggerable(const ServerPlayer *target) const{
         return TriggerSkill::triggerable(target) && target->getPhase() == Player::Finish;
     }
@@ -1332,6 +1448,10 @@ public:
         frequency = Compulsory;
     }
 
+    virtual bool canPreshow() const{
+        return false;
+    }
+
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
     }
@@ -1346,6 +1466,10 @@ class JGTunshi : public PhaseChangeSkill{
 public:
     JGTunshi() : PhaseChangeSkill("jgtunshi"){
         frequency = Compulsory;
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
@@ -1387,6 +1511,10 @@ class JGDixian : public PhaseChangeSkill{
 public:
     JGDixian() : PhaseChangeSkill("jgdixian") {
 
+    }
+
+    virtual bool canPreshow() const{
+        return false;
     }
 
     virtual bool triggerable(const ServerPlayer *player) const{
