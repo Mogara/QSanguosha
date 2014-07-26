@@ -28,14 +28,13 @@ JiangeDefenseScenario::JiangeDefenseScenario()
 }
 
 void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2, QStringList &kingdoms, Room *room) const{
-    kingdoms << "wei" << "wei" << "wei" << "wei"
-             << "shu" << "shu" << "shu" << "shu";
+    QMap<QString, QStringList> roles;
     QStringList wei_roles, shu_roles;
     wei_roles << "ghost" << "machine" << "human" << "human";
     shu_roles << "ghost" << "machine" << "human" << "human";
+    roles.insert("wei", wei_roles);
+    roles.insert("shu", shu_roles);
     qShuffle(kingdoms);
-    qShuffle(wei_roles);
-    qShuffle(shu_roles);
     QStringList wei_generals, shu_generals;
     foreach (QString general, Sanguosha->getLimitedGeneralNames()) {
         QString kingdom = Sanguosha->getGeneral(general)->getKingdom();
@@ -44,40 +43,68 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
         else if (kingdom == "shu")
             shu_generals << general;
     }
+    qShuffle(wei_generals);
+    qShuffle(shu_generals);
+    QMap<ServerPlayer *, QStringList> human_map; // Rara said, human couldn't get ghost or machine as its general.
     QList<ServerPlayer *> players = room->getPlayers();
     for (int i = 0; i < 8; i++) {
-        if (kingdoms[i] == "wei") {
-            QString role = wei_roles.takeFirst();
-            if (role == "ghost") {
-                QString name = getRandomWeiGhost();
-                generals << name;
-                generals2 << name;
-            } else if (role == "machine") {
-                QString name = getRandomWeiMachine();
-                generals << name;
-                generals2 << name;
-            } else if (role == "human") {
-                QStringList choices;
+        if (players[i]->getState() == "online") {
+            QStringList choices;
+            foreach (QString kingdom, roles.keys())
+                if (roles[kingdom].contains("human"))
+                    choices << kingdom;
+            QString choice = choices.at(qrand() % choices.length());
+            QStringList role_list = roles[choice];
+            role_list.removeOne("human");
+            roles[choice] = role_list;
+            if (choice == "wei") {
+                QStringList weijiangs;
                 for (int j = 0; j < 4; j++)
-                    choices << wei_generals.takeFirst();
-                QString answer = room->askForGeneral(players[i], choices, QString(), false);
-                generals << answer.split("+").first();
-                generals2 << answer.split("+").last();
+                    weijiangs << wei_generals.takeFirst();
+                QStringList answer = room->askForGeneral(players[i], weijiangs, QString(), false).split("+");
+                answer.prepend("wei");
+                human_map.insert(players[i], answer);
+            } else if (choice == "shu") {
+                QStringList shujiangs;
+                for (int j = 0; j < 5; j++)
+                    shujiangs << shu_generals.takeFirst();
+                QStringList answer = room->askForGeneral(players[i], shujiangs, QString(), false).split("+");
+                answer.prepend("shu");
+                human_map.insert(players[i], answer);
             }
+        }
+    }
+                    
+    for (int i = 0; i < 8; i++) {
+        if (human_map.keys().contains(players[i])) {
+            QStringList answer = human_map[players[i]];
+            kingdoms << answer.takeFirst();
+            generals << answer.takeFirst();
+            generals2 << answer.takeFirst();
         } else {
-            QString role = shu_roles.takeFirst();
+            QStringList kingdom_choices;
+            foreach (QString kingdom, roles.keys())
+                if (!roles[kingdom].isEmpty())
+                    kingdom_choices << kingdom;
+            QString kingdom = kingdom_choices.at(qrand() % kingdom_choices.length());
+            kingdoms << kingdom;
+            QStringList role_list = roles[kingdom];
+            QString role = role_list.at(qrand() % role_list.length());
+            role_list.removeOne(role);
+            roles[kingdom] = role_list;
             if (role == "ghost") {
-                QString name = getRandomShuGhost();
+                QString name = kingdom == "wei" ? getRandomWeiGhost() : getRandomShuGhost();
                 generals << name;
                 generals2 << name;
             } else if (role == "machine") {
-                QString name = getRandomShuMachine();
+                QString name = kingdom == "wei" ? getRandomWeiMachine() : getRandomShuMachine();
                 generals << name;
                 generals2 << name;
             } else if (role == "human") {
+                int n = kingdom == "wei" ? 4 : 5;
                 QStringList choices;
-                for (int j = 0; j < 5; j++)
-                    choices << shu_generals.takeFirst();
+                for (int j = 0; j < n; j++)
+                    choices << ((kingdom == "wei") ? wei_generals.takeFirst() : shu_generals.takeFirst());
                 QString answer = room->askForGeneral(players[i], choices, QString(), false);
                 generals << answer.split("+").first();
                 generals2 << answer.split("+").last();
