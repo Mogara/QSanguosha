@@ -84,18 +84,18 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void setBackgroundBrush(bool center_as_origin);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseDoubleClickEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-    void changeEvent(QEvent *event);
-    void resizeEvent(QResizeEvent *event);
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
+    virtual void mouseDoubleClickEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void changeEvent(QEvent *event);
+    virtual void resizeEvent(QResizeEvent *event);
     void repaintButtons();
 
     bool isLeftPressDown;
     QPoint movePosition;
 
-    static const int S_PADDING = 2;
+    static const int S_PADDING = 8;
     enum Direction { Up, Down, Left, Right, LeftTop, LeftBottom, RightTop, RightBottom, None = -1 };
 
     bool isZoomReady;
@@ -127,6 +127,7 @@ private:
     void restoreFromConfig();
     void region(const QPoint &cursorGlobalPoint);
     void fetchUpdateInformation();
+    void roundCorners();
 
 public slots:
     void startConnection();

@@ -55,6 +55,7 @@
 #include <QCommandLinkButton>
 #include <QFormLayout>
 #include <QNetworkReply>
+#include <QBitmap>
 
 class FitView : public QGraphicsView {
 public:
@@ -161,6 +162,7 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint);
     setAttribute(Qt::WA_TranslucentBackground);
+
     setMouseTracking(true);
     setMinimumWidth(800);
     setMinimumHeight(580);
@@ -206,6 +208,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(view);
     restoreFromConfig();
+
+    roundCorners();
 
     BackLoader::preload();
     gotoScene(start_scene);
@@ -383,14 +387,17 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *)
 
 void MainWindow::changeEvent(QEvent *event)
 {
-    if (event->type() == QEvent::WindowStateChange)
+    if (event->type() == QEvent::WindowStateChange) {
         repaintButtons();
+        roundCorners();
+    }
     QMainWindow::changeEvent(event);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
     repaintButtons();
+    roundCorners();
     QMainWindow::resizeEvent(event);
 }
 
@@ -467,6 +474,25 @@ void MainWindow::fetchUpdateInformation()
 
     connect(versionInfomationReply, SIGNAL(finished()), SLOT(onVersionInfomationGotten()));
     connect(changeLogReply, SIGNAL(finished()), SLOT(onChangeLogGotten()));
+}
+
+void MainWindow::roundCorners()
+{
+    QBitmap mask(size());
+    if (windowState() & (Qt::WindowMaximized | Qt::WindowFullScreen)) {
+        mask.fill(Qt::black);
+    } else {
+        mask.fill();
+        QPainter painter(&mask);
+        QPainterPath path;
+        QRect windowRect = mask.rect();
+        QRect maskRect(windowRect.x() + 1, windowRect.y() + 1, windowRect.width() - 2, windowRect.height() - 2);
+        path.addRoundedRect(maskRect, 5, 5);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        painter.fillPath(path, Qt::black);
+    }
+    setMask(mask);
 }
 
 void MainWindow::repaintButtons()
