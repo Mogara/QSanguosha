@@ -819,7 +819,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
-        if (TriggerSkill::triggerable(player)) {
+        if (TriggerSkill::triggerable(player) && player->getPhase() == Player::Finish) {
             foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
                 if (p->isFriendWith(player) && p->isWounded())
                     return QStringList(objectName());
