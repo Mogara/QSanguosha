@@ -15,6 +15,11 @@ public:
     virtual int getPlayerCount() const;
     virtual QString getRoles() const;
     virtual void onTagSet(Room *room, const QString &key) const;
+    
+    QString getRandomWeiGhost() const;
+    QString getRandomWeiMachine() const;
+    QString getRandomShuGhost() const;
+    QString getRandomShuMachine() const;
 };
 
 #endif
