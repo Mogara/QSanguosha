@@ -50,9 +50,9 @@ struct RoleMapping : public QMap < RolePair, AI::Relation > {
 
 AI::Relation AI::GetRelationHegemony(const ServerPlayer *a, const ServerPlayer *b) {
     Q_ASSERT(a->getRoom() != NULL);
-    const bool aShown = a->getRoom()->getTag(a->objectName()).toStringList().isEmpty();
+    const bool aShown = a->hasShownAllGenerals();
     Q_ASSERT(b->getRoom() != NULL);
-    const bool bShown = b->getRoom()->getTag(b->objectName()).toStringList().isEmpty();
+    const bool bShown = b->hasShownAllGenerals();
 
     const QString aName = aShown ? a->getGeneralName() :
         a->getRoom()->getTag(a->objectName()).toStringList().first();

@@ -33,6 +33,8 @@
 #include "banpair.h"
 #include "miniscenarios.h"
 
+#include "jiange-defense.h"
+
 #include <lua.hpp>
 #include <QFile>
 #include <QTextStream>
@@ -65,6 +67,7 @@ void Engine::_loadMiniScenarios() {
 
 void Engine::_loadModScenarios() {
     //wait for a new scenario
+    addScenario(new JiangeDefenseScenario());
 }
 
 void Engine::addPackage(const QString &name) {
@@ -735,6 +738,10 @@ QString Engine::getRoles(const QString &mode) const{
         QString rolechar = table[n];
 
         return rolechar;
+    } else {
+        const Scenario *scenario = getScenario(mode);
+        if (scenario)
+            return scenario->getRoles();
     }
     return QString();
 }
