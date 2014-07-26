@@ -661,7 +661,115 @@ public:
         use.to = targets;
 
         room->useCard(use);
+        return false;
+    }
+};
 
+class JGZhenwei : public DistanceSkill{
+public:
+    JGZhenwei() : DistanceSkill("jgzhenwei"){
+
+    }
+
+    virtual int getCorrect(const Player *from, const Player *to) const{
+        if (from->isFriendWith(to))
+            return 0;
+
+        foreach(const Player *p, to->getAliveSiblings()){
+            if (p->isFriendWith(to) && p != to && p->hasShownSkill(objectName()))
+                return 1;
+        }
+
+        return 0;
+    }
+};
+
+class JGBenlei : public PhaseChangeSkill{
+public:
+    JGBenlei() : PhaseChangeSkill("jgbenlei"){
+        frequency = Compulsory;
+    }
+
+    virtual QStringList triggerable(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
+        if (TriggerSkill::triggerable(player) && player->getPhase() == Player::Start){
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+                if (!p->isFriendWith(player) && p->getGeneral()->objectName().contains("machine"))
+                    return QStringList(objectName());
+            }
+        }
+
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent , Room *, ServerPlayer *player, QVariant &, ServerPlayer * ) const{
+        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        Room *room = player->getRoom();
+        room->notifySkillInvoked(player, objectName());
+
+        ServerPlayer *victim = NULL;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+            if (!p->isFriendWith(player) && p->getGeneral()->objectName().contains("machine")){
+                victim = p;
+                break;
+            }
+        }
+
+        if (victim != NULL){
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), victim->objectName());
+            room->damage(DamageStruct(objectName(), player, victim, 1, DamageStruct::Thunder));
+        }
+        return false;
+    }
+};
+
+class JGTianyun : public PhaseChangeSkill{
+public:
+    JGTianyun() : PhaseChangeSkill("jgtianyun"){
+
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->getHp() > 0;
+    }
+
+    virtual bool cost(TriggerEvent , Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        QList<ServerPlayer *> players;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+            if (!p->isFriendWith(player))
+                players << p;
+        }
+
+        if (players.isEmpty())
+            return false;
+
+        player->tag.remove("jgtianyun");
+        ServerPlayer *victim = room->askForPlayerChosen(player, players, objectName(), "@jgtianyun", true, true);
+
+        if (victim != NULL){
+            player->tag["jgtianyun"] = QVariant::fromValue(victim);
+            room->loseHp(player);
+            return true;
+        }
+
+        return false;
+    }
+
+    virtual bool onPhaseChange(ServerPlayer *player) const{
+        ServerPlayer *victim = player->tag["jgtianyun"].value<ServerPlayer *>();
+        if (victim == NULL)
+            return false;
+
+        Room *room = player->getRoom();
+        room->damage(DamageStruct(objectName(), player, victim, 1, DamageStruct::Fire));
+        QList<const Card *> cards = victim->getEquips();
+        if (!cards.isEmpty()){
+            DummyCard dummy;
+            dummy.addSubcards(cards);
+            room->throwCard(&dummy, victim, player);
+        }
         return false;
     }
 };
