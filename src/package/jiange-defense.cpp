@@ -253,6 +253,62 @@ public:
     }
 };
 
+class JGGongshen : public TriggerSkill{
+public:
+    JGGongshen() : TriggerSkill("jggongshen") {
+        events << EventPhaseStart;
+    }
+
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        if (!TriggerSkill::triggerable(player) || player->getPhase() != Player::Finish)
+            return QStringList();
+
+        player->tag.remove("jggongshen");
+
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (p->getGeneral()->objectName().contains("machine"))
+                return QStringList(objectName());
+        }
+
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+        QList<ServerPlayer *> players;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+            if (p->getGeneral()->objectName().contains("machine"))
+                players << p;
+        }
+
+        if (players.isEmpty())
+            return false;
+
+        ServerPlayer *target = room->askForPlayerChosen(player, players, objectName(), "@jggongshen", true, true);
+        if (target != NULL){
+            player->tag["jggongshen"] = QVariant::fromValue(target);
+            return true;
+        }
+
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
+        ServerPlayer *target = player->tag["jggongshen"].value<ServerPlayer *>();
+        player->tag.remove("jggongshen");
+        if (target != NULL){
+            if (player->isFriendWith(target)){
+                RecoverStruct recover;
+                recover.recover = 1;
+                recover.who = player;
+                room->recover(target, recover);
+            }
+            else
+                room->damage(DamageStruct(objectName(), player, target));
+        }
+        return false;
+    }
+};
+
 JiangeDefensePackage::JiangeDefensePackage()
     : Package("jiange-defense", Package::MixedPack){
 
