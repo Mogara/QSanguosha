@@ -439,7 +439,8 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
             trigger_who.clear();
             foreach(const TriggerSkill *skill, skills) {
                 if (!triggered.contains(skill)) {
-                    if (skill->objectName() == "game_rule" || skill->objectName() == "custom_scenario") {
+                    if (skill->objectName() == "game_rule" || (room->getScenario()
+                                                              && room->getScenario()->objectName() == skill->objectName())) {
                         while (room->isPaused()) {}
                         if (will_trigger.isEmpty()
                             || skill->getPriority() == will_trigger.last()->getPriority()) {
@@ -560,7 +561,8 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
 
                         trigger_who.clear();
                         foreach(const TriggerSkill *skill, triggered) {
-                            if (skill->objectName() == "game_rule") {
+                            if (skill->objectName() == "game_rule" || (room->getScenario()
+                                                                       && room->getScenario()->objectName() == skill->objectName())) {
                                 while (room->isPaused()) {}
                                 continue;
                             }

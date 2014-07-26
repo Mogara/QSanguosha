@@ -9,7 +9,15 @@ public:
     JiangeDefenseScenarioRule(Scenario *scenario)
         : ScenarioRule(scenario)
     {
-        events << GameStart << GameOverJudge << BuryVictim;
+        events << GameStart;
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        if (player == NULL)
+            foreach (ServerPlayer *p, room->getPlayers())
+                if (p->getActualGeneral1Name().startsWith("jg_"))
+                    p->showGeneral(true, true, false);
+        return false;
     }
 };
 
