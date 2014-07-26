@@ -1320,13 +1320,15 @@ JiangeDefensePackage::JiangeDefensePackage()
     xiahou->addSkill(new JGFengxing);
 
     General *sima = new General(this, "jg_sima", "wei", 5, true, true);
-    //konghun
-    //fanshi
-    //xuanlei
+    sima->addSkill(new JGKonghun);
+    sima->addSkill(new JGKonghunRecord);
+    related_skills.insertMulti("jgkonghun", "#jgkonghun-record");
+    sima->addSkill(new JGFanshi);
+    sima->addSkill(new JGXuanlei);
 
     General *zhanghe = new General(this, "jg_zhanghe", "wei", 4, true, true);
-    //huodi
-    //jueji
+    zhanghe->addSkill(new JGHuodi);
+    zhanghe->addSkill(new JGJueji);
 
     General *bian = new General(this, "jg_bian_machine", "wei", 4, true, true);
     bian->setGender(General::Sexless);
