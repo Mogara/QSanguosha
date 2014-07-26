@@ -21,6 +21,7 @@
 #include "jiange-defense.h"
 #include "skill.h"
 #include "engine.h"
+#include "standard-tricks.h"
 
 class JGJizhen : public PhaseChangeSkill{
 public:
@@ -317,8 +318,8 @@ public:
 
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
-        return (TriggerSkill::triggerable(player) && player->getPhase() == Player::Start) ? QStringList(objectName()) : QStringList();
+    virtual bool triggerable(const ServerPlayer *player) const{
+        return TriggerSkill::triggerable(player) && player->getPhase() == Player::Start;
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
@@ -583,6 +584,84 @@ public:
             if (!p->isFriendWith(player) && !p->isChained())
                 room->setPlayerProperty(p, "chained", true);
         }
+        return false;
+    }
+};
+
+class JGJiguan : public TriggerSkill{ //temp method
+public:
+    JGJiguan(const QString &owner) : TriggerSkill("jgjiguan_" + owner){
+        setObjectName("jgjiguan_" + owner);
+        events << TargetConfirming;
+        frequency = Compulsory;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (use.card != NULL && use.card->objectName() == "indulgence" && use.to.contains(player) && TriggerSkill::triggerable(player))
+            return QStringList(objectName());
+
+        return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        room->notifySkillInvoked(player, objectName());
+
+        CardUseStruct use = data.value<CardUseStruct>();
+        LogMessage log;
+        if (use.from) {
+            log.type = "$CancelTarget";
+            log.from = use.from;
+        }
+        else {
+            log.type = "$CancelTargetNoUser";
+        }
+        log.to << player;
+        log.arg = use.card->objectName();
+        room->sendLog(log);
+        room->setEmotion(player, "cancel");
+
+        use.to.removeOne(player);
+        data = QVariant::fromValue(use);
+        return false;
+    }
+};
+
+class JGMojian : public PhaseChangeSkill{
+public:
+    JGMojian() : PhaseChangeSkill("jgmojian"){
+        frequency = Compulsory;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return TriggerSkill::triggerable(target) && target->getPhase() == Player::Play;
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        QList<ServerPlayer *> targets;
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)){
+            if (!p->isFriendWith(player))
+                targets << p;
+        }
+
+        ArcheryAttack *aa = new ArcheryAttack(Card::NoSuit, 0);
+        aa->setSkillName("_" + objectName());
+        aa->setShowSkill(objectName());
+        CardUseStruct use;
+        use.card = aa;
+        use.from = player;
+        use.to = targets;
+
+        room->useCard(use);
+
         return false;
     }
 };
