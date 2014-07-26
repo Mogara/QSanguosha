@@ -434,7 +434,7 @@ public:
 
 class JGYuhuo : public TriggerSkill{
 public:
-    JGYuhuo(const QString &owner) : TriggerSkill("jgyuhuo_" + owner) {
+    explicit JGYuhuo(const QString &owner) : TriggerSkill("jgyuhuo_" + owner) {
         setObjectName("jgyuhuo_" + owner);
         events << DamageInflicted;
         frequency = Compulsory;
@@ -593,7 +593,7 @@ public:
 
 class JGJiguan : public TriggerSkill{ //temp method
 public:
-    JGJiguan(const QString &owner) : TriggerSkill("jgjiguan_" + owner) {
+    explicit JGJiguan(const QString &owner) : TriggerSkill("jgjiguan_" + owner) {
         setObjectName("jgjiguan_" + owner);
         events << TargetConfirming;
         frequency = Compulsory;

@@ -443,7 +443,7 @@ public:
     }
 };
 
-Mashu::Mashu(const QString &owner) : DistanceSkill("mashu_" + owner), owner(owner) {
+Mashu::Mashu(const QString &owner) : DistanceSkill("mashu_" + owner) {
 }
 
 int Mashu::getCorrect(const Player *from, const Player *) const{
