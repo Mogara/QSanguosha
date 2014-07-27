@@ -1532,9 +1532,8 @@ public:
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (!p->isFriendWith(player)) {
+            if (!p->isFriendWith(player))
                 p->throwAllEquips();
-            }
         }
         return false;
     }
