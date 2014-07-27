@@ -97,4 +97,30 @@ return {
 	["jgjueji"] = "绝汲",
 	[":jgjueji"] = "一名敌方角色的摸牌阶段，若其已受伤，你可以令其少摸一张牌。",
 
+	["#jg_bian_machine"] = "攻城器械",
+	["jg_bian_machine"] = "缚地狴犴",
+	["jgjiguan_bian"] = "机关",
+	["jgdidong"] = "地动",
+	[":jgdidong"] = "结束阶段开始时，你可以令一名敌方角色翻面。",
+
+	["#jg_suanni_machine"] = "攻城器械",
+	["jg_suanni_machine"] = "食火狻猊",
+	["jgjiguan_suanni"] = "机关",
+	["jglianyu"] = "炼狱",
+	[":jglianyu"] = "结束阶段开始时，你可以对所有敌方角色各造成1点火焰伤害。",
+
+	["#jg_chiwen_machine"] = "攻城器械",
+	["jg_chiwen_machine"] = "吞天螭吻",
+	["jgjiguan_chiwen"] = "机关",
+	["jgtanshi"] = "贪食",
+	[":jgtanshi"] = "锁定技，摸牌阶段，你少摸一张牌。",
+	["jgtunshi"] = "吞噬",
+	[":jgtunshi"] = "锁定技，准备阶段开始时，你对所有手牌数大于你的敌方角色各造成1点伤害。",
+
+	["#jg_yazi_machine"] = "攻城器械",
+	["jg_yazi_machine"] = "裂石睚眦",
+	["jgjiguan_yazi"] = "机关",
+	["jgdixian"] = "地陷",
+	[":jgdixian"] = "结束阶段开始时，你可以翻面，令所有敌方角色各弃置其装备区里的所有牌。",
+
 }
