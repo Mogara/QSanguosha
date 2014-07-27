@@ -43,11 +43,13 @@ public:
     virtual AI::Relation relationTo(const ServerPlayer *a, const ServerPlayer *b) const;
     virtual void onTagSet(Room *room, const QString &key) const = 0;
     virtual bool generalSelection() const;
+    inline bool isRandomSeat() const{ return random_seat; }
 
 protected:
     QString lord;
     QStringList loyalists, rebels, renegades;
     ScenarioRule *rule;
+    bool random_seat;
 };
 
 #endif

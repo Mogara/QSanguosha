@@ -22,7 +22,7 @@
 #include "engine.h"
 
 Scenario::Scenario(const QString &name)
-    : Package(name, Package::SpecialPack), rule(NULL)
+    : Package(name, Package::SpecialPack), rule(NULL), random_seat(true)
 {
 }
 
