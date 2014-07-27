@@ -2465,7 +2465,14 @@ sgs.dynamic_value.control_usecard.Indulgence = true
 function SmartAI:willUseLightning(card)
 	if not card then self.room:writeToConsole(debug.traceback()) return false end
 	if self.player:containsTrick("lightning") then return end
-	if self.player:hasSkill("weimu") and card:isBlack() then return end
+	if self.player:hasSkill("weimu") and card:isBlack() then
+		local shouldUse = true
+		for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if self:evaluateKingdom(p) == "unknown" then shouldUse = false break end
+			if self:evaluateKingdom(p) == self.player:getKingdom() then shouldUse = false break end
+		end
+		if shouldUse then use.card = card return end
+	end
 	--if self.room:isProhibited(self.player, self.player, card) then return end
 
 	local function hasDangerousFriend()
@@ -2798,7 +2805,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 			local range_fix = current_range - 3
 			local FFFslash = self:getCard("FireSlash")
 			for _, enemy in ipairs(self.enemies) do
-				if (enemy:hasArmorEffect("vine") or enemy:getMark("@gale") > 0) and FFFslash and self:slashIsEffective(FFFslash, enemy) and
+				if (enemy:hasArmorEffect("Vine") or enemy:getMark("@gale") > 0) and FFFslash and self:slashIsEffective(FFFslash, enemy) and
 					self.player:getCardCount(true) >= 3 and self.player:canSlash(enemy, FFFslash, true, range_fix) then
 					return axe
 				elseif self:getCardsNum("Analeptic") > 0 and self.player:getCardCount(true) >= 4 and
