@@ -1179,8 +1179,8 @@ public:
         foreach(ServerPlayer *p, players)
             room->damage(DamageStruct(objectName(), player, p, 1, DamageStruct::Thunder));
 
-        int n = player->getMark("zgkonghun");
-        player->setMark("zgkonghun", 0);
+        int n = player->getMark("jgkonghun");
+        player->setMark("jgkonghun", 0);
 
         if (n > 0) {
             RecoverStruct rec;
