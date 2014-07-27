@@ -27,7 +27,7 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QDateTime>
-
+#include <QSplashScreen>
 
 #include "server.h"
 #include "settings.h"
@@ -71,38 +71,75 @@ int main(int argc, char *argv[]) {
 #else
 int main(int argc, char *argv[]) {
 #endif
-    if (argc > 1 && strcmp(argv[1], "-server") == 0)
+
+    bool noGui = argc > 1 && strcmp(argv[1], "-server") == 0;
+    if (noGui)
         new QCoreApplication(argc, argv);
     else
         new QApplication(argc, argv);
 
+    QPixmap raraLogo("image/system/developers/logo.png");
+    QSplashScreen splash(raraLogo);
+    const int alignment = Qt::AlignBottom | Qt::AlignHCenter;
+    if (!noGui) {
+        splash.show();
+        qApp->processEvents();
+    }
+
 #ifdef Q_OS_MAC
 #ifdef QT_NO_DEBUG
+    if (!noGui) {
+        splash.showMessage(QObject::tr("Setting game path..."), alignment, Qt::cyan);
+        qApp->processEvents();
+    }
     QDir::setCurrent(qApp->applicationDirPath());
 #endif
 #endif
 
 #ifdef Q_OS_LINUX
     QDir dir(QString("lua"));
+    if (!noGui) {
+        splash.showMessage(QObject::tr("Checking game path..."), alignment, Qt::cyan);
+        qApp->processEvents();
+    }
     if (dir.exists() && (dir.exists(QString("config.lua")))) {
         // things look good and use current dir
     }
     else {
+        if (!noGui) {
+            splash.showMessage(QObject::tr("Setting game path..."), alignment, Qt::cyan);
+            qApp->processEvents();
+        }
         QDir::setCurrent(qApp->applicationFilePath().replace("games", "share"));
     }
 #endif
 
     // initialize random seed for later use
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
-
-    QTranslator qt_translator, translator;
-    qt_translator.load("qt_zh_CN.qm");
+    // load the main translation file first for we need to translate messages of splash.
+    QTranslator translator;
     translator.load("sanguosha.qm");
-
-    qApp->installTranslator(&qt_translator);
     qApp->installTranslator(&translator);
 
+    if (!noGui) {
+        splash.showMessage(QObject::tr("Loading translation..."), alignment, Qt::cyan);
+        qApp->processEvents();
+    }
+
+    QTranslator qt_translator;
+    qt_translator.load("qt_zh_CN.qm");
+    qApp->installTranslator(&qt_translator);
+
+    if (!noGui) {
+        splash.showMessage(QObject::tr("Initializing game engine..."), alignment, Qt::cyan);
+        qApp->processEvents();
+    }
     Sanguosha = new Engine;
+
+    if (!noGui) {
+        splash.showMessage(QObject::tr("Loading user's configurations..."), alignment, Qt::cyan);
+        qApp->processEvents();
+    }
     Config.init();
     qApp->setFont(Config.AppFont);
 
@@ -118,6 +155,8 @@ int main(int argc, char *argv[]) {
         return qApp->exec();
     }
 
+    splash.showMessage(QObject::tr("Loading style sheet..."), alignment, Qt::cyan);
+    qApp->processEvents();
     QFile file("style-sheet/sanguosha.qss");
     QString styleSheet;
     if (file.open(QIODevice::ReadOnly)) {
@@ -128,13 +167,19 @@ int main(int argc, char *argv[]) {
         .arg(Config.ToolTipBackgroundColor.name()));
 
 #ifdef AUDIO_SUPPORT
+    splash.showMessage(QObject::tr("Initializing audio module..."), alignment, Qt::cyan);
+    qApp->processEvents();
     Audio::init();
 #endif
 
+    splash.showMessage(QObject::tr("Loading main window..."), alignment, Qt::cyan);
+    qApp->processEvents();
     MainWindow main_window;
 
     Sanguosha->setParent(&main_window);
     main_window.show();
+
+    splash.finish(&main_window);
 
     foreach(QString arg, qApp->arguments()) {
         if (arg.startsWith("-connect:")) {
