@@ -1323,7 +1323,7 @@ bool Player::hasShownGeneral2() const {
 }
 
 bool Player::hasShownOneGeneral() const {
-    if (!kingdom.isEmpty() && kingdom != "god" && Sanguosha->getKingdoms().contains(kingdom))
+    if (role_shown && kingdom != "god" && Sanguosha->getKingdoms().contains(kingdom))
         return true;
     return general1_showed || general2_showed;
 }

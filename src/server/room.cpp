@@ -2142,6 +2142,7 @@ void Room::prepareForStart() {
                     notifyProperty(player, player, "general2", generals2[i]);
                 }
                 setPlayerProperty(player, "kingdom", kingdoms[i]);
+                setPlayerProperty(player, "role", HegemonyMode::GetMappedRole(kingdoms[i]));
             }
         }
     }
