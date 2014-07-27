@@ -55,7 +55,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		end
 		if p:hasShownOneGeneral() then
 			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
+			if self:evaluateKingdom(p) == self.player:getKingdom() then
 				f = f + 1
 			else
 				e = e + 1

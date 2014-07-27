@@ -329,6 +329,7 @@ function SmartAI:objectiveLevel(player, tactics)
 	tactics = tactics or sgs.ai_tactics
 	if not player then self.room:writeToConsole(debug.traceback()) return 0 end
 	if self.player:objectName() == player:objectName() then return -2 end
+	if self.room:getMode() == "jiange_defense" and self.player:getKingdom() == player:getKingdom() then return -2 end
 	if self.room:alivePlayerCount() == 2 then return 5 end
 
 	local self_kingdom = self.player:getKingdom()
@@ -504,6 +505,7 @@ function SmartAI:evaluateKingdom(player, other)
 	if not player then self.room:writeToConsole(debug.traceback()) return "unknown" end
 	other = other or self.player
 	if self.room:getMode() == "custom_scenario" then return player:getKingdom() end
+	if self.room:getMode() == "jiange_defense" then return player:getKingdom() end
 	if sgs.ai_explicit[player:objectName()] ~= "unknown" then return sgs.ai_explicit[player:objectName()] end
 	if player:getMark(string.format("KnownBoth_%s_%s", other:objectName(), player:objectName())) > 0 then
 		local upperlimit = player:getLord() and 99 or self.room:getPlayers():length() / 2
@@ -933,7 +935,7 @@ function SmartAI:getKeepValue(card, kept, Write)
 				elseif card:isKindOf("OffensiveHorse") then return -9.8
 				else return -9.7
 				end
-			elseif self.player:hasSkill("bazhen") and card:isKindOf("Armor") then return -8
+			elseif self.player:hasSkills("bazhen|jgyizhong") and card:isKindOf("Armor") then return -8
 			elseif self:needKongcheng() then return 5.0
 			elseif card:isKindOf("Armor") then return self:isWeak() and 5.2 or 3.2
 			elseif card:isKindOf("DefensiveHorse") then return self:isWeak() and 4.3 or 3.19
@@ -1019,7 +1021,7 @@ function SmartAI:getUseValue(card)
 		if self.weaponUsed and card:isKindOf("Weapon") then v = 2 end
 		if self.player:hasSkills("qiangxi") and card:isKindOf("Weapon") then v = 2 end
 		if self.player:hasSkill("kurou") and card:isKindOf("Crossbow") then return 9 end
-		if self.player:hasSkill("bazhen") and card:isKindOf("Armor") then v = 2 end
+		if self.player:hasSkills("bazhen|jgyizhong") and card:isKindOf("Armor") then v = 2 end
 
 		if self.player:hasSkills(sgs.lose_equip_skill) then return 10 end
 	elseif card:getTypeId() == sgs.Card_TypeBasic then
@@ -1096,7 +1098,11 @@ function SmartAI:adjustUsePriority(card, v)
 				v = v + 0.05
 				if card:isKindOf("FireSlash") then
 					for _, enemy in ipairs(self.enemies) do
-						if enemy:hasArmorEffect("Vine") then v = v + 0.07 break end
+						if enemy:hasArmorEffect("vine") or enemy:getMark("@gale") > 0 then v = v + 0.07 break end
+					end
+				elseif card:isKindOf("ThunderSlash") then
+					for _, enemy in ipairs(self.enemies) do
+						if enemy:getMark("@fog") > 0 then v = v + 0.06 break end
 					end
 				end
 			else v = v - 0.05
@@ -2179,6 +2185,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 						if from:getHandcardNum() > 2
 							or self:isWeak(to)
 							or to:hasArmorEffect("Vine")
+							or to:getMark("@gale") > 0
 							or to:isChained() and not self:isGoodChainTarget(to, from)
 							then return null_card end
 					end
@@ -2627,7 +2634,7 @@ function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 		dmg = dmg + from:getMark("drank")
 	end
 	if from:hasFlag("luoyi") then dmg = dmg + 1 end
-	if to:hasArmorEffect("Vine") and not IgnoreArmor(from, to) and fireSlash then dmg = dmg + 1 end
+	if ((to:hasArmorEffect("Vine") and not IgnoreArmor(from, to)) or to:getMark("@gale") > 0) and fireSlash then dmg = dmg + 1 end
 	if from:hasWeapon("GudingBlade") and slash and to:isKongcheng() then dmg = dmg + 1 end
 
 
@@ -2753,7 +2760,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 	for _, friend in ipairs(friends) do
 		if friend:getHp()<=2 and friend:faceUp() then
 			for _, hcard in ipairs(cards) do
-				if (hcard:isKindOf("Armor") and not friend:getArmor() and not friend:hasShownSkill("bazhen"))
+				if (hcard:isKindOf("Armor") and not friend:getArmor() and not friend:hasShownSkills("bazhen|jgyizhong"))
 					or (hcard:isKindOf("DefensiveHorse") and not friend:getDefensiveHorse()) then
 					return hcard, friend
 				end
@@ -3324,7 +3331,7 @@ function SmartAI:damageIsEffective(to, nature, from)
 	damageStruct.to = to or self.player
 	damageStruct.from = from or self.room:getCurrent()
 	damageStruct.nature = nature or sgs.DamageStruct_Normal
-
+	if damageStruct.to:getMark("@fog") > 0 and damageStruct.nature ~= sgs.DamageStruct_Thunder then return false end
 	return self:damageIsEffective_(damageStruct)
 end
 
@@ -3344,7 +3351,9 @@ function SmartAI:damageIsEffective_(damageStruct)
 	end
 
 	if to:hasArmorEffect("PeaceSpell") and nature ~= sgs.DamageStruct_Normal then return false end
-
+	if to:hasShownSkills("jgyuhuo_pangtong|jgyuhuo_zhuque") and nature == sgs.DamageStruct_Fire then return false end
+	if to:getMark("@fog") > 0 and nature ~= sgs.DamageStruct_Thunder then return false end
+	
 	for _, callback in ipairs(sgs.ai_damage_effect) do
 		if type(callback) == "function" then
 			local is_effective = callback(self, damageStruct)
@@ -4183,6 +4192,10 @@ function SmartAI:hasTrickEffective(card, to, from)
 	if to:hasShownSkill("hongyan") and card:isKindOf("Lightning") then return false end
 	if to:hasShownSkill("qianxun") and card:isKindOf("Snatch") then return false end
 	if to:hasShownSkill("qianxun") and card:isKindOf("Indulgence") then return false end
+	if card:isKindOf("Indulgence") then
+		if to:hasSkills("jgjiguan_qinglong|jgjiguan_baihu|jgjiguan_zhuque|jgjiguan_xuanwu") then return false end
+		if to:hasSkills("jgjiguan_bian|jgjiguan_suanni|jgjiguan_chiwen|jgjiguan_yazi") then return false end
+	end	
 	if to:hasShownSkill("weimu") and card:isBlack() then return false end
 	if to:hasShownSkill("kongcheng") and to:isKongcheng() and card:isKindOf("Duel") then return false end
 
@@ -4422,7 +4435,7 @@ function SmartAI:useEquipCard(card, use)
 	elseif card:isKindOf("Armor") then
 		local lion = self:getCard("SilverLion")
 		if lion and self.player:isWounded() and not self.player:hasArmorEffect("SilverLion") and not card:isKindOf("SilverLion")
-			and not (self.player:hasSkill("bazhen") and not self.player:getArmor()) then
+			and not (self.player:hasSkills("bazhen|jgyizhong") and not self.player:getArmor()) then
 			use.card = lion
 			return
 		end
@@ -5072,7 +5085,7 @@ function SmartAI:willShowForAttack()
 		end
 		if p:hasShownOneGeneral() then
 			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
+			if self:evaluateKingdom(p) == self.player:getKingdom() then
 				f = f + 1
 			else
 				e = e + 1
@@ -5097,7 +5110,7 @@ function SmartAI:willShowForDefence()
 		end
 		if p:hasShownOneGeneral() then
 			shown = shown + 1
-			if p:getKingdom() == self.player:getKingdom() then
+			if self:evaluateKingdom(p) == self.player:getKingdom() then
 				f = f + 1
 			else
 				e = e + 1

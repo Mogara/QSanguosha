@@ -41,6 +41,11 @@ sgs.ai_playerchosen_intention.jglingfeng = 80
 
 sgs.ai_skill_invoke.jgbiantian = true
 
+sgs.ai_slash_prohibit.jgbiantian = function(self, from, enemy, card)
+	if enemy:getMark("@fog") > 0 and not card:isKindOf("ThunderSlash") then return false end
+	return true
+end
+
 sgs.ai_skill_playerchosen.jggongshen = function(self, targets)
 	self:updatePlayers()
 	self:sort(self.friends_noself)
@@ -96,6 +101,16 @@ sgs.ai_skill_invoke.jgjingmiao  = true
 sgs.ai_skill_invoke.jgyuhuo_pangtong = true
 sgs.ai_skill_invoke.jgyuhuo_zhuque = true
 
+sgs.ai_slash_prohibit.jgyuhuo_pangtong = function(self, from, enemy, card)
+	if enemy:hasShownSkill("jgyuhuo_pangtong") and card:isKindOf("FireSlash") then return false end
+	return true
+end
+
+sgs.ai_slash_prohibit.jgyuhuo_zhuque = function(self, from, enemy, card)
+	if enemy:hasShownSkill("jgyuhuo_zhuque") and card:isKindOf("FireSlash") then return false end
+	return true
+end
+
 sgs.ai_skill_invoke.jgqiwu  = true
 
 sgs.ai_skill_playerchosen.jgqiwu = function(self, targets)
@@ -119,7 +134,7 @@ sgs.ai_skill_invoke.jgjiguan_xuanwu  = true
 
 sgs.ai_skill_invoke.jgjiguan_bian  = true
 sgs.ai_skill_invoke.jgjiguan_suanni  = true
-sgs.ai_skill_invoke.jgjiguan_taotie  = true
+sgs.ai_skill_invoke.jgjiguan_chiwen  = true
 sgs.ai_skill_invoke.jgjiguan_yazi  = true
 
 sgs.ai_skill_invoke.jgmojian  = true
@@ -174,11 +189,12 @@ sgs.ai_playerchosen_intention.jgtianyun = 80
 sgs.ai_skill_invoke.jgyizhong  = true
 
 function sgs.ai_armor_value.jgyizhong(card)
-	if not card then return 4 end
+	if not card then return 5 end
 end
 
-function sgs.ai_slash_prohibit.jgyizhong(self, from, to, card)
-	return  (not to:getArmor() and card:isBlack() and to:hasShownSkill("jgyizhong"))
+sgs.ai_slash_prohibit.jgyizhong = function(self, from, enemy, card)
+	if not enemy:getArmor() and card:isBlack() and enemy:hasShownSkill("jgyizhong") then return false end
+	return true
 end
 
 function sgs.ai_skill_invoke.jglingyu(self, data)

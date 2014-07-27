@@ -24,6 +24,7 @@ function SmartAI:canAttack(enemy, attacker, nature)
 	local damage = 1
 	if nature == sgs.DamageStruct_Fire and not enemy:hasArmorEffect("SilverLion") then
 		if enemy:hasArmorEffect("Vine") then damage = damage + 1 end
+		if enemy:getMark("@gale") > 0 then damage = damage + 1 end
 	end
 	if #self.enemies == 1 then return true end
 	if self:getDamagedEffects(enemy, attacker) or (self:needToLoseHp(enemy, attacker, false, true) and #self.enemies > 1) or not sgs.isGoodTarget(enemy, self.enemies, self) then return false end
@@ -294,7 +295,12 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 		return true
 	end
 
-	if to:hasArmorEffect("RenwangShield") and slash:isBlack() then return false end
+	if to:hasArmorEffect("RenwangShield") and slash:isBlack() then return false end	
+	if to:hasSkill("jgyizhong") and not to:getArmor() then
+		if slash:isBlack() then
+			return false
+		end
+	end
 	if to:hasArmorEffect("Vine") and not slash:isKindOf("NatureSlash") then
 		local skill_name = slash:getSkillName() or ""
 		local can_convert = false
@@ -2407,6 +2413,8 @@ function SmartAI:useCardIndulgence(card, use)
 	if #enemies == 0 then return end
 
 	local getvalue = function(enemy)
+		if enemy:hasSkills("jgjiguan_qinglong|jgjiguan_baihu|jgjiguan_zhuque|jgjiguan_xuanwu") then return -101 end
+		if enemy:hasSkills("jgjiguan_bian|jgjiguan_suanni|jgjiguan_chiwen|jgjiguan_yazi") then return -101 end
 		if enemy:hasSkill("qianxun") then return -101 end
 		if enemy:hasSkill("weimu") and card:isBlack() then return -101 end
 		if enemy:containsTrick("indulgence") then return -101 end
@@ -2790,7 +2798,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 			local range_fix = current_range - 3
 			local FFFslash = self:getCard("FireSlash")
 			for _, enemy in ipairs(self.enemies) do
-				if enemy:hasArmorEffect("Vine") and FFFslash and self:slashIsEffective(FFFslash, enemy) and
+				if (enemy:hasArmorEffect("vine") or enemy:getMark("@gale") > 0) and FFFslash and self:slashIsEffective(FFFslash, enemy) and
 					self.player:getCardCount(true) >= 3 and self.player:canSlash(enemy, FFFslash, true, range_fix) then
 					return axe
 				elseif self:getCardsNum("Analeptic") > 0 and self.player:getCardCount(true) >= 4 and
