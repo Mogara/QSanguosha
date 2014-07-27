@@ -564,28 +564,15 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         QList<ServerPlayer *> players;
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
             if (p->isFriendWith(player) && p->isWounded())
                 players << p;
         }
-
-        player->tag.remove("jgqiwu");
-        ServerPlayer *target = room->askForPlayerChosen(player, players, objectName(), "@jgqiwu", !player->hasShownSkill(this), true);
-        if (target == NULL && player->hasShownSkill(this))
+        ServerPlayer *target = room->askForPlayerChosen(player, players, objectName(), "@jgqiwu", false, true);
+        if (target == NULL)
             target = players.at(qrand() % players.length());
-
-        if (target != NULL) {
-            player->tag["jgqiwu"] = QVariant::fromValue(target);
-            return true;
-        }
-        return false;
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        ServerPlayer *target = player->tag["jgqiwu"].value<ServerPlayer *>();
-        player->tag.remove("jgqiwu");
         if (target != NULL) {
             RecoverStruct rec;
             rec.recover = 1;
@@ -975,7 +962,6 @@ public:
 class JGChuanyun : public PhaseChangeSkill{
 public:
     JGChuanyun() : PhaseChangeSkill("jgchuanyun") {
-        frequency = Compulsory;
     }
 
     virtual bool canPreshow() const{
@@ -1002,10 +988,7 @@ public:
         }
 
         player->tag.remove("jgchuanyun");
-        ServerPlayer *victim = room->askForPlayerChosen(player, players, objectName(), "@jgchuanyun", !player->hasShownSkill(this), true);
-        if (victim == NULL && player->hasShownSkill(this))
-            victim = players.at(qrand() % players.length());
-
+        ServerPlayer *victim = room->askForPlayerChosen(player, players, objectName(), "@jgchuanyun", true, true);
         if (victim != NULL) {
             player->tag["jgchuanyun"] = QVariant::fromValue(victim);
             return true;
@@ -1131,7 +1114,7 @@ public:
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer* &ask_who) const{
         DamageStruct damage = data.value<DamageStruct>();
-        if (damage.from && damage.from->hasSkill("jgkonghun") && damage.reason == "jgkonghun") {
+        if (damage.from && damage.from->hasSkill("jgkonghun") && damage.reason == "jgkonghun" && !damage.transfer && !damage.chain) {
             ask_who = damage.from;
             return QStringList(objectName());
         }
