@@ -1323,6 +1323,8 @@ bool Player::hasShownGeneral2() const {
 }
 
 bool Player::hasShownOneGeneral() const {
+    if (!kingdom.isEmpty() && kingdom != "god" && Sanguosha->getKingdoms().contains(kingdom))
+        return true;
     return general1_showed || general2_showed;
 }
 
@@ -1396,7 +1398,7 @@ bool Player::isFriendWith(const Player *player) const {
     if (player == NULL)
         return false;
     if (!hasShownOneGeneral() || !player->hasShownOneGeneral())
-        return false;                // ��δ�����򲻴����κ���ͬ�����佫���Լ�Ҳ���ǣ�
+        return false;
 
     if (this == player)
         return true;

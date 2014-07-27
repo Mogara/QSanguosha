@@ -2115,6 +2115,8 @@ int Room::drawCard() {
 
 void Room::prepareForStart() {
     if (scenario) {
+        if (scenario->isRandomSeat() && Config.RandomSeat)
+            qShuffle(m_players);
         QStringList generals, generals2, kingdoms;
         scenario->assign(generals, generals2, kingdoms, this);
 

@@ -1765,7 +1765,7 @@
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.ui" line="251"/>
-        <location filename="../../src/dialog/generaloverview.cpp" line="652"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="654"/>
         <source>Search...</source>
         <translation>搜索...</translation>
     </message>
@@ -1780,7 +1780,7 @@
         <translation>配音</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="548"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="550"/>
         <source>Official</source>
         <translation>官方</translation>
     </message>
@@ -1805,53 +1805,53 @@
         <translation>无性别</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="349"/>
-        <location filename="../../src/dialog/generaloverview.cpp" line="362"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="351"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="364"/>
         <source>&lt;font color=%1&gt;This general is hidden&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;该武将被隐藏， 不会出现在选将列表中&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="378"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="380"/>
         <source>&lt;font color=%1&gt;This is an Lua extension&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;该包为Lua扩展包&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="483"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="485"/>
         <source>Copy lines</source>
         <translation>复制台词</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="522"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="524"/>
         <source>Death</source>
         <translation>阵亡</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="531"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="533"/>
         <source>Victory</source>
         <translation>胜利</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="532"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="534"/>
         <source>Six dragons lead my chariot, I will ride the wind with the greatest speed.With all of the feudal lords under my command,to rule the world with one name!</source>
         <translation>驾六龙，乘风而行，九合诸侯，一匡天下!</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="556"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="558"/>
         <source>Sanguosha OL</source>
         <translation>三国杀OL</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="563"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="565"/>
         <source>None</source>
         <translation>无</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="647"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="649"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="647"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="649"/>
         <source>No generals are found</source>
         <translation>未找到符合要求的武将</translation>
     </message>
@@ -2953,64 +2953,64 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="../../src/server/room.cpp" line="2160"/>
+        <location filename="../../src/server/room.cpp" line="2162"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2376"/>
+        <location filename="../../src/server/room.cpp" line="2378"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2184"/>
+        <location filename="../../src/server/room.cpp" line="2186"/>
         <source>&lt;font color=#000000&gt;Player &lt;b&gt;%1&lt;/b&gt; left the game&lt;/font&gt;</source>
         <translation>&lt;font color=#000000&gt;玩家 %1 离开了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2346"/>
+        <location filename="../../src/server/room.cpp" line="2348"/>
         <source>%1: %2 is not invokable</source>
         <translation>%1: 不可调用的方法名 %2</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2380"/>
+        <location filename="../../src/server/room.cpp" line="2382"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2426"/>
+        <location filename="../../src/server/room.cpp" line="2428"/>
         <source>&lt;font color=#EEB422&gt;Player &lt;b&gt;%1&lt;/b&gt; joined the game&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 加入了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2839"/>
+        <location filename="../../src/server/room.cpp" line="2841"/>
         <source>Unable to parse player</source>
         <translation>不可分析的玩家</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2841"/>
+        <location filename="../../src/server/room.cpp" line="2843"/>
         <source>Server is not waiting for reply from %1</source>
         <translation>服务器无法获取 %1 的响应</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2843"/>
+        <location filename="../../src/server/room.cpp" line="2845"/>
         <source>Reply command should be %1 instead of %2</source>
         <translation>应答指令应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="2846"/>
+        <location filename="../../src/server/room.cpp" line="2848"/>
         <source>Reply serial should be %1 instead of %2</source>
         <translation>玩家序号应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="4588"/>
+        <location filename="../../src/server/room.cpp" line="4590"/>
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
  %1</translation>
     </message>
     <message>
-        <location filename="../../src/server/room.cpp" line="5814"/>
+        <location filename="../../src/server/room.cpp" line="5816"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
@@ -3712,7 +3712,7 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="../../src/server/server.cpp" line="412"/>
         <source>Jiange Defense</source>
-        <translation type="unfinished"></translation>
+        <translation>守卫剑阁（8 人）</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="422"/>

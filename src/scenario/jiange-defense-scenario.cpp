@@ -132,7 +132,7 @@ QString JiangeDefenseScenario::getRandomWeiGhost() const{
 
 QString JiangeDefenseScenario::getRandomWeiMachine() const{
     QStringList machines;
-    machines << "jg_bian_machine" << "jg_suanni_machine" << "jg_taotie_machine" << "jg_yazi_machine";
+    machines << "jg_bian_machine" << "jg_suanni_machine" << "jg_chiwen_machine" << "jg_yazi_machine";
     return machines.at(qrand() % machines.length());
 }
 
