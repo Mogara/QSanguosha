@@ -595,7 +595,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer* &) const{
-        if (!TriggerSkill::triggerable(player))
+        if (!TriggerSkill::triggerable(player) || player->getPhase() != Player::Finish)
             return QStringList();
 
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
