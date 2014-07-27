@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += network opengl
+QT += network
 !winrt:QT += declarative
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
@@ -355,6 +355,11 @@ CONFIG(lua){
         src/lua/lauxlib.h \
         src/lua/lapi.h
     INCLUDEPATH += src/lua
+}
+
+CONFIG(opengl){
+    QT += opengl
+    DEFINES += USING_OPENGL
 }
 
 TRANSLATIONS += builds/vs2013/sanguosha.ts

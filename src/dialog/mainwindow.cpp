@@ -57,9 +57,11 @@
 #include <QNetworkReply>
 #include <QBitmap>
 
-#ifndef QT_NO_OPENGL
+
+#if !defined(QT_NO_OPENGL) && defined(USING_OPENGL)
 #include <QtOpenGL/QGLWidget>
 #endif
+
 
 class FitView : public QGraphicsView {
 public:
@@ -67,11 +69,12 @@ public:
         setSceneRect(Config.Rect);
         setRenderHints(QPainter::TextAntialiasing | QPainter::Antialiasing);
 
-#ifndef QT_NO_OPENGL
+#if !defined(QT_NO_OPENGL) && defined(USING_OPENGL)
         if (QGLFormat::hasOpenGL()) {
             QGLWidget *widget = new QGLWidget(QGLFormat(QGL::SampleBuffers));
+            widget->makeCurrent();
             setViewport(widget);
-            setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+            setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
         }
 #endif
     }
@@ -172,7 +175,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
-    //setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint);
     setAttribute(Qt::WA_TranslucentBackground);
 
     setMouseTracking(true);
