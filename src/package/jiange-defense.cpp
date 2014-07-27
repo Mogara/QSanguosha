@@ -668,17 +668,17 @@ public:
         room->notifySkillInvoked(player, objectName());
 
         CardUseStruct use = data.value<CardUseStruct>();
-        LogMessage log;
+        LogMessage log2;
         if (use.from) {
-            log.type = "$CancelTarget";
-            log.from = use.from;
+            log2.type = "$CancelTarget";
+            log2.from = use.from;
         }
         else {
-            log.type = "$CancelTargetNoUser";
+            log2.type = "$CancelTargetNoUser";
         }
-        log.to << player;
-        log.arg = use.card->objectName();
-        room->sendLog(log);
+        log2.to << player;
+        log2.arg = use.card->objectName();
+        room->sendLog(log2);
         room->setEmotion(player, "cancel");
 
         use.to.removeOne(player);
