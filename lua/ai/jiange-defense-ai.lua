@@ -98,6 +98,18 @@ sgs.ai_skill_invoke.jgyuhuo_zhuque = true
 
 sgs.ai_skill_invoke.jgqiwu  = true
 
+sgs.ai_skill_playerchosen.jgqiwu = function(self, targets)
+	local target = nil
+	local chained = 0
+	self:sort(self.friends, "hp")
+	for _, friend in ipairs(self.friends) do
+		if self:isFriendWith(friend) and friend:getLostHp() > 0 then
+			target = friend
+		end
+	end
+	return target
+end
+
 sgs.ai_skill_invoke.jgtianyu  = true
 
 sgs.ai_skill_invoke.jgjiguan_qinglong  = true
