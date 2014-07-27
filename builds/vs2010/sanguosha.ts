@@ -1765,7 +1765,7 @@
     </message>
     <message>
         <location filename="../../src/dialog/generaloverview.ui" line="251"/>
-        <location filename="../../src/dialog/generaloverview.cpp" line="652"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="654"/>
         <source>Search...</source>
         <translation>搜索...</translation>
     </message>
@@ -1780,7 +1780,7 @@
         <translation>配音</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="548"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="550"/>
         <source>Official</source>
         <translation>官方</translation>
     </message>
@@ -1805,53 +1805,53 @@
         <translation>无性别</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="349"/>
-        <location filename="../../src/dialog/generaloverview.cpp" line="362"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="351"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="364"/>
         <source>&lt;font color=%1&gt;This general is hidden&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;该武将被隐藏， 不会出现在选将列表中&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="378"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="380"/>
         <source>&lt;font color=%1&gt;This is an Lua extension&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;该包为Lua扩展包&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="483"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="485"/>
         <source>Copy lines</source>
         <translation>复制台词</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="522"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="524"/>
         <source>Death</source>
         <translation>阵亡</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="531"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="533"/>
         <source>Victory</source>
         <translation>胜利</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="532"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="534"/>
         <source>Six dragons lead my chariot, I will ride the wind with the greatest speed.With all of the feudal lords under my command,to rule the world with one name!</source>
         <translation>驾六龙，乘风而行，九合诸侯，一匡天下!</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="556"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="558"/>
         <source>Sanguosha OL</source>
         <translation>三国杀OL</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="563"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="565"/>
         <source>None</source>
         <translation>无</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="647"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="649"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/generaloverview.cpp" line="647"/>
+        <location filename="../../src/dialog/generaloverview.cpp" line="649"/>
         <source>No generals are found</source>
         <translation>未找到符合要求的武将</translation>
     </message>

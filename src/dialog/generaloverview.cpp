@@ -314,9 +314,11 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         name = Sanguosha->translate(general_name);
         kingdom = Sanguosha->translate(general->getKingdom());
         gender = general->isMale() ? tr("Male") : (general->isFemale() ? tr("Female") : tr("NoGender"));
-        if (general->getMaxHpHead() == general->getMaxHpDeputy())
+        if (general->objectName().startsWith("jg_")) {
+            max_hp = QString::number(general->getMaxHpHead());
+        } else if (general->getMaxHpHead() == general->getMaxHpDeputy()) {
             max_hp = QString::number((float)general->getMaxHpHead() / 2);
-        else {
+        } else {
             max_hp = QString::number((float)general->getMaxHpHead() / 2);
             if (general->getMaxHpHead() != general->getDoubleMaxHp()) {
                 max_hp.prepend("(");
