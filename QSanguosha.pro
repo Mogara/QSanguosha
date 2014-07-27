@@ -2,7 +2,7 @@
 # Project created by QtCreator 2010-06-13T04:26:52
 # -------------------------------------------------
 TARGET = QSanguosha
-QT += network
+QT += network opengl
 !winrt:QT += declarative
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
