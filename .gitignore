@@ -68,3 +68,4 @@ libGLESv2.dll
 *.lastcodeanalysissucceeded
 /etc/customScenes/custom_scenario.txt
 /etc
+OGLdpf.log
