@@ -490,7 +490,7 @@ void PlayerCardContainer::refresh() {
         if (leftDisableShowLock)
             leftDisableShowLock->setVisible(!m_player->hasShownGeneral1() && !m_player->disableShow(true).isEmpty());
         if (rightDisableShowLock)
-            rightDisableShowLock->setVisible(!m_player->hasShownGeneral2() && !m_player->disableShow(false).isEmpty());
+            rightDisableShowLock->setVisible(m_player->getGeneral2() && !m_player->hasShownGeneral2() && !m_player->disableShow(false).isEmpty());
     }
     updateHandcardNum();
     _adjustComponentZValues();
