@@ -426,6 +426,9 @@ public:
             return QStringList();
         CardUseStruct jingmiao_use = jingmiao_use_tag.value<CardUseStruct>();
 
+        if (jingmiao_use.from->isFriendWith(player))
+            return QStringList();
+
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
         if (((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_USE) || move.to_place != Player::DiscardPile)
             return QStringList();
