@@ -242,7 +242,8 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                 }
             }
             room->setTag("FirstRound", true);
-            room->drawCards(room->getPlayers(), 4, QString());
+            if (room->getMode() != "custom_scenario")
+                room->drawCards(room->getPlayers(), 4, QString());
             if (Config.LuckCardLimitation > 0)
                 room->askForLuckCard();
         }

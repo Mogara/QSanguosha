@@ -34,7 +34,7 @@ MiniSceneRule::MiniSceneRule(Scenario *scenario)
     events << GameStart << EventPhaseStart << FetchDrawPileCard;
 }
 
-void MiniSceneRule::assign(QStringList &generals, QStringList &generals2, QStringList &kingdoms) const{
+void MiniSceneRule::assign(QStringList &generals, QStringList &generals2, QStringList &kingdoms, Room *) const{
     for (int i = 0; i < players.length(); i++) {
         QMap<QString, QString> sp = players.at(i);
         QString name = sp["general"];

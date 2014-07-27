@@ -2133,7 +2133,7 @@ void Room::prepareForStart() {
                 foreach(ServerPlayer *p, getOtherPlayers(player))
                     notifyProperty(p, player, "general");
                 notifyProperty(player, player, "general", generals[i]);
-                if (generals[i] != generals2[i]) {
+                if (generals[i] != generals2[i] || mode == "custom_scenario") {
                     player->setGeneral2Name("anjiang");
                     player->setActualGeneral2Name(generals2[i]);
                     notifyProperty(player, player, "actual_general2");

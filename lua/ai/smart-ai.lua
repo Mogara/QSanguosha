@@ -30,7 +30,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = (require "middleclass").class("SmartAI")
 
-version = "QSanguosha AI 20140213 (V0.23 Alpha)"
+version = "QSanguosha AI 20140727 (V0.24 Alpha)"
 
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
@@ -66,6 +66,7 @@ sgs.ai_skill_use_func = 	{}
 sgs.ai_skills = 			{}
 sgs.ai_slash_weaponfilter = {}
 sgs.ai_slash_prohibit = 	{}
+sgs.ai_trick_prohibit = 	{}
 sgs.ai_view_as = 			{}
 sgs.ai_cardsview = 			{}
 sgs.dynamic_value = 		{
@@ -148,9 +149,6 @@ function setInitialTables()
 	sgs.Friend_Wounded = 4
 	sgs.Friend_MaleWounded = 5
 	sgs.Friend_FemaleWounded = 6
-
-	local t = { "PT", "PT", "PT", "PT", "PT", "WY", "WY", "WY", "WY", "2B" }
-	sgs.ai_tactics = t[math.random(1, #t)]
 
 	sgs.RolesTable = { "lord", "loyalist", "renegade", "rebel", "careerist" }
 	sgs.KingdomsTable = { "wei", "shu", "wu", "qun", "god" }
@@ -325,8 +323,7 @@ function SmartAI:activate(use)
 	self.toUse = nil
 end
 
-function SmartAI:objectiveLevel(player, tactics)
-	tactics = tactics or sgs.ai_tactics
+function SmartAI:objectiveLevel(player)
 	if not player then self.room:writeToConsole(debug.traceback()) return 0 end
 	if self.player:objectName() == player:objectName() then return -2 end
 	if self.room:getMode() == "jiange_defense" and self.player:getKingdom() == player:getKingdom() then return -2 end
@@ -343,111 +340,75 @@ function SmartAI:objectiveLevel(player, tactics)
 	if (not sgs.isAnjiang(self.player) or sgs.shown_kingdom[self_kingdom] < upperlimit) and self.role ~= "careerist" and self_kingdom == player_kingdom then return -2 end
 	if self:getKingdomCount() <= 2 then return 5 end
 
-	if tactics == "2B" then
-		return 5
+	local selfIsCareerist = self.role == "careerist" or sgs.shown_kingdom[self_kingdom] >= upperlimit and sgs.isAnjiang(self.player)
+	local isweak = player:getHp() == 1 and not player:hasShownSkill("kongcheng") and not sgs.isAnjiang(player)
+					and (player:isKongcheng() or sgs.card_lack[player:objectName()] == 1 and player:getHandcardNum() <= 1)
 
-	else
-
-		local selfIsCareerist = self.role == "careerist" or sgs.shown_kingdom[self_kingdom] >= upperlimit and sgs.isAnjiang(self.player)
-		local isweak = player:getHp() == 1 and not player:hasShownSkill("kongcheng") and not sgs.isAnjiang(player)
-						and (player:isKongcheng() or sgs.card_lack[player:objectName()] == 1 and player:getHandcardNum() <= 1)
-
-		local gameProcess = sgs.gameProcess()
-		if gameProcess == "===" then
-			if not selfIsCareerist and sgs.shown_kingdom[self_kingdom] < upperlimit then
-				if sgs.isAnjiang(player) and player_kingdom == "unknown" then
-					if self:evaluateKingdom(player) == self_kingdom then return -1
-					elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
-					elseif self:evaluateKingdom(player) == "unknown" then
-						if self:getOverflow() > 0 then
-							if sgs.turncount <= 2 then return 3
-							else return 5
-							end
-						else return self:getOverflow() > 0 and 3 or 0
+	local gameProcess = sgs.gameProcess()
+	if gameProcess == "===" then
+		if not selfIsCareerist and sgs.shown_kingdom[self_kingdom] < upperlimit then
+			if sgs.isAnjiang(player) and player_kingdom == "unknown" then
+				if self:evaluateKingdom(player) == self_kingdom then return -1
+				elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
+				elseif self:evaluateKingdom(player) == "unknown" then
+					if self:getOverflow() > 0 then
+						if sgs.turncount <= 2 then return 3
+						else return 5
 						end
-					else return self:getOverflow() > 0 and 5 or 0
-					end
+					else return self:getOverflow() > 0 and 3 or 0
+				end
+				else return self:getOverflow() > 0 and 5 or 0
+				end
+			else return 5
+			end
+		else return self:getOverflow() > 0 and 4 or 0
+		end
+	elseif string.find(gameProcess, ">") then
+		local kingdom = gameProcess:split(">")[1]
+		if string.find(gameProcess, ">>>") then
+			if self_kingdom == kingdom and not selfIsCareerist then
+				if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) and self:evaluateKingdom(player) == self_kingdom then return 0
 				else return 5
 				end
-			else return self:getOverflow() > 0 and 4 or 0
-			end
-		elseif string.find(gameProcess, "&") then
-			if tactics == "PT" then
-				local kingdom = gameProcess:split("&")[1]
-				if self_kingdom == kingdom and not selfIsCareerist and sgs.shown_kingdom[self_kingdom] < upperlimit then
-					if self:evaluateKingdom(player) == self_kingdom then return -1
-					elseif not string.find(self:evaluateKingdom(player), kingdom) or not sgs.isAnjiang(player) then return 5
-					else return 0
-					end
-				elseif (player_kingdom == kingdom or self:evaluateKingdom(player) == kingdom) and player:getRole() ~= "careerist" then return 5
-				else return 0
-				end
-			elseif tactics == "WY" then
-				local kingdom1, kingdom2 = gameProcess:split("&")[1], gameProcess:split("&")[2]
-				if (self_kingdom == kingdom1 or self_kingdom == kingdom2) and not selfIsCareerist then
-					if player_kingdom == kingdom1 or player_kingdom == kingdom2 then return 0
-					elseif sgs.isAnjiang(player) and (sgs.shown_kingdom[kingdom1] < upperlimit and self:evaluateKingdom(player) == kingdom1
-								or sgs.shown_kingdom[kingdom2] < upperlimit and self:evaluateKingdom(player) == kingdom2) then return 0
-					elseif string.find(self:evaluateKingdom(player), kingdom1) or string.find(self:evaluateKingdom(player), kingdom2) then return 1
-					else return 5
-					end
-				else
-					if player_kingdom == kingdom1 or player_kingdom == kingdom2 then return 5
-					elseif self:evaluateKingdom(player) == kingdom1 or self:evaluateKingdom(player) == kingdom2 then return 3
-					elseif string.find(self:evaluateKingdom(player), kingdom1) or string.find(self:evaluateKingdom(player), kingdom2) then return 0
-					elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 1 then return 0
-					else return -1
-					end
-				end
-			end
-		elseif string.find(gameProcess, ">") then
-			local kingdom = gameProcess:split(">")[1]
-			if string.find(gameProcess, ">>>") then
-				if self_kingdom == kingdom and not selfIsCareerist then
-					if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) and self:evaluateKingdom(player) == self_kingdom then return 0
-					else return 5
-					end
-				else
-					if player_kingdom == kingdom or self:evaluateKingdom(player) == kingdom or isweak then return 5
-					elseif not string.find(self:evaluateKingdom(player), kingdom) or player:getRole() == "careerist" then return -1
-					else return 3
-					end
-				end
-			elseif string.find(gameProcess, ">>") then
-				if self_kingdom == kingdom and not selfIsCareerist then
-					if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) then
-						if self:evaluateKingdom(player) == self_kingdom then return -1
-						elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
-						elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 1 and self:getOverflow() <= 0 then return 0
-						end
-					end
-					return 5
-				else
-					if player_kingdom == kingdom or self:evaluateKingdom(player) == kingdom or isweak then return 5
-					elseif not string.find(self:evaluateKingdom(player), kingdom) then return 0
-					else return 3
-					end
-				end
 			else
-				if self_kingdom == kingdom and not selfIsCareerist then
-					if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) then
-						if self:evaluateKingdom(player) == self_kingdom then return -1
+				if player_kingdom == kingdom or self:evaluateKingdom(player) == kingdom or isweak then return 5
+				elseif not string.find(self:evaluateKingdom(player), kingdom) or player:getRole() == "careerist" then return -1
+				else return 3
+				end
+			end
+		elseif string.find(gameProcess, ">>") then
+			if self_kingdom == kingdom and not selfIsCareerist then
+				if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) then
+					if self:evaluateKingdom(player) == self_kingdom then return -1
+					elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
+					elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 1 and self:getOverflow() <= 0 then return 0
+					end
+				end
+				return 5
+			else
+				if player_kingdom == kingdom or self:evaluateKingdom(player) == kingdom or isweak then return 5
+				elseif not string.find(self:evaluateKingdom(player), kingdom) then return 0
+				else return 3
+				end
+			end
+		else
+			if self_kingdom == kingdom and not selfIsCareerist then
+				if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) then
+					if self:evaluateKingdom(player) == self_kingdom then return -1
 						elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
-						elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 1 then return 0
-						end
+					elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 1 then return 0
 					end
-					return 5
-				else
-					if player_kingdom == kingdom or isweak then return 5
-					elseif self:evaluateKingdom(player) == kingdom then return 3
-					elseif not string.find(self:evaluateKingdom(player), kingdom) then return 0
-					else return 1
-					end
+				end
+				return 5
+			else
+				if player_kingdom == kingdom or isweak then return 5
+				elseif self:evaluateKingdom(player) == kingdom then return 3
+				elseif not string.find(self:evaluateKingdom(player), kingdom) then return 0
+				else return 1
 				end
 			end
 		end
 	end
-	return 0
 end
 
 function sgs.gameProcess()
@@ -485,10 +446,6 @@ function sgs.gameProcess()
 		elseif anjiang <= 3 then return kingdoms[1] .. ">>"
 		elseif anjiang <= 5 then return kingdoms[1] .. ">"
 		else return "===" end
-	end
-
-	if value[kingdoms[1]] > 0 and value[kingdoms[1]] - value[kingdoms[2]] <= 1 and value[kingdoms[1]] - value[kingdoms[3]] > 1 and anjiang <= 1 then
-		return kingdoms[1] .. "&" .. kingdoms[2]
 	end
 
 	if value[kingdoms[1]] >= sum_value2 and value[kingdoms[1]] > 0 then
@@ -1676,7 +1633,7 @@ end
 function SmartAI:filterEvent(event, player, data)
 	if not sgs.recorder then
 		sgs.recorder = self
-		self.player:speak(version .. " (" .. sgs.ai_tactics .. ")")
+		self.player:speak(version)
 	end
 	if player:objectName() == self.player:objectName() then
 		if sgs.debugmode and type(sgs.ai_debug_func[event]) == "table" then
@@ -3331,7 +3288,6 @@ function SmartAI:damageIsEffective(to, nature, from)
 	damageStruct.to = to or self.player
 	damageStruct.from = from or self.room:getCurrent()
 	damageStruct.nature = nature or sgs.DamageStruct_Normal
-	if damageStruct.to:getMark("@fog") > 0 and damageStruct.nature ~= sgs.DamageStruct_Thunder then return false end
 	return self:damageIsEffective_(damageStruct)
 end
 
@@ -3354,7 +3310,7 @@ function SmartAI:damageIsEffective_(damageStruct)
 	if to:hasShownSkills("jgyuhuo_pangtong|jgyuhuo_zhuque") and nature == sgs.DamageStruct_Fire then return false end
 	if to:getMark("@fog") > 0 and nature ~= sgs.DamageStruct_Thunder then return false end
 	
-	for _, callback in ipairs(sgs.ai_damage_effect) do
+	for _, callback in pairs(sgs.ai_damage_effect) do
 		if type(callback) == "function" then
 			local is_effective = callback(self, damageStruct)
 			if not is_effective then return false end
@@ -4025,16 +3981,12 @@ function SmartAI:exclude(players, card, from)
 		end
 	end
 
+	--if not self.room:isProhibited(from, player, card) then
 	for _, player in ipairs(players) do
-		--if not self.room:isProhibited(from, player, card) then
-			local should_insert = true
-			if limit then
-				should_insert = from:distanceTo(player, range_fix) <= limit
-			end
-			if should_insert then
-				table.insert(excluded, player)
-			end
-		--end
+		if (not card:isKindOf("TrickCard") or self:hasTrickEffective(card, from))
+			and (not limit or from:distanceTo(player, range_fix) <= limit) then
+			table.insert(excluded, player)
+		end
 	end
 	return excluded
 end
@@ -4189,6 +4141,7 @@ function SmartAI:hasTrickEffective(card, to, from)
 	to = to or self.player
 	--if self.room:isProhibited(from, to, card) then return false end
 
+	if not card:isKindOf("TrickCard") then return true end
 	if to:hasShownSkill("hongyan") and card:isKindOf("Lightning") then return false end
 	if to:hasShownSkill("qianxun") and card:isKindOf("Snatch") then return false end
 	if to:hasShownSkill("qianxun") and card:isKindOf("Indulgence") then return false end
@@ -4204,6 +4157,14 @@ function SmartAI:hasTrickEffective(card, to, from)
 
 	if (card:isKindOf("Duel") or card:isKindOf("FireAttack") or card:isKindOf("ArcheryAttack") or card:isKindOf("SavageAssault"))
 		and self:damageIsEffective(to, nature, from) then return false end
+
+	for _, callback in pairs(sgs.ai_trick_prohibit) do
+		if type(callback) == "function" then
+			local isEffective = callback(self, card, to, from)
+			if not isEffective then return false end
+		end
+	end
+
 	return true
 end
 
@@ -4961,7 +4922,6 @@ function SmartAI:cantbeHurt(player, from, damageNum)
 	from = from or self.player
 	damageNum = damageNum or 1
 	if not player then self.room:writeToConsole(debug.traceback()) return end
-	local dyingfriend = 0
 
 	if player:hasShownSkill("duanchang") and not player:isLord() and #(self:getFriendsNoself(player)) > 0 and player:getHp() <= 1 then
 		if not (from:getMaxHp() == 3 and from:getArmor() and from:getDefensiveHorse()) then
@@ -4970,6 +4930,7 @@ function SmartAI:cantbeHurt(player, from, damageNum)
 	end
 	if player:hasShownSkill("tianxiang") and getKnownCard(player, self.player, "diamond|club", false) < player:getHandcardNum() then
 		local peach_num = self.player:objectName() == from:objectName() and self:getCardsNum("Peach") or getCardsNum("Peach", from, self.player)
+		local dyingfriend = 0
 		for _, friend in ipairs(self:getFriends(from)) do
 			if friend:getHp() < 2 and peach_num then
 				dyingfriend = dyingfriend + 1
@@ -4983,7 +4944,7 @@ function SmartAI:cantbeHurt(player, from, damageNum)
 		and from:getNextAlive():objectName() == player:objectName() then
 		local hengzheng = 0
 		for _, player in sgs.qlist(self.room:getOtherPlayers(from)) do
-			if from:isEnemy(player) and player:getCardCount() > 0 then hengzheng = hengzheng + 1 end
+			if self:isEnemy(player, from) and player:getCardCount() > 0 then hengzheng = hengzheng + 1 end
 		end
 		if hengzheng > 2 then return true end
 	end

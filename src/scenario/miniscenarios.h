@@ -33,7 +33,7 @@ public:
     static const char *S_EXTRA_OPTION_REST_IN_DISCARD_PILE;
 
     MiniSceneRule(Scenario *scenario);
-    void assign(QStringList &generals, QStringList &generals2, QStringList &kingdoms) const;
+    void assign(QStringList &generals, QStringList &generals2, QStringList &kingdoms, Room *room) const;
     QStringList existedGenerals() const;
 
     virtual bool effect(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
@@ -60,13 +60,14 @@ public:
     ~MiniScene();
     void setupCustom(QString name) const;
     virtual void onTagSet(Room *room, const QString &key) const;
-    virtual void assign(QStringList &generals, QStringList &generals2, QStringList &roles) const{
+    virtual void assign(QStringList &generals, QStringList &generals2, QStringList &roles, Room *room) const{
         MiniSceneRule *rule = qobject_cast<MiniSceneRule *>(getRule());
-        rule->assign(generals, generals2, roles);
+        rule->assign(generals, generals2, roles, room);
     }
     virtual int getPlayerCount() const{
         QStringList generals, generals2, roles;
-        assign(generals, generals2, roles);
+        Room *room = NULL;
+        assign(generals, generals2, roles, room);
         return roles.length();
     }
 };
