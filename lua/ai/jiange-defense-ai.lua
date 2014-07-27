@@ -98,7 +98,7 @@ sgs.ai_skill_invoke.jgyuhuo_zhuque = true
 
 sgs.ai_skill_invoke.jgqiwu  = true
 
-sgs.ai_skill_playerchosen.qiwu = function(self, targets)
+sgs.ai_skill_playerchosen.jgqiwu = function(self, targets)
 	local target = nil
 	local chained = 0
 	self:sort(self.friends, "hp")
