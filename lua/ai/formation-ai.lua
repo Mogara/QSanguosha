@@ -251,7 +251,7 @@ tiaoxin_skill.name = "tiaoxin"
 table.insert(sgs.ai_skills, tiaoxin_skill)
 tiaoxin_skill.getTurnUseCard = function(self)
 	if not self:willShowForAttack() then
-		return  
+		return
 	end
 	if self.player:hasUsed("TiaoxinCard") then return end
 	return sgs.Card_Parse("@TiaoxinCard=.&tiaoxin")
@@ -360,6 +360,10 @@ sgs.ai_card_intention.ShangyiCard = 50
 sgs.ai_skill_invoke.yicheng = true
 
 sgs.ai_skill_discard.yicheng = function(self, discard_num, min_num, optional, include_equip)
+	if self.player:hasSkill("hongyan") then
+		return self:askForDiscard("dummyreason", 1, 1, false, true)
+	end
+
 	local unpreferedCards = {}
 	local cards = sgs.QList2Table(self.player:getHandcards())
 
@@ -654,7 +658,7 @@ end
 
 sgs.ai_skill_invoke.shengxi = function(self, data)
 	if not self:willShowForDefence() then
-		return false 
+		return false
 	end
 	return true
 end

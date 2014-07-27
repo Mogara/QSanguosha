@@ -1055,7 +1055,7 @@ function SmartAI:adjustUsePriority(card, v)
 				v = v + 0.05
 				if card:isKindOf("FireSlash") then
 					for _, enemy in ipairs(self.enemies) do
-						if enemy:hasArmorEffect("vine") or enemy:getMark("@gale") > 0 then v = v + 0.07 break end
+						if enemy:hasArmorEffect("Vine") or enemy:getMark("@gale") > 0 then v = v + 0.07 break end
 					end
 				elseif card:isKindOf("ThunderSlash") then
 					for _, enemy in ipairs(self.enemies) do
