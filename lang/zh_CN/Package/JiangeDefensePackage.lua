@@ -15,6 +15,8 @@ return {
 	["jg_zhuge"] = "天候孔明",
 	["jgbiantian"] = "变天",
 	[":jgbiantian"] = "锁定技，准备阶段开始时，你判定，若结果为：红色，每当敌方角色于你的下回合开始之前受到的火焰伤害结算开始时，你令伤害值+1；黑色，每当我方角色于你的下回合开始之前受到的非雷电伤害结算开始时，你防止此伤害。",
+	["@gale"] = "狂风",
+	["@fog"] = "大雾",
 	["#jgbiantian-kf"] = "变天（狂风）",
 	["#jgbiantian-dw"] = "变天（大雾）",
 	["#FogProtect"] = "%from 的“<font color=\"yellow\"><b>大雾</b></font>”效果被触发，防止了 %arg 点伤害[%arg2]",
@@ -77,6 +79,7 @@ return {
 	["jg_caozhen"] = "佳人子丹",
 	["jgchiying"] = "持盈",
 	[":jgchiying"] = "锁定技，每当己方角色受到大于1点的伤害时，你将伤害值改为1点。",
+	["#JGChiying"] = "%from 的“<font color=\"yellow\"><b>持盈</b></font>”被触发，防止了 %arg 点伤害，减至 <font color=\"yellow\"><b>1</b></font> 点",
 	["jgjingfan"] = "惊帆",
 	[":jgjingfan"] = "锁定技，其他己方角色与对方角色的距离-1。",
 

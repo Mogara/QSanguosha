@@ -487,6 +487,11 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = player;
+        log.arg = objectName();
+        room->sendLog(log);
         room->notifySkillInvoked(player, objectName());
         CardUseStruct jingmiao_use = room->getTag("jgjingmiao_use").value<CardUseStruct>();
         room->removeTag("jgjingmiao_use");
@@ -612,10 +617,19 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = player;
+        log.arg = objectName();
+        room->sendLog(log);
         room->notifySkillInvoked(player, objectName());
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (!p->isFriendWith(player) && !p->isChained())
-                room->setPlayerProperty(p, "chained", true);
+            if (!p->isFriendWith(player) && !p->isChained()) {
+                p->setChained(true);
+                room->setEmotion(p, "chain");
+                room->broadcastProperty(p, "chained");
+                room->getThread()->trigger(ChainStateChanged, room, p);
+            }
         }
         return false;
     }
@@ -646,6 +660,11 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = player;
+        log.arg = objectName();
+        room->sendLog(log);
         room->notifySkillInvoked(player, objectName());
 
         CardUseStruct use = data.value<CardUseStruct>();
@@ -689,6 +708,12 @@ public:
     virtual bool onPhaseChange(ServerPlayer *player) const{
         QList<ServerPlayer *> targets;
         Room *room = player->getRoom();
+
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = player;
+        log.arg = objectName();
+        room->sendLog(log);
 
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
             if (!p->isFriendWith(player))
@@ -755,6 +780,11 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = player;
+        log.arg = objectName();
+        room->sendLog(log);
         room->notifySkillInvoked(player, objectName());
 
         ServerPlayer *victim = NULL;
@@ -933,7 +963,12 @@ public:
         room->notifySkillInvoked(ask_who, objectName());
         DamageStruct damage = data.value<DamageStruct>();
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ask_who->objectName(), player->objectName());
-        //silverlion? log
+        LogMessage log;
+        log.type = "#JGChiying";
+        log.from = player;
+        log.arg = QString::number(damage.damage);
+        log.arg2 = objectName();
+        room->sendLog(log);
         damage.damage = 1;
         data = QVariant::fromValue(damage);
         return false;
@@ -1212,7 +1247,14 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
-        target->getRoom()->loseHp(target);
+        Room *room = target->getRoom();
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = target;
+        log.arg = objectName();
+        room->sendLog(log);
+        room->notifySkillInvoked(target, objectName());
+        room->loseHp(target);
         return false;
     }
 };
@@ -1245,6 +1287,12 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = player;
+        log.arg = objectName();
+        room->sendLog(log);
+        room->notifySkillInvoked(player, objectName());
 
         QList<ServerPlayer *> players;
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
@@ -1256,7 +1304,7 @@ public:
 
         room->sortByActionOrder(players);
         foreach(ServerPlayer *p, players)
-            room->damage(DamageStruct(objectName(), NULL /*is this correct???*/, p, 1, DamageStruct::Thunder));
+            room->damage(DamageStruct(objectName(), NULL, p, 1, DamageStruct::Thunder));
 
 
         return false;
@@ -1338,8 +1386,6 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ask_who->objectName(), player->objectName());
-
-        //log??
 
         int n = data.toInt();
         data = --n;
@@ -1440,8 +1486,14 @@ public:
         return player->hasShownSkill(this) || player->askForSkillInvoke(objectName());
     }
 
-    virtual int getDrawNum(ServerPlayer *, int n) const{
-        //log
+    virtual int getDrawNum(ServerPlayer *player, int n) const{
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = player;
+        log.arg = objectName();
+        Room *room = player->getRoom();
+        room->sendLog(log);
+        room->notifySkillInvoked(player, objectName());
         return n - 1;
     }
 };
@@ -1474,6 +1526,14 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         Room *room = target->getRoom();
+
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = target;
+        log.arg = objectName();
+        room->sendLog(log);
+        room->notifySkillInvoked(target, objectName());
+
         QList<ServerPlayer *> players;
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
             if (!p->isFriendWith(target) && p->getHandcardNum() > target->getHandcardNum()) {
