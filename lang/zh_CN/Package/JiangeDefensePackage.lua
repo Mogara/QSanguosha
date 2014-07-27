@@ -32,7 +32,7 @@ return {
 	["jg_pangtong"] = "浴火士元",
 	["jgyuhuo_pangtong"] = "浴火",
 	[":jgyuhuo"] = "锁定技，每当你受到火焰伤害时，防止此伤害。",
-	["#YuhuoProtect"] = "%from 的“<font color=\"yellow\"><b>释衅</b></font>”被触发，防止了 %arg 点伤害[%arg2]",
+	["#YuhuoProtect"] = "%from 的“<font color=\"yellow\"><b>浴火</b></font>”被触发，防止了 %arg 点伤害[%arg2]",
 	["jgqiwu"] = "栖梧",
 	[":jgqiwu"] = "锁定技，每当你的梅花牌因弃置而置入弃牌堆后，你令一名己方角色回复1点体力。",
 	["jgtianyu"] = "天狱",
