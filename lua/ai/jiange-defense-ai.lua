@@ -353,3 +353,11 @@ function sgs.ai_skill_invoke.jgdixian(self, data)
 	return throw > 3
 end
 
+--[[
+sgs.ai_trick_prohibit.jgjiguan = function(self, card, to, from)
+	if to:hasShownSkills("jgjiguan_qinglong|jgjiguan_baihu|jgjiguan_zhuque|jgjiguan_xuanwu|jgjiguan_bian|jgjiguan_suanni|jgjiguan_chiwen|jgjiguan_yazi") then
+		return true
+	end
+end
+]]
+

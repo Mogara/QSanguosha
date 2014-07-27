@@ -111,6 +111,7 @@ function sgs.ai_armor_value.Vine(player, self)
 	if player:isChained() and (not self:isGoodChainTarget(player, self.player, nil, nil, fslash) or not self:isGoodChainTarget(player, self.player, nil, nil, tslash)) then return -2 end
 
 	for _, enemy in ipairs(self:getEnemies(player)) do
+		if enemy:hasShownSkill("jgbiantian") then return -2 end
 		if (enemy:canSlash(player) and enemy:hasWeapon("Fan")) or enemy:hasShownSkill("huoji") then return -2 end
 		if getKnownCard(enemy, player, "FireSlash", true) >= 1 or getKnownCard(enemy, player, "FireAttack", true) >= 1 or
 			getKnownCard(enemy, player, "Fan") >= 1 then return -2 end
@@ -323,6 +324,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 		damage = self:hasHeavySlashDamage(from, card, to, true)
 	elseif nature == sgs.DamageStruct_Fire then
 		if to:hasArmorEffect("Vine") then damage = damage + 1 end
+		if to:getMark("@gale") > 0 then damage = damage + 1 end
 	end
 
 	if not self:damageIsEffective_(damageStruct) then return end
@@ -340,11 +342,13 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 		if self:isWeak(target) then newvalue = newvalue - 1 end
 		if dmg and nature == sgs.DamageStruct_Fire then
 			if target:hasArmorEffect("Vine") then dmg = dmg + 1 end
+			if target:getMark("@gale") > 0 then damage = damage + 1 end
 		end
 		if self:cantbeHurt(target, from, damage) then newvalue = newvalue - 100 end
 		if damage + (dmg or 0) >= target:getHp() then
 			newvalue = newvalue - 2
 			if self:isEnemy(target) then kills = kills + 1 end
+			if target:objectName() == self.player:objectName() and #self.friends_noself == 0 and peach_num < damage + (dmg or 0) then newvalue = newvalue - 100 end
 		else
 			if self:isEnemy(target) and from:getHandcardNum() < 2 and target:hasShownSkills("ganglie") and from:getHp() == 1
 				and self:damageIsEffective(from, nil, target) and peach_num < 1 then newvalue = newvalue - 100 end
@@ -380,7 +384,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 			if self:isFriend(player) then
 				good = good + getvalue
 				F_count = F_count + 1
-			elseif self:isEnemy(player) then
+			else
 				bad = bad + getvalue
 				E_count = E_count + 1
 				the_enemy = player
