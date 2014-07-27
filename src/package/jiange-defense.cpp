@@ -102,7 +102,7 @@ public:
             if (players.isEmpty())
                 return true;
 
-            ServerPlayer *victim = room->askForPlayerChosen(target, players, objectName() + "-losehp", "@jglingfeng");
+            ServerPlayer *victim = room->askForPlayerChosen(target, players, objectName(), "@jglingfeng");
             if (victim == NULL)
                 victim = players.at(qrand() % players.length());
 
@@ -518,7 +518,7 @@ public:
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         room->notifySkillInvoked(player, objectName());
         LogMessage log;
-        log.type = "#ShixinProtect";
+        log.type = "#YuhuoProtect";
         log.from = player;
         log.arg = QString::number(data.value<DamageStruct>().damage);
         log.arg2 = "fire_nature";

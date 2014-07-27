@@ -16,6 +16,8 @@ return {
 	[":jgbiantian"] = "锁定技，准备阶段开始时，你判定，若结果为：红色，每当敌方角色于你的下回合开始之前受到的火焰伤害结算开始时，你令伤害值+1；黑色，每当我方角色于你的下回合开始之前受到的非雷电伤害结算开始时，你防止此伤害。",
 	["#jgbiantian-kf"] = "变天（狂风）",
 	["#jgbiantian-dw"] = "变天（大雾）",
+	["#FogProtect"] = "%from 的“<font color=\"yellow\"><b>大雾</b></font>”效果被触发，防止了 %arg 点伤害[%arg2]",
+	["#GalePower"] = "“<font color=\"yellow\"><b>狂风</b></font>”效果被触发，%from 的火焰伤害从 %arg 点增加至 %arg2 点",
 
 	["#jg_yueying"] = "蜀汉英魂",
 	["jg_yueying"] = "工神月英",
@@ -30,6 +32,7 @@ return {
 	["jg_pangtong"] = "浴火士元",
 	["jgyuhuo_pangtong"] = "浴火",
 	[":jgyuhuo"] = "锁定技，每当你受到火焰伤害时，防止此伤害。",
+	["#YuhuoProtect"] = "%from 的“<font color=\"yellow\"><b>释衅</b></font>”被触发，防止了 %arg 点伤害[%arg2]",
 	["jgqiwu"] = "栖梧",
 	[":jgqiwu"] = "锁定技，每当你的梅花牌因弃置而置入弃牌堆后，你令一名己方角色回复1点体力。",
 	["jgtianyu"] = "天狱",
