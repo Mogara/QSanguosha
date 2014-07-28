@@ -139,7 +139,7 @@ end
 sgs.ai_skill_use_func.CunsiCard = function(card, use, self)
 
 	local all_shown = true
-	for _, p in sgs.qlist(room:getOtherPlayers(self.player)) do
+	for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if not p:hasShownOneGeneral() then
 			all_shown = false
 			break
