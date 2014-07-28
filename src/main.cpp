@@ -154,9 +154,10 @@ int main(int argc, char *argv[]) {
 
         return qApp->exec();
     }
-
-    splash.showMessage(QObject::tr("Loading style sheet..."), alignment, Qt::cyan);
-    qApp->processEvents();
+    if (!noGui) {
+        splash.showMessage(QObject::tr("Loading style sheet..."), alignment, Qt::cyan);
+        qApp->processEvents();
+    }
     QFile file("style-sheet/sanguosha.qss");
     QString styleSheet;
     if (file.open(QIODevice::ReadOnly)) {
@@ -167,19 +168,26 @@ int main(int argc, char *argv[]) {
         .arg(Config.ToolTipBackgroundColor.name()));
 
 #ifdef AUDIO_SUPPORT
-    splash.showMessage(QObject::tr("Initializing audio module..."), alignment, Qt::cyan);
-    qApp->processEvents();
+    if (!noGui) {
+        splash.showMessage(QObject::tr("Initializing audio module..."), alignment, Qt::cyan);
+        qApp->processEvents();
+    }
     Audio::init();
+#else
+    if (!noGui)
+        QMessageBox::warning(this, tr("Warning"), tr("Audio support is disabled when compiled"));
 #endif
 
-    splash.showMessage(QObject::tr("Loading main window..."), alignment, Qt::cyan);
-    qApp->processEvents();
+    if (!noGui) {
+        splash.showMessage(QObject::tr("Loading main window..."), alignment, Qt::cyan);
+        qApp->processEvents();
+    }
     MainWindow main_window;
 
     Sanguosha->setParent(&main_window);
     main_window.show();
-
-    splash.finish(&main_window);
+    if (!noGui)
+        splash.finish(&main_window);
 
     foreach(QString arg, qApp->arguments()) {
         if (arg.startsWith("-connect:")) {
