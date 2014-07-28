@@ -326,51 +326,51 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     QPoint gloPoint = event->globalPos();
     if (isZoomReady && isLeftPressDown) {
         QRect rect = this->rect();
-        QPoint tl = mapToGlobal(rect.topLeft());
-        QPoint rb = mapToGlobal(rect.bottomRight());
+        QPoint topLeft = mapToGlobal(rect.topLeft());
+        QPoint bottomRight = mapToGlobal(rect.bottomRight());
 
-        QRect rMove(tl, rb);
+        QRect rMove(topLeft, bottomRight);
 
         switch (direction) {
         case Left:
-            if (rb.x() - gloPoint.x() <= minimumWidth())
-                rMove.setX(tl.x());
+            if (bottomRight.x() - gloPoint.x() <= minimumWidth())
+                rMove.setX(topLeft.x());
             else
                 rMove.setX(gloPoint.x());
             break;
         case Right:
-            rMove.setWidth(gloPoint.x() - tl.x());
+            rMove.setWidth(gloPoint.x() - topLeft.x());
             break;
         case Up:
-            if (rb.y() - gloPoint.y() <= minimumHeight())
-                rMove.setY(tl.y());
+            if (bottomRight.y() - gloPoint.y() <= minimumHeight())
+                rMove.setY(topLeft.y());
             else
                 rMove.setY(gloPoint.y());
             break;
         case Down:
-            rMove.setHeight(gloPoint.y() - tl.y());
+            rMove.setHeight(gloPoint.y() - topLeft.y());
             break;
         case LeftTop:
-            if (rb.x() - gloPoint.x() <= minimumWidth())
-                rMove.setX(tl.x());
+            if (bottomRight.x() - gloPoint.x() <= minimumWidth())
+                rMove.setX(topLeft.x());
             else
                 rMove.setX(gloPoint.x());
-            if (rb.y() - gloPoint.y() <= minimumHeight())
-                rMove.setY(tl.y());
+            if (bottomRight.y() - gloPoint.y() <= minimumHeight())
+                rMove.setY(topLeft.y());
             else
                 rMove.setY(gloPoint.y());
             break;
         case RightTop:
-            rMove.setWidth(gloPoint.x() - tl.x());
+            rMove.setWidth(gloPoint.x() - topLeft.x());
             rMove.setY(gloPoint.y());
             break;
         case LeftBottom:
             rMove.setX(gloPoint.x());
-            rMove.setHeight(gloPoint.y() - tl.y());
+            rMove.setHeight(gloPoint.y() - topLeft.y());
             break;
         case RightBottom:
-            rMove.setWidth(gloPoint.x() - tl.x());
-            rMove.setHeight(gloPoint.y() - tl.y());
+            rMove.setWidth(gloPoint.x() - topLeft.x());
+            rMove.setHeight(gloPoint.y() - topLeft.y());
             break;
         default:
             break;
@@ -433,34 +433,34 @@ void MainWindow::restoreFromConfig() {
 void MainWindow::region(const QPoint &cursorGlobalPoint)
 {
     QRect rect = this->rect();
-    QPoint tl = mapToGlobal(rect.topLeft());
-    QPoint rb = mapToGlobal(rect.bottomRight());
+    QPoint topLeft = mapToGlobal(rect.topLeft());
+    QPoint bottomRight = mapToGlobal(rect.bottomRight());
 
     int x = cursorGlobalPoint.x();
     int y = cursorGlobalPoint.y();
 
-    if (tl.x() + S_PADDING >= x && tl.x() <= x && tl.y() + S_PADDING >= y && tl.y() <= y) {
+    if (topLeft.x() + S_PADDING >= x && topLeft.x() <= x && topLeft.y() + S_PADDING >= y && topLeft.y() <= y) {
         direction = LeftTop;
         setCursor(QCursor(Qt::SizeFDiagCursor));
-    } else if (x >= rb.x() - S_PADDING && x <= rb.x() && y >= rb.y() - S_PADDING && y <= rb.y()) {
+    } else if (x >= bottomRight.x() - S_PADDING && x <= bottomRight.x() && y >= bottomRight.y() - S_PADDING && y <= bottomRight.y()) {
         direction = RightBottom;
         setCursor(QCursor(Qt::SizeFDiagCursor));
-    } else if (x <= tl.x() + S_PADDING && x >= tl.x() && y >= rb.y() - S_PADDING && y <= rb.y()) {
+    } else if (x <= topLeft.x() + S_PADDING && x >= topLeft.x() && y >= bottomRight.y() - S_PADDING && y <= bottomRight.y()) {
         direction = LeftBottom;
         setCursor(QCursor(Qt::SizeBDiagCursor));
-    } else if (x <= rb.x() && x >= rb.x() - S_PADDING && y >= tl.y() && y <= tl.y() + S_PADDING) {
+    } else if (x <= bottomRight.x() && x >= bottomRight.x() - S_PADDING && y >= topLeft.y() && y <= topLeft.y() + S_PADDING) {
         direction = RightTop;
         setCursor(QCursor(Qt::SizeBDiagCursor));
-    } else if (x <= tl.x() + S_PADDING && x >= tl.x()) {
+    } else if (x <= topLeft.x() + S_PADDING && x >= topLeft.x()) {
         direction = Left;
         setCursor(QCursor(Qt::SizeHorCursor));
-    } else if (x <= rb.x() && x >= rb.x() - S_PADDING) {
+    } else if (x <= bottomRight.x() && x >= bottomRight.x() - S_PADDING) {
         direction = Right;
         setCursor(QCursor(Qt::SizeHorCursor));
-    } else if (y >= tl.y() && y <= tl.y() + S_PADDING) {
+    } else if (y >= topLeft.y() && y <= topLeft.y() + S_PADDING) {
         direction = Up;
         setCursor(QCursor(Qt::SizeVerCursor));
-    } else if (y <= rb.y() && y >= rb.y() - S_PADDING) {
+    } else if (y <= bottomRight.y() && y >= bottomRight.y() - S_PADDING) {
         direction = Down;
         setCursor(QCursor(Qt::SizeVerCursor));
     } else {
@@ -515,11 +515,11 @@ void MainWindow::repaintButtons()
     if (!minButton || !maxButton || !normalButton || !closeButton || !menu)
         return;
     int width = this->width();
-    minButton->setGeometry(width - 67, 5, 20, 20);
-    maxButton->setGeometry(width - 46, 5, 20, 20);
-    normalButton->setGeometry(width - 46, 5, 20, 20);
-    closeButton->setGeometry(width - 25, 5, 20, 20);
-    menu->setGeometry(width - 88, 5, 20, 20);
+    minButton->setGeometry(width - 70, 5, 20, 20);
+    maxButton->setGeometry(width - 49, 5, 20, 20);
+    normalButton->setGeometry(width - 49, 5, 20, 20);
+    closeButton->setGeometry(width - 28, 5, 20, 20);
+    menu->setGeometry(width - 91, 5, 20, 20);
     
     bool max = windowState() & Qt::WindowMaximized;
     if (max) {

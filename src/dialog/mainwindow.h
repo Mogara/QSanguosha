@@ -95,7 +95,7 @@ public:
     bool isLeftPressDown;
     QPoint movePosition;
 
-    static const int S_PADDING = 8;
+    static const int S_PADDING = 4;
     enum Direction { Up, Down, Left, Right, LeftTop, LeftBottom, RightTop, RightBottom, None = -1 };
 
     bool isZoomReady;
