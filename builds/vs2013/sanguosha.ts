@@ -3753,7 +3753,7 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="../../src/server/server.cpp" line="412"/>
         <source>Jiange Defense</source>
-        <translation>守卫剑阁</translation>
+        <translation>守卫剑阁（4 人）</translation>
     </message>
     <message>
         <location filename="../../src/server/server.cpp" line="422"/>
