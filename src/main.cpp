@@ -64,15 +64,11 @@ static bool callback(const wchar_t *, const wchar_t *id, void *, EXCEPTION_POINT
     }
     return succeeded;
 }
-
-int main(int argc, char *argv[]) {
-    ExceptionHandler eh(L"./dmp", NULL, callback, NULL,
-        ExceptionHandler::HANDLER_ALL);
-#else
-int main(int argc, char *argv[]) {
 #endif
 
+int main(int argc, char *argv[]) {
     bool noGui = argc > 1 && strcmp(argv[1], "-server") == 0;
+
     if (noGui)
         new QCoreApplication(argc, argv);
     else
@@ -85,6 +81,18 @@ int main(int argc, char *argv[]) {
         splash.show();
         qApp->processEvents();
     }
+
+
+#ifdef USE_BREAKPAD
+    if (!noGui) {
+        splash.showMessage(QObject::tr("Loading BreakPad..."), alignment, Qt::cyan);
+        qApp->processEvents();
+    }
+
+    ExceptionHandler eh(L"./dmp", NULL, callback, NULL, ExceptionHandler::HANDLER_ALL);
+#endif
+
+
 
 #ifdef Q_OS_MAC
 #ifdef QT_NO_DEBUG
@@ -117,14 +125,14 @@ int main(int argc, char *argv[]) {
     // initialize random seed for later use
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
     // load the main translation file first for we need to translate messages of splash.
-    QTranslator translator;
-    translator.load("sanguosha.qm");
-    qApp->installTranslator(&translator);
-
     if (!noGui) {
         splash.showMessage(QObject::tr("Loading translation..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
+
+    QTranslator translator;
+    translator.load("sanguosha.qm");
+    qApp->installTranslator(&translator);
 
     QTranslator qt_translator;
     qt_translator.load("qt_zh_CN.qm");
