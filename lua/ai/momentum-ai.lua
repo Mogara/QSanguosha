@@ -137,12 +137,9 @@ cunsi_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_use_func.CunsiCard = function(card, use, self)
-	local Self = self.player
-	local room = Self:getRoom()
 
 	local all_shown = true
-
-	for _, p in sgs.qlist(room:getOtherPlayers(Self)) do
+	for _, p in sgs.qlist(room:getOtherPlayers(self.player)) do
 		if not p:hasShownOneGeneral() then
 			all_shown = false
 			break
@@ -151,7 +148,7 @@ sgs.ai_skill_use_func.CunsiCard = function(card, use, self)
 
 	local to
 	for _, friend in ipairs(self.friends_noself) do
-		if self:evaluateKingdom(friend) == self.player:getKingdom() and ( self:isWeak(friend) or self.player:getLostHp() > 0 )then
+		if sgs.ai_explicit[friend:objectName()] == self.player:getKingdom() and ( self:isWeak(friend) or self.player:getLostHp() > 0 )then
 			to = friend
 			break
 		end
@@ -164,7 +161,7 @@ sgs.ai_skill_use_func.CunsiCard = function(card, use, self)
 
 	if all_shown and #self.friends_noself == 0 and self.player:getLostHp() > 0 then
 		use.card = card
-		if use.to then use.to:append(Self) end
+		if use.to then use.to:append(self.player) end
 	end
 end
 
