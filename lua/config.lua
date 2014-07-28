@@ -45,13 +45,14 @@ config = {
 		"StandardCard",
 		"FormationEquip",
 		"MomentumEquip" ,
-		"StrategicAdvantage" ,
-		"JiangeDefense",
+		"StrategicAdvantage",
+		--"StrategicAdvantageTest",
 
 		"Standard",
 		"Formation",
 		"Momentum",
-		"Test"
+		"Test",
+		"JiangeDefense"
 	},
 
 	easy_text = {

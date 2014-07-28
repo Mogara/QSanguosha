@@ -1584,7 +1584,7 @@ public:
 };
 
 JiangeDefensePackage::JiangeDefensePackage()
-    : Package("jiange-defense", Package::MixedPack) {
+    : Package("jiange-defense") {
 
     General *liubei = new General(this, "jg_liubei", "shu", 5, true, true);
     liubei->addSkill(new JGJizhen);
