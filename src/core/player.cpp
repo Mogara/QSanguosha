@@ -33,7 +33,7 @@ Player::Player(QObject *parent)
     general1_showed(false), general2_showed(false),
     phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), treasure(NULL),
-    face_up(true), chained(false)
+    face_up(true), chained(false), scenario_role_shown(false)
 {
 }
 
@@ -1323,9 +1323,7 @@ bool Player::hasShownGeneral2() const {
 }
 
 bool Player::hasShownOneGeneral() const {
-    if (role_shown && kingdom != "god" && Sanguosha->getKingdoms().contains(kingdom))
-        return true;
-    return general1_showed || general2_showed;
+    return scenario_role_shown || general1_showed || general2_showed;
 }
 
 bool Player::hasShownAllGenerals() const {

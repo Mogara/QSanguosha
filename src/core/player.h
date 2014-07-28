@@ -68,6 +68,8 @@ class Player : public QObject {
 
     Q_PROPERTY(QString next READ getNextName WRITE setNext)
 
+    Q_PROPERTY(bool scenario_role_shown READ getScenarioRoleShown WRITE setScenarioRoleShown)
+
     Q_ENUMS(Phase)
     Q_ENUMS(Place)
     Q_ENUMS(Role)
@@ -302,6 +304,9 @@ public:
     bool hasPreshowedSkill(const Skill *skill) const;
     bool isHidden(const bool &head_general) const;
 
+    inline bool getScenarioRoleShown() const{ return scenario_role_shown; }
+    inline void setScenarioRoleShown(bool show) { scenario_role_shown = show; }
+
     bool ownSkill(const QString &skill_name) const;
     bool ownSkill(const Skill *skill) const;
     bool isFriendWith(const Player *player) const;
@@ -357,6 +362,8 @@ private:
     QStringList disable_show; 
     // head and/or deputy, reason
     // example: "hd,Blade"
+
+    bool scenario_role_shown;
 
 signals:
     void general_changed();

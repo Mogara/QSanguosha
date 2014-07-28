@@ -2143,6 +2143,7 @@ void Room::prepareForStart() {
                 }
                 setPlayerProperty(player, "kingdom", kingdoms[i]);
                 setPlayerProperty(player, "role", HegemonyMode::GetMappedRole(kingdoms[i]));
+                setPlayerProperty(player, "scenario_role_shown", true);
             }
         }
     }
