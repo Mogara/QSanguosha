@@ -69,6 +69,13 @@ public:
         setSceneRect(Config.Rect);
         setRenderHints(QPainter::TextAntialiasing | QPainter::Antialiasing);
 
+        QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(this);
+        effect->setColor(Qt::cyan);
+        effect->setOffset(0);
+        effect->setBlurRadius(10);
+
+        setGraphicsEffect(effect);
+
 #if !defined(QT_NO_OPENGL) && defined(USING_OPENGL)
         if (QGLFormat::hasOpenGL()) {
             QGLWidget *widget = new QGLWidget(QGLFormat(QGL::SampleBuffers));
@@ -119,7 +126,7 @@ public:
         else if (scene()->inherits("StartScene")) {
             StartScene *start_scene = qobject_cast<StartScene *>(scene());
             QRectF newSceneRect(-event->size().width() / 2, -event->size().height() / 2,
-                event->size().width(), event->size().height());
+                            event->size().width(), event->size().height());
             start_scene->setSceneRect(newSceneRect);
             setSceneRect(start_scene->sceneRect());
             if (newSceneRect != start_scene->sceneRect())
@@ -127,6 +134,28 @@ public:
         }
         if (main_window)
             main_window->setBackgroundBrush(true);
+
+        roundCorners();
+    }
+
+    void roundCorners()
+    {
+        MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
+        QBitmap mask(size());
+        if (main_window->windowState() & (Qt::WindowMaximized | Qt::WindowFullScreen)) {
+            mask.fill(Qt::black);
+        } else {
+            mask.fill();
+            QPainter painter(&mask);
+            QPainterPath path;
+            QRect viewRect = mask.rect();
+            QRect maskRect(viewRect.x(), viewRect.y(), viewRect.width(), viewRect.height());
+            path.addRoundedRect(maskRect, 5, 5);
+            painter.setRenderHint(QPainter::Antialiasing);
+
+            painter.fillPath(path, Qt::black);
+        }
+        setMask(mask);
     }
 };
 
@@ -223,8 +252,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(view);
     restoreFromConfig();
-
-    roundCorners();
 
     BackLoader::preload();
     gotoScene(start_scene);
@@ -402,17 +429,19 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *)
 
 void MainWindow::changeEvent(QEvent *event)
 {
-    if (event->type() == QEvent::WindowStateChange) {
+    if (event->type() == QEvent::WindowStateChange)
         repaintButtons();
-        roundCorners();
-    }
+
     QMainWindow::changeEvent(event);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
+    if (!(windowState() & Qt::WindowFullScreen)) {
+        view->resize(event->size() - QSize(2 * BORDER_WIDTH, 2 * BORDER_WIDTH));
+        view->move(BORDER_WIDTH, BORDER_WIDTH);
+    }
     repaintButtons();
-    roundCorners();
     QMainWindow::resizeEvent(event);
 }
 
@@ -489,25 +518,6 @@ void MainWindow::fetchUpdateInformation()
 
     connect(versionInfomationReply, SIGNAL(finished()), SLOT(onVersionInfomationGotten()));
     connect(changeLogReply, SIGNAL(finished()), SLOT(onChangeLogGotten()));
-}
-
-void MainWindow::roundCorners()
-{
-    QBitmap mask(size());
-    if (windowState() & (Qt::WindowMaximized | Qt::WindowFullScreen)) {
-        mask.fill(Qt::black);
-    } else {
-        mask.fill();
-        QPainter painter(&mask);
-        QPainterPath path;
-        QRect windowRect = mask.rect();
-        QRect maskRect(windowRect.x(), windowRect.y(), windowRect.width(), windowRect.height());
-        path.addRoundedRect(maskRect, 5, 5);
-        painter.setRenderHint(QPainter::Antialiasing);
-
-        painter.fillPath(path, Qt::black);
-    }
-    setMask(mask);
 }
 
 void MainWindow::repaintButtons()

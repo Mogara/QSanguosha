@@ -127,7 +127,8 @@ private:
     void restoreFromConfig();
     void region(const QPoint &cursorGlobalPoint);
     void fetchUpdateInformation();
-    void roundCorners();
+
+    static const int BORDER_WIDTH = 20;
 
 public slots:
     void startConnection();
