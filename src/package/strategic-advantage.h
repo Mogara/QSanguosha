@@ -38,11 +38,11 @@ public:
     Q_INVOKABLE JadeSeal(Card::Suit suit, int number);
 };
 
-class ProtectHeartMirror : public Armor{
+class Breastplate : public Armor{
     Q_OBJECT
 
 public:
-    Q_INVOKABLE ProtectHeartMirror(Card::Suit suit, int number);
+    Q_INVOKABLE Breastplate(Card::Suit suit = Card::Club, int number = 2);
 };
 
 class StrategicAdvantagePackage : public Package{
