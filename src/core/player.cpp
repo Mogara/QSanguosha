@@ -248,7 +248,7 @@ int Player::getAttackRange(bool include_weapon) const{
 
     if (real_range < 0)
         real_range = 0;
-    if (real_rand > 1000)
+    if (real_range > 1000)
         real_range = 1000; //for lure_tiger
 
     return real_range;
