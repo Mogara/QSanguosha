@@ -338,6 +338,7 @@ public:
     Player *getNextAlive(int n = 1) const;
     Player *getLastAlive(int n = 1) const;
 
+    QList<const Player *> getFormation() const;
 };
 
 %extend Player {
@@ -460,7 +461,6 @@ public:
     void notifyPreshow();
 
     bool inSiegeRelation(const ServerPlayer *skill_owner, const ServerPlayer *victim) const;
-    QList<ServerPlayer *> getFormation() const;
     bool inFormationRalation(ServerPlayer *teammate) const;
     void summonFriends(const HegemonyMode::ArrayType type);
 };

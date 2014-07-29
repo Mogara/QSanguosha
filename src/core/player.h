@@ -320,6 +320,8 @@ public:
     Player *getNextAlive(int n = 1) const;
     Player *getLastAlive(int n = 1) const;
 
+    QList<const Player *> getFormation() const;
+
     QVariantMap tag;
 
 protected:

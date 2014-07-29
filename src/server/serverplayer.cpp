@@ -1732,34 +1732,8 @@ bool ServerPlayer::inSiegeRelation(const ServerPlayer *skill_owner, const Server
         || (getLastAlive() == victim && getLastAlive(2) == skill_owner);
 }
 
-QList<ServerPlayer *> ServerPlayer::getFormation() const {
-    QList<ServerPlayer *> teammates;
-    teammates << room->findPlayer(objectName()); //avoid unsafe const_cast
-    int n = aliveCount();
-    int num = n;
-    for (int i = 1; i < n; ++i) {
-        ServerPlayer *target = qobject_cast<ServerPlayer *>(getNextAlive(i));
-        if (isFriendWith(target))
-            teammates << target;
-        else {
-            num = i;
-            break;
-        }
-    }
-
-    n -= num;
-    for (int i = 1; i < n; ++i) {
-        ServerPlayer *target = qobject_cast<ServerPlayer *>(getLastAlive(i));
-        if (isFriendWith(target))
-            teammates << target;
-        else break;
-    }
-
-    return teammates;
-}
-
 bool ServerPlayer::inFormationRalation(ServerPlayer *teammate) const {
-    QList<ServerPlayer *> teammates = getFormation();
+    QList<const Player *> teammates = getFormation();
     return teammates.length() > 1 && teammates.contains(teammate);
 }
 
