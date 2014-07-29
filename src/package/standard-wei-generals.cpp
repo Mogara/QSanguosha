@@ -962,8 +962,10 @@ bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Playe
         const Weapon *card = qobject_cast<const Weapon *>(Self->getWeapon()->getRealCard());
         rangefix += card->getRange() - 1;
     }
-
-    return Self->distanceTo(to_select, rangefix) <= Self->getAttackRange();
+    int distance = Self->distanceTo(to_select, rangefix);
+    if (distance == -1)
+        return false;
+    return distance <= Self->getAttackRange();
 }
 
 void QiangxiCard::onEffect(const CardEffectStruct &effect) const{
