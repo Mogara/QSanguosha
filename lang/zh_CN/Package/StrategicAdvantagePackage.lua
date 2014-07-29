@@ -11,4 +11,9 @@ return {
 
 	["Breastplate"] = "护心镜",
 	[":Breastplate"] = "装备牌·防具\n\n技能：每当你受到XXXXXXXXX的伤害时，你可以XXXXXXXXXX，防止此伤害。",
+
+	["drowning"] = "水淹七军",
+	[":drowning"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：所有装备区有牌的其他角色。\n作用效果：每名目标角色选择一项：1.弃置装备区里的所有牌；2.受到你造成的1点伤害。",
+	["drowning:throw"] = "弃置所有装备",
+	["drowning:damage"] = "受到1点伤害",
 }
