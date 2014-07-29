@@ -197,7 +197,7 @@ void SoundTestBox::btn_clicked(){
 #endif
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), isLeftPressDown(false),
+    : QMainWindow(parent), isLeftPressDown(false), view(NULL),
       scene(NULL), ui(new Ui::MainWindow), server(NULL), about_window(NULL),
       minButton(NULL), maxButton(NULL), normalButton(NULL), closeButton(NULL),
       versionInfomationReply(NULL), changeLogReply(NULL)
@@ -250,7 +250,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     view = new FitView(scene);
 
-    setCentralWidget(view);
+    view->setParent(this);
     restoreFromConfig();
 
     BackLoader::preload();
@@ -429,18 +429,30 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *)
 
 void MainWindow::changeEvent(QEvent *event)
 {
-    if (event->type() == QEvent::WindowStateChange)
+    if (event->type() == QEvent::WindowStateChange) {
         repaintButtons();
 
+        if (!view) return QMainWindow::changeEvent(event);
+
+        if (!(windowState() & (Qt::WindowFullScreen | Qt::WindowMinimized | Qt::WindowMaximized))) {
+            QSize viewSize = size() - QSize(2 * BORDER_WIDTH, 2 * BORDER_WIDTH);
+            view->setGeometry(QRect(QPoint(BORDER_WIDTH, BORDER_WIDTH), viewSize));
+        } else if (!(windowState() & Qt::WindowMinimized)) {
+            view->setGeometry(rect());
+        }
+    }
     QMainWindow::changeEvent(event);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    if (!(windowState() & Qt::WindowFullScreen)) {
-        view->resize(event->size() - QSize(2 * BORDER_WIDTH, 2 * BORDER_WIDTH));
-        view->move(BORDER_WIDTH, BORDER_WIDTH);
+    if (!(windowState() & (Qt::WindowFullScreen | Qt::WindowMinimized | Qt::WindowMaximized))) {
+        QSize viewSize = event->size() - QSize(2 * BORDER_WIDTH, 2 * BORDER_WIDTH);
+        view->setGeometry(QRect(QPoint(BORDER_WIDTH, BORDER_WIDTH), viewSize));
+    } else if (!(windowState() & Qt::WindowMinimized)) {
+        view->setGeometry(rect());
     }
+
     repaintButtons();
     QMainWindow::resizeEvent(event);
 }
