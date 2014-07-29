@@ -241,7 +241,7 @@ public:
     virtual bool isEnabledAtPlay(const Player *player) const;
 };
 
-class ProhibitSkill : public Skill { //to be deleted
+class ProhibitSkill : public Skill {
     Q_OBJECT
 
 public:

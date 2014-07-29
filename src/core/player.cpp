@@ -248,13 +248,13 @@ int Player::getAttackRange(bool include_weapon) const{
 
     if (real_range < 0)
         real_range = 0;
-    if (real_range > 1000)
-        real_range = 1000; //for lure_tiger
 
     return real_range;
 }
 
 bool Player::inMyAttackRange(const Player *other) const{
+    if (distanceTo(other) == -1)
+        return false;
     return distanceTo(other) <= getAttackRange();
 }
 
@@ -270,7 +270,7 @@ int Player::distanceTo(const Player *other, int distance_fix) const{
         return 0;
 
     if (hasFlag("LureTigerTarget") || other->hasFlag("LureTigerTarget"))
-        return 1001; // out of attack range
+        return -1;
 
     if (fixed_distance.contains(other))
         return fixed_distance.value(other);

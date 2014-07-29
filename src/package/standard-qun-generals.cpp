@@ -491,7 +491,8 @@ void LuanwuCard::onEffect(const CardEffectStruct &effect) const{
     foreach(ServerPlayer *player, players) {
         int distance = effect.to->distanceTo(player);
         distance_list << distance;
-        nearest = qMin(nearest, distance);
+        if (distance != -1)
+            nearest = qMin(nearest, distance);
     }
 
     QList<ServerPlayer *> luanwu_targets;

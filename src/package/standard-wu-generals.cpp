@@ -262,8 +262,10 @@ bool LiuliCard::targetFilter(const QList<const Player *> &targets, const Player 
     else if (Self->getOffensiveHorse() && Self->getOffensiveHorse()->getId() == card_id) {
         range_fix += 1;
     }
-
-    return Self->distanceTo(to_select, range_fix) <= Self->getAttackRange();
+    int distance = Self->distanceTo(to_select, range_fix);
+    if (distance == -1)
+        return false;
+    return distance <= Self->getAttackRange();
 }
 
 void LiuliCard::onEffect(const CardEffectStruct &effect) const{
