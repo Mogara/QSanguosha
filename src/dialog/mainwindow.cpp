@@ -107,6 +107,13 @@ public:
         QGraphicsView::mouseReleaseEvent(event);
     }
 
+    virtual void mouseDoubleClickEvent(QMouseEvent *event) {
+        MainWindow *parent = qobject_cast<MainWindow *>(parentWidget());
+        if (parent)
+            parent->mouseDoubleClickEvent(event);
+        QGraphicsView::mouseDoubleClickEvent(event);
+    }
+
     virtual void resizeEvent(QResizeEvent *event) {
         QGraphicsView::resizeEvent(event);
         MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
