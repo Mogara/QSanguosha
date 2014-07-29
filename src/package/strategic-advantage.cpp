@@ -88,6 +88,54 @@ Breastplate::Breastplate(Card::Suit suit, int number)
     setObjectName("Breastplate");
 }
 
+Drowning::Drowning(Suit suit, int number)
+    : AOE(suit, number)
+{
+    setObjectName("drowning");
+}
+
+bool Drowning::isAvailable(const Player *player) const{
+    bool canUse = false;
+    QList<const Player *> players = player->getAliveSiblings();
+    foreach(const Player *p, players) {
+        if (player->isProhibited(p, this))
+            continue;
+        if (!player->hasEquip())
+            continue;
+        canUse = true;
+        break;
+    }
+
+    return canUse && TrickCard::isAvailable(player);
+}
+
+void Drowning::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *source = card_use.from;
+    QList<ServerPlayer *> targets;
+    if (card_use.to.isEmpty()) {
+        QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
+        foreach(ServerPlayer *player, other_players) {
+            if (!player->hasEquip())
+                continue;
+            targets << player;
+        }
+    } else
+        targets = card_use.to;
+
+    CardUseStruct use = card_use;
+    use.to = targets;
+    AOE::onUse(room, use);
+}
+
+void Drowning::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    if (!effect.to->getEquips().isEmpty()
+        && room->askForChoice(effect.to, objectName(), "throw+damage", QVariant::fromValue(effect)) == "throw")
+        effect.to->throwAllEquips();
+    else
+        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to));
+}
+
 StrategicAdvantagePackage::StrategicAdvantagePackage()
     : Package("strategic_advantage", Package::CardPack){
     QList<Card *> cards;
@@ -99,7 +147,8 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         << new Blade(Card::Spade, 5)
         << new Blade(Card::Spade, 6)
         << new Blade(Card::Spade, 7)
-        << new Breastplate();
+        << new Breastplate()
+        << new Drowning();
 
     foreach(Card *c, cards){
         c->setParent(this);
@@ -108,6 +157,4 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
     skills << new BladeSkill;
 }
 
-
 ADD_PACKAGE(StrategicAdvantage)
-
