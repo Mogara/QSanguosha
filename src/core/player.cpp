@@ -1468,7 +1468,7 @@ Player *Player::getLast() const {
 
 Player *Player::getNextAlive(int n) const{
     bool hasAlive = (aliveCount() > 0);
-    Player *next = const_cast<Player *>(this);
+    Player *next = parent()->findChild<Player *>(objectName());
     if (!hasAlive) return next;
     for (int i = 0; i < n; i++) {
         do next = parent()->findChild<Player *>(next->next);
