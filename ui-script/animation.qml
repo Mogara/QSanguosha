@@ -47,7 +47,8 @@ Rectangle {
 
     Image {
         id: heroPic
-        x: -sceneWidth / 2
+        x: -1000
+        y: sceneHeight / 2 - 350
         fillMode: Image.PreserveAspectFit
         source: "../image/animate/" + hero + ".png"
         scale: 0.3
@@ -73,8 +74,8 @@ Rectangle {
         PropertyAnimation {
             target: heroPic
             property: "x"
-            to: 0
-            duration: 400
+            to: tableWidth / 2 - 500
+            duration: 600
             easing.type: Easing.OutQuad
         }
         PropertyAnimation{

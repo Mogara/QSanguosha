@@ -3725,6 +3725,7 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
 
         _m_animationContext->setContextProperty("sceneWidth", sceneRect().width());
         _m_animationContext->setContextProperty("sceneHeight", sceneRect().height());
+        _m_animationContext->setContextProperty("tableWidth", m_tableCenterPos.x() * 2);
         _m_animationContext->setContextProperty("hero", hero);
         _m_animationContext->setContextProperty("skill", Sanguosha->translate(skill));
         QGraphicsObject *object = qobject_cast<QGraphicsObject *>(_m_animationComponent->create(_m_animationContext));
