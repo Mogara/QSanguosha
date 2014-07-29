@@ -100,7 +100,7 @@ bool Drowning::isAvailable(const Player *player) const{
     foreach(const Player *p, players) {
         if (player->isProhibited(p, this))
             continue;
-        if (!player->hasEquip())
+        if (!p->hasEquip())
             continue;
         canUse = true;
         break;
