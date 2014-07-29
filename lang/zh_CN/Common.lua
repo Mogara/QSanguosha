@@ -133,7 +133,7 @@ CommonTranslationTable = {
 	["#HegNullificationSelection"] = "%from 选择了该【<font color=\"yellow\"><b>无懈可击·国</b></font>】为 %arg" ,
 	["hegnul_single"] = "对单一角色生效" ,
 	["hegnul_all"] = "对该势力的全体剩余角色生效" ,
-	["#SkillAvoid"] = "%from 的“%arg”被触发，不能被选择为此 【%arg2】 的目标",
+	["#SkillAvoid"] = "受到“%arg”的影响，%from 不能被选择为此【%arg2】的目标",
 	["#Transfigure"] = "%from 变身为 %arg",
 	["#TransfigureDual"] = "%from 的 %arg2 变身为 %arg",
 	["#AcquireSkill"] = "%from 获得了技能“%arg”",

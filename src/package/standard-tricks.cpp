@@ -709,17 +709,48 @@ AwaitExhausted::AwaitExhausted(Card::Suit suit, int number) : TrickCard(suit, nu
     target_fixed = true;
 }
 
-
 QString AwaitExhausted::getSubtype() const{
     return "await_exhausted";
 }
 
+bool AwaitExhausted::isAvailable(const Player *player) const{
+    bool canUse = false;
+    if (!player->isProhibited(player, this))
+        canUse = true;
+    if (!canUse) {
+        QList<const Player *> players = player->getAliveSiblings();
+        foreach(const Player *p, players) {
+            if (player->isProhibited(p, this))
+                continue;
+            if (player->isFriendWith(p)) {
+                canUse = true;
+                break;
+            }
+        }
+    }
+
+    return canUse && TrickCard::isAvailable(player);
+}
+
 void AwaitExhausted::onUse(Room *room, const CardUseStruct &card_use) const{
     CardUseStruct new_use = card_use;
-    new_use.to << new_use.from;
+    if (!card_use.from->isProhibited(card_use.from, this))
+        new_use.to << new_use.from;
     foreach(ServerPlayer *p, room->getOtherPlayers(new_use.from)) {
-        if (p->isFriendWith(new_use.from))
-            new_use.to << p;
+        if (p->isFriendWith(new_use.from)) {
+            const ProhibitSkill *skill = room->isProhibited(card_use.from, p, this);
+            if (skill) {
+                LogMessage log;
+                log.type = "#SkillAvoid";
+                log.from = p;
+                log.arg = skill->objectName();
+                log.arg2 = objectName();
+                room->sendLog(log);
+
+                room->broadcastSkillInvoke(skill->objectName());
+            } else
+                new_use.to << p;
+        }
     }
 
     if (getSkillName() == "duoshi")
