@@ -276,13 +276,7 @@ ServerPlayer *Room::getCurrentDyingPlayer() const{
     QStringList currentdying = getTag("CurrentDying").toStringList();
     if (currentdying.isEmpty()) return NULL;
     QString dyingobj = currentdying.last();
-    ServerPlayer *who = NULL;
-    foreach(ServerPlayer *p, m_alivePlayers) {
-        if (p->objectName() == dyingobj) {
-            who = p;
-            break;
-        }
-    }
+    ServerPlayer *who = findPlayer(dyingobj);
     return who;
 }
 
