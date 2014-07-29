@@ -93,7 +93,7 @@ return {
 	[":qiluan"] = "一名角色的回合结束后，若你于此回合内杀死过角色，你可以摸三张牌。", 
 	
 	["#lord_liubei"] = "龙横蜀汉",
-	["lord_liubei"] = "刘备（君）",
+	["lord_liubei"] = "刘备-君",
 	["&lord_liubei"] = "刘备" ,
 	["illustrator:lord_liubei"] = "LiuHeng",
 	["zhangwu"] = "章武",
