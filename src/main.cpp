@@ -124,15 +124,16 @@ int main(int argc, char *argv[]) {
 
     // initialize random seed for later use
     qsrand(QTime(0, 0, 0).secsTo(QTime::currentTime()));
+
     // load the main translation file first for we need to translate messages of splash.
+    QTranslator translator;
+    translator.load("sanguosha.qm");
+    qApp->installTranslator(&translator);
+
     if (!noGui) {
         splash.showMessage(QObject::tr("Loading translation..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
-
-    QTranslator translator;
-    translator.load("sanguosha.qm");
-    qApp->installTranslator(&translator);
 
     QTranslator qt_translator;
     qt_translator.load("qt_zh_CN.qm");
@@ -162,10 +163,10 @@ int main(int argc, char *argv[]) {
 
         return qApp->exec();
     }
-    if (!noGui) {
-        splash.showMessage(QObject::tr("Loading style sheet..."), alignment, Qt::cyan);
-        qApp->processEvents();
-    }
+
+    splash.showMessage(QObject::tr("Loading style sheet..."), alignment, Qt::cyan);
+    qApp->processEvents();
+
     QFile file("style-sheet/sanguosha.qss");
     QString styleSheet;
     if (file.open(QIODevice::ReadOnly)) {
@@ -176,26 +177,23 @@ int main(int argc, char *argv[]) {
         .arg(Config.ToolTipBackgroundColor.name()));
 
 #ifdef AUDIO_SUPPORT
-    if (!noGui) {
-        splash.showMessage(QObject::tr("Initializing audio module..."), alignment, Qt::cyan);
-        qApp->processEvents();
-    }
+    splash.showMessage(QObject::tr("Initializing audio module..."), alignment, Qt::cyan);
+    qApp->processEvents();
+
     Audio::init();
 #else
-    if (!noGui)
-        QMessageBox::warning(this, tr("Warning"), tr("Audio support is disabled when compiled"));
+    QMessageBox::warning(this, tr("Warning"), tr("Audio support is disabled when compiled"));
 #endif
 
-    if (!noGui) {
-        splash.showMessage(QObject::tr("Loading main window..."), alignment, Qt::cyan);
-        qApp->processEvents();
-    }
+    splash.showMessage(QObject::tr("Loading main window..."), alignment, Qt::cyan);
+    qApp->processEvents();
+
     MainWindow main_window;
 
     Sanguosha->setParent(&main_window);
     main_window.show();
-    if (!noGui)
-        splash.finish(&main_window);
+
+    splash.finish(&main_window);
 
     foreach(QString arg, qApp->arguments()) {
         if (arg.startsWith("-connect:")) {
