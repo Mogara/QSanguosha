@@ -109,10 +109,20 @@ public:
 
     virtual void resizeEvent(QResizeEvent *event) {
         QGraphicsView::resizeEvent(event);
+        updateScene(event->size());
+
         MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
+        if (main_window)
+            main_window->setBackgroundBrush(scene()->inherits("StartScene"));
+
+        roundCorners();
+    }
+
+    void updateScene(const QSize &size)
+    {
         if (scene()->inherits("RoomScene")) {
             RoomScene *room_scene = qobject_cast<RoomScene *>(scene());
-            QRectF newSceneRect(0, 0, event->size().width(), event->size().height());
+            QRectF newSceneRect(0, 0, size.width(), size.height());
             room_scene->setSceneRect(newSceneRect);
             room_scene->adjustItems();
             setSceneRect(room_scene->sceneRect());
@@ -120,23 +130,18 @@ public:
                 fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
             else
                 this->resetTransform();
-            main_window->setBackgroundBrush(false);
-            return;
-        }
-        else if (scene()->inherits("StartScene")) {
+        } else if (scene()->inherits("StartScene")) {
             StartScene *start_scene = qobject_cast<StartScene *>(scene());
-            QRectF newSceneRect(-event->size().width() / 2, -event->size().height() / 2,
-                            event->size().width(), event->size().height());
+            QRectF newSceneRect(-size.width() / 2, -size.height() / 2,
+                                size.width(), size.height());
             start_scene->setSceneRect(newSceneRect);
             setSceneRect(start_scene->sceneRect());
             if (newSceneRect != start_scene->sceneRect())
                 fitInView(start_scene->sceneRect(), Qt::KeepAspectRatio);
         }
-        if (main_window)
-            main_window->setBackgroundBrush(true);
-
-        roundCorners();
     }
+
+private:
 
     void roundCorners()
     {
@@ -437,8 +442,10 @@ void MainWindow::changeEvent(QEvent *event)
         if (!(windowState() & (Qt::WindowFullScreen | Qt::WindowMinimized | Qt::WindowMaximized))) {
             QSize viewSize = size() - QSize(2 * BORDER_WIDTH, 2 * BORDER_WIDTH);
             view->setGeometry(QRect(QPoint(BORDER_WIDTH, BORDER_WIDTH), viewSize));
+            view->repaint();
         } else if (!(windowState() & Qt::WindowMinimized)) {
             view->setGeometry(rect());
+            view->repaint();
         }
     }
     QMainWindow::changeEvent(event);
@@ -449,8 +456,10 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     if (!(windowState() & (Qt::WindowFullScreen | Qt::WindowMinimized | Qt::WindowMaximized))) {
         QSize viewSize = event->size() - QSize(2 * BORDER_WIDTH, 2 * BORDER_WIDTH);
         view->setGeometry(QRect(QPoint(BORDER_WIDTH, BORDER_WIDTH), viewSize));
+        view->repaint();
     } else if (!(windowState() & Qt::WindowMinimized)) {
         view->setGeometry(rect());
+        view->repaint();
     }
 
     repaintButtons();
@@ -579,8 +588,7 @@ void MainWindow::gotoScene(QGraphicsScene *scene) {
 
     this->scene = scene;
     view->setScene(scene);
-    QResizeEvent e(QSize(view->size().width(), view->size().height()), view->size());
-    view->resizeEvent(&e);
+    view->updateScene(view->size());
     changeBackground();
 }
 
