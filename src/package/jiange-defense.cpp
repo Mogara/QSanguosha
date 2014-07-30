@@ -323,7 +323,7 @@ public:
                 room->recover(target, recover);
             }
             else
-            room->damage(DamageStruct(objectName(), player, target, 1, DamageStruct::Fire));
+                room->damage(DamageStruct(objectName(), player, target));
         }
         return false;
     }
@@ -384,14 +384,9 @@ public:
             QList<int> selected_ids;
             foreach(int id, ids) {
                 const Card *c = Sanguosha->getCard(id);
-                if (c->getTypeId() == Card::TypeTrick){
-                target->gainMark("zhinangTrick", id); }// For AI
-                if (c->getTypeId() == Card::TypeEquip){
-                target->gainMark("zhinangEquip", id); }// For AI
-                if ((c->getTypeId() == Card::TypeTrick && choice == "TrickCard") || (c->getTypeId() == Card::TypeEquip && choice == "EquipCard")) {
+                if ((c->getTypeId() == Card::TypeTrick && choice == "Trick") || (c->getTypeId() == Card::TypeEquip && choice == "Equip")) {
                     selected_ids << id;
                     remaining_ids.removeOne(id);
-                    target->setMark("jgzhinang", id); // For AI
                 }
             }
 
@@ -417,9 +412,6 @@ public:
         DummyCard dummy_throw(remaining_ids);
         room->throwCard(&dummy_throw, NULL);
 
-        target->setMark("zhinangTrick", 0); // For AI
-        target->setMark("zhinangEquip", 0); // For AI
-        target->setMark("jgzhinang", 0); // For AI
         return false;
     }
 };
