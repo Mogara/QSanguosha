@@ -371,10 +371,13 @@ win32-msvc2010: TRANSLATIONS += builds/vs2010/sanguosha.ts
 }
 
 OTHER_FILES += \
-        sanguosha.qss \
-        ui-script/animation.qml
+    sanguosha.qss \
+    ui-script/animation.qml \
+    resource/android/AndroidManifest.xml
 
 LIBS += -lfreetype
 
 INCLUDEPATH += $$PWD/include/freetype
 DEPENDPATH += $$PWD/include/freetype
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/resource/android
