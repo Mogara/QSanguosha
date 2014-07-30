@@ -2112,10 +2112,13 @@ int Room::drawCard() {
 
 void Room::prepareForStart() {
     if (scenario) {
-        if (scenario->isRandomSeat() && Config.RandomSeat)
+        if (scenario->isRandomSeat() && Config.RandomSeat && mode != "custom_scenario")
             qShuffle(m_players);
         QStringList generals, generals2, kingdoms;
         scenario->assign(generals, generals2, kingdoms, this);
+
+        if (mode == "custom_scenario")
+            this->setTag("prepareForCustomScenario", true);
 
         for (int i = 0; i < m_players.length(); i++) {
             ServerPlayer *player = m_players[i];
