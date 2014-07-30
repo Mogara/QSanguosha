@@ -133,12 +133,12 @@ public:
             RoomScene *room_scene = qobject_cast<RoomScene *>(scene());
             QRectF newSceneRect(0, 0, size.width(), size.height());
             room_scene->setSceneRect(newSceneRect);
-            room_scene->adjustItems();
             setSceneRect(room_scene->sceneRect());
             if (newSceneRect != room_scene->sceneRect())
                 fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
             else
                 this->resetTransform();
+            room_scene->adjustItems();
         } else if (scene()->inherits("StartScene")) {
             StartScene *start_scene = qobject_cast<StartScene *>(scene());
             QRectF newSceneRect(-size.width() / 2, -size.height() / 2,

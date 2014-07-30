@@ -522,6 +522,10 @@ void PlayerCardContainer::repaintAll() {
         _getAvatarParent());
     _paintPixmap(_m_actionIcon, _m_layout->m_actionedIconRegion, QSanRoomSkin::S_SKIN_KEY_ACTIONED_ICON,
         _getAvatarParent());
+    if (_m_seatItem != NULL)
+        _paintPixmap(_m_seatItem, _m_layout->m_seatIconRegion,
+            _getPixmap(QSanRoomSkin::S_SKIN_KEY_SEAT_NUMBER, QString::number(m_player->property("UI_Seat").toInt())),
+            _getAvatarParent());
     if (_m_roleComboBox != NULL)
         _m_roleComboBox->setPos(_m_layout->m_roleComboBoxPos);
 
