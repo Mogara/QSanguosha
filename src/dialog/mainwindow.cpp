@@ -433,12 +433,28 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *)
     }
 }
 
-void MainWindow::mouseDoubleClickEvent(QMouseEvent *)
+void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    if (windowState() & Qt::WindowMaximized)
-        showNormal();
-    else
-        showMaximized();
+    bool can_change = true;
+    if (view && view->scene()) {
+        if (view->scene()->inherits("StartScene")) {
+            StartScene *scene = qobject_cast<StartScene *>(view->scene());
+            QPointF pos = view->mapToScene(event->pos());
+            if (scene->itemAt(pos, QTransform()))
+                can_change = false;
+        } else if (view->scene()->inherits("RoomScene")) {
+            RoomScene *scene = qobject_cast<RoomScene *>(view->scene());
+            QPointF pos = view->mapToScene(event->pos());
+            if (scene->itemAt(pos, QTransform()) && scene->itemAt(pos, QTransform())->zValue() > -100000)
+                can_change = false;
+        }
+    }
+    if (can_change) {
+        if (windowState() & Qt::WindowMaximized)
+            showNormal();
+        else
+            showMaximized();
+    }
 }
 
 void MainWindow::changeEvent(QEvent *event)
