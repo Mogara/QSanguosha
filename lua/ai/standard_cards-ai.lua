@@ -154,6 +154,7 @@ function sgs.getDefenseSlash(player, self)
 	end
 
 	defense = defense + math.min(player:getHp() * 0.45, 10)
+	if sgs.isAnjiang(player) then defense = defense + 2 end
 
 	if attacker then
 		local m = sgs.masochism_skill:split("|")
@@ -202,8 +203,8 @@ function sgs.getDefenseSlash(player, self)
 
 	if not player:faceUp() then defense = defense - 0.35 end
 
-	if player:containsTrick("indulgence") and not player:containsTrick("YanxiaoCard") then defense = defense - 0.15 end
-	if player:containsTrick("supply_shortage") and not player:containsTrick("YanxiaoCard") then defense = defense - 0.15 end
+	if player:containsTrick("indulgence") then defense = defense - 0.15 end
+	if player:containsTrick("supply_shortage") then defense = defense - 0.15 end
 
 	if not hasEightDiagram then
 		if player:hasShownSkill("jijiu") then defense = defense - 3 end
@@ -295,7 +296,7 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 		return true
 	end
 
-	if to:hasArmorEffect("RenwangShield") and slash:isBlack() then return false end	
+	if to:hasArmorEffect("RenwangShield") and slash:isBlack() then return false end
 	if to:hasSkill("jgyizhong") and not to:getArmor() then
 		if slash:isBlack() then
 			return false
@@ -1405,7 +1406,7 @@ sgs.ai_skill_cardask.aoe = function(self, data, pattern, target, name)
 
 	if self.player:hasSkill("jianxiong") and (self.player:getHp() > 1 or self:getAllPeachNum() > 0)
 		and not self:willSkipPlayPhase() then
-		if not self:needKongcheng(self.player, true) and self:getAoeValue(aoe) > -10 then return "." end
+		if not self:needKongcheng(self.player, true) and self:getAoeValue(aoe) > 0 then return "." end
 	end
 
 end

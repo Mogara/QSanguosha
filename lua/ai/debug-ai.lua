@@ -18,94 +18,115 @@
   QSanguosha-Hegemony Team
 *********************************************************************]]
 
-sgs.ai_debug_func[sgs.EventPhaseStart].debugfunc=function(self, player, data)
-	if player:getPhase()== sgs.Player_Start then
-		debugFunc(self, self.room, player, data)
-	 end
-end
+-- sgs.ai_debug_func[sgs.EventPhaseStart].debugfunc = function(self, player, data)
+	-- if player:getPhase() == sgs.Player_Start then
+		-- sgs.debugFunc(player)
+	 -- end
+-- end
 
-sgs.ai_debug_func[sgs.CardUsed].debugfunc=function(self, player, data)
-	local card= data:toCardUse().card
-	if card:isKindOf("Peach") or card:isKindOf("Nullification") then
-		debugFunc(self, self.room, player, data)
-	 end
-end
-
-function debugFunc(self, room, player, data)
-	local owner =room:getOwner()
-	local choices = {"showVisiblecards","showHandcards","objectiveLevel","getDefenseSlash"}
-	local debugmsg =function(fmt,...)
-		if type(fmt)=="boolean" then fmt = fmt and "true" or "false" end
-		local msg = string.format(fmt, ...)
-		player:speak(msg)
-		logmsg("ai.html","<pre>"..msg.."</pre>")
+sgs.ai_debug_func[sgs.CardUsed].debugfunc = function(self, player, data)
+	local use = data:toCardUse()
+	if not use.from or use.from:objectName() ~= player:objectName() then return end
+	if use.card:isKindOf("Peach") or use.card:isKindOf("Nullification") then
+		sgs.debugFunc(player, 3)
+	elseif use.card:isKindOf("Slash") then
+		sgs.debugFunc(player, 4)
 	end
-	local players = sgs.QList2Table(room:getAlivePlayers())
+end
+
+function sgs.debugFunc(player, debugType)
+	local owner = global_room:getOwner()
+	local choices = {"showVisiblecards", "showHandcards", "objectiveLevel", "getDefenseSlash"}
+	-- local debugmsg = function(fmt, ...)
+		-- if type(fmt) == "boolean" then fmt = fmt and "true" or "false" end
+		-- local msg = string.format(fmt, ...)
+		-- player:speak(msg)
+		-- logmsg("ai.html", "<pre>" .. msg .. "</pre>")
+	-- end
+
+	local players = sgs.QList2Table(global_room:getAlivePlayers())
+
+	local function showVisiblecards()
+		global_room:writeToConsole(" ")
+		global_room:writeToConsole(string.format("-=showVisiblecards; AI: %s/%s[%s]", player:getActualGeneral1Name(), player:getActualGeneral2Name(), player:getKingdom()))
+		for i = 1, #players, 1 do
+			local msg = string.format("%s/%s[Visiblecards]:", players[i]:getActualGeneral1Name(), players[i]:getActualGeneral2Name())
+			local cards = sgs.QList2Table(players[i]:getHandcards())
+			for _, card in ipairs(cards) do
+				local flag = string.format("%s_%s_%s","visible", player:objectName(), players[i]:objectName())
+				if card:hasFlag("visible") or card:hasFlag(flag) then
+					msg = msg .. card:getClassName() ..", "
+				end
+			end
+			global_room:writeToConsole(msg)
+		end
+	end
+
+	local function showHandcards()
+		global_room:writeToConsole(" ")
+		global_room:writeToConsole(string.format("-=showHandcards; AI: %s/%s[%s]", player:getActualGeneral1Name(), player:getActualGeneral2Name(), player:getKingdom()))
+		for i = 1, #players, 1 do
+			local msg = string.format("%s/%s[Handcards]:", players[i]:getActualGeneral1Name(), players[i]:getActualGeneral2Name())
+			local cards = sgs.QList2Table(players[i]:getHandcards())
+			for _, card in ipairs(cards) do
+				msg = msg .. card:getClassName() ..", "
+			end
+			global_room:writeToConsole(msg2)
+		end
+	end
+
+	local function objectiveLevel()
+		global_room:writeToConsole(" ")
+		global_room:writeToConsole("gameProcess :: " .. sgs.gameProcess())
+		global_room:writeToConsole(string.format("-=objectiveLevel; AI: %s/%s[%s]", player:getActualGeneral1Name(), player:getActualGeneral2Name(), player:getKingdom()))
+		local pSelf = sgs.ais[player:objectName()]
+		for i = 1, #players, 1 do
+			local level = pSelf:objectiveLevel(players[i])
+			local rel = pSelf:evaluateKingdom(players[i])
+
+			global_room:writeToConsole(string.format("%s/%s[%s]: %d %s", players[i]:getActualGeneral1Name(), players[i]:getActualGeneral2Name(),
+															players[i]:getKingdom(), level, rel))
+		end
+	end
+
+	local function getDefenseSlash()
+		global_room:writeToConsole(" ")
+		global_room:writeToConsole(string.format("-=getDefenseSlash; AI: %s/%s[%s]", player:getActualGeneral1Name(), player:getActualGeneral2Name(), player:getKingdom()))
+		for i = 1, #players, 1 do
+			global_room:writeToConsole(string.format("%s/%s:%.2f", players[i]:getActualGeneral1Name(), players[i]:getActualGeneral2Name(), sgs.getDefenseSlash(players[i])))
+		end
+	end
+
+	if debugType then
+		if debugType == 1 then showVisiblecards()
+		elseif debugType == 2 then showHandcards()
+		elseif debugType == 3 then objectiveLevel()
+		elseif debugType == 4 then getDefenseSlash()
+		elseif debugType == 5 then
+			showVisiblecards()
+			showHandcards()
+			objectiveLevel()
+			getDefenseSlash()
+		end
+		return
+	end
+
 	repeat
-		local choice=room:askForChoice(owner,"aidebug","cancel+"..table.concat(choices,"+"))
-		if choice=="cancel" then break end
-		if choice == "showVisiblecards" then
-			debugmsg(" ")
-			debugmsg("===================")
-			debugmsg("查看已知牌; 当前AI是: %s[%s]",sgs.Sanguosha:translate(player:getGeneralName()),sgs.Sanguosha:translate(player:getRole()) )
-			for i=1, #players, 1 do
-				local msg=string.format("%s已知牌:",sgs.Sanguosha:translate(players[i]:getGeneralName()))
-				local cards = sgs.QList2Table(players[i]:getHandcards())
-				for _, card in ipairs(cards) do
-					local flag=string.format("%s_%s_%s","visible",player:objectName(),players[i]:objectName())
-					if card:hasFlag("visible") or card:hasFlag(flag) then
-						msg = msg .. card:getLogName() ..", "
-					end
-				end
-				debugmsg(msg)
-			end
+		local choice = global_room:askForChoice(owner, "aidebug", "cancel+"..table.concat(choices, "+"))
+		if choice == "cancel" then break
+		elseif choice == "showVisiblecards" then showVisiblecards()
+		elseif choice == "showHandcards" then showHandcards()
+		elseif choice == "objectiveLevel" then objectiveLevel()
+		elseif choice == "getDefenseSlash" then getDefenseSlash()
 		end
-		if choice == "showHandcards" then
-			debugmsg(" ")
-			debugmsg("===================")
-			debugmsg("查看手牌; 当前AI是: %s[%s]",sgs.Sanguosha:translate(player:getGeneralName()),sgs.Sanguosha:translate(player:getRole()) )
-			for i=1, #players, 1 do
-				local msg=string.format("%s手牌:",sgs.Sanguosha:translate(players[i]:getGeneralName()))
-				local cards = sgs.QList2Table(players[i]:getHandcards())
-				for _, card in ipairs(cards) do
-					msg = msg .. card:getLogName() ..", "
-				end
-				debugmsg(msg)
-			end
-		end
-		if choice == "objectiveLevel" then
-			debugmsg(" ")
-			debugmsg("============%s(%.1f)", sgs.gameProcess(room), sgs.gameProcess(room,1))
-			debugmsg("查看关系; 当前AI是: %s[%s]",sgs.Sanguosha:translate(player:getGeneralName()),sgs.Sanguosha:translate(player:getRole()) )
-			for i=1, #players, 1 do
-				local level=self:objectiveLevel(players[i])
-				local rel =level>0 and "敌对" or (level<0 and "友好" or "中立")
-				rel = rel .. " " .. level
-
-				debugmsg("%s[%s]: %d:%d:%d %s",
-					sgs.Sanguosha:translate(players[i]:getGeneralName()),
-					sgs.Sanguosha:translate(players[i]:getRole()),
-							  rel)
-			end
-		end
-
-		if choice == "getDefenseSlash" then
-			debugmsg(" ")
-			debugmsg("===================")
-			debugmsg("查看对杀的防御; 当前AI是: %s[%s]",sgs.Sanguosha:translate(player:getGeneralName()),sgs.Sanguosha:translate(player:getRole()) )
-			for i=1, #players, 1 do
-				debugmsg("%s:%.2f",sgs.Sanguosha:translate(players[i]:getGeneralName()),sgs.getDefenseSlash(players[i]))
-			end
-		end
-
 	until false
 end
 
 
-function logmsg(fname,fmt,...)
-	local fp = io.open(fname,"ab")
-	if type(fmt)=="boolean" then fmt = fmt and "true" or "false" end
-	fp:write(string.format(fmt, ...).."\r\n")
+function logmsg(fname, fmt, ...)
+	local fp = io.open(fname, "ab")
+	if type(fmt) == "boolean" then fmt = fmt and "true" or "false" end
+	fp:write(string.format(fmt, ...) .. "\r\n")
 	fp:close()
 end
 
@@ -212,11 +233,12 @@ function SmartAI:printAll(self, player, intention)
 end
 
 function sgs.printFEList(player)
+	if not player then global_room:writeToConsole("---==== printFEList ====---") end
 	global_room:writeToConsole("gameProcess :: " .. sgs.gameProcess())
 	for _, p in sgs.qlist(global_room:getAlivePlayers()) do
 		if player and p:objectName() ~= player:objectName() then continue end
 		local name = p:getActualGeneral1Name() .. "/" .. p:getActualGeneral2Name()
-		global_room:writeToConsole("----  " .. name .. "  kingdom::" .. p:getKingdom() .. "  ----")
+		global_room:writeToConsole("----  " .. name .. "  kingdom::" .. p:getKingdom() .. "-" .. sgs.ais[global_room:getCurrent():objectName()]:evaluateKingdom(p) .. "  ----")
 		local sgsself = sgs.ais[p:objectName()]
 		sgsself:updatePlayers()
 		local msge = "enemies:"
@@ -243,3 +265,9 @@ function sgs.ShowPlayer(player)
 		end
 	end
 end
+
+-- for _, p in sgs.qlist(R:getAlivePlayers()) do
+	-- if p:getGeneralName() == "kongrong" then sgs.printFEList(p) end
+	-- p:speak(sgs.ai_explicit[p:objectName()])
+	-- if sgs.isAnjiang(p) then p:speak("true") end
+-- end
