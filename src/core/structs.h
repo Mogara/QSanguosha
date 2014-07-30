@@ -452,6 +452,7 @@ enum TriggerEvent {
 
     TurnedOver,
     ChainStateChanged,
+    RemoveStateChanged,
 
     ConfirmDamage,    // confirm the damage's count and damage's nature
     Predamage,        // trigger the certain skill -- jueqing

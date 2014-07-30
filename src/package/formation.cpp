@@ -339,7 +339,7 @@ HeyiSummon::HeyiSummon()
 class Heyi : public BattleArraySkill {
 public:
     Heyi() : BattleArraySkill("heyi", HegemonyMode::Formation) {
-        events << GeneralShown << GeneralHidden << GeneralRemoved << Death;
+        events << GeneralShown << GeneralHidden << GeneralRemoved << Death << RemoveStateChanged;
     }
 
     virtual bool canPreshow() const{
@@ -351,7 +351,7 @@ public:
         if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
             if (death.who->hasSkill(objectName())) {
-                foreach(ServerPlayer *p, room->getAllPlayers()){
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
                     if (p->getMark("feiying") > 0) {
                         room->setPlayerMark(p, "feiying", 0);
                         room->detachSkillFromPlayer(p, "feiying", true, true);
@@ -359,14 +359,12 @@ public:
                 }
                 return QStringList();
             }
-            else {
-                if (death.who->getMark("feiying") > 0){
-                    room->setPlayerMark(death.who, "feiying", 0);
-                    room->detachSkillFromPlayer(death.who, "feiying", true, true);
-                }
+            if (death.who->getMark("feiying") > 0) {
+                room->setPlayerMark(death.who, "feiying", 0);
+                room->detachSkillFromPlayer(death.who, "feiying", true, true);
             }
         }
-        foreach(ServerPlayer *p, room->getAllPlayers()){
+        foreach (ServerPlayer *p, room->getAllPlayers()) {
             if (p->getMark("feiying") > 0) {
                 room->setPlayerMark(p, "feiying", 0);
                 room->detachSkillFromPlayer(p, "feiying", true, true);
@@ -488,7 +486,8 @@ TianfuSummon::TianfuSummon()
 class Tianfu : public BattleArraySkill {
 public:
     Tianfu() : BattleArraySkill("tianfu", HegemonyMode::Formation) {
-        events << EventPhaseStart << Death << EventLoseSkill << EventAcquireSkill << GeneralShown << GeneralHidden << GeneralRemoved;
+        events << EventPhaseStart << Death << EventLoseSkill << EventAcquireSkill
+               << GeneralShown << GeneralHidden << GeneralRemoved << RemoveStateChanged;
         relate_to_place = "head";
     }
 
@@ -499,36 +498,30 @@ public:
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
         if (player == NULL) return QStringList();
 
-        if (triggerEvent == EventPhaseStart){
+        if (triggerEvent == EventPhaseStart) {
             if (player->getPhase() != Player::RoundStart)
                 return QStringList();
-        }
-        else if (triggerEvent == Death) {
+        } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
-            if (player != death.who) {
-                return QStringList();
-            }
+            if (player != death.who)
+                return QStringList(); 
         }
 
-        foreach(ServerPlayer *p, room->getPlayers()){
-            if (p->getMark("tianfu_kanpo") > 0 && p->hasSkill("kanpo") && !p->hasInnateSkill("kanpo")){
+        foreach (ServerPlayer *p, room->getPlayers()) {
+            if (p->getMark("tianfu_kanpo") > 0 && p->hasSkill("kanpo") && !p->hasInnateSkill("kanpo")) {
                 p->setMark("tianfu_kanpo", 0);
                 room->detachSkillFromPlayer(p, "kanpo", true, true);
             }
         }
 
-        if (triggerEvent == EventLoseSkill && data.toString() == "tianfu"){
+        if (triggerEvent == EventLoseSkill && data.toString() == "tianfu")
             return QStringList();
-        }
-        else if (triggerEvent == GeneralHidden && player->ownSkill(this) && player->inHeadSkills(objectName()) == data.toBool()){
+        if (triggerEvent == GeneralHidden && player->ownSkill(this) && player->inHeadSkills(objectName()) == data.toBool())
             return QStringList();
-        }
-        else if (triggerEvent == GeneralRemoved && data.toString() == "jiangwei"){
+        if (triggerEvent == GeneralRemoved && data.toString() == "jiangwei")
             return QStringList();
-        }
-        else if (player->aliveCount() < 4){
+        if (player->aliveCount() < 4)
             return QStringList();
-        }
 
         ServerPlayer *current = room->getCurrent();
         if (current && current->isAlive() && current->getPhase() != Player::NotActive) {

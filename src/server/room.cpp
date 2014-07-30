@@ -1767,6 +1767,9 @@ void Room::setPlayerProperty(ServerPlayer *player, const char *property_name, co
 
     if (strcmp(property_name, "chained") == 0)
         thread->trigger(ChainStateChanged, this, player);
+
+    if (strcmp(property_name, "removed") == 0)
+        thread->trigger(RemoveStateChanged, this, player);
 #ifndef QT_NO_DEBUG
     //wait for main thread
     while (!player->event_received) {};
