@@ -461,7 +461,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                     room->setPlayerFlag(player, "Global_PreventPeach");
             }
 
-            if (!player->hasFlag("Global_PreventPeach") && dying.who->hasFlag("LureTigerTarget"))
+            if (!player->hasFlag("Global_PreventPeach") && dying.who->isRemoved())
                 room->setPlayerFlag(player, "Global_PreventPeach");
 
             while (dying.who->getHp() <= 0) {

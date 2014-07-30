@@ -1018,19 +1018,26 @@ void PlayerCardContainer::updateReformState() {
 
 void PlayerCardContainer::showDistance() {
     bool isNull = (_m_distanceItem == NULL);
-    _paintPixmap(_m_distanceItem, _m_layout->m_votesIconRegion,
-        _getPixmap(QSanRoomSkin::S_SKIN_KEY_VOTES_NUMBER, QString::number(Self->distanceTo(m_player))),
-        _getAvatarParent());
-    _m_distanceItem->setZValue(1.1);
-    if (!Self->inMyAttackRange(m_player)) {
-        QGraphicsColorizeEffect *effect = new QGraphicsColorizeEffect();
-        effect->setColor(_m_layout->m_deathEffectColor);
-        effect->setStrength(1.0);
-        _m_distanceItem->setGraphicsEffect(effect);
+    int dis = Self->distanceTo(m_player);
+    if (dis > 0) {
+        _paintPixmap(_m_distanceItem, _m_layout->m_votesIconRegion,
+            _getPixmap(QSanRoomSkin::S_SKIN_KEY_VOTES_NUMBER, QString::number(dis)),
+            _getAvatarParent());
+        _m_distanceItem->setZValue(1.1);
+        if (!Self->inMyAttackRange(m_player)) {
+            QGraphicsColorizeEffect *effect = new QGraphicsColorizeEffect();
+            effect->setColor(_m_layout->m_deathEffectColor);
+            effect->setStrength(1.0);
+            _m_distanceItem->setGraphicsEffect(effect);
+        } else {
+            _m_distanceItem->setGraphicsEffect(NULL);
+        }
+    } else {
+        delete _m_distanceItem;
+        _m_distanceItem = NULL;
     }
-    else {
-        _m_distanceItem->setGraphicsEffect(NULL);
-    }
+    if (!_m_distanceItem)
+        return;
     if (_m_distanceItem->isVisible() && !isNull)
         _m_distanceItem->hide();
     else

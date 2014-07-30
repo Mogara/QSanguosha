@@ -35,8 +35,16 @@ ClientPlayer::ClientPlayer(Client *client)
     mark_doc = new QTextDocument(this);
 }
 
-int ClientPlayer::aliveCount() const{
-    return ClientInstance->alivePlayerCount();
+int ClientPlayer::aliveCount(bool includeRemoved) const{
+    int n = ClientInstance->alivePlayerCount();
+    if (!includeRemoved) {
+        if (isRemoved())
+            n--;
+        foreach (const Player *p, getAliveSiblings())
+            if (p->isRemoved())
+                n--;
+    }
+    return n;
 }
 
 int ClientPlayer::getHandcardNum() const{

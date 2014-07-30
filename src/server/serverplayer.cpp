@@ -218,8 +218,13 @@ QList<int> ServerPlayer::forceToDiscard(int discard_num, bool include_equip, boo
     return to_discard;
 }
 
-int ServerPlayer::aliveCount() const{
-    return room->alivePlayerCount();
+int ServerPlayer::aliveCount(bool includeRemoved) const{
+    int n = room->alivePlayerCount();
+    if (!includeRemoved)
+        foreach (ServerPlayer *p, room->getAllPlayers())
+            if (p->isRemoved())
+                n--;
+    return n;
 }
 
 int ServerPlayer::getHandcardNum() const{
@@ -1793,7 +1798,7 @@ void ServerPlayer::summonFriends(const ArrayType type) {
             room->setPlayerFlag(this, "Global_SummonFailed");
         break;
     } case Formation: {
-        int n = aliveCount();
+        int n = aliveCount(false);
         int asked = n;
         bool failed = true;
         for (int i = 1; i < n; ++i) {

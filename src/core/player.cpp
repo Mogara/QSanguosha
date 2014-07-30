@@ -33,7 +33,7 @@ Player::Player(QObject *parent)
     general1_showed(false), general2_showed(false),
     phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), treasure(NULL),
-    face_up(true), chained(false), scenario_role_shown(false)
+    face_up(true), chained(false), removed(false), scenario_role_shown(false)
 {
 }
 
@@ -265,19 +265,28 @@ void Player::setFixedDistance(const Player *player, int distance) {
         fixed_distance.insert(player, distance);
 }
 
+int Player::originalDistanceTo(const Player *other) const{
+    int left = 0, right = 0;
+    Player *next_p = parent()->findChild<Player *>(objectName());
+    while (next_p != other) {
+        next_p = next_p->getNextAlive();
+        right++;
+    }
+    left = aliveCount(false) - right;
+    return qMin(left, right);
+}
+
 int Player::distanceTo(const Player *other, int distance_fix) const{
-    if (this == other)
+    if (this == other || isDead() || other->isDead())
         return 0;
 
-    if (hasFlag("LureTigerTarget") || other->hasFlag("LureTigerTarget"))
+    if (isRemoved() || other->isRemoved())
         return -1;
 
     if (fixed_distance.contains(other))
         return fixed_distance.value(other);
 
-    int right = qAbs(seat - other->seat);
-    int left = aliveCount() - right;
-    int distance = qMin(left, right);
+    int distance = originalDistanceTo(other);
 
     distance += Sanguosha->correctDistance(this, other);
     distance += distance_fix;
@@ -764,6 +773,17 @@ void Player::setChained(bool chained) {
         Sanguosha->playSystemAudioEffect("chained");
         this->chained = chained;
         emit state_changed();
+    }
+}
+
+bool Player::isRemoved() const{
+    return removed;
+}
+
+void Player::setRemoved(bool removed) {
+    if (this->removed != removed) {
+        this->removed = removed;
+        //emit removed_state_changed();
     }
 }
 
@@ -1451,40 +1471,43 @@ void Player::setNext(const QString &next) {
     this->next = next;
 }
 
-Player *Player::getNext() const {
-    return parent()->findChild<Player *>(next);
+Player *Player::getNext(bool ignoreRemoved) const {
+    Player *next_p = parent()->findChild<Player *>(next);
+    if (ignoreRemoved && next_p->isRemoved())
+        return next_p->getNext(ignoreRemoved);
+    return next_p;
 }
 
 QString Player::getNextName() const {
     return next;
 }
 
-Player *Player::getLast() const {
+Player *Player::getLast(bool ignoreRemoved) const {
     foreach(Player *p, parent()->findChildren<Player *>())
-        if (p->next == objectName())
+        if (p->getNext(ignoreRemoved) == this)
             return p;
     return NULL;
 }
 
-Player *Player::getNextAlive(int n) const{
-    bool hasAlive = (aliveCount() > 0);
+Player *Player::getNextAlive(int n, bool ignoreRemoved) const{
+    bool hasAlive = (aliveCount(!ignoreRemoved) > 0);
     Player *next = parent()->findChild<Player *>(objectName());
     if (!hasAlive) return next;
     for (int i = 0; i < n; i++) {
-        do next = parent()->findChild<Player *>(next->next);
+        do next = next->getNext(ignoreRemoved);
         while (next->isDead());
     }
     return next;
 }
 
-Player *Player::getLastAlive(int n) const {
-    return getNextAlive(aliveCount() - n);
+Player *Player::getLastAlive(int n, bool ignoreRemoved) const {
+    return getNextAlive(aliveCount(!ignoreRemoved) - n, ignoreRemoved);
 }
 
 QList<const Player *> Player::getFormation() const {
     QList<const Player *> teammates;
     teammates << this;
-    int n = aliveCount();
+    int n = aliveCount(false);
     int num = n;
     for (int i = 1; i < n; ++i) {
         Player *target = getNextAlive(i);

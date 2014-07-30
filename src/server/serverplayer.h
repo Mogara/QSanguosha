@@ -113,7 +113,7 @@ public:
     bool isOnline() const;
     inline bool isOffline() const{ return getState() == "robot" || getState() == "offline"; }
 
-    virtual int aliveCount() const;
+    virtual int aliveCount(bool includeRemoved = true) const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);

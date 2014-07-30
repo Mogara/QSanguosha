@@ -338,7 +338,7 @@ void RoomThread::actionNormal(GameRule *game_rule) {
         forever{
             trigger(TurnStart, room, room->getCurrent());
             if (room->isFinished()) break;
-            room->setCurrent(qobject_cast<ServerPlayer *>(room->getCurrent()->getNextAlive()));
+            room->setCurrent(qobject_cast<ServerPlayer *>(room->getCurrent()->getNextAlive(1, false)));
         }
     }
     catch (TriggerEvent triggerEvent) {
@@ -353,7 +353,7 @@ void RoomThread::_handleTurnBrokenNormal(GameRule *game_rule) {
     try {
         ServerPlayer *player = room->getCurrent();
         trigger(TurnBroken, room, player);
-        ServerPlayer *next = qobject_cast<ServerPlayer *>(player->getNextAlive());
+        ServerPlayer *next = qobject_cast<ServerPlayer *>(player->getNextAlive(1, false));
         if (player->getPhase() != Player::NotActive) {
             QVariant _variant;
             game_rule->effect(EventPhaseEnd, room, player, _variant, player);

@@ -444,7 +444,7 @@ bool ArraySummonSkill::isEnabledAtPlay(const Player *player) const{
         }
             break;
         case Formation: {
-            int n = player->aliveCount();
+            int n = player->aliveCount(false);
             int asked = n;
             for (int i = 1; i < n; ++i) {
                 Player *target = player->getNextAlive(i);

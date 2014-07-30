@@ -54,6 +54,7 @@ class Player : public QObject {
     Q_PROPERTY(bool alive READ isAlive WRITE setAlive)
     Q_PROPERTY(QString flags READ getFlags WRITE setFlags)
     Q_PROPERTY(bool chained READ isChained WRITE setChained)
+    Q_PROPERTY(bool removed READ isRemoved WRITE setRemoved)
     Q_PROPERTY(bool owner READ isOwner WRITE setOwner)
     Q_PROPERTY(bool role_shown READ hasShownRole WRITE setShownRole)
 
@@ -157,8 +158,9 @@ public:
     bool faceUp() const;
     void setFaceUp(bool face_up);
 
-    virtual int aliveCount() const = 0;
+    virtual int aliveCount(bool includeRemoved = true) const = 0;
     void setFixedDistance(const Player *player, int distance);
+    int originalDistanceTo(const Player *other) const;
     int distanceTo(const Player *other, int distance_fix = 0) const;
     const General *getAvatarGeneral() const;
     const General *getGeneral() const;
@@ -220,6 +222,9 @@ public:
 
     void setChained(bool chained);
     bool isChained() const;
+
+    void setRemoved(bool removed);
+    bool isRemoved() const;
 
     bool isDuanchang(const bool head = true) const;
 
@@ -314,11 +319,11 @@ public:
 
     void setNext(Player *next);
     void setNext(const QString &next);
-    Player *getNext() const;
+    Player *getNext(bool ignoreRemoved = false) const;
     QString getNextName() const;
-    Player *getLast() const;
-    Player *getNextAlive(int n = 1) const;
-    Player *getLastAlive(int n = 1) const;
+    Player *getLast(bool ignoreRemoved = false) const;
+    Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
+    Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
 
     QList<const Player *> getFormation() const;
 
@@ -355,6 +360,7 @@ private:
     WrappedCard *weapon, *armor, *defensive_horse, *offensive_horse, *treasure;
     bool face_up;
     bool chained;
+    bool removed;
     QList<int> judging_area;
     QHash<const Player *, int> fixed_distance;
     QString next;

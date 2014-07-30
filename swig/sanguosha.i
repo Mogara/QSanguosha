@@ -186,6 +186,7 @@ public:
 
     virtual int aliveCount() const = 0;
     void setFixedDistance(const Player *player, int distance);
+    int originalDistanceTo(const Player *other) const;
     int distanceTo(const Player *other, int distance_fix = 0) const;
     const General *getAvatarGeneral() const;
     const General *getGeneral() const;
@@ -247,6 +248,9 @@ public:
 
     void setChained(bool chained);
     bool isChained() const;
+
+    void setRemoved(bool removed);
+    bool isRemoved() const;
 
     bool isDuanchang(const bool head = true) const;
 
