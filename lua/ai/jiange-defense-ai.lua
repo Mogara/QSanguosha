@@ -18,18 +18,18 @@
   QSanguosha-Hegemony Team
 *********************************************************************]]
 
+
 sgs.ai_skill_invoke.jgjizhen = true
 
-sgs.ai_skill_invoke.jglingfeng = function(self, data)
-	 return true
-end
+sgs.ai_skill_invoke.jglingfeng = true
+
 
 sgs.ai_skill_playerchosen.jglingfeng = function(self, targets)
 	self:updatePlayers()
 	self:sort(self.enemies, "hp")
 	local target = nil
 	for _, enemy in ipairs(self.enemies) do
-		if not self:isFriendWith(enemy) then
+		if not self.player:isFriendWith(enemy) then
 			target = enemy
 			break
 		end
@@ -50,22 +50,30 @@ sgs.ai_skill_playerchosen.jggongshen = function(self, targets)
 	self:updatePlayers()
 	self:sort(self.friends_noself)
 	local target = nil
+	for _, enemy in ipairs(self.enemies) do
+		if string.find(enemy:getGeneral():objectName(), "machine") and not self.player:isFriendWith(enemy) then
+			if enemy:hasArmorEffect("Vine") or enemy:getMark("@gale") > 0 then 
+				target = enemy
+				break
+			end	
+		end
+	end
+	if not target then
 	for _, friend in ipairs(self.friends_noself) do
-		if string.find(friend:getGeneral():objectName(), "machine") and self:isWeak(friend) and self:isFriendWith(friend) then
+		if string.find(friend:getGeneral():objectName(), "machine") and self:isWeak(friend) and self.player:isFriendWith(friend) then
 			target = friend
 			break
 		end
 	end
+	end
 	if not target then
-			if not target then
-				for _, enemy in ipairs(self.enemies) do
-					if string.find(enemy:getGeneral():objectName(), "machine") and not self:isFriendWith(enemy) then
-						target = enemy
-						break
-					end
-				end
+		for _, enemy in ipairs(self.enemies) do
+			if string.find(enemy:getGeneral():objectName(), "machine") and not self.player:isFriendWith(enemy) then
+				target = enemy
+				break
 			end
 		end
+	end
 	return target
 end
 
@@ -73,27 +81,32 @@ sgs.ai_playerchosen_intention.jggongshen = 80
 
 sgs.ai_skill_invoke.jgzhinang = true
 
+sgs.ai_skill_choice.jgzhinang = function(self, choice, data)
+	if self.player:getMark("zhinangEquip") > self.player:getMark("zhinangTrick") and string.find(choice, "EquipCard") then return "EquipCard"
+	else return "TrickCard" end
+end
+
 sgs.ai_skill_playerchosen.jgzhinang = function(self, targets)
 	local id = self.player:getMark("jgzhinang")
 	local card = sgs.Sanguosha:getCard(id)
 	local cards = { card }
 	local c, friend = self:getCardNeedPlayer(cards, self.friends)
-	if friend and self:isFriendWith(friend) then return friend end
+	if friend and self.player:isFriendWith(friend) then return friend end
 
 	self:sort(self.friends)
 	for _, friend in ipairs(self.friends) do
-		if self:isValuableCard(card, friend) and self:isFriendWith(friend) and not self:needKongcheng(friend, true) then return friend end
+		if self:isValuableCard(card, friend) and self.player:isFriendWith(friend) and not self:needKongcheng(friend, true) then return friend end
 	end
 	for _, friend in ipairs(self.friends) do
-		if self:isWeak(friend) and self:isFriendWith(friend) and not self:needKongcheng(friend, true) then return friend end
+		if self:isWeak(friend) and self.player:isFriendWith(friend) and not self:needKongcheng(friend, true) then return friend end
 	end
 	for _, friend in ipairs(self.friends) do
-		if self:isFriendWith(friend) and not self:needKongcheng(friend, true) then return friend end
+		if self.player:isFriendWith(friend) and not self:needKongcheng(friend, true) then return friend end
 	end
 end
 
 sgs.ai_playerchosen_intention.jgzhinang = function(self, from, to)
-	if not self:needKongcheng(to, true) and self:isFriendWith(to) then sgs.updateIntention(from, to, -50) end
+	if not self:needKongcheng(to, true) and self.player:isFriendWith(to) then sgs.updateIntention(from, to, -50) end
 end
 
 sgs.ai_skill_invoke.jgjingmiao  = true
@@ -118,7 +131,7 @@ sgs.ai_skill_playerchosen.jgqiwu = function(self, targets)
 	local chained = 0
 	self:sort(self.friends, "hp")
 	for _, friend in ipairs(self.friends) do
-		if self:isFriendWith(friend) and friend:getLostHp() > 0 then
+		if self.player:isFriendWith(friend) and friend:getLostHp() > 0 then
 			target = friend
 		end
 	end
@@ -146,16 +159,15 @@ sgs.ai_skill_playerchosen.jgtianyun = function(self, targets)
 	local chained = 0
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do
-		if not self:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
+		if not self.player:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
 			if self.player:isChained() then
 				chained = chained + 1
 			end
 		end
 	end
 	for _, enemy in ipairs(self.enemies) do
-		if not self:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
-			if ( enemy:getHp() <= 2 and enemy:hasArmorEffect("Vine") )
-					or ((self:isWeak(enemy) and enemy:getCards("e"):length() >= 2) or enemy:getCards("e"):length() >= 3) then
+		if not self.player:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
+			if enemy:hasArmorEffect("Vine") or enemy:getMark("@gale") > 0 or (enemy:getCards("e"):length() >= 2) then
 				target = enemy
 				break
 			end
@@ -163,7 +175,7 @@ sgs.ai_skill_playerchosen.jgtianyun = function(self, targets)
 	end
 	if not target and chained > 1 and chained > ( 3 - self.player:getHp() )  then
 		for _, enemy in ipairs(self.enemies) do
-			if not self:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
+			if not self.player:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
 				if enemy:isChained() then
 					target = enemy
 					break
@@ -173,11 +185,19 @@ sgs.ai_skill_playerchosen.jgtianyun = function(self, targets)
 	end
 	if not target and self.player:getHp() > 1 then
 		for _, enemy in ipairs(self.enemies) do
-			if not self:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
-				if self.player:getHp() > enemy:getHp() then
+			if not self.player:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
+				if (enemy:getCards("e"):length() >= 1) then
 					target = enemy
 					break
 				end
+			end
+		end
+	end
+	if not target then
+		for _, enemy in ipairs(self.enemies) do
+			if not self.player:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
+				target = enemy
+				break
 			end
 		end
 	end
@@ -202,7 +222,7 @@ function sgs.ai_skill_invoke.jglingyu(self, data)
 	for _, friend in ipairs(self.friends) do
 		if friend:getLostHp() > 0 then
 			weak = weak + 1
-			if friend:isWeak() then
+			if self:isWeak(friend) then
 			weak = weak + 1
 			end
 		end
@@ -211,7 +231,7 @@ function sgs.ai_skill_invoke.jglingyu(self, data)
 	for _, friend in ipairs(self.friends) do
 		if friend:hasShownSkills("fangzhu") then return true end
 	end
-	return weak > 4
+	return weak >= 2
 end
 
 sgs.ai_skill_invoke.jgchiying  = true
@@ -221,7 +241,7 @@ sgs.ai_skill_playerchosen.jgleili = function(self, targets)
 	local chained = 0
 	self:sort(self.enemies, "hp")
 	for _, enemy in ipairs(self.enemies) do
-		if not self:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
+		if not self.player:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
 			if self.player:isChained() then
 				chained = chained + 1
 			end
@@ -229,7 +249,7 @@ sgs.ai_skill_playerchosen.jgleili = function(self, targets)
 	end
 	if chained > 1 then
 		for _, enemy in ipairs(self.enemies) do
-			if not self:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
+			if not self.player:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
 				if enemy:isChained() then
 					target = enemy
 					break
@@ -239,7 +259,7 @@ sgs.ai_skill_playerchosen.jgleili = function(self, targets)
 	end
 	if not target then
 		for _, enemy in ipairs(self.enemies) do
-			if not self:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
+			if not self.player:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
 				target = enemy
 				break
 			end
@@ -248,13 +268,13 @@ sgs.ai_skill_playerchosen.jgleili = function(self, targets)
 	return target
 end
 
-sgs.ai_playerchosen_intention.jgtianyun = 80
+sgs.ai_playerchosen_intention.jgleili = 80
 
 sgs.ai_skill_playerchosen.jgchuanyun = function(self, targets)
 	self:updatePlayers()
 	local target = nil
 	for _, enemy in ipairs(self.enemies) do
-		if not self:isFriendWith(enemy) and enemy:getHp() > self.player:getHp() then
+		if not self.player:isFriendWith(enemy) and enemy:getHp() > self.player:getHp() then
 			target = enemy
 			break
 		end
@@ -264,41 +284,7 @@ end
 
 sgs.ai_playerchosen_intention.jgchuanyun = 80
 
-sgs.ai_skill_playerchosen.jgfengxing = function(self, targets)
-	local slash = sgs.cloneCard("slash")
-	local targetlist = sgs.QList2Table(targets)
-	local arrBestHp, canAvoidSlash, forbidden = {}, {}, {}
-	self:sort(targetlist, "defenseSlash")
-
-	for _, target in ipairs(targetlist) do
-		if not self:isFriendWith(target) and not self:slashProhibit(slash, target) and sgs.isGoodTarget(target, targetlist, self) then
-			if self:slashIsEffective(slash, target) then
-				if self:getDamagedEffects(target, self.player, true) or self:needLeiji(target, self.player) then
-					table.insert(forbidden, target)
-				elseif self:needToLoseHp(target, self.player, true, true) then
-					table.insert(arrBestHp, target)
-				else
-					return target
-				end
-			else
-				table.insert(canAvoidSlash, target)
-			end
-		end
-	end
-
-	if #canAvoidSlash > 0 then return canAvoidSlash[1] end
-	if #arrBestHp > 0 then return arrBestHp[1] end
-
-	self:sort(targetlist, "defenseSlash")
-	targetlist = sgs.reverse(targetlist)
-	for _, target in ipairs(targetlist) do
-		if target:objectName() ~= self.player:objectName() and not self:isFriendWith(target) and not table.contains(forbidden, target) then
-			return target
-		end
-	end
-
-	return targetlist[1]
-end
+sgs.ai_skill_playerchosen.jgfengxing =  sgs.ai_skill_playerchosen.zero_card_as_slash
 
 sgs.ai_playerchosen_intention.jgfengxing = 80
 
@@ -315,7 +301,7 @@ sgs.ai_skill_playerchosen.jghuodi = function(self, targets)
 	self:updatePlayers()
 	local target = nil
 	for _, enemy in ipairs(self.enemies) do
-		if not self:isFriendWith(enemy) and enemy:faceUp() then
+		if not self.player:isFriendWith(enemy) and enemy:faceUp() then
 			target = enemy
 			break
 		end
@@ -339,10 +325,10 @@ end
 sgs.ai_skill_invoke.jgtunshi  = true
 
 function sgs.ai_skill_invoke.jgdixian(self, data)
-	local throw = 0
+	local throw, e= 0, 0
 	for _, enemy in ipairs(self.enemies) do
-		if not self:isFriendWith(enemy) then
-			local e = enemy:getCards("e"):length()
+		if not self.player:isFriendWith(enemy) then
+			e = enemy:getCards("e"):length()
 			throw = throw + e
 		end
 	end
@@ -350,7 +336,7 @@ function sgs.ai_skill_invoke.jgdixian(self, data)
 	for _, friend in ipairs(self.friends) do
 		if friend:hasShownSkills("fangzhu") then return true end
 	end
-	return throw > 3
+	return throw >= 3
 end
 
 --[[
@@ -360,4 +346,3 @@ sgs.ai_trick_prohibit.jgjiguan = function(self, card, to, from)
 	end
 end
 ]]
-

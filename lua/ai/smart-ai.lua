@@ -5099,6 +5099,7 @@ dofile "lua/ai/standard-shu-ai.lua"
 dofile "lua/ai/standard-wu-ai.lua"
 dofile "lua/ai/standard-qun-ai.lua"
 dofile "lua/ai/basara-ai.lua"
+dofile "lua/ai/jiange-defense-ai.lua"
 
 local loaded = "standard|standard_cards|maneuvering"
 
