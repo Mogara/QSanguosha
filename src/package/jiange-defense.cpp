@@ -323,7 +323,7 @@ public:
                 room->recover(target, recover);
             }
             else
-                room->damage(DamageStruct(objectName(), player, target));
+            room->damage(DamageStruct(objectName(), player, target, 1, DamageStruct::Fire));
         }
         return false;
     }

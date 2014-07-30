@@ -81,10 +81,11 @@ sgs.ai_playerchosen_intention.jggongshen = 80
 
 sgs.ai_skill_invoke.jgzhinang = true
 
+--[[
 sgs.ai_skill_choice.jgzhinang = function(self, choice, data)
-	if self.player:getMark("zhinangEquip") > self.player:getMark("zhinangTrick") and string.find(choice, "EquipCard") then return "EquipCard"
-	else return "TrickCard" end
-end
+	if self.player:getMark("zhinangEquip") > self.player:getMark("zhinangTrick") and string.find(choice, "EquipCard") then return "EquipCard" end
+return "TrickCard" 
+end]]
 
 sgs.ai_skill_playerchosen.jgzhinang = function(self, targets)
 	local id = self.player:getMark("jgzhinang")
