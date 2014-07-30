@@ -144,7 +144,7 @@ public slots:
     void skillButtonDeactivated();
     void selectAll();
     void selectCards(const QString &pattern);
-    void controlNullificationButton(bool show);
+    void controlNullificationButton();
 
     virtual void updateAvatar();
     virtual void updateSmallAvatar();

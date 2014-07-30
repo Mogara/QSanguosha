@@ -100,12 +100,15 @@ void Dashboard::hideControlButtons() {
     m_trustButton->hide();
     m_btnReverseSelection->hide();
     m_btnSortHandcard->hide();
+    m_btnNoNullification->hide();
+
 }
 
 void Dashboard::showControlButtons() {
     m_trustButton->show();
     m_btnReverseSelection->show();
     m_btnSortHandcard->show();
+    m_btnNoNullification->show();
 }
 
 void Dashboard::showProgressBar(QSanProtocol::Countdown countdown) {
@@ -588,7 +591,6 @@ void Dashboard::_createExtraButtons() {
     m_btnSortHandcard = new QSanButton("handcard", "sort", this);
     m_btnNoNullification = new QSanButton("handcard", "nullification", this, true);
     m_btnNoNullification->setStyle(QSanButton::S_STYLE_TOGGLE);
-    // @todo: auto hide.
     m_trustButton->setPos(G_DASHBOARD_LAYOUT.m_rswidth, -m_trustButton->boundingRect().height());
     m_btnReverseSelection->setPos(m_trustButton->boundingRect().width() + G_DASHBOARD_LAYOUT.m_rswidth, -m_trustButton->boundingRect().height());
     m_btnSortHandcard->setPos(m_trustButton->boundingRect().width() + m_btnReverseSelection->boundingRect().width() + G_DASHBOARD_LAYOUT.m_rswidth,
@@ -989,10 +991,9 @@ void Dashboard::cancelNullification() {
     }
 }
 
-void Dashboard::controlNullificationButton(bool show) {
+void Dashboard::controlNullificationButton() {
     if (ClientInstance->getReplayer()) return;
     m_btnNoNullification->setState(QSanButton::S_STATE_UP);
-    m_btnNoNullification->setVisible(show);
 }
 
 void Dashboard::disableAllCards() {
