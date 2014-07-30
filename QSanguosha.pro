@@ -292,6 +292,11 @@ CONFIG(audio){
     CONFIG(debug, debug|release): LIBS += -lfmodexL
     else:LIBS += -lfmodex
     SOURCES += src/core/audio.cpp
+
+    android-g++{
+        CONFIG(debug, debug|release):ANDROID_EXTRA_LIBS += $$_PRO_FILE_PWD_/lib/android/arm/lib/libfmodexL.so
+        else:ANDROID_EXTRA_LIBS += $$_PRO_FILE_PWD_/lib/android/arm/lib/libfmodex.so
+    }
 }
 
 CONFIG(lua){
