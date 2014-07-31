@@ -124,8 +124,9 @@ int main(int argc, char *argv[]) {
     }
 #else
     QDir mntdir("/mnt");
-    foreach (const QString &sdcard_path, mntdir.entryList(QDir::Dirs)) {
+    foreach (const QString &sdcard_path, mntdir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
         QDir root(QString("/mnt/%1/QSanguosha").arg(sdcard_path));
+        qDebug() << root.absolutePath();
         if (root.exists()) {
             QDir::setCurrent(root.absolutePath());
             break;
