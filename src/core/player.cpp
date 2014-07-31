@@ -265,15 +265,14 @@ void Player::setFixedDistance(const Player *player, int distance) {
         fixed_distance.insert(player, distance);
 }
 
-int Player::originalDistanceTo(const Player *other) const{
-    int left = 0, right = 0;
+int Player::originalRightDistanceTo(const Player *other) const{
+    int right = 0;
     Player *next_p = parent()->findChild<Player *>(objectName());
     while (next_p != other) {
         next_p = next_p->getNextAlive();
         right++;
     }
-    left = aliveCount(false) - right;
-    return qMin(left, right);
+    return right;
 }
 
 int Player::distanceTo(const Player *other, int distance_fix) const{
@@ -286,7 +285,9 @@ int Player::distanceTo(const Player *other, int distance_fix) const{
     if (fixed_distance.contains(other))
         return fixed_distance.value(other);
 
-    int distance = originalDistanceTo(other);
+    int right = originalRightDistanceTo(other);
+    int left = aliveCount(false) - right;
+    int distance = qMin(left, right);
 
     distance += Sanguosha->correctDistance(this, other);
     distance += distance_fix;

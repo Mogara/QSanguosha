@@ -1519,67 +1519,65 @@
 <context>
     <name>DistanceViewDialog</name>
     <message>
-        <location filename="../../src/dialog/distanceviewdialog.cpp" line="84"/>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="83"/>
         <source>Distance view</source>
         <translation>查看距离</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/distanceviewdialog.cpp" line="96"/>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="95"/>
         <source>From</source>
         <translation>从</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/distanceviewdialog.cpp" line="97"/>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="96"/>
         <source>To</source>
         <translation>至</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/distanceviewdialog.cpp" line="98"/>
-        <source>From seat</source>
-        <translation>源座位</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/distanceviewdialog.cpp" line="99"/>
-        <source>To seat</source>
-        <translation>目标座位</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/distanceviewdialog.cpp" line="100"/>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="97"/>
         <source>Left</source>
         <translation>左距离</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/distanceviewdialog.cpp" line="101"/>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="98"/>
         <source>Right</source>
         <translation>右距离</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/distanceviewdialog.cpp" line="102"/>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="99"/>
         <source>Minimum</source>
         <translation>较小值</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/distanceviewdialog.cpp" line="105"/>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="102"/>
         <source>Distance correct</source>
         <translation>距离修正</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/distanceviewdialog.cpp" line="113"/>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="110"/>
         <source>In attack range</source>
         <translation>在攻击范围内</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/distanceviewdialog.cpp" line="114"/>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="111"/>
         <source>Final</source>
         <translation>最终结果</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/distanceviewdialog.cpp" line="169"/>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="129"/>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="130"/>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="131"/>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="162"/>
+        <source>Not exist</source>
+        <translation>不存在</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="159"/>
         <source>Yes</source>
         <translation>是</translation>
     </message>
     <message>
-        <location filename="../../src/dialog/distanceviewdialog.cpp" line="169"/>
+        <location filename="../../src/dialog/distanceviewdialog.cpp" line="159"/>
         <source>No</source>
         <translation>否</translation>
     </message>
@@ -2668,7 +2666,7 @@
 <context>
     <name>Player</name>
     <message>
-        <location filename="../../src/core/player.cpp" line="1014"/>
+        <location filename="../../src/core/player.cpp" line="1015"/>
         <source>&lt;font color=%1&gt;No skills&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;无技能&lt;/font&gt;</translation>
     </message>

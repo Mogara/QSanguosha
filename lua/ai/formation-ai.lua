@@ -660,6 +660,10 @@ sgs.ai_skill_invoke.shengxi = function(self, data)
 	if not self:willShowForDefence() then
 		return false
 	end
+	if self:getOverflow() >= 0 then
+		local erzhang = self.room:findPlayerBySkillName("guzheng")
+		if erzhang and self:isEnemy(erzhang) then return false end
+	end
 	return true
 end
 
