@@ -21,7 +21,7 @@
 #include "startscene.h"
 #include "engine.h"
 #include "audio.h"
-#include "mainwindow.h"
+#include "QSanSelectableItem.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -29,18 +29,14 @@
 #include <QGraphicsDropShadowEffect>
 #include <QScrollBar>
 #include <QFile>
+#include <QPauseAnimation>
+#include <QSequentialAnimationGroup>
+#include <QPainter>
 
-#ifndef Q_OS_WINRT
-#include <QDeclarativeEngine>
-#include <QDeclarativeContext>
-#include <QDeclarativeComponent>
-#endif
-
-StartScene::StartScene(MainWindow *main_window)
-    : logo(new QSanSelectableItem("image/logo/logo.png", true)),
-      server_log(NULL), main_window(main_window)
+StartScene::StartScene()
 {
     // game logo
+    logo = new QSanSelectableItem("image/logo/logo.png", true);
     logo->moveBy(-Config.Rect.width() / 4, 0);
     addItem(logo);
 
@@ -51,15 +47,7 @@ StartScene::StartScene(MainWindow *main_window)
     website_text->setBrush(Qt::white);
     website_text->setPos(Config.Rect.width() / 2 - website_text->boundingRect().width(),
         Config.Rect.height() / 2 - website_text->boundingRect().height());*/
-#ifndef Q_OS_WINRT
-    static bool initial = true;
-    if (initial) {
-        animationComponent = new QDeclarativeComponent(main_window->getAnimationEngine(),
-                                                       QUrl::fromLocalFile("ui-script/start.qml"),
-                                                       this);
-        initial = false;
-    }
-#endif
+    server_log = NULL;
 }
 
 void StartScene::addButton(QAction *action) {
@@ -135,16 +123,64 @@ void StartScene::switchToServer(Server *server) {
     update();
 }
 
-#ifndef Q_OS_WINRT
 void StartScene::showOrganization()
 {
-    /*
-    QGraphicsObject *object = qobject_cast<QGraphicsObject *>(animationComponent->create());
-    addItem(object);
-    object->setZValue(100);
-    */
+    QSanSelectableItem *title = new QSanSelectableItem("image/system/organization.png", true);
+
+    title->setOpacity(0);
+    addItem(title);
+    title->setPos(0, 0);
+    title->setZValue(1000);
+
+    QGraphicsBlurEffect *blur = new QGraphicsBlurEffect;
+    blur->setBlurHints(QGraphicsBlurEffect::AnimationHint);
+    blur->setBlurRadius(100);
+    title->setGraphicsEffect(blur);
+
+    QGraphicsScale *scale = new QGraphicsScale;
+    scale->setXScale(0.2);
+    scale->setYScale(0.2);
+    QList<QGraphicsTransform *> transformations;
+    transformations << scale;
+    title->setTransformations(transformations);
+
+    QSequentialAnimationGroup *sequentialGroup = new QSequentialAnimationGroup;
+    QParallelAnimationGroup *parallelGroup = new QParallelAnimationGroup;
+
+    QPropertyAnimation *radius = new QPropertyAnimation(blur, "blurRadius");
+    radius->setEndValue(0);
+    radius->setDuration(3200);
+    radius->setEasingCurve(QEasingCurve::InOutQuad);
+
+    QPropertyAnimation *xScale = new QPropertyAnimation(scale, "xScale");
+    xScale->setEndValue(1);
+    xScale->setDuration(4000);
+    xScale->setEasingCurve(QEasingCurve::OutQuad);
+
+    QPropertyAnimation *yScale = new QPropertyAnimation(scale, "yScale");
+    yScale->setEndValue(1);
+    yScale->setDuration(4000);
+    yScale->setEasingCurve(QEasingCurve::OutQuad);
+
+    QPropertyAnimation *fadeIn = new QPropertyAnimation(title, "opacity");
+    fadeIn->setStartValue(0);
+    fadeIn->setEndValue(1);
+    fadeIn->setDuration(2000);
+
+    QPropertyAnimation *fadeOut = new QPropertyAnimation(title, "opacity");
+    fadeOut->setEndValue(0);
+    fadeOut->setDuration(2000);
+
+    parallelGroup->addAnimation(radius);
+    parallelGroup->addAnimation(xScale);
+    parallelGroup->addAnimation(yScale);
+    parallelGroup->addAnimation(fadeIn);
+    sequentialGroup->addAnimation(parallelGroup);
+    sequentialGroup->addPause(2400);
+    sequentialGroup->addAnimation(fadeOut);
+
+    sequentialGroup->start(QAbstractAnimation::DeleteWhenStopped);
 }
-#endif
 
 void StartScene::printServerInfo() {
     QStringList items;

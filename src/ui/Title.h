@@ -18,38 +18,26 @@
     QSanguosha-Hegemony Team
     *********************************************************************/
 
-#ifndef _START_SCENE_H
-#define _START_SCENE_H
+#ifndef TITLE_H
+#define TITLE_H
 
-#include "button.h"
-#include "QSanSelectableItem.h"
-#include "server.h"
+#include <QGraphicsObject>
 
-#include <QGraphicsScene>
-#include <QAction>
-#include <QTextEdit>
-
-class StartScene : public QGraphicsScene {
+class Title : public QGraphicsObject {
     Q_OBJECT
 
 public:
-    StartScene();
-    ~StartScene();
+    explicit Title(QGraphicsObject *parent, const QString &text, const QString &font_name, const int &font_size);
+    virtual QRectF boundingRect() const;
 
-    void addButton(QAction *action);
-    void setServerLogBackground();
-    void switchToServer(Server *server);
-
-public slots:
-    void showOrganization();
+protected:
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 private:
-    void printServerInfo();
 
-    QSanSelectableItem *logo;
-    QTextEdit *server_log;
-    QList<Button *> buttons;
+    QString text;
+    QString font_name;
+    int font_size;
 };
 
-#endif
-
+#endif // TITLE_H

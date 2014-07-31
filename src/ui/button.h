@@ -26,24 +26,7 @@
 #include <QGraphicsObject>
 #include <QGraphicsRotation>
 
-class Title : public QGraphicsObject {
-    Q_OBJECT
-
-    friend class Button;
-
-public:
-    virtual QRectF boundingRect() const;
-
-protected:
-    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-
-private:
-    explicit Title(QGraphicsObject *parent, const QString &text, const QString &font_name, const int &font_size);
-
-    QString text;
-    QString font_name;
-    int font_size;
-};
+class Title;
 
 class Button : public QGraphicsObject{
     Q_OBJECT

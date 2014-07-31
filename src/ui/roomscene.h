@@ -44,10 +44,6 @@ class ChooseOptionsBox;
 class ChooseTriggerOrderBox;
 struct RoomLayout;
 
-#ifndef Q_OS_WINRT
-class QDeclarativeComponent;
-#endif
-
 #include <QGraphicsScene>
 #include <QTableWidget>
 #include <QMainWindow>
@@ -60,7 +56,11 @@ class QDeclarativeComponent;
 #include <QHBoxLayout>
 #include <QMutex>
 #include <QStack>
-
+#ifndef Q_OS_WINRT
+#include <QtDeclarative/QDeclarativeEngine>
+#include <QtDeclarative/QDeclarativeContext>
+#include <QtDeclarative/QDeclarativeComponent>
+#endif
 class ScriptExecutor : public QDialog {
     Q_OBJECT
 
@@ -344,6 +344,8 @@ private:
 
 #ifndef Q_OS_WINRT
     // for animation effects
+    QDeclarativeEngine *_m_animationEngine;
+    QDeclarativeContext *_m_animationContext;
     QDeclarativeComponent *_m_animationComponent;
 #endif
 

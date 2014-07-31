@@ -19,7 +19,7 @@
     *********************************************************************/
 
 #include "button.h"
-#include "engine.h"
+#include "Title.h"
 #include "SkinBank.h"
 #include "jsonutils.h"
 
@@ -176,10 +176,9 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
         if (hasFocus())
             textColor = ReverseColor(textColor);
 
-        using namespace QSanProtocol::Utils;
         IQSanComponentSkin::QSanSimpleTextFont ft;
         Json::Value val(Json::arrayValue);
-        val[0] = toJsonString(font_name);
+        val[0] = QSanProtocol::Utils::toJsonString(font_name);
         val[1] = font_size;
         val[2] = 2;
 
@@ -316,35 +315,6 @@ Button::MouseArea Button::getMouseArea(const QPointF &pos) const
         return Bottom;
 
     return Center;
-}
-
-Title::Title(QGraphicsObject *parent, const QString &text, const QString &font_name, const int &font_size)
-: QGraphicsObject(parent), text(text), font_name(font_name), font_size(font_size)
-{
-}
-
-QRectF Title::boundingRect() const
-{
-    return QRectF(0, 0, font_size * text.length(), font_size + 1);
-}
-
-void Title::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
-{
-    QColor textColor = Qt::white;
-    using namespace QSanProtocol::Utils;
-    IQSanComponentSkin::QSanSimpleTextFont ft;
-    Json::Value val(Json::arrayValue);
-    val[0] = toJsonString(font_name);
-    val[1] = font_size;
-    val[2] = 2;
-
-    val[3] = Json::Value(Json::arrayValue);
-    val[3][0] = textColor.red();
-    val[3][1] = textColor.green();
-    val[3][2] = textColor.blue();
-
-    ft.tryParse(val);
-    ft.paintText(painter, boundingRect().toRect(), Qt::AlignCenter, text);
 }
 
 void Button::onEnabledChanged()

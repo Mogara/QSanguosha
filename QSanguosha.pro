@@ -102,6 +102,7 @@ SOURCES += \
     src/ui/GraphicsBox.cpp \
     src/ui/GuanxingBox.cpp \
     src/ui/IconHelper.cpp \
+    src/ui/Title.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
@@ -205,6 +206,7 @@ HEADERS += \
     src/ui/GraphicsBox.h \
     src/ui/GuanxingBox.h \
     src/ui/IconHelper.h \
+    src/ui/Title.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \

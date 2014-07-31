@@ -44,8 +44,6 @@ class QTextEdit;
 class QGroupBox;
 class RoomItem;
 class QNetworkReply;
-class QDeclarativeEngine;
-class QDeclarativeContext;
 
 class BroadcastBox : public QDialog {
     Q_OBJECT
@@ -102,11 +100,6 @@ public:
     bool isZoomReady;
     Direction direction;
 
-#ifndef Q_OS_WINRT
-    inline QDeclarativeEngine *getAnimationEngine() const { return animationEngine; }
-    inline QDeclarativeContext *getAnimationContext() const {   return animationContext;    }
-#endif
-
 protected:
     virtual void closeEvent(QCloseEvent *event);
 
@@ -129,11 +122,6 @@ private:
 
     QNetworkReply *versionInfomationReply;
     QNetworkReply *changeLogReply;
-
-#ifndef Q_OS_WINRT
-    QDeclarativeEngine *animationEngine;
-    QDeclarativeContext *animationContext;
-#endif
 
     void restoreFromConfig();
     void region(const QPoint &cursorGlobalPoint);
