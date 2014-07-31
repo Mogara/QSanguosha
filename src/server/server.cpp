@@ -934,12 +934,12 @@ void Server::processNewConnection(ClientSocket *socket) {
 
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
 
-    QSanProtocol::Packet version_packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_CHECK_VERSION);
-    version_packet.setMessageBody(QSanProtocol::Utils::toJsonString(Sanguosha->getVersion()));
+    Packet version_packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_CHECK_VERSION);
+    version_packet.setMessageBody(Utils::toJsonString(Sanguosha->getVersion()));
     socket->send(version_packet.toUtf8());
 
-    QSanProtocol::Packet setup_packet(QSanProtocol::S_SRC_ROOM | QSanProtocol::S_TYPE_NOTIFICATION | QSanProtocol::S_DEST_CLIENT, QSanProtocol::S_COMMAND_SETUP);
-    setup_packet.setMessageBody(QSanProtocol::Utils::toJsonString(Sanguosha->getSetupString()));
+    Packet setup_packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
+    setup_packet.setMessageBody(Utils::toJsonString(Sanguosha->getSetupString()));
     socket->send(setup_packet.toUtf8());
 
     emit server_message(tr("%1 connected").arg(socket->peerName()));
