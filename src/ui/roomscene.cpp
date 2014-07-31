@@ -42,6 +42,7 @@
 #include "uiUtils.h"
 #include "qsanbutton.h"
 #include "GuanxingBox.h"
+#include "mainwindow.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -68,6 +69,12 @@
 #include <QCoreApplication>
 #include <QInputDialog>
 #include <QScrollBar>
+
+#ifndef Q_OS_WINRT
+#include <QDeclarativeEngine>
+#include <QDeclarativeContext>
+#include <QDeclarativeComponent>
+#endif
 
 using namespace QSanProtocol;
 
@@ -379,9 +386,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     pindian_from_card = NULL;
     pindian_to_card = NULL;
 #ifndef Q_OS_WINRT
-    _m_animationEngine = new QDeclarativeEngine(this);
-    _m_animationContext = new QDeclarativeContext(_m_animationEngine->rootContext(), this);
-    _m_animationComponent = new QDeclarativeComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation.qml"), this);
+    _m_animationComponent = new QDeclarativeComponent(qobject_cast<MainWindow *>(main_window)->getAnimationEngine(),
+                                                      QUrl::fromLocalFile("ui-script/animation.qml"), this);
 #endif
 }
 
@@ -3726,12 +3732,13 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
         const QString hero = word.mid(6);
         const QString skill = args.value(1, QString());
 
-        _m_animationContext->setContextProperty("sceneWidth", sceneRect().width());
-        _m_animationContext->setContextProperty("sceneHeight", sceneRect().height());
-        _m_animationContext->setContextProperty("tableWidth", m_tableCenterPos.x() * 2);
-        _m_animationContext->setContextProperty("hero", hero);
-        _m_animationContext->setContextProperty("skill", Sanguosha->translate(skill));
-        QGraphicsObject *object = qobject_cast<QGraphicsObject *>(_m_animationComponent->create(_m_animationContext));
+        QDeclarativeContext *context = qobject_cast<MainWindow *>(main_window)->getAnimationContext();
+        context->setContextProperty("sceneWidth", sceneRect().width());
+        context->setContextProperty("sceneHeight", sceneRect().height());
+        context->setContextProperty("tableWidth", m_tableCenterPos.x() * 2);
+        context->setContextProperty("hero", hero);
+        context->setContextProperty("skill", Sanguosha->translate(skill));
+        QGraphicsObject *object = qobject_cast<QGraphicsObject *>(_m_animationComponent->create(context));
         connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
         addItem(object);
         bringToFront(object);

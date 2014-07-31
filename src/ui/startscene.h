@@ -29,16 +29,24 @@
 #include <QAction>
 #include <QTextEdit>
 
+class MainWindow;
+
+#ifndef Q_OS_WINRT
+class QDeclarativeComponent;
+#endif
+
 class StartScene : public QGraphicsScene {
     Q_OBJECT
 
 public:
-    StartScene();
+    StartScene(MainWindow *main_window);
     ~StartScene();
 
     void addButton(QAction *action);
     void setServerLogBackground();
     void switchToServer(Server *server);
+
+    void showOrganization();
 
 private:
     void printServerInfo();
@@ -46,6 +54,12 @@ private:
     QSanSelectableItem *logo;
     QTextEdit *server_log;
     QList<Button *> buttons;
+
+    MainWindow *main_window;
+
+#ifndef Q_OS_WINRT
+    QDeclarativeComponent *animationComponent;
+#endif
 };
 
 #endif

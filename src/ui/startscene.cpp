@@ -21,6 +21,7 @@
 #include "startscene.h"
 #include "engine.h"
 #include "audio.h"
+#include "mainwindow.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -29,10 +30,17 @@
 #include <QScrollBar>
 #include <QFile>
 
-StartScene::StartScene()
+#ifndef Q_OS_WINRT
+#include <QDeclarativeEngine>
+#include <QDeclarativeContext>
+#include <QDeclarativeComponent>
+#endif
+
+StartScene::StartScene(MainWindow *main_window)
+    : logo(new QSanSelectableItem("image/logo/logo.png", true)),
+      server_log(NULL), main_window(main_window)
 {
     // game logo
-    logo = new QSanSelectableItem("image/logo/logo.png", true);
     logo->moveBy(-Config.Rect.width() / 4, 0);
     addItem(logo);
 
@@ -43,7 +51,15 @@ StartScene::StartScene()
     website_text->setBrush(Qt::white);
     website_text->setPos(Config.Rect.width() / 2 - website_text->boundingRect().width(),
         Config.Rect.height() / 2 - website_text->boundingRect().height());*/
-    server_log = NULL;
+#ifndef Q_OS_WINRT
+    static bool initial = true;
+    if (initial) {
+        animationComponent = new QDeclarativeComponent(main_window->getAnimationEngine(),
+                                                       QUrl::fromLocalFile("ui-script/start.qml"),
+                                                       this);
+        initial = false;
+    }
+#endif
 }
 
 void StartScene::addButton(QAction *action) {
@@ -118,6 +134,17 @@ void StartScene::switchToServer(Server *server) {
     connect(server, SIGNAL(server_message(QString)), server_log, SLOT(append(QString)));
     update();
 }
+
+#ifndef Q_OS_WINRT
+void StartScene::showOrganization()
+{
+    /*
+    QGraphicsObject *object = qobject_cast<QGraphicsObject *>(animationComponent->create());
+    addItem(object);
+    object->setZValue(100);
+    */
+}
+#endif
 
 void StartScene::printServerInfo() {
     QStringList items;

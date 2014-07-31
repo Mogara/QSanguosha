@@ -62,6 +62,10 @@
 #include <QtOpenGL/QGLWidget>
 #endif
 
+#ifndef Q_OS_WINRT
+#include <QtDeclarative/QDeclarativeEngine>
+#include <QtDeclarative/QDeclarativeContext>
+#endif
 
 class FitView : public QGraphicsView {
 public:
@@ -180,7 +184,13 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), isLeftPressDown(false),
       scene(NULL), ui(new Ui::MainWindow), server(NULL), about_window(NULL),
       minButton(NULL), maxButton(NULL), normalButton(NULL), closeButton(NULL),
+#ifdef Q_OS_WINRT
       versionInfomationReply(NULL), changeLogReply(NULL)
+#else
+      versionInfomationReply(NULL), changeLogReply(NULL),
+      animationEngine(new QDeclarativeEngine(this)),
+      animationContext(new QDeclarativeContext(animationEngine->rootContext(), this))
+#endif
 {
     ui->setupUi(this);
     setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
@@ -205,7 +215,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->actionAcknowledgement_2, SIGNAL(triggered()), this, SLOT(on_actionAcknowledgement_triggered()));
 
-    StartScene *start_scene = new StartScene;
+    StartScene *start_scene = new StartScene(this);
 
     QList<QAction *> actions;
     actions << ui->actionStart_Game
@@ -287,6 +297,8 @@ MainWindow::MainWindow(QWidget *parent)
                                    "border-color: gray;");
     
     repaintButtons();
+
+    start_scene->showOrganization();
 
     QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
     animation->setDuration(1000);
@@ -780,7 +792,7 @@ void MainWindow::gotoStartScene() {
         Self = NULL;
     }
 
-    StartScene *start_scene = new StartScene;
+    StartScene *start_scene = new StartScene(this);
 
     QList<QAction *> actions;
     actions << ui->actionStart_Game
