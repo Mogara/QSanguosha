@@ -1570,24 +1570,20 @@ JiangeDefensePackage::JiangeDefensePackage()
     pangtong->addSkill(new JGTianyu);
 
     General *qinglong = new General(this, "jg_qinglong_machine", "shu", 4, true, true);
-    qinglong->setGender(General::Sexless);
     qinglong->addSkill(new JGJiguan("qinglong"));
     qinglong->addSkill(new JGMojian);
 
     General *baihu = new General(this, "jg_baihu_machine", "shu", 4, true, true);
-    baihu->setGender(General::Sexless);
     baihu->addSkill(new JGJiguan("baihu"));
     baihu->addSkill(new JGZhenwei);
     baihu->addSkill(new JGBenlei);
 
-    General *zhuque = new General(this, "jg_zhuque_machine", "shu", 5, true, true);
-    zhuque->setGender(General::Sexless);
+    General *zhuque = new General(this, "jg_zhuque_machine", "shu", 5, false, true);
     zhuque->addSkill(new JGJiguan("zhuque"));
     zhuque->addSkill(new JGYuhuo("zhuque"));
     zhuque->addSkill(new JGTianyun);
 
     General *xuanwu = new General(this, "jg_xuanwu_machine", "shu", 5, true, true);
-    xuanwu->setGender(General::Sexless);
     xuanwu->addSkill(new JGJiguan("xuanwu"));
     xuanwu->addSkill(new JGYizhong);
     xuanwu->addSkill(new JGLingyu);
@@ -1615,23 +1611,19 @@ JiangeDefensePackage::JiangeDefensePackage()
     zhanghe->addSkill(new JGJueji);
 
     General *bian = new General(this, "jg_bian_machine", "wei", 4, true, true);
-    bian->setGender(General::Sexless);
     bian->addSkill(new JGJiguan("bian"));
     bian->addSkill(new JGDidong);
 
     General *suanni = new General(this, "jg_suanni_machine", "wei", 3, true, true);
-    suanni->setGender(General::Sexless);
     suanni->addSkill(new JGJiguan("suanni"));
     suanni->addSkill(new JGLianyu);
 
     General *taotie = new General(this, "jg_chiwen_machine", "wei", 5, true, true);
-    taotie->setGender(General::Sexless);
     taotie->addSkill(new JGJiguan("chiwen"));
     taotie->addSkill(new JGTanshi);
     taotie->addSkill(new JGTunshi);
 
     General *yazi = new General(this, "jg_yazi_machine", "wei", 4, true, true);
-    yazi->setGender(General::Sexless);
     yazi->addSkill(new JGJiguan("yazi"));
     yazi->addSkill(new JGDixian);
 
