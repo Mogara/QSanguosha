@@ -1512,9 +1512,9 @@ public:
     }
 };
 
-class JGDixian : public PhaseChangeSkill{
+class JGNailuo : public PhaseChangeSkill{
 public:
-    JGDixian() : PhaseChangeSkill("jgdixian") {
+    JGNailuo() : PhaseChangeSkill("jgnailuo") {
 
     }
 
@@ -1625,7 +1625,7 @@ JiangeDefensePackage::JiangeDefensePackage()
 
     General *yazi = new General(this, "jg_yazi_machine", "wei", 4, true, true);
     yazi->addSkill(new JGJiguan("yazi"));
-    yazi->addSkill(new JGDixian);
+    yazi->addSkill(new JGNailuo);
 
 }
 
