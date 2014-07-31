@@ -820,8 +820,10 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
     QList<ServerPlayer *> players = room->getAlivePlayers();
     ServerPlayer *win_player = players.first();
     if (players.length() == 1) {
-        if (!win_player->hasShownOneGeneral())
-            win_player->showGeneral(true, false);
+        if (!win_player->hasShownGeneral1())
+            win_player->showGeneral(true, false, false);
+        if (!win_player->hasShownGeneral2())
+            win_player->showGeneral(false, false, false);
         foreach (ServerPlayer *p, room->getPlayers()) {
             if (win_player->isFriendWith(p))
                 winners << p->objectName();
@@ -832,24 +834,24 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
             foreach(ServerPlayer *p2, players) {
                 if (p->hasShownOneGeneral() && p2->hasShownOneGeneral() && !p->isFriendWith(p2)) {
                     has_diff_kingdoms = true;
-                    break;// 如果两个都亮了，不是小伙伴，那么呵呵一笑。
+                    break;// if both shown but not friend, hehe.
                 }
                 if ((p->hasShownOneGeneral() && !p2->hasShownOneGeneral() && !p2->willBeFriendWith(p))
                     || (!p->hasShownOneGeneral() && p2->hasShownOneGeneral() && !p->willBeFriendWith(p2))) {
                     has_diff_kingdoms = true;
-                    break;// 一个亮了，一个没亮，不是小伙伴，呵呵一笑。
+                    break;// if either shown but not friend, hehe.
                 }
                 if (!p->hasShownOneGeneral() && !p2->hasShownOneGeneral()) {
                     if (p->getActualGeneral1()->getKingdom() != p2->getActualGeneral1()->getKingdom()) {
                         has_diff_kingdoms = true;
-                        break;  // 两个都没亮，势力还不同，呵呵一笑
+                        break;  // if neither shown and not friend, hehe.
                     }
                 }
             }
             if (has_diff_kingdoms)
                 break;
         }
-        if (!has_diff_kingdoms) { // 判断野心家
+        if (!has_diff_kingdoms) { // judge careerist
             QMap<QString, int> kingdoms;
             QSet<QString> lords;
             foreach(ServerPlayer *p, room->getPlayers())
@@ -874,13 +876,14 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
             }
         }
 
-        if (has_diff_kingdoms) return QString();    //有人不是自己人，呵呵一笑。
+        if (has_diff_kingdoms) return QString();    //if has enemy, hehe
 
-        // 到了这一步，都是自己人了，全员亮将。
+        // if run here, all are friend.
         foreach(ServerPlayer *p, players) {
-            if (!p->hasShownOneGeneral()) {
-                p->showGeneral(true, false); // 不用再触发事件了，嵌套影响结算。
-            }
+            if (!p->hasShownGeneral1())
+                p->showGeneral(true, false, false); // dont trigger event
+            if (!p->hasShownGeneral2())
+                p->showGeneral(false, false, false);
         }
 
         foreach(ServerPlayer *p, room->getPlayers()) {
