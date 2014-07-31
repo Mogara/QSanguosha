@@ -1480,7 +1480,7 @@ void StandardPackage::addQunGenerals()
     kongrong->addSkill(new Mingshi);
     kongrong->addSkill(new Lirang);
 
-    General *jiling = new General(this, "jiling", "qun", 4); // QUN 015
+    General *jiling = new General(this, "jiling", "qun"); // QUN 015
     jiling->addSkill(new Shuangren);
     jiling->addSkill(new SlashNoDistanceLimitSkill("shuangren"));
     related_skills.insertMulti("shuangren", "#shuangren-slash-ndl");

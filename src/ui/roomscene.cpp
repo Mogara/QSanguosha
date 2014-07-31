@@ -3486,6 +3486,9 @@ void RoomScene::showPlayerCards() {
 }
 
 void RoomScene::onGameStart() {
+    if (ClientInstance->getReplayer() != NULL)
+        choose_general_box->clear();
+
     main_window->activateWindow();
 
     if (control_panel)

@@ -536,7 +536,7 @@ class JGQiwu : public TriggerSkill{
 public:
     JGQiwu() : TriggerSkill("jgqiwu") {
         events << CardsMoveOneTime;
-        frequency = Compulsory;
+
     }
 
     virtual bool canPreshow() const{
@@ -567,6 +567,10 @@ public:
         }
 
         return QStringList();
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        return player->askForSkillInvoke(objectName());
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
@@ -797,7 +801,7 @@ public:
 
         if (victim != NULL) {
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), victim->objectName());
-            room->damage(DamageStruct(objectName(), player, victim, 1, DamageStruct::Thunder));
+            room->damage(DamageStruct(objectName(), player, victim, 2, DamageStruct::Thunder));
         }
         return false;
     }
@@ -845,7 +849,7 @@ public:
             return false;
 
         Room *room = player->getRoom();
-        room->damage(DamageStruct(objectName(), player, victim, 1, DamageStruct::Fire));
+        room->damage(DamageStruct(objectName(), player, victim, 2, DamageStruct::Fire));
         QList<const Card *> cards = victim->getEquips();
         if (!cards.isEmpty()) {
             DummyCard dummy;

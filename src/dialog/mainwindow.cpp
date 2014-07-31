@@ -371,10 +371,16 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
             break;
         case RightTop:
             rMove.setWidth(gloPoint.x() - topLeft.x());
-            rMove.setY(gloPoint.y());
+            if (bottomRight.y() - gloPoint.y() <= minimumHeight())
+                rMove.setY(topLeft.y());
+            else
+                rMove.setY(gloPoint.y());
             break;
         case LeftBottom:
-            rMove.setX(gloPoint.x());
+            if (bottomRight.x() - gloPoint.x() <= minimumWidth())
+                rMove.setX(topLeft.x());
+            else
+                rMove.setX(gloPoint.x());
             rMove.setHeight(gloPoint.y() - topLeft.y());
             break;
         case RightBottom:
