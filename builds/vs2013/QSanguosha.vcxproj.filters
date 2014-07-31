@@ -821,6 +821,9 @@
     <ClCompile Include="Release\moc_jiange-defense-scenario.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ui\IconHelper.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1139,6 +1142,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\core\RoomState.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ui\IconHelper.h">
+      <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

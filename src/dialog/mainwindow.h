@@ -155,7 +155,6 @@ private slots:
     void on_actionBroadcast_triggered();
     void on_actionRule_Summary_triggered();
     void on_actionMinimize_to_system_tray_triggered();
-    void on_actionShow_Hide_Menu_triggered();
     void on_actionFullscreen_triggered();
     void on_actionReplay_triggered();
     void on_actionAbout_triggered();
