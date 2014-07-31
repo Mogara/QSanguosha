@@ -180,7 +180,7 @@
   <widget class="QPushButton" name="cancelButton">
    <property name="geometry">
     <rect>
-     <x>210</x>
+     <x>200</x>
      <y>265</y>
      <width>71</width>
      <height>23</height>
@@ -193,8 +193,8 @@
   <widget class="QPushButton" name="connectButton">
    <property name="geometry">
     <rect>
-     <x>120</x>
-     <y>266</y>
+     <x>117</x>
+     <y>265</y>
      <width>75</width>
      <height>23</height>
     </rect>
