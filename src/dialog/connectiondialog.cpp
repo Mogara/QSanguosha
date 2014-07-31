@@ -68,12 +68,12 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
     ui->avatarPixmap->setPixmap(G_ROOM_SKIN.getGeneralPixmap(Config.UserAvatar,
         QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
 
-    hideAvatarList();
-
     ui->reconnectionCheckBox->setChecked(Config.value("EnableReconnection", false).toBool());
 
     setFixedHeight(height());
     setFixedWidth(ShrinkWidth);
+
+    ui->avatarList->hide();
 }
 
 ConnectionDialog::~ConnectionDialog() {
@@ -107,8 +107,7 @@ void ConnectionDialog::on_changeAvatarButton_clicked() {
             hideAvatarList();
             setFixedWidth(ShrinkWidth);
         }
-    }
-    else {
+    } else {
         showAvatarList();
         setFixedWidth(ExpandWidth);
     }

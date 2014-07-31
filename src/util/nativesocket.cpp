@@ -93,11 +93,10 @@ void NativeClientSocket::connectToHost() {
         QStringList texts = Config.HostAddress.split(QChar(':'));
         address = texts.value(0);
         port = texts.value(1).toUShort();
-    }
-    else {
+    } else {
         address = Config.HostAddress;
         if (address == "127.0.0.1")
-            port = Config.value("ServerPort", "9527").toString().toUShort();
+            port = Config.value("ServerPort", 9527u).toUInt();
     }
 
     socket->connectToHost(address, port);
@@ -165,7 +164,7 @@ void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error) {
         reason = tr("Socket access error"); break;
     case QAbstractSocket::NetworkError:
         return; // this error is ignored ...
-    default: reason = tr("Unknow error"); break;
+    default: reason = tr("Unknown error"); break;
     }
 
     emit error_message(tr("Connection failed, error code = %1\n reason:\n %2").arg(socket_error).arg(reason));

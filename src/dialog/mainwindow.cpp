@@ -238,7 +238,6 @@ MainWindow::MainWindow(QWidget *parent)
     BackLoader::preload();
     gotoScene(start_scene);
 
-    addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);
 
     minButton = new QPushButton(this);
@@ -951,12 +950,6 @@ void MainWindow::on_actionFullscreen_triggered()
         showFullScreen();
 }
 
-void MainWindow::on_actionShow_Hide_Menu_triggered()
-{
-    QMenuBar *menu_bar = menuBar();
-    menu_bar->setVisible(!menu_bar->isVisible());
-}
-
 void MainWindow::on_actionMinimize_to_system_tray_triggered()
 {
     if (systray == NULL) {
@@ -1052,6 +1045,7 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
         return;
     }
 
+    server->daemonize();
     server->createNewRoom();
 
     Config.HostAddress = "127.0.0.1";
