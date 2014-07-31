@@ -1062,6 +1062,7 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
         return;
     }
 
+    server->daemonize();
     server->createNewRoom();
 
     Config.HostAddress = "127.0.0.1";
