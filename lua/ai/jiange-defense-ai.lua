@@ -50,20 +50,24 @@ sgs.ai_skill_playerchosen.jggongshen = function(self, targets)
 	self:updatePlayers()
 	self:sort(self.friends_noself)
 	local target = nil
+	local peacespell = false
 	for _, enemy in ipairs(self.enemies) do
-		if string.find(enemy:getGeneral():objectName(), "machine") and not self.player:isFriendWith(enemy) then
-			if enemy:hasArmorEffect("Vine") or enemy:getMark("@gale") > 0 then 
+		if enemy:hasArmorEffect("PeaceSpell") then peacespell = true end
+		if string.find(enemy:getGeneral():objectName(), "machine") and not self.player:isFriendWith(enemy) and not peacespell then
+			if enemy:hasArmorEffect("Vine") or enemy:getMark("@gale") > 0 or enemy:getHp() == 1 then
 				target = enemy
 				break
-			end	
+			end			
 		end
 	end
 	if not target then
 	for _, friend in ipairs(self.friends_noself) do
-		if string.find(friend:getGeneral():objectName(), "machine") and self:isWeak(friend) and self.player:isFriendWith(friend) then
-			target = friend
-			break
-		end
+		if string.find(friend:getGeneral():objectName(), "machine")  and self.player:isFriendWith(friend) and friend:getLostHp() > 0 then
+			if self:isWeak(friend) or peacespell then
+				target = friend
+				break
+			end
+		end	
 	end
 	end
 	if not target then
@@ -88,22 +92,14 @@ return "TrickCard"
 end]]
 
 sgs.ai_skill_playerchosen.jgzhinang = function(self, targets)
-	local id = self.player:getMark("jgzhinang")
-	local card = sgs.Sanguosha:getCard(id)
-	local cards = { card }
-	local c, friend = self:getCardNeedPlayer(cards, self.friends)
-	if friend and self.player:isFriendWith(friend) then return friend end
-
-	self:sort(self.friends)
-	for _, friend in ipairs(self.friends) do
-		if self:isValuableCard(card, friend) and self.player:isFriendWith(friend) and not self:needKongcheng(friend, true) then return friend end
+	for _, friend in ipairs(self.friends_noself) do
+		if friend:faceUp() and not self:isWeak(friend) then 
+			if not friend:getWeapon() or friend:hasSkills("rende|jizhi") then
+				return friend 
+			end
+		end
 	end
-	for _, friend in ipairs(self.friends) do
-		if self:isWeak(friend) and self.player:isFriendWith(friend) and not self:needKongcheng(friend, true) then return friend end
-	end
-	for _, friend in ipairs(self.friends) do
-		if self.player:isFriendWith(friend) and not self:needKongcheng(friend, true) then return friend end
-	end
+	return self.player
 end
 
 sgs.ai_playerchosen_intention.jgzhinang = function(self, from, to)
@@ -168,7 +164,7 @@ sgs.ai_skill_playerchosen.jgtianyun = function(self, targets)
 	end
 	for _, enemy in ipairs(self.enemies) do
 		if not self.player:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
-			if enemy:hasArmorEffect("Vine") or enemy:getMark("@gale") > 0 or (enemy:getCards("e"):length() >= 2) then
+			if enemy:hasArmorEffect("Vine") or enemy:getMark("@gale") > 0 or (enemy:getCards("e"):length() >= 2) or enemy:getHp() == 1then
 				target = enemy
 				break
 			end
