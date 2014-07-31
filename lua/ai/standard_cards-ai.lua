@@ -1141,9 +1141,7 @@ sgs.ai_skill_cardask["@Axe"] = function(self, data, pattern, target)
 			for _, id in ipairs(cards) do
 				if self.player:hasEquip(sgs.Sanguosha:getCard(id)) then num = num + 1 end
 			end
-			self.equipsToDec = num
 			local eff = self:damageIsEffective(effect.to, effect.nature, self.player)
-			self.equipsToDec = 0
 			if not eff then return "." end
 			return "$" .. table.concat(cards, "+")
 		end

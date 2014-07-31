@@ -392,16 +392,6 @@ sgs.ai_skill_use_func.WendaoCard = function(card, use, self)
 	use.card = card
 end
 
-sgs.ai_event_callback[sgs.EventPhaseStart].wendao = function(self, player, data)
-	if player:hasShownSkills("wendao+hongfa") then
-		if player:getArmor() and player:getArmor():objectName() == "PeaceSpell" and not player:getPile("heavenly_army"):isEmpty() then
-			sgs.ai_use_priority.WendaoCard = 11
-		else
-			sgs.ai_use_priority.WendaoCard = sgs.ai_use_priority.ZhihengCard
-		end
-	end
-end
-
 sgs.ai_use_priority.WendaoCard = sgs.ai_use_priority.ZhihengCard
 
 sgs.ai_skill_invoke.hongfa = true
@@ -469,7 +459,11 @@ sgs.ai_slash_prohibit.PeaceSpell = function(self, from, enemy, card)
 end
 function sgs.ai_armor_value.PeaceSpell(player, self)
 	if player:hasShownSkills("hongfa+wendao") then return 1000 end
-	if getCardsNum("Peach", player, player) + getCardsNum("Analeptic", player, player) == 0 and player:getHp() == 1 then return 9 end
+	if getCardsNum("Peach", player, player) + getCardsNum("Analeptic", player, player) == 0 and player:getHp() == 1 then
+		if player:hasArmorEffect("PeaceSpell") then return 99
+		else return -99
+		end
+	end
 	return 3.5
 end
 
