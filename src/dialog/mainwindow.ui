@@ -53,7 +53,6 @@
      <property name="title">
       <string>View</string>
      </property>
-     <addaction name="actionShow_Hide_Menu"/>
      <addaction name="actionFullscreen"/>
      <addaction name="actionMinimize_to_system_tray"/>
     </widget>
@@ -144,7 +143,7 @@
    </property>
    <property name="icon">
     <iconset>
-<normaloff>../image/system/settings.png</normaloff>../image/system/settings.png</iconset>
+     <normaloff>../image/system/settings.png</normaloff>../image/system/settings.png</iconset>
    </property>
    <property name="text">
     <string>Configure</string>
