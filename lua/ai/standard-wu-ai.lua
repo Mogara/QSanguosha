@@ -170,25 +170,38 @@ end
 local qixi_skill = {}
 qixi_skill.name = "qixi"
 table.insert(sgs.ai_skills, qixi_skill)
-qixi_skill.getTurnUseCard = function(self,inclusive)
+qixi_skill.getTurnUseCard = function(self, inclusive)
 
-	local cards = self.player:getCards("he")
-	if self.player:hasSkill("xiaoji") then
-		local cards = self.player:getCards("e")
+	local cards = {}
+	if self.player:hasSkill("xiaoji") and not self.player:getEquips():isEmpty() then
+		for _, c in sgs.qlist(self.player:getEquips()) do
+			if c:isBlack() then table.insert(cards, c) end
+		end
+		if #cards > 0 then
+			self:sortByUseValue(cards, true)
+			local black_card = cards[1]
+			local suit = black_card:getSuitString()
+			local number = black_card:getNumberString()
+			local card_id = black_card:getEffectiveId()
+			local card_str = ("dismantlement:qixi[%s:%s]=%d%s"):format(suit, number, card_id, "&qixi")
+			local dismantlement = sgs.Card_Parse(card_str)
+
+			assert(dismantlement)
+
+			return dismantlement
+		end
 	end
-	cards = sgs.QList2Table(cards)
 
-	local black_card
-
-	self:sortByUseValue(cards,true)
+	cards = sgs.QList2Table(self.player:getCards("he"))
+	self:sortByUseValue(cards, true)
 
 	local has_weapon = false
-
-	for _,card in ipairs(cards)  do
-		if card:isKindOf("Weapon") and card:isBlack() then has_weapon=true end
+	local black_card
+	for _, card in ipairs(cards) do
+		if card:isKindOf("Weapon") and card:isBlack() then has_weapon = true end
 	end
 
-	for _,card in ipairs(cards)  do
+	for _, card in ipairs(cards) do
 		if card:isBlack() and ((self:getUseValue(card) < sgs.ai_use_value.Dismantlement) or inclusive or self:getOverflow() > 0) then
 			local shouldUse = true
 
@@ -196,23 +209,17 @@ qixi_skill.getTurnUseCard = function(self,inclusive)
 				if not self.player:getArmor() then shouldUse = false
 				elseif self.player:hasEquip(card) and not self:needToThrowArmor() then shouldUse = false
 				end
-			end
-
-			if card:isKindOf("Weapon") then
+			elseif card:isKindOf("Weapon") then
 				if not self.player:getWeapon() then shouldUse = false
 				elseif self.player:hasEquip(card) and not has_weapon then shouldUse = false
 				end
-			end
-
-			if card:isKindOf("Slash") then
+			elseif card:isKindOf("Slash") then
 				local dummy_use = {isDummy = true}
 				if self:getCardsNum("Slash") == 1 then
 					self:useBasicCard(card, dummy_use)
 					if dummy_use.card then shouldUse = false end
 				end
-			end
-
-			if self:getUseValue(card) > sgs.ai_use_value.Dismantlement and card:isKindOf("TrickCard") then
+			elseif card:isKindOf("TrickCard") and self:getUseValue(card) > sgs.ai_use_value.Dismantlement then
 				local dummy_use = {isDummy = true}
 				self:useTrickCard(card, dummy_use)
 				if dummy_use.card then shouldUse = false end
@@ -450,7 +457,6 @@ local duoshi_skill = {}
 duoshi_skill.name = "duoshi"
 table.insert(sgs.ai_skills, duoshi_skill)
 duoshi_skill.getTurnUseCard = function(self, inclusive)
-
 	local DuoTime = 2
 	if self.player:hasSkills("fenming|zhiheng|fenxun|keji") then
 		DuoTime = 1
@@ -515,12 +521,6 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 				if dummy_use.card then shouldUse = false end
 			end
 
-			if card:getSuit() == sgs.Card_Diamond and self.player:hasSkill("guose") then
-				self.player:setFlags("ai_duoshi")
-				sgs.ai_use_priority.AwaitExhausted = 0.2
-			end
-
-
 			local sunshangxiang = false
 			if self.player:hasSkills("xiaoji") and self.player:getCards("e"):length() > 0 then
 				sunshangxiang = true
@@ -553,11 +553,6 @@ duoshi_skill.getTurnUseCard = function(self, inclusive)
 	end
 end
 
-sgs.ai_event_callback[sgs.EventPhaseEnd].duoshi = function(self, player, data)
-	if player:getPhase() == sgs.Player_Play and player:hasFlag("ai_duoshi") then
-		sgs.ai_use_priority.AwaitExhausted = 2.8
-	end
-end
 
 local guose_skill = {}
 guose_skill.name = "guose"

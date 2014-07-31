@@ -1017,7 +1017,6 @@ sgs.ai_skill_use_func.QiangxiCard = function(card, use, self)
 			end
 		end
 		self:sort(self.enemies)
-		self.equipsToDec = hand_weapon and 0 or 1
 		for _, enemy in ipairs(self.enemies) do
 			if self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and self:damageIsEffective(enemy) then
 				if hand_weapon and self.player:distanceTo(enemy) <= self.player:getAttackRange() then
@@ -1036,7 +1035,6 @@ sgs.ai_skill_use_func.QiangxiCard = function(card, use, self)
 				end
 			end
 		end
-		self.equipsToDec = 0
 	else
 		self:sort(self.enemies, "hp")
 		for _, enemy in ipairs(self.enemies) do
