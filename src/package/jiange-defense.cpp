@@ -416,31 +416,10 @@ public:
     }
 };
 
-class JGJingmiaoRecord : public TriggerSkill{
-public:
-    JGJingmiaoRecord() : TriggerSkill("#jgjingmiao-record") {
-        global = true;
-        events << CardUsed;
-        frequency = Compulsory;
-    }
-
-    virtual bool canPreshow() const{
-        return false;
-    }
-
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer* &) const{
-        CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card != NULL && use.from != NULL && use.card->isKindOf("Nullification"))
-            room->setTag("jgjingmiao_use", data);
-
-        return QStringList();
-    }
-};
-
 class JGJingmiao : public TriggerSkill{
 public:
     JGJingmiao() : TriggerSkill("jgjingmiao") {
-        events << CardsMoveOneTime;
+        events << CardFinished;
         frequency = Compulsory;
     }
 
@@ -448,54 +427,29 @@ public:
         return false;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
-        if (!TriggerSkill::triggerable(player))
+    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (!use.card->isKindOf("Nullification"))
             return QStringList();
-
-        QVariant jingmiao_use_tag = room->getTag("jgjingmiao_use");
-        if (jingmiao_use_tag.isNull() || !jingmiao_use_tag.canConvert<CardUseStruct>())
+        ServerPlayer *yueying = room->findPlayerBySkillName(objectName());
+        if (player->isFriendWith(yueying))
             return QStringList();
-        CardUseStruct jingmiao_use = jingmiao_use_tag.value<CardUseStruct>();
-
-        if (jingmiao_use.from->isFriendWith(player))
-            return QStringList();
-
-        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) != CardMoveReason::S_REASON_USE) || move.to_place != Player::DiscardPile)
-            return QStringList();
-
-        QList<int> card_ids;
-        if (jingmiao_use.card->isVirtualCard())
-            card_ids = jingmiao_use.card->getSubcards();
-        else
-            card_ids << jingmiao_use.card->getEffectiveId();
-
-        foreach(int id, card_ids) {
-            if (!move.card_ids.contains(id))
-                return QStringList();
-        }
-
+        ask_who = yueying;
         return QStringList(objectName());
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        if (!(player->hasShownSkill(this) || player->askForSkillInvoke(objectName()))) {
-            room->removeTag("jgjingmiao_use");
-            return false;
-        }
-        return true;
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
+        return player->hasShownSkill(this) || ask_who->askForSkillInvoke(objectName(), QVariant::fromValue(player));
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
         LogMessage log;
         log.type = "#TriggerSkill";
-        log.from = player;
+        log.from = ask_who;
         log.arg = objectName();
         room->sendLog(log);
-        room->notifySkillInvoked(player, objectName());
-        CardUseStruct jingmiao_use = room->getTag("jgjingmiao_use").value<CardUseStruct>();
-        room->removeTag("jgjingmiao_use");
-        room->loseHp(jingmiao_use.from);
+        room->notifySkillInvoked(ask_who, objectName());
+        room->loseHp(player);
         return false;
     }
 };
@@ -536,7 +490,6 @@ class JGQiwu : public TriggerSkill{
 public:
     JGQiwu() : TriggerSkill("jgqiwu") {
         events << CardsMoveOneTime;
-
     }
 
     virtual bool canPreshow() const{
@@ -569,19 +522,23 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        return player->askForSkillInvoke(objectName());
-    }
-
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         QList<ServerPlayer *> players;
         foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
             if (p->isFriendWith(player) && p->isWounded())
                 players << p;
         }
         ServerPlayer *target = room->askForPlayerChosen(player, players, objectName(), "@jgqiwu", false, true);
-        if (target == NULL)
-            target = players.at(qrand() % players.length());
+        if (target != NULL) {
+            player->tag[objectName()] = QVariant::fromValue(target);
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        ServerPlayer *target = player->tag[objectName()].value<ServerPlayer *>();
+        player->tag.remove(objectName());
         if (target != NULL) {
             RecoverStruct rec;
             rec.recover = 1;
@@ -1308,7 +1265,7 @@ public:
 
         room->sortByActionOrder(players);
         foreach(ServerPlayer *p, players)
-            room->damage(DamageStruct(objectName(), NULL, p, 1, DamageStruct::Thunder));
+            room->damage(DamageStruct(objectName(), player, p, 1, DamageStruct::Thunder));
 
 
         return false;
@@ -1606,8 +1563,6 @@ JiangeDefensePackage::JiangeDefensePackage()
     yueying->addSkill(new JGGongshen);
     yueying->addSkill(new JGZhinang);
     yueying->addSkill(new JGJingmiao);
-    yueying->addSkill(new JGJingmiaoRecord);
-    related_skills.insertMulti("jgjingmiao", "#jgjingmiao-record");
 
     General *pangtong = new General(this, "jg_pangtong", "shu", 4, true, true);
     pangtong->addSkill(new JGYuhuo("pangtong"));
