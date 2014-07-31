@@ -101,6 +101,7 @@ SOURCES += \
     src/ui/ChooseTriggerOrderBox.cpp \
     src/ui/GraphicsBox.cpp \
     src/ui/GuanxingBox.cpp \
+    src/ui/IconHelper.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
@@ -203,6 +204,7 @@ HEADERS += \
     src/ui/ChooseTriggerOrderBox.h \
     src/ui/GraphicsBox.h \
     src/ui/GuanxingBox.h \
+    src/ui/IconHelper.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \

@@ -33,6 +33,7 @@
 #include "UpdateChecker.h"
 #include "recorder.h"
 #include "audio.h"
+#include "IconHelper.h"
 
 #include <lua.hpp>
 #include <QGraphicsView>
@@ -56,7 +57,6 @@
 #include <QFormLayout>
 #include <QNetworkReply>
 #include <QBitmap>
-
 
 #if !defined(QT_NO_OPENGL) && defined(USING_OPENGL)
 #include <QtOpenGL/QGLWidget>
@@ -241,20 +241,30 @@ MainWindow::MainWindow(QWidget *parent)
     addAction(ui->actionShow_Hide_Menu);
     addAction(ui->actionFullscreen);
 
-    minButton = new QToolButton(this);
-    maxButton = new QToolButton(this);
-    normalButton = new QToolButton(this);
-    closeButton= new QToolButton(this);
-    
-    QPixmap minPix  = style()->standardPixmap(QStyle::SP_TitleBarMinButton);
-    QPixmap maxPix  = style()->standardPixmap(QStyle::SP_TitleBarMaxButton);
-    QPixmap normalPix  = style()->standardPixmap(QStyle::SP_TitleBarNormalButton);
-    QPixmap closePix = style()->standardPixmap(QStyle::SP_TitleBarCloseButton);
-    
-    minButton->setIcon(minPix);
-    maxButton->setIcon(maxPix);
-    normalButton->setIcon(normalPix);
-    closeButton->setIcon(closePix);
+    minButton = new QPushButton(this);
+    minButton->setProperty("control", true);
+
+    maxButton = new QPushButton(this);
+    maxButton->setProperty("bold", true);
+    maxButton->setProperty("control", true);
+
+    normalButton = new QPushButton(this);
+    normalButton->setProperty("bold", true);
+    normalButton->setProperty("control", true);
+
+    closeButton= new QPushButton(this);
+    closeButton->setObjectName("closeButton");
+    closeButton->setProperty("control", true);
+
+    menu = new QPushButton(this);
+    menu->setMenu(ui->menuSumMenu);
+    menu->setProperty("control", true);
+
+    IconHelper::getInstance()->setIcon(minButton, QChar(0xf068), 15);
+    IconHelper::getInstance()->setIcon(maxButton, QChar(0xf106), 15);
+    IconHelper::getInstance()->setIcon(normalButton, QChar(0xf107), 15);
+    IconHelper::getInstance()->setIcon(closeButton, QChar(0xf00d), 15);
+    IconHelper::getInstance()->setIcon(menu, QChar(0xf0c9), 15);
 
     minButton->setToolTip(tr("<font color=%1>Minimize</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
     connect(minButton, SIGNAL(clicked()), this, SLOT(showMinimized()));
@@ -264,21 +274,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(normalButton, SIGNAL(clicked()), this, SLOT(showNormal()));
     closeButton->setToolTip(tr("<font color=%1>Close</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
     connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
-
-    const QString styleSheet = "background-color:transparent;";
-
-    minButton->setStyleSheet(styleSheet);
-    maxButton->setStyleSheet(styleSheet);
-    normalButton->setStyleSheet(styleSheet);
-    closeButton->setStyleSheet(styleSheet);
+    menu->setToolTip(tr("<font color=%1>Config</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
 
     menuBar()->hide();
-
-    menu = new QPushButton(this);
-    menu->setMenu(ui->menuSumMenu);
-    menu->setIcon(QPixmap("image/system/button/config.png"));
-    menu->setStyleSheet("background-color:transparent; QPushButton::menu-indicator{image:None;}");
-    menu->setToolTip(tr("<font color=%1>Config</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
 
     ui->menuSumMenu->setStyleSheet("color: black;"
                                    "background-color: white;"
@@ -332,7 +330,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     if (windowState() & Qt::WindowMaximized)
         return;
-    QPoint gloPoint = event->globalPos();
+    QPoint globalPoint = event->globalPos();
     if (isZoomReady && isLeftPressDown) {
         QRect rect = this->rect();
         QPoint topLeft = mapToGlobal(rect.topLeft());
@@ -342,44 +340,44 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
         switch (direction) {
         case Left:
-            if (bottomRight.x() - gloPoint.x() <= minimumWidth())
+            if (bottomRight.x() - globalPoint.x() <= minimumWidth())
                 rMove.setX(topLeft.x());
             else
-                rMove.setX(gloPoint.x());
+                rMove.setX(globalPoint.x());
             break;
         case Right:
-            rMove.setWidth(gloPoint.x() - topLeft.x());
+            rMove.setWidth(globalPoint.x() - topLeft.x());
             break;
         case Up:
-            if (bottomRight.y() - gloPoint.y() <= minimumHeight())
+            if (bottomRight.y() - globalPoint.y() <= minimumHeight())
                 rMove.setY(topLeft.y());
             else
-                rMove.setY(gloPoint.y());
+                rMove.setY(globalPoint.y());
             break;
         case Down:
-            rMove.setHeight(gloPoint.y() - topLeft.y());
+            rMove.setHeight(globalPoint.y() - topLeft.y());
             break;
         case LeftTop:
-            if (bottomRight.x() - gloPoint.x() <= minimumWidth())
+            if (bottomRight.x() - globalPoint.x() <= minimumWidth())
                 rMove.setX(topLeft.x());
             else
-                rMove.setX(gloPoint.x());
-            if (bottomRight.y() - gloPoint.y() <= minimumHeight())
+                rMove.setX(globalPoint.x());
+            if (bottomRight.y() - globalPoint.y() <= minimumHeight())
                 rMove.setY(topLeft.y());
             else
-                rMove.setY(gloPoint.y());
+                rMove.setY(globalPoint.y());
             break;
         case RightTop:
-            rMove.setWidth(gloPoint.x() - topLeft.x());
-            rMove.setY(gloPoint.y());
+            rMove.setWidth(globalPoint.x() - topLeft.x());
+            rMove.setY(globalPoint.y());
             break;
         case LeftBottom:
-            rMove.setX(gloPoint.x());
-            rMove.setHeight(gloPoint.y() - topLeft.y());
+            rMove.setX(globalPoint.x());
+            rMove.setHeight(globalPoint.y() - topLeft.y());
             break;
         case RightBottom:
-            rMove.setWidth(gloPoint.x() - topLeft.x());
-            rMove.setHeight(gloPoint.y() - topLeft.y());
+            rMove.setWidth(globalPoint.x() - topLeft.x());
+            rMove.setHeight(globalPoint.y() - topLeft.y());
             break;
         default:
             break;
@@ -389,7 +387,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         move(event->globalPos() - movePosition);
         event->accept();
     } else if (!isLeftPressDown)
-        region(gloPoint);
+        region(globalPoint);
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *)
@@ -540,11 +538,11 @@ void MainWindow::repaintButtons()
     if (!minButton || !maxButton || !normalButton || !closeButton || !menu)
         return;
     int width = this->width();
-    minButton->setGeometry(width - 70, 5, 20, 20);
-    maxButton->setGeometry(width - 49, 5, 20, 20);
-    normalButton->setGeometry(width - 49, 5, 20, 20);
-    closeButton->setGeometry(width - 28, 5, 20, 20);
-    menu->setGeometry(width - 91, 5, 20, 20);
+    minButton->setGeometry(width - 120, 0, 40, 33);
+    maxButton->setGeometry(width - 80, 0, 40, 33);
+    normalButton->setGeometry(width - 80, 0, 40, 33);
+    closeButton->setGeometry(width - 40, 0, 40, 33);
+    menu->setGeometry(width - 160, 0, 40, 33);
     
     bool max = windowState() & Qt::WindowMaximized;
     if (max) {

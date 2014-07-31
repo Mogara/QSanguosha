@@ -97,3 +97,21 @@ QPushButton#speed-up{
 QPushButton#uniform{
     background-image: url(image/system/button/uniform.png);
 }
+
+#MainWindow .QPushButton[control = true]{
+	color: rgb(183, 218, 238);
+	background-color:rgba(0,0,0,0);
+	border-style:none;
+}
+
+#MainWindow .QPushButton[control = true]:hover{
+	background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(25, 134, 199, 0), stop:1 rgba(72, 160, 212, 255));
+}
+
+#MainWindow .QPushButton[control = true][bold = true]{
+	font: bold;
+}
+
+#MainWindow #closeButton[control = true]:hover{
+	background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(238, 0, 0, 128), stop:1 rgba(238, 44, 44, 255));
+}

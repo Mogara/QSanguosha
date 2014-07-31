@@ -41,7 +41,6 @@ class QGraphicsScene;
 class QSystemTrayIcon;
 class Server;
 class QTextEdit;
-class QToolButton;
 class QGroupBox;
 class RoomItem;
 class QNetworkReply;
@@ -115,10 +114,10 @@ private:
     Window *about_window;
     UpdateInfoStruct updateInfomation;
 
-    QToolButton *minButton;
-    QToolButton *maxButton;
-    QToolButton *normalButton;
-    QToolButton *closeButton;
+    QPushButton *minButton;
+    QPushButton *maxButton;
+    QPushButton *normalButton;
+    QPushButton *closeButton;
     QPushButton *menu;
 
     QNetworkReply *versionInfomationReply;
