@@ -528,7 +528,7 @@ bool ServerDialog::config() {
     Config.AIDelay = Config.OriginAIDelay;
     Config.AIDelayAD = ai_delay_ad_spinbox->value();
     Config.AlterAIDelayAD = ai_delay_altered_checkbox->isChecked();
-    Config.ServerPort = port_edit->text().toInt();
+    Config.ServerPort = port_edit->text().toUShort();
     Config.DisableLua = disable_lua_checkbox->isChecked();
     Config.SurrenderAtDeath = surrender_at_death_checkbox->isChecked();
     Config.LuckCardLimitation = luck_card_spinbox->value();

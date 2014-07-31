@@ -93,11 +93,10 @@ void NativeClientSocket::connectToHost() {
         QStringList texts = Config.HostAddress.split(QChar(':'));
         address = texts.value(0);
         port = texts.value(1).toUShort();
-    }
-    else {
+    } else {
         address = Config.HostAddress;
         if (address == "127.0.0.1")
-            port = Config.value("ServerPort", "9527").toString().toUShort();
+            port = Config.value("ServerPort", 9527u).toUInt();
     }
 
     socket->connectToHost(address, port);
