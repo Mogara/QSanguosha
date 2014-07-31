@@ -69,13 +69,6 @@ public:
         setSceneRect(Config.Rect);
         setRenderHints(QPainter::TextAntialiasing | QPainter::Antialiasing);
 
-        QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(this);
-        effect->setColor(Qt::cyan);
-        effect->setOffset(0);
-        effect->setBlurRadius(10);
-
-        setGraphicsEffect(effect);
-
 #if !defined(QT_NO_OPENGL) && defined(USING_OPENGL)
         if (QGLFormat::hasOpenGL()) {
             QGLWidget *widget = new QGLWidget(QGLFormat(QGL::SampleBuffers));
@@ -118,20 +111,10 @@ public:
 
     virtual void resizeEvent(QResizeEvent *event) {
         QGraphicsView::resizeEvent(event);
-        updateScene(event->size());
-
         MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
-        if (main_window)
-            main_window->setBackgroundBrush(scene()->inherits("StartScene"));
-
-        roundCorners();
-    }
-
-    void updateScene(const QSize &size)
-    {
         if (scene()->inherits("RoomScene")) {
             RoomScene *room_scene = qobject_cast<RoomScene *>(scene());
-            QRectF newSceneRect(0, 0, size.width(), size.height());
+            QRectF newSceneRect(0, 0, event->size().width(), event->size().height());
             room_scene->setSceneRect(newSceneRect);
             setSceneRect(room_scene->sceneRect());
             if (newSceneRect != room_scene->sceneRect())
@@ -139,37 +122,20 @@ public:
             else
                 this->resetTransform();
             room_scene->adjustItems();
-        } else if (scene()->inherits("StartScene")) {
+            main_window->setBackgroundBrush(false);
+            return;
+        }
+        else if (scene()->inherits("StartScene")) {
             StartScene *start_scene = qobject_cast<StartScene *>(scene());
-            QRectF newSceneRect(-size.width() / 2, -size.height() / 2,
-                                size.width(), size.height());
+            QRectF newSceneRect(-event->size().width() / 2, -event->size().height() / 2,
+                event->size().width(), event->size().height());
             start_scene->setSceneRect(newSceneRect);
             setSceneRect(start_scene->sceneRect());
             if (newSceneRect != start_scene->sceneRect())
                 fitInView(start_scene->sceneRect(), Qt::KeepAspectRatio);
         }
-    }
-
-private:
-
-    void roundCorners()
-    {
-        MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
-        QBitmap mask(size());
-        if (main_window->windowState() & (Qt::WindowMaximized | Qt::WindowFullScreen)) {
-            mask.fill(Qt::black);
-        } else {
-            mask.fill();
-            QPainter painter(&mask);
-            QPainterPath path;
-            QRect viewRect = mask.rect();
-            QRect maskRect(viewRect.x(), viewRect.y(), viewRect.width(), viewRect.height());
-            path.addRoundedRect(maskRect, 5, 5);
-            painter.setRenderHint(QPainter::Antialiasing);
-
-            painter.fillPath(path, Qt::black);
-        }
-        setMask(mask);
+        if (main_window)
+            main_window->setBackgroundBrush(true);
     }
 };
 
@@ -211,7 +177,7 @@ void SoundTestBox::btn_clicked(){
 #endif
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), isLeftPressDown(false), view(NULL),
+    : QMainWindow(parent), isLeftPressDown(false),
       scene(NULL), ui(new Ui::MainWindow), server(NULL), about_window(NULL),
       minButton(NULL), maxButton(NULL), normalButton(NULL), closeButton(NULL),
       versionInfomationReply(NULL), changeLogReply(NULL)
@@ -264,8 +230,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     view = new FitView(scene);
 
-    view->setParent(this);
+    setCentralWidget(view);
     restoreFromConfig();
+
+    roundCorners();
 
     BackLoader::preload();
     gotoScene(start_scene);
@@ -461,33 +429,15 @@ void MainWindow::changeEvent(QEvent *event)
 {
     if (event->type() == QEvent::WindowStateChange) {
         repaintButtons();
-
-        if (!view) return QMainWindow::changeEvent(event);
-
-        if (!(windowState() & (Qt::WindowFullScreen | Qt::WindowMinimized | Qt::WindowMaximized))) {
-            QSize viewSize = size() - QSize(2 * BORDER_WIDTH, 2 * BORDER_WIDTH);
-            view->setGeometry(QRect(QPoint(BORDER_WIDTH, BORDER_WIDTH), viewSize));
-            view->repaint();
-        } else if (!(windowState() & Qt::WindowMinimized)) {
-            view->setGeometry(rect());
-            view->repaint();
-        }
+        roundCorners();
     }
     QMainWindow::changeEvent(event);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    if (!(windowState() & (Qt::WindowFullScreen | Qt::WindowMinimized | Qt::WindowMaximized))) {
-        QSize viewSize = event->size() - QSize(2 * BORDER_WIDTH, 2 * BORDER_WIDTH);
-        view->setGeometry(QRect(QPoint(BORDER_WIDTH, BORDER_WIDTH), viewSize));
-        view->repaint();
-    } else if (!(windowState() & Qt::WindowMinimized)) {
-        view->setGeometry(rect());
-        view->repaint();
-    }
-
     repaintButtons();
+    roundCorners();
     QMainWindow::resizeEvent(event);
 }
 
@@ -566,24 +516,35 @@ void MainWindow::fetchUpdateInformation()
     connect(changeLogReply, SIGNAL(finished()), SLOT(onChangeLogGotten()));
 }
 
+void MainWindow::roundCorners()
+{
+    QBitmap mask(size());
+    if (windowState() & (Qt::WindowMaximized | Qt::WindowFullScreen)) {
+        mask.fill(Qt::black);
+    } else {
+        mask.fill();
+        QPainter painter(&mask);
+        QPainterPath path;
+        QRect windowRect = mask.rect();
+        QRect maskRect(windowRect.x(), windowRect.y(), windowRect.width(), windowRect.height());
+        path.addRoundedRect(maskRect, 5, 5);
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        painter.fillPath(path, Qt::black);
+    }
+    setMask(mask);
+}
+
 void MainWindow::repaintButtons()
 {
     if (!minButton || !maxButton || !normalButton || !closeButton || !menu)
         return;
     int width = this->width();
-    if (!(windowState() & (Qt::WindowFullScreen | Qt::WindowMinimized | Qt::WindowMaximized))) {
-        minButton->setGeometry(width - 90, 25, 20, 20);
-        maxButton->setGeometry(width - 69, 25, 20, 20);
-        normalButton->setGeometry(width - 69, 25, 20, 20);
-        closeButton->setGeometry(width - 48, 25, 20, 20);
-        menu->setGeometry(width - 111, 25, 20, 20);
-    } else {
-        minButton->setGeometry(width - 70, 5, 20, 20);
-        maxButton->setGeometry(width - 49, 5, 20, 20);
-        normalButton->setGeometry(width - 49, 5, 20, 20);
-        closeButton->setGeometry(width - 28, 5, 20, 20);
-        menu->setGeometry(width - 91, 5, 20, 20);
-    }
+    minButton->setGeometry(width - 70, 5, 20, 20);
+    maxButton->setGeometry(width - 49, 5, 20, 20);
+    normalButton->setGeometry(width - 49, 5, 20, 20);
+    closeButton->setGeometry(width - 28, 5, 20, 20);
+    menu->setGeometry(width - 91, 5, 20, 20);
     
     bool max = windowState() & Qt::WindowMaximized;
     if (max) {
@@ -621,7 +582,8 @@ void MainWindow::gotoScene(QGraphicsScene *scene) {
 
     this->scene = scene;
     view->setScene(scene);
-    view->updateScene(view->size());
+    QResizeEvent e(QSize(view->size().width(), view->size().height()), view->size());
+    view->resizeEvent(&e);
     changeBackground();
 }
 
