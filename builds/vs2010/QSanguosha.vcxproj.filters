@@ -826,6 +826,18 @@
     <ClCompile Include="Release\moc_jiange-defense.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ui\IconHelper.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_Title.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_Title.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\Title.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1071,6 +1083,9 @@
     <CustomBuild Include="..\..\src\package\jiange-defense.h">
       <Filter>package</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\Title.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\swig\sanguosha.i">
@@ -1175,6 +1190,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\core\version.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ui\IconHelper.h">
+      <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
