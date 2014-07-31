@@ -288,6 +288,13 @@ MainWindow::MainWindow(QWidget *parent)
     
     repaintButtons();
 
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
+    animation->setDuration(1000);
+    animation->setStartValue(0);
+    animation->setEndValue(1);
+    animation->setEasingCurve(QEasingCurve::OutCurve);
+    animation->start(QAbstractAnimation::DeleteWhenStopped);
+
     systray = NULL;
 }
 
