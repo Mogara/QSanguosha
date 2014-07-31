@@ -438,7 +438,7 @@ public:
         return QStringList(objectName());
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
         return player->hasShownSkill(this) || ask_who->askForSkillInvoke(objectName(), QVariant::fromValue(player));
     }
 
