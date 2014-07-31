@@ -164,7 +164,7 @@ void NativeClientSocket::raiseError(QAbstractSocket::SocketError socket_error) {
         reason = tr("Socket access error"); break;
     case QAbstractSocket::NetworkError:
         return; // this error is ignored ...
-    default: reason = tr("Unknow error"); break;
+    default: reason = tr("Unknown error"); break;
     }
 
     emit error_message(tr("Connection failed, error code = %1\n reason:\n %2").arg(socket_error).arg(reason));
