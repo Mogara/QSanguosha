@@ -2431,10 +2431,10 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Moc%27ing generalselector.h...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Moc%27ing generalselector.h...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Moc%27ing generalselector.h...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Moc%27ing generalselector.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Moc%27ing Title.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Moc%27ing Title.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Moc%27ing Title.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|x64'">Moc%27ing Title.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">Debug\moc_%(Filename).cpp</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">Debug\moc_%(Filename).cpp</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|x64'">Debug\moc_%(Filename).cpp</Outputs>
@@ -2447,10 +2447,10 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Moc%27ing generalselector.h...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Moc%27ing generalselector.h...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Moc%27ing generalselector.h...</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Moc%27ing generalselector.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Moc%27ing Title.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Moc%27ing Title.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Moc%27ing Title.h...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Moc%27ing Title.h...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">Release\moc_%(Filename).cpp</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|Win32'">Release\moc_%(Filename).cpp</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt4|x64'">Release\moc_%(Filename).cpp</Outputs>
