@@ -301,7 +301,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
-    if (windowState() & Qt::WindowMaximized)
+    if (windowState() & (Qt::WindowMaximized | Qt::WindowFullScreen))
         return;
     if (event->button() == Qt::LeftButton) {
         if (isZoomReady) {
@@ -336,7 +336,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    if (windowState() & Qt::WindowMaximized)
+    if (windowState() & (Qt::WindowMaximized | Qt::WindowFullScreen))
         return;
     QPoint globalPoint = event->globalPos();
     if (isZoomReady && isLeftPressDown) {
@@ -556,15 +556,23 @@ void MainWindow::repaintButtons()
     maxButton->setGeometry(width - 90, 0, 40, 33);
     normalButton->setGeometry(width - 90, 0, 40, 33);
     closeButton->setGeometry(width - 50, 0, 40, 33);
-    menu->setGeometry(width - 170, 0, 40, 33);
     
-    bool max = windowState() & Qt::WindowMaximized;
-    if (max) {
+    Qt::WindowStates state = windowState();
+    if (state & Qt::WindowMaximized) {
         maxButton->setVisible(false);
         normalButton->setVisible(true);
+        minButton->setVisible(true);
+        menu->setGeometry(width - 170, 0, 40, 33);
+    } else if (state & Qt::WindowFullScreen) {
+        maxButton->setVisible(false);
+        normalButton->setVisible(false);
+        minButton->setVisible(false);
+        menu->setGeometry(width - 90, 0, 40, 33);
     } else {
         maxButton->setVisible(true);
         normalButton->setVisible(false);
+        minButton->setVisible(true);
+        menu->setGeometry(width - 170, 0, 40, 33);
     }
 }
 
