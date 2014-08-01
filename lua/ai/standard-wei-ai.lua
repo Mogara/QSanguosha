@@ -139,8 +139,23 @@ end
 sgs.ai_skill_cardask["@guicai-card"]=function(self, data)
 	local judge = data:toJudge()
 
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	if judge.reason == "tieqi" then
+		local target
+		for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+			if p:hasFlag("TieqiTarget") then target = p break end
+		end
+		if getCardsNum("Jink", target, self.player) == 0 then return "." end
+		if target:objectName() == self.player:objectName() then
+			local jinks = self:getCards("Jink")
+			local card_id = self:getRetrialCardId(cards, judge)
+			if #jinks == 1 and jinks[1]:toString() == tostring(card_id) then
+				return "."
+			end
+		end
+	end
+
 	if self:needRetrial(judge) then
-		local cards = sgs.QList2Table(self.player:getHandcards())
 		local card_id = self:getRetrialCardId(cards, judge)
 		if card_id ~= -1 then
 			return "$" .. card_id
@@ -311,7 +326,7 @@ end
 
 sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
 	if not self:willShowForAttack() then
-		return "." 
+		return "."
 	end
 	local targets = self:findTuxiTarget()
 	if type(targets) == "table" and #targets > 0 then
@@ -405,7 +420,7 @@ sgs.luoyi_keep_value = {
 
 sgs.ai_skill_invoke.tiandu = function(self, data)
 	if not self:willShowForAttack() then
-		return false 
+		return false
 	end
 	local judge = data:toJudge()
 	if judge.reason == "tuntian" and judge.card:getSuit() ~= sgs.Card_Heart then
@@ -492,9 +507,9 @@ end
 sgs.ai_skill_invoke.luoshen = function(self, data)
 
 	if not self:willShowForAttack() and not self:willShowForDefence() and not self.player:hasSkill("fangzhu") then
-		return false 
+		return false
 	end
-	
+
 	if self:willSkipPlayPhase() then
 		local erzhang = self.room:findPlayerBySkillName("guzheng")
 		if erzhang and self:isEnemy(erzhang) then return false end
@@ -512,11 +527,11 @@ sgs.ai_suit_priority.qingguo= "diamond|heart|club|spade"
 sgs.ai_skill_use["@@shensu1"] = function(self, prompt)
 	self:updatePlayers()
 	self:sort(self.enemies, "defenseSlash")
-	
+
 	if not self:willShowForAttack() then
 		return "."
 	end
-	
+
 	if self.player:containsTrick("lightning") and self.player:getCards("j"):length() == 1
 		and self:hasWizard(self.friends) and not self:hasWizard(self.enemies, true) then
 		return "."
@@ -565,7 +580,7 @@ sgs.ai_skill_use["@@shensu2"] = function(self, prompt, method)
 	if not self:willShowForAttack() then
 		return "."
 	end
-	
+
 	local selfSub = self.player:getHp() - self.player:getHandcardNum()
 
 	local cards = self.player:getCards("he")
@@ -949,7 +964,7 @@ table.insert(sgs.ai_skills, duanliang_skill)
 duanliang_skill.getTurnUseCard = function(self)
 
 	if not self:willShowForAttack() then
-		return nil 
+		return nil
 	end
 
 	local cards = self.player:getCards("he")
@@ -1070,7 +1085,7 @@ quhu_skill.getTurnUseCard = function(self)
 end
 
 sgs.ai_skill_use_func.QuhuCard = function(QHCard, use, self)
-		
+
 	if #self.enemies == 0 then return end
 	local max_card = self:getMaxCard()
 	local max_point = max_card:getNumber()
@@ -1317,7 +1332,7 @@ sgs.ai_skill_cardask["@xiaoguo"] = function(self, data)
 		if currentplayer:getHp() > 2 and (currentplayer:getHandcardNum() > 2 or currentplayer:getCards("e"):length() > 1)then return "." end
 		if currentplayer:getHp() > 1 and (currentplayer:getHandcardNum() > 3 or currentplayer:getCards("e"):length() > 2)then return "." end
 		if currentplayer:hasShownSkills(sgs.lose_equip_skill) and currentplayer:getCards("e"):length() > 0 then return "." end
-		if currentplayer:hasShownSkill("mingshi") 
+		if currentplayer:hasShownSkill("mingshi")
 			and (not self.player:hasShownOneGeneral() or (self.player:hasShownSkill("xiaoguo") and not self.player:hasShownAllGenerals()) )then return "." end
 		return "$" .. card:getEffectiveId()
 	end

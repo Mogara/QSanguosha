@@ -818,7 +818,7 @@ function SmartAI:assignKeep(start)
 	end
 end
 
-function SmartAI:getKeepValue(card, kept, Write)
+function SmartAI:getKeepValue(card, kept, writeMode)
 	if not kept then
 		local CardPlace = self.room:getCardPlace(card:getEffectiveId())
 		if CardPlace == sgs.Player_PlaceHand then
@@ -836,7 +836,7 @@ function SmartAI:getKeepValue(card, kept, Write)
 			elseif self:needKongcheng() then return 5.0
 			elseif card:isKindOf("Armor") then return self:isWeak() and 5.2 or 3.2
 			elseif card:isKindOf("DefensiveHorse") then return self:isWeak() and 4.3 or 3.19
-			elseif card:isKindOf("Weapon") then return at_play and self:slashIsAvailable() and self:getCardsNum("Slash") > 0 and 3.39 or 3.2
+			elseif card:isKindOf("Weapon") then return at_play and self:slashIsAvailable() and 3.39 or 3.2
 			else return 3.19
 			end
 		end
@@ -845,7 +845,7 @@ function SmartAI:getKeepValue(card, kept, Write)
 
 	local value_suit, value_number, newvalue = 0, 0, 0
 
-	if Write then
+	if writeMode then
 		local class_name = card:getClassName()
 		local suit_string = card:getSuitString()
 		local number = card:getNumber()
@@ -3096,9 +3096,7 @@ function SmartAI:needRetrial(judge)
 		else
 			if who:isChained() and not self:isGoodChainTarget(who, self.player, sgs.DamageStruct_Thunder, 3) then return judge:isGood() end
 		end
-	end
-
-	if reason == "indulgence" then
+	elseif reason == "indulgence" then
 		if who:isSkipped(sgs.Player_Draw) and who:isKongcheng() then
 			if who:hasShownSkill("kurou") and who:getHp() >= 3 then
 				if self:isFriend(who) then
@@ -3116,18 +3114,14 @@ function SmartAI:needRetrial(judge)
 		else
 			return judge:isGood()
 		end
-	end
-
-	if reason == "supply_shortage" then
+	elseif reason == "supply_shortage" then
 		if self:isFriend(who) then
 			if who:hasShownSkills("guidao|tiandu") then return false end
 			return not judge:isGood()
 		else
 			return judge:isGood()
 		end
-	end
-
-	if reason == "luoshen" then
+	elseif reason == "luoshen" then
 		if self:isFriend(who) then
 			if who:getHandcardNum() > 30 then return false end
 			if self:hasCrossbowEffect(who) or getKnownCard(who, self.player, "Crossbow", false) > 0 then return not judge:isGood() end
@@ -3136,9 +3130,7 @@ function SmartAI:needRetrial(judge)
 		else
 			return judge:isGood()
 		end
-	end
-
-	if reason == "tuntian" then
+	elseif reason == "tuntian" then
 		if self:isFriend(who) then
 			if self.player:objectName() == who:objectName() then
 				return not self:isWeak()
@@ -3148,9 +3140,9 @@ function SmartAI:needRetrial(judge)
 		else
 			return judge:isGood()
 		end
+	elseif reason == "beige" then
+		return true
 	end
-
-	if reason == "beige" then return true end
 
 	if self:isFriend(who) then
 		return not judge:isGood()
@@ -3295,17 +3287,18 @@ local function getPlayerSkillList(player)
 	return skills
 end
 
-local function cardsView(self, class_name, player)
+local function cardsView(self, class_name, player, cards)
 	for _, skill in ipairs(getPlayerSkillList(player)) do
 		local askill = skill:objectName()
 		if player:hasShownSkill(askill) or player:hasLordSkill(askill) then
 			local callback = sgs.ai_cardsview[askill]
 			if type(callback) == "function" then
-				local ret = callback(self, class_name, player)
+				local ret = callback(self, class_name, player, cards)
 				if ret then return ret end
 			end
 		end
 	end
+	return {}
 end
 
 local function getSkillViewCard(card, class_name, player, card_place)
@@ -3491,9 +3484,11 @@ function SmartAI:getCardId(class_name, player, acard)
 			viewCard = sgs.Card_Parse(viewas)
 			assert(viewCard)
 		end
-		return (viewas or cardid) or (cardid or viewas)
+		if cardid or viewCard then return cardid or viewas end
 	end
-	return cardsView(self, class_name, player)
+	local cardsView = cardsView(self, class_name, player)
+	if #cardsView > 0 then return cardsView[1] end
+	return
 end
 
 function SmartAI:getCard(class_name, player)
@@ -3519,7 +3514,7 @@ function SmartAI:getCards(class_name, flag)
 		end
 	end
 
-	local cards = {}
+	local cards, other = {}, {}
 	local card_place, card_str
 
 	for _, card in sgs.qlist(all_cards) do
@@ -3534,15 +3529,19 @@ function SmartAI:getCards(class_name, flag)
 				card_str = sgs.Card_Parse(card_str)
 				assert(card_str)
 				table.insert(cards, card_str)
+			else
+				table.insert(other, card)
 			end
 		end
 	end
 
-	card_str = cardsView(self, class_name, player)
-	if card_str then
-		card_str = sgs.Card_Parse(card_str)
-		assert(card_str)
-		table.insert(cards, card_str)
+	card_str = cardsView(self, class_name, player, other)
+	if #card_str > 0 then
+		for _, str in ipairs(card_str) do
+			local c = sgs.Card_Parse(str)
+			assert(c)
+			table.insert(cards, c)
+		end
 	end
 
 	return cards
@@ -3698,19 +3697,11 @@ function SmartAI:getCardsNum(class_name, flag)
 	local n = 0
 	if type(class_name) == "table" then
 		for _, each_class in ipairs(class_name) do
-			n = n + self:getCardsNum(each_class, flag, selfonly)
+			n = n + self:getCardsNum(each_class, flag)
 		end
 		return n
 	end
 	n = #self:getCards(class_name, flag)
-
-	card_str = cardsView(self, class_name, player)
-	if card_str then
-		card_str = sgs.Card_Parse(card_str)
-		if card_str:getSkillName() == "Spear" then
-			n = n + math.floor(player:getHandcardNum() / 2) - 1
-		end
-	end
 
 	return n
 end

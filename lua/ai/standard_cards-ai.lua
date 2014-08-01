@@ -1175,33 +1175,31 @@ function sgs.ai_weapon_value.Blade(self, enemy)
 	if not enemy then return math.min(self:getCardsNum("Slash"), 3) end
 end
 
-function cardsView_spear(self, player, skill_name)
-	local cards = player:getCards("he")
-	cards = sgs.QList2Table(cards)
-	if skill_name ~= "fuhun" or player:hasShownSkill("wusheng") then
-		for _, acard in ipairs(cards) do
-			if isCard("Slash", acard, player) then return end
-		end
-	end
-	local cards = player:getCards("h")
-	cards = sgs.QList2Table(cards)
-	local newcards = {}
-	for _, card in ipairs(cards) do
-		if not isCard("Slash", card, player) and not isCard("Peach", card, player) and not (isCard("ExNihilo", card, player) and player:getPhase() == sgs.Player_Play) then table.insert(newcards, card) end
-	end
-	if #newcards < 2 then return end
-	sgs.ais[player:objectName()]:sortByKeepValue(newcards)
-
-	local card_id1 = newcards[1]:getEffectiveId()
-	local card_id2 = newcards[2]:getEffectiveId()
-
-	local card_str = ("slash:%s[%s:%s]=%d+%d&%s"):format(skill_name, "to_be_decided", 0, card_id1, card_id2, skill_name)
-	return card_str
-end
-
-function sgs.ai_cardsview.Spear(self, class_name, player)
+function sgs.ai_cardsview.Spear(self, class_name, player, cards)
 	if class_name == "Slash" then
-		return cardsView_spear(self, player, "Spear")
+		if not cards then
+			cards = {}
+			for _, c in sgs.qlist(player:getHandcards()) do
+				local visible = self.player:objectName() == player:objectName()
+									or c:hasFlag("visible")
+									or c:hasFlag(string.format("visible_%s_%s", self.player:objectName(), player:objectName()))
+				if visible and c:isKindOf("Slash") then continue end
+				table.insert(cards, c)
+			end
+		end
+		if #cards < 2 then return {} end
+
+		sgs.ais[player:objectName()]:sortByKeepValue(cards)
+
+		local card_str = {}
+		for i = 1, #cards, 2 do
+			if i + 1 > #cards then break end
+			local id1 = cards[i]:getEffectiveId()
+			local id2 = cards[i + 1]:getEffectiveId()
+			local str = ("slash:%s[%s:%s]=%d+%d&%s"):format(skill_name, "to_be_decided", 0, id1, id2, skill_name)
+			table.insert(card_str , str)
+		end
+		return card_str
 	end
 end
 

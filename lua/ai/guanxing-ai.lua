@@ -274,7 +274,7 @@ local function GuanXing(self, cards)
 	self:sortByUseValue(bottom)
 	if drawCards > 0 and #bottom > 0 then
 		local has_slash = self:getCardsNum("Slash") > 0
-		local nosfuhun1, nosfuhun2, shuangxiong, has_big
+		local shuangxiong, has_big
 		for index, gcard in ipairs(bottom) do
 			local insert = false
 			if self.player:hasSkill("shuangxiong") and self.player:getHandcardNum() >= 3 then

@@ -513,7 +513,9 @@ private:
         if (has_lord)
             room->notifySkillInvoked(lord, "shouyue");
 
+        target->setFlags("TieqiTarget"); //for AI
         room->judge(judge);
+        target->setFlags("-TieqiTarget");
 
         if (judge.isGood()) {
             LogMessage log;
