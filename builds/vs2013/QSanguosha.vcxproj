@@ -635,6 +635,7 @@
     <ClCompile Include="..\..\src\ui\magatamasItem.cpp" />
     <ClCompile Include="..\..\src\ui\SkinBank.cpp" />
     <ClCompile Include="..\..\src\ui\TimedProgressBar.cpp" />
+    <ClCompile Include="..\..\src\ui\Title.cpp" />
     <ClCompile Include="..\..\src\ui\uiUtils.cpp" />
     <ClCompile Include="Debug\moc_AboutUs.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release Qt4|Win32'">true</ExcludedFromBuild>
@@ -2413,6 +2414,7 @@
     </CustomBuild>
     <ClInclude Include="..\..\src\ui\IconHelper.h" />
     <ClInclude Include="..\..\src\ui\SkinBank.h" />
+    <ClInclude Include="..\..\src\ui\Title.h" />
     <ClInclude Include="..\..\src\ui\uiUtils.h" />
     <CustomBuild Include="..\..\src\server\generalselector.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

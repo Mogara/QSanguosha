@@ -54,7 +54,7 @@ public:
         return false;
     }
 
-    virtual void onDamaged(ServerPlayer *caocao, const DamageStruct &damage) const{
+    virtual void onDamaged(ServerPlayer *, const DamageStruct &) const{
         // emppty
     }
 };
@@ -344,7 +344,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        if ((room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge) && player->askForSkillInvoke(objectName(), data)){
+        if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge && player->askForSkillInvoke(objectName(), data)){
             room->broadcastSkillInvoke(objectName());
             player->obtainCard(judge->card);
             return true;
@@ -352,7 +352,7 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *guojia, QVariant &data, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *) const{
         return false;
     }
 };
