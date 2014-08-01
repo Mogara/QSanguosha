@@ -552,11 +552,11 @@ void MainWindow::repaintButtons()
     if (!minButton || !maxButton || !normalButton || !closeButton || !menu)
         return;
     int width = this->width();
-    minButton->setGeometry(width - 120, 0, 40, 33);
-    maxButton->setGeometry(width - 80, 0, 40, 33);
-    normalButton->setGeometry(width - 80, 0, 40, 33);
-    closeButton->setGeometry(width - 40, 0, 40, 33);
-    menu->setGeometry(width - 160, 0, 40, 33);
+    minButton->setGeometry(width - 130, 0, 40, 33);
+    maxButton->setGeometry(width - 90, 0, 40, 33);
+    normalButton->setGeometry(width - 90, 0, 40, 33);
+    closeButton->setGeometry(width - 50, 0, 40, 33);
+    menu->setGeometry(width - 170, 0, 40, 33);
     
     bool max = windowState() & Qt::WindowMaximized;
     if (max) {

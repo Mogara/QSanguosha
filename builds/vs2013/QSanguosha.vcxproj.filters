@@ -824,6 +824,15 @@
     <ClCompile Include="..\..\src\ui\IconHelper.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ui\Title.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_Title.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_Title.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1080,6 +1089,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\scenario\jiange-defense-scenario.h">
       <Filter>scenario</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\Title.h">
+      <Filter>ui</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
