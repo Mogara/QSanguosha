@@ -915,20 +915,21 @@ Room *Server::createNewRoom() {
 }
 
 void Server::processNewConnection(ClientSocket *socket) {
-    QString addr = socket->peerAddress();
+    QString address = socket->peerAddress();
     if (Config.ForbidSIMC) {
-        if (addresses.contains(addr)) {
+        if (addresses.contains(address)) {
+            addresses.append(address);
             socket->disconnectFromHost();
-            emit server_message(tr("Forbid the connection of address %1").arg(addr));
+            emit server_message(tr("Forbid the connection of address %1").arg(address));
             return;
+        } else {
+            addresses.append(address);
         }
-        else
-            addresses.insert(addr);
     }
 
-    if (Config.value("BannedIP").toStringList().contains(addr)){
+    if (Config.value("BannedIP").toStringList().contains(address)){
         socket->disconnectFromHost();
-        emit server_message(tr("Forbid the connection of address %1").arg(addr));
+        emit server_message(tr("Forbid the connection of address %1").arg(address));
         return;
     }
 
@@ -988,9 +989,11 @@ void Server::processRequest(const char *request) {
 }
 
 void Server::cleanup() {
-    const ClientSocket *socket = qobject_cast<const ClientSocket *>(sender());
+    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
     if (Config.ForbidSIMC)
-        addresses.remove(socket->peerAddress());
+        addresses.removeOne(socket->peerAddress());
+
+    socket->deleteLater();
 }
 
 void Server::signupPlayer(ServerPlayer *player) {

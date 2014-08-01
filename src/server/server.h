@@ -194,7 +194,7 @@ private:
     Room *current;
     QSet<Room *> rooms;
     QHash<QString, ServerPlayer *> players;
-    QSet<QString> addresses;
+    QStringList addresses;
     QMultiHash<QString, QString> name2objname;
 
 private slots:
