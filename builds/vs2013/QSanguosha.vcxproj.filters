@@ -821,9 +821,6 @@
     <ClCompile Include="Release\moc_jiange-defense-scenario.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\ui\IconHelper.cpp">
-      <Filter>ui</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ui\Title.cpp">
       <Filter>ui</Filter>
     </ClCompile>
@@ -832,6 +829,18 @@
     </ClCompile>
     <ClCompile Include="Release\moc_Title.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\BubbleChatBox.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_BubbleChatBox.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_BubbleChatBox.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\StyleHelper.cpp">
+      <Filter>ui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1093,6 +1102,9 @@
     <CustomBuild Include="..\..\src\ui\Title.h">
       <Filter>ui</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\BubbleChatBox.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\resource\icon.rc" />
@@ -1155,7 +1167,7 @@
     <ClInclude Include="..\..\src\core\RoomState.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\ui\IconHelper.h">
+    <ClInclude Include="..\..\src\ui\StyleHelper.h">
       <Filter>ui</Filter>
     </ClInclude>
   </ItemGroup>
