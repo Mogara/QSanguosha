@@ -142,6 +142,8 @@ void Settings::init() {
 
     EnableAutoPreshowInConsoleMode = value("EnableAutoPreshowInConsoleMode", false).toBool();
 
+    BubbleChatBoxKeepSeconds = value("BubbleChatBoxKeepSeconds", 2).toInt();
+
     lua_State *lua = Sanguosha->getLuaState();
     Config.ExtraHiddenGenerals = GetConfigFromLuaState(lua, "extra_hidden_generals").toStringList();
     Config.RemovedHiddenGenerals = GetConfigFromLuaState(lua, "removed_hidden_generals").toStringList();

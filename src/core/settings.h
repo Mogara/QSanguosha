@@ -117,6 +117,8 @@ public:
     QString TableBgImage;
     QString RecordSavePaths;
 
+    int BubbleChatBoxKeepSeconds;
+
     // consts
     static const int S_SURRENDER_REQUEST_MIN_INTERVAL;
     static const int S_PROGRESS_BAR_UPDATE_INTERVAL;

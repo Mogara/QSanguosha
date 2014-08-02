@@ -62,6 +62,8 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->autoTargetCheckBox->setChecked(Config.EnableAutoTarget);
     ui->intellectualSelectionCheckBox->setChecked(Config.EnableIntellectualSelection);
     ui->doubleClickCheckBox->setChecked(Config.EnableDoubleClick);
+    ui->autoPreshowCheckBox->setChecked(Config.EnableAutoPreshowInConsoleMode);
+    ui->bubbleChatBoxKeepSpinBox->setValue(Config.BubbleChatBoxKeepSeconds);
 
     ui->enableAutoSaveCheckBox->setChecked(Config.EnableAutoSaveRecord);
     ui->networkOnlyCheckBox->setChecked(Config.NetworkOnly);
@@ -82,10 +84,6 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     if (!record_path.startsWith(":"))
         ui->recordPathsSetupLineEdit->setText(record_path);
 
-    ui->autoPreshowCheckBox->setChecked(Config.EnableAutoPreshowInConsoleMode);
-
-    connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
-
     QFont font = Config.AppFont;
     showFont(ui->appFontLineEdit, font);
 
@@ -98,6 +96,8 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     int aver = (color.red() + color.green() + color.blue()) / 3;
     palette.setColor(QPalette::Base, aver >= 208 ? Qt::black : Qt::white);
     ui->textEditFontLineEdit->setPalette(palette);
+
+    connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
 }
 
 void ConfigDialog::showFont(QLineEdit *lineedit, const QFont &font) {
@@ -218,14 +218,17 @@ void ConfigDialog::saveConfig() {
     Config.EnableDoubleClick = ui->doubleClickCheckBox->isChecked();
     Config.setValue("EnableDoubleClick", Config.EnableDoubleClick);
 
+    Config.EnableAutoPreshowInConsoleMode = ui->autoPreshowCheckBox->isChecked();
+    Config.setValue("EnableAutoPreshowInConsoleMode", Config.EnableAutoPreshowInConsoleMode);
+
+    Config.BubbleChatBoxKeepSeconds = ui->bubbleChatBoxKeepSpinBox->value();
+    Config.setValue("BubbleChatBoxKeepSeconds", Config.BubbleChatBoxKeepSeconds);
+
     Config.EnableAutoSaveRecord = ui->enableAutoSaveCheckBox->isChecked();
     Config.setValue("EnableAutoSaveRecord", Config.EnableAutoSaveRecord);
 
     Config.NetworkOnly = ui->networkOnlyCheckBox->isChecked();
     Config.setValue("NetworkOnly", Config.NetworkOnly);
-
-    Config.EnableAutoPreshowInConsoleMode = ui->autoPreshowCheckBox->isChecked();
-    Config.setValue("EnableAutoPreshowInConsoleMode", Config.EnableAutoPreshowInConsoleMode);
 }
 
 void ConfigDialog::on_browseBgMusicButton_clicked() {

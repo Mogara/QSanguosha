@@ -18,8 +18,8 @@
     QSanguosha-Hegemony Team
     *********************************************************************/
 
-#ifndef ICONHELPER_H
-#define ICONHELPER_H
+#ifndef STYLEHELPER_H
+#define STYLEHELPER_H
 
 #include <QObject>
 #include <QMutex>
@@ -27,27 +27,20 @@
 
 class QPushButton;
 
-class IconHelper : public QObject
+class StyleHelper : public QObject
 {
+
 private:
-    explicit IconHelper(QObject *parent = 0);
+    explicit StyleHelper(QObject *parent = 0);
     QFont iconFont;
-    static IconHelper *instance;
+    static StyleHelper *instance;
 
 public:
-    static IconHelper *getInstance()
-    {
-        static QMutex mutex;
-        if (!instance) {
-            QMutexLocker locker(&mutex);
-            if (!instance) {
-                instance = new IconHelper;
-            }
-        }
-        return instance;
-    }
+    static StyleHelper *getInstance();
 
     void setIcon(QPushButton *button, QChar iconId, int size = 10);
+
+    static QFont getFontByFileName(const QString &fileName);
 };
 
-#endif // ICONHELPER_H
+#endif // STYLEHELPER_H

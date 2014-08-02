@@ -18,23 +18,48 @@
     QSanguosha-Hegemony Team
     *********************************************************************/
 
-#include "IconHelper.h"
+#include "StyleHelper.h"
 
 #include <QApplication>
 #include <QFontDatabase>
 #include <QPushButton>
 
-IconHelper *IconHelper::instance = NULL;
+StyleHelper *StyleHelper::instance = NULL;
 
-IconHelper::IconHelper(QObject *):
+StyleHelper::StyleHelper(QObject *):
     QObject(qApp)
 {
-    int fontId = QFontDatabase::addApplicationFont("font/fontawesome-webfont.ttf");
-    QString fontName = QFontDatabase::applicationFontFamilies(fontId).at(0);
-    iconFont = QFont(fontName);
+    iconFont = getFontByFileName("fontawesome-webfont.ttf");
 }
 
-void IconHelper::setIcon(QPushButton* button, QChar iconId, int size)
+StyleHelper *StyleHelper::getInstance()
+{
+    static QMutex mutex;
+    if (!instance) {
+        QMutexLocker locker(&mutex);
+        if (!instance) {
+            instance = new StyleHelper;
+        }
+    }
+    return instance;
+}
+
+QFont StyleHelper::getFontByFileName(const QString &fileName)
+{
+    static QMap<QString, QFont> loadedFonts;
+    if (loadedFonts.keys().contains(fileName)) {
+        return loadedFonts.value(fileName);
+    } else {
+        int fontId = QFontDatabase::addApplicationFont("font/" + fileName);
+        Q_ASSERT(fontId != -1);
+        QString fontName = QFontDatabase::applicationFontFamilies(fontId).at(0);
+        QFont font(fontName);
+        loadedFonts[fileName] = font;
+        return font;
+    }
+}
+
+void StyleHelper::setIcon(QPushButton* button, QChar iconId, int size)
 {
     iconFont.setPointSize(size);
     button->setFont(iconFont);

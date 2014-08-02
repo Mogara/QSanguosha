@@ -42,6 +42,7 @@
 #include "uiUtils.h"
 #include "qsanbutton.h"
 #include "GuanxingBox.h"
+#include "BubbleChatBox.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -233,16 +234,18 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(skill_detached(QString)), this, SLOT(detachSkill(QString)));
 
     // chat box
-    chat_box = new QTextEdit;
-    chat_box->setObjectName("chat_box");
-    chat_box_widget = addWidget(chat_box);
+    chatBox = new QTextEdit;
+    chatBox->setObjectName("chat_box");
+    chat_box_widget = addWidget(chatBox);
     chat_box_widget->setZValue(-2.0);
     chat_box_widget->setObjectName("chat_box_widget");
-    chat_box->setReadOnly(true);
-    chat_box->setTextColor(Config.TextEditColor);
-    connect(ClientInstance, SIGNAL(line_spoken(QString)), this, SLOT(appendChatBox(QString)));
+    chatBox->setReadOnly(true);
+    chatBox->setTextColor(Config.TextEditColor);
+    connect(ClientInstance, SIGNAL(lineSpoken(const QString &)), chatBox, SLOT(append(const QString &)));
+    connect(ClientInstance, SIGNAL(playerSpoke(const QString &, const QString &)),
+            this, SLOT(showBubbleChatBox(const QString &, const QString &)));
 
-    QScrollBar *bar = chat_box->verticalScrollBar();
+    QScrollBar *bar = chatBox->verticalScrollBar();
     QFile file("style-sheet/scroll.qss");
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream(&file);
@@ -250,14 +253,14 @@ RoomScene::RoomScene(QMainWindow *main_window)
     }
 
     // chat edit
-    chat_edit = new QLineEdit;
-    chat_edit->setObjectName("chat_edit");
-    chat_edit->setMaxLength(500);
-    chat_edit_widget = addWidget(chat_edit);
+    chatEdit = new QLineEdit;
+    chatEdit->setObjectName("chat_edit");
+    chatEdit->setMaxLength(500);
+    chat_edit_widget = addWidget(chatEdit);
     chat_edit_widget->setObjectName("chat_edit_widget");
     chat_edit_widget->setZValue(-2.0);
-    connect(chat_edit, SIGNAL(returnPressed()), this, SLOT(speak()));
-    chat_edit->setPlaceholderText(tr("Please enter text to chat ... "));
+    connect(chatEdit, SIGNAL(returnPressed()), this, SLOT(speak()));
+    chatEdit->setPlaceholderText(tr("Please enter text to chat ... "));
 
     chat_widget = new ChatWidget();
     chat_widget->setZValue(-0.1);
@@ -775,9 +778,9 @@ void RoomScene::adjustItems() {
     log_box_widget->setPos(_m_infoPlane.topLeft());
     log_box->resize(_m_infoPlane.width(), _m_infoPlane.height() * _m_roomLayout->m_logBoxHeightPercentage);
     chat_box_widget->setPos(_m_infoPlane.left(), _m_infoPlane.bottom() - _m_infoPlane.height() * _m_roomLayout->m_chatBoxHeightPercentage);
-    chat_box->resize(_m_infoPlane.width(), _m_infoPlane.bottom() - chat_box_widget->y());
+    chatBox->resize(_m_infoPlane.width(), _m_infoPlane.bottom() - chat_box_widget->y());
     chat_edit_widget->setPos(_m_infoPlane.left(), _m_infoPlane.bottom());
-    chat_edit->resize(_m_infoPlane.width() - chat_widget->boundingRect().width(), _m_roomLayout->m_chatTextBoxHeight);
+    chatEdit->resize(_m_infoPlane.width() - chat_widget->boundingRect().width(), _m_roomLayout->m_chatTextBoxHeight);
     chat_widget->setPos(_m_infoPlane.right() - chat_widget->boundingRect().width(),
         chat_edit_widget->y() + (_m_roomLayout->m_chatTextBoxHeight - chat_widget->boundingRect().height()) / 2);
 
@@ -1036,6 +1039,14 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats) {
     }
     if (all_robot)
         setChatBoxVisible(false);
+
+    //update the positions of bubbles after setting seats
+    QList<QString> names = name2photo.keys();
+    foreach (const QString &who, names) {
+        if (bubbleChatBoxs.contains(who)) {
+            bubbleChatBoxs[who]->setArea(getBubbleChatBoxShowArea(who));
+        }
+    }
 }
 
 // @todo: The following 3 fuctions are for drag & use feature. Currently they are very buggy and
@@ -1262,7 +1273,7 @@ void RoomScene::updateSelectedTargets() {
 
 void RoomScene::keyReleaseEvent(QKeyEvent *event) {
     if (!Config.EnableHotKey) return;
-    if (chat_edit->hasFocus()) return;
+    if (chatEdit->hasFocus()) return;
 
     bool control_is_down = event->modifiers() & Qt::ControlModifier;
     bool alt_is_down = event->modifiers() & Qt::AltModifier;
@@ -2073,7 +2084,7 @@ void RoomScene::useSelectedCard() {
     }
     case Client::Discarding:
     case Client::Exchanging: {
-        const Card *card = dashboard->pendingCard();
+        const Card *card = dashboard->getPendingCard();
         if (card) {
             ClientInstance->onPlayerDiscardCards(card);
             dashboard->stopPending();
@@ -2108,7 +2119,7 @@ void RoomScene::useSelectedCard() {
         break;
     }
     case Client::AskForYiji: {
-        const Card *card = dashboard->pendingCard();
+        const Card *card = dashboard->getPendingCard();
         if (card) {
             ClientInstance->onPlayerReplyYiji(card, selected_targets.first());
             dashboard->stopPending();
@@ -2147,7 +2158,7 @@ void RoomScene::useCard(const Card *card) {
 }
 
 void RoomScene::callViewAsSkill() {
-    const Card *card = dashboard->pendingCard();
+    const Card *card = dashboard->getPendingCard();
     if (card == NULL) return;
 
     if (card->isAvailable(Self)) {
@@ -2578,7 +2589,7 @@ void RoomScene::onSkillActivated() {
         //ok_button->setEnabled(false);
         cancel_button->setEnabled(true);
 
-        const Card *card = dashboard->pendingCard();
+        const Card *card = dashboard->getPendingCard();
         if (card && card->targetFixed() && card->isAvailable(Self)) {
             useSelectedCard();
         }
@@ -3371,7 +3382,7 @@ void RoomScene::viewDistance() {
 void RoomScene::speak() {
 
     bool broadcast = true;
-    QString text = chat_edit->text();
+    QString text = chatEdit->text();
     if (text == ".StartBgMusic") {
         broadcast = false;
         Config.EnableBgMusic = true;
@@ -3408,7 +3419,7 @@ void RoomScene::speak() {
     }
     if (broadcast) {
         if (game_started && ServerInfo.DisableChat)
-            chat_box->append(tr("This room does not allow chatting!"));
+            chatBox->append(tr("This room does not allow chatting!"));
         else
             ClientInstance->speakToServer(text);
     }
@@ -3422,9 +3433,9 @@ void RoomScene::speak() {
         }
         QString line = tr("<font color='%1'>[%2] said: %3 </font>")
             .arg(Config.TextEditColor.name()).arg(title).arg(text);
-        appendChatBox(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
+        chatBox->append(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
     }
-    chat_edit->clear();
+    chatEdit->clear();
 }
 
 void RoomScene::fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids) {
@@ -3522,7 +3533,7 @@ void RoomScene::freeze() {
         photo->setEnabled(false);
     }
     item2player.clear();
-    chat_edit->setEnabled(false);
+    chatEdit->setEnabled(false);
 #ifdef AUDIO_SUPPORT
     Audio::stopBGM();
 #endif
@@ -4073,21 +4084,41 @@ void RoomScene::updateRolesBox() {
 }
 
 void RoomScene::appendChatEdit(QString txt) {
-    chat_edit->setText(chat_edit->text() + " " + txt);
-    chat_edit->setFocus();
+    chatEdit->setText(chatEdit->text() + txt);
+    chatEdit->setFocus();
 }
 
-void RoomScene::appendChatBox(QString txt) {
-    QString prefix = "<img src='image/system/chatface/";
-    QString suffix = ".png'></img>";
-    txt = txt.replace("<#", prefix).replace("#>", suffix);
-    chat_box->append(txt);
+void RoomScene::showBubbleChatBox(const QString &who, const QString &line)
+{
+    if (!bubbleChatBoxs.keys().contains(who)) {
+        BubbleChatBox *bubbleChatBox = new BubbleChatBox(getBubbleChatBoxShowArea(who));
+        addItem(bubbleChatBox);
+        bubbleChatBox->setZValue(INT_MAX);
+        bubbleChatBoxs.insert(who, bubbleChatBox);
+    }
+
+    bubbleChatBoxs[who]->setText(line);
+}
+
+static const QSize BubbleChatBoxShowAreaSize(138, 64);
+
+QRect RoomScene::getBubbleChatBoxShowArea(const QString &who) const
+{
+    Photo *photo = name2photo.value(who, NULL);
+    if (photo) {
+        QRectF rect = photo->sceneBoundingRect();
+        QPoint center = rect.center().toPoint();
+        return QRect(QPoint(center.x(), center.y() - 90), BubbleChatBoxShowAreaSize);
+    } else {
+        QRectF rect = dashboard->getAvatarAreaSceneBoundingRect();
+        return QRect(QPoint(rect.left() + 45, rect.top() - 20), BubbleChatBoxShowAreaSize);
+    }
 }
 
 void RoomScene::setChatBoxVisible(bool show) {
     if (!show) {
         chat_box_widget->hide();
-        chat_edit->hide();
+        chatEdit->hide();
         chat_widget->hide();
         log_box->resize(_m_infoPlane.width(),
             _m_infoPlane.height() * (_m_roomLayout->m_logBoxHeightPercentage
@@ -4096,7 +4127,7 @@ void RoomScene::setChatBoxVisible(bool show) {
     }
     else {
         chat_box_widget->show();
-        chat_edit->show();
+        chatEdit->show();
         chat_widget->show();
         log_box->resize(_m_infoPlane.width(),
             _m_infoPlane.height() * _m_roomLayout->m_logBoxHeightPercentage);

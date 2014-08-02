@@ -33,7 +33,7 @@
 #include "UpdateChecker.h"
 #include "recorder.h"
 #include "audio.h"
-#include "IconHelper.h"
+#include "StyleHelper.h"
 
 #include <lua.hpp>
 #include <QGraphicsView>
@@ -259,11 +259,11 @@ MainWindow::MainWindow(QWidget *parent)
     menu->setMenu(ui->menuSumMenu);
     menu->setProperty("control", true);
 
-    IconHelper::getInstance()->setIcon(minButton, QChar(0xf068), 15);
-    IconHelper::getInstance()->setIcon(maxButton, QChar(0xf106), 15);
-    IconHelper::getInstance()->setIcon(normalButton, QChar(0xf107), 15);
-    IconHelper::getInstance()->setIcon(closeButton, QChar(0xf00d), 15);
-    IconHelper::getInstance()->setIcon(menu, QChar(0xf0c9), 15);
+    StyleHelper::getInstance()->setIcon(minButton, QChar(0xf068), 15);
+    StyleHelper::getInstance()->setIcon(maxButton, QChar(0xf106), 15);
+    StyleHelper::getInstance()->setIcon(normalButton, QChar(0xf107), 15);
+    StyleHelper::getInstance()->setIcon(closeButton, QChar(0xf00d), 15);
+    StyleHelper::getInstance()->setIcon(menu, QChar(0xf0c9), 15);
 
     minButton->setToolTip(tr("<font color=%1>Minimize</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
     connect(minButton, SIGNAL(clicked()), this, SLOT(showMinimized()));

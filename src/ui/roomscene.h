@@ -42,6 +42,7 @@ class QGroupBox;
 class ChooseGeneralBox;
 class ChooseOptionsBox;
 class ChooseTriggerOrderBox;
+class BubbleChatBox;
 struct RoomLayout;
 
 #include <QGraphicsScene>
@@ -266,8 +267,8 @@ private:
     QList<CardItem *> gongxin_items;
 
     ClientLogBox *log_box;
-    QTextEdit *chat_box;
-    QLineEdit *chat_edit;
+    QTextEdit *chatBox;
+    QLineEdit *chatEdit;
     QGraphicsProxyWidget *chat_box_widget;
     QGraphicsProxyWidget *log_box_widget;
     QGraphicsProxyWidget *chat_edit_widget;
@@ -279,6 +280,8 @@ private:
     QGraphicsPixmapItem *m_tableBg;
     int m_tablew;
     int m_tableh;
+
+    QMap<QString, BubbleChatBox *> bubbleChatBoxs;
 
     // for 3v3 & 1v1 mode
     QSanSelectableItem *selector_box;
@@ -321,6 +324,8 @@ private:
 
     void showPindianBox(const QString &from_name, int from_id, const QString &to_name, int to_id, const QString &reason);
     void setChatBoxVisible(bool show);
+
+    QRect getBubbleChatBoxShowArea(const QString &who) const;
 
     // animation related functions
     typedef void (RoomScene::*AnimationFunc)(const QString &, const QStringList &);
@@ -383,7 +388,7 @@ private slots:
     void onStandoff();
 
     void appendChatEdit(QString txt);
-    void appendChatBox(QString txt);
+    void showBubbleChatBox(const QString &who, const QString &words);
 
     //animations
     void onEnabledChange();

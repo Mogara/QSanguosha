@@ -1751,13 +1751,17 @@ void Client::speak(const Json::Value &speak) {
     QString who = toQString(speak[0]);
     QString text = toQString(speak[1]);
 
-    emit text_spoken(text);
+    static const QString prefix("<img width=14 height=14 src='image/system/chatface/");
+    static const QString suffix(".png'></img>");
+    text = text.replace("<#", prefix).replace("#>", suffix);
 
     if (who == ".") {
         QString line = tr("<font color='red'>System: %1</font>").arg(text);
-        emit line_spoken(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
+        emit lineSpoken(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
         return;
     }
+
+    emit playerSpoke(who, QString("<p style=\"margin:3px 2px;\">%1</p>").arg(text));
 
     const ClientPlayer *from = getPlayer(who);
 
@@ -1773,7 +1777,7 @@ void Client::speak(const Json::Value &speak) {
     QString line = tr("<font color='%1'>[%2] said: %3 </font>")
         .arg(Config.TextEditColor.name()).arg(title).arg(text);
 
-    emit line_spoken(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
+    emit lineSpoken(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
 }
 
 void Client::moveFocus(const Json::Value &focus) {
