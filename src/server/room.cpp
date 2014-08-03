@@ -1662,7 +1662,7 @@ QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, SP
     QString answer;
     QStringList all_pairs;
     foreach(const ServerPlayer *p, skills.keys()) {
-        foreach (const QString &str, skills.value(p))
+        foreach(const QString &str, skills.value(p))
             all_pairs << QString("%1:%2").arg(p->objectName()).arg(str);
     }
 
@@ -5331,7 +5331,7 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, c
         Json::Value clientResponse = player->getClientReply();
         QStringList answer = QString(clientResponse.asCString()).split("+");
         bool valid = true;
-        foreach (QString name, answer) {
+        foreach(QString name, answer) {
             if (!generals.contains(name)) {
                 valid = false;
                 break;
@@ -5638,32 +5638,18 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, c
     const Card *oldJudge = judge->card;
     judge->card = Sanguosha->getCard(card->getEffectiveId());
 
-    CardsMoveStruct move1(QList<int>(),
-        judge->who,
-        Player::PlaceJudge,
-        CardMoveReason(CardMoveReason::S_REASON_RETRIAL,
-        player->objectName(),
-        skill_name,
-        QString()));
+    CardsMoveStruct move1(QList<int>(), judge->who, Player::PlaceJudge,
+        CardMoveReason(CardMoveReason::S_REASON_RETRIAL, player->objectName(), skill_name, QString()));
 
     move1.card_ids.append(card->getEffectiveId());
     int reasonType;
-    if (exchange) {
+    if (exchange)
         reasonType = CardMoveReason::S_REASON_OVERRIDE;
-    }
-    else {
+    else
         reasonType = CardMoveReason::S_REASON_JUDGEDONE;
-    }
-    CardMoveReason reason(reasonType,
-        player->objectName(),
-        exchange ? skill_name : QString(),
-        QString());
-    CardsMoveStruct move2(QList<int>(),
-        judge->who,
-        exchange ? player : NULL,
-        Player::PlaceUnknown,
-        exchange ? Player::PlaceHand : Player::DiscardPile,
-        reason);
+
+    CardMoveReason reason(reasonType, player->objectName(), exchange ? skill_name : QString(), QString());
+    CardsMoveStruct move2(QList<int>(), judge->who, exchange ? player : NULL, Player::PlaceUnknown, exchange ? Player::PlaceHand : Player::DiscardPile, reason);
 
     move2.card_ids.append(oldJudge->getEffectiveId());
 
@@ -5679,7 +5665,7 @@ void Room::retrial(const Card *card, ServerPlayer *player, JudgeStruct *judge, c
     moves.append(move1);
     moves.append(move2);
     moveCardsAtomic(moves, true);
-    judge->updateResult();
+    //judge->updateResult();
 
     if (triggerResponded) {
         CardResponseStruct resp(card, judge->who);

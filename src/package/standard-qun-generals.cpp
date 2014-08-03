@@ -695,19 +695,15 @@ public:
 
         if (card) {
             room->broadcastSkillInvoke(objectName());
-            player->tag["guidao_card"] = QVariant::fromValue(card);
+            room->retrial(card, player, judge, objectName(), true);
             return true;
         }
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer *) const{
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        const Card *card = player->tag["guidao_card"].value<const Card *>();
-
-        if (card != NULL) {
-            room->retrial(card, player, judge, objectName(), true);
-        }
+        judge->updateResult();
         return false;
     }
 };
