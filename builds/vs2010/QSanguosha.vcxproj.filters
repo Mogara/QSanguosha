@@ -1103,7 +1103,7 @@
     <None Include="..\..\swig\sanguosha.i">
       <Filter>Swig Files</Filter>
     </None>
-    <None Include="sanguosha.ts">
+    <None Include="..\sanguosha.ts">
       <Filter>Translation Files</Filter>
     </None>
     <None Include="..\..\swig\ai.i">

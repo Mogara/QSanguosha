@@ -1172,9 +1172,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="sanguosha.ts">
-      <Filter>Translation Files</Filter>
-    </None>
     <None Include="..\..\swig\ai.i">
       <Filter>Swig Files</Filter>
     </None>
@@ -1199,5 +1196,10 @@
     <None Include="..\..\swig\sanguosha.i">
       <Filter>Swig Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\sanguosha.ts">
+      <Filter>Translation Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

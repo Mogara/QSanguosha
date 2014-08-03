@@ -373,8 +373,7 @@ CONFIG(opengl){
     DEFINES += USING_OPENGL
 }
 
-win32-msvc2010: TRANSLATIONS += builds/vs2010/sanguosha.ts
-else: TRANSLATIONS += builds/vs2013/sanguosha.ts
+TRANSLATIONS += builds/sanguosha.ts
 
 !exists($$PWD/sanguosha.qm) {
     system("lrelease builds/vs2013/sanguosha.ts -qm $$PWD/sanguosha.qm")
