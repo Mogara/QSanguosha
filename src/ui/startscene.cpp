@@ -22,6 +22,7 @@
 #include "engine.h"
 #include "audio.h"
 #include "QSanSelectableItem.h"
+#include "StyleHelper.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -47,7 +48,7 @@ StartScene::StartScene()
     website_text->setBrush(Qt::white);
     website_text->setPos(Config.Rect.width() / 2 - website_text->boundingRect().width(),
         Config.Rect.height() / 2 - website_text->boundingRect().height());*/
-    server_log = NULL;
+    serverLog = NULL;
 }
 
 void StartScene::addButton(QAction *action) {
@@ -69,11 +70,11 @@ void StartScene::addButton(QAction *action) {
 }
 
 void StartScene::setServerLogBackground() {
-    if (server_log) {
+    if (serverLog) {
         // make its background the same as background, looks transparent
         QPalette palette;
         palette.setBrush(QPalette::Base, backgroundBrush());
-        server_log->setPalette(palette);
+        serverLog->setPalette(palette);
     }
 }
 
@@ -83,35 +84,46 @@ void StartScene::switchToServer(Server *server) {
 #endif
     logo->load("image/logo/logo-server.png");
     // performs leaving animation
-    QPropertyAnimation *logo_shift = new QPropertyAnimation(logo, "pos");
-    logo_shift->setEndValue(QPointF(Config.Rect.center().rx() - 200, Config.Rect.center().ry() - 175));
+    QPropertyAnimation *logoShift = new QPropertyAnimation(logo, "pos");
+    logoShift->setEndValue(QPointF(Config.Rect.center().rx() - 330, Config.Rect.center().ry() - 215));
 
-    QPropertyAnimation *logo_shrink = new QPropertyAnimation(logo, "scale");
-    logo_shrink->setEndValue(0.5);
+    QGraphicsScale *scale = new QGraphicsScale;
+    scale->setXScale(1);
+    scale->setYScale(1);
+    QList<QGraphicsTransform *> transformations;
+    transformations << scale;
+    logo->setTransformations(transformations);
+
+    QPropertyAnimation *xScale = new QPropertyAnimation(scale, "xScale");
+    xScale->setEndValue(0.5);
+
+    QPropertyAnimation *yScale = new QPropertyAnimation(scale, "yScale");
+    yScale->setEndValue(0.5);
 
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
-    group->addAnimation(logo_shift);
-    group->addAnimation(logo_shrink);
+    group->addAnimation(logoShift);
+    group->addAnimation(xScale);
+    group->addAnimation(yScale);
     group->start(QAbstractAnimation::DeleteWhenStopped);
 
     foreach(Button *button, buttons)
         button->hide();
 
-    server_log = new QTextEdit();
-    server_log->setReadOnly(true);
-    server_log->resize(700, 420);
-    server_log->move(-400, -180);
-    server_log->setFrameShape(QFrame::NoFrame);
-#ifdef Q_OS_LINUX
-    server_log->setFont(QFont("DroidSansFallback", 12));
-#else
-    server_log->setFont(QFont("Verdana", 12));
-#endif
-    server_log->setTextColor(Config.TextEditColor);
-    setServerLogBackground();
-    addWidget(server_log);
+    serverLog = new QTextEdit;
+    serverLog->setReadOnly(true);
+    serverLog->resize(700, 420);
+    serverLog->move(-400, -180);
+    serverLog->setFrameShape(QFrame::NoFrame);
 
-    QScrollBar *bar = server_log->verticalScrollBar();
+    QFont font = StyleHelper::getFontByFileName("wqy-microhei.ttc");
+    font.setPointSize(12);
+    serverLog->setFont(font);
+
+    serverLog->setTextColor(Config.TextEditColor);
+    setServerLogBackground();
+    addWidget(serverLog);
+
+    QScrollBar *bar = serverLog->verticalScrollBar();
     QFile file("style-sheet/scroll.qss");
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream(&file);
@@ -119,7 +131,7 @@ void StartScene::switchToServer(Server *server) {
     }
 
     printServerInfo();
-    connect(server, SIGNAL(server_message(QString)), server_log, SLOT(append(QString)));
+    connect(server, SIGNAL(server_message(QString)), serverLog, SLOT(append(QString)));
     update();
 }
 
@@ -195,41 +207,31 @@ void StartScene::printServerInfo() {
 
     foreach(QString item, items) {
         if (item.startsWith("192.168.") || item.startsWith("10."))
-            server_log->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(item));
+            serverLog->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(item));
         else if (item == "127.0.0.1")
-            server_log->append(tr("Your loopback address %1, this address is available only for your host").arg(item));
+            serverLog->append(tr("Your loopback address %1, this address is available only for your host").arg(item));
         else if (item.startsWith("5.") || item.startsWith("25."))
-            server_log->append(tr("Your Hamachi address: %1, the address is available for users that joined the same Hamachi network").arg(item));
+            serverLog->append(tr("Your Hamachi address: %1, the address is available for users that joined the same Hamachi network").arg(item));
         else if (!item.startsWith("169.254."))
-            server_log->append(tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(item));
+            serverLog->append(tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(item));
     }
 
-    server_log->append(tr("Binding port number is %1").arg(Config.ServerPort));
-    server_log->append(tr("Game mode is %1").arg(Sanguosha->getModeName(Config.GameMode)));
-    server_log->append(tr("Player count is %1").arg(Sanguosha->getPlayerCount(Config.GameMode)));
-    server_log->append(Config.OperationNoLimit ?
+    serverLog->append(tr("Binding port number is %1").arg(Config.ServerPort));
+    serverLog->append(tr("Game mode is %1").arg(Sanguosha->getModeName(Config.GameMode)));
+    serverLog->append(tr("Player count is %1").arg(Sanguosha->getPlayerCount(Config.GameMode)));
+    serverLog->append(Config.OperationNoLimit ?
         tr("There is no time limit") :
         tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
-    server_log->append(Config.EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
+    serverLog->append(Config.EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
     if (Config.EnableCheat)
-        server_log->append(Config.FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
+        serverLog->append(Config.FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
 
     if (Config.RewardTheFirstShowingPlayer)
-        server_log->append(tr("The reward of showing general first is enabled"));
+        serverLog->append(tr("The reward of showing general first is enabled"));
 
     if (Config.EnableAI) {
-        server_log->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
+        serverLog->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
     }
     else
-        server_log->append(tr("This server is AI disabled"));
-}
-
-StartScene::~StartScene() {
-    delete logo;
-    logo = NULL;
-
-    foreach(Button *b, buttons) {
-        delete b;
-        b = NULL;
-    }
+        serverLog->append(tr("This server is AI disabled"));
 }

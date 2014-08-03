@@ -34,7 +34,6 @@ class StartScene : public QGraphicsScene {
 
 public:
     StartScene();
-    ~StartScene();
 
     void addButton(QAction *action);
     void setServerLogBackground();
@@ -47,7 +46,7 @@ private:
     void printServerInfo();
 
     QSanSelectableItem *logo;
-    QTextEdit *server_log;
+    QTextEdit *serverLog;
     QList<Button *> buttons;
 };
 
