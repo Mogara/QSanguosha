@@ -1317,7 +1317,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
                 Json::Value arg(Json::arrayValue);
                 arg[0] = toJsonString(objectName());
                 arg[1] = toJsonString(skill->getLimitMark());
-                arg[2] = 1;
+                arg[2] = getMark(skill->getLimitMark());
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
             }
         }
@@ -1385,7 +1385,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
                     Json::Value arg(Json::arrayValue);
                     arg[0] = toJsonString(objectName());
                     arg[1] = toJsonString(skill->getLimitMark());
-                    arg[2] = 1;
+                    arg[2] = getMark(skill->getLimitMark());
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
                 }
             }
