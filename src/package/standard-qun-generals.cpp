@@ -200,6 +200,9 @@ void LijianCard::onUse(Room *room, const CardUseStruct &card_use) const{
     CardMoveReason reason(CardMoveReason::S_REASON_THROW, diaochan->objectName(), QString(), "lijian", QString());
     room->moveCardTo(this, diaochan, NULL, Player::DiscardPile, reason, true);
 
+    if (diaochan->ownSkill("lijian") && !diaochan->hasShownSkill("lijian"))
+        diaochan->showGeneral(diaochan->inHeadSkills("lijian"));
+
     thread->trigger(CardUsed, room, diaochan, data);
     thread->trigger(CardFinished, room, diaochan, data);
 }
