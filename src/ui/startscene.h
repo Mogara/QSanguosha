@@ -39,7 +39,6 @@ public:
     void setServerLogBackground();
     void switchToServer(Server *server);
 
-public slots:
     void showOrganization();
 
 private:

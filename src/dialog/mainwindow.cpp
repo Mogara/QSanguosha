@@ -294,7 +294,7 @@ MainWindow::MainWindow(QWidget *parent)
     animation->setEasingCurve(QEasingCurve::OutCurve);
     animation->start(QAbstractAnimation::DeleteWhenStopped);
 
-    connect(animation, SIGNAL(finished()), start_scene, SLOT(showOrganization()));
+    start_scene->showOrganization();
 
     systray = NULL;
 }
