@@ -1351,11 +1351,6 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 broadcastResetCard(getPlayers(), card->getEffectiveId());
         }
 
-        QString skill_name = card->showSkill();
-        if (!skill_name.isNull() && player->ownSkill(skill_name)
-            && !player->hasShownSkill(skill_name))
-            player->showGeneral(player->inHeadSkills(skill_name));
-
         if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {
             LogMessage log;
             log.card_str = card->toString();
@@ -1382,9 +1377,11 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             if (!_skill_name.isEmpty())
                 notifySkillInvoked(player, _skill_name);
         }
+/*
     }
 
     if (card) {
+*/
         QVariant decisionData = QVariant::fromValue(QString("cardResponded:%1:%2:_%3_").arg(pattern).arg(prompt).arg(card->toString()));
         thread->trigger(ChoiceMade, this, player, decisionData);
 
@@ -1403,6 +1400,10 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 }
                 moveCardsAtomic(moves, true);
             }
+            QString skill_name = card->showSkill();
+            if (!skill_name.isNull() && player->ownSkill(skill_name)
+                && !player->hasShownSkill(skill_name))
+                player->showGeneral(player->inHeadSkills(skill_name));
         }
         else if (method == Card::MethodDiscard) {
             CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName());
@@ -1424,6 +1425,10 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
                 }
                 moveCardsAtomic(moves, true);
             }
+            QString skill_name = card->showSkill();
+            if (!skill_name.isNull() && player->ownSkill(skill_name)
+                && !player->hasShownSkill(skill_name))
+                player->showGeneral(player->inHeadSkills(skill_name));
         }
 
         if ((method == Card::MethodUse || method == Card::MethodResponse) && !isRetrial) {
