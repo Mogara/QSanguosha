@@ -551,8 +551,6 @@ PindianStruct *ServerPlayer::pindianSelect(ServerPlayer *target, const QString &
 
     pd_move << move1 << move2;
 
-    room->moveCardsAtomic(pd_move, true);
-
     LogMessage log2;
     log2.type = "$PindianResult";
     log2.from = pindian->from;
@@ -563,6 +561,8 @@ PindianStruct *ServerPlayer::pindianSelect(ServerPlayer *target, const QString &
     log2.from = pindian->to;
     log2.card_str = QString::number(pindian->to_card->getEffectiveId());
     room->sendLog(log2);
+
+    room->moveCardsAtomic(pd_move, true);
 
     return pindian;
 }
