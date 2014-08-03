@@ -239,3 +239,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 end
 
 sgs.ai_skill_choice["GameRule:TurnStart"] = sgs.ai_skill_choice["GameRule:TriggerOrder"]
+
+sgs.ai_skill_invoke.GameRule_AskForArraySummon = true
+
+sgs.ai_skill_invoke.FormationSummon = true

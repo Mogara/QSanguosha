@@ -54,12 +54,10 @@ end
 function sgs.ai_skill_invoke.hengjiang(self, data)
 	local target = data:toPlayer()
 	if not target then return end
-	if self:isEnemy(target) then
-		return true
+	if self:isFriend(target) then
+		return false
 	else
-		if target:getPhase() > sgs.Player_Discard then return true end
-		if target:hasShownSkill("keji") and not target:hasFlag("KejiSlashInPlayPhase") then return true end
-		return target:getHandcardNum() <= target:getMaxCards() - 2
+		return true
 	end
 end
 
