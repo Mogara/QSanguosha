@@ -112,7 +112,8 @@ GameRule::GameRule(QObject *parent)
         << SlashHit << SlashEffected << SlashProceed
         << ConfirmDamage << DamageDone << DamageComplete
         << StartJudge << FinishRetrial << FinishJudge
-        << ChoiceMade << GeneralShown;
+        << ChoiceMade << GeneralShown
+        << CardsMoveOneTime;
 
     QList<Skill *> list;
     list << new GameRule_AskForGeneralShowHead;
@@ -786,6 +787,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                 room->removePlayerMark(player, "HalfMaxHpLeft");
             }
         }
+    }
+    case CardsMoveOneTime: {
+        if (data.canConvert<CardsMoveOneTimeStruct>()) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from_places.contains(Player::DrawPile) && room->getDrawPile().isEmpty())
+                room->swapPile();
+        }
+
+        break;
     }
     default:
         break;
