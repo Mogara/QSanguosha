@@ -24,7 +24,7 @@
 #include "button.h"
 
 ChooseOptionsBox::ChooseOptionsBox()
-    : options_number(0), progress_bar(NULL)
+    : optionsNumber(0), progressBar(NULL)
 {
 }
 
@@ -44,7 +44,7 @@ void ChooseOptionsBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //||    -------     ||
     //====================
 
-    title = Sanguosha->translate(skill_name) + " " + tr("Please choose:");
+    title = QString("%1 %2").arg((Sanguosha->translate(skillName)).arg(tr("Please choose:"));
     GraphicsBox::paint(painter, option, widget);
 }
 
@@ -52,7 +52,7 @@ QRectF ChooseOptionsBox::boundingRect() const
 {
     const int width = default_button_width + left_blank_width * 2;
 
-    int height = top_blank_width + options_number * default_button_height + (options_number - 1) * interval + bottom_blank_width;
+    int height = top_blank_width + optionsNumber * default_button_height + (optionsNumber - 1) * interval + bottom_blank_width;
 
     if (ServerInfo.OperationTimeout != 0)
         height += 12;
@@ -64,11 +64,11 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
 {
     //repaint background
     this->options = options;
-    options_number = options.length();
+    optionsNumber = options.length();
     update();
 
     foreach (QString option, options) {
-        QString title = QString("%1:%2").arg(skill_name).arg(option);
+        QString title = QString("%1:%2").arg(skillName).arg(option);
         QString tranlated = Sanguosha->translate(title);
         if (tranlated == title)
             tranlated = Sanguosha->translate(option);
@@ -105,18 +105,18 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
     }
 
     if (ServerInfo.OperationTimeout != 0) {
-        if (!progress_bar) {
-            progress_bar = new QSanCommandProgressBar();
-            progress_bar->setMaximumWidth(boundingRect().width() - 16);
-            progress_bar->setMaximumHeight(12);
-            progress_bar->setTimerEnabled(true);
+        if (!progressBar) {
+            progressBar = new QSanCommandProgressBar();
+            progressBar->setMaximumWidth(boundingRect().width() - 16);
+            progressBar->setMaximumHeight(12);
+            progressBar->setTimerEnabled(true);
             progress_bar_item = new QGraphicsProxyWidget(this);
-            progress_bar_item->setWidget(progress_bar);
+            progress_bar_item->setWidget(progressBar);
             progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 20);
-            connect(progress_bar, SIGNAL(timedOut()), this, SLOT(reply()));
+            connect(progressBar, SIGNAL(timedOut()), this, SLOT(reply()));
         }
-        progress_bar->setCountdown(QSanProtocol::S_COMMAND_MULTIPLE_CHOICE);
-        progress_bar->show();
+        progressBar->setCountdown(QSanProtocol::S_COMMAND_MULTIPLE_CHOICE);
+        progressBar->show();
     }
 }
 
@@ -131,10 +131,10 @@ void ChooseOptionsBox::reply()
 
 void ChooseOptionsBox::clear()
 {
-    if (progress_bar != NULL){
-        progress_bar->hide();
-        progress_bar->deleteLater();
-        progress_bar = NULL;
+    if (progressBar != NULL){
+        progressBar->hide();
+        progressBar->deleteLater();
+        progressBar = NULL;
     }
 
     foreach(Button *button, buttons)
