@@ -1586,7 +1586,8 @@ function SmartAI:useCardDuel(duel, use)
 		if sgs.card_lack[enemy:objectName()]["Slash"] == 1 then n2 = 0 end
 		useduel = n1 >= n2 or self:needToLoseHp(self.player, nil, nil, true)
 					or self:getDamagedEffects(self.player, enemy) or (n2 < 1 and sgs.isGoodHp(self.player))
-					or ((self:hasSkill("jianxiong") or self.player:getMark("shuangxiong") > 0) and sgs.isGoodHp(self.player))
+					or ((self:hasSkill("jianxiong") or self.player:getMark("shuangxiong") > 0) and sgs.isGoodHp(self.player)
+						and n1 + self.player:getHp() >= n2 and self:isWeak(enemy))
 
 		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName()))
 			and self:objectiveLevel(enemy) > 3 and canUseDuelTo(enemy) and not self:cantbeHurt(enemy) and useduel and sgs.isGoodTarget(enemy, enemies, self) then

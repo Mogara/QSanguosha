@@ -564,7 +564,7 @@ function SmartAI:updatePlayers(update)
 		sgs.gameProcess(true)
 	end
 
-	if not sgs.isAnjiang(self.player) and not self.player:getKingdom() == "default" then
+	if not sgs.isAnjiang(self.player) and self.player:getKingdom() ~= "default" then
 		local updateNewKingdom = self.player:getRole() == "careerist" and sgs.ai_explicit[self.player:objectName()] ~= "careerist"
 									or self.player:getRole() ~= "careerist" and sgs.ai_explicit[self.player:objectName()] ~= self.player:getKingdom()
 		if updateNewKingdom then
@@ -2936,7 +2936,10 @@ function SmartAI:willUsePeachTo(dying)
 	end
 
 	local damage = self.room:getTag("CurrentDamageStruct"):toDamage()
-	if type(damage) == "userdata" and damage.to and damage.to:objectName() == dying:objectName() and damage.from and damage.from:objectName() == self.player:objectName()
+	if type(damage) == "userdata" and damage.to and damage.to:objectName() == dying:objectName() and damage.from
+		and (damage.from:objectName() == self.player:objectName()
+			or self.player:isFriendWith(damage.from)
+			or self:evaluateKingdom(damage.from) == self.player:getKingdom())
 		and (self.player:getKingdom() ~= sgs.ai_explicit[damage.to:objectName()] or self.role == "careerist") then
 		return "."
 	end
