@@ -1971,14 +1971,14 @@ void Room::swapPile() {
     if (limit > 0 && times == limit)
         gameOver(".");
 
-    qSwap(m_drawPile, m_discardPile);
+    qShuffle(*m_discardPile);
+    foreach(int card_id, *m_discardPile)
+        setCardMapping(card_id, NULL, Player::DrawPile);
+    *m_drawPile += *m_discardPile;
+    *m_discardPile = QList<int>();
 
     doBroadcastNotify(S_COMMAND_RESET_PILE, Json::Value::null);
     doBroadcastNotify(S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
-
-    qShuffle(*m_drawPile);
-    foreach(int card_id, *m_drawPile)
-        setCardMapping(card_id, NULL, Player::DrawPile);
 }
 
 QList<int> Room::getDiscardPile() {
