@@ -1013,36 +1013,69 @@ bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *
     return targets.isEmpty() && to_select->getHp() > Self->getHp() && !to_select->isKongcheng();
 }
 
+void QuhuCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *xunyu = card_use.from;
+
+    LogMessage log;
+    log.from = xunyu;
+    log.to << card_use.to;
+    log.type = "#UseCard";
+    log.card_str = toString();
+    room->sendLog(log);
+
+    QVariant data = QVariant::fromValue(card_use);
+    RoomThread *thread = room->getThread();
+
+    thread->trigger(PreCardUsed, room, xunyu, data);
+    room->broadcastSkillInvoke("quhu");
+
+    PindianStruct *pd = xunyu->pindianSelect(card_use.to.first(), "quhu");
+    xunyu->tag["quhu_pd"] = QVariant::fromValue(pd);
+
+    if (xunyu->ownSkill("quhu") && !xunyu->hasShownSkill("quhu"))
+        xunyu->showGeneral(xunyu->inHeadSkills("quhu"));
+
+    thread->trigger(CardUsed, room, xunyu, data);
+    thread->trigger(CardFinished, room, xunyu, data);
+}
+
 void QuhuCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.to->getRoom();
+    PindianStruct *pd = effect.from->tag["quhu_pd"].value<PindianStruct *>();
+    effect.from->tag.remove("quhu_pd");
+    if (pd != NULL){
+        bool success = effect.from->pindian(pd);
+        pd = NULL;
 
-    bool success = effect.from->pindian(effect.to, "quhu", NULL);
-    if (success) {
-        QList<ServerPlayer *> players = room->getOtherPlayers(effect.to), wolves;
-        foreach(ServerPlayer *player, players) {
-            if (effect.to->inMyAttackRange(player))
-                wolves << player;
+        Room *room = effect.to->getRoom();
+        if (success) {
+            QList<ServerPlayer *> players = room->getOtherPlayers(effect.to), wolves;
+            foreach(ServerPlayer *player, players) {
+                if (effect.to->inMyAttackRange(player))
+                    wolves << player;
+            }
+
+            if (wolves.isEmpty()) {
+                LogMessage log;
+                log.type = "#QuhuNoWolf";
+                log.from = effect.from;
+                log.to << effect.to;
+                room->sendLog(log);
+
+                return;
+            }
+
+            ServerPlayer *wolf = room->askForPlayerChosen(effect.from, wolves, "quhu", QString("@quhu-damage:%1").arg(effect.to->objectName()));
+
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, effect.to->objectName(), wolf->objectName());
+            room->damage(DamageStruct("quhu", effect.to, wolf));
         }
-
-        if (wolves.isEmpty()) {
-            LogMessage log;
-            log.type = "#QuhuNoWolf";
-            log.from = effect.from;
-            log.to << effect.to;
-            room->sendLog(log);
-
-            return;
+        else {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, effect.to->objectName(), effect.from->objectName());
+            room->damage(DamageStruct("quhu", effect.to, effect.from));
         }
-
-        ServerPlayer *wolf = room->askForPlayerChosen(effect.from, wolves, "quhu", QString("@quhu-damage:%1").arg(effect.to->objectName()));
-
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, effect.to->objectName(), wolf->objectName());
-        room->damage(DamageStruct("quhu", effect.to, wolf));
     }
-    else {
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, effect.to->objectName(), effect.from->objectName());
-        room->damage(DamageStruct("quhu", effect.to, effect.from));
-    }
+    else
+        Q_ASSERT(false);
 }
 
 class Quhu : public ZeroCardViewAsSkill {

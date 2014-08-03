@@ -732,12 +732,46 @@ bool TianyiCard::targetFilter(const QList<const Player *> &targets, const Player
     return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
 }
 
+void TianyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *dalizi = card_use.from;
+
+    LogMessage log;
+    log.from = dalizi;
+    log.to << card_use.to;
+    log.type = "#UseCard";
+    log.card_str = toString();
+    room->sendLog(log);
+
+    QVariant data = QVariant::fromValue(card_use);
+    RoomThread *thread = room->getThread();
+
+    thread->trigger(PreCardUsed, room, dalizi, data);
+    room->broadcastSkillInvoke("tianyi", 2);
+
+    PindianStruct *pd = dalizi->pindianSelect(card_use.to.first(), "tianyi");
+    dalizi->tag["tianyi_pd"] = QVariant::fromValue(pd);
+
+    if (dalizi->ownSkill("tianyi") && !dalizi->hasShownSkill("tianyi"))
+        dalizi->showGeneral(dalizi->inHeadSkills("tianyi"));
+
+    thread->trigger(CardUsed, room, dalizi, data);
+    thread->trigger(CardFinished, room, dalizi, data);
+}
+
 void TianyiCard::onEffect(const CardEffectStruct &effect) const{
-    bool success = effect.from->pindian(effect.to, "tianyi", NULL);
-    if (success)
-        effect.to->getRoom()->setPlayerFlag(effect.from, "TianyiSuccess");
+    PindianStruct *pd = effect.from->tag["tianyi_pd"].value<PindianStruct *>();
+    effect.from->tag.remove("tianyi_pd");
+    if (pd != NULL){
+        bool success = effect.from->pindian(pd);
+        pd = NULL;
+
+        if (success)
+            effect.to->getRoom()->setPlayerFlag(effect.from, "TianyiSuccess");
+        else
+            effect.to->getRoom()->setPlayerCardLimitation(effect.from, "use", "Slash", true);
+    }
     else
-        effect.to->getRoom()->setPlayerCardLimitation(effect.from, "use", "Slash", true);
+        Q_ASSERT(false);
 }
 
 class TianyiViewAsSkill : public ZeroCardViewAsSkill {
@@ -768,10 +802,6 @@ public:
             room->setPlayerFlag(target, "-TianyiSuccess");
 
         return QStringList();
-    }
-
-    virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
-        return 2;
     }
 };
 

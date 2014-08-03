@@ -27,6 +27,7 @@ class Recorder;
 
 class CardMoveReason;
 struct PhaseStruct;
+struct PindianStruct;
 
 #include "structs.h"
 #include "player.h"
@@ -87,7 +88,8 @@ public:
     QList<const Card *> getCards(const QString &flags) const;
     DummyCard *wholeHandCards() const;
     bool hasNullification() const;
-    bool pindian(ServerPlayer *target, const QString &reason, const Card *card1 = NULL);
+    PindianStruct *pindianSelect(ServerPlayer *target, const QString &reason, const Card *card1 = NULL);
+    bool pindian(PindianStruct *pd); //pd is deleted after this function
     void turnOver();
     void play(QList<Player::Phase> set_phases = QList<Player::Phase>());
     bool changePhase(Player::Phase from, Player::Phase to);
