@@ -40,6 +40,8 @@ public:
 
     virtual QRectF boundingRect() const;
 
+    static QFont defaultFont();
+
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void mouseMoveEvent(QGraphicsSceneMouseEvent *event);

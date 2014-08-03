@@ -44,15 +44,15 @@ void ChooseOptionsBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //||    -------     ||
     //====================
 
-    title = QString("%1 %2").arg((Sanguosha->translate(skillName)).arg(tr("Please choose:"));
+    title = QString("%1 %2").arg(Sanguosha->translate(skillName)).arg(tr("Please choose:"));
     GraphicsBox::paint(painter, option, widget);
 }
 
 QRectF ChooseOptionsBox::boundingRect() const
 {
-    const int width = default_button_width + left_blank_width * 2;
+    const int width = getButtonWidth() + outerBlankWidth * 2;
 
-    int height = top_blank_width + optionsNumber * default_button_height + (optionsNumber - 1) * interval + bottom_blank_width;
+    int height = topBlankWidth + optionsNumber * defaultButtonHeight + (optionsNumber - 1) * interval + bottomBlankWidth;
 
     if (ServerInfo.OperationTimeout != 0)
         height += 12;
@@ -67,12 +67,10 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
     optionsNumber = options.length();
     update();
 
+    const int buttonWidth = getButtonWidth();
     foreach (QString option, options) {
-        QString title = QString("%1:%2").arg(skillName).arg(option);
-        QString tranlated = Sanguosha->translate(title);
-        if (tranlated == title)
-            tranlated = Sanguosha->translate(option);
-        Button *button = new Button(tranlated, QSizeF(default_button_width, default_button_height), true);
+        Button *button = new Button(translate(option), QSizeF(buttonWidth,
+                                                      defaultButtonHeight), true);
         button->setFlag(QGraphicsItem::ItemIsFocusable);
         button->setObjectName(option);
         buttons << button;
@@ -98,8 +96,8 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
         Button *button = buttons.at(i);
 
         QPointF pos;
-        pos.setX(left_blank_width);
-        pos.setY(top_blank_width + default_button_height * i + (i - 1) * interval + default_button_height / 2);
+        pos.setX(outerBlankWidth);
+        pos.setY(topBlankWidth + defaultButtonHeight * i + (i - 1) * interval + defaultButtonHeight / 2);
 
         button->setPos(pos);
     }
@@ -110,9 +108,9 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
             progressBar->setMaximumWidth(boundingRect().width() - 16);
             progressBar->setMaximumHeight(12);
             progressBar->setTimerEnabled(true);
-            progress_bar_item = new QGraphicsProxyWidget(this);
-            progress_bar_item->setWidget(progressBar);
-            progress_bar_item->setPos(boundingRect().center().x() - progress_bar_item->boundingRect().width() / 2, boundingRect().height() - 20);
+            progressBarItem = new QGraphicsProxyWidget(this);
+            progressBarItem->setWidget(progressBar);
+            progressBarItem->setPos(boundingRect().center().x() - progressBarItem->boundingRect().width() / 2, boundingRect().height() - 20);
             connect(progressBar, SIGNAL(timedOut()), this, SLOT(reply()));
         }
         progressBar->setCountdown(QSanProtocol::S_COMMAND_MULTIPLE_CHOICE);
@@ -127,6 +125,34 @@ void ChooseOptionsBox::reply()
         choice = options.first();
     ClientInstance->onPlayerMakeChoice(choice);
     clear();
+}
+
+int ChooseOptionsBox::getButtonWidth() const
+{
+    if (options.isEmpty())
+        return minButtonWidth;
+
+    QFontMetrics fontMetrics(Button::defaultFont());
+    int biggest = 0;
+    foreach (const QString &choice, options) {
+        const int width = fontMetrics.width(translate(choice));
+        if (width > biggest)
+            biggest = width;
+    }
+
+    // Otherwise it would look compact
+    biggest += 20;
+
+    return qMax(biggest, minButtonWidth);
+}
+
+QString ChooseOptionsBox::translate(const QString &option) const
+{
+    QString title = QString("%1:%2").arg(skillName).arg(option);
+    QString translated = Sanguosha->translate(title);
+    if (translated == title)
+        translated = Sanguosha->translate(option);
+    return translated;
 }
 
 void ChooseOptionsBox::clear()

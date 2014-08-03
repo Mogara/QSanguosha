@@ -35,7 +35,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QRectF boundingRect() const;
 
-    inline void setSkillName(const QString &skillName) { skillName = skillName; }
+    inline void setSkillName(const QString &skillName) { this->skillName = skillName; }
     void clear();
 
 public slots:
@@ -47,16 +47,19 @@ private:
     QStringList options;
     QString skillName;
     QList<Button *> buttons;
-    static const int defaultButtonWidth = 100;
+    static const int minButtonWidth = 100;
     static const int defaultButtonHeight = 30;
-    static const int top_dark_bar = 27;
     static const int topBlankWidth = 42;
     static const int bottomBlankWidth = 25;
     static const int interval = 15;
     static const int outerBlankWidth = 37;
 
-    QGraphicsProxyWidget *progress_bar_item;
+    QGraphicsProxyWidget *progressBarItem;
     QSanCommandProgressBar *progressBar;
+
+    int getButtonWidth() const;
+
+    QString translate(const QString &option) const;
 };
 
 #endif // _CHOOSE_OPTIONS_BOX_H

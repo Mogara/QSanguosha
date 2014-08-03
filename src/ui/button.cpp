@@ -22,6 +22,7 @@
 #include "Title.h"
 #include "SkinBank.h"
 #include "jsonutils.h"
+#include "StyleHelper.h"
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
@@ -146,6 +147,13 @@ void Button::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 QRectF Button::boundingRect() const
 {
     return QRectF(QPointF(), size);
+}
+
+QFont Button::defaultFont()
+{
+    QFont font = StyleHelper::getFontByFileName("wqy-microhei.ttc");
+    font.setPixelSize(Config.TinyFont.pixelSize());
+    return font;
 }
 
 static QColor ReverseColor(const QColor &color)
