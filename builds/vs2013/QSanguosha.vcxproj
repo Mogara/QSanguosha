@@ -593,7 +593,7 @@
       <Command>$(ProjectDir)\..\..\tools\swig\swig.exe -c++ -lua "$(ProjectDir)\..\..\swig\sanguosha.i"</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)sanguosha.qm $(ProjectDir)..\..\</Command>
+      <Command>copy $(ProjectDir)..\sanguosha.qm $(ProjectDir)..\..\</Command>
     </PostBuildEvent>
     <ResourceCompile>
       <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN64;QT_LARGEFILE_SUPPORT;AUDIO_SUPPORT;QT_DLL;QT_NO_DEBUG;QT_DECLARATIVE_LIB;QT_SQL_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_CORE_LIB;QT_HAVE_MMX;QT_HAVE_3DNOW;QT_HAVE_SSE;QT_HAVE_MMXEXT;QT_HAVE_SSE2;QT_THREAD_SUPPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
