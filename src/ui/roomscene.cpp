@@ -1043,8 +1043,8 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats) {
     //update the positions of bubbles after setting seats
     QList<QString> names = name2photo.keys();
     foreach (const QString &who, names) {
-        if (bubbleChatBoxs.contains(who)) {
-            bubbleChatBoxs[who]->setArea(getBubbleChatBoxShowArea(who));
+        if (bubbleChatBoxes.contains(who)) {
+            bubbleChatBoxes[who]->setArea(getBubbleChatBoxShowArea(who));
         }
     }
 }
@@ -4090,14 +4090,14 @@ void RoomScene::appendChatEdit(QString txt) {
 
 void RoomScene::showBubbleChatBox(const QString &who, const QString &line)
 {
-    if (!bubbleChatBoxs.keys().contains(who)) {
+    if (!bubbleChatBoxes.keys().contains(who)) {
         BubbleChatBox *bubbleChatBox = new BubbleChatBox(getBubbleChatBoxShowArea(who));
         addItem(bubbleChatBox);
         bubbleChatBox->setZValue(INT_MAX);
-        bubbleChatBoxs.insert(who, bubbleChatBox);
+        bubbleChatBoxes.insert(who, bubbleChatBox);
     }
 
-    bubbleChatBoxs[who]->setText(line);
+    bubbleChatBoxes[who]->setText(line);
 }
 
 static const QSize BubbleChatBoxShowAreaSize(138, 64);

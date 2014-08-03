@@ -95,8 +95,7 @@ void BubbleChatBox::setText(const QString &text)
         lineCount = width / PixelsPerLine;
         if (lineCount >= MaxLineCount) {
             lineCount = MaxLineCount;
-        }
-        else if (width % PixelsPerLine != 0) {
+        } else if (width % PixelsPerLine != 0) {
             ++lineCount;
         }
 
@@ -107,8 +106,7 @@ void BubbleChatBox::setText(const QString &text)
     if (boxWidth <= BoxMinWidth) {
         boxWidth = BoxMinWidth;
         chatLabel->setAlignment(Qt::AlignHCenter);
-    }
-    else {
+    } else {
         chatLabel->setAlignment(Qt::AlignLeft);
     }
     chatLabel->setTextWidth(boxWidth);
@@ -185,9 +183,9 @@ void BubbleChatBox::BubbleChatLabel::setBoundingRect(const QRectF &newRect)
 
 void BubbleChatBox::BubbleChatLabel::setAlignment(Qt::Alignment alignment)
 {
-    QTextOption opt = doc->defaultTextOption();
-    opt.setAlignment(alignment);
-    doc->setDefaultTextOption(opt);
+    QTextOption option = doc->defaultTextOption();
+    option.setAlignment(alignment);
+    doc->setDefaultTextOption(option);
 }
 
 void BubbleChatBox::BubbleChatLabel::setWrapMode(QTextOption::WrapMode wrap)

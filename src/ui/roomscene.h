@@ -281,7 +281,7 @@ private:
     int m_tablew;
     int m_tableh;
 
-    QMap<QString, BubbleChatBox *> bubbleChatBoxs;
+    QMap<QString, BubbleChatBox *> bubbleChatBoxes;
 
     // for 3v3 & 1v1 mode
     QSanSelectableItem *selector_box;
