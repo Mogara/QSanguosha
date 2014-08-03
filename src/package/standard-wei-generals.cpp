@@ -24,6 +24,7 @@
 #include "standard-basics.h"
 #include "standard-tricks.h"
 #include "client.h"
+#include "settings.h"
 
 class Jianxiong : public MasochismSkill {
 public:
@@ -55,7 +56,7 @@ public:
     }
 
     virtual void onDamaged(ServerPlayer *, const DamageStruct &) const{
-        // emppty
+        // empty
     }
 };
 
@@ -73,22 +74,23 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *simayi, QVariant &data, ServerPlayer *) const {
-        if (simayi->askForSkillInvoke(objectName(), data)) {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!damage.from->isNude() && simayi->askForSkillInvoke(objectName(), data)) {
+            int aidelay = Config.AIDelay;
+            Config.AIDelay = 0;
+            int card_id = room->askForCardChosen(simayi, damage.from, "he", objectName());
+            Config.AIDelay = aidelay;
+            CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, simayi->objectName());
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, simayi->objectName(), damage.from->objectName());
             room->broadcastSkillInvoke(objectName());
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, simayi->objectName(), data.value<DamageStruct>().from->objectName());
+            room->obtainCard(simayi, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
             return true;
         }
         return false;
     }
 
-    virtual void onDamaged(ServerPlayer *simayi, const DamageStruct &damage) const{
-        ServerPlayer *from = damage.from;
-        Room *room = simayi->getRoom();
-        if (!from->isNude()) {
-            int card_id = room->askForCardChosen(simayi, from, "he", objectName());
-            CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, simayi->objectName());
-            room->obtainCard(simayi, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand); //actually cost
-        }
+    virtual void onDamaged(ServerPlayer *, const DamageStruct &) const{
+        // empty
     }
 };
 
