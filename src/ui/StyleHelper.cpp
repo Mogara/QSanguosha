@@ -23,6 +23,7 @@
 #include <QApplication>
 #include <QFontDatabase>
 #include <QPushButton>
+#include <QMap>
 
 StyleHelper *StyleHelper::instance = NULL;
 
