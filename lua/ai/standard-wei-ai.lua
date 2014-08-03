@@ -136,7 +136,7 @@ sgs.ai_need_damaged.fankui = function (self, attacker, player)
 end
 
 
-sgs.ai_skill_cardask["@guicai-card"]=function(self, data)
+sgs.ai_skill_cardask["@guicai-card"] = function(self, data)
 	local judge = data:toJudge()
 
 	local cards = sgs.QList2Table(self.player:getHandcards())
@@ -145,6 +145,7 @@ sgs.ai_skill_cardask["@guicai-card"]=function(self, data)
 		for _, p in sgs.qlist(self.room:getAlivePlayers()) do
 			if p:hasFlag("TieqiTarget") then target = p break end
 		end
+		if self:canHit(target, judge.from) then return "." end
 		if getCardsNum("Jink", target, self.player) == 0 then return "." end
 		if target:objectName() == self.player:objectName() then
 			local jinks = self:getCards("Jink")
