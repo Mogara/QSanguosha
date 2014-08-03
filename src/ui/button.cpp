@@ -27,6 +27,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPropertyAnimation>
 #include <QFile>
+#include <QGraphicsDropShadowEffect>
 
 static QRectF ButtonRect(0, 0, 154, 154);
 static QRectF CompactButtonRect(0, 0, 189, 46);
@@ -35,7 +36,7 @@ Button::Button(const QString &label, qreal scale, bool compact)
     : label(label), size((compact ? CompactButtonRect.size() : ButtonRect.size()) * scale),
       font_name("wqy-microhei"), font_size(Config.TinyFont.pixelSize()),
       compact(compact), down(false), mouse_area(Outside),
-      rotation(NULL), scale(NULL), title(NULL)
+      rotation(NULL), scale(NULL), title(NULL), frame(NULL)
 {
     init();
 }
@@ -44,7 +45,7 @@ Button::Button(const QString &label, const QSizeF &size, bool compact)
     : label(label), size(size),
       font_name("wqy-microhei"), font_size(Config.TinyFont.pixelSize()),
       compact(compact), down(false), mouse_area(Outside),
-      rotation(NULL), scale(NULL), title(NULL)
+      rotation(NULL), scale(NULL), title(NULL), frame(NULL)
 {
     init();
 }
@@ -67,6 +68,13 @@ void Button::init()
         title = new Title(this, label, font_name, font_size);
         title->setPos(8, boundingRect().height() - title->boundingRect().height() - 8);
         title->hide();
+
+        frame = new QGraphicsDropShadowEffect(this);
+        frame->setOffset(0);
+        frame->setColor(Qt::white);
+        frame->setBlurRadius(12);
+        frame->setEnabled(false);
+        setGraphicsEffect(frame);
     } else {
         setFlags(ItemIsFocusable);
     }
@@ -117,18 +125,22 @@ void Button::mouseReleaseEvent(QGraphicsSceneMouseEvent *)
 
 void Button::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
-    if (compact)
+    if (compact) {
         setFocus(Qt::MouseFocusReason);
-    else
+    } else {
         title->show();
+        frame->setEnabled(true);
+    }
 }
 
 void Button::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
-    if (compact)
+    if (compact) {
         clearFocus();
-    else
+    } else {
         title->hide();
+        frame->setEnabled(false);
+    }
 }
 
 QRectF Button::boundingRect() const

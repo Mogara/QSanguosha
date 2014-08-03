@@ -27,6 +27,7 @@
 #include <QGraphicsRotation>
 
 class Title;
+class QGraphicsDropShadowEffect;
 
 class Button : public QGraphicsObject{
     Q_OBJECT
@@ -70,6 +71,8 @@ private:
     QGraphicsRotation *rotation;
     QGraphicsScale *scale;
     Title *title;
+
+    QGraphicsDropShadowEffect *frame;
 
     QPixmap icon;
 
