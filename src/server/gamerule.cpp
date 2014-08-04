@@ -107,7 +107,7 @@ GameRule::GameRule(QObject *parent)
         << PreCardUsed << CardUsed << CardFinished << CardEffected
         << PostHpReduced
         << EventLoseSkill << EventAcquireSkill
-        << AskForPeaches << AskForPeachesDone << Death << BuryVictim
+        << AskForPeaches << AskForPeachesDone << BuryVictim
         << BeforeGameOverJudge << GameOverJudge
         << SlashHit << SlashEffected << SlashProceed
         << ConfirmDamage << DamageDone << DamageComplete
@@ -653,10 +653,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             room->gameOver(winner);
             return true;
         }
-
-        break;
-    }
-    case Death: {
 
         break;
     }
