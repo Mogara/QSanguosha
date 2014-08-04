@@ -336,11 +336,11 @@ public:
 
     void setNext(Player *next);
     void setNext(const char *next);
-    Player *getNext() const;
+    Player *getNext(bool ignoreRemoved = true) const;
     QString getNextName() const;
-    Player *getLast() const;
-    Player *getNextAlive(int n = 1) const;
-    Player *getLastAlive(int n = 1) const;
+    Player *getLast(bool ignoreRemoved = true) const;
+    Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
+    Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
 
     QList<const Player *> getFormation() const;
 };

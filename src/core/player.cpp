@@ -176,10 +176,8 @@ QStringList Player::disableShow(bool head) const{
 
 
 bool Player::isAdjacentTo(const Player *another) const{
-    int alive_length = 1 + getAliveSiblings().length();
-    return qAbs(seat - another->seat) == 1
-        || (seat == 1 && another->seat == alive_length)
-        || (seat == alive_length && another->seat == 1);
+    return getNextAlive() == another
+        || another->getNextAlive() == this;
 }
 
 bool Player::isAlive() const{
