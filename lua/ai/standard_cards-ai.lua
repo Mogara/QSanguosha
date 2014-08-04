@@ -207,12 +207,36 @@ function sgs.getDefenseSlash(player, self)
 	if player:containsTrick("supply_shortage") then defense = defense - 0.15 end
 
 	if not hasEightDiagram then
-		if player:hasShownSkill("jijiu") then defense = defense - 3 end
-		if player:hasShownSkill("dimeng") then defense = defense - 2.5 end
-		if player:hasShownSkill("guzheng") and knownJink == 0 then defense = defense - 2.5 end
-		if player:hasShownSkill("qiaobian") then defense = defense - 2.4 end
-		if player:hasShownSkill("jieyin") then defense = defense - 2.3 end
-		if player:hasShownSkill("lijian") then defense = defense - 2.2 end
+		if player:hasShownSkill("jijiu") then
+			defense = defense - 3
+		elseif sgs.hasNullSkill("jijiu", player) then
+			defense = defense - 4
+		end
+		if player:hasShownSkill("dimeng") then
+			defense = defense - 2.5
+		elseif sgs.hasNullSkill("dimeng", player) then
+			defense = defense - 3.5
+		end
+		if player:hasShownSkill("guzheng") and knownJink == 0 then
+			defense = defense - 2.5
+		elseif sgs.hasNullSkill("guzheng", player) and knownJink == 0 then
+			defense = defense - 3.5
+		end
+		if player:hasShownSkill("qiaobian") then
+			defense = defense - 2.4
+		elseif sgs.hasNullSkill("qiaobian", player) then
+			defense = defense - 3.4
+		end
+		if player:hasShownSkill("jieyin") then
+			defense = defense - 2.3
+		elseif sgs.hasNullSkill("jieyin", player) then
+			defense = defense - 3.3
+		end
+		if player:hasShownSkill("lijian") then
+			defense = defense - 2.2
+		elseif sgs.hasNullSkill("lijian", player) then
+			defense = defense - 3.2
+		end
 	end
 	return defense
 end
@@ -291,7 +315,7 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 		end
 	end
 	if not self:damageIsEffective_(damage) then return false end
-	
+
 	if to:hasSkill("jgyizhong") and not to:getArmor() and slash:isBlack() then
 		return false
 	end

@@ -128,6 +128,7 @@ sgs.current_mode_players = {
 	wu = 0,
 	qun = 0
 }
+sgs.general_shown = {}
 
 for i = sgs.NonTrigger, sgs.NumOfEvents, 1 do
 	sgs.ai_debug_func[i] = {}
@@ -170,6 +171,7 @@ function setInitialTables()
 		sgs.ai_loyalty[kingdom] = {}
 		sgs.shown_kingdom[p:getKingdom()] = 0
 		sgs.ai_explicit[p:objectName()] = "unknown"
+		sgs.general_shown[p:objectName()] = {}
 		if string.len(p:getRole()) == 0 then
 			global_room:setPlayerProperty(p, "role", sgs.QVariant(p:getKingdom()))
 		end
@@ -567,17 +569,7 @@ function SmartAI:updatePlayers(update)
 	if not sgs.isAnjiang(self.player) and self.player:getKingdom() ~= "default" then
 		local updateNewKingdom = self.player:getRole() == "careerist" and sgs.ai_explicit[self.player:objectName()] ~= "careerist"
 									or self.player:getRole() ~= "careerist" and sgs.ai_explicit[self.player:objectName()] ~= self.player:getKingdom()
-		if updateNewKingdom then
-			sgs.ai_explicit[self.player:objectName()] = self.player:getRole() == "careerist" and "careerist" or self.player:getKingdom()
-			for k, v in pairs(sgs.shown_kingdom) do
-				sgs.shown_kingdom[k] = 0
-			end
-
-			for _, p in sgs.qlist(self.room:getPlayers()) do
-				if sgs.ai_explicit[p:objectName()] == "careerist" or sgs.ai_explicit[p:objectName()] == "unknown" then continue end
-				sgs.shown_kingdom[sgs.ai_explicit[p:objectName()]] = sgs.shown_kingdom[sgs.ai_explicit[p:objectName()]] + 1
-			end
-		end
+		if updateNewKingdom then self:updatePlayerKingdom(self.player) end
 	end
 
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
@@ -592,8 +584,15 @@ function SmartAI:updatePlayers(update)
 	table.insert(self.friends, self.player)
 end
 
-function SmartAI:updatePlayerKingdom(player)
+function SmartAI:updatePlayerKingdom(player, data)
 	sgs.ai_explicit[player:objectName()] = player:getRole() == "careerist" and "careerist" or player:getKingdom()
+	if data then
+		local isHead = data:toBool()
+		sgs.general_shown[player:objectName()][isHead and "head" or "deputy"] = true
+	else
+		sgs.general_shown[player:objectName()]["head"] = player:hasShownGeneral1()
+		sgs.general_shown[player:objectName()]["deputy"] = player:hasShownGeneral2()
+	end
 	for _, k in ipairs(sgs.KingdomsTable) do
 		if k == sgs.ai_explicit[player:objectName()] then sgs.ai_loyalty[k][player:objectName()] = 99
 		else sgs.ai_loyalty[k][player:objectName()] = 0
@@ -612,8 +611,10 @@ function SmartAI:updatePlayerKingdom(player)
 		sgs.shown_kingdom[sgs.ai_explicit[p:objectName()]] = sgs.shown_kingdom[sgs.ai_explicit[p:objectName()]] + 1
 	end
 
-	for _, p in sgs.qlist(global_room:getAllPlayers()) do
-		sgs.ais[p:objectName()]:updatePlayers()
+	if data then
+		for _, p in sgs.qlist(global_room:getAllPlayers()) do
+			sgs.ais[p:objectName()]:updatePlayers()
+		end
 	end
 end
 
@@ -1655,7 +1656,7 @@ function SmartAI:filterEvent(event, player, data)
 	if self ~= sgs.recorder then return end
 
 	if event == sgs.GeneralShown then
-		self:updatePlayerKingdom(player)
+		self:updatePlayerKingdom(player, data)
 	elseif event == sgs.TargetConfirmed then
 		local struct = data:toCardUse()
 		local from  = struct.from
@@ -5030,6 +5031,17 @@ function sgs.getReward(player)
 		if p:isFriendWith(player) then x = x + 1 end
 	end
 	return x
+end
+
+function sgs.hasNullSkill(skill_name, player)
+	if sgs.general_shown[player:objectName()]["head"] and player:inHeadSkills(skill_name) and #player:disableShow(true) > 0
+		and not player:hasShownGeneral1() then
+		return true
+	elseif sgs.general_shown[player:objectName()]["deputy"] and player:inDeputySkills(skill_name) and #player:disableShow(false) > 0
+		and not player:hasShownGeneral2() then
+		return true
+	end
+	return
 end
 
 dofile "lua/ai/debug-ai.lua"

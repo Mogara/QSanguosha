@@ -262,12 +262,7 @@ function sgs.ShowPlayer(player)
 			if player:objectName() == p:objectName() then p:showGeneral() end
 		else
 			p:showGeneral()
+			p:showGeneral(false)
 		end
 	end
 end
-
--- for _, p in sgs.qlist(R:getAlivePlayers()) do
-	-- if p:getGeneralName() == "kongrong" then sgs.printFEList(p) end
-	-- p:speak(sgs.ai_explicit[p:objectName()])
-	-- if sgs.isAnjiang(p) then p:speak("true") end
--- end
