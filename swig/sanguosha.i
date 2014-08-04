@@ -338,11 +338,11 @@ public:
 
     void setNext(Player *next);
     void setNext(const char *next);
-    Player *getNext() const;
+    Player *getNext(bool ignoreRemoved = true) const;
     QString getNextName() const;
-    Player *getLast() const;
-    Player *getNextAlive(int n = 1) const;
-    Player *getLastAlive(int n = 1) const;
+    Player *getLast(bool ignoreRemoved = true) const;
+    Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
+    Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
 
     QList<const Player *> getFormation() const;
 };
@@ -391,7 +391,8 @@ public:
     QList<const Card *> getCards(const char *flags) const;
     DummyCard *wholeHandCards() const;
     bool hasNullification() const;
-    bool pindian(ServerPlayer *target, const char *reason, const Card *card1 = NULL);
+    PindianStruct *pindianSelect(ServerPlayer *target, const QString &reason, const Card *card1 = NULL);
+    bool pindian(PindianStruct *pd); //pd is deleted after this function
     void turnOver();
     void play(QList<Player::Phase> set_phases = QList<Player::Phase>());
     bool changePhase(Player::Phase from, Player::Phase to);

@@ -676,20 +676,16 @@ public:
         log.arg = objectName();
         room->sendLog(log);
 
-        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (!p->isFriendWith(player))
-                targets << p;
-        }
-
         ArcheryAttack *aa = new ArcheryAttack(Card::NoSuit, 0);
         aa->setSkillName("_" + objectName());
         aa->setShowSkill(objectName());
-        CardUseStruct use;
-        use.card = aa;
-        use.from = player;
-        use.to = targets;
 
-        room->useCard(use);
+        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (!p->isFriendWith(player) && !player->isProhibited(p, aa))
+                targets << p;
+        }
+
+        room->useCard(CardUseStruct(aa, player, targets));
 
         return false;
     }

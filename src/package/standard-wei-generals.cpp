@@ -24,6 +24,7 @@
 #include "standard-basics.h"
 #include "standard-tricks.h"
 #include "client.h"
+#include "settings.h"
 
 class Jianxiong : public MasochismSkill {
 public:
@@ -55,7 +56,7 @@ public:
     }
 
     virtual void onDamaged(ServerPlayer *, const DamageStruct &) const{
-        // emppty
+        // empty
     }
 };
 
@@ -73,22 +74,23 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *simayi, QVariant &data, ServerPlayer *) const {
-        if (simayi->askForSkillInvoke(objectName(), data)) {
+        DamageStruct damage = data.value<DamageStruct>();
+        if (!damage.from->isNude() && simayi->askForSkillInvoke(objectName(), data)) {
+            int aidelay = Config.AIDelay;
+            Config.AIDelay = 0;
+            int card_id = room->askForCardChosen(simayi, damage.from, "he", objectName());
+            Config.AIDelay = aidelay;
+            CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, simayi->objectName());
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, simayi->objectName(), damage.from->objectName());
             room->broadcastSkillInvoke(objectName());
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, simayi->objectName(), data.value<DamageStruct>().from->objectName());
+            room->obtainCard(simayi, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
             return true;
         }
         return false;
     }
 
-    virtual void onDamaged(ServerPlayer *simayi, const DamageStruct &damage) const{
-        ServerPlayer *from = damage.from;
-        Room *room = simayi->getRoom();
-        if (!from->isNude()) {
-            int card_id = room->askForCardChosen(simayi, from, "he", objectName());
-            CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, simayi->objectName());
-            room->obtainCard(simayi, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand); //actually cost
-        }
+    virtual void onDamaged(ServerPlayer *, const DamageStruct &) const{
+        // empty
     }
 };
 
@@ -114,22 +116,15 @@ public:
 
         if (card) {
             room->broadcastSkillInvoke(objectName());
-            player->tag["guicai_card"] = QVariant::fromValue(card);
+            room->retrial(card, player, judge, objectName());
             return true;
         }
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer *) const{
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        const Card *card = player->tag["guicai_card"].value<const Card *>();
-
-        if (judge != NULL && card != NULL)
-            room->retrial(card, player, judge, objectName()); //to be splited
-        else
-            Q_ASSERT(false);
-
-        player->tag.remove("guicai_card");
+        judge->updateResult();
         return false;
     }
 };
@@ -1018,36 +1013,69 @@ bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *
     return targets.isEmpty() && to_select->getHp() > Self->getHp() && !to_select->isKongcheng();
 }
 
+void QuhuCard::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *xunyu = card_use.from;
+
+    LogMessage log;
+    log.from = xunyu;
+    log.to << card_use.to;
+    log.type = "#UseCard";
+    log.card_str = toString();
+    room->sendLog(log);
+
+    QVariant data = QVariant::fromValue(card_use);
+    RoomThread *thread = room->getThread();
+
+    thread->trigger(PreCardUsed, room, xunyu, data);
+    room->broadcastSkillInvoke("quhu");
+
+    PindianStruct *pd = xunyu->pindianSelect(card_use.to.first(), "quhu");
+    xunyu->tag["quhu_pd"] = QVariant::fromValue(pd);
+
+    if (xunyu->ownSkill("quhu") && !xunyu->hasShownSkill("quhu"))
+        xunyu->showGeneral(xunyu->inHeadSkills("quhu"));
+
+    thread->trigger(CardUsed, room, xunyu, data);
+    thread->trigger(CardFinished, room, xunyu, data);
+}
+
 void QuhuCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.to->getRoom();
+    PindianStruct *pd = effect.from->tag["quhu_pd"].value<PindianStruct *>();
+    effect.from->tag.remove("quhu_pd");
+    if (pd != NULL){
+        bool success = effect.from->pindian(pd);
+        pd = NULL;
 
-    bool success = effect.from->pindian(effect.to, "quhu", NULL);
-    if (success) {
-        QList<ServerPlayer *> players = room->getOtherPlayers(effect.to), wolves;
-        foreach(ServerPlayer *player, players) {
-            if (effect.to->inMyAttackRange(player))
-                wolves << player;
+        Room *room = effect.to->getRoom();
+        if (success) {
+            QList<ServerPlayer *> players = room->getOtherPlayers(effect.to), wolves;
+            foreach(ServerPlayer *player, players) {
+                if (effect.to->inMyAttackRange(player))
+                    wolves << player;
+            }
+
+            if (wolves.isEmpty()) {
+                LogMessage log;
+                log.type = "#QuhuNoWolf";
+                log.from = effect.from;
+                log.to << effect.to;
+                room->sendLog(log);
+
+                return;
+            }
+
+            ServerPlayer *wolf = room->askForPlayerChosen(effect.from, wolves, "quhu", QString("@quhu-damage:%1").arg(effect.to->objectName()));
+
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, effect.to->objectName(), wolf->objectName());
+            room->damage(DamageStruct("quhu", effect.to, wolf));
         }
-
-        if (wolves.isEmpty()) {
-            LogMessage log;
-            log.type = "#QuhuNoWolf";
-            log.from = effect.from;
-            log.to << effect.to;
-            room->sendLog(log);
-
-            return;
+        else {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, effect.to->objectName(), effect.from->objectName());
+            room->damage(DamageStruct("quhu", effect.to, effect.from));
         }
-
-        ServerPlayer *wolf = room->askForPlayerChosen(effect.from, wolves, "quhu", QString("@quhu-damage:%1").arg(effect.to->objectName()));
-
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, effect.to->objectName(), wolf->objectName());
-        room->damage(DamageStruct("quhu", effect.to, wolf));
     }
-    else {
-        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, effect.to->objectName(), effect.from->objectName());
-        room->damage(DamageStruct("quhu", effect.to, effect.from));
-    }
+    else
+        Q_ASSERT(false);
 }
 
 class Quhu : public ZeroCardViewAsSkill {

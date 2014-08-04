@@ -498,7 +498,8 @@ bool ServerPlayer::hasNullification() const{
     return false;
 }
 
-bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Card *card1) {
+
+PindianStruct *ServerPlayer::pindianSelect(ServerPlayer *target, const QString &reason, const Card *card1) {
     LogMessage log;
     log.type = "#Pindian";
     log.from = this;
@@ -522,50 +523,55 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
 
     if (card1 == NULL || card2 == NULL) return false;
 
-    PindianStruct pindian_struct;
-    pindian_struct.from = this;
-    pindian_struct.to = target;
-    pindian_struct.from_card = card1;
-    pindian_struct.to_card = card2;
-    pindian_struct.from_number = card1->getNumber();
-    pindian_struct.to_number = card2->getNumber();
-    pindian_struct.reason = reason;
+    PindianStruct *pindian = new PindianStruct;
+    pindian->from = this;
+    pindian->to = target;
+    pindian->from_card = card1;
+    pindian->to_card = card2;
+    pindian->from_number = card1->getNumber();
+    pindian->to_number = card2->getNumber();
+    pindian->reason = reason;
 
     QList<CardsMoveStruct> pd_move;
     CardsMoveStruct move1;
-    move1.card_ids << pindian_struct.from_card->getEffectiveId();
-    move1.from = pindian_struct.from;
+    move1.card_ids << pindian->from_card->getEffectiveId();
+    move1.from = pindian->from;
     move1.to = NULL;
     move1.to_place = Player::PlaceTable;
-    CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, pindian_struct.from->objectName(), pindian_struct.to->objectName(),
-        pindian_struct.reason, QString());
+    CardMoveReason reason1(CardMoveReason::S_REASON_PINDIAN, pindian->from->objectName(), pindian->to->objectName(), pindian->reason, QString());
     move1.reason = reason1;
 
     CardsMoveStruct move2;
-    move2.card_ids << pindian_struct.to_card->getEffectiveId();
-    move2.from = pindian_struct.to;
+    move2.card_ids << pindian->to_card->getEffectiveId();
+    move2.from = pindian->to;
     move2.to = NULL;
     move2.to_place = Player::PlaceTable;
-    CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian_struct.to->objectName());
+    CardMoveReason reason2(CardMoveReason::S_REASON_PINDIAN, pindian->to->objectName());
     move2.reason = reason2;
 
     pd_move << move1 << move2;
 
-    room->moveCardsAtomic(pd_move, true);
-
     LogMessage log2;
     log2.type = "$PindianResult";
-    log2.from = pindian_struct.from;
-    log2.card_str = QString::number(pindian_struct.from_card->getEffectiveId());
+    log2.from = pindian->from;
+    log2.card_str = QString::number(pindian->from_card->getEffectiveId());
     room->sendLog(log2);
 
     log2.type = "$PindianResult";
-    log2.from = pindian_struct.to;
-    log2.card_str = QString::number(pindian_struct.to_card->getEffectiveId());
+    log2.from = pindian->to;
+    log2.card_str = QString::number(pindian->to_card->getEffectiveId());
     room->sendLog(log2);
 
+    room->moveCardsAtomic(pd_move, true);
+
+    return pindian;
+}
+
+bool ServerPlayer::pindian(PindianStruct *pd){
+    Q_ASSERT(pd != NULL);
+    PindianStruct &pindian_struct = *pd;
     RoomThread *thread = room->getThread();
-    PindianStruct *pindian_star = &pindian_struct;
+    PindianStruct *pindian_star = pd;
     QVariant data = QVariant::fromValue(pindian_star);
     Q_ASSERT(thread != NULL);
     thread->trigger(PindianVerifying, room, this, data);
@@ -575,10 +581,11 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     pindian_struct.to_number = new_star->to_number;
     pindian_struct.success = (new_star->from_number > new_star->to_number);
 
+    LogMessage log;
     log.type = pindian_struct.success ? "#PindianSuccess" : "#PindianFailure";
     log.from = this;
     log.to.clear();
-    log.to << target;
+    log.to << pd->to;
     log.card_str.clear();
     room->sendLog(log);
 
@@ -586,17 +593,17 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
     arg[0] = (int)S_GAME_EVENT_REVEAL_PINDIAN;
     arg[1] = toJsonString(objectName());
     arg[2] = pindian_struct.from_card->getEffectiveId();
-    arg[3] = toJsonString(target->objectName());
+    arg[3] = toJsonString(pd->to->objectName());
     arg[4] = pindian_struct.to_card->getEffectiveId();
     arg[5] = pindian_struct.success;
-    arg[6] = toJsonString(reason);
+    arg[6] = toJsonString(pd->reason);
     room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
 
     pindian_star = &pindian_struct;
     data = QVariant::fromValue(pindian_star);
     thread->trigger(Pindian, room, this, data);
 
-    pd_move.clear();
+    QList<CardsMoveStruct> pd_move;
 
     if (room->getCardPlace(pindian_struct.from_card->getEffectiveId()) == Player::PlaceTable) {
         CardsMoveStruct move1;
@@ -625,14 +632,17 @@ bool ServerPlayer::pindian(ServerPlayer *target, const QString &reason, const Ca
         room->moveCardsAtomic(pd_move, true);
 
     QVariant decisionData = QVariant::fromValue(QString("pindian:%1:%2:%3:%4:%5")
-        .arg(reason)
+        .arg(pd->reason)
         .arg(this->objectName())
         .arg(pindian_struct.from_card->getEffectiveId())
-        .arg(target->objectName())
+        .arg(pd->to->objectName())
         .arg(pindian_struct.to_card->getEffectiveId()));
     thread->trigger(ChoiceMade, room, this, decisionData);
 
-    return pindian_struct.success;
+
+    bool r = pindian_struct.success;
+    delete pd;
+    return r;
 }
 
 void ServerPlayer::turnOver() {
@@ -1317,7 +1327,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
                 Json::Value arg(Json::arrayValue);
                 arg[0] = toJsonString(objectName());
                 arg[1] = toJsonString(skill->getLimitMark());
-                arg[2] = 1;
+                arg[2] = getMark(skill->getLimitMark());
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
             }
         }
@@ -1385,7 +1395,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
                     Json::Value arg(Json::arrayValue);
                     arg[0] = toJsonString(objectName());
                     arg[1] = toJsonString(skill->getLimitMark());
-                    arg[2] = 1;
+                    arg[2] = getMark(skill->getLimitMark());
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
                 }
             }

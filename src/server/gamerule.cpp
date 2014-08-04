@@ -111,8 +111,9 @@ GameRule::GameRule(QObject *parent)
         << BeforeGameOverJudge << GameOverJudge
         << SlashHit << SlashEffected << SlashProceed
         << ConfirmDamage << DamageDone << DamageComplete
-        << StartJudge << FinishRetrial << FinishJudge
-        << ChoiceMade << GeneralShown;
+        << FinishRetrial << FinishJudge
+        << ChoiceMade << GeneralShown
+        << CardsMoveOneTime;
 
     QList<Skill *> list;
     list << new GameRule_AskForGeneralShowHead;
@@ -685,25 +686,6 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
 
         break;
     }
-    case StartJudge: {
-        int card_id = room->drawCard();
-
-        JudgeStruct *judge = data.value<JudgeStruct *>();
-        judge->card = Sanguosha->getCard(card_id);
-
-        LogMessage log;
-        log.type = "$InitialJudge";
-        log.from = player;
-        log.card_str = QString::number(judge->card->getEffectiveId());
-        room->sendLog(log);
-
-        room->moveCardTo(judge->card, NULL, judge->who, Player::PlaceJudge,
-            CardMoveReason(CardMoveReason::S_REASON_JUDGE,
-            judge->who->objectName(),
-            QString(), QString(), judge->reason), true);
-        judge->updateResult();
-        break;
-    }
     case FinishRetrial: {
         JudgeStruct *judge = data.value<JudgeStruct *>();
 
@@ -786,6 +768,15 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                 room->removePlayerMark(player, "HalfMaxHpLeft");
             }
         }
+    }
+    case CardsMoveOneTime: {
+        if (data.canConvert<CardsMoveOneTimeStruct>()) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            if (move.from_places.contains(Player::DrawPile) && room->getDrawPile().isEmpty())
+                room->swapPile();
+        }
+
+        break;
     }
     default:
         break;

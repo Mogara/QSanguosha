@@ -1090,26 +1090,35 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *zhurong, QVariant &data, ServerPlayer *) const{
         if (zhurong->askForSkillInvoke(objectName(), data)){
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, zhurong->objectName(), data.value<DamageStruct>().to->objectName());
+            DamageStruct damage = data.value<DamageStruct>();
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, zhurong->objectName(), damage.to->objectName());
             room->broadcastSkillInvoke(objectName(), 1);
+            PindianStruct *pd = zhurong->pindianSelect(damage.to, "lieren");
+            zhurong->tag["lieren_pd"] = QVariant::fromValue(pd);
             return true;
         }
         return false;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhurong, QVariant &data, ServerPlayer *) const{
-        DamageStruct damage = data.value<DamageStruct>();
-        ServerPlayer *target = damage.to;
+        PindianStruct *pd = zhurong->tag["lieren_pd"].value<PindianStruct *>();
+        zhurong->tag.remove("lieren_pd");
+        if (pd != NULL){
+            ServerPlayer *target = pd->to;
 
-        bool success = zhurong->pindian(target, "lieren", NULL);
-        if (!success) return false;
+            bool success = zhurong->pindian(pd);
+            pd = NULL;
+            if (!success) return false;
 
-        room->broadcastSkillInvoke(objectName(), 2);
-        if (!target->isNude()) {
-            int card_id = room->askForCardChosen(zhurong, target, "he", objectName());
-            CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, zhurong->objectName());
-            room->obtainCard(zhurong, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
+            room->broadcastSkillInvoke(objectName(), 2);
+            if (!target->isNude()) {
+                int card_id = room->askForCardChosen(zhurong, target, "he", objectName());
+                CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, zhurong->objectName());
+                room->obtainCard(zhurong, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
+            }
         }
+        else
+            Q_ASSERT(false);
 
         return false;
     }

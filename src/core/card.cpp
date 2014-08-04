@@ -712,6 +712,10 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
         room->moveCardTo(this, player, NULL, Player::DiscardPile, reason, true);
     }
 
+    QString skill_name = card_use.card->showSkill();
+    if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
+        card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+
     thread->trigger(CardUsed, room, player, data);
     thread->trigger(CardFinished, room, player, data);
 }

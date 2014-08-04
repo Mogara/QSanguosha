@@ -646,6 +646,10 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
         log.card_str = card_use.card->toString();
         room->sendLog(log);
 
+        QString skill_name = card_use.card->showSkill();
+        if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
+            card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+
         card_use.from->drawCards(1);
     }
     else
@@ -829,6 +833,10 @@ void KnownBoth::onUse(Room *room, const CardUseStruct &card_use) const{
         log.from = card_use.from;
         log.card_str = card_use.card->toString();
         room->sendLog(log);
+
+        QString skill_name = card_use.card->showSkill();
+        if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
+            card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
 
         card_use.from->drawCards(1);
     }

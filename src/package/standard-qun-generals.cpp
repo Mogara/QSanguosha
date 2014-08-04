@@ -200,6 +200,9 @@ void LijianCard::onUse(Room *room, const CardUseStruct &card_use) const{
     CardMoveReason reason(CardMoveReason::S_REASON_THROW, diaochan->objectName(), QString(), "lijian", QString());
     room->moveCardTo(this, diaochan, NULL, Player::DiscardPile, reason, true);
 
+    if (diaochan->ownSkill("lijian") && !diaochan->hasShownSkill("lijian"))
+        diaochan->showGeneral(diaochan->inHeadSkills("lijian"));
+
     thread->trigger(CardUsed, room, diaochan, data);
     thread->trigger(CardFinished, room, diaochan, data);
 }
@@ -692,19 +695,15 @@ public:
 
         if (card) {
             room->broadcastSkillInvoke(objectName());
-            player->tag["guidao_card"] = QVariant::fromValue(card);
+            room->retrial(card, player, judge, objectName(), true);
             return true;
         }
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer *) const{
         JudgeStruct *judge = data.value<JudgeStruct *>();
-        const Card *card = player->tag["guidao_card"].value<const Card *>();
-
-        if (card != NULL) {
-            room->retrial(card, player, judge, objectName(), true);
-        }
+        judge->updateResult();
         return false;
     }
 };
@@ -1106,23 +1105,26 @@ public:
         ServerPlayer *victim;
         if ((victim = room->askForPlayerChosen(jiling, targets, "shuangren", "@shuangren", true, true)) != NULL){
             room->broadcastSkillInvoke(objectName(), 1);
-            jiling->tag["shuangren_target"] = QVariant::fromValue(victim);
+            PindianStruct *pd = jiling->pindianSelect(victim, "shuangren");
+            jiling->tag["shuangren_pd"] = QVariant::fromValue(pd);
             return true;
         }
         return false;
     }
 
     virtual bool onPhaseChange(ServerPlayer *jiling) const{
-        ServerPlayer *target = jiling->tag["shuangren_target"].value<ServerPlayer *>();
-        if (target != NULL){
-            bool success = jiling->pindian(target, "shuangren", NULL);
+        PindianStruct *pd = jiling->tag["shuangren_pd"].value<PindianStruct *>();
+        jiling->tag.remove("shuangren_pd");
+        if (pd != NULL){
+            ServerPlayer *target = pd->to;
+            bool success = jiling->pindian(pd);
+            pd = NULL;
             Room *room = jiling->getRoom();
             if (success) {
                 QList<ServerPlayer *> targets;
                 foreach(ServerPlayer *p, room->getAlivePlayers()){
-                    if (jiling->canSlash(p, NULL, false) && (p->isFriendWith(target) || target == p)){
+                    if (jiling->canSlash(p, NULL, false) && (p->isFriendWith(target) || target == p))
                         targets << p;
-                    }
                 }
                 if (targets.isEmpty())
                     return false;
@@ -1137,6 +1139,8 @@ public:
                 return true;
             }
         }
+        else
+            Q_ASSERT(false);
         return false;
     }
 

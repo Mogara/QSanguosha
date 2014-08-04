@@ -321,9 +321,9 @@ public:
 
     void setNext(Player *next);
     void setNext(const QString &next);
-    Player *getNext(bool ignoreRemoved = false) const;
+    Player *getNext(bool ignoreRemoved = true) const;
     QString getNextName() const;
-    Player *getLast(bool ignoreRemoved = false) const;
+    Player *getLast(bool ignoreRemoved = true) const;
     Player *getNextAlive(int n = 1, bool ignoreRemoved = true) const;
     Player *getLastAlive(int n = 1, bool ignoreRemoved = true) const;
 
