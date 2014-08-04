@@ -40,29 +40,33 @@ class Client : public QObject {
 
 public:
     enum Status {
-        NotActive = 0x0000,
-        Responding = 0x0001,
-        Playing = 0x0002,
-        Discarding = 0x0003,
-        Exchanging = 0x0004,
-        ExecDialog = 0x0005,
-        AskForSkillInvoke = 0x0006,
-        AskForAG = 0x0007,
-        AskForPlayerChoose = 0x0008,
-        AskForYiji = 0x0009,
-        AskForGuanxing = 0x000A,
-        AskForGongxin = 0x000B,
-        AskForShowOrPindian = 0x000C,
-        AskForGeneralChosen = 0x000D,
-        AskForArrangement = 0x000E,
-        AskForChoice = 0x000F,
-        AskForTriggerOrder = 0x0010,
+        NotActive = 0x010000,
+        Responding = 0x000001,
+        Playing = 0x000002,
+        Discarding = 0x000003,
+        Exchanging = 0x000004,
+        ExecDialog = 0x000005,
+        AskForSkillInvoke = 0x000006,
+        AskForAG = 0x000007,
+        AskForPlayerChoose = 0x000008,
+        AskForYiji = 0x000009,
+        AskForGuanxing = 0x00000A,
+        AskForGongxin = 0x00000B,
+        AskForShowOrPindian = 0x00000C,
+        AskForGeneralChosen = 0x01000D,
+        AskForArrangement = 0x00000E,
+        AskForChoice = 0x01000F,
+        AskForTriggerOrder = 0x010010,
+        AskForCardChosen = 0x010011,
 
-        RespondingUse = 0x0101,
-        RespondingForDiscard = 0x0201,
-        RespondingNonTrigger = 0x0301,
+        RespondingUse = 0x000101,
+        RespondingForDiscard = 0x000201,
+        RespondingNonTrigger = 0x000301,
 
-        ClientStatusBasicMask = 0x00FF
+        ClientStatusBasicMask = 0x0000FF,
+        ClientStatusFeatureMask = 0xFF0000,
+
+        StatusHasOwnProgressBar = 0x010000
     };
 
     explicit Client(QObject *parent, const QString &filename = QString());

@@ -104,6 +104,7 @@ SOURCES += \
     src/ui/Title.cpp \
     src/ui/BubbleChatBox.cpp \
     src/ui/StyleHelper.cpp \
+    src/ui/PlayerCardBox.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
@@ -209,6 +210,7 @@ HEADERS += \
     src/ui/Title.h \
     src/ui/BubbleChatBox.h \
     src/ui/StyleHelper.h \
+    src/ui/PlayerCardBox.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \

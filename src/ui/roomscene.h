@@ -43,6 +43,7 @@ class ChooseGeneralBox;
 class ChooseOptionsBox;
 class ChooseTriggerOrderBox;
 class BubbleChatBox;
+class PlayerCardBox;
 struct RoomLayout;
 
 #include <QGraphicsScene>
@@ -263,6 +264,8 @@ private:
     ChooseOptionsBox *choose_options_box;
 
     ChooseTriggerOrderBox *chooseTriggerOrderBox;
+
+    PlayerCardBox *playerCardBox;
 
     QList<CardItem *> gongxin_items;
 

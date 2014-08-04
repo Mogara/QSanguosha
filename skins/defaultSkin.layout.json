@@ -79,7 +79,9 @@
 	
 	"optionButtonText": ["wqy-microhei", [18, 18, 0], 0, [255, 255, 255, 255], 1, 10, [0, 0], [50, 50, 50, 200]],
 	"generalButtonPositionIconRegion": [-1, 2, 29, 24],
-	"generalButtonNameRegion": [26, 0, 60, 23]
+	"generalButtonNameRegion": [26, 0, 60, 23],
+	
+	"playerCardBoxPlaceNameText": ["@wqy-microhei", 16, 2, [228, 213, 160]]
 },
 "room":
 {
