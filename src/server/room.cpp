@@ -407,7 +407,22 @@ void Room::judge(JudgeStruct &judge_struct) {
 
     setTag("judge", getTag("judge").toInt() + 1);
 
-    thread->trigger(StartJudge, this, judge_star->who, data);
+    if (!thread->trigger(StartJudge, this, judge_star->who, data)){
+        int card_id = drawCard();
+
+        judge_struct.card = Sanguosha->getCard(card_id);
+
+        LogMessage log;
+        log.type = "$InitialJudge";
+        log.from = judge_struct.who;
+        log.card_str = QString::number(judge_struct.card->getEffectiveId());
+        sendLog(log);
+
+        moveCardTo(judge_struct.card, NULL, judge_struct.who, Player::PlaceJudge, 
+            CardMoveReason(CardMoveReason::S_REASON_JUDGE, judge_struct.who->objectName(), QString(), QString(), judge_struct.reason), true);
+    }
+
+    judge_struct.updateResult();
 
     QList<ServerPlayer *> players = getAllPlayers();
     foreach(ServerPlayer *player, players) {
