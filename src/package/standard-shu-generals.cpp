@@ -1100,7 +1100,7 @@ public:
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhurong, QVariant &data, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *zhurong, QVariant &, ServerPlayer *) const{
         PindianStruct *pd = zhurong->tag["lieren_pd"].value<PindianStruct *>();
         zhurong->tag.remove("lieren_pd");
         if (pd != NULL){
