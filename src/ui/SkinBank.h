@@ -315,6 +315,9 @@ public:
         //General Button
         QRect generalButtonPositionIconRegion;
         QRect generalButtonNameRegion;
+
+        //Player Card Box
+        QSanSimpleTextFont playerCardBoxPlaceNameText;
     };
 
     enum GeneralIconSize {
