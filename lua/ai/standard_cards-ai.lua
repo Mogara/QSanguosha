@@ -240,7 +240,7 @@ function sgs.getDefenseSlash(player, self)
 
 		local m = sgs.masochism_skill:split("|")
 		for _, masochism in ipairs(m) do
-			if sgs.hasNullSkill(masochism, player)
+			if sgs.hasNullSkill(masochism, player) then
 				defense = defense - 1
 			end
 		end
