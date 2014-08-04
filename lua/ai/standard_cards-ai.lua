@@ -291,25 +291,24 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 		end
 	end
 	if not self:damageIsEffective_(damage) then return false end
-
-	if IgnoreArmor(from, to) or ignore_armor then
-		return true
+	
+	if to:hasSkill("jgyizhong") and not to:getArmor() and slash:isBlack() then
+		return false
 	end
 
-	if to:hasArmorEffect("RenwangShield") and slash:isBlack() then return false end
-	if to:hasSkill("jgyizhong") and not to:getArmor() then
-		if slash:isBlack() then
-			return false
+	if ignore_armor or IgnoreArmor(from, to) then
+
+		if to:hasArmorEffect("RenwangShield") and slash:isBlack() then return false end
+
+		if to:hasArmorEffect("Vine") and not slash:isKindOf("NatureSlash") then
+			local skill_name = slash:getSkillName() or ""
+			local can_convert = false
+			local skill = sgs.Sanguosha:getSkill(skill_name)
+			if not skill or skill:inherits("FilterSkill") then
+				can_convert = true
+			end
+			if not can_convert or not from:hasWeapon("Fan") then return false end
 		end
-	end
-	if to:hasArmorEffect("Vine") and not slash:isKindOf("NatureSlash") then
-		local skill_name = slash:getSkillName() or ""
-		local can_convert = false
-		local skill = sgs.Sanguosha:getSkill(skill_name)
-		if not skill or skill:inherits("FilterSkill") then
-			can_convert = true
-		end
-		if not can_convert or not from:hasWeapon("Fan") then return false end
 	end
 
 	if slash:isKindOf("ThunderSlash") then
