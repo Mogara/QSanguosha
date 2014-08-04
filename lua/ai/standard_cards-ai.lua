@@ -237,6 +237,14 @@ function sgs.getDefenseSlash(player, self)
 		elseif sgs.hasNullSkill("lijian", player) then
 			defense = defense - 3.2
 		end
+
+		local m = sgs.masochism_skill:split("|")
+		for _, masochism in ipairs(m) do
+			if sgs.hasNullSkill(masochism, player)
+				defense = defense - 1
+			end
+		end
+
 	end
 	return defense
 end
