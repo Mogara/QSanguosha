@@ -20,6 +20,7 @@
 
 #include "strategic-advantage.h"
 #include "skill.h"
+#include "engine.h"
 
 Blade::Blade(Card::Suit suit, int number)
     : Weapon(suit, number, 3){
@@ -117,14 +118,29 @@ void Drowning::onUse(Room *room, const CardUseStruct &card_use) const{
         foreach(ServerPlayer *player, other_players) {
             if (!player->hasEquip())
                 continue;
-            targets << player;
+            const Skill *skill = room->isProhibited(source, player, this);
+            if (skill) {
+                if (!skill->isVisible())
+                    skill = Sanguosha->getMainSkill(skill->objectName());
+                if (skill->isVisible()) {
+                    LogMessage log;
+                    log.type = "#SkillAvoid";
+                    log.from = player;
+                    log.arg = skill->objectName();
+                    log.arg2 = objectName();
+                    room->sendLog(log);
+
+                    room->broadcastSkillInvoke(skill->objectName());
+                }
+            } else
+                targets << player;
         }
     } else
         targets = card_use.to;
 
     CardUseStruct use = card_use;
     use.to = targets;
-    AOE::onUse(room, use);
+    TrickCard::onUse(room, use);
 }
 
 void Drowning::onEffect(const CardEffectStruct &effect) const{
