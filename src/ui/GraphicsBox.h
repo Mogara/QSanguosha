@@ -32,10 +32,13 @@ public :
 
     static void paintGraphicsBoxStyle(QPainter *painter, const QString &title, const QRectF &rect);
     static void stylize(QGraphicsObject *target);
+    static void moveToCenter(QGraphicsObject *target);
 
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual QRectF boundingRect() const = 0;
+
+    void moveToCenter();
 
     QString title;
 };

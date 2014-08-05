@@ -53,7 +53,7 @@ void GuanxingBox::doGuanxing(const QList<int> &cardIds, bool up_only) {
 
     itemCount = upItems.length();
     update();
-    setPos(RoomSceneInstance->tableCenterPos() - QPointF(boundingRect().width() / 2, boundingRect().height() / 2));
+    GraphicsBox::moveToCenter(this);
     show();
 
     int cardWidth = G_COMMON_LAYOUT.m_cardNormalWidth;

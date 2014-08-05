@@ -74,7 +74,6 @@ private:
     static const int verticalBlankWidth = 37;
     static const int placeNameAreaWidth = 15;
     static const int intervalBetweenNameAndCard = 20;
-    static const int topDarkBar = 27;
     static const int topBlankWidth = 42;
     static const int bottomBlankWidth = 25;
     static const int intervalBetweenAreas = 10;

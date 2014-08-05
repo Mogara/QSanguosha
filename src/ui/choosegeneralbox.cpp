@@ -20,13 +20,16 @@
 
 #include "choosegeneralbox.h"
 #include "engine.h"
-#include "roomscene.h"
 #include "SkinBank.h"
 #include "choosegeneraldialog.h"
 #include "banpair.h"
 #include "button.h"
+#include "client.h"
+#include "clientplayer.h"
 
 #include <QApplication>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsProxyWidget>
 
 GeneralCardItem::GeneralCardItem(const QString &generalName)
     : CardItem(generalName), hasCompanion(false)
@@ -283,7 +286,7 @@ void ChooseGeneralBox::chooseGeneral(QStringList _generals) {
         general_item->setParentItem(this);
     }
 
-    setPos(RoomSceneInstance->tableCenterPos() - QPointF(boundingRect().width() / 2, boundingRect().height() / 2));
+    GraphicsBox::moveToCenter(this);
     show();
 
     int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;

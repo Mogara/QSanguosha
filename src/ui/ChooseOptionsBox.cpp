@@ -20,8 +20,11 @@
 
 #include "ChooseOptionsBox.h"
 #include "engine.h"
-#include "roomscene.h"
 #include "button.h"
+#include "client.h"
+#include "clientstruct.h"
+
+#include <QGraphicsProxyWidget>
 
 ChooseOptionsBox::ChooseOptionsBox()
     : optionsNumber(0), progressBar(NULL)
@@ -89,7 +92,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
                                .arg(tooltip));
     }
 
-    setPos(RoomSceneInstance->tableCenterPos() - QPointF(boundingRect().width() / 2, boundingRect().height() / 2));
+    moveToCenter();
     show();
 
     for (int i = 0; i < buttons.length(); ++i) {

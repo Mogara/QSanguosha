@@ -20,9 +20,15 @@
 
 #include "ChooseTriggerOrderBox.h"
 #include "engine.h"
-#include "roomscene.h"
 #include "button.h"
 #include "SkinBank.h"
+#include "client.h"
+#include "clientplayer.h"
+#include "TimedProgressBar.h"
+
+#include <QGraphicsSceneMouseEvent>
+#include <QPropertyAnimation>
+#include <QGraphicsProxyWidget>
 
 static qreal initialOpacity = 0.8;
 static int optionButtonHeight = 40;
@@ -307,7 +313,7 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
         optionButtons << button;
     }
 
-    setPos(RoomSceneInstance->tableCenterPos() - QPointF(boundingRect().width() / 2, boundingRect().height() / 2));
+    moveToCenter();
     show();
 
     int y = top_blank_width;
