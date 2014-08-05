@@ -63,7 +63,7 @@ public:
         RespondingForDiscard = 0x000201,
         RespondingNonTrigger = 0x000301,
 
-        ClientStatusBasicMask = 0x0000FF,
+        ClientStatusBasicMask = 0xFF00FF,
         ClientStatusFeatureMask = 0xFF0000,
 
         StatusHasOwnProgressBar = 0x010000
