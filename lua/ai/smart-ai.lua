@@ -4410,7 +4410,6 @@ end
 function IgnoreArmor(from, to)
 	if not from or not to then global_room:writeToConsole(debug.traceback()) return end
 	if not to:getArmor() then return true end
-	to:speak(to:getArmor():objectName())
 	if not to:hasArmorEffect(to:getArmor():objectName()) or from:hasWeapon("QinggangSword") then
 		return true
 	end
