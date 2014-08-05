@@ -847,6 +847,15 @@
     <ClCompile Include="..\..\src\ui\StyleHelper.cpp">
       <Filter>ui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ui\PlayerCardBox.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_PlayerCardBox.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_PlayerCardBox.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1096,6 +1105,9 @@
       <Filter>ui</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\BubbleChatBox.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\PlayerCardBox.h">
       <Filter>ui</Filter>
     </CustomBuild>
   </ItemGroup>
