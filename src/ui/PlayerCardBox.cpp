@@ -228,11 +228,14 @@ void PlayerCardBox::updateNumbers(const int &cardNumber)
 
 void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
 {
+    QList<CardItem *> oldItemsCopy = items;
     foreach(const Card *card, cards) {
         CardItem *item = new CardItem(card);
         item->resetTransform();
         item->setParentItem(this);
         item->setFlag(ItemIsMovable, false);
+        item->setAcceptDrops(false);
+        item->setAcceptHoverEvents(true);
         item->setEnabled(!disabledIds.contains(item->getId())
                          && (method != Card::MethodDiscard
                              || Self->canDiscard(player, item->getId())));
@@ -254,10 +257,13 @@ void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
         if (row != rows - 1)
             count = maxCardNumberInOneRow;
         else
-            count = itemsCopy.size();
+            count = itemsCopy.size() - oldItemsCopy.size();
         const double step = qMin((double)cardWidth, (double)(maxWidth - cardWidth) / (count - 1));
         for(int i = 0; i < count; ++ i) {
-            CardItem *item = itemsCopy.takeFirst();
+            CardItem *item = NULL;
+            do {
+                item = itemsCopy.takeFirst();
+            } while (oldItemsCopy.contains(item));
             const double x = topLeft.x() + step * i;
             const double y = topLeft.y() + (cardHeight + intervalBetweenRows) * row;
             item->setPos(x, y);
@@ -276,13 +282,3 @@ void PlayerCardBox::reply()
         ClientInstance->onPlayerChooseCard();
     clear();
 }
-/*    QString name = sender()->objectName();
-    if (name.isEmpty())
-        return ClientInstance->onPlayerChooseCard();
-
-    bool ok = true;
-    int id = sender()->objectName().toInt(&ok);
-
-    Q_ASSERT(ok);
-    ClientInstance->onPlayerChooseCard(id);
-}*/
