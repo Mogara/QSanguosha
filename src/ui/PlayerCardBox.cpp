@@ -60,7 +60,7 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
         handcard = true;
     }
 
-    if (flags.contains(equipmentFlag) && !player->getEquips().isEmpty()) {
+    if (flags.contains(equipmentFlag) && player->hasEquip()) {
         updateNumbers(player->getEquips().length());
         equip = true;
     }
@@ -184,8 +184,6 @@ void PlayerCardBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
 void PlayerCardBox::clear()
 {
-    hide();
-
     if (progressBar != NULL) {
         progressBar->hide();
         progressBar->deleteLater();
@@ -261,7 +259,11 @@ void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
             count = maxCardNumberInOneRow;
         else
             count = areaItems.size();
-        const double step = qMin((double)cardWidth, (double)(maxWidth - cardWidth) / (count - 1));
+        double step = 0;
+        if (count > 1)
+            step = qMin((double)cardWidth, (double)(maxWidth - cardWidth) / (count - 1));
+        else
+            step = cardWidth;
         for(int i = 0; i < count; ++ i) {
             CardItem *item = areaItems.takeFirst();
             const double x = topLeft.x() + step * i;

@@ -39,6 +39,7 @@ public:
                const QString &flags = "hej", bool handcardVisible = false,
                Card::HandlingMethod method = Card::MethodNone,
                const QList<int> &disabledIds = QList<int>());
+    void clear();
 
 protected:
     // GraphicsBox interface
@@ -47,7 +48,6 @@ protected:
 
 private:
     void paintArea(const QString &name, QPainter *painter);
-    void clear();
     int getRowCount(const int &cardNumber) const;
     void updateNumbers(const int &cardNumber);
     void arrangeCards(const CardList &cards, const QPoint &topLeft);
