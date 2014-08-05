@@ -136,10 +136,13 @@ QRectF PlayerCardBox::boundingRect() const
 
     int width = verticalBlankWidth * 2 + placeNameAreaWidth + intervalBetweenNameAndCard;
 
-    if (maxCardsInOneRow > maxCardNumberInOneRow / 2)
-        width += cardWidth * maxCardNumberInOneRow / 2;
-    else
-        width += cardWidth * maxCardsInOneRow;
+    if (maxCardsInOneRow > maxCardNumberInOneRow / 2) {
+        width += cardWidth * maxCardNumberInOneRow / 2
+                + intervalBetweenCards * (maxCardNumberInOneRow / 2 - 1);
+    } else {
+        width += cardWidth * maxCardsInOneRow
+                + intervalBetweenCards * (maxCardsInOneRow - 1);
+    }
 
     int height = topBlankWidth + bottomBlankWidth + cardHeight * rowCount
             + intervalsBetweenAreas * qMax(intervalBetweenAreas, 0)
@@ -254,7 +257,8 @@ void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
     const int rows = (n + maxCardNumberInOneRow - 1) / maxCardNumberInOneRow;
     const int cardWidth = G_COMMON_LAYOUT.m_cardNormalWidth;
     const int cardHeight = G_COMMON_LAYOUT.m_cardNormalHeight;
-    const int maxWidth = qMin(maxCardsInOneRow, maxCardNumberInOneRow / 2) * cardWidth;
+    const int min = qMin(maxCardsInOneRow, maxCardNumberInOneRow / 2);
+    const int maxWidth = min * cardWidth + intervalBetweenCards * (min - 1);
     for(int row = 0; row < rows; ++ row) {
         int count = 0;
         if (row != rows - 1)
@@ -262,10 +266,12 @@ void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
         else
             count = areaItems.size();
         double step = 0;
-        if (count > 1)
-            step = qMin((double)cardWidth, (double)(maxWidth - cardWidth) / (count - 1));
-        else
+        if (count > 1) {
+            step = qMin((double)cardWidth + intervalBetweenCards,
+                        (double)(maxWidth - cardWidth) / (count - 1));
+        } else {
             step = cardWidth;
+        }
         for(int i = 0; i < count; ++ i) {
             CardItem *item = areaItems.takeFirst();
             const double x = topLeft.x() + step * i;

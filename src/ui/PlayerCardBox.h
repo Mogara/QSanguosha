@@ -78,6 +78,7 @@ private:
     static const int bottomBlankWidth = 25;
     static const int intervalBetweenAreas = 10;
     static const int intervalBetweenRows = 5;
+    static const int intervalBetweenCards = 3;
 
 public slots:
     void reply();
