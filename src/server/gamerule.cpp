@@ -802,7 +802,6 @@ void GameRule::rewardAndPunish(ServerPlayer *killer, ServerPlayer *victim) const
 
 QString GameRule::getWinner(ServerPlayer *victim) const{
     Room *room = victim->getRoom();
-    QString winner;
     QStringList winners;
     QList<ServerPlayer *> players = room->getAlivePlayers();
     ServerPlayer *win_player = players.first();
@@ -849,6 +848,9 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
                 QString kingdom;
                 if (p->hasShownOneGeneral())
                     kingdom = p->getKingdom();
+                else if (!lords.isEmpty())
+                    return QString(); // if hasLord() and there are someone haven't shown its kingdom, it means this one could kill
+                                      // the lord to become careerist.
                 else
                     kingdom = p->getActualGeneral1()->getKingdom();
                 if (lords.contains(kingdom)) continue;
@@ -858,7 +860,7 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
                     kingdoms[kingdom] ++;
                 if (p->isAlive() && !p->hasShownOneGeneral() && kingdoms[kingdom] > room->getPlayers().length() / 2) {
                     has_diff_kingdoms = true;
-                    break;  //活着的人里面有没亮的野心家，呵呵一笑。
+                    break;  //has careerist, hehe
                 }
             }
         }
@@ -878,8 +880,6 @@ QString GameRule::getWinner(ServerPlayer *victim) const{
                 winners << p->objectName();
         }
     }
-    winner = winners.join("+");
 
-
-    return winner;
+    return winners.join("+");
 }
