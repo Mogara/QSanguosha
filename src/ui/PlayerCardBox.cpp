@@ -184,6 +184,8 @@ void PlayerCardBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
 void PlayerCardBox::clear()
 {
+    hide();
+
     if (progressBar != NULL) {
         progressBar->hide();
         progressBar->deleteLater();
