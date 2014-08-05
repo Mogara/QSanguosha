@@ -53,7 +53,7 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
         handcard = true;
     }
 
-    if (flags.contains(equipmentFlag) && !player->getEquips().isEmpty()) {
+    if (flags.contains(equipmentFlag) && player->hasEquip()) {
         updateNumbers(player->getEquips().length());
         equip = true;
     }
@@ -176,9 +176,7 @@ void PlayerCardBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
 void PlayerCardBox::clear()
 {
-    hide();
-
-    if (progressBar != NULL){
+    if (progressBar != NULL) {
         progressBar->hide();
         progressBar->deleteLater();
         progressBar = NULL;
@@ -189,7 +187,7 @@ void PlayerCardBox::clear()
     player = NULL;
     flags.clear();
 
-    foreach(CardItem *item, items)
+    foreach (CardItem *item, items)
         item->deleteLater();
     items.clear();
 
@@ -198,6 +196,10 @@ void PlayerCardBox::clear()
     intervalsBetweenAreas = -1;
     intervalsBetweenRows = 0;
     maxCardsInOneRow = 0;
+
+    update();
+
+    hide();
 }
 
 int PlayerCardBox::getRowCount(const int &cardNumber) const
@@ -235,6 +237,7 @@ void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
         item->setParentItem(this);
         item->setFlag(ItemIsMovable, false);
         item->setAutoBack(false);
+        item->setOuterGlowEffectEnabled(true);
         item->setEnabled(!disabledIds.contains(item->getId())
                          && (method != Card::MethodDiscard
                              || Self->canDiscard(player, item->getId())));

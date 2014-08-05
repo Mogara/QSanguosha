@@ -2344,6 +2344,14 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
             choose_general_box->clear();
             break;
         }
+        case Client::AskForChoice: {
+            choose_options_box->clear();
+            break;
+        }
+        case Client::AskForCardChosen: {
+            playerCardBox->clear();
+            break;
+        }
         default:
             break;
         }
