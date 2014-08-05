@@ -232,12 +232,11 @@ void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
         CardItem *item = new CardItem(card);
         item->resetTransform();
         item->setParentItem(this);
-        item->setObjectName(QString::number(card->getId()));
         item->setFlag(ItemIsMovable, false);
-        item->setEnabled(!disabledIds.contains(card->getEffectiveId())
+        item->setEnabled(!disabledIds.contains(item->getId())
                          && (method != Card::MethodDiscard
-                || Self->canDiscard(player, card->getEffectiveId())));
-        connect(item, SIGNAL(clicked()), SLOT(reply()));
+                             || Self->canDiscard(player, item->getId())));
+        connect(item, SIGNAL(clicked()), this, SLOT(reply()));
         items << item;
     }
 
@@ -268,7 +267,16 @@ void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
 
 void PlayerCardBox::reply()
 {
-    QString name = sender()->objectName();
+    QString name;
+    if (sender()->inherits("CardItem")) {
+        CardItem *asender = qobject_cast<CardItem *>(sender());
+        int id = asender->getId();
+        ClientInstance->onPlayerChooseCard(id);
+    } else
+        ClientInstance->onPlayerChooseCard();
+    clear();
+}
+/*    QString name = sender()->objectName();
     if (name.isEmpty())
         return ClientInstance->onPlayerChooseCard();
 
@@ -277,6 +285,4 @@ void PlayerCardBox::reply()
 
     Q_ASSERT(ok);
     ClientInstance->onPlayerChooseCard(id);
-
-    clear();
-}
+}*/

@@ -76,8 +76,7 @@ void CardItem::setCard(const Card *card) {
         Q_ASSERT(engineCard != NULL);
         setObjectName(engineCard->objectName());
         setToolTip(engineCard->getDescription());
-    }
-    else {
+    } else {
         m_cardId = Card::S_UNKNOWN_CARD_ID;
         setObjectName("unknown");
     }
