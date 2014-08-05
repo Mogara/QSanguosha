@@ -246,7 +246,7 @@ void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
         return;
 
     const int rows = (n + maxCardNumberInOneRow - 1) / maxCardNumberInOneRow;
-    QList<CardItem *> itemsCopy(items);
+    QList<CardItem *> itemsCopy = items;
     const int cardWidth = G_COMMON_LAYOUT.m_cardNormalWidth;
     const int cardHeight = G_COMMON_LAYOUT.m_cardNormalHeight;
     const int maxWidth = qMin(maxCardsInOneRow, maxCardNumberInOneRow / 2) * cardWidth;
@@ -257,12 +257,11 @@ void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
         else
             count = itemsCopy.size();
         const double step = qMin((double)cardWidth, (double)(maxWidth - cardWidth) / (count - 1));
-        for(int i = 0; i < maxCardNumberInOneRow; ++ i) {
-            CardItem *item = itemsCopy[0];
+        for(int i = 0; i < count; ++ i) {
+            CardItem *item = itemsCopy.takeFirst();
             const double x = topLeft.x() + step * i;
             const double y = topLeft.y() + (cardHeight + intervalBetweenRows) * row;
             item->setPos(x, y);
-            itemsCopy.removeAt(0);
         }
     }
 }
