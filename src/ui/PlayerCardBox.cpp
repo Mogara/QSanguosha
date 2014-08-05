@@ -234,8 +234,7 @@ void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
         item->resetTransform();
         item->setParentItem(this);
         item->setFlag(ItemIsMovable, false);
-        item->setAcceptDrops(false);
-        item->setAcceptHoverEvents(true);
+        item->setAutoBack(false);
         item->setEnabled(!disabledIds.contains(item->getId())
                          && (method != Card::MethodDiscard
                              || Self->canDiscard(player, item->getId())));
