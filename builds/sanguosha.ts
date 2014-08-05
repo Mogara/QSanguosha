@@ -2681,17 +2681,17 @@
     <message>
         <location filename="../src/ui/PlayerCardBox.cpp" line="161"/>
         <source>Handcard area</source>
-        <translation type="unfinished">手牌区域</translation>
+        <translation>手牌区域</translation>
     </message>
     <message>
         <location filename="../src/ui/PlayerCardBox.cpp" line="167"/>
         <source>Equip area</source>
-        <translation type="unfinished">装备区</translation>
+        <translation>装备区</translation>
     </message>
     <message>
         <location filename="../src/ui/PlayerCardBox.cpp" line="173"/>
         <source>Judging area</source>
-        <translation type="unfinished">判定区</translation>
+        <translation>判定区</translation>
     </message>
 </context>
 <context>
