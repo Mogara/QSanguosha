@@ -476,27 +476,27 @@
 <context>
     <name>ChooseGeneralBox</name>
     <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="109"/>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="112"/>
         <source>fight</source>
         <translation>出战</translation>
     </message>
     <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="169"/>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="172"/>
         <source>Please select the same nationality generals</source>
         <translation>请选择相同势力的武将</translation>
     </message>
     <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="168"/>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="171"/>
         <source>Please select one general</source>
         <translation>请选择一名武将</translation>
     </message>
     <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="191"/>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="194"/>
         <source>head_general</source>
         <translation>主将</translation>
     </message>
     <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="194"/>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="197"/>
         <source>deputy_general</source>
         <translation>副将</translation>
     </message>
@@ -517,7 +517,7 @@
 <context>
     <name>ChooseOptionsBox</name>
     <message>
-        <location filename="../src/ui/ChooseOptionsBox.cpp" line="47"/>
+        <location filename="../src/ui/ChooseOptionsBox.cpp" line="50"/>
         <source>Please choose:</source>
         <translation>请选择:</translation>
     </message>
@@ -525,7 +525,7 @@
 <context>
     <name>ChooseTriggerOrderBox</name>
     <message>
-        <location filename="../src/ui/ChooseTriggerOrderBox.cpp" line="193"/>
+        <location filename="../src/ui/ChooseTriggerOrderBox.cpp" line="199"/>
         <source>cancel</source>
         <translation>取消</translation>
     </message>
@@ -2679,17 +2679,17 @@
 <context>
     <name>PlayerCardBox</name>
     <message>
-        <location filename="../src/ui/PlayerCardBox.cpp" line="161"/>
+        <location filename="../src/ui/PlayerCardBox.cpp" line="172"/>
         <source>Handcard area</source>
         <translation>手牌区域</translation>
     </message>
     <message>
-        <location filename="../src/ui/PlayerCardBox.cpp" line="167"/>
+        <location filename="../src/ui/PlayerCardBox.cpp" line="178"/>
         <source>Equip area</source>
         <translation>装备区</translation>
     </message>
     <message>
-        <location filename="../src/ui/PlayerCardBox.cpp" line="173"/>
+        <location filename="../src/ui/PlayerCardBox.cpp" line="184"/>
         <source>Judging area</source>
         <translation>判定区</translation>
     </message>
