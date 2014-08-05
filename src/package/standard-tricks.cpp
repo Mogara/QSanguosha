@@ -943,17 +943,13 @@ bool BefriendAttacking::targetFilter(const QList<const Player *> &targets, const
     return to_select->hasShownOneGeneral() && !Self->isFriendWith(to_select);
 }
 
-bool BefriendAttacking::targetsFeasible(const QList<const Player *> &targets, const Player *) const {
-    return targets.length() > 0;
-}
-
 void BefriendAttacking::onEffect(const CardEffectStruct &effect) const {
     effect.to->drawCards(1);
     effect.from->drawCards(3);
 }
 
 bool BefriendAttacking::isAvailable(const Player *player) const {
-    return player->hasShownOneGeneral();
+    return player->hasShownOneGeneral() && TrickCard::isAvailable(player);
 }
 
 QStringList BefriendAttacking::checkTargetModSkillShow(const CardUseStruct &use) const{

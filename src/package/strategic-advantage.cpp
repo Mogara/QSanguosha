@@ -90,9 +90,26 @@ Breastplate::Breastplate(Card::Suit suit, int number)
 }
 
 Drowning::Drowning(Suit suit, int number)
-    : AOE(suit, number)
+    : SingleTargetTrick(suit, number)
 {
     setObjectName("drowning");
+}
+
+bool Drowning::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const {
+    int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
+    if (targets.length() >= total_num)
+        return false;
+
+    return to_select->hasEquip() && to_select != Self;
+}
+
+void Drowning::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    if (!effect.to->getEquips().isEmpty()
+        && room->askForChoice(effect.to, objectName(), "throw+damage", QVariant::fromValue(effect)) == "throw")
+        effect.to->throwAllEquips();
+    else
+        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to));
 }
 
 bool Drowning::isAvailable(const Player *player) const{
@@ -110,46 +127,46 @@ bool Drowning::isAvailable(const Player *player) const{
     return canUse && TrickCard::isAvailable(player);
 }
 
-void Drowning::onUse(Room *room, const CardUseStruct &card_use) const{
-    ServerPlayer *source = card_use.from;
-    QList<ServerPlayer *> targets;
-    if (card_use.to.isEmpty()) {
-        QList<ServerPlayer *> other_players = room->getOtherPlayers(source);
-        foreach(ServerPlayer *player, other_players) {
-            if (!player->hasEquip())
-                continue;
-            const Skill *skill = room->isProhibited(source, player, this);
-            if (skill) {
-                if (!skill->isVisible())
-                    skill = Sanguosha->getMainSkill(skill->objectName());
-                if (skill->isVisible()) {
-                    LogMessage log;
-                    log.type = "#SkillAvoid";
-                    log.from = player;
-                    log.arg = skill->objectName();
-                    log.arg2 = objectName();
-                    room->sendLog(log);
+QStringList Drowning::checkTargetModSkillShow(const CardUseStruct &use) const{
+    if (use.to.length() >= 2){
+        const ServerPlayer *from = use.from;
+        QList<const Skill *> skills = from->getSkillList(false, false);
+        QList<const TargetModSkill *> tarmods;
 
-                    room->broadcastSkillInvoke(skill->objectName());
-                }
-            } else
-                targets << player;
+        foreach(const Skill *skill, skills){
+            if (from->hasSkill(skill->objectName()) && skill->inherits("TargetModSkill")) {
+                const TargetModSkill *tarmod = qobject_cast<const TargetModSkill *>(skill);
+                tarmods << tarmod;
+            }
         }
-    } else
-        targets = card_use.to;
 
-    CardUseStruct use = card_use;
-    use.to = targets;
-    TrickCard::onUse(room, use);
-}
+        if (tarmods.isEmpty())
+            return QStringList();
 
-void Drowning::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.to->getRoom();
-    if (!effect.to->getEquips().isEmpty()
-        && room->askForChoice(effect.to, objectName(), "throw+damage", QVariant::fromValue(effect)) == "throw")
-        effect.to->throwAllEquips();
-    else
-        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to));
+        int n = use.to.length() - 1;
+        QList<const TargetModSkill *> tarmods_copy = tarmods;
+
+        foreach(const TargetModSkill *tarmod, tarmods_copy){
+            const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
+            if (from->hasShownSkill(main_skill)){
+                tarmods.removeOne(tarmod);
+                n -= tarmod->getExtraTargetNum(from, this);
+            }
+        }
+
+        if (tarmods.isEmpty() || n <= 0)
+            return QStringList();
+
+        tarmods_copy = tarmods;
+
+        QStringList shows;
+        foreach(const TargetModSkill *tarmod, tarmods_copy){
+            const Skill *main_skill = Sanguosha->getMainSkill(tarmod->objectName());
+            shows << main_skill->objectName();
+        }
+        return shows;
+    }
+    return QStringList();
 }
 
 StrategicAdvantagePackage::StrategicAdvantagePackage()
@@ -164,7 +181,9 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         << new Blade(Card::Spade, 6)
         << new Blade(Card::Spade, 7)
         << new Breastplate()
-        << new Drowning();
+        << new Drowning(Card::Club, 2)
+        << new Drowning(Card::Club, 3)
+        << new Drowning(Card::Club, 4);
 
     foreach(Card *c, cards){
         c->setParent(this);

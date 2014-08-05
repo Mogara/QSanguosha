@@ -233,7 +233,6 @@ public:
     Q_INVOKABLE BefriendAttacking(Card::Suit suit = Heart, int number = 9);
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual bool targetsFeasible(const QList<const Player *> &targets, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isAvailable(const Player *player) const;
 
