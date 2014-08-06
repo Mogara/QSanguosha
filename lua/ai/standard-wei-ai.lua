@@ -548,7 +548,7 @@ sgs.ai_skill_use["@@shensu1"] = function(self, prompt)
 
 		if not self.player:canSlash(enemy, slash, false) then
 		elseif self:slashProhibit(nil, enemy) then
-		elseif def < 5 and eff then return "@ShensuCard=.&shensu->" .. enemy:objectName()
+		elseif def < 5 and eff then return "@ShensuCard=.->" .. enemy:objectName()
 
 		elseif selfSub >= 2 then return "."
 		elseif selfDef < 6 then return "." end
@@ -561,7 +561,7 @@ sgs.ai_skill_use["@@shensu1"] = function(self, prompt)
 
 		if not self.player:canSlash(enemy, slash, false) then
 		elseif self:slashProhibit(nil, enemy) then
-		elseif eff and def < 8 then return "@ShensuCard=.&shensu->" .. enemy:objectName()
+		elseif eff and def < 8 then return "@ShensuCard=.->" .. enemy:objectName()
 		else return "." end
 	end
 	return "."
@@ -655,8 +655,8 @@ sgs.ai_skill_use["@@shensu2"] = function(self, prompt, method)
 		if selfSub < 0 then return "." end
 	end
 
-	if best_target then return "@ShensuCard=" .. eCard:getEffectiveId() .. "&shensu->" .. best_target:objectName() end
-	if target then return "@ShensuCard=" .. eCard:getEffectiveId() .. "&shensu->" .. target:objectName() end
+	if best_target then return "@ShensuCard=" .. eCard:getEffectiveId() .. "->" .. best_target:objectName() end
+	if target then return "@ShensuCard=" .. eCard:getEffectiveId() .. "->" .. target:objectName() end
 
 	return "."
 end
@@ -1017,7 +1017,7 @@ qiangxi_skill.name = "qiangxi"
 table.insert(sgs.ai_skills, qiangxi_skill)
 qiangxi_skill.getTurnUseCard = function(self)
 	if not self.player:hasUsed("QiangxiCard") then
-		return sgs.Card_Parse("@QiangxiCard=.&qiangxi")
+		return sgs.Card_Parse("@QiangxiCard=.")
 	end
 end
 
@@ -1036,14 +1036,14 @@ sgs.ai_skill_use_func.QiangxiCard = function(card, use, self)
 		for _, enemy in ipairs(self.enemies) do
 			if self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and self:damageIsEffective(enemy) then
 				if hand_weapon and self.player:distanceTo(enemy) <= self.player:getAttackRange() then
-					use.card = sgs.Card_Parse("@QiangxiCard=" .. hand_weapon:getId() .. "&qiangxi")
+					use.card = sgs.Card_Parse("@QiangxiCard=" .. hand_weapon:getId())
 					if use.to then
 						use.to:append(enemy)
 					end
 					break
 				end
 				if self.player:distanceTo(enemy) <= 1 then
-					use.card = sgs.Card_Parse("@QiangxiCard=" .. weapon:getId() .. "&qiangxi")
+					use.card = sgs.Card_Parse("@QiangxiCard=" .. weapon:getId())
 					if use.to then
 						use.to:append(enemy)
 					end
@@ -1056,7 +1056,7 @@ sgs.ai_skill_use_func.QiangxiCard = function(card, use, self)
 		for _, enemy in ipairs(self.enemies) do
 			if self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and self:damageIsEffective(enemy) then
 				if self.player:distanceTo(enemy) <= self.player:getAttackRange() and self.player:getHp() > enemy:getHp() and self.player:getHp() > 1 then
-					use.card = sgs.Card_Parse("@QiangxiCard=.&qiangxi")
+					use.card = sgs.Card_Parse("@QiangxiCard=.")
 					if use.to then
 						use.to:append(enemy)
 					end
