@@ -430,7 +430,7 @@ sgs.ai_skill_use["@@qianhuan"] = function(self)
 	local use = self.player:getTag("qianhuan_data"):toCardUse()
 	local invoke = invoke_qianhuan(self, use)
 	if invoke then
-		return "@QianhuanCard=" .. tostring(self.player:getPile("sorcery"):first()) .. "&qianhuan"
+		return "@QianhuanCard=" .. self.player:getPile("sorcery"):first()
 	end
 	return "."
 end
