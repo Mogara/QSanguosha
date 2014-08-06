@@ -79,6 +79,11 @@ public:
     }
 };
 
+Halberd::Halberd(Card::Suit suit, int number)
+    : Weapon(suit, number, 4){
+    setObjectName("Halberd");
+}
+
 JadeSeal::JadeSeal(Card::Suit suit, int number)
     : Treasure(suit, number){
     setObjectName("JadeSeal");
@@ -175,11 +180,8 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
 
     cards
         << new JadeSeal(Card::Spade, 2)
-        << new JadeSeal(Card::Spade, 3)
-        << new JadeSeal(Card::Spade, 4)
         << new Blade(Card::Spade, 5)
-        << new Blade(Card::Spade, 6)
-        << new Blade(Card::Spade, 7)
+        << new Halberd(Card::Spade, 6)
         << new Breastplate()
         << new Drowning(Card::Club, 2)
         << new Drowning(Card::Club, 3)
