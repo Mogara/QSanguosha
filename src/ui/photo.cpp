@@ -70,6 +70,10 @@ Photo::Photo() : PlayerCardContainer() {
     emotion_item = new Sprite(_m_groupMain);
 
     _createControls();
+
+    _blurEffect = new QParallelAnimationGroup(this);
+    _blurEffect->addAnimation(initializeBlurEffect(_m_avatarIcon));
+    _blurEffect->addAnimation(initializeBlurEffect(_m_smallAvatarIcon));
 }
 
 Photo::~Photo(){
@@ -101,6 +105,8 @@ void Photo::refresh() {
         _m_onlineStatusItem->hide();
 
 }
+
+
 
 QRectF Photo::boundingRect() const{
     return QRect(0, 0, G_PHOTO_LAYOUT.m_normalWidth, G_PHOTO_LAYOUT.m_normalHeight);
@@ -308,6 +314,24 @@ void Photo::updatePhase() {
 
 void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+}
+
+QPropertyAnimation *Photo::initializeBlurEffect(QGraphicsPixmapItem *icon)
+{
+    icon = new QGraphicsPixmapItem(_m_groupMain);
+    icon->setTransformationMode(Qt::SmoothTransformation);
+
+    QGraphicsBlurEffect *effect = new QGraphicsBlurEffect;
+    effect->setBlurHints(QGraphicsBlurEffect::AnimationHint);
+    effect->setBlurRadius(0);
+    icon->setGraphicsEffect(effect);
+
+    QPropertyAnimation *animation = new QPropertyAnimation(effect, "blurRadius");
+    animation->setEasingCurve(QEasingCurve::OutInBounce);
+    animation->setDuration(2000);
+    animation->setStartValue(0);
+    animation->setEndValue(5);
+    return animation;
 }
 
 QGraphicsItem *Photo::getMouseClickReceiver() {

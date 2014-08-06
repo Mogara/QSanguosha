@@ -83,10 +83,13 @@ protected:
     inline virtual QGraphicsItem *_getDeathIconParent() { return _m_groupDeath; }
     virtual QGraphicsItem *_getPileParent() { return _m_groupMain; }
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_PHOTO; }
+    inline virtual QAbstractAnimation *_getPlayerRemovedEffect() { return _blurEffect; }
     virtual void _adjustComponentZValues();
     bool _addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &moveInfo);
 
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+    QPropertyAnimation *initializeBlurEffect(QGraphicsPixmapItem *icon);
 
     FrameType _m_frameType;
     QGraphicsPixmapItem *_m_mainFrame;
@@ -94,6 +97,8 @@ protected:
     QGraphicsPixmapItem *_m_skillNameItem;
     QGraphicsPixmapItem *_m_focusFrame;
     QGraphicsPixmapItem *_m_onlineStatusItem;
+
+    QParallelAnimationGroup *_blurEffect;
 };
 
 #endif

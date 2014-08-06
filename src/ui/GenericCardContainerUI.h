@@ -156,6 +156,8 @@ protected:
     virtual QGraphicsItem *_getDeathIconParent() = 0;
     virtual QString getResourceKeyName() = 0;
 
+    virtual QAbstractAnimation *_getPlayerRemovedEffect() = 0;
+
     virtual void _createRoleComboBox();
     void _updateProgressBar(); // a dirty function used by the class itself only.
     void _updateDeathIcon();
@@ -188,7 +190,6 @@ protected:
     QPixmap _getAvatarIcon(QString generalName);
 
     bool _isSelected(QGraphicsItem *item) const;
-    void _initializeBlurEffect();
 
     // layout
     const QSanRoomSkin::PlayerCardContainerLayout *_m_layout;
@@ -267,8 +268,6 @@ private:
     int _lastZ;
     bool _allZAdjusted;
     QString _m_treasureName;
-    QParallelAnimationGroup *_blurEffect;
-
 signals:
     void selected_changed();
     void enable_changed();

@@ -171,6 +171,7 @@ protected:
     inline virtual QGraphicsItem *_getFocusFrameParent() { return rightFrame; }
     inline virtual QGraphicsItem *_getDeathIconParent() { return middleFrame; }
     inline virtual QString getResourceKeyName() { return QSanRoomSkin::S_SKIN_KEY_DASHBOARD; }
+    inline virtual QAbstractAnimation *_getPlayerRemovedEffect() { return _removedEffect; }
 
     void _createRoleComboBox();
 
@@ -239,6 +240,8 @@ protected:
     void setSelectedItem(CardItem *card_item);
 
     QMenu *_m_sort_menu;
+
+    QPropertyAnimation *_removedEffect;
 
 protected slots:
     virtual void _onEquipSelectChanged();
