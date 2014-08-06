@@ -504,7 +504,6 @@ public:
     }
 };
 
-
 Yinghun::Yinghun() : PhaseChangeSkill("yinghun") {
 }
 
@@ -865,8 +864,7 @@ public:
 
                 room->throwCard(Sanguosha->getCard(card_id), reason, NULL);
             }
-        }
-        else {
+        } else {
             int to_remove = buqu.length() - need;
             for (int i = 0; i < to_remove; i++) {
                 room->fillAG(buqu, zhoutai);
@@ -932,8 +930,7 @@ public:
                 room->broadcastSkillInvoke("buqu");
                 room->setPlayerFlag(zhoutai, "-Global_Dying");
                 return QStringList(objectName());
-            }
-            else {
+            } else {
                 LogMessage log;
                 log.type = "#BuquDuplicate";
                 log.from = zhoutai;
@@ -973,25 +970,28 @@ public:
     }
 
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &data, ServerPlayer *) const{
-        if (triggerEvent == AskForPeachesDone) return true;
-        if (room->askForSkillInvoke(zhoutai, objectName(), data)){
-            room->broadcastSkillInvoke(objectName());
+        if (triggerEvent == AskForPeachesDone)
             return true;
-        }
-        return false;
-    }
-
-    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &, ServerPlayer *) const{
-        if (triggerEvent == PostHpReduced && zhoutai->getHp() < 1) {
-            room->setTag("Buqu", zhoutai->objectName());
+        if (room->askForSkillInvoke(zhoutai, objectName(), data)) {
+            room->broadcastSkillInvoke(objectName());
             const QList<int> &buqu = zhoutai->getPile("buqu");
-
             int need = 1 - zhoutai->getHp(); // the buqu cards that should be turned over
             int n = need - buqu.length();
             if (n > 0) {
                 QList<int> card_ids = room->getNCards(n, false);
                 zhoutai->addToPile("buqu", card_ids);
             }
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *zhoutai, QVariant &, ServerPlayer *) const{
+        if (triggerEvent == AskForPeachesDone)
+            return true;
+        if (zhoutai->getHp() < 1) {
+            room->setTag("Buqu", zhoutai->objectName());
+
             const QList<int> &buqunew = zhoutai->getPile("buqu");
             QList<int> duplicate_numbers;
 
@@ -1011,7 +1011,6 @@ public:
                 return true;
             }
         }
-        else if (triggerEvent == AskForPeachesDone) return true;
         return false;
     }
 };
