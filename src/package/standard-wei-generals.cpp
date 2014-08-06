@@ -590,17 +590,12 @@ public:
         if (Sanguosha->currentRoomState()->getCurrentCardUsePattern().endsWith("1")) {
             if (cards.isEmpty()){
                 ShensuCard *shensu = new ShensuCard;
-                shensu->setShowSkill(objectName());
                 return shensu;
             }
-        }
-        else {
-            if (cards.length() == 1){
-                ShensuCard *card = new ShensuCard;
-                card->setShowSkill(objectName());
-                card->addSubcards(cards);
-                return card;
-            }
+        } else if (cards.length() == 1){
+            ShensuCard *card = new ShensuCard;
+            card->addSubcards(cards);
+            return card;
         }
         return NULL;
     }
@@ -624,11 +619,10 @@ public:
             return QStringList();
 
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
-        if (change.to == Player::Judge && !xiahouyuan->isSkipped(Player::Judge) && !xiahouyuan->isSkipped(Player::Draw)){
+        if (change.to == Player::Judge && !xiahouyuan->isSkipped(Player::Judge) && !xiahouyuan->isSkipped(Player::Draw)) {
             xiahouyuan->tag.remove("shensu_invoke1");
             return QStringList(objectName());
-        }
-        else if (change.to == Player::Play && xiahouyuan->canDiscard(xiahouyuan, "he") && !xiahouyuan->isSkipped(Player::Play)){
+        } else if (change.to == Player::Play && xiahouyuan->canDiscard(xiahouyuan, "he") && !xiahouyuan->isSkipped(Player::Play)) {
             xiahouyuan->tag.remove("shensu_invoke2");
             return QStringList(objectName());
         }
@@ -639,14 +633,13 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *xiahouyuan, QVariant &data, ServerPlayer *) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         if (change.to == Player::Judge && room->askForUseCard(xiahouyuan, "@@shensu1", "@shensu1", 1)) {
-            if (xiahouyuan->hasFlag("shensu1") && xiahouyuan->tag.contains("shensu_invoke1")){
+            if (xiahouyuan->hasFlag("shensu1") && xiahouyuan->tag.contains("shensu_invoke1")) {
                 xiahouyuan->skip(Player::Judge);
                 xiahouyuan->skip(Player::Draw);
                 return true;
             }
-        }
-        else if (change.to == Player::Play && room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2, Card::MethodDiscard)) {
-            if (xiahouyuan->hasFlag("shensu2") && xiahouyuan->tag.contains("shensu_invoke2")){
+        } else if (change.to == Player::Play && room->askForUseCard(xiahouyuan, "@@shensu2", "@shensu2", 2, Card::MethodDiscard)) {
+            if (xiahouyuan->hasFlag("shensu2") && xiahouyuan->tag.contains("shensu_invoke2")) {
                 xiahouyuan->skip(Player::Play);
                 return true;
             }
@@ -657,11 +650,10 @@ public:
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         PhaseChangeStruct change = data.value<PhaseChangeStruct>();
         QVariantList target_list;
-        if (change.to == Player::Judge){
+        if (change.to == Player::Judge) {
             target_list = player->tag["shensu_invoke1"].toList();
             player->tag.remove("shensu_invoke1");
-        }
-        else {
+        } else {
             target_list = player->tag["shensu_invoke2"].toList();
             player->tag.remove("shensu_invoke2");
         }
@@ -673,7 +665,7 @@ public:
             targets << x.value<ServerPlayer *>();
         }
 
-        room->useCard(CardUseStruct(slash, player, targets), false);
+        room->useCard(CardUseStruct(slash, player, targets));
         return false;
     }
 
