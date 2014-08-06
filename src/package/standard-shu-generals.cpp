@@ -219,8 +219,7 @@ public:
                 room->broadcastSkillInvoke("yizhi");
                 player->showGeneral(false);
                 return true;
-            }
-            else
+            } else
                 return false;
         }
         if (!player->hasSkill("yizhi")){
@@ -263,8 +262,7 @@ public:
                 player->showGeneral(false);
                 onPhaseChange(player);
                 return false;
-            }
-            else {
+            } else {
                 room->broadcastSkillInvoke(objectName());
                 return true;
             }
@@ -313,8 +311,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
-        if (invoke){
+        if (player->hasShownSkill(this) || player->askForSkillInvoke(objectName())){
             room->broadcastSkillInvoke(objectName());
             return true;
         }
@@ -343,7 +340,6 @@ public:
         return false;
     }
 };
-
 
 class LongdanVS : public OneCardViewAsSkill {
 public:
@@ -1265,9 +1261,8 @@ public:
                 room->broadcastSkillInvoke(objectName(), 1);
                 return true;
             }
-        }
-        else if (change.to == Player::NotActive)
-            return room->askForUseCard(player, "@@fangquan", "@fangquan-discard", -1, Card::MethodDiscard);
+        } else if (change.to == Player::NotActive)
+            room->askForUseCard(player, "@@fangquan", "@fangquan-discard", -1, Card::MethodDiscard);
         return false;
     }
 
@@ -1304,10 +1299,6 @@ public:
             }
         }
         return QStringList();
-    }
-
-    virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *) const{
-        return true;
     }
 
     virtual bool onPhaseChange(ServerPlayer *liushan) const{
@@ -1417,19 +1408,16 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        if (player->askForSkillInvoke(objectName())){
+        if (player->askForSkillInvoke(objectName())) {
             room->broadcastSkillInvoke(objectName());
-            int handcard_num = player->getHandcardNum();
-            player->tag["shenzhi_num"] = handcard_num;
-            player->throwAllHandCards();
             return true;
         }
-
         return false;
     }
 
     virtual bool onPhaseChange(ServerPlayer *ganfuren) const{
-        int handcard_num = ganfuren->tag["shenzhi_num"].toInt();
+        int handcard_num = ganfuren->getHandcardNum();
+        ganfuren->throwAllHandCards();
         if (handcard_num >= ganfuren->getHp()) {
             RecoverStruct recover;
             recover.who = ganfuren;
