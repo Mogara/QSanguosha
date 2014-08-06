@@ -1473,27 +1473,27 @@
 <context>
     <name>Dashboard</name>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="152"/>
+        <location filename="../src/ui/dashboard.cpp" line="148"/>
         <source>Trusting ...</source>
         <translation>托管中 ...</translation>
     </message>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="952"/>
+        <location filename="../src/ui/dashboard.cpp" line="933"/>
         <source>Sort handcards</source>
         <translation>整理手牌</translation>
     </message>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="954"/>
+        <location filename="../src/ui/dashboard.cpp" line="935"/>
         <source>Sort by type</source>
         <translation>按类型排序</translation>
     </message>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="957"/>
+        <location filename="../src/ui/dashboard.cpp" line="938"/>
         <source>Sort by suit</source>
         <translation>按花色排序</translation>
     </message>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="960"/>
+        <location filename="../src/ui/dashboard.cpp" line="941"/>
         <source>Sort by number</source>
         <translation>按点数排序</translation>
     </message>

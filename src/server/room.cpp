@@ -3547,7 +3547,7 @@ void Room::throwCard(const Card *card, const CardMoveReason &reason, ServerPlaye
     sendLog(log);
 
     QList<CardsMoveStruct> moves;
-    if (who) {
+    if (who) { // player's card cannot enter discard_pile directly
         CardsMoveStruct move(to_discard, who, NULL, Player::PlaceUnknown, Player::PlaceTable, reason);
         moveCardsAtomic(move, true);
         QList<int> new_list = getCardIdsOnTable(to_discard);
@@ -3555,7 +3555,8 @@ void Room::throwCard(const Card *card, const CardMoveReason &reason, ServerPlaye
             CardsMoveStruct move2(new_list, who, NULL, Player::PlaceTable, Player::DiscardPile, reason);
             moveCardsAtomic(move2, true);
         }
-    } else {
+    } else if ((reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD){
+        // discard must through place_table
         CardsMoveStruct move(to_discard, NULL, Player::PlaceTable, reason);
         moveCardsAtomic(move, true);
         QList<int> new_list = getCardIdsOnTable(to_discard);
@@ -3563,6 +3564,9 @@ void Room::throwCard(const Card *card, const CardMoveReason &reason, ServerPlaye
             CardsMoveStruct move2(new_list, NULL, Player::DiscardPile, reason);
             moveCardsAtomic(move2, true);
         }
+    } else { // other conditions
+        CardsMoveStruct move(to_discard, NULL, Player::DiscardPile, reason);
+        moveCardsAtomic(move, true);
     }
 }
 
