@@ -521,7 +521,7 @@ PindianStruct *ServerPlayer::pindianSelect(ServerPlayer *target, const QString &
         card2 = room->askForPindian(target, this, target, reason);
     }
 
-    if (card1 == NULL || card2 == NULL) return false;
+    if (card1 == NULL || card2 == NULL) return NULL;
 
     PindianStruct *pindian = new PindianStruct;
     pindian->from = this;
