@@ -2957,6 +2957,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
                 wrapped->takeOver(trick);
                 broadcastUpdateCard(getPlayers(), wrapped->getId(), wrapped);
                 card_use.card = wrapped;
+                wrapped->setShowSkill(card->showSkill());
                 wrapped->onUse(this, card_use);
                 return true;
             }

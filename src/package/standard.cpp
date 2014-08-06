@@ -269,7 +269,7 @@ void DelayedTrick::onUse(Room *room, const CardUseStruct &card_use) const{
     CardMoveReason reason(CardMoveReason::S_REASON_USE, use.from->objectName(), use.to.first()->objectName(), getSkillName(), QString());
     room->moveCardTo(this, use.from, use.to.first(), Player::PlaceDelayedTrick, reason, true);
 
-    QString skill_name = showSkill();
+    QString skill_name = wrapped->showSkill();
     if (!skill_name.isNull() && use.from->ownSkill(skill_name) && !use.from->hasShownSkill(skill_name))
         use.from->showGeneral(use.from->inHeadSkills(skill_name));
 
