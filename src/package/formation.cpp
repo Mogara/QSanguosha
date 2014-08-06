@@ -278,7 +278,6 @@ public:
         HuyuanCard *first = new HuyuanCard;
         first->addSubcard(originalcard->getId());
         first->setSkillName(objectName());
-        first->setShowSkill(objectName());
         return first;
     }
 };
@@ -303,8 +302,8 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *target, QVariant &, ServerPlayer *) const {
         target->tag.remove("huyuan_equip");
         target->tag.remove("huyuan_target");
-        bool invoek = room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
-        if (invoek && target->tag.contains("huyuan_target"))
+        bool invoke = room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
+        if (invoke && target->tag.contains("huyuan_target"))
             return true;
 
         return false;
