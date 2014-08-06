@@ -269,7 +269,7 @@ kurou_skill.getTurnUseCard = function(self, inclusive)
 
 	self.player:setFlags("-Kurou_toDie")
 	sgs.ai_use_priority.KurouCard = 6.8
-	local kuroucard = sgs.Card_Parse("@KurouCard=.&kurou")
+	local kuroucard = sgs.Card_Parse("@KurouCard=.")
 
 	if not self:willShowForAttack() then
 		return nil

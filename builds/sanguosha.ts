@@ -1473,27 +1473,27 @@
 <context>
     <name>Dashboard</name>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="148"/>
+        <location filename="../src/ui/dashboard.cpp" line="152"/>
         <source>Trusting ...</source>
         <translation>托管中 ...</translation>
     </message>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="933"/>
+        <location filename="../src/ui/dashboard.cpp" line="952"/>
         <source>Sort handcards</source>
         <translation>整理手牌</translation>
     </message>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="935"/>
+        <location filename="../src/ui/dashboard.cpp" line="954"/>
         <source>Sort by type</source>
         <translation>按类型排序</translation>
     </message>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="938"/>
+        <location filename="../src/ui/dashboard.cpp" line="957"/>
         <source>Sort by suit</source>
         <translation>按花色排序</translation>
     </message>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="941"/>
+        <location filename="../src/ui/dashboard.cpp" line="960"/>
         <source>Sort by number</source>
         <translation>按点数排序</translation>
     </message>
@@ -2679,17 +2679,17 @@
 <context>
     <name>PlayerCardBox</name>
     <message>
-        <location filename="../src/ui/PlayerCardBox.cpp" line="172"/>
+        <location filename="../src/ui/PlayerCardBox.cpp" line="175"/>
         <source>Handcard area</source>
         <translation>手牌区域</translation>
     </message>
     <message>
-        <location filename="../src/ui/PlayerCardBox.cpp" line="178"/>
+        <location filename="../src/ui/PlayerCardBox.cpp" line="181"/>
         <source>Equip area</source>
         <translation>装备区</translation>
     </message>
     <message>
-        <location filename="../src/ui/PlayerCardBox.cpp" line="184"/>
+        <location filename="../src/ui/PlayerCardBox.cpp" line="187"/>
         <source>Judging area</source>
         <translation>判定区</translation>
     </message>
