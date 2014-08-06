@@ -1233,7 +1233,7 @@ public:
     }
 };
 
-ZhijianCard::ZhijianCard() {  //there is no "mute = true", why is this skill card mute?
+ZhijianCard::ZhijianCard() {
     will_throw = false;
     handling_method = Card::MethodNone;
 }
@@ -1260,6 +1260,9 @@ void ZhijianCard::onEffect(const CardEffectStruct &effect) const{
     log.card_str = QString::number(getEffectiveId());
     erzhang->getRoom()->sendLog(log);
 
+    if (erzhang->ownSkill("zhijian") && !erzhang->hasShownSkill("zhijian"))
+        erzhang->showGeneral(erzhang->inHeadSkills("zhijian"));
+
     erzhang->drawCards(1);
 }
 
@@ -1272,7 +1275,6 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const{
         ZhijianCard *zhijian_card = new ZhijianCard;
         zhijian_card->addSubcard(originalCard);
-        zhijian_card->setShowSkill(objectName());
         return zhijian_card;
     }
 };
@@ -1359,8 +1361,7 @@ public:
         return skill_list;
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const {
-        ServerPlayer *erzhang = ask_who;
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *erzhang) const {
         QVariantList guzheng_cardsToGet = erzhang->tag["GuzhengToGet"].toList();
         QVariantList guzheng_cardsOther = erzhang->tag["GuzhengOther"].toList();
 
@@ -1378,55 +1379,32 @@ public:
         }
 
         QList<int> cards = cardsToGet + cardsOther;
+        erzhang->tag.remove("GuzhengToGet");
+        erzhang->tag.remove("GuzhengOther");
         if (erzhang->askForSkillInvoke(objectName(), cards.length())){
             room->broadcastSkillInvoke(objectName());
+            room->fillAG(cards, erzhang, cardsOther);
+
+            int to_back = room->askForAG(erzhang, cardsToGet, false, objectName());
+            player->obtainCard(Sanguosha->getCard(to_back));
+
+            cards.removeOne(to_back);
+
+            room->clearAG(erzhang);
+            erzhang->tag["GuzhengCards"] = IntList2StringList(cards).join("+");
             return true;
-        }
-        else {
-            erzhang->tag.remove("GuzhengToGet");
-            erzhang->tag.remove("GuzhengOther");
         }
 
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
-        ServerPlayer *erzhang = ask_who;
-
-        QVariantList guzheng_cardsToGet = erzhang->tag["GuzhengToGet"].toList();
-        QVariantList guzheng_cardsOther = erzhang->tag["GuzhengOther"].toList();
-        erzhang->tag.remove("GuzhengToGet");
-        erzhang->tag.remove("GuzhengOther");
-
-        QList<int> cardsToGet;
-        foreach(QVariant card_data, guzheng_cardsToGet) {
-            int card_id = card_data.toInt();
-            if (room->getCardPlace(card_id) == Player::DiscardPile)
-                cardsToGet << card_id;
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *erzhang) const{
+        QList<int> cards = StringList2IntList(erzhang->tag["GuzhengCards"].toString().split("+"));
+        erzhang->tag.remove("GuzhengCards");
+        if (cards.isEmpty()) {
+            DummyCard dummy(cards);
+            room->obtainCard(erzhang, &dummy);
         }
-        QList<int> cardsOther;
-        foreach(QVariant card_data, guzheng_cardsOther) {
-            int card_id = card_data.toInt();
-            if (room->getCardPlace(card_id) == Player::DiscardPile)
-                cardsOther << card_id;
-        }
-
-        if (cardsToGet.isEmpty())
-            return false;
-
-        QList<int> cards = cardsToGet + cardsOther;
-
-        room->fillAG(cards, erzhang, cardsOther);
-
-        int to_back = room->askForAG(erzhang, cardsToGet, false, objectName());
-        player->obtainCard(Sanguosha->getCard(to_back));
-
-        cards.removeOne(to_back);
-
-        room->clearAG(erzhang);
-
-        DummyCard dummy(cards);
-        room->obtainCard(erzhang, &dummy);
 
         return false;
     }
