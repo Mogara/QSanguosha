@@ -809,9 +809,8 @@ function SmartAI:useCardPeach(card, use)
 	if not self.player:isWounded() then return end
 
 	local peaches = 0
-	local cards = self.player:getHandcards()
+	local cards = sgs.QList2Table(self.player:getHandcards())
 
-	cards = sgs.QList2Table(cards)
 	for _,card in ipairs(cards) do
 		if isCard("Peach", card, self.player) then peaches = peaches + 1 end
 	end
@@ -856,34 +855,59 @@ function SmartAI:useCardPeach(card, use)
 		end
 	end
 
-
-	if self.player:getHp() == 1 then
-		mustusepeach = true
-	end
-
-	if mustusepeach or (self.player:hasSkill("buqu") and self.player:getHp() < 1 and self.player:getMaxCards() == 0) or peaches > self.player:getHp() then
+	local maxCards = self.player:getOverflow(self.player, true)
+	local overflow = self:getOverflow() > 0
+	if self.player:hasSkill("buqu") and self.player:getHp() < 1 and maxCards == 0 then
 		use.card = card
 		return
 	end
 
-	if self:getOverflow() <= 0 and #self.friends_noself > 0 then
+	if mustusepeach or peaches > maxCards or self.player:getHp() == 1 then
+		use.card = card
 		return
 	end
 
-	if self.player:hasSkill("kuanggu") and self.player:getLostHp()==1 and self.player:getOffensiveHorse() then
+	if not overflow and #self.friends_noself > 0 then
+		return
+	end
+
+	local useJieyinCard
+	if self.player:hasSkill("jieyin") and not self.player:hasUsed("JieyinCard") and self:getOverflow() > 0 then
+		self:sort(self.friends, "hp")
+		for _, friend in ipairs(self.friends) do
+			if friend:isWounded() and friend:isMale() then useJieyinCard = true end
+		end
+	end
+
+	if overflow then
+		self:sortByKeepValue(cards)
+		local handcardNum = self.player:getHandcardNum() - (useJieyinCard and 2 or 0)
+		local discardNum = handcardNum - maxCards
+		if discardNum > 0 then
+			for i, c in ipairs(cards) do
+				if c:getEffectiveId() == card:getEffectiveId() then
+					use.card = card
+					return
+				end
+				if i >= discardNum then break end
+			end
+		end
+	end
+
+	local lord = self.player:getLord()
+	if lord and lord:getHp() <= 2 and self:isWeak(lord) then
+		if self.player:isLord() then use.card = card end
+		return
+	end
+
+	if self.player:hasSkill("kuanggu") and self.player:getLostHp() == 1 and self.player:getOffensiveHorse() then
 		return
 	end
 
 	if self:needToLoseHp(self.player, nil, nil, nil, true) then return end
 
-	if lord and self:isFriend(lord) and lord:getHp() <= 2 and self:isWeak(lord) then
-		if self.player:isLord() then use.card = card end
-		if self:getCardsNum("Peach") > 1 and self:getCardsNum("Peach") + self:getCardsNum("Jink") > self.player:getMaxCards() then use.card = card end
-		return
-	end
-
 	self:sort(self.friends, "hp")
-	if self.friends[1]:objectName()==self.player:objectName() or self.player:getHp()<2 then
+	if self.friends[1]:objectName()==self.player:objectName() or self.player:getHp() < 2 then
 		use.card = card
 		return
 	end
@@ -891,13 +915,6 @@ function SmartAI:useCardPeach(card, use)
 	if #self.friends > 1 and ((not hasBuquEffect(self.friends[2]) and self.friends[2]:getHp() < 3 and self:getOverflow() < 2)
 								or (not hasBuquEffect(self.friends[1]) and self.friends[1]:getHp() < 2 and peaches <= 1 and self:getOverflow() < 3)) then
 		return
-	end
-
-	if self.player:hasSkill("jieyin") and self:getOverflow() > 0 then
-		self:sort(self.friends, "hp")
-		for _, friend in ipairs(self.friends) do
-			if friend:isWounded() and friend:isMale() then return end
-		end
 	end
 
 	use.card = card

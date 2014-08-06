@@ -476,27 +476,27 @@
 <context>
     <name>ChooseGeneralBox</name>
     <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="109"/>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="112"/>
         <source>fight</source>
         <translation>出战</translation>
     </message>
     <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="169"/>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="172"/>
         <source>Please select the same nationality generals</source>
         <translation>请选择相同势力的武将</translation>
     </message>
     <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="168"/>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="171"/>
         <source>Please select one general</source>
         <translation>请选择一名武将</translation>
     </message>
     <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="191"/>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="194"/>
         <source>head_general</source>
         <translation>主将</translation>
     </message>
     <message>
-        <location filename="../src/ui/choosegeneralbox.cpp" line="194"/>
+        <location filename="../src/ui/choosegeneralbox.cpp" line="197"/>
         <source>deputy_general</source>
         <translation>副将</translation>
     </message>
@@ -517,7 +517,7 @@
 <context>
     <name>ChooseOptionsBox</name>
     <message>
-        <location filename="../src/ui/ChooseOptionsBox.cpp" line="47"/>
+        <location filename="../src/ui/ChooseOptionsBox.cpp" line="50"/>
         <source>Please choose:</source>
         <translation>请选择:</translation>
     </message>
@@ -525,7 +525,7 @@
 <context>
     <name>ChooseTriggerOrderBox</name>
     <message>
-        <location filename="../src/ui/ChooseTriggerOrderBox.cpp" line="193"/>
+        <location filename="../src/ui/ChooseTriggerOrderBox.cpp" line="199"/>
         <source>cancel</source>
         <translation>取消</translation>
     </message>
@@ -2679,17 +2679,17 @@
 <context>
     <name>PlayerCardBox</name>
     <message>
-        <location filename="../src/ui/PlayerCardBox.cpp" line="161"/>
+        <location filename="../src/ui/PlayerCardBox.cpp" line="172"/>
         <source>Handcard area</source>
         <translation>手牌区域</translation>
     </message>
     <message>
-        <location filename="../src/ui/PlayerCardBox.cpp" line="167"/>
+        <location filename="../src/ui/PlayerCardBox.cpp" line="178"/>
         <source>Equip area</source>
         <translation>装备区</translation>
     </message>
     <message>
-        <location filename="../src/ui/PlayerCardBox.cpp" line="173"/>
+        <location filename="../src/ui/PlayerCardBox.cpp" line="184"/>
         <source>Judging area</source>
         <translation>判定区</translation>
     </message>
@@ -3020,64 +3020,64 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="../src/server/room.cpp" line="2184"/>
+        <location filename="../src/server/room.cpp" line="2182"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2400"/>
+        <location filename="../src/server/room.cpp" line="2398"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2208"/>
+        <location filename="../src/server/room.cpp" line="2206"/>
         <source>&lt;font color=#000000&gt;Player &lt;b&gt;%1&lt;/b&gt; left the game&lt;/font&gt;</source>
         <translation>&lt;font color=#000000&gt;玩家 %1 离开了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2370"/>
+        <location filename="../src/server/room.cpp" line="2368"/>
         <source>%1: %2 is not invokable</source>
         <translation>%1: 不可调用的方法名 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2404"/>
+        <location filename="../src/server/room.cpp" line="2402"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2450"/>
+        <location filename="../src/server/room.cpp" line="2448"/>
         <source>&lt;font color=#EEB422&gt;Player &lt;b&gt;%1&lt;/b&gt; joined the game&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 加入了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2863"/>
+        <location filename="../src/server/room.cpp" line="2861"/>
         <source>Unable to parse player</source>
         <translation>不可分析的玩家</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2865"/>
+        <location filename="../src/server/room.cpp" line="2863"/>
         <source>Server is not waiting for reply from %1</source>
         <translation>服务器无法获取 %1 的响应</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2867"/>
+        <location filename="../src/server/room.cpp" line="2865"/>
         <source>Reply command should be %1 instead of %2</source>
         <translation>应答指令应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2870"/>
+        <location filename="../src/server/room.cpp" line="2868"/>
         <source>Reply serial should be %1 instead of %2</source>
         <translation>玩家序号应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="4614"/>
+        <location filename="../src/server/room.cpp" line="4612"/>
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
  %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="5826"/>
+        <location filename="../src/server/room.cpp" line="5824"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
