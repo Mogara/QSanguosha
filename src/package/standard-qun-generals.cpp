@@ -206,7 +206,7 @@ void LijianCard::onUse(Room *room, const CardUseStruct &card_use) const{
     QList<int> table_ids = room->getCardIdsOnTable(this);
     if (!table_ids.isEmpty()) {
         DummyCard dummy(table_ids);
-        room->moveCardTo(dummy, diaochan, NULL, Player::DiscardPile, reason, true);
+        room->moveCardTo(&dummy, diaochan, NULL, Player::DiscardPile, reason, true);
     }
 
     thread->trigger(CardUsed, room, diaochan, data);
