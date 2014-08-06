@@ -782,7 +782,7 @@ bool Player::isRemoved() const{
 void Player::setRemoved(bool removed) {
     if (this->removed != removed) {
         this->removed = removed;
-        //emit removed_state_changed();
+        emit removedChanged();
     }
 }
 

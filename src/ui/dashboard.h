@@ -152,6 +152,7 @@ public slots:
 
     virtual void updateAvatar();
     virtual void updateSmallAvatar();
+    virtual void onRemovedChanged();
 
 protected:
     void _createExtraButtons();
@@ -180,6 +181,8 @@ protected:
     void _addHandCard(CardItem *card_item, bool prepend = false, const QString &footnote = QString());
     void _adjustCards();
     void _adjustCards(const QList<CardItem *> &list, int y);
+
+    QPropertyAnimation *initializeBlurEffect(QGraphicsPixmapItem *icon);
 
     int width;
     // sync objects
@@ -239,6 +242,8 @@ protected:
     void setSelectedItem(CardItem *card_item);
 
     QMenu *_m_sort_menu;
+
+    QParallelAnimationGroup *_blurEffect;
 
 protected slots:
     virtual void _onEquipSelectChanged();

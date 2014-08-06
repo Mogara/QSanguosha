@@ -70,6 +70,12 @@ Photo::Photo() : PlayerCardContainer() {
     emotion_item = new Sprite(_m_groupMain);
 
     _createControls();
+
+    _removedEffect = new QPropertyAnimation(this, "opacity", this);
+    _removedEffect->setDuration(2000);
+    _removedEffect->setEasingCurve(QEasingCurve::OutInBounce);
+    _removedEffect->setEndValue(0.3);
+    _removedEffect->setStartValue(1.0);
 }
 
 Photo::~Photo(){
@@ -100,6 +106,15 @@ void Photo::refresh() {
     else if (_m_onlineStatusItem != NULL && state_str == "online")
         _m_onlineStatusItem->hide();
 
+}
+
+void Photo::onRemovedChanged()
+{
+    QAbstractAnimation::Direction direction = m_player->isRemoved() ? QAbstractAnimation::Forward
+                                                                    : QAbstractAnimation::Backward;
+
+    _removedEffect->setDirection(direction);
+    _removedEffect->start();
 }
 
 QRectF Photo::boundingRect() const{

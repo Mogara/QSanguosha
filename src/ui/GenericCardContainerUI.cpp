@@ -471,8 +471,7 @@ void PlayerCardContainer::refresh() {
         _m_saveMeIcon->setVisible(false);
         leftDisableShowLock->setVisible(false);
         rightDisableShowLock->setVisible(false);
-    }
-    else if (m_player) {
+    } else if (m_player) {
         if (_m_faceTurnedIcon)
             _m_faceTurnedIcon->setVisible(!m_player->faceUp());
         if (_m_faceTurnedIcon2)
@@ -566,6 +565,7 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player) {
         connect(player, SIGNAL(kingdom_changed(QString)), _m_roleComboBox, SLOT(fix(QString)));
         connect(player, SIGNAL(hp_changed()), this, SLOT(updateHp()));
         connect(player, SIGNAL(disable_show_changed()), this, SLOT(refresh()));
+        connect(player, SIGNAL(removedChanged()), this, SLOT(onRemovedChanged()));
 
         QTextDocument *textDoc = m_player->getMarkDoc();
         Q_ASSERT(_m_markItem);

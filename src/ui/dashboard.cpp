@@ -74,6 +74,10 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     _createExtraButtons();
 
     _m_sort_menu = new QMenu(RoomSceneInstance->mainWindow());
+
+    _blurEffect = new QParallelAnimationGroup(this);
+    _blurEffect->addAnimation(initializeBlurEffect(_m_avatarIcon));
+    _blurEffect->addAnimation(initializeBlurEffect(_m_smallAvatarIcon));
 }
 
 void Dashboard::refresh() {
@@ -830,6 +834,21 @@ void Dashboard::_adjustCards() {
     }
 }
 
+QPropertyAnimation *Dashboard::initializeBlurEffect(QGraphicsPixmapItem *icon)
+{
+    QGraphicsBlurEffect *effect = new QGraphicsBlurEffect;
+    effect->setBlurHints(QGraphicsBlurEffect::AnimationHint);
+    effect->setBlurRadius(0);
+    icon->setGraphicsEffect(effect);
+
+    QPropertyAnimation *animation = new QPropertyAnimation(effect, "blurRadius");
+    animation->setEasingCurve(QEasingCurve::OutInBounce);
+    animation->setDuration(2000);
+    animation->setStartValue(0);
+    animation->setEndValue(5);
+    return animation;
+}
+
 int Dashboard::getMiddleWidth() {
     return width - G_DASHBOARD_LAYOUT.m_leftWidth - G_DASHBOARD_LAYOUT.m_rightWidth;
 }
@@ -1359,5 +1378,14 @@ void Dashboard::updateSmallAvatar()
     }
     _m_smallAvatarIcon->show();
     _adjustComponentZValues();
+}
+
+void Dashboard::onRemovedChanged()
+{
+    QAbstractAnimation::Direction direction = m_player->isRemoved() ? QAbstractAnimation::Forward
+                                                                    : QAbstractAnimation::Backward;
+
+    _blurEffect->setDirection(direction);
+    _blurEffect->start();
 }
 

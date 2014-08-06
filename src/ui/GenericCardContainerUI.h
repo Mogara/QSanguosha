@@ -134,6 +134,7 @@ public slots:
     virtual void showSeat();
     virtual void showPile();
     virtual void refresh();
+    virtual void onRemovedChanged() = 0;
 
 protected:
     // overrider parent functions
