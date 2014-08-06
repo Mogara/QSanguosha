@@ -429,7 +429,8 @@ bool Snatch::targetFilter(const QList<const Player *> &targets, const Player *to
     if (m_skillName == "jixi")
         ++rangefix;
 
-    if (Self->distanceTo(to_select, rangefix) > distance_limit)
+    int distance = Self->distanceTo(to_select, rangefix);
+    if (distance == -1 || distance > distance_limit)
         return false;
 
     return true;
@@ -1120,7 +1121,8 @@ bool SupplyShortage::targetFilter(const QList<const Player *> &targets, const Pl
     if (Self->getOffensiveHorse() && subcards.contains(Self->getOffensiveHorse()->getId()))
         ++rangefix;
 
-    if (Self->distanceTo(to_select, rangefix) > distance_limit)
+    int distance = Self->distanceTo(to_select, rangefix);
+    if (distance == -1 || distance > distance_limit)
         return false;
 
     return true;
