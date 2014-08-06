@@ -49,14 +49,13 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         if (player->askForSkillInvoke(objectName(), data)){
             room->broadcastSkillInvoke(objectName());
-            player->obtainCard(data.value<DamageStruct>().card);
             return true;
         }
         return false;
     }
 
-    virtual void onDamaged(ServerPlayer *, const DamageStruct &) const{
-        // empty
+    virtual void onDamaged(ServerPlayer *player, const DamageStruct &damage) const{
+        player->obtainCard(damage.card);
     }
 };
 
