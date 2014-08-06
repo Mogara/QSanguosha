@@ -269,7 +269,7 @@ kurou_skill.getTurnUseCard = function(self, inclusive)
 
 	self.player:setFlags("-Kurou_toDie")
 	sgs.ai_use_priority.KurouCard = 6.8
-	local kuroucard = sgs.Card_Parse("@KurouCard=.&kurou")
+	local kuroucard = sgs.Card_Parse("@KurouCard=.")
 
 	if not self:willShowForAttack() then
 		return nil
@@ -1614,7 +1614,7 @@ zhijian_skill.getTurnUseCard = function(self)
 	end
 	if #equips == 0 then return end
 
-	return sgs.Card_Parse("@ZhijianCard=.&zhijian")
+	return sgs.Card_Parse("@ZhijianCard=.")
 end
 
 sgs.ai_skill_use_func.ZhijianCard = function(card, use, self)
@@ -1665,7 +1665,7 @@ sgs.ai_skill_use_func.ZhijianCard = function(card, use, self)
 
 	if not target then return end
 	if use.to then use.to:append(target) end
-	local zhijian = sgs.Card_Parse("@ZhijianCard=" .. select_equip:getId() .. "&zhijian")
+	local zhijian = sgs.Card_Parse("@ZhijianCard=" .. select_equip:getId())
 	assert(zhijian)
 	use.card = zhijian
 end

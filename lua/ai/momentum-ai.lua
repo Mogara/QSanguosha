@@ -131,7 +131,7 @@ local cunsi_skill = {}
 cunsi_skill.name = "cunsi"
 table.insert(sgs.ai_skills, cunsi_skill)
 cunsi_skill.getTurnUseCard = function(self)
-	return sgs.Card_Parse("@CunsiCard=.&cunsi")
+	return sgs.Card_Parse("@CunsiCard=.")
 end
 
 sgs.ai_skill_use_func.CunsiCard = function(card, use, self)

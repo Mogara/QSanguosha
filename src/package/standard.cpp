@@ -95,17 +95,25 @@ void EquipCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
         CardMoveReason(CardMoveReason::S_REASON_USE, target->objectName()));
     exchangeMove.push_back(move1);
     if (equipped_id != Card::S_UNKNOWN_CARD_ID) {
-        CardsMoveStruct move2(equipped_id, NULL, Player::DiscardPile,
+        CardsMoveStruct move2(equipped_id, target, Player::PlaceTable,
             CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
         exchangeMove.push_back(move2);
     }
+    room->moveCardsAtomic(exchangeMove, true);
+
     LogMessage log;
     log.from = target;
     log.type = "$Install";
     log.card_str = QString::number(getEffectiveId());
     room->sendLog(log);
 
-    room->moveCardsAtomic(exchangeMove, true);
+    if (equipped_id != Card::S_UNKNOWN_CARD_ID) {
+        if (room->getCardPlace(equipped_id) == Player::PlaceTable) {
+            CardsMoveStruct move3(equipped_id, NULL, Player::DiscardPile,
+                CardMoveReason(CardMoveReason::S_REASON_CHANGE_EQUIP, target->objectName()));
+            room->moveCardsAtomic(move3, true);
+        }
+    }
 }
 
 void EquipCard::onInstall(ServerPlayer *player) const{

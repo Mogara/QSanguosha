@@ -159,46 +159,46 @@ sgs.ai_skill_use["@@huyuan"] = function(self, prompt)
 	self:sortByKeepValue(cards)
 	if self.player:hasArmorEffect("SilverLion") then
 		local player = huyuan_validate(self, "SilverLion", false)
-		if player then return "@HuyuanCard=" .. self.player:getArmor():getEffectiveId() .. "&huyuan->" .. player:objectName() end
+		if player then return "@HuyuanCard=" .. self.player:getArmor():getEffectiveId() .. "->" .. player:objectName() end
 	end
 	if self.player:getOffensiveHorse() then
 		local player = huyuan_validate(self, "OffensiveHorse", false)
-		if player then return "@HuyuanCard=" .. self.player:getOffensiveHorse():getEffectiveId() .. "&huyuan->" .. player:objectName() end
+		if player then return "@HuyuanCard=" .. self.player:getOffensiveHorse():getEffectiveId() .. "->" .. player:objectName() end
 	end
 	if self.player:getWeapon() then
 		local player = huyuan_validate(self, "Weapon", false)
-		if player then return "@HuyuanCard=" .. self.player:getWeapon():getEffectiveId() .. "&huyuan->" .. player:objectName() end
+		if player then return "@HuyuanCard=" .. self.player:getWeapon():getEffectiveId() .. "->" .. player:objectName() end
 	end
 	if self.player:getArmor() and self.player:getLostHp() <= 1 and self.player:getHandcardNum() >= 3 then
 		local player = huyuan_validate(self, "Armor", false)
-		if player then return "@HuyuanCard=" .. self.player:getArmor():getEffectiveId() .. "&huyuan->" .. player:objectName() end
+		if player then return "@HuyuanCard=" .. self.player:getArmor():getEffectiveId() .. "->" .. player:objectName() end
 	end
 	for _, card in ipairs(cards) do
 		if card:isKindOf("DefensiveHorse") then
 			local player = huyuan_validate(self, "DefensiveHorse", true)
-			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "&huyuan->" .. player:objectName() end
+			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
 		end
 	end
 	for _, card in ipairs(cards) do
 		if card:isKindOf("OffensiveHorse") then
 			local player = huyuan_validate(self, "OffensiveHorse", true)
-			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "&huyuan->" .. player:objectName() end
+			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
 		end
 	end
 	for _, card in ipairs(cards) do
 		if card:isKindOf("Weapon") then
 			local player = huyuan_validate(self, "Weapon", true)
-			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "&huyuan->" .. player:objectName() end
+			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
 		end
 	end
 	for _, card in ipairs(cards) do
 		if card:isKindOf("SilverLion") then
 			local player = huyuan_validate(self, "SilverLion", true)
-			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "&huyuan->" .. player:objectName() end
+			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
 		end
 		if card:isKindOf("Armor") and huyuan_validate(self, "Armor", true) then
 			local player = huyuan_validate(self, "Armor", true)
-			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "&huyuan->" .. player:objectName() end
+			if player then return "@HuyuanCard=" .. card:getEffectiveId() .. "->" .. player:objectName() end
 		end
 	end
 end
@@ -325,7 +325,7 @@ local shangyi_skill = {}
 shangyi_skill.name = "shangyi"
 table.insert(sgs.ai_skills, shangyi_skill)
 shangyi_skill.getTurnUseCard = function(self)
-	local card_str = ("@ShangyiCard=.&shangyi")
+	local card_str = ("@ShangyiCard=.")
 	local shangyi_card = sgs.Card_Parse(card_str)
 	assert(shangyi_card)
 	return shangyi_card
@@ -430,7 +430,7 @@ sgs.ai_skill_use["@@qianhuan"] = function(self)
 	local use = self.player:getTag("qianhuan_data"):toCardUse()
 	local invoke = invoke_qianhuan(self, use)
 	if invoke then
-		return "@QianhuanCard=" .. tostring(self.player:getPile("sorcery"):first()) .. "&qianhuan"
+		return "@QianhuanCard=" .. self.player:getPile("sorcery"):first()
 	end
 	return "."
 end
