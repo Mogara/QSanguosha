@@ -653,16 +653,21 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
 
         effect.from->tag.remove("shangyi");
         room->throwCard(to_discard, effect.to, effect.from);
-    }
-    else {
+    } else {
         room->broadcastSkillInvoke("shangyi", 2);
-        QStringList list = room->getTag(effect.to->objectName()).toStringList();
+        QStringList list;
+        if (!effect.to->hasShownGeneral1())
+            list << effect.to->getActualGeneral1Name();
+        if (!effect.to->hasShownGeneral2())
+            list << effect.to->getActualGeneral2Name();
         foreach(QString name, list) {
             LogMessage log;
             log.type = "$KnownBothViewGeneral";
             log.from = effect.from;
             log.to << effect.to;
-            log.arg = name;
+            QString position = effect.to->getActualGeneral1Name() == name ? "head_general" : "deputy_general";
+            log.arg = Sanguosha->translate(position);
+            log.arg2 = name;
             room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
         }
         Json::Value arg(Json::arrayValue);
