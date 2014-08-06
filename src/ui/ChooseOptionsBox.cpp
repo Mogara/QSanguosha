@@ -146,7 +146,8 @@ int ChooseOptionsBox::getButtonWidth() const
     // Otherwise it would look compact
     biggest += 20;
 
-    return qMax(biggest, minButtonWidth);
+    int width = minButtonWidth;
+    return qMax(biggest, width);
 }
 
 QString ChooseOptionsBox::translate(const QString &option) const
