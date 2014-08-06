@@ -443,8 +443,7 @@ function SmartAI:useCardSlash(card, use)
 		slash_prohibit = self:slashProhibit(card, friend)
 		if self:isPriorFriendOfSlash(friend, card) then
 			if not slash_prohibit then
-				if (not use.current_targets or not table.contains(use.current_targets, friend:objectName()))
-					and (self.player:canSlash(friend, card, not no_distance, rangefix)
+				if (self.player:canSlash(friend, card, not no_distance, rangefix)
 						or (use.isDummy and (self.player:distanceTo(friend, rangefix) <= self.predictedRange)))
 					and self:slashIsEffective(card, friend) then
 					use.card = card
@@ -473,8 +472,7 @@ function SmartAI:useCardSlash(card, use)
 		for _, friend in ipairs(self.friends_noself) do
 			if self:canLiuli(target, friend) and self:slashIsEffective(card, friend) and #targets > 1 and friend:getHp() < 3 then canliuli = true end
 		end
-		if (not use.current_targets or not table.contains(use.current_targets, target:objectName()))
-			and (self.player:canSlash(target, card, not no_distance, rangefix)
+		if (self.player:canSlash(target, card, not no_distance, rangefix)
 				or (use.isDummy and self.predictedRange and self.player:distanceTo(target, rangefix) <= self.predictedRange))
 			and self:objectiveLevel(target) > 3
 			and self:slashIsEffective(card, target, self.player, shoulduse_wuqian)
@@ -544,8 +542,7 @@ function SmartAI:useCardSlash(card, use)
 
 	for _, friend in ipairs(self.friends_noself) do
 		local slash_prohibit = self:slashProhibit(card, friend)
-		if (not use.current_targets or not table.contains(use.current_targets, friend:objectName()))
-			and not self:hasHeavySlashDamage(self.player, card, friend) and (not use.to or not use.to:contains(friend))
+		if not self:hasHeavySlashDamage(self.player, card, friend) and (not use.to or not use.to:contains(friend))
 			and (self:getDamagedEffects(friend, self.player) and not (friend:isLord() and #self.enemies < 1) or self:needToLoseHp(friend, self.player, true, true)) then
 
 			if not slash_prohibit then
@@ -1581,15 +1578,13 @@ function SmartAI:useCardDuel(duel, use)
 	end
 
 	for _, friend in ipairs(friends) do
-		if (not use.current_targets or not table.contains(use.current_targets, friend:objectName()))
-			and friend:hasSkill("jieming") and canUseDuelTo(friend) and self.player:hasSkill("rende") and (huatuo and self:isFriend(huatuo)) then
+		if friend:hasSkill("jieming") and canUseDuelTo(friend) and self.player:hasSkill("rende") and (huatuo and self:isFriend(huatuo)) then
 			table.insert(targets, friend)
 		end
 	end
 
 	for _, enemy in ipairs(enemies) do
-		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName()))
-			and self.player:hasFlag("duelTo_" .. enemy:objectName()) and canUseDuelTo(enemy) then
+		if self.player:hasFlag("duelTo_" .. enemy:objectName()) and canUseDuelTo(enemy) then
 			table.insert(targets, enemy)
 		end
 	end
@@ -1630,8 +1625,7 @@ function SmartAI:useCardDuel(duel, use)
 					or ((self:hasSkill("jianxiong") or self.player:getMark("shuangxiong") > 0) and sgs.isGoodHp(self.player)
 						and n1 + self.player:getHp() >= n2 and self:isWeak(enemy))
 
-		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName()))
-			and self:objectiveLevel(enemy) > 3 and canUseDuelTo(enemy) and not self:cantbeHurt(enemy) and useduel and sgs.isGoodTarget(enemy, enemies, self) then
+		if self:objectiveLevel(enemy) > 3 and canUseDuelTo(enemy) and not self:cantbeHurt(enemy) and useduel and sgs.isGoodTarget(enemy, enemies, self) then
 			if not table.contains(targets, enemy) then table.insert(targets, enemy) end
 		end
 	end
@@ -1664,7 +1658,7 @@ function SmartAI:useCardDuel(duel, use)
 			if self:isEnemy(targets[i]) then enemySlash = enemySlash + n2 end
 
 			if use.to then
-				if i == 1 and not use.current_targets then
+				if i == 1 then
 					use.to:append(targets[i])
 					if not use.isDummy then self:speak("duel", self.player:isFemale()) end
 				end
@@ -1839,8 +1833,7 @@ function SmartAI:useCardSnatchOrDismantlement(card, use)
 	local targets_num = (1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card))
 
 	local addTarget = function(player, cardid)
-		if not table.contains(targets, player:objectName())
-			and (not use.current_targets or not table.contains(use.current_targets, player:objectName())) then
+		if not table.contains(targets, player:objectName()) then
 			if not usecard then
 				use.card = card
 				usecard = true
@@ -2175,8 +2168,7 @@ function SmartAI:useCardCollateral(card, use)
 	if needCrossbow then
 		for i = #fromList, 1, -1 do
 			local friend = fromList[i]
-			if (not use.current_targets or not table.contains(use.current_targets, friend:objectName()))
-				and friend:getWeapon() and friend:getWeapon():isKindOf("Crossbow") and self:hasTrickEffective(card, friend) then
+			if friend:getWeapon() and friend:getWeapon():isKindOf("Crossbow") and self:hasTrickEffective(card, friend) then
 				for _, enemy in ipairs(toList) do
 					if friend:canSlash(enemy, nil) and friend:objectName() ~= enemy:objectName() then
 						self.room:setPlayerFlag(self.player, "needCrossbow")
@@ -2193,8 +2185,7 @@ function SmartAI:useCardCollateral(card, use)
 	local n = nil
 	local final_enemy = nil
 	for _, enemy in ipairs(fromList) do
-		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName()))
-			and self:hasTrickEffective(card, enemy)
+		if self:hasTrickEffective(card, enemy)
 			and not enemy:hasShownSkills(sgs.lose_equip_skill)
 			and not (enemy:hasSkill("weimu") and card:isBlack())
 			and not enemy:hasSkill("tuntian")
@@ -2252,8 +2243,7 @@ function SmartAI:useCardCollateral(card, use)
 	end
 
 	for _, friend in ipairs(fromList) do
-		if (not use.current_targets or not table.contains(use.current_targets, friend:objectName()))
-			and friend:getWeapon() and (getKnownCard(friend, self.player, "Slash", true, "he") > 0 or getCardsNum("Slash", friend) > 1 and friend:getHandcardNum() >= 4)
+		if friend:getWeapon() and (getKnownCard(friend, self.player, "Slash", true, "he") > 0 or getCardsNum("Slash", friend) > 1 and friend:getHandcardNum() >= 4)
 			and self:hasTrickEffective(card, friend)
 			and self:objectiveLevel(friend) < 0
 			--[[and not self.room:isProhibited(self.player, friend, card)]] then
@@ -2273,8 +2263,7 @@ function SmartAI:useCardCollateral(card, use)
 	self:sort(toList)
 
 	for _, friend in ipairs(fromList) do
-		if (not use.current_targets or not table.contains(use.current_targets, friend:objectName()))
-			and friend:getWeapon() and friend:hasShownSkills(sgs.lose_equip_skill)
+		if friend:getWeapon() and friend:hasShownSkills(sgs.lose_equip_skill)
 			and self:hasTrickEffective(card, friend)
 			and self:objectiveLevel(friend) < 0
 			and not (friend:getWeapon():isKindOf("Crossbow") and getCardsNum("Slash", friend) > 1) then

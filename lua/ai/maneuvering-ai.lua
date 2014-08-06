@@ -412,7 +412,6 @@ function SmartAI:useCardIronChain(card, use)
 	local enemytargets = {}
 	self:sort(self.friends, "defense")
 	for _, friend in ipairs(self.friends) do
-		if use.current_targets and table.contains(use.current_targets, friend:objectName()) then continue end
 		if friend:isChained() and not self:isGoodChainPartner(friend) and self:hasTrickEffective(card, friend) then
 			if friend:containsTrick("lightning") then
 				table.insert(friendtargets, friend)
@@ -426,16 +425,14 @@ function SmartAI:useCardIronChain(card, use)
 	table.insertTable(friendtargets, friendtargets2)
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
-		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName()))
-			and not enemy:isChained() --[[and not self.room:isProhibited(self.player, enemy, card)]]
+		if not enemy:isChained() --[[and not self.room:isProhibited(self.player, enemy, card)]]
 			and self:hasTrickEffective(card, enemy) and not (self:objectiveLevel(enemy) <= 3)
 			and not self:getDamagedEffects(enemy) and not self:needToLoseHp(enemy) and sgs.isGoodTarget(enemy, self.enemies, self) then
 			table.insert(enemytargets, enemy)
 		end
 	end
 
-	local chainSelf = (not use.current_targets or not table.contains(use.current_targets, self.player:objectName()))
-						and (self:needToLoseHp(self.player) or self:getDamagedEffects(self.player)) and not self.player:isChained()
+	local chainSelf = (self:needToLoseHp(self.player) or self:getDamagedEffects(self.player)) and not self.player:isChained()
 						and (self:getCardId("FireSlash") or self:getCardId("ThunderSlash") or
 							(self:getCardId("Slash") and (self.player:hasWeapon("Fan")))
 						or (self:getCardId("FireAttack") and self.player:getHandcardNum() > 2))
@@ -461,8 +458,6 @@ function SmartAI:useCardIronChain(card, use)
 		elseif chainSelf then
 			if use.to then use.to:append(friendtargets[1]) end
 			if use.to then use.to:append(self.player) end
-		elseif use.current_targets then
-			if use.to then use.to:append(friendtargets[1]) end
 		end
 	elseif #enemytargets > 1 then
 		if use.to then
@@ -475,8 +470,6 @@ function SmartAI:useCardIronChain(card, use)
 		if chainSelf then
 			if use.to then use.to:append(enemytargets[1]) end
 			if use.to then use.to:append(self.player) end
-		elseif use.current_targets then
-			if use.to then use.to:append(enemytargets[1]) end
 		end
 	end
 	if use.to then assert(use.to:length() < targets_num + 1) end
@@ -575,7 +568,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 
 	local enemies, targets = {}, {}
 	for _, enemy in ipairs(self.enemies) do
-		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName())) and can_attack(enemy) then
+		if can_attack(enemy) then
 			table.insert(enemies, enemy)
 		end
 	end
@@ -588,8 +581,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 		end
 	end
 
-	if (not use.current_targets or not table.contains(use.current_targets, self.player:objectName()))
-		and can_FireAttack_self and self.player:isChained() and self:isGoodChainTarget(self.player)
+	if can_FireAttack_self and self.player:isChained() and self:isGoodChainTarget(self.player)
 		and self.player:getHandcardNum() > 1 --[[and not self.room:isProhibited(self.player, self.player, fire_attack)]]
 		and self:damageIsEffective(self.player, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(self.player)
 		and self:hasTrickEffective(fire_attack, self.player) then
@@ -610,7 +602,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	end
 
 	for _, enemy in ipairs(enemies) do
-		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName())) and enemy:getHandcardNum() == 1 then
+		if enemy:getHandcardNum() == 1 then
 			local handcards = sgs.QList2Table(enemy:getHandcards())
 			local flag = string.format("%s_%s_%s", "visible", self.player:objectName(), enemy:objectName())
 			if handcards[1]:hasFlag("visible") or handcards[1]:hasFlag(flag) then
@@ -634,13 +626,12 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 		if enemy:hasShownSkill("mingshi") and not self.player:hasShownAllGenerals() then
 			damage = damage - 1
 		end
-		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName()))
-			and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player) and damage > 1 then
+		if self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player) and damage > 1 then
 			if not table.contains(targets, enemy) then table.insert(targets, enemy) end
 		end
 	end
 	for _, enemy in ipairs(enemies) do
-		if (not use.current_targets or not table.contains(use.current_targets, enemy:objectName())) and not table.contains(targets, enemy) then table.insert(targets, enemy) end
+		if not table.contains(targets, enemy) then table.insert(targets, enemy) end
 	end
 
 	if #targets > 0 then
