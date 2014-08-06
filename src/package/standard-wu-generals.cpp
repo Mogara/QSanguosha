@@ -137,8 +137,11 @@ KurouCard::KurouCard() {
 
 void KurouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     room->loseHp(source);
-    if (source->isAlive())
+    if (source->isAlive()) {
+        if (source->ownSkill("kurou") && !source->hasShownSkill("kurou"))
+            source->showGeneral(source->inHeadSkills("kurou"));
         room->drawCards(source, 2);
+    }
 }
 
 class Kurou : public ZeroCardViewAsSkill {
@@ -151,9 +154,7 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        KurouCard *card = new KurouCard;
-        card->setShowSkill(objectName());
-        return card;
+        return new KurouCard;
     }
 };
 
