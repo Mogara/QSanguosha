@@ -1399,11 +1399,6 @@ public:
             return QStringList();
         if (player->getPhase() != Player::Start || player->isKongcheng())
             return QStringList();
-
-        foreach(const Card *card, player->getHandcards()){
-            if (player->isJilei(card))
-                return QStringList();
-        }
         return QStringList(objectName());
     }
 
@@ -1416,7 +1411,11 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *ganfuren) const{
-        int handcard_num = ganfuren->getHandcardNum();
+        int handcard_num = 0;
+        foreach(const Card *card, ganfuren->getHandcards()) {
+            if (!ganfuren->isJilei(card))
+                handcard_num++;
+        }
         ganfuren->throwAllHandCards();
         if (handcard_num >= ganfuren->getHp()) {
             RecoverStruct recover;
