@@ -278,7 +278,6 @@ public:
         HuyuanCard *first = new HuyuanCard;
         first->addSubcard(originalcard->getId());
         first->setSkillName(objectName());
-        first->setShowSkill(objectName());
         return first;
     }
 };
@@ -303,8 +302,8 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *target, QVariant &, ServerPlayer *) const {
         target->tag.remove("huyuan_equip");
         target->tag.remove("huyuan_target");
-        bool invoek = room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
-        if (invoek && target->tag.contains("huyuan_target"))
+        bool invoke = room->askForUseCard(target, "@@huyuan", "@huyuan-equip", -1, Card::MethodNone);
+        if (invoke && target->tag.contains("huyuan_target"))
             return true;
 
         return false;
@@ -621,9 +620,13 @@ bool ShangyiCard::targetFilter(const QList<const Player *> &targets, const Playe
     return targets.isEmpty() && (!to_select->isKongcheng() || !to_select->hasShownAllGenerals()) && to_select != Self;
 }
 
+void ShangyiCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+    room->showAllCards(card_use.from, card_use.to.first());
+}
+
 void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    room->showAllCards(effect.from, effect.to);
+
     QStringList choices;
     if (!effect.to->isKongcheng())
         choices << "handcards";
@@ -653,16 +656,21 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
 
         effect.from->tag.remove("shangyi");
         room->throwCard(to_discard, effect.to, effect.from);
-    }
-    else {
+    } else {
         room->broadcastSkillInvoke("shangyi", 2);
-        QStringList list = room->getTag(effect.to->objectName()).toStringList();
+        QStringList list;
+        if (!effect.to->hasShownGeneral1())
+            list << effect.to->getActualGeneral1Name();
+        if (!effect.to->hasShownGeneral2())
+            list << effect.to->getActualGeneral2Name();
         foreach(QString name, list) {
             LogMessage log;
             log.type = "$KnownBothViewGeneral";
             log.from = effect.from;
             log.to << effect.to;
-            log.arg = name;
+            QString position = effect.to->getActualGeneral1Name() == name ? "head_general" : "deputy_general";
+            log.arg = Sanguosha->translate(position);
+            log.arg2 = name;
             room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
         }
         Json::Value arg(Json::arrayValue);
@@ -682,9 +690,9 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        Card *card = new ShangyiCard;
-        card->setShowSkill(objectName());
-        return card;
+        ShangyiCard *c = new ShangyiCard;
+        c->setShowSkill(objectName());
+        return c;
     }
 };
 
@@ -788,7 +796,6 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const{
         QianhuanCard *c = new QianhuanCard;
         c->addSubcard(originalCard);
-        c->setShowSkill(objectName());
         return c;
     }
 };
@@ -836,8 +843,7 @@ public:
                 invoke = true;
                 room->broadcastSkillInvoke(objectName());
             }
-        }
-        else {
+        } else {
             QString prompt;
             QStringList prompt_list;
             prompt_list << "@qianhuan-cancel";
@@ -847,8 +853,15 @@ public:
             prompt_list << use.card->objectName();
             prompt = prompt_list.join(":");
             yuji->tag.remove("qianhuan_cancel");
-            if (room->askForUseCard(yuji, "@@qianhuan", prompt, -1, Card::MethodNone))
+            if (room->askForUseCard(yuji, "@@qianhuan", prompt, -1, Card::MethodNone)) {
+                int id = yuji->tag["qianhuan_cancel"].toInt();
+                yuji->tag.remove("qianhuan_cancel");
+                CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), objectName(), QString());
+                room->throwCard(Sanguosha->getCard(id), reason, NULL);
+
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, yuji->objectName(), use.to.first()->objectName());
                 invoke = true;
+            }
         }
 
         yuji->tag.remove("qianhuan_data");
@@ -874,36 +887,25 @@ public:
                 CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), objectName(), QString());
                 room->throwCard(Sanguosha->getCard(id), reason, NULL);
             }
-        }
-        else if (triggerEvent == TargetConfirming) {
+        } else if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
-            QList<int> ids = yuji->getPile("sorcery");
 
-            bool ok = false;
-            int id = yuji->tag["qianhuan_cancel"].toInt(&ok);
-            if (id != -1 && ok){
-                CardMoveReason reason(CardMoveReason::S_REASON_REMOVE_FROM_PILE, QString(), objectName(), QString());
-                room->throwCard(Sanguosha->getCard(id), reason, NULL);
-
-                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, yuji->objectName(), use.to.first()->objectName());
-
-                LogMessage log;
-                if (use.from) {
-                    log.type = "$CancelTarget";
-                    log.from = use.from;
-                }
-                else {
-                    log.type = "$CancelTargetNoUser";
-                }
-                log.to = use.to;
-                log.arg = use.card->objectName();
-                room->sendLog(log);
-
-                room->setEmotion(use.to.first(), "cancel");
-
-                use.to.clear();
-                data = QVariant::fromValue(use);
+            LogMessage log;
+            if (use.from) {
+                log.type = "$CancelTarget";
+                log.from = use.from;
             }
+            else {
+                log.type = "$CancelTargetNoUser";
+            }
+            log.to = use.to;
+            log.arg = use.card->objectName();
+            room->sendLog(log);
+
+            room->setEmotion(use.to.first(), "cancel");
+
+            use.to.clear();
+            data = QVariant::fromValue(use);
         }
 
         return false;

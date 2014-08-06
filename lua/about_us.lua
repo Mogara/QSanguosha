@@ -29,7 +29,8 @@ programmers = {
 	'hmqgg',
 	'takashiro',
 	'lrl026',
-	'Para'
+	'Para',
+	'tangjs520'
 }
 
 ai_designers = {
@@ -54,6 +55,19 @@ art_designers = {
 
 assistants = {
 	'Dear J'
+}
+
+audio_workers = {
+	'豚紙',
+	'墨宣砚韵',
+	'极光星逝',
+	'両仪弑',
+	'饮魂之殇',
+	'孝直',
+	'鱼梓酱',
+	'doublebit',
+	'尖子班的学生',
+	'琴音'
 }
 
 about_us.width = 900
@@ -207,7 +221,8 @@ function createHomePage()
 	table.insert(sectionbody, HTMLTable.createListingBlock("<br>简介", 
 		"QSanguosha-Hegemony是一个基于太阳神三国杀V2的开源项目，为了实现游卡官方国战而努力。"))
 	table.insert(sectionbody, HTMLTable.createListingBlock("开发人员", "程序：" .. table.concat(programmers, " "),
-		"AI：" .. table.concat(ai_designers, " "), "美工：" .. table.concat(art_designers, " "), "助理: " .. table.concat(assistants, " ")))
+		"AI：" .. table.concat(ai_designers, " "), "美工：" .. table.concat(art_designers, " "), "助理: " .. table.concat(assistants, " "),
+		"配音工作人员:" .. table.concat(audio_workers, " ")))
 	table.insert(sectionbody, HTMLTable.createListingBlock("特别鸣谢", getQunInfo("太阳神三国杀国战联机群", 
 		"低调的付尼玛", "01112a97ee4545654e1a098850184a84a9eadd3d6c7dc570fdd883e461babfd4", "nini"),
 		getQunInfo("豚豚神杀游戏群", "洛神", "ffb10d7ef73fbdef7cf7da3f6a64b95b889c465fdc4e1662979434583357638b", "tuntun"),

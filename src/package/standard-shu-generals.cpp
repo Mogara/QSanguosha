@@ -31,12 +31,13 @@ RendeCard::RendeCard() {
     handling_method = Card::MethodNone;
 }
 
-void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    ServerPlayer *target = targets.first();
-
-    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "rende", QString());
+void RendeCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *target = card_use.to.first();
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, card_use.from->objectName(), target->objectName(), "rende", QString());
     room->obtainCard(target, this, reason, false);
+}
 
+void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     int old_value = source->getMark("rende");
     int new_value = old_value + subcards.length();
     room->setPlayerMark(source, "rende", new_value);
@@ -217,8 +218,7 @@ public:
                 room->broadcastSkillInvoke("yizhi");
                 player->showGeneral(false);
                 return true;
-            }
-            else
+            } else
                 return false;
         }
         if (!player->hasSkill("yizhi")){
@@ -261,8 +261,7 @@ public:
                 player->showGeneral(false);
                 onPhaseChange(player);
                 return false;
-            }
-            else {
+            } else {
                 room->broadcastSkillInvoke(objectName());
                 return true;
             }
@@ -311,8 +310,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
-        if (invoke){
+        if (player->hasShownSkill(this) || player->askForSkillInvoke(objectName())){
             room->broadcastSkillInvoke(objectName());
             return true;
         }
@@ -341,7 +339,6 @@ public:
         return false;
     }
 };
-
 
 class LongdanVS : public OneCardViewAsSkill {
 public:
@@ -1263,9 +1260,8 @@ public:
                 room->broadcastSkillInvoke(objectName(), 1);
                 return true;
             }
-        }
-        else if (change.to == Player::NotActive)
-            return room->askForUseCard(player, "@@fangquan", "@fangquan-discard", -1, Card::MethodDiscard);
+        } else if (change.to == Player::NotActive)
+            room->askForUseCard(player, "@@fangquan", "@fangquan-discard", -1, Card::MethodDiscard);
         return false;
     }
 
@@ -1302,10 +1298,6 @@ public:
             }
         }
         return QStringList();
-    }
-
-    virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *) const{
-        return true;
     }
 
     virtual bool onPhaseChange(ServerPlayer *liushan) const{
@@ -1406,28 +1398,24 @@ public:
             return QStringList();
         if (player->getPhase() != Player::Start || player->isKongcheng())
             return QStringList();
-
-        foreach(const Card *card, player->getHandcards()){
-            if (player->isJilei(card))
-                return QStringList();
-        }
         return QStringList(objectName());
     }
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        if (player->askForSkillInvoke(objectName())){
+        if (player->askForSkillInvoke(objectName())) {
             room->broadcastSkillInvoke(objectName());
-            int handcard_num = player->getHandcardNum();
-            player->tag["shenzhi_num"] = handcard_num;
-            player->throwAllHandCards();
             return true;
         }
-
         return false;
     }
 
     virtual bool onPhaseChange(ServerPlayer *ganfuren) const{
-        int handcard_num = ganfuren->tag["shenzhi_num"].toInt();
+        int handcard_num = 0;
+        foreach(const Card *card, ganfuren->getHandcards()) {
+            if (!ganfuren->isJilei(card))
+                handcard_num++;
+        }
+        ganfuren->throwAllHandCards();
         if (handcard_num >= ganfuren->getHp()) {
             RecoverStruct recover;
             recover.who = ganfuren;
@@ -1444,7 +1432,6 @@ void StandardPackage::addShuGenerals()
     liubei->addCompanion("zhangfei");
     liubei->addCompanion("ganfuren");
     liubei->addSkill(new Rende);
-
 
     General *guanyu = new General(this, "guanyu", "shu", 5); // SHU 002
     guanyu->addSkill(new Wusheng);

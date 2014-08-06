@@ -37,7 +37,9 @@ static QSize generalButtonSize;
 TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString &player, const QString &skill, const int width)
     : QGraphicsObject(parent), skillName(skill), playerName(player), width(width)
 {
-    setToolTip(Sanguosha->getSkill(skill)->getDescription());
+    const Skill *sk = Sanguosha->getSkill(skill);
+    if (sk)
+        setToolTip(sk->getDescription());
     setAcceptedMouseButtons(Qt::LeftButton);
     setFlag(ItemIsFocusable);
 

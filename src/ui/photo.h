@@ -35,6 +35,7 @@
 class ClientPlayer;
 class RoleComboBox;
 class QPushButton;
+class QPropertyAnimation;
 
 class Photo : public PlayerCardContainer {
     Q_OBJECT

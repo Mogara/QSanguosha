@@ -38,6 +38,7 @@ class RendeCard : public SkillCard {
 public:
     Q_INVOKABLE RendeCard();
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    virtual void extraCost(Room *room, const CardUseStruct &card_use) const;
 };
 
 class SavageAssaultAvoid : public TriggerSkill {

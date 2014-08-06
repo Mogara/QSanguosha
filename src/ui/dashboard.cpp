@@ -1360,4 +1360,3 @@ void Dashboard::updateSmallAvatar()
     _m_smallAvatarIcon->show();
     _adjustComponentZValues();
 }
-

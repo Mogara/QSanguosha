@@ -331,7 +331,7 @@ sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
 	end
 	local targets = self:findTuxiTarget()
 	if type(targets) == "table" and #targets > 0 then
-		return ("@TuxiCard=.&tuxi->" .. table.concat(targets, "+"))
+		return ("@TuxiCard=.&->" .. table.concat(targets, "+"))
 	end
 	return "."
 end
@@ -543,8 +543,8 @@ sgs.ai_skill_use["@@shensu1"] = function(self, prompt)
 	if dummy_use.card and not dummy_use.to:isEmpty() then
 		for _, enemy in sgs.qlist(dummy_use.to) do
 			local def = sgs.getDefenseSlash(enemy, self)
-			if def < 3 then return "@ShensuCard=.&shensu->" .. enemy:objectName() end
-			if not self:isWeak() and def < 5 then return "@ShensuCard=.&shensu->" .. enemy:objectName() end
+			if def < 3 then return "@ShensuCard=.->" .. enemy:objectName() end
+			if not self:isWeak() and def < 5 then return "@ShensuCard=.->" .. enemy:objectName() end
 		end
 	end
 
@@ -639,8 +639,8 @@ sgs.ai_skill_use["@@shensu2"] = function(self, prompt, method)
 		if selfSub < 0 then return "." end
 	end
 
-	if best_target then return "@ShensuCard=" .. eCard:getEffectiveId() .. "&shensu->" .. best_target:objectName() end
-	if target then return "@ShensuCard=" .. eCard:getEffectiveId() .. "&shensu->" .. target:objectName() end
+	if best_target then return "@ShensuCard=" .. eCard:getEffectiveId() .. "->" .. best_target:objectName() end
+	if target then return "@ShensuCard=" .. eCard:getEffectiveId() .. "->" .. target:objectName() end
 
 	return "."
 end
@@ -1020,14 +1020,14 @@ sgs.ai_skill_use_func.QiangxiCard = function(card, use, self)
 		for _, enemy in ipairs(self.enemies) do
 			if self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and self:damageIsEffective(enemy) then
 				if hand_weapon and self.player:distanceTo(enemy) <= self.player:getAttackRange() then
-					use.card = sgs.Card_Parse("@QiangxiCard=" .. hand_weapon:getId() .. "&qiangxi")
+					use.card = sgs.Card_Parse("@QiangxiCard=" .. tostring(hand_weapon:getId()) .. "&qiangxi")
 					if use.to then
 						use.to:append(enemy)
 					end
 					break
 				end
 				if self.player:distanceTo(enemy) <= 1 then
-					use.card = sgs.Card_Parse("@QiangxiCard=" .. weapon:getId() .. "&qiangxi")
+					use.card = sgs.Card_Parse("@QiangxiCard=" .. tostring(weapon:getId()) .. "&qiangxi")
 					if use.to then
 						use.to:append(enemy)
 					end

@@ -647,8 +647,7 @@ bool Card::targetFilter(const QList<const Player *> &targets, const Player *to_s
     return targets.isEmpty() && to_select != Self;
 }
 
-bool Card::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self,
-    int &maxVotes) const{
+bool Card::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self, int &maxVotes) const{
     bool canSelect = targetFilter(targets, to_select, Self);
     maxVotes = canSelect ? 1 : 0;
     return canSelect;
@@ -706,15 +705,29 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
             moves.append(move);
         }
         room->moveCardsAtomic(moves, true);
-    }
-    else if (card_use.card->willThrow()) {
-        CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->getSkillName(), QString());
-        room->moveCardTo(this, player, NULL, Player::DiscardPile, reason, true);
-    }
+        // show general
+        QString skill_name = card_use.card->showSkill();
+        if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
+            card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+    } else {
+        const SkillCard *skill_card = qobject_cast<const SkillCard *>(card_use.card);
+        if (skill_card)
+            skill_card->extraCost(room, card_use);
 
-    QString skill_name = card_use.card->showSkill();
-    if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
-        card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+        // show general
+        QString skill_name = card_use.card->showSkill();
+        if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
+            card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+
+        if (card_use.card->willThrow()) {
+            QList<int> table_cardids = room->getCardIdsOnTable(card_use.card);
+            if (!table_cardids.isEmpty()) {
+                DummyCard dummy(table_cardids);
+                CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->getSkillName(), QString());
+                room->moveCardTo(&dummy, player, NULL, Player::DiscardPile, reason, true);
+            }
+        }
+    }
 
     thread->trigger(CardUsed, room, player, data);
     thread->trigger(CardFinished, room, player, data);
@@ -723,8 +736,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
 void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     if (targets.length() == 1) {
         room->cardEffect(this, source, targets.first());
-    }
-    else {
+    } else {
         foreach(ServerPlayer *target, targets) {
             CardEffectStruct effect;
             effect.card = this;
@@ -767,7 +779,11 @@ void Card::addSubcard(int card_id) {
 }
 
 void Card::addSubcard(const Card *card) {
-    addSubcard(card->getEffectiveId());
+    //addSubcard(card->getEffectiveId());
+    if (!card->isVirtualCard())
+        addSubcard(card->getId());
+    else
+        addSubcards(card->getSubcards());
 }
 
 QList<int> Card::getSubcards() const{
@@ -875,6 +891,13 @@ QString SkillCard::toString(bool hidden) const{
         return str;
 }
 
+void SkillCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+    if (card_use.card->willThrow()){
+        CardMoveReason reason(CardMoveReason::S_REASON_THROW, card_use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
+        room->moveCardTo(this, card_use.from, NULL, Player::PlaceTable, reason, true);
+    }
+}
+
 // ---------- Dummy card      -------------------
 
 DummyCard::DummyCard() : SkillCard() {
@@ -916,7 +939,10 @@ ArraySummonCard::ArraySummonCard(const QString &name)
 
 const Card *ArraySummonCard::validate(CardUseStruct &card_use) const{
     const BattleArraySkill *skill = qobject_cast<const BattleArraySkill *>(Sanguosha->getTriggerSkill(objectName()));
-    if (skill) skill->summonFriends(card_use.from);
+    if (skill) {
+        card_use.from->showGeneral(card_use.from->inHeadSkills(skill));
+        skill->summonFriends(card_use.from);
+    }
     return NULL;
 }
 

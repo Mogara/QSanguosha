@@ -157,7 +157,7 @@ local t = {
 	["known_both"] = "知己知彼",
 	[":known_both"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：一名其他角色。\n作用效果：你选择一项：1.观看目标角色的所有手牌；2.观看目标角色的一张暗置的武将牌。\n◆此牌能重铸。",
 	["#KnownBothView"] = "%from 观看了 %to 的 %arg" ,
-	["$KnownBothViewGeneral"] = "%from 观看了 %to 的 %arg2，为 %arg" ,
+	["$KnownBothViewGeneral"] = "%from 观看了 %to 的 %arg，为 %arg2" ,
 	
 	["befriend_attacking"] = "远交近攻",
 	[":befriend_attacking"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：与你势力不同的一名有明置的武将牌的角色。\n作用效果：目标角色摸一张牌，然后你摸三张牌。",

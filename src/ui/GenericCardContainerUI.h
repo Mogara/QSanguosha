@@ -131,6 +131,7 @@ public slots:
     void updateVotes(bool need_select = true, bool display_1 = false);
     void updateReformState();
     void showDistance();
+    void onRemovedChanged();
     virtual void showSeat();
     virtual void showPile();
     virtual void refresh();
@@ -187,6 +188,7 @@ protected:
     QPixmap _getAvatarIcon(QString generalName);
 
     bool _isSelected(QGraphicsItem *item) const;
+    void _initializeBlurEffect();
 
     // layout
     const QSanRoomSkin::PlayerCardContainerLayout *_m_layout;
@@ -265,6 +267,8 @@ private:
     int _lastZ;
     bool _allZAdjusted;
     QString _m_treasureName;
+    QParallelAnimationGroup *_blurEffect;
+
 signals:
     void selected_changed();
     void enable_changed();

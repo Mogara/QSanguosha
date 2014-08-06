@@ -70,7 +70,9 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
         judging = true;
     }
 
-    maxCardsInOneRow = qMin(maxCardsInOneRow, maxCardNumberInOneRow);
+    int max = maxCardsInOneRow;
+    int maxNumber = maxCardNumberInOneRow;
+    maxCardsInOneRow = qMin(max, maxNumber);
 
     update();
 
@@ -144,8 +146,9 @@ QRectF PlayerCardBox::boundingRect() const
                 + intervalBetweenCards * (maxCardsInOneRow - 1);
     }
 
+    int areaInterval = intervalBetweenAreas;
     int height = topBlankWidth + bottomBlankWidth + cardHeight * rowCount
-            + intervalsBetweenAreas * qMax(intervalBetweenAreas, 0)
+            + intervalsBetweenAreas * qMax(areaInterval, 0)
             + intervalsBetweenRows * intervalBetweenRows;
 
     if (ServerInfo.OperationTimeout != 0)
@@ -268,9 +271,7 @@ void PlayerCardBox::arrangeCards(const CardList &cards, const QPoint &topLeft)
         double step = 0;
         if (count > 1) {
             step = qMin((double)cardWidth + intervalBetweenCards,
-                        (double)(maxWidth - cardWidth) / (count - 1));
-        } else {
-            step = cardWidth;
+                        (double)(maxWidth - cardWidth) / qMax(count - 1, 0));
         }
         for(int i = 0; i < count; ++ i) {
             CardItem *item = areaItems.takeFirst();

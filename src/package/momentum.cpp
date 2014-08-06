@@ -405,12 +405,15 @@ bool CunsiCard::targetFilter(const QList<const Player *> &targets, const Player 
 
 void CunsiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     room->doSuperLightbox("mifuren", "cunsi");
-    Card::onUse(room, card_use);
+    SkillCard::onUse(room, card_use);
+}
+
+void CunsiCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+    card_use.from->removeGeneral(card_use.from->inHeadSkills("cunsi"));
 }
 
 void CunsiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    effect.from->removeGeneral(effect.from->inHeadSkills("cunsi"));
     room->setPlayerMark(effect.from, "cunsi", 1);
     room->acquireSkill(effect.to, "yongjue");
     room->setPlayerMark(effect.to, "@yongjue", 1);
@@ -424,9 +427,7 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        CunsiCard *card = new CunsiCard;
-        card->setShowSkill(objectName());
-        return card;
+        return new CunsiCard;
     }
 };
 
