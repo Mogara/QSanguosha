@@ -716,8 +716,7 @@ void QiaobianCard::use(Room *room, ServerPlayer *zhanghe, QList<ServerPlayer *> 
             moves.push_back(move2);
         }
         room->moveCardsAtomic(moves, false);
-    }
-    else if (phase == Player::Play) {
+    } else if (phase == Player::Play) {
         if (targets.isEmpty())
             return;
 
@@ -924,8 +923,7 @@ public:
     }
 
     virtual bool onPhaseChange(ServerPlayer *caoren) const{
-        Room *room = caoren->getRoom();
-        room->drawCards(caoren, 3);
+        caoren->drawCards(3, objectName());
         caoren->turnOver();
         return false;
     }
@@ -955,6 +953,9 @@ void QiangxiCard::onEffect(const CardEffectStruct &effect) const{
     if (subcards.isEmpty())
         room->loseHp(effect.from);
 
+    if (effect.from->isAlive() && effect.from->ownSkill("qiangxi") && !effect.from->hasShownSkill("qiangxi"))
+        effect.from->showGeneral(effect.from->inHeadSkills("qiangxi"));
+
     room->damage(DamageStruct("qiangxi", effect.from, effect.to));
 }
 
@@ -974,16 +975,12 @@ public:
     virtual const Card *viewAs(const QList<const Card *> &cards) const{
         if (cards.isEmpty()) {
             QiangxiCard *card = new QiangxiCard;
-            card->setShowSkill(objectName());
             return card;
-        }
-        else if (cards.length() == 1) {
+        } else if (cards.length() == 1) {
             QiangxiCard *card = new QiangxiCard;
             card->addSubcards(cards);
-            card->setShowSkill(objectName());
             return card;
-        }
-        else
+        } else
             return NULL;
     }
 
