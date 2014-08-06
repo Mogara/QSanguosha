@@ -75,21 +75,21 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *simayi, QVariant &data, ServerPlayer *) const {
         DamageStruct damage = data.value<DamageStruct>();
         if (!damage.from->isNude() && simayi->askForSkillInvoke(objectName(), data)) {
-            int aidelay = Config.AIDelay;
-            Config.AIDelay = 0;
-            int card_id = room->askForCardChosen(simayi, damage.from, "he", objectName());
-            Config.AIDelay = aidelay;
-            CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, simayi->objectName());
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, simayi->objectName(), damage.from->objectName());
             room->broadcastSkillInvoke(objectName());
-            room->obtainCard(simayi, Sanguosha->getCard(card_id), reason, room->getCardPlace(card_id) != Player::PlaceHand);
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, simayi->objectName(), damage.from->objectName());
             return true;
         }
         return false;
     }
 
-    virtual void onDamaged(ServerPlayer *, const DamageStruct &) const{
-        // empty
+    virtual void onDamaged(ServerPlayer *simayi, const DamageStruct &damage) const{
+        Room *room = simayi->getRoom();
+        int aidelay = Config.AIDelay;
+        Config.AIDelay = 0;
+        int card_id = room->askForCardChosen(simayi, damage.from, "he", objectName());
+        Config.AIDelay = aidelay;
+        CardMoveReason reason(CardMoveReason::S_REASON_EXTRACTION, simayi->objectName());
+        room->obtainCard(simayi, Sanguosha->getCard(card_id), reason, false);
     }
 };
 
@@ -269,16 +269,14 @@ public:
         if (triggerEvent == DrawNCards) {
             if (TriggerSkill::triggerable(player))
                 return QStringList(objectName());
-        }
-        else if (triggerEvent == PreCardUsed) {
+        } else if (triggerEvent == PreCardUsed) {
             if (player != NULL && player->isAlive() && player->hasFlag("luoyi")){
                 CardUseStruct use = data.value<CardUseStruct>();
                 if (use.card != NULL && (use.card->isKindOf("Slash") || use.card->isKindOf("Duel"))){
                     room->setCardFlag(use.card, objectName());
                 }
             }
-        }
-        else if (triggerEvent == DamageCaused) {
+        } else if (triggerEvent == DamageCaused) {
             if (player != NULL && player->isAlive() && player->hasFlag("luoyi")){
                 DamageStruct damage = data.value<DamageStruct>();
                 if (damage.card != NULL && damage.card->hasFlag("luoyi") && !damage.chain && !damage.transfer && damage.by_user){
@@ -289,12 +287,12 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+    virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         if (triggerEvent == DamageCaused) {
             room->broadcastSkillInvoke(objectName(), 1);
             return true;
-        }
-        else if (player->askForSkillInvoke(objectName())){
+        } else if (player->askForSkillInvoke(objectName())) {
+            data = data.toInt() - 1;
             room->broadcastSkillInvoke(objectName(), 2);
             return true;
         }
@@ -313,10 +311,8 @@ public:
             room->sendLog(log);
 
             data = QVariant::fromValue(damage);
-        }
-        else {
+        } else {
             room->setPlayerFlag(player, objectName());
-            data = data.toInt() - 1;
         }
         return false;
     }
