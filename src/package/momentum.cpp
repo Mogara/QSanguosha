@@ -424,9 +424,7 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        CunsiCard *card = new CunsiCard;
-        card->setShowSkill(objectName());
-        return card;
+        return new CunsiCard;
     }
 };
 
