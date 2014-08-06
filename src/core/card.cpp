@@ -775,7 +775,11 @@ void Card::addSubcard(int card_id) {
 }
 
 void Card::addSubcard(const Card *card) {
-    addSubcard(card->getEffectiveId());
+    //addSubcard(card->getEffectiveId());
+    if (!card->isVirtualCard())
+        addSubcard(card->getId());
+    else
+        addSubcards(card->getSubcards());
 }
 
 QList<int> Card::getSubcards() const{
