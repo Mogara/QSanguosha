@@ -939,7 +939,10 @@ ArraySummonCard::ArraySummonCard(const QString &name)
 
 const Card *ArraySummonCard::validate(CardUseStruct &card_use) const{
     const BattleArraySkill *skill = qobject_cast<const BattleArraySkill *>(Sanguosha->getTriggerSkill(objectName()));
-    if (skill) skill->summonFriends(card_use.from);
+    if (skill) {
+        card_use.from->showGeneral(card_use.from->inHeadSkills(skill));
+        skill->summonFriends(card_use.from);
+    }
     return NULL;
 }
 
