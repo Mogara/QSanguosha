@@ -198,10 +198,16 @@ void LijianCard::onUse(Room *room, const CardUseStruct &card_use) const{
     room->broadcastSkillInvoke("lijian");
 
     CardMoveReason reason(CardMoveReason::S_REASON_THROW, diaochan->objectName(), QString(), "lijian", QString());
-    room->moveCardTo(this, diaochan, NULL, Player::DiscardPile, reason, true);
+    room->moveCardTo(this, diaochan, NULL, Player::PlaceTable, reason, true);
 
     if (diaochan->ownSkill("lijian") && !diaochan->hasShownSkill("lijian"))
         diaochan->showGeneral(diaochan->inHeadSkills("lijian"));
+
+    QList<int> table_ids = room->getCardIdsOnTable(this);
+    if (!table_ids.isEmpty()) {
+        DummyCard dummy(table_ids);
+        room->moveCardTo(dummy, diaochan, NULL, Player::DiscardPile, reason, true);
+    }
 
     thread->trigger(CardUsed, room, diaochan, data);
     thread->trigger(CardFinished, room, diaochan, data);

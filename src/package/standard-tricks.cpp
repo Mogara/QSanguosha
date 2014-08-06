@@ -255,7 +255,7 @@ Nullification::Nullification(Suit suit, int number)
 void Nullification::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     // does nothing, just throw it
     QList<int> table_cardids = room->getCardIdsOnTable(this);
-    if (!table_cardids.isEmpty()){
+    if (!table_cardids.isEmpty()) {
         DummyCard dummy(table_cardids);
         CardMoveReason reason(CardMoveReason::S_REASON_USE, source->objectName());
         room->moveCardTo(&dummy, NULL, Player::DiscardPile, reason);
