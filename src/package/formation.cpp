@@ -620,12 +620,12 @@ bool ShangyiCard::targetFilter(const QList<const Player *> &targets, const Playe
     return targets.isEmpty() && (!to_select->isKongcheng() || !to_select->hasShownAllGenerals()) && to_select != Self;
 }
 
+void ShangyiCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+    room->showAllCards(card_use.from, card_use.to.first());
+}
+
 void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.from->getRoom();
-    room->showAllCards(effect.from, effect.to);
-
-    if (effect.from->ownSkill("shangyi") && !effect.from->hasShownSkill("shangyi"))
-        effect.from->showGeneral(effect.from->inHeadSkills("shangyi"));
 
     QStringList choices;
     if (!effect.to->isKongcheng())
@@ -690,7 +690,9 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        return new ShangyiCard;
+        ShangyiCard *c = new ShangyiCard;
+        c->setShowSkill(objectName());
+        return c;
     }
 };
 
