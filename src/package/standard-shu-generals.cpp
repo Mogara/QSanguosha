@@ -37,6 +37,9 @@ void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &tar
     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "rende", QString());
     room->obtainCard(target, this, reason, false);
 
+    if (source->ownSkill("rende") && !source->hasShownSkill("rende"))
+        source->showGeneral(source->inHeadSkills("rende"));
+
     int old_value = source->getMark("rende");
     int new_value = old_value + subcards.length();
     room->setPlayerMark(source, "rende", new_value);
@@ -68,7 +71,6 @@ public:
 
         RendeCard *rende_card = new RendeCard;
         rende_card->addSubcards(cards);
-        rende_card->setShowSkill(objectName());
         return rende_card;
     }
 };
@@ -1444,7 +1446,6 @@ void StandardPackage::addShuGenerals()
     liubei->addCompanion("zhangfei");
     liubei->addCompanion("ganfuren");
     liubei->addSkill(new Rende);
-
 
     General *guanyu = new General(this, "guanyu", "shu", 5); // SHU 002
     guanyu->addSkill(new Wusheng);
