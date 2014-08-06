@@ -332,17 +332,17 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        JudgeStruct *judge = data.value<JudgeStruct *>();
-        if (room->getCardPlace(judge->card->getEffectiveId()) == Player::PlaceJudge && player->askForSkillInvoke(objectName(), data)){
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+        if (player->askForSkillInvoke(objectName(), data)){
             room->broadcastSkillInvoke(objectName());
-            player->obtainCard(judge->card);
             return true;
         }
         return false;
     }
 
-    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer *) const{
+        JudgeStruct *judge = data.value<JudgeStruct *>();
+        player->obtainCard(judge->card);
         return false;
     }
 };
@@ -391,7 +391,6 @@ public:
         moves.append(move);
         room->notifyMoveCards(true, moves, false, _guojia);
         room->notifyMoveCards(false, moves, false, _guojia);
-        //-----------------------------the codes above is actually cost--------------------
         QList<int> origin_yiji = yiji_cards;
         while (room->askForYiji(guojia, yiji_cards, objectName(), true, false, true, -1, room->getAlivePlayers())) {
             CardsMoveStruct move(QList<int>(), guojia, NULL, Player::PlaceHand, Player::PlaceTable, preview_reason);
