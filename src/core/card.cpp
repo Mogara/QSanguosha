@@ -706,15 +706,24 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
             moves.append(move);
         }
         room->moveCardsAtomic(moves, true);
-    }
-    else if (card_use.card->willThrow()) {
+        // show general
+        QString skill_name = card_use.card->showSkill();
+        if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
+            card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+    } else if (card_use.card->willThrow()) {
         CardMoveReason reason(CardMoveReason::S_REASON_THROW, player->objectName(), QString(), card_use.card->getSkillName(), QString());
-        room->moveCardTo(this, player, NULL, Player::DiscardPile, reason, true);
-    }
+        room->moveCardTo(this, player, NULL, Player::PlaceTable, reason, true);
+        // show general
+        QString skill_name = card_use.card->showSkill();
+        if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
+            card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
 
-    QString skill_name = card_use.card->showSkill();
-    if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
-        card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
+        QList<int> table_cardids = room->getCardIdsOnTable(this);
+        if (!table_cardids.isEmpty()) {
+            DummyCard dummy(table_cardids);
+            room->moveCardTo(&dummy, player, NULL, Player::DiscardPile, reason, true);
+        }
+    }
 
     thread->trigger(CardUsed, room, player, data);
     thread->trigger(CardFinished, room, player, data);
@@ -723,8 +732,7 @@ void Card::onUse(Room *room, const CardUseStruct &use) const{
 void Card::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     if (targets.length() == 1) {
         room->cardEffect(this, source, targets.first());
-    }
-    else {
+    } else {
         foreach(ServerPlayer *target, targets) {
             CardEffectStruct effect;
             effect.card = this;

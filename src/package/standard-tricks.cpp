@@ -637,8 +637,8 @@ bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Play
 void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
     if (card_use.to.isEmpty()) {
         CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
-        reason.m_skillName = this->getSkillName();
-        room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason);
+        reason.m_skillName = getSkillName();
+        room->moveCardTo(this, card_use.from, NULL, Player::PlaceTable, reason, true);
         card_use.from->broadcastSkillInvoke("@recast");
 
         LogMessage log;
@@ -651,9 +651,14 @@ void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
         if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
             card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
 
+        QList<int> table_cardids = room->getCardIdsOnTable(this);
+        if (!table_cardids.isEmpty()) {
+            DummyCard dummy(table_cardids);
+            room->moveCardTo(&dummy, card_use.from, NULL, Player::DiscardPile, reason, true);
+        }
+
         card_use.from->drawCards(1);
-    }
-    else
+    } else
         TrickCard::onUse(room, card_use);
 }
 
@@ -825,8 +830,8 @@ bool KnownBoth::targetsFeasible(const QList<const Player *> &targets, const Play
 void KnownBoth::onUse(Room *room, const CardUseStruct &card_use) const{
     if (card_use.to.isEmpty()){
         CardMoveReason reason(CardMoveReason::S_REASON_RECAST, card_use.from->objectName());
-        reason.m_skillName = this->getSkillName();
-        room->moveCardTo(this, card_use.from, NULL, Player::DiscardPile, reason);
+        reason.m_skillName = getSkillName();
+        room->moveCardTo(this, card_use.from, NULL, Player::PlaceTable, reason);
         card_use.from->broadcastSkillInvoke("@recast");
 
         LogMessage log;
@@ -839,9 +844,14 @@ void KnownBoth::onUse(Room *room, const CardUseStruct &card_use) const{
         if (!skill_name.isNull() && card_use.from->ownSkill(skill_name) && !card_use.from->hasShownSkill(skill_name))
             card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
 
+        QList<int> table_cardids = room->getCardIdsOnTable(this);
+        if (!table_cardids.isEmpty()) {
+            DummyCard dummy(table_cardids);
+            room->moveCardTo(&dummy, card_use.from, NULL, Player::DiscardPile, reason, true);
+        }
+
         card_use.from->drawCards(1);
-    }
-    else
+    } else
         SingleTargetTrick::onUse(room, card_use);
 }
 
