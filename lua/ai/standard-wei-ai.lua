@@ -526,44 +526,28 @@ sgs.qingguo_suit_value = {
 sgs.ai_suit_priority.qingguo= "diamond|heart|club|spade"
 
 sgs.ai_skill_use["@@shensu1"] = function(self, prompt)
-	self:updatePlayers()
-	self:sort(self.enemies, "defenseSlash")
 
-	if not self:willShowForAttack() then
-		return "."
-	end
+	if not self:willShowForAttack() then return "." end
 
 	if self.player:containsTrick("lightning") and self.player:getCards("j"):length() == 1
 		and self:hasWizard(self.friends) and not self:hasWizard(self.enemies, true) then
 		return "."
 	end
 
-	local selfSub = self.player:getHp() - self.player:getHandcardNum()
-	local selfDef = sgs.getDefense(self.player)
+	local slash = sgs.cloneCard("slash")
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+	self.player:setFlags("slashNoDistanceLimit")
+	self:useBasicCard(slash, dummy_use)
+	self.player:setFlags("-slashNoDistanceLimit")
 
-	for _, enemy in ipairs(self.enemies) do
-		local def = sgs.getDefenseSlash(enemy, self)
-		local slash = sgs.cloneCard("slash")
-		local eff = self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
-
-		if not self.player:canSlash(enemy, slash, false) then
-		elseif self:slashProhibit(nil, enemy) then
-		elseif def < 5 and eff then return "@ShensuCard=.&shensu->" .. enemy:objectName()
-
-		elseif selfSub >= 2 then return "."
-		elseif selfDef < 6 then return "." end
+	if dummy_use.card and not dummy_use.to:isEmpty() then
+		for _, enemy in sgs.qlist(dummy_use.to) do
+			local def = sgs.getDefenseSlash(enemy, self)
+			if def < 3 then return "@ShensuCard=.&shensu->" .. enemy:objectName() end
+			if not self:isWeak() and def < 5 then return "@ShensuCard=.&shensu->" .. enemy:objectName() end
+		end
 	end
 
-	for _, enemy in ipairs(self.enemies) do
-		local def = sgs.getDefense(enemy)
-		local slash = sgs.cloneCard("slash")
-		local eff = self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
-
-		if not self.player:canSlash(enemy, slash, false) then
-		elseif self:slashProhibit(nil, enemy) then
-		elseif eff and def < 8 then return "@ShensuCard=.&shensu->" .. enemy:objectName()
-		else return "." end
-	end
 	return "."
 end
 

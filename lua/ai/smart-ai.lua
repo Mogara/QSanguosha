@@ -355,7 +355,7 @@ function SmartAI:objectiveLevel(player)
 	if self:getKingdomCount() <= 2 then return 5 end
 
 	local selfIsCareerist = self.role == "careerist" or sgs.shown_kingdom[self_kingdom] >= upperlimit and sgs.isAnjiang(self.player)
-	local isweak = sgs.getReward(player) > 2 and player:getHp() == 1 and not player:hasShownSkill("kongcheng") and not sgs.isAnjiang(player)
+	local isweak = sgs.getReward(player) > 2 and player:getHp() == 1 and not player:hasShownSkills("kongcheng|buqu") and not sgs.isAnjiang(player)
 					and (player:isKongcheng() or sgs.card_lack[player:objectName()] == 1 and player:getHandcardNum() <= 1)
 
 	local gameProcess = sgs.gameProcess()
@@ -1008,12 +1008,6 @@ function SmartAI:adjustUsePriority(card, v)
 		end
 		if self.player:hasSkill("jiang") and card:isRed() then v = v + 0.21 end
 
-		for _, p in ipairs(self.friends) do
-			if p:hasSkill("yongjue") then
-				v = 9.4
-				break
-			end
-		end
 	end
 
 	local suits_value = {}
@@ -1029,8 +1023,11 @@ function SmartAI:getDynamicUsePriority(card)
 	if not card then return 0 end
 	if card:hasFlag("AIGlobal_KillOff") then return 15 end
 
-	-- direct control
-	if card:isKindOf("AmazingGrace") then
+	if card:isKindOf("Slash") then
+		for _, p in ipairs(self.friends) do
+			if p:hasShownSkill("yongjue") and self.player:isFriendWith(p) then return 12 end
+		end
+	elseif card:isKindOf("AmazingGrace") then
 		local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
 		if zhugeliang and self:isEnemy(zhugeliang) and zhugeliang:isKongcheng() then
 			return math.max(sgs.ai_use_priority.Slash, sgs.ai_use_priority.Duel) + 0.1

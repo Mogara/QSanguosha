@@ -495,7 +495,7 @@ function SmartAI:useCardSlash(card, use)
 			local usecard = card
 			if not use.to or use.to:isEmpty() then
 				if self.player:hasWeapon("Spear") and card:getSkillName() == "Spear" then
-				elseif self.player:hasWeapon("Crossbow") and self:getCardsNum("Slash") > 1 then
+				elseif self.player:hasWeapon("Crossbow") and self:getCardsNum("Slash") > 0 then
 				elseif not use.isDummy then
 					local card = self:findWeaponToUse(target)
 					if card then
@@ -805,18 +805,15 @@ function SmartAI:canHit(to, from, conservative)
 end
 
 function SmartAI:useCardPeach(card, use)
-	local mustusepeach = false
 	if not self.player:isWounded() then return end
 
+	local mustusepeach = false
 	local peaches = 0
 	local cards = sgs.QList2Table(self.player:getHandcards())
 
-	for _,card in ipairs(cards) do
+	for _, card in ipairs(cards) do
 		if isCard("Peach", card, self.player) then peaches = peaches + 1 end
 	end
-
-	if self.player:isLord() and (self.player:hasSkill("hunzi") and self.player:getMark("hunzi") == 0)
-		and self.player:getHp() < 4 and self.player:getHp() > peaches then return end
 
 	if self.player:hasSkill("rende") and self:findFriendsByType(sgs.Friend_Draw) then return end
 
@@ -855,7 +852,7 @@ function SmartAI:useCardPeach(card, use)
 		end
 	end
 
-	local maxCards = self.player:getOverflow(self.player, true)
+	local maxCards = self:getOverflow(self.player, true)
 	local overflow = self:getOverflow() > 0
 	if self.player:hasSkill("buqu") and self.player:getHp() < 1 and maxCards == 0 then
 		use.card = card
@@ -872,7 +869,7 @@ function SmartAI:useCardPeach(card, use)
 	end
 
 	local useJieyinCard
-	if self.player:hasSkill("jieyin") and not self.player:hasUsed("JieyinCard") and self:getOverflow() > 0 then
+	if self.player:hasSkill("jieyin") and not self.player:hasUsed("JieyinCard") and overflow then
 		self:sort(self.friends, "hp")
 		for _, friend in ipairs(self.friends) do
 			if friend:isWounded() and friend:isMale() then useJieyinCard = true end
@@ -900,14 +897,10 @@ function SmartAI:useCardPeach(card, use)
 		return
 	end
 
-	if self.player:hasSkill("kuanggu") and self.player:getLostHp() == 1 and self.player:getOffensiveHorse() then
-		return
-	end
-
 	if self:needToLoseHp(self.player, nil, nil, nil, true) then return end
 
 	self:sort(self.friends, "hp")
-	if self.friends[1]:objectName()==self.player:objectName() or self.player:getHp() < 2 then
+	if self.friends[1]:objectName() == self.player:objectName() or self.player:getHp() < 2 then
 		use.card = card
 		return
 	end
