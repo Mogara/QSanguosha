@@ -1084,7 +1084,7 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
-        if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who).contains(objectName())){
+        if (TriggerSkill::triggerable(triggerEvent, room, player, data, ask_who).contains(objectName())) {
             DamageStruct damage = data.value<DamageStruct>();
             QStringList trigger_list;
             for (int i = 1; i <= damage.damage; i++){
@@ -1168,9 +1168,7 @@ public:
         if (player->isNude() || caopi == player)
             return false;
         DummyCard dummy(player->handCards());
-        QList <const Card *> equips = player->getEquips();
-        foreach(const Card *card, equips)
-            dummy.addSubcard(card);
+        dummy.addSubcards(player->getEquips());
         if (dummy.subcardsLength() > 0) {
             CardMoveReason reason(CardMoveReason::S_REASON_RECYCLE, caopi->objectName());
             room->obtainCard(caopi, &dummy, reason, false);
@@ -1198,7 +1196,8 @@ public:
         ServerPlayer *to = caopi->tag["fangzhu_invoke"].value<ServerPlayer *>();
         caopi->tag.remove("fangzhu_invoke");
         if (to) {
-            to->drawCards(caopi->getLostHp());
+            if (caopi->isWounded())
+                to->drawCards(caopi->getLostHp(), objectName());
             to->turnOver();
         }
     }
@@ -1234,8 +1233,7 @@ public:
         if (!room->askForCard(player, ".Equip", "@xiaoguo-discard", QVariant())) {
             room->broadcastSkillInvoke(objectName(), 2);
             room->damage(DamageStruct("xiaoguo", ask_who, player));
-        }
-        else {
+        } else {
             room->broadcastSkillInvoke(objectName(), 3);
         }
         return false;
