@@ -827,6 +827,11 @@ PlayerCardContainer::PlayerCardContainer() {
     _allZAdjusted = false;
 
     _m_treasureName = QString();
+
+    _m_avatarIcon = new QGraphicsPixmapItem(this);
+    _m_smallAvatarIcon = new QGraphicsPixmapItem(this);
+
+    _initializeBlurEffect();
 }
 
 void PlayerCardContainer::hideAvatars() {
@@ -848,6 +853,35 @@ bool PlayerCardContainer::_startLaying() {
     _allZAdjusted = true;
     _lastZ = -1;
     return true;
+}
+
+void PlayerCardContainer::_initializeBlurEffect()
+{
+    QGraphicsBlurEffect *effect1 = new QGraphicsBlurEffect;
+    effect1->setBlurHints(QGraphicsBlurEffect::AnimationHint);
+    effect1->setBlurRadius(0);
+    _m_avatarIcon->setGraphicsEffect(effect1);
+
+    QPropertyAnimation *animation1 = new QPropertyAnimation(effect1, "blurRadius");
+    animation1->setEasingCurve(QEasingCurve::OutInBounce);
+    animation1->setDuration(2000);
+    animation1->setStartValue(0);
+    animation1->setEndValue(5);
+
+    QGraphicsBlurEffect *effect2 = new QGraphicsBlurEffect;
+    effect2->setBlurHints(QGraphicsBlurEffect::AnimationHint);
+    effect2->setBlurRadius(0);
+    _m_smallAvatarIcon->setGraphicsEffect(effect2);
+
+    QPropertyAnimation *animation2 = new QPropertyAnimation(effect2, "blurRadius");
+    animation2->setEasingCurve(QEasingCurve::OutInBounce);
+    animation2->setDuration(2000);
+    animation2->setStartValue(0);
+    animation2->setEndValue(5);
+
+    _blurEffect = new QParallelAnimationGroup(this);
+    _blurEffect->addAnimation(animation1);
+    _blurEffect->addAnimation(animation2);
 }
 
 void PlayerCardContainer::_layBetween(QGraphicsItem *middle, QGraphicsItem *item1, QGraphicsItem *item2) {
@@ -1046,6 +1080,15 @@ void PlayerCardContainer::showDistance() {
         _m_distanceItem->hide();
     else
         _m_distanceItem->show();
+}
+
+void PlayerCardContainer::onRemovedChanged()
+{
+    QAbstractAnimation::Direction direction = m_player->isRemoved() ? QAbstractAnimation::Forward
+                                                                    : QAbstractAnimation::Backward;
+
+    _blurEffect->setDirection(direction);
+    _blurEffect->start();
 }
 
 void PlayerCardContainer::showSeat() {

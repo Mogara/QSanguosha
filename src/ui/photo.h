@@ -70,7 +70,6 @@ public slots:
     void hideEmotion();
     void hideSkillName();
     virtual void refresh();
-    virtual void onRemovedChanged();
 
 protected:
     inline virtual QGraphicsItem *_getEquipParent() { return _m_groupMain; }
@@ -95,7 +94,6 @@ protected:
     QGraphicsPixmapItem *_m_skillNameItem;
     QGraphicsPixmapItem *_m_focusFrame;
     QGraphicsPixmapItem *_m_onlineStatusItem;
-    QPropertyAnimation *_removedEffect;
 };
 
 #endif
