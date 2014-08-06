@@ -325,7 +325,7 @@ local shangyi_skill = {}
 shangyi_skill.name = "shangyi"
 table.insert(sgs.ai_skills, shangyi_skill)
 shangyi_skill.getTurnUseCard = function(self)
-	local card_str = ("@ShangyiCard=.&shangyi")
+	local card_str = ("@ShangyiCard=.")
 	local shangyi_card = sgs.Card_Parse(card_str)
 	assert(shangyi_card)
 	return shangyi_card
