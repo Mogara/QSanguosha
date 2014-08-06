@@ -525,7 +525,7 @@
 <context>
     <name>ChooseTriggerOrderBox</name>
     <message>
-        <location filename="../src/ui/ChooseTriggerOrderBox.cpp" line="199"/>
+        <location filename="../src/ui/ChooseTriggerOrderBox.cpp" line="201"/>
         <source>cancel</source>
         <translation>取消</translation>
     </message>
