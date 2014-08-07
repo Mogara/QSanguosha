@@ -242,7 +242,7 @@ public:
     void setPileOpen(const QString &pile_name, const QString &player);
 
     void addHistory(const QString &name, int times = 1);
-    void clearHistory();
+    void clearHistory(const QString &name = QString());
     bool hasUsed(const QString &card_class) const;
     int usedTimes(const QString &card_class) const;
     int getSlashCount() const;

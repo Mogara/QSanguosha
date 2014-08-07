@@ -266,7 +266,7 @@ public:
     void setPileOpen(const char *pile_name, const char *player);
 
     void addHistory(const char *name, int times = 1);
-    void clearHistory();
+    void clearHistory(const char *name = "");
     bool hasUsed(const char *card_class) const;
     int usedTimes(const char *card_class) const;
     int getSlashCount() const;
@@ -391,7 +391,7 @@ public:
     QList<const Card *> getCards(const char *flags) const;
     DummyCard *wholeHandCards() const;
     bool hasNullification() const;
-    PindianStruct *pindianSelect(ServerPlayer *target, const QString &reason, const Card *card1 = NULL);
+    PindianStruct *pindianSelect(ServerPlayer *target, const char *reason, const Card *card1 = NULL);
     bool pindian(PindianStruct *pd); //pd is deleted after this function
     void turnOver();
     void play(QList<Player::Phase> set_phases = QList<Player::Phase>());
@@ -447,10 +447,10 @@ public:
     void introduceTo(ServerPlayer *player);
     void marshal(ServerPlayer *player) const;
 
-    void addToPile(const char *pile_name, const Card *card, bool open = true);
-    void addToPile(const char *pile_name, int card_id, bool open = true);
-    void addToPile(const char *pile_name, QList<int> card_ids, bool open = true);
-    void addToPile(const char *pile_name, QList<int> card_ids, bool open, CardMoveReason reason);
+    void addToPile(const char *pile_name, const Card *card, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
+    void addToPile(const char *pile_name, int card_id, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
+    void addToPile(const char *pile_name, QList<int> card_ids, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
+    void addToPile(const char *pile_name, QList<int> card_ids, bool open, QList<ServerPlayer *> open_players, CardMoveReason reason);
     void exchangeFreelyFromPrivatePile(const char *skill_name, const char *pile_name, int upperlimit = 1000, bool include_equip = false);
     void gainAnExtraTurn();
 

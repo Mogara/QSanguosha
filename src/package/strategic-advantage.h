@@ -38,6 +38,24 @@ public:
     Q_INVOKABLE Halberd(Card::Suit suit, int number);
 };
 
+class WoodenOxCard: public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE WoodenOxCard();
+
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+};
+
+class WoodenOx: public Treasure{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE WoodenOx(Card::Suit suit, int number);
+
+    virtual void onUninstall(ServerPlayer *player) const;
+};
+
 class JadeSeal : public Treasure{
     Q_OBJECT
 

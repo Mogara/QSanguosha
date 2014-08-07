@@ -894,8 +894,11 @@ int Player::getSlashCount() const{
         + history.value("FireSlash", 0);
 }
 
-void Player::clearHistory() {
-    history.clear();
+void Player::clearHistory(const QString &name) {
+    if (name.isEmpty())
+        history.clear();
+    else
+        history.remove(name);
 }
 
 bool Player::hasUsed(const QString &card_class) const{
