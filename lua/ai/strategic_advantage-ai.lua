@@ -18,7 +18,7 @@
   QSanguosha-Hegemony Team
 *********************************************************************]]
 
- 
+
 function SmartAI:useCardDrowning(card, use)
 	if card:isAvailable(self.player) then return end
 
@@ -46,7 +46,7 @@ function SmartAI:useCardDrowning(card, use)
 		end
 	end
 
-	if #targets > 0 then
+	if not Splayers:isEmpty() then
 		use.card = card
 		if use.to then use.to = Splayers end
 		return
