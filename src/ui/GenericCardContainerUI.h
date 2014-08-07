@@ -157,6 +157,7 @@ protected:
     virtual QString getResourceKeyName() = 0;
 
     virtual QAbstractAnimation *_getPlayerRemovedEffect() = 0;
+    virtual void _initializeRemovedEffect() = 0;
 
     virtual void _createRoleComboBox();
     void _updateProgressBar(); // a dirty function used by the class itself only.

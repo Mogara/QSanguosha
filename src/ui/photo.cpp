@@ -70,10 +70,6 @@ Photo::Photo() : PlayerCardContainer() {
     emotion_item = new Sprite(_m_groupMain);
 
     _createControls();
-
-    _blurEffect = new QParallelAnimationGroup(this);
-    _blurEffect->addAnimation(initializeBlurEffect(_m_avatarIcon));
-    _blurEffect->addAnimation(initializeBlurEffect(_m_smallAvatarIcon));
 }
 
 Photo::~Photo(){
@@ -119,6 +115,14 @@ void Photo::repaintAll() {
     setFrame(_m_frameType);
     hideSkillName(); // @todo: currently we don't adjust skillName's position for simplicity,
     // consider repainting it instead of hiding it in the future.
+    if (!_m_avatarIcon) {
+        _m_avatarIcon = new QGraphicsPixmapItem(_getAvatarParent());
+        _m_avatarIcon->setTransformationMode(Qt::SmoothTransformation);
+    }
+    if (!_m_smallAvatarIcon) {
+        _m_smallAvatarIcon = new QGraphicsPixmapItem(_getAvatarParent());
+        _m_smallAvatarIcon->setTransformationMode(Qt::SmoothTransformation);
+    }
     PlayerCardContainer::repaintAll();
     refresh();
 }
@@ -318,9 +322,6 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *
 
 QPropertyAnimation *Photo::initializeBlurEffect(QGraphicsPixmapItem *icon)
 {
-    icon = new QGraphicsPixmapItem(_m_groupMain);
-    icon->setTransformationMode(Qt::SmoothTransformation);
-
     QGraphicsBlurEffect *effect = new QGraphicsBlurEffect;
     effect->setBlurHints(QGraphicsBlurEffect::AnimationHint);
     effect->setBlurRadius(0);
@@ -332,6 +333,13 @@ QPropertyAnimation *Photo::initializeBlurEffect(QGraphicsPixmapItem *icon)
     animation->setStartValue(0);
     animation->setEndValue(5);
     return animation;
+}
+
+void Photo::_initializeRemovedEffect()
+{
+    _blurEffect = new QParallelAnimationGroup(this);
+    _blurEffect->addAnimation(initializeBlurEffect(_m_avatarIcon));
+    _blurEffect->addAnimation(initializeBlurEffect(_m_smallAvatarIcon));
 }
 
 QGraphicsItem *Photo::getMouseClickReceiver() {

@@ -90,6 +90,7 @@ protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
     QPropertyAnimation *initializeBlurEffect(QGraphicsPixmapItem *icon);
+    virtual void _initializeRemovedEffect();
 
     FrameType _m_frameType;
     QGraphicsPixmapItem *_m_mainFrame;

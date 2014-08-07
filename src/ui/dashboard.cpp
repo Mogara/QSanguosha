@@ -74,12 +74,6 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     _createExtraButtons();
 
     _m_sort_menu = new QMenu(RoomSceneInstance->mainWindow());
-
-    _removedEffect = new QPropertyAnimation(this, "opacity", this);
-    _removedEffect->setDuration(2000);
-    _removedEffect->setEasingCurve(QEasingCurve::OutInBounce);
-    _removedEffect->setEndValue(0.6);
-    _removedEffect->setStartValue(1.0);
 }
 
 void Dashboard::refresh() {
@@ -788,6 +782,15 @@ void Dashboard::_setEquipBorderAnimation(int index, bool turnOn) {
 
     _m_isEquipsAnimOn[index] = turnOn;
     _mutexEquipAnim.unlock();
+}
+
+void Dashboard::_initializeRemovedEffect()
+{
+    _removedEffect = new QPropertyAnimation(this, "opacity", this);
+    _removedEffect->setDuration(2000);
+    _removedEffect->setEasingCurve(QEasingCurve::OutInBounce);
+    _removedEffect->setEndValue(0.6);
+    _removedEffect->setStartValue(1.0);
 }
 
 void Dashboard::adjustCards(bool playAnimation) {

@@ -543,6 +543,7 @@ void PlayerCardContainer::repaintAll() {
                  lock, _getAvatarParent());
 
     _adjustComponentZValues();
+    _initializeRemovedEffect();
     refresh();
 }
 
@@ -825,8 +826,6 @@ PlayerCardContainer::PlayerCardContainer() {
     _m_groupDeath->setFlag(ItemHasNoContents);
     _m_groupDeath->setPos(0, 0);
     _allZAdjusted = false;
-
-    _m_treasureName = QString();
 }
 
 void PlayerCardContainer::hideAvatars() {
@@ -1054,11 +1053,7 @@ void PlayerCardContainer::onRemovedChanged()
                                                                     : QAbstractAnimation::Backward;
 
     _getPlayerRemovedEffect()->setDirection(direction);
-    QParallelAnimationGroup *group = qobject_cast<QParallelAnimationGroup *>(_getPlayerRemovedEffect());
-    if (group)
-        group->start();
-    else
-        _getPlayerRemovedEffect()->start();
+    _getPlayerRemovedEffect()->start();
 }
 
 void PlayerCardContainer::showSeat() {

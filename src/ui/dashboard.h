@@ -241,6 +241,7 @@ protected:
 
     QMenu *_m_sort_menu;
 
+    virtual void _initializeRemovedEffect();
     QPropertyAnimation *_removedEffect;
 
 protected slots:
