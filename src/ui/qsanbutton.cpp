@@ -404,6 +404,11 @@ void QSanInvokeSkillDock::update() {
     QGraphicsObject::update();
 }
 
+void QSanInvokeSkillDock::paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *)
+{
+    // do nothing
+}
+
 QSanInvokeSkillButton *QSanInvokeSkillDock::getSkillButtonByName(const QString &skillName) const{
     foreach(QSanInvokeSkillButton *button, _m_buttons) {
         if (button->getSkill()->objectName() == skillName)

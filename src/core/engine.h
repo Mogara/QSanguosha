@@ -45,6 +45,7 @@ class LuaTrickCard;
 class LuaWeapon;
 class LuaArmor;
 class LuaTreasure;
+class TransferSkill;
 
 struct lua_State;
 
@@ -201,6 +202,8 @@ public:
 
     bool isGeneralHidden(const QString &general_name) const;
 
+    TransferSkill *getTransfer() const;
+
 private:
     void _loadMiniScenarios();
     void _loadModScenarios();
@@ -245,6 +248,8 @@ private:
     QHash<QString, const LuaTreasure *> luaTreasures;
 
     QMultiMap<QString, QString> sp_convert_pairs;
+
+    TransferSkill *transfer;
 };
 
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key) {

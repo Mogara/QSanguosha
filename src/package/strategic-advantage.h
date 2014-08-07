@@ -23,6 +23,7 @@
 
 #include "package.h"
 #include "standard.h"
+#include "skill.h"
 
 class Blade : public Weapon{
     Q_OBJECT
@@ -83,7 +84,7 @@ public:
     virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
-class AllianceFeast: public AOE{
+class AllianceFeast : public AOE {
     Q_OBJECT
 
 public:
@@ -94,6 +95,29 @@ public:
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isAvailable(const Player *player) const;*/
+};
+
+class TransferCard : public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE TransferCard();
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class TransferSkill : public OneCardViewAsSkill {
+    Q_OBJECT
+
+public:
+    explicit TransferSkill();
+
+    virtual bool viewFilter(const Card *to_select) const;
+    virtual const Card *viewAs(const Card *originalCard) const;
+    void setToSelect(int _toSelect);
+
+private:
+    int _toSelect;
 };
 
 class StrategicAdvantagePackage : public Package{

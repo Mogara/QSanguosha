@@ -351,6 +351,12 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
     connect(card_item, SIGNAL(thrown()), this, SLOT(onCardItemThrown()));
 
     card_item->setOuterGlowEffectEnabled(true);
+
+    if (card_item->getCard()->isTransferable()) {
+        card_item->setTransferable(true);
+        if (!_transferButtons.contains(card_item->getTransferButton()))
+            _transferButtons << card_item->getTransferButton();
+    }
 }
 
 void Dashboard::_createRoleComboBox() {
@@ -624,6 +630,16 @@ void Dashboard::showSeat() {
     _m_seatItem->setZValue(1.1);
 }
 
+void Dashboard::addPending(CardItem *item)
+{
+    pendings << item;
+}
+
+QList<TransferButton *> Dashboard::getTransferButtons() const
+{
+    return _transferButtons;
+}
+
 void Dashboard::skillButtonActivated() {
     QSanSkillButton *button = qobject_cast<QSanSkillButton *>(sender());
     QList<QSanInvokeSkillButton *> buttons = rightSkillDock->getAllSkillButtons()
@@ -657,6 +673,11 @@ void Dashboard::skillButtonDeactivated() {
             if (_m_equipSkillBtns[i]->isDown())
                 _m_equipSkillBtns[i]->click();
         }
+    }
+
+    foreach (TransferButton *button, _transferButtons) {
+        if (button->isDown())
+            button->setState(QSanButton::S_STATE_UP);
     }
 }
 
@@ -874,6 +895,10 @@ QList<CardItem *> Dashboard::removeHandCards(const QList<int> &card_ids) {
             card_item->hideFrame();
             card_item->disconnect(this);
             card_item->setOuterGlowEffectEnabled(false);
+            if (card_item->getCard()->isTransferable()) {
+                card_item->setTransferable(false);
+                _transferButtons.removeOne(card_item->getTransferButton());
+            }
             result.append(card_item);
         }
     }
@@ -1032,7 +1057,7 @@ void Dashboard::startPending(const ViewAsSkill *skill) {
     pendings.clear();
     unselectAll();
 
-    if (skill && skill->inherits("ViewAsSkill") && !skill->getExpandPile().isEmpty())
+    if (skill && !skill->getExpandPile().isEmpty())
         expandPileCards(skill->getExpandPile());
 
     for (int i = 0; i < 5; i++) {

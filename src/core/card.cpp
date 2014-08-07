@@ -39,7 +39,7 @@ const Card::Suit Card::AllSuits[4] = {
 
 Card::Card(Suit suit, int number, bool target_fixed)
     :target_fixed(target_fixed), mute(false),
-    will_throw(true), has_preact(false), can_recast(false),
+    will_throw(true), has_preact(false), can_recast(false), transferable(true),
     m_suit(suit), m_number(number), m_id(-1)
 {
     handling_method = will_throw ? Card::MethodDiscard : Card::MethodUse;
@@ -399,11 +399,6 @@ QString Card::getEffectName() const{
 bool Card::isTransferable() const
 {
     return transferable;
-}
-
-void Card::setTransferable(bool value)
-{
-    transferable = value;
 }
 
 QString Card::subcardString() const{

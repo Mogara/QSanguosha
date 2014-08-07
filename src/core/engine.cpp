@@ -32,8 +32,8 @@
 #include "RoomState.h"
 #include "banpair.h"
 #include "miniscenarios.h"
-
 #include "jiange-defense-scenario.h"
+#include "strategic-advantage.h"
 
 #include <lua.hpp>
 #include <QFile>
@@ -97,6 +97,8 @@ Engine::Engine()
     foreach(QString name, package_names)
         addPackage(name);
 
+    transfer = new TransferSkill;
+
     _loadMiniScenarios();
     _loadModScenarios();
     m_customScene = new CustomScenario();
@@ -135,6 +137,7 @@ void Engine::addTranslationEntry(const char *key, const char *value) {
 Engine::~Engine() {
     lua_close(lua);
     delete m_customScene;
+    delete transfer;
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif
@@ -425,6 +428,11 @@ bool Engine::isGeneralHidden(const QString &general_name) const{
         return Config.ExtraHiddenGenerals.contains(general_name);
     else
         return !Config.RemovedHiddenGenerals.contains(general_name);
+}
+
+TransferSkill *Engine::getTransfer() const
+{
+    return transfer;
 }
 
 WrappedCard *Engine::getWrappedCard(int cardId) {

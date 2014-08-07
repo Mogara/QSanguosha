@@ -23,6 +23,7 @@
 #include "skill.h"
 #include "clientplayer.h"
 #include "settings.h"
+#include "roomscene.h"
 
 #include <cmath>
 #include <QPainter>
@@ -49,6 +50,8 @@ void CardItem::_initialize() {
     outerGlowEffectEnabled = false;
     outerGlowEffect = NULL;
     outerGlowColor = Qt::white;
+    _transferButton = NULL;
+    _transferable = false;
 }
 
 CardItem::CardItem(const Card *card) {
@@ -260,6 +263,23 @@ QColor CardItem::getOuterGlowColor() const
     return outerGlowColor;
 }
 
+void CardItem::setTransferable(const bool transferable)
+{
+    _transferable = transferable;
+    if (transferable && _transferButton == NULL) {
+        _transferButton = new TransferButton(this);
+        _transferButton->setPos(0, -20);
+        _transferButton->hide();
+        connect(_transferButton, SIGNAL(_activated()), RoomSceneInstance, SLOT(onTransferButtonActivated()));
+        connect(_transferButton, SIGNAL(_deactivated()), RoomSceneInstance, SLOT(onSkillDeactivated()));
+    }
+}
+
+TransferButton *CardItem::getTransferButton() const
+{
+    return _transferButton;
+}
+
 const int CardItem::_S_CLICK_JITTER_TOLERANCE = 1600;
 const int CardItem::_S_MOVE_JITTER_TOLERANCE = 200;
 
@@ -304,11 +324,15 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
+    if (_transferable)
+        _transferButton->show();
     emit enter_hover();
     emit hoverChanged(true);
 }
 
 void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
+    if (_transferable)
+        _transferButton->hide();
     emit leave_hover();
     emit hoverChanged(false);
 }
@@ -350,6 +374,29 @@ void CardItem::setFootnote(const QString &desc) {
     _m_footnoteImage.fill(Qt::transparent);
     QPainter painter(&_m_footnoteImage);
     font.paintText(&painter, QRect(QPoint(0, 0), rect.size()),
-        (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);
+                   (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);
 }
 
+int TransferButton::getCardId() const
+{
+    return _id;
+}
+
+CardItem *TransferButton::getCardItem() const
+{
+    return _cardItem;
+}
+
+TransferButton::TransferButton(CardItem *parent)
+    : QSanButton("carditem", "give", parent), _id(parent->getId()), _cardItem(parent)
+{
+    _m_style = S_STYLE_TOGGLE;
+}
+
+void TransferButton::onClicked()
+{
+    if (isDown())
+        emit _activated();
+    else
+        emit _deactivated();
+}
