@@ -383,6 +383,7 @@ class FanSkill : public OneCardViewAsSkill {
 public:
     FanSkill() : OneCardViewAsSkill("Fan") {
         filter_pattern = "%slash";
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{

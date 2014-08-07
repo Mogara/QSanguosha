@@ -94,6 +94,7 @@ public:
 class Wusheng : public OneCardViewAsSkill {
 public:
     Wusheng() : OneCardViewAsSkill("wusheng") {
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -343,6 +344,7 @@ public:
 class LongdanVS : public OneCardViewAsSkill {
 public:
     LongdanVS() : OneCardViewAsSkill("longdan") {
+        response_or_use = true;
     }
 
     virtual bool viewFilter(const Card *to_select) const{
@@ -717,6 +719,7 @@ class Lianhuan : public OneCardViewAsSkill {
 public:
     Lianhuan() : OneCardViewAsSkill("lianhuan") {
         filter_pattern = ".|club|.|hand";
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -788,6 +791,7 @@ class Huoji : public OneCardViewAsSkill {
 public:
     Huoji() : OneCardViewAsSkill("huoji") {
         filter_pattern = ".|red|.|hand";
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -834,6 +838,7 @@ public:
     Kanpo() : OneCardViewAsSkill("kanpo") {
         filter_pattern = ".|black|.|hand";
         response_pattern = "nullification";
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -845,10 +850,7 @@ public:
     }
 
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
-        foreach(const Card *card, player->getHandcards()) {
-            if (card->isBlack()) return true;
-        }
-        return false;
+        return !player->isKongcheng() || !player->getPile("wooden_ox").isEmpty();
     }
 
     virtual int getEffectIndex(const ServerPlayer *player, const Card *) const{

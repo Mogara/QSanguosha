@@ -521,6 +521,7 @@ public:
     Qingguo() : OneCardViewAsSkill("qingguo") {
         filter_pattern = ".|black|.|hand";
         response_pattern = "jink";
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -876,6 +877,7 @@ class Duanliang : public OneCardViewAsSkill {
 public:
     Duanliang() : OneCardViewAsSkill("duanliang") {
         filter_pattern = "BasicCard,EquipCard|black";
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
