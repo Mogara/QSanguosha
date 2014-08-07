@@ -16,4 +16,7 @@ return {
 	[":drowning"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：装备区有牌的一名其他角色。\n作用效果：目标角色选择一项：1.弃置装备区里的所有牌；2.受到你造成的1点伤害。",
 	["drowning:throw"] = "弃置装备区里的所有牌",
 	["drowning:damage"] = "受到其造成的1点伤害",
+
+	["alliance_feast"] = "联军盛宴",
+	[":alliance_feast"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：XXXXXXXXXX。\n作用效果：你XXXXXXXXX。然后XXXXXXXXX各选择一项：XXXXXXX；或XXXXXXXX，XXXXXXX。",
 }
