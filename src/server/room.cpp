@@ -1738,6 +1738,8 @@ void Room::addPlayerHistory(ServerPlayer *player, const QString &key, int times)
     if (player) {
         if (key == ".")
             player->clearHistory();
+        else if (times == 0)
+            player->clearHistory(key);
         else
             player->addHistory(key, times);
     }

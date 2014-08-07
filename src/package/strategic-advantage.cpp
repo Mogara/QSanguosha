@@ -84,6 +84,113 @@ Halberd::Halberd(Card::Suit suit, int number)
     setObjectName("Halberd");
 }
 
+WoodenOxCard::WoodenOxCard() {
+    target_fixed = true;
+    will_throw = false;
+    handling_method = Card::MethodNone;
+    m_skillName = "WoodenOx";
+}
+
+void WoodenOxCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
+    source->addToPile("wooden_ox", subcards, false);
+
+    QList<ServerPlayer *> targets;
+    foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
+        if (!p->getTreasure())
+            targets << p;
+    }
+    if (targets.isEmpty())
+        return;
+    ServerPlayer *target = room->askForPlayerChosen(source, targets, "WoodenOx", "@wooden_ox-move", true);
+    if (target) {
+        const Card *treasure = source->getTreasure();
+        if (treasure)
+            room->moveCardTo(treasure, source, target, Player::PlaceEquip,
+                             CardMoveReason(CardMoveReason::S_REASON_TRANSFER,
+                                            source->objectName(), "WoodenOx", QString()));
+    }
+}
+
+class WoodenOxSkill: public OneCardViewAsSkill {
+public:
+    WoodenOxSkill(): OneCardViewAsSkill("WoodenOx") {
+        filter_pattern = ".|.|.|hand";
+    }
+
+    virtual bool isEnabledAtPlay(const Player *player) const{
+        return !player->hasUsed("WoodenOxCard");
+    }
+
+    virtual const Card *viewAs(const Card *originalCard) const{
+        WoodenOxCard *card = new WoodenOxCard;
+        card->addSubcard(originalCard);
+        card->setSkillName("WoodenOx");
+        return card;
+    }
+};
+
+class WoodenOxTriggerSkill: public TreasureSkill {
+public:
+    WoodenOxTriggerSkill(): TreasureSkill("WoodenOx_trigger") {
+        events << CardsMoveOneTime;
+        global = true;
+    }
+
+    virtual bool triggerable(const ServerPlayer *target) const{
+        return target != NULL && target->isAlive();
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+        if (!player->isAlive() || !move.from || move.from != player)
+            return false;
+        if (player->hasTreasure("WoodenOx")) {
+            int count = 0;
+            for (int i = 0; i < move.card_ids.size(); i++) {
+                if (move.from_pile_names[i] == "wooden_ox") count++;
+            }
+            if (count > 0) {
+                LogMessage log;
+                log.type = "#WoodenOx";
+                log.from = player;
+                log.arg = QString::number(count);
+                log.arg2 = "WoodenOx";
+                room->sendLog(log);
+            }
+        }
+        if (player->getPile("wooden_ox").isEmpty())
+            return false;
+        for (int i = 0; i < move.card_ids.size(); i++) {
+            if (move.from_places[i] != Player::PlaceEquip && move.from_places[i] != Player::PlaceTable) continue;
+            const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
+            if (card->objectName() == "WoodenOx") {
+                ServerPlayer *to = (ServerPlayer *)move.to;
+                if (to && to->getTreasure() && to->getTreasure()->objectName() == "WoodenOx"
+                    && move.to_place == Player::PlaceEquip) {
+                    QList<ServerPlayer *> p_list;
+                    p_list << to;
+                    to->addToPile("wooden_ox", player->getPile("wooden_ox"), false, p_list);
+                } else {
+                    player->clearOnePrivatePile("wooden_ox");
+                }
+                return false;
+            }
+        }
+        return false;
+    }
+};
+
+WoodenOx::WoodenOx(Suit suit, int number)
+    : Treasure(suit, number)
+{
+    setObjectName("WoodenOx");
+}
+
+void WoodenOx::onUninstall(ServerPlayer *player) const{
+    player->getRoom()->addPlayerHistory(player, "WoodenOxCard", 0);
+    Treasure::onUninstall(player);
+}
+
 JadeSeal::JadeSeal(Card::Suit suit, int number)
     : Treasure(suit, number){
     setObjectName("JadeSeal");
@@ -186,6 +293,7 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
     QList<Card *> cards;
 
     cards
+        << new WoodenOx(Card::Diamond, 5)
         << new JadeSeal(Card::Spade, 2)
         << new Blade(Card::Spade, 5)
         << new Halberd(Card::Spade, 6)
@@ -195,11 +303,13 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         << new Drowning(Card::Club, 4)
         << new AllianceFeast();
 
-    foreach(Card *c, cards){
-        c->setParent(this);
-    }
+    skills << new BladeSkill
+           << new WoodenOxSkill << new WoodenOxTriggerSkill;
 
-    skills << new BladeSkill;
+    foreach (Card *card, cards)
+        card->setParent(this);
+
+    addMetaObject<WoodenOxCard>();
 }
 
 ADD_PACKAGE(StrategicAdvantage)

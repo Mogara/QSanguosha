@@ -395,6 +395,7 @@ QString Card::getEffectName() const{
     }
     return name;
 }
+
 bool Card::isTransferable() const
 {
     return transferable;
@@ -404,7 +405,6 @@ void Card::setTransferable(bool value)
 {
     transferable = value;
 }
-
 
 QString Card::subcardString() const{
     if (subcards.isEmpty())
