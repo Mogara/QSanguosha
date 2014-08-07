@@ -179,21 +179,33 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             room->notifySkillInvoked(player, "paoxiao");
         }
     }
-    if (use.to.size() > 1 && player->hasSkill("duanbing")) {
+    if ((use.to.size() > 1 || player->hasFlag("Global_MoreSlashInOneTurn"))
+        && player->hasFlag("TianyiSuccess") && player->getPhase() == Player::Play) {
+        room->broadcastSkillInvoke("tianyi", 1);
+    } else if (use.to.size() > 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, player, this)
+               && player->hasSkill("duanbing")) {
         if (!player->hasShownSkill("duanbing"))
             player->showGeneral(player->inHeadSkills("duanbing"));
         room->broadcastSkillInvoke("duanbing");
         room->notifySkillInvoked(player, "duanbing");
     }
-    if ((use.to.size() > 1 || player->hasFlag("Global_MoreSlashInOneTurn")) && player->hasFlag("TianyiSuccess") && player->getPhase() == Player::Play){
-        room->broadcastSkillInvoke("tianyi", 1);
-    }
 
     if (use.card->isVirtualCard()) {
-        if (use.card->getSkillName() == "spear")
+        if (use.card->getSkillName() == "Spear")
             room->setEmotion(player, "weapon/spear");
-        else if (use.card->getSkillName() == "fan")
+        else if (use.card->getSkillName() == "Fan")
             room->setEmotion(player, "weapon/fan");
+    }
+
+    if (use.from->hasFlag("HalberdUse")) {
+        use.from->setFlags("-HalberdUse");
+        room->setEmotion(player, "weapon/halberd");
+
+        LogMessage log;
+        log.type = "#HalberdUse";
+        log.from = use.from;
+        log.to << use.to;
+        room->sendLog(log);
     }
 
     if (player->getPhase() == Player::Play

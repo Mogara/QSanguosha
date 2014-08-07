@@ -8,6 +8,7 @@ return {
 
 	["Halberd"] = "方天画戟",
 	[":Halberd"] = "装备牌·武器\n\n攻击范围：4\n技能：君主技，限定技，锁定技，主将技，副将技，阵法技，出牌阶段限一次，Fs了不起。",
+	["#HalberdUse"] = "%from 对 %to 发动了【<font color=\"yellow\"><b>方天画戟</b></font>】效果",
 
 	["WoodenOx"] = "木牛流马",
 	[":WoodenOx"] = "装备牌·宝物\n\n技能：\n" ..

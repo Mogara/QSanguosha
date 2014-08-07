@@ -23,31 +23,31 @@
 #include "engine.h"
 
 Blade::Blade(Card::Suit suit, int number)
-    : Weapon(suit, number, 3){
+    : Weapon(suit, number, 3)
+{
     setObjectName("Blade");
 }
 
-class BladeSkill : public WeaponSkill{
+class BladeSkill : public WeaponSkill {
 public:
-    BladeSkill() : WeaponSkill("Blade"){
+    BladeSkill() : WeaponSkill("Blade") {
         events << TargetChosen << CardFinished;
         frequency = Compulsory;
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
         CardUseStruct use = data.value<CardUseStruct>();
-        if (triggerEvent == TargetChosen){
+        if (triggerEvent == TargetChosen) {
             if (!WeaponSkill::triggerable(use.from))
                 return QStringList();
 
-            if (use.to.contains(player) && use.card->isKindOf("Slash")){
+            if (use.to.contains(player) && use.card->isKindOf("Slash")) {
                 ask_who = use.from;
                 return QStringList(objectName());
             }
-        }
-        else {
-            if (use.card->isKindOf("Slash")){
-                foreach(ServerPlayer *p, use.to){
+        } else {
+            if (use.card->isKindOf("Slash")) {
+                foreach (ServerPlayer *p, use.to) {
                     QStringList blade_use = p->property("blade_use").toStringList();
                     if (!blade_use.contains(use.card->toString()))
                         return QStringList();
@@ -73,14 +73,17 @@ public:
         room->setPlayerProperty(player, "blade_use", blade_use);
 
         if (!player->hasShownAllGenerals())
-            room->setPlayerDisableShow(player, "hd", "Blade");
+            room->setEmotion(use.from, "weapon/blade");
+            
+        room->setPlayerDisableShow(player, "hd", "Blade"); // this effect should always make sense.
 
         return false;
     }
 };
 
 Halberd::Halberd(Card::Suit suit, int number)
-    : Weapon(suit, number, 4){
+    : Weapon(suit, number, 4)
+{
     setObjectName("Halberd");
 }
 
