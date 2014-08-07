@@ -49,6 +49,7 @@ class Card : public QObject {
     Q_PROPERTY(bool mute READ isMute CONSTANT)
     Q_PROPERTY(bool equipped READ isEquipped)
     Q_PROPERTY(Color color READ getColor)
+    Q_PROPERTY(bool transferable READ isTransferable WRITE setTransferable)
 
     Q_ENUMS(Suit)
     Q_ENUMS(CardType)
@@ -167,6 +168,9 @@ public:
 
     virtual QString getEffectName() const;
 
+    bool isTransferable() const;
+    void setTransferable(bool value);
+
 protected:
     QList<int> subcards;
     bool target_fixed;
@@ -174,6 +178,7 @@ protected:
     bool will_throw;
     bool has_preact;
     bool can_recast;
+    bool transferable;
     Suit m_suit;
     int m_number;
     int m_id;
