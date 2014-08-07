@@ -174,6 +174,13 @@ QStringList Drowning::checkTargetModSkillShow(const CardUseStruct &use) const{
     return QStringList();
 }
 
+AllianceFeast::AllianceFeast(Card::Suit suit, int number)
+    : AOE(suit, number)
+{
+    setObjectName("alliance_feast");
+    target_fixed = false;
+}
+
 StrategicAdvantagePackage::StrategicAdvantagePackage()
     : Package("strategic_advantage", Package::CardPack){
     QList<Card *> cards;
@@ -185,7 +192,8 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         << new Breastplate()
         << new Drowning(Card::Club, 2)
         << new Drowning(Card::Club, 3)
-        << new Drowning(Card::Club, 4);
+        << new Drowning(Card::Club, 4)
+        << new AllianceFeast();
 
     foreach(Card *c, cards){
         c->setParent(this);
