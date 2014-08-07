@@ -331,7 +331,7 @@ sgs.ai_skill_use["@@tuxi"] = function(self, prompt)
 	end
 	local targets = self:findTuxiTarget()
 	if type(targets) == "table" and #targets > 0 then
-		return ("@TuxiCard=.&tuxi->" .. table.concat(targets, "+"))
+		return ("@TuxiCard=.&->" .. table.concat(targets, "+"))
 	end
 	return "."
 end
@@ -526,44 +526,28 @@ sgs.qingguo_suit_value = {
 sgs.ai_suit_priority.qingguo= "diamond|heart|club|spade"
 
 sgs.ai_skill_use["@@shensu1"] = function(self, prompt)
-	self:updatePlayers()
-	self:sort(self.enemies, "defenseSlash")
 
-	if not self:willShowForAttack() then
-		return "."
-	end
+	if not self:willShowForAttack() then return "." end
 
 	if self.player:containsTrick("lightning") and self.player:getCards("j"):length() == 1
 		and self:hasWizard(self.friends) and not self:hasWizard(self.enemies, true) then
 		return "."
 	end
 
-	local selfSub = self.player:getHp() - self.player:getHandcardNum()
-	local selfDef = sgs.getDefense(self.player)
+	local slash = sgs.cloneCard("slash")
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
+	self.player:setFlags("slashNoDistanceLimit")
+	self:useBasicCard(slash, dummy_use)
+	self.player:setFlags("-slashNoDistanceLimit")
 
-	for _, enemy in ipairs(self.enemies) do
-		local def = sgs.getDefenseSlash(enemy, self)
-		local slash = sgs.cloneCard("slash")
-		local eff = self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
-
-		if not self.player:canSlash(enemy, slash, false) then
-		elseif self:slashProhibit(nil, enemy) then
-		elseif def < 5 and eff then return "@ShensuCard=.->" .. enemy:objectName()
-
-		elseif selfSub >= 2 then return "."
-		elseif selfDef < 6 then return "." end
+	if dummy_use.card and not dummy_use.to:isEmpty() then
+		for _, enemy in sgs.qlist(dummy_use.to) do
+			local def = sgs.getDefenseSlash(enemy, self)
+			if def < 3 then return "@ShensuCard=.->" .. enemy:objectName() end
+			if not self:isWeak() and def < 5 then return "@ShensuCard=.->" .. enemy:objectName() end
+		end
 	end
 
-	for _, enemy in ipairs(self.enemies) do
-		local def = sgs.getDefense(enemy)
-		local slash = sgs.cloneCard("slash")
-		local eff = self:slashIsEffective(slash, enemy) and sgs.isGoodTarget(enemy, self.enemies, self)
-
-		if not self.player:canSlash(enemy, slash, false) then
-		elseif self:slashProhibit(nil, enemy) then
-		elseif eff and def < 8 then return "@ShensuCard=.->" .. enemy:objectName()
-		else return "." end
-	end
 	return "."
 end
 
@@ -1017,7 +1001,7 @@ qiangxi_skill.name = "qiangxi"
 table.insert(sgs.ai_skills, qiangxi_skill)
 qiangxi_skill.getTurnUseCard = function(self)
 	if not self.player:hasUsed("QiangxiCard") then
-		return sgs.Card_Parse("@QiangxiCard=.")
+		return sgs.Card_Parse("@QiangxiCard=.&qiangxi")
 	end
 end
 
@@ -1036,14 +1020,14 @@ sgs.ai_skill_use_func.QiangxiCard = function(card, use, self)
 		for _, enemy in ipairs(self.enemies) do
 			if self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and self:damageIsEffective(enemy) then
 				if hand_weapon and self.player:distanceTo(enemy) <= self.player:getAttackRange() then
-					use.card = sgs.Card_Parse("@QiangxiCard=" .. hand_weapon:getId())
+					use.card = sgs.Card_Parse("@QiangxiCard=" .. tostring(hand_weapon:getId()) .. "&qiangxi")
 					if use.to then
 						use.to:append(enemy)
 					end
 					break
 				end
 				if self.player:distanceTo(enemy) <= 1 then
-					use.card = sgs.Card_Parse("@QiangxiCard=" .. weapon:getId())
+					use.card = sgs.Card_Parse("@QiangxiCard=" .. tostring(weapon:getId()) .. "&qiangxi")
 					if use.to then
 						use.to:append(enemy)
 					end
@@ -1056,7 +1040,7 @@ sgs.ai_skill_use_func.QiangxiCard = function(card, use, self)
 		for _, enemy in ipairs(self.enemies) do
 			if self:objectiveLevel(enemy) > 3 and not self:cantbeHurt(enemy) and self:damageIsEffective(enemy) then
 				if self.player:distanceTo(enemy) <= self.player:getAttackRange() and self.player:getHp() > enemy:getHp() and self.player:getHp() > 1 then
-					use.card = sgs.Card_Parse("@QiangxiCard=.")
+					use.card = sgs.Card_Parse("@QiangxiCard=.&qiangxi")
 					if use.to then
 						use.to:append(enemy)
 					end

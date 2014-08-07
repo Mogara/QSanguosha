@@ -135,13 +135,12 @@ KurouCard::KurouCard() {
     target_fixed = true;
 }
 
+void KurouCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+    room->loseHp(card_use.from);
+}
+
 void KurouCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
-    room->loseHp(source);
-    if (source->isAlive()) {
-        if (source->ownSkill("kurou") && !source->hasShownSkill("kurou"))
-            source->showGeneral(source->inHeadSkills("kurou"));
-        room->drawCards(source, 2);
-    }
+    room->drawCards(source, 2);
 }
 
 class Kurou : public ZeroCardViewAsSkill {
@@ -678,9 +677,10 @@ public:
 
     virtual bool viewFilter(const Card *to_select) const{
         Room *room = Sanguosha->currentRoom();
-        foreach(ServerPlayer *p, room->getPlayers())
+        foreach(ServerPlayer *p, room->getPlayers()) {
             if (p->ownSkill(objectName()) && p->hasShownSkill(objectName()))
                 return to_select->getSuit() == Card::Spade;
+        }
         return false;
     }
 
@@ -732,30 +732,10 @@ bool TianyiCard::targetFilter(const QList<const Player *> &targets, const Player
     return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
 }
 
-void TianyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
+void TianyiCard::extraCost(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *dalizi = card_use.from;
-
-    LogMessage log;
-    log.from = dalizi;
-    log.to << card_use.to;
-    log.type = "#UseCard";
-    log.card_str = toString();
-    room->sendLog(log);
-
-    QVariant data = QVariant::fromValue(card_use);
-    RoomThread *thread = room->getThread();
-
-    thread->trigger(PreCardUsed, room, dalizi, data);
-    room->broadcastSkillInvoke("tianyi", 2);
-
     PindianStruct *pd = dalizi->pindianSelect(card_use.to.first(), "tianyi");
     dalizi->tag["tianyi_pd"] = QVariant::fromValue(pd);
-
-    if (dalizi->ownSkill("tianyi") && !dalizi->hasShownSkill("tianyi"))
-        dalizi->showGeneral(dalizi->inHeadSkills("tianyi"));
-
-    thread->trigger(CardUsed, room, dalizi, data);
-    thread->trigger(CardFinished, room, dalizi, data);
 }
 
 void TianyiCard::onEffect(const CardEffectStruct &effect) const{
@@ -1122,9 +1102,8 @@ public:
         foreach(ServerPlayer *player, other_players)
             least = qMin(player->getHandcardNum(), least);
         room->setPlayerMark(lusu, "haoshi", least);
-        bool used = room->askForUseCard(lusu, "@@haoshi!", "@haoshi", -1, Card::MethodNone);
 
-        if (!used) {
+        if (!room->askForUseCard(lusu, "@@haoshi!", "@haoshi", -1, Card::MethodNone)) {
             // force lusu to give his half cards
             ServerPlayer *beggar = NULL;
             foreach(ServerPlayer *player, other_players) {
@@ -1248,22 +1227,19 @@ bool ZhijianCard::targetFilter(const QList<const Player *> &targets, const Playe
     return to_select->getEquip(equip_index) == NULL;
 }
 
-void ZhijianCard::onEffect(const CardEffectStruct &effect) const{
-    ServerPlayer *erzhang = effect.from;
-    erzhang->getRoom()->moveCardTo(this, erzhang, effect.to, Player::PlaceEquip,
-        CardMoveReason(CardMoveReason::S_REASON_PUT,
-        erzhang->objectName(), "zhijian", QString()));
+void ZhijianCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *erzhang = card_use.from;
+    room->moveCardTo(this, erzhang, card_use.to.first(), Player::PlaceEquip, CardMoveReason(CardMoveReason::S_REASON_PUT, erzhang->objectName(), "zhijian", QString()));
 
     LogMessage log;
     log.type = "$ZhijianEquip";
-    log.from = effect.to;
+    log.from = card_use.to.first();
     log.card_str = QString::number(getEffectiveId());
-    erzhang->getRoom()->sendLog(log);
+    room->sendLog(log);
+}
 
-    if (erzhang->ownSkill("zhijian") && !erzhang->hasShownSkill("zhijian"))
-        erzhang->showGeneral(erzhang->inHeadSkills("zhijian"));
-
-    erzhang->drawCards(1);
+void ZhijianCard::onEffect(const CardEffectStruct &effect) const{
+    effect.from->drawCards(1);
 }
 
 class Zhijian : public OneCardViewAsSkill {
@@ -1275,6 +1251,7 @@ public:
     virtual const Card *viewAs(const Card *originalCard) const{
         ZhijianCard *zhijian_card = new ZhijianCard;
         zhijian_card->addSubcard(originalCard);
+        zhijian_card->setShowSkill(objectName());
         return zhijian_card;
     }
 };

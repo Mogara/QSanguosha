@@ -805,41 +805,32 @@ end
 
 sgs.ai_skill_playerchosen.shuangren = function(self, targets)
 	if self.player:isKongcheng() then return nil end
+	if not self:willShowForAttack() then return nil end
+	if self.player:getMark("shuangxiong") > 0 and self.player:hasSkill("shuangxiong") then return nil end
+
 	self:sort(self.enemies, "handcard")
 	local max_card = self:getMaxCard()
 	local max_point = max_card:getNumber()
 
 	local slash = sgs.cloneCard("slash")
-	local dummy_use = { isDummy = true }
+	local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 	self.player:setFlags("slashNoDistanceLimit")
 	self:useBasicCard(slash, dummy_use)
 	self.player:setFlags("-slashNoDistanceLimit")
 
-	if not self:willShowForAttack() then
-		return nil
-	end
-
-	if self.player:getMark("shuangxiong") ~= 0 and self.player:hasSkill("shuangxiong") then
-		return nil
-	end
-
-	if dummy_use.card then
-		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:hasShownSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
-				local enemy_max_card = self:getMaxCard(enemy)
-				local enemy_max_point = enemy_max_card and enemy_max_card:getNumber() or 100
-				if max_point > enemy_max_point then
-					self.shuangren_card = max_card:getEffectiveId()
-					return enemy
-				end
+	if dummy_use.card and not dummy_use.to:isEmpty() then
+		for _, enemy in sgs.qlist(dummy_use.to) do
+			local enemy_max_card = self:getMaxCard(enemy)
+			local enemy_max_point = enemy_max_card and enemy_max_card:getNumber() or 100
+			if max_point > enemy_max_point then
+				self.shuangren_card = max_card:getEffectiveId()
+				return enemy
 			end
 		end
-		for _, enemy in ipairs(self.enemies) do
-			if not (enemy:hasShownSkill("kongcheng") and enemy:getHandcardNum() == 1) and not enemy:isKongcheng() then
-				if max_point >= 10 then
-					self.shuangren_card = max_card:getEffectiveId()
-					return enemy
-				end
+		for _, enemy in sgs.qlist(dummy_use.to) do
+			if max_point >= 10 then
+				self.shuangren_card = max_card:getEffectiveId()
+				return enemy
 			end
 		end
 	end

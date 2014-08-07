@@ -56,7 +56,7 @@ class KurouCard : public SkillCard {
 
 public:
     Q_INVOKABLE KurouCard();
-
+    virtual void extraCost(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
 };
 
@@ -103,7 +103,7 @@ public:
     Q_INVOKABLE TianyiCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
-    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void extraCost(Room *room, const CardUseStruct &card_use) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
@@ -135,6 +135,7 @@ public:
     Q_INVOKABLE ZhijianCard();
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void extraCost(Room *room, const CardUseStruct &card_use) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 

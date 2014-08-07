@@ -122,7 +122,7 @@
         <translation>&lt;font color=%1&gt;&lt;b&gt;【%2】&lt;/b&gt; %3&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/core/card.cpp" line="772"/>
+        <location filename="../src/core/card.cpp" line="776"/>
         <source>Subcard must not be virtual card!</source>
         <translation>子卡不能是虚拟卡牌 !</translation>
     </message>
@@ -525,7 +525,7 @@
 <context>
     <name>ChooseTriggerOrderBox</name>
     <message>
-        <location filename="../src/ui/ChooseTriggerOrderBox.cpp" line="199"/>
+        <location filename="../src/ui/ChooseTriggerOrderBox.cpp" line="201"/>
         <source>cancel</source>
         <translation>取消</translation>
     </message>
@@ -1473,27 +1473,27 @@
 <context>
     <name>Dashboard</name>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="152"/>
+        <location filename="../src/ui/dashboard.cpp" line="148"/>
         <source>Trusting ...</source>
         <translation>托管中 ...</translation>
     </message>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="952"/>
+        <location filename="../src/ui/dashboard.cpp" line="933"/>
         <source>Sort handcards</source>
         <translation>整理手牌</translation>
     </message>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="954"/>
+        <location filename="../src/ui/dashboard.cpp" line="935"/>
         <source>Sort by type</source>
         <translation>按类型排序</translation>
     </message>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="957"/>
+        <location filename="../src/ui/dashboard.cpp" line="938"/>
         <source>Sort by suit</source>
         <translation>按花色排序</translation>
     </message>
     <message>
-        <location filename="../src/ui/dashboard.cpp" line="960"/>
+        <location filename="../src/ui/dashboard.cpp" line="941"/>
         <source>Sort by number</source>
         <translation>按点数排序</translation>
     </message>
@@ -3070,14 +3070,14 @@
         <translation>玩家序号应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="4617"/>
+        <location filename="../src/server/room.cpp" line="4622"/>
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
  %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="5825"/>
+        <location filename="../src/server/room.cpp" line="5830"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>

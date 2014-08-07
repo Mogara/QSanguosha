@@ -31,15 +31,13 @@ RendeCard::RendeCard() {
     handling_method = Card::MethodNone;
 }
 
-void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
-    ServerPlayer *target = targets.first();
-
-    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, source->objectName(), target->objectName(), "rende", QString());
+void RendeCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *target = card_use.to.first();
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, card_use.from->objectName(), target->objectName(), "rende", QString());
     room->obtainCard(target, this, reason, false);
+}
 
-    if (source->ownSkill("rende") && !source->hasShownSkill("rende"))
-        source->showGeneral(source->inHeadSkills("rende"));
-
+void RendeCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
     int old_value = source->getMark("rende");
     int new_value = old_value + subcards.length();
     room->setPlayerMark(source, "rende", new_value);
@@ -71,6 +69,7 @@ public:
 
         RendeCard *rende_card = new RendeCard;
         rende_card->addSubcards(cards);
+        rende_card->setShowSkill(objectName());
         return rende_card;
     }
 };

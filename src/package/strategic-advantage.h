@@ -31,6 +31,13 @@ public:
     Q_INVOKABLE Blade(Card::Suit suit, int number);
 };
 
+class Halberd : public Weapon{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Halberd(Card::Suit suit, int number);
+};
+
 class JadeSeal : public Treasure{
     Q_OBJECT
 

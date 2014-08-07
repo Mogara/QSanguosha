@@ -30,6 +30,21 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 	local unpreferedCards = {}
 	local cards = sgs.QList2Table(self.player:getHandcards())
 
+	if self:getCardsNum("Crossbow", 'he') > 0 and #self.enemies > 0 and self.player:getCardCount(true) >= 4 then
+		local zcards = self.player:getCards("he")
+		self:sortByUseValue(zcards, true)
+		for _, zcard in sgs.qlist(zcards) do
+			if not isCard("Peach", zcard, self.player) and (self.player:getOffensiveHorse() or card:isKindOf("OffensiveHorse")) and not self.player:isJilei(zcard) then
+				table.insert(unpreferedCards, zcard:getEffectiveId())
+				if #unpreferedCards >= self.player:getMaxHp() then break end
+			end
+		end
+		if #unpreferedCards > 0 then
+			use.card = sgs.Card_Parse("@ZhihengCard=" .. table.concat(zcard, "+") .. "&zhiheng")
+			return
+		end
+	end
+
 	if self.player:getHp() < 3 then
 		local zcards = self.player:getCards("he")
 		local use_slash, keep_jink, keep_analeptic, keep_weapon = false, false, false
@@ -269,7 +284,7 @@ kurou_skill.getTurnUseCard = function(self, inclusive)
 
 	self.player:setFlags("-Kurou_toDie")
 	sgs.ai_use_priority.KurouCard = 6.8
-	local kuroucard = sgs.Card_Parse("@KurouCard=.")
+	local kuroucard = sgs.Card_Parse("@KurouCard=.&kurou")
 
 	if not self:willShowForAttack() then
 		return nil
@@ -1111,6 +1126,14 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 				and self:canAttack(enemy, dmg.from or self.room:getCurrent(), dmg.nature) then
 				return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. enemy:objectName()
 			end
+		end
+	end
+
+	local newDamageStruct = dmg
+	for _, friend in ipairs(self.friends_noself) do
+		newDamageStruct.to = friend
+		if not self:damageIsEffective_(newDamageStruct) then
+			return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. friend:objectName()
 		end
 	end
 

@@ -190,9 +190,7 @@ public:
     }
 
     virtual const Card *viewAs() const{
-        TuxiCard *tuxi = new TuxiCard;
-        tuxi->setShowSkill("tuxi");
-        return tuxi;
+        return new TuxiCard;
     }
 };
 
@@ -311,9 +309,9 @@ public:
             room->sendLog(log);
 
             data = QVariant::fromValue(damage);
-        } else {
+        } else
             room->setPlayerFlag(player, objectName());
-        }
+        
         return false;
     }
 };
@@ -947,16 +945,15 @@ bool QiangxiCard::targetFilter(const QList<const Player *> &targets, const Playe
     return distance <= Self->getAttackRange();
 }
 
+void QiangxiCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+    if (card_use.card->getSubcards().isEmpty())
+        room->loseHp(card_use.from);
+
+    SkillCard::extraCost(room, card_use);
+}
+
 void QiangxiCard::onEffect(const CardEffectStruct &effect) const{
-    Room *room = effect.to->getRoom();
-
-    if (subcards.isEmpty())
-        room->loseHp(effect.from);
-
-    if (effect.from->isAlive() && effect.from->ownSkill("qiangxi") && !effect.from->hasShownSkill("qiangxi"))
-        effect.from->showGeneral(effect.from->inHeadSkills("qiangxi"));
-
-    room->damage(DamageStruct("qiangxi", effect.from, effect.to));
+    effect.to->getRoom()->damage(DamageStruct("qiangxi", effect.from, effect.to));
 }
 
 class Qiangxi : public ViewAsSkill {
@@ -996,30 +993,10 @@ bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *
     return targets.isEmpty() && to_select->getHp() > Self->getHp() && !to_select->isKongcheng();
 }
 
-void QuhuCard::onUse(Room *room, const CardUseStruct &card_use) const{
+void QuhuCard::extraCost(Room *room, const CardUseStruct &card_use) const{
     ServerPlayer *xunyu = card_use.from;
-
-    LogMessage log;
-    log.from = xunyu;
-    log.to << card_use.to;
-    log.type = "#UseCard";
-    log.card_str = toString();
-    room->sendLog(log);
-
-    QVariant data = QVariant::fromValue(card_use);
-    RoomThread *thread = room->getThread();
-
-    thread->trigger(PreCardUsed, room, xunyu, data);
-    room->broadcastSkillInvoke("quhu");
-
     PindianStruct *pd = xunyu->pindianSelect(card_use.to.first(), "quhu");
     xunyu->tag["quhu_pd"] = QVariant::fromValue(pd);
-
-    if (xunyu->ownSkill("quhu") && !xunyu->hasShownSkill("quhu"))
-        xunyu->showGeneral(xunyu->inHeadSkills("quhu"));
-
-    thread->trigger(CardUsed, room, xunyu, data);
-    thread->trigger(CardFinished, room, xunyu, data);
 }
 
 void QuhuCard::onEffect(const CardEffectStruct &effect) const{
