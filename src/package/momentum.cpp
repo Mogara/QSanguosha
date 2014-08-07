@@ -408,7 +408,7 @@ void CunsiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     SkillCard::onUse(room, card_use);
 }
 
-void CunsiCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+void CunsiCard::extraCost(Room *, const CardUseStruct &card_use) const{
     card_use.from->removeGeneral(card_use.from->inHeadSkills("cunsi"));
 }
 

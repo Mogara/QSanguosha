@@ -993,7 +993,7 @@ bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *
     return targets.isEmpty() && to_select->getHp() > Self->getHp() && !to_select->isKongcheng();
 }
 
-void QuhuCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+void QuhuCard::extraCost(Room *, const CardUseStruct &card_use) const{
     ServerPlayer *xunyu = card_use.from;
     PindianStruct *pd = xunyu->pindianSelect(card_use.to.first(), "quhu");
     xunyu->tag["quhu_pd"] = QVariant::fromValue(pd);

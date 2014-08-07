@@ -47,11 +47,12 @@ int LuaBattleArraySkill::getPriority() const{
     return priority;
 }
 
-LuaViewAsSkill::LuaViewAsSkill(const char *name, const char *response_pattern, const char *expand_pile)
+LuaViewAsSkill::LuaViewAsSkill(const char *name, const char *response_pattern, bool response_or_use, const char *expand_pile)
     : ViewAsSkill(name), view_filter(0), view_as(0),
     enabled_at_play(0), enabled_at_response(0), enabled_at_nullification(0)
 {
     this->response_pattern = response_pattern;
+    this->response_or_use = response_or_use;
     this->expand_pile = expand_pile;
 }
 

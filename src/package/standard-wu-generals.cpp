@@ -732,7 +732,7 @@ bool TianyiCard::targetFilter(const QList<const Player *> &targets, const Player
     return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
 }
 
-void TianyiCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+void TianyiCard::extraCost(Room *, const CardUseStruct &card_use) const{
     ServerPlayer *dalizi = card_use.from;
     PindianStruct *pd = dalizi->pindianSelect(card_use.to.first(), "tianyi");
     dalizi->tag["tianyi_pd"] = QVariant::fromValue(pd);

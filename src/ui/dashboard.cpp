@@ -661,6 +661,7 @@ void Dashboard::skillButtonDeactivated() {
 }
 
 void Dashboard::selectAll() {
+    retractPileCards("wooden_ox");
     selectCards(".");
 }
 
@@ -1014,6 +1015,7 @@ void Dashboard::disableAllCards() {
 
 void Dashboard::enableCards() {
     m_mutexEnableCards.lock();
+    expandPileCards("wooden_ox");
     foreach(CardItem *card_item, m_handCards)
         card_item->setEnabled(card_item->getCard()->isAvailable(Self));
     m_mutexEnableCards.unlock();
@@ -1032,10 +1034,21 @@ void Dashboard::startPending(const ViewAsSkill *skill) {
     pendings.clear();
     unselectAll();
 
-    if (skill && skill->inherits("ViewAsSkill") && !skill->getExpandPile().isEmpty())
-        expandPileCards(skill->getExpandPile());
+    bool expand = (skill && skill->isResponseOrUse());
+    if (!expand && skill && skill->inherits("ResponseSkill")) {
+        const ResponseSkill *resp_skill = qobject_cast<const ResponseSkill *>(skill);
+        if (resp_skill && (resp_skill->getRequest() == Card::MethodResponse || resp_skill->getRequest() == Card::MethodUse))
+            expand = true;
+    }
+    if (expand)
+        expandPileCards("wooden_ox");
+    else {
+        retractPileCards("wooden_ox");
+        if (skill && !skill->getExpandPile().isEmpty())
+            expandPileCards(skill->getExpandPile());
+    }
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < S_EQUIP_AREA_LENGTH; i++) {
         if (_m_equipCards[i] != NULL)
             connect(_m_equipCards[i], SIGNAL(mark_changed()), this, SLOT(onMarkChanged()));
     }
@@ -1052,6 +1065,7 @@ void Dashboard::stopPending() {
 
     viewAsSkill = NULL;
     pendingCard = NULL;
+    retractPileCards("wooden_ox");
     emit card_selected(NULL);
 
     foreach(CardItem *item, m_handCards)

@@ -59,6 +59,8 @@ public:
     virtual bool viewFilter(const Card *to_select) const;
     virtual const Card *viewAs(const Card *originalCard) const;
 
+    inline Card::HandlingMethod getRequest() const{ return request; }
+
 protected:
     const CardPattern *pattern;
     Card::HandlingMethod request;
