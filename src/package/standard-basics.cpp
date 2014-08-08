@@ -108,6 +108,11 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
                 room->setPlayerFlag(target, "-SlashAssignee");
     }
 
+    if (player->hasFlag("HalberdSlashFilter")) {
+        room->setPlayerFlag(player, "-HalberdSlashFilter");
+        room->setPlayerMark(player, "halberd_count", card_use.to.length() - 1);
+    }
+
     /* actually it's not proper to put the codes here.
        considering the nasty design of the client and the convenience as well,
        I just move them here */
@@ -140,7 +145,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             }
         }
     }
-    if (use.card->isVirtualCard() && use.card->subcardsLength() == 0
+    if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || use.from->hasFlag("HalberdUse"))
         && !player->hasFlag("slashDisableExtraTarget")) {
         QList<ServerPlayer *> targets_ts;
         while (true) {
@@ -157,8 +162,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             if (extra_target) {
                 use.to.append(extra_target);
                 room->sortByActionOrder(use.to);
-            }
-            else
+            } else
                 break;
             targets_ts.clear();
             targets_const.clear();
@@ -179,8 +183,10 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             room->notifySkillInvoked(player, "paoxiao");
         }
     }
-    if ((use.to.size() > 1 || player->hasFlag("Global_MoreSlashInOneTurn"))
-        && player->hasFlag("TianyiSuccess") && player->getPhase() == Player::Play) {
+    if ((use.to.size() > 1 + player->getMark("halberd_count") || player->hasFlag("Global_MoreSlashInOneTurn"))
+        && player->hasFlag("TianyiSuccess") && player->getPhase() == Player::Play && player->getSlashCount() == 2) {
+        if (player->hasFlag("Global_MoreSlashInOneTurn")) // Tianyi just let player could use one more Slash
+            room->setPlayerFlag(player, "-Global_MoreSlashInOneTurn");
         room->broadcastSkillInvoke("tianyi", 1);
     } else if (use.to.size() > 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, player, this)
                && player->hasSkill("duanbing")) {
@@ -204,8 +210,9 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         LogMessage log;
         log.type = "#HalberdUse";
         log.from = use.from;
-        log.to << use.to;
         room->sendLog(log);
+
+        room->setPlayerMark(player, "halberd_count", 0);
     }
 
     if (player->getPhase() == Player::Play
@@ -295,7 +302,16 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
     }
 
     if (!Self->canSlash(to_select, this, distance_limit, rangefix, targets)) return false;
-    if (targets.length() >= slash_targets) {
+    if (Self->hasFlag("HalberdSlashFilter")) {
+        QSet<QString> kingdoms;
+        foreach (const Player *p, targets) {
+            if (!p->hasShownOneGeneral())
+                continue;
+            kingdoms << p->getKingdom();
+        }
+        if (to_select->hasShownOneGeneral() && kingdoms.contains(to_select->getKingdom()))
+            return false;
+    } else if (targets.length() >= slash_targets) {
         if (Self->hasSkill("duanbing") && targets.length() == slash_targets) {
             QList<const Player *> duanbing_targets;
             bool no_other_assignee = true;
@@ -308,8 +324,7 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
             if (no_other_assignee && duanbing_targets.length() == 1 && Slash::IsSpecificAssignee(duanbing_targets.first(), Self, this))
                 return Self->distanceTo(to_select, rangefix) == 1;
             return Self->distanceTo(to_select, rangefix) == 1;
-        }
-        else
+        } else
             return false;
     }
 
