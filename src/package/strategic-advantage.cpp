@@ -19,6 +19,7 @@
     *********************************************************************/
 
 #include "strategic-advantage.h"
+#include "standard-tricks.h"
 #include "skill.h"
 #include "engine.h"
 
@@ -296,14 +297,34 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
     QList<Card *> cards;
 
     cards
-        << new WoodenOx(Card::Diamond, 5)
-        << new JadeSeal(Card::Spade, 2)
+        // basics
+
+        // equips
         << new Blade(Card::Spade, 5)
         << new Halberd(Card::Spade, 6)
         << new Breastplate()
+        //<< new IronArmor()
+        //<< new OffensiveHorse()
+        << new WoodenOx(Card::Diamond, 5)
+        << new JadeSeal(Card::Spade, 2)
+
+        // tricks
         << new Drowning(Card::Club, 2)
         << new Drowning(Card::Club, 3)
         << new Drowning(Card::Club, 4)
+        //<< new BurningCamps()
+        //<< new BurningCamps()
+        //<< new BurningCamps()
+        //<< new ThreatenEmperor()
+        //<< new ThreatenEmperor()
+        //<< new ThreatenEmperor()
+        //<< new ImperialOrder()
+        //<< new LureTiger()
+        //<< new LureTiger()
+        //<< new FightTogether()
+        //<< new FightTogether()
+        << new HegNullification(Card::Spade, 1)
+        << new HegNullification(Card::Spade, 13)
         << new AllianceFeast();
 
     skills << new BladeSkill
