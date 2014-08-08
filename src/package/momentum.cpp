@@ -557,16 +557,10 @@ public:
     }
 };
 
-class YongjueStart : public TriggerSkill {
+class YongjueClear : public TriggerSkill {
 public:
-    YongjueStart() : TriggerSkill("yongjue-start") {
+    YongjueClear() : TriggerSkill("#yongjue-clear") {
         events << EventPhaseStart;
-        global = true;
-        frequency = Compulsory;
-    }
-
-    virtual int getPriority() const{
-        return 10;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &, ServerPlayer* &) const {
@@ -1386,7 +1380,8 @@ MomentumPackage::MomentumPackage()
     lord_zhangjiao->addSkill(new Hongfa);
     lord_zhangjiao->addSkill(new Wendao);
 
-    skills << new Yongjue << new YongjueStart << new Benghuai << new HongfaSlash << new Yinghun_Sunce << new Yingzi_Sunce;
+    skills << new Yongjue << new YongjueClear << new Benghuai << new HongfaSlash << new Yinghun_Sunce << new Yingzi_Sunce;
+    related_skills.insertMulti("yongjue", "#yongjue-clear");
 
     addMetaObject<CunsiCard>();
     addMetaObject<DuanxieCard>();

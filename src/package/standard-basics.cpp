@@ -213,6 +213,8 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         room->sendLog(log);
 
         room->setPlayerMark(player, "halberd_count", 0);
+
+        use.card->setFlags("halberd_slash");
     }
 
     if (player->getPhase() == Player::Play

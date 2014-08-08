@@ -492,8 +492,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                             p->setFlags("Global_askForSkillCost");           // TriggerOrder need protect
                         bool has_compulsory = false;
                         foreach(const TriggerSkill *skill, who_skills){
-                            if (skill->getFrequency() == Skill::Compulsory
-                                && (skill->isGlobal() || p->hasShownSkill(skill) || p->getAcquiredSkills().contains(skill->objectName()))) {
+                            if (skill->getFrequency() == Skill::Compulsory && p->hasShownSkill(skill)) {
                                 has_compulsory = true;
                                 break;
                             }
@@ -597,8 +596,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         if (has_compulsory){
                             has_compulsory = false;
                             foreach(const TriggerSkill *s, trigger_who[p]){
-                                if (s->getFrequency() == Skill::Compulsory
-                                    && (skill->isGlobal() || p->hasShownSkill(skill) || p->getAcquiredSkills().contains(skill->objectName()))) {
+                                if (s->getFrequency() == Skill::Compulsory && p->hasShownSkill(skill)) {
                                     has_compulsory = true;
                                     break;
                                 }

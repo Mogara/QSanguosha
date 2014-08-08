@@ -1239,6 +1239,12 @@ bool Player::hasShownSkill(const Skill *skill) const{
     if (skill->inherits("ArmorSkill") || skill->inherits("WeaponSkill"))
         return true;
 
+    if (skill->inherits("TriggerSkill")) {
+        const TriggerSkill *tr_skill = qobject_cast<const TriggerSkill *>(skill);
+        if (tr_skill && tr_skill->isGlobal())
+            return true;
+    }
+
     if (!skill->isVisible()){
         const Skill *main_skill = Sanguosha->getMainSkill(skill->objectName());
         if (main_skill != NULL)

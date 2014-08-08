@@ -479,14 +479,9 @@ public:
 
 class LuoshenMove : public TriggerSkill {
 public:
-    LuoshenMove() : TriggerSkill("luoshen-move") {
+    LuoshenMove() : TriggerSkill("#luoshen-move") {
         events << FinishJudge;
-        global = true;
         frequency = Compulsory;
-    }
-
-    virtual bool canPreshow() const {
-        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
@@ -1247,7 +1242,8 @@ void StandardPackage::addWeiGenerals()
     General *zhenji = new General(this, "zhenji", "wei", 3, false); // WEI 007
     zhenji->addSkill(new Qingguo);
     zhenji->addSkill(new Luoshen);
-    skills << new LuoshenMove;
+    zhenji->addSkill(new LuoshenMove);
+    related_skills.insertMulti("luoshen", "#luoshen-move");
 
     General *xiahouyuan = new General(this, "xiahouyuan", "wei"); // WEI 008
     xiahouyuan->addSkill(new Shensu);

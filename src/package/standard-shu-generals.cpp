@@ -144,9 +144,8 @@ public:
 
 class PaoxiaoArmorNullificaion : public TriggerSkill{
 public:
-    PaoxiaoArmorNullificaion() : TriggerSkill("paoxiao_null"){
+    PaoxiaoArmorNullificaion() : TriggerSkill("#paoxiao-null"){
         events << TargetChosen;
-        global = true;
         frequency = Compulsory;
     }
 
@@ -157,19 +156,15 @@ public:
         ServerPlayer *lord = room->getLord(player->getKingdom());
         if (lord != NULL && lord->hasLordSkill("shouyue") && lord->hasShownGeneral1()){
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Slash") && use.from == player){
-                foreach(ServerPlayer *p, use.to.toSet()){
-                    if (p->getMark("Equips_of_Others_Nullified_to_You") == 0)
-                        return QStringList(objectName());
-                }
-            }
+            if (use.card->isKindOf("Slash") && use.from == player)
+                return QStringList(objectName());
         }
 
         return QStringList();
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        if (player->hasShownSkill("paoxiao") || player->getAcquiredSkills().contains("paoxiao"))
+        if (player->hasShownSkill("paoxiao"))
             return true;
         else {
             player->tag["paoxiao_use"] = data;
@@ -187,9 +182,8 @@ public:
         ServerPlayer *lord = room->getLord(player->getKingdom());
         room->notifySkillInvoked(lord, "shouyue");
         CardUseStruct use = data.value<CardUseStruct>();
-        foreach(ServerPlayer *p, use.to.toSet()){
+        foreach (ServerPlayer *p, use.to.toSet())
             p->addQinggangTag(use.card);
-        }
         return false;
     }
 };
@@ -1282,17 +1276,12 @@ public:
 
 class FangquanGive : public PhaseChangeSkill {
 public:
-    FangquanGive() : PhaseChangeSkill("fangquan-give") {
-        global = true;
+    FangquanGive() : PhaseChangeSkill("#fangquan-give") {
         frequency = Compulsory;
     }
 
-    virtual int getPriority() const{
-        return 1;
-    }
-
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer * &ask_who) const{
-        if (player != NULL && player->isAlive() && player->hasSkill("fangquan")){
+        if (player != NULL && player->isAlive()) {
             if (!room->getTag("FangquanTarget").isNull()){
                 ServerPlayer *target = room->getTag("FangquanTarget").value<ServerPlayer *>();
                 ask_who = target;
@@ -1440,7 +1429,8 @@ void StandardPackage::addShuGenerals()
 
     General *zhangfei = new General(this, "zhangfei", "shu"); // SHU 003
     zhangfei->addSkill(new Paoxiao);
-    skills << new PaoxiaoArmorNullificaion;
+    zhangfei->addSkill(new PaoxiaoArmorNullificaion);
+    related_skills.insertMulti("paoxiao", "#paoxiao-null");
 
     General *zhugeliang = new General(this, "zhugeliang", "shu", 3); // SHU 004
     zhugeliang->addCompanion("huangyueying");
@@ -1484,7 +1474,8 @@ void StandardPackage::addShuGenerals()
     General *liushan = new General(this, "liushan", "shu", 3); // SHU 013
     liushan->addSkill(new Xiangle);
     liushan->addSkill(new Fangquan);
-    skills << new FangquanGive;
+    liushan->addSkill(new FangquanGive);
+    related_skills.insertMulti("fangquan", "#fangquan-give");
 
     General *menghuo = new General(this, "menghuo", "shu"); // SHU 014
     menghuo->addCompanion("zhurong");

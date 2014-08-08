@@ -138,6 +138,7 @@ public:
     WoodenOxTriggerSkill(): TreasureSkill("WoodenOx_trigger") {
         events << CardsMoveOneTime;
         global = true;
+        frequency = Compulsory;
     }
 
     virtual bool triggerable(const ServerPlayer *target) const{
