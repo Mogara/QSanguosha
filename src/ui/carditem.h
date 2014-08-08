@@ -165,6 +165,7 @@ signals:
 
 public slots:
     virtual void changeGeneral(const QString &generalName);
+    void onTransferEnabledChanged();
 };
 
 #endif

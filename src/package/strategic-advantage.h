@@ -97,29 +97,6 @@ public:
     virtual bool isAvailable(const Player *player) const;*/
 };
 
-class TransferCard : public SkillCard {
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE TransferCard();
-
-    virtual void onEffect(const CardEffectStruct &effect) const;
-};
-
-class TransferSkill : public OneCardViewAsSkill {
-    Q_OBJECT
-
-public:
-    explicit TransferSkill();
-
-    virtual bool viewFilter(const Card *to_select) const;
-    virtual const Card *viewAs(const Card *originalCard) const;
-    void setToSelect(int _toSelect);
-
-private:
-    int _toSelect;
-};
-
 class StrategicAdvantagePackage : public Package{
     Q_OBJECT
 

@@ -112,6 +112,12 @@ void CardItem::changeGeneral(const QString &generalName) {
     emit general_changed();
 }
 
+void CardItem::onTransferEnabledChanged()
+{
+    if (!_transferButton->isEnabled())
+        setTransferable(false);
+}
+
 const Card *CardItem::getCard() const{
     return Sanguosha->getCard(m_cardId);
 }
@@ -206,7 +212,11 @@ bool CardItem::isEquipped() const{
 }
 
 void CardItem::setFrozen(bool is_frozen) {
-    frozen = is_frozen;
+    if (frozen != is_frozen) {
+        frozen = is_frozen;
+        setFlag(QGraphicsItem::ItemIsMovable, !frozen);
+        update();
+    }
 }
 
 CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id) {
@@ -269,9 +279,13 @@ void CardItem::setTransferable(const bool transferable)
     if (transferable && _transferButton == NULL) {
         _transferButton = new TransferButton(this);
         _transferButton->setPos(0, -20);
+        _transferButton->setEnabled(false);
         _transferButton->hide();
         connect(_transferButton, SIGNAL(_activated()), RoomSceneInstance, SLOT(onTransferButtonActivated()));
         connect(_transferButton, SIGNAL(_deactivated()), RoomSceneInstance, SLOT(onSkillDeactivated()));
+        connect(_transferButton, SIGNAL(enabledChanged()), SLOT(onTransferEnabledChanged()));
+    } else if (!transferable) {
+        _transferButton->hide();
     }
 }
 
@@ -324,14 +338,14 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
-    if (_transferable)
+    if (_transferable && _transferButton->isEnabled())
         _transferButton->show();
     emit enter_hover();
     emit hoverChanged(true);
 }
 
 void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
-    if (_transferable)
+    if (_transferButton)
         _transferButton->hide();
     emit leave_hover();
     emit hoverChanged(false);
@@ -344,7 +358,7 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
     if (!_m_frameType.isEmpty())
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardFrameArea, G_ROOM_SKIN.getCardAvatarPixmap(_m_frameType));
 
-    if (!isEnabled()) {
+    if (frozen || !isEnabled()) {
         painter->fillRect(G_COMMON_LAYOUT.m_cardMainArea, QColor(100, 100, 100, 255 * opacity()));
         painter->setOpacity(0.7 * opacity());
     }
@@ -391,6 +405,7 @@ TransferButton::TransferButton(CardItem *parent)
     : QSanButton("carditem", "give", parent), _id(parent->getId()), _cardItem(parent)
 {
     _m_style = S_STYLE_TOGGLE;
+    connect(this, SIGNAL(clicked()), SLOT(onClicked()));
 }
 
 void TransferButton::onClicked()

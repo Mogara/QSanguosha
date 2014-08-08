@@ -44,7 +44,6 @@
 #include "GuanxingBox.h"
 #include "BubbleChatBox.h"
 #include "PlayerCardBox.h"
-#include "strategic-advantage.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -2299,13 +2298,21 @@ void RoomScene::showPromptBox() {
 }
 
 void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus) {
+    //--------------------------------------------
     if (!dashboard->getTransferButtons().isEmpty()) {
-        const bool enabled = Sanguosha->getTransfer()->isAvailable(Self,
-                                                CardUseStruct::CARD_USE_REASON_PLAY,
-                                                Sanguosha->currentRoomState()->getCurrentCardUsePattern());
-        foreach(TransferButton *button, dashboard->getTransferButtons())
+        bool enabled = false;
+        if (newStatus == Client::Playing) {
+            enabled = Sanguosha->getTransfer()->isAvailable(Self,
+                                                            CardUseStruct::CARD_USE_REASON_PLAY,
+                                                            Sanguosha->currentRoomState()->getCurrentCardUsePattern());
+        }
+        foreach(TransferButton *button, dashboard->getTransferButtons()) {
             button->setEnabled(enabled);
+            if (enabled)
+                button->getCardItem()->setTransferable(true);
+        }
     }
+    //---------------------------------------------------
     foreach(QSanSkillButton *button, m_skillButtons) {
         Q_ASSERT(button != NULL);
         const ViewAsSkill *vsSkill = button->getViewAsSkill();
@@ -2631,9 +2638,17 @@ void RoomScene::onTransferButtonActivated()
 
     Sanguosha->getTransfer()->setToSelect(button->getCardId());
 
+    foreach (TransferButton *btn, dashboard->getTransferButtons()) {
+        if (btn != button && btn->isDown())
+            btn->setState(QSanButton::S_STATE_UP);
+    }
+
     dashboard->startPending(Sanguosha->getTransfer());
-    dashboard->selectCard(button->getCardItem(), true);
+    dashboard->unselectAll();
     dashboard->addPending(button->getCardItem());
+    dashboard->selectCard(button->getCardItem(), true);
+    dashboard->updatePending();
+    dashboard->adjustCards();
     cancel_button->setEnabled(true);
 }
 

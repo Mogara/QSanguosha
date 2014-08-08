@@ -43,8 +43,7 @@ public:
                 ask_who = use.from;
                 return QStringList(objectName());
             }
-        }
-        else {
+        } else {
             if (use.card->isKindOf("Slash")){
                 foreach(ServerPlayer *p, use.to){
                     QStringList blade_use = p->property("blade_use").toStringList();
@@ -287,39 +286,6 @@ AllianceFeast::AllianceFeast(Card::Suit suit, int number)
     target_fixed = false;
 }
 
-TransferCard::TransferCard()
-{
-
-}
-
-void TransferCard::onEffect(const CardEffectStruct &effect) const{
-    effect.to->getRoom()->obtainCard(effect.to, this);
-}
-
-TransferSkill::TransferSkill()
-    : OneCardViewAsSkill("transfer")
-{
-
-}
-
-bool TransferSkill::viewFilter(const Card *to_select) const
-{
-    return to_select->getId() == _toSelect;
-}
-
-const Card *TransferSkill::viewAs(const Card *originalCard) const
-{
-    TransferCard *transfer = new TransferCard;
-    transfer->addSubcard(originalCard);
-    return transfer;
-}
-
-void TransferSkill::setToSelect(int toSelect)
-{
-    _toSelect = toSelect;
-}
-
-
 StrategicAdvantagePackage::StrategicAdvantagePackage()
     : Package("strategic_advantage", Package::CardPack){
     QList<Card *> cards;
@@ -342,7 +308,6 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         card->setParent(this);
 
     addMetaObject<WoodenOxCard>();
-    addMetaObject<TransferCard>();
 }
 
 ADD_PACKAGE(StrategicAdvantage)

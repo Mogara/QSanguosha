@@ -329,9 +329,9 @@ void Dashboard::addHandCards(QList<CardItem *> &card_items) {
 
 void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &footnote) {
     if (ClientInstance->getStatus() == Client::Playing)
-        card_item->setEnabled(card_item->getCard()->isAvailable(Self));
+        card_item->setFrozen(!card_item->getCard()->isAvailable(Self));
     else
-        card_item->setEnabled(false);
+        card_item->setFrozen(true);
 
     card_item->setHomeOpacity(1.0);
     card_item->setRotation(0.0);
@@ -370,7 +370,7 @@ void Dashboard::selectCard(const QString &pattern, bool forward, bool multiple) 
     // find all cards that match the card type
     QList<CardItem *> matches;
     foreach(CardItem *card_item, m_handCards) {
-        if (card_item->isEnabled() && (pattern == "." || card_item->getCard()->match(pattern)))
+        if (!card_item->isFrozen() && (pattern == "." || card_item->getCard()->match(pattern)))
             matches << card_item;
     }
 
@@ -410,7 +410,7 @@ void Dashboard::selectOnlyCard(bool need_only) {
 
     QList<CardItem *> items;
     foreach(CardItem *card_item, m_handCards) {
-        if (card_item->isEnabled()) {
+        if (!card_item->isFrozen()) {
             items << card_item;
             count++;
             if (need_only && count > 1) {
@@ -1010,7 +1010,7 @@ void Dashboard::reverseSelection() {
         }
     }
     foreach(CardItem *item, m_handCards)
-        if (item->isEnabled() && !selected_items.contains(item))
+        if (!item->isFrozen() && !selected_items.contains(item))
             item->clickItem();
     adjustCards();
 }
@@ -1033,21 +1033,21 @@ void Dashboard::controlNullificationButton() {
 void Dashboard::disableAllCards() {
     m_mutexEnableCards.lock();
     foreach(CardItem *card_item, m_handCards)
-        card_item->setEnabled(false);
+        card_item->setFrozen(true);
     m_mutexEnableCards.unlock();
 }
 
 void Dashboard::enableCards() {
     m_mutexEnableCards.lock();
     foreach(CardItem *card_item, m_handCards)
-        card_item->setEnabled(card_item->getCard()->isAvailable(Self));
+        card_item->setFrozen(!card_item->getCard()->isAvailable(Self));
     m_mutexEnableCards.unlock();
 }
 
 void Dashboard::enableAllCards() {
     m_mutexEnableCards.lock();
     foreach(CardItem *card_item, m_handCards)
-        card_item->setEnabled(true);
+        card_item->setFrozen(false);
     m_mutexEnableCards.unlock();
 }
 
@@ -1080,7 +1080,7 @@ void Dashboard::stopPending() {
     emit card_selected(NULL);
 
     foreach(CardItem *item, m_handCards)
-        item->setEnabled(false);
+        item->setFrozen(true);
 
     for (int i = 0; i < 5; i++) {
         CardItem *equip = _m_equipCards[i];
@@ -1151,8 +1151,9 @@ void Dashboard::onCardItemClicked() {
         if (card_item->isSelected()) {
             selectCard(card_item, false);
             pendings.removeOne(card_item);
-        }
-        else {
+            if (viewAsSkill->inherits("TransferSkill"))
+                RoomSceneInstance->doCancelButton();
+        } else {
             if (viewAsSkill->inherits("OneCardViewAsSkill"))
                 unselectAll();
             selectCard(card_item, true);
@@ -1160,13 +1161,11 @@ void Dashboard::onCardItemClicked() {
         }
 
         updatePending();
-    }
-    else {
+    } else {
         if (card_item->isSelected()) {
             unselectAll();
             emit card_selected(NULL);
-        }
-        else {
+        } else {
             unselectAll();
             selectCard(card_item, true);
             selected = card_item;
@@ -1187,7 +1186,7 @@ void Dashboard::updatePending() {
         pended = cards;
     foreach(CardItem *item, m_handCards) {
         if (!item->isSelected() || pendings.isEmpty())
-            item->setEnabled(viewAsSkill->viewFilter(pended, item->getCard()));
+            item->setFrozen(!viewAsSkill->viewFilter(pended, item->getCard()));
     }
 
     for (int i = 0; i < 5; i++) {

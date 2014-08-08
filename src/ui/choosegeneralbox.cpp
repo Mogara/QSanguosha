@@ -99,14 +99,6 @@ void GeneralCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     CardItem::mouseReleaseEvent(event);
 }
 
-void GeneralCardItem::setFrozen(bool is_frozen) {
-    if (frozen != is_frozen) {
-        frozen = is_frozen;
-        setFlag(QGraphicsItem::ItemIsMovable, !frozen);
-        update();
-    }
-}
-
 ChooseGeneralBox::ChooseGeneralBox()
     : general_number(0), single_result(false),
       confirm(new Button(tr("fight"), 0.6, true)),
@@ -409,15 +401,15 @@ void ChooseGeneralBox::adjustItems() {
                 if (!card->isFrozen())
                     card->setFrozen(true);
                 card->hideCompanion();
-            }
-            else {
+            } else {
                 if (card->isFrozen())
                     card->setFrozen(false);
                 if (general->isCompanionWith(selected.first()->objectName())) {
                     selected.first()->showCompanion();
                     card->showCompanion();
+                } else {
+                    card->hideCompanion();
                 }
-                else card->hideCompanion();
             }
         }
         if (confirm->isEnabled()) confirm->setEnabled(false);
@@ -459,9 +451,9 @@ void ChooseGeneralBox::_initializeItems() {
         if ((party < 2 || (selected.isEmpty() && has_lord && party == 2))) {
             if (!item->isFrozen())
                 item->setFrozen(true);
-        }
-        else if (item->isFrozen())
+        } else if (item->isFrozen()) {
             item->setFrozen(false);
+        }
 
         if (Self->isDead() && item->isFrozen())
             item->setFrozen(false);
