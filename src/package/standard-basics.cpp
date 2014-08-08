@@ -145,8 +145,33 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             }
         }
     }
-    if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || use.from->hasFlag("HalberdUse"))
+    if (((use.card->isVirtualCard() && use.card->subcardsLength() == 0) || player->hasFlag("HalberdUse"))
         && !player->hasFlag("slashDisableExtraTarget")) {
+        if (!player->hasFlag("HalberdUse") && player->hasWeapon("Halberd")) {
+            room->setPlayerFlag(player, "HalberdSlashFilter");
+            forever {
+                QList<ServerPlayer *> targets_ts;
+                QList<const Player *> targets_const;
+                foreach(ServerPlayer *p, use.to)
+                    targets_const << qobject_cast<const Player *>(p);
+                foreach(ServerPlayer *p, room->getAlivePlayers())
+                    if (!use.to.contains(p) && use.card->targetFilter(targets_const, p, use.from))
+                        targets_ts << p;
+                if (targets_ts.isEmpty())
+                break;
+
+                ServerPlayer *extra_target = room->askForPlayerChosen(player, targets_ts, "Halberd", "@halberd_extra_targets", true);
+                if (extra_target) {
+                    room->setPlayerFlag(player, "HalberdUse");
+                    room->addPlayerMark(player, "halberd_count");
+                    use.to.append(extra_target);
+                    room->sortByActionOrder(use.to);
+                } else
+                    break;
+            }
+            room->setPlayerFlag(player, "-HalberdSlashFilter");
+        }
+
         QList<ServerPlayer *> targets_ts;
         while (true) {
             QList<const Player *> targets_const;
