@@ -304,7 +304,7 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         << new Halberd(Card::Spade, 6)
         << new Breastplate()
         //<< new IronArmor()
-        //<< new OffensiveHorse()
+        //<< new OffensiveHorse(Card::Heart, 3, true)
         << new WoodenOx(Card::Diamond, 5)
         << new JadeSeal(Card::Spade, 2)
 
