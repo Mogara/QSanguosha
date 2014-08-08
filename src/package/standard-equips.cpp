@@ -109,15 +109,16 @@ QinggangSword::QinggangSword(Suit suit, int number)
 class SpearSkill : public ViewAsSkill {
 public:
     SpearSkill() : ViewAsSkill("Spear") {
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getHandcardNum() >= 2 && Slash::IsAvailable(player)
+        return Slash::IsAvailable(player)
             && player->getMark("Equips_Nullified_to_Yourself") == 0;
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return player->getHandcardNum() >= 2 && pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0;
+        return pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0;
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
