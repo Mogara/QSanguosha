@@ -358,9 +358,9 @@ kurou_skill.getTurnUseCard = function(self, inclusive)
 	end
 end
 
-sgs.ai_skill_use_func.KurouCard=function(card,use,self)
+sgs.ai_skill_use_func.KurouCard = function(card, use, self)
 	if not use.isDummy then self:speak("kurou") end
-	use.card=card
+	use.card = card
 end
 
 sgs.ai_use_priority.KurouCard = 6.8

@@ -417,6 +417,7 @@ local invoke_qianhuan = function(self, use)
 	if (use.from and self:isFriend(use.from)) then return false end
 	if use.to:isEmpty() then return false end
 	if use.card:isKindOf("Peach") then return false end
+	if use.card:isKindOf("Lightning") then return end
 	if (self.player:getPile("sorcery"):length() == 1) and not (use.card:isKindOf("Slash") or use.card:isKindOf("duel") or use.card:isKindOf("FireAttack")) then return false end
 	local to = use.to:first()
 	if to and to:objectName() == self.player:objectName() then
