@@ -614,7 +614,7 @@ int ArmorSkill::getPriority() const {
 }
 
 bool ArmorSkill::triggerable(const ServerPlayer *target) const{
-    if (target == NULL || target->getArmor() == NULL)
+    if (target == NULL)
         return false;
     return target->hasArmorEffect(objectName());
 }
@@ -624,8 +624,12 @@ TreasureSkill::TreasureSkill(const QString &name)
 {
 }
 
+int TreasureSkill::getPriority() const {
+    return 2;
+}
+
 bool TreasureSkill::triggerable(const ServerPlayer *target) const{
-    if (target == NULL || target->getTreasure() == NULL)
+    if (target == NULL)
         return false;
     return target->hasTreasure(objectName());
 }

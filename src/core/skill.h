@@ -371,6 +371,7 @@ class TreasureSkill : public TriggerSkill {
 public:
     TreasureSkill(const QString &name);
 
+    virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 

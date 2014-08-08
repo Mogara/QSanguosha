@@ -1236,7 +1236,7 @@ bool Player::hasShownSkill(const Skill *skill) const{
     if (head_acquired_skills.contains(skill->objectName()) || deputy_acquired_skills.contains(skill->objectName()))
         return true;
 
-    if (skill->inherits("ArmorSkill") || skill->inherits("WeaponSkill"))
+    if (skill->inherits("ArmorSkill") || skill->inherits("WeaponSkill") || skill->inherits("TreasureSkill"))
         return true;
 
     if (skill->inherits("TriggerSkill")) {
