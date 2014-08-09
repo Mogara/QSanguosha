@@ -554,7 +554,7 @@ private:
 
 private slots:
     void reportDisconnection();
-    void processClientPacket(const QString &packet);
+    void processClientPacket(const QByteArray &packet);
     void assignRoles();
     void startGame();
 

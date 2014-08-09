@@ -259,7 +259,7 @@ void ServerPlayer::kick(){
 }
 
 void ServerPlayer::getMessage(const char *message) {
-    QString request = QString::fromUtf8(message);
+    QByteArray request(message);
     if (request.endsWith("\n"))
         request.chop(1);
 

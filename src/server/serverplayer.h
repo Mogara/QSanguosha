@@ -227,7 +227,7 @@ private slots:
 
 signals:
     void disconnected();
-    void request_got(const QString &request);
+    void request_got(const QByteArray &request);
     void message_ready(const QString &msg);
 };
 
