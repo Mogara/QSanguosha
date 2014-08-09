@@ -506,8 +506,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
                 const Skill *s = Sanguosha->getSkill(skill);
                 if (s != NULL && s->canPreshow())
                     ClientInstance->preshow(skill);
-            }
-            else {
+            } else {
                 Self->setSkillPreshowed(skill, showed);
                 if (!showed) {
                     foreach(QSanSkillButton *btn, m_skillButtons) {
@@ -2302,6 +2301,21 @@ void RoomScene::showPromptBox() {
 }
 
 void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus) {
+    //--------------------------------------------
+    if (!dashboard->getTransferButtons().isEmpty()) {
+        bool enabled = false;
+        if (newStatus == Client::Playing) {
+            enabled = Sanguosha->getTransfer()->isAvailable(Self,
+                                                            CardUseStruct::CARD_USE_REASON_PLAY,
+                                                            Sanguosha->currentRoomState()->getCurrentCardUsePattern());
+        }
+        foreach(TransferButton *button, dashboard->getTransferButtons()) {
+            button->setEnabled(enabled);
+            if (enabled)
+                button->getCardItem()->setTransferable(true);
+        }
+    }
+    //---------------------------------------------------
     foreach(QSanSkillButton *button, m_skillButtons) {
         Q_ASSERT(button != NULL);
         const ViewAsSkill *vsSkill = button->getViewAsSkill();
@@ -2314,12 +2328,10 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                     reason = CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
                 else if (newStatus == Client::Responding || rx.exactMatch(pattern))
                     reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
-            }
-            else if (newStatus == Client::Playing)
+            } else if (newStatus == Client::Playing)
                 reason = CardUseStruct::CARD_USE_REASON_PLAY;
             button->setEnabled(vsSkill->isAvailable(Self, reason, pattern) && !pattern.endsWith("!"));
-        }
-        else {
+        } else {
             const Skill *skill = button->getSkill();
             if (skill->getFrequency() == Skill::Wake)
                 button->setEnabled(Self->getMark(skill->objectName()) > 0);
@@ -2618,10 +2630,29 @@ void RoomScene::onSkillActivated() {
         const Card *card = dashboard->getPendingCard();
         if (card && card->targetFixed() && card->isAvailable(Self)) {
             useSelectedCard();
-        }
-        else if (skill->inherits("OneCardViewAsSkill") && !skill->getDialog() && Config.EnableIntellectualSelection)
+        } else if (skill->inherits("OneCardViewAsSkill") && !skill->getDialog() && Config.EnableIntellectualSelection)
             dashboard->selectOnlyCard(ClientInstance->getStatus() == Client::Playing);
     }
+}
+
+void RoomScene::onTransferButtonActivated()
+{
+    TransferButton *button = qobject_cast<TransferButton *>(sender());
+
+    Sanguosha->getTransfer()->setToSelect(button->getCardId());
+
+    foreach (TransferButton *btn, dashboard->getTransferButtons()) {
+        if (btn != button && btn->isDown())
+            btn->setState(QSanButton::S_STATE_UP);
+    }
+
+    dashboard->startPending(Sanguosha->getTransfer());
+    dashboard->unselectAll();
+    dashboard->addPending(button->getCardItem());
+    dashboard->selectCard(button->getCardItem(), true);
+    dashboard->updatePending();
+    dashboard->adjustCards();
+    cancel_button->setEnabled(true);
 }
 
 void RoomScene::doOkButton() {
@@ -3391,8 +3422,7 @@ void RoomScene::detachSkill(const QString &skill_name) {
     if (Self != NULL && Self->hasFlag("shuangxiong")
         && skill_name == "shuangxiong" && Self->getPhase() <= Player::Discard){
         Self->setFlags("shuangxiong_postpone");
-    }
-    else {
+    } else {
         QSanSkillButton *btn = dashboard->removeSkillButton(skill_name);
         if (btn == NULL) return;    //be care LordSkill and SPConvertSkill
         m_skillButtons.removeAll(btn);

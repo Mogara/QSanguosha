@@ -363,6 +363,7 @@ private slots:
     void acquireSkill(const ClientPlayer *player, const QString &skill_name, const bool &head = true);
     void updateSelectedTargets();
     void onSkillActivated();
+    void onTransferButtonActivated();
     void onSkillDeactivated();
     void startInXs();
     void hideAvatars();

@@ -36,8 +36,6 @@ public:
     void showCompanion();
     void hideCompanion();
 
-    virtual void setFrozen(bool is_frozen);
-
 protected:
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);

@@ -142,6 +142,7 @@
 "button-handcard": "image/system/button/handcard/%1/%2.png",
 "button-replay": "image/system/button/replay/%1/%2.png",
 "button-choose-general-box": "image/system/choose-general-box/%1/%2.png",
+"button-carditem": "image/system/button/carditem/%1/%2.png",
 
 // icons
 "saveMe": "image/system/death/save-me.png",

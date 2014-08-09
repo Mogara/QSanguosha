@@ -169,7 +169,7 @@ public:
     virtual QString getEffectName() const;
 
     bool isTransferable() const;
-    void setTransferable(bool value);
+    void setTranseferable(const bool transferbale);
 
 protected:
     QList<int> subcards;

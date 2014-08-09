@@ -23,6 +23,7 @@
 
 #include "package.h"
 #include "standard.h"
+#include "skill.h"
 
 class Blade : public Weapon{
     Q_OBJECT
@@ -83,7 +84,7 @@ public:
     virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
-class AllianceFeast: public AOE{
+class AllianceFeast : public AOE {
     Q_OBJECT
 
 public:

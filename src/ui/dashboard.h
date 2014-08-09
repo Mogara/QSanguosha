@@ -139,6 +139,10 @@ public:
         return rightFrame->sceneBoundingRect();
     }
 
+    void addPending(CardItem *item);
+    void addTransferButton(TransferButton *button);
+    QList<TransferButton *> getTransferButtons() const;
+
 public slots:
     void sortCards();
     void beginSorting();
@@ -226,6 +230,9 @@ protected:
     const ViewAsSkill *viewAsSkill;
     const FilterSkill *filter;
     QStringList _m_pile_expanded;
+
+    // for transfer
+    QList<TransferButton *> _transferButtons;
 
     // for equip skill/selections
     PixmapAnimation *_m_equipBorders[5];

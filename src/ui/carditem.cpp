@@ -23,6 +23,7 @@
 #include "skill.h"
 #include "clientplayer.h"
 #include "settings.h"
+#include "roomscene.h"
 
 #include <cmath>
 #include <QPainter>
@@ -49,6 +50,8 @@ void CardItem::_initialize() {
     outerGlowEffectEnabled = false;
     outerGlowEffect = NULL;
     outerGlowColor = Qt::white;
+    _transferButton = NULL;
+    _transferable = false;
 }
 
 CardItem::CardItem(const Card *card) {
@@ -107,6 +110,12 @@ void CardItem::changeGeneral(const QString &generalName) {
         setToolTip(QString());
     }
     emit general_changed();
+}
+
+void CardItem::onTransferEnabledChanged()
+{
+    if (!_transferButton->isEnabled())
+        setTransferable(false);
 }
 
 const Card *CardItem::getCard() const{
@@ -203,7 +212,11 @@ bool CardItem::isEquipped() const{
 }
 
 void CardItem::setFrozen(bool is_frozen) {
-    frozen = is_frozen;
+    if (frozen != is_frozen) {
+        frozen = is_frozen;
+        setFlag(QGraphicsItem::ItemIsMovable, !frozen);
+        update();
+    }
 }
 
 CardItem *CardItem::FindItem(const QList<CardItem *> &items, int card_id) {
@@ -260,6 +273,27 @@ QColor CardItem::getOuterGlowColor() const
     return outerGlowColor;
 }
 
+void CardItem::setTransferable(const bool transferable)
+{
+    _transferable = transferable;
+    if (transferable && _transferButton == NULL) {
+        _transferButton = new TransferButton(this);
+        _transferButton->setPos(0, -20);
+        _transferButton->setEnabled(false);
+        _transferButton->hide();
+        connect(_transferButton, SIGNAL(_activated()), RoomSceneInstance, SLOT(onTransferButtonActivated()));
+        connect(_transferButton, SIGNAL(_deactivated()), RoomSceneInstance, SLOT(onSkillDeactivated()));
+        connect(_transferButton, SIGNAL(enabledChanged()), SLOT(onTransferEnabledChanged()));
+    } else if (!transferable) {
+        _transferButton->hide();
+    }
+}
+
+TransferButton *CardItem::getTransferButton() const
+{
+    return _transferButton;
+}
+
 const int CardItem::_S_CLICK_JITTER_TOLERANCE = 1600;
 const int CardItem::_S_MOVE_JITTER_TOLERANCE = 200;
 
@@ -304,11 +338,15 @@ void CardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 void CardItem::hoverEnterEvent(QGraphicsSceneHoverEvent *) {
+    if (_transferable && _transferButton->isEnabled())
+        _transferButton->show();
     emit enter_hover();
     emit hoverChanged(true);
 }
 
 void CardItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *) {
+    if (_transferButton)
+        _transferButton->hide();
     emit leave_hover();
     emit hoverChanged(false);
 }
@@ -320,7 +358,7 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
     if (!_m_frameType.isEmpty())
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardFrameArea, G_ROOM_SKIN.getCardAvatarPixmap(_m_frameType));
 
-    if (!isEnabled()) {
+    if (frozen || !isEnabled()) {
         painter->fillRect(G_COMMON_LAYOUT.m_cardMainArea, QColor(100, 100, 100, 255 * opacity()));
         painter->setOpacity(0.7 * opacity());
     }
@@ -350,6 +388,30 @@ void CardItem::setFootnote(const QString &desc) {
     _m_footnoteImage.fill(Qt::transparent);
     QPainter painter(&_m_footnoteImage);
     font.paintText(&painter, QRect(QPoint(0, 0), rect.size()),
-        (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);
+                   (Qt::AlignmentFlag)((int)Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWrapAnywhere), desc);
 }
 
+int TransferButton::getCardId() const
+{
+    return _id;
+}
+
+CardItem *TransferButton::getCardItem() const
+{
+    return _cardItem;
+}
+
+TransferButton::TransferButton(CardItem *parent)
+    : QSanButton("carditem", "give", parent), _id(parent->getId()), _cardItem(parent)
+{
+    _m_style = S_STYLE_TOGGLE;
+    connect(this, SIGNAL(clicked()), SLOT(onClicked()));
+}
+
+void TransferButton::onClicked()
+{
+    if (isDown())
+        emit _activated();
+    else
+        emit _deactivated();
+}

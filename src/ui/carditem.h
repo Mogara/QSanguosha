@@ -28,10 +28,33 @@
 #include <QMutex>
 #include <QSize>
 #include "SkinBank.h"
+#include "qsanbutton.h"
 
 class FilterSkill;
 class General;
 class QGraphicsDropShadowEffect;
+
+class TransferButton : public QSanButton {
+    Q_OBJECT
+
+    friend class CardItem;
+public:
+    int getCardId() const;
+    CardItem *getCardItem() const;
+
+private:
+    TransferButton(CardItem *parent);
+
+    int _id;
+    CardItem *_cardItem;
+
+private slots:
+    void onClicked();
+
+signals:
+    void _activated();
+    void _deactivated();
+};
 
 class CardItem : public QSanSelectableItem {
     Q_OBJECT
@@ -92,6 +115,9 @@ public:
     void setOuterGlowColor(const QColor &color);
     QColor getOuterGlowColor() const;
 
+    void setTransferable(const bool transferable);
+    TransferButton *getTransferButton() const;
+
 protected:
     void _initialize();
     QAbstractAnimation *m_currentAnimation;
@@ -122,6 +148,8 @@ private:
     bool outerGlowEffectEnabled;
     QColor outerGlowColor;
     QGraphicsDropShadowEffect *outerGlowEffect;
+    TransferButton *_transferButton;
+    bool _transferable;
 
 signals:
     void toggle_discards();
@@ -137,6 +165,7 @@ signals:
 
 public slots:
     virtual void changeGeneral(const QString &generalName);
+    void onTransferEnabledChanged();
 };
 
 #endif

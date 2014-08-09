@@ -192,8 +192,10 @@ ViewAsSkill::ViewAsSkill(const QString &name)
 }
 
 bool ViewAsSkill::isAvailable(const Player *invoker, CardUseStruct::CardUseReason reason, const QString &pattern) const{
-    if (!invoker->hasSkill(objectName()) && !invoker->hasFlag(objectName())) // For Shuangxiong
+    if (!inherits("TransferSkill") && !invoker->hasSkill(objectName())
+            && !invoker->hasFlag(objectName())) { // For Shuangxiong
         return false;
+    }
     switch (reason) {
     case CardUseStruct::CARD_USE_REASON_PLAY: return isEnabledAtPlay(invoker);
     case CardUseStruct::CARD_USE_REASON_RESPONSE:

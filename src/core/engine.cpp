@@ -32,7 +32,6 @@
 #include "RoomState.h"
 #include "banpair.h"
 #include "miniscenarios.h"
-
 #include "jiange-defense-scenario.h"
 
 #include <lua.hpp>
@@ -97,6 +96,10 @@ Engine::Engine()
     foreach(QString name, package_names)
         addPackage(name);
 
+    metaobjects.insert("TransferCard", &TransferCard::staticMetaObject);
+
+    transfer = new TransferSkill;
+
     _loadMiniScenarios();
     _loadModScenarios();
     m_customScene = new CustomScenario();
@@ -135,6 +138,7 @@ void Engine::addTranslationEntry(const char *key, const char *value) {
 Engine::~Engine() {
     lua_close(lua);
     delete m_customScene;
+    delete transfer;
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif
@@ -225,36 +229,31 @@ void Engine::addPackage(Package *package) {
             luaBasicCard_className2objectName.insert(lcard->getClassName(), lcard->objectName());
             if (!luaBasicCards.keys().contains(lcard->getClassName()))
                 luaBasicCards.insert(lcard->getClassName(), lcard->clone());
-        }
-        else if (card->isKindOf("LuaTrickCard")) {
+        } else if (card->isKindOf("LuaTrickCard")) {
             const LuaTrickCard *lcard = qobject_cast<const LuaTrickCard *>(card);
             Q_ASSERT(lcard != NULL);
             luaTrickCard_className2objectName.insert(lcard->getClassName(), lcard->objectName());
             if (!luaTrickCards.keys().contains(lcard->getClassName()))
                 luaTrickCards.insert(lcard->getClassName(), lcard->clone());
-        }
-        else if (card->isKindOf("LuaWeapon")) {
+        } else if (card->isKindOf("LuaWeapon")) {
             const LuaWeapon *lcard = qobject_cast<const LuaWeapon *>(card);
             Q_ASSERT(lcard != NULL);
             luaWeapon_className2objectName.insert(lcard->getClassName(), lcard->objectName());
             if (!luaWeapons.keys().contains(lcard->getClassName()))
                 luaWeapons.insert(lcard->getClassName(), lcard->clone());
-        }
-        else if (card->isKindOf("LuaArmor")) {
+        } else if (card->isKindOf("LuaArmor")) {
             const LuaArmor *lcard = qobject_cast<const LuaArmor *>(card);
             Q_ASSERT(lcard != NULL);
             luaArmor_className2objectName.insert(lcard->getClassName(), lcard->objectName());
             if (!luaArmors.keys().contains(lcard->getClassName()))
                 luaArmors.insert(lcard->getClassName(), lcard->clone());
-        }
-        else if (card->isKindOf("LuaTreasure")) {
+        } else if (card->isKindOf("LuaTreasure")) {
             const LuaTreasure *lcard = qobject_cast<const LuaTreasure *>(card);
             Q_ASSERT(lcard != NULL);
             luaTreasure_className2objectName.insert(lcard->getClassName(), lcard->objectName());
             if (!luaTreasures.keys().contains(lcard->getClassName()))
                 luaTreasures.insert(lcard->getClassName(), lcard->clone());
-        }
-        else {
+        } else {
             QString class_name = card->metaObject()->className();
             metaobjects.insert(class_name, card->metaObject());
             className2objectName.insert(class_name, card->objectName());
@@ -427,6 +426,11 @@ bool Engine::isGeneralHidden(const QString &general_name) const{
         return !Config.RemovedHiddenGenerals.contains(general_name);
 }
 
+TransferSkill *Engine::getTransfer() const
+{
+    return transfer;
+}
+
 WrappedCard *Engine::getWrappedCard(int cardId) {
     Card *card = getCard(cardId);
     WrappedCard *wrappedCard = qobject_cast<WrappedCard *>(card);
@@ -484,58 +488,48 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
         const LuaBasicCard *lcard = luaBasicCards.value(name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    }
-    else if (luaBasicCard_className2objectName.values().contains(name)) {
+    } else if (luaBasicCard_className2objectName.values().contains(name)) {
         QString class_name = luaBasicCard_className2objectName.key(name, name);
         const LuaBasicCard *lcard = luaBasicCards.value(class_name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    }
-    else if (luaTrickCard_className2objectName.keys().contains(name)) {
+    } else if (luaTrickCard_className2objectName.keys().contains(name)) {
         const LuaTrickCard *lcard = luaTrickCards.value(name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    }
-    else if (luaTrickCard_className2objectName.values().contains(name)) {
+    } else if (luaTrickCard_className2objectName.values().contains(name)) {
         QString class_name = luaTrickCard_className2objectName.key(name, name);
         const LuaTrickCard *lcard = luaTrickCards.value(class_name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    }
-    else if (luaWeapon_className2objectName.keys().contains(name)) {
+    } else if (luaWeapon_className2objectName.keys().contains(name)) {
         const LuaWeapon *lcard = luaWeapons.value(name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    }
-    else if (luaWeapon_className2objectName.values().contains(name)) {
+    } else if (luaWeapon_className2objectName.values().contains(name)) {
         QString class_name = luaWeapon_className2objectName.key(name, name);
         const LuaWeapon *lcard = luaWeapons.value(class_name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    }
-    else if (luaArmor_className2objectName.keys().contains(name)) {
+    } else if (luaArmor_className2objectName.keys().contains(name)) {
         const LuaArmor *lcard = luaArmors.value(name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    }
-    else if (luaArmor_className2objectName.values().contains(name)) {
+    } else if (luaArmor_className2objectName.values().contains(name)) {
         QString class_name = luaArmor_className2objectName.key(name, name);
         const LuaArmor *lcard = luaArmors.value(class_name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    }
-    else if (luaTreasure_className2objectName.keys().contains(name)) {
+    } else if (luaTreasure_className2objectName.keys().contains(name)) {
         const LuaTreasure *lcard = luaTreasures.value(name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    }
-    else if (luaTreasure_className2objectName.values().contains(name)) {
+    } else if (luaTreasure_className2objectName.values().contains(name)) {
         QString class_name = luaTreasure_className2objectName.key(name, name);
         const LuaTreasure *lcard = luaTreasures.value(class_name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    }
-    else {
+    } else {
         const QMetaObject *meta = metaobjects.value(name, NULL);
         if (meta == NULL)
             meta = metaobjects.value(className2objectName.key(name, QString()), NULL);
@@ -1021,4 +1015,42 @@ int Engine::correctAttackRange(const Player *target, bool include_weapon, bool f
     }
 
     return extra;
+}
+
+TransferSkill::TransferSkill()
+    : OneCardViewAsSkill("transfer")
+{
+
+}
+
+bool TransferSkill::viewFilter(const Card *to_select) const
+{
+    return to_select->getId() == _toSelect;
+}
+
+const Card *TransferSkill::viewAs(const Card *originalCard) const
+{
+    TransferCard *transfer = new TransferCard;
+    transfer->addSubcard(originalCard);
+    return transfer;
+}
+
+bool TransferSkill::isEnabledAtPlay(const Player *) const
+{
+    return true;
+}
+
+void TransferSkill::setToSelect(int toSelect)
+{
+    _toSelect = toSelect;
+}
+
+TransferCard::TransferCard()
+{
+    will_throw = false;
+    mute = true;
+}
+
+void TransferCard::onEffect(const CardEffectStruct &effect) const{
+    effect.to->getRoom()->obtainCard(effect.to, this);
 }

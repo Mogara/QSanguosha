@@ -20,7 +20,6 @@
 
 #include "strategic-advantage.h"
 #include "standard-tricks.h"
-#include "skill.h"
 #include "engine.h"
 
 Blade::Blade(Card::Suit suit, int number)
