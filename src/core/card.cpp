@@ -401,6 +401,11 @@ bool Card::isTransferable() const
     return transferable;
 }
 
+void Card::setTranseferable(const bool transferbale)
+{
+    this->transferable = transferbale;
+}
+
 QString Card::subcardString() const{
     if (subcards.isEmpty())
         return ".";

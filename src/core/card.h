@@ -49,7 +49,7 @@ class Card : public QObject {
     Q_PROPERTY(bool mute READ isMute CONSTANT)
     Q_PROPERTY(bool equipped READ isEquipped)
     Q_PROPERTY(Color color READ getColor)
-    Q_PROPERTY(bool transferable READ isTransferable)
+    Q_PROPERTY(bool transferable READ isTransferable WRITE setTransferable)
 
     Q_ENUMS(Suit)
     Q_ENUMS(CardType)

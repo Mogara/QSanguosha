@@ -25,7 +25,6 @@
 Slash::Slash(Suit suit, int number) : BasicCard(suit, number)
 {
     setObjectName("slash");
-    transferable = true;
     nature = DamageStruct::Normal;
     drank = 0;
 }
