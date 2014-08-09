@@ -1428,9 +1428,6 @@ public:
                     args[2] = QSanProtocol::Utils::toJsonString(skill->objectName());
                     args[3] = true;
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
-
-                    if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
-                        room->addPlayerMark(player, skill->getLimitMark());
                 }
                 room->changeHero(player, to_change, false, true, false, true);
                 player->setSkillsPreshowed("h");
@@ -1454,6 +1451,11 @@ public:
 
                 room->setPlayerProperty(player, "kingdom", dfowner->getKingdom());
                 room->setPlayerProperty(player, "role", HegemonyMode::GetMappedRole(dfowner->getKingdom()));
+
+                foreach(const Skill *skill, Sanguosha->getGeneral(to_change)->getSkillList(true, true)) {
+                    if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
+                        room->addPlayerMark(player, skill->getLimitMark());
+                }
 
                 player->drawCards(1);
             }
