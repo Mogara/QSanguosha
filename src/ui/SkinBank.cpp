@@ -114,6 +114,9 @@ const char *QSanRoomSkin::S_SKIN_KEY_ROLE_BOX_KINGDOM_MASK = "roleBoxKingdomMask
 const char *QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_SPLIT_LINE = "chooseGeneralBoxSplitLine";
 const char *QSanRoomSkin::S_SKIN_KEY_CHOOSE_GENERAL_BOX_DEST_SEAT = "chooseGeneralBoxDestSeat";
 
+//CardItem
+const char *QSanRoomSkin::S_SKIN_KEY_CARD_TRANSFERABLE_ICON = "cardTransferableIcon";
+
 //GeneralCardItem
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT = "generalCardItemCompanionFont-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_ICON = "generalCardItemCompanionIcon-%1";
@@ -811,6 +814,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
     tryParse(config["cardMainArea"], _m_commonLayout.m_cardMainArea);
     tryParse(config["cardSuitArea"], _m_commonLayout.m_cardSuitArea);
     tryParse(config["cardNumberArea"], _m_commonLayout.m_cardNumberArea);
+    tryParse(config["cardTransferableIconArea"], _m_commonLayout.m_cardTransferableIconArea);
     tryParse(config["cardFrameArea"], _m_commonLayout.m_cardFrameArea);
     tryParse(config["cardFootnoteArea"], _m_commonLayout.m_cardFootnoteArea);
     tryParse(config["cardAvatarArea"], _m_commonLayout.m_cardAvatarArea);

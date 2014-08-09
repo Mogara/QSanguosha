@@ -272,6 +272,7 @@ public:
         QRect m_cardMainArea;
         QRect m_cardSuitArea;
         QRect m_cardNumberArea;
+        QRect m_cardTransferableIconArea;
         QRect m_cardFootnoteArea;
         QRect m_cardAvatarArea;
         QRect m_cardFrameArea;
@@ -439,6 +440,9 @@ public:
     //ChooseGeneralBox
     static const char *S_SKIN_KEY_CHOOSE_GENERAL_BOX_SPLIT_LINE;
     static const char *S_SKIN_KEY_CHOOSE_GENERAL_BOX_DEST_SEAT;
+
+    //CardItem
+    static const char *S_SKIN_KEY_CARD_TRANSFERABLE_ICON;
 
     //GeneralCardItem
     static const char *S_SKIN_KEY_GENERAL_CARD_ITEM_COMPANION_FONT;

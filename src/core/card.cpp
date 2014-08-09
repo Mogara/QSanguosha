@@ -402,7 +402,7 @@ bool Card::isTransferable() const
     return transferable;
 }
 
-void Card::setTranseferable(const bool transferbale)
+void Card::setTransferable(const bool transferbale)
 {
     this->transferable = transferbale;
 }

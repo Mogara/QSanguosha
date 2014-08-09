@@ -180,6 +180,9 @@
 "chooseGeneralBoxSplitLine": "image/system/choose-general-box/split-line.png",
 "chooseGeneralBoxDestSeat": "image/system/choose-general-box/dest-seat.png",
 
+//card item
+"cardTransferableIcon": "image/system/transferable.png",
+
 //general card item
 "generalCardItemCompanionFont-default": "image/system/companions/prompt/%1.png",
 "generalCardItemCompanionIcon-default": "image/system/companions/icons/%1.png",
