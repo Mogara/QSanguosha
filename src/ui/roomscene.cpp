@@ -2146,7 +2146,10 @@ void RoomScene::useSelectedCard() {
     }
 
     const ViewAsSkill *skill = dashboard->currentSkill();
-    if (skill) dashboard->stopPending();
+    if (skill)
+        dashboard->stopPending();
+    else
+        dashboard->retractPileCards("wooden_ox");
 }
 
 void RoomScene::onEnabledChange() {

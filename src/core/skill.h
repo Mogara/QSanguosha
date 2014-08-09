@@ -93,10 +93,12 @@ public:
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const;
     static const ViewAsSkill *parseViewAsSkill(const Skill *skill);
 
+    inline bool isResponseOrUse() const{ return response_or_use; }
     inline QString getExpandPile() const{ return expand_pile; }
 
 protected:
     QString response_pattern;
+    bool response_or_use;
     QString expand_pile;
 };
 
@@ -369,6 +371,7 @@ class TreasureSkill : public TriggerSkill {
 public:
     TreasureSkill(const QString &name);
 
+    virtual int getPriority() const;
     virtual bool triggerable(const ServerPlayer *target) const;
 };
 

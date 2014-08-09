@@ -63,6 +63,7 @@ public:
 class Qixi : public OneCardViewAsSkill {
 public:
     Qixi() : OneCardViewAsSkill("qixi") {
+        response_or_use = true;
     }
 
     virtual bool viewFilter(const Card *to_select) const{
@@ -219,6 +220,7 @@ class Guose : public OneCardViewAsSkill {
 public:
     Guose() : OneCardViewAsSkill("guose") {
         filter_pattern = ".|diamond";
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -409,6 +411,7 @@ class Duoshi : public OneCardViewAsSkill {
 public:
     Duoshi() : OneCardViewAsSkill("duoshi") {
         filter_pattern = ".|red|.|hand";
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -732,7 +735,7 @@ bool TianyiCard::targetFilter(const QList<const Player *> &targets, const Player
     return targets.isEmpty() && !to_select->isKongcheng() && to_select != Self;
 }
 
-void TianyiCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+void TianyiCard::extraCost(Room *, const CardUseStruct &card_use) const{
     ServerPlayer *dalizi = card_use.from;
     PindianStruct *pd = dalizi->pindianSelect(card_use.to.first(), "tianyi");
     dalizi->tag["tianyi_pd"] = QVariant::fromValue(pd);

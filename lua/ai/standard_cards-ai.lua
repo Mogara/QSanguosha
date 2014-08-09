@@ -339,7 +339,7 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 			if not skill or skill:inherits("FilterSkill") then
 				can_convert = true
 			end
-			if not can_convert and not from:hasWeapon("Fan") then return false end
+			if not can_convert or not from:hasWeapon("Fan") then return false end
 		end
 	end
 

@@ -94,6 +94,7 @@ public:
 class Wusheng : public OneCardViewAsSkill {
 public:
     Wusheng() : OneCardViewAsSkill("wusheng") {
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -143,9 +144,8 @@ public:
 
 class PaoxiaoArmorNullificaion : public TriggerSkill{
 public:
-    PaoxiaoArmorNullificaion() : TriggerSkill("paoxiao_null"){
+    PaoxiaoArmorNullificaion() : TriggerSkill("#paoxiao-null"){
         events << TargetChosen;
-        global = true;
         frequency = Compulsory;
     }
 
@@ -156,19 +156,15 @@ public:
         ServerPlayer *lord = room->getLord(player->getKingdom());
         if (lord != NULL && lord->hasLordSkill("shouyue") && lord->hasShownGeneral1()){
             CardUseStruct use = data.value<CardUseStruct>();
-            if (use.card->isKindOf("Slash") && use.from == player){
-                foreach(ServerPlayer *p, use.to.toSet()){
-                    if (p->getMark("Equips_of_Others_Nullified_to_You") == 0)
-                        return QStringList(objectName());
-                }
-            }
+            if (use.card->isKindOf("Slash") && use.from == player)
+                return QStringList(objectName());
         }
 
         return QStringList();
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
-        if (player->hasShownSkill("paoxiao") || player->getAcquiredSkills().contains("paoxiao"))
+        if (player->hasShownSkill("paoxiao"))
             return true;
         else {
             player->tag["paoxiao_use"] = data;
@@ -186,9 +182,8 @@ public:
         ServerPlayer *lord = room->getLord(player->getKingdom());
         room->notifySkillInvoked(lord, "shouyue");
         CardUseStruct use = data.value<CardUseStruct>();
-        foreach(ServerPlayer *p, use.to.toSet()){
+        foreach (ServerPlayer *p, use.to.toSet())
             p->addQinggangTag(use.card);
-        }
         return false;
     }
 };
@@ -343,6 +338,7 @@ public:
 class LongdanVS : public OneCardViewAsSkill {
 public:
     LongdanVS() : OneCardViewAsSkill("longdan") {
+        response_or_use = true;
     }
 
     virtual bool viewFilter(const Card *to_select) const{
@@ -537,10 +533,10 @@ public:
         if (!TriggerSkill::triggerable(player))
             return QStringList();
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card != NULL && use.card->isNDTrick()){
-            if (!use.card->isVirtualCard())
+        if (use.card != NULL && use.card->isNDTrick()) {
+            if (!use.card->isVirtualCard() || use.card->getSubcards().isEmpty())
                 return QStringList(objectName());
-            else if (use.card->getSubcards().length() == 1){
+            else if (use.card->getSubcards().length() == 1) {
                 if (Sanguosha->getCard(use.card->getEffectiveId())->objectName() == use.card->objectName())
                     return QStringList(objectName());
             }
@@ -717,6 +713,7 @@ class Lianhuan : public OneCardViewAsSkill {
 public:
     Lianhuan() : OneCardViewAsSkill("lianhuan") {
         filter_pattern = ".|club|.|hand";
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -788,6 +785,7 @@ class Huoji : public OneCardViewAsSkill {
 public:
     Huoji() : OneCardViewAsSkill("huoji") {
         filter_pattern = ".|red|.|hand";
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -834,6 +832,7 @@ public:
     Kanpo() : OneCardViewAsSkill("kanpo") {
         filter_pattern = ".|black|.|hand";
         response_pattern = "nullification";
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -845,10 +844,7 @@ public:
     }
 
     virtual bool isEnabledAtNullification(const ServerPlayer *player) const{
-        foreach(const Card *card, player->getHandcards()) {
-            if (card->isBlack()) return true;
-        }
-        return false;
+        return !player->isKongcheng() || !player->getPile("wooden_ox").isEmpty();
     }
 
     virtual int getEffectIndex(const ServerPlayer *player, const Card *) const{
@@ -1280,17 +1276,12 @@ public:
 
 class FangquanGive : public PhaseChangeSkill {
 public:
-    FangquanGive() : PhaseChangeSkill("fangquan-give") {
-        global = true;
+    FangquanGive() : PhaseChangeSkill("#fangquan-give") {
         frequency = Compulsory;
     }
 
-    virtual int getPriority() const{
-        return 1;
-    }
-
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer * &ask_who) const{
-        if (player != NULL && player->isAlive() && player->hasSkill("fangquan")){
+        if (player != NULL && player->isAlive()) {
             if (!room->getTag("FangquanTarget").isNull()){
                 ServerPlayer *target = room->getTag("FangquanTarget").value<ServerPlayer *>();
                 ask_who = target;
@@ -1438,7 +1429,8 @@ void StandardPackage::addShuGenerals()
 
     General *zhangfei = new General(this, "zhangfei", "shu"); // SHU 003
     zhangfei->addSkill(new Paoxiao);
-    skills << new PaoxiaoArmorNullificaion;
+    zhangfei->addSkill(new PaoxiaoArmorNullificaion);
+    related_skills.insertMulti("paoxiao", "#paoxiao-null");
 
     General *zhugeliang = new General(this, "zhugeliang", "shu", 3); // SHU 004
     zhugeliang->addCompanion("huangyueying");
@@ -1482,7 +1474,8 @@ void StandardPackage::addShuGenerals()
     General *liushan = new General(this, "liushan", "shu", 3); // SHU 013
     liushan->addSkill(new Xiangle);
     liushan->addSkill(new Fangquan);
-    skills << new FangquanGive;
+    liushan->addSkill(new FangquanGive);
+    related_skills.insertMulti("fangquan", "#fangquan-give");
 
     General *menghuo = new General(this, "menghuo", "shu"); // SHU 014
     menghuo->addCompanion("zhurong");

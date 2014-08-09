@@ -123,8 +123,7 @@ void EquipCard::onInstall(ServerPlayer *player) const{
     if (skill) {
         if (skill->inherits("ViewAsSkill")) {
             room->attachSkillToPlayer(player, this->objectName());
-        }
-        else if (skill->inherits("TriggerSkill")) {
+        } else if (skill->inherits("TriggerSkill")) {
             const TriggerSkill *trigger_skill = qobject_cast<const TriggerSkill *>(skill);
             room->getThread()->addTriggerSkill(trigger_skill);
         }

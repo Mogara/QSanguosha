@@ -2939,13 +2939,6 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
 
     try {
         if (card_use.card->getRealCard() == card) {
-            /*
-            QString skill_name = card_use.card->showSkill();
-            if (!skill_name.isNull() && card_use.from->ownSkill(skill_name)
-                && !card_use.from->hasShownSkill(skill_name))
-                card_use.from->showGeneral(card_use.from->inHeadSkills(skill_name));
-            */ 
-            //moved to Card::onUse()
             QStringList tarmod_detect;
             while (!((tarmod_detect = card_use.card->checkTargetModSkillShow(card_use)).isEmpty())){
                 QString to_show = askForChoice(card_use.from, "tarmod_show", tarmod_detect.join("+"), QVariant::fromValue(card_use));
@@ -2974,8 +2967,7 @@ bool Room::useCard(const CardUseStruct &use, bool add_history) {
             }
 
             card_use.card->onUse(this, card_use);
-        }
-        else if (card) {
+        } else if (card) {
             CardUseStruct new_use = card_use;
             new_use.card = card;
             useCard(new_use);

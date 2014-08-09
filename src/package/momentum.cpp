@@ -408,7 +408,7 @@ void CunsiCard::onUse(Room *room, const CardUseStruct &card_use) const{
     SkillCard::onUse(room, card_use);
 }
 
-void CunsiCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+void CunsiCard::extraCost(Room *, const CardUseStruct &card_use) const{
     card_use.from->removeGeneral(card_use.from->inHeadSkills("cunsi"));
 }
 
@@ -557,16 +557,10 @@ public:
     }
 };
 
-class YongjueStart : public TriggerSkill {
+class YongjueClear : public TriggerSkill {
 public:
-    YongjueStart() : TriggerSkill("yongjue-start") {
+    YongjueClear() : TriggerSkill("#yongjue-clear") {
         events << EventPhaseStart;
-        global = true;
-        frequency = Compulsory;
-    }
-
-    virtual int getPriority() const{
-        return 10;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *target, QVariant &, ServerPlayer* &) const {
@@ -1386,7 +1380,8 @@ MomentumPackage::MomentumPackage()
     lord_zhangjiao->addSkill(new Hongfa);
     lord_zhangjiao->addSkill(new Wendao);
 
-    skills << new Yongjue << new YongjueStart << new Benghuai << new HongfaSlash << new Yinghun_Sunce << new Yingzi_Sunce;
+    skills << new Yongjue << new YongjueClear << new Benghuai << new HongfaSlash << new Yinghun_Sunce << new Yingzi_Sunce;
+    related_skills.insertMulti("yongjue", "#yongjue-clear");
 
     addMetaObject<CunsiCard>();
     addMetaObject<DuanxieCard>();
@@ -1430,10 +1425,8 @@ public:
             for (int i = 0; i < move.card_ids.size(); i++) {
                 if (move.from_places[i] != Player::PlaceEquip) continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
-                if (card->objectName() == objectName()) {
-                    player->setFlags("-peacespell_throwing");
+                if (card->objectName() == objectName())
                     return QStringList(objectName());
-                }
             }
         }
         return QStringList();
@@ -1466,6 +1459,7 @@ public:
 
             room->sendLog(l);
 
+            player->setFlags("-peacespell_throwing");
             room->loseHp(player);
             if (player->isAlive())
                 player->drawCards(2);

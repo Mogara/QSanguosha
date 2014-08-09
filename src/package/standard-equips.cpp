@@ -109,15 +109,16 @@ QinggangSword::QinggangSword(Suit suit, int number)
 class SpearSkill : public ViewAsSkill {
 public:
     SpearSkill() : ViewAsSkill("Spear") {
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
-        return player->getHandcardNum() >= 2 && Slash::IsAvailable(player)
+        return Slash::IsAvailable(player)
             && player->getMark("Equips_Nullified_to_Yourself") == 0;
     }
 
     virtual bool isEnabledAtResponse(const Player *player, const QString &pattern) const{
-        return player->getHandcardNum() >= 2 && pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0;
+        return pattern == "slash" && player->getMark("Equips_Nullified_to_Yourself") == 0;
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
@@ -383,6 +384,7 @@ class FanSkill : public OneCardViewAsSkill {
 public:
     FanSkill() : OneCardViewAsSkill("Fan") {
         filter_pattern = "%slash";
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -589,8 +591,11 @@ public:
                 if (move.from_places[i] != Player::PlaceEquip) continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
                 if (card->objectName() == objectName()) {
-                    player->setFlags("-SilverLionRecover");
-                    return (player->isWounded()) ? QStringList(objectName()) : QStringList();
+                    if (!player->isWounded()) {
+                        player->setFlags("-SilverLionRecover");
+                        return QStringList();
+                    }
+                    return QStringList(objectName());
                 }
             }
         }
@@ -618,6 +623,8 @@ public:
                 if (move.from_places[i] != Player::PlaceEquip) continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
                 if (card->objectName() == objectName()) {
+                    player->setFlags("-SilverLionRecover");
+
                     room->setEmotion(player, "armor/silver_lion");
                     RecoverStruct recover;
                     recover.card = card;

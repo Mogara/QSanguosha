@@ -31,6 +31,7 @@ class Jijiu : public OneCardViewAsSkill {
 public:
     Jijiu() : OneCardViewAsSkill("jijiu") {
         filter_pattern = ".|red";
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *) const{
@@ -278,6 +279,7 @@ public:
 class Luanji : public ViewAsSkill {
 public:
     Luanji() : ViewAsSkill("luanji") {
+        response_or_use = true;
     }
 
     virtual bool viewFilter(const QList<const Card *> &selected, const Card *to_select) const{
@@ -307,6 +309,7 @@ public:
 class ShuangxiongViewAsSkill : public OneCardViewAsSkill {
 public:
     ShuangxiongViewAsSkill() :OneCardViewAsSkill("shuangxiong") { //Client::updateProperty() / RoomScene::detachSkill()
+        response_or_use = true;
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{

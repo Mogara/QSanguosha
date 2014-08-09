@@ -479,14 +479,9 @@ public:
 
 class LuoshenMove : public TriggerSkill {
 public:
-    LuoshenMove() : TriggerSkill("luoshen-move") {
+    LuoshenMove() : TriggerSkill("#luoshen-move") {
         events << FinishJudge;
-        global = true;
         frequency = Compulsory;
-    }
-
-    virtual bool canPreshow() const {
-        return false;
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
@@ -521,6 +516,7 @@ public:
     Qingguo() : OneCardViewAsSkill("qingguo") {
         filter_pattern = ".|black|.|hand";
         response_pattern = "jink";
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -876,6 +872,7 @@ class Duanliang : public OneCardViewAsSkill {
 public:
     Duanliang() : OneCardViewAsSkill("duanliang") {
         filter_pattern = "BasicCard,EquipCard|black";
+        response_or_use = true;
     }
 
     virtual const Card *viewAs(const Card *originalCard) const{
@@ -993,7 +990,7 @@ bool QuhuCard::targetFilter(const QList<const Player *> &targets, const Player *
     return targets.isEmpty() && to_select->getHp() > Self->getHp() && !to_select->isKongcheng();
 }
 
-void QuhuCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+void QuhuCard::extraCost(Room *, const CardUseStruct &card_use) const{
     ServerPlayer *xunyu = card_use.from;
     PindianStruct *pd = xunyu->pindianSelect(card_use.to.first(), "quhu");
     xunyu->tag["quhu_pd"] = QVariant::fromValue(pd);
@@ -1245,7 +1242,8 @@ void StandardPackage::addWeiGenerals()
     General *zhenji = new General(this, "zhenji", "wei", 3, false); // WEI 007
     zhenji->addSkill(new Qingguo);
     zhenji->addSkill(new Luoshen);
-    skills << new LuoshenMove;
+    zhenji->addSkill(new LuoshenMove);
+    related_skills.insertMulti("luoshen", "#luoshen-move");
 
     General *xiahouyuan = new General(this, "xiahouyuan", "wei"); // WEI 008
     xiahouyuan->addSkill(new Shensu);

@@ -474,8 +474,12 @@ DummyCard *ServerPlayer::wholeHandCards() const{
 }
 
 bool ServerPlayer::hasNullification() const{
-    foreach(const Card *card, handcards) {
-        if (card->isKindOf("Nullification"))
+    foreach (const Card *card, handcards) {
+        if (card->objectName() == "nullification")
+            return true;
+    }
+    foreach (int id, getPile("wooden_ox")) {
+        if (Sanguosha->getCard(id)->objectName() == "nullification")
             return true;
     }
 

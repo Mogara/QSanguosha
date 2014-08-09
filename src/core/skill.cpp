@@ -187,7 +187,7 @@ bool Skill::relateToPlace(bool head) const{
 }
 
 ViewAsSkill::ViewAsSkill(const QString &name)
-    : Skill(name), response_pattern(QString()), expand_pile(QString())
+    : Skill(name), response_pattern(QString()), response_or_use(false), expand_pile(QString())
 {
 }
 
@@ -265,6 +265,8 @@ bool OneCardViewAsSkill::viewFilter(const Card *to_select) const{
         if (pat.endsWith("!")) {
             if (Self->isJilei(to_select)) return false;
             pat.chop(1);
+        } else if (response_or_use && pat.contains("hand")) {
+            pat.replace("hand", "hand,wooden_ox");
         }
         ExpPattern pattern(pat);
         return pattern.match(Self, to_select);
@@ -614,7 +616,7 @@ int ArmorSkill::getPriority() const {
 }
 
 bool ArmorSkill::triggerable(const ServerPlayer *target) const{
-    if (target == NULL || target->getArmor() == NULL)
+    if (target == NULL)
         return false;
     return target->hasArmorEffect(objectName());
 }
@@ -624,8 +626,12 @@ TreasureSkill::TreasureSkill(const QString &name)
 {
 }
 
+int TreasureSkill::getPriority() const {
+    return 2;
+}
+
 bool TreasureSkill::triggerable(const ServerPlayer *target) const{
-    if (target == NULL || target->getTreasure() == NULL)
+    if (target == NULL)
         return false;
     return target->hasTreasure(objectName());
 }

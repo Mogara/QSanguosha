@@ -628,10 +628,25 @@ bool IronChain::targetFilter(const QList<const Player *> &targets, const Player 
 }
 
 bool IronChain::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
-    if (Self->isCardLimited(this, Card::MethodUse))
+    bool rec = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    QList<int> sub;
+    if (isVirtualCard())
+        sub = subcards;
+    else
+        sub << getEffectiveId();
+    foreach (int id, sub) {
+        if (Self->getPile("wooden_ox").contains(id)) {
+            rec = false;
+            break;
+        }
+    }
+
+    if (rec && Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;
     int total_num = 2 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    return targets.length() <= total_num;
+    if (targets.length() > total_num)
+        return false;
+    return rec || targets.length() > 0;
 }
 
 void IronChain::onUse(Room *room, const CardUseStruct &card_use) const{
@@ -800,7 +815,9 @@ void AwaitExhausted::onEffect(const CardEffectStruct &effect) const {
     effect.to->getRoom()->setPlayerFlag(effect.to, "AwaitExhaustedEffected");
 }
 
-KnownBoth::KnownBoth(Card::Suit suit, int number) : SingleTargetTrick(suit, number){
+KnownBoth::KnownBoth(Card::Suit suit, int number)
+    :SingleTargetTrick(suit, number)
+{
     setObjectName("known_both");
     can_recast = true;
 }
@@ -817,14 +834,25 @@ bool KnownBoth::targetFilter(const QList<const Player *> &targets, const Player 
 }
 
 bool KnownBoth::targetsFeasible(const QList<const Player *> &targets, const Player *Self) const{
-    if (Self->isCardLimited(this, Card::MethodUse))
+    bool rec = (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_PLAY);
+    QList<int> sub;
+    if (isVirtualCard())
+        sub = subcards;
+    else
+        sub << getEffectiveId();
+    foreach (int id, sub) {
+        if (Self->getPile("wooden_ox").contains(id)) {
+            rec = false;
+            break;
+        }
+    }
+
+    if (rec && Self->isCardLimited(this, Card::MethodUse))
         return targets.length() == 0;
-
-    if (Sanguosha->currentRoomState()->getCurrentCardUseReason() == CardUseStruct::CARD_USE_REASON_RESPONSE_USE)
-        return targets.length() != 0;
-
     int total_num = 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, Self, this);
-    return targets.length() <= total_num;
+    if (targets.length() > total_num)
+        return false;
+    return rec || targets.length() > 0;
 }
 
 void KnownBoth::onUse(Room *room, const CardUseStruct &card_use) const{
