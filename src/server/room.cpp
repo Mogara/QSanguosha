@@ -1926,7 +1926,7 @@ ServerPlayer *Room::addSocket(ClientSocket *socket) {
     m_players << player;
 
     connect(player, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
-    connect(player, SIGNAL(request_got(QString)), this, SLOT(processClientPacket(QString)));
+    connect(player, SIGNAL(request_got(QByteArray)), this, SLOT(processClientPacket(QByteArray)));
 
     return player;
 }
@@ -2342,23 +2342,21 @@ void Room::processRequestPreshow(ServerPlayer *player, const Json::Value &arg) {
     player->releaseLock(ServerPlayer::SEMA_MUTEX);
 }
 
-void Room::processClientPacket(const QString &request) {
+void Room::processClientPacket(const QByteArray &request) {
     Packet packet;
-    //@todo: remove this thing after the new protocol is fully deployed
-    if (packet.parse(request.toUtf8().constData())) {
+
+    if (packet.parse(request.constData())) {
         ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
         if (packet.getPacketType() == S_TYPE_REPLY) {
             if (player == NULL) return;
             player->setClientReplyString(request);
             processResponse(player, &packet);
-        }
-        else if (packet.getPacketType() == S_TYPE_REQUEST || packet.getPacketType() == S_TYPE_NOTIFICATION) {
+        } else if (packet.getPacketType() == S_TYPE_REQUEST || packet.getPacketType() == S_TYPE_NOTIFICATION) {
             Callback callback = m_callbacks[packet.getCommandType()];
             if (!callback) return;
             (this->*callback)(player, packet.getMessageBody());
         }
-    }
-    else {
+    } else {
         ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
         if (player == NULL) return;
 
@@ -2368,7 +2366,7 @@ void Room::processClientPacket(const QString &request) {
             return;
         }
 
-        emit room_message(tr("%1: %2 is not invokable").arg(player->reportHeader()).arg(request));
+        emit room_message(tr("%1: %2 is not invokable").arg(player->reportHeader()).arg(QString(request)));
     }
 }
 
