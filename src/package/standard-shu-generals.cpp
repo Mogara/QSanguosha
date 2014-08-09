@@ -533,10 +533,10 @@ public:
         if (!TriggerSkill::triggerable(player))
             return QStringList();
         CardUseStruct use = data.value<CardUseStruct>();
-        if (use.card != NULL && use.card->isNDTrick()){
-            if (!use.card->isVirtualCard())
+        if (use.card != NULL && use.card->isNDTrick()) {
+            if (!use.card->isVirtualCard() || use.card->getSubcards().isEmpty())
                 return QStringList(objectName());
-            else if (use.card->getSubcards().length() == 1){
+            else if (use.card->getSubcards().length() == 1) {
                 if (Sanguosha->getCard(use.card->getEffectiveId())->objectName() == use.card->objectName())
                     return QStringList(objectName());
             }

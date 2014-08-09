@@ -214,9 +214,6 @@ function sgs.Card_Parse(str)
 	if type(str) ~= "string" and type(str) ~= "number" and str.toString() then
 		global_room:writeToConsole(str:toString())
 	end
-	if string.len(str) > 3 and not string.find(str, "&") then
-		global_room:writeToConsole("showskillname is empty! >> " .. str)
-	end
 	local card = cardparse(str)
 	if not card then global_room:writeToConsole("Wrong!!sgs.Card_Parse >> " .. str) assert(false) end
 	return card
