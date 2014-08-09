@@ -389,7 +389,8 @@ QString Card::getEffectName() const{
         QChar ch = name[i];
         if (ch.isUpper()) {
             name[i] = ch.toLower();
-            name.insert(i, "_");
+            if (i != 0)
+                name.insert(i, "_");
             break;
         }
     }
