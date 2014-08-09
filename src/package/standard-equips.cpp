@@ -591,8 +591,11 @@ public:
                 if (move.from_places[i] != Player::PlaceEquip) continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
                 if (card->objectName() == objectName()) {
-                    player->setFlags("-SilverLionRecover");
-                    return (player->isWounded()) ? QStringList(objectName()) : QStringList();
+                    if (!player->isWounded()) {
+                        player->setFlags("-SilverLionRecover");
+                        return QStringList();
+                    }
+                    return QStringList(objectName());
                 }
             }
         }
@@ -620,6 +623,8 @@ public:
                 if (move.from_places[i] != Player::PlaceEquip) continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
                 if (card->objectName() == objectName()) {
+                    player->setFlags("-SilverLionRecover");
+
                     room->setEmotion(player, "armor/silver_lion");
                     RecoverStruct recover;
                     recover.card = card;

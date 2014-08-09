@@ -1425,10 +1425,8 @@ public:
             for (int i = 0; i < move.card_ids.size(); i++) {
                 if (move.from_places[i] != Player::PlaceEquip) continue;
                 const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
-                if (card->objectName() == objectName()) {
-                    player->setFlags("-peacespell_throwing");
+                if (card->objectName() == objectName())
                     return QStringList(objectName());
-                }
             }
         }
         return QStringList();
@@ -1461,6 +1459,7 @@ public:
 
             room->sendLog(l);
 
+            player->setFlags("-peacespell_throwing");
             room->loseHp(player);
             if (player->isAlive())
                 player->drawCards(2);
