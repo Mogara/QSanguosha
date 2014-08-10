@@ -371,14 +371,14 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
     if (card) {
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardSuitArea, G_ROOM_SKIN.getCardSuitPixmap(card->getSuit()));
         painter->drawPixmap(G_COMMON_LAYOUT.m_cardNumberArea, G_ROOM_SKIN.getCardNumberPixmap(card->getNumber(), card->isBlack()));
+        if (card->isTransferable())
+            painter->drawPixmap(G_COMMON_LAYOUT.m_cardTransferableIconArea,
+                                G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_CARD_TRANSFERABLE_ICON));
+
         QRect rect = G_COMMON_LAYOUT.m_cardFootnoteArea;
         // Deal with stupid QT...
         if (_m_showFootnote)
             painter->drawImage(rect, _m_footnoteImage);
-
-        if (card->isTransferable())
-            painter->drawPixmap(G_COMMON_LAYOUT.m_cardTransferableIconArea,
-                                G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_CARD_TRANSFERABLE_ICON));
     }
 
     if (!_m_avatarName.isEmpty())

@@ -208,8 +208,9 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             room->notifySkillInvoked(player, "paoxiao");
         }
     }
-    if ((use.to.size() > 1 + player->getMark("halberd_count") || player->hasFlag("Global_MoreSlashInOneTurn"))
-        && player->hasFlag("TianyiSuccess") && player->getPhase() == Player::Play && player->getSlashCount() == 2) {
+    if ((use.to.size() > 1 + player->getMark("halberd_count")
+        || (player->hasFlag("Global_MoreSlashInOneTurn") && player->getSlashCount() == 2))
+        && player->hasFlag("TianyiSuccess") && player->getPhase() == Player::Play) {
         if (player->hasFlag("Global_MoreSlashInOneTurn")) // Tianyi just let player could use one more Slash
             room->setPlayerFlag(player, "-Global_MoreSlashInOneTurn");
         room->broadcastSkillInvoke("tianyi", 1);
