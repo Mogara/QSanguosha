@@ -5498,8 +5498,7 @@ void Room::takeAG(ServerPlayer *player, int card_id, bool move_cards) {
                 QList<const Card *> cards;
                 cards << Sanguosha->getCard(card_id);
                 filterCards(player, cards, false);
-            }
-            else {
+            } else {
                 arg[2] = false;
             }
         }

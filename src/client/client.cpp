@@ -1467,8 +1467,7 @@ void Client::takeAG(const Json::Value &take_str) {
             updatePileNum();
         }
         emit ag_taken(NULL, card_id, move_cards);
-    }
-    else {
+    } else {
         ClientPlayer *taker = getPlayer(toQString(take_str[0]));
         if (move_cards)
             taker->addCard(card, Player::PlaceHand);

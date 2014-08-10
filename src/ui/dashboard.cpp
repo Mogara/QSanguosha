@@ -328,6 +328,9 @@ void Dashboard::addHandCards(QList<CardItem *> &card_items) {
 }
 
 void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &footnote) {
+    //card item in dashboard should never be disabled
+    if (!card_item->isEnabled())
+        card_item->setEnabled(true);
     if (ClientInstance->getStatus() == Client::Playing)
         card_item->setFrozen(!card_item->getCard()->isAvailable(Self));
     else
@@ -902,6 +905,10 @@ QList<CardItem *> Dashboard::removeHandCards(const QList<int> &card_ids) {
                 card_item->setTransferable(false);
                 _transferButtons.removeOne(card_item->getTransferButton());
             }
+            // frozen is a fake disabled state only used in dashboard.
+            // Disable the item when removing.
+            if (card_item->isFrozen())
+                card_item->setEnabled(false);
             result.append(card_item);
         }
     }

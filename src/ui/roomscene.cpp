@@ -3369,8 +3369,7 @@ void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id, bool move_car
             move.to_place = Player::PlaceHand;
             move.to = taker;
             container->addCardItems(items, move);
-        }
-        else {
+        } else {
             delete copy;
         }
     }
