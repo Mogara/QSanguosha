@@ -889,7 +889,7 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const {
         choices << "handcards";
     if (!effect.to->hasShownGeneral1())
         choices << "head_general";
-    if (!effect.to->hasShownGeneral2())
+    if (effect.to->getGeneral2() && !effect.to->hasShownGeneral2())
         choices << "deputy_general";
 
     Room *room = effect.from->getRoom();

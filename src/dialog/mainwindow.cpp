@@ -443,6 +443,8 @@ void MainWindow::changeEvent(QEvent *event)
         repaintButtons();
         roundCorners();
     }
+    /*if (view && view->viewport())
+        view->viewport()->update();*/ // i dont know why crash here
     QMainWindow::changeEvent(event);
 }
 
