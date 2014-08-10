@@ -49,7 +49,7 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
     maxCardsInOneRow = 0;
 
     this->player = player;
-    this->title = reason;
+    this->title = tr("%1: please choose %2's card").arg(reason).arg(ClientInstance->getPlayerName(player->objectName()));
     this->flags = flags;
     bool handcard = false;
     bool equip = false;

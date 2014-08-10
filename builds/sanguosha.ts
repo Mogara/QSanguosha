@@ -2679,6 +2679,11 @@
 <context>
     <name>PlayerCardBox</name>
     <message>
+        <location filename="../src/ui/PlayerCardBox.cpp" line="52"/>
+        <source>%1: please choose %2&apos;s card</source>
+        <translation>%1：请选择 %2 的一张卡牌</translation>
+    </message>
+    <message>
         <location filename="../src/ui/PlayerCardBox.cpp" line="175"/>
         <source>Handcard area</source>
         <translation>手牌区域</translation>
