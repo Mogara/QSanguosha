@@ -26,7 +26,7 @@
     "cardFrameArea": [-5, -5, 98, 135],
     "cardSuitArea": [3, 19, 21, 17],
     "cardNumberArea": [0, 2, 27, 28],
-	"cardTransferableIconArea": [58, 95, 35, 35],
+    "cardTransferableIconArea": [58, 95, 35, 35],
     "cardFootnoteArea": [0, 70, 93, 50],
     "cardAvatarArea": [46, 83, 40, 40],
     "cardFootnoteFont": ["SimSun", [12, 12, 3], 0, [255, 255, 255, 255], 1, 10, [0, 0], [20, 20, 20, 255]],
