@@ -962,5 +962,6 @@ TransferCard::TransferCard(){
 }
 
 void TransferCard::onEffect(const CardEffectStruct &effect) const{
-    effect.to->getRoom()->obtainCard(effect.to, this);
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, effect.from->objectName(), effect.to->objectName(), "transfer", QString());
+    effect.to->getRoom()->obtainCard(effect.to, this, reason);
 }
