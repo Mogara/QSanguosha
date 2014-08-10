@@ -352,6 +352,8 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
     connect(card_item, SIGNAL(clicked()), this, SLOT(onCardItemClicked()));
     connect(card_item, SIGNAL(double_clicked()), this, SLOT(onCardItemDoubleClicked()));
     connect(card_item, SIGNAL(thrown()), this, SLOT(onCardItemThrown()));
+    connect(card_item, SIGNAL(enter_hover()), this, SLOT(bringSenderToTop()));
+    connect(card_item, SIGNAL(leave_hover()), this, SLOT(resetSenderZValue()));
 
     card_item->setOuterGlowEffectEnabled(true);
 
@@ -1308,6 +1310,24 @@ void Dashboard::updateTrustButton() {
         m_trustButton->update();
         setTrust(trusting);
     }
+}
+
+void Dashboard::bringSenderToTop()
+{
+    CardItem *item = qobject_cast<CardItem *>(sender());
+
+    Q_ASSERT(item);
+    item->setData(CARDITEM_Z_DATA_KEY, item->zValue());
+    item->setZValue(1000);
+}
+
+void Dashboard::resetSenderZValue()
+{
+    CardItem *item = qobject_cast<CardItem *>(sender());
+
+    Q_ASSERT(item);
+    const int z = item->data(CARDITEM_Z_DATA_KEY).toInt();
+    item->setZValue(z);
 }
 
 const ViewAsSkill *Dashboard::currentSkill() const{

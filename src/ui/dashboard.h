@@ -251,6 +251,9 @@ protected:
     virtual void _initializeRemovedEffect();
     QPropertyAnimation *_removedEffect;
 
+private:
+    static const int CARDITEM_Z_DATA_KEY = 0413;
+
 protected slots:
     virtual void _onEquipSelectChanged();
 
@@ -264,6 +267,8 @@ private slots:
     void onHeadSkillPreshowed();
     void onDeputySkillPreshowed();
     void updateTrustButton();
+    void bringSenderToTop();
+    void resetSenderZValue();
 
 signals:
     void card_selected(const Card *card);
