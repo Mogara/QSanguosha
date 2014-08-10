@@ -109,5 +109,22 @@ private:
     ChoosePlayerCard *card;
 };
 
+class TransferCard;
+
+class TransferSkill : public OneCardViewAsSkill {
+    Q_OBJECT
+
+public:
+    explicit TransferSkill();
+
+    virtual bool viewFilter(const Card *to_select) const;
+    virtual const Card *viewAs(const Card *originalCard) const;
+    virtual bool isEnabledAtPlay(const Player *player) const;
+    void setToSelect(int _toSelect);
+
+private:
+    int _toSelect;
+};
+
 #endif
 

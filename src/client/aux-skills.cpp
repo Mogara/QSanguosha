@@ -199,3 +199,24 @@ const Card *ChoosePlayerSkill::viewAs() const{
     return card;
 }
 
+TransferSkill::TransferSkill()
+    : OneCardViewAsSkill("transfer") {
+}
+
+bool TransferSkill::viewFilter(const Card *to_select) const{
+    return to_select->getId() == _toSelect;
+}
+
+const Card *TransferSkill::viewAs(const Card *originalCard) const{
+    TransferCard *transfer = new TransferCard;
+    transfer->addSubcard(originalCard);
+    return transfer;
+}
+
+bool TransferSkill::isEnabledAtPlay(const Player *) const{
+    return true;
+}
+
+void TransferSkill::setToSelect(int toSelect){
+    _toSelect = toSelect;
+}

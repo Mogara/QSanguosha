@@ -30,6 +30,7 @@
 #include "protocol.h"
 #include "util.h"
 #include "version.h"
+#include "aux-skills.h"
 
 #include <QHash>
 #include <QStringList>
@@ -45,20 +46,6 @@ class LuaTrickCard;
 class LuaWeapon;
 class LuaArmor;
 class LuaTreasure;
-class TransferSkill : public OneCardViewAsSkill {
-    Q_OBJECT
-
-public:
-    explicit TransferSkill();
-
-    virtual bool viewFilter(const Card *to_select) const;
-    virtual const Card *viewAs(const Card *originalCard) const;
-    virtual bool isEnabledAtPlay(const Player *player) const;
-    void setToSelect(int _toSelect);
-
-private:
-    int _toSelect;
-};
 
 struct lua_State;
 
@@ -263,15 +250,6 @@ private:
     QMultiMap<QString, QString> sp_convert_pairs;
 
     TransferSkill *transfer;
-};
-
-class TransferCard : public SkillCard {
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE TransferCard();
-
-    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key) {
