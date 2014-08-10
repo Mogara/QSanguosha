@@ -352,7 +352,9 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
 
     card_item->setOuterGlowEffectEnabled(true);
 
-    if (card_item->getCard()->isTransferable()) {
+    //Make sure that the card is a handcard.
+    if (Self->getHandcards().contains(card_item->getCard())
+            && card_item->getCard()->isTransferable()) {
         card_item->setTransferable(true);
         if (!_transferButtons.contains(card_item->getTransferButton()))
             _transferButtons << card_item->getTransferButton();
@@ -922,9 +924,9 @@ QList<CardItem *> Dashboard::removeCardItems(const QList<int> &card_ids, Player:
             card_item->setOpacity(0.0);
             result.push_back(card_item);
         }
-    }
-    else
+    } else {
         Q_ASSERT(false);
+    }
 
     Q_ASSERT(result.size() == card_ids.size());
     if (place == Player::PlaceHand)
