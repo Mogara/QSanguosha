@@ -51,6 +51,11 @@ public:
     virtual bool onPhaseChange(ServerPlayer *target) const{
         Room *room = target->getRoom();
 
+        LogMessage log;
+        log.type = "#TriggerSkill";
+        log.from = target;
+        log.arg = objectName();
+        room->sendLog(log);
         room->notifySkillInvoked(target, objectName());
 
         QList<ServerPlayer *> draw_list;
