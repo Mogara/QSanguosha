@@ -1385,7 +1385,7 @@ public:
                 continue;
 
             bool continue_flag = false;
-            foreach(ServerPlayer *p, room->getPlayers()){
+            foreach(ServerPlayer *p, room->getAlivePlayers()){
                 QStringList generals_of_player = room->getTag(p->objectName()).toStringList();
                 if (generals_of_player.contains(general)){
                     continue_flag = true;

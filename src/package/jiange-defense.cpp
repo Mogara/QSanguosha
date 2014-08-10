@@ -432,7 +432,7 @@ public:
         if (!use.card->isKindOf("Nullification"))
             return QStringList();
         ServerPlayer *yueying = room->findPlayerBySkillName(objectName());
-        if (player->isFriendWith(yueying))
+        if (!yueying || player->isFriendWith(yueying))
             return QStringList();
         ask_who = yueying;
         return QStringList(objectName());
@@ -694,14 +694,13 @@ public:
 class JGZhenwei : public DistanceSkill{
 public:
     JGZhenwei() : DistanceSkill("jgzhenwei") {
-
     }
 
     virtual int getCorrect(const Player *from, const Player *to) const{
         if (from->isFriendWith(to))
             return 0;
 
-        foreach(const Player *p, to->getAliveSiblings()) {
+        foreach (const Player *p, to->getAliveSiblings()) {
             if (p->isFriendWith(to) && p != to && p->hasShownSkill(objectName()))
                 return 1;
         }
@@ -935,14 +934,13 @@ public:
 class JGJingfan : public DistanceSkill{
 public:
     JGJingfan() : DistanceSkill("jgjingfan") {
-
     }
 
     virtual int getCorrect(const Player *from, const Player *to) const{
         if (from->isFriendWith(to))
             return 0;
 
-        foreach(const Player *p, from->getAliveSiblings()) {
+        foreach (const Player *p, from->getAliveSiblings()) {
             if (p->isFriendWith(from) && p != from && p->hasShownSkill(objectName()))
                 return -1;
         }

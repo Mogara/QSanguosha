@@ -220,6 +220,15 @@ public:
     const Card *validate(CardUseStruct &card_use) const;
 };
 
+class TransferCard : public SkillCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE TransferCard();
+
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 class DummyCard : public SkillCard {
     Q_OBJECT
 

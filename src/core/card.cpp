@@ -956,3 +956,12 @@ const Card *ArraySummonCard::validate(CardUseStruct &card_use) const{
     return NULL;
 }
 
+TransferCard::TransferCard(){
+    will_throw = false;
+    mute = true;
+}
+
+void TransferCard::onEffect(const CardEffectStruct &effect) const{
+    CardMoveReason reason(CardMoveReason::S_REASON_GIVE, effect.from->objectName(), effect.to->objectName(), "transfer", QString());
+    effect.to->getRoom()->obtainCard(effect.to, this, reason);
+}
