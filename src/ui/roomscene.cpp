@@ -1163,6 +1163,10 @@ void RoomScene::enableTargets(const Card *card) {
         foreach(PlayerCardContainer *item, item2player.keys()) {
             QGraphicsItem *animationTarget = item->getMouseClickReceiver();
             animations->effectOut(animationTarget);
+            QGraphicsItem *animationTarget2 = item->getMouseClickReceiver2();
+            if (animationTarget2)
+                animations->effectOut(animationTarget2);
+
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
             item->setEnabled(true);
         }
@@ -1179,6 +1183,10 @@ void RoomScene::enableTargets(const Card *card) {
         foreach(PlayerCardContainer *item, item2player.keys()) {
             QGraphicsItem *animationTarget = item->getMouseClickReceiver();
             animations->effectOut(animationTarget);
+            QGraphicsItem *animationTarget2 = item->getMouseClickReceiver2();
+            if (animationTarget2)
+                animations->effectOut(animationTarget2);
+
             item->setFlag(QGraphicsItem::ItemIsSelectable, false);
         }
 
@@ -1237,11 +1245,17 @@ void RoomScene::updateTargetsEnablity(const Card *card) {
         bool enabled = (card == NULL) || (!Sanguosha->isProhibited(Self, player, card, selected_targets) && maxVotes > 0);
 
         QGraphicsItem *animationTarget = item->getMouseClickReceiver();
-        if (enabled)
+        QGraphicsItem *animationTarget2 = item->getMouseClickReceiver2();
+        if (enabled) {
             animations->effectOut(animationTarget);
-        else if (!animationTarget->graphicsEffect()
-            || !animationTarget->graphicsEffect()->inherits("SentbackEffect"))
+            if (animationTarget2)
+                animations->effectOut(animationTarget2);
+        } else if (!animationTarget->graphicsEffect()
+            || !animationTarget->graphicsEffect()->inherits("SentbackEffect")) {
             animations->sendBack(animationTarget);
+            if (animationTarget2)
+                animations->sendBack(animationTarget2);
+        }
 
         if (card)
             item->setFlag(QGraphicsItem::ItemIsSelectable, enabled);
