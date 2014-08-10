@@ -76,6 +76,7 @@ private:
     QList<CardItem *> items;
     QStack<QList<CardItem *> > items_stack;
     QStack<bool> retained_stack;
+    QList<int> ids;
 
     void _addCardItem(int card_id, const QPointF &pos);
 

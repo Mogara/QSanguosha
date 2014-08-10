@@ -352,16 +352,15 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
             _m_privatePiles[p_name] = NULL;
             _m_privatePiles.remove(p_name);
         }
-    }
-    else {
+    } else {
         // retrieve menu and create a new pile if necessary
         QPushButton *button;
         if (!_m_privatePiles.contains(p_name)) {
             button = new QPushButton;
             button->setObjectName(p_name);
-            if (treasure == 0)
+            if (treasure == 0) {
                 button->setProperty("private_pile", "true");
-            else {
+            } else {
                 QStringList namelist = pile_name.split(":");
                 QString toolTip = QString("<b>%1 [</b><img src='image/system/log/%2.png' height = 12/><b>%3]</b>")
                     .arg(Sanguosha->translate(namelist.at(0)))
@@ -373,8 +372,7 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
             QGraphicsProxyWidget *button_widget = new QGraphicsProxyWidget(_getPileParent());
             button_widget->setWidget(button);
             _m_privatePiles[p_name] = button_widget;
-        }
-        else {
+        } else {
             button = (QPushButton *)(_m_privatePiles[p_name]->widget());
         }
 

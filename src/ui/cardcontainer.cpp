@@ -88,14 +88,16 @@ QRectF CardContainer::boundingRect() const{
 }
 
 void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids) {
+    if (card_ids == ids)
+        return;
+
     QList<CardItem *> card_items;
     if (card_ids.isEmpty() && items.isEmpty())
         return;
     else if (card_ids.isEmpty() && !items.isEmpty()) {
         card_items = items;
         items.clear();
-    }
-    else if (!items.isEmpty()) {
+    } else if (!items.isEmpty()) {
         retained_stack.push(retained());
         items_stack.push(items);
         foreach(CardItem *item, items)
@@ -128,8 +130,7 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
         if (i < first_row) {
             pos.setX(25 + (card_width + cardInterval) * i);
             pos.setY(45);
-        }
-        else {
+        } else {
             if (itemCount % 2 == 1)
                 pos.setX(25 + card_width / 2 + cardInterval / 2
                 + (card_width + cardInterval) * (i - first_row));
@@ -148,6 +149,7 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
             item->setEnabled(false);
         item->setOuterGlowEffectEnabled(true);
         item->show();
+        ids << item->getId();
     }
     confirm_button->setPos(boundingRect().center().x() - confirm_button->boundingRect().width() / 2, boundingRect().height() - 40);
 }
@@ -174,8 +176,8 @@ void CardContainer::clear() {
         fillCards();
         if (retained && confirm_button)
             confirm_button->show();
-    }
-    else {
+    } else {
+        ids.clear();
         confirm_button->hide();
         hide();
     }
@@ -232,7 +234,7 @@ void CardContainer::startGongxin(const QList<int> &enabled_ids) {
     foreach(CardItem *item, items) {
         const Card *card = item->getCard();
         if (card && enabled_ids.contains(card->getEffectiveId()))
-            connect(item, SIGNAL(double_clicked()), this, SLOT(gongxinItem()));
+            connect(item, SIGNAL(clicked()), this, SLOT(gongxinItem()));
         else
             item->setEnabled(false);
     }
