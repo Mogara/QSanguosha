@@ -162,7 +162,7 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //==================================================
     title = single_result ? tr("Please select one general")
                           : tr("Please select the same nationality generals");
-    if (!single_result)
+    if (!single_result && Self->getSeat() > 0)
         title.prepend(Sanguosha->translate(QString("SEAT(%1)").arg(Self->getSeat()))
                       + " ");
     GraphicsBox::paint(painter, option, widget);
