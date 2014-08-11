@@ -1371,11 +1371,11 @@ bool Player::hasShownGeneral2() const {
 }
 
 bool Player::hasShownOneGeneral() const {
-    return scenario_role_shown || general1_showed || general2_showed;
+    return scenario_role_shown || general1_showed || (general2 && general2_showed);
 }
 
 bool Player::hasShownAllGenerals() const {
-    return general1_showed && general2_showed;
+    return general1_showed && (!general2 || general2_showed);
 }
 
 void Player::setGeneral1Showed(bool showed) {
