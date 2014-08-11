@@ -880,27 +880,24 @@ bool QSanRoomSkin::_loadLayoutConfig(const Json::Value &layoutConfig) {
     for (int i = 0; i < 2; i++) {
         Json::Value playerConfig;
         PlayerCardContainerLayout *layout;
-        int equipRegionNum = 4;
         if (i == 0) {
             layout = &_m_photoLayout;
             playerConfig = layoutConfig[S_SKIN_KEY_PHOTO];
-        }
-        else {
+        } else {
             layout = &_m_dashboardLayout;
-            equipRegionNum++;
             playerConfig = layoutConfig[S_SKIN_KEY_DASHBOARD];
         }
 
         tryParse(playerConfig["normalHeight"], layout->m_normalHeight);
         tryParse(playerConfig["handCardNumIconArea"], layout->m_handCardArea);
-        for (int j = 0; j < equipRegionNum; j++)
+        for (int j = 0; j < S_EQUIP_AREA_LENGTH; j++)
             tryParse(playerConfig["equipAreas"][j], layout->m_equipAreas[j]);
         tryParse(playerConfig["equipImageArea"], layout->m_equipImageArea);
-        tryParse(playerConfig["equipTextArea"], layout->m_equipTextArea);
         tryParse(playerConfig["equipSuitArea"], layout->m_equipSuitArea);
-        tryParse(playerConfig["equipDistanceArea"], layout->m_equipDistanceArea);
         tryParse(playerConfig["equipPointArea"], layout->m_equipPointArea);
-        layout->m_equipFont.tryParse(playerConfig["equipFont"]);
+        tryParse(playerConfig["horseImageArea"], layout->m_horseImageArea);
+        tryParse(playerConfig["horseSuitArea"], layout->m_horseSuitArea);
+        tryParse(playerConfig["horsePointArea"], layout->m_horsePointArea);
         layout->m_equipPointFont.tryParse(playerConfig["equipPointFont"]);
 
         tryParse(playerConfig["delayedTrickFirstRegion"], layout->m_delayedTrickFirstRegion);
