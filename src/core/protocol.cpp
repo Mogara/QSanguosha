@@ -60,6 +60,18 @@ bool QSanProtocol::Countdown::tryParse(const Json::Value &val) {
         return false;
 }
 
+QVariant QSanProtocol::Countdown::toQVariant() const
+{
+    JsonArray val;
+    if (type == S_COUNTDOWN_NO_LIMIT || type == S_COUNTDOWN_USE_DEFAULT) {
+        val << (int)type;
+    } else {
+        val << (int)current;
+        val << (int)max;
+    }
+    return val;
+}
+
 bool QSanProtocol::Utils::isStringArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex) {
     if (!jsonObject.isArray() || jsonObject.size() <= endIndex)
         return false;
