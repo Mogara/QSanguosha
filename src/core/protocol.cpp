@@ -29,28 +29,30 @@ const char *QSanProtocol::S_PLAYER_SELF_REFERENCE_ID = "MG_SELF";
 
 const int QSanProtocol::S_ALL_ALIVE_PLAYERS = 0;
 
-bool QSanProtocol::Countdown::tryParse(const Json::Value &val) {
-    if (!val.isArray())
+bool QSanProtocol::Countdown::tryParse(const QVariant &var) {
+    if (!var.canConvert<JsonArray>())
         return false;
 
+    JsonArray val = var.value<JsonArray>();
+
     //compatible with old JSON representation of Countdown
-    Json::ArrayIndex offset = 0;
-    if (val[0].isString()) {
-        if (val[0].asString() == "MG_COUNTDOWN")
+    unsigned offset = 0;
+    if (val[0].type() == QMetaType::QString) {
+        if (val[0].toString() == "MG_COUNTDOWN")
             offset = 1;
         else
             return false;
     }
 
     if (val.size() - offset == 2) {
-        if (!Utils::isIntArray(val, offset, offset + 1)) return false;
-        current = (time_t)val[offset].asInt();
-        max = (time_t)val[offset + 1].asInt();
+        if (!JsonUtils::isIntArray(val, offset, offset + 1)) return false;
+        current = (time_t)val[offset].toInt();
+        max = (time_t)val[offset + 1].toInt();
         type = S_COUNTDOWN_USE_SPECIFIED;
         return true;
     }
-    else if (val.size() - offset == 1 && val[offset].isInt()) {
-        CountdownType type = (CountdownType)val[offset].asInt();
+    else if (val.size() - offset == 1 && val[offset].canConvert<int>()) {
+        CountdownType type = (CountdownType)val[offset].toInt();
         if (type != S_COUNTDOWN_NO_LIMIT && type != S_COUNTDOWN_USE_DEFAULT)
             return false;
         else this->type = type;

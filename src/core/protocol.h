@@ -219,7 +219,7 @@ namespace QSanProtocol {
         time_t max;
         inline Countdown(CountdownType type = S_COUNTDOWN_NO_LIMIT, time_t current = 0, time_t max = 0)
             : type(type), current(current), max(max) {}
-        bool tryParse(const Json::Value &val);
+        bool tryParse(const QVariant &var);
         QVariant toQVariant() const;
         inline Json::Value toJsonValue() const{
             if (type == S_COUNTDOWN_NO_LIMIT

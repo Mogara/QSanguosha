@@ -1803,7 +1803,7 @@ void Client::moveFocus(const Json::Value &focus) {
     else {
         // focus[1] is the moveFocus reason, which is now removed.
         Json::ArrayIndex countdown_index = focus.size() >= 3 ? 2 : 1;
-        if (!countdown.tryParse(focus[countdown_index])) {
+        if (!countdown.tryParse(JsonValueToVariant(focus[countdown_index]))) {
             return;
         }
     }
