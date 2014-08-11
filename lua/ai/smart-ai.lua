@@ -822,9 +822,7 @@ end
 function SmartAI:getKeepValue(card, kept, writeMode)
 	if not kept then
 		local CardPlace = self.room:getCardPlace(card:getEffectiveId())
-		if CardPlace == sgs.Player_PlaceHand then
-			return self.keepValue[card:getId()] or self.keepdata[card:getClassName()] or 0
-		else
+		if CardPlace == sgs.Player_PlaceEquip then
 			local at_play = self.player:getPhase() == sgs.Player_Play
 			if card:isKindOf("SilverLion") and self.player:isWounded() then return -10
 			elseif self.player:hasSkills(sgs.lose_equip_skill) then
@@ -840,8 +838,9 @@ function SmartAI:getKeepValue(card, kept, writeMode)
 			elseif card:isKindOf("Weapon") then return at_play and self:slashIsAvailable() and 3.39 or 3.2
 			else return 3.19
 			end
+		else
+			return self.keepValue[card:getId()] or self.keepdata[card:getClassName()] or 0
 		end
-		return self.keepValue[card:getId()] or self.keepdata[card:getClassName()] or 0
 	end
 
 	local value_suit, value_number, newvalue = 0, 0, 0
@@ -3907,6 +3906,9 @@ function SmartAI:exclude(players, card, from)
 	local excluded = {}
 	local limit = self:getDistanceLimit(card, from)
 	local range_fix = 0
+	if card:isKindOf("Snatch") and card:getSkillName() == "jixi" then
+		range_fix = range_fix + 1
+	end
 
 	if type(players) ~= "table" then players = sgs.QList2Table(players) end
 

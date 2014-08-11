@@ -298,9 +298,9 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
         }
 
 
-        foreach(ServerPlayer *p, room->getPlayers()) {
-            p->showGeneral(true, false);
-            p->showGeneral(false, false);
+        foreach(ServerPlayer *p, room->getAllPlayers()) {
+            p->showGeneral(true);
+            p->showGeneral(false);
         }
 
         room->setTag("WaitForPlayer", QVariant(true));
