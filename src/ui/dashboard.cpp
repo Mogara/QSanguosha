@@ -339,7 +339,7 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
 
     card_item->setHomeOpacity(1.0);
     card_item->setRotation(0.0);
-    card_item->setFlags(ItemIsFocusable);
+    card_item->setFlag(ItemIsFocusable);
     card_item->setZValue(0.1);
     if (!footnote.isEmpty()) {
         card_item->setFootnote(footnote);
