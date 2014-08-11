@@ -20,10 +20,6 @@
 
 #include "protocol.h"
 
-#include "json.h"
-#include <json/json.h>
-#include <QString>
-
 using namespace std;
 using namespace QSanProtocol;
 
@@ -87,8 +83,7 @@ bool QSanProtocol::Utils::isIntArray(const Json::Value &jsonObject, unsigned int
 QSanProtocol::Packet::Packet(int packetDescription, CommandType command)
     : globalSerial(0), localSerial(0),
     command(command),
-    packetDescription(static_cast<PacketDescription>(packetDescription)),
-    messageBody(Json::nullValue)
+    packetDescription(static_cast<PacketDescription>(packetDescription))
 {
 }
 
@@ -97,22 +92,21 @@ unsigned int QSanProtocol::Packet::createGlobalSerial() {
     return globalSerial;
 }
 
-bool QSanProtocol::Packet::parse(const string &s) {
-    if (s.length() > S_MAX_PACKET_SIZE) {
+bool QSanProtocol::Packet::parse(const QByteArray &raw) {
+    if (raw.length() > S_MAX_PACKET_SIZE) {
         return false;
     }
 
-    Json::Value result;
+    JsonDocument doc = JsonDocument::fromJson(raw);
+    JsonArray result = doc.array();
 
-    Json::Reader reader;
-    bool success = reader.parse(s, result);
-    if (!success || !Utils::isIntArray(result, 0, 3) || result.size() > 5)
+    if (!JsonUtils::isIntArray(result, 0, 3) || result.size() > 5)
         return false;
 
-    globalSerial = result[0].asUInt();
-    localSerial = result[1].asUInt();
-    packetDescription = static_cast<PacketDescription>(result[2].asInt());
-    command = (CommandType)result[3].asInt();
+    globalSerial = result[0].toUInt();
+    localSerial = result[1].toUInt();
+    packetDescription = static_cast<PacketDescription>(result[2].toInt());
+    command = (CommandType)result[3].toInt();
 
     if (result.size() == 5)
         messageBody = result[4];
@@ -127,8 +121,8 @@ QByteArray QSanProtocol::Packet::toUtf8() const{
     result << localSerial;
     result << packetDescription;
     result << command;
-    if (messageBody != Json::nullValue)
-        result << JsonValueToVariant(messageBody);
+    if (!messageBody.isNull())
+        result << messageBody;
 
     JsonDocument doc(result);
     QByteArray msg = doc.toJson();

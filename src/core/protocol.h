@@ -21,9 +21,11 @@
 #ifndef _PROTOCOL_H
 #define _PROTOCOL_H
 
-#include <json/json.h>
+#include "json.h"
+
 #include <string>
 #include <QByteArray>
+#include <QVariant>
 
 namespace QSanProtocol {
     namespace Utils {
@@ -242,7 +244,7 @@ namespace QSanProtocol {
 
     class AbstractPacket {
     public:
-        virtual bool parse(const std::string &) = 0;
+        virtual bool parse(const QByteArray &) = 0;
         virtual QByteArray toUtf8() const = 0;
         virtual QString toString() const = 0;
         virtual PacketDescription getPacketDestination() const = 0;
@@ -260,10 +262,9 @@ namespace QSanProtocol {
 
         Packet(int packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN);
         unsigned int createGlobalSerial();
-        inline void setMessageBody(const Json::Value &value) { messageBody = value; }
-        inline Json::Value &getMessageBody() { return messageBody; }
-        inline const Json::Value &getMessageBody() const{ return messageBody; }
-        virtual bool parse(const std::string &);
+        inline void setMessageBody(const Json::Value &value) { messageBody = JsonValueToVariant(value); }
+        inline Json::Value getMessageBody() const{ return VariantToJsonValue(messageBody); }
+        virtual bool parse(const QByteArray &raw);
         virtual QByteArray toUtf8() const;
         virtual QString toString() const;
         virtual PacketDescription getPacketDestination() const{
@@ -282,7 +283,7 @@ namespace QSanProtocol {
         static unsigned int globalSerialSequence;
         CommandType command;
         PacketDescription packetDescription;
-        Json::Value messageBody;
+        QVariant messageBody;
 
         //helper functions
         static const unsigned int S_MAX_PACKET_SIZE;
