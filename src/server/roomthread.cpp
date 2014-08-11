@@ -488,8 +488,6 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                     forever{
                         QList<const TriggerSkill *> who_skills = trigger_who.value(p);
                         if (who_skills.isEmpty()) break;
-                        if (p && !p->hasShownAllGenerals())
-                            p->setFlags("Global_askForSkillCost");           // TriggerOrder need protect
                         bool has_compulsory = false;
                         foreach(const TriggerSkill *skill, who_skills){
                             if (skill->getFrequency() == Skill::Compulsory && p->hasShownSkill(skill)) {
@@ -512,26 +510,40 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         if (names.isEmpty()) break;
 
                         QString name;
-                        if (names.contains("game_rule"))
-                            name = "game_rule";
-                        else if (names.contains("custom_scenario"))
-                            name = "custom_scenario";
-                        else if (names.length() == 1) {
-                            name = names.first();
-                            if (name.contains("AskForGeneralShow") && p != NULL) {
+                        foreach (QString sn, names) {
+                            const TriggerSkill *skill = Sanguosha->getTriggerSkill(sn);
+                            if (skill && skill->isGlobal() && skill->getFrequency() == Skill::Compulsory) {
+                                name = sn; // a new trick to deal with all "record-skill" or "compulsory-global",
+                                           // they should always be triggered first.
+                                break;
+                            }
+                        }
+                        if (name.isEmpty()) {
+                            if (p && !p->hasShownAllGenerals())
+                                p->setFlags("Global_askForSkillCost");           // TriggerOrder need protect
+                            if (names.contains("game_rule"))
+                                name = "game_rule";
+                            else if (names.contains("custom_scenario"))
+                                name = "custom_scenario";
+                            else if (names.length() == 1) {
+                                name = names.first();
+                                if (name.contains("AskForGeneralShow") && p != NULL) {
+                                    SPlayerDataMap map;
+                                    map[p] = names;
+                                    name = room->askForTriggerOrder(p, "GameRule:TurnStart", map, true, data);
+                                }
+                            } else if (p != NULL) {
+                                QString reason = "GameRule:TriggerOrder";
+                                if (names.length() == 2 && names.contains("GameRule_AskForGeneralShowHead"))
+                                    reason = "GameRule:TurnStart";
                                 SPlayerDataMap map;
                                 map[p] = names;
-                                name = room->askForTriggerOrder(p, "GameRule:TurnStart", map, true, data);
+                                name = room->askForTriggerOrder(p, reason, map, !has_compulsory, data);
+                            } else {
+                                name = names.last();
                             }
-                        } else if (p != NULL) {
-                            QString reason = "GameRule:TriggerOrder";
-                            if (names.length() == 2 && names.contains("GameRule_AskForGeneralShowHead"))
-                                reason = "GameRule:TurnStart";
-                            SPlayerDataMap map;
-                            map[p] = names;
-                            name = room->askForTriggerOrder(p, reason, map, !has_compulsory, data);
-                        } else {
-                            name = names.last();
+                            if (p && p->hasFlag("Global_askForSkillCost"))
+                                p->setFlags("-Global_askForSkillCost");
                         }
 
                         if (name == "cancel") break;
@@ -541,9 +553,8 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         const TriggerSkill *skill = who_skills[_names.indexOf(name)];
 
                         //----------------------------------------------- TriggerSkill::cost
-                        if (skill->isGlobal() || (p && p->ownSkill(name) && p->hasShownSkill(name))) // if hasShown, then needn't protect
-                            if (p && p->hasFlag("Global_askForSkillCost"))
-                                p->setFlags("-Global_askForSkillCost");
+                        if (p && !p->hasShownSkill(skill))
+                            p->setFlags("Global_askForSkillCost");           // SkillCost need protect
                         already_triggered.append(skill);
                         bool do_effect = false;
                         if (skill->cost(triggerEvent, room, target, data, p)) {
@@ -551,8 +562,8 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                             if (p && p->ownSkill(name) && !p->hasShownSkill(name))
                                 p->showGeneral(p->inHeadSkills(name));
                         }
-                        if (p && !p->hasFlag("Global_askForSkillCost") && !p->hasShownAllGenerals())          // for next time
-                            p->setFlags("Global_askForSkillCost");
+                        if (p && p->hasFlag("Global_askForSkillCost"))          // for next time
+                            p->setFlags("-Global_askForSkillCost");
                         //-----------------------------------------------
 
                         //----------------------------------------------- TriggerSkill::effect
@@ -604,13 +615,10 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         }
                     }
 
-                        if (p && p->hasFlag("Global_askForSkillCost"))
-                            p->setFlags("-Global_askForSkillCost"); // remove Flag
-
                     if (broken) break;
                 }
                 // @todo_Slob: for drawing cards when game starts -- stupid design of triggering no player!
-                // @todo_Slob: we needn't judge the priority of game_rule because of codes from Line. 418 to Line. 450
+                // @todo_Slob: we needn't judge the priority of game_rule because of codes from Line. 444 to Line. 481
                 if (!broken) {
                     if (!trigger_who[NULL].isEmpty()){
                         foreach(const TriggerSkill *skill, trigger_who[NULL]){

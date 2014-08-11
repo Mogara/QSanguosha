@@ -47,6 +47,10 @@ public:
         in_attack->setReadOnly(true);
 
         QList<const DistanceSkill *> skills = Sanguosha->getDistanceSkills();
+        QLineEdit *horse_edit = new QLineEdit;
+        horse_edit->setObjectName("HorseCorrect");
+        horse_edit->setReadOnly(true);
+        distance_edits << horse_edit;
         foreach(const DistanceSkill *skill, skills) {
             bool show_skill = false;
             foreach(const ClientPlayer *p, ClientInstance->getPlayers()) {
@@ -144,7 +148,10 @@ void DistanceViewDialog::showDistance() {
     }
 
     foreach(QLineEdit *edit, ui->distance_edits) {
-        const Skill *skill = Sanguosha->getSkill(edit->objectName());
+        QString skill_name = edit->objectName();
+        if (skill_name == "HorseCorrect")
+            skill_name = "Horse";
+        const Skill *skill = Sanguosha->getSkill(skill_name);
         const DistanceSkill *distance_skill = qobject_cast<const DistanceSkill *>(skill);
         int correct = distance_skill->getCorrect(from, to);
 

@@ -1400,9 +1400,18 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
 
     case Qt::Key_D: {
         if (Self == NULL) return;
-        foreach(Photo *photo, photos) {
-            if (photo->getPlayer() && photo->getPlayer()->isAlive())
-                photo->showDistance();
+        if (Self->property("distance_shown").toBool()) {
+            Self->setProperty("distance_shown", false);
+            foreach(Photo *photo, photos) {
+                if (photo->getPlayer() && photo->getPlayer()->isAlive())
+                    photo->hideDistance();
+            }
+        } else {
+            Self->setProperty("distance_shown", true);
+            foreach(Photo *photo, photos) {
+                if (photo->getPlayer() && photo->getPlayer()->isAlive())
+                    photo->showDistance();
+            }
         }
         break;
     }
