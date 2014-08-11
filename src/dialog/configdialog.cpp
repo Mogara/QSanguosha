@@ -61,6 +61,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->neverNullifyMyTrickCheckBox->setChecked(Config.NeverNullifyMyTrick);
     ui->autoTargetCheckBox->setChecked(Config.EnableAutoTarget);
     ui->intellectualSelectionCheckBox->setChecked(Config.EnableIntellectualSelection);
+    ui->superDragCheckBox->setChecked(Config.EnableSuperDrag);
     ui->doubleClickCheckBox->setChecked(Config.EnableDoubleClick);
     ui->autoPreshowCheckBox->setChecked(Config.EnableAutoPreshowInConsoleMode);
     ui->bubbleChatBoxKeepSpinBox->setValue(Config.BubbleChatBoxKeepSeconds);
@@ -214,6 +215,9 @@ void ConfigDialog::saveConfig() {
 
     Config.EnableIntellectualSelection = ui->intellectualSelectionCheckBox->isChecked();
     Config.setValue("EnableIntellectualSelection", Config.EnableIntellectualSelection);
+
+    Config.EnableSuperDrag = ui->superDragCheckBox->isChecked();
+    Config.setValue("EnableSuperDrag", Config.EnableSuperDrag);
 
     Config.EnableDoubleClick = ui->doubleClickCheckBox->isChecked();
     Config.setValue("EnableDoubleClick", Config.EnableDoubleClick);

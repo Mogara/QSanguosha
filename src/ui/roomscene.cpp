@@ -90,6 +90,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     _m_last_front_ZValue = 0;
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
 
+    _m_isInDragAndUseMode = false;
+
     _m_roomSkin = &(QSanSkinFactory::getInstance().getCurrentSkinScheme().getRoomSkin());
     _m_roomLayout = &(G_ROOM_SKIN.getRoomLayout());
     _m_photoLayout = &(G_ROOM_SKIN.getPhotoLayout());
@@ -1056,8 +1058,6 @@ void RoomScene::arrangeSeats(const QList<const ClientPlayer *> &seats) {
     }
 }
 
-// @todo: The following 3 fuctions are for drag & use feature. Currently they are very buggy and
-// cause a lot of major problems. We should look into this later.
 void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsScene::mousePressEvent(event);
     bool changed = false;
@@ -1072,64 +1072,66 @@ void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         changed = true;
     if (changed)
         emit cancel_role_box_expanding();
-    /*
-    _m_isMouseButtonDown = true;
-    _m_isInDragAndUseMode = false;
-    */
+
+    if (Config.EnableSuperDrag)
+        _m_isInDragAndUseMode = false;
+
 }
 
 void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsScene::mouseReleaseEvent(event);
-    /*
-    if (_m_isInDragAndUseMode) {
-    bool accepted = false;
-    if (ok_button->isEnabled()) {
-    foreach (Photo *photo, photos) {
-    if (photo->isUnderMouse()) {
-    accepted = true;
-    break;
-    }
-    }
 
-    if (!accepted && dashboard->isAvatarUnderMouse())
-    accepted = true;
+    if (_m_isInDragAndUseMode) {
+        bool accepted = false;
+        if (ok_button->isEnabled()) {
+            foreach (Photo *photo, photos) {
+                if (photo->isUnderMouse()) {
+                    accepted = true;
+                    break;
+                }
+            }
+
+            if (!accepted && dashboard->isAvatarUnderMouse())
+                accepted = true;
+        }
+        if (accepted) {
+            ok_button->click();
+        } else {
+            enableTargets(NULL);
+            dashboard->unselectAll();
+        }
+        _m_isInDragAndUseMode = false;
     }
-    if (accepted)
-    ok_button->click();
-    else {
-    enableTargets(NULL);
-    dashboard->unselectAll();
-    }
-    _m_isInDragAndUseMode = false;
-    }*/
 }
 
 void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsScene::mouseMoveEvent(event);
-    /*
+
+    if (!Config.EnableSuperDrag)
+        return;
+
     QGraphicsObject *obj = static_cast<QGraphicsObject *>(focusItem());
     CardItem *card_item = qobject_cast<CardItem *>(obj);
     if (!card_item || !card_item->isUnderMouse())
-    return;
+        return;
     PlayerCardContainer *victim = NULL;
 
     foreach (Photo *photo, photos) {
-    if (photo->isUnderMouse())
-    victim = photo;
+        if (photo->isUnderMouse())
+            victim = photo;
     }
 
     if (dashboard->isAvatarUnderMouse())
-    victim = dashboard;
+        victim = dashboard;
 
-    _m_isInDragAndUseMode = true;
-    if (!dashboard->isSelected()) hasUpdate = true;
-    if (victim != NULL && !victim->isSelected()) {
-    if (!_m_isInDragAndUseMode)
-    enableTargets(card_item->getCard());
-    _m_isInDragAndUseMode = true;
-    dashboard->selectCard(card_item, true);
-    victim->setSelected(true);
-    } */
+    if (victim != NULL) {
+        if (!_m_isInDragAndUseMode)
+            enableTargets(card_item->getCard());
+
+        _m_isInDragAndUseMode = true;
+        dashboard->selectCard(card_item, true);
+        victim->setSelected(true);
+    }
 }
 
 void RoomScene::enableTargets(const Card *card) {

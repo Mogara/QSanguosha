@@ -101,6 +101,7 @@ public:
     bool NeverNullifyMyTrick;
     bool EnableAutoTarget;
     bool EnableIntellectualSelection;
+    bool EnableSuperDrag;
     bool EnableDoubleClick;
     bool EnableAutoSaveRecord;
     bool NetworkOnly;

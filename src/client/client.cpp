@@ -546,8 +546,7 @@ void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> 
         _m_roomState.setCurrentCardUsePattern(QString());
     if (card == NULL) {
         replyToServer(S_COMMAND_RESPONSE_CARD, Json::Value::null);
-    }
-    else {
+    } else {
         Json::Value targetNames(Json::arrayValue);
         if (!card->targetFixed()) {
             foreach(const Player *target, targets)
