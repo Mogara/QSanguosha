@@ -30,6 +30,11 @@ protected:
     QVariant value;
 };
 
+namespace JsonUtils{
+    bool isStringArray(const JsonArray &array, unsigned from, unsigned int to);
+    bool isIntArray(const JsonArray &array, unsigned from, unsigned int to);
+}
+
 Json::Value VariantToJsonValue(const QVariant &var);
 QVariant JsonValueToVariant(const Json::Value &var);
 
