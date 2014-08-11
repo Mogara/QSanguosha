@@ -445,7 +445,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                 if (!triggered.contains(skill)) {
                     if (skill->objectName() == "game_rule" || (room->getScenario()
                                                               && room->getScenario()->objectName() == skill->objectName())) {
-                        while (room->isPaused()) {}
+                        room->tryPause();
                         if (will_trigger.isEmpty()
                             || skill->getPriority() == will_trigger.last()->getPriority()) {
                             will_trigger.append(skill);
@@ -456,7 +456,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         triggered.prepend(skill);
                     }
                     else {
-                        while (room->isPaused()) {}
+                        room->tryPause();
                         if (will_trigger.isEmpty()
                             || skill->getPriority() == will_trigger.last()->getPriority()) {
                             QMap<ServerPlayer *, QStringList> triggerSkillList = skill->triggerable(triggerEvent, room, target, data);
@@ -577,11 +577,11 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         foreach(const TriggerSkill *skill, triggered) {
                             if (skill->objectName() == "game_rule" || (room->getScenario()
                                                                        && room->getScenario()->objectName() == skill->objectName())) {
-                                while (room->isPaused()) {}
+                                room->tryPause();
                                 continue;
                             }
                             else {
-                                while (room->isPaused()) {}
+                                room->tryPause();
                                 if (skill->getPriority() == triggered.first()->getPriority()) {
                                     QMap<ServerPlayer *, QStringList> triggerSkillList = skill->triggerable(triggerEvent, room, target, data);
                                     foreach(ServerPlayer *player, room->getAllPlayers(true)){
@@ -655,7 +655,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
         throw throwed_event;
     }
 
-    while (room->isPaused()) {}
+    room->tryPause();
     return broken;
 }
 
