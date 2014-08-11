@@ -114,7 +114,7 @@ bool QSanProtocol::Packet::parse(const string &s) {
     command = (CommandType)result[3].asInt();
 
     if (result.size() == 5)
-        setBody(result[4]);
+        messageBody = result[4];
     return true;
 }
 
@@ -126,9 +126,8 @@ QByteArray QSanProtocol::Packet::toUtf8() const{
     result[1] = localSerial;
     result[2] = packetDescription;
     result[3] = command;
-    const Json::Value &body = getBody();
-    if (body != Json::nullValue)
-        result[4] = body;
+    if (messageBody != Json::nullValue)
+        result[4] = messageBody;
 
     Json::FastWriter writer;
     string msg = writer.write(result);

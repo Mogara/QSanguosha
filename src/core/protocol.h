@@ -277,13 +277,12 @@ namespace QSanProtocol {
         }
         virtual PacketDescription getPacketDescription() const{ return packetDescription; }
         virtual CommandType getCommandType() const{ return command; }
+
     protected:
         static unsigned int globalSerialSequence;
         CommandType command;
         PacketDescription packetDescription;
         Json::Value messageBody;
-        inline void setBody(const Json::Value &value) { messageBody = value; }
-        const Json::Value &getBody() const{ return messageBody; }
 
         //helper functions
         static const unsigned int S_MAX_PACKET_SIZE;
