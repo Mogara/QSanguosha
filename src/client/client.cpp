@@ -225,10 +225,10 @@ void Client::signup() {
     if (replayer)
         replayer->start();
     else {
-        Json::Value arg(Json::arrayValue);
-        arg.append(Config.value("EnableReconnection", false).toBool());
-        arg.append(toJsonString(Config.UserName));
-        arg.append(toJsonString(Config.UserAvatar));
+        JsonArray arg;
+        arg << Config.value("EnableReconnection", false).toBool();
+        arg << Config.UserName;
+        arg << Config.UserAvatar;
         notifyServer(S_COMMAND_SIGNUP, arg);
     }
 }
@@ -258,7 +258,7 @@ void Client::requestServer(CommandType command, const Json::Value &arg) {
     }
 }
 
-void Client::notifyServer(CommandType command, const Json::Value &arg) {
+void Client::notifyServer(CommandType command, const QVariant &arg) {
     if (socket) {
         Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
@@ -1060,7 +1060,7 @@ void Client::speakToServer(const QString &text) {
     if (text.isEmpty())
         return;
 
-    notifyServer(S_COMMAND_SPEAK, toJsonString(text));
+    notifyServer(S_COMMAND_SPEAK, text);
 }
 
 void Client::addHistory(const Json::Value &history) {
