@@ -128,16 +128,16 @@ int Room::alivePlayerCount() const{
 }
 
 bool Room::notifyUpdateCard(ServerPlayer *player, int cardId, const Card *newCard) {
-    Json::Value val(Json::arrayValue);
+    JsonArray val;
     Q_ASSERT(newCard);
     QString className = newCard->getClassName();
-    val[0] = cardId;
-    val[1] = (int)newCard->getSuit();
-    val[2] = newCard->getNumber();
-    val[3] = toJsonString(className);
-    val[4] = toJsonString(newCard->getSkillName());
-    val[5] = toJsonString(newCard->objectName());
-    val[6] = toJsonArray(newCard->getFlags());
+    val << cardId;
+    val << (int)newCard->getSuit();
+    val << newCard->getNumber();
+    val << className;
+    val << newCard->getSkillName();
+    val << newCard->objectName();
+    val << JsonUtils::toJsonArray(newCard->getFlags());
     doNotify(player, S_COMMAND_UPDATE_CARD, val);
     return true;
 }
@@ -367,7 +367,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason) {
         if (p->isAlive() || p == victim)
             thread->trigger(Death, this, p, data);
 
-    doNotify(victim, S_COMMAND_SET_DASHBOARD_SHADOW, toJsonString(victim->objectName()));
+    doNotify(victim, S_COMMAND_SET_DASHBOARD_SHADOW, victim->objectName());
 
     victim->detachAllSkills();
     thread->trigger(BuryVictim, this, victim, data);
@@ -560,7 +560,7 @@ void Room::slashResult(const SlashEffectStruct &effect, const Card *jink) {
 
 void Room::attachSkillToPlayer(ServerPlayer *player, const QString &skill_name) {
     player->acquireSkill(skill_name);
-    doNotify(player, S_COMMAND_ATTACH_SKILL, toJsonString(skill_name));
+    doNotify(player, S_COMMAND_ATTACH_SKILL, skill_name);
 }
 
 void Room::detachSkillFromPlayer(ServerPlayer *player, const QString &skill_name, bool is_equip, bool acquire_only) {
@@ -801,7 +801,7 @@ ServerPlayer *Room::getRaceResult(QList<ServerPlayer *> &players, QSanProtocol::
     return _m_raceWinner;
 }
 
-bool Room::doNotify(ServerPlayer *player, QSanProtocol::CommandType command, const Json::Value &arg) {
+bool Room::doNotify(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg) {
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
     packet.setMessageBody(arg);
     player->invoke(&packet);
@@ -810,7 +810,7 @@ bool Room::doNotify(ServerPlayer *player, QSanProtocol::CommandType command, con
 
 bool Room::doBroadcastNotify(const QList<ServerPlayer *> &players, QSanProtocol::CommandType command, const Json::Value &arg) {
     foreach(ServerPlayer *player, players)
-        doNotify(player, command, arg);
+        doNotify(player, command, JsonValueToVariant(arg));
     return true;
 }
 
@@ -827,28 +827,28 @@ bool Room::doBroadcastNotify(QSanProtocol::CommandType command, const Json::Valu
 }
 
 // the following functions for Lua
-bool Room::doNotify(ServerPlayer *player, int command, const QString &arg) {
+bool Room::doNotify(ServerPlayer *player, int command, const char *arg) {
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, (QSanProtocol::CommandType)command);
     Json::Reader reader;
     Json::Value json_arg;
-    std::string str = arg.toStdString();
+    std::string str(arg);
     if (reader.parse(str, json_arg)) {
         packet.setMessageBody(json_arg);
         player->invoke(&packet);
     }
     else {
-        output("Fail to parse the Json Value " + arg);
+        output(QString("Fail to parse the Json Value %1").arg(arg));
     }
     return true;
 }
 
-bool Room::doBroadcastNotify(const QList<ServerPlayer *> &players, int command, const QString &arg) {
+bool Room::doBroadcastNotify(const QList<ServerPlayer *> &players, int command, const char *arg) {
     foreach(ServerPlayer *player, players)
         doNotify(player, command, arg);
     return true;
 }
 
-bool Room::doBroadcastNotify(int command, const QString &arg) {
+bool Room::doBroadcastNotify(int command, const char *arg) {
     return doBroadcastNotify(m_players, command, arg);
 }
 
@@ -1136,7 +1136,7 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     if (!validHumanPlayers.isEmpty()) {
         if (trick->isKindOf("AOE") || trick->isKindOf("GlobalEffect")) {
             foreach(ServerPlayer *p, validHumanPlayers)
-                doNotify(p, S_COMMAND_NULLIFICATION_ASKED, toJsonString(trick->objectName()));
+                doNotify(p, S_COMMAND_NULLIFICATION_ASKED, trick->objectName());
         }
         repliedPlayer = doBroadcastRaceRequest(validHumanPlayers, S_COMMAND_NULLIFICATION,
             timeOut, &Room::verifyNullificationResponse);
@@ -1227,9 +1227,9 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
 
     if (handcard_visible && !who->isKongcheng()) {
         QList<int> handcards = who->handCards();
-        Json::Value arg(Json::arrayValue);
-        arg[0] = toJsonString(who->objectName());
-        arg[1] = toJsonArray(handcards);
+        JsonArray arg;
+        arg << who->objectName();
+        arg << JsonUtils::toJsonArray(handcards);
         doNotify(player, S_COMMAND_SET_KNOWN_CARDS, arg);
     }
     int card_id = Card::S_UNKNOWN_CARD_ID;
@@ -1744,14 +1744,14 @@ void Room::addPlayerHistory(ServerPlayer *player, const QString &key, int times)
             player->addHistory(key, times);
     }
 
-    Json::Value arg(Json::arrayValue);
-    arg[0] = toJsonString(key);
-    arg[1] = times;
+    JsonArray arg;
+    arg << key;
+    arg << times;
 
     if (player)
         doNotify(player, S_COMMAND_ADD_HISTORY, arg);
     else
-        doBroadcastNotify(S_COMMAND_ADD_HISTORY, arg);
+        doBroadcastNotify(S_COMMAND_ADD_HISTORY, VariantToJsonValue(arg));
 }
 
 void Room::setPlayerFlag(ServerPlayer *player, const QString &flag) {
@@ -1824,33 +1824,33 @@ void Room::removePlayerMark(ServerPlayer *player, const QString &mark, int remov
 void Room::setPlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern, bool single_turn) {
     player->setCardLimitation(limit_list, pattern, single_turn);
 
-    Json::Value arg(Json::arrayValue);
-    arg[0] = true;
-    arg[1] = toJsonString(limit_list);
-    arg[2] = toJsonString(pattern);
-    arg[3] = single_turn;
+    JsonArray arg;
+    arg << true;
+    arg << limit_list;
+    arg << pattern;
+    arg << single_turn;
     doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
 }
 
 void Room::removePlayerCardLimitation(ServerPlayer *player, const QString &limit_list, const QString &pattern) {
     player->removeCardLimitation(limit_list, pattern);
 
-    Json::Value arg(Json::arrayValue);
-    arg[0] = false;
-    arg[1] = toJsonString(limit_list);
-    arg[2] = toJsonString(pattern);
-    arg[3] = false;
+    JsonArray arg;
+    arg << false;
+    arg << limit_list;
+    arg << pattern;
+    arg << false;
     doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
 }
 
 void Room::clearPlayerCardLimitation(ServerPlayer *player, bool single_turn) {
     player->clearCardLimitation(single_turn);
 
-    Json::Value arg(Json::arrayValue);
-    arg[0] = true;
-    arg[1] = Json::Value::null;
-    arg[2] = Json::Value::null;
-    arg[3] = single_turn;
+    JsonArray arg;
+    arg << true;
+    arg << QVariant();
+    arg << QVariant();
+    arg << single_turn;
     doNotify(player, S_COMMAND_CARD_LIMITATION, arg);
 }
 
@@ -1891,13 +1891,13 @@ void Room::setCardFlag(int card_id, const QString &flag, ServerPlayer *who) {
     Q_ASSERT(Sanguosha->getCard(card_id) != NULL);
     Sanguosha->getCard(card_id)->setFlags(flag);
 
-    Json::Value arg(Json::arrayValue);
-    arg[0] = card_id;
-    arg[1] = toJsonString(flag);
+    JsonArray arg;
+    arg << card_id;
+    arg << flag;
     if (who)
         doNotify(who, S_COMMAND_CARD_FLAG, arg);
     else
-        doBroadcastNotify(S_COMMAND_CARD_FLAG, arg);
+        doBroadcastNotify(S_COMMAND_CARD_FLAG, VariantToJsonValue(arg));
 }
 
 void Room::clearCardFlag(const Card *card, ServerPlayer *who) {
@@ -1911,13 +1911,13 @@ void Room::clearCardFlag(int card_id, ServerPlayer *who) {
     Q_ASSERT(Sanguosha->getCard(card_id) != NULL);
     Sanguosha->getCard(card_id)->clearFlags();
 
-    Json::Value arg(Json::arrayValue);
-    arg[0] = card_id;
-    arg[1] = toJsonString(".");
+    JsonArray arg;
+    arg << card_id;
+    arg << ".";
     if (who)
         doNotify(who, S_COMMAND_CARD_FLAG, arg);
     else
-        doBroadcastNotify(S_COMMAND_CARD_FLAG, arg);
+        doBroadcastNotify(S_COMMAND_CARD_FLAG, VariantToJsonValue(arg));
 }
 
 ServerPlayer *Room::addSocket(ClientSocket *socket) {
@@ -2267,9 +2267,9 @@ void Room::pauseCommand(ServerPlayer *player, const Json::Value &arg) {
     if (!canPause(player)) return;
     bool pause = arg.asBool();
     if (game_paused != pause) {
-        Json::Value arg(Json::arrayValue);
-        arg[0] = (int)S_GAME_EVENT_PAUSE;
-        arg[1] = pause;
+        JsonArray arg;
+        arg << (int)S_GAME_EVENT_PAUSE;
+        arg << pause;
         doNotify(player, S_COMMAND_LOG_EVENT, arg);
 
         game_paused = pause;
@@ -2314,7 +2314,7 @@ bool Room::makeSurrender(ServerPlayer *initiator) {
     m_surrenderRequestReceived = false;
 
     initiator->setFlags("Global_ForbidSurrender");
-    doNotify(initiator, S_COMMAND_ENABLE_SURRENDER, Json::Value(false));
+    doNotify(initiator, S_COMMAND_ENABLE_SURRENDER, QVariant(false));
     return true;
 }
 
@@ -2574,12 +2574,12 @@ void Room::run() {
 
     if (using_countdown) {
         for (int i = Config.CountDownSeconds; i >= 0; i--) {
-            doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, i);
+            doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, Json::Value(i));
             sleep(1);
         }
     }
     else
-        doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, 0);
+        doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, Json::Value(0));
 
 
     if (scenario && !scenario->generalSelection())
@@ -3343,20 +3343,20 @@ void Room::marshal(ServerPlayer *player) {
     notifyProperty(player, player, "general2", player->getActualGeneral2Name());
 
     foreach(const Skill *skill, player->getVisibleSkillList()) {
-        Json::Value args1;
-        args1[0] = S_GAME_EVENT_ADD_SKILL;
-        args1[1] = toJsonString(player->objectName());
-        args1[2] = toJsonString(skill->objectName());
-        args1[3] = player->inHeadSkills(skill->objectName());
+        JsonArray args1;
+        args1 << (int) S_GAME_EVENT_ADD_SKILL;
+        args1 << player->objectName();
+        args1 << skill->objectName();
+        args1 << player->inHeadSkills(skill->objectName());
         doNotify(player, S_COMMAND_LOG_EVENT, args1);
 
         foreach(const Skill *related_skill, Sanguosha->getRelatedSkills(skill->objectName())) {
             if (!related_skill->isVisible()) {
-                Json::Value args2;
-                args2[0] = S_GAME_EVENT_ADD_SKILL;
-                args2[1] = toJsonString(player->objectName());
-                args2[2] = toJsonString(related_skill->objectName());
-                args2[3] = player->inHeadSkills(related_skill->objectName());
+                JsonArray args2;
+                args2 << (int) S_GAME_EVENT_ADD_SKILL;
+                args2 << player->objectName();
+                args2 << related_skill->objectName();
+                args2 << player->inHeadSkills(related_skill->objectName());
                 doNotify(player, S_COMMAND_LOG_EVENT, args2);
             }
         }
@@ -3364,16 +3364,16 @@ void Room::marshal(ServerPlayer *player) {
 
     player->notifyPreshow();
 
-    doNotify(player, S_COMMAND_GAME_START, Json::Value::null);
+    doNotify(player, S_COMMAND_GAME_START, QVariant());
 
     QList<int> drawPile = Sanguosha->getRandomCards();
-    doNotify(player, S_COMMAND_AVAILABLE_CARDS, toJsonArray(drawPile));
+    doNotify(player, S_COMMAND_AVAILABLE_CARDS, JsonUtils::toJsonArray(drawPile));
 
     foreach(ServerPlayer *p, m_players)
         p->marshal(player);
 
     notifyProperty(player, player, "flags", "-marshalling");
-    doNotify(player, S_COMMAND_UPDATE_PILE, Json::Value(m_drawPile->length()));
+    doNotify(player, S_COMMAND_UPDATE_PILE, m_drawPile->length());
 }
 
 void Room::startGame() {
@@ -3441,13 +3441,13 @@ void Room::startGame() {
 bool Room::notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *propertyOwner, const char *propertyName, QString value) {
     if (propertyOwner == NULL) return false;
     if (value.isNull()) value = propertyOwner->property(propertyName).toString();
-    Json::Value arg(Json::arrayValue);
+    JsonArray arg;
     if (propertyOwner == playerToNotify)
-        arg[0] = toJsonString(QString(QSanProtocol::S_PLAYER_SELF_REFERENCE_ID));
+        arg << QString(QSanProtocol::S_PLAYER_SELF_REFERENCE_ID);
     else
-        arg[0] = toJsonString(propertyOwner->objectName());
-    arg[1] = propertyName;
-    arg[2] = toJsonString(value);
+        arg << propertyOwner->objectName();
+    arg << propertyName;
+    arg << value;
     return doNotify(playerToNotify, S_COMMAND_SET_PROPERTY, arg);
 }
 
@@ -4268,8 +4268,8 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
     Q_ASSERT(_m_lastMovementId >= 0);
     foreach(ServerPlayer *player, players) {
         if (player->isOffline()) continue;
-        Json::Value arg(Json::arrayValue);
-        arg[0] = moveId;
+        JsonArray arg;
+        arg << moveId;
         for (int i = 0; i < cards_moves.size(); i++) {
             cards_moves[i].open = forceVisible || cards_moves[i].isRelevant(player)
                 // forceVisible will override cards to be visible
@@ -4286,7 +4286,7 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 // any card from/to place table should be visible
                 || player->hasFlag("Global_GongxinOperator");
             // the player put someone's cards to the drawpile
-            arg[i + 1] = cards_moves[i].toJsonValue();
+            arg << JsonValueToVariant(cards_moves[i].toJsonValue());
         }
         doNotify(player, isLostPhase ? S_COMMAND_LOSE_CARD : S_COMMAND_GET_CARD, arg);
     }
@@ -4380,8 +4380,8 @@ void Room::preparePlayers() {
                 player->addSkill(skill->objectName(), false);
         }
 
-        Json::Value args;
-        args[0] = QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
+        JsonArray args;
+        args << (int) QSanProtocol::S_GAME_EVENT_UPDATE_SKILL;
         doNotify(player, QSanProtocol::S_COMMAND_LOG_EVENT, args);
 
         notifyProperty(player, player, "flags", "AutoPreshowAvailable");
@@ -5060,14 +5060,14 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
         log.type = "$GuanxingTop";
         log.from = zhuge;
         log.card_str = IntList2StringList(top_cards).join("+");
-        doNotify(zhuge, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        doNotify(zhuge, QSanProtocol::S_COMMAND_LOG_SKILL, log.toQVariant());
     }
     if (!bottom_cards.isEmpty()) {
         LogMessage log;
         log.type = "$GuanxingBottom";
         log.from = zhuge;
         log.card_str = IntList2StringList(bottom_cards).join("+");
-        doNotify(zhuge, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        doNotify(zhuge, QSanProtocol::S_COMMAND_LOG_SKILL, log.toQVariant());
     }
 
     QListIterator<int> i(top_cards);
@@ -5092,7 +5092,7 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> e
     log.from = shenlvmeng;
     log.to << target;
     log.card_str = IntList2StringList(target->handCards()).join("+");
-    doNotify(shenlvmeng, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+    doNotify(shenlvmeng, QSanProtocol::S_COMMAND_LOG_SKILL, log.toQVariant());
 
     QVariant decisionData = QVariant::fromValue("viewCards:" + shenlvmeng->objectName() + ":" + target->objectName());
     thread->trigger(ChoiceMade, this, shenlvmeng, decisionData);
@@ -5460,14 +5460,14 @@ void Room::makeReviving(const QString &name) {
 }
 
 void Room::fillAG(const QList<int> &card_ids, ServerPlayer *who, const QList<int> &disabled_ids) {
-    Json::Value arg(Json::arrayValue);
-    arg[0] = toJsonArray(card_ids);
-    arg[1] = toJsonArray(disabled_ids);
+    JsonArray arg;
+    arg << JsonUtils::toJsonArray(card_ids);
+    arg << JsonUtils::toJsonArray(disabled_ids);
 
     if (who)
         doNotify(who, S_COMMAND_FILL_AMAZING_GRACE, arg);
     else
-        doBroadcastNotify(S_COMMAND_FILL_AMAZING_GRACE, arg);
+        doBroadcastNotify(S_COMMAND_FILL_AMAZING_GRACE, VariantToJsonValue(arg));
 }
 
 void Room::takeAG(ServerPlayer *player, int card_id, bool move_cards) {
@@ -5524,7 +5524,7 @@ void Room::takeAG(ServerPlayer *player, int card_id, bool move_cards) {
 
 void Room::clearAG(ServerPlayer *player) {
     if (player)
-        doNotify(player, S_COMMAND_CLEAR_AMAZING_GRACE, Json::Value::null);
+        doNotify(player, S_COMMAND_CLEAR_AMAZING_GRACE, QVariant());
     else
         doBroadcastNotify(S_COMMAND_CLEAR_AMAZING_GRACE, Json::Value::null);
 }
@@ -5552,7 +5552,7 @@ void Room::sendLog(const LogMessage &log) {
     if (log.type.isEmpty())
         return;
 
-    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_SKILL, VariantToJsonValue(log.toQVariant()));
 }
 
 void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer) {
@@ -5591,10 +5591,10 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to) {
         return;
     while (isPaused()) {}
 
-    Json::Value gongxinArgs(Json::arrayValue);
-    gongxinArgs[0] = toJsonString(player->objectName());
-    gongxinArgs[1] = false;
-    gongxinArgs[2] = toJsonArray(player->handCards());
+    JsonArray gongxinArgs;
+    gongxinArgs << player->objectName();
+    gongxinArgs << false;
+    gongxinArgs << JsonUtils::toJsonArray(player->handCards());
 
     bool isUnicast = (to != NULL);
 
@@ -5620,7 +5620,7 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to) {
         log.from = to;
         log.to << player;
         log.card_str = IntList2StringList(player->handCards()).join("+");
-        doNotify(to, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        doNotify(to, QSanProtocol::S_COMMAND_LOG_SKILL, log.toQVariant());
 
         QVariant decisionData = QVariant::fromValue("viewCards:" + to->objectName() + ":" + player->objectName());
         thread->trigger(ChoiceMade, this, to, decisionData);
@@ -5636,7 +5636,7 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to) {
         log.card_str = IntList2StringList(player->handCards()).join("+");
         sendLog(log);
 
-        doBroadcastNotify(S_COMMAND_SHOW_ALL_CARDS, gongxinArgs);
+        doBroadcastNotify(S_COMMAND_SHOW_ALL_CARDS, VariantToJsonValue(gongxinArgs));
     }
 }
 

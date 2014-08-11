@@ -1113,7 +1113,7 @@ public:
         log.type = "$ViewDrawPile";
         log.from = player;
         log.card_str = IntList2StringList(guanxing).join("+");
-        room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toQVariant());
 
         room->askForGuanxing(player, guanxing, Room::GuanxingUpOnly);
 

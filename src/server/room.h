@@ -177,7 +177,7 @@ public:
     // Notify a player of a event by sending S_SERVER_NOTIFICATION packets. No reply should be expected from
     // the client for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
     // will be rejected.
-    bool doNotify(ServerPlayer *player, QSanProtocol::CommandType command, const Json::Value &arg);
+    bool doNotify(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg);
 
     // Broadcast a event to a list of players by sending S_SERVER_NOTIFICATION packets. No replies should be expected from
     // the clients for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
@@ -185,9 +185,9 @@ public:
     bool doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg, ServerPlayer *except = NULL);
     bool doBroadcastNotify(const QList<ServerPlayer *> &players, QSanProtocol::CommandType command, const Json::Value &arg);
 
-    bool doNotify(ServerPlayer *player, int command, const QString &arg);
-    bool doBroadcastNotify(int command, const QString &arg);
-    bool doBroadcastNotify(const QList<ServerPlayer *> &players, int command, const QString &arg);
+    bool doNotify(ServerPlayer *player, int command, const char *arg);
+    bool doBroadcastNotify(int command, const char *arg);
+    bool doBroadcastNotify(const QList<ServerPlayer *> &players, int command, const char *arg);
 
     // Ask a server player to wait for the client response. Call is blocking until client replies or server times out,
     // whichever is earlier.

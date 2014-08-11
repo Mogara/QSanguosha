@@ -641,7 +641,7 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
     log.to << effect.to;
     log.arg = choice;
     foreach(ServerPlayer *p, room->getOtherPlayers(effect.from, true)){
-        room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toQVariant());
     }
 
     if (choice == "handcards") {
@@ -671,11 +671,11 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
             QString position = effect.to->getActualGeneral1Name() == name ? "head_general" : "deputy_general";
             log.arg = Sanguosha->translate(position);
             log.arg2 = name;
-            room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+            room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toQVariant());
         }
-        Json::Value arg(Json::arrayValue);
-        arg[0] = QSanProtocol::Utils::toJsonString("shangyi");
-        arg[1] = QSanProtocol::Utils::toJsonArray(list);
+        JsonArray arg;
+        arg << "shangyi";
+        arg << JsonUtils::toJsonArray(list);
         room->doNotify(effect.from, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
     }
 }

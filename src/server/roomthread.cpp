@@ -55,15 +55,14 @@ QString LogMessage::toString() const{
         .arg(card_str).arg(arg).arg(arg2);
 }
 
-Json::Value LogMessage::toJsonValue() const{
+QVariant LogMessage::toQVariant() const{
     QStringList tos;
     foreach(ServerPlayer *player, to)
         if (player != NULL) tos << player->objectName();
 
     QStringList log;
     log << type << (from ? from->objectName() : "") << tos.join("+") << card_str << arg << arg2;
-    Json::Value json_log = QSanProtocol::Utils::toJsonArray(log);
-    return json_log;
+    return JsonUtils::toJsonArray(log);
 }
 
 DamageStruct::DamageStruct()

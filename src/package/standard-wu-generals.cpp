@@ -1162,7 +1162,7 @@ void DimengCard::use(Room *room, ServerPlayer *, QList<ServerPlayer *> &targets)
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
             if (p != a && p != b)
                 room->doNotify(p, QSanProtocol::S_COMMAND_EXCHANGE_KNOWN_CARDS,
-                QSanProtocol::Utils::toJsonArray(a->objectName(), b->objectName()));
+                JsonArray() << a->objectName() << b->objectName());
         }
         QList<CardsMoveStruct> exchangeMove;
         CardsMoveStruct move1(a->handCards(), b, Player::PlaceHand,
