@@ -88,7 +88,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *target) const{
         Room *room = target->getRoom();
-        QList<int> cardids = room->getNCards(2);
+        QList<int> cardids = room->getNCards(2, false);
         CardsMoveStruct move(cardids, NULL, Player::PlaceTable, CardMoveReason(CardMoveReason::S_REASON_SHOW, target->objectName(), objectName(), QString()));
         room->moveCardsAtomic(move, true);
 

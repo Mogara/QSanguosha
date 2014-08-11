@@ -1018,7 +1018,6 @@ void PlayerCardContainer::updateReformState() {
 }
 
 void PlayerCardContainer::showDistance() {
-    bool isNull = (_m_distanceItem == NULL);
     int dis = Self->distanceTo(m_player);
     if (dis > 0) {
         _paintPixmap(_m_distanceItem, _m_layout->m_votesIconRegion,
@@ -1039,10 +1038,13 @@ void PlayerCardContainer::showDistance() {
     }
     if (!_m_distanceItem)
         return;
-    if (_m_distanceItem->isVisible() && !isNull)
-        _m_distanceItem->hide();
-    else
+    if (!_m_distanceItem->isVisible())
         _m_distanceItem->show();
+}
+
+void PlayerCardContainer::hideDistance() {
+    if (_m_distanceItem && _m_distanceItem->isVisible())
+        _m_distanceItem->hide();
 }
 
 void PlayerCardContainer::onRemovedChanged()

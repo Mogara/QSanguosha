@@ -131,6 +131,7 @@ public slots:
     void updateVotes(bool need_select = true, bool display_1 = false);
     void updateReformState();
     void showDistance();
+    void hideDistance();
     void onRemovedChanged();
     virtual void showSeat();
     virtual void showPile();
