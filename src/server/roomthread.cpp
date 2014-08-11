@@ -510,11 +510,11 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
                         if (names.isEmpty()) break;
 
                         QString name;
-                        foreach (QString sn, names) {
-                            const TriggerSkill *skill = Sanguosha->getTriggerSkill(sn);
+                        foreach (QString skillName, names) {
+                            const TriggerSkill *skill = Sanguosha->getTriggerSkill(skillName);
                             if (skill && skill->isGlobal() && skill->getFrequency() == Skill::Compulsory) {
-                                name = sn; // a new trick to deal with all "record-skill" or "compulsory-global",
-                                           // they should always be triggered first.
+                                name = skillName; // a new trick to deal with all "record-skill" or "compulsory-global",
+                                                  // they should always be triggered first.
                                 break;
                             }
                         }
