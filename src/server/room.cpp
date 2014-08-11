@@ -2362,7 +2362,7 @@ void Room::processClientPacket(const QByteArray &request) {
 
         if (game_finished) {
             if (player->isOnline())
-                player->notify(S_COMMAND_WARN, toJsonString("GAME_OVER"));
+                player->notify(S_COMMAND_WARN, "GAME_OVER");
             return;
         }
 
@@ -2717,9 +2717,9 @@ void Room::speakCommand(ServerPlayer *player, const QString &arg) {
 void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
 #define _NO_BROADCAST_SPEAKING {\
     broadcast = false; \
-    Json::Value body(Json::arrayValue); \
-    body[0] = toJsonString(player->objectName()); \
-    body[1] = arg; \
+    JsonArray body; \
+    body << player->objectName(); \
+    body << JsonValueToVariant(arg); \
     player->notify(S_COMMAND_SPEAK, body); \
 }
     bool broadcast = true;
@@ -3317,9 +3317,9 @@ void Room::marshal(ServerPlayer *player) {
             p->introduceTo(player);
     }
 
-    Json::Value player_circle(Json::arrayValue);
+    JsonArray player_circle;
     foreach(ServerPlayer *player, m_players)
-        player_circle.append(toJsonString(player->objectName()));
+        player_circle << player->objectName();
 
     player->notify(S_COMMAND_ARRANGE_SEATS, player_circle);
     player->notify(S_COMMAND_START_IN_X_SECONDS, 0);

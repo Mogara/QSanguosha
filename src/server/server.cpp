@@ -936,11 +936,11 @@ void Server::processNewConnection(ClientSocket *socket) {
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
 
     Packet version_packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_CHECK_VERSION);
-    version_packet.setMessageBody(Utils::toJsonString(Sanguosha->getVersion()));
+    version_packet.setMessageBody(Sanguosha->getVersion());
     socket->send(version_packet.toUtf8());
 
     Packet setup_packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
-    setup_packet.setMessageBody(Utils::toJsonString(Sanguosha->getSetupString()));
+    setup_packet.setMessageBody(Sanguosha->getSetupString());
     socket->send(setup_packet.toUtf8());
 
     emit server_message(tr("%1 connected").arg(socket->peerName()));
@@ -956,7 +956,7 @@ void Server::processRequest(const char *request) {
     if (!signup.parse(request) || signup.getCommandType() != S_COMMAND_SIGNUP) {
         emit server_message(tr("Invalid signup string: %1").arg(request));
         Packet error(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
-        error.setMessageBody("INVALID_FORMAT");
+        error.setMessageBody(Json::Value("INVALID_FORMAT"));
         socket->send(error.toUtf8());
         socket->disconnectFromHost();
         return;

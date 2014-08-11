@@ -334,7 +334,7 @@ void ServerPlayer::invoke(const char *method, const QString &arg) {
     unicast(QString("%1 %2").arg(method).arg(arg));
 }
 
-void ServerPlayer::notify(CommandType type, const Json::Value &arg){
+void ServerPlayer::notify(CommandType type, const QVariant &arg){
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, type);
     packet.setMessageBody(arg);
     unicast(packet.toString());
@@ -927,17 +927,17 @@ void ServerPlayer::introduceTo(ServerPlayer *player) {
     QString screen_name = screenName();
     QString avatar = property("avatar").toString();
 
-    Json::Value introduce_str(Json::arrayValue);
-    introduce_str.append(toJsonString(objectName()));
-    introduce_str.append(toJsonString(screen_name));
-    introduce_str.append(toJsonString(avatar));
+    JsonArray introduce_str;
+    introduce_str << objectName();
+    introduce_str << screen_name;
+    introduce_str << avatar;
 
     if (player) {
         player->notify(S_COMMAND_ADD_PLAYER, introduce_str);
         room->notifyProperty(player, this, "state");
     }
     else {
-        room->doBroadcastNotify(S_COMMAND_ADD_PLAYER, introduce_str, this);
+        room->doBroadcastNotify(S_COMMAND_ADD_PLAYER, VariantToJsonValue(introduce_str), this);
         room->broadcastProperty(this, "state");
     }
 
