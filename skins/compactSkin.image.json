@@ -36,5 +36,12 @@
 "playerGeneralIcon-chenwudongxi-4": ["image/fullskin/generals/fulldual/chenwudongxi.png", [0, 0, 124, 291], [64, 150]],
 "playerGeneralIcon-chenwudongxi-6": ["image/fullskin/generals/fulldual/chenwudongxi.png", [0, 0, 250, 291], [129, 150]],
 
-"photoEquip-default": ["image/fullskin/small-equips/%1.png", [0, 0, 114, 19]]
+"photoEquip-default": ["image/fullskin/small-equips/%1.png", [0, 0, 114, 19]],
+"photoEquip-ChiTu": ["image/fullskin/small-equips/offensivehorse.png", [0, 0, 57, 19]],
+"photoEquip-DaYuan": ["image/fullskin/small-equips/offensivehorse.png", [0, 0, 57, 19]],
+"photoEquip-ZiXing": ["image/fullskin/small-equips/offensivehorse.png", [0, 0, 57, 19]],
+"photoEquip-JingFan": ["image/fullskin/small-equips/offensivehorse.png", [0, 0, 57, 19]],
+"photoEquip-DiLu": ["image/fullskin/small-equips/defensivehorse.png", [0, 0, 57, 19]],
+"photoEquip-JueYing": ["image/fullskin/small-equips/defensivehorse.png", [0, 0, 57, 19]],
+"photoEquip-ZhuaHuangFeiDian": ["image/fullskin/small-equips/defensivehorse.png", [0, 0, 57, 19]]
 }

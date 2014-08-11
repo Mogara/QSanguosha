@@ -156,6 +156,13 @@
 
 // equips
 "photoEquip-default": "image/fullskin/small-equips/%1.png",
+"photoEquip-ChiTu": "image/fullskin/small-equips/offensivehorse.png",
+"photoEquip-DaYuan": "image/fullskin/small-equips/offensivehorse.png",
+"photoEquip-ZiXing": "image/fullskin/small-equips/offensivehorse.png",
+"photoEquip-JingFan": "image/fullskin/small-equips/offensivehorse.png",
+"photoEquip-DiLu": "image/fullskin/small-equips/defensivehorse.png",
+"photoEquip-JueYing": "image/fullskin/small-equips/defensivehorse.png",
+"photoEquip-ZhuaHuangFeiDian": "image/fullskin/small-equips/defensivehorse.png",
 "dashboardEquip-default": "image/equips/%1.png",
 
 // kingdoms

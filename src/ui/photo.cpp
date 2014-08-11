@@ -248,7 +248,7 @@ QList<CardItem *> Photo::removeCardItems(const QList<int> &card_ids, Player::Pla
         updateHandcardNum();
     }
     else if (place == Player::PlaceEquip) {
-        result = removeEquips(card_ids, false);
+        result = removeEquips(card_ids);
     }
     else if (place == Player::PlaceDelayedTrick) {
         result = removeDelayedTricks(card_ids);
@@ -273,7 +273,7 @@ bool Photo::_addCardItems(QList<CardItem *> &card_items, const CardsMoveStruct &
     foreach(CardItem *card_item, card_items)
         card_item->setHomeOpacity(homeOpacity);
     if (place == Player::PlaceEquip) {
-        addEquips(card_items, false);
+        addEquips(card_items);
         destroy = false;
     }
     else if (place == Player::PlaceDelayedTrick) {

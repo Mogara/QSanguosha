@@ -326,57 +326,37 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
     if (!player)
         player = m_player;
     if (!player) return;
-    QString p_name = pile_name;
-    int treasure = 0;
-    if (p_name.endsWith("+&")) {
-        treasure = 1;
-        p_name = pile_name.split(":").first();
-        _m_treasureName = p_name;
-    }
-    else if (p_name.endsWith("-&")) {
-        treasure = -1;
-        p_name = pile_name.split(":").first();
-        _m_treasureName = QString();
-    }
-    const QList<int> &pile = player->getPile(p_name);
-    if (pile.size() == 0 && treasure == 0 && _m_treasureName != p_name) {
-        if (_m_privatePiles.contains(p_name)) {
-            delete _m_privatePiles[p_name];
-            _m_privatePiles[p_name] = NULL;
-            _m_privatePiles.remove(p_name);
-        }
-    }
-    else if (treasure == -1) {
-        if (_m_privatePiles.contains(p_name)) {
-            delete _m_privatePiles[p_name];
-            _m_privatePiles[p_name] = NULL;
-            _m_privatePiles.remove(p_name);
+    QString treasure_name;
+    if (player->getTreasure()) treasure_name = player->getTreasure()->objectName();
+
+    const QList<int> &pile = player->getPile(pile_name);
+    if (pile.size() == 0) {
+        if (_m_privatePiles.contains(pile_name)) {
+            delete _m_privatePiles[pile_name];
+            _m_privatePiles[pile_name] = NULL;
+            _m_privatePiles.remove(pile_name);
         }
     } else {
         // retrieve menu and create a new pile if necessary
         QPushButton *button;
-        if (!_m_privatePiles.contains(p_name)) {
+        if (!_m_privatePiles.contains(pile_name)) {
             button = new QPushButton;
-            button->setObjectName(p_name);
-            if (treasure == 0) {
-                button->setProperty("private_pile", "true");
-            } else {
-                QStringList namelist = pile_name.split(":");
-                QString toolTip = QString("<b>%1 [</b><img src='image/system/log/%2.png' height = 12/><b>%3]</b>")
-                    .arg(Sanguosha->translate(namelist.at(0)))
-                    .arg(namelist.at(1))
-                    .arg(namelist.at(2));
-                button->setToolTip(toolTip);
+            button->setObjectName(pile_name);
+            if (treasure_name == pile_name)
                 button->setProperty("treasure", "true");
-            }
+            else
+                button->setProperty("private_pile", "true");
             QGraphicsProxyWidget *button_widget = new QGraphicsProxyWidget(_getPileParent());
+            button_widget->setObjectName(pile_name);
             button_widget->setWidget(button);
-            _m_privatePiles[p_name] = button_widget;
+            _m_privatePiles[pile_name] = button_widget;
         } else {
-            button = (QPushButton *)(_m_privatePiles[p_name]->widget());
+            button = (QPushButton *)(_m_privatePiles[pile_name]->widget());
         }
-
-        button->setText(QString("%1(%2)").arg(Sanguosha->translate(p_name)).arg(pile.length()));
+        QString text = Sanguosha->translate(pile_name);
+        if (pile.length() > 0)
+             text.append(QString("(%1)").arg(pile.length()));
+        button->setText(text);
         disconnect(button, SIGNAL(clicked()), this, SLOT(showPile()));
         connect(button, SIGNAL(clicked()), this, SLOT(showPile()));
     }
@@ -385,8 +365,8 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
     QPoint step = _m_layout->m_privatePileStep;
     QSize size = _m_layout->m_privatePileButtonSize;
     QList<QGraphicsProxyWidget *> widgets_t, widgets_p, widgets = _m_privatePiles.values();
-    foreach(QGraphicsProxyWidget *widget, widgets) {
-        if (widget->objectName() == _m_treasureName)
+    foreach (QGraphicsProxyWidget *widget, widgets) {
+        if (widget->objectName() == treasure_name)
             widgets_t << widget;
         else
             widgets_p << widget;
@@ -443,7 +423,7 @@ void PlayerCardContainer::updateMarks() {
 }
 
 void PlayerCardContainer::_updateEquips() {
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < S_EQUIP_AREA_LENGTH; i++) {
         CardItem *equip = _m_equipCards[i];
         if (equip == NULL) continue;
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard()->getRealCard());
@@ -630,44 +610,23 @@ QPixmap PlayerCardContainer::_getEquipPixmap(const EquipCard *equip) {
     equipIcon.fill(Qt::transparent);
     QPainter painter(&equipIcon);
     // icon / background
-    painter.drawPixmap(_m_layout->m_equipImageArea, _getPixmap(QSanRoomSkin::S_SKIN_KEY_EQUIP_ICON, equip->objectName()));
-    // equip name
-    _m_layout->m_equipFont.paintText(&painter,
-        _m_layout->m_equipTextArea,
-        Qt::AlignLeft | Qt::AlignCenter,
-        Sanguosha->translate(equip->objectName()));
+    QRect imageArea = _m_layout->m_equipImageArea;
+    if (equip->isKindOf("Horse"))
+        imageArea = _m_layout->m_horseImageArea;
+    painter.drawPixmap(imageArea, _getPixmap(QSanRoomSkin::S_SKIN_KEY_EQUIP_ICON, equip->objectName()));
     // equip suit
-    painter.drawPixmap(_m_layout->m_equipSuitArea, G_ROOM_SKIN.getCardSuitPixmap(realCard->getSuit()));
+    QRect suitArea = _m_layout->m_equipSuitArea;
+    if (equip->isKindOf("Horse"))
+        suitArea = _m_layout->m_horseSuitArea;
+    painter.drawPixmap(suitArea, G_ROOM_SKIN.getCardSuitPixmap(realCard->getSuit()));
     // equip point
+    QRect pointArea = _m_layout->m_equipPointArea;
+    if (equip->isKindOf("Horse"))
+        pointArea = _m_layout->m_horsePointArea;
     _m_layout->m_equipPointFont.paintText(&painter,
-        _m_layout->m_equipPointArea,
-        Qt::AlignLeft | Qt::AlignVCenter,
-        realCard->getNumberString());
-    // distance
-    int index = (int)(equip->location());
-    QString distance;
-    if (index == 0) {
-        const Weapon *weapon = qobject_cast<const Weapon *>(equip);
-        Q_ASSERT(weapon);
-        if (weapon)
-            distance = Sanguosha->translate(QString("CAPITAL(%1)").arg(QString::number(weapon->getRange())));
-    }
-    else if (index == 2) {
-        const DefensiveHorse *horse = qobject_cast<const DefensiveHorse *>(equip);
-        Q_ASSERT(horse);
-        if (horse) distance = QString("+%1").arg(QString::number(horse->getCorrect()));
-    }
-    else if (index == 3) {
-        const OffensiveHorse *horse = qobject_cast<const OffensiveHorse *>(equip);
-        Q_ASSERT(horse);
-        if (horse) distance = QString::number(horse->getCorrect());
-    }
-    if (index != 1) {
-        _m_layout->m_equipFont.paintText(&painter,
-            _m_layout->m_equipDistanceArea,
-            Qt::AlignLeft | Qt::AlignVCenter,
-            distance);
-    }
+                                          pointArea,
+                                          Qt::AlignLeft | Qt::AlignVCenter,
+                                          realCard->getNumberString());
     return equipIcon;
 }
 
@@ -682,18 +641,10 @@ void PlayerCardContainer::setFloatingArea(QRect rect) {
     if (_getProgressBarParent() == _m_floatingArea) _updateProgressBar();
 }
 
-void PlayerCardContainer::addEquips(QList<CardItem *> &equips, bool isDashboard) {
+void PlayerCardContainer::addEquips(QList<CardItem *> &equips) {
     foreach(CardItem *equip, equips) {
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(equip->getCard()->getRealCard());
         int index = (int)(equip_card->location());
-        if (equip_card->location() == EquipCard::TreasureLocation && !isDashboard) {
-            QString name = QString("%1:%2:%3:+&").arg(equip_card->objectName())
-                .arg(equip_card->getSuitString())
-                .arg(equip_card->getNumberString());
-            updatePile(name);
-            _m_photo_treasure = equip;
-            continue;
-        }
         Q_ASSERT(_m_equipCards[index] == NULL);
         _m_equipCards[index] = equip;
         connect(equip, SIGNAL(mark_changed()), this, SLOT(_onEquipSelectChanged()));
@@ -727,24 +678,11 @@ void PlayerCardContainer::addEquips(QList<CardItem *> &equips, bool isDashboard)
     }
 }
 
-QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds, bool isDashboard) {
+QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds) {
     QList<CardItem *> result;
     foreach(int card_id, cardIds) {
         const EquipCard *equip_card = qobject_cast<const EquipCard *>(Sanguosha->getEngineCard(card_id));
         int index = (int)(equip_card->location());
-        if (equip_card->location() == EquipCard::TreasureLocation && !isDashboard) {
-            QString name = QString("%1:%2:%3:-&").arg(equip_card->objectName())
-                .arg(equip_card->getSuitString())
-                .arg(equip_card->getNumberString());
-            updatePile(name);
-            Q_ASSERT(_m_photo_treasure != NULL);
-            CardItem *equip = _m_photo_treasure;
-            equip->setHomeOpacity(0.0);
-            equip->setPos(_m_layout->m_equipAreas[3].center());
-            result.append(equip);
-            _m_photo_treasure = NULL;
-            continue;
-        }
         Q_ASSERT(_m_equipCards[index] != NULL);
         CardItem *equip = _m_equipCards[index];
         equip->setHomeOpacity(0.0);
@@ -801,13 +739,12 @@ PlayerCardContainer::PlayerCardContainer() {
 
     leftDisableShowLock = rightDisableShowLock = NULL;
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < S_EQUIP_AREA_LENGTH; i++) {
         _m_equipCards[i] = NULL;
         _m_equipRegions[i] = NULL;
         _m_equipAnim[i] = NULL;
         _m_equipLabel[i] = NULL;
     }
-    _m_photo_treasure = NULL;
     _m_extraSkillBg = NULL;
     _m_extraSkillText = NULL;
 
@@ -887,7 +824,7 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_phaseIcon);
     _layUnder(_m_kingdomIcon);
     _layUnder(_m_screenNameItem);
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < S_EQUIP_AREA_LENGTH; i++)
         _layUnder(_m_equipRegions[i]);
     _layUnder(_m_selectedFrame2);
     _layUnder(_m_selectedFrame);
@@ -947,7 +884,7 @@ void PlayerCardContainer::_createControls() {
     _m_progressBarItem->setWidget(_m_progressBar);
     _updateProgressBar();
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < S_EQUIP_AREA_LENGTH; i++) {
         _m_equipLabel[i] = new QLabel;
         _m_equipLabel[i]->setStyleSheet("QLabel { background-color: transparent; }");
         _m_equipLabel[i]->setPixmap(QPixmap(_m_layout->m_equipAreas[i].size()));

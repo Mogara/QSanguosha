@@ -1361,7 +1361,7 @@ public:
         QList<int> cards = cardsToGet + cardsOther;
         erzhang->tag.remove("GuzhengToGet");
         erzhang->tag.remove("GuzhengOther");
-        if (erzhang->askForSkillInvoke(objectName(), cards.length())){
+        if (erzhang->askForSkillInvoke(objectName(), cards.length())) {
             room->broadcastSkillInvoke(objectName());
             room->fillAG(cards, erzhang, cardsOther);
 
@@ -1381,7 +1381,7 @@ public:
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *erzhang) const{
         QList<int> cards = StringList2IntList(erzhang->tag["GuzhengCards"].toString().split("+"));
         erzhang->tag.remove("GuzhengCards");
-        if (cards.isEmpty()) {
+        if (!cards.isEmpty()) {
             DummyCard dummy(cards);
             room->obtainCard(erzhang, &dummy);
         }

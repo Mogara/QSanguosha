@@ -18,9 +18,8 @@
   QSanguosha-Hegemony Team
 *********************************************************************]]
 
-
 function SmartAI:useCardDrowning(card, use)
-	if card:isAvailable(self.player) then return end
+	if not card:isAvailable(self.player) then return end
 
 	self:sort(self.enemies)
 	local function cmp(a, b)
@@ -71,7 +70,6 @@ sgs.ai_skill_choice.drowning = function(self, choices, data)
 	if not self:damageIsEffective(self.player, sgs.DamageStruct_Normal, effect.from)
 		or self:needToLoseHp(self.player, effect.from)
 		or self:getDamagedEffects(self.player, effect.from) then return "damage" end
-	if self:isWeak() and not self:needDeath() then return "throw" end
 
 	local value = 0
 	for _, equip in sgs.qlist(self.player:getEquips()) do

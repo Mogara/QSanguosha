@@ -73,16 +73,16 @@
     "graphicsBoxBgColor": [0, 0, 0, 220],
     "graphicsBoxBorderColor": [166, 150, 122],
     "graphicsBoxTitleFont": ["wqy-microhei", 16, 2, [228, 213, 160]],
-	
+    
     "generalBoxDestSeatFont": ["SimSun", 12, 2, [105, 103, 91]],
 
     "generalCardItemCompanionPromptRegion": [-1, 102, 95, 15],
-	
-	"optionButtonText": ["wqy-microhei", [18, 18, 0], 0, [255, 255, 255, 255], 1, 10, [0, 0], [50, 50, 50, 200]],
-	"generalButtonPositionIconRegion": [-1, 2, 29, 24],
-	"generalButtonNameRegion": [26, 0, 60, 23],
-	
-	"playerCardBoxPlaceNameText": ["@wqy-microhei", 16, 2, [228, 213, 160]]
+    
+    "optionButtonText": ["wqy-microhei", [18, 18, 0], 0, [255, 255, 255, 255], 1, 10, [0, 0], [50, 50, 50, 200]],
+    "generalButtonPositionIconRegion": [-1, 2, 29, 24],
+    "generalButtonNameRegion": [26, 0, 60, 23],
+    
+    "playerCardBoxPlaceNameText": ["@wqy-microhei", 16, 2, [228, 213, 160]]
 },
 "room":
 {
@@ -110,13 +110,13 @@
     "canvasArea": [0, 0, 157, 181],
     "handCardNumIconArea": [-8, 104, 30, 18],
     "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
-    "equipAreas": [[1, 120, 150, 21], [1, 134, 150, 21], [1, 148, 150, 21], [1, 162, 150, 21]],
+    "equipAreas": [[1, 120, 150, 21], [1, 134, 150, 21], [1, 148, 75, 21], [70, 148, 75, 21], [1, 162, 150, 21]],
     "equipImageArea": [0, 1, 140, 19],
-    //"equipTextArea": [35, -5, 85, 21], // need adjustment
     "equipSuitArea": [117, 2, 21, 17],
-    //"equipDistanceArea": [14, -5, 30, 21], // need adjustment
     "equipPointArea": [106, -4, 25, 25],
-    //"equipFont": ["FZLiBian-S02", [14, 14, 0], 50, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
+    "horseImageArea": [0, 1, 70, 19],
+    "horseSuitArea": [48, 2, 21, 17],
+    "horsePointArea": [37, -4, 25, 25],
     "equipPointFont": ["arial", [13, 13, 3], 20, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],
     "delayedTrickFirstRegion": [-13, 16, 28, 28],
     "delayedTrickStep": [0, 19],
@@ -167,8 +167,8 @@
     "extraSkillFont": ["SimLi", [16, 16, 3], 0, [255, 255, 255, 255], 2, 100, [0, 0], [102, 16, 120, 255]],
     "extraSkillTextArea": [32, 93, 56, 20],
     "seatIconRegion": [4, 1, 23, 16],
-	"leftDisableShowLockArea": [16, 59, 50, 61],
-	"rightDisableShowLockArea": [93, 59, 50, 61]
+    "leftDisableShowLockArea": [16, 59, 50, 61],
+    "rightDisableShowLockArea": [93, 59, 50, 61]
 },
 "dashboard":
 {
@@ -184,11 +184,11 @@
     "equipBorderPos": [-6, -6],
     "equipSelectedOffset": [10, 0],
     "equipImageArea": [0, 0, 145, 22],
-    "equipTextArea": [0, 0, 0, 0],
     "equipSuitArea": [126, 5, 21, 17],
-    "equipDistanceArea": [0, 0, 0, 0],
     "equipPointArea": [115, -5, 30, 30],
-    "equipFont": ["SimLi", 9, 60, [0, 0, 0, 255], 3, 8, [0, 0], [240, 240, 240, 200]],
+    "horseImageArea": [0, 0, 149, 25],
+    "horseSuitArea": [128, 5, 21, 17],
+    "horsePointArea": [117, -5, 30, 30],
     "equipPointFont": ["arial", [14, 14, 3], 20, [0, 0, 0, 255], 1, 0, [0, 0], [240, 240, 240, 200]],
     "delayedTrickFirstRegion": [155, -11, 28, 28],
     "delayedTrickStep": [28, 0],
@@ -254,40 +254,40 @@
     "hiddenMarkRegion": [4, -3, 124, 146],
     "hiddenMarkRegion2": [132, -3, 124, 146],
     "seatIconRegion": [-32, 118, 30, 30],
-	"leftDisableShowLockArea": [15, 9, 100, 122],
-	"rightDisableShowLockArea": [144, 9, 100, 122]
+    "leftDisableShowLockArea": [15, 9, 100, 122],
+    "rightDisableShowLockArea": [144, 9, 100, 122]
 },
 "skillButton":
 {
-"height": 26,
-"width": [120, 58, 45],
-"textArea": [[13, 2, 112, 20], [16, 2, 44, 20], [9, 2, 40, 20]],
-"textAreaDown": [[14, 3, 112, 20], [17, 3, 44, 20], [10, 3, 40, 20]],
-"textFont": [["simkai", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
-             ["simkai", [13, 13, 1], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // medium
-             ["simkai", [13, 13, 0], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]]],  // narrow
+    "height": 26,
+    "width": [120, 58, 45],
+    "textArea": [[13, 2, 112, 20], [16, 2, 44, 20], [9, 2, 40, 20]],
+    "textAreaDown": [[14, 3, 112, 20], [17, 3, 44, 20], [10, 3, 40, 20]],
+    "textFont": [["simkai", [13, 13, 2], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // wide
+                ["simkai", [13, 13, 1], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],  // medium
+                ["simkai", [13, 13, 0], 50, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]]],  // narrow
 
-// The following settings override the text color defined above
-// xxButtonColor = [normalColor, downColor, disabledColor, hoverColor]
-"arrayFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]], // normalColor = [penColor, shadowColor]
-                    [[255, 255, 255, 255], [0, 0, 0, 120]], // downColor = [penColor, shadowColor]
-                    [[255, 255, 255, 255], [0, 0, 0, 120]], // disableColor = [penColor, shadowColor]
-                    [[255, 255, 255, 255], [0, 0, 0, 120]], // hoverColor = [penColor, shadowColor]
-                    [[255, 255, 255, 255], [0, 0, 0, 120]]], // preshowColor = [penColor, shadowColor]
-"compulsoryFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
+    // The following settings override the text color defined above
+    // xxButtonColor = [normalColor, downColor, disabledColor, hoverColor]
+    "arrayFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]], // normalColor = [penColor, shadowColor]
+                        [[255, 255, 255, 255], [0, 0, 0, 120]], // downColor = [penColor, shadowColor]
+                        [[255, 255, 255, 255], [0, 0, 0, 120]], // disableColor = [penColor, shadowColor]
+                        [[255, 255, 255, 255], [0, 0, 0, 120]], // hoverColor = [penColor, shadowColor]
+                        [[255, 255, 255, 255], [0, 0, 0, 120]]], // preshowColor = [penColor, shadowColor]
+    "compulsoryFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
+                            [[255, 255, 255, 255], [0, 0, 0, 120]],
+                            [[255, 255, 255, 255], [0, 0, 0, 120]],
+                            [[255, 255, 255, 255], [0, 0, 0, 120]],
+                            [[255, 255, 255, 255], [0, 0, 0, 120]]],
+    "oneoffFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
                         [[255, 255, 255, 255], [0, 0, 0, 120]],
                         [[255, 255, 255, 255], [0, 0, 0, 120]],
                         [[255, 255, 255, 255], [0, 0, 0, 120]],
                         [[255, 255, 255, 255], [0, 0, 0, 120]]],
-"oneoffFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
-                    [[255, 255, 255, 255], [0, 0, 0, 120]],
-                    [[255, 255, 255, 255], [0, 0, 0, 120]],
-                    [[255, 255, 255, 255], [0, 0, 0, 120]],
-                    [[255, 255, 255, 255], [0, 0, 0, 120]]],
-"proactiveFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
-                       [[255, 255, 255, 255], [0, 0, 0, 120]],
-                       [[255, 255, 255, 255], [0, 0, 0, 120]],
-                       [[255, 255, 255, 255], [0, 0, 0, 120]],
-                       [[255, 255, 255, 255], [0, 0, 0, 120]]]
+    "proactiveFontColor": [[[255, 255, 255, 255], [0, 0, 0, 120]],
+                        [[255, 255, 255, 255], [0, 0, 0, 120]],
+                        [[255, 255, 255, 255], [0, 0, 0, 120]],
+                        [[255, 255, 255, 255], [0, 0, 0, 120]],
+                        [[255, 255, 255, 255], [0, 0, 0, 120]]]
 }
 }

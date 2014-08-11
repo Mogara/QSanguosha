@@ -32,13 +32,13 @@
     "canvasArea": [0, 0, 131, 152],
     "handCardNumIconArea": [-8, 76, 30, 18],
     "handCardFont": ["Arial", [12, 12, -1], 20, [255, 255, 255, 255], 1, 30, [0, 0], [20, 20, 20, 200]],
-    "equipAreas": [[1, 91, 150, 21], [1, 105, 150, 21], [1, 119, 150, 21], [1, 133, 150, 21]],
+    "equipAreas": [[1, 91, 150, 21], [1, 105, 150, 21], [1, 119, 75, 21], [58, 119, 75, 21], [1, 133, 150, 21]],
     "equipImageArea": [0, 1, 114, 19],
-    //"equipTextArea": [35, -5, 85, 21], // need adjustment
     "equipSuitArea": [94, 2, 21, 17],
-    //"equipDistanceArea": [14, -5, 30, 21], // need adjustment
     "equipPointArea": [88, -4, 25, 25],
-    //"equipFont": ["FZLiBian-S02", [14, 14, 0], 50, [0, 0, 0, 255], 3, 50, [0, 0], [255, 255, 190, 255]],
+    "horseImageArea": [0, 1, 57, 19],
+    "horseSuitArea": [37, 2, 21, 17],
+    "horsePointArea": [31, -4, 25, 25],
     "equipPointFont": ["Arial", [13, 13, 3], 20, [0, 0, 0, 255], 1, 1, [0, 0], [255, 255, 190, 128]],
     "delayedTrickFirstRegion": [-13, 16, 28, 28],
     "delayedTrickStep": [0, 19],
