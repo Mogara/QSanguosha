@@ -331,6 +331,7 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
     //card item in dashboard should never be disabled
     if (!card_item->isEnabled())
         card_item->setEnabled(true);
+
     if (ClientInstance->getStatus() == Client::Playing)
         card_item->setFrozen(!card_item->getCard()->isAvailable(Self));
     else

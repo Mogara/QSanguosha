@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>502</width>
-    <height>576</height>
+    <height>543</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -26,9 +26,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>20</y>
+     <y>10</y>
      <width>481</width>
-     <height>511</height>
+     <height>501</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -38,42 +38,176 @@
     <attribute name="title">
      <string>Environment</string>
     </attribute>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>10</y>
        <width>461</width>
-       <height>471</height>
+       <height>457</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_14">
       <item>
        <widget class="QGroupBox" name="bgGroupBox">
+        <property name="maximumSize">
+         <size>
+          <width>480</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="title">
          <string>Background</string>
         </property>
-        <widget class="QGroupBox" name="audioGroupBox">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>130</y>
-           <width>459</width>
-           <height>191</height>
-          </rect>
-         </property>
-         <property name="title">
-          <string>Audio</string>
-         </property>
-         <widget class="QWidget" name="layoutWidget">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>20</y>
-            <width>431</width>
-            <height>161</height>
-           </rect>
-          </property>
+        <layout class="QFormLayout" name="formLayout">
+         <item row="0" column="0" colspan="2">
+          <layout class="QVBoxLayout" name="verticalLayout_11">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout">
+                 <item>
+                  <widget class="QLabel" name="backgrounSetupLabel">
+                   <property name="text">
+                    <string>Setup background</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>bgPathLineEdit</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="bgPathLineEdit">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout">
+                 <item>
+                  <spacer name="horizontalSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browseBgButton">
+                   <property name="text">
+                    <string>Browse ...</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="resetBgButton">
+                   <property name="text">
+                    <string>Reset</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_3">
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_4">
+                 <item>
+                  <widget class="QLabel" name="tableBgSetupLabel">
+                   <property name="text">
+                    <string>Setup tableBg</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>bgPathLineEdit</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="tableBgPathLineEdit">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <spacer name="tableBghorizontalSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="browseTableBgButton">
+                   <property name="text">
+                    <string>Browse ...</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="resetTableBgButton">
+                   <property name="text">
+                    <string>Reset</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_11">
+             <item>
+              <widget class="QCheckBox" name="noIndicatorCheckBox">
+               <property name="text">
+                <string>No indicator</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="noEquipAnimCheckBox">
+               <property name="text">
+                <string>No equip anim</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="audioGroupBox">
+        <property name="title">
+         <string>Audio</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_17">
+         <item>
           <layout class="QVBoxLayout" name="verticalLayout_12">
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -213,29 +347,29 @@
             </layout>
            </item>
           </layout>
-         </widget>
-        </widget>
-        <widget class="QGroupBox" name="fontSetupGroupBox">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>330</y>
-           <width>441</width>
-           <height>131</height>
-          </rect>
-         </property>
-         <property name="title">
-          <string>Font setup</string>
-         </property>
-         <widget class="QWidget" name="layoutWidget_2">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>20</y>
-            <width>421</width>
-            <height>101</height>
-           </rect>
-          </property>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="fontSetupGroupBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>480</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Font setup</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_16">
+         <item>
           <layout class="QVBoxLayout" name="verticalLayout_13">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_12">
@@ -332,154 +466,8 @@
             </layout>
            </item>
           </layout>
-         </widget>
-        </widget>
-        <widget class="QWidget" name="">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>20</y>
-           <width>431</width>
-           <height>101</height>
-          </rect>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_11">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout">
-                <item>
-                 <widget class="QLabel" name="backgrounSetupLabel">
-                  <property name="text">
-                   <string>Setup background</string>
-                  </property>
-                  <property name="buddy">
-                   <cstring>bgPathLineEdit</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="bgPathLineEdit">
-                  <property name="readOnly">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout">
-                <item>
-                 <spacer name="horizontalSpacer">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="browseBgButton">
-                  <property name="text">
-                   <string>Browse ...</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="resetBgButton">
-                  <property name="text">
-                   <string>Reset</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_3">
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_4">
-                <item>
-                 <widget class="QLabel" name="tableBgSetupLabel">
-                  <property name="text">
-                   <string>Setup tableBg</string>
-                  </property>
-                  <property name="buddy">
-                   <cstring>bgPathLineEdit</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="tableBgPathLineEdit">
-                  <property name="readOnly">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_4">
-                <item>
-                 <spacer name="tableBghorizontalSpacer">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="browseTableBgButton">
-                  <property name="text">
-                   <string>Browse ...</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="resetTableBgButton">
-                  <property name="text">
-                   <string>Reset</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_11">
-            <item>
-             <widget class="QCheckBox" name="noIndicatorCheckBox">
-              <property name="text">
-               <string>No indicator</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="noEquipAnimCheckBox">
-              <property name="text">
-               <string>No equip anim</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
@@ -498,9 +486,8 @@
        <height>21</height>
       </rect>
      </property>
-     <zorder></zorder>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -628,7 +615,7 @@
         <property name="title">
          <string>Game Record</string>
         </property>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>10</x>
@@ -741,8 +728,8 @@
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>540</y>
+     <x>140</x>
+     <y>510</y>
      <width>341</width>
      <height>32</height>
     </rect>

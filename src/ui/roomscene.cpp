@@ -1775,9 +1775,9 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves) {
                 card->deleteLater();
                 cards.removeAt(j);
                 j--;
-            }
-            else
+            } else {
                 card->setEnabled(true);
+            }
             card->setFootnote(_translateMovement(movement));
             card->hideFootnote();
         }
