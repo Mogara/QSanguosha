@@ -237,7 +237,7 @@ void Client::networkDelayTest(const Json::Value &) {
     notifyServer(S_COMMAND_NETWORK_DELAY_TEST);
 }
 
-void Client::replyToServer(CommandType command, const Json::Value &arg) {
+void Client::replyToServer(CommandType command, const QVariant &arg) {
     if (socket) {
         Packet packet(S_SRC_CLIENT | S_TYPE_REPLY | S_DEST_ROOM, command);
         packet.localSerial = _m_lastServerSerial;
@@ -482,7 +482,7 @@ void Client::loseCards(const Json::Value &arg) {
 void Client::onPlayerChooseGeneral(const QString &item_name) {
     setStatus(NotActive);
     if (!item_name.isEmpty()) {
-        replyToServer(S_COMMAND_CHOOSE_GENERAL, toJsonString(item_name));
+        replyToServer(S_COMMAND_CHOOSE_GENERAL, item_name);
         Sanguosha->playSystemAudioEffect("choose-item");
     }
 }
@@ -545,15 +545,15 @@ void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> 
     if ((status & ClientStatusBasicMask) == Responding)
         _m_roomState.setCurrentCardUsePattern(QString());
     if (card == NULL) {
-        replyToServer(S_COMMAND_RESPONSE_CARD, Json::Value::null);
+        replyToServer(S_COMMAND_RESPONSE_CARD);
     } else {
-        Json::Value targetNames(Json::arrayValue);
+        JsonArray targetNames;
         if (!card->targetFixed()) {
             foreach(const Player *target, targets)
-                targetNames.append(toJsonString(target->objectName()));
+                targetNames << target->objectName();
         }
 
-        replyToServer(S_COMMAND_RESPONSE_CARD, toJsonArray(card->toString(), targetNames));
+        replyToServer(S_COMMAND_RESPONSE_CARD, JsonArray() << card->toString() << QVariant::fromValue(targetNames));
 
         if (card->isVirtualCard() && !card->parent())
             delete card;
@@ -936,7 +936,7 @@ void Client::askForSkillInvoke(const Json::Value &arg) {
 }
 
 void Client::onPlayerMakeChoice(const QString &choice) {
-    replyToServer(S_COMMAND_MULTIPLE_CHOICE, toJsonString(choice));
+    replyToServer(S_COMMAND_MULTIPLE_CHOICE, choice);
     setStatus(NotActive);
 }
 
@@ -1009,7 +1009,7 @@ void Client::askForNullification(const Json::Value &arg) {
 }
 
 void Client::onPlayerChooseCard(int card_id) {
-    Json::Value reply = Json::Value::null;
+    QVariant reply;
     if (card_id != -2)
         reply = card_id;
     replyToServer(S_COMMAND_CHOOSE_CARD, reply);
@@ -1021,13 +1021,13 @@ void Client::onPlayerChoosePlayer(const Player *player) {
     if (player == NULL && !m_isDiscardActionRefusable)
         player = findChild<const Player *>(players_to_choose.first());
 
-    replyToServer(S_COMMAND_CHOOSE_PLAYER, (player == NULL) ? Json::Value::null : toJsonString(player->objectName()));
+    replyToServer(S_COMMAND_CHOOSE_PLAYER, (player == NULL) ? QVariant() : player->objectName());
     setStatus(NotActive);
 }
 
 void Client::onPlayerChooseTriggerOrder(const QString &choice)
 {
-    replyToServer(S_COMMAND_TRIGGER_ORDER, toJsonString(choice));
+    replyToServer(S_COMMAND_TRIGGER_ORDER, choice);
     setStatus(NotActive);
 }
 
@@ -1420,26 +1420,26 @@ void Client::setMark(const Json::Value &mark_str) {
 }
 
 void Client::onPlayerChooseSuit() {
-    replyToServer(S_COMMAND_CHOOSE_SUIT, toJsonString(sender()->objectName()));
+    replyToServer(S_COMMAND_CHOOSE_SUIT, sender()->objectName());
     setStatus(NotActive);
 }
 
 void Client::onPlayerChooseKingdom() {
-    replyToServer(S_COMMAND_CHOOSE_KINGDOM, toJsonString(sender()->objectName()));
+    replyToServer(S_COMMAND_CHOOSE_KINGDOM, sender()->objectName());
     setStatus(NotActive);
 }
 
 void Client::onPlayerDiscardCards(const Card *cards) {
-    Json::Value val;
-    if (!cards)
-        val = Json::Value::null;
-    else {
+    if (cards) {
+        JsonArray arr;
         foreach(int card_id, cards->getSubcards())
-            val.append(card_id);
+            arr << card_id;
         if (cards->isVirtualCard() && !cards->parent())
             delete cards;
+        replyToServer(S_COMMAND_DISCARD_CARD, arr);
+    } else {
+        replyToServer(S_COMMAND_DISCARD_CARD);
     }
-    replyToServer(S_COMMAND_DISCARD_CARD, val);
 
     setStatus(NotActive);
 }
@@ -1616,7 +1616,7 @@ void Client::askForGongxin(const Json::Value &arg) {
 }
 
 void Client::onPlayerReplyGongxin(int card_id) {
-    Json::Value reply = Json::Value::null;
+    QVariant reply;
     if (card_id != -1)
         reply = card_id;
     replyToServer(S_COMMAND_SKILL_GONGXIN, reply);
@@ -1700,23 +1700,22 @@ void Client::askForPlayerChosen(const Json::Value &players) {
 }
 
 void Client::onPlayerReplyYiji(const Card *card, const Player *to) {
-    Json::Value req;
     if (!card)
-        req = Json::Value::null;
+        replyToServer(S_COMMAND_SKILL_YIJI);
     else {
-        req = Json::Value(Json::arrayValue);
-        req[0] = toJsonArray(card->getSubcards());
-        req[1] = toJsonString(to->objectName());
+        JsonArray req;
+        req << JsonUtils::toJsonArray(card->getSubcards());
+        req << to->objectName();
+        replyToServer(S_COMMAND_SKILL_YIJI, req);
     }
-    replyToServer(S_COMMAND_SKILL_YIJI, req);
 
     setStatus(NotActive);
 }
 
 void Client::onPlayerReplyGuanxing(const QList<int> &up_cards, const QList<int> &down_cards) {
-    Json::Value decks(Json::arrayValue);
-    decks[0] = toJsonArray(up_cards);
-    decks[1] = toJsonArray(down_cards);
+    JsonArray decks;
+    decks << JsonUtils::toJsonArray(up_cards);
+    decks << JsonUtils::toJsonArray(down_cards);
 
     replyToServer(S_COMMAND_SKILL_GUANXING, decks);
 

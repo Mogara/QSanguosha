@@ -83,7 +83,7 @@ public:
     void requestSurrender();
 
     void disconnectFromHost();
-    void replyToServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
+    void replyToServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());
     void requestServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());
     void notifyServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());
     void request(const QByteArray &raw);

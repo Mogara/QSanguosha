@@ -195,7 +195,7 @@ JsonDocument JsonDocument::fromJson(const QByteArray &json)
 
 bool JsonUtils::isStringArray(const JsonArray &array, unsigned from, unsigned int to)
 {
-    if (array.length() <= to)
+    if ((unsigned) array.length() <= to)
         return false;
     for (unsigned int i = from; i <= to; i++) {
         if (!array.at(i).canConvert<QString>())
@@ -206,11 +206,29 @@ bool JsonUtils::isStringArray(const JsonArray &array, unsigned from, unsigned in
 
 bool JsonUtils::isIntArray(const JsonArray &array, unsigned from, unsigned int to)
 {
-    if (array.length() <= to)
+    if ((unsigned) array.length() <= to)
         return false;
     for (unsigned int i = from; i <= to; i++) {
         if (!array.at(i).canConvert<int>())
             return false;
     }
     return true;
+}
+
+JsonArray JsonUtils::toJsonArray(const QList<int> &intArray)
+{
+    JsonArray json;
+    foreach (int number, intArray) {
+        json << number;
+    }
+    return json;
+}
+
+JsonArray JsonUtils::toJsonArray(const QStringList &stringArray)
+{
+    JsonArray json;
+    foreach (const QString &string, stringArray) {
+        json << string;
+    }
+    return json;
 }
