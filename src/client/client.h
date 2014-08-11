@@ -84,7 +84,7 @@ public:
 
     void disconnectFromHost();
     void replyToServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
-    void requestServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
+    void requestServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());
     void notifyServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());
     void request(const QByteArray &raw);
     inline void request(const QString &unicode){ request(unicode.toUtf8()); }

@@ -250,7 +250,7 @@ void Client::handleGameEvent(const Json::Value &arg) {
     emit event_received(arg);
 }
 
-void Client::requestServer(CommandType command, const Json::Value &arg) {
+void Client::requestServer(CommandType command, const QVariant &arg) {
     if (socket) {
         Packet packet(S_SRC_CLIENT | S_TYPE_REQUEST | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
@@ -488,42 +488,42 @@ void Client::onPlayerChooseGeneral(const QString &item_name) {
 }
 
 void Client::requestCheatRunScript(const QString &script) {
-    Json::Value cheatReq(Json::arrayValue);
-    cheatReq[0] = (int)S_CHEAT_RUN_SCRIPT;
-    cheatReq[1] = toJsonString(script);
+    JsonArray cheatReq;
+    cheatReq << (int)S_CHEAT_RUN_SCRIPT;
+    cheatReq << script;
     requestServer(S_COMMAND_CHEAT, cheatReq);
 }
 
 void Client::requestCheatRevive(const QString &name) {
-    Json::Value cheatReq(Json::arrayValue);
-    cheatReq[0] = (int)S_CHEAT_REVIVE_PLAYER;
-    cheatReq[1] = toJsonString(name);
+    JsonArray cheatReq;
+    cheatReq << (int)S_CHEAT_REVIVE_PLAYER;
+    cheatReq << name;
     requestServer(S_COMMAND_CHEAT, cheatReq);
 }
 
 void Client::requestCheatDamage(const QString &source, const QString &target, DamageStruct::Nature nature, int points) {
-    Json::Value cheatReq(Json::arrayValue), cheatArg(Json::arrayValue);
-    cheatArg[0] = toJsonString(source);
-    cheatArg[1] = toJsonString(target);
-    cheatArg[2] = (int)nature;
-    cheatArg[3] = points;
+    JsonArray cheatReq, cheatArg;
+    cheatArg << source;
+    cheatArg << target;
+    cheatArg << (int)nature;
+    cheatArg << points;
 
-    cheatReq[0] = (int)S_CHEAT_MAKE_DAMAGE;
-    cheatReq[1] = cheatArg;
+    cheatReq << (int)S_CHEAT_MAKE_DAMAGE;
+    cheatReq << cheatArg;
     requestServer(S_COMMAND_CHEAT, cheatReq);
 }
 
 void Client::requestCheatKill(const QString &killer, const QString &victim) {
-    Json::Value cheatArg;
-    cheatArg[0] = (int)S_CHEAT_KILL_PLAYER;
-    cheatArg[1] = toJsonArray(killer, victim);
+    JsonArray cheatArg;
+    cheatArg << (int)S_CHEAT_KILL_PLAYER;
+    cheatArg << (JsonArray() << killer << victim);
     requestServer(S_COMMAND_CHEAT, cheatArg);
 }
 
 void Client::requestCheatGetOneCard(int card_id) {
-    Json::Value cheatArg;
-    cheatArg[0] = (int)S_CHEAT_GET_ONE_CARD;
-    cheatArg[1] = card_id;
+    JsonArray cheatArg;
+    cheatArg << (int)S_CHEAT_GET_ONE_CARD;
+    cheatArg << card_id;
     requestServer(S_COMMAND_CHEAT, cheatArg);
 }
 
@@ -1043,7 +1043,7 @@ void Client::trust() {
 }
 
 void Client::preshow(QString skill_name) {
-    requestServer(S_COMMAND_PRESHOW, toJsonString(skill_name));
+    requestServer(S_COMMAND_PRESHOW, skill_name);
     Self->setSkillPreshowed(skill_name, !Self->hasPreshowedSkill(skill_name));
     if (Self->inHeadSkills(skill_name))
         emit head_preshowed();
