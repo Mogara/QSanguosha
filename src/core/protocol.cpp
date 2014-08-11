@@ -20,6 +20,7 @@
 
 #include "protocol.h"
 
+#include "json.h"
 #include <json/json.h>
 #include <QString>
 
@@ -121,22 +122,22 @@ bool QSanProtocol::Packet::parse(const string &s) {
 
 //characters in JSON string representations are unicode-escaped. So we don't need Base64 here.
 QByteArray QSanProtocol::Packet::toUtf8() const{
-    Json::Value result(Json::arrayValue);
-    result[0] = globalSerial;
-    result[1] = localSerial;
-    result[2] = packetDescription;
-    result[3] = command;
+    JsonArray result;
+    result << globalSerial;
+    result << localSerial;
+    result << packetDescription;
+    result << command;
     if (messageBody != Json::nullValue)
-        result[4] = messageBody;
+        result << JsonValueToVariant(messageBody);
 
-    Json::FastWriter writer;
-    string msg = writer.write(result);
+    JsonDocument doc(result);
+    QByteArray msg = doc.toJson();
 
     //truncate too long messages
     if (msg.length() > S_MAX_PACKET_SIZE)
-        msg = msg.substr(0, S_MAX_PACKET_SIZE);
+        return msg.left(S_MAX_PACKET_SIZE);
 
-    return msg.c_str();
+    return msg;
 }
 
 QString QSanProtocol::Packet::toString() const{

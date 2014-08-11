@@ -1,63 +1,5 @@
 #include "json.h"
 
-JsonDocument::JsonDocument()
-{
-}
-
-JsonDocument::JsonDocument(const QVariant &var)
-    :value(var)
-{
-}
-
-JsonDocument::JsonDocument(const JsonArray &array)
-{
-    value = array;
-}
-
-JsonDocument::JsonDocument(const JsonObject &object)
-{
-    value = object;
-}
-
-JsonArray JsonDocument::array() const
-{
-    return value.value<JsonArray>();
-}
-
-JsonObject JsonDocument::object() const
-{
-    return value.value<JsonObject>();
-}
-
-bool JsonDocument::isArray() const
-{
-    return value.canConvert<JsonArray>();
-}
-
-bool JsonDocument::isObject() const
-{
-    return value.canConvert<JsonObject>();
-}
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-#include <QJsonDocument>
-
-QByteArray JsonDocument::toJson(bool isIndented) const
-{
-    QJsonDocument doc = QJsonDocument::fromVariant(value);
-    return doc.toJson(isIndented ? QJsonDocument::Indented : QJsonDocument::Compact);
-}
-
-JsonDocument JsonDocument::fromJson(const QByteArray &json)
-{
-    QJsonDocument jsondoc = QJsonDocument::fromJson(json);
-    JsonDocument doc;
-    doc.value = jsondoc.toVariant();
-    return doc;
-}
-#else
-
-#include <json/json.h>
 #include <QStringlist>
 
 Json::Value VariantToJsonValue(const QVariant &var)
@@ -171,6 +113,64 @@ QVariant JsonValueToVariant(const Json::Value &var)
         return QVariant();
     }
 }
+
+JsonDocument::JsonDocument()
+{
+}
+
+JsonDocument::JsonDocument(const QVariant &var)
+    :value(var)
+{
+}
+
+JsonDocument::JsonDocument(const JsonArray &array)
+{
+    value = array;
+}
+
+JsonDocument::JsonDocument(const JsonObject &object)
+{
+    value = object;
+}
+
+JsonArray JsonDocument::array() const
+{
+    return value.value<JsonArray>();
+}
+
+JsonObject JsonDocument::object() const
+{
+    return value.value<JsonObject>();
+}
+
+bool JsonDocument::isArray() const
+{
+    return value.canConvert<JsonArray>();
+}
+
+bool JsonDocument::isObject() const
+{
+    return value.canConvert<JsonObject>();
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QJsonDocument>
+
+QByteArray JsonDocument::toJson(bool isIndented) const
+{
+    QJsonDocument doc = QJsonDocument::fromVariant(value);
+    return doc.toJson(isIndented ? QJsonDocument::Indented : QJsonDocument::Compact);
+}
+
+JsonDocument JsonDocument::fromJson(const QByteArray &json)
+{
+    QJsonDocument jsondoc = QJsonDocument::fromJson(json);
+    JsonDocument doc;
+    doc.value = jsondoc.toVariant();
+    return doc;
+}
+
+#else
 
 QByteArray JsonDocument::toJson(bool isIndented)
 {

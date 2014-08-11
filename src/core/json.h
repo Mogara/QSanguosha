@@ -4,6 +4,8 @@
 #include <QVariantList>
 #include <QVariantMap>
 
+#include <json/json.h>
+
 typedef QVariantList JsonArray;
 typedef QVariantMap JsonObject;
 
@@ -27,5 +29,8 @@ public:
 protected:
     QVariant value;
 };
+
+Json::Value VariantToJsonValue(const QVariant &var);
+QVariant JsonValueToVariant(const Json::Value &var);
 
 #endif // JSON_H
