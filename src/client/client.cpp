@@ -240,7 +240,7 @@ void Client::networkDelayTest(const Json::Value &) {
 void Client::replyToServer(CommandType command, const Json::Value &arg) {
     if (socket) {
         Packet packet(S_SRC_CLIENT | S_TYPE_REPLY | S_DEST_ROOM, command);
-        packet.m_localSerial = _m_lastServerSerial;
+        packet.localSerial = _m_lastServerSerial;
         packet.setMessageBody(arg);
         socket->send(packet.toUtf8());
     }
@@ -341,15 +341,15 @@ void Client::processServerPacket(const char *cmd) {
 bool Client::processServerRequest(const Packet &packet) {
     setStatus(NotActive);
 
-    _m_lastServerSerial = packet.m_globalSerial;
+    _m_lastServerSerial = packet.globalSerial;
     CommandType command = packet.getCommandType();
     Json::Value msg = packet.getMessageBody();
 
     if (!replayer) {
         Countdown countdown;
-        countdown.m_current = 0;
-        countdown.m_type = Countdown::S_COUNTDOWN_USE_DEFAULT;
-        countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
+        countdown.current = 0;
+        countdown.type = Countdown::S_COUNTDOWN_USE_DEFAULT;
+        countdown.max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
         setCountdown(countdown);
     }
 
@@ -1796,9 +1796,9 @@ void Client::moveFocus(const Json::Value &focus) {
     }
 
     if (focus.size() == 1) {//default countdown
-        countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
-        countdown.m_current = 0;
-        countdown.m_max = ServerInfo.getCommandTimeout(S_COMMAND_UNKNOWN, S_CLIENT_INSTANCE);
+        countdown.type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
+        countdown.current = 0;
+        countdown.max = ServerInfo.getCommandTimeout(S_COMMAND_UNKNOWN, S_CLIENT_INSTANCE);
     }
     else {
         // focus[1] is the moveFocus reason, which is now removed.
@@ -1816,8 +1816,8 @@ void Client::moveFocus(const QString &focus, CommandType command) {
     focuses.append(focus);
 
     Countdown countdown;
-    countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
-    countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
+    countdown.max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
+    countdown.type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
 
     emit focus_moved(focuses, countdown);
 }

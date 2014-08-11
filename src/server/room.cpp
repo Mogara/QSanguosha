@@ -738,8 +738,8 @@ ServerPlayer *Room::doBroadcastRaceRequest(QList<ServerPlayer *> &players, QSanP
     while (_m_semRaceRequest.tryAcquire(1)) {} //drain lock
     _m_semRoomMutex.release();
     Countdown countdown;
-    countdown.m_max = timeOut;
-    countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
+    countdown.max = timeOut;
+    countdown.type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
     if (command == S_COMMAND_NULLIFICATION)
         notifyMoveFocus(getAllPlayers(), countdown);
     else
@@ -894,7 +894,7 @@ bool Room::notifyMoveFocus(ServerPlayer *focus) {
     QList<ServerPlayer *> players;
     players.append(focus);
     Countdown countdown;
-    countdown.m_type = Countdown::S_COUNTDOWN_NO_LIMIT;
+    countdown.type = Countdown::S_COUNTDOWN_NO_LIMIT;
     return notifyMoveFocus(players, countdown, focus);
 }
 
@@ -902,12 +902,12 @@ bool Room::notifyMoveFocus(ServerPlayer *focus, CommandType command) {
     QList<ServerPlayer *> players;
     players.append(focus);
     Countdown countdown;
-    countdown.m_max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
-    if (countdown.m_max == ServerInfo.getCommandTimeout(S_COMMAND_UNKNOWN, S_CLIENT_INSTANCE)) {
-        countdown.m_type = Countdown::S_COUNTDOWN_USE_DEFAULT;
+    countdown.max = ServerInfo.getCommandTimeout(command, S_CLIENT_INSTANCE);
+    if (countdown.max == ServerInfo.getCommandTimeout(S_COMMAND_UNKNOWN, S_CLIENT_INSTANCE)) {
+        countdown.type = Countdown::S_COUNTDOWN_USE_DEFAULT;
     }
     else {
-        countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
+        countdown.type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
     }
 
     return notifyMoveFocus(players, countdown, focus);
@@ -936,7 +936,7 @@ bool Room::notifyMoveFocus(const QList<ServerPlayer *> &focuses, const Countdown
     }
     //============================================
 
-    if (countdown.m_type != Countdown::S_COUNTDOWN_USE_DEFAULT) {
+    if (countdown.type != Countdown::S_COUNTDOWN_USE_DEFAULT) {
         arg[1] = countdown.toJsonValue();
     }
 
@@ -2865,9 +2865,9 @@ void Room::processResponse(ServerPlayer *player, const Packet *packet) {
     else if (packet->getCommandType() != player->m_expectedReplyCommand)
         emit room_message(tr("Reply command should be %1 instead of %2")
         .arg(player->m_expectedReplyCommand).arg(packet->getCommandType()));
-    else if (packet->m_localSerial != player->m_expectedReplySerial)
+    else if (packet->localSerial != player->m_expectedReplySerial)
         emit room_message(tr("Reply serial should be %1 instead of %2")
-        .arg(player->m_expectedReplySerial).arg(packet->m_localSerial));
+        .arg(player->m_expectedReplySerial).arg(packet->localSerial));
     else
         success = true;
 
@@ -4641,8 +4641,8 @@ void Room::askForLuckCard() {
         n++;
 
         Countdown countdown;
-        countdown.m_max = ServerInfo.getCommandTimeout(S_COMMAND_LUCK_CARD, S_CLIENT_INSTANCE);
-        countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
+        countdown.max = ServerInfo.getCommandTimeout(S_COMMAND_LUCK_CARD, S_CLIENT_INSTANCE);
+        countdown.type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
         notifyMoveFocus(players, countdown);
 
         doBroadcastRequest(players, S_COMMAND_LUCK_CARD);
@@ -5183,8 +5183,8 @@ QList<const Card *> Room::askForPindianRace(ServerPlayer *from, ServerPlayer *to
     Q_ASSERT(!from->isKongcheng() && !to->isKongcheng());
     while (isPaused()) {}
     Countdown countdown;
-    countdown.m_max = ServerInfo.getCommandTimeout(S_COMMAND_PINDIAN, S_CLIENT_INSTANCE);
-    countdown.m_type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
+    countdown.max = ServerInfo.getCommandTimeout(S_COMMAND_PINDIAN, S_CLIENT_INSTANCE);
+    countdown.type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
     notifyMoveFocus(QList<ServerPlayer *>() << from << to, countdown);
 
     const Card *from_card = NULL, *to_card = NULL;

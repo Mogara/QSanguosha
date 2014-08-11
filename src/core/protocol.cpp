@@ -26,7 +26,7 @@
 using namespace std;
 using namespace QSanProtocol;
 
-unsigned int QSanProtocol::Packet::_m_globalSerial = 0;
+unsigned int QSanProtocol::Packet::globalSerialSequence = 0;
 const unsigned int QSanProtocol::Packet::S_MAX_PACKET_SIZE = 65535;
 const char *QSanProtocol::S_PLAYER_SELF_REFERENCE_ID = "MG_SELF";
 
@@ -47,16 +47,16 @@ bool QSanProtocol::Countdown::tryParse(const Json::Value &val) {
 
     if (val.size() - offset == 2) {
         if (!Utils::isIntArray(val, offset, offset + 1)) return false;
-        m_current = (time_t)val[offset].asInt();
-        m_max = (time_t)val[offset + 1].asInt();
-        m_type = S_COUNTDOWN_USE_SPECIFIED;
+        current = (time_t)val[offset].asInt();
+        max = (time_t)val[offset + 1].asInt();
+        type = S_COUNTDOWN_USE_SPECIFIED;
         return true;
     }
     else if (val.size() - offset == 1 && val[offset].isInt()) {
         CountdownType type = (CountdownType)val[offset].asInt();
         if (type != S_COUNTDOWN_NO_LIMIT && type != S_COUNTDOWN_USE_DEFAULT)
             return false;
-        else m_type = type;
+        else this->type = type;
         return true;
     }
     else
@@ -84,16 +84,16 @@ bool QSanProtocol::Utils::isIntArray(const Json::Value &jsonObject, unsigned int
 }
 
 QSanProtocol::Packet::Packet(int packetDescription, CommandType command)
-    : m_globalSerial(0), m_localSerial(0),
-    m_command(command),
-    m_packetDescription(static_cast<PacketDescription>(packetDescription)),
-    m_msgBody(Json::nullValue)
+    : globalSerial(0), localSerial(0),
+    command(command),
+    packetDescription(static_cast<PacketDescription>(packetDescription)),
+    messageBody(Json::nullValue)
 {
 }
 
 unsigned int QSanProtocol::Packet::createGlobalSerial() {
-    m_globalSerial = ++_m_globalSerial;
-    return m_globalSerial;
+    globalSerial = ++globalSerialSequence;
+    return globalSerial;
 }
 
 bool QSanProtocol::Packet::parse(const string &s) {
@@ -108,10 +108,10 @@ bool QSanProtocol::Packet::parse(const string &s) {
     if (!success || !Utils::isIntArray(result, 0, 3) || result.size() > 5)
         return false;
 
-    m_globalSerial = result[0].asUInt();
-    m_localSerial = result[1].asUInt();
-    m_packetDescription = static_cast<PacketDescription>(result[2].asInt());
-    m_command = (CommandType)result[3].asInt();
+    globalSerial = result[0].asUInt();
+    localSerial = result[1].asUInt();
+    packetDescription = static_cast<PacketDescription>(result[2].asInt());
+    command = (CommandType)result[3].asInt();
 
     if (result.size() == 5)
         setBody(result[4]);
@@ -122,10 +122,10 @@ bool QSanProtocol::Packet::parse(const string &s) {
 //characters in JSON string representations are unicode-escaped. So we don't need Base64 here.
 QByteArray QSanProtocol::Packet::toUtf8() const{
     Json::Value result(Json::arrayValue);
-    result[0] = m_globalSerial;
-    result[1] = m_localSerial;
-    result[2] = m_packetDescription;
-    result[3] = m_command;
+    result[0] = globalSerial;
+    result[1] = localSerial;
+    result[2] = packetDescription;
+    result[3] = command;
     const Json::Value &body = getBody();
     if (body != Json::nullValue)
         result[4] = body;

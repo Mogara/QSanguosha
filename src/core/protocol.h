@@ -211,32 +211,32 @@ namespace QSanProtocol {
             S_COUNTDOWN_NO_LIMIT,
             S_COUNTDOWN_USE_SPECIFIED,
             S_COUNTDOWN_USE_DEFAULT
-        } m_type;
+        } type;
 
-        time_t m_current;
-        time_t m_max;
+        time_t current;
+        time_t max;
         inline Countdown(CountdownType type = S_COUNTDOWN_NO_LIMIT, time_t current = 0, time_t max = 0)
-            : m_type(type), m_current(current), m_max(max) {}
+            : type(type), current(current), max(max) {}
         bool tryParse(const Json::Value &val);
         inline Json::Value toJsonValue() const{
-            if (m_type == S_COUNTDOWN_NO_LIMIT
-                || m_type == S_COUNTDOWN_USE_DEFAULT) {
+            if (type == S_COUNTDOWN_NO_LIMIT
+                || type == S_COUNTDOWN_USE_DEFAULT) {
                 Json::Value val(Json::arrayValue);
-                val[0] = (int)m_type;
+                val[0] = (int)type;
                 return val;
             }
             else {
                 Json::Value val(Json::arrayValue);
-                val[0] = (int)m_current;
-                val[1] = (int)m_max;
+                val[0] = (int)current;
+                val[1] = (int)max;
                 return val;
             }
         }
         inline bool hasTimedOut() {
-            if (m_type == S_COUNTDOWN_NO_LIMIT)
+            if (type == S_COUNTDOWN_NO_LIMIT)
                 return false;
             else
-                return m_current >= m_max;
+                return current >= max;
         }
     };
 
@@ -255,35 +255,35 @@ namespace QSanProtocol {
     class Packet : public AbstractPacket {
     public:
         //format: [global_serial, local_serial, packet_type, command_name, command_body]
-        unsigned int m_globalSerial;
-        unsigned int m_localSerial;
+        unsigned int globalSerial;
+        unsigned int localSerial;
 
         Packet(int packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN);
         unsigned int createGlobalSerial();
-        inline void setMessageBody(const Json::Value &value) { m_msgBody = value; }
-        inline Json::Value &getMessageBody() { return m_msgBody; }
-        inline const Json::Value &getMessageBody() const{ return m_msgBody; }
+        inline void setMessageBody(const Json::Value &value) { messageBody = value; }
+        inline Json::Value &getMessageBody() { return messageBody; }
+        inline const Json::Value &getMessageBody() const{ return messageBody; }
         virtual bool parse(const std::string &);
         virtual QByteArray toUtf8() const;
         virtual QString toString() const;
         virtual PacketDescription getPacketDestination() const{
-            return static_cast<PacketDescription>(m_packetDescription & S_DEST_MASK);
+            return static_cast<PacketDescription>(packetDescription & S_DEST_MASK);
         }
         virtual PacketDescription getPacketSource() const{
-            return static_cast<PacketDescription>(m_packetDescription & S_SRC_MASK);
+            return static_cast<PacketDescription>(packetDescription & S_SRC_MASK);
         }
         virtual PacketDescription getPacketType() const{
-            return static_cast<PacketDescription>(m_packetDescription & S_TYPE_MASK);
+            return static_cast<PacketDescription>(packetDescription & S_TYPE_MASK);
         }
-        virtual PacketDescription getPacketDescription() const{ return m_packetDescription; }
-        virtual CommandType getCommandType() const{ return m_command; }
+        virtual PacketDescription getPacketDescription() const{ return packetDescription; }
+        virtual CommandType getCommandType() const{ return command; }
     protected:
-        static unsigned int _m_globalSerial;
-        CommandType m_command;
-        PacketDescription m_packetDescription;
-        Json::Value m_msgBody;
-        inline void setBody(const Json::Value &value) { m_msgBody = value; }
-        const Json::Value &getBody() const{ return m_msgBody; }
+        static unsigned int globalSerialSequence;
+        CommandType command;
+        PacketDescription packetDescription;
+        Json::Value messageBody;
+        inline void setBody(const Json::Value &value) { messageBody = value; }
+        const Json::Value &getBody() const{ return messageBody; }
 
         //helper functions
         static const unsigned int S_MAX_PACKET_SIZE;
