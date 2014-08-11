@@ -884,9 +884,9 @@ Server::Server(QObject *parent)
 }
 
 void Server::broadcast(const QString &msg) {
-    Json::Value arg(Json::arrayValue);
-    arg[0] = ".";
-    arg[1] = Utils::toJsonString(msg);
+    JsonArray arg;
+    arg << ".";
+    arg << msg;
 
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
     packet.setMessageBody(arg);
