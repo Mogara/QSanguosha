@@ -937,7 +937,7 @@ bool Room::notifyMoveFocus(const QList<ServerPlayer *> &focuses, const Countdown
     //============================================
 
     if (countdown.type != Countdown::S_COUNTDOWN_USE_DEFAULT) {
-        arg[1] = countdown.toJsonValue();
+        arg[1] = VariantToJsonValue(countdown.toQVariant());
     }
 
     return doBroadcastNotify(S_COMMAND_MOVE_FOCUS, arg, except);

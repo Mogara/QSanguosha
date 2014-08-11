@@ -221,19 +221,6 @@ namespace QSanProtocol {
             : type(type), current(current), max(max) {}
         bool tryParse(const QVariant &var);
         QVariant toQVariant() const;
-        inline Json::Value toJsonValue() const{
-            if (type == S_COUNTDOWN_NO_LIMIT
-                || type == S_COUNTDOWN_USE_DEFAULT) {
-                Json::Value val(Json::arrayValue);
-                val[0] = (int)type;
-                return val;
-            } else {
-                Json::Value val(Json::arrayValue);
-                val[0] = (int)current;
-                val[1] = (int)max;
-                return val;
-            }
-        }
         inline bool hasTimedOut() {
             if (type == S_COUNTDOWN_NO_LIMIT)
                 return false;
