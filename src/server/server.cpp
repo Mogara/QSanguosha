@@ -962,10 +962,10 @@ void Server::processRequest(const char *request) {
         return;
     }
 
-    Json::Value body = VariantToJsonValue(signup.getMessageBody());
-    bool is_reconnection = body[0].asBool();
-    QString screen_name = Utils::toQString(body[1]);
-    QString avatar = Utils::toQString(body[2]);
+    JsonArray body = signup.getMessageBody().value<JsonArray>();
+    bool is_reconnection = body[0].toBool();
+    QString screen_name = body[1].toString();
+    QString avatar = body[2].toString();
 
     if (is_reconnection) {
         foreach(QString objname, name2objname.values(screen_name)) {
