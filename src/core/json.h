@@ -31,8 +31,14 @@ protected:
 };
 
 namespace JsonUtils{
+    //three number types defined by JsonCPP
+    inline bool isNumber(const QVariant &var) {
+        return var.type() == QMetaType::Double || var.type() == QMetaType::Int || var.type() == QMetaType::UInt;
+    }
+
     bool isStringArray(const JsonArray &array, unsigned from, unsigned int to);
     bool isIntArray(const JsonArray &array, unsigned from, unsigned int to);
+
     QVariant toJsonArray(const QList<int> &intArray);
     QVariant toJsonArray(const QStringList &stringArray);
 

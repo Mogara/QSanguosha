@@ -192,7 +192,7 @@ Client::~Client() {
 }
 
 void Client::updateCard(const QVariant &val) {
-    if (val.type() == QMetaType::Int) {
+    if (JsonUtils::isNumber(val.type())) {
         // reset card
         int cardId = val.toInt();
         Card *card = _m_roomState.getCard(cardId);
@@ -661,7 +661,7 @@ void Client::startGame(const QVariant &) {
 void Client::hpChange(const QVariant &change_str) {
     JsonArray change = change_str.value<JsonArray>();
     if (change.size() != 3) return;
-    if (change[0].type() != QMetaType::QString || change[1].type() != QMetaType::Int || change[2].type() != QMetaType::Int) return;
+    if (change[0].type() != QMetaType::QString || !JsonUtils::isNumber(change[1]) || !JsonUtils::isNumber(change[2])) return;
 
     QString who = change[0].toString();
     int delta = change[1].toInt();
@@ -676,7 +676,7 @@ void Client::hpChange(const QVariant &change_str) {
 void Client::maxhpChange(const QVariant &change_str) {
     JsonArray change = change_str.value<JsonArray>();
     if (change.size() != 2) return;
-    if (change[0].type() != QMetaType::QString || change[1].type() != QMetaType::Int) return;
+    if (change[0].type() != QMetaType::QString || !JsonUtils::isNumber(change[1])) return;
 
     QString who = change[0].toString();
     int delta = change[1].toInt();
@@ -1437,7 +1437,7 @@ void Client::askForTriggerOrder(const Json::Value &ask_str)
 void Client::setMark(const QVariant &mark_var) {
     JsonArray mark_str = mark_var.value<JsonArray>();
     if (mark_str.size() != 3) return;
-    if (mark_str[0].type() != QMetaType::QString || mark_str[1].type() != QMetaType::QString || mark_str[2].type() != QMetaType::Int) return;
+    if (mark_str[0].type() != QMetaType::QString || mark_str[1].type() != QMetaType::QString || !JsonUtils::isNumber(mark_str[2])) return;
 
     QString who = mark_str[0].toString();
     QString mark = mark_str[1].toString();
@@ -1583,7 +1583,7 @@ void Client::alertFocus() {
 
 void Client::showCard(const QVariant &show_str) {
     JsonArray show = show_str.value<JsonArray>();
-    if (show.size() != 2 || show[0].type() != QMetaType::QString || show[1].type() != QMetaType::Int)
+    if (show.size() != 2 || show[0].type() != QMetaType::QString || !JsonUtils::isNumber(show[1]))
         return;
 
     QString player_name = show[0].toString();

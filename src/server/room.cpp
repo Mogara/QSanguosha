@@ -1274,7 +1274,7 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
             bool success = doRequest(player, S_COMMAND_CHOOSE_CARD, arg, true);
             //@todo: check if the card returned is valid
             const QVariant &clientReply = player->getClientReply();
-            if (!success || clientReply.type() != QMetaType::Int) {
+            if (!success || !JsonUtils::isNumber(clientReply)) {
                 // randomly choose a card
                 QList<const Card *> cards = who->getCards(flags);
                 do {
@@ -1592,7 +1592,7 @@ int Room::askForAG(ServerPlayer *player, const QList<int> &card_ids, bool refusa
         else {
             bool success = doRequest(player, S_COMMAND_AMAZING_GRACE, refusable, true);
             const QVariant &clientReply = player->getClientReply();
-            if (success && clientReply.type() == QMetaType::Int)
+            if (success && JsonUtils::isNumber(clientReply))
                 card_id = clientReply.toInt();
         }
 
@@ -2295,7 +2295,7 @@ void Room::processRequestCheat(ServerPlayer *player, const QVariant &arg) {
     if (!Config.EnableCheat || !arg.canConvert<JsonArray>()) return;
 
     JsonArray args = arg.value<JsonArray>();
-    if(args[0].type() != QMetaType::Int) return;
+    if(!JsonUtils::isNumber(args[0])) return;
 
     //@todo: synchronize this
     player->m_cheatArgs = VariantToJsonValue(arg);
@@ -5154,7 +5154,7 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> e
         gongxinArgs << JsonUtils::toJsonArray(enabled_ids);
         bool success = doRequest(shenlvmeng, S_COMMAND_SKILL_GONGXIN, gongxinArgs, true);
         const QVariant &clientReply = shenlvmeng->getClientReply();
-        if (!success || clientReply.type() != QMetaType::Int || !target->handCards().contains(clientReply.toInt())) {
+        if (!success || !JsonUtils::isNumber(clientReply) || !target->handCards().contains(clientReply.toInt())) {
             shenlvmeng->tag.remove(skill_name);
             return -1;
         }
@@ -5838,7 +5838,7 @@ QString Room::askForOrder(ServerPlayer *player) {
 
     Game3v3Camp result = qrand() % 2 == 0 ? S_CAMP_WARM : S_CAMP_COOL;
     const QVariant &clientReply = player->getClientReply();
-    if (success && clientReply.type() == QMetaType::Int)
+    if (success && JsonUtils::isNumber(clientReply))
         result = (Game3v3Camp)clientReply.toInt();
     return (result == S_CAMP_WARM) ? "warm" : "cool";
 }
