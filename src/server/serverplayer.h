@@ -178,7 +178,7 @@ public:
     bool m_isWaitingReply; // Suggest if the server player is waiting for client's response.
     Json::Value m_cheatArgs; // Store the cheat code received from client.
     QSanProtocol::CommandType m_expectedReplyCommand; // Store the command to be sent to the client.
-    Json::Value m_commandArgs; // Store the command args to be sent to the client.
+    QVariant m_commandArgs; // Store the command args to be sent to the client.
 
     // static function
     static bool CompareByActionOrder(ServerPlayer *a, ServerPlayer *b);

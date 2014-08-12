@@ -684,12 +684,12 @@ void Room::handleAcquireDetachSkills(ServerPlayer *player, const QString &skill_
     handleAcquireDetachSkills(player, skill_names.split("|"), acquire_only);
 }
 
-bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const Json::Value &arg, bool wait) {
+bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, bool wait) {
     time_t timeOut = ServerInfo.getCommandTimeout(command, S_SERVER_INSTANCE);
     return doRequest(player, command, arg, timeOut, wait);
 }
 
-bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const Json::Value &arg, time_t timeOut, bool wait) {
+bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg, time_t timeOut, bool wait) {
     Packet packet(S_SRC_ROOM | S_TYPE_REQUEST | S_DEST_CLIENT, command);
     packet.setMessageBody(arg);
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
@@ -959,15 +959,15 @@ bool Room::askForSkillInvoke(ServerPlayer *player, const QString &skill_name, co
             thread->delay();
     }
     else {
-        Json::Value skillCommand;
+        JsonArray skillCommand;
         if (data.type() == QVariant::String)
-            skillCommand = toJsonArray(skill_name, data.toString());
+            skillCommand << skill_name << data.toString();
         else {
             ServerPlayer *player = data.value<ServerPlayer *>();
             QString data_str;
             if (player != NULL)
                 data_str = "playerdata:" + player->objectName();
-            skillCommand = toJsonArray(skill_name, data_str);
+            skillCommand << skill_name << data_str;
         }
 
         if (!doRequest(player, S_COMMAND_INVOKE_SKILL, skillCommand, true)
@@ -1020,7 +1020,7 @@ QString Room::askForChoice(ServerPlayer *player, const QString &skill_name, cons
             thread->delay();
         }
         else {
-            bool success = doRequest(player, S_COMMAND_MULTIPLE_CHOICE, toJsonArray(skill_name, choices), true);
+            bool success = doRequest(player, S_COMMAND_MULTIPLE_CHOICE, JsonArray() << skill_name << choices, true);
             Json::Value clientReply = player->getClientReply();
             if (!success || !clientReply.isString()) {
                 answer = ".";
@@ -1113,10 +1113,10 @@ bool Room::_askForNullification(const Card *trick, ServerPlayer *from, ServerPla
     QList<ServerPlayer *> validHumanPlayers;
     QList<ServerPlayer *> validAiPlayers;
 
-    Json::Value arg(Json::arrayValue);
-    arg[0] = toJsonString(trick_name);
-    arg[1] = from ? toJsonString(from->objectName()) : Json::Value::null;
-    arg[2] = to ? toJsonString(to->objectName()) : Json::Value::null;
+    JsonArray arg;
+    arg << trick_name;
+    arg << (from ? QVariant(from->objectName()) : QVariant());
+    arg << (to ? QVariant(to->objectName()) : QVariant());
 
     CardEffectStruct trickEffect;
     trickEffect.card = trick;
@@ -1260,13 +1260,13 @@ int Room::askForCardChosen(ServerPlayer *player, ServerPlayer *who, const QStrin
                 card_id = cards.at(qrand() % cards.length())->getId();
             }
         } else {
-            Json::Value arg(Json::arrayValue);
-            arg[0] = toJsonString(who->objectName());
-            arg[1] = toJsonString(flags);
-            arg[2] = toJsonString(reason);
-            arg[3] = handcard_visible;
-            arg[4] = (int)method;
-            arg[5] = toJsonArray(disabled_ids);
+            JsonArray arg;
+            arg << who->objectName();
+            arg << flags;
+            arg << reason;
+            arg << handcard_visible;
+            arg << (int)method;
+            arg << JsonUtils::toJsonArray(disabled_ids);
             bool success = doRequest(player, S_COMMAND_CHOOSE_CARD, arg, true);
             //@todo: check if the card returned is valid
             Json::Value clientReply = player->getClientReply();
@@ -1338,10 +1338,10 @@ const Card *Room::askForCard(ServerPlayer *player, const QString &pattern, const
             if (card && player->isCardLimited(card, method)) card = NULL;
             if (card) thread->delay();
         } else {
-            Json::Value arg(Json::arrayValue);
-            arg[0] = toJsonString(pattern);
-            arg[1] = toJsonString(prompt);
-            arg[2] = int(method);
+            JsonArray arg;
+            arg << pattern;
+            arg << prompt;
+            arg << int(method);
             bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, arg, true);
             Json::Value clientReply = player->getClientReply();
             if (success && !clientReply.isNull())
@@ -1505,11 +1505,11 @@ const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, co
             thread->delay();
         }
     } else {
-        Json::Value ask_str(Json::arrayValue);
-        ask_str[0] = toJsonString(pattern);
-        ask_str[1] = toJsonString(prompt);
-        ask_str[2] = int(method);
-        ask_str[3] = notice_index;
+        JsonArray ask_str;
+        ask_str << pattern;
+        ask_str << prompt;
+        ask_str << int(method);
+        ask_str << notice_index;
         bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, ask_str, true);
         if (success) {
             Json::Value clientReply = player->getClientReply();
@@ -1615,7 +1615,7 @@ const Card *Room::askForCardShow(ServerPlayer *player, ServerPlayer *requestor, 
         if (player->getHandcardNum() == 1)
             card = player->getHandcards().first();
         else {
-            bool success = doRequest(player, S_COMMAND_SHOW_CARD, toJsonString(requestor->getGeneralName()), true);
+            bool success = doRequest(player, S_COMMAND_SHOW_CARD, requestor->getGeneralName(), true);
             Json::Value clientReply = player->getClientReply();
             if (success && clientReply[0].isString())
                 card = Card::Parse(toQString(clientReply[0]));
@@ -1641,9 +1641,9 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying) {
         card = ai->askForSinglePeach(dying);
     else {
         int peaches = 1 - dying->getHp();
-        Json::Value arg(Json::arrayValue);
-        arg[0] = toJsonString(dying->objectName());
-        arg[1] = peaches;
+        JsonArray arg;
+        arg << dying->objectName();
+        arg << peaches;
         bool success = doRequest(player, S_COMMAND_ASK_PEACH, arg, true);
         Json::Value clientReply = player->getClientReply();
         if (!success || !clientReply[0].isString())
@@ -1717,12 +1717,12 @@ QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, SP
 
             thread->delay();
         } else {
-            Json::Value args;
+            JsonArray args;
             //example: "["turn_start", ["sgs1:tiandu", "sgs1:tuntian", "sgs2:slobsb"], true]"
 
-            args[0] = toJsonString(reason);
-            args[1] = toJsonArray(all_pairs);
-            args[2] = optional;
+            args << reason;
+            args << JsonUtils::toJsonArray(all_pairs);
+            args << optional;
 
             bool success = doRequest(player, S_COMMAND_TRIGGER_ORDER, args, true);
             Json::Value clientReply = player->getClientReply();
@@ -2294,7 +2294,7 @@ bool Room::makeSurrender(ServerPlayer *initiator) {
     QList<ServerPlayer *> playersAlive;
     foreach(ServerPlayer *player, m_players) {
         if (player != initiator && player->isAlive() && player->isOnline()) {
-            player->m_commandArgs = toJsonString(initiator->getGeneral()->objectName());
+            player->m_commandArgs = initiator->getGeneral()->objectName();
             playersAlive << player;
         }
     }
@@ -2499,9 +2499,9 @@ void Room::chooseGenerals() {
     assignGeneralsForPlayers(to_assign);
 
     foreach(ServerPlayer *player, to_assign) {
-        Json::Value args;
-        args[0] = toJsonArray(player->getSelected());
-        args[1] = false;
+        JsonArray args;
+        args << JsonUtils::toJsonArray(player->getSelected());
+        args << false;
         player->m_commandArgs = args;
     }
 
@@ -4597,7 +4597,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use) {
         if (diff > 0) thread->delay(diff);
     }
     else {
-        bool success = doRequest(player, S_COMMAND_PLAY_CARD, toJsonString(player->objectName()), true);
+        bool success = doRequest(player, S_COMMAND_PLAY_CARD, player->objectName(), true);
         Json::Value clientReply = player->getClientReply();
 
         if (m_surrenderRequestReceived) {
@@ -4633,7 +4633,7 @@ void Room::askForLuckCard() {
     QList<ServerPlayer *> players;
     foreach(ServerPlayer *player, m_players) {
         if (!player->getAI()) {
-            player->m_commandArgs = Json::Value::null;
+            player->m_commandArgs = QVariant();
             players << player;
         }
     }
@@ -4752,7 +4752,7 @@ Card::Suit Room::askForSuit(ServerPlayer *player, const QString &reason) {
     if (ai)
         return ai->askForSuit(reason);
 
-    bool success = doRequest(player, S_COMMAND_CHOOSE_SUIT, Json::Value::null, true);
+    bool success = doRequest(player, S_COMMAND_CHOOSE_SUIT, QVariant(), true);
 
     Card::Suit suit = Card::AllSuits[qrand() % 4];
     if (success) {
@@ -4779,7 +4779,7 @@ QString Room::askForKingdom(ServerPlayer *player) {
     if (ai)
         return ai->askForKingdom();
 
-    bool success = doRequest(player, S_COMMAND_CHOOSE_KINGDOM, Json::Value::null, true);
+    bool success = doRequest(player, S_COMMAND_CHOOSE_KINGDOM, QVariant(), true);
     Json::Value clientReply = player->getClientReply();
     if (success && clientReply.isString()) {
         QString kingdom = toQString(clientReply.asCString());
@@ -4870,12 +4870,12 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
         if (optional && !to_discard.isEmpty())
             thread->delay();
     } else {
-        Json::Value ask_str(Json::arrayValue);
-        ask_str[0] = discard_num;
-        ask_str[1] = min_num;
-        ask_str[2] = optional;
-        ask_str[3] = include_equip;
-        ask_str[4] = toJsonString(prompt);
+        JsonArray ask_str;
+        ask_str << discard_num;
+        ask_str << min_num;
+        ask_str << optional;
+        ask_str << include_equip;
+        ask_str << prompt;
         bool success = doRequest(player, S_COMMAND_DISCARD_CARD, ask_str, true);
 
         //@todo: also check if the player does have that card!!!
@@ -4931,11 +4931,11 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
         }
     }
     else {
-        Json::Value exchange_str(Json::arrayValue);
-        exchange_str[0] = discard_num;
-        exchange_str[1] = include_equip;
-        exchange_str[2] = toJsonString(prompt);
-        exchange_str[3] = optional;
+        JsonArray exchange_str;
+        exchange_str << discard_num;
+        exchange_str << include_equip;
+        exchange_str << prompt;
+        exchange_str << optional;
 
         bool success = doRequest(player, S_COMMAND_EXCHANGE_CARD, exchange_str, true);
         //@todo: also check if the player does have that card!!!
@@ -5014,9 +5014,9 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
         bottom_cards = cards;
     }
     else {
-        Json::Value guanxingArgs(Json::arrayValue);
-        guanxingArgs[0] = toJsonArray(cards);
-        guanxingArgs[1] = (guanxing_type != GuanxingBothSides);
+        JsonArray guanxingArgs;
+        guanxingArgs << JsonUtils::toJsonArray(cards);
+        guanxingArgs << (guanxing_type != GuanxingBothSides);
         bool success = doRequest(zhuge, S_COMMAND_SKILL_GUANXING, guanxingArgs, true);
         if (!success) {
             foreach(int card_id, cards) {
@@ -5130,11 +5130,11 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> e
                 notifyResetCard(shenlvmeng, cardId);
         }
 
-        Json::Value gongxinArgs(Json::arrayValue);
-        gongxinArgs[0] = toJsonString(target->objectName());
-        gongxinArgs[1] = true;
-        gongxinArgs[2] = toJsonArray(target->handCards());
-        gongxinArgs[3] = toJsonArray(enabled_ids);
+        JsonArray gongxinArgs;
+        gongxinArgs << target->objectName();
+        gongxinArgs << true;
+        gongxinArgs << JsonUtils::toJsonArray(target->handCards());
+        gongxinArgs << JsonUtils::toJsonArray(enabled_ids);
         bool success = doRequest(shenlvmeng, S_COMMAND_SKILL_GONGXIN, gongxinArgs, true);
         Json::Value clientReply = shenlvmeng->getClientReply();
         if (!success || !clientReply.isInt() || !target->handCards().contains(clientReply.asInt())) {
@@ -5163,7 +5163,7 @@ const Card *Room::askForPindian(ServerPlayer *player, ServerPlayer *from, Server
         return ai->askForPindian(from, reason);
     }
 
-    bool success = doRequest(player, S_COMMAND_PINDIAN, toJsonArray(from->objectName(), to->objectName()), true);
+    bool success = doRequest(player, S_COMMAND_PINDIAN, JsonArray() << from->objectName() << to->objectName(), true);
 
     Json::Value clientReply = player->getClientReply();
     if (!success || !clientReply[0].isString()) {
@@ -5217,11 +5217,15 @@ QList<const Card *> Room::askForPindianRace(ServerPlayer *from, ServerPlayer *to
 
     QList<ServerPlayer *> players;
     if (!from_card) {
-        from->m_commandArgs = toJsonArray(from->objectName(), to->objectName());
+        JsonArray arr;
+        arr << from->objectName() << to->objectName();
+        from->m_commandArgs = arr;
         players << from;
     }
     if (!to_card) {
-        to->m_commandArgs = toJsonArray(from->objectName(), to->objectName());
+        JsonArray arr;
+        arr << from->objectName() << to->objectName();
+        to->m_commandArgs = arr;
         players << to;
     }
 
@@ -5274,13 +5278,14 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
             thread->delay();
     }
     else {
-        Json::Value req;
-        req[0] = Json::Value(Json::arrayValue);
-        req[1] = toJsonString(skillName);
-        req[2] = toJsonString(prompt);
-        req[3] = optional;
+        JsonArray req;
+        JsonArray req_targets;
         foreach(ServerPlayer *target, targets)
-            req[0].append(toJsonString(target->objectName()));
+            req_targets << target->objectName();
+        req << req_targets;
+        req << skillName;
+        req << prompt;
+        req << optional;
         bool success = doRequest(player, S_COMMAND_CHOOSE_PLAYER, req, true);
 
         Json::Value clientReply = player->getClientReply();
@@ -5339,9 +5344,9 @@ QString Room::askForGeneral(ServerPlayer *player, const QStringList &generals, c
         thread->delay();
     }
     else if (player->isOnline()) {
-        Json::Value options;
-        options[0] = toJsonArray(generals);
-        options[1] = single_result;
+        JsonArray options;
+        options << JsonUtils::toJsonArray(generals);
+        options << single_result;
         bool success = doRequest(player, S_COMMAND_CHOOSE_GENERAL, options, true);
 
         Json::Value clientResponse = player->getClientReply();
@@ -5725,16 +5730,16 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
             }
         }
         else {
-            Json::Value arg(Json::arrayValue);
-            arg[0] = toJsonArray(cards);
-            arg[1] = optional;
-            arg[2] = max_num;
-            QStringList player_names;
+            JsonArray arg;
+            arg << JsonUtils::toJsonArray(cards);
+            arg << optional;
+            arg << max_num;
+            JsonArray player_names;
             foreach(ServerPlayer *player, players)
                 player_names << player->objectName();
-            arg[3] = toJsonArray(player_names);
+            arg << player_names;
             if (!prompt.isEmpty())
-                arg[4] = toJsonString(prompt);
+                arg << prompt;
             bool success = doRequest(guojia, S_COMMAND_SKILL_YIJI, arg, true);
 
             //Validate client response
