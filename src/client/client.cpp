@@ -69,7 +69,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_GAME_OVER] = &Client::gameOver;
 
     callbacks[S_COMMAND_CHANGE_HP] = &Client::hpChange;
-    m_callbacks[S_COMMAND_CHANGE_MAXHP] = &Client::maxhpChange;
+    callbacks[S_COMMAND_CHANGE_MAXHP] = &Client::maxhpChange;
     m_callbacks[S_COMMAND_KILL_PLAYER] = &Client::killPlayer;
     m_callbacks[S_COMMAND_REVIVE_PLAYER] = &Client::revivePlayer;
     m_callbacks[S_COMMAND_SHOW_CARD] = &Client::showCard;
@@ -672,12 +672,13 @@ void Client::hpChange(const QVariant &change_str) {
     emit hp_changed(who, delta, nature, nature_index == -1);
 }
 
-void Client::maxhpChange(const Json::Value &change_str) {
-    if (!change_str.isArray() || change_str.size() != 2) return;
-    if (!change_str[0].isString() || !change_str[1].isInt()) return;
+void Client::maxhpChange(const QVariant &change_str) {
+    JsonArray change = change_str.value<JsonArray>();
+    if (change.size() != 2) return;
+    if (change[0].type() != QMetaType::QString || change[1].type() != QMetaType::Int) return;
 
-    QString who = toQString(change_str[0]);
-    int delta = change_str[1].asInt();
+    QString who = change[0].toString();
+    int delta = change[1].toInt();
     emit maxhp_changed(who, delta);
 }
 
