@@ -2336,9 +2336,12 @@ void Room::processRequestSurrender(ServerPlayer *player, const Json::Value &) {
 void Room::processRequestPreshow(ServerPlayer *player, const Json::Value &arg) {
     if (player == NULL)
         return;
+
+    if (!arg.isArray() || !arg[0].isString() || !arg[1].isBool()) return;
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
-    QString skill_name = toQString(arg);
-    player->preshowSkill(skill_name);
+    const QString skill_name = toQString(arg[0]);
+    const bool isPreshowed = arg[1].asBool();
+    player->setSkillPreshowed(skill_name, isPreshowed);
     player->releaseLock(ServerPlayer::SEMA_MUTEX);
 }
 
@@ -4871,6 +4874,7 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
         ask_str[2] = optional;
         ask_str[3] = include_equip;
         ask_str[4] = toJsonString(prompt);
+        ask_str[5] = toJsonString(reason);
         bool success = doRequest(player, S_COMMAND_DISCARD_CARD, ask_str, true);
 
         //@todo: also check if the player does have that card!!!

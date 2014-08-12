@@ -216,23 +216,22 @@ void QSanSkillButton::_setSkillType(SkillType type) {
 
 void QSanSkillButton::onMouseClick() {
     if (_m_skill == NULL) return;
+
+    if (!Self->hasPreshowedSkill(_m_skill) && _m_state == QSanButton::S_STATE_CANPRESHOW) {
+        setState(S_STATE_DISABLED);
+        ClientInstance->preshow(_m_skill->objectName(), true);
+    } else if (Self->hasPreshowedSkill(_m_skill) && _m_state == QSanButton::S_STATE_DISABLED
+             && _m_skill->canPreshow() && !Self->hasShownSkill(_m_skill)) {
+        setState(QSanButton::S_STATE_CANPRESHOW);
+        ClientInstance->preshow(_m_skill->objectName(), false);
+    }
+
     if ((_m_style == S_STYLE_TOGGLE && isDown() && _m_emitActivateSignal) || _m_style == S_STYLE_PUSH) {
         emit skill_activated();
         emit skill_activated(_m_skill);
-    }
-    else if (!isDown() && _m_emitDeactivateSignal) {
+    } else if (!isDown() && _m_emitDeactivateSignal) {
         emit skill_deactivated();
         emit skill_deactivated(_m_skill);
-    }
-
-    if (_m_state == QSanButton::S_STATE_CANPRESHOW) {
-        setState(S_STATE_DISABLED);
-        ClientInstance->preshow(_m_skill->objectName());
-    }
-    else if (_m_state == QSanButton::S_STATE_DISABLED && _m_skill->canPreshow()
-        && !Self->hasShownSkill(_m_skill)) {
-        setState(QSanButton::S_STATE_CANPRESHOW);
-        ClientInstance->preshow(_m_skill->objectName());
     }
 }
 
@@ -313,8 +312,12 @@ void QSanSkillButton::mousePressEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 void QSanSkillButton::setEnabled(bool enabled) {
-    if (_m_skill->canPreshow() && !Self->hasShownSkill(_m_skill)) return;
-    QSanButton::setEnabled(enabled);
+    if (!enabled && _m_skill->canPreshow()
+            && !Self->hasShownSkill(_m_skill)) {
+        setState(Self->hasPreshowedSkill(_m_skill) ? S_STATE_DISABLED : S_STATE_CANPRESHOW);
+    } else {
+        QSanButton::setEnabled(enabled);
+    }
 }
 
 void QSanInvokeSkillButton::_repaint() {
