@@ -56,7 +56,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_isGameOver = false;
 
     callbacks[S_COMMAND_CHECK_VERSION] = &Client::checkVersion;
-    m_callbacks[S_COMMAND_SETUP] = &Client::setup;
+    callbacks[S_COMMAND_SETUP] = &Client::setup;
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Client::networkDelayTest;
     m_callbacks[S_COMMAND_ADD_PLAYER] = &Client::addPlayer;
     m_callbacks[S_COMMAND_REMOVE_PLAYER] = &Client::removePlayer;
@@ -287,11 +287,11 @@ void Client::checkVersion(const QVariant &server_version) {
     emit version_checked(version_number, mod_name);
 }
 
-void Client::setup(const Json::Value &setup_json) {
+void Client::setup(const QVariant &setup_json) {
     if (socket && !socket->isConnected())
         return;
 
-    QString setup_str = toQString(setup_json);
+    QString setup_str = setup_json.toString();
     if (ServerInfo.parse(setup_str)) {
         emit server_connected();
         notifyServer(S_COMMAND_TOGGLE_READY);
