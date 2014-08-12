@@ -37,6 +37,8 @@ namespace JsonUtils{
     QVariant toJsonArray(const QStringList &stringArray);
 }
 
+
+//@todo: these two functions are temporarily used to migrate the project from JsonCPP, and will soon be inaccessible.
 Json::Value VariantToJsonValue(const QVariant &var);
 QVariant JsonValueToVariant(const Json::Value &var);
 

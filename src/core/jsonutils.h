@@ -30,6 +30,7 @@
 
 namespace QSanProtocol
 {
+    //@todo: JsonCPP Utility functions will soon be independent from QSanProtocol
     namespace Utils
     {
         inline QString toQString(const Json::Value &value) {
