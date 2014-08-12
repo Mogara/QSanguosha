@@ -218,6 +218,7 @@ void Room::enterDying(ServerPlayer *player, DamageStruct *reason) {
     currentdying << player->objectName();
     setTag("CurrentDying", QVariant::fromValue(currentdying));
 
+
     JsonArray arg;
     arg << (int)QSanProtocol::S_GAME_EVENT_PLAYER_DYING;
     arg << player->objectName();
@@ -932,7 +933,7 @@ bool Room::notifyMoveFocus(const QList<ServerPlayer *> &focuses, const Countdown
         for (int i = 0; i < n; i++) {
             players << focuses.at(i)->objectName();
         }
-        arg << players;
+        arg << QVariant(players);
     }
     else {
         arg << QSanProtocol::S_ALL_ALIVE_PLAYERS;
@@ -5282,7 +5283,7 @@ ServerPlayer *Room::askForPlayerChosen(ServerPlayer *player, const QList<ServerP
         JsonArray req_targets;
         foreach(ServerPlayer *target, targets)
             req_targets << target->objectName();
-        req << req_targets;
+        req << QVariant(req_targets);
         req << skillName;
         req << prompt;
         req << optional;
@@ -5737,7 +5738,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
             JsonArray player_names;
             foreach(ServerPlayer *player, players)
                 player_names << player->objectName();
-            arg << player_names;
+            arg << QVariant(player_names);
             if (!prompt.isEmpty())
                 arg << prompt;
             bool success = doRequest(guojia, S_COMMAND_SKILL_YIJI, arg, true);

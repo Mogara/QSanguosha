@@ -509,14 +509,14 @@ void Client::requestCheatDamage(const QString &source, const QString &target, Da
     cheatArg << points;
 
     cheatReq << (int)S_CHEAT_MAKE_DAMAGE;
-    cheatReq << cheatArg;
+    cheatReq << QVariant(cheatArg);
     requestServer(S_COMMAND_CHEAT, cheatReq);
 }
 
 void Client::requestCheatKill(const QString &killer, const QString &victim) {
     JsonArray cheatArg;
     cheatArg << (int)S_CHEAT_KILL_PLAYER;
-    cheatArg << (JsonArray() << killer << victim);
+    cheatArg << QVariant(JsonArray() << killer << victim);
     requestServer(S_COMMAND_CHEAT, cheatArg);
 }
 
