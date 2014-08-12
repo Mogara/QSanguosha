@@ -319,14 +319,14 @@ void Client::processServerPacket(const char *cmd) {
     Packet packet;
     if (packet.parse(cmd)) {
         if (packet.getPacketType() == S_TYPE_NOTIFICATION) {
-            Callback callback = m_callbacks[packet.getCommandType()];
+            CallBack callback = m_callbacks[packet.getCommandType()];
             if (callback) {
                 (this->*callback)(packet.getMessageBody());
             }
         }
         else if (packet.getPacketType() == S_TYPE_REQUEST) {
             if (replayer && packet.getPacketDescription() == 0x411 && packet.getCommandType() == S_COMMAND_CHOOSE_GENERAL) {
-                Callback callback = m_interactions[S_COMMAND_CHOOSE_GENERAL];
+                CallBack callback = m_interactions[S_COMMAND_CHOOSE_GENERAL];
                 if (callback)
                     (this->*callback)(packet.getMessageBody());
             }
@@ -353,7 +353,7 @@ bool Client::processServerRequest(const Packet &packet) {
         setCountdown(countdown);
     }
 
-    Callback callback = m_interactions[command];
+    CallBack callback = m_interactions[command];
     if (!callback) return false;
     (this->*callback)(msg);
 
