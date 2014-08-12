@@ -67,6 +67,8 @@ sgs.ai_skill_choice.drowning = function(self, choices, data)
 		or self:needToLoseHp(self.player, effect.from)
 		or self:getDamagedEffects(self.player, effect.from) then return "damage" end
 
+	if self.player:getHp() == 1 then return "throw" end
+
 	local value = 0
 	for _, equip in sgs.qlist(self.player:getEquips()) do
 		if equip:isKindOf("Weapon") then value = value + self:evaluateWeapon(equip)
