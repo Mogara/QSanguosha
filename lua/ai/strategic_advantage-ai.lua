@@ -21,11 +21,7 @@
 function SmartAI:useCardDrowning(card, use)
 	if not card:isAvailable(self.player) then return end
 
-	self:sort(self.enemies)
-	local function cmp(a, b)
-		return a:getEquips():length() >= b:getEquips():length()
-	end
-	table.sort(self.enemies, cmp)
+	self:sort(self.enemies, "equip_defense")
 
 	local players = sgs.PlayerList()
 	local Splayers = sgs.SPlayerList()
@@ -71,6 +67,8 @@ sgs.ai_skill_choice.drowning = function(self, choices, data)
 		or self:needToLoseHp(self.player, effect.from)
 		or self:getDamagedEffects(self.player, effect.from) then return "damage" end
 
+	if self.player:getHp() == 1 then return "throw" end
+
 	local value = 0
 	for _, equip in sgs.qlist(self.player:getEquips()) do
 		if equip:isKindOf("Weapon") then value = value + self:evaluateWeapon(equip)
@@ -83,3 +81,41 @@ sgs.ai_skill_choice.drowning = function(self, choices, data)
 	end
 	if value < 8 then return "throw" else return "damage" end
 end
+
+
+local transfer_skill = {}
+transfer_skill.name = "transfer"
+table.insert(sgs.ai_skills, transfer_skill)
+transfer_skill.getTurnUseCard = function(self, inclusive)
+	if self.player:isKongcheng() then return end
+	if self:isWeak() and self:getOverflow() <= 0 then return end
+	return sgs.Card_Parse("@TransferCard=.")
+end
+
+sgs.ai_skill_use_func.TransferCard = function(card, use, self)
+
+	local cards = {}
+	for _, c in sgs.qlist(self.player:getHandcards()) do
+		if c:isTransferable() then table.insert(cards, c) end
+	end
+	if #cards == 0 then return end
+
+	local friends = {}
+	for _, friend in ipairs(self.friends_noself) do
+		if not self:needKongcheng(friend, true) then table.insert(friends, friend:objectName()) end
+	end
+	if #friends == 0 then return end
+
+	if #friends > 0 then
+		local card, target = self:getCardNeedPlayer(cards)
+		if card and target and table.contains(friends, target:objectName()) then
+			use.card = sgs.Card_Parse("@TransferCard=" .. card:getEffectiveId())
+			if use.to then use.to:append(target) end
+			return
+		end
+	end
+
+end
+
+sgs.ai_use_priority.TransferCard = 0
+sgs.ai_card_intention.TransferCard = -10

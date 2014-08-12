@@ -1042,9 +1042,12 @@ void Client::trust() {
     setStatus(NotActive);
 }
 
-void Client::preshow(QString skill_name) {
-    requestServer(S_COMMAND_PRESHOW, toJsonString(skill_name));
-    Self->setSkillPreshowed(skill_name, !Self->hasPreshowedSkill(skill_name));
+void Client::preshow(const QString &skill_name, const bool isPreshowed) {
+    Json::Value arg(Json::arrayValue);
+    arg[0] = toJsonString(skill_name);
+    arg[1] = isPreshowed;
+    requestServer(S_COMMAND_PRESHOW, arg);
+    Self->setSkillPreshowed(skill_name, isPreshowed);
     if (Self->inHeadSkills(skill_name))
         emit head_preshowed();
     else
@@ -1171,14 +1174,16 @@ void Client::updatePileNum() {
 }
 
 void Client::askForDiscard(const Json::Value &req) {
-    if (!req.isArray() || !req[0].isInt() || !req[1].isInt() || !req[2].isBool() || !req[3].isBool())
+    if (!req.isArray() || !req[0].isInt() || !req[1].isInt() || !req[2].isBool()
+            || !req[3].isBool() || !req[4].isString() || !req[5].isString())
         return;
 
     discard_num = req[0].asInt();
     min_num = req[1].asInt();
     m_isDiscardActionRefusable = req[2].asBool();
     m_canDiscardEquip = req[3].asBool();
-    QString prompt = req[4].asCString();
+    QString prompt = toQString(req[4]);
+    discard_reason = toQString(req[5]);
 
     if (prompt.isEmpty()) {
         if (m_canDiscardEquip)
@@ -1190,8 +1195,7 @@ void Client::askForDiscard(const Json::Value &req) {
             prompt.append(tr("%1 %2 card(s) are required at least").arg(min_num).arg(m_canDiscardEquip ? "" : tr("hand")));
         }
         prompt_doc->setHtml(prompt);
-    }
-    else {
+    } else {
         QStringList texts = prompt.split(":");
         if (texts.length() < 4) {
             while (texts.length() < 3)

@@ -957,7 +957,7 @@ duanliang_skill.getTurnUseCard = function(self)
 
 	local card
 
-	self:sortByUseValue(cards,true)
+	self:sortByUseValue(cards, true)
 
 	for _,acard in ipairs(cards)  do
 		if acard:isBlack() and (acard:isKindOf("BasicCard") or acard:isKindOf("EquipCard")) and (self:getDynamicUsePriority(acard) < sgs.ai_use_value.SupplyShortage) then
