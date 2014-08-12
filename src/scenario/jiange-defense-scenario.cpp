@@ -46,7 +46,7 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
     }
     qShuffle(wei_generals);
     qShuffle(shu_generals);
-    Q_ASSERT(wei_generals.length() < 10 || shu_generals.length() < 10);
+    Q_ASSERT(wei_generals.length() >= 10 && shu_generals.length() >= 10);
     QMap<ServerPlayer *, QStringList> human_map; // Rara said, human couldn't get ghost or machine as its general.
     QList<ServerPlayer *> players = room->getPlayers();
     for (int i = 0; i < 8; i++) {
