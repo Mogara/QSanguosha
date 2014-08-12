@@ -131,7 +131,7 @@ public:
     void getCards(const Json::Value &);
     void updateProperty(const Json::Value &);
     void killPlayer(const QVariant &player_name);
-    void revivePlayer(const Json::Value &player_arg);
+    void revivePlayer(const QVariant &player);
     void setDashboardShadow(const Json::Value &player_arg);
     void warn(const QVariant &);
     void setMark(const Json::Value &mark_str);

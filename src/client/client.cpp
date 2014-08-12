@@ -71,7 +71,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_CHANGE_HP] = &Client::hpChange;
     callbacks[S_COMMAND_CHANGE_MAXHP] = &Client::maxhpChange;
     callbacks[S_COMMAND_KILL_PLAYER] = &Client::killPlayer;
-    m_callbacks[S_COMMAND_REVIVE_PLAYER] = &Client::revivePlayer;
+    callbacks[S_COMMAND_REVIVE_PLAYER] = &Client::revivePlayer;
     m_callbacks[S_COMMAND_SHOW_CARD] = &Client::showCard;
     m_callbacks[S_COMMAND_UPDATE_CARD] = &Client::updateCard;
     m_callbacks[S_COMMAND_SET_MARK] = &Client::setMark;
@@ -1327,10 +1327,10 @@ void Client::setDashboardShadow(const Json::Value &player_arg) {
     emit dashboard_death(player_name);
 }
 
-void Client::revivePlayer(const Json::Value &player_arg) {
-    if (!player_arg.isString()) return;
-    QString player_name = toQString(player_arg);
+void Client::revivePlayer(const QVariant &player) {
+    if (player.type() != QMetaType::QString) return;
 
+    QString player_name = player.toString();
     alive_count++;
     emit player_revived(player_name);
 }
