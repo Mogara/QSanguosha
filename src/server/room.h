@@ -182,8 +182,8 @@ public:
     // Broadcast a event to a list of players by sending S_SERVER_NOTIFICATION packets. No replies should be expected from
     // the clients for S_SERVER_NOTIFICATION as it's a one way notice. Any message from the client in reply to this call
     // will be rejected.
-    bool doBroadcastNotify(QSanProtocol::CommandType command, const Json::Value &arg, ServerPlayer *except = NULL);
-    bool doBroadcastNotify(const QList<ServerPlayer *> &players, QSanProtocol::CommandType command, const Json::Value &arg);
+    bool doBroadcastNotify(QSanProtocol::CommandType command, const QVariant &arg, ServerPlayer *except = NULL);
+    bool doBroadcastNotify(const QList<ServerPlayer *> &players, QSanProtocol::CommandType command, const QVariant &arg);
 
     bool doNotify(ServerPlayer *player, int command, const char *arg);
     bool doBroadcastNotify(int command, const char *arg);

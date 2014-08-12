@@ -593,14 +593,14 @@ bool ServerPlayer::pindian(PindianStruct *pd){
     log.card_str.clear();
     room->sendLog(log);
 
-    Json::Value arg(Json::arrayValue);
-    arg[0] = (int)S_GAME_EVENT_REVEAL_PINDIAN;
-    arg[1] = toJsonString(objectName());
-    arg[2] = pindian_struct.from_card->getEffectiveId();
-    arg[3] = toJsonString(pd->to->objectName());
-    arg[4] = pindian_struct.to_card->getEffectiveId();
-    arg[5] = pindian_struct.success;
-    arg[6] = toJsonString(pd->reason);
+    JsonArray arg;
+    arg << (int)S_GAME_EVENT_REVEAL_PINDIAN;
+    arg << objectName();
+    arg << pindian_struct.from_card->getEffectiveId();
+    arg << pd->to->objectName();
+    arg << pindian_struct.to_card->getEffectiveId();
+    arg << pindian_struct.success;
+    arg << pd->reason;
     room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
 
     pindian_star = &pindian_struct;
@@ -850,10 +850,10 @@ void ServerPlayer::addSkill(const QString &skill_name, bool head_skill) {
 
 void ServerPlayer::loseSkill(const QString &skill_name) {
     Player::loseSkill(skill_name);
-    Json::Value args;
-    args[0] = QSanProtocol::S_GAME_EVENT_LOSE_SKILL;
-    args[1] = toJsonString(objectName());
-    args[2] = toJsonString(skill_name);
+    JsonArray args;
+    args << (int) QSanProtocol::S_GAME_EVENT_LOSE_SKILL;
+    args << objectName();
+    args << skill_name;
     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
@@ -861,10 +861,10 @@ void ServerPlayer::setGender(General::Gender gender) {
     if (gender == getGender())
         return;
     Player::setGender(gender);
-    Json::Value args;
-    args[0] = QSanProtocol::S_GAME_EVENT_CHANGE_GENDER;
-    args[1] = toJsonString(objectName());
-    args[2] = (int)gender;
+    JsonArray args;
+    args << (int) QSanProtocol::S_GAME_EVENT_CHANGE_GENDER;
+    args << objectName();
+    args << (int)gender;
     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
@@ -937,7 +937,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player) {
         room->notifyProperty(player, this, "state");
     }
     else {
-        room->doBroadcastNotify(S_COMMAND_ADD_PLAYER, VariantToJsonValue(introduce_str), this);
+        room->doBroadcastNotify(S_COMMAND_ADD_PLAYER, introduce_str, this);
         room->broadcastProperty(this, "state");
     }
 
@@ -1313,12 +1313,12 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 
         general_name = names.first();
 
-        Json::Value arg(Json::arrayValue);
-        arg[0] = S_GAME_EVENT_CHANGE_HERO;
-        arg[1] = toJsonString(objectName());
-        arg[2] = toJsonString(general_name);
-        arg[3] = false;
-        arg[4] = false;
+        JsonArray arg;
+        arg << (int) S_GAME_EVENT_CHANGE_HERO;
+        arg << objectName();
+        arg << general_name;
+        arg << false;
+        arg << false;
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral(this, general_name);
 
@@ -1329,10 +1329,10 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
             if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
                 && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
                 && hasShownSkill(skill)) {
-                Json::Value arg(Json::arrayValue);
-                arg[0] = toJsonString(objectName());
-                arg[1] = toJsonString(skill->getLimitMark());
-                arg[2] = getMark(skill->getLimitMark());
+                JsonArray arg;
+                arg << objectName();
+                arg << skill->getLimitMark();
+                arg << getMark(skill->getLimitMark());
                 room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
             }
         }
@@ -1381,12 +1381,12 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
         room->setPlayerProperty(this, "general2_showed", true);
 
         general_name = names.at(1);
-        Json::Value arg(Json::arrayValue);
-        arg[0] = S_GAME_EVENT_CHANGE_HERO;
-        arg[1] = toJsonString(objectName());
-        arg[2] = toJsonString(general_name);
-        arg[3] = true;
-        arg[4] = false;
+        JsonArray arg;
+        arg << S_GAME_EVENT_CHANGE_HERO;
+        arg << objectName();
+        arg << general_name;
+        arg << true;
+        arg << false;
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral2(this, general_name);
 
@@ -1397,10 +1397,10 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
                 if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
                     && (!skill->isLordSkill() || hasLordSkill(skill->objectName()))
                     && hasShownSkill(skill)) {
-                    Json::Value arg(Json::arrayValue);
-                    arg[0] = toJsonString(objectName());
-                    arg[1] = toJsonString(skill->getLimitMark());
-                    arg[2] = getMark(skill->getLimitMark());
+                    JsonArray arg;
+                    arg << objectName();
+                    arg << skill->getLimitMark();
+                    arg << getMark(skill->getLimitMark());
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_SET_MARK, arg);
                 }
             }
@@ -1560,12 +1560,12 @@ void ServerPlayer::removeGeneral(bool head_general) {
         room->setPlayerProperty(this, "actual_general1", general_name);
         room->setPlayerProperty(this, "general1_showed", true);
 
-        Json::Value arg(Json::arrayValue);
-        arg[0] = S_GAME_EVENT_CHANGE_HERO;
-        arg[1] = toJsonString(objectName());
-        arg[2] = toJsonString(general_name);
-        arg[3] = false;
-        arg[4] = false;
+        JsonArray arg;
+        arg << (int) S_GAME_EVENT_CHANGE_HERO;
+        arg << objectName();
+        arg << general_name;
+        arg << false;
+        arg << false;
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral(this, general_name);
 
@@ -1614,12 +1614,12 @@ void ServerPlayer::removeGeneral(bool head_general) {
         room->setPlayerProperty(this, "actual_general2", general_name);
         room->setPlayerProperty(this, "general2_showed", true);
 
-        Json::Value arg(Json::arrayValue);
-        arg[0] = S_GAME_EVENT_CHANGE_HERO;
-        arg[1] = toJsonString(objectName());
-        arg[2] = toJsonString(general_name);
-        arg[3] = true;
-        arg[4] = false;
+        JsonArray arg;
+        arg << (int) S_GAME_EVENT_CHANGE_HERO;
+        arg << objectName();
+        arg << general_name;
+        arg << true;
+        arg << false;
         room->doBroadcastNotify(S_COMMAND_LOG_EVENT, arg);
         room->changePlayerGeneral2(this, general_name);
 

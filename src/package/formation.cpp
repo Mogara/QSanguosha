@@ -1422,11 +1422,11 @@ public:
                 room->setPlayerProperty(player, "general1_showed", true);
                 foreach(const Skill *skill, Sanguosha->getGeneral(to_change)->getSkillList(true, true)) {
                     player->addSkill(skill->objectName());
-                    Json::Value args;
-                    args[0] = QSanProtocol::S_GAME_EVENT_ADD_SKILL;
-                    args[1] = QSanProtocol::Utils::toJsonString(player->objectName());
-                    args[2] = QSanProtocol::Utils::toJsonString(skill->objectName());
-                    args[3] = true;
+                    JsonArray args;
+                    args << QSanProtocol::S_GAME_EVENT_ADD_SKILL;
+                    args << player->objectName();
+                    args << skill->objectName();
+                    args << true;
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
                 }
                 room->changeHero(player, to_change, false, true, false, true);

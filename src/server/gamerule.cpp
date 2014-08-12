@@ -264,12 +264,12 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
         room->sendLog(log);
         room->addPlayerMark(player, "Global_TurnCount");
 
-        Json::Value update_handcards_array(Json::arrayValue);
+        JsonArray update_handcards_array;
         foreach(ServerPlayer *p, room->getPlayers()){
-            Json::Value _current(Json::arrayValue);
-            _current[0] = QSanProtocol::Utils::toJsonString(p->objectName());
-            _current[1] = p->getHandcardNum();
-            update_handcards_array.append(_current);
+            JsonArray _current;
+            _current << p->objectName();
+            _current << p->getHandcardNum();
+            update_handcards_array << _current;
         }
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_UPDATE_HANDCARD_NUM, update_handcards_array);
 
