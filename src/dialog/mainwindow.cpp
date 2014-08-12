@@ -442,8 +442,10 @@ void MainWindow::changeEvent(QEvent *event)
     if (event->type() == QEvent::WindowStateChange) {
         repaintButtons();
         roundCorners();
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         if (view && view->viewport())
             view->viewport()->repaint();
+#endif
     }
     QMainWindow::changeEvent(event);
 }
