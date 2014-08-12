@@ -1275,7 +1275,7 @@ public:
     bool isFull() const;
     bool isFinished() const;
     bool canPause(ServerPlayer *p) const;
-    bool isPaused() const;
+    void tryPause();
     QString getMode() const;
     RoomThread *getThread() const;
     ServerPlayer *getCurrent() const;

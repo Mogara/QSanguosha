@@ -155,22 +155,22 @@ sgs.ai_skill_playerchosen.jgtianyun = function(self, targets)
 	local target = nil
 	local chained = 0
 	self:sort(self.enemies, "hp")
-	for _, enemy in ipairs(self.enemies) do
+	--[[for _, enemy in ipairs(self.enemies) do
 		if not self.player:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
 			if self.player:isChained() then
 				chained = chained + 1
 			end
 		end
-	end
+	end]]
 	for _, enemy in ipairs(self.enemies) do
 		if not self.player:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
-			if enemy:hasArmorEffect("Vine") or enemy:getMark("@gale") > 0 or (enemy:getCards("e"):length() >= 2) or enemy:getHp() == 1then
+			if enemy:hasArmorEffect("Vine") or enemy:getMark("@gale") > 0 or (enemy:getCards("e"):length() >= 2) or enemy:getHp() == 1 then
 				target = enemy
 				break
 			end
 		end
 	end
-	if not target and chained > 1 and chained > ( 3 - self.player:getHp() )  then
+	--[[if not target and chained > 1 and chained > ( 3 - self.player:getHp() )  then
 		for _, enemy in ipairs(self.enemies) do
 			if not self.player:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
 				if enemy:isChained() then
@@ -193,6 +193,14 @@ sgs.ai_skill_playerchosen.jgtianyun = function(self, targets)
 	if not target then
 		for _, enemy in ipairs(self.enemies) do
 			if not self.player:isFriendWith(enemy) and not enemy:hasArmorEffect("PeaceSpell") then
+				target = enemy
+				break
+			end
+		end
+	end]]
+	if not target then
+		for _, enemy in ipairs(self.enemies) do
+			if self:isGoodChainTarget(enemy, sel.player, sgs.DamageStruct_Fire, 2, nil) then
 				target = enemy
 				break
 			end
@@ -220,7 +228,7 @@ function sgs.ai_skill_invoke.jglingyu(self, data)
 		if friend:getLostHp() > 0 then
 			weak = weak + 1
 			if self:isWeak(friend) then
-			weak = weak + 1
+				weak = weak + 1
 			end
 		end
 	end

@@ -32,6 +32,7 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 
 	if self:getCardsNum("Crossbow", 'he') > 0 and #self.enemies > 0 and self.player:getCardCount(true) >= 4 then
 		local zcards = self.player:getCards("he")
+		zcards = sgs.QList2Table(zcards)
 		self:sortByUseValue(zcards, true)
 		for _, zcard in sgs.qlist(zcards) do
 			if not isCard("Peach", zcard, self.player) and (self.player:getOffensiveHorse() or card:isKindOf("OffensiveHorse")) and not self.player:isJilei(zcard) then

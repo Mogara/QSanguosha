@@ -1279,11 +1279,14 @@ public:
             QVariantList guzhengOther = erzhang->tag["GuzhengOther"].toList();
 
             if ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_DISCARD) {
-                foreach(int card_id, move.card_ids) {
-                    if (move.from == current)
-                        guzhengToGet << card_id;
-                    else if (!guzhengToGet.contains(card_id))
-                        guzhengOther << card_id;
+                foreach (int card_id, move.card_ids) {
+                    if (move.from == current) {
+                        if (!guzhengToGet.contains(card_id))
+                            guzhengToGet << card_id;
+                    } else {
+                        if (!guzhengOther.contains(card_id))
+                            guzhengOther << card_id;
+                    }
                 }
             }
 
@@ -1371,7 +1374,7 @@ public:
             cards.removeOne(to_back);
 
             room->clearAG(erzhang);
-            erzhang->tag["GuzhengCards"] = IntList2StringList(cards).join("+");
+            erzhang->tag["GuzhengCards"] = IntList2VariantList(cards);
             return true;
         }
 
@@ -1379,7 +1382,7 @@ public:
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *erzhang) const{
-        QList<int> cards = StringList2IntList(erzhang->tag["GuzhengCards"].toString().split("+"));
+        QList<int> cards = VariantList2IntList(erzhang->tag["GuzhengCards"].toList());
         erzhang->tag.remove("GuzhengCards");
         if (!cards.isEmpty()) {
             DummyCard dummy(cards);
