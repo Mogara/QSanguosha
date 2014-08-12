@@ -509,6 +509,8 @@ PindianStruct *ServerPlayer::pindianSelect(ServerPlayer *target, const QString &
     log.to << target;
     room->sendLog(log);
 
+    room->tryPause();
+
     const Card *card2;
 
     if (card1 == NULL) {
@@ -572,6 +574,9 @@ PindianStruct *ServerPlayer::pindianSelect(ServerPlayer *target, const QString &
 
 bool ServerPlayer::pindian(PindianStruct *pd){
     Q_ASSERT(pd != NULL);
+
+    room->tryPause();
+
     PindianStruct &pindian_struct = *pd;
     RoomThread *thread = room->getThread();
     PindianStruct *pindian_star = pd;
@@ -1173,6 +1178,8 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids,
 }
 
 void ServerPlayer::exchangeFreelyFromPrivatePile(const QString &skill_name, const QString &pile_name, int upperlimit, bool include_equip) {
+    room->tryPause();
+
     QList<int> pile = getPile(pile_name);
     if (pile.isEmpty()) return;
 
@@ -1302,6 +1309,8 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
     QStringList names = room->getTag(objectName()).toStringList();
     if (names.isEmpty()) return;
     QString general_name;
+
+    room->tryPause();
 
     if (head_general) {
         if (getGeneralName() != "anjiang") return;
@@ -1452,12 +1461,17 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
 }
 
 void ServerPlayer::hideGeneral(bool head_general) {
+    room->tryPause();
+
     if (head_general) {
         if (getGeneralName() == "anjiang") return;
 
         setSkillsPreshowed("h", false);
+        // dirty hack for temporary convenience.
+        room->setPlayerProperty(this, "flags", "hiding");
         notifyPreshow();
         room->setPlayerProperty(this, "general1_showed", false);
+        room->setPlayerProperty(this, "flags", "-hiding");
 
         JsonArray arg;
         arg << (int) S_GAME_EVENT_CHANGE_HERO;
@@ -1488,13 +1502,15 @@ void ServerPlayer::hideGeneral(bool head_general) {
             room->setPlayerProperty(this, "kingdom", "god");
             room->setPlayerProperty(this, "role", HegemonyMode::GetMappedRole("god"));
         }
-    }
-    else {
+    } else {
         if (getGeneral2Name() == "anjiang") return;
 
         setSkillsPreshowed("d", false);
+        // dirty hack for temporary convenience
+        room->setPlayerProperty(this, "flags", "hiding");
         notifyPreshow();
         room->setPlayerProperty(this, "general2_showed", false);
+        room->setPlayerProperty(this, "flags", "-hiding");
 
         JsonArray arg;
         arg << (int) S_GAME_EVENT_CHANGE_HERO;
@@ -1543,6 +1559,8 @@ void ServerPlayer::hideGeneral(bool head_general) {
 
 void ServerPlayer::removeGeneral(bool head_general) {
     QString general_name, from_general;
+
+    room->tryPause();
 
     room->setEmotion(this, "remove");
 
@@ -1599,8 +1617,7 @@ void ServerPlayer::removeGeneral(bool head_general) {
 
             room->setPlayerProperty(this, "role", role);
         }
-    }
-    else {
+    } else {
         if (!hasShownGeneral2())
             showGeneral(false); //zoushi?
 
@@ -1759,6 +1776,8 @@ bool ServerPlayer::inFormationRalation(ServerPlayer *teammate) const {
 using namespace HegemonyMode;
 
 void ServerPlayer::summonFriends(const ArrayType type) {
+    room->tryPause();
+
     if (aliveCount() < 4) return;
     LogMessage log;
     log.type = "#InvokeSkill";

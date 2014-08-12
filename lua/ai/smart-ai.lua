@@ -1177,16 +1177,6 @@ sgs.ai_compare_funcs = {
 
 }
 
-function SmartAI:sort(players, key)
-	if not players then self.room:writeToConsole(debug.traceback()) end
-	if #players == 0 then return end
-	function _sort(players, key)
-		local func = sgs.ai_compare_funcs[key or "defense"]
-		table.sort(players, func)
-	end
-	if not pcall(_sort, players, key) then self.room:writeToConsole(debug.traceback()) end
-end
-
 function SmartAI:adjustKeepValue(card, v)
 	local suits = {"club", "spade", "diamond", "heart"}
 	for _, askill in sgs.qlist(self.player:getVisibleSkillList(true)) do
@@ -1422,6 +1412,16 @@ function SmartAI:sort(players, key)
 		func = function(a, b, self)
 			local c1 = a:getHandcardNum()
 			local c2 = b:getHandcardNum()
+			if c1 == c2 then
+				return sgs.getDefenseSlash(a, self) < sgs.getDefenseSlash(b, self)
+			else
+				return c1 < c2
+			end
+		end
+	elseif key == "equip_defense" then
+		func = function(a, b, self)
+			local c1 = a:getCards("e"):length()
+			local c2 = b:getCards("e"):length()
 			if c1 == c2 then
 				return sgs.getDefenseSlash(a, self) < sgs.getDefenseSlash(b, self)
 			else
@@ -2531,9 +2531,15 @@ function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 		dmg = dmg + from:getMark("drank")
 	end
 	if from:hasFlag("luoyi") then dmg = dmg + 1 end
-	if ((to:hasArmorEffect("Vine") and not IgnoreArmor(from, to)) or to:getMark("@gale") > 0) and fireSlash then dmg = dmg + 1 end
 	if from:hasWeapon("GudingBlade") and slash and to:isKongcheng() then dmg = dmg + 1 end
-
+	if to:getMark("@gale") > 0 and fireSlash then dmg = dmg + 1 end
+	local jiaren_zidan = self.room:findPlayerBySkillName("jgchiying")
+	if jiaren_zidan and jiaren_zidan:isFriendWith(to) then
+		dmg = 1
+	end
+	if to:hasArmorEffect("Vine") and not IgnoreArmor(from, to) and fireSlash then
+		dmg = dmg + 1
+	end
 
 	if getValue then return dmg end
 	return (dmg > 1)
@@ -2564,13 +2570,13 @@ function SmartAI:hasCrossbowEffect(player)
 	return player:hasWeapon("Crossbow") or player:hasShownSkill("paoxiao")
 end
 
-function SmartAI:getCardNeedPlayer(cards, include_self)
+function SmartAI:getCardNeedPlayer(cards, friends_table, skillname)
 	cards = cards or sgs.QList2Table(self.player:getHandcards())
 
 	local cardtogivespecial = {}
 	local specialnum = 0
 	local keptslash = 0
-	local friends={}
+	local friends = {}
 	local cmpByAction = function(a,b)
 		return a:getRoom():getFront(a, b):objectName() == a:objectName()
 	end
@@ -2579,7 +2585,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 		return a:getNumber() > b:getNumber()
 	end
 
-	local friends_table = include_self and self.friends or self.friends_noself
+	local friends_table = friends_table or self.friends_noself
 	for _, player in ipairs(friends_table) do
 		local exclude = self:needKongcheng(player) or self:willSkipPlayPhase(player)
 		if player:hasShownSkills("keji|qiaobian|shensu") or player:getHp() - player:getHandcardNum() >= 3
@@ -2650,12 +2656,12 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 		end
 	end
 
-	if (self.player:hasSkill("rende") and self.player:isWounded() and self.player:getMark("rende") < 3) and not self.player:hasSkill("kongcheng") then
+	if (skillname == "rende" and self.player:hasSkill("rende") and self.player:isWounded() and self.player:getMark("rende") < 3) and not self.player:hasSkill("kongcheng") then
 		if (self.player:getHandcardNum() < 3 and self.player:getMark("rende") == 0 and self:getOverflow() <= 0) then return end
 	end
 
 	for _, friend in ipairs(friends) do
-		if friend:getHp()<=2 and friend:faceUp() then
+		if friend:getHp() <= 2 and friend:faceUp() then
 			for _, hcard in ipairs(cards) do
 				if (hcard:isKindOf("Armor") and not friend:getArmor() and not friend:hasShownSkills("bazhen|jgyizhong"))
 					or (hcard:isKindOf("DefensiveHorse") and not friend:getDefensiveHorse()) then
@@ -2799,7 +2805,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 		end
 	end
 
-	local shoulduse = self.player:isWounded() and self.player:hasSkill("rende") and self.player:getMark("rende") < 3
+	local shoulduse = skillname == "rende" and self.player:isWounded() and self.player:hasSkill("rende") and self.player:getMark("rende") < 3
 
 	if #cardtogive == 0 and shoulduse then cardtogive = cards end
 
@@ -3809,7 +3815,7 @@ function SmartAI:fillSkillCards(cards)
 		end
 	end
 	for _, skill in ipairs(sgs.ai_skills) do
-		if self:hasSkill(skill) or (skill.name == "shuangxiong" and self.player:hasFlag("shuangxiong")) then
+		if self:hasSkill(skill) or skill.name == "transfer" or (skill.name == "shuangxiong" and self.player:hasFlag("shuangxiong")) then
 			local skill_card = skill.getTurnUseCard(self, #cards == 0)
 			if skill_card then table.insert(cards, skill_card) end
 		end
@@ -3825,7 +3831,7 @@ function SmartAI:useSkillCard(card, use)
 	else
 		name = card:getClassName()
 	end
-	if not use.isDummy
+	if not use.isDummy and name ~= "TransferCard"
 		and not self.player:hasSkill(card:getSkillName()) and not self.player:hasLordSkill(card:getSkillName()) then return end
 	if sgs.ai_skill_use_func[name] then
 		sgs.ai_skill_use_func[name](card, use, self)
@@ -4876,7 +4882,7 @@ function SmartAI:cantbeHurt(player, from, damageNum)
 		and from:getNextAlive():objectName() == player:objectName() then
 		local hengzheng = 0
 		for _, player in sgs.qlist(self.room:getOtherPlayers(from)) do
-			if self:isEnemy(player, from) and player:getCardCount() > 0 then hengzheng = hengzheng + 1 end
+			if self:isEnemy(player, from) and player:getCardCount(true) > 0 then hengzheng = hengzheng + 1 end
 		end
 		if hengzheng > 2 then return true end
 	end

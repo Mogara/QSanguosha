@@ -21,11 +21,7 @@
 function SmartAI:useCardDrowning(card, use)
 	if not card:isAvailable(self.player) then return end
 
-	self:sort(self.enemies)
-	local function cmp(a, b)
-		return a:getEquips():length() >= b:getEquips():length()
-	end
-	table.sort(self.enemies, cmp)
+	self:sort(self.enemies, "equip_defense")
 
 	local players = sgs.PlayerList()
 	local Splayers = sgs.SPlayerList()
@@ -71,6 +67,8 @@ sgs.ai_skill_choice.drowning = function(self, choices, data)
 		or self:needToLoseHp(self.player, effect.from)
 		or self:getDamagedEffects(self.player, effect.from) then return "damage" end
 
+	if self.player:getHp() == 1 then return "throw" end
+
 	local value = 0
 	for _, equip in sgs.qlist(self.player:getEquips()) do
 		if equip:isKindOf("Weapon") then value = value + self:evaluateWeapon(equip)
@@ -83,3 +81,83 @@ sgs.ai_skill_choice.drowning = function(self, choices, data)
 	end
 	if value < 8 then return "throw" else return "damage" end
 end
+
+
+local transfer_skill = {}
+transfer_skill.name = "transfer"
+table.insert(sgs.ai_skills, transfer_skill)
+transfer_skill.getTurnUseCard = function(self, inclusive)
+	if self.player:isKongcheng() then return end
+	if self:isWeak() and self:getOverflow() <= 0 then return end
+	if not self.player:hasShownOneGeneral() then return end
+	return sgs.Card_Parse("@TransferCard=.")
+end
+
+sgs.ai_skill_use_func.TransferCard = function(card, use, self)
+
+	local friends, friends_other, isWeakFriend = {}, {}
+	for _, friend in ipairs(self.friends_noself) do
+		if not self:needKongcheng(friend, true) and friend:hasShownOneGeneral() then
+			if self.player:isFriendWith(friend) then
+				if self:isWeak(friend) then isWeakFriend = true end
+				table.insert(friends, friend)
+			else
+				table.insert(friends_other, friend)
+			end
+		end
+	end
+	if isWeakFriend then friends_other = {} end
+	if #friends == 0 and #friends_other == 0 then return end
+
+	local cards = {}
+	for _, c in sgs.qlist(self.player:getHandcards()) do
+		if c:isTransferable() and (not isCard("Peach", c, self.player) or #friends == 0) then table.insert(cards, c) end
+	end
+	if #cards == 0 then return end
+
+	if #friends_other > 0 then
+		for i = 1, #cards do
+			local card, target = self:getCardNeedPlayer(cards, friends_other)
+			if card and target then
+				cards = self:resetCards(cards, card)
+			else
+				break
+			end
+
+			use.card = sgs.Card_Parse("@TransferCard=" .. card:getEffectiveId())
+			if use.to then use.to:append(target) end
+			return
+		end
+	end
+
+	cards = {}
+	for _, c in sgs.qlist(self.player:getHandcards()) do
+		if c:isTransferable() then table.insert(cards, c) end
+	end
+	if #cards == 0 then return end
+
+	if #friends > 0 then
+		for i = 1, #cards do
+			local card, target = self:getCardNeedPlayer(cards, friends)
+			if card and target then
+				cards = self:resetCards(cards, card)
+			elseif self:getOverflow() <= 0 then
+				return
+			end
+
+			use.card = sgs.Card_Parse("@TransferCard=" .. card:getEffectiveId())
+			if use.to then use.to:append(target) end
+			return
+		end
+
+		if #cards > 0 and self:getOverflow() > 0 then
+			self:sort(friends, "handcard")
+			use.card = sgs.Card_Parse("@TransferCard=" .. cards[1]:getEffectiveId())
+			if use.to then use.to:append(friends[1]) end
+			return
+		end
+	end
+end
+
+sgs.ai_use_priority.TransferCard = 0
+sgs.ai_card_intention.TransferCard = -10

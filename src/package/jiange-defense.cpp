@@ -977,12 +977,11 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         QList<ServerPlayer *> players;
-        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
             if (p->getHp() >= player->getHp())
                 players << p;
         }
 
-        player->tag.remove("jgchuanyun");
         ServerPlayer *victim = room->askForPlayerChosen(player, players, objectName(), "@jgchuanyun", true, true);
         if (victim != NULL) {
             player->tag["jgchuanyun"] = QVariant::fromValue(victim);
@@ -1022,14 +1021,15 @@ public:
         return QStringList();
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         QList<ServerPlayer *> players;
-        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
             if (!p->isFriendWith(player))
                 players << p;
         }
+        DamageStruct damage = data.value<DamageStruct>();
+        players.removeOne(damage.to);// another one
 
-        player->tag.remove("jgleili");
         ServerPlayer *victim = room->askForPlayerChosen(player, players, objectName(), "@jgleili", true, true);
         if (victim != NULL) {
             player->tag["jgleili"] = QVariant::fromValue(victim);

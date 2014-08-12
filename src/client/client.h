@@ -228,6 +228,7 @@ public:
     QString skill_name;
     QList<const Card *> discarded_list;
     QStringList players_to_choose;
+    QString discard_reason;
 
 public slots:
     void signup();
@@ -237,7 +238,7 @@ public slots:
     void onPlayerChooseAG(int card_id);
     void onPlayerChoosePlayer(const Player *player);
     void onPlayerChooseTriggerOrder(const QString &choice);
-    void preshow(QString skill_name);
+    void preshow(const QString &skill_name, const bool isPreshowed);
     void trust();
     void addRobot();
     void fillRobots();

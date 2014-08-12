@@ -37,6 +37,7 @@ struct LogMessage;
 
 #include <QMutex>
 #include <QStack>
+#include <QWaitCondition>
 
 typedef QMap<const ServerPlayer *, QStringList> SPlayerDataMap;
 
@@ -59,7 +60,7 @@ public:
     bool isFull() const;
     bool isFinished() const;
     bool canPause(ServerPlayer *p) const;
-    bool isPaused() const;
+    void tryPause();
     int getLack() const;
     QString getMode() const;
     const Scenario *getScenario() const;
@@ -486,6 +487,8 @@ private:
     bool game_started;
     bool game_finished;
     bool game_paused;
+    QWaitCondition m_waitCond;
+    mutable QMutex m_mutex;
     lua_State *L;
     QList<AI *> ais;
 

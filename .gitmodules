@@ -1,0 +1,3 @@
+[submodule "QSanDumpUploader"]
+	path = QSanDumpUploader
+	url = git@github.com:QSanguosha-Rara/QSanDumpUploader.git

@@ -47,7 +47,7 @@ return {
 	["illustrator:zhenji"] = "DH",
 	["luoshen"] = "洛神",
 	[":luoshen"] = "准备阶段开始时，你可以判定，若结果为黑色，你可以重复此流程。最后你获得所有的黑色判定牌。",
-	["luoshen-move"] = "洛神（将此牌置于处理区）",
+	["#luoshen-move"] = "洛神（将此牌置于处理区）",
 	["qingguo"] = "倾国",
 	[":qingguo"] = "你可以将一张黑色手牌当【闪】使用或打出。",
 

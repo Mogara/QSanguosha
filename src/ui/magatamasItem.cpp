@@ -124,13 +124,21 @@ void MagatamasBoxItem::_doHpChangeAnimation(int newHp) {
         newHp -= m_hp;
         mHp = 0;
     }
-    for (int i = qMax(newHp, mHp - 10); i < mHp; i++) {
+    for (int i = qMax(newHp, mHp - 10), j = 0; i < mHp; ++i, ++j) {
         Sprite *aniMaga = new Sprite;
         aniMaga->setPixmap(_icons[qBound(0, i, 3)]);
         aniMaga->setParentItem(this);
         aniMaga->setOffset(QPoint(-(width - m_imageArea.left()) / 2, -(height - m_imageArea.top()) / 2));
 
-        int pos = m_maxHp > 4 ? 0 : i;
+        int lostHp = m_maxHp - mHp;
+        if (lostHp >= m_maxHp)
+            lostHp = m_maxHp - 1;
+
+        lostHp += j;
+        if (lostHp >= m_maxHp)
+            lostHp = m_maxHp - 1;
+
+        int pos = m_maxHp > 4 ? 0 : lostHp;
         aniMaga->setPos(QPoint(xStep * pos - aniMaga->offset().x(), yStep * pos - aniMaga->offset().y()));
 
         QPropertyAnimation *fade = new QPropertyAnimation(aniMaga, "opacity");
@@ -159,34 +167,40 @@ void MagatamasBoxItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     if (m_hp == m_maxHp) imageIndex = 3;
 
     int xStep, yStep;
+    double blank;
+    int bgWidth, bgHeight;
     if (this->m_orientation == Qt::Horizontal) {
         xStep = m_iconSize.width();
         yStep = 0;
-    }
-    else {
+        blank = (xStep - m_imageArea.width()) / 2;
+        bgWidth = xStep * qMin(m_maxHp, 4) + 5;
+        bgHeight = m_iconSize.height() + 2;
+    } else {
         xStep = 0;
         yStep = m_iconSize.height();
+        blank = (yStep - m_imageArea.height()) / 2;
+        bgWidth = m_iconSize.width() + 2;
+        bgHeight = yStep * qMin(m_maxHp, 4) + 5;
     }
 
     if (m_showBackground) {
-        QRect rect(0, -m_imageArea.height(), xStep * qMin(m_maxHp, 4) + m_imageArea.width() + 1, yStep * qMin(m_maxHp, 4) + 3);
+        QRect rect(-2, -2, bgWidth, bgHeight);
         painter->drawPixmap(rect, G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BG));
     }
 
     if (m_maxHp <= 4) {
         int i;
         for (i = 0; i < m_maxHp - qMax(m_hp, 0); i++) {
-            QRect rect(xStep * i, yStep * i, m_imageArea.width(), m_imageArea.height());
-            rect.translate(m_imageArea.topLeft());
+            QRect rect(xStep * i + blank, yStep * i + blank, m_imageArea.width(), m_imageArea.height());
+            //rect.translate(m_imageArea.topLeft());
             painter->drawPixmap(rect, _icons[0]);
         }
         for (; i < m_maxHp; i++) {
-            QRect rect(xStep * i, yStep * i, m_imageArea.width(), m_imageArea.height());
-            rect.translate(m_imageArea.topLeft());
+            QRect rect(xStep * i + blank, yStep * i + blank, m_imageArea.width(), m_imageArea.height());
+            //rect.translate(m_imageArea.topLeft());
             painter->drawPixmap(rect, _icons[imageIndex]);
         }
-    }
-    else {
+    } else {
         painter->drawPixmap(m_imageArea, _icons[imageIndex]);
         QRect rect(xStep, yStep, m_imageArea.width(), m_imageArea.height());
         rect.translate(m_imageArea.topLeft());

@@ -323,12 +323,20 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 					or sgs.DamageStruct_Normal
 		damage = self:hasHeavySlashDamage(from, card, to, true)
 	elseif nature == sgs.DamageStruct_Fire then
-		if to:hasArmorEffect("Vine") then damage = damage + 1 end
 		if to:getMark("@gale") > 0 then damage = damage + 1 end
 	end
 
 	if not self:damageIsEffective_(damageStruct) then return end
 	if card and card:isKindOf("FireAttack") and not self:hasTrickEffective(card, to, self.player) then return end
+	
+	local jiaren_zidan = self.room:findPlayerBySkillName("jgchiying")
+	if jiaren_zidan and jiaren_zidan:isFriendWith(to) then
+		damage = 1
+	end
+
+	if nature == sgs.DamageStruct_Fire then
+		if to:hasArmorEffect("Vine") then damage = damage + 1 end
+	end
 
 	if to:hasArmorEffect("SilverLion") then damage = 1 end
 

@@ -960,6 +960,9 @@ public:
     virtual QString toString(bool hidden = false) const;
 
     virtual QString getEffectName() const;
+
+    bool isTransferable() const;
+    void setTransferable(const bool transferbale);
 };
 
 %extend Card {
@@ -1272,7 +1275,7 @@ public:
     bool isFull() const;
     bool isFinished() const;
     bool canPause(ServerPlayer *p) const;
-    bool isPaused() const;
+    void tryPause();
     QString getMode() const;
     RoomThread *getThread() const;
     ServerPlayer *getCurrent() const;

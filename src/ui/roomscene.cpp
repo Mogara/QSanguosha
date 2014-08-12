@@ -507,7 +507,7 @@ void RoomScene::handleGameEvent(const Json::Value &arg) {
             if (in_console_mode && Config.EnableAutoPreshowInConsoleMode && auto_preshow_available){
                 const Skill *s = Sanguosha->getSkill(skill);
                 if (s != NULL && s->canPreshow())
-                    ClientInstance->preshow(skill);
+                    ClientInstance->preshow(skill, true);
             } else {
                 Self->setSkillPreshowed(skill, showed);
                 if (!showed) {
@@ -1286,8 +1286,7 @@ void RoomScene::updateSelectedTargets() {
             }
         }
         ok_button->setEnabled(card->targetsFeasible(selected_targets, Self));
-    }
-    else {
+    } else {
         selected_targets.clear();
     }
 
@@ -2209,6 +2208,30 @@ void RoomScene::cancelViewAsSkill() {
     updateStatus(status, status);
 }
 
+void RoomScene::highlightSkillButton(const QString &skillName, const CardUseStruct::CardUseReason reason, const QString &pattern)
+{
+    const bool isViewAsSkill = reason != CardUseStruct::CARD_USE_REASON_UNKNOWN && !pattern.isEmpty();
+    if (Self->hasSkill(skillName, true)) {
+        foreach(QSanSkillButton *button, m_skillButtons) {
+            Q_ASSERT(button != NULL);
+            if (isViewAsSkill) {
+                const ViewAsSkill *vsSkill = button->getViewAsSkill();
+                if (vsSkill != NULL && vsSkill->objectName() == skillName
+                    && vsSkill->isAvailable(Self, reason, pattern)) {
+                    button->setState(QSanButton::S_STATE_DOWN);
+                    break;
+                }
+            } else {
+                const Skill *skill = button->getSkill();
+                if (skill != NULL && skill->objectName() == skillName) {
+                    button->setState(QSanButton::S_STATE_DOWN);
+                    break;
+                }
+            }
+        }
+    }
+}
+
 void RoomScene::selectTarget(int order, bool multiple) {
     if (!multiple) unselectAllTargets();
 
@@ -2437,16 +2460,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                     ClientInstance->onPlayerResponseCard(NULL);
                     return;
                 }
-                if (Self->hasSkill(skill_name, true)) {
-                    foreach(QSanSkillButton *button, m_skillButtons) {
-                        Q_ASSERT(button != NULL);
-                        const ViewAsSkill *vsSkill = button->getViewAsSkill();
-                        if (vsSkill != NULL && vsSkill->objectName() == skill_name
-                            && vsSkill->isAvailable(Self, reason, pattern))
-                            button->setState(QSanButton::S_STATE_DOWN);
-                        break;
-                    }
-                }
+                highlightSkillButton(skill_name, reason, pattern);
                 dashboard->startPending(skill);
                 if (skill->inherits("OneCardViewAsSkill") && Config.EnableIntellectualSelection)
                     dashboard->selectOnlyCard();
@@ -2502,6 +2516,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
         discard_skill->setMinNum(ClientInstance->min_num);
         discard_skill->setIncludeEquip(ClientInstance->m_canDiscardEquip);
         discard_skill->setIsDiscard(newStatus != Client::Exchanging);
+        highlightSkillButton(ClientInstance->discard_reason);
         dashboard->startPending(discard_skill);
         break;
     }
@@ -2518,7 +2533,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
     case Client::AskForSkillInvoke: {
         QString skill_name = ClientInstance->getSkillNameToInvoke();
         dashboard->highlightEquip(skill_name, true);
-        foreach(QSanSkillButton *button, m_skillButtons) {
+        highlightSkillButton(skill_name);
+        /*foreach(QSanSkillButton *button, m_skillButtons) {
             if (button->getSkill()->objectName() == skill_name) {
                 if (button->getStyle() == QSanSkillButton::S_STYLE_TOGGLE
                     && button->isEnabled() && button->isDown()) {
@@ -2526,7 +2542,7 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                     return;
                 }
             }
-        }
+        }*/
 
         showPromptBox();
         ok_button->setEnabled(!ClientInstance->getSkillNameToInvoke().endsWith("!"));

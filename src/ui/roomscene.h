@@ -318,6 +318,9 @@ private:
 
     void callViewAsSkill();
     void cancelViewAsSkill();
+    void highlightSkillButton(const QString &skillName,
+                              const CardUseStruct::CardUseReason reason = CardUseStruct::CARD_USE_REASON_UNKNOWN,
+                              const QString &pattern = QString());
 
     void freeze();
     void addRestartButton(QDialog *dialog);
