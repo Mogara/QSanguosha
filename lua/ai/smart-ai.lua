@@ -2531,9 +2531,15 @@ function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 		dmg = dmg + from:getMark("drank")
 	end
 	if from:hasFlag("luoyi") then dmg = dmg + 1 end
-	if ((to:hasArmorEffect("Vine") and not IgnoreArmor(from, to)) or to:getMark("@gale") > 0) and fireSlash then dmg = dmg + 1 end
 	if from:hasWeapon("GudingBlade") and slash and to:isKongcheng() then dmg = dmg + 1 end
-
+	if to:getMark("@gale") > 0 and fireSlash then dmg = dmg + 1 end
+	local jiaren_zidan = room:findPlayerBySkillName("jgchiying")
+	if jiaren_zidan and jiaren_zidan:isFriendWith(to) then
+		dmg = 1
+	end
+	if to:hasArmorEffect("Vine") and not IgnoreArmor(from, to) and fireSlash then
+		dmg = dmg + 1
+	end
 
 	if getValue then return dmg end
 	return (dmg > 1)
