@@ -984,7 +984,7 @@ void Server::processRequest(const char *request) {
     current->signup(player, screen_name, avatar, false);
     if (current->getPlayers().length() == 1 && current->getScenario() && current->getScenario()->objectName() == "jiange_defense") {
         for (int i = 0; i < 4; ++i)
-            current->addRobotCommand(player, Json::Value());
+            current->addRobotCommand(player, QVariant());
     }
 }
 

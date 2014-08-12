@@ -2253,7 +2253,7 @@ void Room::reportDisconnection() {
     }
 }
 
-void Room::trustCommand(ServerPlayer *player, const Json::Value &) {
+void Room::trustCommand(ServerPlayer *player, const QVariant &) {
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
     if (player->isOnline()) {
         player->setState("trust");
@@ -2269,9 +2269,9 @@ void Room::trustCommand(ServerPlayer *player, const Json::Value &) {
     broadcastProperty(player, "state");
 }
 
-void Room::pauseCommand(ServerPlayer *player, const Json::Value &arg) {
+void Room::pauseCommand(ServerPlayer *player, const QVariant &arg) {
     if (!canPause(player)) return;
-    bool pause = arg.asBool();
+    bool pause = arg.toBool();
     if (game_paused != pause) {
         JsonArray arg;
         arg << (int)S_GAME_EVENT_PAUSE;
@@ -2282,11 +2282,14 @@ void Room::pauseCommand(ServerPlayer *player, const Json::Value &arg) {
     }
 }
 
-void Room::processRequestCheat(ServerPlayer *player, const Json::Value &arg) {
-    if (!Config.EnableCheat) return;
-    if (!arg.isArray() || !arg[0].isInt()) return;
+void Room::processRequestCheat(ServerPlayer *player, const QVariant &arg) {
+    if (!Config.EnableCheat || !arg.canConvert<JsonArray>()) return;
+
+    JsonArray args = arg.value<JsonArray>();
+    if(args[0].type() != QMetaType::Int) return;
+
     //@todo: synchronize this
-    player->m_cheatArgs = arg;
+    player->m_cheatArgs = VariantToJsonValue(arg);
     player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
 }
 
@@ -2324,7 +2327,7 @@ bool Room::makeSurrender(ServerPlayer *initiator) {
     return true;
 }
 
-void Room::processRequestSurrender(ServerPlayer *player, const Json::Value &) {
+void Room::processRequestSurrender(ServerPlayer *player, const QVariant &) {
     //@todo: Strictly speaking, the client must be in the PLAY phase
     //@todo: return false for 3v3 and 1v1!!!
     if (player == NULL || !player->m_isWaitingReply)
@@ -2339,11 +2342,11 @@ void Room::processRequestSurrender(ServerPlayer *player, const Json::Value &) {
     player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
 }
 
-void Room::processRequestPreshow(ServerPlayer *player, const Json::Value &arg) {
+void Room::processRequestPreshow(ServerPlayer *player, const QVariant &arg) {
     if (player == NULL)
         return;
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
-    QString skill_name = toQString(arg);
+    QString skill_name = arg.toString();
     player->preshowSkill(skill_name);
     player->releaseLock(ServerPlayer::SEMA_MUTEX);
 }
@@ -2360,7 +2363,7 @@ void Room::processClientPacket(const QByteArray &request) {
         } else if (packet.getPacketType() == S_TYPE_REQUEST || packet.getPacketType() == S_TYPE_NOTIFICATION) {
             Callback callback = m_callbacks[packet.getCommandType()];
             if (!callback) return;
-            (this->*callback)(player, VariantToJsonValue(packet.getMessageBody()));
+            (this->*callback)(player, packet.getMessageBody());
         }
     } else {
         ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
@@ -2376,7 +2379,7 @@ void Room::processClientPacket(const QByteArray &request) {
     }
 }
 
-void Room::addRobotCommand(ServerPlayer *player, const Json::Value &) {
+void Room::addRobotCommand(ServerPlayer *player, const QVariant &) {
     if (player && !player->isOwner()) return;
     if (isFull()) return;
 
@@ -2412,10 +2415,10 @@ void Room::addRobotCommand(ServerPlayer *player, const Json::Value &) {
     broadcastProperty(robot, "state");
 }
 
-void Room::fillRobotsCommand(ServerPlayer *player, const Json::Value &) {
+void Room::fillRobotsCommand(ServerPlayer *player, const QVariant &) {
     int left = player_count - m_players.length();
     for (int i = 0; i < left; i++) {
-        addRobotCommand(player, Json::Value());
+        addRobotCommand(player, QVariant());
     }
 }
 
@@ -2428,7 +2431,7 @@ ServerPlayer *Room::getOwner() const{
     return NULL;
 }
 
-void Room::toggleReadyCommand(ServerPlayer *, const Json::Value &) {
+void Room::toggleReadyCommand(ServerPlayer *, const QVariant &) {
     if (!game_started && isFull())
         start();
 }
@@ -2463,7 +2466,7 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
         }
     }
     else
-        toggleReadyCommand(player, Json::Value());
+        toggleReadyCommand(player, QVariant());
 }
 
 void Room::assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign) {
@@ -2716,21 +2719,17 @@ bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, b
     return true;
 }
 
-void Room::speakCommand(ServerPlayer *player, const QString &arg) {
-    speakCommand(player, toJsonString(arg));
-}
-
-void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
+void Room::speakCommand(ServerPlayer *player, const QVariant &arg) {
 #define _NO_BROADCAST_SPEAKING {\
     broadcast = false; \
     JsonArray body; \
     body << player->objectName(); \
-    body << JsonValueToVariant(arg); \
+    body << arg; \
     player->notify(S_COMMAND_SPEAK, body); \
 }
     bool broadcast = true;
     if (player && Config.EnableCheat) {
-        QString sentence = toQString(arg);
+        QString sentence = arg.toString();
         if (sentence == ".BroadcastRoles") {
             _NO_BROADCAST_SPEAKING
                 foreach(ServerPlayer *p, m_alivePlayers)
@@ -2852,7 +2851,7 @@ void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
     if (broadcast) {
         JsonArray body;
         body << player->objectName();
-        body << toQString(arg);
+        body << arg;
 
         Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
         packet.setMessageBody(body);
@@ -5827,7 +5826,7 @@ QString Room::askForOrder(ServerPlayer *player) {
     return (result == S_CAMP_WARM) ? "warm" : "cool";
 }
 
-void Room::networkDelayTestCommand(ServerPlayer *player, const Json::Value &) {
+void Room::networkDelayTestCommand(ServerPlayer *player, const QVariant &) {
     qint64 delay = player->endNetworkDelayTest();
     QString reportStr = tr("<font color=#EEB422>The network delay of player <b>%1</b> is %2 milliseconds.</font>")
         .arg(player->screenName()).arg(QString::number(delay));
