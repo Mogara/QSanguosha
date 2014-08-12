@@ -58,7 +58,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_CHECK_VERSION] = &Client::checkVersion;
     callbacks[S_COMMAND_SETUP] = &Client::setup;
     callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Client::networkDelayTest;
-    m_callbacks[S_COMMAND_ADD_PLAYER] = &Client::addPlayer;
+    callbacks[S_COMMAND_ADD_PLAYER] = &Client::addPlayer;
     m_callbacks[S_COMMAND_REMOVE_PLAYER] = &Client::removePlayer;
     m_callbacks[S_COMMAND_START_IN_X_SECONDS] = &Client::startInXs;
     m_callbacks[S_COMMAND_ARRANGE_SEATS] = &Client::arrangeSeats;
@@ -370,11 +370,17 @@ void Client::processObsoleteServerPacket(const QString &cmd) {
     QMessageBox::information(NULL, tr("Warning"), tr("No such invokable method named \"%1\"").arg(cmd));
 }
 
-void Client::addPlayer(const Json::Value &player_info) {
-    if (!player_info.isArray() || player_info.size() < 3) return;
-    QString name = toQString(player_info[0]);
-    QString screen_name = toQString(player_info[1]);
-    QString avatar = toQString(player_info[2]);
+void Client::addPlayer(const QVariant &player_info) {
+    if (!player_info.canConvert<JsonArray>())
+        return;
+
+    JsonArray info = player_info.value<JsonArray>();
+    if(info.size() < 3)
+        return;
+
+    QString name = info[0].toString();
+    QString screen_name = info[1].toString();
+    QString avatar = info[2].toString();
 
     ClientPlayer *player = new ClientPlayer(this);
     player->setObjectName(name);

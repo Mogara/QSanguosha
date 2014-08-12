@@ -113,8 +113,8 @@ public:
     typedef void (Client::*Callback) (const QVariant &);
 
     void checkVersion(const QVariant &server_version);
-    void setup(const Json::Value &setup_str);
-    void networkDelayTest(const Json::Value &);
+    void setup(const QVariant &setup_str);
+    void networkDelayTest(const QVariant &);
     void addPlayer(const Json::Value &player_info);
     void removePlayer(const Json::Value &player_name_json);
     void startInXs(const Json::Value &);
