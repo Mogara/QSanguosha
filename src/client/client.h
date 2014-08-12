@@ -154,7 +154,7 @@ public:
     void updateStateItem(const Json::Value &state_str);
     void setAvailableCards(const Json::Value &pile);
     void setCardFlag(const Json::Value &pattern_str);
-    void updateCard(const Json::Value &arg);
+    void updateCard(const QVariant &val);
 
     void fillAG(const Json::Value &cards_str);
     void takeAG(const Json::Value &take_str);

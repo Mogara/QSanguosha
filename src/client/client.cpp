@@ -73,7 +73,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_KILL_PLAYER] = &Client::killPlayer;
     callbacks[S_COMMAND_REVIVE_PLAYER] = &Client::revivePlayer;
     callbacks[S_COMMAND_SHOW_CARD] = &Client::showCard;
-    m_callbacks[S_COMMAND_UPDATE_CARD] = &Client::updateCard;
+    callbacks[S_COMMAND_UPDATE_CARD] = &Client::updateCard;
     m_callbacks[S_COMMAND_SET_MARK] = &Client::setMark;
     m_callbacks[S_COMMAND_LOG_SKILL] = &Client::log;
     m_callbacks[S_COMMAND_ATTACH_SKILL] = &Client::attachSkill;
@@ -191,25 +191,26 @@ Client::~Client() {
     ClientInstance = NULL;
 }
 
-void Client::updateCard(const Json::Value &val) {
-    if (val.isInt()) {
+void Client::updateCard(const QVariant &val) {
+    if (val.type() == QMetaType::Int) {
         // reset card
-        int cardId = val.asInt();
+        int cardId = val.toInt();
         Card *card = _m_roomState.getCard(cardId);
         if (!card->isModified()) return;
         _m_roomState.resetCard(cardId);
     }
     else {
         // update card
-        Q_ASSERT(val.size() >= 5);
-        int cardId = val[0].asInt();
-        Card::Suit suit = (Card::Suit)val[1].asInt();
-        int number = val[2].asInt();
-        QString cardName = val[3].asCString();
-        QString skillName = val[4].asCString();
-        QString objectName = val[5].asCString();
+        JsonArray args = val.value<JsonArray>();
+        Q_ASSERT(args.size() >= 5);
+        int cardId = args[0].toInt();
+        Card::Suit suit = (Card::Suit) args[1].toInt();
+        int number = args[2].toInt();
+        QString cardName = args[3].toString();
+        QString skillName = args[4].toString();
+        QString objectName = args[5].toString();
         QStringList flags;
-        tryParse(val[6], flags);
+        JsonUtils::tryParse(args[6].value<JsonArray>(), flags);
 
         Card *card = Sanguosha->cloneCard(cardName, suit, number, flags);
         card->setId(cardId);
