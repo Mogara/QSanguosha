@@ -777,7 +777,7 @@ sgs.ai_skill_invoke.lirang = function(self, data)
 	if not self:willShowForAttack() then
 		return false
 	end
-	return true
+	return #self.friends_noself > 0
 end
 
 sgs.ai_skill_askforyiji.lirang = function(self, card_ids)
