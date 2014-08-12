@@ -63,9 +63,9 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_START_IN_X_SECONDS] = &Client::startInXs;
     callbacks[S_COMMAND_ARRANGE_SEATS] = &Client::arrangeSeats;
     callbacks[S_COMMAND_WARN] = &Client::warn;
-    m_callbacks[S_COMMAND_SPEAK] = &Client::speak;
+    callbacks[S_COMMAND_SPEAK] = &Client::speak;
 
-    m_callbacks[S_COMMAND_GAME_START] = &Client::startGame;
+    callbacks[S_COMMAND_GAME_START] = &Client::startGame;
     m_callbacks[S_COMMAND_GAME_OVER] = &Client::gameOver;
 
     m_callbacks[S_COMMAND_CHANGE_HP] = &Client::hpChange;
@@ -647,7 +647,7 @@ void Client::activate(const Json::Value &playerId) {
     setStatus(toQString(playerId) == Self->objectName() ? Playing : NotActive);
 }
 
-void Client::startGame(const Json::Value &) {
+void Client::startGame(const QVariant &) {
     Sanguosha->registerRoom(this);
     _m_roomState.reset();
 
@@ -1751,14 +1751,15 @@ void Client::log(const Json::Value &log_str) {
     }
 }
 
-void Client::speak(const Json::Value &speak) {
-    if (!speak.isArray()) {
-        qDebug() << toQString(speak);
+void Client::speak(const QVariant &speak) {
+    if (!speak.canConvert<JsonArray>()) {
+        qDebug() << speak;
         return;
     }
 
-    QString who = toQString(speak[0]);
-    QString text = toQString(speak[1]);
+    JsonArray args = speak.value<JsonArray>();
+    QString who = args[0].toString();
+    QString text = args[1].toString();
 
     static const QString prefix("<img width=14 height=14 src='image/system/chatface/");
     static const QString suffix(".png'></img>");

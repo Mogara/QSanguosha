@@ -120,7 +120,7 @@ public:
     void startInXs(const QVariant &);
     void arrangeSeats(const QVariant &seats_arr);
     void activate(const Json::Value &playerId);
-    void startGame(const Json::Value &);
+    void startGame(const QVariant &);
     void hpChange(const Json::Value &change_str);
     void maxhpChange(const Json::Value &change_str);
     void resetPiles(const Json::Value &);
@@ -137,7 +137,7 @@ public:
     void setMark(const Json::Value &mark_str);
     void showCard(const Json::Value &show_str);
     void log(const Json::Value &log_str);
-    void speak(const Json::Value &speak);
+    void speak(const QVariant &speak);
     void addHistory(const Json::Value &history);
     void moveFocus(const Json::Value &focus);
     void setEmotion(const Json::Value &set_str);
