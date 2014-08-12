@@ -2750,9 +2750,9 @@ void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
             _NO_BROADCAST_SPEAKING
                 QString split("----------");
 
-            Json::Value arg(Json::arrayValue);
-            arg[0] = toJsonString(player->objectName());
-            arg[1] = toJsonString(split);
+            JsonArray arg;
+            arg << player->objectName();
+            arg << split;
 
             Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
             packet.setMessageBody(arg);
@@ -2765,9 +2765,9 @@ void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
                         .arg(Sanguosha->getEngineCard(card->getId())->getLogName());
                     QString hand = handcards.join(", ");
 
-                    Json::Value arg(Json::arrayValue);
-                    arg[0] = toJsonString(p->objectName());
-                    arg[1] = toJsonString(hand);
+                    JsonArray arg;
+                    arg << p->objectName();
+                    arg << hand;
 
                     Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
                     packet.setMessageBody(arg);
@@ -2787,9 +2787,9 @@ void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
                             handcards << QString("<b>%1</b>")
                             .arg(Sanguosha->getEngineCard(card->getId())->getLogName());
                         QString hand = handcards.join(", ");
-                        Json::Value arg(Json::arrayValue);
-                        arg[0] = toJsonString(p->objectName());
-                        arg[1] = toJsonString(hand);
+                        JsonArray arg;
+                        arg << p->objectName();
+                        arg << hand;
 
                         Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
                         packet.setMessageBody(arg);
@@ -2813,9 +2813,9 @@ void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
                                 pile_cards << QString("<b>%1</b>").arg(Sanguosha->getEngineCard(id)->getLogName());
                             QString pile = pile_cards.join(", ");
 
-                            Json::Value arg(Json::arrayValue);
-                            arg[0] = toJsonString(p->objectName());
-                            arg[1] = toJsonString(pile);
+                            JsonArray arg;
+                            arg << p->objectName();
+                            arg << pile;
 
                             Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
                             packet.setMessageBody(arg);
@@ -2850,9 +2850,9 @@ void Room::speakCommand(ServerPlayer *player, const Json::Value &arg) {
         }
     }
     if (broadcast) {
-        Json::Value body(Json::arrayValue);
-        body[0] = toJsonString(player->objectName());
-        body[1] = arg;
+        JsonArray body;
+        body << player->objectName();
+        body << toQString(arg);
 
         Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
         packet.setMessageBody(body);
