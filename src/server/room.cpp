@@ -1650,7 +1650,7 @@ const Card *Room::askForSinglePeach(ServerPlayer *player, ServerPlayer *dying) {
         arg << peaches;
         bool success = doRequest(player, S_COMMAND_ASK_PEACH, arg, true);
         JsonArray clientReply = player->getClientReply().value<JsonArray>();
-        if (!success || (!clientReply.isEmpty() && clientReply[0].type() == QMetaType::QString))
+        if (!success || clientReply.isEmpty() || clientReply[0].type() != QMetaType::QString)
             return NULL;
 
         card = Card::Parse(clientReply[0].toString());
