@@ -692,9 +692,9 @@ function SmartAI:getValuableCardForGuanxing(cards)
 			local FFFslash = self:getCard("FireSlash")
 			for _, enemy in ipairs(self.enemies) do
 				if enemy:hasArmorEffect("Vine") and FFFslash and self:slashIsEffective(FFFslash, enemy) and
-					self.player:getCardCount() >= 3 and self.player:canSlash(enemy, FFFslash, true, range_fix) then
+					self.player:getCardCount(true) >= 3 and self.player:canSlash(enemy, FFFslash, true, range_fix) then
 					return axe
-				elseif self:getCardsNum("Analeptic") > 0 and self.player:getCardCount() >= 4 and
+				elseif self:getCardsNum("Analeptic") > 0 and self.player:getCardCount(true) >= 4 and
 					self:slashIsEffective(slash, enemy) and self.player:canSlash(enemy, slash, true, range_fix) then
 					return axe
 				end

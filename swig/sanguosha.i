@@ -960,6 +960,9 @@ public:
     virtual QString toString(bool hidden = false) const;
 
     virtual QString getEffectName() const;
+
+    bool isTransferable() const;
+    void setTransferable(const bool transferbale);
 };
 
 %extend Card {

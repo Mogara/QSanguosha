@@ -1177,16 +1177,6 @@ sgs.ai_compare_funcs = {
 
 }
 
-function SmartAI:sort(players, key)
-	if not players then self.room:writeToConsole(debug.traceback()) end
-	if #players == 0 then return end
-	function _sort(players, key)
-		local func = sgs.ai_compare_funcs[key or "defense"]
-		table.sort(players, func)
-	end
-	if not pcall(_sort, players, key) then self.room:writeToConsole(debug.traceback()) end
-end
-
 function SmartAI:adjustKeepValue(card, v)
 	local suits = {"club", "spade", "diamond", "heart"}
 	for _, askill in sgs.qlist(self.player:getVisibleSkillList(true)) do
@@ -1422,6 +1412,16 @@ function SmartAI:sort(players, key)
 		func = function(a, b, self)
 			local c1 = a:getHandcardNum()
 			local c2 = b:getHandcardNum()
+			if c1 == c2 then
+				return sgs.getDefenseSlash(a, self) < sgs.getDefenseSlash(b, self)
+			else
+				return c1 < c2
+			end
+		end
+	elseif key == "equip_defense" then
+		func = function(a, b, self)
+			local c1 = a:getCards("e"):length()
+			local c2 = b:getCards("e"):length()
 			if c1 == c2 then
 				return sgs.getDefenseSlash(a, self) < sgs.getDefenseSlash(b, self)
 			else
@@ -2570,7 +2570,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 	local cardtogivespecial = {}
 	local specialnum = 0
 	local keptslash = 0
-	local friends={}
+	local friends = {}
 	local cmpByAction = function(a,b)
 		return a:getRoom():getFront(a, b):objectName() == a:objectName()
 	end
@@ -3809,7 +3809,7 @@ function SmartAI:fillSkillCards(cards)
 		end
 	end
 	for _, skill in ipairs(sgs.ai_skills) do
-		if self:hasSkill(skill) or (skill.name == "shuangxiong" and self.player:hasFlag("shuangxiong")) then
+		if self:hasSkill(skill) or skill.name == "transfer" or (skill.name == "shuangxiong" and self.player:hasFlag("shuangxiong")) then
 			local skill_card = skill.getTurnUseCard(self, #cards == 0)
 			if skill_card then table.insert(cards, skill_card) end
 		end
@@ -3825,7 +3825,7 @@ function SmartAI:useSkillCard(card, use)
 	else
 		name = card:getClassName()
 	end
-	if not use.isDummy
+	if not use.isDummy and name ~= "TransferCard"
 		and not self.player:hasSkill(card:getSkillName()) and not self.player:hasLordSkill(card:getSkillName()) then return end
 	if sgs.ai_skill_use_func[name] then
 		sgs.ai_skill_use_func[name](card, use, self)
@@ -4876,7 +4876,7 @@ function SmartAI:cantbeHurt(player, from, damageNum)
 		and from:getNextAlive():objectName() == player:objectName() then
 		local hengzheng = 0
 		for _, player in sgs.qlist(self.room:getOtherPlayers(from)) do
-			if self:isEnemy(player, from) and player:getCardCount() > 0 then hengzheng = hengzheng + 1 end
+			if self:isEnemy(player, from) and player:getCardCount(true) > 0 then hengzheng = hengzheng + 1 end
 		end
 		if hengzheng > 2 then return true end
 	end
