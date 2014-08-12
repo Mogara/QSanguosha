@@ -115,8 +115,8 @@ public:
     void checkVersion(const QVariant &server_version);
     void setup(const QVariant &setup_str);
     void networkDelayTest(const QVariant &);
-    void addPlayer(const Json::Value &player_info);
-    void removePlayer(const Json::Value &player_name_json);
+    void addPlayer(const QVariant &player_info);
+    void removePlayer(const QVariant &player_name);
     void startInXs(const Json::Value &);
     void arrangeSeats(const Json::Value &seats_arr);
     void activate(const Json::Value &playerId);
