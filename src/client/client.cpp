@@ -60,9 +60,9 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Client::networkDelayTest;
     callbacks[S_COMMAND_ADD_PLAYER] = &Client::addPlayer;
     callbacks[S_COMMAND_REMOVE_PLAYER] = &Client::removePlayer;
-    m_callbacks[S_COMMAND_START_IN_X_SECONDS] = &Client::startInXs;
-    m_callbacks[S_COMMAND_ARRANGE_SEATS] = &Client::arrangeSeats;
-    m_callbacks[S_COMMAND_WARN] = &Client::warn;
+    callbacks[S_COMMAND_START_IN_X_SECONDS] = &Client::startInXs;
+    callbacks[S_COMMAND_ARRANGE_SEATS] = &Client::arrangeSeats;
+    callbacks[S_COMMAND_WARN] = &Client::warn;
     m_callbacks[S_COMMAND_SPEAK] = &Client::speak;
 
     m_callbacks[S_COMMAND_GAME_START] = &Client::startGame;
@@ -577,8 +577,8 @@ void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> 
     setStatus(NotActive);
 }
 
-void Client::startInXs(const Json::Value &left_seconds) {
-    int seconds = left_seconds.asInt();
+void Client::startInXs(const QVariant &left_seconds) {
+    int seconds = left_seconds.toInt();
     if (seconds > 0)
         lines_doc->setHtml(tr("<p align = \"center\">Game will start in <b>%1</b> seconds...</p>").arg(seconds));
     else
@@ -590,11 +590,12 @@ void Client::startInXs(const Json::Value &left_seconds) {
     }
 }
 
-void Client::arrangeSeats(const Json::Value &seats_arr) {
+void Client::arrangeSeats(const QVariant &seats_arr) {
     QStringList player_names;
-    if (seats_arr.isArray()){
-        for (Json::Value::iterator i = seats_arr.begin(); i != seats_arr.end(); i++){
-            player_names << toQString(*i);
+    if (seats_arr.canConvert<JsonArray>()) {
+        JsonArray seats = seats_arr.value<JsonArray>();
+        foreach (const QVariant &seat, seats){
+            player_names << seat.toString();
         }
     }
     players.clear();
@@ -1326,8 +1327,8 @@ void Client::revivePlayer(const Json::Value &player_arg) {
 }
 
 
-void Client::warn(const Json::Value &reason_json) {
-    QString reason = toQString(reason_json);
+void Client::warn(const QVariant &reason_var) {
+    QString reason = reason_var.toString();
     QString msg;
     if (reason == "GAME_OVER")
         msg = tr("Game is over now");

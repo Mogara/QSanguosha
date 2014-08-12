@@ -117,8 +117,8 @@ public:
     void networkDelayTest(const QVariant &);
     void addPlayer(const QVariant &player_info);
     void removePlayer(const QVariant &player_name);
-    void startInXs(const Json::Value &);
-    void arrangeSeats(const Json::Value &seats_arr);
+    void startInXs(const QVariant &);
+    void arrangeSeats(const QVariant &seats_arr);
     void activate(const Json::Value &playerId);
     void startGame(const Json::Value &);
     void hpChange(const Json::Value &change_str);
@@ -133,7 +133,7 @@ public:
     void killPlayer(const Json::Value &player_arg);
     void revivePlayer(const Json::Value &player_arg);
     void setDashboardShadow(const Json::Value &player_arg);
-    void warn(const Json::Value &);
+    void warn(const QVariant &);
     void setMark(const Json::Value &mark_str);
     void showCard(const Json::Value &show_str);
     void log(const Json::Value &log_str);
