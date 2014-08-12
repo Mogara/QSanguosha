@@ -321,14 +321,14 @@ void Client::processServerPacket(const char *cmd) {
         if (packet.getPacketType() == S_TYPE_NOTIFICATION) {
             CallBack callback = m_callbacks[packet.getCommandType()];
             if (callback) {
-                (this->*callback)(packet.getMessageBody());
+                (this->*callback)(VariantToJsonValue(packet.getMessageBody()));
             }
         }
         else if (packet.getPacketType() == S_TYPE_REQUEST) {
             if (replayer && packet.getPacketDescription() == 0x411 && packet.getCommandType() == S_COMMAND_CHOOSE_GENERAL) {
                 CallBack callback = m_interactions[S_COMMAND_CHOOSE_GENERAL];
                 if (callback)
-                    (this->*callback)(packet.getMessageBody());
+                    (this->*callback)(VariantToJsonValue(packet.getMessageBody()));
             }
             else if (!replayer)
                 processServerRequest(packet);
@@ -343,7 +343,7 @@ bool Client::processServerRequest(const Packet &packet) {
 
     _m_lastServerSerial = packet.globalSerial;
     CommandType command = packet.getCommandType();
-    Json::Value msg = packet.getMessageBody();
+    Json::Value msg = VariantToJsonValue(packet.getMessageBody());
 
     if (!replayer) {
         Countdown countdown;

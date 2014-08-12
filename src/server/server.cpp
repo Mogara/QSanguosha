@@ -962,7 +962,7 @@ void Server::processRequest(const char *request) {
         return;
     }
 
-    const Json::Value &body = signup.getMessageBody();
+    Json::Value body = VariantToJsonValue(signup.getMessageBody());
     bool is_reconnection = body[0].asBool();
     QString screen_name = Utils::toQString(body[1]);
     QString avatar = Utils::toQString(body[2]);

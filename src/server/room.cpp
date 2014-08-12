@@ -2359,7 +2359,7 @@ void Room::processClientPacket(const QByteArray &request) {
         } else if (packet.getPacketType() == S_TYPE_REQUEST || packet.getPacketType() == S_TYPE_NOTIFICATION) {
             Callback callback = m_callbacks[packet.getCommandType()];
             if (!callback) return;
-            (this->*callback)(player, packet.getMessageBody());
+            (this->*callback)(player, VariantToJsonValue(packet.getMessageBody()));
         }
     } else {
         ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
@@ -2883,7 +2883,7 @@ void Room::processResponse(ServerPlayer *player, const Packet *packet) {
     else {
         _m_semRoomMutex.acquire();
         if (_m_raceStarted) {
-            player->setClientReply(packet->getMessageBody());
+            player->setClientReply(VariantToJsonValue(packet->getMessageBody()));
             player->m_isClientResponseReady = true;
             // Warning: the statement below must be the last one before releasing the lock!!!
             // Any statement after this statement will totally compromise the synchronization
@@ -2899,7 +2899,7 @@ void Room::processResponse(ServerPlayer *player, const Packet *packet) {
         }
         else {
             _m_semRoomMutex.release();
-            player->setClientReply(packet->getMessageBody());
+            player->setClientReply(VariantToJsonValue(packet->getMessageBody()));
             player->m_isClientResponseReady = true;
             player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
         }

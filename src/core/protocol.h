@@ -251,7 +251,7 @@ namespace QSanProtocol {
         unsigned int createGlobalSerial();
         inline void setMessageBody(const Json::Value &value) { messageBody = JsonValueToVariant(value); }
         inline void setMessageBody(const QVariant &value) { messageBody = value; }
-        inline Json::Value getMessageBody() const{ return VariantToJsonValue(messageBody); }
+        inline const QVariant &getMessageBody() const{ return messageBody; }
         virtual bool parse(const QByteArray &raw);
         virtual QByteArray toUtf8() const;
         virtual QString toString() const;

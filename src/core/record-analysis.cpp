@@ -81,7 +81,7 @@ void RecAnalysis::initialize(QString dir) {
         packet.parse(line.toUtf8().constData());
 
         if (packet.getCommandType() == S_COMMAND_SETUP){
-            const Json::Value &body = packet.getMessageBody();
+            Json::Value body = VariantToJsonValue(packet.getMessageBody());
             if (body.isString()){
                 QString l = toQString(body);
                 QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSTBHAMN123a-r]*)(\\s+)?");
@@ -115,7 +115,7 @@ void RecAnalysis::initialize(QString dir) {
 
         if (packet.getCommandType() == S_COMMAND_ARRANGE_SEATS) {
             QStringList line_struct;
-            const Json::Value &body = packet.getMessageBody();
+            Json::Value body = VariantToJsonValue(packet.getMessageBody());
             if (body.isArray()){
                 for (Json::Value::iterator i = body.begin(); i != body.end(); i++){
                     QString line = toQString(*i);
@@ -130,7 +130,7 @@ void RecAnalysis::initialize(QString dir) {
         }
 
         if (packet.getCommandType() == S_COMMAND_ADD_PLAYER) {
-            const Json::Value &body = packet.getMessageBody();
+            Json::Value body = VariantToJsonValue(packet.getMessageBody());
             if (body.isArray() && body.size() >= 2){
                 getPlayer(toQString(body[0]))->m_screenName = toQString(body[1]);
             }
@@ -138,13 +138,13 @@ void RecAnalysis::initialize(QString dir) {
         }
 
         if (packet.getCommandType() == S_COMMAND_REMOVE_PLAYER) {
-            QString name = toQString(packet.getMessageBody());
+            QString name = packet.getMessageBody().toString();
             m_recordMap.remove(name);
             continue;
         }
 
         if (packet.getCommandType() == S_COMMAND_SPEAK) {
-            const Json::Value &body = packet.getMessageBody();
+            Json::Value body = VariantToJsonValue(packet.getMessageBody());
             if (!body.isArray() || body.size() < 3){
                 continue;
             }
