@@ -74,7 +74,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_REVIVE_PLAYER] = &Client::revivePlayer;
     callbacks[S_COMMAND_SHOW_CARD] = &Client::showCard;
     callbacks[S_COMMAND_UPDATE_CARD] = &Client::updateCard;
-    m_callbacks[S_COMMAND_SET_MARK] = &Client::setMark;
+    callbacks[S_COMMAND_SET_MARK] = &Client::setMark;
     m_callbacks[S_COMMAND_LOG_SKILL] = &Client::log;
     m_callbacks[S_COMMAND_ATTACH_SKILL] = &Client::attachSkill;
     m_callbacks[S_COMMAND_MOVE_FOCUS] = &Client::moveFocus;
@@ -1429,16 +1429,18 @@ void Client::askForTriggerOrder(const Json::Value &ask_str)
     setStatus(AskForTriggerOrder);
 }
 
-void Client::setMark(const Json::Value &mark_str) {
-    if (!mark_str.isArray() || mark_str.size() != 3) return;
-    if (!mark_str[0].isString() || !mark_str[1].isString() || !mark_str[2].isInt()) return;
+void Client::setMark(const QVariant &mark_var) {
+    JsonArray mark_str = mark_var.value<JsonArray>();
+    if (mark_str.size() != 3) return;
+    if (mark_str[0].type() != QMetaType::QString || mark_str[1].type() != QMetaType::QString || mark_str[2].type() != QMetaType::Int) return;
 
-    QString who = toQString(mark_str[0]);
-    QString mark = toQString(mark_str[1]);
-    int value = mark_str[2].asInt();
+    QString who = mark_str[0].toString();
+    QString mark = mark_str[1].toString();
+    int value = mark_str[2].toInt();
 
     ClientPlayer *player = getPlayer(who);
-    player->setMark(mark, value);
+    if (player)
+        player->setMark(mark, value);
 }
 
 void Client::onPlayerChooseSuit() {
