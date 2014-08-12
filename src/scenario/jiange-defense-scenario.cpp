@@ -36,7 +36,8 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
     roles.insert("shu", shu_roles);
     qShuffle(kingdoms);
     QStringList wei_generals, shu_generals;
-    foreach (QString general, Sanguosha->getLimitedGeneralNames()) {
+    foreach (QString general, Sanguosha->getGeneralNames()) {
+        if (general.startsWith("lord_")) continue;
         QString kingdom = Sanguosha->getGeneral(general)->getKingdom();
         if (kingdom == "wei")
             wei_generals << general;
@@ -45,6 +46,7 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
     }
     qShuffle(wei_generals);
     qShuffle(shu_generals);
+    Q_ASSERT(wei_generals.length() < 10 || shu_generals.length() < 10);
     QMap<ServerPlayer *, QStringList> human_map; // Rara said, human couldn't get ghost or machine as its general.
     QList<ServerPlayer *> players = room->getPlayers();
     for (int i = 0; i < 8; i++) {
@@ -59,7 +61,7 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
             roles[choice] = role_list;
             if (choice == "wei") {
                 QStringList weijiangs;
-                for (int j = 0; j < 4; j++)
+                for (int j = 0; j < 5; j++)
                     weijiangs << wei_generals.takeFirst();
                 QStringList answer = room->askForGeneral(players[i], weijiangs, QString(), false).split("+");
                 answer.prepend("wei");
