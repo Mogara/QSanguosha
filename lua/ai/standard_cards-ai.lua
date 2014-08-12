@@ -444,6 +444,8 @@ function SmartAI:useCardSlash(card, use)
 
 	local function canAppendTarget(target)
 		if use.to:contains(target) then return false end
+		if not self:isWeak(target) and self:hasSkill("keji") and not self.player:hasFlag("KejiSlashInPlayPhase") and self:getOverflow() > 2
+			and self:getCardsNum("Crossbow", "he") == 0 then return end
 		local targets = sgs.PlayerList()
 		for _, to in sgs.qlist(use.to) do
 			targets:append(to)

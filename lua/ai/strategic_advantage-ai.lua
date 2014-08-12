@@ -86,7 +86,7 @@ transfer_skill.name = "transfer"
 table.insert(sgs.ai_skills, transfer_skill)
 transfer_skill.getTurnUseCard = function(self, inclusive)
 	if self.player:isKongcheng() then return end
-	if self:isWeak() and self:getOverflow() < 0 then return end
+	if self:isWeak() and self:getOverflow() <= 0 then return end
 	return sgs.Card_Parse("@TransferCard=.")
 end
 

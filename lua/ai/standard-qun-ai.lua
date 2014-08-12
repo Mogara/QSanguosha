@@ -741,6 +741,19 @@ sgs.ai_skill_choice.duanchang = function(self, choices, data)
 			return "head_general"
 		end
 	end
+
+	local skills = (sgs.masochism_skill .. "|" .. sgs.recover_skill .. "|" .. sgs.priority_skill .. "|"
+					.. sgs.wizard_skill .. "|" .. sgs.cardneed_skill):split("|")
+	for _, skill in ipairs(skills) do
+		if who:hasShownSkill(skill) then
+			if self:isFriendWith(who) then
+				return who:inHeadSkills(skill) and "deputy_general" or "head_general"
+			else
+				return who:inHeadSkills(skill) and "head_general" or "deputy_general"
+			end
+		end
+	end
+
 	return "head_general"
 end
 
