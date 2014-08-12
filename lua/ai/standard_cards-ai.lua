@@ -1243,11 +1243,19 @@ function sgs.ai_cardsview.Spear(self, class_name, player, cards)
 
 		sgs.ais[player:objectName()]:sortByKeepValue(cards)
 
+		local newcards = {}
+		for _, card in ipairs(cards) do
+			if not isCard("Peach", card, player) and not (isCard("ExNihilo", card, player) and player:getPhase() == sgs.Player_Play) then
+				table.insert(newcards, card)
+			end
+		end
+		if #newcards < 2 then return {} end
+
 		local card_str = {}
-		for i = 1, #cards, 2 do
-			if i + 1 > #cards then break end
-			local id1 = cards[i]:getEffectiveId()
-			local id2 = cards[i + 1]:getEffectiveId()
+		for i = 1, #newcards, 2 do
+			if i + 1 > #newcards then break end
+			local id1 = newcards[i]:getEffectiveId()
+			local id2 = newcards[i + 1]:getEffectiveId()
 			local str = ("slash:%s[%s:%s]=%d+%d&%s"):format(skill_name, "to_be_decided", 0, id1, id2, skill_name)
 			table.insert(card_str , str)
 		end
