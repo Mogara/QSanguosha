@@ -37,7 +37,7 @@ ServerPlayer::ServerPlayer(Room *room)
     : Player(room), m_isClientResponseReady(false), m_isWaitingReply(false),
     event_received(false), socket(NULL), room(room),
     ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL),
-    _m_phases_index(0), _m_clientResponse(Json::nullValue)
+    _m_phases_index(0)
 {
     semas = new QSemaphore *[S_NUM_SEMAPHORES];
     for (int i = 0; i < S_NUM_SEMAPHORES; i++)

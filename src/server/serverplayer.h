@@ -171,8 +171,8 @@ public:
     }
     inline QString getClientReplyString() { return m_clientResponseString; }
     inline void setClientReplyString(const QString &val) { m_clientResponseString = val; }
-    inline Json::Value getClientReply() { return _m_clientResponse; }
-    inline void setClientReply(const Json::Value &val) { _m_clientResponse = val; }
+    inline const QVariant &getClientReply() const{ return _m_clientResponse; }
+    inline void setClientReply(const QVariant &val) { _m_clientResponse = val; }
     unsigned int m_expectedReplySerial; // Suggest the acceptable serial number of an expected response.
     bool m_isClientResponseReady; //Suggest whether a valid player's reponse has been received.
     bool m_isWaitingReply; // Suggest if the server player is waiting for client's response.
@@ -219,7 +219,7 @@ private:
     QStringList selected; // 3v3 mode use only
     QDateTime test_time;
     QString m_clientResponseString;
-    Json::Value _m_clientResponse;
+    QVariant _m_clientResponse;
 
 private slots:
     void getMessage(const char *message);
