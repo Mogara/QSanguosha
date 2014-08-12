@@ -55,7 +55,7 @@ Client::Client(QObject *parent, const QString &filename)
     ClientInstance = this;
     m_isGameOver = false;
 
-    m_callbacks[S_COMMAND_CHECK_VERSION] = &Client::checkVersion;
+    callbacks[S_COMMAND_CHECK_VERSION] = &Client::checkVersion;
     m_callbacks[S_COMMAND_SETUP] = &Client::setup;
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Client::networkDelayTest;
     m_callbacks[S_COMMAND_ADD_PLAYER] = &Client::addPlayer;
@@ -271,8 +271,8 @@ void Client::request(const QByteArray &raw) {
         socket->send(raw);
 }
 
-void Client::checkVersion(const Json::Value &server_version) {
-    QString version = toQString(server_version);
+void Client::checkVersion(const QVariant &server_version) {
+    QString version = server_version.toString();
     QString version_number, mod_name;
     if (version.contains(QChar(':'))) {
         QStringList texts = version.split(QChar(':'));
@@ -319,9 +319,14 @@ void Client::processServerPacket(const char *cmd) {
     Packet packet;
     if (packet.parse(cmd)) {
         if (packet.getPacketType() == S_TYPE_NOTIFICATION) {
-            CallBack callback = m_callbacks[packet.getCommandType()];
+            Callback callback = callbacks[packet.getCommandType()];
             if (callback) {
-                (this->*callback)(VariantToJsonValue(packet.getMessageBody()));
+                (this->*callback)(packet.getMessageBody());
+            } else {//@to-do: remove the branch after all callbacks are migrated
+                CallBack deprecated_callback = m_callbacks[packet.getCommandType()];
+                if (deprecated_callback) {
+                    (this->*deprecated_callback)(VariantToJsonValue(packet.getMessageBody()));
+                }
             }
         }
         else if (packet.getPacketType() == S_TYPE_REQUEST) {
