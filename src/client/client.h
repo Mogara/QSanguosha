@@ -135,7 +135,7 @@ public:
     void setDashboardShadow(const Json::Value &player_arg);
     void warn(const QVariant &);
     void setMark(const Json::Value &mark_str);
-    void showCard(const Json::Value &show_str);
+    void showCard(const QVariant &show_str);
     void log(const Json::Value &log_str);
     void speak(const QVariant &speak);
     void addHistory(const Json::Value &history);

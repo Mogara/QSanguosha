@@ -72,7 +72,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_CHANGE_MAXHP] = &Client::maxhpChange;
     callbacks[S_COMMAND_KILL_PLAYER] = &Client::killPlayer;
     callbacks[S_COMMAND_REVIVE_PLAYER] = &Client::revivePlayer;
-    m_callbacks[S_COMMAND_SHOW_CARD] = &Client::showCard;
+    callbacks[S_COMMAND_SHOW_CARD] = &Client::showCard;
     m_callbacks[S_COMMAND_UPDATE_CARD] = &Client::updateCard;
     m_callbacks[S_COMMAND_SET_MARK] = &Client::setMark;
     m_callbacks[S_COMMAND_LOG_SKILL] = &Client::log;
@@ -1573,13 +1573,13 @@ void Client::alertFocus() {
         QApplication::alert(QApplication::focusWidget());
 }
 
-void Client::showCard(const Json::Value &show_str) {
-    if (!show_str.isArray() || show_str.size() != 2
-        || !show_str[0].isString() || !show_str[1].isInt())
+void Client::showCard(const QVariant &show_str) {
+    JsonArray show = show_str.value<JsonArray>();
+    if (show.size() != 2 || show[0].type() != QMetaType::QString || show[1].type() != QMetaType::Int)
         return;
 
-    QString player_name = toQString(show_str[0]);
-    int card_id = show_str[1].asInt();
+    QString player_name = show[0].toString();
+    int card_id = show[1].toInt();
 
     ClientPlayer *player = getPlayer(player_name);
     if (player != Self)
