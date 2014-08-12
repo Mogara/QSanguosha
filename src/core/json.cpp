@@ -215,7 +215,7 @@ bool JsonUtils::isIntArray(const JsonArray &array, unsigned from, unsigned int t
     return true;
 }
 
-JsonArray JsonUtils::toJsonArray(const QList<int> &intArray)
+QVariant JsonUtils::toJsonArray(const QList<int> &intArray)
 {
     JsonArray json;
     foreach (int number, intArray) {
@@ -224,7 +224,7 @@ JsonArray JsonUtils::toJsonArray(const QList<int> &intArray)
     return json;
 }
 
-JsonArray JsonUtils::toJsonArray(const QStringList &stringArray)
+QVariant JsonUtils::toJsonArray(const QStringList &stringArray)
 {
     JsonArray json;
     foreach (const QString &string, stringArray) {

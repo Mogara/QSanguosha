@@ -33,8 +33,8 @@ protected:
 namespace JsonUtils{
     bool isStringArray(const JsonArray &array, unsigned from, unsigned int to);
     bool isIntArray(const JsonArray &array, unsigned from, unsigned int to);
-    JsonArray toJsonArray(const QList<int> &intArray);
-    JsonArray toJsonArray(const QStringList &stringArray);
+    QVariant toJsonArray(const QList<int> &intArray);
+    QVariant toJsonArray(const QStringList &stringArray);
 }
 
 Json::Value VariantToJsonValue(const QVariant &var);
