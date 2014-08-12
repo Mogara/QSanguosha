@@ -75,7 +75,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_SHOW_CARD] = &Client::showCard;
     callbacks[S_COMMAND_UPDATE_CARD] = &Client::updateCard;
     callbacks[S_COMMAND_SET_MARK] = &Client::setMark;
-    m_callbacks[S_COMMAND_LOG_SKILL] = &Client::log;
+    callbacks[S_COMMAND_LOG_SKILL] = &Client::log;
     m_callbacks[S_COMMAND_ATTACH_SKILL] = &Client::attachSkill;
     m_callbacks[S_COMMAND_MOVE_FOCUS] = &Client::moveFocus;
     m_callbacks[S_COMMAND_SET_EMOTION] = &Client::setEmotion;
@@ -1746,12 +1746,12 @@ void Client::onPlayerReplyGuanxing(const QList<int> &up_cards, const QList<int> 
     setStatus(NotActive);
 }
 
-void Client::log(const Json::Value &log_str) {
-    if (!log_str.isArray() || log_str.size() != 6)
+void Client::log(const QVariant &log_str) {
+    QStringList log;
+
+    if (!JsonUtils::tryParse(log_str.value<JsonArray>(), log) || log.size() != 6)
         emit log_received(QStringList() << QString());
     else {
-        QStringList log;
-        tryParse(log_str, log);
         if (log.first() == "#BasaraReveal")
             Sanguosha->playSystemAudioEffect("choose-item");
         else if (log.first() == "#UseLuckCard") {

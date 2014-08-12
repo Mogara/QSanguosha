@@ -136,7 +136,7 @@ public:
     void warn(const QVariant &);
     void setMark(const QVariant &mark_var);
     void showCard(const QVariant &show_str);
-    void log(const Json::Value &log_str);
+    void log(const QVariant &log_str);
     void speak(const QVariant &speak);
     void addHistory(const Json::Value &history);
     void moveFocus(const Json::Value &focus);
