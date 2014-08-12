@@ -66,9 +66,9 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_SPEAK] = &Client::speak;
 
     callbacks[S_COMMAND_GAME_START] = &Client::startGame;
-    m_callbacks[S_COMMAND_GAME_OVER] = &Client::gameOver;
+    callbacks[S_COMMAND_GAME_OVER] = &Client::gameOver;
 
-    m_callbacks[S_COMMAND_CHANGE_HP] = &Client::hpChange;
+    callbacks[S_COMMAND_CHANGE_HP] = &Client::hpChange;
     m_callbacks[S_COMMAND_CHANGE_MAXHP] = &Client::maxhpChange;
     m_callbacks[S_COMMAND_KILL_PLAYER] = &Client::killPlayer;
     m_callbacks[S_COMMAND_REVIVE_PLAYER] = &Client::revivePlayer;
@@ -657,14 +657,15 @@ void Client::startGame(const QVariant &) {
     emit game_started();
 }
 
-void Client::hpChange(const Json::Value &change_str) {
-    if (!change_str.isArray() || change_str.size() != 3) return;
-    if (!change_str[0].isString() || !change_str[1].isInt() || !change_str[2].isInt()) return;
+void Client::hpChange(const QVariant &change_str) {
+    JsonArray change = change_str.value<JsonArray>();
+    if (change.size() != 3) return;
+    if (change[0].type() != QMetaType::QString || change[1].type() != QMetaType::Int || change[2].type() != QMetaType::Int) return;
 
-    QString who = toQString(change_str[0]);
-    int delta = change_str[1].asInt();
+    QString who = change[0].toString();
+    int delta = change[1].toInt();
 
-    int nature_index = change_str[2].asInt();
+    int nature_index = change[2].toInt();
     DamageStruct::Nature nature = DamageStruct::Normal;
     if (nature_index > 0) nature = (DamageStruct::Nature)nature_index;
 
@@ -1245,13 +1246,20 @@ void Client::askForExchange(const Json::Value &exchange_str) {
     setStatus(Exchanging);
 }
 
-void Client::gameOver(const Json::Value &arg) {
+void Client::gameOver(const QVariant &arg) {
     disconnectFromHost();
     m_isGameOver = true;
     setStatus(Client::NotActive);
-    QString winner = toQString(arg[0]);
+
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() < 2)
+        return;
+
+    QString winner = args[0].toString();
     QStringList roles;
-    tryParse(arg[1], roles);
+    foreach (const QVariant &role, args[1].value<JsonArray>()) {
+        roles << role.toString();
+    }
 
     Q_ASSERT(roles.length() == players.length());
 

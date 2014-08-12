@@ -121,12 +121,12 @@ public:
     void arrangeSeats(const QVariant &seats_arr);
     void activate(const Json::Value &playerId);
     void startGame(const QVariant &);
-    void hpChange(const Json::Value &change_str);
+    void hpChange(const QVariant &change_str);
     void maxhpChange(const Json::Value &change_str);
     void resetPiles(const Json::Value &);
     void setPileNumber(const Json::Value &pile_str);
     void setHandcardNum(const Json::Value &num_array);
-    void gameOver(const Json::Value &);
+    void gameOver(const QVariant &);
     void loseCards(const Json::Value &);
     void getCards(const Json::Value &);
     void updateProperty(const Json::Value &);
