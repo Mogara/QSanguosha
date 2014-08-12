@@ -70,7 +70,7 @@ Client::Client(QObject *parent, const QString &filename)
 
     callbacks[S_COMMAND_CHANGE_HP] = &Client::hpChange;
     callbacks[S_COMMAND_CHANGE_MAXHP] = &Client::maxhpChange;
-    m_callbacks[S_COMMAND_KILL_PLAYER] = &Client::killPlayer;
+    callbacks[S_COMMAND_KILL_PLAYER] = &Client::killPlayer;
     m_callbacks[S_COMMAND_REVIVE_PLAYER] = &Client::revivePlayer;
     m_callbacks[S_COMMAND_SHOW_CARD] = &Client::showCard;
     m_callbacks[S_COMMAND_UPDATE_CARD] = &Client::updateCard;
@@ -1287,12 +1287,12 @@ void Client::gameOver(const QVariant &arg) {
     emit game_over();
 }
 
-void Client::killPlayer(const Json::Value &player_arg) {
-    if (!player_arg.isString()) return;
-    QString player_name = toQString(player_arg);
+void Client::killPlayer(const QVariant &player_name) {
+    if (player_name.type() != QMetaType::QString) return;
+    QString name = player_name.toString();
 
     alive_count--;
-    ClientPlayer *player = getPlayer(player_name);
+    ClientPlayer *player = getPlayer(name);
     if (player == Self) {
         foreach(const Skill *skill, Self->getVisibleSkills())
             emit skill_detached(skill->objectName());
@@ -1317,7 +1317,7 @@ void Client::killPlayer(const Json::Value &player_arg) {
         updatePileNum();
     }
 
-    emit player_killed(player_name);
+    emit player_killed(name);
 }
 
 void Client::setDashboardShadow(const Json::Value &player_arg) {
