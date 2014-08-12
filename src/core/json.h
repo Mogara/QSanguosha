@@ -35,6 +35,8 @@ namespace JsonUtils{
     bool isIntArray(const JsonArray &array, unsigned from, unsigned int to);
     QVariant toJsonArray(const QList<int> &intArray);
     QVariant toJsonArray(const QStringList &stringArray);
+
+    bool tryParse(const JsonArray &val, QStringList &list);
 }
 
 

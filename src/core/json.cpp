@@ -232,3 +232,18 @@ QVariant JsonUtils::toJsonArray(const QStringList &stringArray)
     }
     return json;
 }
+
+bool JsonUtils::tryParse(const JsonArray &val, QStringList &list)
+{
+    foreach (const QVariant &var, val) {
+        if (var.type() != QMetaType::QString) {
+            return false;
+        }
+    }
+
+    foreach (const QVariant &var, val) {
+        list << var.toString();
+    }
+
+    return true;
+}
