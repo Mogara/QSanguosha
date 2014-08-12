@@ -50,7 +50,7 @@ public:
     friend class RoomThread;
 
     typedef void (Room::*Callback)(ServerPlayer *, const QVariant &);
-    typedef bool (Room::*ResponseVerifyFunction)(ServerPlayer *, const Json::Value &, void *);
+    typedef bool (Room::*ResponseVerifyFunction)(ServerPlayer *, const QVariant &, void *);
 
     explicit Room(QObject *parent, const QString &mode);
     ~Room();
@@ -209,7 +209,7 @@ public:
         ResponseVerifyFunction validateFunc = NULL, void *funcArg = NULL);
 
     // Verification functions
-    bool verifyNullificationResponse(ServerPlayer *, const Json::Value &, void *);
+    bool verifyNullificationResponse(ServerPlayer *, const QVariant &, void *);
 
     // Notification functions
     bool notifyMoveFocus(ServerPlayer *focus);

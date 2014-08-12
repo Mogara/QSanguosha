@@ -777,7 +777,7 @@ ServerPlayer *Room::getRaceResult(QList<ServerPlayer *> &players, QSanProtocol::
 
         if (validateFunc == NULL
             || (_m_raceWinner->m_isClientResponseReady
-            && (this->*validateFunc)(_m_raceWinner, VariantToJsonValue(_m_raceWinner->getClientReply()), funcArg))) {
+            && (this->*validateFunc)(_m_raceWinner, _m_raceWinner->getClientReply(), funcArg))) {
             validResult = true;
             break;
         }
@@ -1091,10 +1091,13 @@ bool Room::isCanceled(const CardEffectStruct &effect) {
     return result;
 }
 
-bool Room::verifyNullificationResponse(ServerPlayer *player, const Json::Value &response, void *) {
+bool Room::verifyNullificationResponse(ServerPlayer *player, const QVariant &response, void *) {
     const Card *card = NULL;
-    if (player != NULL && response.isArray() && response[0].isString())
-        card = Card::Parse(toQString(response[0]));
+    if (player != NULL && response.canConvert<JsonArray>()) {
+        JsonArray responseArray = response.value<JsonArray>();
+        if (responseArray[0].type() == QMetaType::QString)
+            card = Card::Parse(responseArray[0].toString());
+    }
     return card != NULL;
 }
 
