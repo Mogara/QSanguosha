@@ -262,8 +262,7 @@ bool PlayerCardContainer::canBeSelected()
 {
     QGraphicsItem *item1 = getMouseClickReceiver();
     QGraphicsItem *item2 = getMouseClickReceiver2();
-    return (item1 || item2) != NULL && isEnabled() &&
-        (flags() & QGraphicsItem::ItemIsSelectable);
+    return (item1 != NULL || item2 != NULL) && isEnabled() && (flags() & QGraphicsItem::ItemIsSelectable);
 }
 
 const ClientPlayer *PlayerCardContainer::getPlayer() const {
