@@ -112,7 +112,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_CHOOSE_DIRECTION] = &Client::askForDirection;
     interactions[S_COMMAND_EXCHANGE_CARD] = &Client::askForExchange;
     interactions[S_COMMAND_ASK_PEACH] = &Client::askForSinglePeach;
-    m_interactions[S_COMMAND_SKILL_GUANXING] = &Client::askForGuanxing;
+    interactions[S_COMMAND_SKILL_GUANXING] = &Client::askForGuanxing;
     interactions[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
     m_interactions[S_COMMAND_SKILL_YIJI] = &Client::askForYiji;
     m_interactions[S_COMMAND_PLAY_CARD] = &Client::activate;
@@ -1618,11 +1618,15 @@ void Client::attachSkill(const QVariant &skill) {
     emit skill_attached(skill_name, true);
 }
 
-void Client::askForGuanxing(const Json::Value &arg) {
-    Json::Value deck = arg[0];
-    bool single_side = arg[1].asBool();
+void Client::askForGuanxing(const QVariant &arg) {
+    JsonArray args = arg.value<JsonArray>();
+    if (args.isEmpty())
+        return;
+
+    JsonArray deck = args[0].value<JsonArray>();
+    bool single_side = args[1].toBool();
     QList<int> card_ids;
-    tryParse(deck, card_ids);
+    JsonUtils::tryParse(deck, card_ids);
 
     emit guanxing(card_ids, single_side);
     setStatus(AskForGuanxing);

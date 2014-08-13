@@ -177,7 +177,7 @@ public:
     void askForPlayerChosen(const QVariant &players);
     void askForGeneral(const QVariant &);
     void askForYiji(const Json::Value &);
-    void askForGuanxing(const Json::Value &);
+    void askForGuanxing(const QVariant &);
     void showAllCards(const QVariant &);
     void askForGongxin(const QVariant &);
     void askForSurrender(const Json::Value &);
