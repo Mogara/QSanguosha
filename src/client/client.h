@@ -150,7 +150,7 @@ public:
     void exchangeKnownCards(const Json::Value &players);
     void setKnownCards(const Json::Value &set_str);
     void viewGenerals(const Json::Value &str);
-    void setFixedDistance(const Json::Value &set_str);
+    void setFixedDistance(const QVariant &set_str);
     void updateStateItem(const Json::Value &state_str);
     void setAvailableCards(const Json::Value &pile);
     void setCardFlag(const Json::Value &pattern_str);

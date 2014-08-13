@@ -85,7 +85,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_LOG_EVENT] = &Client::handleGameEvent;
     callbacks[S_COMMAND_ADD_HISTORY] = &Client::addHistory;
     callbacks[S_COMMAND_ANIMATE] = &Client::animate;
-    m_callbacks[S_COMMAND_FIXED_DISTANCE] = &Client::setFixedDistance;
+    callbacks[S_COMMAND_FIXED_DISTANCE] = &Client::setFixedDistance;
     m_callbacks[S_COMMAND_CARD_LIMITATION] = &Client::cardLimitation;
     m_callbacks[S_COMMAND_DISABLE_SHOW] = &Client::disableShow;
     m_callbacks[S_COMMAND_NULLIFICATION_ASKED] = &Client::setNullification;
@@ -1890,13 +1890,16 @@ void Client::animate(const QVariant &animate_str) {
     emit animated(name, args);
 }
 
-void Client::setFixedDistance(const Json::Value &set_str) {
-    if (!set_str.isArray() || set_str.size() != 3) return;
-    if (!set_str[0].isString() || !set_str[1].isString() || !set_str[2].isInt()) return;
+void Client::setFixedDistance(const QVariant &set_str) {
+    JsonArray set = set_str.value<JsonArray>();
+    if (set.size() != 3
+            || set[0].type() != QMetaType::QString
+            || set[1].type() != QMetaType::QString
+            || !JsonUtils::isNumber(set[2])) return;
 
-    ClientPlayer *from = getPlayer(toQString(set_str[0]));
-    ClientPlayer *to = getPlayer(toQString(set_str[1]));
-    int distance = set_str[2].asInt();
+    ClientPlayer *from = getPlayer(set[0].toString());
+    ClientPlayer *to = getPlayer(set[1].toString());
+    int distance = set[2].toInt();
 
     if (from && to)
         from->setFixedDistance(to, distance);
