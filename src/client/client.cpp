@@ -90,7 +90,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_DISABLE_SHOW] = &Client::disableShow;
     callbacks[S_COMMAND_NULLIFICATION_ASKED] = &Client::setNullification;
     callbacks[S_COMMAND_ENABLE_SURRENDER] = &Client::enableSurrender;
-    m_callbacks[S_COMMAND_EXCHANGE_KNOWN_CARDS] = &Client::exchangeKnownCards;
+    callbacks[S_COMMAND_EXCHANGE_KNOWN_CARDS] = &Client::exchangeKnownCards;
     m_callbacks[S_COMMAND_SET_KNOWN_CARDS] = &Client::setKnownCards;
     m_callbacks[S_COMMAND_VIEW_GENERALS] = &Client::viewGenerals;
     m_callbacks[S_COMMAND_SET_DASHBOARD_SHADOW] = &Client::setDashboardShadow;
@@ -767,9 +767,10 @@ void Client::enableSurrender(const QVariant &enabled) {
     emit surrender_enabled(en);
 }
 
-void Client::exchangeKnownCards(const Json::Value &players) {
-    if (!players.isArray() || players.size() != 2 || !players[0].isString() || !players[1].isString()) return;
-    ClientPlayer *a = getPlayer(toQString(players[0])), *b = getPlayer(toQString(players[1]));
+void Client::exchangeKnownCards(const QVariant &players) {
+    JsonArray args = players.value<JsonArray>();
+    if (args.size() != 2 || args[0].type() != QMetaType::QString || args[1].type() != QMetaType::QString) return;
+    ClientPlayer *a = getPlayer(args[0].toString()), *b = getPlayer(args[1].toString());
     QList<int> a_known, b_known;
     foreach(const Card *card, a->getHandcards())
         a_known << card->getId();

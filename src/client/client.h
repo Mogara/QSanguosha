@@ -147,7 +147,7 @@ public:
     void disableShow(const QVariant &args);
     void setNullification(const QVariant &str);
     void enableSurrender(const QVariant &enabled);
-    void exchangeKnownCards(const Json::Value &players);
+    void exchangeKnownCards(const QVariant &players);
     void setKnownCards(const Json::Value &set_str);
     void viewGenerals(const Json::Value &str);
     void setFixedDistance(const QVariant &set_str);
