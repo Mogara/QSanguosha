@@ -259,7 +259,6 @@ protected:
 private:
     ClientSocket *socket;
     bool m_isGameOver;
-    QHash<QSanProtocol::CommandType, CallBack> m_interactions;
     QHash<QSanProtocol::CommandType, Callback> interactions;
     QHash<QSanProtocol::CommandType, Callback> callbacks;
     QList<const ClientPlayer *> players;

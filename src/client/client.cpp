@@ -327,9 +327,9 @@ void Client::processServerPacket(const char *cmd) {
         }
         else if (packet.getPacketType() == S_TYPE_REQUEST) {
             if (replayer && packet.getPacketDescription() == 0x411 && packet.getCommandType() == S_COMMAND_CHOOSE_GENERAL) {
-                CallBack callback = m_interactions[S_COMMAND_CHOOSE_GENERAL];
+                CallBack callback = interactions[S_COMMAND_CHOOSE_GENERAL];
                 if (callback)
-                    (this->*callback)(VariantToJsonValue(packet.getMessageBody()));
+                    (this->*callback)(packet.getMessageBody());
             }
             else if (!replayer)
                 processServerRequest(packet);
@@ -356,12 +356,6 @@ bool Client::processServerRequest(const Packet &packet) {
     Callback callback = interactions[command];
     if (callback) {
         (this->*callback)(packet.getMessageBody());
-        return true;
-    }
-
-    CallBack deprecated_callback = m_interactions[command];
-    if (deprecated_callback) {
-        (this->*deprecated_callback)(VariantToJsonValue(packet.getMessageBody()));
         return true;
     }
 
