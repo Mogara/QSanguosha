@@ -4,119 +4,6 @@
 #include <QFile>
 #include <QRect>
 #include <QColor>
-#include <json/json.h>
-
-Json::Value VariantToJsonValue(const QVariant &var)
-{
-    switch (var.type()) {
-    //bool
-    case QMetaType::Bool:
-        return var.toBool();
-
-    //number
-    case QMetaType::Int:
-        return var.toInt();
-    case QMetaType::UInt:
-        return var.toUInt();
-    case QMetaType::Float:
-        return var.toFloat();
-    case QMetaType::Double:
-        return var.toDouble();
-    case QMetaType::LongLong:
-        return var.toLongLong();
-    case QMetaType::ULongLong:
-        return var.toULongLong();
-
-    //string
-    case QMetaType::QString:
-        return var.toString().toUtf8().constData();
-    case QMetaType::QByteArray:
-        return var.toByteArray().constData();
-
-    //array
-    case QMetaType::QStringList:{
-        Json::Value array(Json::arrayValue);
-        foreach (const QString &str, var.toStringList()) {
-            array.append(str.toUtf8().constData());
-        }
-        return array;
-    }
-    case QMetaType::QVariantList:{
-        Json::Value array(Json::arrayValue);
-        foreach (const QVariant &value, var.toList()) {
-            array.append(VariantToJsonValue(value));
-        }
-        return array;
-    }
-
-    //object
-    case QMetaType::QVariantMap:{
-        Json::Value object(Json::objectValue);
-        QMapIterator<QString, QVariant> iter(var.toMap());
-        while (iter.hasNext()) {
-            iter.next();
-            object[iter.key().toUtf8().constData()] = VariantToJsonValue(iter.value());
-        }
-        return object;
-    }
-    case QMetaType::QVariantHash:{
-        Json::Value object(Json::objectValue);
-        QHashIterator<QString, QVariant> iter(var.toHash());
-        while (iter.hasNext()) {
-            iter.next();
-            object[iter.key().toUtf8().constData()] = VariantToJsonValue(iter.value());
-        }
-        return object;
-    }
-
-    //null
-    default:
-        return Json::Value::null;
-    }
-}
-
-QVariant JsonValueToVariant(const Json::Value &var)
-{
-    switch (var.type()) {
-    //number
-    case Json::intValue:
-        return var.asInt();
-    case Json::uintValue:
-        return var.asUInt();
-    case Json::realValue:
-        return var.asDouble();
-
-    //string
-    case Json::stringValue:
-        return QString::fromUtf8(var.asCString());
-
-    //boolean
-    case Json::booleanValue:
-        return var.asBool();
-
-    //array
-    case Json::arrayValue:{
-        JsonArray array;
-        for (Json::ArrayIndex i = 0; i < var.size(); i++) {
-            array.append(JsonValueToVariant(var[i]));
-        }
-        return array;
-    }
-
-    //object
-    case Json::objectValue:{
-        JsonObject object;
-        for (Json::ValueIterator iter = var.begin(); iter != var.end(); iter++) {
-            object.insert(QString::fromUtf8(iter.memberName()), JsonValueToVariant(*iter));
-        }
-        return object;
-    }
-
-    //null
-    default:
-        return QVariant();
-    }
-}
 
 JsonDocument::JsonDocument()
     :valid(false)
@@ -138,11 +25,11 @@ JsonDocument::JsonDocument(const JsonObject &object)
 {
 }
 
-JsonDocument JsonDocument::fromFilePath(const QString &path)
+JsonDocument JsonDocument::fromFilePath(const QString &path, bool allowComment)
 {
     QFile file(path);
     file.open(QFile::ReadOnly);
-    return fromJson(file.readAll());
+    return fromJson(file.readAll(), allowComment);
 }
 
 bool JsonUtils::isStringArray(const QVariant &var, unsigned from, unsigned int to)
@@ -316,8 +203,56 @@ bool JsonUtils::tryParse(const QVariant &arg, QColor &color) {
     return true;
 }
 
-/*#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+
 #include <QJsonDocument>
+
+QByteArray clearComment(const QByteArray &src)
+{
+    QByteArray result(src);
+    int max = result.size() - 1;
+    for (int i = 0; i < max; i++) {
+        switch (result.at(i)) {
+        case '/':
+            if (result.at(i + 1) == '*') {//multi-line comment
+                int offset = i;
+                i++;
+                while(i < max && (result.at(i) != '*' || result.at(i + 1) != '/')) {
+                    i++;
+                }
+
+                int length = i + 2 - offset;
+                result.remove(offset, length);
+                i = offset;
+                max -= length;
+
+            } else if (result.at(i + 1) == '/') {//single-line comment
+                int offset = i;
+                i++;
+                while(i < max + 1 && result.at(i) != '\n') {
+                    i++;
+                }
+
+                int length = i + 1 - offset;
+                result.remove(offset, length);
+                i = offset;
+                max -= length;
+            }
+            break;
+        case '"'://string
+            while(i < max + 1 && result.at(i) != '"') {
+                if (result.at(i) == '\\') {
+                    i += 2;
+                } else {
+                    i++;
+                }
+            }
+            break;
+        default:;
+        }
+    }
+    return result;
+}
 
 QByteArray JsonDocument::toJson(bool isIndented) const
 {
@@ -325,10 +260,10 @@ QByteArray JsonDocument::toJson(bool isIndented) const
     return doc.toJson(isIndented ? QJsonDocument::Indented : QJsonDocument::Compact);
 }
 
-JsonDocument JsonDocument::fromJson(const QByteArray &json)
+JsonDocument JsonDocument::fromJson(const QByteArray &json, bool allowComment)
 {
     QJsonParseError error;
-    QJsonDocument jsondoc = QJsonDocument::fromJson(json, &error);
+    QJsonDocument jsondoc = QJsonDocument::fromJson(allowComment ? clearComment(json) : json, &error);
 
     JsonDocument doc;
     if (error.error == QJsonParseError::NoError) {
@@ -341,7 +276,121 @@ JsonDocument JsonDocument::fromJson(const QByteArray &json)
     return doc;
 }
 
-#else*/
+#else
+
+#include <json/json.h>
+
+Json::Value VariantToJsonValue(const QVariant &var)
+{
+    switch (var.type()) {
+    //bool
+    case QMetaType::Bool:
+        return var.toBool();
+
+    //number
+    case QMetaType::Int:
+        return var.toInt();
+    case QMetaType::UInt:
+        return var.toUInt();
+    case QMetaType::Float:
+        return var.toFloat();
+    case QMetaType::Double:
+        return var.toDouble();
+    case QMetaType::LongLong:
+        return var.toLongLong();
+    case QMetaType::ULongLong:
+        return var.toULongLong();
+
+    //string
+    case QMetaType::QString:
+        return var.toString().toUtf8().constData();
+    case QMetaType::QByteArray:
+        return var.toByteArray().constData();
+
+    //array
+    case QMetaType::QStringList:{
+        Json::Value array(Json::arrayValue);
+        foreach (const QString &str, var.toStringList()) {
+            array.append(str.toUtf8().constData());
+        }
+        return array;
+    }
+    case QMetaType::QVariantList:{
+        Json::Value array(Json::arrayValue);
+        foreach (const QVariant &value, var.toList()) {
+            array.append(VariantToJsonValue(value));
+        }
+        return array;
+    }
+
+    //object
+    case QMetaType::QVariantMap:{
+        Json::Value object(Json::objectValue);
+        QMapIterator<QString, QVariant> iter(var.toMap());
+        while (iter.hasNext()) {
+            iter.next();
+            object[iter.key().toUtf8().constData()] = VariantToJsonValue(iter.value());
+        }
+        return object;
+    }
+    case QMetaType::QVariantHash:{
+        Json::Value object(Json::objectValue);
+        QHashIterator<QString, QVariant> iter(var.toHash());
+        while (iter.hasNext()) {
+            iter.next();
+            object[iter.key().toUtf8().constData()] = VariantToJsonValue(iter.value());
+        }
+        return object;
+    }
+
+    //null
+    default:
+        return Json::Value::null;
+    }
+}
+
+QVariant JsonValueToVariant(const Json::Value &var)
+{
+    switch (var.type()) {
+    //number
+    case Json::intValue:
+        return var.asInt();
+    case Json::uintValue:
+        return var.asUInt();
+    case Json::realValue:
+        return var.asDouble();
+
+    //string
+    case Json::stringValue:
+        return QString::fromUtf8(var.asCString());
+
+    //boolean
+    case Json::booleanValue:
+        return var.asBool();
+
+    //array
+    case Json::arrayValue:{
+        JsonArray array;
+        for (Json::ArrayIndex i = 0; i < var.size(); i++) {
+            array.append(JsonValueToVariant(var[i]));
+        }
+        return array;
+    }
+
+    //object
+    case Json::objectValue:{
+        JsonObject object;
+        for (Json::ValueIterator iter = var.begin(); iter != var.end(); iter++) {
+            object.insert(QString::fromUtf8(iter.memberName()), JsonValueToVariant(*iter));
+        }
+        return object;
+    }
+
+    //null
+    default:
+        return QVariant();
+    }
+}
 
 QByteArray JsonDocument::toJson(bool isIndented) const
 {
@@ -369,4 +418,4 @@ JsonDocument JsonDocument::fromJson(const QByteArray &json)
     return doc;
 }
 
-//#endif
+#endif

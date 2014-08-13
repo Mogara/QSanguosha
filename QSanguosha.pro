@@ -108,12 +108,6 @@ SOURCES += \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
-    src/jsoncpp/src/json_writer.cpp \
-    src/jsoncpp/src/json_valueiterator.inl \
-    src/jsoncpp/src/json_value.cpp \
-    src/jsoncpp/src/json_reader.cpp \
-    src/jsoncpp/src/json_internalmap.inl \
-    src/jsoncpp/src/json_internalarray.inl \
     swig/sanguosha_wrap.cxx
 
 HEADERS += \
@@ -214,18 +208,7 @@ HEADERS += \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \
-    src/util/socket.h \
-    src/jsoncpp/src/json_tool.h \
-    src/jsoncpp/src/json_batchallocator.h \
-    src/jsoncpp/include/json/writer.h \
-    src/jsoncpp/include/json/value.h \
-    src/jsoncpp/include/json/reader.h \
-    src/jsoncpp/include/json/json.h \
-    src/jsoncpp/include/json/forwards.h \
-    src/jsoncpp/include/json/features.h \
-    src/jsoncpp/include/json/config.h \
-    src/jsoncpp/include/json/autolink.h \
-    src/jsoncpp/include/json/assertions.h
+    src/util/socket.h
 
 FORMS += \
     src/dialog/cardoverview.ui \
@@ -243,7 +226,29 @@ INCLUDEPATH += src/scenario
 INCLUDEPATH += src/server
 INCLUDEPATH += src/ui
 INCLUDEPATH += src/util
-INCLUDEPATH += src/jsoncpp/include
+
+lessThan(QT_MAJOR_VERSION, 5){
+    SOURCES += src/jsoncpp/src/json_writer.cpp \
+        src/jsoncpp/src/json_valueiterator.inl \
+        src/jsoncpp/src/json_value.cpp \
+        src/jsoncpp/src/json_reader.cpp \
+        src/jsoncpp/src/json_internalmap.inl \
+        src/jsoncpp/src/json_internalarray.inl
+
+    HEADERS += src/jsoncpp/src/json_tool.h \
+        src/jsoncpp/src/json_batchallocator.h \
+        src/jsoncpp/include/json/writer.h \
+        src/jsoncpp/include/json/value.h \
+        src/jsoncpp/include/json/reader.h \
+        src/jsoncpp/include/json/json.h \
+        src/jsoncpp/include/json/forwards.h \
+        src/jsoncpp/include/json/features.h \
+        src/jsoncpp/include/json/config.h \
+        src/jsoncpp/include/json/autolink.h \
+        src/jsoncpp/include/json/assertions.h
+
+    INCLUDEPATH += src/jsoncpp/include
+}
 
 win32{
     RC_FILE += resource/icon.rc

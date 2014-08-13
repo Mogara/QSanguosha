@@ -17,8 +17,8 @@ public:
     JsonDocument(const JsonObject &object);
 
     QByteArray toJson(bool isIndented = false) const;
-    static JsonDocument fromJson(const QByteArray &json);
-    static JsonDocument fromFilePath(const QString &path);
+    static JsonDocument fromJson(const QByteArray &json, bool allowComment = false);
+    static JsonDocument fromFilePath(const QString &path, bool allowComment = true);
 
     inline bool isArray() const{return value.canConvert<JsonArray>();}
     inline bool isObject() const{return value.canConvert<JsonObject>();}
