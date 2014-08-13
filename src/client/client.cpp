@@ -107,7 +107,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_UPDATE_HANDCARD_NUM] = &Client::setHandcardNum;
 
     // interactive methods
-    m_interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
+    interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
     m_interactions[S_COMMAND_CHOOSE_PLAYER] = &Client::askForPlayerChosen;
     m_interactions[S_COMMAND_CHOOSE_DIRECTION] = &Client::askForDirection;
     m_interactions[S_COMMAND_EXCHANGE_CARD] = &Client::askForExchange;
@@ -1368,11 +1368,11 @@ void Client::warn(const QVariant &reason_var) {
     QMessageBox::warning(NULL, tr("Warning"), msg);
 }
 
-void Client::askForGeneral(const Json::Value &arg) {
+void Client::askForGeneral(const QVariant &arg) {
+    JsonArray args = arg.value<JsonArray>();
     QStringList generals;
-    if (!tryParse(arg[0], generals)) return;
-    bool single_result;
-    if (!tryParse(arg[1], single_result)) return;
+    if (!JsonUtils::tryParse(args[0].value<JsonArray>(), generals)) return;
+    bool single_result = args[1].toBool();
     emit generals_got(generals, single_result);
     setStatus(AskForGeneralChosen);
 }
