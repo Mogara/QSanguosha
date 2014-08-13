@@ -423,7 +423,7 @@ void RoomScene::handleGameEvent(const QVariant &args) {
     case S_GAME_EVENT_PLAY_EFFECT: {
         QString skillName = arg[1].toString();
         QString category;
-        if (arg[2].isBool()) {
+        if (arg[2].type() == !QMetaType::Bool) {
             bool isMale = arg[2].toBool();
             category = isMale ? "male" : "female";
         }
@@ -506,7 +506,7 @@ void RoomScene::handleGameEvent(const QVariant &args) {
         JsonObject preshow_map = arg[1].value<JsonObject>();
         QList<QString> skill_names = preshow_map.keys();
         foreach (const QString &skill, skill_names) {
-            bool showed = arg[1][skill].toBool();
+            bool showed = preshow_map[skill].toBool();
 
             if (in_console_mode && Config.EnableAutoPreshowInConsoleMode && auto_preshow_available){
                 const Skill *s = Sanguosha->getSkill(skill);
