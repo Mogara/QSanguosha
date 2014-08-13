@@ -103,7 +103,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_SET_PROPERTY] = &Client::updateProperty;
     callbacks[S_COMMAND_RESET_PILE] = &Client::resetPiles;
     callbacks[S_COMMAND_UPDATE_PILE] = &Client::setPileNumber;
-    m_callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
+    callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
     m_callbacks[S_COMMAND_UPDATE_HANDCARD_NUM] = &Client::setHandcardNum;
 
     // interactive methods
@@ -1190,13 +1190,16 @@ void Client::setHandcardNum(const Json::Value &num_array){
     emit update_handcard_num();
 }
 
-void Client::setCardFlag(const Json::Value &pattern_str) {
-    if (!pattern_str.isArray() || pattern_str.size() != 2) return;
-    if (!pattern_str[0].isInt() || !pattern_str[1].isString()) return;
+void Client::setCardFlag(const QVariant &pattern_str) {
+    JsonArray pattern = pattern_str.value<JsonArray>();
+    if (pattern.size() != 2 || !JsonUtils::isNumber(pattern[0]) || pattern[1].type() != QMetaType::QString) return;
 
-    int id = pattern_str[0].asInt();
-    QString flag = toQString(pattern_str[1]);
-    Sanguosha->getCard(id)->setFlags(flag);
+    int id = pattern[0].toInt();
+    QString flag = pattern[1].toString();
+
+    Card *card = Sanguosha->getCard(id);
+    if (card)
+        card->setFlags(flag);
 }
 
 void Client::updatePileNum() {
