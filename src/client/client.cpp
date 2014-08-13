@@ -125,7 +125,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_NULLIFICATION] = &Client::askForNullification;
     interactions[S_COMMAND_SHOW_CARD] = &Client::askForCardShow;
     interactions[S_COMMAND_AMAZING_GRACE] = &Client::askForAG;
-    m_interactions[S_COMMAND_PINDIAN] = &Client::askForPindian;
+    interactions[S_COMMAND_PINDIAN] = &Client::askForPindian;
     m_interactions[S_COMMAND_CHOOSE_CARD] = &Client::askForCardChosen;
     m_interactions[S_COMMAND_CHOOSE_ORDER] = &Client::askForOrder;
     m_interactions[S_COMMAND_SURRENDER] = &Client::askForSurrender;
@@ -1678,9 +1678,10 @@ void Client::onPlayerReplyGongxin(int card_id) {
     setStatus(NotActive);
 }
 
-void Client::askForPindian(const Json::Value &ask_str) {
-    if (!isStringArray(ask_str, 0, 1)) return;
-    QString from = toQString(ask_str[0]);
+void Client::askForPindian(const QVariant &ask_str) {
+    JsonArray ask = ask_str.value<JsonArray>();
+    if (!JsonUtils::isStringArray(ask, 0, 1)) return;
+    QString from = ask[0].toString();
     if (from == Self->objectName())
         prompt_doc->setHtml(tr("Please play a card for pindian"));
     else {
