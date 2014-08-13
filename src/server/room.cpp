@@ -4894,9 +4894,9 @@ bool Room::askForDiscard(ServerPlayer *player, const QString &reason, int discar
         bool success = doRequest(player, S_COMMAND_DISCARD_CARD, ask_str, true);
 
         //@todo: also check if the player does have that card!!!
-        Json::Value clientReply = VariantToJsonValue(player->getClientReply());
-        if (!success || !clientReply.isArray() || ((int)clientReply.size() > discard_num || (int)clientReply.size() < min_num)
-            || !tryParse(clientReply, to_discard)) {
+        JsonArray clientReply = player->getClientReply().value<JsonArray>();
+        if (!success || ((int)clientReply.size() > discard_num || (int)clientReply.size() < min_num)
+            || !JsonUtils::tryParse(clientReply, to_discard)) {
             if (optional) return false;
             // time is up, and the server choose the cards to discard
             to_discard = player->forceToDiscard(discard_num, include_equip);
@@ -4954,9 +4954,9 @@ const Card *Room::askForExchange(ServerPlayer *player, const QString &reason, in
 
         bool success = doRequest(player, S_COMMAND_EXCHANGE_CARD, exchange_str, true);
         //@todo: also check if the player does have that card!!!
-        Json::Value clientReply = VariantToJsonValue(player->getClientReply());
-        if (!success || !clientReply.isArray() || (int)clientReply.size() != discard_num
-            || !tryParse(clientReply, to_exchange)) {
+        JsonArray clientReply = player->getClientReply().value<JsonArray>();
+        if (!success || (int)clientReply.size() != discard_num
+            || !JsonUtils::tryParse(clientReply, to_exchange)) {
             if (optional) return NULL;
             to_exchange = player->forceToDiscard(discard_num, include_equip, false);
         }
@@ -5042,10 +5042,10 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
             }
             return;
         }
-        Json::Value clientReply = VariantToJsonValue(zhuge->getClientReply());
-        if (clientReply.isArray() && clientReply.size() == 2) {
-            success &= tryParse(clientReply[0], top_cards);
-            success &= tryParse(clientReply[1], bottom_cards);
+        JsonArray clientReply = zhuge->getClientReply().value<JsonArray>();
+        if (clientReply.size() == 2) {
+            success &= JsonUtils::tryParse(clientReply[0].value<JsonArray>(), top_cards);
+            success &= JsonUtils::tryParse(clientReply[1].value<JsonArray>(), bottom_cards);
             if (guanxing_type == GuanxingDownOnly) {
                 bottom_cards = top_cards;
                 top_cards.clear();
@@ -5758,18 +5758,18 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
             bool success = doRequest(guojia, S_COMMAND_SKILL_YIJI, arg, true);
 
             //Validate client response
-            Json::Value clientReply = VariantToJsonValue(guojia->getClientReply());
-            if (!success || !clientReply.isArray() || clientReply.size() != 2)
+            JsonArray clientReply = guojia->getClientReply().value<JsonArray>();
+            if (!success || clientReply.size() != 2)
                 break;
 
-            if (!tryParse(clientReply[0], ids) || !clientReply[1].isString())
+            if (!JsonUtils::tryParse(clientReply[0].value<JsonArray>(), ids) || clientReply[1].type() != QMetaType::QString)
                 break;
 
             foreach(int id, ids)
                 if (!cards.contains(id))
                     break;
 
-            ServerPlayer *who = findChild<ServerPlayer *>(toQString(clientReply[1]));
+            ServerPlayer *who = findChild<ServerPlayer *>(clientReply[1].toString());
             if (!who)
                 break;
             else
