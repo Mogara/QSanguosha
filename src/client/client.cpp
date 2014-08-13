@@ -119,7 +119,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_DISCARD_CARD] = &Client::askForDiscard;
     interactions[S_COMMAND_CHOOSE_SUIT] = &Client::askForSuit;
     interactions[S_COMMAND_CHOOSE_KINGDOM] = &Client::askForKingdom;
-    m_interactions[S_COMMAND_RESPONSE_CARD] = &Client::askForCardOrUseCard;
+    interactions[S_COMMAND_RESPONSE_CARD] = &Client::askForCardOrUseCard;
     m_interactions[S_COMMAND_INVOKE_SKILL] = &Client::askForSkillInvoke;
     m_interactions[S_COMMAND_MULTIPLE_CHOICE] = &Client::askForChoice;
     m_interactions[S_COMMAND_NULLIFICATION] = &Client::askForNullification;
@@ -878,15 +878,16 @@ QString Client::_processCardPattern(const QString &pattern) {
     return pattern;
 }
 
-void Client::askForCardOrUseCard(const Json::Value &cardUsage) {
-    if (!cardUsage.isArray() || !cardUsage[0].isString() || !cardUsage[1].isString())
+void Client::askForCardOrUseCard(const QVariant &cardUsage) {
+    JsonArray usage = cardUsage.value<JsonArray>();
+    if (usage.size() != 4 || usage[0].type() != QMetaType::QString || usage[1].type() != QMetaType::QString)
         return;
-    QString card_pattern = toQString(cardUsage[0]);
+    QString card_pattern = usage[0].toString();
     _m_roomState.setCurrentCardUsePattern(card_pattern);
-    QStringList texts = toQString(cardUsage[1]).split(":");
+    QStringList texts = usage[1].toString().split(":");
     int index = -1;
-    if (cardUsage[3].isInt() && cardUsage[3].asInt() > 0)
-        index = cardUsage[3].asInt();
+    if (JsonUtils::isNumber(usage[3]) && usage[3].toInt() > 0)
+        index = usage[3].toInt();
 
     if (texts.isEmpty())
         return;
@@ -911,8 +912,8 @@ void Client::askForCardOrUseCard(const Json::Value &cardUsage) {
     }
 
     Status status = Responding;
-    if (cardUsage[2].isInt()) {
-        Card::HandlingMethod method = (Card::HandlingMethod)(cardUsage[2].asInt());
+    if (JsonUtils::isNumber(usage[2])) {
+        Card::HandlingMethod method = (Card::HandlingMethod)(usage[2].toInt());
         switch (method) {
         case Card::MethodDiscard: status = RespondingForDiscard; break;
         case Card::MethodUse: status = RespondingUse; break;

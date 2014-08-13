@@ -161,7 +161,7 @@ public:
     void clearAG(const QVariant &);
 
     //interactive server callbacks
-    void askForCardOrUseCard(const Json::Value &);
+    void askForCardOrUseCard(const QVariant &);
     void askForAG(const Json::Value &);
     void askForSinglePeach(const QVariant &);
     void askForCardShow(const Json::Value &);
