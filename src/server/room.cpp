@@ -4306,7 +4306,7 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 // any card from/to place table should be visible
                 || player->hasFlag("Global_GongxinOperator");
             // the player put someone's cards to the drawpile
-            arg << JsonValueToVariant(cards_moves[i].toJsonValue());
+            arg << cards_moves[i].toQVariant();
         }
         doNotify(player, isLostPhase ? S_COMMAND_LOSE_CARD : S_COMMAND_GET_CARD, arg);
     }

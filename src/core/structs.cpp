@@ -49,17 +49,21 @@ bool CardsMoveStruct::tryParse(const QVariant &arg) {
     return true;
 }
 
-Json::Value CardsMoveStruct::toJsonValue() const{
-    Json::Value arg(Json::arrayValue);
-    if (open) arg[0] = toJsonArray(card_ids);
-    else arg[0] = card_ids.size();
-    arg[1] = (int)from_place;
-    arg[2] = (int)to_place;
-    arg[3] = toJsonString(from_player_name);
-    arg[4] = toJsonString(to_player_name);
-    arg[5] = toJsonString(from_pile_name);
-    arg[6] = toJsonString(to_pile_name);
-    arg[7] = reason.toJsonValue();
+QVariant CardsMoveStruct::toQVariant() const{
+    JsonArray arg;
+    if (open) {
+        arg << JsonUtils::toJsonArray(card_ids);
+    } else {
+        arg << card_ids.size();
+    }
+
+    arg << (int)from_place;
+    arg << (int)to_place;
+    arg << from_player_name;
+    arg << to_player_name;
+    arg << from_pile_name;
+    arg << to_pile_name;
+    arg << JsonValueToVariant(reason.toJsonValue());
     return arg;
 }
 
