@@ -874,13 +874,13 @@ QString Client::_processCardPattern(const QString &pattern) {
 
 void Client::askForCardOrUseCard(const QVariant &cardUsage) {
     JsonArray usage = cardUsage.value<JsonArray>();
-    if (usage.size() != 4 || usage[0].type() != QMetaType::QString || usage[1].type() != QMetaType::QString)
+    if (usage.size() < 2 || usage[0].type() != QMetaType::QString || usage[1].type() != QMetaType::QString)
         return;
     QString card_pattern = usage[0].toString();
     _m_roomState.setCurrentCardUsePattern(card_pattern);
     QStringList texts = usage[1].toString().split(":");
     int index = -1;
-    if (JsonUtils::isNumber(usage[3]) && usage[3].toInt() > 0)
+    if (usage.size() >= 4 && JsonUtils::isNumber(usage[3]) && usage[3].toInt() > 0)
         index = usage[3].toInt();
 
     if (texts.isEmpty())
@@ -906,7 +906,7 @@ void Client::askForCardOrUseCard(const QVariant &cardUsage) {
     }
 
     Status status = Responding;
-    if (JsonUtils::isNumber(usage[2])) {
+    if (usage.size() >= 3 && JsonUtils::isNumber(usage[2])) {
         Card::HandlingMethod method = (Card::HandlingMethod)(usage[2].toInt());
         switch (method) {
         case Card::MethodDiscard: status = RespondingForDiscard; break;
