@@ -76,10 +76,10 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_UPDATE_CARD] = &Client::updateCard;
     callbacks[S_COMMAND_SET_MARK] = &Client::setMark;
     callbacks[S_COMMAND_LOG_SKILL] = &Client::log;
-    m_callbacks[S_COMMAND_ATTACH_SKILL] = &Client::attachSkill;
-    m_callbacks[S_COMMAND_MOVE_FOCUS] = &Client::moveFocus;
-    m_callbacks[S_COMMAND_SET_EMOTION] = &Client::setEmotion;
-    m_callbacks[S_COMMAND_INVOKE_SKILL] = &Client::skillInvoked;
+    callbacks[S_COMMAND_ATTACH_SKILL] = &Client::attachSkill;
+    callbacks[S_COMMAND_MOVE_FOCUS] = &Client::moveFocus;
+    callbacks[S_COMMAND_SET_EMOTION] = &Client::setEmotion;
+    callbacks[S_COMMAND_INVOKE_SKILL] = &Client::skillInvoked;
     m_callbacks[S_COMMAND_SHOW_ALL_CARDS] = &Client::showAllCards;
     m_callbacks[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
     m_callbacks[S_COMMAND_LOG_EVENT] = &Client::handleGameEvent;
@@ -1596,10 +1596,10 @@ void Client::showCard(const QVariant &show_str) {
     emit card_shown(player_name, card_id);
 }
 
-void Client::attachSkill(const Json::Value &skill) {
-    if (!skill.isString()) return;
+void Client::attachSkill(const QVariant &skill) {
+    if (skill.type() != QMetaType::QString) return;
 
-    QString skill_name = toQString(skill);
+    QString skill_name = skill.toString();
     Self->acquireSkill(skill_name);
     emit skill_attached(skill_name, true);
 }
@@ -1807,16 +1807,17 @@ void Client::speak(const QVariant &speak) {
     emit lineSpoken(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
 }
 
-void Client::moveFocus(const Json::Value &focus) {
-    QStringList players;
+void Client::moveFocus(const QVariant &focus) {
     Countdown countdown;
 
-    Q_ASSERT(focus.isArray());
+    JsonArray args = focus.value<JsonArray>();
+    Q_ASSERT(!args.isEmpty());
 
-    if (focus[0].isArray()) {
-        tryParse(focus[0], players);
-    }
-    else {
+    QStringList players;
+    JsonArray json_players = args[0].value<JsonArray>();
+    if (!json_players.isEmpty()) {
+        JsonUtils::tryParse(json_players, players);
+    } else {
         foreach(const ClientPlayer *player, this->players) {
             if (player->isAlive()) {
                 players << player->objectName();
@@ -1824,15 +1825,14 @@ void Client::moveFocus(const Json::Value &focus) {
         }
     }
 
-    if (focus.size() == 1) {//default countdown
+    if (args.size() == 1) {//default countdown
         countdown.type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
         countdown.current = 0;
         countdown.max = ServerInfo.getCommandTimeout(S_COMMAND_UNKNOWN, S_CLIENT_INSTANCE);
-    }
-    else {
-        // focus[1] is the moveFocus reason, which is now removed.
-        Json::ArrayIndex countdown_index = focus.size() >= 3 ? 2 : 1;
-        if (!countdown.tryParse(JsonValueToVariant(focus[countdown_index]))) {
+
+    } else {// focus[1] is the moveFocus reason, which is now removed.
+        Json::ArrayIndex countdown_index = args.size() >= 3 ? 2 : 1;
+        if (!countdown.tryParse(args[countdown_index])) {
             return;
         }
     }
@@ -1851,19 +1851,21 @@ void Client::moveFocus(const QString &focus, CommandType command) {
     emit focus_moved(focuses, countdown);
 }
 
-void Client::setEmotion(const Json::Value &set_str) {
-    if (!set_str.isArray() || set_str.size() != 2) return;
-    if (!set_str[0].isString() || !set_str[1].isString()) return;
+void Client::setEmotion(const QVariant &set_str) {
+    JsonArray set = set_str.value<JsonArray>();
+    if (set.size() != 2) return;
+    if (JsonUtils::isStringArray(set, 0, 1)) return;
 
-    QString target_name = toQString(set_str[0]);
-    QString emotion = toQString(set_str[1]);
+    QString target_name = set[0].toString();
+    QString emotion = set[1].toString();
 
     emit emotion_set(target_name, emotion);
 }
 
-void Client::skillInvoked(const Json::Value &arg) {
-    if (!isStringArray(arg, 0, 1)) return;
-    emit skill_invoked(QString(arg[1].asCString()), QString(arg[0].asCString()));
+void Client::skillInvoked(const QVariant &arg) {
+    JsonArray args = arg.value<JsonArray>();
+    if (!JsonUtils::isStringArray(args, 0, 1)) return;
+    emit skill_invoked(args[1].toString(), args[0].toString());
 }
 
 void Client::animate(const Json::Value &animate_str) {

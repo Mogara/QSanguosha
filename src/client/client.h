@@ -139,9 +139,9 @@ public:
     void log(const QVariant &log_str);
     void speak(const QVariant &speak);
     void addHistory(const Json::Value &history);
-    void moveFocus(const Json::Value &focus);
-    void setEmotion(const Json::Value &set_str);
-    void skillInvoked(const Json::Value &invoke_str);
+    void moveFocus(const QVariant &focus);
+    void setEmotion(const QVariant &set_str);
+    void skillInvoked(const QVariant &invoke_str);
     void animate(const Json::Value &animate_str);
     void cardLimitation(const Json::Value &limit);
     void disableShow(const Json::Value &args);
@@ -196,7 +196,7 @@ public:
     void recoverGeneral(const Json::Value &);
     void revealGeneral(const Json::Value &);
 
-    void attachSkill(const Json::Value &skill);
+    void attachSkill(const QVariant &skill);
 
     inline virtual RoomState *getRoomState() { return &_m_roomState; }
     inline virtual Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
