@@ -51,7 +51,7 @@ QString LogMessage::toString() const{
         .arg(card_str).arg(arg).arg(arg2);
 }
 
-QVariant LogMessage::toQVariant() const{
+QVariant LogMessage::toVariant() const{
     QStringList tos;
     foreach(ServerPlayer *player, to)
         if (player != NULL) tos << player->objectName();

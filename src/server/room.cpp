@@ -936,7 +936,7 @@ bool Room::notifyMoveFocus(const QList<ServerPlayer *> &focuses, const Countdown
     //============================================
 
     if (countdown.type != Countdown::S_COUNTDOWN_USE_DEFAULT) {
-        arg << countdown.toQVariant();
+        arg << countdown.toVariant();
     }
 
     return doBroadcastNotify(S_COMMAND_MOVE_FOCUS, arg, except);
@@ -4301,7 +4301,7 @@ bool Room::notifyMoveCards(bool isLostPhase, QList<CardsMoveStruct> cards_moves,
                 // any card from/to place table should be visible
                 || player->hasFlag("Global_GongxinOperator");
             // the player put someone's cards to the drawpile
-            arg << cards_moves[i].toQVariant();
+            arg << cards_moves[i].toVariant();
         }
         doNotify(player, isLostPhase ? S_COMMAND_LOSE_CARD : S_COMMAND_GET_CARD, arg);
     }
@@ -5078,14 +5078,14 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
         log.type = "$GuanxingTop";
         log.from = zhuge;
         log.card_str = IntList2StringList(top_cards).join("+");
-        doNotify(zhuge, QSanProtocol::S_COMMAND_LOG_SKILL, log.toQVariant());
+        doNotify(zhuge, QSanProtocol::S_COMMAND_LOG_SKILL, log.toVariant());
     }
     if (!bottom_cards.isEmpty()) {
         LogMessage log;
         log.type = "$GuanxingBottom";
         log.from = zhuge;
         log.card_str = IntList2StringList(bottom_cards).join("+");
-        doNotify(zhuge, QSanProtocol::S_COMMAND_LOG_SKILL, log.toQVariant());
+        doNotify(zhuge, QSanProtocol::S_COMMAND_LOG_SKILL, log.toVariant());
     }
 
     QListIterator<int> i(top_cards);
@@ -5110,7 +5110,7 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> e
     log.from = shenlvmeng;
     log.to << target;
     log.card_str = IntList2StringList(target->handCards()).join("+");
-    doNotify(shenlvmeng, QSanProtocol::S_COMMAND_LOG_SKILL, log.toQVariant());
+    doNotify(shenlvmeng, QSanProtocol::S_COMMAND_LOG_SKILL, log.toVariant());
 
     QVariant decisionData = QVariant::fromValue("viewCards:" + shenlvmeng->objectName() + ":" + target->objectName());
     thread->trigger(ChoiceMade, this, shenlvmeng, decisionData);
@@ -5579,7 +5579,7 @@ void Room::sendLog(const LogMessage &log) {
     if (log.type.isEmpty())
         return;
 
-    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_SKILL, log.toQVariant());
+    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_SKILL, log.toVariant());
 }
 
 void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer) {
@@ -5647,7 +5647,7 @@ void Room::showAllCards(ServerPlayer *player, ServerPlayer *to) {
         log.from = to;
         log.to << player;
         log.card_str = IntList2StringList(player->handCards()).join("+");
-        doNotify(to, QSanProtocol::S_COMMAND_LOG_SKILL, log.toQVariant());
+        doNotify(to, QSanProtocol::S_COMMAND_LOG_SKILL, log.toVariant());
 
         QVariant decisionData = QVariant::fromValue("viewCards:" + to->objectName() + ":" + player->objectName());
         thread->trigger(ChoiceMade, this, to, decisionData);

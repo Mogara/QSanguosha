@@ -32,7 +32,7 @@ class GameRule;
 struct LogMessage {
     LogMessage();
     QString toString() const;
-    QVariant toQVariant() const;
+    QVariant toVariant() const;
 
     QString type;
     ServerPlayer *from;

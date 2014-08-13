@@ -216,7 +216,7 @@ namespace QSanProtocol {
         inline Countdown(CountdownType type = S_COUNTDOWN_NO_LIMIT, time_t current = 0, time_t max = 0)
             : type(type), current(current), max(max) {}
         bool tryParse(const QVariant &var);
-        QVariant toQVariant() const;
+        QVariant toVariant() const;
         inline bool hasTimedOut() {
             if (type == S_COUNTDOWN_NO_LIMIT)
                 return false;

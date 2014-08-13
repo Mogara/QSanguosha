@@ -903,7 +903,7 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const {
     log.to << effect.to;
     log.arg = choice;
     foreach(ServerPlayer *p, room->getOtherPlayers(effect.from, true)){
-        room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toQVariant());
+        room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toVariant());
     }
 
     if (choice == "handcards")
@@ -918,7 +918,7 @@ void KnownBoth::onEffect(const CardEffectStruct &effect) const {
             log.to << effect.to;
             log.arg = name;
             log.arg2 = choice;
-            room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toQVariant());
+            room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toVariant());
         }
         JsonArray arg;
         arg << objectName();

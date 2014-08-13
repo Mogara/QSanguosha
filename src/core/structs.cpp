@@ -46,7 +46,7 @@ bool CardsMoveStruct::tryParse(const QVariant &arg) {
     return true;
 }
 
-QVariant CardsMoveStruct::toQVariant() const{
+QVariant CardsMoveStruct::toVariant() const{
     JsonArray arg;
     if (open) {
         arg << JsonUtils::toJsonArray(card_ids);
@@ -60,7 +60,7 @@ QVariant CardsMoveStruct::toQVariant() const{
     arg << to_player_name;
     arg << from_pile_name;
     arg << to_pile_name;
-    arg << reason.toQVariant();
+    arg << reason.toVariant();
     return arg;
 }
 
@@ -78,7 +78,7 @@ bool CardMoveReason::tryParse(const QVariant &arg) {
     return true;
 }
 
-QVariant CardMoveReason::toQVariant() const{
+QVariant CardMoveReason::toVariant() const{
     JsonArray result;
     result << m_reason;
     result << m_playerId;

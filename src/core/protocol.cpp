@@ -62,7 +62,7 @@ bool QSanProtocol::Countdown::tryParse(const QVariant &var) {
         return false;
 }
 
-QVariant QSanProtocol::Countdown::toQVariant() const
+QVariant QSanProtocol::Countdown::toVariant() const
 {
     JsonArray val;
     if (type == S_COUNTDOWN_NO_LIMIT || type == S_COUNTDOWN_USE_DEFAULT) {
