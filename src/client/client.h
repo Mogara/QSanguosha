@@ -144,7 +144,7 @@ public:
     void skillInvoked(const QVariant &invoke_str);
     void animate(const QVariant &animate_str);
     void cardLimitation(const QVariant &limit);
-    void disableShow(const Json::Value &args);
+    void disableShow(const QVariant &args);
     void setNullification(const Json::Value &str);
     void enableSurrender(const Json::Value &enabled);
     void exchangeKnownCards(const Json::Value &players);
