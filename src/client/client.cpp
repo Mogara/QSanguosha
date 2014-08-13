@@ -86,7 +86,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_ADD_HISTORY] = &Client::addHistory;
     callbacks[S_COMMAND_ANIMATE] = &Client::animate;
     callbacks[S_COMMAND_FIXED_DISTANCE] = &Client::setFixedDistance;
-    m_callbacks[S_COMMAND_CARD_LIMITATION] = &Client::cardLimitation;
+    callbacks[S_COMMAND_CARD_LIMITATION] = &Client::cardLimitation;
     m_callbacks[S_COMMAND_DISABLE_SHOW] = &Client::disableShow;
     m_callbacks[S_COMMAND_NULLIFICATION_ASKED] = &Client::setNullification;
     m_callbacks[S_COMMAND_ENABLE_SURRENDER] = &Client::enableSurrender;
@@ -708,18 +708,18 @@ Client::Status Client::getStatus() const{
     return status;
 }
 
-void Client::cardLimitation(const Json::Value &limit) {
-    if (!limit.isArray() || limit.size() != 4) return;
+void Client::cardLimitation(const QVariant &limit) {
+    JsonArray args = limit.value<JsonArray>();
+    if (args.size() != 4) return;
 
-    bool set = limit[0].asBool();
-    bool single_turn = limit[3].asBool();
-    if (limit[1].isNull() && limit[2].isNull()) {
+    bool set = args[0].toBool();
+    bool single_turn = args[3].toBool();
+    if (args[1].isNull() && args[2].isNull()) {
         Self->clearCardLimitation(single_turn);
-    }
-    else {
-        if (!limit[1].isString() || !limit[2].isString()) return;
-        QString limit_list = toQString(limit[1]);
-        QString pattern = toQString(limit[2]);
+    } else {
+        if (args[1].type() != QMetaType::QString || args[2].type() != QMetaType::QString) return;
+        QString limit_list = args[1].toString();
+        QString pattern = args[2].toString();
         if (set)
             Self->setCardLimitation(limit_list, pattern, single_turn);
         else
