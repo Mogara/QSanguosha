@@ -163,7 +163,7 @@ public:
     //interactive server callbacks
     void askForCardOrUseCard(const Json::Value &);
     void askForAG(const Json::Value &);
-    void askForSinglePeach(const Json::Value &);
+    void askForSinglePeach(const QVariant &);
     void askForCardShow(const Json::Value &);
     void askForSkillInvoke(const Json::Value &);
     void askForChoice(const Json::Value &);

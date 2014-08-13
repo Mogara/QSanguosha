@@ -111,7 +111,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_CHOOSE_PLAYER] = &Client::askForPlayerChosen;
     interactions[S_COMMAND_CHOOSE_DIRECTION] = &Client::askForDirection;
     interactions[S_COMMAND_EXCHANGE_CARD] = &Client::askForExchange;
-    m_interactions[S_COMMAND_ASK_PEACH] = &Client::askForSinglePeach;
+    interactions[S_COMMAND_ASK_PEACH] = &Client::askForSinglePeach;
     m_interactions[S_COMMAND_SKILL_GUANXING] = &Client::askForGuanxing;
     interactions[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
     m_interactions[S_COMMAND_SKILL_YIJI] = &Client::askForYiji;
@@ -1520,11 +1520,12 @@ void Client::clearAG(const QVariant &) {
     emit ag_cleared();
 }
 
-void Client::askForSinglePeach(const Json::Value &arg) {
-    if (!arg.isArray() || arg.size() != 2 || !arg[0].isString() || !arg[1].isInt()) return;
+void Client::askForSinglePeach(const QVariant &arg) {
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 2 || args[0].type() != QMetaType::QString || !JsonUtils::isNumber(args[1])) return;
 
-    ClientPlayer *dying = getPlayer(toQString(arg[0]));
-    int peaches = arg[1].asInt();
+    ClientPlayer *dying = getPlayer(args[0].toString());
+    int peaches = args[1].toInt();
 
     // @todo: anti-cheating of askForSinglePeach is not done yet!!!
     QStringList pattern;
