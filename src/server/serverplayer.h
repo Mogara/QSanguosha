@@ -176,7 +176,7 @@ public:
     unsigned int m_expectedReplySerial; // Suggest the acceptable serial number of an expected response.
     bool m_isClientResponseReady; //Suggest whether a valid player's reponse has been received.
     bool m_isWaitingReply; // Suggest if the server player is waiting for client's response.
-    Json::Value m_cheatArgs; // Store the cheat code received from client.
+    QVariant m_cheatArgs; // Store the cheat code received from client.
     QSanProtocol::CommandType m_expectedReplyCommand; // Store the command to be sent to the client.
     QVariant m_commandArgs; // Store the command args to be sent to the client.
 

@@ -2295,7 +2295,7 @@ void Room::processRequestCheat(ServerPlayer *player, const QVariant &arg) {
     if(!JsonUtils::isNumber(args[0])) return;
 
     //@todo: synchronize this
-    player->m_cheatArgs = VariantToJsonValue(arg);
+    player->m_cheatArgs = arg;
     player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
 }
 
@@ -5387,34 +5387,37 @@ QString Room::askForGeneral(ServerPlayer *player, const QString &generals, const
 }
 
 bool Room::makeCheat(ServerPlayer *player) {
-    Json::Value arg = player->m_cheatArgs;
-    player->m_cheatArgs = Json::Value::null;
-    if (!arg.isArray() || !arg[0].isInt()) return false;
-    CheatCode code = (CheatCode)arg[0].asInt();
+    JsonArray arg = player->m_cheatArgs.value<JsonArray>();
+    player->m_cheatArgs = QVariant();
+    if (arg.isEmpty() || !JsonUtils::isNumber(arg[0])) return false;
+
+    CheatCode code = (CheatCode)arg[0].toInt();
     if (code == S_CHEAT_KILL_PLAYER) {
-        if (!isStringArray(arg[1], 0, 1)) return false;
-        makeKilling(toQString(arg[1][0]), toQString(arg[1][1]));
-    }
-    else if (code == S_CHEAT_MAKE_DAMAGE) {
-        if (arg[1].size() != 4 || !isStringArray(arg[1], 0, 1)
-            || !arg[1][2].isInt() || !arg[1][3].isInt())
+        JsonArray arg1 = arg[1].value<JsonArray>();
+        if (!JsonUtils::isStringArray(arg1, 0, 1)) return false;
+        makeKilling(arg1[0].toString(), arg1[1].toString());
+
+    } else if (code == S_CHEAT_MAKE_DAMAGE) {
+        JsonArray arg1 = arg[1].value<JsonArray>();
+        if (arg1.size() != 4 || !JsonUtils::isStringArray(arg1, 0, 1)
+            || !JsonUtils::isNumber(arg1[2]) || !JsonUtils::isNumber(arg1[3]))
             return false;
-        makeDamage(toQString(arg[1][0]), toQString(arg[1][1]),
-            (QSanProtocol::CheatCategory)arg[1][2].asInt(), arg[1][3].asInt());
-    }
-    else if (code == S_CHEAT_REVIVE_PLAYER) {
-        if (!arg[1].isString()) return false;
-        makeReviving(toQString(arg[1]));
-    }
-    else if (code == S_CHEAT_RUN_SCRIPT) {
-        if (!arg[1].isString()) return false;
-        QByteArray data = QByteArray::fromBase64(arg[1].asCString());
+        makeDamage(arg1[0].toString(), arg1[1].toString(),
+            (QSanProtocol::CheatCategory)arg1[2].toInt(), arg1[3].toInt());
+
+    } else if (code == S_CHEAT_REVIVE_PLAYER) {
+        if (arg[1].type() != QMetaType::QString) return false;
+        makeReviving(arg[1].toString());
+
+    } else if (code == S_CHEAT_RUN_SCRIPT) {
+        if (arg[1].type() != QMetaType::QString) return false;
+        QByteArray data = QByteArray::fromBase64(arg[1].toString().toLatin1());
         data = qUncompress(data);
         doScript(data);
-    }
-    else if (code == S_CHEAT_GET_ONE_CARD) {
-        if (!arg[1].isInt()) return false;
-        int card_id = arg[1].asInt();
+
+    } else if (code == S_CHEAT_GET_ONE_CARD) {
+        if (!JsonUtils::isNumber(arg[1])) return false;
+        int card_id = arg[1].toInt();
 
         LogMessage log;
         log.type = "$CheatCard";
@@ -5424,6 +5427,7 @@ bool Room::makeCheat(ServerPlayer *player) {
 
         obtainCard(player, card_id);
     }
+
     return true;
 }
 
