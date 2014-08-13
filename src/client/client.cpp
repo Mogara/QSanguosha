@@ -99,7 +99,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_AVAILABLE_CARDS] = &Client::setAvailableCards;
 
     callbacks[S_COMMAND_GET_CARD] = &Client::getCards;
-    m_callbacks[S_COMMAND_LOSE_CARD] = &Client::loseCards;
+    callbacks[S_COMMAND_LOSE_CARD] = &Client::loseCards;
     m_callbacks[S_COMMAND_SET_PROPERTY] = &Client::updateProperty;
     m_callbacks[S_COMMAND_RESET_PILE] = &Client::resetPiles;
     m_callbacks[S_COMMAND_UPDATE_PILE] = &Client::setPileNumber;
@@ -476,13 +476,14 @@ void Client::getCards(const QVariant &arg) {
     emit move_cards_got(moveId, moves);
 }
 
-void Client::loseCards(const Json::Value &arg) {
-    Q_ASSERT(arg.isArray() && arg.size() >= 1);
-    int moveId = arg[0].asInt();
+void Client::loseCards(const QVariant &arg) {
+    JsonArray args = arg.value<JsonArray>();
+    Q_ASSERT(args.size() >= 1);
+    int moveId = args[0].toInt();
     QList<CardsMoveStruct> moves;
-    for (unsigned int i = 1; i < arg.size(); i++) {
+    for (int i = 1; i < arg.size(); i++) {
         CardsMoveStruct move;
-        if (!move.tryParse(JsonValueToVariant(arg[i]))) return;
+        if (!move.tryParse(arg[i])) return;
         move.from = getPlayer(move.from_player_name);
         move.to = getPlayer(move.to_player_name);
         Player::Place srcPlace = move.from_place;
