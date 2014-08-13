@@ -323,11 +323,6 @@ void Client::processServerPacket(const char *cmd) {
             Callback callback = callbacks[packet.getCommandType()];
             if (callback) {
                 (this->*callback)(packet.getMessageBody());
-            } else {//@to-do: remove the branch after all callbacks are migrated
-                CallBack deprecated_callback = m_callbacks[packet.getCommandType()];
-                if (deprecated_callback) {
-                    (this->*deprecated_callback)(VariantToJsonValue(packet.getMessageBody()));
-                }
             }
         }
         else if (packet.getPacketType() == S_TYPE_REQUEST) {
