@@ -182,7 +182,7 @@ public:
     void askForGongxin(const QVariant &);
     void askForSurrender(const QVariant &);
     void askForLuckCard(const QVariant &);
-    void askForTriggerOrder(const Json::Value &);
+    void askForTriggerOrder(const QVariant &);
     void handleGameEvent(const QVariant &);
     //3v3 & 1v1
     void askForOrder(const QVariant &);
