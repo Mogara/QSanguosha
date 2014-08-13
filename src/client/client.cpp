@@ -116,7 +116,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
     interactions[S_COMMAND_SKILL_YIJI] = &Client::askForYiji;
     interactions[S_COMMAND_PLAY_CARD] = &Client::activate;
-    m_interactions[S_COMMAND_DISCARD_CARD] = &Client::askForDiscard;
+    interactions[S_COMMAND_DISCARD_CARD] = &Client::askForDiscard;
     interactions[S_COMMAND_CHOOSE_SUIT] = &Client::askForSuit;
     interactions[S_COMMAND_CHOOSE_KINGDOM] = &Client::askForKingdom;
     m_interactions[S_COMMAND_RESPONSE_CARD] = &Client::askForCardOrUseCard;
@@ -1201,17 +1201,18 @@ void Client::updatePileNum() {
     lines_doc->setHtml(QString("<font color='%1'><p align = \"center\">" + pile_str + "</p></font>").arg(Config.TextEditColor.name()));
 }
 
-void Client::askForDiscard(const Json::Value &req) {
-    if (!req.isArray() || !req[0].isInt() || !req[1].isInt() || !req[2].isBool()
-            || !req[3].isBool() || !req[4].isString() || !req[5].isString())
+void Client::askForDiscard(const QVariant &reqvar) {
+    JsonArray req = reqvar.value<JsonArray>();
+    if (req.size() != 6 || !JsonUtils::isNumber(req[0]) || !JsonUtils::isNumber(req[1]) || req[2].type() != QMetaType::Bool
+            || req[3].type() != QMetaType::Bool || req[4].type() != QMetaType::QString || req[5].type() != QMetaType::QString)
         return;
 
-    discard_num = req[0].asInt();
-    min_num = req[1].asInt();
-    m_isDiscardActionRefusable = req[2].asBool();
-    m_canDiscardEquip = req[3].asBool();
-    QString prompt = toQString(req[4]);
-    discard_reason = toQString(req[5]);
+    discard_num = req[0].toInt();
+    min_num = req[1].toInt();
+    m_isDiscardActionRefusable = req[2].toBool();
+    m_canDiscardEquip = req[3].toBool();
+    QString prompt = req[4].toString();
+    discard_reason = req[5].toString();
 
     if (prompt.isEmpty()) {
         if (m_canDiscardEquip)
