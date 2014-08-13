@@ -135,7 +135,7 @@ public:
         m_eventName = eventName;
     }
 
-    bool tryParse(const Json::Value &);
+    bool tryParse(const QVariant &);
     Json::Value toJsonValue() const;
 
     inline bool operator == (const CardMoveReason &other) const{

@@ -45,7 +45,7 @@ bool CardsMoveStruct::tryParse(const QVariant &arg) {
     to_player_name = args[4].toString();
     from_pile_name = args[5].toString();
     to_pile_name = args[6].toString();
-    reason.tryParse(VariantToJsonValue(args[7]));
+    reason.tryParse(args[7]);
     return true;
 }
 
@@ -63,13 +63,18 @@ Json::Value CardsMoveStruct::toJsonValue() const{
     return arg;
 }
 
-bool CardMoveReason::tryParse(const Json::Value &arg) {
-    m_reason = arg[0].asInt();
-    m_playerId = arg[1].asCString();
-    m_skillName = arg[2].asCString();
-    m_eventName = arg[3].asCString();
-    m_targetId = arg[4].asCString();
-    return true; // @todo: fix this
+bool CardMoveReason::tryParse(const QVariant &arg) {
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 5 || !args[0].canConvert<int>() || !JsonUtils::isStringArray(args, 1, 4))
+        return false;
+
+    m_reason = args[0].toInt();
+    m_playerId = args[1].toString();
+    m_skillName = args[2].toString();
+    m_eventName = args[3].toString();
+    m_targetId = args[4].toString();
+
+    return true;
 }
 
 Json::Value CardMoveReason::toJsonValue() const{
