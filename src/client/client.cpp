@@ -88,7 +88,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_FIXED_DISTANCE] = &Client::setFixedDistance;
     callbacks[S_COMMAND_CARD_LIMITATION] = &Client::cardLimitation;
     callbacks[S_COMMAND_DISABLE_SHOW] = &Client::disableShow;
-    m_callbacks[S_COMMAND_NULLIFICATION_ASKED] = &Client::setNullification;
+    callbacks[S_COMMAND_NULLIFICATION_ASKED] = &Client::setNullification;
     m_callbacks[S_COMMAND_ENABLE_SURRENDER] = &Client::enableSurrender;
     m_callbacks[S_COMMAND_EXCHANGE_KNOWN_CARDS] = &Client::exchangeKnownCards;
     m_callbacks[S_COMMAND_SET_KNOWN_CARDS] = &Client::setKnownCards;
@@ -744,9 +744,9 @@ void Client::disableShow(const QVariant &arg) {
         p->removeDisableShow(reason);
 }
 
-void Client::setNullification(const Json::Value &str) {
-    if (!str.isString()) return;
-    QString astr = toQString(str);
+void Client::setNullification(const QVariant &str) {
+    if (str.type() != QMetaType::QString) return;
+    QString astr = str.toString();
     if (astr != ".") {
         if (m_noNullificationTrickName == ".") {
             m_noNullificationThisTime = false;
