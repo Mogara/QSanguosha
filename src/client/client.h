@@ -169,8 +169,8 @@ public:
     void askForChoice(const Json::Value &);
     void askForDiscard(const Json::Value &);
     void askForExchange(const Json::Value &);
-    void askForSuit(const Json::Value &);
-    void askForKingdom(const Json::Value &);
+    void askForSuit(const QVariant &);
+    void askForKingdom(const QVariant &);
     void askForNullification(const Json::Value &);
     void askForPindian(const Json::Value &);
     void askForCardChosen(const Json::Value &);
@@ -181,12 +181,12 @@ public:
     void showAllCards(const QVariant &);
     void askForGongxin(const QVariant &);
     void askForSurrender(const Json::Value &);
-    void askForLuckCard(const Json::Value &);
+    void askForLuckCard(const QVariant &);
     void askForTriggerOrder(const Json::Value &);
     void handleGameEvent(const QVariant &);
     //3v3 & 1v1
     void askForOrder(const Json::Value &);
-    void askForDirection(const Json::Value &);
+    void askForDirection(const QVariant &);
 
     // 3v3 & 1v1 methods
     void fillGenerals(const QVariant &generals);

@@ -109,7 +109,7 @@ Client::Client(QObject *parent, const QString &filename)
     // interactive methods
     interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
     interactions[S_COMMAND_CHOOSE_PLAYER] = &Client::askForPlayerChosen;
-    m_interactions[S_COMMAND_CHOOSE_DIRECTION] = &Client::askForDirection;
+    interactions[S_COMMAND_CHOOSE_DIRECTION] = &Client::askForDirection;
     m_interactions[S_COMMAND_EXCHANGE_CARD] = &Client::askForExchange;
     m_interactions[S_COMMAND_ASK_PEACH] = &Client::askForSinglePeach;
     m_interactions[S_COMMAND_SKILL_GUANXING] = &Client::askForGuanxing;
@@ -117,8 +117,8 @@ Client::Client(QObject *parent, const QString &filename)
     m_interactions[S_COMMAND_SKILL_YIJI] = &Client::askForYiji;
     m_interactions[S_COMMAND_PLAY_CARD] = &Client::activate;
     m_interactions[S_COMMAND_DISCARD_CARD] = &Client::askForDiscard;
-    m_interactions[S_COMMAND_CHOOSE_SUIT] = &Client::askForSuit;
-    m_interactions[S_COMMAND_CHOOSE_KINGDOM] = &Client::askForKingdom;
+    interactions[S_COMMAND_CHOOSE_SUIT] = &Client::askForSuit;
+    interactions[S_COMMAND_CHOOSE_KINGDOM] = &Client::askForKingdom;
     m_interactions[S_COMMAND_RESPONSE_CARD] = &Client::askForCardOrUseCard;
     m_interactions[S_COMMAND_INVOKE_SKILL] = &Client::askForSkillInvoke;
     m_interactions[S_COMMAND_MULTIPLE_CHOICE] = &Client::askForChoice;
@@ -129,7 +129,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_interactions[S_COMMAND_CHOOSE_CARD] = &Client::askForCardChosen;
     m_interactions[S_COMMAND_CHOOSE_ORDER] = &Client::askForOrder;
     m_interactions[S_COMMAND_SURRENDER] = &Client::askForSurrender;
-    m_interactions[S_COMMAND_LUCK_CARD] = &Client::askForLuckCard;
+    interactions[S_COMMAND_LUCK_CARD] = &Client::askForLuckCard;
     m_interactions[S_COMMAND_TRIGGER_ORDER] = &Client::askForTriggerOrder;
 
     callbacks[S_COMMAND_FILL_AMAZING_GRACE] = &Client::fillAG;
@@ -980,7 +980,7 @@ void Client::askForSurrender(const Json::Value &initiator) {
     setStatus(AskForSkillInvoke);
 }
 
-void Client::askForLuckCard(const Json::Value &) {
+void Client::askForLuckCard(const QVariant &) {
     skill_to_invoke = "luck_card";
     prompt_doc->setHtml(tr("Do you want to use the luck card?"));
     setStatus(AskForSkillInvoke);
@@ -1377,14 +1377,14 @@ void Client::askForGeneral(const QVariant &arg) {
     setStatus(AskForGeneralChosen);
 }
 
-void Client::askForSuit(const Json::Value &) {
+void Client::askForSuit(const QVariant &) {
     QStringList suits;
     suits << "spade" << "club" << "heart" << "diamond";
     emit suits_got(suits);
     setStatus(ExecDialog);
 }
 
-void Client::askForKingdom(const Json::Value &) {
+void Client::askForKingdom(const QVariant &) {
     QStringList kingdoms = Sanguosha->getKingdoms();
     kingdoms.removeOne("god"); // god kingdom does not really exist
     emit kingdoms_got(kingdoms);
@@ -1422,7 +1422,7 @@ void Client::askForOrder(const Json::Value &arg) {
     setStatus(ExecDialog);
 }
 
-void Client::askForDirection(const Json::Value &) {
+void Client::askForDirection(const QVariant &) {
     emit directions_got();
     setStatus(ExecDialog);
 }
