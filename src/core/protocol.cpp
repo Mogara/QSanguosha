@@ -20,7 +20,6 @@
 
 #include "protocol.h"
 
-using namespace std;
 using namespace QSanProtocol;
 
 unsigned int QSanProtocol::Packet::globalSerialSequence = 0;
@@ -50,15 +49,15 @@ bool QSanProtocol::Countdown::tryParse(const QVariant &var) {
         max = (time_t)val[offset + 1].toInt();
         type = S_COUNTDOWN_USE_SPECIFIED;
         return true;
-    }
-    else if (val.size() - offset == 1 && val[offset].canConvert<int>()) {
+
+    } else if (val.size() - offset == 1 && val[offset].canConvert<int>()) {
         CountdownType type = (CountdownType)val[offset].toInt();
         if (type != S_COUNTDOWN_NO_LIMIT && type != S_COUNTDOWN_USE_DEFAULT)
             return false;
         else this->type = type;
         return true;
-    }
-    else
+
+    } else
         return false;
 }
 
@@ -119,7 +118,7 @@ QByteArray QSanProtocol::Packet::toUtf8() const{
         result << messageBody;
 
     JsonDocument doc(result);
-    QByteArray msg = doc.toJson();
+    QByteArray msg(doc.toJson());
 
     //truncate too long messages
     if (msg.length() > S_MAX_PACKET_SIZE)

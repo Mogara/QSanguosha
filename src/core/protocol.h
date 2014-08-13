@@ -23,7 +23,6 @@
 
 #include "json.h"
 
-#include <string>
 #include <QByteArray>
 #include <QVariant>
 
