@@ -104,7 +104,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_RESET_PILE] = &Client::resetPiles;
     callbacks[S_COMMAND_UPDATE_PILE] = &Client::setPileNumber;
     callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
-    m_callbacks[S_COMMAND_UPDATE_HANDCARD_NUM] = &Client::setHandcardNum;
+    callbacks[S_COMMAND_UPDATE_HANDCARD_NUM] = &Client::setHandcardNum;
 
     // interactive methods
     m_interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
@@ -1170,17 +1170,15 @@ void Client::setPileNumber(const QVariant &pile_str) {
     updatePileNum();
 }
 
-void Client::setHandcardNum(const Json::Value &num_array){
-    if (!num_array.isArray()) return;
-    for (unsigned i = 0u; i < num_array.size(); i++){
-        Json::Value _current = num_array[i];
-        if (!_current.isArray())
-            continue;
-        if (_current.size() != 2 || !_current[0].isString() || !_current[1].isInt())
+void Client::setHandcardNum(const QVariant &nums){
+    JsonArray num_array = nums.value<JsonArray>();
+    foreach (const QVariant &current, num_array) {
+        JsonArray _current = current.value<JsonArray>();
+        if (_current.size() != 2 || _current[0].type() != QMetaType::QString || !JsonUtils::isNumber(_current[1]))
             continue;
 
-        QString name = toQString(_current[0]);
-        int num = _current[1].asInt();
+        QString name = _current[0].toString();
+        int num = _current[1].toInt();
 
         ClientPlayer *p = getPlayer(name);
         if (p != NULL)

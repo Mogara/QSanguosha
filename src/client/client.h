@@ -125,7 +125,7 @@ public:
     void maxhpChange(const QVariant &change_str);
     void resetPiles(const QVariant &);
     void setPileNumber(const QVariant &pile_str);
-    void setHandcardNum(const Json::Value &num_array);
+    void setHandcardNum(const QVariant &num_array);
     void gameOver(const QVariant &);
     void loseCards(const QVariant &);
     void getCards(const QVariant &);
