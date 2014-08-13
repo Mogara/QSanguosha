@@ -146,7 +146,7 @@ public:
     void cardLimitation(const QVariant &limit);
     void disableShow(const QVariant &args);
     void setNullification(const QVariant &str);
-    void enableSurrender(const Json::Value &enabled);
+    void enableSurrender(const QVariant &enabled);
     void exchangeKnownCards(const Json::Value &players);
     void setKnownCards(const Json::Value &set_str);
     void viewGenerals(const Json::Value &str);

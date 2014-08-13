@@ -89,7 +89,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_CARD_LIMITATION] = &Client::cardLimitation;
     callbacks[S_COMMAND_DISABLE_SHOW] = &Client::disableShow;
     callbacks[S_COMMAND_NULLIFICATION_ASKED] = &Client::setNullification;
-    m_callbacks[S_COMMAND_ENABLE_SURRENDER] = &Client::enableSurrender;
+    callbacks[S_COMMAND_ENABLE_SURRENDER] = &Client::enableSurrender;
     m_callbacks[S_COMMAND_EXCHANGE_KNOWN_CARDS] = &Client::exchangeKnownCards;
     m_callbacks[S_COMMAND_SET_KNOWN_CARDS] = &Client::setKnownCards;
     m_callbacks[S_COMMAND_VIEW_GENERALS] = &Client::viewGenerals;
@@ -761,9 +761,9 @@ void Client::setNullification(const QVariant &str) {
     }
 }
 
-void Client::enableSurrender(const Json::Value &enabled) {
-    if (!enabled.isBool()) return;
-    bool en = enabled.asBool();
+void Client::enableSurrender(const QVariant &enabled) {
+    if (enabled.type() != QMetaType::Bool) return;
+    bool en = enabled.toBool();
     emit surrender_enabled(en);
 }
 
