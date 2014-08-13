@@ -453,13 +453,13 @@ bool Client::_getSingleCard(int card_id, CardsMoveStruct move) {
 }
 
 void Client::getCards(const QVariant &arg) {
-    JsonArray args = args.value<JsonArray>();
+    JsonArray args = arg.value<JsonArray>();
     Q_ASSERT(args.size() >= 1);
     int moveId = args[0].toInt();
     QList<CardsMoveStruct> moves;
     for (unsigned int i = 1; i < args.size(); i++) {
         CardsMoveStruct move;
-        if (!move.tryParse(VariantToJsonValue(args[i]))) return;
+        if (!move.tryParse(args[i])) return;
         move.from = getPlayer(move.from_player_name);
         move.to = getPlayer(move.to_player_name);
         Player::Place dstPlace = move.to_place;
@@ -482,7 +482,7 @@ void Client::loseCards(const Json::Value &arg) {
     QList<CardsMoveStruct> moves;
     for (unsigned int i = 1; i < arg.size(); i++) {
         CardsMoveStruct move;
-        if (!move.tryParse(arg[i])) return;
+        if (!move.tryParse(JsonValueToVariant(arg[i]))) return;
         move.from = getPlayer(move.from_player_name);
         move.to = getPlayer(move.to_player_name);
         Player::Place srcPlace = move.from_place;

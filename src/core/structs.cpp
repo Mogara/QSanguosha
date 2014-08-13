@@ -24,24 +24,28 @@
 
 using namespace QSanProtocol::Utils;
 
-bool CardsMoveStruct::tryParse(const Json::Value &arg) {
-    if (!arg.isArray() || arg.size() != 8) return false;
-    if ((!arg[0].isInt() && !arg[0].isArray()) ||
-        !isIntArray(arg, 1, 2) || !isStringArray(arg, 3, 6)) return false;
-    if (arg[0].isInt()) {
-        int size = arg[0].asInt();
+bool CardsMoveStruct::tryParse(const QVariant &arg) {
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 8) return false;
+
+    if ((!JsonUtils::isNumber(args[0]) && !args[0].canConvert<JsonArray>()) ||
+        !JsonUtils::isIntArray(args, 1, 2) || !JsonUtils::isStringArray(args, 3, 6)) return false;
+
+    if (JsonUtils::isNumber(args[0])) {
+        int size = args[0].asInt();
         for (int i = 0; i < size; i++)
             card_ids.append(Card::S_UNKNOWN_CARD_ID);
-    }
-    else if (!QSanProtocol::Utils::tryParse(arg[0], card_ids))
+    } else if (!JsonUtils::tryParse(args[0].value<JsonArray>(), card_ids)) {
         return false;
-    from_place = (Player::Place)arg[1].asInt();
-    to_place = (Player::Place)arg[2].asInt();
-    from_player_name = toQString(arg[3]);
-    to_player_name = toQString(arg[4]);
-    from_pile_name = toQString(arg[5]);
-    to_pile_name = toQString(arg[6]);
-    reason.tryParse(arg[7]);
+    }
+
+    from_place = (Player::Place)args[1].toInt();
+    to_place = (Player::Place)args[2].toInt();
+    from_player_name = args[3].toString();
+    to_player_name = args[4].toString();
+    from_pile_name = args[5].toString();
+    to_pile_name = args[6].toString();
+    reason.tryParse(VariantToJsonValue(args[7]));
     return true;
 }
 

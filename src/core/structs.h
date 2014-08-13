@@ -297,7 +297,7 @@ struct CardsMoveStruct {
     Player *origin_from, *origin_to;
     QString origin_from_pile_name, origin_to_pile_name; //for case of the movement transitted
 
-    bool tryParse(const Json::Value &);
+    bool tryParse(const QVariant &arg);
     Json::Value toJsonValue() const;
     inline bool isRelevant(const Player *player) {
         return player != NULL && (from == player || (to == player && to_place != Player::PlaceSpecial));
