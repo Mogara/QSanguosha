@@ -39,6 +39,20 @@ public:
     Q_INVOKABLE Halberd(Card::Suit suit, int number);
 };
 
+class Breastplate : public Armor{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE Breastplate(Card::Suit suit = Card::Club, int number = 2);
+};
+
+class IronArmor : public Armor{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE IronArmor(Card::Suit suit = Card::Diamond, int number = 9);
+};
+
 class WoodenOxCard: public SkillCard {
     Q_OBJECT
 
@@ -62,13 +76,6 @@ class JadeSeal : public Treasure{
 
 public:
     Q_INVOKABLE JadeSeal(Card::Suit suit, int number);
-};
-
-class Breastplate : public Armor{
-    Q_OBJECT
-
-public:
-    Q_INVOKABLE Breastplate(Card::Suit suit = Card::Club, int number = 2);
 };
 
 class Drowning: public SingleTargetTrick {

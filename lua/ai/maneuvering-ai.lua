@@ -328,7 +328,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 
 	if not self:damageIsEffective_(damageStruct) then return end
 	if card and card:isKindOf("FireAttack") and not self:hasTrickEffective(card, to, self.player) then return end
-	
+
 	local jiaren_zidan = self.room:findPlayerBySkillName("jgchiying")
 	if jiaren_zidan and jiaren_zidan:isFriendWith(to) then
 		damage = 1
@@ -583,7 +583,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 
 	local can_FireAttack_self
 	for _, card in ipairs(canDis) do
-		if (not isCard("Peach", card, self.player) or self:getCardsNum("Peach") >= 3)
+		if (not isCard("Peach", card, self.player) or self:getCardsNum("Peach") >= 3) and not self.player:hasArmorEffect("IronArmor")
 			and (not isCard("Analeptic", card, self.player) or self:getCardsNum("Analeptic") >= 2) then
 			can_FireAttack_self = true
 		end

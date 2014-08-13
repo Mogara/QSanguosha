@@ -87,6 +87,17 @@ Halberd::Halberd(Card::Suit suit, int number)
     setObjectName("Halberd");
 }
 
+Breastplate::Breastplate(Card::Suit suit, int number)
+    : Armor(suit, number){
+    setObjectName("Breastplate");
+}
+
+IronArmor::IronArmor(Card::Suit suit, int number)
+    : Armor(suit, number)
+{
+    setObjectName("IronArmor");
+}
+
 WoodenOxCard::WoodenOxCard() {
     target_fixed = true;
     will_throw = false;
@@ -200,11 +211,6 @@ JadeSeal::JadeSeal(Card::Suit suit, int number)
     setObjectName("JadeSeal");
 }
 
-Breastplate::Breastplate(Card::Suit suit, int number)
-    : Armor(suit, number){
-    setObjectName("Breastplate");
-}
-
 Drowning::Drowning(Suit suit, int number)
     : SingleTargetTrick(suit, number)
 {
@@ -303,7 +309,7 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         << new Blade(Card::Spade, 5)
         << new Halberd(Card::Spade, 6)
         << new Breastplate()
-        //<< new IronArmor()
+        << new IronArmor()
         //<< new OffensiveHorse(Card::Heart, 3, true)
         << new WoodenOx(Card::Diamond, 5)
         << new JadeSeal(Card::Spade, 2)
