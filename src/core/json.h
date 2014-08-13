@@ -21,14 +21,17 @@ public:
     QByteArray toJson(bool isIndented = false) const;
     static JsonDocument fromJson(const QByteArray &json);
 
-    bool isArray() const;
-    bool isObject() const;
+    inline bool isArray() const{return value.canConvert<JsonArray>();}
+    inline bool isObject() const{return value.canConvert<JsonObject>();}
+    inline bool isValid() const{return valid;}
 
-    JsonArray array() const;
-    JsonObject object() const;
+    inline JsonArray array() const{return value.value<JsonArray>();}
+    inline JsonObject object() const{return value.value<JsonObject>();}
+    inline const QVariant& toVariant() const{return value;}
 
 protected:
     QVariant value;
+    bool valid;
 };
 
 namespace JsonUtils{

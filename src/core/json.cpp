@@ -115,42 +115,23 @@ QVariant JsonValueToVariant(const Json::Value &var)
 }
 
 JsonDocument::JsonDocument()
+    :valid(false)
 {
 }
 
 JsonDocument::JsonDocument(const QVariant &var)
-    :value(var)
+    :value(var), valid(true)
 {
 }
 
 JsonDocument::JsonDocument(const JsonArray &array)
+    :value(array), valid(true)
 {
-    value = array;
 }
 
 JsonDocument::JsonDocument(const JsonObject &object)
+    :value(object), valid(true)
 {
-    value = object;
-}
-
-JsonArray JsonDocument::array() const
-{
-    return value.value<JsonArray>();
-}
-
-JsonObject JsonDocument::object() const
-{
-    return value.value<JsonObject>();
-}
-
-bool JsonDocument::isArray() const
-{
-    return value.canConvert<JsonArray>();
-}
-
-bool JsonDocument::isObject() const
-{
-    return value.canConvert<JsonObject>();
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
@@ -164,9 +145,16 @@ QByteArray JsonDocument::toJson(bool isIndented) const
 
 JsonDocument JsonDocument::fromJson(const QByteArray &json)
 {
-    QJsonDocument jsondoc = QJsonDocument::fromJson(json);
+    QJsonParseError error;
+    QJsonDocument jsondoc = QJsonDocument::fromJson(json, &error);
+
     JsonDocument doc;
-    doc.value = jsondoc.toVariant();
+    if (error.error == QJsonParseError::NoError) {
+        doc.value = jsondoc.toVariant();
+        doc.valid = true;
+    } else {
+        doc.valid = false;
+    }
     return doc;
 }
 
@@ -187,8 +175,11 @@ JsonDocument JsonDocument::fromJson(const QByteArray &json)
 {
     Json::Value root;
     Json::Reader reader;
-    reader.parse(json.constData(), root);
-    return JsonValueToVariant(root);
+    JsonDocument doc;
+    doc.valid = reader.parse(json.constData(), root);
+    if (doc.valid)
+        doc.value = JsonValueToVariant(root);
+    return doc;
 }
 
 #endif
