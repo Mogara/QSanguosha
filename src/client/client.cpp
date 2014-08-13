@@ -113,7 +113,7 @@ Client::Client(QObject *parent, const QString &filename)
     m_interactions[S_COMMAND_EXCHANGE_CARD] = &Client::askForExchange;
     m_interactions[S_COMMAND_ASK_PEACH] = &Client::askForSinglePeach;
     m_interactions[S_COMMAND_SKILL_GUANXING] = &Client::askForGuanxing;
-    m_interactions[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
+    interactions[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
     m_interactions[S_COMMAND_SKILL_YIJI] = &Client::askForYiji;
     m_interactions[S_COMMAND_PLAY_CARD] = &Client::activate;
     m_interactions[S_COMMAND_DISCARD_CARD] = &Client::askForDiscard;
@@ -349,7 +349,6 @@ bool Client::processServerRequest(const Packet &packet) {
 
     _m_lastServerSerial = packet.globalSerial;
     CommandType command = packet.getCommandType();
-    Json::Value msg = VariantToJsonValue(packet.getMessageBody());
 
     if (!replayer) {
         Countdown countdown;
@@ -359,11 +358,19 @@ bool Client::processServerRequest(const Packet &packet) {
         setCountdown(countdown);
     }
 
-    CallBack callback = m_interactions[command];
-    if (!callback) return false;
-    (this->*callback)(msg);
+    Callback callback = interactions[command];
+    if (callback) {
+        (this->*callback)(packet.getMessageBody());
+        return true;
+    }
 
-    return true;
+    CallBack deprecated_callback = m_interactions[command];
+    if (deprecated_callback) {
+        (this->*deprecated_callback)(VariantToJsonValue(packet.getMessageBody()));
+        return true;
+    }
+
+    return false;
 }
 
 void Client::processObsoleteServerPacket(const QString &cmd) {
