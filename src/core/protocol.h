@@ -249,7 +249,6 @@ namespace QSanProtocol {
 
         Packet(int packetDescription = S_DESC_UNKNOWN, CommandType command = S_COMMAND_UNKNOWN);
         unsigned int createGlobalSerial();
-        inline void setMessageBody(const Json::Value &value) { messageBody = JsonValueToVariant(value); }
         inline void setMessageBody(const QVariant &value) { messageBody = value; }
         inline const QVariant &getMessageBody() const{ return messageBody; }
         virtual bool parse(const QByteArray &raw);

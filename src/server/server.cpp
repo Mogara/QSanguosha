@@ -956,7 +956,7 @@ void Server::processRequest(const char *request) {
     if (!signup.parse(request) || signup.getCommandType() != S_COMMAND_SIGNUP) {
         emit server_message(tr("Invalid signup string: %1").arg(request));
         Packet error(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
-        error.setMessageBody(Json::Value("INVALID_FORMAT"));
+        error.setMessageBody("INVALID_FORMAT");
         socket->send(error.toUtf8());
         socket->disconnectFromHost();
         return;
