@@ -1856,7 +1856,7 @@ void Client::moveFocus(const QVariant &focus) {
         countdown.max = ServerInfo.getCommandTimeout(S_COMMAND_UNKNOWN, S_CLIENT_INSTANCE);
 
     } else {// focus[1] is the moveFocus reason, which is now removed.
-        Json::ArrayIndex countdown_index = args.size() >= 3 ? 2 : 1;
+        unsigned countdown_index = args.size() >= 3 ? 2 : 1;
         if (!countdown.tryParse(args[countdown_index])) {
             return;
         }
