@@ -124,7 +124,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_MULTIPLE_CHOICE] = &Client::askForChoice;
     interactions[S_COMMAND_NULLIFICATION] = &Client::askForNullification;
     interactions[S_COMMAND_SHOW_CARD] = &Client::askForCardShow;
-    m_interactions[S_COMMAND_AMAZING_GRACE] = &Client::askForAG;
+    interactions[S_COMMAND_AMAZING_GRACE] = &Client::askForAG;
     m_interactions[S_COMMAND_PINDIAN] = &Client::askForPindian;
     m_interactions[S_COMMAND_CHOOSE_CARD] = &Client::askForCardChosen;
     m_interactions[S_COMMAND_CHOOSE_ORDER] = &Client::askForOrder;
@@ -1580,9 +1580,9 @@ void Client::askForCardShow(const QVariant &requestor) {
     setStatus(AskForShowOrPindian);
 }
 
-void Client::askForAG(const Json::Value &arg) {
-    if (!arg.isBool()) return;
-    m_isDiscardActionRefusable = arg.asBool();
+void Client::askForAG(const QVariant &arg) {
+    if (arg.type() != QMetaType::Bool) return;
+    m_isDiscardActionRefusable = arg.toBool();
     setStatus(AskForAG);
 }
 

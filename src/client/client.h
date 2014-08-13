@@ -162,7 +162,7 @@ public:
 
     //interactive server callbacks
     void askForCardOrUseCard(const QVariant &);
-    void askForAG(const Json::Value &);
+    void askForAG(const QVariant &);
     void askForSinglePeach(const QVariant &);
     void askForCardShow(const QVariant &);
     void askForSkillInvoke(const QVariant &);
