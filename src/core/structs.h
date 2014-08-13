@@ -96,7 +96,7 @@ struct CardUseStruct {
     CardUseStruct(const Card *card, ServerPlayer *from, ServerPlayer *target, bool isOwnerUse = true);
     bool isValid(const QString &pattern) const;
     void parse(const QString &str, Room *room);
-    bool tryParse(const Json::Value &, Room *room);
+    bool tryParse(const QVariant &usage, Room *room);
 
     const Card *card;
     ServerPlayer *from;

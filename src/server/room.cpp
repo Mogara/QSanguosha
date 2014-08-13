@@ -1513,7 +1513,7 @@ const Card *Room::askForUseCard(ServerPlayer *player, const QString &pattern, co
         ask_str << notice_index;
         bool success = doRequest(player, S_COMMAND_RESPONSE_CARD, ask_str, true);
         if (success) {
-            Json::Value clientReply = VariantToJsonValue(player->getClientReply());
+            const QVariant &clientReply = player->getClientReply();
             isCardUsed = !clientReply.isNull();
             if (isCardUsed && card_use.tryParse(clientReply, this))
                 card_use.from = player;
@@ -4610,7 +4610,7 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use) {
     }
     else {
         bool success = doRequest(player, S_COMMAND_PLAY_CARD, player->objectName(), true);
-        Json::Value clientReply = VariantToJsonValue(player->getClientReply());
+        const QVariant &clientReply = player->getClientReply();
 
         if (m_surrenderRequestReceived) {
             makeSurrender(player);
@@ -4628,7 +4628,8 @@ void Room::activate(ServerPlayer *player, CardUseStruct &card_use) {
 
         card_use.from = player;
         if (!card_use.tryParse(clientReply, this)) {
-            emit room_message(tr("Card cannot be parsed:\n %1").arg(toQString(clientReply[0])));
+            JsonArray use = clientReply.value<JsonArray>();
+            emit room_message(tr("Card cannot be parsed:\n %1").arg(use[0].toString()));
             return;
         }
     }
