@@ -114,7 +114,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_ASK_PEACH] = &Client::askForSinglePeach;
     interactions[S_COMMAND_SKILL_GUANXING] = &Client::askForGuanxing;
     interactions[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
-    m_interactions[S_COMMAND_SKILL_YIJI] = &Client::askForYiji;
+    interactions[S_COMMAND_SKILL_YIJI] = &Client::askForYiji;
     m_interactions[S_COMMAND_PLAY_CARD] = &Client::activate;
     m_interactions[S_COMMAND_DISCARD_CARD] = &Client::askForDiscard;
     interactions[S_COMMAND_CHOOSE_SUIT] = &Client::askForSuit;
@@ -1686,15 +1686,16 @@ void Client::askForPindian(const Json::Value &ask_str) {
     setStatus(AskForShowOrPindian);
 }
 
-void Client::askForYiji(const Json::Value &ask_str) {
-    if (!ask_str.isArray() || (ask_str.size() != 4 && ask_str.size() != 5)) return;
-    //if (!ask_str[0].isArray() || !ask_str[1].isBool() || !ask_str[2].isInt()) return;
-    Json::Value card_list = ask_str[0];
-    int count = ask_str[2].asInt();
-    m_isDiscardActionRefusable = ask_str[1].asBool();
+void Client::askForYiji(const QVariant &ask_str) {
+    JsonArray ask = ask_str.value<JsonArray>();
+    if (ask.size() != 4 && ask.size() != 5) return;
 
-    if (ask_str.size() == 5) {
-        QString prompt = toQString(ask_str[4]);
+    JsonArray card_list = ask[0].value<JsonArray>();
+    int count = ask[2].toInt();
+    m_isDiscardActionRefusable = ask[1].toBool();
+
+    if (ask.size() == 5) {
+        QString prompt = ask[4].toString();
         QStringList texts = prompt.split(":");
         if (texts.length() < 4) {
             while (texts.length() < 3)
@@ -1702,8 +1703,7 @@ void Client::askForYiji(const Json::Value &ask_str) {
             texts.append(QString::number(count));
         }
         setPromptList(texts);
-    }
-    else {
+    } else {
         prompt_doc->setHtml(tr("Please distribute %1 cards %2 as you wish")
             .arg(count)
             .arg(m_isDiscardActionRefusable ? QString() : tr("to another player")));
@@ -1711,11 +1711,13 @@ void Client::askForYiji(const Json::Value &ask_str) {
 
     //@todo: use cards directly rather than the QString
     QStringList card_str;
-    for (unsigned int i = 0; i < card_list.size(); i++)
-        card_str << QString::number(card_list[i].asInt());
-    Json::Value players = ask_str[3];
+    foreach (const QVariant &card, card_list)
+        card_str << QString::number(card.toInt());
+
+    JsonArray players = ask[3].value<JsonArray>();
     QStringList names;
-    tryParse(players, names);
+    JsonUtils::tryParse(players, names);
+
     _m_roomState.setCurrentCardUsePattern(QString("%1=%2=%3").arg(count).arg(card_str.join("+")).arg(names.join("+")));
     setStatus(AskForYiji);
 }

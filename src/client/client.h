@@ -176,7 +176,7 @@ public:
     void askForCardChosen(const Json::Value &);
     void askForPlayerChosen(const QVariant &players);
     void askForGeneral(const QVariant &);
-    void askForYiji(const Json::Value &);
+    void askForYiji(const QVariant &);
     void askForGuanxing(const QVariant &);
     void showAllCards(const QVariant &);
     void askForGongxin(const QVariant &);
