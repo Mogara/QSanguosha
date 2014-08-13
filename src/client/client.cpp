@@ -92,7 +92,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_ENABLE_SURRENDER] = &Client::enableSurrender;
     callbacks[S_COMMAND_EXCHANGE_KNOWN_CARDS] = &Client::exchangeKnownCards;
     callbacks[S_COMMAND_SET_KNOWN_CARDS] = &Client::setKnownCards;
-    m_callbacks[S_COMMAND_VIEW_GENERALS] = &Client::viewGenerals;
+    callbacks[S_COMMAND_VIEW_GENERALS] = &Client::viewGenerals;
     m_callbacks[S_COMMAND_SET_DASHBOARD_SHADOW] = &Client::setDashboardShadow;
 
     m_callbacks[S_COMMAND_UPDATE_STATE_ITEM] = &Client::updateStateItem;
@@ -792,11 +792,12 @@ void Client::setKnownCards(const QVariant &set_str) {
 
 }
 
-void Client::viewGenerals(const Json::Value &str) {
-    if (str.size() != 2 || !str[0].isString()) return;
-    QString reason = toQString(str[0]);
+void Client::viewGenerals(const QVariant &arg) {
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 2 || args[0].type() != QMetaType::QString) return;
+    QString reason = args[0].toString();
     QStringList names;
-    if (!tryParse(str[1], names)) return;
+    if (!JsonUtils::tryParse(args[1].value<JsonArray>(), names)) return;
     emit generals_viewed(reason, names);
 }
 
