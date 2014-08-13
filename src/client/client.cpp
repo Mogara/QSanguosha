@@ -91,7 +91,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_NULLIFICATION_ASKED] = &Client::setNullification;
     callbacks[S_COMMAND_ENABLE_SURRENDER] = &Client::enableSurrender;
     callbacks[S_COMMAND_EXCHANGE_KNOWN_CARDS] = &Client::exchangeKnownCards;
-    m_callbacks[S_COMMAND_SET_KNOWN_CARDS] = &Client::setKnownCards;
+    callbacks[S_COMMAND_SET_KNOWN_CARDS] = &Client::setKnownCards;
     m_callbacks[S_COMMAND_VIEW_GENERALS] = &Client::viewGenerals;
     m_callbacks[S_COMMAND_SET_DASHBOARD_SHADOW] = &Client::setDashboardShadow;
 
@@ -780,13 +780,14 @@ void Client::exchangeKnownCards(const QVariant &players) {
     b->setCards(a_known);
 }
 
-void Client::setKnownCards(const Json::Value &set_str) {
-    if (!set_str.isArray() || set_str.size() != 2) return;
-    QString name = toQString(set_str[0]);
+void Client::setKnownCards(const QVariant &set_str) {
+    JsonArray set = set_str.value<JsonArray>();
+    if (set.size() != 2) return;
+    QString name = set[0].toString();
     ClientPlayer *player = getPlayer(name);
     if (player == NULL) return;
     QList<int> ids;
-    tryParse(set_str[1], ids);
+    JsonUtils::tryParse(set[1].value<JsonArray>(), ids);
     player->setCards(ids);
 
 }
