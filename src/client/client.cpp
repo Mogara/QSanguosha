@@ -137,7 +137,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_CLEAR_AMAZING_GRACE] = &Client::clearAG;
 
     // 3v3 mode & 1v1 mode
-    m_interactions[S_COMMAND_ARRANGE_GENERAL] = &Client::startArrange;
+    interactions[S_COMMAND_ARRANGE_GENERAL] = &Client::startArrange;
 
     callbacks[S_COMMAND_FILL_GENERAL] = &Client::fillGenerals;
     callbacks[S_COMMAND_TAKE_GENERAL] = &Client::takeGeneral;
@@ -1950,14 +1950,13 @@ void Client::takeGeneral(const QVariant &take) {
     emit general_taken(who, name, rule);
 }
 
-void Client::startArrange(const Json::Value &to_arrange) {
+void Client::startArrange(const QVariant &to_arrange) {
     if (to_arrange.isNull()) {
         emit arrange_started(QString());
-    }
-    else {
-        if (!to_arrange.isArray()) return;
+    } else {
+        if (!to_arrange.canConvert<JsonArray>()) return;
         QStringList arrangelist;
-        tryParse(to_arrange, arrangelist);
+        JsonUtils::tryParse(to_arrange.value<JsonArray>(), arrangelist);
         emit arrange_started(arrangelist.join("+"));
     }
     setStatus(AskForArrangement);

@@ -191,7 +191,7 @@ public:
     // 3v3 & 1v1 methods
     void fillGenerals(const QVariant &generals);
     void takeGeneral(const QVariant &take_str);
-    void startArrange(const Json::Value &to_arrange);
+    void startArrange(const QVariant &to_arrange);
 
     void recoverGeneral(const QVariant &recover);
     void revealGeneral(const QVariant &reveal);
