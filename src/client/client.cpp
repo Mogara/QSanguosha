@@ -100,7 +100,7 @@ Client::Client(QObject *parent, const QString &filename)
 
     callbacks[S_COMMAND_GET_CARD] = &Client::getCards;
     callbacks[S_COMMAND_LOSE_CARD] = &Client::loseCards;
-    m_callbacks[S_COMMAND_SET_PROPERTY] = &Client::updateProperty;
+    callbacks[S_COMMAND_SET_PROPERTY] = &Client::updateProperty;
     m_callbacks[S_COMMAND_RESET_PILE] = &Client::resetPiles;
     m_callbacks[S_COMMAND_UPDATE_PILE] = &Client::setPileNumber;
     m_callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
@@ -400,12 +400,13 @@ void Client::addPlayer(const QVariant &player_info) {
     emit player_added(player);
 }
 
-void Client::updateProperty(const Json::Value &arg) {
-    if (!isStringArray(arg, 0, 2)) return;
-    QString object_name = toQString(arg[0]);
+void Client::updateProperty(const QVariant &arg) {
+    JsonArray args = arg.value<JsonArray>();
+    if (!JsonUtils::isStringArray(args, 0, 2)) return;
+    QString object_name = args[0].toString();
     ClientPlayer *player = getPlayer(object_name);
     if (!player) return;
-    player->setProperty(arg[1].asCString(), toQString(arg[2]));
+    player->setProperty(args[1].toString().toLatin1().constData(), args[2].toString());
 
     //for shuangxiong { RoomScene::detachSkill(const QString &) }
     if (arg[1] == "phase" && player->getPhase() == Player::Finish

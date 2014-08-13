@@ -129,7 +129,7 @@ public:
     void gameOver(const QVariant &);
     void loseCards(const QVariant &);
     void getCards(const QVariant &);
-    void updateProperty(const Json::Value &);
+    void updateProperty(const QVariant &);
     void killPlayer(const QVariant &player_name);
     void revivePlayer(const QVariant &player);
     void setDashboardShadow(const QVariant &player);
