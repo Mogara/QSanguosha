@@ -156,9 +156,9 @@ public:
     void setCardFlag(const QVariant &pattern_str);
     void updateCard(const QVariant &val);
 
-    void fillAG(const Json::Value &cards_str);
-    void takeAG(const Json::Value &take_str);
-    void clearAG(const Json::Value &);
+    void fillAG(const QVariant &cards_str);
+    void takeAG(const QVariant &take_var);
+    void clearAG(const QVariant &);
 
     //interactive server callbacks
     void askForCardOrUseCard(const Json::Value &);

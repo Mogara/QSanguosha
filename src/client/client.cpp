@@ -132,9 +132,9 @@ Client::Client(QObject *parent, const QString &filename)
     m_interactions[S_COMMAND_LUCK_CARD] = &Client::askForLuckCard;
     m_interactions[S_COMMAND_TRIGGER_ORDER] = &Client::askForTriggerOrder;
 
-    m_callbacks[S_COMMAND_FILL_AMAZING_GRACE] = &Client::fillAG;
-    m_callbacks[S_COMMAND_TAKE_AMAZING_GRACE] = &Client::takeAG;
-    m_callbacks[S_COMMAND_CLEAR_AMAZING_GRACE] = &Client::clearAG;
+    callbacks[S_COMMAND_FILL_AMAZING_GRACE] = &Client::fillAG;
+    callbacks[S_COMMAND_TAKE_AMAZING_GRACE] = &Client::takeAG;
+    callbacks[S_COMMAND_CLEAR_AMAZING_GRACE] = &Client::clearAG;
 
     // 3v3 mode & 1v1 mode
     m_interactions[S_COMMAND_ARRANGE_GENERAL] = &Client::startArrange;
@@ -1488,37 +1488,39 @@ void Client::onPlayerDiscardCards(const Card *cards) {
     setStatus(NotActive);
 }
 
-void Client::fillAG(const Json::Value &cards_str) {
-    if (!cards_str.isArray() || cards_str.size() != 2) return;
+void Client::fillAG(const QVariant &cards_str) {
+    JsonArray cards = cards_str.value<JsonArray>();
+    if (cards.size() != 2) return;
     QList<int> card_ids, disabled_ids;
-    tryParse(cards_str[0], card_ids);
-    tryParse(cards_str[1], disabled_ids);
+    JsonUtils::tryParse(cards[0].value<JsonArray>(), card_ids);
+    JsonUtils::tryParse(cards[1].value<JsonArray>(), disabled_ids);
     emit ag_filled(card_ids, disabled_ids);
 }
 
-void Client::takeAG(const Json::Value &take_str) {
-    if (!take_str.isArray() || take_str.size() != 3) return;
-    if (!take_str[1].isInt() || !take_str[2].isBool()) return;
+void Client::takeAG(const QVariant &take_var) {
+    JsonArray take = take_var.value<JsonArray>();
+    if (take.size() != 3) return;
+    if (!JsonUtils::isNumber(take[1]) || take[2].type() != QMetaType::Bool) return;
 
-    int card_id = take_str[1].asInt();
-    bool move_cards = take_str[2].asBool();
+    int card_id = take[1].toInt();
+    bool move_cards = take[2].toBool();
     const Card *card = Sanguosha->getCard(card_id);
 
-    if (take_str[0].isNull()) {
+    if (take[0].isNull()) {
         if (move_cards) {
             discarded_list.prepend(card);
             updatePileNum();
         }
         emit ag_taken(NULL, card_id, move_cards);
     } else {
-        ClientPlayer *taker = getPlayer(toQString(take_str[0]));
+        ClientPlayer *taker = getPlayer(take[0].toString());
         if (move_cards)
             taker->addCard(card, Player::PlaceHand);
         emit ag_taken(taker, card_id, move_cards);
     }
 }
 
-void Client::clearAG(const Json::Value &) {
+void Client::clearAG(const QVariant &) {
     emit ag_cleared();
 }
 
