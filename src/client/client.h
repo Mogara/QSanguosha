@@ -109,7 +109,6 @@ public:
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
 
-    typedef void (Client::*CallBack) (const Json::Value &);
     typedef void (Client::*Callback) (const QVariant &);
 
     void checkVersion(const QVariant &server_version);
