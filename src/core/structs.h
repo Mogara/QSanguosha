@@ -136,7 +136,7 @@ public:
     }
 
     bool tryParse(const QVariant &);
-    Json::Value toJsonValue() const;
+    QVariant toQVariant() const;
 
     inline bool operator == (const CardMoveReason &other) const{
         return m_reason == other.m_reason

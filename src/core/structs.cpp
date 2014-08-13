@@ -63,7 +63,7 @@ QVariant CardsMoveStruct::toQVariant() const{
     arg << to_player_name;
     arg << from_pile_name;
     arg << to_pile_name;
-    arg << JsonValueToVariant(reason.toJsonValue());
+    arg << reason.toQVariant();
     return arg;
 }
 
@@ -81,13 +81,13 @@ bool CardMoveReason::tryParse(const QVariant &arg) {
     return true;
 }
 
-Json::Value CardMoveReason::toJsonValue() const{
-    Json::Value result;
-    result[0] = m_reason;
-    result[1] = toJsonString(m_playerId);
-    result[2] = toJsonString(m_skillName);
-    result[3] = toJsonString(m_eventName);
-    result[4] = toJsonString(m_targetId);
+QVariant CardMoveReason::toQVariant() const{
+    JsonArray result;
+    result << m_reason;
+    result << m_playerId;
+    result << m_skillName;
+    result << m_eventName;
+    result << m_targetId;
     return result;
 }
 
