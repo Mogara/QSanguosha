@@ -82,7 +82,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_INVOKE_SKILL] = &Client::skillInvoked;
     callbacks[S_COMMAND_SHOW_ALL_CARDS] = &Client::showAllCards;
     callbacks[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
-    m_callbacks[S_COMMAND_LOG_EVENT] = &Client::handleGameEvent;
+    callbacks[S_COMMAND_LOG_EVENT] = &Client::handleGameEvent;
     m_callbacks[S_COMMAND_ADD_HISTORY] = &Client::addHistory;
     m_callbacks[S_COMMAND_ANIMATE] = &Client::animate;
     m_callbacks[S_COMMAND_FIXED_DISTANCE] = &Client::setFixedDistance;
@@ -247,7 +247,7 @@ void Client::replyToServer(CommandType command, const QVariant &arg) {
     }
 }
 
-void Client::handleGameEvent(const Json::Value &arg) {
+void Client::handleGameEvent(const QVariant &arg) {
     emit event_received(arg);
 }
 

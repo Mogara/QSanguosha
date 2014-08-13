@@ -183,7 +183,7 @@ public:
     void askForSurrender(const Json::Value &);
     void askForLuckCard(const Json::Value &);
     void askForTriggerOrder(const Json::Value &);
-    void handleGameEvent(const Json::Value &);
+    void handleGameEvent(const QVariant &);
     //3v3 & 1v1
     void askForOrder(const Json::Value &);
     void askForDirection(const Json::Value &);
@@ -338,7 +338,7 @@ signals:
     void game_started();
     void game_over();
     void standoff();
-    void event_received(const Json::Value &);
+    void event_received(const QVariant &);
 
     void move_cards_lost(int moveId, QList<CardsMoveStruct> moves);
     void move_cards_got(int moveId, QList<CardsMoveStruct> moves);
