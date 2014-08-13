@@ -126,7 +126,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_SHOW_CARD] = &Client::askForCardShow;
     interactions[S_COMMAND_AMAZING_GRACE] = &Client::askForAG;
     interactions[S_COMMAND_PINDIAN] = &Client::askForPindian;
-    m_interactions[S_COMMAND_CHOOSE_CARD] = &Client::askForCardChosen;
+    interactions[S_COMMAND_CHOOSE_CARD] = &Client::askForCardChosen;
     m_interactions[S_COMMAND_CHOOSE_ORDER] = &Client::askForOrder;
     m_interactions[S_COMMAND_SURRENDER] = &Client::askForSurrender;
     interactions[S_COMMAND_LUCK_CARD] = &Client::askForLuckCard;
@@ -1405,18 +1405,23 @@ void Client::askForChoice(const QVariant &ask_str) {
     setStatus(AskForChoice);
 }
 
-void Client::askForCardChosen(const Json::Value &ask_str) {
-    if (!ask_str.isArray() || ask_str.size() != 6 || !isStringArray(ask_str, 0, 2)
-        || !ask_str[3].isBool() || !ask_str[4].isInt()) return;
-    QString player_name = toQString(ask_str[0]);
-    QString flags = toQString(ask_str[1]);
-    QString reason = toQString(ask_str[2]);
-    bool handcard_visible = ask_str[3].asBool();
-    Card::HandlingMethod method = (Card::HandlingMethod)ask_str[4].asInt();
+void Client::askForCardChosen(const QVariant &ask_str) {
+    JsonArray ask = ask_str.value<JsonArray>();
+    if (ask.size() != 6 || !JsonUtils::isStringArray(ask, 0, 2)
+        || ask[3].type() != QMetaType::Bool || !JsonUtils::isNumber(ask[4])) return;
+
+    QString player_name = ask[0].toString();
+    QString flags = ask[1].toString();
+    QString reason = ask[2].toString();
+    bool handcard_visible = ask[3].toBool();
+    Card::HandlingMethod method = (Card::HandlingMethod)ask[4].toInt();
+
     ClientPlayer *player = getPlayer(player_name);
     if (player == NULL) return;
+
     QList<int> disabled_ids;
-    tryParse(ask_str[5], disabled_ids);
+    JsonUtils::tryParse(ask[5].value<JsonArray>(), disabled_ids);
+
     emit cards_got(player, flags, reason, handcard_visible, method, disabled_ids);
     setStatus(AskForCardChosen);
 }
