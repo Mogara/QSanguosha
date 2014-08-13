@@ -93,7 +93,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_EXCHANGE_KNOWN_CARDS] = &Client::exchangeKnownCards;
     callbacks[S_COMMAND_SET_KNOWN_CARDS] = &Client::setKnownCards;
     callbacks[S_COMMAND_VIEW_GENERALS] = &Client::viewGenerals;
-    m_callbacks[S_COMMAND_SET_DASHBOARD_SHADOW] = &Client::setDashboardShadow;
+    callbacks[S_COMMAND_SET_DASHBOARD_SHADOW] = &Client::setDashboardShadow;
 
     m_callbacks[S_COMMAND_UPDATE_STATE_ITEM] = &Client::updateStateItem;
     m_callbacks[S_COMMAND_AVAILABLE_CARDS] = &Client::setAvailableCards;
@@ -1339,11 +1339,9 @@ void Client::killPlayer(const QVariant &player_name) {
     emit player_killed(name);
 }
 
-void Client::setDashboardShadow(const Json::Value &player_arg) {
-    if (!player_arg.isString()) return;
-    QString player_name = toQString(player_arg);
-
-    emit dashboard_death(player_name);
+void Client::setDashboardShadow(const QVariant &player) {
+    if (player.type() != QMetaType::QString) return;
+    emit dashboard_death(player.toString());
 }
 
 void Client::revivePlayer(const QVariant &player) {
