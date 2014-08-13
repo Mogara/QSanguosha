@@ -332,10 +332,9 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 		end
 	end
 
+	if not ignore_armor and  to:hasArmorEffect("IronArmor") and slash:isKindOf("FireSlash") then return false end
+
 	if not (ignore_armor or IgnoreArmor(from, to)) then
-
-		if to:hasArmorEffect("IronArmor") and slash:isKindOf("FireSlash") then return false end
-
 		if to:hasArmorEffect("RenwangShield") and slash:isBlack() then
 			if (from:hasWeapon("DragonPhoenix") or from:hasWeapon("DoubleSword") and (from:isMale() and to:isFemale() or from:isFemale() or to:isMale()))
 				and (to:getCardCount(true) == 1 or #self:getEnemies(from) == 1) then
