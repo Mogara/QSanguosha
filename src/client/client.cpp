@@ -80,7 +80,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_MOVE_FOCUS] = &Client::moveFocus;
     callbacks[S_COMMAND_SET_EMOTION] = &Client::setEmotion;
     callbacks[S_COMMAND_INVOKE_SKILL] = &Client::skillInvoked;
-    m_callbacks[S_COMMAND_SHOW_ALL_CARDS] = &Client::showAllCards;
+    callbacks[S_COMMAND_SHOW_ALL_CARDS] = &Client::showAllCards;
     m_callbacks[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
     m_callbacks[S_COMMAND_LOG_EVENT] = &Client::handleGameEvent;
     m_callbacks[S_COMMAND_ADD_HISTORY] = &Client::addHistory;
@@ -1614,15 +1614,17 @@ void Client::askForGuanxing(const Json::Value &arg) {
     setStatus(AskForGuanxing);
 }
 
-void Client::showAllCards(const Json::Value &arg) {
-    if (!arg.isArray() || arg.size() != 3
-        || !arg[0].isString() || !arg[1].isBool())
+void Client::showAllCards(const QVariant &arg) {
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 3 || args[0].type() != QMetaType::QString || args[1].type() != QMetaType::Bool)
         return;
-    ClientPlayer *who = getPlayer(toQString(arg[0]));
-    QList<int> card_ids;
-    if (!tryParse(arg[2], card_ids)) return;
 
-    if (who) who->setCards(card_ids);
+    ClientPlayer *who = getPlayer(args[0].toString());
+    QList<int> card_ids;
+    if (!JsonUtils::tryParse(args[2].value<JsonArray>(), card_ids)) return;
+
+    if (who)
+        who->setCards(card_ids);
 
     emit gongxin(card_ids, false, QList<int>());
 }
