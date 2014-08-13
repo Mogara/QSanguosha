@@ -423,7 +423,7 @@ void RoomScene::handleGameEvent(const QVariant &args) {
     case S_GAME_EVENT_PLAY_EFFECT: {
         QString skillName = arg[1].toString();
         QString category;
-        if (arg[2].type() == !QMetaType::Bool) {
+        if (arg[2].type() == QMetaType::Bool) {
             bool isMale = arg[2].toBool();
             category = isMale ? "male" : "female";
         }
