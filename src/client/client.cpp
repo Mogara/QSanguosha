@@ -409,7 +409,7 @@ void Client::updateProperty(const QVariant &arg) {
     player->setProperty(args[1].toString().toLatin1().constData(), args[2].toString());
 
     //for shuangxiong { RoomScene::detachSkill(const QString &) }
-    if (arg[1] == "phase" && player->getPhase() == Player::Finish
+    if (args[1] == "phase" && player->getPhase() == Player::Finish
         && player->hasFlag("shuangxiong_postpone") && player == Self && !Self->ownSkill("shuangxiong"))
         emit skill_detached("shuangxiong");
 
@@ -482,9 +482,9 @@ void Client::loseCards(const QVariant &arg) {
     Q_ASSERT(args.size() >= 1);
     int moveId = args[0].toInt();
     QList<CardsMoveStruct> moves;
-    for (int i = 1; i < arg.size(); i++) {
+    for (int i = 1; i < args.size(); i++) {
         CardsMoveStruct move;
-        if (!move.tryParse(arg[i])) return;
+        if (!move.tryParse(args[i])) return;
         move.from = getPlayer(move.from_player_name);
         move.to = getPlayer(move.to_player_name);
         Player::Place srcPlace = move.from_place;
