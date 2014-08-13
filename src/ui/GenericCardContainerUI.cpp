@@ -258,6 +258,13 @@ QPixmap PlayerCardContainer::paintByMask(QPixmap &source) {
     return tmp;
 }
 
+bool PlayerCardContainer::canBeSelected()
+{
+    QGraphicsItem *item1 = getMouseClickReceiver();
+    QGraphicsItem *item2 = getMouseClickReceiver2();
+    return (item1 != NULL || item2 != NULL) && isEnabled() && (flags() & QGraphicsItem::ItemIsSelectable);
+}
+
 const ClientPlayer *PlayerCardContainer::getPlayer() const {
     if (m_player) return m_player;
     return NULL;
@@ -1037,8 +1044,7 @@ QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVaria
                 _clearPixmap(_m_selectedFrame2);
                 _m_selectedFrame2->hide();
             }
-        }
-        else {
+        } else {
             _paintPixmap(_m_selectedFrame, _m_layout->m_focusFrameArea,
                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_SELECTED_FRAME),
                 _getFocusFrameParent());
@@ -1052,8 +1058,7 @@ QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVaria
         }
         updateVotes();
         emit selected_changed();
-    }
-    else if (change == ItemEnabledHasChanged) {
+    } else if (change == ItemEnabledHasChanged) {
         _m_votesGot = 0;
         emit enable_changed();
     }
