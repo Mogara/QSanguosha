@@ -329,7 +329,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 	if not self:damageIsEffective_(damageStruct) then return end
 	if card and card:isKindOf("FireAttack") and not self:hasTrickEffective(card, to, self.player) then return end
 	
-	local jiaren_zidan = room:findPlayerBySkillName("jgchiying")
+	local jiaren_zidan = self.room:findPlayerBySkillName("jgchiying")
 	if jiaren_zidan and jiaren_zidan:isFriendWith(to) then
 		damage = 1
 	end

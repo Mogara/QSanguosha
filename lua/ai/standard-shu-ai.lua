@@ -97,7 +97,7 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 	self:sortByUseValue(cards, true)
 	
 	for i = 1, #cards do
-		local card, friend = self:getCardNeedPlayer(cards)
+		local card, friend = self:getCardNeedPlayer(cards, nil, "rende")
 		if card and friend then
 			cards = self:resetCards(cards, card)
 		else
@@ -105,7 +105,7 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 		end
 		if self.player:getHandcardNum() < 3 and self.player:hasSkill("kongcheng") then
 			for _, p in ipairs(self.friends_noself) do
-				friend=p
+				friend = p
 			end
 		end		
 

@@ -2570,7 +2570,7 @@ function SmartAI:hasCrossbowEffect(player)
 	return player:hasWeapon("Crossbow") or player:hasShownSkill("paoxiao")
 end
 
-function SmartAI:getCardNeedPlayer(cards, include_self)
+function SmartAI:getCardNeedPlayer(cards, friends_table, skillname)
 	cards = cards or sgs.QList2Table(self.player:getHandcards())
 
 	local cardtogivespecial = {}
@@ -2585,7 +2585,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 		return a:getNumber() > b:getNumber()
 	end
 
-	local friends_table = include_self and self.friends or self.friends_noself
+	local friends_table = friends_table or self.friends_noself
 	for _, player in ipairs(friends_table) do
 		local exclude = self:needKongcheng(player) or self:willSkipPlayPhase(player)
 		if player:hasShownSkills("keji|qiaobian|shensu") or player:getHp() - player:getHandcardNum() >= 3
@@ -2656,12 +2656,12 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 		end
 	end
 
-	if (self.player:hasSkill("rende") and self.player:isWounded() and self.player:getMark("rende") < 3) and not self.player:hasSkill("kongcheng") then
+	if (skillname == "rende" and self.player:hasSkill("rende") and self.player:isWounded() and self.player:getMark("rende") < 3) and not self.player:hasSkill("kongcheng") then
 		if (self.player:getHandcardNum() < 3 and self.player:getMark("rende") == 0 and self:getOverflow() <= 0) then return end
 	end
 
 	for _, friend in ipairs(friends) do
-		if friend:getHp()<=2 and friend:faceUp() then
+		if friend:getHp() <= 2 and friend:faceUp() then
 			for _, hcard in ipairs(cards) do
 				if (hcard:isKindOf("Armor") and not friend:getArmor() and not friend:hasShownSkills("bazhen|jgyizhong"))
 					or (hcard:isKindOf("DefensiveHorse") and not friend:getDefensiveHorse()) then
@@ -2805,7 +2805,7 @@ function SmartAI:getCardNeedPlayer(cards, include_self)
 		end
 	end
 
-	local shoulduse = self.player:isWounded() and self.player:hasSkill("rende") and self.player:getMark("rende") < 3
+	local shoulduse = skillname == "rende" and self.player:isWounded() and self.player:hasSkill("rende") and self.player:getMark("rende") < 3
 
 	if #cardtogive == 0 and shoulduse then cardtogive = cards end
 

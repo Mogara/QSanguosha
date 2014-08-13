@@ -1468,8 +1468,11 @@ void ServerPlayer::hideGeneral(bool head_general) {
         if (getGeneralName() == "anjiang") return;
 
         setSkillsPreshowed("h", false);
+        // dirty hack for temporary convenience.
+        room->setPlayerProperty(this, "flags", "hiding");
         notifyPreshow();
         room->setPlayerProperty(this, "general1_showed", false);
+        room->setPlayerProperty(this, "flags", "-hiding");
 
         Json::Value arg(Json::arrayValue);
         arg[0] = S_GAME_EVENT_CHANGE_HERO;
@@ -1500,13 +1503,15 @@ void ServerPlayer::hideGeneral(bool head_general) {
             room->setPlayerProperty(this, "kingdom", "god");
             room->setPlayerProperty(this, "role", HegemonyMode::GetMappedRole("god"));
         }
-    }
-    else {
+    } else {
         if (getGeneral2Name() == "anjiang") return;
 
         setSkillsPreshowed("d", false);
+        // dirty hack for temporary convenience
+        room->setPlayerProperty(this, "flags", "hiding");
         notifyPreshow();
         room->setPlayerProperty(this, "general2_showed", false);
+        room->setPlayerProperty(this, "flags", "-hiding");
 
         Json::Value arg(Json::arrayValue);
         arg[0] = S_GAME_EVENT_CHANGE_HERO;
@@ -1613,8 +1618,7 @@ void ServerPlayer::removeGeneral(bool head_general) {
 
             room->setPlayerProperty(this, "role", role);
         }
-    }
-    else {
+    } else {
         if (!hasShownGeneral2())
             showGeneral(false); //zoushi?
 

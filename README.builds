@@ -42,7 +42,7 @@ To build QSanguosha in Mac OS X
 
 2. Download and install the libraries and Qt Creator from http://download.qt-project.org/official_releases/qt/5.3/5.3.1/qt-opensource-mac-x64-clang-5.3.1.dmg
 
-3. Download the source code and install swig from http://sourceforge.net/projects/swig/files/swig/ and make sure the version of swig is 3.0.1 or later.
+3. Download the source code and install swig from http://sourceforge.net/projects/swig/files/swig/ and make sure the version of swig is 3.0.2 or later.
    Tips: unzip the source code tarball and open a terminal, type:
    ./configure --without-pcre
    make
@@ -143,7 +143,7 @@ if you see all the non-system libraries is in @executable_path, it should succee
    qt_zh_CN.qm
    sanguosha.qss
    
-8.1 [optional] select Tools/External/QtLinguist/lrelease, copy ~/Builds/vs2013/sanguosha.qm to QSanguosha.app/Contents/MacOS.
+8.1 [optional] select Tools/External/QtLinguist/lrelease, copy ~/Builds/sanguosha.qm to QSanguosha.app/Contents/MacOS.
 
 9. Double-click QSanguosha.app folder and have fun!
 
@@ -153,7 +153,12 @@ To build QSanguosha in Linux or using MinGW
    (I strongly recommand you download the libraries and Qt Creator from software sources in Linux, because the compliation causes a lot of time)
    (If you are using MinGW, make sure the version of MinGW is compatible with Qt Libraries)
 
-2. (Linux)Download and install the swig from http://sourceforge.net/projects/swig/files/swig/ or software sources, make sure the version of swig is 3.0.1 or later.
+2. (Linux)Download and install the swig from http://sourceforge.net/projects/swig/files/swig/ or software sources, make sure the version of swig is 3.0.2 or later.
+   Tips: unzip the source code tarball and open a terminal, type:
+   ./configure --without-pcre
+   make
+   sudo make install
+
 2. (MinGW)Download the swigwin (swig for Windows, 3.0.2) http://sourceforge.net/projects/swig/files/swigwin/
    Create a ~/tools/swig folder under your source directory. Unzip swigwin and copy all unzipped files to ~/tools/swig.
 
@@ -172,7 +177,7 @@ To build QSanguosha in Linux or using MinGW
 
 4. Open QSanguosha.pro, configure the project and make sure the project is compiled with g++. Change the configuration to Release.
 
-4.1 [optional] select Tools/External/QtLinguist/lrelease, copy ~/Builds/vs2013/sanguosha.qm to ~.
+4.1 [optional] select Tools/External/QtLinguist/lrelease, copy ~/Builds/sanguosha.qm to ~.
 
 5. You are now able to build the solution. When compilation succeeded, the (MinGW)QSanguosha.exe or (Linux)QSanguosha is in ~/../Build-QSanguosha-**/ folder. You should move this file to ~ folder.
 
