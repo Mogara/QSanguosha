@@ -83,7 +83,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_SHOW_ALL_CARDS] = &Client::showAllCards;
     callbacks[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
     callbacks[S_COMMAND_LOG_EVENT] = &Client::handleGameEvent;
-    m_callbacks[S_COMMAND_ADD_HISTORY] = &Client::addHistory;
+    callbacks[S_COMMAND_ADD_HISTORY] = &Client::addHistory;
     m_callbacks[S_COMMAND_ANIMATE] = &Client::animate;
     m_callbacks[S_COMMAND_FIXED_DISTANCE] = &Client::setFixedDistance;
     m_callbacks[S_COMMAND_CARD_LIMITATION] = &Client::cardLimitation;
@@ -1089,12 +1089,12 @@ void Client::speakToServer(const QString &text) {
     notifyServer(S_COMMAND_SPEAK, text);
 }
 
-void Client::addHistory(const Json::Value &history) {
-    if (!history.isArray() || history.size() != 2) return;
-    if (!history[0].isString() || !history[1].isInt()) return;
+void Client::addHistory(const QVariant &history) {
+    JsonArray args = history.value<JsonArray>();
+    if (args.size() != 2 || args[0].type() != QMetaType::QString || !JsonUtils::isNumber(args[1])) return;
 
-    QString add_str = toQString(history[0]);
-    int times = history[1].asInt();
+    QString add_str = args[0].toString();
+    int times = args[1].toInt();
     if (add_str == "pushPile") {
         emit card_used();
         return;

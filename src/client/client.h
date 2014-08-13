@@ -138,7 +138,7 @@ public:
     void showCard(const QVariant &show_str);
     void log(const QVariant &log_str);
     void speak(const QVariant &speak);
-    void addHistory(const Json::Value &history);
+    void addHistory(const QVariant &history);
     void moveFocus(const QVariant &focus);
     void setEmotion(const QVariant &set_str);
     void skillInvoked(const QVariant &invoke_str);
