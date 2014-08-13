@@ -102,7 +102,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_LOSE_CARD] = &Client::loseCards;
     callbacks[S_COMMAND_SET_PROPERTY] = &Client::updateProperty;
     callbacks[S_COMMAND_RESET_PILE] = &Client::resetPiles;
-    m_callbacks[S_COMMAND_UPDATE_PILE] = &Client::setPileNumber;
+    callbacks[S_COMMAND_UPDATE_PILE] = &Client::setPileNumber;
     m_callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
     m_callbacks[S_COMMAND_UPDATE_HANDCARD_NUM] = &Client::setHandcardNum;
 
@@ -1164,9 +1164,9 @@ void Client::resetPiles(const QVariant &) {
     emit pile_reset();
 }
 
-void Client::setPileNumber(const Json::Value &pile_str) {
-    if (!pile_str.isInt()) return;
-    pile_num = pile_str.asInt();
+void Client::setPileNumber(const QVariant &pile_str) {
+    if (!pile_str.canConvert<int>()) return;
+    pile_num = pile_str.toInt();
     updatePileNum();
 }
 
