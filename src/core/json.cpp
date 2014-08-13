@@ -236,13 +236,28 @@ QVariant JsonUtils::toJsonArray(const QStringList &stringArray)
 bool JsonUtils::tryParse(const JsonArray &val, QStringList &list)
 {
     foreach (const QVariant &var, val) {
-        if (var.type() != QMetaType::QString) {
+        if (!var.canConvert<QString>()) {
             return false;
         }
     }
 
     foreach (const QVariant &var, val) {
         list << var.toString();
+    }
+
+    return true;
+}
+
+bool JsonUtils::tryParse(const JsonArray &val, QList<int> &list)
+{
+    foreach (const QVariant &var, val) {
+        if (!var.canConvert<int>()) {
+            return false;
+        }
+    }
+
+    foreach (const QVariant &var, val) {
+        list << var.toInt();
     }
 
     return true;
