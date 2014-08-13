@@ -140,11 +140,17 @@ JsonDocument::JsonDocument(const JsonObject &object)
 JsonDocument JsonDocument::fromFilePath(const QString &path)
 {
     QFile file(path);
+    file.open(QFile::ReadOnly);
     return fromJson(file.readAll());
 }
 
-bool JsonUtils::isStringArray(const JsonArray &array, unsigned from, unsigned int to)
+bool JsonUtils::isStringArray(const QVariant &var, unsigned from, unsigned int to)
 {
+    if (!var.canConvert<JsonArray>())
+        return false;
+
+    JsonArray array = var.value<JsonArray>();
+
     if ((unsigned) array.length() <= to)
         return false;
     for (unsigned int i = from; i <= to; i++) {
@@ -154,8 +160,13 @@ bool JsonUtils::isStringArray(const JsonArray &array, unsigned from, unsigned in
     return true;
 }
 
-bool JsonUtils::isIntArray(const JsonArray &array, unsigned from, unsigned int to)
+bool JsonUtils::isIntArray(const QVariant &var, unsigned from, unsigned int to)
 {
+    if (!var.canConvert<JsonArray>())
+        return false;
+
+    JsonArray array = var.value<JsonArray>();
+
     if ((unsigned) array.length() <= to)
         return false;
     for (unsigned int i = from; i <= to; i++) {
@@ -183,30 +194,61 @@ QVariant JsonUtils::toJsonArray(const QStringList &stringArray)
     return json;
 }
 
-bool JsonUtils::tryParse(const JsonArray &val, QStringList &list)
+
+bool JsonUtils::tryParse(const QVariant &arg, int &result) {
+    if (!arg.canConvert<int>()) return false;
+    result = arg.toInt();
+    return true;
+}
+
+bool JsonUtils::tryParse(const QVariant &arg, double &result) {
+    if (arg.canConvert<double>())
+        result = arg.toDouble();
+    else
+        return false;
+    return true;
+}
+
+bool JsonUtils::tryParse(const QVariant &arg, bool &result) {
+    if (!arg.canConvert<bool>()) return false;
+    result = arg.toBool();
+    return true;
+}
+
+bool JsonUtils::tryParse(const QVariant &var, QStringList &list)
 {
-    foreach (const QVariant &var, val) {
+    if (!var.canConvert<JsonArray>())
+        return false;
+
+    JsonArray array = var.value<JsonArray>();
+
+    foreach (const QVariant &var, array) {
         if (!var.canConvert<QString>()) {
             return false;
         }
     }
 
-    foreach (const QVariant &var, val) {
+    foreach (const QVariant &var, array) {
         list << var.toString();
     }
 
     return true;
 }
 
-bool JsonUtils::tryParse(const JsonArray &val, QList<int> &list)
+bool JsonUtils::tryParse(const QVariant &var, QList<int> &list)
 {
-    foreach (const QVariant &var, val) {
+    if (!var.canConvert<JsonArray>())
+        return false;
+
+    JsonArray array = var.value<JsonArray>();
+
+    foreach (const QVariant &var, array) {
         if (!var.canConvert<int>()) {
             return false;
         }
     }
 
-    foreach (const QVariant &var, val) {
+    foreach (const QVariant &var, array) {
         list << var.toInt();
     }
 
@@ -273,7 +315,7 @@ bool JsonUtils::tryParse(const QVariant &arg, QColor &color) {
     return true;
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+/*#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QJsonDocument>
 
 QByteArray JsonDocument::toJson(bool isIndented) const
@@ -298,7 +340,7 @@ JsonDocument JsonDocument::fromJson(const QByteArray &json)
     return doc;
 }
 
-#else
+#else*/
 
 #include <json/json.h>
 
@@ -328,4 +370,4 @@ JsonDocument JsonDocument::fromJson(const QByteArray &json)
     return doc;
 }
 
-#endif
+//#endif

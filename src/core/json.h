@@ -43,14 +43,18 @@ namespace JsonUtils{
         return var.type() == QMetaType::Double || var.type() == QMetaType::Int || var.type() == QMetaType::UInt;
     }
 
-    bool isStringArray(const JsonArray &array, unsigned from, unsigned int to);
-    bool isIntArray(const JsonArray &array, unsigned from, unsigned int to);
+    bool isStringArray(const QVariant &var, unsigned from, unsigned int to);
+    bool isIntArray(const QVariant &var, unsigned from, unsigned int to);
 
     QVariant toJsonArray(const QList<int> &intArray);
     QVariant toJsonArray(const QStringList &stringArray);
 
-    bool tryParse(const JsonArray &val, QStringList &list);
-    bool tryParse(const JsonArray &val, QList<int> &list);
+    bool tryParse(const QVariant &, int &);
+    bool tryParse(const QVariant &, double &);
+    bool tryParse(const QVariant &, bool &);
+
+    bool tryParse(const QVariant &var, QStringList &list);
+    bool tryParse(const QVariant &var, QList<int> &list);
     bool tryParse(const QVariant &arg, QRect &result);
     bool tryParse(const QVariant &arg, QSize &result);
     bool tryParse(const QVariant &arg, QPoint &result);
