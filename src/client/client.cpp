@@ -81,7 +81,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_SET_EMOTION] = &Client::setEmotion;
     callbacks[S_COMMAND_INVOKE_SKILL] = &Client::skillInvoked;
     callbacks[S_COMMAND_SHOW_ALL_CARDS] = &Client::showAllCards;
-    m_callbacks[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
+    callbacks[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
     m_callbacks[S_COMMAND_LOG_EVENT] = &Client::handleGameEvent;
     m_callbacks[S_COMMAND_ADD_HISTORY] = &Client::addHistory;
     m_callbacks[S_COMMAND_ANIMATE] = &Client::animate;
@@ -1629,16 +1629,17 @@ void Client::showAllCards(const QVariant &arg) {
     emit gongxin(card_ids, false, QList<int>());
 }
 
-void Client::askForGongxin(const Json::Value &arg) {
-    if (!arg.isArray() || arg.size() != 4
-        || !arg[0].isString() || !arg[1].isBool())
+void Client::askForGongxin(const QVariant &args) {
+    JsonArray arg = args.value<JsonArray>();
+    if (arg.size() != 4 || arg[0].type() != QMetaType::QString || arg[1].type() != QMetaType::Bool)
         return;
-    ClientPlayer *who = getPlayer(toQString(arg[0]));
-    bool enable_heart = arg[1].asBool();
+
+    ClientPlayer *who = getPlayer(arg[0].toString());
+    bool enable_heart = arg[1].toBool();
     QList<int> card_ids;
-    if (!tryParse(arg[2], card_ids)) return;
+    if (!tryParse(arg[2].value<JsonArray>(), card_ids)) return;
     QList<int> enabled_ids;
-    if (!tryParse(arg[3], enabled_ids)) return;
+    if (!tryParse(arg[3].value<JsonArray>(), enabled_ids)) return;
 
     who->setCards(card_ids);
 

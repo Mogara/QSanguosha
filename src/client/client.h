@@ -179,7 +179,7 @@ public:
     void askForYiji(const Json::Value &);
     void askForGuanxing(const Json::Value &);
     void showAllCards(const QVariant &);
-    void askForGongxin(const Json::Value &);
+    void askForGongxin(const QVariant &);
     void askForSurrender(const Json::Value &);
     void askForLuckCard(const Json::Value &);
     void askForTriggerOrder(const Json::Value &);
