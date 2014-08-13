@@ -171,7 +171,7 @@ public:
     void askForExchange(const QVariant &exchange);
     void askForSuit(const QVariant &);
     void askForKingdom(const QVariant &);
-    void askForNullification(const Json::Value &);
+    void askForNullification(const QVariant &);
     void askForPindian(const Json::Value &);
     void askForCardChosen(const Json::Value &);
     void askForPlayerChosen(const QVariant &players);

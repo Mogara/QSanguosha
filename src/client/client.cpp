@@ -122,7 +122,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_RESPONSE_CARD] = &Client::askForCardOrUseCard;
     interactions[S_COMMAND_INVOKE_SKILL] = &Client::askForSkillInvoke;
     interactions[S_COMMAND_MULTIPLE_CHOICE] = &Client::askForChoice;
-    m_interactions[S_COMMAND_NULLIFICATION] = &Client::askForNullification;
+    interactions[S_COMMAND_NULLIFICATION] = &Client::askForNullification;
     m_interactions[S_COMMAND_SHOW_CARD] = &Client::askForCardShow;
     m_interactions[S_COMMAND_AMAZING_GRACE] = &Client::askForAG;
     m_interactions[S_COMMAND_PINDIAN] = &Client::askForPindian;
@@ -988,21 +988,22 @@ void Client::askForLuckCard(const QVariant &) {
     setStatus(AskForSkillInvoke);
 }
 
-void Client::askForNullification(const Json::Value &arg) {
-    if (!arg.isArray() || arg.size() != 3 || !arg[0].isString()
-        || !(arg[1].isNull() || arg[1].isString())
-        || !arg[2].isString())
+void Client::askForNullification(const QVariant &arg) {
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 3 || args[0].type() != QMetaType::QString
+        || !(args[1].isNull() || args[1].type() == QMetaType::QString)
+        || args[2].type() != QMetaType::QString)
         return;
 
-    QString trick_name = toQString(arg[0]);
-    Json::Value source_name = arg[1];
-    ClientPlayer *target_player = getPlayer(toQString(arg[2]));
+    QString trick_name = args[0].toString();
+    const QVariant &source_name = args[1];
+    ClientPlayer *target_player = getPlayer(args[2].toString());
 
     if (!target_player || !target_player->getGeneral()) return;
 
     ClientPlayer *source = NULL;
-    if (source_name != Json::Value::null)
-        source = getPlayer(source_name.asCString());
+    if (!source_name.isNull())
+        source = getPlayer(source_name.toString());
 
     const Card *trick_card = Sanguosha->findChild<const Card *>(trick_name);
     if (Config.NeverNullifyMyTrick && source == Self) {
