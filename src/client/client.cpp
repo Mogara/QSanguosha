@@ -96,7 +96,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_SET_DASHBOARD_SHADOW] = &Client::setDashboardShadow;
 
     callbacks[S_COMMAND_UPDATE_STATE_ITEM] = &Client::updateStateItem;
-    m_callbacks[S_COMMAND_AVAILABLE_CARDS] = &Client::setAvailableCards;
+    callbacks[S_COMMAND_AVAILABLE_CARDS] = &Client::setAvailableCards;
 
     m_callbacks[S_COMMAND_GET_CARD] = &Client::getCards;
     m_callbacks[S_COMMAND_LOSE_CARD] = &Client::loseCards;
@@ -1978,9 +1978,9 @@ void Client::updateStateItem(const QVariant &state) {
     emit role_state_changed(state.toString());
 }
 
-void Client::setAvailableCards(const Json::Value &pile) {
-    if (!pile.isArray()) return;
+void Client::setAvailableCards(const QVariant &pile) {
+    if (!pile.canConvert<JsonArray>()) return;
     QList<int> drawPile;
-    tryParse(pile, drawPile);
+    tryParse(pile.value<JsonArray>(), drawPile);
     available_cards = drawPile;
 }

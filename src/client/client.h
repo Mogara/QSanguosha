@@ -152,7 +152,7 @@ public:
     void viewGenerals(const QVariant &arg);
     void setFixedDistance(const QVariant &set_str);
     void updateStateItem(const QVariant &state);
-    void setAvailableCards(const Json::Value &pile);
+    void setAvailableCards(const QVariant &pile);
     void setCardFlag(const Json::Value &pattern_str);
     void updateCard(const QVariant &val);
 
