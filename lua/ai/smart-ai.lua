@@ -4113,6 +4113,8 @@ function SmartAI:hasTrickEffective(card, to, from)
 	if (card:isKindOf("Duel") or card:isKindOf("FireAttack") or card:isKindOf("ArcheryAttack") or card:isKindOf("SavageAssault"))
 		and not self:damageIsEffective(to, nature, from) then return false end
 
+	if to:hasArmorEffect("IronArmor") and (card:isKindOf("FireAttack") or card:isKindOf("BurningCamps")) then return false end
+
 	for _, callback in pairs(sgs.ai_trick_prohibit) do
 		if type(callback) == "function" then
 			local isEffective = callback(self, card, to, from)

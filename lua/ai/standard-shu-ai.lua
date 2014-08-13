@@ -24,7 +24,7 @@ function SmartAI:shouldUseRende()
 		for _, enemy in ipairs(self.enemies) do
 			local inAttackRange = self.player:distanceTo(enemy) == 1 or self.player:distanceTo(enemy) == 2
 									and self:getCardsNum("OffensiveHorse") > 0 and not self.player:getOffensiveHorse()
-			local inPaoxiaoAttackRange =  self.player:distanceTo(enemy) <= self.player:getAttackRange()	and	self.player:hasSkill("paoxiao")											
+			local inPaoxiaoAttackRange =  self.player:distanceTo(enemy) <= self.player:getAttackRange()	and	self.player:hasSkill("paoxiao")
 			if (inAttackRange or inPaoxiaoAttackRange) and sgs.isGoodTarget(enemy, self.enemies, self) then
 				local slashs = self:getCards("Slash")
 				local slash_count = 0
@@ -37,7 +37,7 @@ function SmartAI:shouldUseRende()
 			end
 		end
 	end
-	
+
 	for _, enemy in ipairs(self.enemies) do
 		if enemy:canSlash(self.player) and not self:slashProhibit(nil, self.player, enemy)
 			and self:hasCrossbowEffect(enemy) and getCardsNum("Slash", enemy) > 1 and self:getOverflow() <= 0 then
@@ -49,7 +49,7 @@ function SmartAI:shouldUseRende()
 			return true
 		end
 	end
-	
+
 	local keepNum = 1
 	if self.player:getMark("rende") == 0 then
 		if self.player:getHandcardNum() == 3 then
@@ -62,7 +62,7 @@ function SmartAI:shouldUseRende()
 	if self.player:hasSkill("kongcheng") then
 		keepNum = 0
 	end
-		
+
 	if self:getOverflow() > 0  then
 		return true
 	end
@@ -73,8 +73,8 @@ function SmartAI:shouldUseRende()
 		and (3 - self.player:getMark("rende")) >=  (self.player:getHandcardNum() - keepNum) then
 		return true
 	end
-	
-	if self.player:hasSkill("kongcheng") then 
+
+	if self.player:hasSkill("kongcheng") then
 		return true
 	end
 
@@ -95,7 +95,7 @@ end
 sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByUseValue(cards, true)
-	
+
 	for i = 1, #cards do
 		local card, friend = self:getCardNeedPlayer(cards, nil, "rende")
 		if card and friend then
@@ -107,10 +107,10 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 			for _, p in ipairs(self.friends_noself) do
 				friend = p
 			end
-		end		
+		end
 
 		if friend:objectName() == self.player:objectName() or not self.player:getHandcards():contains(card) then continue end
-	
+
 		if card:isAvailable(self.player) and (card:isKindOf("Slash") or card:isKindOf("Duel") or card:isKindOf("Snatch") or card:isKindOf("Dismantlement")) then
 			local dummy_use = { isDummy = true, to = sgs.SPlayerList() }
 			local cardtype = card:getTypeId()
@@ -135,7 +135,7 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 			self:useTrickCard(card, dummy_use)
 			if dummy_use.card then continue end
 		end
-		
+
 		use.card = sgs.Card_Parse("@RendeCard=" .. card:getId())
 		if use.to then use.to:append(friend) return end
 	end
@@ -173,7 +173,7 @@ wusheng_skill.getTurnUseCard = function(self, inclusive)
 	self:sort(self.enemies, "defense")
 	local useAll = false
 	for _, enemy in ipairs(self.enemies) do
-		if enemy:getHp() == 1 and not enemy:hasArmorEffect("EightDiagram") and self.player:distanceTo(enemy) <= self.player:getAttackRange()  then 
+		if enemy:getHp() == 1 and not enemy:hasArmorEffect("EightDiagram") and self.player:distanceTo(enemy) <= self.player:getAttackRange()  then
 			useAll = true
 			break
 		end
@@ -345,7 +345,7 @@ local lianhuan_skill = {}
 lianhuan_skill.name = "lianhuan"
 table.insert(sgs.ai_skills, lianhuan_skill)
 lianhuan_skill.getTurnUseCard = function(self)
-	
+
 	local cards = self.player:getCards("h")
 	cards = sgs.QList2Table(cards)
 
@@ -380,7 +380,7 @@ lianhuan_skill.getTurnUseCard = function(self)
 	end
 
 	if not self:willShowForAttack() then
-		return nil 
+		return nil
 	end
 	if not card then return nil end
 	local number = card:getNumberString()
@@ -441,7 +441,7 @@ huoji_skill.getTurnUseCard = function(self)
 	end
 
 	if not self:willShowForAttack() then
-		return nil 
+		return nil
 	end
 	if not card then return nil end
 	local suit = card:getSuitString()
@@ -484,9 +484,9 @@ sgs.kanpo_suit_value = {
 }
 
 sgs.ai_skill_invoke.bazhen = function(self, data)
-	if (not self:willShowForDefence() and self:getCardsNum("Jink") > 0) then 
-		return false 
-	end	
+	if (not self:willShowForDefence() and self:getCardsNum("Jink") > 0) then
+		return false
+	end
 	return sgs.ai_skill_invoke.EightDiagram
 end
 
@@ -739,9 +739,9 @@ sgs.ai_skill_invoke.juxiang = true
 sgs.ai_skill_invoke.kongcheng = true
 
 sgs.ai_skill_invoke.guanxing = function(self, data)
-	if not self:willShowForDefence() and not self:willShowForAttack() and self.player:getJudgingArea():isEmpty() then 	
-		return false 
-	end	
+	if not self:willShowForDefence() and not self:willShowForAttack() and self.player:getJudgingArea():isEmpty() then
+		return false
+	end
 	return true
 end
 
