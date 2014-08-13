@@ -6,6 +6,7 @@
 
 #include <json/json.h>
 
+//Directly apply two containers of Qt here. Reimplement the 2 classes if necessary.
 typedef QVariantList JsonArray;
 typedef QVariantMap JsonObject;
 
@@ -31,8 +32,8 @@ protected:
 };
 
 namespace JsonUtils{
-    //three number types defined by JsonCPP
     inline bool isNumber(const QVariant &var) {
+        //three number types defined by JsonCPP
         return var.type() == QMetaType::Double || var.type() == QMetaType::Int || var.type() == QMetaType::UInt;
     }
 
@@ -45,7 +46,6 @@ namespace JsonUtils{
     bool tryParse(const JsonArray &val, QStringList &list);
     bool tryParse(const JsonArray &val, QList<int> &list);
 }
-
 
 //@todo: these two functions are temporarily used to migrate the project from JsonCPP, and will soon be inaccessible.
 Json::Value VariantToJsonValue(const QVariant &var);
