@@ -128,7 +128,7 @@ public:
     void setHandcardNum(const Json::Value &num_array);
     void gameOver(const QVariant &);
     void loseCards(const Json::Value &);
-    void getCards(const Json::Value &);
+    void getCards(const QVariant &);
     void updateProperty(const Json::Value &);
     void killPlayer(const QVariant &player_name);
     void revivePlayer(const QVariant &player);
