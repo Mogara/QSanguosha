@@ -1864,7 +1864,7 @@ void Client::moveFocus(const QString &focus, CommandType command) {
 void Client::setEmotion(const QVariant &set_str) {
     JsonArray set = set_str.value<JsonArray>();
     if (set.size() != 2) return;
-    if (JsonUtils::isStringArray(set, 0, 1)) return;
+    if (!JsonUtils::isStringArray(set, 0, 1)) return;
 
     QString target_name = set[0].toString();
     QString emotion = set[1].toString();
