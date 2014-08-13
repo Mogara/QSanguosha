@@ -403,7 +403,7 @@ QByteArray JsonDocument::toJson(bool isIndented) const
     }
 }
 
-JsonDocument JsonDocument::fromJson(const QByteArray &json)
+JsonDocument JsonDocument::fromJson(const QByteArray &json, bool)
 {
     Json::Value root;
     Json::Reader reader;
