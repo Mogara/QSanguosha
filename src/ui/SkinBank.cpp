@@ -471,7 +471,7 @@ bool IQSanComponentSkin::AnchoredRect::tryParse(const QVariant &var) {
     m_useFixedSize = false;
     m_anchorChild = m_anchorParent = Qt::AlignLeft | Qt::AlignTop;
     JsonArray value = var.value<JsonArray>();
-    if (JsonUtils::isIntArray(value, 0, 3)) {
+    if (JsonUtils::isNumberArray(value, 0, 3)) {
         QRect rect;
         bool success = JsonUtils::tryParse(value, rect);
         if (!success) return false;
@@ -479,11 +479,11 @@ bool IQSanComponentSkin::AnchoredRect::tryParse(const QVariant &var) {
         m_fixedSize = rect.size();
         m_offset = rect.topLeft();
 
-    } else if (JsonUtils::isStringArray(value, 0, 0) && value.size() >= 3 && JsonUtils::isIntArray(value[2], 0, 1)) {
+    } else if (JsonUtils::isStringArray(value, 0, 0) && value.size() >= 3 && JsonUtils::isNumberArray(value[2], 0, 1)) {
         if (JsonUtils::tryParse(value[0], m_anchorChild)
             && JsonUtils::tryParse(value[1], m_anchorParent)
             && JsonUtils::tryParse(value[2], m_offset)) {
-            if (value.size() >= 4 && JsonUtils::isIntArray(value[3].value<JsonArray>(), 0, 1)
+            if (value.size() >= 4 && JsonUtils::isNumberArray(value[3].value<JsonArray>(), 0, 1)
                 && JsonUtils::tryParse(value[3], m_fixedSize))
                 m_useFixedSize = true;
             return true;

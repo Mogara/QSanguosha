@@ -26,7 +26,7 @@ bool CardsMoveStruct::tryParse(const QVariant &arg) {
     if (args.size() != 8) return false;
 
     if ((!JsonUtils::isNumber(args[0]) && !args[0].canConvert<JsonArray>()) ||
-        !JsonUtils::isIntArray(args, 1, 2) || !JsonUtils::isStringArray(args, 3, 6)) return false;
+        !JsonUtils::isNumberArray(args, 1, 2) || !JsonUtils::isStringArray(args, 3, 6)) return false;
 
     if (JsonUtils::isNumber(args[0])) {
         int size = args[0].toInt();

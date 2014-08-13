@@ -48,7 +48,7 @@ bool JsonUtils::isStringArray(const QVariant &var, unsigned from, unsigned int t
     return true;
 }
 
-bool JsonUtils::isIntArray(const QVariant &var, unsigned from, unsigned int to)
+bool JsonUtils::isNumberArray(const QVariant &var, unsigned from, unsigned int to)
 {
     if (!var.canConvert<JsonArray>())
         return false;

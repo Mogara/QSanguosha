@@ -42,7 +42,7 @@ namespace JsonUtils{
     }
 
     bool isStringArray(const QVariant &var, unsigned from, unsigned int to);
-    bool isIntArray(const QVariant &var, unsigned from, unsigned int to);
+    bool isNumberArray(const QVariant &var, unsigned from, unsigned int to);
 
     QVariant toJsonArray(const QList<int> &intArray);
     QVariant toJsonArray(const QStringList &stringArray);
