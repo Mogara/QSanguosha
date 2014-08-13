@@ -1,6 +1,9 @@
 #include "json.h"
 
 #include <QStringlist>
+#include <QFile>
+#include <QRect>
+#include <QColor>
 
 Json::Value VariantToJsonValue(const QVariant &var)
 {
@@ -134,55 +137,11 @@ JsonDocument::JsonDocument(const JsonObject &object)
 {
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-#include <QJsonDocument>
-
-QByteArray JsonDocument::toJson(bool isIndented) const
+JsonDocument JsonDocument::fromFilePath(const QString &path)
 {
-    QJsonDocument doc = QJsonDocument::fromVariant(value);
-    return doc.toJson(isIndented ? QJsonDocument::Indented : QJsonDocument::Compact);
+    QFile file(path);
+    return fromJson(file.readAll());
 }
-
-JsonDocument JsonDocument::fromJson(const QByteArray &json)
-{
-    QJsonParseError error;
-    QJsonDocument jsondoc = QJsonDocument::fromJson(json, &error);
-
-    JsonDocument doc;
-    if (error.error == QJsonParseError::NoError) {
-        doc.value = jsondoc.toVariant();
-        doc.valid = true;
-    } else {
-        doc.valid = false;
-    }
-    return doc;
-}
-
-#else
-
-QByteArray JsonDocument::toJson(bool isIndented)
-{
-    if (isIndented) {
-        Json::StyledWriter writer;
-        return writer.write(VariantToJsonValue(value)).c_str();
-    } else {
-        Json::FastWriter writer;
-        return writer.write(VariantToJsonValue(value)).c_str();
-    }
-}
-
-JsonDocument JsonDocument::fromJson(const QByteArray &json)
-{
-    Json::Value root;
-    Json::Reader reader;
-    JsonDocument doc;
-    doc.valid = reader.parse(json.constData(), root);
-    if (doc.valid)
-        doc.value = JsonValueToVariant(root);
-    return doc;
-}
-
-#endif
 
 bool JsonUtils::isStringArray(const JsonArray &array, unsigned from, unsigned int to)
 {
@@ -253,3 +212,120 @@ bool JsonUtils::tryParse(const JsonArray &val, QList<int> &list)
 
     return true;
 }
+
+bool JsonUtils::tryParse(const QVariant &arg, Qt::Alignment &align) {
+    if (arg.type() != QMetaType::QString) return false;
+    QString alignStr = arg.toString().toLower();
+    if (alignStr.contains("left"))
+        align = Qt::AlignLeft;
+    else if (alignStr.contains("right"))
+        align = Qt::AlignRight;
+    else if (alignStr.contains("center"))
+        align = Qt::AlignHCenter;
+
+    if (alignStr.contains("top"))
+        align |= Qt::AlignTop;
+    else if (alignStr.contains("bottom"))
+        align |= Qt::AlignBottom;
+    else if (alignStr.contains("center"))
+        align |= Qt::AlignVCenter;
+
+    return true;
+}
+
+bool JsonUtils::tryParse(const QVariant &arg, QRect &result) {
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 4) return false;
+
+    result.setLeft(args[0].toInt());
+    result.setTop(args[1].toInt());
+    result.setWidth(args[2].toInt());
+    result.setHeight(args[3].toInt());
+
+    return true;
+}
+
+bool JsonUtils::tryParse(const QVariant &arg, QSize &result) {
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 2) return false;
+    result.setWidth(args[0].toInt());
+    result.setHeight(args[1].toInt());
+    return true;
+}
+
+bool JsonUtils::tryParse(const QVariant &arg, QPoint &result) {
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 2) return false;
+    result.setX(args[0].toInt());
+    result.setY(args[1].toInt());
+    return true;
+}
+
+bool JsonUtils::tryParse(const QVariant &arg, QColor &color) {
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() < 3) return false;
+
+    color.setRed(args[0].toInt());
+    color.setGreen(args[1].toInt());
+    color.setBlue(args[2].toInt());
+    color.setAlpha(args.size() > 3 ? args[3].toInt() : 255);
+
+    return true;
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QJsonDocument>
+
+QByteArray JsonDocument::toJson(bool isIndented) const
+{
+    QJsonDocument doc = QJsonDocument::fromVariant(value);
+    return doc.toJson(isIndented ? QJsonDocument::Indented : QJsonDocument::Compact);
+}
+
+JsonDocument JsonDocument::fromJson(const QByteArray &json)
+{
+    QJsonParseError error;
+    QJsonDocument jsondoc = QJsonDocument::fromJson(json, &error);
+
+    JsonDocument doc;
+    if (error.error == QJsonParseError::NoError) {
+        doc.value = jsondoc.toVariant();
+        doc.valid = true;
+    } else {
+        doc.valid = false;
+        doc.error = error.errorString();
+    }
+    return doc;
+}
+
+#else
+
+#include <json/json.h>
+
+QByteArray JsonDocument::toJson(bool isIndented) const
+{
+    if (isIndented) {
+        Json::StyledWriter writer;
+        return writer.write(VariantToJsonValue(value)).c_str();
+    } else {
+        Json::FastWriter writer;
+        return writer.write(VariantToJsonValue(value)).c_str();
+    }
+}
+
+JsonDocument JsonDocument::fromJson(const QByteArray &json)
+{
+    Json::Value root;
+    Json::Reader reader;
+    JsonDocument doc;
+    doc.valid = reader.parse(json.constData(), root);
+    if (doc.valid) {
+        doc.value = JsonValueToVariant(root);
+    } else {
+        doc.error = QString::fromStdString(reader.getFormattedErrorMessages());
+    }
+
+    return doc;
+}
+
+#endif

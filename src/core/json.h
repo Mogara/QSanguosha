@@ -20,6 +20,7 @@ public:
 
     QByteArray toJson(bool isIndented = false) const;
     static JsonDocument fromJson(const QByteArray &json);
+    static JsonDocument fromFilePath(const QString &path);
 
     inline bool isArray() const{return value.canConvert<JsonArray>();}
     inline bool isObject() const{return value.canConvert<JsonObject>();}
@@ -28,10 +29,12 @@ public:
     inline JsonArray array() const{return value.value<JsonArray>();}
     inline JsonObject object() const{return value.value<JsonObject>();}
     inline const QVariant& toVariant() const{return value;}
+    inline const QString errorString() const{return error;}
 
 protected:
     QVariant value;
     bool valid;
+    QString error;
 };
 
 namespace JsonUtils{
@@ -48,6 +51,11 @@ namespace JsonUtils{
 
     bool tryParse(const JsonArray &val, QStringList &list);
     bool tryParse(const JsonArray &val, QList<int> &list);
+    bool tryParse(const QVariant &arg, QRect &result);
+    bool tryParse(const QVariant &arg, QSize &result);
+    bool tryParse(const QVariant &arg, QPoint &result);
+    bool tryParse(const QVariant &arg, QColor &result);
+    bool tryParse(const QVariant &arg, Qt::Alignment &align);
 }
 
 //@todo: these two functions are temporarily used to migrate the project from JsonCPP, and will soon be inaccessible.
