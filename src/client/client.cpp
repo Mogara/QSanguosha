@@ -139,10 +139,10 @@ Client::Client(QObject *parent, const QString &filename)
     // 3v3 mode & 1v1 mode
     m_interactions[S_COMMAND_ARRANGE_GENERAL] = &Client::startArrange;
 
-    m_callbacks[S_COMMAND_FILL_GENERAL] = &Client::fillGenerals;
-    m_callbacks[S_COMMAND_TAKE_GENERAL] = &Client::takeGeneral;
-    m_callbacks[S_COMMAND_RECOVER_GENERAL] = &Client::recoverGeneral;
-    m_callbacks[S_COMMAND_REVEAL_GENERAL] = &Client::revealGeneral;
+    callbacks[S_COMMAND_FILL_GENERAL] = &Client::fillGenerals;
+    callbacks[S_COMMAND_TAKE_GENERAL] = &Client::takeGeneral;
+    callbacks[S_COMMAND_RECOVER_GENERAL] = &Client::recoverGeneral;
+    callbacks[S_COMMAND_REVEAL_GENERAL] = &Client::revealGeneral;
 
     m_noNullificationThisTime = false;
     m_noNullificationTrickName = ".";
@@ -1915,18 +1915,20 @@ void Client::setFixedDistance(const QVariant &set_str) {
         from->setFixedDistance(to, distance);
 }
 
-void Client::fillGenerals(const Json::Value &generals) {
-    if (!generals.isArray()) return;
+void Client::fillGenerals(const QVariant &generals) {
+    if (!generals.canConvert<JsonArray>()) return;
+
     QStringList filled;
-    tryParse(generals, filled);
+    JsonUtils::tryParse(generals.value<JsonArray>(), filled);
     emit generals_filled(filled);
 }
 
-void Client::takeGeneral(const Json::Value &take_str) {
-    if (!isStringArray(take_str, 0, 2)) return;
-    QString who = toQString(take_str[0]);
-    QString name = toQString(take_str[1]);
-    QString rule = toQString(take_str[2]);
+void Client::takeGeneral(const QVariant &take) {
+    JsonArray take_array = take.value<JsonArray>();
+    if (!JsonUtils::isStringArray(take_array, 0, 2)) return;
+    QString who = take_array[0].toString();
+    QString name = take_array[1].toString();
+    QString rule = take_array[2].toString();
 
     emit general_taken(who, name, rule);
 }
@@ -1944,18 +1946,20 @@ void Client::startArrange(const Json::Value &to_arrange) {
     setStatus(AskForArrangement);
 }
 
-void Client::recoverGeneral(const Json::Value &recover_str) {
-    if (!recover_str.isArray() || recover_str.size() != 2 || !recover_str[0].isInt() || !recover_str[1].isString()) return;
-    int index = recover_str[0].asInt();
-    QString name = toQString(recover_str[1]);
+void Client::recoverGeneral(const QVariant &recover) {
+    JsonArray args = recover.value<JsonArray>();
+    if (args.size() != 2 || !JsonUtils::isNumber(args[0]) || args[1].type() != QMetaType::QString) return;
+    int index = args[0].toInt();
+    QString name = args[1].toString();
 
     emit general_recovered(index, name);
 }
 
-void Client::revealGeneral(const Json::Value &reveal_str) {
-    if (!reveal_str.isArray() || reveal_str.size() != 2 || !reveal_str[0].isString() || !reveal_str[1].isString()) return;
-    bool self = (toQString(reveal_str[0]) == Self->objectName());
-    QString general = toQString(reveal_str[1]);
+void Client::revealGeneral(const QVariant &reveal) {
+    JsonArray args = reveal.value<JsonArray>();
+    if (args.size() != 2 || args[0].type() != QMetaType::QString || args[1].type() != QMetaType::QString) return;
+    bool self = (args[0].toString() == Self->objectName());
+    QString general = args[1].toString();
 
     emit general_revealed(self, general);
 }

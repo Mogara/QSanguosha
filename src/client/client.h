@@ -189,12 +189,12 @@ public:
     void askForDirection(const Json::Value &);
 
     // 3v3 & 1v1 methods
-    void fillGenerals(const Json::Value &generals);
-    void takeGeneral(const Json::Value &take_str);
+    void fillGenerals(const QVariant &generals);
+    void takeGeneral(const QVariant &take_str);
     void startArrange(const Json::Value &to_arrange);
 
-    void recoverGeneral(const Json::Value &);
-    void revealGeneral(const Json::Value &);
+    void recoverGeneral(const QVariant &recover);
+    void revealGeneral(const QVariant &reveal);
 
     void attachSkill(const QVariant &skill);
 
