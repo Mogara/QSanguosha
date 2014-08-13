@@ -30,7 +30,6 @@ class Slash;
 #include "serverplayer.h"
 
 #include <QVariant>
-#include <json/json.h>
 
 struct DamageStruct {
     enum Nature {

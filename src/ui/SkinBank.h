@@ -27,7 +27,6 @@
 #include "qsanbutton.h"
 #include "util.h"
 
-#include <json/json.h>
 #include <QString>
 #include <QPixmap>
 #include <QHash>

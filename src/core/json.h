@@ -4,8 +4,6 @@
 #include <QVariantList>
 #include <QVariantMap>
 
-#include <json/json.h>
-
 //Directly apply two containers of Qt here. Reimplement the 2 classes if necessary.
 typedef QVariantList JsonArray;
 typedef QVariantMap JsonObject;
@@ -61,9 +59,5 @@ namespace JsonUtils{
     bool tryParse(const QVariant &arg, QColor &result);
     bool tryParse(const QVariant &arg, Qt::Alignment &align);
 }
-
-//@todo: these two functions are temporarily used to migrate the project from JsonCPP, and will soon be inaccessible.
-Json::Value VariantToJsonValue(const QVariant &var);
-QVariant JsonValueToVariant(const Json::Value &var);
 
 #endif // JSON_H

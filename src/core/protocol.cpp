@@ -74,26 +74,6 @@ QVariant QSanProtocol::Countdown::toQVariant() const
     return val;
 }
 
-bool QSanProtocol::Utils::isStringArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex) {
-    if (!jsonObject.isArray() || jsonObject.size() <= endIndex)
-        return false;
-    for (unsigned int i = startIndex; i <= endIndex; i++) {
-        if (!jsonObject[i].isString())
-            return false;
-    }
-    return true;
-}
-
-bool QSanProtocol::Utils::isIntArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex) {
-    if (!jsonObject.isArray() || jsonObject.size() <= endIndex)
-        return false;
-    for (unsigned int i = startIndex; i <= endIndex; i++) {
-        if (!jsonObject[i].isInt())
-            return false;
-    }
-    return true;
-}
-
 QSanProtocol::Packet::Packet(int packetDescription, CommandType command)
     : globalSerial(0), localSerial(0),
     command(command),

@@ -28,10 +28,6 @@
 #include <QVariant>
 
 namespace QSanProtocol {
-    namespace Utils {
-        bool isStringArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex);
-        bool isIntArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex);
-    }
 
     enum PacketDescription {
         S_DESC_UNKNOWN,

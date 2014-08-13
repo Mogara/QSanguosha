@@ -28,7 +28,6 @@
 #include "skill.h"
 
 using namespace QSanProtocol;
-using namespace QSanProtocol::Utils;
 
 const int ServerPlayer::S_NUM_SEMAPHORES = 6;
 

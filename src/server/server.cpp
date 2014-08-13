@@ -28,7 +28,6 @@
 #include "customassigndialog.h"
 #include "miniscenarios.h"
 #include "SkinBank.h"
-#include "jsonutils.h"
 #include "banpair.h"
 
 #include <QMessageBox>

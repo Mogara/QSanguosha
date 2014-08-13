@@ -22,7 +22,6 @@ SOURCES += \
     src/core/card.cpp \
     src/core/engine.cpp \
     src/core/general.cpp \
-    src/core/jsonutils.cpp \
     src/core/lua-wrapper.cpp \
     src/core/player.cpp \
     src/core/protocol.cpp \
@@ -128,7 +127,6 @@ HEADERS += \
     src/core/compiler-specific.h \
     src/core/engine.h \
     src/core/general.h \
-    src/core/jsonutils.h \
     src/core/lua-wrapper.h \
     src/core/namespace.h \
     src/core/player.h \

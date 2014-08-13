@@ -27,7 +27,6 @@
 #include "gamerule.h"
 #include "scenerule.h"
 #include "server.h"
-#include "jsonutils.h"
 #include "structs.h"
 #include "miniscenarios.h"
 #include "generalselector.h"
@@ -53,7 +52,6 @@
 #endif
 
 using namespace QSanProtocol;
-using namespace QSanProtocol::Utils;
 
 Room::Room(QObject *parent, const QString &mode)
     : QThread(parent), mode(mode), current(NULL), pile1(Sanguosha->getRandomCards()),

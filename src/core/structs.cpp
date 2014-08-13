@@ -19,10 +19,7 @@
     *********************************************************************/
 
 #include "structs.h"
-#include "jsonutils.h"
 #include "protocol.h"
-
-using namespace QSanProtocol::Utils;
 
 bool CardsMoveStruct::tryParse(const QVariant &arg) {
     JsonArray args = arg.value<JsonArray>();

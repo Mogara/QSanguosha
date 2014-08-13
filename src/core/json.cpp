@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QRect>
 #include <QColor>
+#include <json/json.h>
 
 Json::Value VariantToJsonValue(const QVariant &var)
 {
@@ -341,8 +342,6 @@ JsonDocument JsonDocument::fromJson(const QByteArray &json)
 }
 
 #else*/
-
-#include <json/json.h>
 
 QByteArray JsonDocument::toJson(bool isIndented) const
 {

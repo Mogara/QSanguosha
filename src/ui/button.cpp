@@ -21,7 +21,6 @@
 #include "button.h"
 #include "Title.h"
 #include "SkinBank.h"
-#include "jsonutils.h"
 #include "StyleHelper.h"
 
 #include <QPainter>

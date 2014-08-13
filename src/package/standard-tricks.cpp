@@ -24,7 +24,6 @@
 #include "util.h"
 #include "engine.h"
 #include "skill.h"
-#include "jsonutils.h"
 
 AmazingGrace::AmazingGrace(Suit suit, int number)
     : GlobalEffect(suit, number)
