@@ -185,7 +185,7 @@ public:
     void askForTriggerOrder(const Json::Value &);
     void handleGameEvent(const QVariant &);
     //3v3 & 1v1
-    void askForOrder(const Json::Value &);
+    void askForOrder(const QVariant &);
     void askForDirection(const QVariant &);
 
     // 3v3 & 1v1 methods

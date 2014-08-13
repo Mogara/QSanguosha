@@ -127,7 +127,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_AMAZING_GRACE] = &Client::askForAG;
     interactions[S_COMMAND_PINDIAN] = &Client::askForPindian;
     interactions[S_COMMAND_CHOOSE_CARD] = &Client::askForCardChosen;
-    m_interactions[S_COMMAND_CHOOSE_ORDER] = &Client::askForOrder;
+    interactions[S_COMMAND_CHOOSE_ORDER] = &Client::askForOrder;
     m_interactions[S_COMMAND_SURRENDER] = &Client::askForSurrender;
     interactions[S_COMMAND_LUCK_CARD] = &Client::askForLuckCard;
     m_interactions[S_COMMAND_TRIGGER_ORDER] = &Client::askForTriggerOrder;
@@ -1426,9 +1426,9 @@ void Client::askForCardChosen(const QVariant &ask_str) {
     setStatus(AskForCardChosen);
 }
 
-void Client::askForOrder(const Json::Value &arg) {
-    if (!arg.isInt()) return;
-    Game3v3ChooseOrderCommand reason = (Game3v3ChooseOrderCommand)arg.asInt();
+void Client::askForOrder(const QVariant &arg) {
+    if (!JsonUtils::isNumber(arg)) return;
+    Game3v3ChooseOrderCommand reason = (Game3v3ChooseOrderCommand)arg.toInt();
     emit orders_got(reason);
     setStatus(ExecDialog);
 }
