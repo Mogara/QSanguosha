@@ -95,7 +95,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_VIEW_GENERALS] = &Client::viewGenerals;
     callbacks[S_COMMAND_SET_DASHBOARD_SHADOW] = &Client::setDashboardShadow;
 
-    m_callbacks[S_COMMAND_UPDATE_STATE_ITEM] = &Client::updateStateItem;
+    callbacks[S_COMMAND_UPDATE_STATE_ITEM] = &Client::updateStateItem;
     m_callbacks[S_COMMAND_AVAILABLE_CARDS] = &Client::setAvailableCards;
 
     m_callbacks[S_COMMAND_GET_CARD] = &Client::getCards;
@@ -1973,9 +1973,9 @@ void Client::onPlayerChooseOrder() {
     setStatus(NotActive);
 }
 
-void Client::updateStateItem(const Json::Value &state_str) {
-    if (!state_str.isString()) return;
-    emit role_state_changed(toQString(state_str));
+void Client::updateStateItem(const QVariant &state) {
+    if (state.type() != QMetaType::QString) return;
+    emit role_state_changed(state.toString());
 }
 
 void Client::setAvailableCards(const Json::Value &pile) {

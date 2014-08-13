@@ -151,7 +151,7 @@ public:
     void setKnownCards(const QVariant &set_str);
     void viewGenerals(const QVariant &arg);
     void setFixedDistance(const QVariant &set_str);
-    void updateStateItem(const Json::Value &state_str);
+    void updateStateItem(const QVariant &state);
     void setAvailableCards(const Json::Value &pile);
     void setCardFlag(const Json::Value &pattern_str);
     void updateCard(const QVariant &val);
