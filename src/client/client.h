@@ -164,7 +164,7 @@ public:
     void askForCardOrUseCard(const QVariant &);
     void askForAG(const Json::Value &);
     void askForSinglePeach(const QVariant &);
-    void askForCardShow(const Json::Value &);
+    void askForCardShow(const QVariant &);
     void askForSkillInvoke(const QVariant &);
     void askForChoice(const QVariant &);
     void askForDiscard(const QVariant &reqvar);

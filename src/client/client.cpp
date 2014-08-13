@@ -123,7 +123,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_INVOKE_SKILL] = &Client::askForSkillInvoke;
     interactions[S_COMMAND_MULTIPLE_CHOICE] = &Client::askForChoice;
     interactions[S_COMMAND_NULLIFICATION] = &Client::askForNullification;
-    m_interactions[S_COMMAND_SHOW_CARD] = &Client::askForCardShow;
+    interactions[S_COMMAND_SHOW_CARD] = &Client::askForCardShow;
     m_interactions[S_COMMAND_AMAZING_GRACE] = &Client::askForAG;
     m_interactions[S_COMMAND_PINDIAN] = &Client::askForPindian;
     m_interactions[S_COMMAND_CHOOSE_CARD] = &Client::askForCardChosen;
@@ -1571,9 +1571,9 @@ void Client::askForSinglePeach(const QVariant &arg) {
     setStatus(RespondingUse);
 }
 
-void Client::askForCardShow(const Json::Value &requestor) {
-    if (!requestor.isString()) return;
-    QString name = Sanguosha->translate(toQString(requestor));
+void Client::askForCardShow(const QVariant &requestor) {
+    if (requestor.type() != QMetaType::QString) return;
+    QString name = Sanguosha->translate(requestor.toString());
     prompt_doc->setHtml(tr("%1 request you to show one hand card").arg(name));
 
     _m_roomState.setCurrentCardUsePattern(".");
