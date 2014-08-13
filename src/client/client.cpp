@@ -1644,9 +1644,9 @@ void Client::askForGongxin(const QVariant &args) {
     ClientPlayer *who = getPlayer(arg[0].toString());
     bool enable_heart = arg[1].toBool();
     QList<int> card_ids;
-    if (!tryParse(arg[2].value<JsonArray>(), card_ids)) return;
+    if (!JsonUtils::tryParse(arg[2].value<JsonArray>(), card_ids)) return;
     QList<int> enabled_ids;
-    if (!tryParse(arg[3].value<JsonArray>(), enabled_ids)) return;
+    if (!JsonUtils::tryParse(arg[3].value<JsonArray>(), enabled_ids)) return;
 
     who->setCards(card_ids);
 
