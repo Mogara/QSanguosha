@@ -206,7 +206,7 @@ void Client::updateCard(const QVariant &val) {
         QString skillName = args[4].toString();
         QString objectName = args[5].toString();
         QStringList flags;
-        JsonUtils::tryParse(args[6].value<JsonArray>(), flags);
+        JsonUtils::tryParse(args[6], flags);
 
         Card *card = Sanguosha->cloneCard(cardName, suit, number, flags);
         card->setId(cardId);
@@ -775,7 +775,7 @@ void Client::setKnownCards(const QVariant &set_str) {
     ClientPlayer *player = getPlayer(name);
     if (player == NULL) return;
     QList<int> ids;
-    JsonUtils::tryParse(set[1].value<JsonArray>(), ids);
+    JsonUtils::tryParse(set[1], ids);
     player->setCards(ids);
 
 }
@@ -785,7 +785,7 @@ void Client::viewGenerals(const QVariant &arg) {
     if (args.size() != 2 || args[0].type() != QMetaType::QString) return;
     QString reason = args[0].toString();
     QStringList names;
-    if (!JsonUtils::tryParse(args[1].value<JsonArray>(), names)) return;
+    if (!JsonUtils::tryParse(args[1], names)) return;
     emit generals_viewed(reason, names);
 }
 
@@ -1366,7 +1366,7 @@ void Client::warn(const QVariant &reason_var) {
 void Client::askForGeneral(const QVariant &arg) {
     JsonArray args = arg.value<JsonArray>();
     QStringList generals;
-    if (!JsonUtils::tryParse(args[0].value<JsonArray>(), generals)) return;
+    if (!JsonUtils::tryParse(args[0], generals)) return;
     bool single_result = args[1].toBool();
     emit generals_got(generals, single_result);
     setStatus(AskForGeneralChosen);
@@ -1410,7 +1410,7 @@ void Client::askForCardChosen(const QVariant &ask_str) {
     if (player == NULL) return;
 
     QList<int> disabled_ids;
-    JsonUtils::tryParse(ask[5].value<JsonArray>(), disabled_ids);
+    JsonUtils::tryParse(ask[5], disabled_ids);
 
     emit cards_got(player, flags, reason, handcard_visible, method, disabled_ids);
     setStatus(AskForCardChosen);
@@ -1438,7 +1438,7 @@ void Client::askForTriggerOrder(const QVariant &ask_str)
     QString reason = ask[0].toString();
 
     QStringList choices;
-    JsonUtils::tryParse(ask[1].value<JsonArray>(), choices);
+    JsonUtils::tryParse(ask[1], choices);
 
     bool optional = ask[2].toBool();
 
@@ -1489,8 +1489,8 @@ void Client::fillAG(const QVariant &cards_str) {
     JsonArray cards = cards_str.value<JsonArray>();
     if (cards.size() != 2) return;
     QList<int> card_ids, disabled_ids;
-    JsonUtils::tryParse(cards[0].value<JsonArray>(), card_ids);
-    JsonUtils::tryParse(cards[1].value<JsonArray>(), disabled_ids);
+    JsonUtils::tryParse(cards[0], card_ids);
+    JsonUtils::tryParse(cards[1], disabled_ids);
     emit ag_filled(card_ids, disabled_ids);
 }
 
@@ -1640,7 +1640,7 @@ void Client::showAllCards(const QVariant &arg) {
 
     ClientPlayer *who = getPlayer(args[0].toString());
     QList<int> card_ids;
-    if (!JsonUtils::tryParse(args[2].value<JsonArray>(), card_ids)) return;
+    if (!JsonUtils::tryParse(args[2], card_ids)) return;
 
     if (who)
         who->setCards(card_ids);
@@ -1656,9 +1656,9 @@ void Client::askForGongxin(const QVariant &args) {
     ClientPlayer *who = getPlayer(arg[0].toString());
     bool enable_heart = arg[1].toBool();
     QList<int> card_ids;
-    if (!JsonUtils::tryParse(arg[2].value<JsonArray>(), card_ids)) return;
+    if (!JsonUtils::tryParse(arg[2], card_ids)) return;
     QList<int> enabled_ids;
-    if (!JsonUtils::tryParse(arg[3].value<JsonArray>(), enabled_ids)) return;
+    if (!JsonUtils::tryParse(arg[3], enabled_ids)) return;
 
     who->setCards(card_ids);
 
@@ -1781,7 +1781,7 @@ void Client::onPlayerReplyGuanxing(const QList<int> &up_cards, const QList<int> 
 void Client::log(const QVariant &log_str) {
     QStringList log;
 
-    if (!JsonUtils::tryParse(log_str.value<JsonArray>(), log) || log.size() != 6)
+    if (!JsonUtils::tryParse(log_str, log) || log.size() != 6)
         emit log_received(QStringList() << QString());
     else {
         if (log.first() == "#BasaraReveal")
@@ -1926,7 +1926,7 @@ void Client::fillGenerals(const QVariant &generals) {
     if (!generals.canConvert<JsonArray>()) return;
 
     QStringList filled;
-    JsonUtils::tryParse(generals.value<JsonArray>(), filled);
+    JsonUtils::tryParse(generals, filled);
     emit generals_filled(filled);
 }
 
@@ -1946,7 +1946,7 @@ void Client::startArrange(const QVariant &to_arrange) {
     } else {
         if (!to_arrange.canConvert<JsonArray>()) return;
         QStringList arrangelist;
-        JsonUtils::tryParse(to_arrange.value<JsonArray>(), arrangelist);
+        JsonUtils::tryParse(to_arrange, arrangelist);
         emit arrange_started(arrangelist.join("+"));
     }
     setStatus(AskForArrangement);
@@ -1997,6 +1997,6 @@ void Client::updateStateItem(const QVariant &state) {
 void Client::setAvailableCards(const QVariant &pile) {
     if (!pile.canConvert<JsonArray>()) return;
     QList<int> drawPile;
-    JsonUtils::tryParse(pile.value<JsonArray>(), drawPile);
+    JsonUtils::tryParse(pile, drawPile);
     available_cards = drawPile;
 }

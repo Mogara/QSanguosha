@@ -44,7 +44,7 @@ bool QSanProtocol::Countdown::tryParse(const QVariant &var) {
     }
 
     if (val.size() - offset == 2) {
-        if (!JsonUtils::isIntArray(val, offset, offset + 1)) return false;
+        if (!JsonUtils::isNumberArray(val, offset, offset + 1)) return false;
         current = (time_t)val[offset].toInt();
         max = (time_t)val[offset + 1].toInt();
         type = S_COUNTDOWN_USE_SPECIFIED;
@@ -93,7 +93,7 @@ bool QSanProtocol::Packet::parse(const QByteArray &raw) {
     JsonDocument doc = JsonDocument::fromJson(raw);
     JsonArray result = doc.array();
 
-    if (!JsonUtils::isIntArray(result, 0, 3) || result.size() > 5)
+    if (!JsonUtils::isNumberArray(result, 0, 3) || result.size() > 5)
         return false;
 
     globalSerial = result[0].toUInt();

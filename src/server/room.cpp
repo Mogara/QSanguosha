@@ -5042,8 +5042,8 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
         }
         JsonArray clientReply = zhuge->getClientReply().value<JsonArray>();
         if (clientReply.size() == 2) {
-            success &= JsonUtils::tryParse(clientReply[0].value<JsonArray>(), top_cards);
-            success &= JsonUtils::tryParse(clientReply[1].value<JsonArray>(), bottom_cards);
+            success &= JsonUtils::tryParse(clientReply[0], top_cards);
+            success &= JsonUtils::tryParse(clientReply[1], bottom_cards);
             if (guanxing_type == GuanxingDownOnly) {
                 bottom_cards = top_cards;
                 top_cards.clear();
@@ -5764,7 +5764,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
             if (!success || clientReply.size() != 2)
                 break;
 
-            if (!JsonUtils::tryParse(clientReply[0].value<JsonArray>(), ids) || clientReply[1].type() != QMetaType::QString)
+            if (!JsonUtils::tryParse(clientReply[0], ids) || clientReply[1].type() != QMetaType::QString)
                 break;
 
             foreach(int id, ids)
