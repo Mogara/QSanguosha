@@ -84,7 +84,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
     callbacks[S_COMMAND_LOG_EVENT] = &Client::handleGameEvent;
     callbacks[S_COMMAND_ADD_HISTORY] = &Client::addHistory;
-    m_callbacks[S_COMMAND_ANIMATE] = &Client::animate;
+    callbacks[S_COMMAND_ANIMATE] = &Client::animate;
     m_callbacks[S_COMMAND_FIXED_DISTANCE] = &Client::setFixedDistance;
     m_callbacks[S_COMMAND_CARD_LIMITATION] = &Client::cardLimitation;
     m_callbacks[S_COMMAND_DISABLE_SHOW] = &Client::disableShow;
@@ -1878,13 +1878,15 @@ void Client::skillInvoked(const QVariant &arg) {
     emit skill_invoked(args[1].toString(), args[0].toString());
 }
 
-void Client::animate(const Json::Value &animate_str) {
-    if (!animate_str.isArray() || !animate_str[0].isInt()
-        || !animate_str[1].isString() || !animate_str[2].isString())
+void Client::animate(const QVariant &animate_str) {
+    JsonArray animate = animate_str.value<JsonArray>();
+    if (animate.size() != 3 || !JsonUtils::isNumber(animate[0])
+        || animate[1].type() != QMetaType::QString || animate[2].type() != QMetaType::QString)
         return;
+
     QStringList args;
-    args << toQString(animate_str[1]) << toQString(animate_str[2]);
-    int name = animate_str[0].asInt();
+    args << animate[1].toString() << animate[2].toString();
+    int name = animate[0].toInt();
     emit animated(name, args);
 }
 

@@ -142,7 +142,7 @@ public:
     void moveFocus(const QVariant &focus);
     void setEmotion(const QVariant &set_str);
     void skillInvoked(const QVariant &invoke_str);
-    void animate(const Json::Value &animate_str);
+    void animate(const QVariant &animate_str);
     void cardLimitation(const Json::Value &limit);
     void disableShow(const Json::Value &args);
     void setNullification(const Json::Value &str);
