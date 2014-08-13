@@ -601,7 +601,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\core\banpair.cpp" />
-    <ClCompile Include="..\..\src\core\jsonutils.cpp" />
+    <ClCompile Include="..\..\src\core\json.cpp" />
     <ClCompile Include="..\..\src\core\protocol.cpp" />
     <ClCompile Include="..\..\src\core\record-analysis.cpp" />
     <ClCompile Include="..\..\src\core\RoomState.cpp" />
@@ -1764,7 +1764,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">Release\moc_%(Filename).cpp;%(Outputs)</Outputs>
     </CustomBuild>
     <ClInclude Include="..\..\src\core\compiler-specific.h" />
-    <ClInclude Include="..\..\src\core\jsonutils.h" />
+    <ClInclude Include="..\..\src\core\json.h" />
     <ClInclude Include="..\..\src\core\namespace.h" />
     <ClInclude Include="..\..\src\core\protocol.h" />
     <CustomBuild Include="..\..\src\ui\TablePile.h">
