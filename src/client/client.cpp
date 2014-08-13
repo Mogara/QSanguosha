@@ -115,7 +115,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_SKILL_GUANXING] = &Client::askForGuanxing;
     interactions[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
     interactions[S_COMMAND_SKILL_YIJI] = &Client::askForYiji;
-    m_interactions[S_COMMAND_PLAY_CARD] = &Client::activate;
+    interactions[S_COMMAND_PLAY_CARD] = &Client::activate;
     m_interactions[S_COMMAND_DISCARD_CARD] = &Client::askForDiscard;
     interactions[S_COMMAND_CHOOSE_SUIT] = &Client::askForSuit;
     interactions[S_COMMAND_CHOOSE_KINGDOM] = &Client::askForKingdom;
@@ -649,8 +649,8 @@ void Client::notifyRoleChange(const QString &new_role) {
     }
 }
 
-void Client::activate(const Json::Value &playerId) {
-    setStatus(toQString(playerId) == Self->objectName() ? Playing : NotActive);
+void Client::activate(const QVariant &playerId) {
+    setStatus(playerId.toString() == Self->objectName() ? Playing : NotActive);
 }
 
 void Client::startGame(const QVariant &) {

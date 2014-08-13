@@ -119,7 +119,7 @@ public:
     void removePlayer(const QVariant &player_name);
     void startInXs(const QVariant &);
     void arrangeSeats(const QVariant &seats_arr);
-    void activate(const Json::Value &playerId);
+    void activate(const QVariant &playerId);
     void startGame(const QVariant &);
     void hpChange(const QVariant &change_str);
     void maxhpChange(const QVariant &change_str);
