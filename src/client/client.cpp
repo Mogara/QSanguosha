@@ -110,7 +110,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
     interactions[S_COMMAND_CHOOSE_PLAYER] = &Client::askForPlayerChosen;
     interactions[S_COMMAND_CHOOSE_DIRECTION] = &Client::askForDirection;
-    m_interactions[S_COMMAND_EXCHANGE_CARD] = &Client::askForExchange;
+    interactions[S_COMMAND_EXCHANGE_CARD] = &Client::askForExchange;
     m_interactions[S_COMMAND_ASK_PEACH] = &Client::askForSinglePeach;
     m_interactions[S_COMMAND_SKILL_GUANXING] = &Client::askForGuanxing;
     interactions[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
@@ -1236,18 +1236,19 @@ void Client::askForDiscard(const Json::Value &req) {
     setStatus(Discarding);
 }
 
-void Client::askForExchange(const Json::Value &exchange_str) {
-    if (!exchange_str.isArray() || !exchange_str[0].isInt() || !exchange_str[1].isBool()
-        || !exchange_str[2].isString() || !exchange_str[3].isBool()) {
+void Client::askForExchange(const QVariant &exchange) {
+    JsonArray args = excange.value<JsonArray>();
+    if (!JsonUtils::isNumber(args[0]) || args[1].type() != QMetaType::Bool
+        || args[2].type() != QMetaType::QString || args[3].type() != QMetaType::Bool) {
         QMessageBox::warning(NULL, tr("Warning"), tr("Exchange string is not well formatted!"));
         return;
     }
 
-    discard_num = exchange_str[0].asInt();
-    m_canDiscardEquip = exchange_str[1].asBool();
-    QString prompt = exchange_str[2].asCString();
+    discard_num = args[0].toInt();
+    m_canDiscardEquip = args[1].toBool();
+    QString prompt = args[2].toString();
     min_num = discard_num;
-    m_isDiscardActionRefusable = exchange_str[3].asBool();
+    m_isDiscardActionRefusable = args[3].toBool();
 
     if (prompt.isEmpty()) {
         prompt = tr("Please give %1 cards to exchange").arg(discard_num);

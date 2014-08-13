@@ -168,7 +168,7 @@ public:
     void askForSkillInvoke(const Json::Value &);
     void askForChoice(const Json::Value &);
     void askForDiscard(const Json::Value &);
-    void askForExchange(const Json::Value &);
+    void askForExchange(const QVariant &exchange);
     void askForSuit(const QVariant &);
     void askForKingdom(const QVariant &);
     void askForNullification(const Json::Value &);
