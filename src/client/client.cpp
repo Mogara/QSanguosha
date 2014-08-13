@@ -1237,7 +1237,7 @@ void Client::askForDiscard(const Json::Value &req) {
 }
 
 void Client::askForExchange(const QVariant &exchange) {
-    JsonArray args = excange.value<JsonArray>();
+    JsonArray args = exchange.value<JsonArray>();
     if (!JsonUtils::isNumber(args[0]) || args[1].type() != QMetaType::Bool
         || args[2].type() != QMetaType::QString || args[3].type() != QMetaType::Bool) {
         QMessageBox::warning(NULL, tr("Warning"), tr("Exchange string is not well formatted!"));
