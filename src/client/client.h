@@ -180,7 +180,7 @@ public:
     void askForGuanxing(const QVariant &);
     void showAllCards(const QVariant &);
     void askForGongxin(const QVariant &);
-    void askForSurrender(const Json::Value &);
+    void askForSurrender(const QVariant &);
     void askForLuckCard(const QVariant &);
     void askForTriggerOrder(const Json::Value &);
     void handleGameEvent(const QVariant &);

@@ -128,7 +128,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_PINDIAN] = &Client::askForPindian;
     interactions[S_COMMAND_CHOOSE_CARD] = &Client::askForCardChosen;
     interactions[S_COMMAND_CHOOSE_ORDER] = &Client::askForOrder;
-    m_interactions[S_COMMAND_SURRENDER] = &Client::askForSurrender;
+    interactions[S_COMMAND_SURRENDER] = &Client::askForSurrender;
     interactions[S_COMMAND_LUCK_CARD] = &Client::askForLuckCard;
     m_interactions[S_COMMAND_TRIGGER_ORDER] = &Client::askForTriggerOrder;
 
@@ -968,12 +968,12 @@ void Client::onPlayerMakeChoice(const QString &choice) {
     setStatus(NotActive);
 }
 
-void Client::askForSurrender(const Json::Value &initiator) {
-    if (!initiator.isString()) return;
+void Client::askForSurrender(const QVariant &initiator) {
+    if (initiator.type() != QMetaType::QString) return;
 
     QString text = tr("%1 initiated a vote for disadvataged side to claim "
         "capitulation. Click \"OK\" to surrender or \"Cancel\" to resist.")
-        .arg(Sanguosha->translate(toQString(initiator)));
+        .arg(Sanguosha->translate(initiator.toString()));
     text.append(tr("<br/> <b>Notice</b>: if more than half people decides to surrender. "
         "This game will over."));
     skill_name = "surrender";
