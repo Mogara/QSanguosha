@@ -457,7 +457,7 @@ void Client::getCards(const QVariant &arg) {
     Q_ASSERT(args.size() >= 1);
     int moveId = args[0].toInt();
     QList<CardsMoveStruct> moves;
-    for (unsigned int i = 1; i < args.size(); i++) {
+    for (int i = 1; i < args.size(); i++) {
         CardsMoveStruct move;
         if (!move.tryParse(args[i])) return;
         move.from = getPlayer(move.from_player_name);
