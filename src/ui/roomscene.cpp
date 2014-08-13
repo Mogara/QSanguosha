@@ -1072,30 +1072,18 @@ void RoomScene::mousePressEvent(QGraphicsSceneMouseEvent *event) {
         changed = true;
     if (changed)
         emit cancel_role_box_expanding();
-
-    if (Config.EnableSuperDrag)
-        _m_isInDragAndUseMode = false;
-
 }
 
 void RoomScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     QGraphicsScene::mouseReleaseEvent(event);
 
     if (_m_isInDragAndUseMode) {
-        bool accepted = false;
-        if (ok_button->isEnabled()) {
-            foreach (Photo *photo, photos) {
-                if (photo->isUnderMouse()) {
-                    accepted = true;
-                    break;
-                }
-            }
-
-            if (!accepted && dashboard->isAvatarUnderMouse())
-                accepted = true;
-        }
-        if (accepted) {
-            ok_button->click();
+        if ((ok_button->isEnabled() || dashboard->currentSkill())
+                && (!dashboard->isUnderMouse() || dashboard->isAvatarUnderMouse())) {
+            if (ok_button->isEnabled())
+                ok_button->click();
+            else
+                dashboard->adjustCards(true);
         } else {
             enableTargets(NULL);
             dashboard->unselectAll();
@@ -1114,6 +1102,27 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     CardItem *card_item = qobject_cast<CardItem *>(obj);
     if (!card_item || !card_item->isUnderMouse())
         return;
+
+    static bool wasOutsideDashboard = false;
+    const bool isOutsideDashboard = !dashboard->isUnderMouse()
+            || dashboard->isAvatarUnderMouse();
+    if (isOutsideDashboard != wasOutsideDashboard) {
+        wasOutsideDashboard = isOutsideDashboard;
+        if (wasOutsideDashboard && !_m_isInDragAndUseMode) {
+            dashboard->selectCard(card_item, true);
+            if (dashboard->currentSkill()) {
+                dashboard->addPending(card_item);
+                dashboard->updatePending();
+            }
+            _m_isInDragAndUseMode = true;
+            if (!dashboard->currentSkill()
+                    && (ClientInstance->getStatus() == Client::Playing
+                        || ClientInstance->getStatus() == Client::RespondingUse)) {
+                enableTargets(card_item->getCard());
+            }
+        }
+    }
+
     PlayerCardContainer *victim = NULL;
 
     foreach (Photo *photo, photos) {
@@ -1124,13 +1133,9 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     if (dashboard->isAvatarUnderMouse())
         victim = dashboard;
 
-    if (victim != NULL) {
-        if (!_m_isInDragAndUseMode)
-            enableTargets(card_item->getCard());
-
-        _m_isInDragAndUseMode = true;
-        dashboard->selectCard(card_item, true);
+    if (victim != NULL && victim->canBeSelected()) {
         victim->setSelected(true);
+        updateSelectedTargets();
     }
 }
 

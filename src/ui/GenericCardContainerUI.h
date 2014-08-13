@@ -102,6 +102,8 @@ public:
 
     inline RoleComboBox *getRoleComboBox() const { return _m_roleComboBox; }
 
+    bool canBeSelected();
+
 public slots:
     virtual void updateAvatar();
     virtual void updateSmallAvatar();
