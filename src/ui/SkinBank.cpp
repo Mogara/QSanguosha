@@ -180,7 +180,7 @@ bool IQSanComponentSkin::isImageKeyDefined(const QString &key) const{
     return val.canConvert<JsonArray>() || val.type() == QMetaType::QString;
 }
 
-void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, QRect pos, Qt::Alignment align,
+void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, const QRect &pos, Qt::Alignment align,
     const QString &text) const{
     if (pos.width() <= 0 || pos.height() <= 0 || m_fontSize.width() <= 0 || m_fontSize.height() <= 0) return;
     QSize actualSize = m_fontSize;
@@ -194,7 +194,7 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, QRect 
 }
 
 
-void IQSanComponentSkin::QSanSimpleTextFont::paintText(QGraphicsPixmapItem *item, QRect pos,
+void IQSanComponentSkin::QSanSimpleTextFont::paintText(QGraphicsPixmapItem *item, const QRect &pos,
     Qt::Alignment align, const QString &text) const{
     QPixmap pixmap(pos.size());
     pixmap.fill(Qt::transparent);
@@ -204,7 +204,7 @@ void IQSanComponentSkin::QSanSimpleTextFont::paintText(QGraphicsPixmapItem *item
     item->setPos(pos.x(), pos.y());
 }
 
-void IQSanComponentSkin::QSanShadowTextFont::paintText(QPainter *painter, QRect pos,
+void IQSanComponentSkin::QSanShadowTextFont::paintText(QPainter *painter, const QRect &pos,
     Qt::Alignment align, const QString &text) const{
     if (pos.width() <= 0 || pos.height() <= 0 || m_fontSize.width() <= 0 || m_fontSize.height() <= 0) return;
     QImage image(pos.width(), pos.height(), QImage::Format_ARGB32);
@@ -224,7 +224,7 @@ void IQSanComponentSkin::QSanShadowTextFont::paintText(QPainter *painter, QRect 
 }
 
 void IQSanComponentSkin::QSanShadowTextFont::paintText(QGraphicsPixmapItem *pixmapItem,
-    QRect pos,
+    const QRect &pos,
     Qt::Alignment align,
     const QString &text) const{
     QImage image(pos.width(), pos.height(), QImage::Format_ARGB32);
@@ -419,7 +419,7 @@ QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, bool is
     return getPlayerAudioEffectPath(eventName, QString(isMale ? "male" : "female"), index);
 }
 
-QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(QRect parentRect, QSize size) const{
+QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(const QRect &parentRect, const QSize &size) const{
     QPoint parentAnchor;
     Qt::Alignment hAlign = m_anchorParent & Qt::AlignHorizontal_Mask;
     if (hAlign & Qt::AlignRight)
@@ -457,7 +457,7 @@ QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(QRect parentRect, QSiz
     return rect;
 }
 
-QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(QRect parentRect) const{
+QRect IQSanComponentSkin::AnchoredRect::getTranslatedRect(const QRect &parentRect) const{
     Q_ASSERT(m_useFixedSize);
     return getTranslatedRect(parentRect, m_fixedSize);
 }

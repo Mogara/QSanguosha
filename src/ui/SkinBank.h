@@ -57,10 +57,10 @@ public:
         bool m_vertical;
         QSanSimpleTextFont();
         bool tryParse(const QVariant &arg);
-        void paintText(QPainter *painter, QRect pos, Qt::Alignment align, const QString &text) const;
+        void paintText(QPainter *painter, const QRect &pos, Qt::Alignment align, const QString &text) const;
         // this function's prototype is confusing. It will CLEAR ALL contents on the
         // QGraphicsPixmapItem passed in and then start drawing.
-        void paintText(QGraphicsPixmapItem *item, QRect pos, Qt::Alignment align, const QString &text) const;
+        void paintText(QGraphicsPixmapItem *item, const QRect &pos, Qt::Alignment align, const QString &text) const;
 
     protected:
         static QHash<QString, int *> _m_fontBank;
@@ -73,16 +73,16 @@ public:
         QPoint m_shadowOffset;
         QColor m_shadowColor;
         bool tryParse(const QVariant &arg);
-        void paintText(QPainter *painter, QRect pos, Qt::Alignment align, const QString &text) const;
+        void paintText(QPainter *painter, const QRect &pos, Qt::Alignment align, const QString &text) const;
         // this function's prototype is confusing. It will CLEAR ALL contents on the
         // QGraphicsPixmapItem passed in and then start drawing.
-        void paintText(QGraphicsPixmapItem *item, QRect pos, Qt::Alignment align, const QString &text) const;
+        void paintText(QGraphicsPixmapItem *item, const QRect &pos, Qt::Alignment align, const QString &text) const;
     };
 
     class AnchoredRect {
     public:
-        QRect getTranslatedRect(QRect parentRect) const;
-        QRect getTranslatedRect(QRect parentRect, QSize childSize) const;
+        QRect getTranslatedRect(const QRect &parentRect) const;
+        QRect getTranslatedRect(const QRect &parentRect, const QSize &childSize) const;
         bool tryParse(const QVariant &value);
 
     protected:
