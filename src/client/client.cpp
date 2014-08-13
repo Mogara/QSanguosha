@@ -120,7 +120,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_CHOOSE_SUIT] = &Client::askForSuit;
     interactions[S_COMMAND_CHOOSE_KINGDOM] = &Client::askForKingdom;
     interactions[S_COMMAND_RESPONSE_CARD] = &Client::askForCardOrUseCard;
-    m_interactions[S_COMMAND_INVOKE_SKILL] = &Client::askForSkillInvoke;
+    interactions[S_COMMAND_INVOKE_SKILL] = &Client::askForSkillInvoke;
     m_interactions[S_COMMAND_MULTIPLE_CHOICE] = &Client::askForChoice;
     m_interactions[S_COMMAND_NULLIFICATION] = &Client::askForNullification;
     m_interactions[S_COMMAND_SHOW_CARD] = &Client::askForCardShow;
@@ -924,11 +924,12 @@ void Client::askForCardOrUseCard(const QVariant &cardUsage) {
     setStatus(status);
 }
 
-void Client::askForSkillInvoke(const Json::Value &arg) {
-    if (!isStringArray(arg, 0, 1)) return;
+void Client::askForSkillInvoke(const QVariant &arg) {
+    JsonArray args = arg.value<JsonArray>();
+    if (!JsonUtils::isStringArray(args, 0, 1)) return;
 
-    QString skill_name = toQString(arg[0]);
-    QString data = toQString(arg[1]);
+    QString skill_name = args[0].toString();
+    QString data = args[1].toString();
 
     skill_to_invoke = skill_name;
 
