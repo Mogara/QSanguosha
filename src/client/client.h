@@ -174,7 +174,7 @@ public:
     void askForNullification(const Json::Value &);
     void askForPindian(const Json::Value &);
     void askForCardChosen(const Json::Value &);
-    void askForPlayerChosen(const Json::Value &);
+    void askForPlayerChosen(const QVariant &players);
     void askForGeneral(const QVariant &);
     void askForYiji(const Json::Value &);
     void askForGuanxing(const Json::Value &);

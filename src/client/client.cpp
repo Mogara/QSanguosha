@@ -108,7 +108,7 @@ Client::Client(QObject *parent, const QString &filename)
 
     // interactive methods
     interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
-    m_interactions[S_COMMAND_CHOOSE_PLAYER] = &Client::askForPlayerChosen;
+    interactions[S_COMMAND_CHOOSE_PLAYER] = &Client::askForPlayerChosen;
     m_interactions[S_COMMAND_CHOOSE_DIRECTION] = &Client::askForDirection;
     m_interactions[S_COMMAND_EXCHANGE_CARD] = &Client::askForExchange;
     m_interactions[S_COMMAND_ASK_PEACH] = &Client::askForSinglePeach;
@@ -1714,19 +1714,21 @@ void Client::askForYiji(const Json::Value &ask_str) {
     setStatus(AskForYiji);
 }
 
-void Client::askForPlayerChosen(const Json::Value &players) {
-    if (!players.isArray() || players.size() != 4) return;
-    if (!players[1].isString() || !players[0].isArray() || !players[3].isBool()) return;
-    if (players[0].size() == 0) return;
-    skill_name = toQString(players[1]);
+void Client::askForPlayerChosen(const QVariant &players) {
+    JsonArray args = players.value<JsonArray>();
+    if (args.size() != 4) return;
+    if (args[1].type() != QMetaType::QString || !args[0].canConvert<JsonArray>() || args[3].type() != QMetaType::Bool) return;
+    JsonArray choices = args[0].value<JsonArray>();
+    if (choices.size() == 0) return;
+    skill_name = args[1].toString();
     players_to_choose.clear();
-    for (unsigned int i = 0; i < players[0].size(); i++)
-        players_to_choose.push_back(toQString(players[0][i]));
-    m_isDiscardActionRefusable = players[3].asBool();
+    for (int i = 0; i < choices.size(); i++)
+        players_to_choose.push_back(choices[i].toString());
+    m_isDiscardActionRefusable = args[3].toBool();
 
     QString text;
     QString description = Sanguosha->translate(ClientInstance->skill_name);
-    QString prompt = toQString(players[2]);
+    QString prompt = args[2].toString();
     if (!prompt.isEmpty()) {
         QStringList texts = prompt.split(":");
         text = setPromptList(texts);
