@@ -123,7 +123,7 @@ public:
     void startGame(const QVariant &);
     void hpChange(const QVariant &change_str);
     void maxhpChange(const QVariant &change_str);
-    void resetPiles(const Json::Value &);
+    void resetPiles(const QVariant &);
     void setPileNumber(const Json::Value &pile_str);
     void setHandcardNum(const Json::Value &num_array);
     void gameOver(const QVariant &);

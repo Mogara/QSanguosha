@@ -101,7 +101,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_GET_CARD] = &Client::getCards;
     callbacks[S_COMMAND_LOSE_CARD] = &Client::loseCards;
     callbacks[S_COMMAND_SET_PROPERTY] = &Client::updateProperty;
-    m_callbacks[S_COMMAND_RESET_PILE] = &Client::resetPiles;
+    callbacks[S_COMMAND_RESET_PILE] = &Client::resetPiles;
     m_callbacks[S_COMMAND_UPDATE_PILE] = &Client::setPileNumber;
     m_callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
     m_callbacks[S_COMMAND_UPDATE_HANDCARD_NUM] = &Client::setHandcardNum;
@@ -1157,7 +1157,7 @@ QTextDocument *Client::getPromptDoc() const{
     return prompt_doc;
 }
 
-void Client::resetPiles(const Json::Value &) {
+void Client::resetPiles(const QVariant &) {
     discarded_list.clear();
     swap_pile++;
     updatePileNum();
