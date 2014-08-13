@@ -804,9 +804,9 @@ QSanInvokeSkillButton::SkillButtonWidth width) const{
 bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout) {
     JsonObject layoutConfig = layout.value<JsonObject>();
     JsonObject config = layoutConfig[S_SKIN_KEY_COMMON].value<JsonObject>();
-    _m_commonLayout.m_cardNormalHeight = config["cardNormalHeight"].toInt();
-    _m_commonLayout.m_cardNormalWidth = config["cardNormalWidth"].toInt();
-    _m_commonLayout.m_hpExtraSpaceHolder = config["hpExtraSpaceHolder"].toInt();
+    tryParse(config["cardNormalHeight"], _m_commonLayout.m_cardNormalHeight);
+    tryParse(config["cardNormalWidth"], _m_commonLayout.m_cardNormalWidth);
+    tryParse(config["hpExtraSpaceHolder"], _m_commonLayout.m_hpExtraSpaceHolder);
     tryParse(config["cardMainArea"], _m_commonLayout.m_cardMainArea);
     tryParse(config["cardSuitArea"], _m_commonLayout.m_cardSuitArea);
     tryParse(config["cardNumberArea"], _m_commonLayout.m_cardNumberArea);
@@ -814,17 +814,17 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout) {
     tryParse(config["cardFrameArea"], _m_commonLayout.m_cardFrameArea);
     tryParse(config["cardFootnoteArea"], _m_commonLayout.m_cardFootnoteArea);
     tryParse(config["cardAvatarArea"], _m_commonLayout.m_cardAvatarArea);
-    _m_commonLayout.m_chooseGeneralBoxSwitchIconSizeThreshold = config["chooseGeneralBoxSwitchIconSizeThreshold"].toInt();
-    _m_commonLayout.m_chooseGeneralBoxSwitchIconEachRow = config["chooseGeneralBoxSwitchIconEachRow"].toInt();
-    _m_commonLayout.m_chooseGeneralBoxSwitchIconEachRowForTooManyGenerals = config["chooseGeneralBoxSwitchIconEachRowForTooManyGenerals"].toInt();
-    _m_commonLayout.m_chooseGeneralBoxNoIconThreshold = config["chooseGeneralBoxNoIconThreshold"].toInt();
+    tryParse(config["chooseGeneralBoxSwitchIconSizeThreshold"], _m_commonLayout.m_chooseGeneralBoxSwitchIconSizeThreshold);
+    tryParse(config["chooseGeneralBoxSwitchIconEachRow"], _m_commonLayout.m_chooseGeneralBoxSwitchIconEachRow);
+    tryParse(config["chooseGeneralBoxSwitchIconEachRowForTooManyGenerals"], _m_commonLayout.m_chooseGeneralBoxSwitchIconEachRowForTooManyGenerals);
+    tryParse(config["chooseGeneralBoxNoIconThreshold"], _m_commonLayout.m_chooseGeneralBoxNoIconThreshold);
     tryParse(config["chooseGeneralBoxDenseIconSize"], _m_commonLayout.m_chooseGeneralBoxDenseIconSize);
     tryParse(config["chooseGeneralBoxSparseIconSize"], _m_commonLayout.m_chooseGeneralBoxSparseIconSize);
     tryParse(config["tinyAvatarSize"], _m_commonLayout.m_tinyAvatarSize);
     _m_commonLayout.m_cardFootnoteFont.tryParse(config["cardFootnoteFont"]);
 
     JsonArray magatamaFont = config["magatamaFont"].value<JsonArray>();
-    for (int i = 0; i < magatamaFont.size(); i++) {
+    for (int i = 0; i < 6 && i < magatamaFont.size(); i++) {
         _m_commonLayout.m_hpFont[i].tryParse(magatamaFont[i]);
     }
 
@@ -884,7 +884,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout) {
         tryParse(playerConfig["normalHeight"], layout->m_normalHeight);
         tryParse(playerConfig["handCardNumIconArea"], layout->m_handCardArea);
         JsonArray equipAreas = playerConfig["equipAreas"].value<JsonArray>();
-        for (int j = 0; j < S_EQUIP_AREA_LENGTH; j++)
+        for (int j = 0; j < S_EQUIP_AREA_LENGTH && j < equipAreas.size(); j++)
             tryParse(equipAreas[j], layout->m_equipAreas[j]);
         tryParse(playerConfig["equipImageArea"], layout->m_equipImageArea);
         tryParse(playerConfig["equipSuitArea"], layout->m_equipSuitArea);
@@ -933,9 +933,12 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout) {
         tryParse(playerConfig["magatamasHorizontal"], layout->m_magatamasHorizontal);
         tryParse(playerConfig["magatamasBgVisible"], layout->m_magatamasBgVisible);
         JsonArray magatamasAnchor = playerConfig["magatamasAnchor"].value<JsonArray>();
-        tryParse(magatamasAnchor[1], layout->m_magatamasAnchor);
-        if (magatamasAnchor[0].type() == QMetaType::QString)
-            tryParse(magatamasAnchor[0], layout->m_magatamasAlign);
+        if (!magatamasAnchor.isEmpty()) {
+            if (magatamasAnchor.size() > 1)
+                tryParse(magatamasAnchor[1], layout->m_magatamasAnchor);
+            if (magatamasAnchor[0].type() == QMetaType::QString)
+                tryParse(magatamasAnchor[0], layout->m_magatamasAlign);
+        }
 
         layout->m_phaseArea.tryParse(playerConfig["phaseArea"]);
         tryParse(playerConfig["privatePileStartPos"], layout->m_privatePileStartPos);
@@ -1012,11 +1015,14 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout) {
         if (tryParse(config["height"], height))
             _m_dashboardLayout.m_skillButtonsSize[i].setHeight(height);
         int width = 0;
-        if (tryParse(configWidth[i], width))
+        if (i < configWidth.size() && tryParse(configWidth[i], width))
             _m_dashboardLayout.m_skillButtonsSize[i].setWidth(width);
-        tryParse(configTextArea[i], _m_dashboardLayout.m_skillTextArea[i]);
-        tryParse(configTextAreaDown[i], _m_dashboardLayout.m_skillTextAreaDown[i]);
-        _m_dashboardLayout.m_skillTextFonts[i].tryParse(configTextFont[i]);
+        if (i < configTextArea.size())
+            tryParse(configTextArea[i], _m_dashboardLayout.m_skillTextArea[i]);
+        if (i < configTextAreaDown.size())
+            tryParse(configTextAreaDown[i], _m_dashboardLayout.m_skillTextAreaDown[i]);
+        if (i < configTextFont.size())
+            _m_dashboardLayout.m_skillTextFonts[i].tryParse(configTextFont[i]);
     }
     for (int i = 0; i < QSanInvokeSkillButton::S_NUM_SKILL_TYPES; i++) {
         QString key;
@@ -1031,7 +1037,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout) {
         }
 
         JsonArray subconfig = config[key].value<JsonArray>();
-        for (int j = 0; j < 5; j++) {
+        for (int j = 0; j < 5 && j < subconfig.size(); j++) {
             int index = i * 5 + j;
             JsonArray config = subconfig[j].value<JsonArray>();
             if (config.size() < 2)
