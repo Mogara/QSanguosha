@@ -121,7 +121,7 @@ Client::Client(QObject *parent, const QString &filename)
     interactions[S_COMMAND_CHOOSE_KINGDOM] = &Client::askForKingdom;
     interactions[S_COMMAND_RESPONSE_CARD] = &Client::askForCardOrUseCard;
     interactions[S_COMMAND_INVOKE_SKILL] = &Client::askForSkillInvoke;
-    m_interactions[S_COMMAND_MULTIPLE_CHOICE] = &Client::askForChoice;
+    interactions[S_COMMAND_MULTIPLE_CHOICE] = &Client::askForChoice;
     m_interactions[S_COMMAND_NULLIFICATION] = &Client::askForNullification;
     m_interactions[S_COMMAND_SHOW_CARD] = &Client::askForCardShow;
     m_interactions[S_COMMAND_AMAZING_GRACE] = &Client::askForAG;
@@ -1395,10 +1395,11 @@ void Client::askForKingdom(const QVariant &) {
     setStatus(ExecDialog);
 }
 
-void Client::askForChoice(const Json::Value &ask_str) {
-    if (!isStringArray(ask_str, 0, 1)) return;
-    QString skill_name = toQString(ask_str[0]);
-    QStringList options = toQString(ask_str[1]).split("+");
+void Client::askForChoice(const QVariant &ask_str) {
+    JsonArray ask = ask_str.value<JsonArray>();
+    if (!JsonUtils::isStringArray(ask, 0, 1)) return;
+    QString skill_name = ask[0].toString();
+    QStringList options = ask[1].toString().split("+");
     emit options_got(skill_name, options);
     setStatus(AskForChoice);
 }
