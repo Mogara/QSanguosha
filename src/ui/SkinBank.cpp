@@ -154,12 +154,7 @@ bool IQSanComponentSkin::QSanSimpleTextFont::tryParse(const QVariant &args) {
         m_spacing = arg1[2].toInt();
     }
     m_weight = arg[2].toInt();
-    JsonArray arg3 = arg[3].value<JsonArray>();
-    m_color.setRed(arg3[0].toInt());
-    m_color.setGreen(arg3[1].toInt());
-    m_color.setBlue(arg3[2].toInt());
-    if (arg3.size() > 3)
-        m_color.setAlpha(arg3[3].toInt());
+    JsonUtils::tryParse(arg[3], m_color);
     return true;
 }
 
