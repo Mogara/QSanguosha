@@ -830,14 +830,11 @@ bool Room::doBroadcastNotify(QSanProtocol::CommandType command, const QVariant &
 // the following functions for Lua
 bool Room::doNotify(ServerPlayer *player, int command, const char *arg) {
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, (QSanProtocol::CommandType)command);
-    Json::Reader reader;
-    Json::Value json_arg;
-    std::string str(arg);
-    if (reader.parse(str, json_arg)) {
-        packet.setMessageBody(json_arg);
+    JsonDocument doc = JsonDocument::fromJson(arg);
+    if (doc.isValid()) {
+        packet.setMessageBody(doc.toVariant());
         player->invoke(&packet);
-    }
-    else {
+    } else {
         output(QString("Fail to parse the Json Value %1").arg(arg));
     }
     return true;
