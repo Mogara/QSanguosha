@@ -32,7 +32,7 @@ bool CardsMoveStruct::tryParse(const QVariant &arg) {
         !JsonUtils::isIntArray(args, 1, 2) || !JsonUtils::isStringArray(args, 3, 6)) return false;
 
     if (JsonUtils::isNumber(args[0])) {
-        int size = args[0].asInt();
+        int size = args[0].toInt();
         for (int i = 0; i < size; i++)
             card_ids.append(Card::S_UNKNOWN_CARD_ID);
     } else if (!JsonUtils::tryParse(args[0].value<JsonArray>(), card_ids)) {
