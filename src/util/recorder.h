@@ -38,7 +38,7 @@ public:
     explicit Recorder(QObject *parent);
     static QImage TXT2PNG(QByteArray data);
     bool save(const QString &filename) const;
-    void recordLine(const QString &line);
+    void recordLine(const QByteArray &line);
     QList<QString> getRecords() const;
 
 public slots:

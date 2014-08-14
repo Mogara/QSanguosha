@@ -527,7 +527,7 @@ private:
     void assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign);
     void chooseGenerals();
     AI *cloneAI(ServerPlayer *player);
-    void broadcast(const QString &message, ServerPlayer *except = NULL);
+    void broadcast(const QByteArray &message, ServerPlayer *except = NULL);
     void initCallbacks();
     QString askForOrder(ServerPlayer *player);
 

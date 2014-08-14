@@ -38,12 +38,12 @@ void Recorder::record(const char *line) {
     recordLine(line);
 }
 
-void Recorder::recordLine(const QString &line) {
-    int elapsed = watch.elapsed();
-    if (line.endsWith("\n"))
-        data.append(QString("%1 %2").arg(elapsed).arg(line));
-    else
-        data.append(QString("%1 %2\n").arg(elapsed).arg(line));
+void Recorder::recordLine(const QByteArray &line) {
+    data.append(QString::number(watch.elapsed()));
+    data.append(' ');
+    data.append(line);
+    if (!line.endsWith('\n'))
+        data.append('\n');
 }
 
 bool Recorder::save(const QString &filename) const{
