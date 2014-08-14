@@ -144,7 +144,7 @@ bool JsonUtils::tryParse(const QVariant &var, QList<int> &list)
 }
 
 bool JsonUtils::tryParse(const QVariant &arg, Qt::Alignment &align) {
-    if (arg.type() != QMetaType::QString) return false;
+    if (!JsonUtils::isString(arg)) return false;
     QString alignStr = arg.toString().toLower();
     if (alignStr.contains("left"))
         align = Qt::AlignLeft;

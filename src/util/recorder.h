@@ -36,9 +36,9 @@ class Recorder : public QObject {
 
 public:
     explicit Recorder(QObject *parent);
-    static QImage TXT2PNG(QByteArray data);
+    static QImage TXT2PNG(const QByteArray &data);
     bool save(const QString &filename) const;
-    void recordLine(const QString &line);
+    void recordLine(const QByteArray &line);
     QList<QString> getRecords() const;
 
 public slots:
@@ -54,7 +54,7 @@ class Replayer : public QThread {
 
 public:
     explicit Replayer(QObject *parent, const QString &filename);
-    static QByteArray PNG2TXT(const QString filename);
+    static QByteArray PNG2TXT(const QString &filename);
 
     int getDuration() const;
     qreal getSpeed();

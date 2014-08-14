@@ -38,12 +38,12 @@ void Recorder::record(const char *line) {
     recordLine(line);
 }
 
-void Recorder::recordLine(const QString &line) {
-    int elapsed = watch.elapsed();
-    if (line.endsWith("\n"))
-        data.append(QString("%1 %2").arg(elapsed).arg(line));
-    else
-        data.append(QString("%1 %2\n").arg(elapsed).arg(line));
+void Recorder::recordLine(const QByteArray &line) {
+    data.append(QString::number(watch.elapsed()));
+    data.append(' ');
+    data.append(line);
+    if (!line.endsWith('\n'))
+        data.append('\n');
 }
 
 bool Recorder::save(const QString &filename) const{
@@ -67,7 +67,7 @@ QList<QString> Recorder::getRecords() const{
     return records;
 }
 
-QImage Recorder::TXT2PNG(QByteArray txtData) {
+QImage Recorder::TXT2PNG(const QByteArray &txtData) {
     QByteArray data = qCompress(txtData, 9);
     qint32 actual_size = data.size();
     data.prepend((const char *)&actual_size, sizeof(qint32));
@@ -123,7 +123,7 @@ Replayer::Replayer(QObject *parent, const QString &filename)
     delete device;
 }
 
-QByteArray Replayer::PNG2TXT(const QString filename) {
+QByteArray Replayer::PNG2TXT(const QString &filename) {
     QImage image(filename);
     image = image.convertToFormat(QImage::Format_ARGB32);
     const uchar *imageData = image.bits();

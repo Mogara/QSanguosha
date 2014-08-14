@@ -365,7 +365,6 @@ class ServerPlayer: public Player {
 public:
     explicit ServerPlayer(Room *room);
 
-    void invoke(const char *method, const char *arg = ".");
     void kick();
     void unicast(const char *message);
     void drawCard(const Card *card);
@@ -977,11 +976,11 @@ public:
     Armor *toArmor() {
         return qobject_cast<Armor *>($self);
     }
-    
+
     Treasure *toTreasure() {
         return qobject_cast<Treasure *>($self);
     }
-    
+
     WrappedCard *toWrapped() {
         return qobject_cast<WrappedCard *>($self);
     }
@@ -1467,7 +1466,6 @@ public:
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
     void addPlayerHistory(ServerPlayer *player, const char *key, int times = 1);
 
-    void broadcastInvoke(const char *method, const char *arg = ".", ServerPlayer *except = NULL);
     inline Card *getCard(int cardId) const;
     inline void resetCard(int cardId);
     void updateCardsOnLose(const CardsMoveStruct &move);

@@ -38,7 +38,16 @@ protected:
 namespace JsonUtils{
     inline bool isNumber(const QVariant &var) {
         //three number types defined by JsonCPP
-        return var.type() == QMetaType::Double || var.type() == QMetaType::Int || var.type() == QMetaType::UInt;
+        QMetaType::Type type = static_cast<QMetaType::Type>(var.type());
+        return type == QMetaType::Double || type == QMetaType::Int || type == QMetaType::UInt;
+    }
+
+    inline bool isString(const QVariant &var) {
+        return static_cast<QMetaType::Type>(var.type()) == QMetaType::QString;
+    }
+
+    inline bool isBool(const QVariant &var) {
+        return static_cast<QMetaType::Type>(var.type()) == QMetaType::Bool;
     }
 
     bool isStringArray(const QVariant &var, unsigned from, unsigned int to);

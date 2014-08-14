@@ -35,13 +35,13 @@ public:
         frequency = Compulsory;
     }
 
-    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &ask_who) const{
+    virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
         CardUseStruct use = data.value<CardUseStruct>();
         if (triggerEvent == TargetChosen) {
             if (!WeaponSkill::triggerable(use.from))
                 return QStringList();
 
-            if (use.to.contains(player) && use.card->isKindOf("Slash")) {
+            if (use.to.contains(player) && use.card->isKindOf("Slash") && player->getMark("Equips_of_Others_Nullified_to_You") == 0) {
                 ask_who = use.from;
                 return QStringList(objectName());
             }
@@ -97,6 +97,49 @@ IronArmor::IronArmor(Card::Suit suit, int number)
 {
     setObjectName("IronArmor");
 }
+
+class IronArmorSkill : public ArmorSkill {
+public:
+    IronArmorSkill() : ArmorSkill("IronArmor") {
+        events << TargetConfirming;
+        frequency = Compulsory;
+    }
+
+    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
+        if (!ArmorSkill::triggerable(player)) return QStringList();
+        CardUseStruct use = data.value<CardUseStruct>();
+        if (!use.card) return QStringList();
+        if (!use.to.contains(player) || player->getMark("Equips_of_Others_Nullified_to_You") > 0) return QStringList();
+        if (use.card->isKindOf("FireAttack") || use.card->isKindOf("FireSlash") || use.card->isKindOf("BurningCamps"))
+            return QStringList(objectName());
+        return QStringList();
+    }
+
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        CardUseStruct use = data.value<CardUseStruct>();
+        LogMessage log2;
+        log2.type = "#IronArmor";
+        log2.from = player;
+        log2.arg = objectName();
+        room->sendLog(log2);
+        LogMessage log;
+        if (use.from) {
+            log.type = "$CancelTarget";
+            log.from = use.from;
+        } else {
+            log.type = "$CancelTargetNoUser";
+        }
+        log.to << player;
+        log.arg = use.card->objectName();
+        room->sendLog(log);
+
+        room->setEmotion(player, "cancel");
+
+        use.to.removeOne(player);
+        data = QVariant::fromValue(use);
+        return false;
+    }
+};
 
 WoodenOxCard::WoodenOxCard() {
     target_fixed = true;
@@ -333,7 +376,7 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         << new HegNullification(Card::Spade, 13)
         << new AllianceFeast();
 
-    skills << new BladeSkill
+    skills << new BladeSkill << new IronArmorSkill
            << new WoodenOxSkill << new WoodenOxTriggerSkill;
 
     foreach (Card *card, cards)

@@ -337,6 +337,8 @@ bool Slash::targetFilter(const QList<const Player *> &targets, const Player *to_
                 continue;
             kingdoms << p->getKingdom();
         }
+        if (to_select->getMark("Equips_of_Others_Nullified_to_You") > 0)
+            return false;
         if (to_select->hasShownOneGeneral() && kingdoms.contains(to_select->getKingdom()))
             return false;
     } else if (targets.length() >= slash_targets) {

@@ -422,11 +422,11 @@ void RoomScene::handleGameEvent(const QVariant &args) {
     case S_GAME_EVENT_PLAY_EFFECT: {
         QString skillName = arg[1].toString();
         QString category;
-        if (arg[2].type() == QMetaType::Bool) {
+        if (JsonUtils::isBool(arg[2])) {
             bool isMale = arg[2].toBool();
             category = isMale ? "male" : "female";
         }
-        else if (arg[2].type() == QMetaType::QString)
+        else if (JsonUtils::isString(arg[2]))
             category = arg[2].toString();
         int type = arg[3].toInt();
         Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(skillName, category, type));

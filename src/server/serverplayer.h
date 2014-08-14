@@ -60,11 +60,10 @@ public:
 
     void setSocket(ClientSocket *socket);
     void invoke(const QSanProtocol::AbstractPacket *packet);
-    void invoke(const char *method, const QString &arg = ".");
     void notify(QSanProtocol::CommandType type, const QVariant &arg = QVariant());
     void kick();
     QString reportHeader() const;
-    void unicast(const QString &message);
+    void unicast(const QByteArray &message);
     void drawCard(const Card *card);
     Room *getRoom() const;
     void broadcastSkillInvoke(const Card *card) const;
@@ -223,12 +222,12 @@ private:
 
 private slots:
     void getMessage(const char *message);
-    void sendMessage(const QString &message);
+    void sendMessage(const QByteArray &message);
 
 signals:
     void disconnected();
     void request_got(const QByteArray &request);
-    void message_ready(const QString &msg);
+    void message_ready(const QByteArray &msg);
 };
 
 #endif

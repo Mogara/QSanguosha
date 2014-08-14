@@ -23,12 +23,13 @@
 using namespace QSanProtocol;
 
 unsigned int QSanProtocol::Packet::globalSerialSequence = 0;
-const unsigned int QSanProtocol::Packet::S_MAX_PACKET_SIZE = 65535;
+const int QSanProtocol::Packet::S_MAX_PACKET_SIZE = 65535;
 const char *QSanProtocol::S_PLAYER_SELF_REFERENCE_ID = "MG_SELF";
 
 const int QSanProtocol::S_ALL_ALIVE_PLAYERS = 0;
 
-bool QSanProtocol::Countdown::tryParse(const QVariant &var) {
+bool QSanProtocol::Countdown::tryParse(const QVariant &var)
+{
     if (!var.canConvert<JsonArray>())
         return false;
 
@@ -36,7 +37,7 @@ bool QSanProtocol::Countdown::tryParse(const QVariant &var) {
 
     //compatible with old JSON representation of Countdown
     unsigned offset = 0;
-    if (val[0].type() == QMetaType::QString) {
+    if (JsonUtils::isString(val[0])) {
         if (val[0].toString() == "MG_COUNTDOWN")
             offset = 1;
         else
@@ -80,12 +81,14 @@ QSanProtocol::Packet::Packet(int packetDescription, CommandType command)
 {
 }
 
-unsigned int QSanProtocol::Packet::createGlobalSerial() {
+unsigned int QSanProtocol::Packet::createGlobalSerial()
+{
     globalSerial = ++globalSerialSequence;
     return globalSerial;
 }
 
-bool QSanProtocol::Packet::parse(const QByteArray &raw) {
+bool QSanProtocol::Packet::parse(const QByteArray &raw)
+{
     if (raw.length() > S_MAX_PACKET_SIZE) {
         return false;
     }
@@ -108,7 +111,8 @@ bool QSanProtocol::Packet::parse(const QByteArray &raw) {
 
 
 //characters in JSON string representations are unicode-escaped. So we don't need Base64 here.
-QByteArray QSanProtocol::Packet::toUtf8() const{
+QByteArray QSanProtocol::Packet::toJson() const
+{
     JsonArray result;
     result << globalSerial;
     result << localSerial;
@@ -118,7 +122,7 @@ QByteArray QSanProtocol::Packet::toUtf8() const{
         result << messageBody;
 
     JsonDocument doc(result);
-    QByteArray msg(doc.toJson());
+    const QByteArray &msg = doc.toJson();
 
     //truncate too long messages
     if (msg.length() > S_MAX_PACKET_SIZE)
@@ -127,7 +131,8 @@ QByteArray QSanProtocol::Packet::toUtf8() const{
     return msg;
 }
 
-QString QSanProtocol::Packet::toString() const{
-    return QString::fromUtf8(toUtf8());
+QString QSanProtocol::Packet::toString() const
+{
+    return QString::fromUtf8(toJson());
 }
 

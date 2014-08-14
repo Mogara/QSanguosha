@@ -329,6 +329,8 @@ public:
 
     QList<const Player *> getFormation() const;
 
+    QHash<QString, QStringList> getBigAndSmallKingdoms() const;
+
     QVariantMap tag;
 
 protected:

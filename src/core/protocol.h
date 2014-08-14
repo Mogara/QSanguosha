@@ -227,7 +227,7 @@ namespace QSanProtocol {
     class AbstractPacket {
     public:
         virtual bool parse(const QByteArray &) = 0;
-        virtual QByteArray toUtf8() const = 0;
+        virtual QByteArray toJson() const = 0;
         virtual QString toString() const = 0;
         virtual PacketDescription getPacketDestination() const = 0;
         virtual PacketDescription getPacketSource() const = 0;
@@ -247,7 +247,7 @@ namespace QSanProtocol {
         inline void setMessageBody(const QVariant &value) { messageBody = value; }
         inline const QVariant &getMessageBody() const{ return messageBody; }
         virtual bool parse(const QByteArray &raw);
-        virtual QByteArray toUtf8() const;
+        virtual QByteArray toJson() const;
         virtual QString toString() const;
         virtual PacketDescription getPacketDestination() const{
             return static_cast<PacketDescription>(packetDescription & S_DEST_MASK);
@@ -268,7 +268,7 @@ namespace QSanProtocol {
         QVariant messageBody;
 
         //helper functions
-        static const unsigned int S_MAX_PACKET_SIZE;
+        static const int S_MAX_PACKET_SIZE;
     };
 }
 
