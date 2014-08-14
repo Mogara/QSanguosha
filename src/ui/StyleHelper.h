@@ -25,6 +25,8 @@
 #include <QMutex>
 #include <QFont>
 
+#include "settings.h"
+
 class QPushButton;
 
 class StyleHelper : public QObject
@@ -41,6 +43,13 @@ public:
     void setIcon(QPushButton *button, QChar iconId, int size = 10);
 
     static QFont getFontByFileName(const QString &fileName);
+    
+    static QString styleSheetOfTooltip()
+    {
+        return QString("QToolTip{ border: 1px solid rgb(166, 150, 122); padding: 1px; "
+                       "border-radius: 3px; background: %1; opacity: 230; }")
+                .arg(Config.ToolTipBackgroundColor.name());
+    }
 };
 
 #endif // STYLEHELPER_H
