@@ -15,6 +15,7 @@ return {
 
 	["IronArmor"] = "明光铠",
 	[":IronArmor"] = "装备牌·防具\n\n技能：每当你成为【火攻】、火【杀】或【火XXXX】的目标时，你取消自己。",
+	["#IronArmor"] = "%from 的装备技能【%arg】被触发",
 
 	["WoodenOx"] = "木牛流马",
 	[":WoodenOx"] = "装备牌·宝物\n\n技能：\n" ..
