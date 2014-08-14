@@ -94,19 +94,7 @@ void RecAnalysis::initialize(const QString &dir) {
         }
 
         if (packet.getCommandType() == S_COMMAND_ARRANGE_SEATS) {
-            QStringList line_struct;
-            const QVariant &body = packet.getMessageBody();
-            if (body.canConvert<JsonArray>()) {
-                JsonArray lines = body.value<JsonArray>();
-                foreach (const QVariant &l, lines) {
-                    QString line = l.toString();
-                    if (!line.isEmpty()){
-                        line_struct.append(line);
-                    }
-                }
-            }
-            role_list = line_struct.last().split("+");
-
+            JsonUtils::tryParse(packet.getMessageBody(), role_list);
             continue;
         }
 
@@ -157,14 +145,23 @@ void RecAnalysis::initialize(const QString &dir) {
                 }
             }
 
-            if (property == "Global_TurnCount") {
+            continue;
+        }
+
+        if (packet.getCommandType() == S_COMMAND_SET_MARK) {
+            JsonArray args = packet.getMessageBody().value<JsonArray>();
+            if (args.size() != 3)
+                continue;
+
+            QString who = args.at(0).toString();
+            QString mark = args.at(1).toString();
+            int num = args.at(2).toInt();
+            if (mark == "Global_TurnCount") {
                 PlayerRecordStruct *rec = getPlayer(who);
                 if (rec) {
-                    rec->m_turnCount++;
+                    rec->m_turnCount = num;
                     m_currentPlayer = rec;
                 }
-
-                continue;
             }
 
             continue;
@@ -238,8 +235,11 @@ void RecAnalysis::initialize(const QString &dir) {
         }
     }
 
+    QByteArray last_line = records_line.last();
+    last_line.remove(0, last_line.indexOf(' '));
+
     Packet gameover_packet;
-    gameover_packet.parse(records_line.last());
+    gameover_packet.parse(last_line);
     if (gameover_packet.getCommandType() == S_COMMAND_GAME_OVER) {
         JsonArray args = gameover_packet.getMessageBody().value<JsonArray>();
         if (args.size() == 2) {
