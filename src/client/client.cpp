@@ -239,7 +239,7 @@ void Client::replyToServer(CommandType command, const QVariant &arg) {
         Packet packet(S_SRC_CLIENT | S_TYPE_REPLY | S_DEST_ROOM, command);
         packet.localSerial = _m_lastServerSerial;
         packet.setMessageBody(arg);
-        socket->send(packet.toUtf8());
+        socket->send(packet.toJson());
     }
 }
 
@@ -251,7 +251,7 @@ void Client::requestServer(CommandType command, const QVariant &arg) {
     if (socket) {
         Packet packet(S_SRC_CLIENT | S_TYPE_REQUEST | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
-        socket->send(packet.toUtf8());
+        socket->send(packet.toJson());
     }
 }
 
@@ -259,7 +259,7 @@ void Client::notifyServer(CommandType command, const QVariant &arg) {
     if (socket) {
         Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_ROOM, command);
         packet.setMessageBody(arg);
-        socket->send(packet.toUtf8());
+        socket->send(packet.toJson());
     }
 }
 

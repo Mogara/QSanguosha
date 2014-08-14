@@ -370,7 +370,6 @@ class ServerPlayer: public Player {
 public:
     explicit ServerPlayer(Room *room);
 
-    void invoke(const char *method, const char *arg = ".");
     void kick();
     void unicast(const char *message);
     void drawCard(const Card *card);
@@ -458,7 +457,6 @@ public:
     void addToPile(const char *pile_name, int card_id, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
     void addToPile(const char *pile_name, QList<int> card_ids, bool open = true, QList<ServerPlayer *> open_players = QList<ServerPlayer *>());
     void addToPile(const char *pile_name, QList<int> card_ids, bool open, QList<ServerPlayer *> open_players, CardMoveReason reason);
-    void exchangeFreelyFromPrivatePile(const char *skill_name, const char *pile_name, int upperlimit = 1000, bool include_equip = false);
     void gainAnExtraTurn();
 
     void copyFrom(ServerPlayer *sp);
@@ -996,11 +994,11 @@ public:
     Armor *toArmor() {
         return qobject_cast<Armor *>($self);
     }
-    
+
     Treasure *toTreasure() {
         return qobject_cast<Treasure *>($self);
     }
-    
+
     WrappedCard *toWrapped() {
         return qobject_cast<WrappedCard *>($self);
     }
@@ -1486,7 +1484,6 @@ public:
     const Card *askForSinglePeach(ServerPlayer *player, ServerPlayer *dying);
     void addPlayerHistory(ServerPlayer *player, const char *key, int times = 1);
 
-    void broadcastInvoke(const char *method, const char *arg = ".", ServerPlayer *except = NULL);
     inline Card *getCard(int cardId) const;
     inline void resetCard(int cardId);
     void updateCardsOnLose(const CardsMoveStruct &move);

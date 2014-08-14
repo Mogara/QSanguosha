@@ -196,9 +196,9 @@ QRectF ChooseGeneralBox::boundingRect() const {
     //arrange them in two rows if there are more than 6 generals.
     //Number of cards in the second row cannot be greater than that in the first row
     //and the difference should not be greater than 1.
-    if (general_number < 6)
+    if (general_number < 6) {
         first_row = general_number;
-    else {
+    } else {
         second_row = general_number / 2;
         first_row = general_number - second_row;
     }
@@ -210,7 +210,9 @@ QRectF ChooseGeneralBox::boundingRect() const {
     if (second_row)
         height += (card_to_center_line + G_COMMON_LAYOUT.m_cardNormalHeight);
 
-    if (single_result) return QRectF(0, 0, width, height);
+    //No need to reserve space for button
+    if (single_result)
+        return QRectF(0, 0, width, height - 30);
 
     height += G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line + split_line_to_card_seat;
 

@@ -2,7 +2,7 @@ Open Source Sanguosha
 ==========
 [![Code Climate](https://codeclimate.com/github/QSanguosha-Rara/QSanguosha-For-Hegemony.png)](https://codeclimate.com/github/QSanguosha-Rara/QSanguosha-For-Hegemony)
 
-| Homepage:      | https://qsanguosha.org                        |
+| Homepage:      | http://qsanguosha.org                        |
 |----------------|-----------------------------------------------|
 | API reference: | http://gaodayihao.github.com/QSanguosha/api   |
 | Documentation: | https://github.com/gaodayihao/QSanguosha/wiki (Chinese) |
@@ -12,7 +12,7 @@ Lisense
 ###Code
 This game is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 3.0 
+as published by the Free Software Foundation; either version 3.0
 of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
@@ -23,25 +23,25 @@ General Public License for more details.
 See the LICENSE file for more details.
 
 ###Material
-Our Materials are under the terms of the Creative Commons 
-Attribution-NonCommercial-NoDerivatives 4.0 International (CC 
-BY-NC-ND 4.0) 
+Our Materials are under the terms of the Creative Commons
+Attribution-NonCommercial-NoDerivatives 4.0 International (CC
+BY-NC-ND 4.0)
 
 **You are free to:**
 
-Share — copy and redistribute the material in any medium or format 
+Share — copy and redistribute the material in any medium or format
 
 **Under the following terms:**
 
-Attribution — You must give appropriate credit, provide a link to 
-the license, and indicate if changes were made. You may do so in 
-any reasonable manner, but not in any way that suggests the licensor 
-endorses you or your use. 
+Attribution — You must give appropriate credit, provide a link to
+the license, and indicate if changes were made. You may do so in
+any reasonable manner, but not in any way that suggests the licensor
+endorses you or your use.
 
-NonCommercial — You may not use the material for commercial purposes. 
+NonCommercial — You may not use the material for commercial purposes.
 
-NoDerivatives — If you remix, transform, or build upon the material, 
-you may not distribute the modified material. 
+NoDerivatives — If you remix, transform, or build upon the material,
+you may not distribute the modified material.
 
 See the CC BY-NC-ND 4.0 file for more details.
 
@@ -50,12 +50,12 @@ Introduction
 
 Sanguosha is both a popular board game and online game,
 this project try to clone the Sanguosha online version.
-The whole project is written in C++, 
+The whole project is written in C++,
 using Qt's graphics view framework as the game engine.
-I've tried many other open source game engines, 
-such as SDL, HGE, Clanlib and others, 
-but many of them lack some important features. 
-Although Qt is an application framework instead of a game engine, 
+I've tried many other open source game engines,
+such as SDL, HGE, Clanlib and others,
+but many of them lack some important features.
+Although Qt is an application framework instead of a game engine,
 its graphics view framework is suitable for my game developing. By Moligaloo
 
 Features
@@ -124,16 +124,16 @@ Mac OS X
    ./configure --without-pcre
    make
    sudo make install
-   
+
 4. Open a terminal here, type:
    cd swig
    swig -c++ -lua sanguosha.i
-   
+
 5. Open QSanguosha.pro with Qt Creator, configure the project and make sure the project is compiled with clang. Change the configuration to Release.
 
 6. You are now able to build the solution. When compilation succeeded, the QSanguosha.app folder is in ~/../Build-QSanguosha-**/ folder.
    I highly recommend you move this folder to ~.
-   
+
 7. This step is the most important and difficult one. Please pay a lot of attention to read this step.
    Open a terminal here, type:
    otool -L QSanguosha.app/Contents/MacOS/QSanguosha
@@ -157,12 +157,12 @@ You'll see something like this:
 
 Pay attention to the 2 lines contains libfmodex.dylib or libfreetype.1.dylib.
 using install_name_tool to change the path of the 2 library files to their absolute paths, like this:
-   install_name_tool -change ./libfmodex.dylib ~/lib/mac/lib/libfmodex.dylib QSanguosha.app/Contents/MacOS/QSanguosha 
-   install_name_tool -change libfreetype.1.dylib ~/lib/mac/lib/libfreetype.dylib  QSanguosha.app/Contents/MacOS/QSanguosha 
+   install_name_tool -change ./libfmodex.dylib ~/lib/mac/lib/libfmodex.dylib QSanguosha.app/Contents/MacOS/QSanguosha
+   install_name_tool -change libfreetype.1.dylib ~/lib/mac/lib/libfreetype.dylib  QSanguosha.app/Contents/MacOS/QSanguosha
 
 Type:
    otool -L QSanguosha.app/Contents/MacOS/QSanguosha
-   
+
 if you see all the directories is absolute path, it should succeed. (~ stands for the project dir)
    QSanguosha.app/Contents/MacOS/QSanguosha:
    ~/lib/mac/lib/libfmodex.dylib (compatibility version 1.0.0, current version 1.0.0)
@@ -179,15 +179,15 @@ if you see all the directories is absolute path, it should succeed. (~ stands fo
    /System/Library/Frameworks/AGL.framework/Versions/A/AGL (compatibility version 1.0.0, current version 1.0.0)
    /usr/lib/libstdc++.6.dylib (compatibility version 7.0.0, current version 56.0.0)
    /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 169.3.0)
-   
+
 Type:
    macdeployqt QSanguosha.app/
-   
+
 Some times the macdeployqt is not in the system directories, in this case you should go to the Qt Install Dir and find this file.
 
 Type:
    otool -L QSanguosha.app/Contents/MacOS/QSanguosha
-   
+
 if you see all the non-system libraries is in @executable_path, it should succeed.
    QSanguosha.app/Contents/MacOS/QSanguosha:
    @executable_path/../Frameworks/libfmodex.dylib (compatibility version 1.0.0, current version 1.0.0)
@@ -204,7 +204,7 @@ if you see all the non-system libraries is in @executable_path, it should succee
    /System/Library/Frameworks/AGL.framework/Versions/A/AGL (compatibility version 1.0.0, current version 1.0.0)
    /usr/lib/libstdc++.6.dylib (compatibility version 7.0.0, current version 56.0.0)
    /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 169.3.0)
-   
+
 8.copy the following folders and files to QSanguosha.app/Contents/MacOS/, they are listed below:
    ai-selector/
    audio/
@@ -219,7 +219,7 @@ if you see all the non-system libraries is in @executable_path, it should succee
    ui-script/
    qt_zh_CN.qm
    sanguosha.qss
-   
+
 8.1 [optional] select Tools/External/QtLinguist/lrelease, copy ~/Builds/vs2013/sanguosha.qm to QSanguosha.app/Contents/MacOS.
 
 9. Double-click QSanguosha.app folder and have fun!

@@ -848,12 +848,8 @@ bool Room::doBroadcastNotify(int command, const char *arg) {
     return doBroadcastNotify(m_players, command, arg);
 }
 
-void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer *except) {
-    broadcast(QString("%1 %2").arg(method).arg(arg), except);
-}
-
 void Room::broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except) {
-    broadcast(packet->toString(), except);
+    broadcast(packet->toJson(), except);
 }
 
 bool Room::getResult(ServerPlayer *player, time_t timeOut) {
@@ -1973,7 +1969,7 @@ const Scenario *Room::getScenario() const{
     return scenario;
 }
 
-void Room::broadcast(const QString &message, ServerPlayer *except) {
+void Room::broadcast(const QByteArray &message, ServerPlayer *except) {
     foreach(ServerPlayer *player, m_players) {
         if (player != except)
             player->unicast(message);

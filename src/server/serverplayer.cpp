@@ -278,7 +278,7 @@ void ServerPlayer::setSocket(ClientSocket *socket) {
     if (socket) {
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
         connect(socket, SIGNAL(message_got(const char *)), this, SLOT(getMessage(const char *)));
-        connect(this, SIGNAL(message_ready(QString)), this, SLOT(sendMessage(QString)));
+        connect(this, SIGNAL(message_ready(QByteArray)), this, SLOT(sendMessage(QByteArray)));
     }
     else {
         if (this->socket) {
@@ -288,7 +288,7 @@ void ServerPlayer::setSocket(ClientSocket *socket) {
             this->socket->deleteLater();
         }
 
-        disconnect(this, SLOT(sendMessage(QString)));
+        disconnect(this, SLOT(sendMessage(QByteArray)));
     }
 
     this->socket = socket;
@@ -309,7 +309,7 @@ void ServerPlayer::getMessage(const char *message) {
     emit request_got(request);
 }
 
-void ServerPlayer::unicast(const QString &message) {
+void ServerPlayer::unicast(const QByteArray &message) {
     emit message_ready(message);
 
     if (recorder)
@@ -360,27 +360,23 @@ void ServerPlayer::clearSelected() {
     selected.clear();
 }
 
-void ServerPlayer::sendMessage(const QString &message) {
+void ServerPlayer::sendMessage(const QByteArray &message) {
     if (socket) {
 #ifndef QT_NO_DEBUG
         printf("%s", qPrintable(objectName()));
 #endif
-        socket->send(message.toUtf8());
+        socket->send(message);
     }
 }
 
 void ServerPlayer::invoke(const AbstractPacket *packet) {
-    unicast(packet->toString());
-}
-
-void ServerPlayer::invoke(const char *method, const QString &arg) {
-    unicast(QString("%1 %2").arg(method).arg(arg));
+    unicast(packet->toJson());
 }
 
 void ServerPlayer::notify(CommandType type, const QVariant &arg){
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, type);
     packet.setMessageBody(arg);
-    unicast(packet.toString());
+    unicast(packet.toJson());
 }
 
 QString ServerPlayer::reportHeader() const{
@@ -1219,78 +1215,6 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids,
     move.to_place = Player::PlaceSpecial;
     move.reason = reason;
     room->moveCardsAtomic(move, open);
-}
-
-void ServerPlayer::exchangeFreelyFromPrivatePile(const QString &skill_name, const QString &pile_name, int upperlimit, bool include_equip) {
-    room->tryPause();
-
-    QList<int> pile = getPile(pile_name);
-    if (pile.isEmpty()) return;
-
-    QString tempMovingFlag = QString("%1_InTempMoving").arg(skill_name);
-    room->setPlayerFlag(this, tempMovingFlag);
-
-    int ai_delay = Config.AIDelay;
-    Config.AIDelay = 0;
-
-    QList<int> will_to_pile, will_to_handcard;
-    while (!pile.isEmpty()) {
-        room->fillAG(pile, this);
-        int card_id = room->askForAG(this, pile, true, skill_name);
-        room->clearAG(this);
-        if (card_id == -1) break;
-
-        pile.removeOne(card_id);
-        will_to_handcard << card_id;
-        if (pile.length() >= upperlimit) break;
-
-        CardMoveReason reason(CardMoveReason::S_REASON_EXCHANGE_FROM_PILE, this->objectName());
-        room->obtainCard(this, Sanguosha->getCard(card_id), reason, false);
-    }
-
-    Config.AIDelay = ai_delay;
-
-    int n = will_to_handcard.length();
-    if (n == 0) return;
-    const Card *exchange_card = room->askForExchange(this, skill_name, n, include_equip);
-    will_to_pile = exchange_card->getSubcards();
-    delete exchange_card;
-
-    QList<int> will_to_handcard_x = will_to_handcard, will_to_pile_x = will_to_pile;
-    QList<int> duplicate;
-    foreach(int id, will_to_pile) {
-        if (will_to_handcard_x.contains(id)) {
-            duplicate << id;
-            will_to_pile_x.removeOne(id);
-            will_to_handcard_x.removeOne(id);
-            n--;
-        }
-    }
-
-    if (n == 0) {
-        addToPile(pile_name, will_to_pile, false);
-        room->setPlayerFlag(this, "-" + tempMovingFlag);
-        return;
-    }
-
-    LogMessage log;
-    log.type = "#QixingExchange";
-    log.from = this;
-    log.arg = QString::number(n);
-    log.arg2 = skill_name;
-    room->sendLog(log);
-
-    addToPile(pile_name, duplicate, false);
-    room->setPlayerFlag(this, "-" + tempMovingFlag);
-    addToPile(pile_name, will_to_pile_x, false);
-
-    room->setPlayerFlag(this, tempMovingFlag);
-    addToPile(pile_name, will_to_handcard_x, false);
-    room->setPlayerFlag(this, "-" + tempMovingFlag);
-
-    DummyCard dummy(will_to_handcard_x);
-    CardMoveReason reason(CardMoveReason::S_REASON_EXCHANGE_FROM_PILE, this->objectName());
-    room->obtainCard(this, &dummy, reason, false);
 }
 
 void ServerPlayer::gainAnExtraTurn() {

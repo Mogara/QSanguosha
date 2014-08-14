@@ -217,6 +217,7 @@ private:
     bool _shouldIgnoreDisplayMove(CardsMoveStruct &movement);
     bool _processCardsMove(CardsMoveStruct &move, bool isLost);
     bool _m_isInDragAndUseMode;
+    bool _m_superDragStarted;
     const QSanRoomSkin::RoomLayout *_m_roomLayout;
     const QSanRoomSkin::PhotoLayout *_m_photoLayout;
     const QSanRoomSkin::CommonLayout *_m_commonLayout;

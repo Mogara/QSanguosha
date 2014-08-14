@@ -372,7 +372,6 @@ public:
     void addRobotCommand(ServerPlayer *player, const QVariant &arg);
     void fillRobotsCommand(ServerPlayer *player, const QVariant &arg);
     void broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except = NULL);
-    void broadcastInvoke(const char *method, const QString &arg = ".", ServerPlayer *except = NULL);
     void networkDelayTestCommand(ServerPlayer *player, const QVariant &);
     inline RoomState *getRoomState() { return &_m_roomState; }
     inline Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
@@ -528,7 +527,7 @@ private:
     void assignGeneralsForPlayers(const QList<ServerPlayer *> &to_assign);
     void chooseGenerals();
     AI *cloneAI(ServerPlayer *player);
-    void broadcast(const QString &message, ServerPlayer *except = NULL);
+    void broadcast(const QByteArray &message, ServerPlayer *except = NULL);
     void initCallbacks();
     QString askForOrder(ServerPlayer *player);
 
