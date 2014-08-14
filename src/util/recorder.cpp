@@ -67,7 +67,7 @@ QList<QString> Recorder::getRecords() const{
     return records;
 }
 
-QImage Recorder::TXT2PNG(QByteArray txtData) {
+QImage Recorder::TXT2PNG(const QByteArray &txtData) {
     QByteArray data = qCompress(txtData, 9);
     qint32 actual_size = data.size();
     data.prepend((const char *)&actual_size, sizeof(qint32));
@@ -123,7 +123,7 @@ Replayer::Replayer(QObject *parent, const QString &filename)
     delete device;
 }
 
-QByteArray Replayer::PNG2TXT(const QString filename) {
+QByteArray Replayer::PNG2TXT(const QString &filename) {
     QImage image(filename);
     image = image.convertToFormat(QImage::Format_ARGB32);
     const uchar *imageData = image.bits();
