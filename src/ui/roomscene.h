@@ -166,9 +166,9 @@ public slots:
         bool handcard_visible, Card::HandlingMethod method, QList<int> disabled_ids);
     void chooseKingdom(const QStringList &kingdoms);
     void chooseOption(const QString &skillName, const QStringList &options);
-    void chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason);
+    //void chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason);
     void chooseRole(const QString &scheme, const QStringList &roles);
-    void chooseDirection();
+    //void chooseDirection();
     void chooseTriggerOrder(const QString &reason, const QStringList &options, const bool optional);
 
     void bringToFront(QGraphicsItem *item);

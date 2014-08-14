@@ -18,53 +18,13 @@
     QSanguosha-Hegemony Team
     *********************************************************************/
 
-#ifndef _CHOOSE_GENERAL_DIALOG_H
-#define _CHOOSE_GENERAL_DIALOG_H
-
-class General;
-
-#include "TimedProgressBar.h"
+#ifndef FREECHOOSEDIALOG_H
+#define FREECHOOSEDIALOG_H
 
 #include <QDialog>
-#include <QGroupBox>
 #include <QButtonGroup>
 
-#include <QToolButton>
-
-class OptionButton : public QToolButton {
-    Q_OBJECT
-
-public:
-    explicit OptionButton(const QString icon_path, const QString &caption = "", QWidget *parent = 0);
-#ifdef Q_WS_X11
-    virtual QSize sizeHint() const{ return iconSize(); } // it causes bugs under Windows
-#endif
-
-protected:
-    virtual void mouseDoubleClickEvent(QMouseEvent *);
-
-signals:
-    void double_clicked();
-};
-
-class ChooseGeneralDialog : public QDialog {
-    Q_OBJECT
-
-public:
-    explicit ChooseGeneralDialog(const QStringList &general_names, QWidget *parent, bool view_only = false, const QString &title = QString());
-
-public slots:
-    void done(int);
-
-protected:
-    QDialog *m_freeChooseDialog;
-
-private:
-    QSanCommandProgressBar *progress_bar;
-
-private slots:
-    void freeChoose();
-};
+class General;
 
 class FreeChooseDialog : public QDialog {
     Q_OBJECT
@@ -89,5 +49,5 @@ signals:
     void pair_chosen(const QString &first, const QString &second);
 };
 
-#endif
+#endif // FREECHOOSEDIALOG_H
 

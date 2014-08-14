@@ -18,8 +18,8 @@
     QSanguosha-Hegemony Team
     *********************************************************************/
 
-#ifndef _WINDOW_H
-#define _WINDOW_H
+#ifndef WINDOW_H
+#define WINDOW_H
 
 #include <QGraphicsScale>
 #include <QGraphicsObject>
@@ -56,5 +56,5 @@ private:
     QImage *outimg;
 };
 
-#endif
+#endif // WINDOW_H
 

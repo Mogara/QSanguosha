@@ -24,7 +24,7 @@
 #include "engine.h"
 #include "nativesocket.h"
 #include "scenario.h"
-#include "choosegeneraldialog.h"
+#include "FreeChooseDialog.h"
 #include "customassigndialog.h"
 #include "miniscenarios.h"
 #include "SkinBank.h"

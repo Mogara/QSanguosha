@@ -288,7 +288,7 @@ private slots:
     void onPlayerChooseSuit();
     void onPlayerChooseKingdom();
     void alertFocus();
-    void onPlayerChooseOrder();
+    //void onPlayerChooseOrder();
 
 signals:
     void version_checked(const QString &version_number, const QString &mod_name);

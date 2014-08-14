@@ -21,7 +21,7 @@
 #include "choosegeneralbox.h"
 #include "engine.h"
 #include "SkinBank.h"
-#include "choosegeneraldialog.h"
+#include "FreeChooseDialog.h"
 #include "banpair.h"
 #include "button.h"
 #include "client.h"
@@ -100,7 +100,7 @@ void GeneralCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 }
 
 ChooseGeneralBox::ChooseGeneralBox()
-    : general_number(0), single_result(false),
+    : general_number(0), single_result(false), view_only(false),
       confirm(new Button(tr("fight"), 0.6, true)),
       progress_bar(NULL)
 {
@@ -160,14 +160,16 @@ void ChooseGeneralBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     //||             ==================               ||
     //||                                              ||
     //==================================================
-    title = single_result ? tr("Please select one general")
-                          : tr("Please select the same nationality generals");
-    if (!single_result && Self->getSeat() > 0)
-        title.prepend(Sanguosha->translate(QString("SEAT(%1)").arg(Self->getSeat()))
-                      + " ");
+    if (!view_only) {
+        title = single_result ? tr("Please select one general")
+                              : tr("Please select the same nationality generals");
+        if (!single_result && Self->getSeat() > 0)
+            title.prepend(Sanguosha->translate(QString("SEAT(%1)").arg(Self->getSeat()))
+                          + " ");
+    }
     GraphicsBox::paint(painter, option, widget);
 
-    if (single_result) return;
+    if (view_only || single_result) return;
 
     int split_line_y = top_blank_width + G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line;
     if (general_number > 5)
@@ -211,10 +213,11 @@ QRectF ChooseGeneralBox::boundingRect() const {
         height += (card_to_center_line + G_COMMON_LAYOUT.m_cardNormalHeight);
 
     //No need to reserve space for button
-    if (single_result)
-        return QRectF(0, 0, width, height - 30);
-
-    height += G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line + split_line_to_card_seat;
+    if (single_result) {
+        height -= 30;
+    } else if (!view_only) {
+        height += G_COMMON_LAYOUT.m_cardNormalHeight + card_bottom_to_split_line + split_line_to_card_seat;
+    }
 
     return QRectF(0, 0, width, height);
 }
@@ -235,15 +238,20 @@ static bool sortByKingdom(const QString &gen1, const QString &gen2){
     return kingdom_priority_map[g1->getKingdom()] < kingdom_priority_map[g2->getKingdom()];
 }
 
-void ChooseGeneralBox::chooseGeneral(QStringList _generals) {
+void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_only, bool single_result, const QString &reason) {
     //repaint background
     QStringList generals = _generals;
+    this->single_result = single_result;
+    if (view_only)
+        title = reason;
+    if (this->view_only != view_only) {
+        this->view_only = view_only;
+        confirm->setText(view_only ? tr("confirm") : tr("fight"));
+    }
     foreach(QString general, _generals){
         if (general.endsWith("(lord)"))
             generals.removeOne(general);
     }
-
-    qSort(generals.begin(), generals.end(), sortByKingdom);
 
     general_number = generals.length();
     update();
@@ -251,22 +259,31 @@ void ChooseGeneralBox::chooseGeneral(QStringList _generals) {
     items.clear();
     selected.clear();
     int z = generals.length();
+
+    //DO NOT USE qSort HERE FOR WE NEED TO KEEP THE INITIAL ORDER IN SOME CASES
+    qStableSort(generals.begin(), generals.end(), sortByKingdom);
+
     foreach(QString general, generals) {
         GeneralCardItem *general_item = new GeneralCardItem(general);
         general_item->setFlag(QGraphicsItem::ItemIsFocusable);
         general_item->setZValue(z--);
 
-        if (single_result)
+        if (view_only || single_result) {
             general_item->setFlag(QGraphicsItem::ItemIsMovable, false);
-        else {
+        } else {
             general_item->setAutoBack(true);
             connect(general_item, SIGNAL(released()), this, SLOT(_adjust()));
         }
 
-        connect(general_item, SIGNAL(clicked()), this, SLOT(_onItemClicked()));
-        connect(general_item, SIGNAL(general_changed()), this, SLOT(adjustItems()));
+        if (!view_only) {
+            connect(general_item, SIGNAL(clicked()), this, SLOT(_onItemClicked()));
+            if (!single_result) {
+                connect(general_item, SIGNAL(general_changed()), this,
+                        SLOT(adjustItems()));
+            }
+        }
 
-        if (!single_result) {
+        if (!single_result && !view_only) {
             const General *hero = Sanguosha->getGeneral(general);
             foreach(QString other, generals) {
                 if (general != other && hero->isCompanionWith(other)) {
@@ -280,7 +297,7 @@ void ChooseGeneralBox::chooseGeneral(QStringList _generals) {
         general_item->setParentItem(this);
     }
 
-    GraphicsBox::moveToCenter(this);
+    moveToCenter();
     show();
 
     int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
@@ -294,33 +311,34 @@ void ChooseGeneralBox::chooseGeneral(QStringList _generals) {
         if (i < first_row) {
             pos.setX(left_blank_width + (card_width + card_to_center_line) * i + card_width / 2);
             pos.setY(top_blank_width + card_height / 2);
-        }
-        else {
-            if (items.length() % 2 == 1)
+        } else {
+            if (items.length() % 2 == 1) {
                 pos.setX(left_blank_width + card_width / 2 + card_to_center_line / 2
                 + (card_width + card_to_center_line) * (i - first_row) + card_width / 2);
-            else
+            } else {
                 pos.setX(left_blank_width + (card_width + card_to_center_line) * (i - first_row) + card_width / 2);
+            }
             pos.setY(top_blank_width + card_height + card_to_center_line + card_height / 2);
         }
 
         card_item->setPos(25, 45);
-        if (!single_result)
-            //store initial position
+        //store initial position
+        if (!single_result && !view_only)
             card_item->setData(S_DATA_INITIAL_HOME_POS, pos);
         card_item->setHomePos(pos);
         card_item->goBack(true);
     }
 
-    if (single_result)
+    if (single_result) {
         confirm->hide();
-    else {
+    } else {
         confirm->setPos(boundingRect().center().x() - confirm->boundingRect().width() / 2, boundingRect().height() - 60);
         confirm->show();
     }
-    _initializeItems();
+    if (!view_only && !single_result)
+        _initializeItems();
 
-    if (ServerInfo.OperationTimeout != 0) {
+    if (!view_only && ServerInfo.OperationTimeout != 0) {
         if (!progress_bar) {
             progress_bar = new QSanCommandProgressBar();
             progress_bar->setMinimumWidth(200);
@@ -415,8 +433,7 @@ void ChooseGeneralBox::adjustItems() {
             }
         }
         if (confirm->isEnabled()) confirm->setEnabled(false);
-    }
-    else {
+    } else {
         _initializeItems();
         foreach(GeneralCardItem *card, items) {
             card->hideCompanion();
@@ -464,6 +481,9 @@ void ChooseGeneralBox::_initializeItems() {
 }
 
 void ChooseGeneralBox::reply() {
+    if (view_only)
+        return clear();
+
     QString generals;
     if (!selected.isEmpty()) {
         generals = selected.first()->objectName();

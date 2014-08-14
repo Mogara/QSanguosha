@@ -59,16 +59,16 @@ public:
     QRectF boundingRect() const;
     void clear();
 
-    inline void setSingleResult(const bool single_result) { this->single_result = single_result; }
-
 public slots:
-    void chooseGeneral(QStringList generals);
+    void chooseGeneral(const QStringList &generals, bool view_only = false,
+                       bool single_result = false, const QString &reason = QString());
     void reply();
     void adjustItems();
 
 private:
     int general_number;
     bool single_result;
+    bool view_only;
     QList<GeneralCardItem *> items, selected;
     static const int top_dark_bar = 27;
     static const int top_blank_width = 42;
