@@ -205,7 +205,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->actionAcknowledgement_2, SIGNAL(triggered()), this, SLOT(on_actionAcknowledgement_triggered()));
 
-    StartScene *start_scene = new StartScene;
+    StartScene *start_scene = new StartScene(this);
 
     QList<QAction *> actions;
     actions << ui->actionStart_Game
@@ -793,7 +793,7 @@ void MainWindow::gotoStartScene() {
         Self = NULL;
     }
 
-    StartScene *start_scene = new StartScene;
+    StartScene *start_scene = new StartScene(this);
 
     QList<QAction *> actions;
     actions << ui->actionStart_Game
