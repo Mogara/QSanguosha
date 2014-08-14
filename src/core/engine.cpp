@@ -946,17 +946,16 @@ int Engine::correctDistance(const Player *from, const Player *to) const{
     return correct;
 }
 
-int Engine::correctMaxCards(const Player *target, bool fixed) const{
+int Engine::correctMaxCards(const ServerPlayer *target, bool fixed, MaxCardsType::MaxCardsCount type) const{
     int extra = 0;
 
-    foreach(const MaxCardsSkill *skill, maxcards_skills) {
+    foreach (const MaxCardsSkill *skill, maxcards_skills) {
         if (fixed) {
-            int f = skill->getFixed(target);
+            int f = skill->getFixed(target, type);
             if (f > extra)
                 extra = f;
-        }
-        else {
-            extra += skill->getExtra(target);
+        } else {
+            extra += skill->getExtra(target, type);
         }
     }
 

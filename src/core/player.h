@@ -112,8 +112,6 @@ public:
     void removeDisableShow(const QString &reason);
     QStringList disableShow(bool head) const;
 
-    int getMaxCards() const;
-
     QString getKingdom() const;
     void setKingdom(const QString &kingdom);
 
@@ -276,7 +274,6 @@ public:
     void addQinggangTag(const Card *card);
     void removeQinggangTag(const Card *card);
     const Player *getLord(bool include_death = false) const; // a small function put here, simple but useful
-    int getPlayerNumWithSameKingdom(const QString &_to_calculate = QString()) const;
 
     void copyFrom(Player *p);
 

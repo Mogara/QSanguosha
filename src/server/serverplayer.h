@@ -80,6 +80,7 @@ public:
     void throwAllMarks(bool visible_only = true);
     void clearOnePrivatePile(const QString &pile_name);
     void clearPrivatePiles();
+    int getMaxCards(MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
     void drawCards(int n, const QString &reason = QString());
     bool askForSkillInvoke(const QString &skill_name, const QVariant &data = QVariant());
     QList<int> forceToDiscard(int discard_num, bool include_equip, bool is_discard = true);
@@ -116,6 +117,7 @@ public:
     inline bool isOffline() const{ return getState() == "robot" || getState() == "offline"; }
 
     virtual int aliveCount(bool includeRemoved = true) const;
+    int getPlayerNumWithSameKingdom(const QString &_to_calculate = QString(), MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);

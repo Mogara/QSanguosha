@@ -31,4 +31,12 @@ namespace HegemonyMode {
     };
 };
 
+namespace MaxCardsType {
+    enum MaxCardsCount {
+        Max = 1,
+        Normal = 0,
+        Min = -1,
+    };
+};
+
 #endif

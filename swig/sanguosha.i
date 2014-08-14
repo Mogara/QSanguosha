@@ -49,6 +49,14 @@ namespace HegemonyMode {
     };
 };
 
+namespace MaxCardsType {
+    enum MaxCardsCount {
+        Max = 1,
+        Normal = 0,
+        Min = -1,
+    };
+};
+
 class QObject {
 public:
     QString objectName();
@@ -138,8 +146,6 @@ public:
     void removeDisableShow(const char *reason);
     QStringList disableShow(bool head) const;
 
-    int getMaxCards() const;
-
     QString getKingdom() const;
     void setKingdom(const char *kingdom);
 
@@ -184,7 +190,7 @@ public:
     bool faceUp() const;
     void setFaceUp(bool face_up);
 
-    virtual int aliveCount() const = 0;
+    virtual int aliveCount(bool includeRemoved = true) const = 0;
     void setFixedDistance(const Player *player, int distance);
     int originalRightDistanceTo(const Player *other) const;
     int distanceTo(const Player *other, int distance_fix = 0) const;
@@ -296,7 +302,6 @@ public:
     void addQinggangTag(const Card *card);
     void removeQinggangTag(const Card *card);
     const Player *getLord(bool include_death = false) const; // a small function put here, simple but useful
-    int getPlayerNumWithSameKingdom(const char *_to_calculate = NULL) const;
 
     void copyFrom(Player *p);
 
@@ -383,6 +388,7 @@ public:
     void throwAllMarks(bool visible_only = true);
     void clearOnePrivatePile(const char *pile_name);
     void clearPrivatePiles();
+    int getMaxCards(MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
     void drawCards(int n, const char *reason = NULL);
     bool askForSkillInvoke(const char *skill_name, const QVariant &data = QVariant());
     QList<int> forceToDiscard(int discard_num, bool include_equip, bool is_discard = true);
@@ -418,7 +424,8 @@ public:
     bool isOnline() const;
     bool isOffline() const;
 
-    virtual int aliveCount() const;
+    virtual int aliveCount(bool includeRemoved = true) const;
+    int getPlayerNumWithSameKingdom(const QString &_to_calculate = QString(), MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
@@ -487,7 +494,7 @@ public:
     void setHandcardNum(int n);
     virtual QString getGameMode() const;
     virtual void setFlags(const char *flag);
-    virtual int aliveCount() const;
+    virtual int aliveCount(bool includeRemoved = true) const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
@@ -753,6 +760,16 @@ struct CardResponseStruct {
     bool m_isUse;
 };
 
+struct PlayerNumStruct {
+	PlayerNumStruct();
+    PlayerNumStruct(int num, const QString &toCalculate);
+    PlayerNumStruct(int num, const QString &toCalculate, MaxCardsType::MaxCardsCount type);
+
+    MaxCardsType::MaxCardsCount m_type;
+    int m_num;
+    QString m_toCalculate;
+};
+
 enum TriggerEvent {
     NonTrigger,
 
@@ -763,6 +780,8 @@ enum TriggerEvent {
     EventPhaseEnd,
     EventPhaseChanging,
     EventPhaseSkipping,
+
+    ConfirmPlayerNum, // hongfa only
 
     DrawNCards,
     AfterDrawNCards,
@@ -1150,7 +1169,7 @@ public:
 
     const ProhibitSkill *isProhibited(const Player *from, const Player *to, const Card *card, const QList<const Player *> &others = QList<const Player *>()) const;
     int correctDistance(const Player *from, const Player *to) const;
-    int correctMaxCards(const Player *target, bool fixed = false) const;
+    int correctMaxCards(const ServerPlayer *target, bool fixed = false, MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
     int correctCardTarget(const TargetModSkill::ModType type, const Player *from, const Card *card) const;
     int correctAttackRange(const Player *target, bool include_weapon = true, bool fixed = false) const;
 

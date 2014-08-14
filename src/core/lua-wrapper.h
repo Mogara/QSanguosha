@@ -125,8 +125,8 @@ class LuaMaxCardsSkill : public MaxCardsSkill {
 public:
     LuaMaxCardsSkill(const char *name);
 
-    virtual int getExtra(const Player *target) const;
-    virtual int getFixed(const Player *target) const;
+    virtual int getExtra(const ServerPlayer *target, MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
+    virtual int getFixed(const ServerPlayer *target, MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
 
     LuaFunction extra_func;
     LuaFunction fixed_func;
