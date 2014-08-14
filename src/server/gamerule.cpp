@@ -641,9 +641,9 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
     }
     case BeforeGameOverJudge: {
         if (!player->hasShownGeneral1())
-            player->showGeneral(true, false);
+            player->showGeneral(true, false, false);
         if (!player->hasShownGeneral2())
-            player->showGeneral(false, false);
+            player->showGeneral(false, false, false);
         break;
     }
     case GameOverJudge: {
@@ -721,6 +721,11 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
         break;
     }
     case GeneralShown: {
+        QString winner = getWinner(player);
+        if (!winner.isNull()) {
+            room->gameOver(winner); // if all hasShownGenreal, and they are all friend, game over.
+            return true;
+        }
         if (Config.RewardTheFirstShowingPlayer && room->getTag("TheFirstToShowRewarded").isNull()) {
             LogMessage log;
             log.type = "#FirstShowReward";

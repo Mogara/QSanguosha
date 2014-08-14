@@ -393,8 +393,7 @@ void RoomThread::run() {
                     terminate();
                     Sanguosha->unregisterRoom();
                     return;
-                }
-                else
+                } else
                     Q_ASSERT(false);
             }
         }
