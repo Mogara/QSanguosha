@@ -177,7 +177,7 @@ bool IQSanComponentSkin::QSanShadowTextFont::tryParse(const QVariant &arg) {
 
 bool IQSanComponentSkin::isImageKeyDefined(const QString &key) const{
     const QVariant & val = _m_imageConfig[key];
-    return val.canConvert<JsonArray>() || val.type() == QMetaType::QString;
+    return val.canConvert<JsonArray>() || JsonUtils::isString(val);
 }
 
 void IQSanComponentSkin::QSanSimpleTextFont::paintText(QPainter *painter, const QRect &pos, Qt::Alignment align,
@@ -325,7 +325,7 @@ QPixmap QSanRoomSkin::getProgressBarPixmap(int percentile) const{
         if (map.size() < 2 || !JsonUtils::isNumber(map[0])) continue;
         int thred = map[0].toInt();
         if (thred >= percentile) {
-            if (map[1].type() != QMetaType::QString) continue;
+            if (!JsonUtils::isString(map[1])) continue;
             return getPixmapFromFileName(map[1].toString());
         }
     }
@@ -612,7 +612,7 @@ QStringList IQSanComponentSkin::getAudioFileNames(const QString &key) const{
     const QVariant &result = _m_audioConfig[key];
     if (result.isNull())
         return QStringList();
-    else if (result.type() == QMetaType::QString)
+    else if (JsonUtils::isString(result))
         return QStringList(result.toString());
     else if (result.canConvert<JsonArray>()) {
         QStringList audios;
@@ -642,7 +642,7 @@ QString IQSanComponentSkin::_readConfig(const QVariant &dict, const QString &key
     if (!dict.canConvert<JsonObject>()) return defaultValue;
     JsonObject dictMap = dict.value<JsonObject>();
     const QVariant &val = dictMap[key];
-    if (val.type() != QMetaType::QString) {
+    if (!JsonUtils::isString(val)) {
         qWarning("Unable to read configuration: %s", key.toLatin1().constData());
         return defaultValue;
     }
@@ -657,11 +657,11 @@ QString IQSanComponentSkin::_readImageConfig(const QString &key, QRect &rect,
     if (_m_imageConfig.isEmpty()) return defaultValue;
     const QVariant &val = _m_imageConfig[key];
     QString result;
-    if (val.type() == QMetaType::QString)
+    if (JsonUtils::isString(val))
         result = val.toString();
     else if (val.canConvert<JsonArray>()) {
         JsonArray arr = val.value<JsonArray>();
-        if (arr.size() >= 2 && arr[0].type() == QMetaType::QString && tryParse(arr[1], rect)) {
+        if (arr.size() >= 2 && JsonUtils::isString(arr[0]) && tryParse(arr[1], rect)) {
             clipping = true;
             result = arr[0].toString();
             if (arr.size() > 3 && tryParse(arr[3], newScale))
@@ -936,7 +936,7 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout) {
         if (!magatamasAnchor.isEmpty()) {
             if (magatamasAnchor.size() > 1)
                 tryParse(magatamasAnchor[1], layout->m_magatamasAnchor);
-            if (magatamasAnchor[0].type() == QMetaType::QString)
+            if (JsonUtils::isString(magatamasAnchor[0]))
                 tryParse(magatamasAnchor[0], layout->m_magatamasAlign);
         }
 

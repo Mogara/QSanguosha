@@ -80,7 +80,7 @@ void RecAnalysis::initialize(QString dir) {
 
         if (packet.getCommandType() == S_COMMAND_SETUP){
             const QVariant &body = packet.getMessageBody();
-            if (body.type() == QMetaType::QString){
+            if (JsonUtils::isString(body)){
                 QString l = body.toString();
                 QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSTBHAMN123a-r]*)(\\s+)?");
                 if (!rx.exactMatch(l))

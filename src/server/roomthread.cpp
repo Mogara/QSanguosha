@@ -234,14 +234,14 @@ bool CardUseStruct::isValid(const QString &pattern) const{
 
 bool CardUseStruct::tryParse(const QVariant &usage, Room *room) {
     JsonArray use = usage.value<JsonArray>();
-    if (use.size() < 2 || use[0].type() != QMetaType::QString || !use[1].canConvert<JsonArray>())
+    if (use.size() < 2 || !JsonUtils::isString(use[0]) || !use[1].canConvert<JsonArray>())
         return false;
 
     card = Card::Parse(use[0].toString());
     JsonArray targets = use[1].value<JsonArray>();
 
     foreach (const QVariant &target, targets) {
-        if (target.type() != QMetaType::QString) return false;
+        if (!JsonUtils::isString(target)) return false;
         this->to << room->findChild<ServerPlayer *>(target.toString());
     }
     return true;

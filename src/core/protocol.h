@@ -268,7 +268,7 @@ namespace QSanProtocol {
         QVariant messageBody;
 
         //helper functions
-        static const unsigned int S_MAX_PACKET_SIZE;
+        static const int S_MAX_PACKET_SIZE;
     };
 }
 
