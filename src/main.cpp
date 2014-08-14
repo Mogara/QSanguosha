@@ -34,6 +34,7 @@
 #include "engine.h"
 #include "mainwindow.h"
 #include "audio.h"
+#include "StyleHelper.h"
 
 #ifndef WINDOWS
 #include <QDir>
@@ -186,8 +187,7 @@ int main(int argc, char *argv[]) {
         QTextStream stream(&file);
         styleSheet = stream.readAll();
     }
-    qApp->setStyleSheet(styleSheet + QString("QToolTip{ border: 0px solid; background: %1; opacity: 190; }")
-        .arg(Config.ToolTipBackgroundColor.name()));
+    qApp->setStyleSheet(styleSheet + StyleHelper::styleSheetOfTooltip());
 
 #ifdef AUDIO_SUPPORT
     splash.showMessage(QObject::tr("Initializing audio module..."), alignment, Qt::cyan);

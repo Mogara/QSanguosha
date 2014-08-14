@@ -21,6 +21,7 @@
 #include "configdialog.h"
 #include "ui_configdialog.h"
 #include "settings.h"
+#include "StyleHelper.h"
 
 #include <QFileDialog>
 #include <QDesktopServices>
@@ -320,7 +321,6 @@ void ConfigDialog::on_toolTipBackgroundColorButton_clicked()
             QTextStream stream(&file);
             styleSheet = stream.readAll();
         }
-        qApp->setStyleSheet(styleSheet + QString("QToolTip{ border: 0px solid; background: %1; opacity: 190; }")
-            .arg(Config.ToolTipBackgroundColor.name()));
+        qApp->setStyleSheet(styleSheet + StyleHelper::styleSheetOfTooltip());
     }
 }
