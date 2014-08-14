@@ -33,7 +33,7 @@ class StartScene : public QGraphicsScene {
     Q_OBJECT
 
 public:
-    StartScene();
+    StartScene(QObject *parent = 0);
 
     void addButton(QAction *action);
     void setServerLogBackground();

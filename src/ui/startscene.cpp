@@ -34,7 +34,8 @@
 #include <QSequentialAnimationGroup>
 #include <QPainter>
 
-StartScene::StartScene()
+StartScene::StartScene(QObject *parent)
+    :QGraphicsScene(parent)
 {
     // game logo
     logo = new QSanSelectableItem("image/logo/logo.png", true);
