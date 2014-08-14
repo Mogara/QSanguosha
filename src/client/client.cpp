@@ -22,7 +22,6 @@
 #include "settings.h"
 #include "engine.h"
 #include "standard.h"
-#include "choosegeneraldialog.h"
 #include "nativesocket.h"
 #include "recorder.h"
 #include "SkinBank.h"
@@ -1970,7 +1969,7 @@ void Client::revealGeneral(const QVariant &reveal) {
     emit general_revealed(self, general);
 }
 
-void Client::onPlayerChooseOrder() {
+/*void Client::onPlayerChooseOrder() {
     OptionButton *button = qobject_cast<OptionButton *>(sender());
     QString order;
     if (button) {
@@ -1987,7 +1986,7 @@ void Client::onPlayerChooseOrder() {
     else req = (int)S_CAMP_COOL;
     replyToServer(S_COMMAND_CHOOSE_ORDER, req);
     setStatus(NotActive);
-}
+}*/
 
 void Client::updateStateItem(const QVariant &state) {
     if (!JsonUtils::isString(state)) return;

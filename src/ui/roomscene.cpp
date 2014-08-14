@@ -25,7 +25,7 @@
 #include "cardoverview.h"
 #include "distanceviewdialog.h"
 #include "playercarddialog.h"
-#include "choosegeneraldialog.h"
+#include "FreeChooseDialog.h"
 #include "window.h"
 #include "button.h"
 #include "cardcontainer.h"
@@ -1520,8 +1520,7 @@ void RoomScene::chooseGeneral(const QStringList &generals, const bool single_res
         delete m_choiceDialog;
         m_choiceDialog = new FreeChooseDialog(main_window);
     } else {
-        choose_general_box->setSingleResult(single_result);
-        choose_general_box->chooseGeneral(generals);
+        choose_general_box->chooseGeneral(generals, false, single_result);
     }
 }
 
@@ -1599,7 +1598,7 @@ void RoomScene::chooseCard(const ClientPlayer *player, const QString &flags, con
                               handcard_visible, method, disabled_ids);
 }
 
-void RoomScene::chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason) {
+/*void RoomScene::chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason) {
     QDialog *dialog = new QDialog;
     if (reason == S_REASON_CHOOSE_ORDER_SELECT)
         dialog->setWindowTitle(tr("The order who first choose general"));
@@ -1628,7 +1627,7 @@ void RoomScene::chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand reason) {
     connect(dialog, SIGNAL(rejected()), ClientInstance, SLOT(onPlayerChooseOrder()));
     delete m_choiceDialog;
     m_choiceDialog = dialog;
-}
+}*/
 
 void RoomScene::chooseRole(const QString &scheme, const QStringList &roles) {
     QDialog *dialog = new QDialog;
@@ -1674,7 +1673,7 @@ void RoomScene::chooseRole(const QString &scheme, const QStringList &roles) {
     m_choiceDialog = dialog;
 }
 
-void RoomScene::chooseDirection() {
+/*void RoomScene::chooseDirection() {
     QDialog *dialog = new QDialog;
     dialog->setWindowTitle(tr("Please select the direction"));
 
@@ -1703,7 +1702,7 @@ void RoomScene::chooseDirection() {
     connect(dialog, SIGNAL(rejected()), ClientInstance, SLOT(onPlayerMakeChoice()));
     delete m_choiceDialog;
     m_choiceDialog = dialog;
-}
+}*/
 
 void RoomScene::chooseTriggerOrder(const QString &reason, const QStringList &options, const bool optional)
 {
@@ -3239,10 +3238,11 @@ void RoomScene::doScript() {
 }
 
 void RoomScene::viewGenerals(const QString &reason, const QStringList &names) {
-    QDialog *dialog = new ChooseGeneralDialog(names, main_window, true, Sanguosha->translate(reason));
-    connect(dialog, SIGNAL(rejected()), dialog, SLOT(deleteLater()));
-    dialog->setParent(main_window, Qt::Dialog);
-    dialog->show();
+    QApplication::alert(main_window);
+    if (!main_window->isActiveWindow())
+        Sanguosha->playSystemAudioEffect("pop-up");
+    choose_general_box->chooseGeneral(names, true, false,
+                                      Sanguosha->translate(reason));
 }
 
 void RoomScene::fillTable(QTableWidget *table, const QList<const ClientPlayer *> &players) {

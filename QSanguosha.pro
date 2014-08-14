@@ -38,11 +38,11 @@ SOURCES += \
     src/dialog/cardbutton.cpp \
     src/dialog/cardeditor.cpp \
     src/dialog/cardoverview.cpp \
-    src/dialog/choosegeneraldialog.cpp \
     src/dialog/configdialog.cpp \
     src/dialog/connectiondialog.cpp \
     src/dialog/customassigndialog.cpp \
     src/dialog/distanceviewdialog.cpp \
+    src/dialog/FreeChooseDialog.cpp \
     src/dialog/generaloverview.cpp \
     src/dialog/mainwindow.cpp \
     src/dialog/playercarddialog.cpp \
@@ -138,11 +138,11 @@ HEADERS += \
     src/dialog/cardbutton.h \
     src/dialog/cardeditor.h \
     src/dialog/cardoverview.h \
-    src/dialog/choosegeneraldialog.h \
     src/dialog/configdialog.h \
     src/dialog/connectiondialog.h \
     src/dialog/customassigndialog.h \
     src/dialog/distanceviewdialog.h \
+    src/dialog/FreeChooseDialog.h \
     src/dialog/generaloverview.h \
     src/dialog/mainwindow.h \
     src/dialog/playercarddialog.h \

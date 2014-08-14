@@ -176,8 +176,7 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
         if (hasFocus()) boxColor = ReverseColor(boxColor);
         boxColor.setAlphaF(0.8);
         edgeWidth = 2;
-    }
-    else {
+    } else {
         boxColor = QColor(120, 212, 120);
         edgeColor.setAlphaF(0.3);
     }
@@ -209,9 +208,9 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
 
         ft.tryParse(val);
         ft.paintText(painter, rect.toRect(), Qt::AlignCenter, label);
-    }
-    else
+    } else {
         painter->drawPixmap(rect.toRect(), icon);
+    }
 }
 
 void Button::doTransform(const QPointF &pos)

@@ -18,8 +18,8 @@
     QSanguosha-Hegemony Team
     *********************************************************************/
 
-#ifndef _BUTTON_H
-#define _BUTTON_H
+#ifndef BUTTON_H
+#define BUTTON_H
 
 #include "settings.h"
 
@@ -37,6 +37,7 @@ public:
     explicit Button(const QString &label, const QSizeF &size, bool compact = false);
     void setFontName(const QString &name);
     void setFontSize(const int &size);
+    inline void setText(const QString &text) { label = text; }
 
     virtual QRectF boundingRect() const;
 
@@ -91,5 +92,5 @@ private slots:
 
 };
 
-#endif
+#endif // BUTTON_H
 
