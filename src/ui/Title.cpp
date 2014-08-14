@@ -20,7 +20,6 @@
 
 #include "Title.h"
 #include "SkinBank.h"
-#include "jsonutils.h"
 
 Title::Title(QGraphicsObject *parent, const QString &text, const QString &font_name, const int &font_size)
 : QGraphicsObject(parent), text(text), font_name(font_name), font_size(font_size)
@@ -36,15 +35,16 @@ void Title::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *
 {
     QColor textColor = Qt::white;
     IQSanComponentSkin::QSanSimpleTextFont ft;
-    Json::Value val(Json::arrayValue);
-    val[0] = QSanProtocol::Utils::toJsonString(font_name);
-    val[1] = font_size;
-    val[2] = 2;
+    JsonArray val;
+    val << font_name;
+    val << font_size;
+    val << 2;
 
-    val[3] = Json::Value(Json::arrayValue);
-    val[3][0] = textColor.red();
-    val[3][1] = textColor.green();
-    val[3][2] = textColor.blue();
+    JsonArray val3;
+    val3 << textColor.red();
+    val3 << textColor.green();
+    val3 << textColor.blue();
+    val << QVariant(val3);
 
     ft.tryParse(val);
     ft.paintText(painter, boundingRect().toRect(), Qt::AlignCenter, text);

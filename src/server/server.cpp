@@ -28,7 +28,6 @@
 #include "customassigndialog.h"
 #include "miniscenarios.h"
 #include "SkinBank.h"
-#include "jsonutils.h"
 #include "banpair.h"
 
 #include <QMessageBox>
@@ -884,9 +883,9 @@ Server::Server(QObject *parent)
 }
 
 void Server::broadcast(const QString &msg) {
-    Json::Value arg(Json::arrayValue);
-    arg[0] = ".";
-    arg[1] = Utils::toJsonString(msg);
+    JsonArray arg;
+    arg << ".";
+    arg << msg;
 
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
     packet.setMessageBody(arg);
@@ -936,11 +935,11 @@ void Server::processNewConnection(ClientSocket *socket) {
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
 
     Packet version_packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_CHECK_VERSION);
-    version_packet.setMessageBody(Utils::toJsonString(Sanguosha->getVersion()));
+    version_packet.setMessageBody(Sanguosha->getVersion());
     socket->send(version_packet.toUtf8());
 
     Packet setup_packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
-    setup_packet.setMessageBody(Utils::toJsonString(Sanguosha->getSetupString()));
+    setup_packet.setMessageBody(Sanguosha->getSetupString());
     socket->send(setup_packet.toUtf8());
 
     emit server_message(tr("%1 connected").arg(socket->peerName()));
@@ -962,10 +961,10 @@ void Server::processRequest(const char *request) {
         return;
     }
 
-    const Json::Value &body = signup.getMessageBody();
-    bool is_reconnection = body[0].asBool();
-    QString screen_name = Utils::toQString(body[1]);
-    QString avatar = Utils::toQString(body[2]);
+    JsonArray body = signup.getMessageBody().value<JsonArray>();
+    bool is_reconnection = body[0].toBool();
+    QString screen_name = body[1].toString();
+    QString avatar = body[2].toString();
 
     if (is_reconnection) {
         foreach(QString objname, name2objname.values(screen_name)) {
@@ -984,7 +983,7 @@ void Server::processRequest(const char *request) {
     current->signup(player, screen_name, avatar, false);
     if (current->getPlayers().length() == 1 && current->getScenario() && current->getScenario()->objectName() == "jiange_defense") {
         for (int i = 0; i < 4; ++i)
-            current->addRobotCommand(player, Json::Value());
+            current->addRobotCommand(player, QVariant());
     }
 }
 

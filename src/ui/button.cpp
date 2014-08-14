@@ -21,7 +21,6 @@
 #include "button.h"
 #include "Title.h"
 #include "SkinBank.h"
-#include "jsonutils.h"
 #include "StyleHelper.h"
 
 #include <QPainter>
@@ -197,15 +196,16 @@ void Button::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget 
             textColor = ReverseColor(textColor);
 
         IQSanComponentSkin::QSanSimpleTextFont ft;
-        Json::Value val(Json::arrayValue);
-        val[0] = QSanProtocol::Utils::toJsonString(font_name);
-        val[1] = font_size;
-        val[2] = 2;
+        JsonArray val;
+        val << font_name;
+        val << font_size;
+        val << 2;
 
-        val[3] = Json::Value(Json::arrayValue);
-        val[3][0] = textColor.red();
-        val[3][1] = textColor.green();
-        val[3][2] = textColor.blue();
+        JsonArray val3;
+        val3 << textColor.red();
+        val3 << textColor.green();
+        val3 << textColor.blue();
+        val << QVariant(val3);
 
         ft.tryParse(val);
         ft.paintText(painter, rect.toRect(), Qt::AlignCenter, label);

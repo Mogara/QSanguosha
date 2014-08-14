@@ -22,13 +22,11 @@
 #include "recorder.h"
 #include "settings.h"
 #include "engine.h"
-#include "jsonutils.h"
 
 #include <QFile>
 #include <QMessageBox>
 
 using namespace QSanProtocol;
-using namespace QSanProtocol::Utils;
 
 RecAnalysis::RecAnalysis(QString dir) : m_recordPlayers(0), m_currentPlayer(NULL) {
     initialize(dir);
@@ -81,9 +79,9 @@ void RecAnalysis::initialize(QString dir) {
         packet.parse(line.toUtf8().constData());
 
         if (packet.getCommandType() == S_COMMAND_SETUP){
-            const Json::Value &body = packet.getMessageBody();
-            if (body.isString()){
-                QString l = toQString(body);
+            const QVariant &body = packet.getMessageBody();
+            if (body.type() == QMetaType::QString){
+                QString l = body.toString();
                 QRegExp rx("(.*):(@?\\w+):(\\d+):(\\d+):([+\\w]*):([RCFSTBHAMN123a-r]*)(\\s+)?");
                 if (!rx.exactMatch(l))
                     continue;
@@ -115,10 +113,11 @@ void RecAnalysis::initialize(QString dir) {
 
         if (packet.getCommandType() == S_COMMAND_ARRANGE_SEATS) {
             QStringList line_struct;
-            const Json::Value &body = packet.getMessageBody();
-            if (body.isArray()){
-                for (Json::Value::iterator i = body.begin(); i != body.end(); i++){
-                    QString line = toQString(*i);
+            const QVariant &body = packet.getMessageBody();
+            if (body.canConvert<JsonArray>()) {
+                JsonArray lines = body.value<JsonArray>();
+                foreach (const QVariant &l, lines) {
+                    QString line = l.toString();
                     if (!line.isEmpty()){
                         line_struct.append(line);
                     }
@@ -130,27 +129,27 @@ void RecAnalysis::initialize(QString dir) {
         }
 
         if (packet.getCommandType() == S_COMMAND_ADD_PLAYER) {
-            const Json::Value &body = packet.getMessageBody();
-            if (body.isArray() && body.size() >= 2){
-                getPlayer(toQString(body[0]))->m_screenName = toQString(body[1]);
+            JsonArray body = packet.getMessageBody().value<JsonArray>();
+            if (body.size() >= 2){
+                getPlayer(body[0].toString())->m_screenName = body[1].toString();
             }
             continue;
         }
 
         if (packet.getCommandType() == S_COMMAND_REMOVE_PLAYER) {
-            QString name = toQString(packet.getMessageBody());
+            QString name = packet.getMessageBody().toString();
             m_recordMap.remove(name);
             continue;
         }
 
         if (packet.getCommandType() == S_COMMAND_SPEAK) {
-            const Json::Value &body = packet.getMessageBody();
-            if (!body.isArray() || body.size() < 3){
+            JsonArray body = packet.getMessageBody().value<JsonArray>();
+            if (body.size() < 3) {
                 continue;
             }
 
-            QString speaker = toQString(body[0]);
-            QString words = toQString(body[1]);
+            QString speaker = body[0].toString();
+            QString words = body[1].toString();
             m_recordChat += getPlayer(speaker)->m_screenName + ": " + words;
             m_recordChat.append("<br/>");
 

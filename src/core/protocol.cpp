@@ -20,124 +20,111 @@
 
 #include "protocol.h"
 
-#include <json/json.h>
-#include <QString>
-
-using namespace std;
 using namespace QSanProtocol;
 
-unsigned int QSanProtocol::Packet::_m_globalSerial = 0;
+unsigned int QSanProtocol::Packet::globalSerialSequence = 0;
 const unsigned int QSanProtocol::Packet::S_MAX_PACKET_SIZE = 65535;
 const char *QSanProtocol::S_PLAYER_SELF_REFERENCE_ID = "MG_SELF";
 
 const int QSanProtocol::S_ALL_ALIVE_PLAYERS = 0;
 
-bool QSanProtocol::Countdown::tryParse(const Json::Value &val) {
-    if (!val.isArray())
+bool QSanProtocol::Countdown::tryParse(const QVariant &var) {
+    if (!var.canConvert<JsonArray>())
         return false;
 
+    JsonArray val = var.value<JsonArray>();
+
     //compatible with old JSON representation of Countdown
-    Json::ArrayIndex offset = 0;
-    if (val[0].isString()) {
-        if (val[0].asString() == "MG_COUNTDOWN")
+    unsigned offset = 0;
+    if (val[0].type() == QMetaType::QString) {
+        if (val[0].toString() == "MG_COUNTDOWN")
             offset = 1;
         else
             return false;
     }
 
     if (val.size() - offset == 2) {
-        if (!Utils::isIntArray(val, offset, offset + 1)) return false;
-        m_current = (time_t)val[offset].asInt();
-        m_max = (time_t)val[offset + 1].asInt();
-        m_type = S_COUNTDOWN_USE_SPECIFIED;
+        if (!JsonUtils::isNumberArray(val, offset, offset + 1)) return false;
+        current = (time_t)val[offset].toInt();
+        max = (time_t)val[offset + 1].toInt();
+        type = S_COUNTDOWN_USE_SPECIFIED;
         return true;
-    }
-    else if (val.size() - offset == 1 && val[offset].isInt()) {
-        CountdownType type = (CountdownType)val[offset].asInt();
+
+    } else if (val.size() - offset == 1 && val[offset].canConvert<int>()) {
+        CountdownType type = (CountdownType)val[offset].toInt();
         if (type != S_COUNTDOWN_NO_LIMIT && type != S_COUNTDOWN_USE_DEFAULT)
             return false;
-        else m_type = type;
+        else this->type = type;
         return true;
-    }
-    else
+
+    } else
         return false;
 }
 
-bool QSanProtocol::Utils::isStringArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex) {
-    if (!jsonObject.isArray() || jsonObject.size() <= endIndex)
-        return false;
-    for (unsigned int i = startIndex; i <= endIndex; i++) {
-        if (!jsonObject[i].isString())
-            return false;
+QVariant QSanProtocol::Countdown::toVariant() const
+{
+    JsonArray val;
+    if (type == S_COUNTDOWN_NO_LIMIT || type == S_COUNTDOWN_USE_DEFAULT) {
+        val << (int)type;
+    } else {
+        val << (int)current;
+        val << (int)max;
     }
-    return true;
-}
-
-bool QSanProtocol::Utils::isIntArray(const Json::Value &jsonObject, unsigned int startIndex, unsigned int endIndex) {
-    if (!jsonObject.isArray() || jsonObject.size() <= endIndex)
-        return false;
-    for (unsigned int i = startIndex; i <= endIndex; i++) {
-        if (!jsonObject[i].isInt())
-            return false;
-    }
-    return true;
+    return val;
 }
 
 QSanProtocol::Packet::Packet(int packetDescription, CommandType command)
-    : m_globalSerial(0), m_localSerial(0),
-    m_command(command),
-    m_packetDescription(static_cast<PacketDescription>(packetDescription)),
-    m_msgBody(Json::nullValue)
+    : globalSerial(0), localSerial(0),
+    command(command),
+    packetDescription(static_cast<PacketDescription>(packetDescription))
 {
 }
 
 unsigned int QSanProtocol::Packet::createGlobalSerial() {
-    m_globalSerial = ++_m_globalSerial;
-    return m_globalSerial;
+    globalSerial = ++globalSerialSequence;
+    return globalSerial;
 }
 
-bool QSanProtocol::Packet::parse(const string &s) {
-    if (s.length() > S_MAX_PACKET_SIZE) {
+bool QSanProtocol::Packet::parse(const QByteArray &raw) {
+    if (raw.length() > S_MAX_PACKET_SIZE) {
         return false;
     }
 
-    Json::Value result;
+    JsonDocument doc = JsonDocument::fromJson(raw);
+    JsonArray result = doc.array();
 
-    Json::Reader reader;
-    bool success = reader.parse(s, result);
-    if (!success || !Utils::isIntArray(result, 0, 3) || result.size() > 5)
+    if (!JsonUtils::isNumberArray(result, 0, 3) || result.size() > 5)
         return false;
 
-    m_globalSerial = result[0].asUInt();
-    m_localSerial = result[1].asUInt();
-    m_packetDescription = static_cast<PacketDescription>(result[2].asInt());
-    m_command = (CommandType)result[3].asInt();
+    globalSerial = result[0].toUInt();
+    localSerial = result[1].toUInt();
+    packetDescription = static_cast<PacketDescription>(result[2].toInt());
+    command = (CommandType)result[3].toInt();
 
     if (result.size() == 5)
-        setBody(result[4]);
+        messageBody = result[4];
     return true;
 }
 
 
 //characters in JSON string representations are unicode-escaped. So we don't need Base64 here.
 QByteArray QSanProtocol::Packet::toUtf8() const{
-    Json::Value result(Json::arrayValue);
-    result[0] = m_globalSerial;
-    result[1] = m_localSerial;
-    result[2] = m_packetDescription;
-    result[3] = m_command;
-    const Json::Value &body = getBody();
-    if (body != Json::nullValue)
-        result[4] = body;
+    JsonArray result;
+    result << globalSerial;
+    result << localSerial;
+    result << packetDescription;
+    result << command;
+    if (!messageBody.isNull())
+        result << messageBody;
 
-    Json::FastWriter writer;
-    string msg = writer.write(result);
+    JsonDocument doc(result);
+    QByteArray msg(doc.toJson());
 
     //truncate too long messages
     if (msg.length() > S_MAX_PACKET_SIZE)
-        msg = msg.substr(0, S_MAX_PACKET_SIZE);
+        return msg.left(S_MAX_PACKET_SIZE);
 
-    return msg.c_str();
+    return msg;
 }
 
 QString QSanProtocol::Packet::toString() const{

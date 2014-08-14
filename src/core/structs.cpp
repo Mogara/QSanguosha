@@ -19,62 +19,72 @@
     *********************************************************************/
 
 #include "structs.h"
-#include "jsonutils.h"
 #include "protocol.h"
 
-using namespace QSanProtocol::Utils;
+bool CardsMoveStruct::tryParse(const QVariant &arg) {
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 8) return false;
 
-bool CardsMoveStruct::tryParse(const Json::Value &arg) {
-    if (!arg.isArray() || arg.size() != 8) return false;
-    if ((!arg[0].isInt() && !arg[0].isArray()) ||
-        !isIntArray(arg, 1, 2) || !isStringArray(arg, 3, 6)) return false;
-    if (arg[0].isInt()) {
-        int size = arg[0].asInt();
+    if ((!JsonUtils::isNumber(args[0]) && !args[0].canConvert<JsonArray>()) ||
+        !JsonUtils::isNumberArray(args, 1, 2) || !JsonUtils::isStringArray(args, 3, 6)) return false;
+
+    if (JsonUtils::isNumber(args[0])) {
+        int size = args[0].toInt();
         for (int i = 0; i < size; i++)
             card_ids.append(Card::S_UNKNOWN_CARD_ID);
-    }
-    else if (!QSanProtocol::Utils::tryParse(arg[0], card_ids))
+    } else if (!JsonUtils::tryParse(args[0], card_ids)) {
         return false;
-    from_place = (Player::Place)arg[1].asInt();
-    to_place = (Player::Place)arg[2].asInt();
-    from_player_name = toQString(arg[3]);
-    to_player_name = toQString(arg[4]);
-    from_pile_name = toQString(arg[5]);
-    to_pile_name = toQString(arg[6]);
-    reason.tryParse(arg[7]);
+    }
+
+    from_place = (Player::Place)args[1].toInt();
+    to_place = (Player::Place)args[2].toInt();
+    from_player_name = args[3].toString();
+    to_player_name = args[4].toString();
+    from_pile_name = args[5].toString();
+    to_pile_name = args[6].toString();
+    reason.tryParse(args[7]);
     return true;
 }
 
-Json::Value CardsMoveStruct::toJsonValue() const{
-    Json::Value arg(Json::arrayValue);
-    if (open) arg[0] = toJsonArray(card_ids);
-    else arg[0] = card_ids.size();
-    arg[1] = (int)from_place;
-    arg[2] = (int)to_place;
-    arg[3] = toJsonString(from_player_name);
-    arg[4] = toJsonString(to_player_name);
-    arg[5] = toJsonString(from_pile_name);
-    arg[6] = toJsonString(to_pile_name);
-    arg[7] = reason.toJsonValue();
+QVariant CardsMoveStruct::toVariant() const{
+    JsonArray arg;
+    if (open) {
+        arg << JsonUtils::toJsonArray(card_ids);
+    } else {
+        arg << card_ids.size();
+    }
+
+    arg << (int)from_place;
+    arg << (int)to_place;
+    arg << from_player_name;
+    arg << to_player_name;
+    arg << from_pile_name;
+    arg << to_pile_name;
+    arg << reason.toVariant();
     return arg;
 }
 
-bool CardMoveReason::tryParse(const Json::Value &arg) {
-    m_reason = arg[0].asInt();
-    m_playerId = arg[1].asCString();
-    m_skillName = arg[2].asCString();
-    m_eventName = arg[3].asCString();
-    m_targetId = arg[4].asCString();
-    return true; // @todo: fix this
+bool CardMoveReason::tryParse(const QVariant &arg) {
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 5 || !args[0].canConvert<int>() || !JsonUtils::isStringArray(args, 1, 4))
+        return false;
+
+    m_reason = args[0].toInt();
+    m_playerId = args[1].toString();
+    m_skillName = args[2].toString();
+    m_eventName = args[3].toString();
+    m_targetId = args[4].toString();
+
+    return true;
 }
 
-Json::Value CardMoveReason::toJsonValue() const{
-    Json::Value result;
-    result[0] = m_reason;
-    result[1] = toJsonString(m_playerId);
-    result[2] = toJsonString(m_skillName);
-    result[3] = toJsonString(m_eventName);
-    result[4] = toJsonString(m_targetId);
+QVariant CardMoveReason::toVariant() const{
+    JsonArray result;
+    result << m_reason;
+    result << m_playerId;
+    result << m_skillName;
+    result << m_eventName;
+    result << m_targetId;
     return result;
 }
 

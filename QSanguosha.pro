@@ -22,7 +22,6 @@ SOURCES += \
     src/core/card.cpp \
     src/core/engine.cpp \
     src/core/general.cpp \
-    src/core/jsonutils.cpp \
     src/core/lua-wrapper.cpp \
     src/core/player.cpp \
     src/core/protocol.cpp \
@@ -34,6 +33,7 @@ SOURCES += \
     src/core/util.cpp \
     src/core/WrappedCard.cpp \
     src/core/version.cpp \
+    src/core/json.cpp \
     src/dialog/AboutUs.cpp \
     src/dialog/cardbutton.cpp \
     src/dialog/cardeditor.cpp \
@@ -108,12 +108,6 @@ SOURCES += \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
-    src/jsoncpp/src/json_writer.cpp \
-    src/jsoncpp/src/json_valueiterator.inl \
-    src/jsoncpp/src/json_value.cpp \
-    src/jsoncpp/src/json_reader.cpp \
-    src/jsoncpp/src/json_internalmap.inl \
-    src/jsoncpp/src/json_internalarray.inl \
     swig/sanguosha_wrap.cxx
 
 HEADERS += \
@@ -127,7 +121,6 @@ HEADERS += \
     src/core/compiler-specific.h \
     src/core/engine.h \
     src/core/general.h \
-    src/core/jsonutils.h \
     src/core/lua-wrapper.h \
     src/core/namespace.h \
     src/core/player.h \
@@ -140,6 +133,7 @@ HEADERS += \
     src/core/util.h \
     src/core/WrappedCard.h \
     src/core/version.h \
+    src/core/json.h \
     src/dialog/AboutUs.h \
     src/dialog/cardbutton.h \
     src/dialog/cardeditor.h \
@@ -214,18 +208,7 @@ HEADERS += \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \
-    src/util/socket.h \
-    src/jsoncpp/src/json_tool.h \
-    src/jsoncpp/src/json_batchallocator.h \
-    src/jsoncpp/include/json/writer.h \
-    src/jsoncpp/include/json/value.h \
-    src/jsoncpp/include/json/reader.h \
-    src/jsoncpp/include/json/json.h \
-    src/jsoncpp/include/json/forwards.h \
-    src/jsoncpp/include/json/features.h \
-    src/jsoncpp/include/json/config.h \
-    src/jsoncpp/include/json/autolink.h \
-    src/jsoncpp/include/json/assertions.h
+    src/util/socket.h
 
 FORMS += \
     src/dialog/cardoverview.ui \
@@ -243,7 +226,29 @@ INCLUDEPATH += src/scenario
 INCLUDEPATH += src/server
 INCLUDEPATH += src/ui
 INCLUDEPATH += src/util
-INCLUDEPATH += src/jsoncpp/include
+
+lessThan(QT_MAJOR_VERSION, 5){
+    SOURCES += src/jsoncpp/src/json_writer.cpp \
+        src/jsoncpp/src/json_valueiterator.inl \
+        src/jsoncpp/src/json_value.cpp \
+        src/jsoncpp/src/json_reader.cpp \
+        src/jsoncpp/src/json_internalmap.inl \
+        src/jsoncpp/src/json_internalarray.inl
+
+    HEADERS += src/jsoncpp/src/json_tool.h \
+        src/jsoncpp/src/json_batchallocator.h \
+        src/jsoncpp/include/json/writer.h \
+        src/jsoncpp/include/json/value.h \
+        src/jsoncpp/include/json/reader.h \
+        src/jsoncpp/include/json/json.h \
+        src/jsoncpp/include/json/forwards.h \
+        src/jsoncpp/include/json/features.h \
+        src/jsoncpp/include/json/config.h \
+        src/jsoncpp/include/json/autolink.h \
+        src/jsoncpp/include/json/assertions.h
+
+    INCLUDEPATH += src/jsoncpp/include
+}
 
 win32{
     RC_FILE += resource/icon.rc
@@ -378,7 +383,7 @@ CONFIG(opengl){
 TRANSLATIONS += builds/sanguosha.ts
 
 !exists($$PWD/sanguosha.qm) {
-    system("lrelease builds/vs2013/sanguosha.ts -qm $$PWD/sanguosha.qm")
+    system("lrelease builds/sanguosha.ts -qm $$PWD/sanguosha.qm")
 }
 
 OTHER_FILES += \

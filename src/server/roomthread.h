@@ -32,7 +32,7 @@ class GameRule;
 struct LogMessage {
     LogMessage();
     QString toString() const;
-    Json::Value toJsonValue() const;
+    QVariant toVariant() const;
 
     QString type;
     ServerPlayer *from;

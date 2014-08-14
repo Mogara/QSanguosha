@@ -25,18 +25,14 @@
 #include "scenerule.h"
 #include "scenario.h"
 #include "ai.h"
-#include "jsonutils.h"
 #include "settings.h"
 #include "standard.h"
 
 #include <QTime>
-#include <json/json.h>
 
 #ifdef QSAN_UI_LIBRARY_AVAILABLE
 #pragma message WARN("UI elements detected in server side!!!")
 #endif
-
-using namespace QSanProtocol::Utils;
 
 LogMessage::LogMessage()
     : from(NULL)
@@ -55,15 +51,14 @@ QString LogMessage::toString() const{
         .arg(card_str).arg(arg).arg(arg2);
 }
 
-Json::Value LogMessage::toJsonValue() const{
+QVariant LogMessage::toVariant() const{
     QStringList tos;
     foreach(ServerPlayer *player, to)
         if (player != NULL) tos << player->objectName();
 
     QStringList log;
     log << type << (from ? from->objectName() : "") << tos.join("+") << card_str << arg << arg2;
-    Json::Value json_log = QSanProtocol::Utils::toJsonArray(log);
-    return json_log;
+    return JsonUtils::toJsonArray(log);
 }
 
 DamageStruct::DamageStruct()
@@ -237,16 +232,17 @@ bool CardUseStruct::isValid(const QString &pattern) const{
     }*/
 }
 
-bool CardUseStruct::tryParse(const Json::Value &usage, Room *room) {
-    if (usage.size() < 2 || !usage[0].isString() || !usage[1].isArray())
+bool CardUseStruct::tryParse(const QVariant &usage, Room *room) {
+    JsonArray use = usage.value<JsonArray>();
+    if (use.size() < 2 || use[0].type() != QMetaType::QString || !use[1].canConvert<JsonArray>())
         return false;
 
-    card = Card::Parse(toQString(usage[0]));
-    const Json::Value &targets = usage[1];
+    card = Card::Parse(use[0].toString());
+    JsonArray targets = use[1].value<JsonArray>();
 
-    for (unsigned int i = 0; i < targets.size(); i++) {
-        if (!targets[i].isString()) return false;
-        this->to << room->findChild<ServerPlayer *>(toQString(targets[i]));
+    foreach (const QVariant &target, targets) {
+        if (target.type() != QMetaType::QString) return false;
+        this->to << room->findChild<ServerPlayer *>(target.toString());
     }
     return true;
 }

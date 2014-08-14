@@ -27,7 +27,6 @@
 #include "qsanbutton.h"
 #include "util.h"
 
-#include <json/json.h>
 #include <QString>
 #include <QPixmap>
 #include <QHash>
@@ -57,11 +56,11 @@ public:
         QColor m_color;
         bool m_vertical;
         QSanSimpleTextFont();
-        bool tryParse(Json::Value arg);
-        void paintText(QPainter *painter, QRect pos, Qt::Alignment align, const QString &text) const;
+        bool tryParse(const QVariant &arg);
+        void paintText(QPainter *painter, const QRect &pos, Qt::Alignment align, const QString &text) const;
         // this function's prototype is confusing. It will CLEAR ALL contents on the
         // QGraphicsPixmapItem passed in and then start drawing.
-        void paintText(QGraphicsPixmapItem *item, QRect pos, Qt::Alignment align, const QString &text) const;
+        void paintText(QGraphicsPixmapItem *item, const QRect &pos, Qt::Alignment align, const QString &text) const;
 
     protected:
         static QHash<QString, int *> _m_fontBank;
@@ -73,18 +72,18 @@ public:
         double m_shadowDecadeFactor;
         QPoint m_shadowOffset;
         QColor m_shadowColor;
-        bool tryParse(Json::Value arg);
-        void paintText(QPainter *painter, QRect pos, Qt::Alignment align, const QString &text) const;
+        bool tryParse(const QVariant &arg);
+        void paintText(QPainter *painter, const QRect &pos, Qt::Alignment align, const QString &text) const;
         // this function's prototype is confusing. It will CLEAR ALL contents on the
         // QGraphicsPixmapItem passed in and then start drawing.
-        void paintText(QGraphicsPixmapItem *item, QRect pos, Qt::Alignment align, const QString &text) const;
+        void paintText(QGraphicsPixmapItem *item, const QRect &pos, Qt::Alignment align, const QString &text) const;
     };
 
     class AnchoredRect {
     public:
-        QRect getTranslatedRect(QRect parentRect) const;
-        QRect getTranslatedRect(QRect parentRect, QSize childSize) const;
-        bool tryParse(Json::Value value);
+        QRect getTranslatedRect(const QRect &parentRect) const;
+        QRect getTranslatedRect(const QRect &parentRect, const QSize &childSize) const;
+        bool tryParse(const QVariant &value);
 
     protected:
         Qt::Alignment m_anchorChild;
@@ -107,18 +106,18 @@ public:
     QStringList getAnimationFileNames() const;
 
 protected:
-    virtual bool _loadLayoutConfig(const Json::Value &config) = 0;
-    virtual bool _loadImageConfig(const Json::Value &config);
-    virtual bool _loadAnimationConfig(const Json::Value &config) = 0;
-    QString _readConfig(const Json::Value &dictionary, const QString &key,
+    virtual bool _loadLayoutConfig(const QVariant &config) = 0;
+    virtual bool _loadImageConfig(const QVariant &config);
+    virtual bool _loadAnimationConfig(const QVariant &config) = 0;
+    QString _readConfig(const QVariant &dictionary, const QString &key,
         const QString &defaultValue = QString()) const;
     QString _readImageConfig(const QString &key, QRect &clipRegion, bool &clipping,
         QSize &newScale, bool &scaled,
         const QString &defaultValue = QString()) const;
 
-    Json::Value _m_imageConfig;
-    Json::Value _m_audioConfig;
-    Json::Value _m_animationConfig;
+    JsonObject _m_imageConfig;
+    JsonObject _m_audioConfig;
+    JsonObject _m_animationConfig;
     // image key -> image file name
     static QHash<QString, QString> S_IMAGE_KEY2FILE;
     static QHash<QString, QPixmap> S_IMAGE_KEY2PIXMAP;
@@ -454,15 +453,15 @@ protected:
     PhotoLayout _m_photoLayout;
     CommonLayout _m_commonLayout;
     DashboardLayout _m_dashboardLayout;
-    virtual bool _loadLayoutConfig(const Json::Value &layoutConfig);
-    virtual bool _loadAnimationConfig(const Json::Value &animationConfig);
+    virtual bool _loadLayoutConfig(const QVariant &layout);
+    virtual bool _loadAnimationConfig(const QVariant &animationConfig);
 };
 
 class QSanSkinScheme {
     // Why do we need another layer above room skin? Because we may add lobby, login interface
     // in the future; and we may need to assemble a set of different skins into a scheme.
 public:
-    bool load(Json::Value configs);
+    bool load(const QVariant &configs);
     const QSanRoomSkin& getRoomSkin() const;
 
 protected:
@@ -484,7 +483,7 @@ protected:
     QSanSkinFactory(const char *fileName);
     static QSanSkinFactory* _sm_singleton;
     QSanSkinScheme _sm_currentSkin;
-    Json::Value _m_skinList;
+    JsonObject _m_skinList;
     QString _m_skinName;
 };
 

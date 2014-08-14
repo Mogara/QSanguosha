@@ -26,7 +26,6 @@
 #include "structs.h"
 #include "gamerule.h"
 #include "settings.h"
-#include "jsonutils.h"
 
 class Tuntian : public TriggerSkill {
 public:
@@ -641,7 +640,7 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
     log.to << effect.to;
     log.arg = choice;
     foreach(ServerPlayer *p, room->getOtherPlayers(effect.from, true)){
-        room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        room->doNotify(p, QSanProtocol::S_COMMAND_LOG_SKILL, log.toVariant());
     }
 
     if (choice == "handcards") {
@@ -671,11 +670,11 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
             QString position = effect.to->getActualGeneral1Name() == name ? "head_general" : "deputy_general";
             log.arg = Sanguosha->translate(position);
             log.arg2 = name;
-            room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+            room->doNotify(effect.from, QSanProtocol::S_COMMAND_LOG_SKILL, log.toVariant());
         }
-        Json::Value arg(Json::arrayValue);
-        arg[0] = QSanProtocol::Utils::toJsonString("shangyi");
-        arg[1] = QSanProtocol::Utils::toJsonArray(list);
+        JsonArray arg;
+        arg << "shangyi";
+        arg << JsonUtils::toJsonArray(list);
         room->doNotify(effect.from, QSanProtocol::S_COMMAND_VIEW_GENERALS, arg);
     }
 }
@@ -1422,11 +1421,11 @@ public:
                 room->setPlayerProperty(player, "general1_showed", true);
                 foreach(const Skill *skill, Sanguosha->getGeneral(to_change)->getSkillList(true, true)) {
                     player->addSkill(skill->objectName());
-                    Json::Value args;
-                    args[0] = QSanProtocol::S_GAME_EVENT_ADD_SKILL;
-                    args[1] = QSanProtocol::Utils::toJsonString(player->objectName());
-                    args[2] = QSanProtocol::Utils::toJsonString(skill->objectName());
-                    args[3] = true;
+                    JsonArray args;
+                    args << QSanProtocol::S_GAME_EVENT_ADD_SKILL;
+                    args << player->objectName();
+                    args << skill->objectName();
+                    args << true;
                     room->doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
                 }
                 room->changeHero(player, to_change, false, true, false, true);

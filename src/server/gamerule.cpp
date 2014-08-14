@@ -24,7 +24,6 @@
 #include "standard.h"
 #include "engine.h"
 #include "settings.h"
-#include "jsonutils.h"
 
 #include <QTime>
 
@@ -233,10 +232,10 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                 foreach(const Skill *skill, player->getVisibleSkillList()) {
                     if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()
                         && (!skill->isLordSkill() || player->hasLordSkill(skill->objectName()))) {
-                        Json::Value arg(Json::arrayValue);
-                        arg[0] = QSanProtocol::Utils::toJsonString(player->objectName());
-                        arg[1] = QSanProtocol::Utils::toJsonString(skill->getLimitMark());
-                        arg[2] = 1;
+                        JsonArray arg;
+                        arg << player->objectName();
+                        arg << skill->getLimitMark();
+                        arg << 1;
                         room->doNotify(player, QSanProtocol::S_COMMAND_SET_MARK, arg);
                         player->addMark(skill->getLimitMark());
                     }
@@ -264,12 +263,12 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
         room->sendLog(log);
         room->addPlayerMark(player, "Global_TurnCount");
 
-        Json::Value update_handcards_array(Json::arrayValue);
+        JsonArray update_handcards_array;
         foreach(ServerPlayer *p, room->getPlayers()){
-            Json::Value _current(Json::arrayValue);
-            _current[0] = QSanProtocol::Utils::toJsonString(p->objectName());
-            _current[1] = p->getHandcardNum();
-            update_handcards_array.append(_current);
+            JsonArray _current;
+            _current << p->objectName();
+            _current << p->getHandcardNum();
+            update_handcards_array << _current;
         }
         room->doBroadcastNotify(QSanProtocol::S_COMMAND_UPDATE_HANDCARD_NUM, update_handcards_array);
 
@@ -326,7 +325,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
             CardUseStruct card_use = data.value<CardUseStruct>();
             if (card_use.from->hasFlag("Global_ForbidSurrender")) {
                 card_use.from->setFlags("-Global_ForbidSurrender");
-                room->doNotify(card_use.from, QSanProtocol::S_COMMAND_ENABLE_SURRENDER, Json::Value(true));
+                room->doNotify(card_use.from, QSanProtocol::S_COMMAND_ENABLE_SURRENDER, true);
             }
 
             card_use.from->broadcastSkillInvoke(card_use.card);
@@ -413,7 +412,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
 
         if (use.card->isKindOf("AOE") || use.card->isKindOf("GlobalEffect")) {
             foreach(ServerPlayer *p, room->getAlivePlayers())
-                room->doNotify(p, QSanProtocol::S_COMMAND_NULLIFICATION_ASKED, QSanProtocol::Utils::toJsonString("."));
+                room->doNotify(p, QSanProtocol::S_COMMAND_NULLIFICATION_ASKED, QString("."));
         }
         if (use.card->isKindOf("Slash"))
             use.from->tag.remove("Jink_" + use.card->toString());

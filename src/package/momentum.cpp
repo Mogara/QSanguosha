@@ -26,7 +26,6 @@
 #include "client.h"
 #include "engine.h"
 #include "structs.h"
-#include "jsonutils.h"
 
 class Xunxun : public PhaseChangeSkill {
 public:
@@ -1113,7 +1112,7 @@ public:
         log.type = "$ViewDrawPile";
         log.from = player;
         log.card_str = IntList2StringList(guanxing).join("+");
-        room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toJsonValue());
+        room->doNotify(player, QSanProtocol::S_COMMAND_LOG_SKILL, log.toVariant());
 
         room->askForGuanxing(player, guanxing, Room::GuanxingUpOnly);
 

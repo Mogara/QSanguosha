@@ -607,7 +607,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\core\banpair.cpp" />
-    <ClCompile Include="..\..\src\core\jsonutils.cpp" />
+    <ClCompile Include="..\..\src\core\json.cpp" />
     <ClCompile Include="..\..\src\core\protocol.cpp" />
     <ClCompile Include="..\..\src\core\record-analysis.cpp" />
     <ClCompile Include="..\..\src\core\RoomState.cpp" />
@@ -1708,7 +1708,7 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release Qt5|x64'">
       </AdditionalInputs>
     </CustomBuild>
-    <CustomBuild Include="..\..\src\core\jsonutils.h">
+    <CustomBuild Include="..\..\src\core\json.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt4|Win32'">
       </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug Qt5|Win32'">

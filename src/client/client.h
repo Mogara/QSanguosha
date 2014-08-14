@@ -83,9 +83,9 @@ public:
     void requestSurrender();
 
     void disconnectFromHost();
-    void replyToServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
-    void requestServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
-    void notifyServer(QSanProtocol::CommandType command, const Json::Value &arg = Json::Value::null);
+    void replyToServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());
+    void requestServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());
+    void notifyServer(QSanProtocol::CommandType command, const QVariant &arg = QVariant());
     void request(const QByteArray &raw);
     inline void request(const QString &unicode){ request(unicode.toUtf8()); }
     void onPlayerResponseCard(const Card *card, const QList<const Player *> &targets = QList<const Player *>());
@@ -109,93 +109,93 @@ public:
     QTextDocument *getLinesDoc() const;
     QTextDocument *getPromptDoc() const;
 
-    typedef void (Client::*Callback) (const Json::Value &);
+    typedef void (Client::*Callback) (const QVariant &);
 
-    void checkVersion(const Json::Value &server_version);
-    void setup(const Json::Value &setup_str);
-    void networkDelayTest(const Json::Value &);
-    void addPlayer(const Json::Value &player_info);
-    void removePlayer(const Json::Value &player_name_json);
-    void startInXs(const Json::Value &);
-    void arrangeSeats(const Json::Value &seats_arr);
-    void activate(const Json::Value &playerId);
-    void startGame(const Json::Value &);
-    void hpChange(const Json::Value &change_str);
-    void maxhpChange(const Json::Value &change_str);
-    void resetPiles(const Json::Value &);
-    void setPileNumber(const Json::Value &pile_str);
-    void setHandcardNum(const Json::Value &num_array);
-    void gameOver(const Json::Value &);
-    void loseCards(const Json::Value &);
-    void getCards(const Json::Value &);
-    void updateProperty(const Json::Value &);
-    void killPlayer(const Json::Value &player_arg);
-    void revivePlayer(const Json::Value &player_arg);
-    void setDashboardShadow(const Json::Value &player_arg);
-    void warn(const Json::Value &);
-    void setMark(const Json::Value &mark_str);
-    void showCard(const Json::Value &show_str);
-    void log(const Json::Value &log_str);
-    void speak(const Json::Value &speak);
-    void addHistory(const Json::Value &history);
-    void moveFocus(const Json::Value &focus);
-    void setEmotion(const Json::Value &set_str);
-    void skillInvoked(const Json::Value &invoke_str);
-    void animate(const Json::Value &animate_str);
-    void cardLimitation(const Json::Value &limit);
-    void disableShow(const Json::Value &args);
-    void setNullification(const Json::Value &str);
-    void enableSurrender(const Json::Value &enabled);
-    void exchangeKnownCards(const Json::Value &players);
-    void setKnownCards(const Json::Value &set_str);
-    void viewGenerals(const Json::Value &str);
-    void setFixedDistance(const Json::Value &set_str);
-    void updateStateItem(const Json::Value &state_str);
-    void setAvailableCards(const Json::Value &pile);
-    void setCardFlag(const Json::Value &pattern_str);
-    void updateCard(const Json::Value &arg);
+    void checkVersion(const QVariant &server_version);
+    void setup(const QVariant &setup_str);
+    void networkDelayTest(const QVariant &);
+    void addPlayer(const QVariant &player_info);
+    void removePlayer(const QVariant &player_name);
+    void startInXs(const QVariant &);
+    void arrangeSeats(const QVariant &seats_arr);
+    void activate(const QVariant &playerId);
+    void startGame(const QVariant &);
+    void hpChange(const QVariant &change_str);
+    void maxhpChange(const QVariant &change_str);
+    void resetPiles(const QVariant &);
+    void setPileNumber(const QVariant &pile_str);
+    void setHandcardNum(const QVariant &num_array);
+    void gameOver(const QVariant &);
+    void loseCards(const QVariant &);
+    void getCards(const QVariant &);
+    void updateProperty(const QVariant &);
+    void killPlayer(const QVariant &player_name);
+    void revivePlayer(const QVariant &player);
+    void setDashboardShadow(const QVariant &player);
+    void warn(const QVariant &);
+    void setMark(const QVariant &mark_var);
+    void showCard(const QVariant &show_str);
+    void log(const QVariant &log_str);
+    void speak(const QVariant &speak);
+    void addHistory(const QVariant &history);
+    void moveFocus(const QVariant &focus);
+    void setEmotion(const QVariant &set_str);
+    void skillInvoked(const QVariant &invoke_str);
+    void animate(const QVariant &animate_str);
+    void cardLimitation(const QVariant &limit);
+    void disableShow(const QVariant &args);
+    void setNullification(const QVariant &str);
+    void enableSurrender(const QVariant &enabled);
+    void exchangeKnownCards(const QVariant &players);
+    void setKnownCards(const QVariant &set_str);
+    void viewGenerals(const QVariant &arg);
+    void setFixedDistance(const QVariant &set_str);
+    void updateStateItem(const QVariant &state);
+    void setAvailableCards(const QVariant &pile);
+    void setCardFlag(const QVariant &pattern_str);
+    void updateCard(const QVariant &val);
 
-    void fillAG(const Json::Value &cards_str);
-    void takeAG(const Json::Value &take_str);
-    void clearAG(const Json::Value &);
+    void fillAG(const QVariant &cards_str);
+    void takeAG(const QVariant &take_var);
+    void clearAG(const QVariant &);
 
     //interactive server callbacks
-    void askForCardOrUseCard(const Json::Value &);
-    void askForAG(const Json::Value &);
-    void askForSinglePeach(const Json::Value &);
-    void askForCardShow(const Json::Value &);
-    void askForSkillInvoke(const Json::Value &);
-    void askForChoice(const Json::Value &);
-    void askForDiscard(const Json::Value &);
-    void askForExchange(const Json::Value &);
-    void askForSuit(const Json::Value &);
-    void askForKingdom(const Json::Value &);
-    void askForNullification(const Json::Value &);
-    void askForPindian(const Json::Value &);
-    void askForCardChosen(const Json::Value &);
-    void askForPlayerChosen(const Json::Value &);
-    void askForGeneral(const Json::Value &);
-    void askForYiji(const Json::Value &);
-    void askForGuanxing(const Json::Value &);
-    void showAllCards(const Json::Value &);
-    void askForGongxin(const Json::Value &);
-    void askForSurrender(const Json::Value &);
-    void askForLuckCard(const Json::Value &);
-    void askForTriggerOrder(const Json::Value &);
-    void handleGameEvent(const Json::Value &);
+    void askForCardOrUseCard(const QVariant &);
+    void askForAG(const QVariant &);
+    void askForSinglePeach(const QVariant &);
+    void askForCardShow(const QVariant &);
+    void askForSkillInvoke(const QVariant &);
+    void askForChoice(const QVariant &);
+    void askForDiscard(const QVariant &reqvar);
+    void askForExchange(const QVariant &exchange);
+    void askForSuit(const QVariant &);
+    void askForKingdom(const QVariant &);
+    void askForNullification(const QVariant &);
+    void askForPindian(const QVariant &);
+    void askForCardChosen(const QVariant &ask_str);
+    void askForPlayerChosen(const QVariant &players);
+    void askForGeneral(const QVariant &);
+    void askForYiji(const QVariant &);
+    void askForGuanxing(const QVariant &);
+    void showAllCards(const QVariant &);
+    void askForGongxin(const QVariant &);
+    void askForSurrender(const QVariant &);
+    void askForLuckCard(const QVariant &);
+    void askForTriggerOrder(const QVariant &);
+    void handleGameEvent(const QVariant &);
     //3v3 & 1v1
-    void askForOrder(const Json::Value &);
-    void askForDirection(const Json::Value &);
+    void askForOrder(const QVariant &);
+    void askForDirection(const QVariant &);
 
     // 3v3 & 1v1 methods
-    void fillGenerals(const Json::Value &generals);
-    void takeGeneral(const Json::Value &take_str);
-    void startArrange(const Json::Value &to_arrange);
+    void fillGenerals(const QVariant &generals);
+    void takeGeneral(const QVariant &take_str);
+    void startArrange(const QVariant &to_arrange);
 
-    void recoverGeneral(const Json::Value &);
-    void revealGeneral(const Json::Value &);
+    void recoverGeneral(const QVariant &recover);
+    void revealGeneral(const QVariant &reveal);
 
-    void attachSkill(const Json::Value &skill);
+    void attachSkill(const QVariant &skill);
 
     inline virtual RoomState *getRoomState() { return &_m_roomState; }
     inline virtual Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }
@@ -258,8 +258,8 @@ protected:
 private:
     ClientSocket *socket;
     bool m_isGameOver;
-    QHash<QSanProtocol::CommandType, Callback> m_interactions;
-    QHash<QSanProtocol::CommandType, Callback> m_callbacks;
+    QHash<QSanProtocol::CommandType, Callback> interactions;
+    QHash<QSanProtocol::CommandType, Callback> callbacks;
     QList<const ClientPlayer *> players;
     QStringList ban_packages;
     Recorder *recorder;
@@ -335,7 +335,7 @@ signals:
     void game_started();
     void game_over();
     void standoff();
-    void event_received(const Json::Value &);
+    void event_received(const QVariant &);
 
     void move_cards_lost(int moveId, QList<CardsMoveStruct> moves);
     void move_cards_got(int moveId, QList<CardsMoveStruct> moves);
