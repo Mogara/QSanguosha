@@ -53,15 +53,11 @@ void RecAnalysis::initialize(const QString &dir) {
     records_line.removeAll(QByteArray());
 
     QStringList role_list;
-    foreach(const QByteArray &line, records_line) {
-        int elapsed;
-        QByteArray cmd;
-
-        QTextStream stream(line);
-        stream >> elapsed >> cmd;
+    foreach(QByteArray line, records_line) {
+        line.remove(0, line.indexOf(' '));
 
         Packet packet;
-        if (!packet.parse(cmd))
+        if (!packet.parse(line))
             continue;
 
         if (packet.getCommandType() == S_COMMAND_SETUP){
