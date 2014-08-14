@@ -3454,7 +3454,7 @@ bool Room::notifyProperty(ServerPlayer *playerToNotify, const ServerPlayer *prop
     if (value.isNull()) value = propertyOwner->property(propertyName).toString();
     JsonArray arg;
     if (propertyOwner == playerToNotify)
-        arg << QString(QSanProtocol::S_PLAYER_SELF_REFERENCE_ID);
+        arg << QSanProtocol::S_PLAYER_SELF_REFERENCE_ID;
     else
         arg << propertyOwner->objectName();
     arg << propertyName;
@@ -5575,7 +5575,7 @@ void Room::sendLog(const LogMessage &log) {
     if (log.type.isEmpty())
         return;
 
-    doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_SKILL, log.toVariant());
+    doBroadcastNotify(S_COMMAND_LOG_SKILL, log.toVariant());
 }
 
 void Room::showCard(ServerPlayer *player, int card_id, ServerPlayer *only_viewer) {

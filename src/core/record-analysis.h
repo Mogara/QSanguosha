@@ -33,7 +33,7 @@ class RecAnalysis : public QObject {
     Q_OBJECT
 
 public:
-    explicit RecAnalysis(QString dir = QString());
+    explicit RecAnalysis(const QString &dir = QString());
     ~RecAnalysis();
 
     static const unsigned int M_ALL_PLAYER = 0xFFFF;
@@ -53,7 +53,7 @@ public:
         ZeroDamaged = 0x800
     };
 
-    void initialize(QString dir = QString());
+    void initialize(const QString &dir = QString());
     PlayerRecordStruct *getPlayerRecord(const Player *player) const;
     QMap<QString, PlayerRecordStruct *> getRecordMap() const;
     QStringList getRecordPackages() const;

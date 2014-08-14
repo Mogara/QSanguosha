@@ -100,7 +100,7 @@ public:
     void speakToServer(const QString &text);
     ClientPlayer *getPlayer(const QString &name);
     bool save(const QString &filename) const;
-    QList<QString> getRecords() const;
+    QList<QByteArray> getRecords() const;
     QString getReplayPath() const;
     Replayer *getReplayer() const;
     QString getPlayerName(const QString &str);

@@ -39,7 +39,7 @@ public:
     static QImage TXT2PNG(const QByteArray &data);
     bool save(const QString &filename) const;
     void recordLine(const QByteArray &line);
-    QList<QString> getRecords() const;
+    QList<QByteArray> getRecords() const;
 
 public slots:
     void record(const char *line);

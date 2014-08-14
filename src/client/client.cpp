@@ -1123,11 +1123,11 @@ bool Client::save(const QString &filename) const{
         return false;
 }
 
-QList<QString> Client::getRecords() const{
+QList<QByteArray> Client::getRecords() const{
     if (recorder)
         return recorder->getRecords();
     else
-        return QList<QString>();
+        return QList<QByteArray>();
 }
 
 QString Client::getReplayPath() const{
