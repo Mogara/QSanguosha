@@ -139,7 +139,21 @@ public:
         return rightFrame->sceneBoundingRect();
     }
 
-    void addPending(CardItem *item);
+    inline void addPending(CardItem *item)
+    {
+        pendings << item;
+    }
+
+    inline QList<CardItem *> getPendings() const {
+        return pendings;
+    }
+
+    void clearPendings();
+
+    inline bool hasHandCard(CardItem *item) const {
+        return m_handCards.contains(item);
+    }
+
     void addTransferButton(TransferButton *button);
     QList<TransferButton *> getTransferButtons() const;
 

@@ -90,6 +90,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     int player_count = Sanguosha->getPlayerCount(ServerInfo.GameMode);
 
     _m_isInDragAndUseMode = false;
+    _m_superDragStarted = false;
 
     _m_roomSkin = &(QSanSkinFactory::getInstance().getCurrentSkinScheme().getRoomSkin());
     _m_roomLayout = &(G_ROOM_SKIN.getRoomLayout());
@@ -349,8 +350,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
         connect(add_robot, SIGNAL(clicked()), ClientInstance, SLOT(addRobot()));
         connect(fill_robots, SIGNAL(clicked()), ClientInstance, SLOT(fillRobots()));
         connect(Self, SIGNAL(owner_changed(bool)), this, SLOT(showOwnerButtons(bool)));
-    }
-    else {
+    } else {
         control_panel = NULL;
     }
     return_to_start_scene = new Button(tr("Return to main menu"), 1.0, true);
@@ -1103,7 +1103,7 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
 
     QGraphicsObject *obj = static_cast<QGraphicsObject *>(focusItem());
     CardItem *card_item = qobject_cast<CardItem *>(obj);
-    if (!card_item || !card_item->isUnderMouse())
+    if (!card_item || !card_item->isUnderMouse() || !dashboard->hasHandCard(card_item))
         return;
 
     static bool wasOutsideDashboard = false;
@@ -1112,12 +1112,16 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
     if (isOutsideDashboard != wasOutsideDashboard) {
         wasOutsideDashboard = isOutsideDashboard;
         if (wasOutsideDashboard && !_m_isInDragAndUseMode) {
+            if (!_m_superDragStarted && !dashboard->getPendings().isEmpty())
+                dashboard->clearPendings();
+
             dashboard->selectCard(card_item, true);
             if (dashboard->currentSkill()) {
                 dashboard->addPending(card_item);
                 dashboard->updatePending();
             }
             _m_isInDragAndUseMode = true;
+            _m_superDragStarted = true;
             if (!dashboard->currentSkill()
                     && (ClientInstance->getStatus() == Client::Playing
                         || ClientInstance->getStatus() == Client::RespondingUse)) {
@@ -1436,11 +1440,8 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
 void RoomScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event) {
     QGraphicsScene::contextMenuEvent(event);
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QGraphicsItem *item = itemAt(event->scenePos());
-#else
     QGraphicsItem *item = itemAt(event->scenePos(), QTransform());
-#endif
+
     if (item && item->zValue() < -99999) { // @todo_P: tableBg?
         QMenu *menu = miscellaneous_menu;
         menu->clear();
@@ -1518,8 +1519,7 @@ void RoomScene::chooseGeneral(const QStringList &generals, const bool single_res
     if (generals.isEmpty()) {
         delete m_choiceDialog;
         m_choiceDialog = new FreeChooseDialog(main_window);
-    }
-    else {
+    } else {
         choose_general_box->setSingleResult(single_result);
         choose_general_box->chooseGeneral(generals);
     }
@@ -2395,6 +2395,8 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                 button->setState(QSanButton::S_STATE_DISABLED);
         }
     }
+
+    _m_superDragStarted = false;
 
     switch (newStatus & Client::ClientStatusBasicMask) {
     case Client::NotActive: {

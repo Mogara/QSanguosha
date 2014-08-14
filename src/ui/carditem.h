@@ -95,7 +95,7 @@ public:
     inline void setSelected(bool selected) { m_isSelected = selected; }
     bool isEquipped() const;
 
-    virtual void setFrozen(bool is_frozen);
+    virtual void setFrozen(bool is_frozen, bool update_movable = true);
     inline bool isFrozen() { return frozen; }
 
     inline void showFootnote() { _m_showFootnote = true; }

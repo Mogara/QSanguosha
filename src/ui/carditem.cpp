@@ -211,10 +211,11 @@ bool CardItem::isEquipped() const{
     return Self->hasEquip(card);
 }
 
-void CardItem::setFrozen(bool is_frozen) {
+void CardItem::setFrozen(bool is_frozen, bool update_movable) {
     if (frozen != is_frozen) {
         frozen = is_frozen;
-        setFlag(QGraphicsItem::ItemIsMovable, !frozen);
+        if (!update_movable || frozen)
+            setFlag(QGraphicsItem::ItemIsMovable, !frozen);
         update();
     }
 }

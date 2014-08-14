@@ -333,9 +333,12 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
         card_item->setEnabled(true);
 
     if (ClientInstance->getStatus() == Client::Playing)
-        card_item->setFrozen(!card_item->getCard()->isAvailable(Self));
+        card_item->setFrozen(!card_item->getCard()->isAvailable(Self), false);
     else
-        card_item->setFrozen(true);
+        card_item->setFrozen(true, false);
+
+    if (Config.EnableSuperDrag)
+        card_item->setFlag(ItemIsMovable);
 
     card_item->setHomeOpacity(1.0);
     card_item->setRotation(0.0);
@@ -638,9 +641,11 @@ void Dashboard::showSeat() {
     _m_seatItem->setZValue(1.1);
 }
 
-void Dashboard::addPending(CardItem *item)
-{
-    pendings << item;
+void Dashboard::clearPendings() {
+    selected = NULL;
+    foreach (CardItem *item, m_handCards)
+        selectCard(item, false);
+    pendings.clear();
 }
 
 QList<TransferButton *> Dashboard::getTransferButtons() const
@@ -1046,7 +1051,7 @@ void Dashboard::controlNullificationButton() {
 void Dashboard::disableAllCards() {
     m_mutexEnableCards.lock();
     foreach(CardItem *card_item, m_handCards)
-        card_item->setFrozen(true);
+        card_item->setFrozen(true, false);
     m_mutexEnableCards.unlock();
 }
 
@@ -1054,14 +1059,14 @@ void Dashboard::enableCards() {
     m_mutexEnableCards.lock();
     expandPileCards("wooden_ox");
     foreach(CardItem *card_item, m_handCards)
-        card_item->setFrozen(!card_item->getCard()->isAvailable(Self));
+        card_item->setFrozen(!card_item->getCard()->isAvailable(Self), false);
     m_mutexEnableCards.unlock();
 }
 
 void Dashboard::enableAllCards() {
     m_mutexEnableCards.lock();
     foreach(CardItem *card_item, m_handCards)
-        card_item->setFrozen(false);
+        card_item->setFrozen(false, false);
     m_mutexEnableCards.unlock();
 }
 
@@ -1106,7 +1111,7 @@ void Dashboard::stopPending() {
     emit card_selected(NULL);
 
     foreach(CardItem *item, m_handCards)
-        item->setFrozen(true);
+        item->setFrozen(true, false);
 
     for (int i = 0; i < S_EQUIP_AREA_LENGTH; i++) {
         CardItem *equip = _m_equipCards[i];
@@ -1212,7 +1217,7 @@ void Dashboard::updatePending() {
         pended = cards;
     foreach(CardItem *item, m_handCards) {
         if (!item->isSelected() || pendings.isEmpty())
-            item->setFrozen(!viewAsSkill->viewFilter(pended, item->getCard()));
+            item->setFrozen(!viewAsSkill->viewFilter(pended, item->getCard()), false);
     }
 
     for (int i = 0; i < S_EQUIP_AREA_LENGTH; i++) {
