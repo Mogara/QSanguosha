@@ -328,10 +328,6 @@ void ServerPlayer::invoke(const AbstractPacket *packet) {
     unicast(packet->toString());
 }
 
-void ServerPlayer::invoke(const char *method, const QString &arg) {
-    unicast(QString("%1 %2").arg(method).arg(arg));
-}
-
 void ServerPlayer::notify(CommandType type, const QVariant &arg){
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, type);
     packet.setMessageBody(arg);

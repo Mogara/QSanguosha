@@ -848,10 +848,6 @@ bool Room::doBroadcastNotify(int command, const char *arg) {
     return doBroadcastNotify(m_players, command, arg);
 }
 
-void Room::broadcastInvoke(const char *method, const QString &arg, ServerPlayer *except) {
-    broadcast(QString("%1 %2").arg(method).arg(arg), except);
-}
-
 void Room::broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except) {
     broadcast(packet->toString(), except);
 }

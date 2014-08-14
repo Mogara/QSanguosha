@@ -60,7 +60,6 @@ public:
 
     void setSocket(ClientSocket *socket);
     void invoke(const QSanProtocol::AbstractPacket *packet);
-    void invoke(const char *method, const QString &arg = ".");
     void notify(QSanProtocol::CommandType type, const QVariant &arg = QVariant());
     void kick();
     QString reportHeader() const;
