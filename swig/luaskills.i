@@ -79,8 +79,8 @@ class MaxCardsSkill: public Skill {
 public:
     MaxCardsSkill(const QString &name);
 
-    virtual int getExtra(const Player *target) const;
-    virtual int getFixed(const Player *target) const;
+    virtual int getExtra(const ServerPlayer *target, MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
+    virtual int getFixed(const ServerPlayer *target, MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
 };
 
 class TargetModSkill: public Skill {
@@ -169,8 +169,8 @@ public:
 class LuaMaxCardsSkill: public MaxCardsSkill {
 public:
     LuaMaxCardsSkill(const char *name);
-    virtual int getExtra(const Player *target) const;
-    virtual int getFixed(const Player *target) const;
+    virtual int getExtra(const ServerPlayer *target, MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
+    virtual int getFixed(const ServerPlayer *target, MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
 
     LuaFunction extra_func;
     LuaFunction fixed_func;
@@ -677,7 +677,7 @@ int LuaDistanceSkill::getCorrect(const Player *from, const Player *to) const{
     return correct;
 }
 
-int LuaMaxCardsSkill::getExtra(const Player *target) const{
+int LuaMaxCardsSkill::getExtra(const ServerPlayer *target, MaxCardsType::MaxCardsCount type) const{
     if (extra_func == 0)
         return 0;
 
@@ -686,9 +686,12 @@ int LuaMaxCardsSkill::getExtra(const Player *target) const{
     lua_rawgeti(L, LUA_REGISTRYINDEX, extra_func);
 
     SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaMaxCardsSkill, 0);
-    SWIG_NewPointerObj(L, target, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, target, SWIGTYPE_p_ServerPlayer, 0);
 
-    int error = lua_pcall(L, 2, 1, 0);
+    int e = static_cast<int>(type);
+    lua_pushinteger(L, e);
+
+    int error = lua_pcall(L, 3, 1, 0);
     if (error) {
         Error(L);
         return 0;
@@ -700,7 +703,7 @@ int LuaMaxCardsSkill::getExtra(const Player *target) const{
     return extra;
 }
 
-int LuaMaxCardsSkill::getFixed(const Player *target) const{
+int LuaMaxCardsSkill::getFixed(const ServerPlayer *target, MaxCardsType::MaxCardsCount type) const{
     if (fixed_func == 0)
         return 0;
 
@@ -709,7 +712,10 @@ int LuaMaxCardsSkill::getFixed(const Player *target) const{
     lua_rawgeti(L, LUA_REGISTRYINDEX, fixed_func);
 
     SWIG_NewPointerObj(L, this, SWIGTYPE_p_LuaMaxCardsSkill, 0);
-    SWIG_NewPointerObj(L, target, SWIGTYPE_p_Player, 0);
+    SWIG_NewPointerObj(L, target, SWIGTYPE_p_ServerPlayer, 0);
+
+    int e = static_cast<int>(type);
+    lua_pushinteger(L, e);
 
     int error = lua_pcall(L, 2, 1, 0);
     if (error) {

@@ -688,16 +688,6 @@ void Player::setFaceUp(bool face_up) {
     }
 }
 
-int Player::getMaxCards() const{
-    int origin = Sanguosha->correctMaxCards(this, true);
-    if (origin == 0)
-        origin = qMax(hp, 0);
-
-    origin += Sanguosha->correctMaxCards(this);
-
-    return qMax(origin, 0);
-}
-
 QString Player::getKingdom() const{
     if (kingdom.isEmpty() && general)
         return general->getKingdom();
@@ -1154,27 +1144,6 @@ const Player *Player::getLord(bool include_death) const{
     }
 
     return NULL;
-}
-
-int Player::getPlayerNumWithSameKingdom(const QString &_to_calculate /* = QString() */) const{
-    QString to_calculate = _to_calculate;
-
-    if (to_calculate.isEmpty())
-        to_calculate = kingdom;
-
-    QList<const Player *> players = getAliveSiblings();
-    players << this;
-
-    int num = 0;
-    foreach(const Player *p, players){
-        if (p->hasShownOneGeneral() && p->getKingdom() == to_calculate && (this == p || p->getRole() != "careerist"))
-            num += 1;
-    }
-
-    if (hasLordSkill("hongfa") && to_calculate == "qun")
-        num += getPile("heavenly_army").length();
-
-    return num;
 }
 
 void Player::copyFrom(Player *p) {

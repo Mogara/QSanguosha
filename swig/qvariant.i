@@ -148,6 +148,14 @@ public:
     CardResponseStruct toCardResponse() const{
         return $self->value<CardResponseStruct>();
     }
+
+    void setValue(PlayerNumStruct *cmcs) {
+        $self->setValue(QVariant::fromValue(*cmcs));
+    }
+
+    PlayerNumStruct toPlayerNum() const{
+        return $self->value<PlayerNumStruct>();
+    }
 /*
     void setValue(QList<int> intlist) {
         QVariantList varlist;

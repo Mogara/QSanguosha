@@ -1330,8 +1330,8 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         ServerPlayer *dfowner = NULL;
-        foreach(ServerPlayer *p, room->getAlivePlayers()){
-            if (p->hasWeapon("DragonPhoenix")){
+        foreach(ServerPlayer *p, room->getAlivePlayers()) {
+            if (p->hasWeapon("DragonPhoenix")) {
                 dfowner = p;
                 break;
             }
@@ -1344,36 +1344,24 @@ public:
         if (!damage || !damage->from || damage->from != dfowner) return false;
         if (!damage->card || !damage->card->isKindOf("Slash")) return false;
 
-        QMap<QString, int> kingdoms;
-        bool has_careerist = false;
-        foreach(ServerPlayer *p, room->getAlivePlayers()){
-            if (p->getRole() == "careerist"){
-                has_careerist = true;
+        QStringList kingdom_list = Sanguosha->getKingdoms();
+        kingdom_list << "careerist";
+        bool broken = false;
+        int n = dfowner->getPlayerNumWithSameKingdom(QString(), MaxCardsType::Normal);
+        foreach (QString kingdom, Sanguosha->getKingdoms()) {
+            if (kingdom == "god") continue;
+            if (dfowner->getRole() == "careerist") {
+                if (kingdom == "careerist")
+                    continue;
+            } else if (dfowner->getKingdom() == kingdom)
                 continue;
+            if (dfowner->getPlayerNumWithSameKingdom(kingdom, MaxCardsType::Normal) < n) {
+                broken = true;
+                break;
             }
-            if (!kingdoms.keys().contains(p->getKingdom()))
-                kingdoms[p->getKingdom()] = 0;
-
-            kingdoms[p->getKingdom()]++;
         }
 
-        kingdoms["god"] = 2147483647;
-
-        QString kingdom_least = "god";
-
-        foreach(QString kingdom, kingdoms.keys()){
-            if (kingdom == "god")
-                continue;
-            if (kingdoms[kingdom] <= 0)
-                continue;
-            if (kingdoms[kingdom] < kingdoms[kingdom_least])
-                kingdom_least = kingdom;
-        }
-
-        if (kingdoms[dfowner->getKingdom()] != kingdoms[kingdom_least])
-            return false;
-
-        if (has_careerist && kingdoms[dfowner->getKingdom()] >= 2)
+        if (broken)
             return false;
 
         QStringList generals = Sanguosha->getLimitedGeneralNames();

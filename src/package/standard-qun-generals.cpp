@@ -885,19 +885,23 @@ void XiongyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
 void XiongyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
     Card::use(room, source, targets);
 
-    QList<QString> kingdom_list = Sanguosha->getKingdoms();
+    QStringList kingdom_list = Sanguosha->getKingdoms();
+    kingdom_list << "careerist";
     bool invoke = true;
-    if (source->getRole() != "careerist") {
-        int n = room->getLieges(source->getKingdom(), NULL).length();
-        foreach(QString kingdom, Sanguosha->getKingdoms()) {
-            if (kingdom == "god") continue;
-            int x = room->getLieges(kingdom, NULL).length();
-            if (x && x < n) {
-                invoke = false;
-                break;
-            }
+    int n = source->getPlayerNumWithSameKingdom(QString(), MaxCardsType::Normal);
+    foreach(QString kingdom, Sanguosha->getKingdoms()) {
+        if (kingdom == "god") continue;
+        if (source->getRole() == "careerist") {
+            if (kingdom == "careerist")
+                continue;
+        } else if (source->getKingdom() == kingdom)
+            continue;
+        if (source->getPlayerNumWithSameKingdom(kingdom, MaxCardsType::Normal) < n) {
+            invoke = false;
+            break;
         }
     }
+
     if (invoke && source->isWounded()) {
         RecoverStruct recover;
         recover.who = source;

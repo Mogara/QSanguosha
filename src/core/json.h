@@ -36,6 +36,10 @@ protected:
 };
 
 namespace JsonUtils{
+    /* the return value of QVariant::type() is declared as QVariant::Type(obsolete) but actually statically casted from
+     * QMetaType::Type (See line 1685, corelib/kernel/qvariant.cpp). Compiler may output warnings about the comparison
+     * between different enumerations. So it's casted back to QMetaType::Type here.
+     */
     inline bool isNumber(const QVariant &var) {
         //three number types defined by JsonCPP
         QMetaType::Type type = static_cast<QMetaType::Type>(var.type());

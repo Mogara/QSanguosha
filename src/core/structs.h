@@ -28,6 +28,7 @@ class Slash;
 
 #include "player.h"
 #include "serverplayer.h"
+#include "namespace.h"
 
 #include <QVariant>
 
@@ -417,6 +418,30 @@ struct CardResponseStruct {
     bool m_isUse;
 };
 
+struct PlayerNumStruct {
+    inline PlayerNumStruct() {
+        m_num = 0;
+        m_toCalculate = QString();
+        m_type = MaxCardsType::Max;
+    }
+
+    inline PlayerNumStruct(int num, const QString &toCalculate) {
+        m_num = num;
+        m_toCalculate = toCalculate;
+        m_type = MaxCardsType::Max;
+    }
+
+    inline PlayerNumStruct(int num, const QString &toCalculate, MaxCardsType::MaxCardsCount type) {
+        m_num = num;
+        m_toCalculate = toCalculate;
+        m_type = type;
+    }
+
+    MaxCardsType::MaxCardsCount m_type;
+    int m_num;
+    QString m_toCalculate;
+};
+
 enum TriggerEvent {
     NonTrigger,
 
@@ -427,6 +452,8 @@ enum TriggerEvent {
     EventPhaseEnd,
     EventPhaseChanging,
     EventPhaseSkipping,
+
+    ConfirmPlayerNum, // hongfa only
 
     DrawNCards,
     AfterDrawNCards,
@@ -523,6 +550,7 @@ Q_DECLARE_METATYPE(DeathStruct)
 Q_DECLARE_METATYPE(RecoverStruct)
 Q_DECLARE_METATYPE(PhaseChangeStruct)
 Q_DECLARE_METATYPE(CardResponseStruct)
+Q_DECLARE_METATYPE(PlayerNumStruct)
 Q_DECLARE_METATYPE(const Card *)
 Q_DECLARE_METATYPE(ServerPlayer *)
 Q_DECLARE_METATYPE(JudgeStruct *)

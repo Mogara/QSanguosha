@@ -25,7 +25,6 @@
 #include "settings.h"
 #include "recorder.h"
 #include "lua-wrapper.h"
-#include "skill.h"
 
 using namespace QSanProtocol;
 
@@ -188,6 +187,16 @@ void ServerPlayer::throwAllCards() {
     }
 }
 
+int ServerPlayer::getMaxCards(MaxCardsType::MaxCardsCount type) const{
+    int origin = Sanguosha->correctMaxCards(this, true, type);
+    if (origin == 0)
+        origin = qMax(getHp(), 0);
+
+    origin += Sanguosha->correctMaxCards(this, false, type);
+
+    return qMax(origin, 0);
+}
+
 void ServerPlayer::drawCards(int n, const QString &reason) {
     room->drawCards(this, n, reason);
 }
@@ -227,6 +236,42 @@ int ServerPlayer::aliveCount(bool includeRemoved) const{
 
 int ServerPlayer::getHandcardNum() const{
     return handcards.length();
+}
+
+int ServerPlayer::getPlayerNumWithSameKingdom(const QString &_to_calculate, MaxCardsType::MaxCardsCount type) const{
+    QString to_calculate = _to_calculate;
+
+    if (to_calculate.isEmpty()) {
+        if (getRole() == "careerist")
+            to_calculate = "careerist";
+        else
+            to_calculate = getKingdom();
+    }
+
+    ServerPlayer *this_player = room->findPlayer(objectName());
+    QList<ServerPlayer *> players = room->getAlivePlayers();
+
+    int num = 0;
+    foreach (ServerPlayer *p, players) {
+        if (!p->hasShownOneGeneral())
+            continue;
+        if (to_calculate == "careerist") {
+            if (p->getRole() == "careerist") {
+                num ++;
+                break;    // careerist always alone.
+            }
+            continue;
+        }
+        if (p->getKingdom() == to_calculate)
+            num += 1;
+    }
+
+    QVariant data = QVariant::fromValue(PlayerNumStruct(num, to_calculate, type));
+    room->getThread()->trigger(ConfirmPlayerNum, room, this_player, data);
+    PlayerNumStruct playerNumStruct = data.value<PlayerNumStruct>();
+    num = playerNumStruct.m_num;
+
+    return qMax(num, 0);
 }
 
 void ServerPlayer::setSocket(ClientSocket *socket) {
