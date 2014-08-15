@@ -217,11 +217,12 @@ public:
         return ask_who->hasShownSkill("jgbiantian");
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
         DamageStruct damage = data.value<DamageStruct>();
         LogMessage log;
         log.type = "#GalePower";
-        log.from = player;
+        log.from = ask_who;
+        log.to << player;
         log.arg = QString::number(damage.damage);
         log.arg2 = QString::number(++damage.damage);
         room->sendLog(log);
@@ -258,11 +259,12 @@ public:
         return ask_who->hasShownSkill("jgbiantian");
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const{
         DamageStruct damage = data.value<DamageStruct>();
         LogMessage log;
         log.type = "#FogProtect";
-        log.from = player;
+        log.from = ask_who;
+        log.to << player;
         log.arg = QString::number(damage.damage);
         if (damage.nature == DamageStruct::Normal)
             log.arg2 = "normal_nature";
@@ -926,7 +928,7 @@ public:
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ask_who->objectName(), player->objectName());
         LogMessage log;
         log.type = "#JGChiying";
-        log.from = player;
+        log.from = ask_who;
         log.arg = QString::number(damage.damage);
         log.arg2 = objectName();
         room->sendLog(log);

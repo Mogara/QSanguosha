@@ -19,8 +19,8 @@ return {
 	["@fog"] = "大雾",
 	["#jgbiantian-kf"] = "变天（狂风）",
 	["#jgbiantian-dw"] = "变天（大雾）",
-	["#FogProtect"] = "%from 的“<font color=\"yellow\"><b>大雾</b></font>”效果被触发，防止了 %arg 点伤害[%arg2]",
-	["#GalePower"] = "“<font color=\"yellow\"><b>狂风</b></font>”效果被触发，%from 的火焰伤害从 %arg 点增加至 %arg2 点",
+	["#FogProtect"] = "%from 的“<font color=\"yellow\"><b>大雾</b></font>”效果被触发，防止了 %to 的 %arg 点伤害[%arg2]",
+	["#GalePower"] = "%from 的“<font color=\"yellow\"><b>狂风</b></font>”效果被触发，%to 的火焰伤害从 %arg 点增加至 %arg2 点",
 
 	["#jg_yueying"] = "蜀汉英魂",
 	["jg_yueying"] = "工神月英",
