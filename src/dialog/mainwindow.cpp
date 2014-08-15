@@ -1093,6 +1093,10 @@ void MainWindow::on_actionRecord_analysis_triggered() {
 #else
     QString location = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 #endif
+    QString last_dir = Config.value("LastReplayDir").toString();
+    if (!last_dir.isEmpty())
+        location = last_dir;
+
     QString filename = QFileDialog::getOpenFileName(this,
         tr("Load replay record"),
         location,
