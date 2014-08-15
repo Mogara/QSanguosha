@@ -130,9 +130,6 @@
     <ClCompile Include="..\..\src\dialog\configdialog.cpp">
       <Filter>dialog</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\dialog\choosegeneraldialog.cpp">
-      <Filter>dialog</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\package\package.cpp">
       <Filter>package</Filter>
     </ClCompile>
@@ -224,9 +221,6 @@
       <Filter>server</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\protocol.cpp">
-      <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\core\jsonutils.cpp">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\core\util.cpp">
@@ -433,9 +427,6 @@
     <ClCompile Include="Release\moc_chatwidget.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Release\moc_choosegeneraldialog.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="Release\moc_client.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
@@ -584,9 +575,6 @@
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_chatwidget.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_choosegeneraldialog.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_client.cpp">
@@ -851,6 +839,18 @@
     <ClCompile Include="Release\moc_PlayerCardBox.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\core\json.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\FreeChooseDialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_FreeChooseDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_FreeChooseDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -908,9 +908,6 @@
       <Filter>dialog</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\cardoverview.h">
-      <Filter>dialog</Filter>
-    </CustomBuild>
-    <CustomBuild Include="..\..\src\dialog\choosegeneraldialog.h">
       <Filter>dialog</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\configdialog.h">
@@ -1117,6 +1114,9 @@
     <CustomBuild Include="..\..\src\ui\PlayerCardBox.h">
       <Filter>ui</Filter>
     </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\FreeChooseDialog.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\resource\icon.rc" />
@@ -1149,9 +1149,6 @@
     <ClInclude Include="..\..\src\core\compiler-specific.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\core\jsonutils.h">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\core\namespace.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -1181,6 +1178,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\ui\StyleHelper.h">
       <Filter>ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\core\json.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
