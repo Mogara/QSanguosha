@@ -490,7 +490,7 @@ end
 sgs.dynamic_value.damage_card.LuanwuCard = true
 
 sgs.ai_skill_cardask["@luanwu-slash"] = function(self)
-	local players = {}
+	local targets = {}
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 		if player:hasFlag("SlashAssignee") then table.insert(targets, player) end
 	end
