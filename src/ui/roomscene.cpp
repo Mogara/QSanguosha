@@ -43,6 +43,7 @@
 #include "GuanxingBox.h"
 #include "BubbleChatBox.h"
 #include "PlayerCardBox.h"
+#include "StyleHelper.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -255,11 +256,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
             this, SLOT(showBubbleChatBox(const QString &, const QString &)));
 
     QScrollBar *bar = chatBox->verticalScrollBar();
-    QFile file("style-sheet/scroll.qss");
-    if (file.open(QIODevice::ReadOnly)) {
-        QTextStream stream(&file);
-        bar->setStyleSheet(stream.readAll());
-    }
+    bar->setStyleSheet(StyleHelper::styleSheetOfScrollBar());
 
     // chat edit
     chatEdit = new QLineEdit;
@@ -3687,8 +3684,7 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion, bool perm
     Photo *photo = name2photo[who];
     if (photo) {
         photo->setEmotion(emotion, permanent);
-    }
-    else {
+    } else {
         QString path = QString("image/system/emotion/%1.png").arg(emotion);
         if (QFile::exists(path)) {
             QSanSelectableItem *item = new QSanSelectableItem(path);
