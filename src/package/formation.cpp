@@ -1355,7 +1355,8 @@ public:
                     continue;
             } else if (dfowner->getKingdom() == kingdom)
                 continue;
-            if (dfowner->getPlayerNumWithSameKingdom(kingdom, MaxCardsType::Normal) < n) {
+            int other_num = dfowner->getPlayerNumWithSameKingdom(kingdom, MaxCardsType::Normal);
+            if (other_num > 0 && other_num < n) {
                 broken = true;
                 break;
             }
