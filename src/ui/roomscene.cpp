@@ -2228,6 +2228,7 @@ void RoomScene::highlightSkillButton(const QString &skillName, const CardUseStru
             } else {
                 const Skill *skill = button->getSkill();
                 if (skill != NULL && skill->objectName() == skillName) {
+                    button->setEnabled(true);
                     button->setState(QSanButton::S_STATE_DOWN);
                     break;
                 }

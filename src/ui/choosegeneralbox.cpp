@@ -254,7 +254,7 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
     }
 
     general_number = generals.length();
-    update();
+    prepareGeometryChange();
 
     items.clear();
     selected.clear();

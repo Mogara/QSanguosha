@@ -74,7 +74,7 @@ void PlayerCardBox::chooseCard(const QString &reason, const ClientPlayer *player
     int maxNumber = maxCardNumberInOneRow;
     maxCardsInOneRow = qMin(max, maxNumber);
 
-    update();
+    prepareGeometryChange();
 
     moveToCenter();
     show();

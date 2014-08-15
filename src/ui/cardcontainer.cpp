@@ -113,7 +113,7 @@ void CardContainer::fillCards(const QList<int> &card_ids, const QList<int> &disa
 
     items.append(card_items);
     itemCount = items.length();
-    update();
+    prepareGeometryChange();
 
     int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;

@@ -68,7 +68,7 @@ void ChooseOptionsBox::chooseOption(const QStringList &options)
     //repaint background
     this->options = options;
     optionsNumber = options.length();
-    update();
+    prepareGeometryChange();
 
     const int buttonWidth = getButtonWidth();
     foreach (QString option, options) {
