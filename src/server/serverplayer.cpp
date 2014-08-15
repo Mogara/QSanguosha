@@ -1866,6 +1866,38 @@ void ServerPlayer::summonFriends(const ArrayType type) {
     }
 }
 
+QHash<QString, QStringList> ServerPlayer::getBigAndSmallKingdoms(MaxCardsType::MaxCardsCount type) const
+{
+    QMap<QString, int> kingdom_map;
+    QStringList kingdoms = Sanguosha->getKingdoms();
+    kingdoms << "careerist";
+    foreach (QString kingdom, kingdoms) {
+        if (kingdom == "god") continue;
+        kingdom_map.insert(kingdom, getPlayerNumWithSameKingdom(kingdom, type));
+    }
+    QHash<QString, QStringList> big_n_small;
+    big_n_small.insert("big", QStringList());
+    big_n_small.insert("small", QStringList());
+    foreach (QString key, kingdom_map.keys()) {
+        if (kingdom_map[key] == 0)
+            continue;
+        if (big_n_small["big"].isEmpty()) {
+            big_n_small["big"] << key;
+            continue;
+        }
+        if (kingdom_map[key] == kingdom_map[big_n_small["big"].first()]) {
+            big_n_small["big"] << key;
+        } else if (kingdom_map[key] > kingdom_map[big_n_small["big"].first()]) {
+            big_n_small["small"] << big_n_small["big"];
+            big_n_small["big"].clear();
+            big_n_small["big"] << key;
+        } else if (kingdom_map[key] < kingdom_map[big_n_small["big"].first()]) {
+            big_n_small["small"] << key;
+        }
+    }
+    return big_n_small;
+}
+
 #ifndef QT_NO_DEBUG
 bool ServerPlayer::event(QEvent *event) {
 #define SET_MY_PROPERTY {\

@@ -267,3 +267,47 @@ void ClientPlayer::setMark(const QString &mark, int value) {
         emit duanchang_invoked();
 }
 
+QHash<QString, QStringList> ClientPlayer::getBigAndSmallKingdoms(MaxCardsType::MaxCardsCount) const
+{
+    QMap<QString, int> kingdom_map;
+    kingdom_map.insert("wei", 0);
+    kingdom_map.insert("shu", 0);
+    kingdom_map.insert("wu", 0);
+    kingdom_map.insert("qun", 0);
+    kingdom_map.insert("careerist", 0);
+    QList<const Player *> players = getAliveSiblings();
+    players.prepend(this);
+    foreach (const Player *p, players) {
+        if (!p->hasShownOneGeneral())
+            continue;
+        QString key = p->getRole() == "careerist" ? "careerist" : p->getKingdom();
+        kingdom_map[key] ++;
+    }
+    QHash<QString, QStringList> big_n_small;
+    big_n_small.insert("big", QStringList());
+    big_n_small.insert("small", QStringList());
+    if (kingdom_map["careerist"] > 0)
+        big_n_small["small"] << "careerist";
+    kingdom_map.remove("careerist");
+    foreach (QString key, kingdom_map.keys()) {
+        if (kingdom_map[key] == 0)
+            continue;
+        if (big_n_small["big"].isEmpty()) {
+            if (kingdom_map[key] == 1)
+                big_n_small["small"] << key;
+            else
+                big_n_small["big"] << key;
+            continue;
+        }
+        if (kingdom_map[key] == kingdom_map[big_n_small["big"].first()]) {
+            big_n_small["big"] << key;
+        } else if (kingdom_map[key] > kingdom_map[big_n_small["big"].first()]) {
+            big_n_small["small"] << big_n_small["big"];
+            big_n_small["big"].clear();
+            big_n_small["big"] << key;
+        } else if (kingdom_map[key] < kingdom_map[big_n_small["big"].first()]) {
+            big_n_small["small"] << key;
+        }
+    }
+    return big_n_small;
+}

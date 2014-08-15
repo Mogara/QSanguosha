@@ -23,6 +23,7 @@
 
 #include "general.h"
 #include "WrappedCard.h"
+#include "namespace.h"
 
 #include <QObject>
 #include <QTcpSocket>
@@ -326,7 +327,7 @@ public:
 
     QList<const Player *> getFormation() const;
 
-    QHash<QString, QStringList> getBigAndSmallKingdoms() const;
+    virtual QHash<QString, QStringList> getBigAndSmallKingdoms(MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const = 0;
 
     QVariantMap tag;
 
