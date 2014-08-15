@@ -195,6 +195,8 @@ public:
     bool inFormationRalation(ServerPlayer *teammate) const;
     void summonFriends(const HegemonyMode::ArrayType type);
 
+    virtual QHash<QString, QStringList> getBigAndSmallKingdoms(MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const;
+
     bool event_received;
 
 protected:
