@@ -259,7 +259,7 @@ public:
         return ask_who->hasShownSkill("jgbiantian");
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who) const{
         DamageStruct damage = data.value<DamageStruct>();
         LogMessage log;
         log.type = "#FogProtect";
