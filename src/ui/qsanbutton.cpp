@@ -224,14 +224,14 @@ void QSanSkillButton::onMouseClick() {
              && _m_skill->canPreshow() && !Self->hasShownSkill(_m_skill)) {
         setState(QSanButton::S_STATE_CANPRESHOW);
         ClientInstance->preshow(_m_skill->objectName(), false);
-    }
-
-    if ((_m_style == S_STYLE_TOGGLE && isDown() && _m_emitActivateSignal) || _m_style == S_STYLE_PUSH) {
-        emit skill_activated();
-        emit skill_activated(_m_skill);
-    } else if (!isDown() && _m_emitDeactivateSignal) {
-        emit skill_deactivated();
-        emit skill_deactivated(_m_skill);
+    } else {
+        if ((_m_style == S_STYLE_TOGGLE && isDown() && _m_emitActivateSignal) || _m_style == S_STYLE_PUSH) {
+            emit skill_activated();
+            emit skill_activated(_m_skill);
+        } else if (!isDown() && _m_emitDeactivateSignal) {
+            emit skill_deactivated();
+            emit skill_deactivated(_m_skill);
+        }
     }
 }
 
