@@ -35,6 +35,7 @@ void GuanxingBox::doGuanxing(const QList<int> &cardIds, bool up_only) {
         return;
     }
 
+    zhuge.clear();//self
     this->up_only = up_only;
     upItems.clear();
     scene_width = RoomSceneInstance->sceneRect().width();
@@ -89,20 +90,79 @@ void GuanxingBox::doGuanxing(const QList<int> &cardIds, bool up_only) {
     }
 }
 
+void GuanxingBox::mirrorGuanxingStart(const QString &who, int card_num)
+{
+    QList<int> cards;
+    for (int i = 0; i < card_num; i++) {
+        cards << -1;
+    }
+    doGuanxing(cards, false);
+
+    foreach (CardItem *item, upItems) {
+        item->setFlag(QGraphicsItem::ItemIsMovable, false);
+        item->disconnect(this);
+    }
+
+    zhuge = who;
+}
+
+void GuanxingBox::mirrorGuanxingMove(int from, int to)
+{
+    if (from == 0 || to == 0)
+        return;
+
+    QList<CardItem *> *fromItems = NULL;
+    if (from > 0) {
+        fromItems = &upItems;
+        from = from - 1;
+    } else {
+        fromItems = &downItems;
+        from = -from - 1;
+    }
+
+    if (from < fromItems->length()) {
+        CardItem *card = fromItems->at(from);
+
+        QList<CardItem *> *toItems = NULL;
+        if (to > 0) {
+            toItems = &upItems;
+            to = to - 1;
+        } else {
+            toItems = &downItems;
+            to = -to - 1;
+        }
+
+        if (to >= 0 && to <= toItems->length()) {
+            fromItems->removeOne(card);
+            toItems->insert(to, card);
+            adjust();
+        }
+    }
+}
+
 void GuanxingBox::onItemReleased()
 {
     CardItem *item = qobject_cast<CardItem *>(sender());
     if (item == NULL) return;
 
-    upItems.removeOne(item);
-    downItems.removeOne(item);
+    int fromPos = 0;
+    if (upItems.contains(item)) {
+        fromPos = upItems.indexOf(item);
+        upItems.removeOne(item);
+        fromPos = fromPos + 1;
+    } else {
+        fromPos = downItems.indexOf(item);
+        downItems.removeOne(item);
+        fromPos = -fromPos - 1;
+    }
 
     const int count = upItems.length() + downItems.length();
     const int cardWidth = G_COMMON_LAYOUT.m_cardNormalWidth;
     const int cardHeight = G_COMMON_LAYOUT.m_cardNormalHeight;
     const int middleY = 45 + (isOneRow() ? cardHeight : (cardHeight * 2 + cardInterval));
 
-    QList<CardItem *> *items = (up_only || item->y() + cardHeight / 2 <= middleY) ? &upItems : &downItems;
+    bool toUpItems = (up_only || item->y() + cardHeight / 2 <= middleY);
+    QList<CardItem *> *items = toUpItems ? &upItems : &downItems;
     bool oddRow = true;
     if (!isOneRow() && count % 2) {
         const qreal y = item->y() + cardHeight / 2;
@@ -114,6 +174,8 @@ void GuanxingBox::onItemReleased()
     c = qBound(0, c, items->length());
     items->insert(c, item);
 
+    int toPos = toUpItems ? c + 1: -c - 1;
+    ClientInstance->onPlayerDoGuanxingStep(fromPos, toPos);
     adjust();
 }
 
@@ -122,14 +184,20 @@ void GuanxingBox::onItemClicked()
     CardItem *item = qobject_cast<CardItem *>(sender());
     if (item == NULL || up_only) return;
     
+    int fromPos, toPos;
     if (upItems.contains(item)) {
+        fromPos = upItems.indexOf(item) + 1;
+        toPos = -downItems.size() - 1;
         upItems.removeOne(item);
         downItems.append(item);
     } else {
+        fromPos = -downItems.indexOf(item) - 1;
+        toPos = upItems.size() + 1;
         downItems.removeOne(item);
         upItems.append(item);
     }
 
+    ClientInstance->onPlayerDoGuanxingStep(fromPos, toPos);
     adjust();
 }
 
@@ -239,7 +307,12 @@ QRectF GuanxingBox::boundingRect() const {
 }
 
 void GuanxingBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *) {
-    GraphicsBox::paintGraphicsBoxStyle(painter, tr("Please arrange the cards"), boundingRect());
+    if (zhuge.isEmpty()) {
+        GraphicsBox::paintGraphicsBoxStyle(painter, tr("Please arrange the cards"), boundingRect());
+    } else {
+        QString playerName = ClientInstance->getPlayerName(zhuge);
+        GraphicsBox::paintGraphicsBoxStyle(painter, tr("%1 is arranging the cards").arg(playerName), boundingRect());
+    }
 
     const int card_width = G_COMMON_LAYOUT.m_cardNormalWidth;
     const int card_height = G_COMMON_LAYOUT.m_cardNormalHeight;

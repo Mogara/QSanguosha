@@ -200,6 +200,9 @@ RoomScene::RoomScene(QMainWindow *main_window)
     guanxing_box->setZValue(20000.0);
 
     connect(ClientInstance, SIGNAL(guanxing(QList<int>, bool)), guanxing_box, SLOT(doGuanxing(QList<int>, bool)));
+    connect(ClientInstance, SIGNAL(mirror_guanxing_start(QString,int)), guanxing_box, SLOT(mirrorGuanxingStart(QString,int)));
+    connect(ClientInstance, SIGNAL(mirror_guanxing_move(int,int)), guanxing_box, SLOT(mirrorGuanxingMove(int,int)));
+    connect(ClientInstance, SIGNAL(mirror_guanxing_finish()), guanxing_box, SLOT(clear()));
     guanxing_box->moveBy(-120, 0);
 
     choose_general_box = new ChooseGeneralBox;

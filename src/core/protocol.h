@@ -154,7 +154,7 @@ namespace QSanProtocol {
         S_COMMAND_SIGNUP,
         S_COMMAND_DISABLE_SHOW,
         S_COMMAND_TRIGGER_ORDER,
-        S_COMMAND_SKILL_GUANXING_MOVE
+        S_COMMAND_MIRROR_GUANXING
     };
 
     enum GameEventType {
@@ -194,6 +194,12 @@ namespace QSanProtocol {
     enum Game3v3Camp {
         S_CAMP_WARM,
         S_CAMP_COOL
+    };
+
+    enum GuanxingStep {
+        S_GUANXING_START,
+        S_GUANXING_MOVE,
+        S_GUANXING_FINISH
     };
 
     //static consts

@@ -368,9 +368,12 @@ public:
     void speakCommand(ServerPlayer *player, const QVariant &arg);
     void trustCommand(ServerPlayer *player, const QVariant &arg);
     void pauseCommand(ServerPlayer *player, const QVariant &arg);
-    void processResponse(ServerPlayer *player, const QSanProtocol::Packet *arg);
     void addRobotCommand(ServerPlayer *player, const QVariant &arg);
     void fillRobotsCommand(ServerPlayer *player, const QVariant &arg);
+    void guanxingStepCommand(ServerPlayer *player, const QVariant &arg);
+
+    void processResponse(ServerPlayer *player, const QSanProtocol::Packet *arg);
+
     void broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except = NULL);
     void networkDelayTestCommand(ServerPlayer *player, const QVariant &);
     inline RoomState *getRoomState() { return &_m_roomState; }

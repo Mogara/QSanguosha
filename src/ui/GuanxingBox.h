@@ -28,7 +28,6 @@ class GuanxingBox : public CardContainer {
 
 public:
     GuanxingBox();
-    void clear();
     void reply();
     virtual QRectF boundingRect() const;
 
@@ -37,7 +36,11 @@ protected:
 
 public slots:
     void doGuanxing(const QList<int> &card_ids, bool up_only);
-    
+    void clear();
+
+    void mirrorGuanxingStart(const QString &who, int card_num);
+    void mirrorGuanxingMove(int from, int to);
+
 private slots:
     void onItemReleased();
     void onItemClicked();
@@ -48,6 +51,7 @@ private:
     void adjust();
     int itemNumberOfFirstRow() const;
     bool isOneRow() const;
+    QString zhuge;
 };
 
 #endif // GUANXINGBOX_H

@@ -89,10 +89,8 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_SET_KNOWN_CARDS] = &Client::setKnownCards;
     callbacks[S_COMMAND_VIEW_GENERALS] = &Client::viewGenerals;
     callbacks[S_COMMAND_SET_DASHBOARD_SHADOW] = &Client::setDashboardShadow;
-
     callbacks[S_COMMAND_UPDATE_STATE_ITEM] = &Client::updateStateItem;
     callbacks[S_COMMAND_AVAILABLE_CARDS] = &Client::setAvailableCards;
-
     callbacks[S_COMMAND_GET_CARD] = &Client::getCards;
     callbacks[S_COMMAND_LOSE_CARD] = &Client::loseCards;
     callbacks[S_COMMAND_SET_PROPERTY] = &Client::updateProperty;
@@ -100,6 +98,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_UPDATE_PILE] = &Client::setPileNumber;
     callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
     callbacks[S_COMMAND_UPDATE_HANDCARD_NUM] = &Client::setHandcardNum;
+    callbacks[S_COMMAND_MIRROR_GUANXING] = &Client::guanxingStep;
 
     // interactive methods
     interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
@@ -214,6 +213,29 @@ void Client::updateCard(const QVariant &val) {
         WrappedCard *wrapped = Sanguosha->getWrappedCard(cardId);
         Q_ASSERT(wrapped != NULL);
         wrapped->copyEverythingFrom(card);
+    }
+}
+
+void Client::guanxingStep(const QVariant &args)
+{
+    JsonArray arg = args.value<JsonArray>();
+    if (arg.isEmpty()) return;
+
+    GuanxingStep step = static_cast<GuanxingStep>(arg.at(0).toInt());
+    if (step == S_GUANXING_START) {
+        if (arg.size() >= 3) {
+            QString who = arg.at(1).toString();
+            int cardNum = arg.at(2).toInt();
+            emit mirror_guanxing_start(who, cardNum);
+        }
+    } else if (step == S_GUANXING_MOVE) {
+        if (arg.size() >= 3) {
+            int from = arg.at(1).toInt();
+            int to = arg.at(2).toInt();
+            emit mirror_guanxing_move(from, to);
+        }
+    } else if (step == S_GUANXING_FINISH) {
+        emit mirror_guanxing_finish();
     }
 }
 
@@ -1775,6 +1797,13 @@ void Client::onPlayerReplyGuanxing(const QList<int> &up_cards, const QList<int> 
     replyToServer(S_COMMAND_SKILL_GUANXING, decks);
 
     setStatus(NotActive);
+}
+
+void Client::onPlayerDoGuanxingStep(int from, int to)
+{
+    JsonArray args;
+    args << S_GUANXING_MOVE << from << to;
+    notifyServer(S_COMMAND_MIRROR_GUANXING, args);
 }
 
 void Client::log(const QVariant &log_str) {

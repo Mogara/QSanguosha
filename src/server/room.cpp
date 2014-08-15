@@ -106,12 +106,11 @@ void Room::initCallbacks() {
     m_callbacks[S_COMMAND_TOGGLE_READY] = &Room::toggleReadyCommand;
     m_callbacks[S_COMMAND_ADD_ROBOT] = &Room::addRobotCommand;
     m_callbacks[S_COMMAND_FILL_ROBOTS] = &Room::fillRobotsCommand;
-
     m_callbacks[S_COMMAND_SPEAK] = &Room::speakCommand;
     m_callbacks[S_COMMAND_TRUST] = &Room::trustCommand;
     m_callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
-
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
+    m_callbacks[S_COMMAND_MIRROR_GUANXING] = &Room::guanxingStepCommand;
 }
 
 ServerPlayer *Room::getCurrent() const{
@@ -2427,6 +2426,11 @@ void Room::fillRobotsCommand(ServerPlayer *player, const QVariant &) {
     for (int i = 0; i < left; i++) {
         addRobotCommand(player, QVariant());
     }
+}
+
+void Room::guanxingStepCommand(ServerPlayer *player, const QVariant &arg)
+{
+    doBroadcastNotify(S_COMMAND_MIRROR_GUANXING, arg, player);
 }
 
 ServerPlayer *Room::getOwner() const{
@@ -5024,6 +5028,10 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
         bottom_cards = cards;
     }
     else {
+        JsonArray stepArgs;
+        stepArgs << S_GUANXING_START << zhuge->objectName() << cards.length();
+        doBroadcastNotify(S_COMMAND_MIRROR_GUANXING, stepArgs, zhuge);
+
         JsonArray guanxingArgs;
         guanxingArgs << JsonUtils::toJsonArray(cards);
         guanxingArgs << (guanxing_type != GuanxingBothSides);
@@ -5046,6 +5054,10 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
                 top_cards.clear();
             }
         }
+
+        stepArgs.clear();
+        stepArgs << S_GUANXING_FINISH;
+        doBroadcastNotify(S_COMMAND_MIRROR_GUANXING, stepArgs, zhuge);
     }
 
     bool length_equal = top_cards.length() + bottom_cards.length() == cards.length();

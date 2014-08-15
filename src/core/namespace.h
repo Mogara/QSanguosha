@@ -31,7 +31,7 @@ namespace HegemonyMode {
         Siege,
         Formation
     };
-};
+}
 
 namespace MaxCardsType {
     enum MaxCardsCount {
@@ -39,6 +39,6 @@ namespace MaxCardsType {
         Normal = 0,
         Min = -1,
     };
-};
+}
 
 #endif
