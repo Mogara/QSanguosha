@@ -442,7 +442,7 @@ sgs.ai_view_as.hongfa_slash = function(card, player, card_place)
 	end
 end
 
-sgs.ai_skill_use["@@hongfa"] = function(self)
+sgs.ai_skill_use["@@hongfa1"] = function(self)
 	local ints = sgs.QList2Table(self.player:getPile("heavenly_army"))
 	local int = getHongfaCard(ints)
 	if int then

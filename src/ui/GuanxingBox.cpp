@@ -53,7 +53,7 @@ void GuanxingBox::doGuanxing(const QList<int> &cardIds, bool up_only) {
     }
 
     itemCount = upItems.length();
-    update();
+    prepareGeometryChange();
     GraphicsBox::moveToCenter(this);
     show();
 

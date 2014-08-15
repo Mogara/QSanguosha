@@ -12,8 +12,8 @@ QProgressBar::chunk {
 }
 
 QTextEdit {
-    border: 1px solid rgb(166, 150, 122);
-    background-color: rgba(0, 0, 0, 65%);
+	border: none;
+    background-color: rgba(0, 0, 0, 48%);
 }
 
 QTextEdit[description="true"] {
@@ -133,8 +133,23 @@ QMenu::item:selected {
 
 QMenu::separator {
 	height: 1px;
-    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(72, 160, 212, 255), stop:1 transparent);
+    background: qlineargradient(spread:reflect, x1:0, y1:0, x2:0.5, y2:0, stop:0 transparent, stop:1 rgba(72, 160, 212, 255));
 	border-radius: 1px;
     margin-left: 5px;
-    margin-right: 10px;
+    margin-right: 5px;
 }
+
+QMenu::indicator:checked {
+	margin-left: 5px;
+	width: 15px;
+	height: 15px;
+	image: url(image/system/menu-indicator.png);
+}
+
+QMenu::right-arrow {
+	margin-right: 5px;
+	width: 12px;
+	height: 12px;
+	image: url(image/system/menu-right-arrow.png);
+}
+	

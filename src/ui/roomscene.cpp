@@ -1116,7 +1116,7 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
                 dashboard->clearPendings();
 
             dashboard->selectCard(card_item, true);
-            if (dashboard->currentSkill()) {
+            if (dashboard->currentSkill() && !dashboard->getPendings().contains(card_item)) {
                 dashboard->addPending(card_item);
                 dashboard->updatePending();
             }
@@ -2231,6 +2231,7 @@ void RoomScene::highlightSkillButton(const QString &skillName, const CardUseStru
             } else {
                 const Skill *skill = button->getSkill();
                 if (skill != NULL && skill->objectName() == skillName) {
+                    button->setEnabled(true);
                     button->setState(QSanButton::S_STATE_DOWN);
                     break;
                 }

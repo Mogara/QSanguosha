@@ -152,7 +152,7 @@ void StartScene::showOrganization()
     transformations << scale;
     title->setTransformations(transformations);
 
-    QSequentialAnimationGroup *sequentialGroup = new QSequentialAnimationGroup;
+    QSequentialAnimationGroup *sequentialGroup = new QSequentialAnimationGroup(this);
     QParallelAnimationGroup *parallelGroup = new QParallelAnimationGroup;
 
     QPropertyAnimation *radius = new QPropertyAnimation(blur, "blurRadius");

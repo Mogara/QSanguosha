@@ -257,7 +257,7 @@ void ChooseTriggerOrderBox::chooseOption(const QString &reason, const QStringLis
     this->reason = reason;
     this->options = options;
     this->optional = optional;
-    update();
+    prepareGeometryChange();
 
     const int generalCount = getGeneralNum();
 
