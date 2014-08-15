@@ -24,6 +24,7 @@
 #include "clientplayer.h"
 #include "client.h"
 #include "roomscene.h"
+#include "StyleHelper.h"
 
 #include <QPalette>
 #include <QScrollBar>
@@ -34,11 +35,7 @@ ClientLogBox::ClientLogBox(QWidget *parent)
     setReadOnly(true);
 
     QScrollBar *bar = verticalScrollBar();
-    QFile file("style-sheet/scroll.qss");
-    if (file.open(QIODevice::ReadOnly)) {
-        QTextStream stream(&file);
-        bar->setStyleSheet(stream.readAll());
-    }
+    bar->setStyleSheet(StyleHelper::styleSheetOfScrollBar());
 }
 
 void ClientLogBox::appendLog(const QString &type, const QString &from_general, const QStringList &tos,

@@ -896,7 +896,8 @@ void XiongyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
                 continue;
         } else if (source->getKingdom() == kingdom)
             continue;
-        if (source->getPlayerNumWithSameKingdom(kingdom, MaxCardsType::Normal) < n) {
+        int other_num = source->getPlayerNumWithSameKingdom(kingdom, MaxCardsType::Normal);
+        if (other_num > 0 && other_num < n) {
             invoke = false;
             break;
         }

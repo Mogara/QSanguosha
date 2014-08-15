@@ -82,7 +82,7 @@ void Settings::init() {
     }
 
     CountDownSeconds = value("CountDownSeconds", 3).toInt();
-    GameMode = value("GameMode", "02p").toString();
+    GameMode = value("GameMode", "08p").toString();
 
     BanPackages = value("BanPackages", "Test").toStringList();
     RandomSeat = value("RandomSeat", true).toBool();
@@ -91,7 +91,7 @@ void Settings::init() {
     ForbidSIMC = value("ForbidSIMC", false).toBool();
     DisableChat = value("DisableChat", false).toBool();
     Address = value("Address", QString()).toString();
-    EnableAI = value("EnableAI", true).toBool();
+    EnableAI = true;
     OriginAIDelay = value("OriginAIDelay", 1000).toInt();
     AlterAIDelayAD = value("AlterAIDelayAD", false).toBool();
     AIDelayAD = value("AIDelayAD", 0).toInt();
@@ -123,7 +123,7 @@ void Settings::init() {
     EnableMinimizeDialog = value("EnableMinimizeDialog", false).toBool();
     EnableAutoTarget = value("EnableAutoTarget", true).toBool();
     EnableIntellectualSelection = value("EnableIntellectualSelection", true).toBool();
-    EnableSuperDrag = value("EnableSuperDrag", false).toBool();
+    EnableSuperDrag = value("EnableSuperDrag", false).toBool(); // set it to true?
     EnableDoubleClick = value("EnableDoubleClick", false).toBool();
     NullificationCountDown = value("NullificationCountDown", 8).toInt();
     OperationTimeout = value("OperationTimeout", 15).toInt();

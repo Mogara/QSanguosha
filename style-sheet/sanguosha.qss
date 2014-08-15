@@ -1,4 +1,4 @@
-QProgressBar{
+QProgressBar {
     color : solid gray;
     border: 2px solid gray;
     border-radius: 5px;
@@ -7,13 +7,13 @@ QProgressBar{
     text-align: center;
 }
 
-QProgressBar::chunk{
+QProgressBar::chunk {
     background: #B22222;
 }
 
-QTextEdit{
-    border: 1px solid gray;
-    background-color: rgba(0,0,0,80);
+QTextEdit {
+    border: 1px solid rgb(166, 150, 122);
+    background-color: rgba(0, 0, 0, 65%);
 }
 
 QTextEdit[description="true"] {
@@ -22,12 +22,12 @@ QTextEdit[description="true"] {
     background-color: rgba(255,255,255,255);
 }
 
-QTextEdit#whatsnew{
+QTextEdit#whatsnew {
 	background-image: url(image/system/simpleBg/whatsnew.png);
 }
 
-QLineEdit#chat_edit{
-    background-color: rgba(20,20,20,255);
+QLineEdit#chat_edit {
+    background-color: rgba(20, 20, 20, 255);
     color: white;
     border: 10px transparent;
     height: 20px;
@@ -38,18 +38,18 @@ QStatusBar::item {
      border: 0px solid grey;
  }
  
-QStatusBar{
+QStatusBar {
     background-image: url(image/system/skill-dock.png);
     color:white;
 }
 
-QMenu[private_pile="true"]{
+QMenu[private_pile="true"] {
     background-color: rgba(43,63,53,200);
     border-radius: 1px;
     color: white;
 }
 
-QPushButton[private_pile="true"]{
+QPushButton[private_pile="true"] {
     background-color: rgba(43,63,53,200);
     border-radius: 1px;
     color: white;
@@ -71,47 +71,70 @@ QDialog, QDialog *{
 	background-image: url(image/system/simpleBg/dialog.png);
 }
 
-QPushButton[game_control="true"]{
+QPushButton[game_control="true"] {
     border: 0px solid gray;
     font: 12px;
     border-radius: 5px;
     padding: 6px 12px 6px 12px;
 }
 
-QPushButton#pause{
+QPushButton#pause {
     background-image: url(image/system/button/pause.png);
 }
 
-QPushButton#play{
+QPushButton#play {
     background-image: url(image/system/button/play.png);
 }
 
-QPushButton#slow-down{
+QPushButton#slow-down {
     background-image: url(image/system/button/slow-down.png);
 }
 
-QPushButton#speed-up{
+QPushButton#speed-up {
     background-image: url(image/system/button/speed-up.png);
 }
 
-QPushButton#uniform{
+QPushButton#uniform {
     background-image: url(image/system/button/uniform.png);
 }
 
-#MainWindow .QPushButton[control = true]{
+QPushButton[control = true] {
 	color: rgb(183, 218, 238);
-	background-color:rgba(0,0,0,0);
+	background-color:rgba(0, 0, 0, 0);
 	border-style:none;
 }
 
-#MainWindow .QPushButton[control = true]:hover{
-	background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(25, 134, 199, 0), stop:1 rgba(72, 160, 212, 255));
+QPushButton[control = true]:hover {
+	background-color: rgb(72, 160, 212);
 }
 
-#MainWindow .QPushButton[control = true][bold = true]{
+QPushButton[control = true][bold = true] {
 	font: bold;
 }
 
-#MainWindow #closeButton[control = true]:hover{
-	background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(238, 0, 0, 128), stop:1 rgba(238, 44, 44, 255));
+#closeButton[control = true]:hover {
+	background-color: rgb(238, 44, 44);
+}
+
+QMenu {
+	background-color: rgb(216, 255, 253);
+	border: none;
+}
+
+QMenu::item {
+	padding: 7px 40px 7px 35px;
+	background: transparent;
+	border-radius: 2px;
+}
+
+QMenu::item:selected {
+	background: rgba(88, 201, 241, 200);
+}
+
+QMenu::separator {
+	height: 1px;
+    background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(72, 160, 212, 255), stop:1 transparent);
+	border-radius: 1px;
+    margin-left: 5px;
+    margin-right: 10px;
 }

@@ -1306,7 +1306,7 @@ public:
             return true;
         if (triggerEvent == PreHpLost) {
             player->tag.remove("hongfa_prevent");
-            return room->askForUseCard(player, "@@hongfa1", "@hongfa-prevent", -1, Card::MethodNone);
+            return room->askForUseCard(player, "@@hongfa1", "@hongfa-prevent", 1, Card::MethodNone);
         }
         return false;
     }

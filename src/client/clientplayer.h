@@ -50,6 +50,8 @@ public:
     virtual bool isLastHandCard(const Card *card, bool contain = false) const;
     virtual void setMark(const QString &mark, int value);
 
+    virtual QHash<QString, QStringList> getBigAndSmallKingdoms(MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const;
+
 private:
     int handcard_num;
     QList<const Card *> known_cards;

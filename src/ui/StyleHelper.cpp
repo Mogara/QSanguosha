@@ -24,6 +24,8 @@
 #include <QFontDatabase>
 #include <QPushButton>
 #include <QMap>
+#include <QFile>
+#include <QTextStream>
 
 StyleHelper *StyleHelper::instance = NULL;
 
@@ -58,6 +60,19 @@ QFont StyleHelper::getFontByFileName(const QString &fileName)
         loadedFonts[fileName] = font;
         return font;
     }
+}
+
+QString StyleHelper::styleSheetOfScrollBar()
+{
+    static QString style;
+    if (style.isEmpty()) {
+        QFile file("style-sheet/scroll.qss");
+        if (file.open(QIODevice::ReadOnly)) {
+            QTextStream stream(&file);
+            style = stream.readAll();
+        }
+    }
+    return style;
 }
 
 void StyleHelper::setIcon(QPushButton* button, QChar iconId, int size)

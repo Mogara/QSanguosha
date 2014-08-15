@@ -29,7 +29,6 @@
 #include <QNetworkInterface>
 #include <QGraphicsDropShadowEffect>
 #include <QScrollBar>
-#include <QFile>
 #include <QPauseAnimation>
 #include <QSequentialAnimationGroup>
 #include <QPainter>
@@ -125,11 +124,7 @@ void StartScene::switchToServer(Server *server) {
     addWidget(serverLog);
 
     QScrollBar *bar = serverLog->verticalScrollBar();
-    QFile file("style-sheet/scroll.qss");
-    if (file.open(QIODevice::ReadOnly)) {
-        QTextStream stream(&file);
-        bar->setStyleSheet(stream.readAll());
-    }
+    bar->setStyleSheet(StyleHelper::styleSheetOfScrollBar());
 
     printServerInfo();
     connect(server, SIGNAL(server_message(QString)), serverLog, SLOT(append(QString)));

@@ -43,6 +43,7 @@
 #include "GuanxingBox.h"
 #include "BubbleChatBox.h"
 #include "PlayerCardBox.h"
+#include "StyleHelper.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -158,8 +159,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
     connect(ClientInstance, SIGNAL(cards_got(const ClientPlayer *, QString, QString, bool, Card::HandlingMethod, QList<int>)),
         this, SLOT(chooseCard(const ClientPlayer *, QString, QString, bool, Card::HandlingMethod, QList<int>)));
     connect(ClientInstance, SIGNAL(roles_got(QString, QStringList)), this, SLOT(chooseRole(QString, QStringList)));
-    connect(ClientInstance, SIGNAL(directions_got()), this, SLOT(chooseDirection()));
-    connect(ClientInstance, SIGNAL(orders_got(QSanProtocol::Game3v3ChooseOrderCommand)), this, SLOT(chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand)));
+    //connect(ClientInstance, SIGNAL(directions_got()), this, SLOT(chooseDirection()));
+    //connect(ClientInstance, SIGNAL(orders_got(QSanProtocol::Game3v3ChooseOrderCommand)), this, SLOT(chooseOrder(QSanProtocol::Game3v3ChooseOrderCommand)));
     connect(ClientInstance, SIGNAL(kingdoms_got(QStringList)), this, SLOT(chooseKingdom(QStringList)));
     connect(ClientInstance, SIGNAL(triggers_got(QString,QStringList,bool)), this, SLOT(chooseTriggerOrder(QString,QStringList,bool)));
     connect(ClientInstance, SIGNAL(seats_arranged(QList<const ClientPlayer *>)), SLOT(arrangeSeats(QList<const ClientPlayer *>)));
@@ -255,11 +256,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
             this, SLOT(showBubbleChatBox(const QString &, const QString &)));
 
     QScrollBar *bar = chatBox->verticalScrollBar();
-    QFile file("style-sheet/scroll.qss");
-    if (file.open(QIODevice::ReadOnly)) {
-        QTextStream stream(&file);
-        bar->setStyleSheet(stream.readAll());
-    }
+    bar->setStyleSheet(StyleHelper::styleSheetOfScrollBar());
 
     // chat edit
     chatEdit = new QLineEdit;
@@ -3687,8 +3684,7 @@ void RoomScene::setEmotion(const QString &who, const QString &emotion, bool perm
     Photo *photo = name2photo[who];
     if (photo) {
         photo->setEmotion(emotion, permanent);
-    }
-    else {
+    } else {
         QString path = QString("image/system/emotion/%1.png").arg(emotion);
         if (QFile::exists(path)) {
             QSanSelectableItem *item = new QSanSelectableItem(path);
