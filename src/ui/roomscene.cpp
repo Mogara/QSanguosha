@@ -1113,7 +1113,7 @@ void RoomScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
                 dashboard->clearPendings();
 
             dashboard->selectCard(card_item, true);
-            if (dashboard->currentSkill()) {
+            if (dashboard->currentSkill() && !dashboard->getPendings().contains(card_item)) {
                 dashboard->addPending(card_item);
                 dashboard->updatePending();
             }
