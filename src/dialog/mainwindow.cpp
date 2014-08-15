@@ -276,14 +276,6 @@ MainWindow::MainWindow(QWidget *parent)
     menu->setToolTip(tr("<font color=%1>Config</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
 
     menuBar()->hide();
-
-    ui->menuSumMenu->setStyleSheet("color: black;"
-                                   "background-color: white;"
-                                   "selection-color: white;"
-                                   "selection-background-color: black;"
-                                   "border-style: outset;"
-                                   "border-width: 0px 2px 2px 0px;"
-                                   "border-color: gray;");
     
     repaintButtons();
 
