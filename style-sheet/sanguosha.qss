@@ -138,3 +138,18 @@ QMenu::separator {
     margin-left: 5px;
     margin-right: 10px;
 }
+
+QMenu::indicator:checked {
+	margin-left: 5px;
+	width: 15px;
+	height: 15px;
+	image: url(image/system/menu-indicator.png);
+}
+
+QMenu::right-arrow {
+	margin-right: 5px;
+	width: 12px;
+	height: 12px;
+	image: url(image/system/menu-right-arrow.png);
+}
+	
