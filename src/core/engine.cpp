@@ -25,7 +25,6 @@
 #include "settings.h"
 #include "scenario.h"
 #include "audio.h"
-#include "protocol.h"
 #include "structs.h"
 #include "lua-wrapper.h"
 #include "RoomState.h"

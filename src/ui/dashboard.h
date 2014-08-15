@@ -26,7 +26,6 @@
 #include "carditem.h"
 #include "player.h"
 #include "skill.h"
-#include "protocol.h"
 #include "TimedProgressBar.h"
 #include "GenericCardContainerUI.h"
 #include "pixmapanimation.h"

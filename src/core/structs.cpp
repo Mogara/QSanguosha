@@ -19,7 +19,7 @@
     *********************************************************************/
 
 #include "structs.h"
-#include "protocol.h"
+#include "json.h"
 
 bool CardsMoveStruct::tryParse(const QVariant &arg) {
     JsonArray args = arg.value<JsonArray>();

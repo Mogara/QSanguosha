@@ -22,6 +22,7 @@
 #include "recorder.h"
 #include "settings.h"
 #include "engine.h"
+#include "json.h"
 
 #include <QFile>
 #include <QMessageBox>

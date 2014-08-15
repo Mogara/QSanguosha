@@ -19,7 +19,6 @@
     *********************************************************************/
 
 #include "SkinBank.h"
-#include "protocol.h"
 #include "uiUtils.h"
 #include "engine.h"
 #include "settings.h"

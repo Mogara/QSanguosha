@@ -27,6 +27,7 @@
 #include "ai.h"
 #include "settings.h"
 #include "standard.h"
+#include "json.h"
 
 #include <QTime>
 

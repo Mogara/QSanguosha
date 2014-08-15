@@ -25,6 +25,7 @@
 #include "settings.h"
 #include "recorder.h"
 #include "lua-wrapper.h"
+#include "json.h"
 
 using namespace QSanProtocol;
 

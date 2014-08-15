@@ -24,6 +24,7 @@
 #include "skill.h"
 #include "standard.h"
 
+struct lua_State;
 typedef int LuaFunction;
 
 class LuaTriggerSkill : public TriggerSkill {

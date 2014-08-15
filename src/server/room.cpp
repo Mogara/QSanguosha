@@ -30,6 +30,7 @@
 #include "structs.h"
 #include "miniscenarios.h"
 #include "generalselector.h"
+#include "json.h"
 
 #include <lua.hpp>
 #include <QStringList>

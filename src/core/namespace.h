@@ -21,6 +21,8 @@
 #ifndef _NAMESPACE_H
 #define _NAMESPACE_H
 
+#include <QString>
+
 namespace HegemonyMode {
     QString GetMappedRole(const QString &kingdom);
     QString GetMappedKingdom(const QString &role);

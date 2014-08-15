@@ -24,6 +24,7 @@
 #include "standard.h"
 #include "engine.h"
 #include "settings.h"
+#include "json.h"
 
 #include <QTime>
 

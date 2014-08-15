@@ -24,7 +24,6 @@
 #include "QSanSelectableItem.h"
 #include "player.h"
 #include "carditem.h"
-#include "protocol.h"
 
 #include "GenericCardContainerUI.h"
 #include "sprite.h"

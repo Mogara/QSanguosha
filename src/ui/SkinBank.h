@@ -26,6 +26,7 @@
 #include "card.h"
 #include "qsanbutton.h"
 #include "util.h"
+#include "json.h"
 
 #include <QString>
 #include <QPixmap>

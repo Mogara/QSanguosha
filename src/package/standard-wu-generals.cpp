@@ -24,6 +24,7 @@
 #include "standard-tricks.h"
 #include "client.h"
 #include "settings.h"
+#include "json.h"
 
 ZhihengCard::ZhihengCard() {
     target_fixed = true;

@@ -21,8 +21,6 @@
 #ifndef _PROTOCOL_H
 #define _PROTOCOL_H
 
-#include "json.h"
-
 #include <QByteArray>
 #include <QVariant>
 

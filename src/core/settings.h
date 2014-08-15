@@ -21,7 +21,6 @@
 #ifndef _SETTINGS_H
 #define _SETTINGS_H
 
-#include "protocol.h"
 #include <QSettings>
 #include <QFont>
 #include <QRectF>

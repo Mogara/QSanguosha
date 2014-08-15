@@ -27,7 +27,6 @@
 #include "skill.h"
 #include "package.h"
 #include "exppattern.h"
-#include "protocol.h"
 #include "util.h"
 #include "version.h"
 #include "aux-skills.h"

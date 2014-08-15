@@ -21,8 +21,6 @@
 #ifndef _RECORDER_H
 #define _RECORDER_H
 
-#include "protocol.h"
-
 #include <QObject>
 #include <QTime>
 #include <QThread>

@@ -26,6 +26,7 @@
 #include "structs.h"
 #include "gamerule.h"
 #include "settings.h"
+#include "json.h"
 
 class Tuntian : public TriggerSkill {
 public:
