@@ -12,8 +12,8 @@ QProgressBar::chunk {
 }
 
 QTextEdit {
-    border: 1px solid rgb(166, 150, 122);
-    background-color: rgba(0, 0, 0, 42%);
+	border: none;
+    background-color: rgba(0, 0, 0, 48%);
 }
 
 QTextEdit[description="true"] {

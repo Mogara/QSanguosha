@@ -1,42 +1,37 @@
 QTextEdit QScrollBar:vertical {
-    border: 1px solid gray;
-    background-color: rgba(43, 45, 31, 114);
-    width: 10px;
-    margin: 21px 0 21px 0;
+    border: transparent;
+	border-radius: 4px;
+    background-color: rgba(43, 45, 31, 50);
+    width: 8px;
+    margin-bottom: 1px;
+	margin-top: 1px;
+}
+
+QTextEdit QScrollBar:vertical:hover {
+	background-color: rgba(168, 164, 167, 120);
 }
 
 QTextEdit QScrollBar::handle:vertical {
-    background-color: rgb(95, 86, 63, 200);
+	border: transparent;
+	border-radius: 4px;
+    background-color: rgba(201, 209, 222, 100);
     min-height: 20px;
 }
 
 QTextEdit QScrollBar::handle:vertical:hover {
-    background-color: rgb(95, 86, 63, 255);
-    min-height: 20px;
+    background-color: rgba(201, 209, 222, 200)
 }
 
 QTextEdit QScrollBar::add-line:vertical {
-    border: 1px solid gray;
-    background-color: rgba(43, 45, 31, 114);
-    height: 20px;
-    subcontrol-position: bottom;
-    subcontrol-origin: margin;
+    background: none;
 }
 
 QTextEdit QScrollBar::sub-line:vertical {
-    border: 1px solid gray;
-    background-color: rgba(43, 45, 31, 114);
-    height: 20px;
-    subcontrol-position: top;
-    subcontrol-origin: margin;
+    background: none;
 }
 
-QTextEdit QScrollBar::up-arrow:vertical {
-    border-image: url(image/system/scroll/scroll-up-arrow.png);
-}
-
-QTextEdit QScrollBar::down-arrow:vertical {
-    border-image: url(image/system/scroll/scroll-down-arrow.png);
+QTextEdit QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+	background: none;
 }
 
 QTextEdit QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
