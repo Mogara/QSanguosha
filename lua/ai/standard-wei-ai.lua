@@ -1196,7 +1196,6 @@ function SmartAI:toTurnOver(player, n, reason) -- @todo: param of toTurnOver
 end
 
 sgs.ai_skill_playerchosen.fangzhu = function(self, targets)
-	self:updatePlayers()
 	self:sort(self.friends_noself, "handcard")
 	local target = nil
 	local n = self.player:getLostHp()
@@ -1210,28 +1209,12 @@ sgs.ai_skill_playerchosen.fangzhu = function(self, targets)
 	if not target then
 		if n >= 3 then
 			target = self:findPlayerToDraw(false, n)
-			if not target then
-				for _, enemy in ipairs(self.enemies) do
-					if self:toTurnOver(enemy, n, "fangzhu") then
-						target = enemy
-						break
-					end
-				end
-			end
 		else
 			self:sort(self.enemies)
 			for _, enemy in ipairs(self.enemies) do
-				if self:toTurnOver(enemy, n, "fangzhu") then
+				if self:toTurnOver(enemy, n, "fangzhu") and enemy:hasShownSkills(sgs.priority_skill) then
 					target = enemy
 					break
-				end
-			end
-			if not target then
-				for _, enemy in ipairs(self.enemies) do
-					if self:toTurnOver(enemy, n, "fangzhu") and enemy:hasShownSkills(sgs.priority_skill) then
-						target = enemy
-						break
-					end
 				end
 			end
 			if not target then
