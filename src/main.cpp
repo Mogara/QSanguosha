@@ -69,6 +69,10 @@ static bool callback(const wchar_t *, const wchar_t *id, void *, EXCEPTION_POINT
 
 int main(int argc, char *argv[]) {
     bool noGui = argc > 1 && strcmp(argv[1], "-server") == 0;
+    bool noSplash = false;
+#ifdef Q_OS_MAC
+    noSplash = true;
+#endif
 
     if (noGui)
         new QCoreApplication(argc, argv);
@@ -78,14 +82,14 @@ int main(int argc, char *argv[]) {
     QPixmap raraLogo("image/system/developers/logo.png");
     QSplashScreen splash(raraLogo);
     const int alignment = Qt::AlignBottom | Qt::AlignHCenter;
-    if (!noGui) {
+    if (!noGui || !noSplash) {
         splash.show();
         qApp->processEvents();
     }
 
 
 #ifdef USE_BREAKPAD
-    if (!noGui) {
+    if (!noGui || !noSplash) {
         splash.showMessage(QObject::tr("Loading BreakPad..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
@@ -97,7 +101,7 @@ int main(int argc, char *argv[]) {
 
 #ifdef Q_OS_MAC
 #ifdef QT_NO_DEBUG
-    if (!noGui) {
+    if (!noGui || !noSplash) {
         splash.showMessage(QObject::tr("Setting game path..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
@@ -106,7 +110,7 @@ int main(int argc, char *argv[]) {
 #endif
 
 #ifdef Q_OS_LINUX
-    if (!noGui) {
+    if (!noGui || !noSplash) {
         splash.showMessage(QObject::tr("Checking game path..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
@@ -117,7 +121,7 @@ int main(int argc, char *argv[]) {
         // things look good and use current dir
     }
     else {
-        if (!noGui) {
+        if (!noGui || !noSplash) {
             splash.showMessage(QObject::tr("Setting game path..."), alignment, Qt::cyan);
             qApp->processEvents();
         }
@@ -144,7 +148,7 @@ int main(int argc, char *argv[]) {
     translator.load("sanguosha.qm");
     qApp->installTranslator(&translator);
 
-    if (!noGui) {
+    if (!noGui || !noSplash) {
         splash.showMessage(QObject::tr("Loading translation..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
@@ -153,13 +157,13 @@ int main(int argc, char *argv[]) {
     qt_translator.load("qt_zh_CN.qm");
     qApp->installTranslator(&qt_translator);
 
-    if (!noGui) {
+    if (!noGui || !noSplash) {
         splash.showMessage(QObject::tr("Initializing game engine..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
     Sanguosha = new Engine;
 
-    if (!noGui) {
+    if (!noGui || !noSplash) {
         splash.showMessage(QObject::tr("Loading user's configurations..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
@@ -178,8 +182,10 @@ int main(int argc, char *argv[]) {
         return qApp->exec();
     }
 
-    splash.showMessage(QObject::tr("Loading style sheet..."), alignment, Qt::cyan);
-    qApp->processEvents();
+    if (!noSplash) {
+        splash.showMessage(QObject::tr("Loading style sheet..."), alignment, Qt::cyan);
+        qApp->processEvents();
+    }
 
     QFile file("style-sheet/sanguosha.qss");
     QString styleSheet;
@@ -190,23 +196,27 @@ int main(int argc, char *argv[]) {
     qApp->setStyleSheet(styleSheet + StyleHelper::styleSheetOfTooltip());
 
 #ifdef AUDIO_SUPPORT
-    splash.showMessage(QObject::tr("Initializing audio module..."), alignment, Qt::cyan);
-    qApp->processEvents();
+    if (!noSplash) {
+        splash.showMessage(QObject::tr("Initializing audio module..."), alignment, Qt::cyan);
+        qApp->processEvents();
+    }
 
     Audio::init();
 #else
     QMessageBox::warning(this, tr("Warning"), tr("Audio support is disabled when compiled"));
 #endif
 
-    splash.showMessage(QObject::tr("Loading main window..."), alignment, Qt::cyan);
-    qApp->processEvents();
+    if (!noSplash) {
+        splash.showMessage(QObject::tr("Loading main window..."), alignment, Qt::cyan);
+        qApp->processEvents();
+    }
 
     MainWindow main_window;
 
     Sanguosha->setParent(&main_window);
     main_window.show();
-
-    splash.finish(&main_window);
+    if (!noSplash)
+        splash.finish(&main_window);
 
     foreach(QString arg, qApp->arguments()) {
         if (arg.startsWith("-connect:")) {
