@@ -366,7 +366,7 @@ public:
 
     //notification callbacks
     void toggleReadyCommand(ServerPlayer *player, const QVariant &);
-    void speakCommand(ServerPlayer *player, const QVariant &arg);
+    void speakCommand(ServerPlayer *player, const QVariant &message);
     void trustCommand(ServerPlayer *player, const QVariant &arg);
     void pauseCommand(ServerPlayer *player, const QVariant &arg);
     void addRobotCommand(ServerPlayer *player, const QVariant &arg);

@@ -2743,9 +2743,9 @@ bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, b
     return true;
 }
 
-void Room::speakCommand(ServerPlayer *player, const QVariant &arg) {
+void Room::speakCommand(ServerPlayer *player, const QVariant &message) {
     if (player && Config.EnableCheat) {
-        QString sentence = arg.toString();
+        QString sentence = message.toString();
         if (sentence.at(0) == '.') {
             int split = sentence.indexOf('=');
             QString cmd = split == -1 ? sentence : sentence.left(split);
@@ -2753,7 +2753,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg) {
             if (cheatFunc) {
                 JsonArray body;
                 body << player->objectName();
-                body << arg;
+                body << message;
                 player->notify(S_COMMAND_SPEAK, body);
 
                 (this->*cheatFunc)(player, split != -1 ? sentence.mid(split + 1) : QVariant());
@@ -2764,7 +2764,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg) {
 
     JsonArray body;
     body << player->objectName();
-    body << arg;
+    body << message;
 
     Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
     packet.setMessageBody(body);
