@@ -341,19 +341,17 @@ void Client::processServerPacket(const char *cmd) {
             if (callback) {
                 (this->*callback)(packet.getMessageBody());
             }
-        }
-        else if (packet.getPacketType() == S_TYPE_REQUEST) {
+        } else if (packet.getPacketType() == S_TYPE_REQUEST) {
             if (replayer && packet.getPacketDescription() == 0x411 && packet.getCommandType() == S_COMMAND_CHOOSE_GENERAL) {
                 Callback callback = interactions[S_COMMAND_CHOOSE_GENERAL];
                 if (callback)
                     (this->*callback)(packet.getMessageBody());
-            }
-            else if (!replayer)
+            } else if (!replayer)
                 processServerRequest(packet);
         }
-    }
-    else
+    } else {
         processObsoleteServerPacket(cmd);
+    }
 }
 
 bool Client::processServerRequest(const Packet &packet) {

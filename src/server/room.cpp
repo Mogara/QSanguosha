@@ -98,19 +98,19 @@ void Room::initCallbacks() {
     m_requestResponsePair[S_COMMAND_LUCK_CARD] = S_COMMAND_INVOKE_SKILL;
 
     // client request handlers
-    m_callbacks[S_COMMAND_SURRENDER] = &Room::processRequestSurrender;
-    m_callbacks[S_COMMAND_CHEAT] = &Room::processRequestCheat;
-    m_callbacks[S_COMMAND_PRESHOW] = &Room::processRequestPreshow;
+    interactions[S_COMMAND_SURRENDER] = &Room::processRequestSurrender;
+    interactions[S_COMMAND_CHEAT] = &Room::processRequestCheat;
+    interactions[S_COMMAND_PRESHOW] = &Room::processRequestPreshow;
 
     // Client notifications
-    m_callbacks[S_COMMAND_TOGGLE_READY] = &Room::toggleReadyCommand;
-    m_callbacks[S_COMMAND_ADD_ROBOT] = &Room::addRobotCommand;
-    m_callbacks[S_COMMAND_FILL_ROBOTS] = &Room::fillRobotsCommand;
-    m_callbacks[S_COMMAND_SPEAK] = &Room::speakCommand;
-    m_callbacks[S_COMMAND_TRUST] = &Room::trustCommand;
-    m_callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
-    m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
-    m_callbacks[S_COMMAND_MIRROR_GUANXING_STEP] = &Room::mirrorGuanxingStepCommand;
+    callbacks[S_COMMAND_TOGGLE_READY] = &Room::toggleReadyCommand;
+    callbacks[S_COMMAND_ADD_ROBOT] = &Room::addRobotCommand;
+    callbacks[S_COMMAND_FILL_ROBOTS] = &Room::fillRobotsCommand;
+    callbacks[S_COMMAND_SPEAK] = &Room::speakCommand;
+    callbacks[S_COMMAND_TRUST] = &Room::trustCommand;
+    callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
+    callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
+    callbacks[S_COMMAND_MIRROR_GUANXING_STEP] = &Room::mirrorGuanxingStepCommand;
 }
 
 ServerPlayer *Room::getCurrent() const{
@@ -2366,8 +2366,12 @@ void Room::processClientPacket(const QByteArray &request) {
             if (player == NULL) return;
             player->setClientReplyString(request);
             processResponse(player, &packet);
-        } else if (packet.getPacketType() == S_TYPE_REQUEST || packet.getPacketType() == S_TYPE_NOTIFICATION) {
-            Callback callback = m_callbacks[packet.getCommandType()];
+        } else if (packet.getPacketType() == S_TYPE_REQUEST) {
+            Callback callback = interactions[packet.getCommandType()];
+            if (!callback) return;
+            (this->*callback)(player, packet.getMessageBody());
+        } else if (packet.getPacketType() == S_TYPE_NOTIFICATION) {
+            Callback callback = callbacks[packet.getCommandType()];
             if (!callback) return;
             (this->*callback)(player, packet.getMessageBody());
         }

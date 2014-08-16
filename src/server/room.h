@@ -499,7 +499,8 @@ private:
     QSemaphore _m_semRoomMutex; // Provide per-room  (rather than per-player) level protection of any shared variables
 
 
-    QHash<QSanProtocol::CommandType, Callback> m_callbacks;
+    QHash<QSanProtocol::CommandType, Callback> interactions;
+    QHash<QSanProtocol::CommandType, Callback> callbacks;
     QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
     // Stores the expected client response for each server request, any unmatched client response will be discarded.
 
