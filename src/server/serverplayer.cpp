@@ -239,7 +239,7 @@ int ServerPlayer::getHandcardNum() const{
     return handcards.length();
 }
 
-int ServerPlayer::getPlayerNumWithSameKingdom(const QString &_to_calculate, MaxCardsType::MaxCardsCount type) const{
+int ServerPlayer::getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate, MaxCardsType::MaxCardsCount type) const{
     QString to_calculate = _to_calculate;
 
     if (to_calculate.isEmpty()) {
@@ -267,7 +267,7 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString &_to_calculate, MaxC
             num += 1;
     }
 
-    QVariant data = QVariant::fromValue(PlayerNumStruct(num, to_calculate, type));
+    QVariant data = QVariant::fromValue(PlayerNumStruct(num, to_calculate, type, reason));
     room->getThread()->trigger(ConfirmPlayerNum, room, this_player, data);
     PlayerNumStruct playerNumStruct = data.value<PlayerNumStruct>();
     num = playerNumStruct.m_num;
@@ -1867,14 +1867,14 @@ void ServerPlayer::summonFriends(const ArrayType type) {
     }
 }
 
-QHash<QString, QStringList> ServerPlayer::getBigAndSmallKingdoms(MaxCardsType::MaxCardsCount type) const
+QHash<QString, QStringList> ServerPlayer::getBigAndSmallKingdoms(const QString &reason, MaxCardsType::MaxCardsCount type) const
 {
     QMap<QString, int> kingdom_map;
     QStringList kingdoms = Sanguosha->getKingdoms();
     kingdoms << "careerist";
     foreach (QString kingdom, kingdoms) {
         if (kingdom == "god") continue;
-        kingdom_map.insert(kingdom, getPlayerNumWithSameKingdom(kingdom, type));
+        kingdom_map.insert(kingdom, getPlayerNumWithSameKingdom(reason, kingdom, type));
     }
     QHash<QString, QStringList> big_n_small;
     big_n_small.insert("big", QStringList());

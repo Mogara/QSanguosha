@@ -327,7 +327,7 @@ public:
 
     QList<const Player *> getFormation() const;
 
-    virtual QHash<QString, QStringList> getBigAndSmallKingdoms(MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const = 0;
+    virtual QHash<QString, QStringList> getBigAndSmallKingdoms(const QString &reason, MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const = 0;
 
     QVariantMap tag;
 

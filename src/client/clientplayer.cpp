@@ -267,7 +267,7 @@ void ClientPlayer::setMark(const QString &mark, int value) {
         emit duanchang_invoked();
 }
 
-QHash<QString, QStringList> ClientPlayer::getBigAndSmallKingdoms(MaxCardsType::MaxCardsCount type) const
+QHash<QString, QStringList> ClientPlayer::getBigAndSmallKingdoms(const QString &, MaxCardsType::MaxCardsCount type) const
 {
     QMap<QString, int> kingdom_map;
     kingdom_map.insert("wei", 0);

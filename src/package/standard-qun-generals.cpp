@@ -888,7 +888,7 @@ void XiongyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
     QStringList kingdom_list = Sanguosha->getKingdoms();
     kingdom_list << "careerist";
     bool invoke = true;
-    int n = source->getPlayerNumWithSameKingdom(QString(), MaxCardsType::Normal);
+    int n = source->getPlayerNumWithSameKingdom("xiongyi", QString(), MaxCardsType::Normal);
     foreach(QString kingdom, Sanguosha->getKingdoms()) {
         if (kingdom == "god") continue;
         if (source->getRole() == "careerist") {
@@ -896,7 +896,7 @@ void XiongyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &t
                 continue;
         } else if (source->getKingdom() == kingdom)
             continue;
-        int other_num = source->getPlayerNumWithSameKingdom(kingdom, MaxCardsType::Normal);
+        int other_num = source->getPlayerNumWithSameKingdom("xiongyi", kingdom, MaxCardsType::Normal);
         if (other_num > 0 && other_num < n) {
             invoke = false;
             break;

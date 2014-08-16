@@ -424,7 +424,8 @@ public:
     bool isOffline() const;
 
     virtual int aliveCount(bool includeRemoved = true) const;
-    int getPlayerNumWithSameKingdom(const QString &_to_calculate = QString(), MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
+    int getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate = QString(),
+                                    MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
@@ -762,10 +763,12 @@ struct PlayerNumStruct {
 	PlayerNumStruct();
     PlayerNumStruct(int num, const QString &toCalculate);
     PlayerNumStruct(int num, const QString &toCalculate, MaxCardsType::MaxCardsCount type);
+    PlayerNumStruct(int num, const QString &toCalculate, MaxCardsType::MaxCardsCount type, const QString &reason);
 
     MaxCardsType::MaxCardsCount m_type;
     int m_num;
     QString m_toCalculate;
+    QString m_reason;
 };
 
 enum TriggerEvent {

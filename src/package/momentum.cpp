@@ -1104,7 +1104,7 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        int num = player->getPlayerNumWithSameKingdom(QString(), MaxCardsType::Normal);
+        int num = player->getPlayerNumWithSameKingdom("wuxin", QString(), MaxCardsType::Normal);
 
         QList<int> guanxing = room->getNCards(num);
 
@@ -1295,7 +1295,9 @@ public:
             if (player_num.m_type == MaxCardsType::Max)
                 player_num.m_num += player->getPile("heavenly_army").length();
             else if (player_num.m_type == MaxCardsType::Normal) {
+                player->tag["HongfaTianbingData"] = data; // for AI
                 const Card *card = room->askForUseCard(player, "@@hongfa2", "@hongfa-tianbing", 2, Card::MethodNone);
+                player->tag.remove("HongfaTianbingData");
                 if (card)
                     player_num.m_num += card->subcardsLength();
             }
@@ -1313,7 +1315,7 @@ public:
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
         if (triggerEvent == EventPhaseStart) {
-            int num = player->getPlayerNumWithSameKingdom(QString(), MaxCardsType::Normal);
+            int num = player->getPlayerNumWithSameKingdom("hongfa", QString(), MaxCardsType::Normal);
             QList<int> tianbing = room->getNCards(num);
             player->addToPile("heavenly_army", tianbing);
             return false;
@@ -1558,7 +1560,7 @@ public:
             return 0;
 
         if (target->isFriendWith(ps_owner))
-            return ps_owner->getPlayerNumWithSameKingdom(QString(), type);
+            return ps_owner->getPlayerNumWithSameKingdom("PeaceSpell", QString(), type);
 
         return 0;
     }

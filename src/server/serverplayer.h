@@ -116,7 +116,8 @@ public:
     inline bool isOffline() const{ return getState() == "robot" || getState() == "offline"; }
 
     virtual int aliveCount(bool includeRemoved = true) const;
-    int getPlayerNumWithSameKingdom(const QString &_to_calculate = QString(), MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
+    int getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate = QString(),
+                                    MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
     virtual void addCard(const Card *card, Place place);
@@ -195,7 +196,7 @@ public:
     bool inFormationRalation(ServerPlayer *teammate) const;
     void summonFriends(const HegemonyMode::ArrayType type);
 
-    virtual QHash<QString, QStringList> getBigAndSmallKingdoms(MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const;
+    virtual QHash<QString, QStringList> getBigAndSmallKingdoms(const QString &reason, MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const;
 
     bool event_received;
 
