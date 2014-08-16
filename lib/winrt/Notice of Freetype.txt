@@ -1,0 +1,1 @@
+the X86 and arm version of freetype is not prebuilt
