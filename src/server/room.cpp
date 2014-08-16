@@ -111,6 +111,15 @@ void Room::initCallbacks() {
     callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
     callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
     callbacks[S_COMMAND_MIRROR_GUANXING_STEP] = &Room::mirrorGuanxingStepCommand;
+
+    // Cheat commands
+    cheatCommands[".BroadcastRoles"] = &Room::broadcastRoles;
+    cheatCommands[".ShowHandCards"] = &Room::showHandCards;
+    cheatCommands[".ShowPrivatePile"] = &Room::showPrivatePile;
+    cheatCommands[".SetAIDelay"] = &Room::setAIDelay;
+    cheatCommands[".SetGameMode"] = &Room::setGameMode;
+    cheatCommands[".Pause"] = &Room::pause;
+    cheatCommands[".Resume"] = &Room::resume;
 }
 
 ServerPlayer *Room::getCurrent() const{
@@ -2735,43 +2744,77 @@ bool Room::_setPlayerGeneral(ServerPlayer *player, const QString &generalName, b
 }
 
 void Room::speakCommand(ServerPlayer *player, const QVariant &arg) {
-#define _NO_BROADCAST_SPEAKING {\
-    broadcast = false; \
-    JsonArray body; \
-    body << player->objectName(); \
-    body << arg; \
-    player->notify(S_COMMAND_SPEAK, body); \
-}
-    bool broadcast = true;
     if (player && Config.EnableCheat) {
         QString sentence = arg.toString();
-        if (sentence == ".BroadcastRoles") {
-            _NO_BROADCAST_SPEAKING
-                foreach(ServerPlayer *p, m_alivePlayers)
-                broadcastProperty(p, "role", p->getRole());
-        }
-        else if (sentence.startsWith(".BroadcastRoles=")) {
-            _NO_BROADCAST_SPEAKING
-                QString name = sentence.mid(16);
-            foreach(ServerPlayer *p, m_alivePlayers) {
-                if (p->objectName() == name || p->getGeneralName() == name) {
-                    broadcastProperty(p, "role", p->getRole());
-                    break;
-                }
+        if (sentence.at(0) == '.') {
+            int split = sentence.indexOf('=');
+            QString cmd = split == -1 ? sentence : sentence.left(split);
+            Callback cheatFunc = cheatCommands[cmd];
+            if (cheatFunc) {
+                JsonArray body;
+                body << player->objectName();
+                body << arg;
+                player->notify(S_COMMAND_SPEAK, body);
+
+                (this->*cheatFunc)(player, split != -1 ? sentence.mid(split + 1) : QVariant());
+                return;
             }
         }
-        else if (sentence == ".ShowHandCards") {
-            _NO_BROADCAST_SPEAKING
-                QString split("----------");
+    }
 
-            JsonArray arg;
-            arg << player->objectName();
-            arg << split;
+    JsonArray body;
+    body << player->objectName();
+    body << arg;
 
-            Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
-            packet.setMessageBody(arg);
-            player->invoke(&packet);
-            foreach(ServerPlayer *p, m_alivePlayers) {
+    Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
+    packet.setMessageBody(body);
+    broadcastInvoke(&packet);
+}
+
+void Room::broadcastRoles(ServerPlayer *, const QVariant &target)
+{
+    if (target.isNull()) {
+        foreach(ServerPlayer *p, m_alivePlayers)
+            broadcastProperty(p, "role", p->getRole());
+    } else {
+        QString name = target.toString();
+        foreach(ServerPlayer *p, m_alivePlayers) {
+            if (p->objectName() == name || p->getGeneralName() == name) {
+                broadcastProperty(p, "role", p->getRole());
+                break;
+            }
+        }
+    }
+}
+
+void Room::showHandCards(ServerPlayer *player, const QVariant &target)
+{
+    if (target.isNull()) {
+        JsonArray splitLine;
+        splitLine << player->objectName();
+        splitLine << "----------";
+
+        player->notify(S_COMMAND_SPEAK, splitLine);
+        foreach(ServerPlayer *p, m_alivePlayers) {
+            if (!p->isKongcheng()) {
+                QStringList handcards;
+                foreach(const Card *card, p->getHandcards())
+                    handcards << QString("<b>%1</b>")
+                    .arg(Sanguosha->getEngineCard(card->getId())->getLogName());
+                QString hand = handcards.join(", ");
+
+                JsonArray arg;
+                arg << p->objectName();
+                arg << hand;
+
+                player->notify(S_COMMAND_SPEAK, arg);
+            }
+        }
+        player->notify(S_COMMAND_SPEAK, splitLine);
+    } else {
+        QString name = target.toString();
+        foreach(ServerPlayer *p, m_alivePlayers) {
+            if (p->objectName() == name || p->getGeneralName() == name) {
                 if (!p->isKongcheng()) {
                     QStringList handcards;
                     foreach(const Card *card, p->getHandcards())
@@ -2782,97 +2825,64 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &arg) {
                     JsonArray arg;
                     arg << p->objectName();
                     arg << hand;
-
-                    Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
-                    packet.setMessageBody(arg);
-                    player->invoke(&packet);
+                    player->notify(S_COMMAND_SPEAK, arg);
                 }
+                break;
             }
-            player->invoke(&packet);
-        }
-        else if (sentence.startsWith(".ShowHandCards=")) {
-            _NO_BROADCAST_SPEAKING
-                QString name = sentence.mid(15);
-            foreach(ServerPlayer *p, m_alivePlayers) {
-                if (p->objectName() == name || p->getGeneralName() == name) {
-                    if (!p->isKongcheng()) {
-                        QStringList handcards;
-                        foreach(const Card *card, p->getHandcards())
-                            handcards << QString("<b>%1</b>")
-                            .arg(Sanguosha->getEngineCard(card->getId())->getLogName());
-                        QString hand = handcards.join(", ");
-                        JsonArray arg;
-                        arg << p->objectName();
-                        arg << hand;
-
-                        Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
-                        packet.setMessageBody(arg);
-                        player->invoke(&packet);
-                    }
-                    break;
-                }
-            }
-        }
-        else if (sentence.startsWith(".ShowPrivatePile=")) {
-            _NO_BROADCAST_SPEAKING
-                QStringList arg = sentence.mid(17).split(":");
-            if (arg.length() == 2) {
-                QString name = arg.first();
-                QString pile_name = arg.last();
-                foreach(ServerPlayer *p, m_alivePlayers) {
-                    if (p->objectName() == name || p->getGeneralName() == name) {
-                        if (!p->getPile(pile_name).isEmpty()) {
-                            QStringList pile_cards;
-                            foreach(int id, p->getPile(pile_name))
-                                pile_cards << QString("<b>%1</b>").arg(Sanguosha->getEngineCard(id)->getLogName());
-                            QString pile = pile_cards.join(", ");
-
-                            JsonArray arg;
-                            arg << p->objectName();
-                            arg << pile;
-
-                            Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
-                            packet.setMessageBody(arg);
-                            player->invoke(&packet);
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-        else if (sentence.startsWith(".SetAIDelay=")) {
-            _NO_BROADCAST_SPEAKING
-                bool ok = false;
-            int delay = sentence.mid(12).toInt(&ok);
-            if (ok) {
-                Config.AIDelay = Config.OriginAIDelay = delay;
-                Config.setValue("OriginAIDelay", delay);
-            }
-        }
-        else if (sentence.startsWith(".SetGameMode=")) {
-            _NO_BROADCAST_SPEAKING
-                QString name = sentence.mid(13);
-            setTag("NextGameMode", name);
-        }
-        else if (sentence == ".Pause") {
-            _NO_BROADCAST_SPEAKING
-                pauseCommand(player, "true");
-        }
-        else if (sentence == ".Resume") {
-            _NO_BROADCAST_SPEAKING
-                pauseCommand(player, "false");
         }
     }
-    if (broadcast) {
-        JsonArray body;
-        body << player->objectName();
-        body << arg;
+}
 
-        Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
-        packet.setMessageBody(body);
-        broadcastInvoke(&packet);
+void Room::showPrivatePile(ServerPlayer *player, const QVariant &args)
+{
+    QStringList arg = args.toString().split(":");
+    if (arg.length() != 2)
+        return;
+
+    QString name = arg.first();
+    QString pile_name = arg.last();
+    foreach(ServerPlayer *p, m_alivePlayers) {
+        if (p->objectName() == name || p->getGeneralName() == name) {
+            if (!p->getPile(pile_name).isEmpty()) {
+                QStringList pile_cards;
+                foreach(int id, p->getPile(pile_name))
+                    pile_cards << QString("<b>%1</b>").arg(Sanguosha->getEngineCard(id)->getLogName());
+                QString pile = pile_cards.join(", ");
+
+                JsonArray arg;
+                arg << p->objectName();
+                arg << pile;
+                player->notify(S_COMMAND_SPEAK, arg);
+            }
+            break;
+        }
     }
-#undef _NO_BROADCAST_SPEAKING
+}
+
+void Room::setAIDelay(ServerPlayer *, const QVariant &delay)
+{
+    bool ok = false;
+    int miliseconds = delay.toInt(&ok);
+    if (ok) {
+        Config.AIDelay = Config.OriginAIDelay = miliseconds;
+        Config.setValue("OriginAIDelay", miliseconds);
+    }
+}
+
+void Room::setGameMode(ServerPlayer *, const QVariant &mode)
+{
+    QString name = mode.toString();
+    setTag("NextGameMode", name);
+}
+
+void Room::pause(ServerPlayer *player, const QVariant &)
+{
+    pauseCommand(player, true);
+}
+
+void Room::resume(ServerPlayer *player, const QVariant &)
+{
+    pauseCommand(player, false);
 }
 
 void Room::processResponse(ServerPlayer *player, const Packet *packet) {

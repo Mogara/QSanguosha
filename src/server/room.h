@@ -364,6 +364,7 @@ public:
     QString askForTriggerOrder(ServerPlayer *player, const QString &reason, SPlayerDataMap &skills, bool optional = true, const QVariant &data = QVariant());
     void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
 
+    //notification callbacks
     void toggleReadyCommand(ServerPlayer *player, const QVariant &);
     void speakCommand(ServerPlayer *player, const QVariant &arg);
     void trustCommand(ServerPlayer *player, const QVariant &arg);
@@ -373,6 +374,16 @@ public:
     void mirrorGuanxingStepCommand(ServerPlayer *player, const QVariant &arg);
 
     void processResponse(ServerPlayer *player, const QSanProtocol::Packet *arg);
+
+    //cheat commands executed via speakCommand
+    QHash<QString, Callback> cheatCommands;
+    void broadcastRoles(ServerPlayer *, const QVariant &target);
+    void showHandCards(ServerPlayer *player, const QVariant &target);
+    void showPrivatePile(ServerPlayer *player, const QVariant &args);
+    void setAIDelay(ServerPlayer *, const QVariant &delay);
+    void setGameMode(ServerPlayer *, const QVariant &mode);
+    void pause(ServerPlayer *player, const QVariant &);
+    void resume(ServerPlayer *player, const QVariant &);
 
     void broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except = NULL);
     void networkDelayTestCommand(ServerPlayer *player, const QVariant &);
