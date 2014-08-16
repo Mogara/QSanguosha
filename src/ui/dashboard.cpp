@@ -1131,11 +1131,15 @@ void Dashboard::stopPending() {
 void Dashboard::expandPileCards(const QString &pile_name) {
     if (_m_pile_expanded.contains(pile_name)) return;
     _m_pile_expanded << pile_name;
-    QList<int> pile = Self->getPile(pile_name);
-    if (pile_name == "heavenly_army")
+    QString new_name = pile_name;
+    QList<int> pile;
+    if (new_name.startsWith("%")) {
+        new_name = new_name.mid(1);
         foreach (const Player *p, Self->getAliveSiblings())
-            if (p->isLord() && p->hasShownSkill("hongfa"))
-                pile += p->getPile(pile_name);
+           pile += p->getPile(new_name);
+    } else {
+        pile = Self->getPile(new_name);
+    }
     if (pile.isEmpty()) return;
     QList<CardItem *> card_items = _createCards(pile);
     foreach (CardItem *card_item, card_items) {
@@ -1143,7 +1147,7 @@ void Dashboard::expandPileCards(const QString &pile_name) {
         card_item->setParentItem(this);
     }
     foreach (CardItem *card_item, card_items)
-        _addHandCard(card_item, true, Sanguosha->translate(pile_name));
+        _addHandCard(card_item, true, Sanguosha->translate(new_name));
     adjustCards();
     _playMoveCardsAnimation(card_items, false);
     update();
@@ -1152,11 +1156,15 @@ void Dashboard::expandPileCards(const QString &pile_name) {
 void Dashboard::retractPileCards(const QString &pile_name) {
     if (!_m_pile_expanded.contains(pile_name)) return;
     _m_pile_expanded.removeOne(pile_name);
-    QList<int> pile = Self->getPile(pile_name);
-    if (pile_name == "heavenly_army")
+    QString new_name = pile_name;
+    QList<int> pile;
+    if (new_name.startsWith("%")) {
+        new_name = new_name.mid(1);
         foreach (const Player *p, Self->getAliveSiblings())
-            if (p->isLord() && p->hasShownSkill("hongfa"))
-                pile += p->getPile(pile_name);
+            pile += p->getPile(new_name);
+    } else {
+        pile = Self->getPile(new_name);
+    }
     if (pile.isEmpty()) return;
     CardItem *card_item;
     foreach (int card_id, pile) {

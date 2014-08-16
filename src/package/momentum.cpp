@@ -1122,17 +1122,18 @@ public:
 
 class HongfaSlash : public OneCardViewAsSkill {
 public:
-    HongfaSlash() : OneCardViewAsSkill("hongfa_slash") { //RoomScene::retractPileCards()
+    HongfaSlash() : OneCardViewAsSkill("hongfa_slash") {
         attached_lord_skill = true;
-        expand_pile = "heavenly_army";
-        filter_pattern = ".|.|.|heavenly_army";
+        expand_pile = "%heavenly_army";
+        filter_pattern = ".|.|.|%heavenly_army";
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
         if (!player->hasShownOneGeneral())
             return false;
         const Player *zhangjiao = player->getLord();
-        if (!zhangjiao || zhangjiao->getPile("heavenly_army").isEmpty() || !zhangjiao->isFriendWith(player))
+        if (!zhangjiao || !zhangjiao->hasLordSkill("hongfa")
+            || zhangjiao->getPile("heavenly_army").isEmpty() || !zhangjiao->isFriendWith(player))
             return false;
         return Slash::IsAvailable(player);
     }
@@ -1141,7 +1142,8 @@ public:
         if (!player->hasShownOneGeneral())
             return false;
         const Player *zhangjiao = player->getLord();
-        if (!zhangjiao || zhangjiao->getPile("heavenly_army").isEmpty() || !zhangjiao->isFriendWith(player))
+        if (!zhangjiao || !zhangjiao->hasLordSkill("hongfa")
+            || zhangjiao->getPile("heavenly_army").isEmpty() || !zhangjiao->isFriendWith(player))
             return false;
         return pattern == "slash";
     }
