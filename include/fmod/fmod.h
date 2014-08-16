@@ -15,7 +15,7 @@
     0xaaaabbcc -> aaaa = major version number.  bb = minor version number.  cc = development version number.
 */
 
-#define FMOD_VERSION    0x00044440
+#define FMOD_VERSION    0x00044441
 
 /*
     Compiler specific settings.
@@ -321,6 +321,7 @@ struct FMOD_ASYNCREADINFO
     - FMOD_OUTPUTTYPE_GC - extradriverdata is a pointer to a FMOD_GC_INFO struct. This can be found in fmodgc.h.
     - FMOD_OUTPUTTYPE_WII - extradriverdata is a pointer to a FMOD_WII_INFO struct. This can be found in fmodwii.h.
     - FMOD_OUTPUTTYPE_ALSA - extradriverdata is a pointer to a FMOD_LINUX_EXTRADRIVERDATA struct. This can be found in fmodlinux.h.
+    - FMOD_OUTPUTTYPE_PULSEAUDIO - extradriverdata is a const char * representing the name of the application to appear in PulseAudio mixer GUIs.
     
     Currently these are the only FMOD drivers that take extra information.  Other unknown plugins may have different requirements.
     
