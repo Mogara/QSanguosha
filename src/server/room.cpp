@@ -5040,12 +5040,19 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
     }
     else {
         JsonArray stepArgs;
-        stepArgs << S_GUANXING_START << zhuge->objectName() << cards.length();
+        stepArgs << S_GUANXING_START << zhuge->objectName() << (guanxing_type != GuanxingBothSides) << cards.length();
         doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, stepArgs, zhuge);
 
         AI *ai = zhuge->getAI();
         if (ai) {
             ai->askForGuanxing(cards, top_cards, bottom_cards, static_cast<int>(guanxing_type));
+
+            bool isTrustAI = zhuge->getState() == "trust";
+            if (isTrustAI) {
+                stepArgs[1] = QVariant();
+                stepArgs[3] = JsonUtils::toJsonArray(cards);
+                zhuge->notify(S_COMMAND_MIRROR_GUANXING_STEP, stepArgs);
+            }
 
             thread->delay();
             thread->delay();
@@ -5069,7 +5076,7 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
                     to_move.removeOne(id);
                     JsonArray movearg = movearg_base;
                     movearg << pos + 1 << -i - 1;
-                    doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, movearg, zhuge);
+                    doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, movearg, isTrustAI ? NULL : zhuge);
                     thread->delay();
                 }
             }
@@ -5085,12 +5092,18 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
                 to_move.insert(i, id);
                 JsonArray movearg = movearg_base;
                 movearg << pos + 1 << i + 1;
-                doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, movearg, zhuge);
+                doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, movearg, isTrustAI ? NULL : zhuge);
                 thread->delay();
             }
 
             thread->delay();
             thread->delay();
+
+            if (isTrustAI) {
+                JsonArray stepArgs;
+                stepArgs << S_GUANXING_FINISH;
+                zhuge->notify(S_COMMAND_MIRROR_GUANXING_STEP, stepArgs);
+            }
 
         } else {
             JsonArray guanxingArgs;

@@ -225,8 +225,18 @@ void Client::mirrorGuanxingStep(const QVariant &args)
     if (step == S_GUANXING_START) {
         if (arg.size() >= 3) {
             QString who = arg.at(1).toString();
-            int cardNum = arg.at(2).toInt();
-            emit mirror_guanxing_start(who, cardNum);
+            bool upOnly = arg.at(2).toBool();
+
+            QList<int> cards;
+            if (JsonUtils::isNumber(arg.at(3))) {
+                int cardNum = arg.at(3).toInt();
+                for(int i = 0; i < cardNum; i++) {
+                    cards << -1;
+                }
+            } else {
+                JsonUtils::tryParse(arg.at(3), cards);
+            }
+            emit mirror_guanxing_start(who, upOnly, cards);
         }
     } else if (step == S_GUANXING_MOVE) {
         if (arg.size() >= 3) {
