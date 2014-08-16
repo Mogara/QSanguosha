@@ -156,7 +156,7 @@ public:
     void setAvailableCards(const QVariant &pile);
     void setCardFlag(const QVariant &pattern_str);
     void updateCard(const QVariant &val);
-    void guanxingStep(const QVariant &args);
+    void mirrorGuanxingStep(const QVariant &args);
 
     void fillAG(const QVariant &cards_str);
     void takeAG(const QVariant &take_var);

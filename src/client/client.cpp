@@ -98,7 +98,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_UPDATE_PILE] = &Client::setPileNumber;
     callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
     callbacks[S_COMMAND_UPDATE_HANDCARD_NUM] = &Client::setHandcardNum;
-    callbacks[S_COMMAND_MIRROR_GUANXING] = &Client::guanxingStep;
+    callbacks[S_COMMAND_MIRROR_GUANXING_STEP] = &Client::mirrorGuanxingStep;
 
     // interactive methods
     interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
@@ -216,7 +216,7 @@ void Client::updateCard(const QVariant &val) {
     }
 }
 
-void Client::guanxingStep(const QVariant &args)
+void Client::mirrorGuanxingStep(const QVariant &args)
 {
     JsonArray arg = args.value<JsonArray>();
     if (arg.isEmpty()) return;
@@ -1803,7 +1803,7 @@ void Client::onPlayerDoGuanxingStep(int from, int to)
 {
     JsonArray args;
     args << S_GUANXING_MOVE << from << to;
-    notifyServer(S_COMMAND_MIRROR_GUANXING, args);
+    notifyServer(S_COMMAND_MIRROR_GUANXING_STEP, args);
 }
 
 void Client::log(const QVariant &log_str) {

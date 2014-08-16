@@ -370,7 +370,7 @@ public:
     void pauseCommand(ServerPlayer *player, const QVariant &arg);
     void addRobotCommand(ServerPlayer *player, const QVariant &arg);
     void fillRobotsCommand(ServerPlayer *player, const QVariant &arg);
-    void guanxingStepCommand(ServerPlayer *player, const QVariant &arg);
+    void mirrorGuanxingStepCommand(ServerPlayer *player, const QVariant &arg);
 
     void processResponse(ServerPlayer *player, const QSanProtocol::Packet *arg);
 

@@ -110,7 +110,7 @@ void Room::initCallbacks() {
     m_callbacks[S_COMMAND_TRUST] = &Room::trustCommand;
     m_callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
     m_callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
-    m_callbacks[S_COMMAND_MIRROR_GUANXING] = &Room::guanxingStepCommand;
+    m_callbacks[S_COMMAND_MIRROR_GUANXING_STEP] = &Room::mirrorGuanxingStepCommand;
 }
 
 ServerPlayer *Room::getCurrent() const{
@@ -2428,9 +2428,9 @@ void Room::fillRobotsCommand(ServerPlayer *player, const QVariant &) {
     }
 }
 
-void Room::guanxingStepCommand(ServerPlayer *player, const QVariant &arg)
+void Room::mirrorGuanxingStepCommand(ServerPlayer *player, const QVariant &arg)
 {
-    doBroadcastNotify(S_COMMAND_MIRROR_GUANXING, arg, player);
+    doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, arg, player);
 }
 
 ServerPlayer *Room::getOwner() const{
@@ -5030,7 +5030,7 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
     else {
         JsonArray stepArgs;
         stepArgs << S_GUANXING_START << zhuge->objectName() << cards.length();
-        doBroadcastNotify(S_COMMAND_MIRROR_GUANXING, stepArgs, zhuge);
+        doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, stepArgs, zhuge);
 
         JsonArray guanxingArgs;
         guanxingArgs << JsonUtils::toJsonArray(cards);
@@ -5057,7 +5057,7 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
 
         stepArgs.clear();
         stepArgs << S_GUANXING_FINISH;
-        doBroadcastNotify(S_COMMAND_MIRROR_GUANXING, stepArgs, zhuge);
+        doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, stepArgs, zhuge);
     }
 
     bool length_equal = top_cards.length() + bottom_cards.length() == cards.length();

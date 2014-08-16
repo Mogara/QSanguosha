@@ -154,7 +154,7 @@ namespace QSanProtocol {
         S_COMMAND_SIGNUP,
         S_COMMAND_DISABLE_SHOW,
         S_COMMAND_TRIGGER_ORDER,
-        S_COMMAND_MIRROR_GUANXING
+        S_COMMAND_MIRROR_GUANXING_STEP
     };
 
     enum GameEventType {
