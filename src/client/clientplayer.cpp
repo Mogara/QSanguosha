@@ -267,7 +267,7 @@ void ClientPlayer::setMark(const QString &mark, int value) {
         emit duanchang_invoked();
 }
 
-QHash<QString, QStringList> ClientPlayer::getBigAndSmallKingdoms(MaxCardsType::MaxCardsCount) const
+QHash<QString, QStringList> ClientPlayer::getBigAndSmallKingdoms(MaxCardsType::MaxCardsCount type) const
 {
     QMap<QString, int> kingdom_map;
     kingdom_map.insert("wei", 0);
@@ -281,8 +281,10 @@ QHash<QString, QStringList> ClientPlayer::getBigAndSmallKingdoms(MaxCardsType::M
         if (!p->hasShownOneGeneral())
             continue;
         QString key = p->getRole() == "careerist" ? "careerist" : p->getKingdom();
-        kingdom_map[key] ++;
+        ++kingdom_map[key];
     }
+    if (type == MaxCardsType::Max && hasLordSkill("hongfa") && !getPile("heavenly_army").isEmpty())
+        kingdom_map["qun"] += getPile("heavenly_army").length();
     QHash<QString, QStringList> big_n_small;
     big_n_small.insert("big", QStringList());
     big_n_small.insert("small", QStringList());
