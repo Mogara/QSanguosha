@@ -139,9 +139,9 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                 checkpoint = false;
                 const Card *card = Sanguosha->getCard(id);
                 foreach (QString p, place.split(",")) {
-                    if (p == "equipped" && player->hasEquip(card))
+                    if (p == "equipped" && player->hasEquip(card)) {
                         checkpoint = true;
-                    else if (p == "hand" && card->getEffectiveId() >= 0) {
+                    } else if (p == "hand" && card->getEffectiveId() >= 0) {
                         foreach (const Card *c, player->getHandcards()) {
                             if (c->getEffectiveId() == id) {
                                 checkpoint = true;
@@ -150,17 +150,14 @@ bool ExpPattern::matchOne(const Player *player, const Card *card, QString exp) c
                         }
                     } else if (p.startsWith("%")) {
                         p = p.mid(1);
-                        QList<const Player *> pls = player->getAliveSiblings();
-                        pls << player;
-                        foreach (const Player *pl, pls) {
+                        foreach (const Player *pl, player->getAliveSiblings())
                             if (!pl->getPile(p).isEmpty() && pl->getPile(p).contains(id)) {
                                 checkpoint = true;
                                 break;
                             }
-                        }
-                    } else if (!player->getPile(p).isEmpty() && player->getPile(p).contains(id))
+                    } else if (!player->getPile(p).isEmpty() && player->getPile(p).contains(id)) {
                         checkpoint = true;
-                    
+                    }
                     if (checkpoint)
                         break;
                 }

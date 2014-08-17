@@ -1139,9 +1139,7 @@ void Dashboard::expandPileCards(const QString &pile_name) {
     QList<int> pile;
     if (new_name.startsWith("%")) {
         new_name = new_name.mid(1);
-        QList<const Player *> pls = Self->getAliveSiblings();
-        pls << Self;
-        foreach (const Player *p, pls)
+        foreach (const Player *p, Self->getAliveSiblings())
            pile += p->getPile(new_name);
     } else {
         pile = Self->getPile(new_name);
@@ -1166,9 +1164,7 @@ void Dashboard::retractPileCards(const QString &pile_name) {
     QList<int> pile;
     if (new_name.startsWith("%")) {
         new_name = new_name.mid(1);
-        QList<const Player *> pls = Self->getAliveSiblings();
-        pls << Self;
-        foreach (const Player *p, pls)
+        foreach (const Player *p, Self->getAliveSiblings())
             pile += p->getPile(new_name);
     } else {
         pile = Self->getPile(new_name);
