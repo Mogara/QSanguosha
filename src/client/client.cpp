@@ -76,7 +76,6 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_SET_EMOTION] = &Client::setEmotion;
     callbacks[S_COMMAND_INVOKE_SKILL] = &Client::skillInvoked;
     callbacks[S_COMMAND_SHOW_ALL_CARDS] = &Client::showAllCards;
-    callbacks[S_COMMAND_SKILL_GONGXIN] = &Client::askForGongxin;
     callbacks[S_COMMAND_LOG_EVENT] = &Client::handleGameEvent;
     callbacks[S_COMMAND_ADD_HISTORY] = &Client::addHistory;
     callbacks[S_COMMAND_ANIMATE] = &Client::animate;
