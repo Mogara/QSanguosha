@@ -40,6 +40,9 @@ void Recorder::record(const char *line) {
 }
 
 void Recorder::recordLine(const QByteArray &line) {
+    if (line.isEmpty())
+        return;
+
     data.append(QString::number(watch.elapsed()));
     data.append(' ');
     data.append(line);

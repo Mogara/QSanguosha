@@ -117,6 +117,9 @@ void NativeClientSocket::disconnectFromHost() {
 }
 
 void NativeClientSocket::send(const QByteArray &message) {
+    if (message.isEmpty())
+        return;
+
     socket->write(message);
     if (!message.endsWith('\n')){
         socket->write("\n");
