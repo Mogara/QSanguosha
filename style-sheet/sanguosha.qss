@@ -309,7 +309,7 @@ QCheckBox::indicator:disabled {
 	background: rgb(200, 202, 204);
 }
 
-QPushButton[chat = false] {
+QDialog QPushButton {
 	color: white;
 	background-color: rgb(26, 188, 156);
 	border: transparent;
@@ -318,15 +318,51 @@ QPushButton[chat = false] {
 	min-width: 85px;
 }
 
-QPushButton:hover[chat = false] {
+QDialog QPushButton:hover {
 	background-color: rgb(72, 201, 176);
 }
 
-QPushButton:disabled[chat = false] {
+QDialog QPushButton:disabled {
 	background-color: rgba(72, 201, 176, 52%);
 	color: rgba(255, 255, 255, 70%);
 }
 
-QPushButton:pressed[chat = false] {
+QDialog QPushButton:pressed {
 	background-color: rgb(22, 160, 133);
+}
+
+QRadioButton {
+	spacing: 10px;
+	margin-left: 10px;
+}
+
+QRadioButton:checked {
+	color: rgb(26, 188, 156);
+}
+
+QRadioButton::indicator {
+	background: url(image/system/controls/radiobutton-indicator-bg.png);
+	height: 20px;
+	width: 20px;
+}
+
+QRadioButton::indicator:checked {
+	background: url(image/system/controls/radiobutton-indicator-bg-checked.png);
+	image: url(image/system/controls/radiobutton-indicator-checked.png);
+}
+
+QRadioButton::indicator:unchecked:hover {
+	image: url(image/system/controls/radiobutton-indicator.png);
+}
+
+QRadioButton:disabled {
+	color: rgb(200, 202, 204);
+}
+
+QRadioButton::indicator:disabled {
+	background: url(image/system/controls/radiobutton-indicator-bg-disabled.png);
+}
+
+QRadioButton::indicator:disabled:checked {
+	image: url(image/system/controls/radiobutton-indicator-disabled.png);
 }
