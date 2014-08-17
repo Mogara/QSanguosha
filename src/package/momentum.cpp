@@ -1299,7 +1299,8 @@ public:
                 player_num.m_num += player->getPile("heavenly_army").length();
             else if (player_num.m_type == MaxCardsType::Normal) {
                 player->tag["HongfaTianbingData"] = data; // for AI
-                const Card *card = room->askForUseCard(player, "@@hongfa2", "@hongfa-tianbing", 2, Card::MethodNone);
+                QString prompt = QString("@hongfa-tianbing:%1").arg(player_num.m_reason);
+                const Card *card = room->askForUseCard(player, "@@hongfa2", prompt, 2, Card::MethodNone);
                 player->tag.remove("HongfaTianbingData");
                 if (card)
                     player_num.m_num += card->subcardsLength();
