@@ -366,3 +366,27 @@ QRadioButton::indicator:disabled {
 QRadioButton::indicator:disabled:checked {
 	image: url(image/system/controls/radiobutton-indicator-disabled.png);
 }
+
+QGroupBox {
+	border-radius: 5px;
+	background: transparent;
+	border: 2px solid rgb(185, 195, 199);
+	margin-top: 7px;
+	padding: 10px;
+}
+
+QGroupBox::title {
+	padding: 0 3px;
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+}
+
+QGroupBox:disabled {
+	background-color: rgba(244, 246, 246, 70%);
+	border-color: rgba(213, 219, 219, 70%);
+	color: rgba(163, 169, 169, 70%);
+}
+
+QGroupBox::title:disabled {
+	color: rgba(163, 169, 169, 70%);
+}
