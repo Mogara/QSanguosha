@@ -90,13 +90,9 @@ void GuanxingBox::doGuanxing(const QList<int> &cardIds, bool up_only) {
     }
 }
 
-void GuanxingBox::mirrorGuanxingStart(const QString &who, int card_num)
+void GuanxingBox::mirrorGuanxingStart(const QString &who, bool up_only, const QList<int> &cards)
 {
-    QList<int> cards;
-    for (int i = 0; i < card_num; i++) {
-        cards << -1;
-    }
-    doGuanxing(cards, false);
+    doGuanxing(cards, up_only);
 
     foreach (CardItem *item, upItems) {
         item->setFlag(QGraphicsItem::ItemIsMovable, false);

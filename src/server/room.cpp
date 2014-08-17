@@ -5031,11 +5031,8 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
     tryPause();
     notifyMoveFocus(zhuge, S_COMMAND_SKILL_GUANXING);
 
-    AI *ai = zhuge->getAI();
-    if (ai) {
-        ai->askForGuanxing(cards, top_cards, bottom_cards, (int)guanxing_type);
-    }
-    else if (guanxing_type == GuanxingUpOnly && cards.length() == 1) {
+
+    if (guanxing_type == GuanxingUpOnly && cards.length() == 1) {
         top_cards = cards;
     }
     else if (guanxing_type == GuanxingDownOnly && cards.length() == 1) {
@@ -5043,29 +5040,93 @@ void Room::askForGuanxing(ServerPlayer *zhuge, const QList<int> &cards, Guanxing
     }
     else {
         JsonArray stepArgs;
-        stepArgs << S_GUANXING_START << zhuge->objectName() << cards.length();
+        stepArgs << S_GUANXING_START << zhuge->objectName() << (guanxing_type != GuanxingBothSides) << cards.length();
         doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, stepArgs, zhuge);
 
-        JsonArray guanxingArgs;
-        guanxingArgs << JsonUtils::toJsonArray(cards);
-        guanxingArgs << (guanxing_type != GuanxingBothSides);
-        bool success = doRequest(zhuge, S_COMMAND_SKILL_GUANXING, guanxingArgs, true);
-        if (!success) {
-            foreach(int card_id, cards) {
-                if (guanxing_type == GuanxingDownOnly)
-                    m_drawPile->append(card_id);
-                else
-                    m_drawPile->prepend(card_id);
+        AI *ai = zhuge->getAI();
+        if (ai) {
+            ai->askForGuanxing(cards, top_cards, bottom_cards, static_cast<int>(guanxing_type));
+
+            bool isTrustAI = zhuge->getState() == "trust";
+            if (isTrustAI) {
+                stepArgs[1] = QVariant();
+                stepArgs[3] = JsonUtils::toJsonArray(cards);
+                zhuge->notify(S_COMMAND_MIRROR_GUANXING_STEP, stepArgs);
             }
-            return;
-        }
-        JsonArray clientReply = zhuge->getClientReply().value<JsonArray>();
-        if (clientReply.size() == 2) {
-            success &= JsonUtils::tryParse(clientReply[0], top_cards);
-            success &= JsonUtils::tryParse(clientReply[1], bottom_cards);
+
+            thread->delay();
+            thread->delay();
+
+            QList<int> realtopcards = top_cards;
+            QList<int> realbottomcards = bottom_cards;
             if (guanxing_type == GuanxingDownOnly) {
-                bottom_cards = top_cards;
-                top_cards.clear();
+                realtopcards = realbottomcards;
+                realbottomcards.clear();
+            }
+
+            QList<int> to_move = cards;
+
+            JsonArray movearg_base;
+            movearg_base << S_GUANXING_MOVE;
+
+            if (guanxing_type == GuanxingBothSides && !realbottomcards.isEmpty()) {
+                for (int i = 0; i < realbottomcards.length(); ++i) {
+                    int id = realbottomcards.at(i);
+                    int pos = to_move.indexOf(id);
+                    to_move.removeOne(id);
+                    JsonArray movearg = movearg_base;
+                    movearg << pos + 1 << -i - 1;
+                    doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, movearg, isTrustAI ? NULL : zhuge);
+                    thread->delay();
+                }
+            }
+
+            for (int i = 0; i < realtopcards.length() - 1; ++i) {
+                int id = realtopcards.at(i);
+                int pos = to_move.indexOf(id);
+
+                if (pos == i)
+                    continue;
+
+                to_move.removeOne(id);
+                to_move.insert(i, id);
+                JsonArray movearg = movearg_base;
+                movearg << pos + 1 << i + 1;
+                doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, movearg, isTrustAI ? NULL : zhuge);
+                thread->delay();
+            }
+
+            thread->delay();
+            thread->delay();
+
+            if (isTrustAI) {
+                JsonArray stepArgs;
+                stepArgs << S_GUANXING_FINISH;
+                zhuge->notify(S_COMMAND_MIRROR_GUANXING_STEP, stepArgs);
+            }
+
+        } else {
+            JsonArray guanxingArgs;
+            guanxingArgs << JsonUtils::toJsonArray(cards);
+            guanxingArgs << (guanxing_type != GuanxingBothSides);
+            bool success = doRequest(zhuge, S_COMMAND_SKILL_GUANXING, guanxingArgs, true);
+            if (!success) {
+                foreach(int card_id, cards) {
+                    if (guanxing_type == GuanxingDownOnly)
+                        m_drawPile->append(card_id);
+                    else
+                        m_drawPile->prepend(card_id);
+                }
+                return;
+            }
+            JsonArray clientReply = zhuge->getClientReply().value<JsonArray>();
+            if (clientReply.size() == 2) {
+                success &= JsonUtils::tryParse(clientReply[0], top_cards);
+                success &= JsonUtils::tryParse(clientReply[1], bottom_cards);
+                if (guanxing_type == GuanxingDownOnly) {
+                    bottom_cards = top_cards;
+                    top_cards.clear();
+                }
             }
         }
 

@@ -225,8 +225,18 @@ void Client::mirrorGuanxingStep(const QVariant &args)
     if (step == S_GUANXING_START) {
         if (arg.size() >= 3) {
             QString who = arg.at(1).toString();
-            int cardNum = arg.at(2).toInt();
-            emit mirror_guanxing_start(who, cardNum);
+            bool upOnly = arg.at(2).toBool();
+
+            QList<int> cards;
+            if (JsonUtils::isNumber(arg.at(3))) {
+                int cardNum = arg.at(3).toInt();
+                for(int i = 0; i < cardNum; i++) {
+                    cards << -1;
+                }
+            } else {
+                JsonUtils::tryParse(arg.at(3), cards);
+            }
+            emit mirror_guanxing_start(who, upOnly, cards);
         }
     } else if (step == S_GUANXING_MOVE) {
         if (arg.size() >= 3) {
@@ -1650,6 +1660,14 @@ void Client::askForGuanxing(const QVariant &arg) {
 
     emit guanxing(card_ids, single_side);
     setStatus(AskForGuanxing);
+
+    if (recorder) {
+        JsonArray stepArgs;
+        stepArgs << S_GUANXING_START << QVariant() << single_side << args[0];
+        Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_MIRROR_GUANXING_STEP);
+        packet.setMessageBody(stepArgs);
+        recorder->recordLine(packet.toJson());
+    }
 }
 
 void Client::showAllCards(const QVariant &arg) {
@@ -1795,6 +1813,12 @@ void Client::onPlayerReplyGuanxing(const QList<int> &up_cards, const QList<int> 
     replyToServer(S_COMMAND_SKILL_GUANXING, decks);
 
     setStatus(NotActive);
+
+    if (recorder) {
+        Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_MIRROR_GUANXING_STEP);
+        packet.setMessageBody(JsonArray() << S_GUANXING_FINISH);
+        recorder->recordLine(packet.toJson());
+    }
 }
 
 void Client::onPlayerDoGuanxingStep(int from, int to)
@@ -1802,6 +1826,12 @@ void Client::onPlayerDoGuanxingStep(int from, int to)
     JsonArray args;
     args << S_GUANXING_MOVE << from << to;
     notifyServer(S_COMMAND_MIRROR_GUANXING_STEP, args);
+
+    if (recorder) {
+        Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_MIRROR_GUANXING_STEP);
+        packet.setMessageBody(args);
+        recorder->recordLine(packet.toJson());
+    }
 }
 
 void Client::log(const QVariant &log_str) {
