@@ -165,7 +165,7 @@ bool CardContainer::retained() {
 void CardContainer::clear() {
     foreach(CardItem *item, items) {
         item->hide();
-        delete item;
+        item->deleteLater();
         item = NULL;
     }
 
