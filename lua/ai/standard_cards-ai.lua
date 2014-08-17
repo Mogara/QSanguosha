@@ -1248,6 +1248,8 @@ function sgs.ai_cardsview.Spear(self, class_name, player, cards)
 
 		local newcards = {}
 		for _, card in ipairs(cards) do
+			if self.room:getCardOwner(card:getEffectiveId()):objectName() ~= player:objectName()
+				or self.room:getCardPlace(card:getEffectiveId()) ~= sgs.Player_PlaceHand then continue end
 			if not isCard("Peach", card, player) and not (isCard("ExNihilo", card, player) and player:getPhase() == sgs.Player_Play) then
 				table.insert(newcards, card)
 			end

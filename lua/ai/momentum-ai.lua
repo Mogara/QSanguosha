@@ -451,6 +451,21 @@ sgs.ai_skill_use["@@hongfa1"] = function(self)
 	return "."
 end
 
+sgs.ai_skill_use["@@hongfa2"] = function(self)
+	if self.player:getRole() == "careerist" then return "." end
+	local ints = sgs.QList2Table(self.player:getPile("heavenly_army"))
+	local pn = self.player:getTag("HongfaTianbingData"):toPlayerNum()
+	if pn.m_toCalculate ~= self.player:getKingdom() then return "." end
+	if pn.m_reason == "wuxin" or "hongfa" == pn.m_reason or pn.m_reason == "PeaceSpell" then
+		return "@HongfaCard=" .. table.concat(ints, "+") .. "&hongfa"
+	elseif pn.m_reason == "DragonPhoenix" or pn.m_reason == "xiongyi" then
+		return "."
+	else
+		self.room:writeToConsole("@@hongfa2 " .. pn.m_reason .. " is empty!")
+	end
+	return "."
+end
+
 sgs.ai_slash_prohibit.PeaceSpell = function(self, from, enemy, card)
 	if enemy:hasArmorEffect("PeaceSpell") and card:isKindOf("NatureSlash") then return true end
 	return
