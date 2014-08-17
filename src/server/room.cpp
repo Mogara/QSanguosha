@@ -704,7 +704,6 @@ bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, co
     player->m_isClientResponseReady = false;
     player->drainLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
     player->setClientReply(QVariant());
-    player->setClientReplyString(QString());
     player->m_isWaitingReply = true;
     player->m_expectedReplySerial = packet.createGlobalSerial();
     if (m_requestResponsePair.contains(command))
@@ -2373,7 +2372,6 @@ void Room::processClientPacket(const QByteArray &request) {
         ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
         if (packet.getPacketType() == S_TYPE_REPLY) {
             if (player == NULL) return;
-            player->setClientReplyString(request);
             processResponse(player, &packet);
         } else if (packet.getPacketType() == S_TYPE_REQUEST) {
             Callback callback = interactions[packet.getCommandType()];
