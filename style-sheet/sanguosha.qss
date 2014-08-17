@@ -12,8 +12,11 @@ QProgressBar::chunk {
 }
 
 QTextEdit {
-	border: none;
-    background-color: rgba(0, 0, 0, 48%);
+	border-left: none;
+	border-right: none;
+	border-top: 1px solid qlineargradient(spread:reflect, x1:0, y1:0, x2:0.5, y2:0, stop:0 transparent, stop:1 rgb(166, 150, 122));
+	border-bottom: none;
+    background-color: rgba(0, 0, 0, 40%);
 }
 
 QTextEdit[description="true"] {
@@ -26,22 +29,35 @@ QTextEdit#whatsnew {
 	background-image: url(image/system/simpleBg/whatsnew.png);
 }
 
+QLineEdit {
+	border: 2px solid rgb(185, 195, 199);
+	padding-left: 8px;
+	min-height: 32px;
+	border-radius: 6px;
+	alignment: left center;
+}
+
+QLineEdit:focus {
+	border-color: rgb(26, 188, 156);
+}
+
+QLineEdit:disabled {
+	background-color: rgba(244, 246, 246, 70%);
+	border-color: rgba(213, 219, 219, 70%);
+	color: rgba(213, 219, 219, 70%);
+}
+
 QLineEdit#chat_edit {
-    background-color: rgba(20, 20, 20, 255);
+    background-color: rgba(0, 0, 0, 200);
     color: white;
-    border: 10px transparent;
+    border: 1px solid rgb(166, 150, 122);
     height: 20px;
-    border-image: url(image/system/border.png)10 10 10 10;
- }
+    border-radius: 2px;
+}
 
 QStatusBar::item {
      border: 0px solid grey;
  }
- 
-QStatusBar {
-    background-image: url(image/system/skill-dock.png);
-    color:white;
-}
 
 QMenu[private_pile="true"] {
     background-color: rgba(43,63,53,200);
@@ -67,8 +83,71 @@ QPushButton[treasure = true] {
     color: white;
 }
 
-QDialog, QDialog *{
-	background-image: url(image/system/simpleBg/dialog.png);
+QDialog {
+	background: rgb(214, 231, 239);
+}
+
+QTabWidget::pane {
+	border: none;
+}
+
+QTabWidget::tab-bar {
+    subcontrol-position: center;
+}
+
+QTabBar::tab {
+	alignment: center;
+	background-color: rgb(52, 73, 94);
+	border: none;
+	width: 109;
+	height: 54;
+	color: white;
+	font: 13px;
+}
+
+QTabBar::tab:only-one, QTabBar::tab:first {
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+}
+
+QTabBar::tab:only-one, QTabBar::tab:last {
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+QTabBar::tab:selected {
+	background-color: rgb(26, 188, 156);
+}
+
+QTabBar::tab:!selected:hover {
+	color: rgb(26, 188, 156);
+}
+
+QTabBar::scroller {
+	width: 52px;
+}
+
+QTabBar QToolButton {
+	background-color: rgb(52, 73, 94);
+	border: transparent;
+	border-radius: 5px;
+	alignment: center;
+}
+
+QTabBar QToolButton:hover {
+	background-color: rgb(26, 188, 156);
+}
+
+QTabBar QToolButton::left-arrow {
+	image: url(image/system/controls/tabbar-left-arrow.png);
+	width: 12;
+	height: 12;
+}
+
+QTabBar QToolButton::right-arrow {
+	image: url(image/system/controls/tabbar-right-arrow.png);
+	width: 12;
+	height: 12;
 }
 
 QPushButton[game_control="true"] {
@@ -143,13 +222,13 @@ QMenu::indicator:checked {
 	margin-left: 5px;
 	width: 15px;
 	height: 15px;
-	image: url(image/system/menu-indicator.png);
+	image: url(image/system/controls/menu-indicator.png);
 }
 
 QMenu::right-arrow {
 	margin-right: 5px;
 	width: 12px;
 	height: 12px;
-	image: url(image/system/menu-right-arrow.png);
+	image: url(image/system/controls/menu-right-arrow.png);
 }
 	

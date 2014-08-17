@@ -69,7 +69,7 @@ ServerDialog::ServerDialog(QWidget *parent)
     layout->addLayout(createButtonLayout());
     setLayout(layout);
 
-    setMinimumWidth(300);
+    setMinimumSize(574, 380);
 }
 
 QWidget *ServerDialog::createBasicTab() {

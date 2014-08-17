@@ -10,11 +10,11 @@
     <x>0</x>
     <y>0</y>
     <width>502</width>
-    <height>543</height>
+    <height>603</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -22,13 +22,249 @@
   <property name="windowTitle">
    <string>Config dialog</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QProgressBar {
+    color : solid gray;
+    border: 2px solid gray;
+    border-radius: 5px;
+    background: transparent;
+    padding: 0px;
+    text-align: center;
+}
+
+QProgressBar::chunk {
+    background: #B22222;
+}
+
+QTextEdit {
+	border-left: none;
+	border-right: none;
+	border-top: 1px solid qlineargradient(spread:reflect, x1:0, y1:0, x2:0.5, y2:0, stop:0 transparent, stop:1 rgb(166, 150, 122));
+	border-bottom: none;
+    background-color: rgba(0, 0, 0, 40%);
+}
+
+QTextEdit[description=&quot;true&quot;] {
+    border: 10px;
+    border-image: none;
+    background-color: rgba(255,255,255,255);
+}
+
+QTextEdit#whatsnew {
+	background-image: url(image/system/simpleBg/whatsnew.png);
+}
+
+QLineEdit {
+	border: 2px solid rgb(185, 195, 199);
+	padding-left: 8px;
+	min-height: 32px;
+	border-radius: 6px;
+	alignment: left center;
+}
+
+QLineEdit:focus {
+	border-color: rgb(26, 188, 156);
+}
+
+QLineEdit:disabled {
+	background-color: rgba(244, 246, 246, 70%);
+	border-color: rgba(213, 219, 219, 70%);
+	color: rgba(213, 219, 219, 70%);
+}
+
+QLineEdit#chat_edit {
+    background-color: rgba(20, 20, 20, 255);
+    color: white;
+    border: 10px transparent;
+    height: 20px;
+    border-image: url(image/system/controls/border.png) 10 10 10 10;
+ }
+
+QStatusBar::item {
+     border: 0px solid grey;
+ }
+
+QMenu[private_pile=&quot;true&quot;] {
+    background-color: rgba(43,63,53,200);
+    border-radius: 1px;
+    color: white;
+}
+
+QPushButton[private_pile=&quot;true&quot;] {
+    background-color: rgba(43,63,53,200);
+    border-radius: 1px;
+    color: white;
+}
+
+QMenu[treasure = true] {
+    background-color: rgba(64, 52, 0, 200);
+    border-radius: 5px;
+    color: white;
+}
+
+QPushButton[treasure = true] {
+    background-color: rgba(64, 52, 0, 200);
+    border-radius: 5px;
+    color: white;
+}
+
+QDialog {
+	background: rgb(214, 231, 239);
+}
+
+QTabWidget::pane {
+	border: none;
+}
+
+QTabWidget::tab-bar {
+    subcontrol-position: center;
+}
+
+QTabBar::tab {
+	alignment: center;
+	background-color: rgb(52, 73, 94);
+	border: none;
+	width: 109;
+	height: 54;
+	color: white;
+	font: 13px;
+}
+
+QTabBar::tab:only-one, QTabBar::tab:first {
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+}
+
+QTabBar::tab:only-one, QTabBar::tab:last {
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+QTabBar::tab:selected {
+	background-color: rgb(26, 188, 156);
+}
+
+QTabBar::tab:!selected:hover {
+	color: rgb(26, 188, 156);
+}
+
+QTabBar::scroller {
+	width: 52px;
+}
+
+QTabBar QToolButton {
+	background-color: rgb(52, 73, 94);
+	border: transparent;
+	border-radius: 5px;
+	alignment: center;
+}
+
+QTabBar QToolButton:hover {
+	background-color: rgb(26, 188, 156);
+}
+
+QTabBar QToolButton::left-arrow {
+	image: url(image/system/controls/tabbar-left-arrow.png);
+	width: 12;
+	height: 12;
+}
+
+QTabBar QToolButton::right-arrow {
+	image: url(image/system/controls/tabbar-right-arrow.png);
+	width: 12;
+	height: 12;
+}
+
+QPushButton[game_control=&quot;true&quot;] {
+    border: 0px solid gray;
+    font: 12px;
+    border-radius: 5px;
+    padding: 6px 12px 6px 12px;
+}
+
+QPushButton#pause {
+    background-image: url(image/system/button/pause.png);
+}
+
+QPushButton#play {
+    background-image: url(image/system/button/play.png);
+}
+
+QPushButton#slow-down {
+    background-image: url(image/system/button/slow-down.png);
+}
+
+QPushButton#speed-up {
+    background-image: url(image/system/button/speed-up.png);
+}
+
+QPushButton#uniform {
+    background-image: url(image/system/button/uniform.png);
+}
+
+QPushButton[control = true] {
+	color: rgb(183, 218, 238);
+	background-color:rgba(0, 0, 0, 0);
+	border-style:none;
+}
+
+QPushButton[control = true]:hover {
+	background-color: rgb(72, 160, 212);
+}
+
+QPushButton[control = true][bold = true] {
+	font: bold;
+}
+
+#closeButton[control = true]:hover {
+	background-color: rgb(238, 44, 44);
+}
+
+QMenu {
+	background-color: rgb(216, 255, 253);
+	border: none;
+}
+
+QMenu::item {
+	padding: 7px 40px 7px 35px;
+	background: transparent;
+	border-radius: 2px;
+}
+
+QMenu::item:selected {
+	background: rgba(88, 201, 241, 200);
+}
+
+QMenu::separator {
+	height: 1px;
+    background: qlineargradient(spread:reflect, x1:0, y1:0, x2:0.5, y2:0, stop:0 transparent, stop:1 rgba(72, 160, 212, 255));
+	border-radius: 1px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+QMenu::indicator:checked {
+	margin-left: 5px;
+	width: 15px;
+	height: 15px;
+	image: url(image/system/controls/menu-indicator.png);
+}
+
+QMenu::right-arrow {
+	margin-right: 5px;
+	width: 12px;
+	height: 12px;
+	image: url(image/system/controls/menu-right-arrow.png);
+}
+	</string>
+  </property>
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
+     <y>20</y>
      <width>481</width>
-     <height>501</height>
+     <height>541</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -38,690 +274,791 @@
     <attribute name="title">
      <string>Environment</string>
     </attribute>
-    <widget class="QWidget" name="layoutWidget1">
+    <widget class="QGroupBox" name="audioGroupBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>150</y>
+       <width>451</width>
+       <height>201</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Audio</string>
+     </property>
+     <widget class="QWidget" name="layoutWidget1">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>431</width>
+        <height>97</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QLabel" name="setupBgMusicLabel">
+         <property name="text">
+          <string>Setup background music</string>
+         </property>
+         <property name="buddy">
+          <cstring>bgMusicPathLineEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="bgMusicPathLineEdit">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browseBgMusicButton">
+           <property name="text">
+            <string>Browse ...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="resetBgMusicButton">
+           <property name="text">
+            <string>Reset</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>120</y>
+        <width>431</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QCheckBox" name="enableEffectCheckBox">
+         <property name="text">
+          <string>Enable effects</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="enableLastWordCheckBox">
+         <property name="text">
+          <string>Enable last word</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="enableBgMusicCheckBox">
+         <property name="text">
+          <string>Enable background music</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>140</y>
+        <width>431</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QLabel" name="bgmVolumeLabel">
+         <property name="text">
+          <string>BGM    Volume</string>
+         </property>
+         <property name="buddy">
+          <cstring>bgmVolumeSlider</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSlider" name="bgmVolumeSlider">
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget3_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>170</y>
+        <width>431</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
+        <widget class="QLabel" name="effectVolumeLabel">
+         <property name="text">
+          <string>Effect Volume</string>
+         </property>
+         <property name="buddy">
+          <cstring>bgmVolumeSlider</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSlider" name="effectVolumeSlider">
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="bgGroupBox">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>461</width>
-       <height>457</height>
+       <width>451</width>
+       <height>141</height>
       </rect>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_14">
-      <item>
-       <widget class="QGroupBox" name="bgGroupBox">
-        <property name="maximumSize">
-         <size>
-          <width>480</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="title">
-         <string>Background</string>
-        </property>
-        <layout class="QFormLayout" name="formLayout">
-         <item row="0" column="0" colspan="2">
-          <layout class="QVBoxLayout" name="verticalLayout_11">
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_10">
-             <item>
-              <layout class="QVBoxLayout" name="verticalLayout_2">
-               <item>
-                <layout class="QVBoxLayout" name="verticalLayout">
-                 <item>
-                  <widget class="QLabel" name="backgrounSetupLabel">
-                   <property name="text">
-                    <string>Setup background</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>bgPathLineEdit</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="bgPathLineEdit">
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout">
-                 <item>
-                  <spacer name="horizontalSpacer">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browseBgButton">
-                   <property name="text">
-                    <string>Browse ...</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="resetBgButton">
-                   <property name="text">
-                    <string>Reset</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QVBoxLayout" name="verticalLayout_3">
-               <item>
-                <layout class="QVBoxLayout" name="verticalLayout_4">
-                 <item>
-                  <widget class="QLabel" name="tableBgSetupLabel">
-                   <property name="text">
-                    <string>Setup tableBg</string>
-                   </property>
-                   <property name="buddy">
-                    <cstring>bgPathLineEdit</cstring>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="tableBgPathLineEdit">
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_4">
-                 <item>
-                  <spacer name="tableBghorizontalSpacer">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="browseTableBgButton">
-                   <property name="text">
-                    <string>Browse ...</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="resetTableBgButton">
-                   <property name="text">
-                    <string>Reset</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_11">
-             <item>
-              <widget class="QCheckBox" name="noIndicatorCheckBox">
-               <property name="text">
-                <string>No indicator</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QCheckBox" name="noEquipAnimCheckBox">
-               <property name="text">
-                <string>No equip anim</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="audioGroupBox">
-        <property name="title">
-         <string>Audio</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_17">
+     <property name="title">
+      <string>Background</string>
+     </property>
+     <widget class="QWidget" name="layoutWidget4">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>211</width>
+        <height>99</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_12">
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_5">
-             <item>
-              <widget class="QLabel" name="setupBgMusicLabel">
-               <property name="text">
-                <string>Setup background music</string>
-               </property>
-               <property name="buddy">
-                <cstring>bgMusicPathLineEdit</cstring>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="bgMusicPathLineEdit">
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_2">
-               <item>
-                <spacer name="horizontalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QPushButton" name="browseBgMusicButton">
-                 <property name="text">
-                  <string>Browse ...</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="resetBgMusicButton">
-                 <property name="text">
-                  <string>Reset</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <item>
-              <widget class="QCheckBox" name="enableEffectCheckBox">
-               <property name="text">
-                <string>Enable effects</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QCheckBox" name="enableLastWordCheckBox">
-               <property name="text">
-                <string>Enable last word</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QCheckBox" name="enableBgMusicCheckBox">
-               <property name="text">
-                <string>Enable background music</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_5">
-             <item>
-              <widget class="QLabel" name="bgmVolumeLabel">
-               <property name="text">
-                <string>BGM    Volume</string>
-               </property>
-               <property name="buddy">
-                <cstring>bgmVolumeSlider</cstring>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSlider" name="bgmVolumeSlider">
-               <property name="maximum">
-                <number>100</number>
-               </property>
-               <property name="value">
-                <number>100</number>
-               </property>
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
-             <item>
-              <widget class="QLabel" name="effectVolumeLabel">
-               <property name="text">
-                <string>Effect Volume</string>
-               </property>
-               <property name="buddy">
-                <cstring>bgmVolumeSlider</cstring>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSlider" name="effectVolumeSlider">
-               <property name="maximum">
-                <number>100</number>
-               </property>
-               <property name="value">
-                <number>100</number>
-               </property>
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
+          <widget class="QLabel" name="backgrounSetupLabel">
+           <property name="text">
+            <string>Setup background</string>
+           </property>
+           <property name="buddy">
+            <cstring>bgPathLineEdit</cstring>
+           </property>
+          </widget>
          </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="fontSetupGroupBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>480</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="title">
-         <string>Font setup</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_16">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_13">
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_12">
-             <item>
-              <widget class="QLabel" name="appFontLabel">
-               <property name="text">
-                <string>Application font</string>
-               </property>
-               <property name="buddy">
-                <cstring>appFontLineEdit</cstring>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="appFontLineEdit">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="changeAppFontButton">
-               <property name="text">
-                <string>Set application font</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_13">
-             <item>
-              <widget class="QLabel" name="textEditFontLabel">
-               <property name="text">
-                <string>Text edit font</string>
-               </property>
-               <property name="buddy">
-                <cstring>textEditFontLineEdit</cstring>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="textEditFontLineEdit">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="readOnly">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="setTextEditFontButton">
-               <property name="text">
-                <string>Font ...</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="setTextEditColorButton">
-               <property name="text">
-                <string>Color ...</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_14">
-             <item>
-              <widget class="QPushButton" name="toolTipFontColorButton">
-               <property name="text">
-                <string>Skill Description Color in Tool Tip</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="overviewFontColorButton">
-               <property name="text">
-                <string>Skill Description Color in Overview</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="toolTipBackgroundColorButton">
-               <property name="text">
-                <string>Tool Tip Background Color</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
+          <widget class="QLineEdit" name="bgPathLineEdit">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
         </layout>
-       </widget>
-      </item>
-     </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browseBgButton">
+           <property name="text">
+            <string>Browse ...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="resetBgButton">
+           <property name="text">
+            <string>Reset</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget4_2">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>20</y>
+        <width>211</width>
+        <height>99</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QLabel" name="tableBgSetupLabel">
+           <property name="text">
+            <string>Setup tableBg</string>
+           </property>
+           <property name="buddy">
+            <cstring>bgPathLineEdit</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="tableBgPathLineEdit">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <spacer name="tableBghorizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browseTableBgButton">
+           <property name="text">
+            <string>Browse ...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="resetTableBgButton">
+           <property name="text">
+            <string>Reset</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>120</y>
+        <width>204</width>
+        <height>18</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_12">
+       <item>
+        <widget class="QCheckBox" name="noIndicatorCheckBox">
+         <property name="text">
+          <string>No indicator</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="noEquipAnimCheckBox">
+         <property name="text">
+          <string>No equip anim</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="fontSetupGroupBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>340</y>
+       <width>451</width>
+       <height>141</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title">
+      <string>Font setup</string>
+     </property>
+     <widget class="QPushButton" name="toolTipFontColorButton">
+      <property name="geometry">
+       <rect>
+        <x>11</x>
+        <y>111</y>
+        <width>138</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Skill Description Color in Tool Tip</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="overviewFontColorButton">
+      <property name="geometry">
+       <rect>
+        <x>157</x>
+        <y>111</y>
+        <width>138</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Skill Description Color in Overview</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="toolTipBackgroundColorButton">
+      <property name="geometry">
+       <rect>
+        <x>303</x>
+        <y>111</y>
+        <width>138</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+        <horstretch>255</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Tool Tip Background Color</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>431</width>
+        <height>48</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <item>
+        <widget class="QLabel" name="appFontLabel">
+         <property name="text">
+          <string>Application font</string>
+         </property>
+         <property name="buddy">
+          <cstring>appFontLineEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="appFontLineEdit">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="changeAppFontButton">
+         <property name="text">
+          <string>Set application font</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>60</y>
+        <width>431</width>
+        <height>48</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_10">
+       <item>
+        <widget class="QLabel" name="textEditFontLabel">
+         <property name="text">
+          <string>Text edit font</string>
+         </property>
+         <property name="buddy">
+          <cstring>textEditFontLineEdit</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="textEditFontLineEdit">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="setTextEditFontButton">
+         <property name="text">
+          <string>Font ...</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="setTextEditColorButton">
+         <property name="text">
+          <string>Color ...</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </widget>
    <widget class="QWidget" name="gameTab">
     <attribute name="title">
      <string>Game</string>
     </attribute>
-    <widget class="QWidget" name="widget" native="true">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>110</y>
-       <width>271</width>
-       <height>21</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QWidget" name="layoutWidget2">
+    <widget class="QCheckBox" name="neverNullifyMyTrickCheckBox">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>461</width>
-       <height>301</height>
+       <width>331</width>
+       <height>16</height>
       </rect>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_15">
-      <property name="spacing">
-       <number>13</number>
+     <property name="text">
+      <string>Never nullify my single target trick</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="autoTargetCheckBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>241</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Enable auto target</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="intellectualSelectionCheckBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>241</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Enable intellectual selection</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="doubleClickCheckBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>241</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Enable double-click</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="gameRecordGroupBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>160</y>
+       <width>451</width>
+       <height>121</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Game Record</string>
+     </property>
+     <widget class="QWidget" name="verticalLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>421</width>
+        <height>99</height>
+       </rect>
       </property>
-      <property name="sizeConstraint">
-       <enum>QLayout::SetDefaultConstraint</enum>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <item>
+          <widget class="QLabel" name="recordPathsSetupLabel">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Setup Record Paths</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="recordPathsSetupLineEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="browseRecordPathsButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Browse ...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="resetRecordPathsButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Reset</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QCheckBox" name="networkOnlyCheckBox">
+      <property name="enabled">
+       <bool>false</bool>
       </property>
-      <property name="leftMargin">
-       <number>2</number>
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>20</y>
+        <width>131</width>
+        <height>16</height>
+       </rect>
       </property>
-      <property name="topMargin">
-       <number>0</number>
+      <property name="text">
+       <string>Network Game Only</string>
       </property>
-      <item>
-       <layout class="QVBoxLayout" name="verticalLayout_9">
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_8">
-          <item>
-           <widget class="QCheckBox" name="neverNullifyMyTrickCheckBox">
-            <property name="text">
-             <string>Never nullify my single target trick</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="autoTargetCheckBox">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="text">
-             <string>Enable auto target</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="intellectualSelectionCheckBox">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="text">
-             <string>Enable intellectual selection</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="superDragCheckBox">
-            <property name="text">
-             <string>Enable super drag</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="doubleClickCheckBox">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="text">
-             <string>Enable double-click</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="autoPreshowCheckBox">
-            <property name="text">
-             <string>Enable auto preshow in console mode</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_8">
-          <item>
-           <widget class="QLabel" name="bubbleChatBoxKeepLabel">
-            <property name="text">
-             <string>Bubble chat boxes keep time</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="bubbleChatBoxKeepSpinBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="suffix">
-             <string>second(s)</string>
-            </property>
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>5</number>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="gameRecordGroupBox">
-        <property name="title">
-         <string>Game Record</string>
-        </property>
-        <widget class="QWidget" name="layoutWidget">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>20</y>
-           <width>431</width>
-           <height>99</height>
-          </rect>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="enableAutoSaveCheckBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>151</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Enable Auto Save</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QCheckBox" name="autoPreshowCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>110</y>
+       <width>231</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Enable auto preshow in console mode</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="widget" native="true">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>130</y>
+       <width>271</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <widget class="QWidget" name="horizontalLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>240</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_8">
+       <item>
+        <widget class="QLabel" name="bubbleChatBoxKeepLabel">
+         <property name="text">
+          <string>Bubble chat boxes keep time</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_10">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_9">
-            <item>
-             <widget class="QCheckBox" name="enableAutoSaveCheckBox">
-              <property name="text">
-               <string>Enable Auto Save</string>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="networkOnlyCheckBox">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Network Game Only</string>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_7">
-              <item>
-               <widget class="QLabel" name="recordPathsSetupLabel">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Setup Record Paths</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="recordPathsSetupLineEdit">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_7">
-              <item>
-               <spacer name="horizontalSpacer_3">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QPushButton" name="browseRecordPathsButton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Browse ...</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="resetRecordPathsButton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Reset</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-         </layout>
         </widget>
-       </widget>
-      </item>
-     </layout>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="bubbleChatBoxKeepSpinBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="suffix">
+          <string>second(s)</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>5</number>
+         </property>
+         <property name="value">
+          <number>2</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QCheckBox" name="superDragCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>70</y>
+       <width>131</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Enable super drag</string>
+     </property>
     </widget>
    </widget>
   </widget>
@@ -729,7 +1066,7 @@
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>510</y>
+     <y>560</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -752,7 +1089,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>248</x>
-     <y>540</y>
+     <y>254</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -768,7 +1105,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>316</x>
-     <y>540</y>
+     <y>260</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

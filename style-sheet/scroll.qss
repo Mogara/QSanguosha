@@ -14,7 +14,7 @@ QTextEdit QScrollBar:vertical:hover {
 QTextEdit QScrollBar::handle:vertical {
 	border: transparent;
 	border-radius: 4px;
-    background-color: rgba(201, 209, 222, 100);
+    background-color: rgba(201, 209, 222, 50);
     min-height: 20px;
 }
 
