@@ -143,11 +143,8 @@ ChatWidget::ChatWidget()
     QPushButton *returnButton, *chatfaceButton, *easytextButton;
 
     returnButton = addButton("returnBt", -1);
-    returnButton->setProperty("chat", true);
     chatfaceButton = addButton("chatfaceBt", 24);
-    chatfaceButton->setProperty("chat", true);
     easytextButton = addButton("easytextBt", 48 + 1);
-    easytextButton->setProperty("chat", true);
 
     chat_face_board = new MyPixmapItem(QPixmap("image/system/chatface/faceboard.png"), this);
     chat_face_board->setSize(160, 180);
