@@ -1876,6 +1876,12 @@ QHash<QString, QStringList> ServerPlayer::getBigAndSmallKingdoms(const QString &
         if (kingdom == "god") continue;
         kingdom_map.insert(kingdom, getPlayerNumWithSameKingdom(reason, kingdom, type));
     }
+    foreach (ServerPlayer *p, room->getAlivePlayers()) {
+        if (!p->hasShownOneGeneral()) {
+            kingdom_map.insert("anjiang", 1);
+            break;
+        }
+    }
     QHash<QString, QStringList> big_n_small;
     big_n_small.insert("big", QStringList());
     big_n_small.insert("small", QStringList());
