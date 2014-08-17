@@ -452,7 +452,6 @@ sgs.ai_skill_use["@@hongfa1"] = function(self)
 end
 
 sgs.ai_skill_use["@@hongfa2"] = function(self)
-	self.player:speak("!!!!!!")
 	if self.player:getRole() == "careerist" then return "." end
 	local ints = sgs.QList2Table(self.player:getPile("heavenly_army"))
 	local pn = self.player:getTag("HongfaTianbingData"):toPlayerNum()
