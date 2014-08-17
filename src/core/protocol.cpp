@@ -37,23 +37,22 @@ bool QSanProtocol::Countdown::tryParse(const QVariant &var)
     JsonArray val = var.value<JsonArray>();
 
     //compatible with old JSON representation of Countdown
-    unsigned offset = 0;
     if (JsonUtils::isString(val[0])) {
         if (val[0].toString() == "MG_COUNTDOWN")
-            offset = 1;
+            val.removeFirst();
         else
             return false;
     }
 
-    if (val.size() - offset == 2) {
-        if (!JsonUtils::isNumberArray(val, offset, offset + 1)) return false;
-        current = (time_t)val[offset].toInt();
-        max = (time_t)val[offset + 1].toInt();
+    if (val.size() == 2) {
+        if (!JsonUtils::isNumberArray(val, 0, 1)) return false;
+        current = (time_t)val[0].toInt();
+        max = (time_t)val[1].toInt();
         type = S_COUNTDOWN_USE_SPECIFIED;
         return true;
 
-    } else if (val.size() - offset == 1 && val[offset].canConvert<int>()) {
-        CountdownType type = (CountdownType)val[offset].toInt();
+    } else if (val.size() == 1 && val[0].canConvert<int>()) {
+        CountdownType type = (CountdownType)val[0].toInt();
         if (type != S_COUNTDOWN_NO_LIMIT && type != S_COUNTDOWN_USE_DEFAULT)
             return false;
         else this->type = type;
@@ -110,8 +109,6 @@ bool QSanProtocol::Packet::parse(const QByteArray &raw)
     return true;
 }
 
-
-//characters in JSON string representations are unicode-escaped. So we don't need Base64 here.
 QByteArray QSanProtocol::Packet::toJson() const
 {
     JsonArray result;
@@ -125,9 +122,9 @@ QByteArray QSanProtocol::Packet::toJson() const
     JsonDocument doc(result);
     const QByteArray &msg = doc.toJson();
 
-    //truncate too long messages
+    //return an empty string here, for Packet::parse won't parse it (line 92)
     if (msg.length() > S_MAX_PACKET_SIZE)
-        return msg.left(S_MAX_PACKET_SIZE);
+        return QByteArray();
 
     return msg;
 }
@@ -136,4 +133,3 @@ QString QSanProtocol::Packet::toString() const
 {
     return QString::fromUtf8(toJson());
 }
-

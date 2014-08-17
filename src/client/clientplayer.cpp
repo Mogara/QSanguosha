@@ -278,8 +278,10 @@ QHash<QString, QStringList> ClientPlayer::getBigAndSmallKingdoms(const QString &
     QList<const Player *> players = getAliveSiblings();
     players.prepend(this);
     foreach (const Player *p, players) {
-        if (!p->hasShownOneGeneral())
+        if (!p->hasShownOneGeneral()) {
+            kingdom_map.insert("anjiang", 1);
             continue;
+        }
         QString key = p->getRole() == "careerist" ? "careerist" : p->getKingdom();
         ++kingdom_map[key];
     }
