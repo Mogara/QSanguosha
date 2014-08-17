@@ -264,9 +264,9 @@ bool GuanxingBox::isOneRow() const
 
 void GuanxingBox::clear() {
     foreach(CardItem *card_item, upItems)
-        delete card_item;
+        card_item->deleteLater();
     foreach(CardItem *card_item, downItems)
-        delete card_item;
+        card_item->deleteLater();
 
     upItems.clear();
     downItems.clear();
