@@ -1086,8 +1086,10 @@ void Dashboard::startPending(const ViewAsSkill *skill) {
         expandPileCards("wooden_ox");
     else {
         retractPileCards("wooden_ox");
-        if (skill && !skill->getExpandPile().isEmpty())
-            expandPileCards(skill->getExpandPile());
+        if (skill && !skill->getExpandPile().isEmpty()) {
+            foreach (QString pile_name, skill->getExpandPile().split(","))
+                expandPileCards(pile_name);
+        }
     }
 
     for (int i = 0; i < S_EQUIP_AREA_LENGTH; i++) {
@@ -1102,8 +1104,10 @@ void Dashboard::startPending(const ViewAsSkill *skill) {
 void Dashboard::stopPending() {
     m_mutexEnableCards.lock();
 
-    if (viewAsSkill && !viewAsSkill->getExpandPile().isEmpty())
-        retractPileCards(viewAsSkill->getExpandPile());
+    if (viewAsSkill && !viewAsSkill->getExpandPile().isEmpty()) {
+        foreach (QString pile_name, viewAsSkill->getExpandPile().split(","))
+            retractPileCards(pile_name);
+    }
 
     viewAsSkill = NULL;
     pendingCard = NULL;
