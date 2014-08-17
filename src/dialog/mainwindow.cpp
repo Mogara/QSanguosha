@@ -392,8 +392,9 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     } else if (isLeftPressDown && (event->buttons() & Qt::LeftButton)) {
         move(event->globalPos() - movePosition);
         event->accept();
-    } else if (!isLeftPressDown)
+    } else if (!isLeftPressDown) {
         region(globalPoint);
+    }
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *)

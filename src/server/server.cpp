@@ -53,7 +53,7 @@ static QLayout *HLay(QWidget *left, QWidget *right) {
 }
 
 ServerDialog::ServerDialog(QWidget *parent)
-    : QDialog(parent)
+    : FlatDialog(parent)
 {
     setWindowTitle(tr("Start server"));
 
@@ -64,10 +64,8 @@ ServerDialog::ServerDialog(QWidget *parent)
     tab_widget->addTab(createConversionTab(), tr("Conversion Selection"));
     tab_widget->addTab(createMiscTab(), tr("Miscellaneous"));
 
-    QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(tab_widget);
     layout->addLayout(createButtonLayout());
-    setLayout(layout);
 
     setMinimumSize(574, 380);
 }

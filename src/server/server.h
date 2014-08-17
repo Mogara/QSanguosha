@@ -29,8 +29,8 @@ class QRadioButton;
 #include "socket.h"
 #include "detector.h"
 #include "clientstruct.h"
+#include "FlatDialog.h"
 
-#include <QDialog>
 #include <QLineEdit>
 #include <QSpinBox>
 #include <QCheckBox>
@@ -45,7 +45,7 @@ class QRadioButton;
 
 class Package;
 
-class ServerDialog : public QDialog {
+class ServerDialog : public FlatDialog {
     Q_OBJECT
 
 public:
@@ -168,7 +168,6 @@ private slots:
     void doCustomAssign();
 
     void updateButtonEnablility(QAbstractButton *button);
-
 };
 
 class Scenario;
