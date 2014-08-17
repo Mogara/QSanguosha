@@ -350,7 +350,7 @@ signals:
     void nullification_asked(bool asked);
     void surrender_enabled(bool enabled);
 
-    void mirror_guanxing_start(const QString &who, int card_num);
+    void mirror_guanxing_start(const QString &who, bool up_only, const QList<int> &cards);
     void mirror_guanxing_move(int from, int to);
     void mirror_guanxing_finish();
 
