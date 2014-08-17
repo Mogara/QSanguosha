@@ -112,7 +112,7 @@ return {
 	[":wendao"] = "出牌阶段限一次，你可以弃置一张红色牌，获得弃牌堆里或场上的一张【太平要术】。",
 	["@hongfa-prevent"] = "你可以发动“弘法”，防止此次失去体力",
 	["~hongfa1"] = "选择一张\"天兵\"→点击确定",
-	["@hongfa-tianbing"] = "你可以发动“弘法”，令“群势力角色数”+X",
+	["@hongfa-tianbing"] = "<font color='#ffcc33'><b>%src</b></font> 你可以发动“弘法”，令“群势力角色数”+X",
 	["~hongfa2"] = "选择X张\"天兵\"→点击确定",
 	
 	["PeaceSpell"] = "太平要术",
