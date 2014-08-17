@@ -332,13 +332,14 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
     if (!card_item->isEnabled())
         card_item->setEnabled(true);
 
-    if (ClientInstance->getStatus() == Client::Playing)
-        card_item->setFrozen(!card_item->getCard()->isAvailable(Self), false);
-    else
+    if (ClientInstance->getStatus() == Client::Playing) {
+        const bool frozen = !card_item->getCard()->isAvailable(Self);
+        card_item->setFrozen(frozen, false);
+        if (!frozen && Config.EnableSuperDrag)
+            card_item->setFlag(ItemIsMovable);
+    } else {
         card_item->setFrozen(true, false);
-
-    if (Config.EnableSuperDrag)
-        card_item->setFlag(ItemIsMovable);
+    }
 
     card_item->setHomeOpacity(1.0);
     card_item->setRotation(0.0);

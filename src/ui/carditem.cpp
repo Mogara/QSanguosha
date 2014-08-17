@@ -214,7 +214,7 @@ bool CardItem::isEquipped() const{
 void CardItem::setFrozen(bool is_frozen, bool update_movable) {
     if (frozen != is_frozen) {
         frozen = is_frozen;
-        if (!update_movable || frozen)
+        if (update_movable || frozen)
             setFlag(QGraphicsItem::ItemIsMovable, !frozen);
         update();
     }
