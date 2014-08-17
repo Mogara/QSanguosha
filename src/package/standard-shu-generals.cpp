@@ -1311,10 +1311,10 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer * &) const{
-        if (TriggerSkill::triggerable(player)){
+        if (TriggerSkill::triggerable(player)) {
             QList<ServerPlayer *> friends;
-            foreach(ServerPlayer *p, room->getOtherPlayers(player)){
-                if (p->isFriendWith(player))
+            foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+                if (player->isFriendWith(p) || player->willBeFriendWith(p))
                     friends << p;
             }
 
@@ -1334,7 +1334,7 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         QList<ServerPlayer *> friends;
         foreach(ServerPlayer *p, room->getOtherPlayers(player)){
-            if (p->isFriendWith(player))
+            if (player->isFriendWith(p) || player->willBeFriendWith(p))
                 friends << p;
         }
 

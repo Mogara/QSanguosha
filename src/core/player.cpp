@@ -1424,7 +1424,8 @@ bool Player::isFriendWith(const Player *player) const {
     return kingdom == player->kingdom;
 }
 
-bool Player::willBeFriendWith(const Player *player) const {
+bool Player::willBeFriendWith(const Player *player) const
+{
     if (this == player)
         return true;
     if (player == NULL)
@@ -1455,48 +1456,56 @@ bool Player::willBeFriendWith(const Player *player) const {
     return false;
 }
 
-void Player::setNext(Player *next) {
+void Player::setNext(Player *next)
+{
     this->next = next->objectName();
 }
 
-void Player::setNext(const QString &next) {
+void Player::setNext(const QString &next)
+{
     this->next = next;
 }
 
-Player *Player::getNext(bool ignoreRemoved) const {
+Player *Player::getNext(bool ignoreRemoved) const
+{
     Player *next_p = parent()->findChild<Player *>(next);
     if (ignoreRemoved && next_p->isRemoved())
         return next_p->getNext(ignoreRemoved);
     return next_p;
 }
 
-QString Player::getNextName() const {
+QString Player::getNextName() const
+{
     return next;
 }
 
-Player *Player::getLast(bool ignoreRemoved) const {
+Player *Player::getLast(bool ignoreRemoved) const
+{
     foreach(Player *p, parent()->findChildren<Player *>())
         if (p->getNext(ignoreRemoved) == this)
             return p;
     return NULL;
 }
 
-Player *Player::getNextAlive(int n, bool ignoreRemoved) const{
+Player *Player::getNextAlive(int n, bool ignoreRemoved) const
+{
     bool hasAlive = (aliveCount(!ignoreRemoved) > 0);
     Player *next = parent()->findChild<Player *>(objectName());
     if (!hasAlive) return next;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; ++i) {
         do next = next->getNext(ignoreRemoved);
         while (next->isDead());
     }
     return next;
 }
 
-Player *Player::getLastAlive(int n, bool ignoreRemoved) const {
+Player *Player::getLastAlive(int n, bool ignoreRemoved) const
+{
     return getNextAlive(aliveCount(!ignoreRemoved) - n, ignoreRemoved);
 }
 
-QList<const Player *> Player::getFormation() const {
+QList<const Player *> Player::getFormation() const
+{
     QList<const Player *> teammates;
     teammates << this;
     int n = aliveCount(false);
