@@ -1236,13 +1236,12 @@ public:
             DyingStruct dying = data.value<DyingStruct>();
             if (dying.damage && dying.damage->from)
                 target = dying.damage->from;
-            if (dying.who != player && target && target->isFriendWith(player))
+            if (dying.who != player && target && (target->isFriendWith(player) || player->willBeFriendWith(target)))
                 return QStringList(objectName());
-        }
-        else if (triggerEvent == Death) {
+        } else if (triggerEvent == Death) {
             DeathStruct death = data.value<DeathStruct>();
             target = death.who;
-            if (target && target->isFriendWith(player))
+            if (target && (target->isFriendWith(player) || player->willBeFriendWith(target)))
                 return QStringList(objectName());
         }
         return QStringList();
@@ -1251,24 +1250,20 @@ public:
     virtual bool cost(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName(), (int)triggerEvent);
         if (invoke){
-            if (triggerEvent == Dying) {
+            if (triggerEvent == Dying)
                 room->broadcastSkillInvoke(objectName(), 1);
-            }
-            else if (triggerEvent == Death) {
+            else if (triggerEvent == Death)
                 room->broadcastSkillInvoke(objectName(), 2);
-            }
             return true;
         }
         return false;
     }
 
     virtual bool effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        if (triggerEvent == Dying) {
+        if (triggerEvent == Dying)
             player->drawCards(1);
-        }
-        else if (triggerEvent == Death) {
+        else if (triggerEvent == Death)
             room->loseHp(player);
-        }
         return false;
     }
 };

@@ -587,7 +587,8 @@ public:
     virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &) const{
         if (!TriggerSkill::triggerable(player)) return QStringList();
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        if (move.from && move.from->isAlive() && move.from->getPhase() == Player::NotActive && move.from->isFriendWith(player)
+        if (move.from && move.from->isAlive() && move.from->getPhase() == Player::NotActive
+            && (move.from->isFriendWith(player) || player->willBeFriendWith(move.from))
             && move.from_places.contains(Player::PlaceHand) && move.is_last_handcard)
             return QStringList(objectName());
 
@@ -736,41 +737,31 @@ public:
         frequency = Frequent;
     }
 
-    virtual QStringList triggerable(TriggerEvent, Room *, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
-        if (!TriggerSkill::triggerable(player)) return QStringList();
+    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data) const{
+        QMap<ServerPlayer *, QStringList> skill_list;
         CardUseStruct use = data.value<CardUseStruct>();
-        if (!use.card->isKindOf("Slash")) return QStringList();
-        foreach(ServerPlayer *p, use.to) {
-            if (player->isFriendWith(p)) {
-                ask_who = player;
-                player->tag["yicheng_target"] = QVariant::fromValue(p);
-                return QStringList(objectName());
-            }
-            if (!player->isAlive()) break;
+        if (!use.card->isKindOf("Slash")) return skill_list;
+        if (use.to.contains(player)) {
+            foreach (ServerPlayer *p, room->findPlayersBySkillName(objectName()))
+                if (p->isFriendWith(player) || p->willBeFriendWith(player))
+                    skill_list.insert(p, QStringList(objectName()));
         }
-
-        return QStringList();
+        return skill_list;
     }
 
-    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        if (room->askForSkillInvoke(player, objectName(), player->tag["yicheng_target"])){
-            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), player->tag["yicheng_target"].value<ServerPlayer *>()->objectName());
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
+        if (ask_who->askForSkillInvoke(objectName(), QVariant::fromValue(player))){
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ask_who->objectName(), player->objectName());
             room->broadcastSkillInvoke(objectName());
             return true;
         }
-        else
-            player->tag.remove("yicheng_target");
         return false;
     }
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
-        ServerPlayer *p = player->tag["yicheng_target"].value<ServerPlayer *>();
-        player->tag.remove("yicheng_target");
-        if (p) {
-            p->drawCards(1);
-            if (p->isAlive() && p->canDiscard(p, "he"))
-                room->askForDiscard(p, objectName(), 1, 1, false, true);
-        }
+        player->drawCards(1);
+        if (player->isAlive() && player->canDiscard(player, "he"))
+            room->askForDiscard(player, objectName(), 1, 1, false, true);
         return false;
     }
 };
@@ -813,17 +804,17 @@ public:
         QList<ServerPlayer *> yujis = room->findPlayersBySkillName(objectName());
         if (triggerEvent == Damaged && player->isAlive()) {
             foreach(ServerPlayer *yuji, yujis)
-                if (player->isFriendWith(yuji))
+                if (yuji->isFriendWith(player) || yuji->willBeFriendWith(player))
                     skill_list.insert(yuji, QStringList(objectName()));
-        }
-        else if (triggerEvent == TargetConfirming) {
+        } else if (triggerEvent == TargetConfirming) {
             CardUseStruct use = data.value<CardUseStruct>();
-            if (!use.card || use.card->getTypeId() == Card::TypeEquip || use.card->getTypeId() == Card::TypeSkill || !use.to.contains(player))
+            if (!use.card || use.card->getTypeId() == Card::TypeEquip
+                || use.card->getTypeId() == Card::TypeSkill || !use.to.contains(player))
                 return skill_list;
             if (use.to.length() != 1) return skill_list;
             foreach(ServerPlayer *yuji, yujis) {
                 if (yuji->getPile("sorcery").isEmpty()) continue;
-                if (use.to.first()->isFriendWith(yuji))
+                if (yuji->isFriendWith(use.to.first()) || yuji->willBeFriendWith(use.to.first()))
                     skill_list.insert(yuji, QStringList(objectName()));
             }
         }
