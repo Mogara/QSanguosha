@@ -170,8 +170,6 @@ public:
             drainLock((SemaphoreType)i);
         }
     }
-    inline QString getClientReplyString() { return m_clientResponseString; }
-    inline void setClientReplyString(const QString &val) { m_clientResponseString = val; }
     inline const QVariant &getClientReply() const{ return _m_clientResponse; }
     inline void setClientReply(const QVariant &val) { _m_clientResponse = val; }
     unsigned int m_expectedReplySerial; // Suggest the acceptable serial number of an expected response.
@@ -221,7 +219,6 @@ private:
     QList<PhaseStruct> _m_phases_state;
     QStringList selected; // 3v3 mode use only
     QDateTime test_time;
-    QString m_clientResponseString;
     QVariant _m_clientResponse;
 
 private slots:
