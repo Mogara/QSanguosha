@@ -418,9 +418,10 @@ local invoke_qianhuan = function(self, use)
 	if use.to:isEmpty() then return false end
 	if use.card:isKindOf("Peach") then return false end
 	if use.card:isKindOf("Lightning") then return end
-	if not self:hasTrickEffective(use.card, use.to:first(), use.from) then return end
-	if (self.player:getPile("sorcery"):length() == 1) and not (use.card:isKindOf("Slash") or use.card:isKindOf("duel") or use.card:isKindOf("FireAttack")) then return false end
 	local to = use.to:first()
+	if use.card:isKindOf("Slash") and not self:slashIsEffective(use.card, to, use.from) then return end
+	if not self:hasTrickEffective(use.card, to, use.from) then return end
+	if (self.player:getPile("sorcery"):length() == 1) and not (use.card:isKindOf("Slash") or use.card:isKindOf("duel") or use.card:isKindOf("FireAttack")) then return false end
 	if to and to:objectName() == self.player:objectName() then
 		return not (use.from and (use.from:objectName() == to:objectName()
 									or (use.card:isKindOf("Slash") and self:isPriorFriendOfSlash(self.player, use.card, use.from))))
