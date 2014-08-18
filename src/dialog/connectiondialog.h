@@ -21,10 +21,11 @@
 #ifndef _CONNECTION_DIALOG_H
 #define _CONNECTION_DIALOG_H
 
-#include <QDialog>
 #include <QListWidget>
 #include <QComboBox>
 #include <QButtonGroup>
+
+#include "FlatDialog.h"
 
 class UdpDetector;
 
@@ -32,7 +33,7 @@ namespace Ui {
     class ConnectionDialog;
 }
 
-class ConnectionDialog : public QDialog {
+class ConnectionDialog : public FlatDialog {
     Q_OBJECT
 
 public:
@@ -52,7 +53,7 @@ private slots:
     void on_connectButton_clicked();
 };
 
-class UdpDetectorDialog : public QDialog {
+class UdpDetectorDialog : public FlatDialog {
     Q_OBJECT
 
 public:
@@ -62,6 +63,7 @@ private:
     QListWidget *list;
     UdpDetector *detector;
     QPushButton *detect_button;
+    QPushButton *cancel_button;
 
 private slots:
     void startDetection();

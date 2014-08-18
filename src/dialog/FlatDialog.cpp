@@ -25,18 +25,21 @@
 #include <QVBoxLayout>
 #include <QMouseEvent>
 
-FlatDialog::FlatDialog(QWidget *parent)
+FlatDialog::FlatDialog(QWidget *parent, bool needTitle)
     : QDialog(parent, Qt::FramelessWindowHint | Qt::Dialog),
-      title(new QLabel), layout(new QVBoxLayout)
+      mousePressed(false)
 {
     setAttribute(Qt::WA_TranslucentBackground);
 
-    title->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    title->setObjectName("window_title");
-    connect(this, SIGNAL(windowTitleChanged(QString)), title, SLOT(setText(QString)));
-
-    layout->addWidget(title);
-    setLayout(layout);
+    if (needTitle) {
+        layout = new QVBoxLayout;
+        title = new QLabel;
+        title->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+        title->setObjectName("window_title");
+        connect(this, SIGNAL(windowTitleChanged(QString)), title, SLOT(setText(QString)));
+        layout->addWidget(title);
+        setLayout(layout);
+    }
 }
 
 void FlatDialog::paintEvent(QPaintEvent *)
@@ -49,14 +52,22 @@ void FlatDialog::paintEvent(QPaintEvent *)
 
 void FlatDialog::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() & Qt::LeftButton)
+    if (event->button() & Qt::LeftButton) {
         mousePressedPoint = event->globalPos() - frameGeometry().topLeft();
+        mousePressed = true;
+    }
 }
 
 void FlatDialog::mouseMoveEvent(QMouseEvent *event)
 {
-    QPoint path = event->globalPos() - mousePressedPoint;
-    move(path);
+    if (mousePressed)
+        move(event->globalPos() - mousePressedPoint);
+}
+
+void FlatDialog::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() & Qt::LeftButton)
+        mousePressed = false;
 }
 
 

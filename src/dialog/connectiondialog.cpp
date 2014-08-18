@@ -24,14 +24,16 @@
 #include "engine.h"
 #include "detector.h"
 #include "SkinBank.h"
+#include "StyleHelper.h"
 
 #include <QMessageBox>
 #include <QTimer>
 #include <QRadioButton>
 #include <QBoxLayout>
+#include <QScrollBar>
 
-static const int ShrinkWidth = 285;
-static const int ExpandWidth = 826;
+static const int ShrinkWidth = 317;
+static const int ExpandWidth = 772;
 
 void ConnectionDialog::hideAvatarList() {
     if (!ui->avatarList->isVisible()) return;
@@ -54,7 +56,7 @@ void ConnectionDialog::showAvatarList() {
 }
 
 ConnectionDialog::ConnectionDialog(QWidget *parent)
-    : QDialog(parent), ui(new Ui::ConnectionDialog)
+    : FlatDialog(parent, false), ui(new Ui::ConnectionDialog)
 {
     ui->setupUi(this);
 
@@ -70,8 +72,12 @@ ConnectionDialog::ConnectionDialog(QWidget *parent)
 
     ui->reconnectionCheckBox->setChecked(Config.value("EnableReconnection", false).toBool());
 
-    setFixedHeight(height());
-    setFixedWidth(ShrinkWidth);
+    connect(this, SIGNAL(windowTitleChanged(QString)), ui->title, SLOT(setText(QString)));
+
+    QScrollBar *bar = ui->avatarList->verticalScrollBar();
+    bar->setStyleSheet(StyleHelper::styleSheetOfScrollBar());
+
+    resize(ShrinkWidth, height());
 
     ui->avatarList->hide();
 }
@@ -101,15 +107,17 @@ void ConnectionDialog::on_connectButton_clicked() {
 void ConnectionDialog::on_changeAvatarButton_clicked() {
     if (ui->avatarList->isVisible()) {
         QListWidgetItem *selected = ui->avatarList->currentItem();
-        if (selected)
+        if (selected) {
             on_avatarList_itemDoubleClicked(selected);
-        else {
+        } else {
             hideAvatarList();
-            setFixedWidth(ShrinkWidth);
+            resize(ShrinkWidth, height());
         }
     } else {
         showAvatarList();
-        setFixedWidth(ExpandWidth);
+        //Avoid violating the constraints
+        //setFixedWidth(ExpandWidth);
+        resize(ExpandWidth, height());
     }
 }
 
@@ -121,7 +129,7 @@ void ConnectionDialog::on_avatarList_itemDoubleClicked(QListWidgetItem *item) {
     Config.setValue("UserAvatar", general_name);
     hideAvatarList();
 
-    setFixedWidth(ShrinkWidth);
+    resize(ShrinkWidth, height());
 }
 
 void ConnectionDialog::on_clearHistoryButton_clicked() {
@@ -143,17 +151,18 @@ void ConnectionDialog::on_detectLANButton_clicked() {
 // -----------------------------------
 
 UdpDetectorDialog::UdpDetectorDialog(QDialog *parent)
-    : QDialog(parent)
+    : FlatDialog(parent)
 {
     setWindowTitle(tr("Detect available server's addresses at LAN"));
     detect_button = new QPushButton(tr("Refresh"));
+    cancel_button = new QPushButton(tr("cancel"));
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
     hlayout->addWidget(detect_button);
+    hlayout->addWidget(cancel_button);
 
     list = new QListWidget;
-    QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(list);
     layout->addLayout(hlayout);
 
@@ -161,6 +170,7 @@ UdpDetectorDialog::UdpDetectorDialog(QDialog *parent)
 
     detector = NULL;
     connect(detect_button, SIGNAL(clicked()), this, SLOT(startDetection()));
+    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
     connect(list, SIGNAL(itemDoubleClicked(QListWidgetItem *)), this, SLOT(chooseAddress(QListWidgetItem *)));
 
     detect_button->click();
