@@ -446,7 +446,7 @@ sgs.ai_skill_use["@@hongfa1"] = function(self)
 	local ints = sgs.QList2Table(self.player:getPile("heavenly_army"))
 	local int = getHongfaCard(ints)
 	if int then
-		return "@HongfaCard=" .. tostring(int) .. "&hongfa"
+		return "@HongfaCard=" .. tostring(int)
 	end
 	return "."
 end
@@ -457,7 +457,7 @@ sgs.ai_skill_use["@@hongfa2"] = function(self)
 	local pn = self.player:getTag("HongfaTianbingData"):toPlayerNum()
 	if pn.m_toCalculate ~= self.player:getKingdom() then return "." end
 	if pn.m_reason == "wuxin" or "hongfa" == pn.m_reason or pn.m_reason == "PeaceSpell" then
-		return "@HongfaCard=" .. table.concat(ints, "+") .. "&hongfa"
+		return "@HongfaTianbingCard=" .. table.concat(ints, "+")
 	elseif pn.m_reason == "DragonPhoenix" or pn.m_reason == "xiongyi" then
 		return "."
 	else
