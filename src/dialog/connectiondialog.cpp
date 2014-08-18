@@ -155,7 +155,7 @@ UdpDetectorDialog::UdpDetectorDialog(QDialog *parent)
 {
     setWindowTitle(tr("Detect available server's addresses at LAN"));
     detect_button = new QPushButton(tr("Refresh"));
-    cancel_button = new QPushButton(tr("cancel"));
+    cancel_button = new QPushButton(tr("Cancel"));
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
