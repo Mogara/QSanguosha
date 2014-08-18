@@ -2367,8 +2367,7 @@ void Room::processRequestPreshow(ServerPlayer *player, const QVariant &arg) {
 
 void Room::processClientPacket(const QByteArray &request) {
     Packet packet;
-
-    if (packet.parse(request.constData())) {
+    if (packet.parse(request)) {
         ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
         if (packet.getPacketType() == S_TYPE_REPLY) {
             if (player == NULL) return;
