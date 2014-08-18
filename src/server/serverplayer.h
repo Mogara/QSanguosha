@@ -222,7 +222,7 @@ private:
     QVariant _m_clientResponse;
 
 private slots:
-    void getMessage(const char *message);
+    void getMessage(QByteArray request);
     void sendMessage(const QByteArray &message);
 
 signals:

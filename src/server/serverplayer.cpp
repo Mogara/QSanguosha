@@ -278,7 +278,7 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString &reason, const QStri
 void ServerPlayer::setSocket(ClientSocket *socket) {
     if (socket) {
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
-        connect(socket, SIGNAL(message_got(const char *)), this, SLOT(getMessage(const char *)));
+        connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(getMessage(QByteArray)));
         connect(this, SIGNAL(message_ready(QByteArray)), this, SLOT(sendMessage(QByteArray)));
     }
     else {
@@ -302,8 +302,7 @@ void ServerPlayer::kick(){
     setSocket(NULL);
 }
 
-void ServerPlayer::getMessage(const char *message) {
-    QByteArray request(message);
+void ServerPlayer::getMessage(QByteArray request) {
     if (request.endsWith("\n"))
         request.chop(1);
 

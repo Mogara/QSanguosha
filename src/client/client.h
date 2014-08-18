@@ -283,8 +283,7 @@ private:
     bool _getSingleCard(int card_id, CardsMoveStruct move);
 
 private slots:
-    void processServerPacket(const QString &cmd);
-    void processServerPacket(const char *cmd);
+    void processServerPacket(const QByteArray &cmd);
     bool processServerRequest(const QSanProtocol::Packet &packet);
     void processObsoleteServerPacket(const QString &cmd);
     void notifyRoleChange(const QString &new_role);

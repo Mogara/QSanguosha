@@ -153,7 +153,7 @@ Client::Client(QObject *parent, const QString &filename)
         recorder = NULL;
 
         replayer = new Replayer(this, filename);
-        connect(replayer, SIGNAL(command_parsed(QString)), this, SLOT(processServerPacket(QString)));
+        connect(replayer, SIGNAL(command_parsed(QByteArray)), this, SLOT(processServerPacket(QByteArray)));
     }
     else {
         socket = new NativeClientSocket;
@@ -161,8 +161,8 @@ Client::Client(QObject *parent, const QString &filename)
 
         recorder = new Recorder(this);
 
-        connect(socket, SIGNAL(message_got(const char *)), recorder, SLOT(record(const char *)));
-        connect(socket, SIGNAL(message_got(const char *)), this, SLOT(processServerPacket(const char *)));
+        connect(socket, SIGNAL(message_got(QByteArray)), recorder, SLOT(recordLine(QByteArray)));
+        connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processServerPacket(QByteArray)));
         connect(socket, SIGNAL(error_message(QString)), this, SIGNAL(error_message(QString)));
         socket->connectToHost();
 
@@ -337,11 +337,7 @@ void Client::disconnectFromHost() {
 
 typedef char buffer_t[65535];
 
-void Client::processServerPacket(const QString &cmd) {
-    processServerPacket(cmd.toUtf8().data());
-}
-
-void Client::processServerPacket(const char *cmd) {
+void Client::processServerPacket(const QByteArray &cmd) {
     if (m_isGameOver) return;
     Packet packet;
     if (packet.parse(cmd)) {
