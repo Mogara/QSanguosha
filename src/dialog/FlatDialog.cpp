@@ -21,7 +21,6 @@
 #include "FlatDialog.h"
 
 #include <QLabel>
-#include <QGraphicsDropShadowEffect>
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QMouseEvent>
@@ -31,12 +30,6 @@ FlatDialog::FlatDialog(QWidget *parent)
       title(new QLabel), layout(new QVBoxLayout)
 {
     setAttribute(Qt::WA_TranslucentBackground);
-
-    QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(this);
-    effect->setBlurRadius(18);
-    effect->setOffset(0);
-    effect->setColor(Qt::cyan);
-    setGraphicsEffect(effect);
 
     title->setAlignment(Qt::AlignTop | Qt::AlignLeft);
     title->setObjectName("window_title");
@@ -50,7 +43,7 @@ void FlatDialog::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
     painter.setPen(Qt::NoPen);
-    painter.setBrush(QColor(214, 231, 239, 75));
+    painter.setBrush(QColor(214, 231, 239));
     painter.drawRoundedRect(rect(), 5, 5);
 }
 
