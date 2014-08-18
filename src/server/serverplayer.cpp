@@ -303,10 +303,27 @@ void ServerPlayer::kick(){
 }
 
 void ServerPlayer::getMessage(QByteArray request) {
-    if (request.endsWith("\n"))
+    if (request.endsWith('\n'))
         request.chop(1);
 
     emit request_got(request);
+
+    Packet packet;
+    if (packet.parse(request)) {
+        switch (packet.getPacketDestination()) {
+        case S_DEST_ROOM:
+            emit roomPacketReceived(packet);
+            break;
+        //unused destination. Lobby hasn't been implemented.
+        case S_DEST_LOBBY:
+            emit lobbyPacketReceived(packet);
+            break;
+        default:
+            emit invalidPacketReceived(request);
+        }
+    } else {
+        emit invalidPacketReceived(request);
+    }
 }
 
 void ServerPlayer::unicast(const QByteArray &message) {

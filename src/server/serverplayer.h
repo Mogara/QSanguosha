@@ -229,7 +229,10 @@ signals:
     void disconnected();
     void request_got(const QByteArray &request);
     void message_ready(const QByteArray &msg);
+
+    void roomPacketReceived(const QSanProtocol::Packet &packet);
+    void lobbyPacketReceived(const QSanProtocol::Packet &packet);
+    void invalidPacketReceived(const QByteArray &message);
 };
 
 #endif
-

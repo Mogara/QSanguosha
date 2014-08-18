@@ -1934,7 +1934,8 @@ ServerPlayer *Room::addSocket(ClientSocket *socket) {
     m_players << player;
 
     connect(player, SIGNAL(disconnected()), this, SLOT(reportDisconnection()));
-    connect(player, SIGNAL(request_got(QByteArray)), this, SLOT(processClientPacket(QByteArray)));
+    connect(player, SIGNAL(roomPacketReceived(QSanProtocol::Packet)), this, SLOT(processClientPacket(QSanProtocol::Packet)));
+    connect(player, SIGNAL(invalidPacketReceived(QByteArray)), this, SLOT(reportInvalidPacket(QByteArray)));
 
     return player;
 }
@@ -2365,34 +2366,33 @@ void Room::processRequestPreshow(ServerPlayer *player, const QVariant &arg) {
     player->releaseLock(ServerPlayer::SEMA_MUTEX);
 }
 
-void Room::processClientPacket(const QByteArray &request) {
-    Packet packet;
-    if (packet.parse(request)) {
-        ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
-        if (packet.getPacketType() == S_TYPE_REPLY) {
-            if (player == NULL) return;
-            processResponse(player, &packet);
-        } else if (packet.getPacketType() == S_TYPE_REQUEST) {
-            Callback callback = interactions[packet.getCommandType()];
-            if (!callback) return;
-            (this->*callback)(player, packet.getMessageBody());
-        } else if (packet.getPacketType() == S_TYPE_NOTIFICATION) {
-            Callback callback = callbacks[packet.getCommandType()];
-            if (!callback) return;
-            (this->*callback)(player, packet.getMessageBody());
-        }
-    } else {
-        ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
+void Room::processClientPacket(const QSanProtocol::Packet &packet) {
+    ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
+    if (packet.getPacketType() == S_TYPE_REPLY) {
         if (player == NULL) return;
-
-        if (game_finished) {
-            if (player->isOnline())
-                player->notify(S_COMMAND_WARN, "GAME_OVER");
-            return;
-        }
-
-        emit room_message(tr("%1: %2 is not invokable").arg(player->reportHeader()).arg(QString(request)));
+        processClientReply(player, packet);
+    } else if (packet.getPacketType() == S_TYPE_REQUEST) {
+        Callback callback = interactions[packet.getCommandType()];
+        if (!callback) return;
+        (this->*callback)(player, packet.getMessageBody());
+    } else if (packet.getPacketType() == S_TYPE_NOTIFICATION) {
+        Callback callback = callbacks[packet.getCommandType()];
+        if (!callback) return;
+        (this->*callback)(player, packet.getMessageBody());
     }
+}
+
+void Room::reportInvalidPacket(const QByteArray &message) {
+    ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
+    if (player == NULL) return;
+
+    if (game_finished) {
+        if (player->isOnline())
+            player->notify(S_COMMAND_WARN, "GAME_OVER");
+        return;
+    }
+
+    emit room_message(tr("%1: %2 is not invokable").arg(player->reportHeader()).arg(QString::fromUtf8(message)));
 }
 
 void Room::addRobotCommand(ServerPlayer *player, const QVariant &) {
@@ -2882,30 +2882,29 @@ void Room::resume(ServerPlayer *player, const QVariant &)
     pauseCommand(player, false);
 }
 
-void Room::processResponse(ServerPlayer *player, const Packet *packet) {
+void Room::processClientReply(ServerPlayer *player, const Packet &packet) {
     player->acquireLock(ServerPlayer::SEMA_MUTEX);
     bool success = false;
     if (player == NULL)
         emit room_message(tr("Unable to parse player"));
     else if (!player->m_isWaitingReply || player->m_isClientResponseReady)
         emit room_message(tr("Server is not waiting for reply from %1").arg(player->objectName()));
-    else if (packet->getCommandType() != player->m_expectedReplyCommand)
+    else if (packet.getCommandType() != player->m_expectedReplyCommand)
         emit room_message(tr("Reply command should be %1 instead of %2")
-        .arg(player->m_expectedReplyCommand).arg(packet->getCommandType()));
-    else if (packet->localSerial != player->m_expectedReplySerial)
+        .arg(player->m_expectedReplyCommand).arg(packet.getCommandType()));
+    else if (packet.localSerial != player->m_expectedReplySerial)
         emit room_message(tr("Reply serial should be %1 instead of %2")
-        .arg(player->m_expectedReplySerial).arg(packet->localSerial));
+        .arg(player->m_expectedReplySerial).arg(packet.localSerial));
     else
         success = true;
 
     if (!success) {
         player->releaseLock(ServerPlayer::SEMA_MUTEX);
         return;
-    }
-    else {
+    } else {
         _m_semRoomMutex.acquire();
         if (_m_raceStarted) {
-            player->setClientReply(packet->getMessageBody());
+            player->setClientReply(packet.getMessageBody());
             player->m_isClientResponseReady = true;
             // Warning: the statement below must be the last one before releasing the lock!!!
             // Any statement after this statement will totally compromise the synchronization
@@ -2918,10 +2917,9 @@ void Room::processResponse(ServerPlayer *player, const Packet *packet) {
             _m_raceWinner = player;
             // the _m_semRoomMutex.release() signal is in getRaceResult();
             _m_semRaceRequest.release();
-        }
-        else {
+        } else {
             _m_semRoomMutex.release();
-            player->setClientReply(packet->getMessageBody());
+            player->setClientReply(packet.getMessageBody());
             player->m_isClientResponseReady = true;
             player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
         }

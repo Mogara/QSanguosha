@@ -373,7 +373,7 @@ public:
     void fillRobotsCommand(ServerPlayer *player, const QVariant &arg);
     void mirrorGuanxingStepCommand(ServerPlayer *player, const QVariant &arg);
 
-    void processResponse(ServerPlayer *player, const QSanProtocol::Packet *arg);
+    void processClientReply(ServerPlayer *player, const QSanProtocol::Packet &packet);
 
     //cheat commands executed via speakCommand
     QHash<QString, Callback> cheatCommands;
@@ -569,7 +569,8 @@ private:
 
 private slots:
     void reportDisconnection();
-    void processClientPacket(const QByteArray &packet);
+    void processClientPacket(const QSanProtocol::Packet &packet);
+    void reportInvalidPacket(const QByteArray &message);
     void assignRoles();
     void startGame();
 
