@@ -766,8 +766,7 @@ QStringList Engine::getGeneralNames() const{
 
     while (itor.hasNext()) {
         itor.next();
-        if (!isGeneralHidden(itor.value()->objectName()) && !getBanPackages().contains(itor.value()->getPackage()))
-            general_names << itor.key();
+        general_names << itor.key();
     }
 
     return general_names;
@@ -776,38 +775,11 @@ QStringList Engine::getGeneralNames() const{
 QStringList Engine::getLimitedGeneralNames() const{
     //for later use
     QStringList general_names = getGeneralNames();
-    QStringList general_names_copy = general_names;
-    QStringList lord_general_names;
+    QStringList general_names_copy = getGeneralNames();
 
-    foreach(QString n, general_names_copy){
-        if (n.startsWith("lord_")){
-            general_names.removeOne(n);
-            lord_general_names << n;
-        }
-    }
-
-    QStringList general_conversions = Config.value("GeneralConversions").toStringList();
-    bool convert_lua = general_conversions.contains("Lua");
-    general_conversions.removeOne("Lua");
-    foreach(QString str, general_conversions) {
-        QString lord = "lord_" + str;
-        if (general_names_copy.contains(lord) && general_names.contains(str)){
-            general_names.removeOne(str);
-            general_names << lord;
-        }
-    }
-
-    if (convert_lua){
-        foreach(QString lord, lord_general_names){
-            QString non_lord = lord.mid(5);
-            if (generals.contains(non_lord) && generals.contains(lord) && general_names.contains(non_lord)){
-                const General *_non_lord_general = generals[non_lord];
-                if (Config.value("LuaPackages").toString().split("+").contains(_non_lord_general->getPackage())){
-                    general_names.removeOne(non_lord);
-                    general_names << lord;
-                }
-            }
-        }
+    foreach(QString name, general_names_copy) {
+        if (isGeneralHidden(name) || getBanPackages().contains(getGeneral(name)->getPackage()))
+            general_names.removeOne(name);
     }
 
     QStringList banned_generals = Config.value("Banlist/Generals", "").toStringList();
@@ -844,6 +816,7 @@ QList<int> Engine::getRandomCards() const{
         if (!getBanPackages().contains(card->getPackage()))
             list << card->getId();
     }
+
     QStringList card_conversions = Config.value("CardConversions").toStringList();
     foreach(QString str, card_conversions) {
         if (str == "DragonPhoenix")

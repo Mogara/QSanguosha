@@ -3331,7 +3331,7 @@ function isCard(class_name, card, player)
 		local place
 		local id = card:getEffectiveId()
 		if global_room:getCardOwner(id) == nil or global_room:getCardOwner(id):objectName() ~= player:objectName() then place = sgs.Player_PlaceHand
-		else place = global_room:getCardPlace(card:getEffectiveId()) end
+		else place = global_room:getCardPlace(id) end
 		if getSkillViewCard(card, class_name, player, place) then return true end
 	else
 		if not prohibitUseDirectly(card, player) then return true end
@@ -3559,6 +3559,14 @@ function getCardsNum(class_name, player, from)
 		global_room:writeToConsole(debug.traceback())
 		return 0
 	end
+
+	if not from and global_room:getCurrent():objectName() == player:objectName() then
+		global_room:writeToConsole("")
+		global_room:writeToConsole("cheat???")
+		global_room:writeToConsole(debug.traceback())
+		return 0
+	end
+
 	local cards = sgs.QList2Table(player:getHandcards())
 	local num = 0
 	local shownum = 0
@@ -3576,70 +3584,64 @@ function getCardsNum(class_name, player, from)
 	local diamondcard = 0
 	local clubcard = 0
 	local slashjink = 0
-
-	if not from and global_room:getCurrent():objectName() == player:objectName() then
-		global_room:writeToConsole("")
-		global_room:writeToConsole("cheat???")
-		global_room:writeToConsole(debug.traceback())
-		return 0
-	end
+	local other = {}
 	from = from or global_room:getCurrent()
 
-	if not player then
-		return #getCards(class_name, player)
-	else
-		for _, card in ipairs(cards) do
-			local flag = string.format("%s_%s_%s", "visible", from:objectName(), player:objectName())
-			if card:hasFlag("visible") or card:hasFlag(flag) or from:objectName() == player:objectName() then
-				shownum = shownum + 1
-				if card:isKindOf(class_name) then
-					num = num + 1
+	for _, card in ipairs(cards) do
+		local flag = string.format("%s_%s_%s", "visible", from:objectName(), player:objectName())
+		if card:hasFlag("visible") or card:hasFlag(flag) or from:objectName() == player:objectName() then
+			shownum = shownum + 1
+			if isCard(class_name, card, player) then
+				num = num + 1
+			else
+				table.insert(other, card)
+			end
+			if card:isKindOf("EquipCard") then
+				equipcard = equipcard + 1
+			end
+			if card:isKindOf("Slash") or card:isKindOf("Jink") then
+				slashjink = slashjink + 1
+			end
+			if card:isRed() then
+				if not card:isKindOf("Slash") then
+					redslash = redslash + 1
 				end
-				if card:isKindOf("EquipCard") then
-					equipcard = equipcard + 1
+				if not card:isKindOf("Peach") then
+					redpeach = redpeach + 1
 				end
-				if card:isKindOf("Slash") or card:isKindOf("Jink") then
-					slashjink = slashjink + 1
+			end
+			if card:isBlack() then
+				blackcard = blackcard + 1
+				if not card:isKindOf("Nullification") then
+					blacknull = blacknull + 1
 				end
-				if card:isRed() then
-					if not card:isKindOf("Slash") then
-						redslash = redslash + 1
-					end
-					if not card:isKindOf("Peach") then
-						redpeach = redpeach + 1
-					end
+			end
+			if card:getSuit() == sgs.Card_Heart then
+				if not card:isKindOf("Slash") then
+					heartslash = heartslash + 1
 				end
-				if card:isBlack() then
-					blackcard = blackcard + 1
-					if not card:isKindOf("Nullification") then
-						blacknull = blacknull + 1
-					end
+				if not card:isKindOf("Peach") then
+					heartpeach = heartpeach + 1
 				end
-				if card:getSuit() == sgs.Card_Heart then
-					if not card:isKindOf("Slash") then
-						heartslash = heartslash + 1
-					end
-					if not card:isKindOf("Peach") then
-						heartpeach = heartpeach + 1
-					end
+			end
+			if card:getSuit() == sgs.Card_Spade then
+				if not card:isKindOf("Nullification") then
+					spadenull = spadenull + 1
 				end
-				if card:getSuit() == sgs.Card_Spade then
-					if not card:isKindOf("Nullification") then
-						spadenull = spadenull + 1
-					end
-					if not card:isKindOf("Analeptic") then
-						spadewine = spadewine + 1
-					end
+				if not card:isKindOf("Analeptic") then
+					spadewine = spadewine + 1
 				end
-				if card:getSuit() == sgs.Card_Diamond and not card:isKindOf("Slash") then
-					diamondcard = diamondcard + 1
-				end
-				if card:getSuit() == sgs.Card_Club then
-					clubcard = clubcard + 1
-				end
+			end
+			if card:getSuit() == sgs.Card_Diamond and not card:isKindOf("Slash") then
+				diamondcard = diamondcard + 1
+			end
+			if card:getSuit() == sgs.Card_Club then
+				clubcard = clubcard + 1
 			end
 		end
 	end
+	num = num + #cardsView(sgs.ais[player:objectName()], class_name, player, other)
+
 	local ecards = player:getCards("e")
 	for _, card in sgs.qlist(ecards) do
 		equipcard = equipcard + 1
@@ -3664,39 +3666,40 @@ function getCardsNum(class_name, player, from)
 		end
 	end
 
-	if class_name == "Slash" then
-		local slashnum
-		if player:hasShownSkill("wusheng") then
-			slashnum = redslash + num + (player:getHandcardNum() - shownum) * 0.69
-		elseif player:hasShownSkill("longdan") then
-			slashnum = slashjink + (player:getHandcardNum() - shownum)*0.72
-		else
-			slashnum = num+(player:getHandcardNum() - shownum)*0.35
+	if player:objectName() ~= from:objectName() then
+		if class_name == "Slash" then
+			local slashnum
+			if player:hasShownSkill("wusheng") then
+				slashnum = redslash + num + (player:getHandcardNum() - shownum) * 0.69
+			elseif player:hasShownSkill("longdan") then
+				slashnum = slashjink + (player:getHandcardNum() - shownum) * 0.72
+			else
+				slashnum = num+(player:getHandcardNum() - shownum) * 0.35
+			end
+			return slashnum
+		elseif class_name == "Jink" then
+			if player:hasShownSkill("qingguo") then
+				return blackcard + num + (player:getHandcardNum() - shownum) * 0.85
+			elseif player:hasShownSkill("longdan") then
+				return slashjink + (player:getHandcardNum() - shownum) * 0.72
+			else
+				return num + (player:getHandcardNum() - shownum) * 0.6
+			end
+		elseif class_name == "Peach" then
+			if player:hasShownSkill("jijiu") then
+				return num + redpeach + (player:getHandcardNum() - shownum) * 0.6
+			else
+				return num
+			end
+		elseif class_name == "Nullification" then
+			if player:hasShownSkill("kanpo") then
+				return num + blacknull + (player:getHandcardNum() - shownum) * 0.5
+			else
+				return num
+			end
 		end
-		return player:hasShownSkill("wushuang") and slashnum*2 or slashnum
-	elseif class_name == "Jink" then
-		if player:hasShownSkill("qingguo") then
-			return blackcard + num + (player:getHandcardNum() - shownum)*0.85
-		elseif player:hasShownSkill("longdan") then
-			return slashjink + (player:getHandcardNum() - shownum)*0.72
-		else
-			return num + (player:getHandcardNum() - shownum)*0.6
-		end
-	elseif class_name == "Peach" then
-		if player:hasShownSkill("jijiu") then
-			return num + redpeach + (player:getHandcardNum() - shownum)*0.6
-		else
-			return num
-		end
-	elseif class_name == "Nullification" then
-		if player:hasShownSkill("kanpo") then
-			return num + blacknull + (player:getHandcardNum() - shownum)*0.5
-		else
-			return num
-		end
-	else
-		return num
 	end
+	return num
 end
 
 function SmartAI:getCardsNum(class_name, flag)

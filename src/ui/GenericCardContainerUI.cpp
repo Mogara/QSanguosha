@@ -777,7 +777,7 @@ void PlayerCardContainer::hideAvatars() {
 
 void PlayerCardContainer::_layUnder(QGraphicsItem *item) {
     _lastZ--;
-    Q_ASSERT((unsigned long)item != 0xcdcdcdcd);
+    //Q_ASSERT((unsigned long)item != 0xcdcdcdcd);
     if (item)
         item->setZValue(_lastZ--);
     else

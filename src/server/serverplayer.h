@@ -198,6 +198,8 @@ public:
 
     bool event_received;
 
+    void changeToLord();
+
 protected:
     //Synchronization helpers
     QSemaphore **semas;

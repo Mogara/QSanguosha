@@ -748,8 +748,9 @@ ServerPlayer *Room::doBroadcastRaceRequest(QList<ServerPlayer *> &players, QSanP
     countdown.max = timeOut;
     countdown.type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
     if (command == S_COMMAND_NULLIFICATION)
-        players.first()->setFlags("Global_askForSkillCost");
-    notifyMoveFocus(players, countdown);
+        notifyMoveFocus(getAllPlayers(), countdown);
+    else
+        notifyMoveFocus(players, countdown);
     foreach(ServerPlayer *player, players)
         doRequest(player, command, player->m_commandArgs, timeOut, false);
 
@@ -3414,10 +3415,8 @@ void Room::startGame() {
         if (general1->isCompanionWith(generals.last()))
             addPlayerMark(player, "CompanionEffect");
 
-        int max_hp = general1->getMaxHpHead()
-            + general2->getMaxHpDeputy();
-        if (max_hp % 2 == 1)
-            addPlayerMark(player, "HalfMaxHpLeft");
+        int max_hp = general1->getMaxHpHead() + general2->getMaxHpDeputy();
+        setPlayerMark(player, "HalfMaxHpLeft", max_hp % 2);
 
         player->setMaxHp(max_hp / 2);
         player->setHp(player->getMaxHp());

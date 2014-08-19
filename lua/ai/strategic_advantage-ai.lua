@@ -110,8 +110,15 @@ sgs.ai_skill_use_func.TransferCard = function(card, use, self)
 	if #friends == 0 and #friends_other == 0 then return end
 
 	local cards = {}
+	local oneJink = self.player:hasSkill("kongcheng")
 	for _, c in sgs.qlist(self.player:getHandcards()) do
-		if c:isTransferable() and (not isCard("Peach", c, self.player) or #friends == 0) then table.insert(cards, c) end
+		if c:isTransferable() and (not isCard("Peach", c, self.player) or #friends == 0) then
+			if not oneJink and isCard("Jink", c, self.player) then
+				oneJink = true
+				continue
+			end
+			table.insert(cards, c)
+		end
 	end
 	if #cards == 0 then return end
 

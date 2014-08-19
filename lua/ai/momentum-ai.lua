@@ -426,20 +426,29 @@ hongfa_slash_skill.getTurnUseCard = function(self, inclusive)
 	end
 end
 
-sgs.ai_view_as.hongfa_slash = function(card, player, card_place)
+sgs.ai_cardsview.hongfa_slash = function(self, class_name, player)
+	if class_name ~= "Slash" then return end
 	local zj = player:getLord()
 	if (not zj or zj:getPile("heavenly_army"):isEmpty() or not zj:isFriendWith(player)) then return end
-	local ints = sgs.QList2Table(zj:getPile("heavenly_army"))
-
-	local int = getHongfaCard(ints)
-	if int then
+	local ints = zj:getPile("heavenly_army")
+	local card_str = {}
+	local PeaceSpell, DragonPhoenix
+	for _, int in sgs.qlist(ints) do
 		local card = sgs.Sanguosha:getCard(int)
 		local suit = card:getSuitString()
 		local number = card:getNumberString()
-		local card_id = card:getEffectiveId()
-		local card_str = string.format("slash:hongfa[%s:%s]=%d&", suit, number, card_id)
-		return card_str
+		local id = card:getEffectiveId()
+		if card:objectName() == "PeaceSpell" then
+			PeaceSpell = string.format("slash:hongfa[%s:%s]=%d&", suit, number, id)
+		elseif card:objectName() == "DragonPhoenix" then
+			DragonPhoenix = string.format("slash:hongfa[%s:%s]=%d&", suit, number, id)
+		else
+			table.insert(card_str, string.format("slash:hongfa[%s:%s]=%d&", suit, number, id))
+		end
 	end
+	if PeaceSpell then table.insert(card_str, 1, PeaceSpell) end
+	if DragonPhoenix then table.insert(card_str, DragonPhoenix) end
+	return card_str
 end
 
 sgs.ai_skill_use["@@hongfa1"] = function(self)

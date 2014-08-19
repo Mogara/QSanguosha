@@ -163,7 +163,7 @@ local function GuanXing(self, cards)
 		end
 
 	end
-	
+
 	local drawCards = self:ImitateResult_DrawNCards(self.player, self.player:getVisibleSkillList(true))
 	local drawCards_copy = drawCards
 	if willSkipDrawPhase then drawCards = 0 end
@@ -302,7 +302,7 @@ local function GuanXing(self, cards)
 				if isCard("Slash", gcard, self.player) then
 					insert = true
 				end
-			elseif self.player:hasSkills("jizhi") then	
+			elseif self.player:hasSkills("jizhi") then
 				if isCard("TrickCard", gcard, self.player) then
 					insert = true
 				end
@@ -425,7 +425,7 @@ local function GuanXing(self, cards)
 	return up, bottom
 end
 
-local function XinZhan(self, cards)
+local function WuXin(self, cards)
 	local up, bottom = {}, {}
 	local judged_list = {}
 	local hasJudge = false
@@ -435,6 +435,8 @@ local function XinZhan(self, cards)
 	judge = sgs.reverse(judge)
 
 	bottom = getIdToCard(self, cards)
+	self:sortByUseValue(bottom, true)
+
 	for judge_count, need_judge in ipairs(judge) do
 		local index = 1
 		local lightning_flag = false
@@ -477,6 +479,8 @@ local function XinZhan(self, cards)
 		end
 	end
 
+	self:sortByUseValue(bottom)
+
 	while #bottom ~= 0 do
 		table.insert(up, table.remove(bottom))
 	end
@@ -487,7 +491,7 @@ end
 
 function SmartAI:askForGuanxing(cards, guanxing_type)
 	if guanxing_type == sgs.Room_GuanxingBothSides then return GuanXing(self, cards)
-	elseif guanxing_type == sgs.Room_GuanxingUpOnly then return XinZhan(self, cards)
+	elseif guanxing_type == sgs.Room_GuanxingUpOnly then return WuXin(self, cards)
 	elseif guanxing_type == sgs.Room_GuanxingDownOnly then return {}, cards
 	end
 	return cards, {}

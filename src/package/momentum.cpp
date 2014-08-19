@@ -1447,7 +1447,7 @@ MomentumPackage::MomentumPackage()
     zhangren->addSkill(new Chuanxin);
     zhangren->addSkill(new Fengshi);
 
-    General *lord_zhangjiao = new General(this, "lord_zhangjiao$", "qun");
+    General *lord_zhangjiao = new General(this, "lord_zhangjiao$", "qun", 4, true, true);
     lord_zhangjiao->addSkill(new Wuxin);
     lord_zhangjiao->addSkill(new Hongfa);
     lord_zhangjiao->addSkill(new Wendao);

@@ -1921,6 +1921,66 @@ QHash<QString, QStringList> ServerPlayer::getBigAndSmallKingdoms(const QString &
     return big_n_small;
 }
 
+void ServerPlayer::changeToLord() {
+    foreach(QString skill_name, head_skills.keys()) {
+        Player::loseSkill(skill_name);
+        JsonArray arg_loseskill;
+        arg_loseskill << (int)QSanProtocol::S_GAME_EVENT_LOSE_SKILL;
+        arg_loseskill << objectName();
+        arg_loseskill << skill_name;
+        room->doNotify(this, QSanProtocol::S_COMMAND_LOG_EVENT, arg_loseskill);
+
+        const Skill *skill = Sanguosha->getSkill(skill_name);
+        if (skill != NULL) {
+            if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
+                room->setPlayerMark(this, skill->getLimitMark(), 0);
+        }
+    }
+
+
+    QStringList real_generals = room->getTag(objectName()).toStringList();
+    QString name = real_generals.takeFirst();
+    name.prepend("lord_");
+    real_generals.prepend(name);
+    room->setTag(objectName(), real_generals);
+
+    room->setPlayerMark(this, "CompanionEffect", 1);
+
+    const General *lord = Sanguosha->getGeneral(name);
+    const General *deputy = Sanguosha->getGeneral(real_generals.last());
+    Q_ASSERT(lord != NULL && deputy != NULL);
+    int doubleMaxHp = lord->getMaxHpHead() + deputy->getMaxHpDeputy();
+    room->setPlayerMark(this, "HalfMaxHpLeft", doubleMaxHp % 2);
+
+    setMaxHp(doubleMaxHp / 2);
+    setHp(doubleMaxHp / 2);
+
+    room->broadcastProperty(this, "maxhp");
+    room->broadcastProperty(this, "hp");
+
+    JsonArray arg_changehero;
+    arg_changehero << (int)S_GAME_EVENT_CHANGE_HERO;
+    arg_changehero << objectName();
+    arg_changehero << name;
+    arg_changehero << false;
+    arg_changehero << false;
+    room->doNotify(this, QSanProtocol::S_COMMAND_LOG_EVENT, arg_changehero);
+
+    foreach(const Skill *skill, lord->getVisibleSkillList(true)) {
+        addSkill(skill->objectName());
+
+        if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty()) {
+            setMark(skill->getLimitMark(), 1);
+            JsonArray arg;
+            arg << objectName();
+            arg << skill->getLimitMark();
+            arg << 1;
+            room->doNotify(this, S_COMMAND_SET_MARK, arg);
+        }
+    }
+    
+}
+
 #ifndef QT_NO_DEBUG
 bool ServerPlayer::event(QEvent *event) {
 #define SET_MY_PROPERTY {\
