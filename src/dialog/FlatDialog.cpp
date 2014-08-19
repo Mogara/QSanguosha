@@ -19,11 +19,13 @@
     *********************************************************************/
 
 #include "FlatDialog.h"
+#include "StyleHelper.h"
 
 #include <QLabel>
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QMouseEvent>
+#include <QGraphicsDropShadowEffect>
 
 FlatDialog::FlatDialog(QWidget *parent, bool needTitle)
     : QDialog(parent, Qt::FramelessWindowHint | Qt::Dialog),
@@ -40,13 +42,23 @@ FlatDialog::FlatDialog(QWidget *parent, bool needTitle)
         layout->addWidget(title);
         setLayout(layout);
     }
+
+    if (StyleHelper::backgroundColorOfFlatDialog().alpha() <= 100) {
+        QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(this);
+        effect->setBlurRadius(18);
+        QColor color = StyleHelper::backgroundColorOfFlatDialog();
+        color.setAlpha(255);
+        effect->setColor(color);
+        effect->setOffset(0);
+        setGraphicsEffect(effect);
+    }
 }
 
 void FlatDialog::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
     painter.setPen(Qt::NoPen);
-    painter.setBrush(QColor(214, 231, 239));
+    painter.setBrush(StyleHelper::backgroundColorOfFlatDialog());
     painter.drawRoundedRect(rect(), 5, 5);
 }
 

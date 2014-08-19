@@ -22,6 +22,7 @@
 #define FLATDIALOG_H
 
 #include <QDialog>
+#include <QColor>
 
 class QLabel;
 class QVBoxLayout;

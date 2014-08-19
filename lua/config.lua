@@ -40,6 +40,12 @@ config = {
 		array = "#800080",
 		lord = "#FFA500",
 	},
+	
+	-- Sci-fi style background
+	--dialog_background_color = "#49C9F0";
+	--dialog_background_alpha = 75;
+	dialog_background_color = "#D6E7DB";
+	dialog_background_alpha = 255;
 
 	package_names = {
 		"StandardCard",

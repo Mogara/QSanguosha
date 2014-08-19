@@ -19,6 +19,8 @@
     *********************************************************************/
 
 #include "StyleHelper.h"
+#include "engine.h"
+#include "util.h"
 
 #include <QApplication>
 #include <QFontDatabase>
@@ -73,6 +75,25 @@ QString StyleHelper::styleSheetOfScrollBar()
         }
     }
     return style;
+}
+
+QColor StyleHelper::backgroundColorOfFlatDialog()
+{
+    static QColor color;
+    static bool loaded = false;
+    if (!loaded) {
+        lua_State *L = Sanguosha->getLuaState();
+        const QString colorString = GetConfigFromLuaState(L, "dialog_background_color").toString();
+        color.setNamedColor(colorString);
+        if (!color.isValid()) {
+            qWarning("Invalid color for dialog background");
+            color.setRgb(214, 231, 239);
+        }
+        const int alpha = GetConfigFromLuaState(L, "dialog_background_alpha").toInt();
+        color.setAlpha(qBound(0, alpha, 255));
+        loaded = true;
+    }
+    return color;
 }
 
 void StyleHelper::setIcon(QPushButton* button, QChar iconId, int size)
