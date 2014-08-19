@@ -148,4 +148,10 @@ void Settings::init() {
     lua_State *lua = Sanguosha->getLuaState();
     Config.ExtraHiddenGenerals = GetConfigFromLuaState(lua, "extra_hidden_generals").toStringList();
     Config.RemovedHiddenGenerals = GetConfigFromLuaState(lua, "removed_hidden_generals").toStringList();
+
+    QStringList forbid_packages = value("ForbidPackages").toStringList();
+    if (forbid_packages.isEmpty()) {
+        forbid_packages << "Test" << "JiangeDefense";
+        setValue("ForbidPackages", forbid_packages);
+    }
 }

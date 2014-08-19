@@ -1,8 +1,8 @@
 -- translation for Hegemony Formation Package
 
 return {
-	["formation"] = "阵包",
-	["formation_equip"] = "阵包",
+	["formation"] = "君临天下·阵",
+	["formation_equip"] = "君临天下·阵",
 	
 	["#dengai"] = "矫然的壮士",
 	["dengai"] = "邓艾",
