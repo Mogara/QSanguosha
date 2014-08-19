@@ -2046,8 +2046,7 @@ void Client::updateStateItem(const QVariant &state) {
 }
 
 void Client::setAvailableCards(const QVariant &pile) {
-    if (!pile.canConvert<JsonArray>()) return;
     QList<int> drawPile;
-    JsonUtils::tryParse(pile, drawPile);
-    available_cards = drawPile;
+    if (JsonUtils::tryParse(pile, drawPile))
+        available_cards = drawPile;
 }
