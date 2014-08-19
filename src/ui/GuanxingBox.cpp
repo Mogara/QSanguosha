@@ -271,6 +271,7 @@ void GuanxingBox::clear() {
     upItems.clear();
     downItems.clear();
 
+    prepareGeometryChange();
     hide();
 }
 

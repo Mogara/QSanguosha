@@ -190,8 +190,6 @@ void PlayerCardBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
 void PlayerCardBox::clear()
 {
-    hide();
-
     if (progressBar != NULL) {
         progressBar->hide();
         progressBar->deleteLater();
@@ -203,6 +201,8 @@ void PlayerCardBox::clear()
     foreach(CardItem *item, items)
         item->deleteLater();
     items.clear();
+
+    disappear();
 }
 
 int PlayerCardBox::getRowCount(const int &cardNumber) const

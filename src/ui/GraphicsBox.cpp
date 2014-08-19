@@ -84,3 +84,9 @@ void GraphicsBox::moveToCenter()
 {
     moveToCenter(this);
 }
+
+void GraphicsBox::disappear()
+{
+    prepareGeometryChange();
+    hide();
+}
