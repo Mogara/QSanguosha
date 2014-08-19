@@ -236,64 +236,22 @@ QWidget *ServerDialog::createAdvancedTab() {
 }
 
 QWidget *ServerDialog::createConversionTab() {
-    conversions_group = new QButtonGroup(this);
-    conversions_group->setExclusive(false);
+    QVBoxLayout *layout = new QVBoxLayout;
 
-    QGroupBox *formation_conversions = new QGroupBox(tr("Formation Conversions"));
-    QGroupBox *momentum_conversions = new QGroupBox(tr("Momentum Conversions"));
-    QGroupBox *other_conversions = new QGroupBox(tr("Other Conversions"));
-
-    QVBoxLayout *formation_layout = new QVBoxLayout;
-    QVBoxLayout *momentum_layout = new QVBoxLayout;
-    QVBoxLayout *other_layout = new QVBoxLayout;
-    formation_conversions->setLayout(formation_layout);
-    momentum_conversions->setLayout(momentum_layout);
-    other_conversions->setLayout(other_layout);
-
-    bool enable_lord_liubei = Config.value("GeneralConversions").toStringList().contains("liubei");
-    convert_liubei_to_lord = new QCheckBox(tr("Convert Liu Bei to Lord Liu Bei"));
-    convert_liubei_to_lord->setChecked(enable_lord_liubei);
+    bool enable_lord = Config.value("EnableLordConvertion", true).toBool();
+    convert_lord = new QCheckBox(tr("Enable Lord Convertion"));
+    convert_lord->setChecked(enable_lord);
 
     convert_ds_to_dp = new QCheckBox(tr("Convert DoubleSword to DragonPhoenix"));
-    convert_ds_to_dp->setChecked(Config.value("CardConversions").toStringList().contains("DragonPhoenix"));
-    convert_ds_to_dp->setDisabled(enable_lord_liubei);
+    convert_ds_to_dp->setChecked(Config.value("CardConversions").toStringList().contains("DragonPhoenix") || enable_lord);
+    convert_ds_to_dp->setDisabled(enable_lord);
 
-    connect(convert_liubei_to_lord, SIGNAL(toggled(bool)), convert_ds_to_dp, SLOT(setChecked(bool)));
-    connect(convert_liubei_to_lord, SIGNAL(toggled(bool)), convert_ds_to_dp, SLOT(setDisabled(bool)));
-
-    conversions_group->addButton(convert_liubei_to_lord);
-    conversions_group->addButton(convert_ds_to_dp);
-    formation_layout->addWidget(convert_liubei_to_lord);
-    formation_layout->addWidget(convert_ds_to_dp);
-
-    bool enable_lord_zhangjiao = Config.value("GeneralConversions").toStringList().contains("zhangjiao");
-    convert_zhangjiao_to_lord = new QCheckBox(tr("Convert Zhang Jiao to Lord Zhang Jiao"));
-    convert_zhangjiao_to_lord->setChecked(enable_lord_zhangjiao);
-    /*
-        add_peace_spell = new QCheckBox(tr("Add Peace Spell"));
-        add_peace_spell->setChecked(Config.value("CardConversions").toStringList().contains("+109"));
-        add_peace_spell->setDisabled(enable_lord_zhangjiao);
-
-        connect(convert_zhangjiao_to_lord, SIGNAL(toggled(bool)), add_peace_spell, SLOT(setChecked(bool)));
-        connect(convert_zhangjiao_to_lord, SIGNAL(toggled(bool)), add_peace_spell, SLOT(setDisabled(bool)));
-        */
-    conversions_group->addButton(convert_zhangjiao_to_lord);
-    //conversions_group->addButton(add_peace_spell);
-    momentum_layout->addWidget(convert_zhangjiao_to_lord);
-    //momentum_layout->addWidget(add_peace_spell);
-
-    bool enable_lua_lord = Config.value("GeneralConversions").toStringList().contains("Lua");
-    convert_lua_lord = new QCheckBox(tr("Convert Lua Lords"));
-    convert_lua_lord->setChecked(enable_lua_lord);
-
-    conversions_group->addButton(convert_lua_lord);
-    other_layout->addWidget(convert_lua_lord);
+    connect(convert_lord, SIGNAL(toggled(bool)), convert_ds_to_dp, SLOT(setChecked(bool)));
+    connect(convert_lord, SIGNAL(toggled(bool)), convert_ds_to_dp, SLOT(setDisabled(bool)));
 
     QWidget *widget = new QWidget;
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(formation_conversions);
-    layout->addWidget(momentum_conversions);
-    layout->addWidget(other_conversions);
+    layout->addWidget(convert_lord);
+    layout->addWidget(convert_ds_to_dp);
     widget->setLayout(layout);
     return widget;
 }
@@ -575,10 +533,7 @@ bool ServerDialog::config() {
     Config.setValue("BanPackages", Config.BanPackages);
 
     QStringList general_conversions;
-    if (convert_liubei_to_lord->isChecked()) general_conversions << "liubei";
-    if (convert_zhangjiao_to_lord->isChecked()) general_conversions << "zhangjiao";
-    if (convert_lua_lord->isChecked()) general_conversions << "Lua";
-    Config.setValue("GeneralConversions", general_conversions);
+    Config.setValue("EnableLordConvertion", convert_lord->isChecked());
 
     QStringList card_conversions;
     if (convert_ds_to_dp->isChecked()) card_conversions << "DragonPhoenix";

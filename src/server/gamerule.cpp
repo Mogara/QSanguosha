@@ -106,6 +106,10 @@ public:
 
     virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
         QMap<ServerPlayer *, QStringList> trigger_map;
+
+        if (!Config.value("EnableLordConvertion", true).toBool())
+            return trigger_map;
+
         if (player == NULL) {
             foreach(ServerPlayer *p, room->getAllPlayers()) {
                 if (p->getActualGeneral1() != NULL) {

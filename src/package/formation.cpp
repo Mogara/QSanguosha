@@ -1259,7 +1259,7 @@ FormationPackage::FormationPackage()
     hetaihou->addSkill(new Zhendu);
     hetaihou->addSkill(new Qiluan);
 
-    General *liubei = new General(this, "lord_liubei$", "shu", 4);
+    General *liubei = new General(this, "lord_liubei$", "shu", 4, true, true);
     liubei->addSkill(new Zhangwu);
     liubei->addSkill(new Zhangwu_Draw);
     related_skills.insertMulti("zhangwu", "#zhangwu-draw");
