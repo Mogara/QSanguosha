@@ -3415,10 +3415,8 @@ void Room::startGame() {
         if (general1->isCompanionWith(generals.last()))
             addPlayerMark(player, "CompanionEffect");
 
-        int max_hp = general1->getMaxHpHead()
-            + general2->getMaxHpDeputy();
-        if (max_hp % 2 == 1)
-            addPlayerMark(player, "HalfMaxHpLeft");
+        int max_hp = general1->getMaxHpHead() + general2->getMaxHpDeputy();
+        setPlayerMark(player, "HalfMaxHpLeft", max_hp % 2);
 
         player->setMaxHp(max_hp / 2);
         player->setHp(player->getMaxHp());

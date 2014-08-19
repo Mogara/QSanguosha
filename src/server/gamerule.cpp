@@ -97,6 +97,42 @@ public:
     }
 };
 
+class GameRule_LordConvertion : public TriggerSkill {
+public:
+    GameRule_LordConvertion() : TriggerSkill("GameRule_LordConvertion") {
+        events << GameStart;
+        global = true;
+    }
+
+    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+        QMap<ServerPlayer *, QStringList> trigger_map;
+        if (player == NULL) {
+            foreach(ServerPlayer *p, room->getAllPlayers()) {
+                if (p->getActualGeneral1() != NULL) {
+                    QStringList generals = Sanguosha->getGeneralNames();
+                    QString lord = "lord_" + p->getActualGeneral1()->objectName();
+                    if (generals.contains(lord)) {
+                        const General *lord_general = Sanguosha->getGeneral(lord);
+                        if (!Sanguosha->getBanPackages().contains(lord_general->getPackage()))
+                            trigger_map.insert(p, QStringList(objectName()));
+                    }
+                }
+            }
+        }
+
+        return trigger_map;
+    }
+
+    virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
+        return ask_who->askForSkillInvoke(objectName(), "change_to_lord");
+    }
+
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
+        ask_who->changeToLord();
+        return false;
+    }
+};
+
 GameRule::GameRule(QObject *parent)
     : TriggerSkill("game_rule")
 {
@@ -119,6 +155,8 @@ GameRule::GameRule(QObject *parent)
     list << new GameRule_AskForGeneralShowHead;
     list << new GameRule_AskForGeneralShowDeputy;
     list << new GameRule_AskForArraySummon;
+    list << new GameRule_LordConvertion;
+
     QList<const Skill *> list_copy;
     foreach(Skill *s, list)
         list_copy << s;
