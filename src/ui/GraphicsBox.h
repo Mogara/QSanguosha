@@ -39,6 +39,7 @@ protected:
     virtual QRectF boundingRect() const = 0;
 
     void moveToCenter();
+    void disappear();
 
     QString title;
 };

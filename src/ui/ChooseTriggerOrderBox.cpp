@@ -375,7 +375,7 @@ void ChooseTriggerOrderBox::clear()
 
     cancel->hide();
 
-    hide();
+    disappear();
 }
 
 void ChooseTriggerOrderBox::reply()

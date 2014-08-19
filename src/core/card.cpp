@@ -902,7 +902,7 @@ QString SkillCard::toString(bool hidden) const{
 }
 
 void SkillCard::extraCost(Room *room, const CardUseStruct &card_use) const{
-    if (card_use.card->willThrow()){
+    if (card_use.card->willThrow()) {
         CardMoveReason reason(CardMoveReason::S_REASON_THROW, card_use.from->objectName(), QString(), card_use.card->getSkillName(), QString());
         room->moveCardTo(this, card_use.from, NULL, Player::PlaceTable, reason, true);
     }

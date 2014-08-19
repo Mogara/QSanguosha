@@ -88,7 +88,7 @@ rende_skill.getTurnUseCard = function(self)
 	if self.player:isKongcheng() then return end
 
 	if self:shouldUseRende() then
-		return sgs.Card_Parse("@RendeCard=.")
+		return sgs.Card_Parse("@RendeCard=.&rende")
 	end
 end
 
@@ -136,7 +136,7 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 			if dummy_use.card then continue end
 		end
 
-		use.card = sgs.Card_Parse("@RendeCard=" .. card:getId())
+		use.card = sgs.Card_Parse("@RendeCard=" .. card:getId() .. "&rende")
 		if use.to then use.to:append(friend) return end
 	end
 

@@ -24,6 +24,7 @@
 #include <QObject>
 #include <QMutex>
 #include <QFont>
+#include <QColor>
 
 #include "settings.h"
 
@@ -52,6 +53,8 @@ public:
     }
 
     static QString styleSheetOfScrollBar();
+
+    static QColor backgroundColorOfFlatDialog();
 };
 
 #endif // STYLEHELPER_H

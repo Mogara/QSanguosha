@@ -679,6 +679,7 @@ function sgs.getDefense(player)
 	if player:hasShownSkill("keji") then defense = defense + player:getHandcardNum() * 0.5 end
 	if player:hasShownSkill("jieyin") and player:getHandcardNum() > 1 then defense = defense + 2 end
 
+	if player:hasShownSkill("qianhuan") then defense = defense + 4 end
 	if player:hasShownSkill("jijiu") then defense = defense + 2 end
 	if player:hasShownSkill("lijian") then defense = defense + 0.5 end
 	if player:hasLordSkill("hongfa") then

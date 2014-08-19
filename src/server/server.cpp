@@ -128,10 +128,12 @@ QWidget *ServerDialog::createPackageTab() {
         if (package == NULL)
             continue;
 
+        bool forbid_package = Config.value("ForbidPackages").toStringList().contains(extension);
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setObjectName(extension);
         checkbox->setText(Sanguosha->translate(extension));
-        checkbox->setChecked(!ban_packages.contains(extension));
+        checkbox->setChecked(!ban_packages.contains(extension) && !forbid_package);
+        checkbox->setEnabled(!forbid_package);
 
         extension_group->addButton(checkbox);
 
@@ -942,16 +944,16 @@ void Server::processNewConnection(ClientSocket *socket) {
 
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 
-    connect(socket, SIGNAL(message_got(const char *)), this, SLOT(processRequest(const char *)));
+    connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processRequest(QByteArray)));
 }
 
-void Server::processRequest(const char *request) {
+void Server::processRequest(const QByteArray &request) {
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
-    socket->disconnect(this, SLOT(processRequest(const char *)));
+    socket->disconnect(this, SLOT(processRequest(QByteArray)));
 
     Packet signup;
     if (!signup.parse(request) || signup.getCommandType() != S_COMMAND_SIGNUP) {
-        emit server_message(tr("Invalid signup string: %1").arg(request));
+        emit server_message(tr("Invalid signup string: %1").arg(QString::fromUtf8(request)));
         Packet error(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
         error.setMessageBody("INVALID_FORMAT");
         socket->send(error.toJson());

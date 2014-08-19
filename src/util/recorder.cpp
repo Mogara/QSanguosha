@@ -35,10 +35,6 @@ Recorder::Recorder(QObject *parent)
     watch.start();
 }
 
-void Recorder::record(const char *line) {
-    recordLine(line);
-}
-
 void Recorder::recordLine(const QByteArray &line) {
     if (line.isEmpty())
         return;
@@ -109,16 +105,12 @@ Replayer::Replayer(QObject *parent, const QString &filename)
         return;
 
     while (!device->atEnd()) {
-        QString line = QString::fromUtf8(device->readLine());
-
-        QStringList splited_line = line.split(" ");
-        QString elapsed_str = splited_line.takeFirst();
-        QString cmd = splited_line.join(" ");
-        int elapsed = elapsed_str.toInt();
+        QByteArray line = device->readLine();
+        int split = line.indexOf(' ');
 
         Pair pair;
-        pair.elapsed = elapsed;
-        pair.cmd = cmd;
+        pair.elapsed = line.left(split).toInt();
+        pair.cmd = line.mid(split + 1);
 
         pairs << pair;
     }
@@ -203,7 +195,7 @@ void Replayer::run() {
 
         Packet packet;
         bool delayed = true;
-        if (packet.parse(pair.cmd.toLatin1().constData())){
+        if (packet.parse(pair.cmd)) {
             if (nondelays.contains(packet.getCommandType()))
                 delayed = false;
         }

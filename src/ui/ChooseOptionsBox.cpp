@@ -172,7 +172,5 @@ void ChooseOptionsBox::clear()
 
     buttons.clear();
 
-    update();
-
-    hide();
+    disappear();
 }

@@ -179,6 +179,7 @@ void CardContainer::clear() {
     } else {
         ids.clear();
         confirm_button->hide();
+        prepareGeometryChange();
         hide();
     }
 }

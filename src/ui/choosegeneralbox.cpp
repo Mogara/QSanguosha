@@ -508,9 +508,7 @@ void ChooseGeneralBox::clear() {
     items.clear();
     selected.clear();
 
-    update();
-
-    hide();
+    disappear();
 }
 
 void ChooseGeneralBox::_onItemClicked() {
