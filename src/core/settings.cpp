@@ -151,7 +151,7 @@ void Settings::init() {
 
     QStringList forbid_packages = value("ForbidPackages").toStringList();
     if (forbid_packages.isEmpty()) {
-        forbid_packages << "Test" << "JiangeDefense";
+        forbid_packages << "test" << "jiange-defense";
         setValue("ForbidPackages", forbid_packages);
     }
 }
