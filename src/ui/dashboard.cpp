@@ -1059,15 +1059,22 @@ void Dashboard::disableAllCards() {
 void Dashboard::enableCards() {
     m_mutexEnableCards.lock();
     expandPileCards("wooden_ox");
-    foreach(CardItem *card_item, m_handCards)
-        card_item->setFrozen(!card_item->getCard()->isAvailable(Self), false);
+    foreach(CardItem *card_item, m_handCards) {
+        const bool frozen = !card_item->getCard()->isAvailable(Self);
+        card_item->setFrozen(frozen, false);
+        if (!frozen && Config.EnableSuperDrag)
+            card_item->setFlag(ItemIsMovable);
+    }
     m_mutexEnableCards.unlock();
 }
 
 void Dashboard::enableAllCards() {
     m_mutexEnableCards.lock();
-    foreach(CardItem *card_item, m_handCards)
+    foreach(CardItem *card_item, m_handCards) {
         card_item->setFrozen(false, false);
+        if (Config.EnableSuperDrag)
+            card_item->setFlag(ItemIsMovable);
+    }
     m_mutexEnableCards.unlock();
 }
 
@@ -1229,8 +1236,12 @@ void Dashboard::updatePending() {
     if (!viewAsSkill->inherits("OneCardViewAsSkill"))
         pended = cards;
     foreach(CardItem *item, m_handCards) {
-        if (!item->isSelected() || pendings.isEmpty())
-            item->setFrozen(!viewAsSkill->viewFilter(pended, item->getCard()), false);
+        if (!item->isSelected() || pendings.isEmpty()) {
+            const bool frozen = !viewAsSkill->viewFilter(pended, item->getCard());
+            item->setFrozen(frozen, false);
+            if (!frozen && Config.EnableSuperDrag)
+                item->setFlag(ItemIsMovable);
+        }
     }
 
     for (int i = 0; i < S_EQUIP_AREA_LENGTH; i++) {
