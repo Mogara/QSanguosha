@@ -457,22 +457,22 @@ public:
     }
 
     virtual QStringList triggerable(TriggerEvent triggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer* &ask_who) const{
-        if (player == NULL || !player->isAlive()) return QStringList();
+        if (player == NULL || !player->isAlive())
+            return QStringList();
         QList<ServerPlayer *> owners = room->findPlayersBySkillName(objectName());
         if (triggerEvent == CardUsed || triggerEvent == CardResponded){
             ServerPlayer *from = NULL;
             bool is_use = false;
             const Card *card = NULL;
-            if (triggerEvent == CardUsed){
+            if (triggerEvent == CardUsed) {
                 is_use = true;
                 CardUseStruct use = data.value<CardUseStruct>();
                 from = use.from;
                 card = use.card;
-            }
-            else {
+            } else {
                 CardResponseStruct resp = data.value<CardResponseStruct>();
                 is_use = resp.m_isUse;
-                from = resp.m_who;
+                from = player;
                 card = resp.m_card;
             }
             if (from->getPhase() == Player::Play && from->getMark(objectName()) == 0 && is_use){
@@ -494,8 +494,7 @@ public:
                     }
                 }
             }
-        }
-        else if (triggerEvent == CardsMoveOneTime){
+        } else if (triggerEvent == CardsMoveOneTime) {
             CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
             if (move.from != NULL && move.from->tag.contains("yongjue_card") && player == move.from
                 && ((move.reason.m_reason & CardMoveReason::S_MASK_BASIC_REASON) == CardMoveReason::S_REASON_USE)
