@@ -222,14 +222,17 @@ private:
     QVariant _m_clientResponse;
 
 private slots:
-    void getMessage(const char *message);
+    void getMessage(QByteArray request);
     void sendMessage(const QByteArray &message);
 
 signals:
     void disconnected();
     void request_got(const QByteArray &request);
     void message_ready(const QByteArray &msg);
+
+    void roomPacketReceived(const QSanProtocol::Packet &packet);
+    void lobbyPacketReceived(const QSanProtocol::Packet &packet);
+    void invalidPacketReceived(const QByteArray &message);
 };
 
 #endif
-

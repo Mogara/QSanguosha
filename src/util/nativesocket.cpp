@@ -108,7 +108,7 @@ void NativeClientSocket::getMessage() {
 #ifndef QT_NO_DEBUG
         printf("recv: %s", msg.constData());
 #endif
-        emit message_got(msg.constData());
+        emit message_got(msg);
     }
 }
 

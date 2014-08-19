@@ -30,17 +30,19 @@ class FlatDialog : public QDialog {
     Q_OBJECT
 
 protected:
-    FlatDialog(QWidget *parent);
+    FlatDialog(QWidget *parent, bool needTitle = true);
 
-    void paintEvent(QPaintEvent *);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    virtual void paintEvent(QPaintEvent *);
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
 
     QVBoxLayout *layout;
 
 private:
     QLabel *title;
     QPoint mousePressedPoint;
+    bool mousePressed;
 };
 
 #endif // FLATDIALOG_H

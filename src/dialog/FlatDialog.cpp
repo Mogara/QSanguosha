@@ -21,49 +21,53 @@
 #include "FlatDialog.h"
 
 #include <QLabel>
-#include <QGraphicsDropShadowEffect>
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QMouseEvent>
 
-FlatDialog::FlatDialog(QWidget *parent)
+FlatDialog::FlatDialog(QWidget *parent, bool needTitle)
     : QDialog(parent, Qt::FramelessWindowHint | Qt::Dialog),
-      title(new QLabel), layout(new QVBoxLayout)
+      mousePressed(false)
 {
     setAttribute(Qt::WA_TranslucentBackground);
 
-    QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect(this);
-    effect->setBlurRadius(18);
-    effect->setOffset(0);
-    effect->setColor(Qt::cyan);
-    setGraphicsEffect(effect);
-
-    title->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-    title->setObjectName("window_title");
-    connect(this, SIGNAL(windowTitleChanged(QString)), title, SLOT(setText(QString)));
-
-    layout->addWidget(title);
-    setLayout(layout);
+    if (needTitle) {
+        layout = new QVBoxLayout;
+        title = new QLabel;
+        title->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+        title->setObjectName("window_title");
+        connect(this, SIGNAL(windowTitleChanged(QString)), title, SLOT(setText(QString)));
+        layout->addWidget(title);
+        setLayout(layout);
+    }
 }
 
 void FlatDialog::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
     painter.setPen(Qt::NoPen);
-    painter.setBrush(QColor(214, 231, 239, 75));
+    painter.setBrush(QColor(214, 231, 239));
     painter.drawRoundedRect(rect(), 5, 5);
 }
 
 void FlatDialog::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() & Qt::LeftButton)
+    if (event->button() & Qt::LeftButton) {
         mousePressedPoint = event->globalPos() - frameGeometry().topLeft();
+        mousePressed = true;
+    }
 }
 
 void FlatDialog::mouseMoveEvent(QMouseEvent *event)
 {
-    QPoint path = event->globalPos() - mousePressedPoint;
-    move(path);
+    if (mousePressed)
+        move(event->globalPos() - mousePressedPoint);
+}
+
+void FlatDialog::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() & Qt::LeftButton)
+        mousePressed = false;
 }
 
 

@@ -36,11 +36,10 @@ public:
     explicit Recorder(QObject *parent);
     static QImage TXT2PNG(const QByteArray &data);
     bool save(const QString &filename) const;
-    void recordLine(const QByteArray &line);
     QList<QByteArray> getRecords() const;
 
 public slots:
-    void record(const char *line);
+    void recordLine(const QByteArray &line);
 
 private:
     QTime watch;
@@ -79,12 +78,12 @@ private:
 
     struct Pair {
         int elapsed;
-        QString cmd;
+        QByteArray cmd;
     };
     QList<Pair> pairs;
 
 signals:
-    void command_parsed(const QString &cmd);
+    void command_parsed(const QByteArray &cmd);
     void elasped(int secs);
     void speed_changed(qreal speed);
 };

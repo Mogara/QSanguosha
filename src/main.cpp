@@ -203,7 +203,7 @@ int main(int argc, char *argv[]) {
 
     Audio::init();
 #else
-    QMessageBox::warning(this, tr("Warning"), tr("Audio support is disabled when compiled"));
+    QMessageBox::warning(this, QObject::tr("Warning"), QObject::tr("Audio support is disabled when compiled"));
 #endif
 
     if (!noSplash) {

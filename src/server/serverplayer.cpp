@@ -278,7 +278,7 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString &reason, const QStri
 void ServerPlayer::setSocket(ClientSocket *socket) {
     if (socket) {
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
-        connect(socket, SIGNAL(message_got(const char *)), this, SLOT(getMessage(const char *)));
+        connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(getMessage(QByteArray)));
         connect(this, SIGNAL(message_ready(QByteArray)), this, SLOT(sendMessage(QByteArray)));
     }
     else {
@@ -302,12 +302,28 @@ void ServerPlayer::kick(){
     setSocket(NULL);
 }
 
-void ServerPlayer::getMessage(const char *message) {
-    QByteArray request(message);
-    if (request.endsWith("\n"))
+void ServerPlayer::getMessage(QByteArray request) {
+    if (request.endsWith('\n'))
         request.chop(1);
 
     emit request_got(request);
+
+    Packet packet;
+    if (packet.parse(request)) {
+        switch (packet.getPacketDestination()) {
+        case S_DEST_ROOM:
+            emit roomPacketReceived(packet);
+            break;
+        //unused destination. Lobby hasn't been implemented.
+        case S_DEST_LOBBY:
+            emit lobbyPacketReceived(packet);
+            break;
+        default:
+            emit invalidPacketReceived(request);
+        }
+    } else {
+        emit invalidPacketReceived(request);
+    }
 }
 
 void ServerPlayer::unicast(const QByteArray &message) {
