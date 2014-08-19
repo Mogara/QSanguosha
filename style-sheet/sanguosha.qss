@@ -446,21 +446,21 @@ QComboBox QAbstractItemView {
 	color: white;
 }
 
-QListWidget {
+QListView {
 	border-radius: 5px;
 	background-color: rgb(236, 240, 241);
 	color: rgb(52, 73, 94);
 }
 
-QListWidget::item {
+QListView::item {
 	border-radius: 5px;
 }
 
-QListWidget::item:selected {
+QListView::item:selected {
 	background-color: rgb(26, 188, 156);
 	border: transparent;
 }
 
-QListWidget::item:!selected:hover {
+QListView::item:!selected:hover {
 	color: rgb(26, 188, 156);
 }

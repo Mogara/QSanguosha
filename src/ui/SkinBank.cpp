@@ -356,13 +356,13 @@ QPixmap QSanRoomSkin::getCardAvatarPixmap(const QString &generalName) const{
 
 QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSize size) const{
     QString name = generalName;
-    if (size == S_GENERAL_ICON_SIZE_CARD)
+    if (size == S_GENERAL_ICON_SIZE_CARD) {
         return getCardMainPixmap(name);
-    else {
+    } else {
         QString key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size).arg(name);
-        if (isImageKeyDefined(key))
+        if (isImageKeyDefined(key)) {
             return getPixmap(key);
-        else {
+        } else {
             key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size);
             return getPixmap(key, name);
         }
@@ -494,7 +494,7 @@ bool IQSanComponentSkin::AnchoredRect::tryParse(const QVariant &var) {
 
 // Load pixmap from a file and map it to the given key.
 QPixmap QSanPixmapCache::getPixmap(const QString &key, const QString &fileName) {
-    static QPixmap empty(1, 1);
+    static QPixmap empty;
     QPixmap cached;
     if (QPixmapCache::find(key, &cached)) {
         return cached;
@@ -502,8 +502,7 @@ QPixmap QSanPixmapCache::getPixmap(const QString &key, const QString &fileName) 
 
     if (fileName == "deprecated") {
         QPixmapCache::insert(key, empty);
-    }
-    else {
+    } else {
         QPixmap pixmap;
         bool success = !fileName.isEmpty() && pixmap.load(fileName);
         if (!success) {
@@ -511,8 +510,7 @@ QPixmap QSanPixmapCache::getPixmap(const QString &key, const QString &fileName) 
                      fileName.toLatin1().constData(),
                      key.toLatin1().constData());*/
             QPixmapCache::insert(key, empty); // make Qt happy
-        }
-        else{
+        } else {
             QPixmapCache::insert(key, pixmap);
             return pixmap;
         }
@@ -644,8 +642,9 @@ QString IQSanComponentSkin::_readConfig(const QVariant &dict, const QString &key
     if (!JsonUtils::isString(val)) {
         qWarning("Unable to read configuration: %s", key.toLatin1().constData());
         return defaultValue;
+    } else {
+        return val.toString();
     }
-    else return val.toString();
 }
 
 QString IQSanComponentSkin::_readImageConfig(const QString &key, QRect &rect,
@@ -653,12 +652,13 @@ QString IQSanComponentSkin::_readImageConfig(const QString &key, QRect &rect,
     bool &scaled, const QString &defaultValue) const{
     clipping = false;
     scaled = false;
-    if (_m_imageConfig.isEmpty()) return defaultValue;
+    if (_m_imageConfig.isEmpty())
+        return defaultValue;
     const QVariant &val = _m_imageConfig[key];
     QString result;
-    if (JsonUtils::isString(val))
+    if (JsonUtils::isString(val)) {
         result = val.toString();
-    else if (val.canConvert<JsonArray>()) {
+    } else if (val.canConvert<JsonArray>()) {
         JsonArray arr = val.value<JsonArray>();
         if (arr.size() >= 2 && JsonUtils::isString(arr[0]) && tryParse(arr[1], rect)) {
             clipping = true;
@@ -666,8 +666,7 @@ QString IQSanComponentSkin::_readImageConfig(const QString &key, QRect &rect,
             if (arr.size() > 3 && tryParse(arr[3], newScale))
                 scaled = true;
         }
-    }
-    else {
+    } else {
         qWarning("Unable to read configuration: %s", key.toLatin1().constData());
         return defaultValue;
     }
@@ -693,17 +692,18 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) co
     bool scaled = false;
 
     // case 1 and 2
-    if (arg.isNull()) totalKey = key; else totalKey = key.arg(arg);
+    if (arg.isNull())
+        totalKey = key;
+    else
+        totalKey = key.arg(arg);
     bool from_cache = false;
     if (S_IMAGE_KEY2FILE.contains(totalKey)) { // first, search cache
         fileName = S_IMAGE_KEY2FILE[totalKey];
         from_cache = true;
-    }
-    else if (isImageKeyDefined(totalKey)) { // then, read from config file
+    } else if (isImageKeyDefined(totalKey)) { // then, read from config file
         fileName = _readImageConfig(totalKey, clipRegion, clipping, scaleRegion, scaled);
         S_IMAGE_KEY2FILE[totalKey].append(fileName);
-    }
-    else { // case 3: use default
+    } else { // case 3: use default
         Q_ASSERT(!arg.isNull());
         groupKey = key.arg(S_SKIN_KEY_DEFAULT);
         S_IMAGE_GROUP_KEYS[groupKey].append(totalKey);
@@ -755,6 +755,9 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) co
             if (scaled)
                 clipped = clipped.scaled(scaleRegion, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
             pixmap = clipped;
+        } else if (pixmap.isNull()) {
+            pixmap = QPixmap(scaleRegion.isValid() ? scaleRegion : clipRegion.size());
+            pixmap.fill();
         }
         S_IMAGE_KEY2PIXMAP[totalKey] = pixmap;
     }

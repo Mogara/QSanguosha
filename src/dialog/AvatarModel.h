@@ -18,38 +18,26 @@
     QSanguosha-Hegemony Team
     *********************************************************************/
 
-#ifndef _CONNECTION_DIALOG_H
-#define _CONNECTION_DIALOG_H
+#ifndef AVATARMODEL_H
+#define AVATARMODEL_H
 
-#include <QListWidget>
-#include <QComboBox>
-#include <QButtonGroup>
+#include <QAbstractListModel>
 
-#include "FlatDialog.h"
+#include "engine.h"
+#include "general.h"
 
-namespace Ui {
-    class ConnectionDialog;
-}
-
-class ConnectionDialog : public FlatDialog {
+class AvatarModel : public QAbstractListModel
+{
     Q_OBJECT
-
 public:
-    ConnectionDialog(QWidget *parent);
-    ~ConnectionDialog();
-    void hideAvatarList();
-    void showAvatarList();
+    
+    explicit AvatarModel(const GeneralList &list);
+
+    virtual int rowCount(const QModelIndex &) const;
+    virtual QVariant data(const QModelIndex &index, int role) const;
 
 private:
-    Ui::ConnectionDialog *ui;
-
-private slots:
-    void on_detectLANButton_clicked();
-    void on_clearHistoryButton_clicked();
-    void on_avatarList_doubleClicked(const QModelIndex &index);
-    void on_changeAvatarButton_clicked();
-    void on_connectButton_clicked();
+    GeneralList list;
 };
 
-#endif
-
+#endif // AVATARMODEL_H

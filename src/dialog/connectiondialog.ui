@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>772</width>
+    <width>619</width>
     <height>367</height>
    </rect>
   </property>
@@ -471,22 +471,22 @@ QComboBox QAbstractItemView {
 	color: white;
 }
 
-QListWidget {
+QListView {
 	border-radius: 5px;
 	background-color: rgb(236, 240, 241);
 	color: rgb(52, 73, 94);
 }
 
-QListWidget::item {
+QListView::item {
 	border-radius: 5px;
 }
 
-QListWidget::item:selected {
+QListView::item:selected {
 	background-color: rgb(26, 188, 156);
 	border: transparent;
 }
 
-QListWidget::item:!selected:hover {
+QListView::item:!selected:hover {
 	color: rgb(26, 188, 156);
 }</string>
   </property>
@@ -641,12 +641,12 @@ QListWidget::item:!selected:hover {
     </layout>
    </widget>
   </widget>
-  <widget class="QListWidget" name="avatarList">
+  <widget class="QListView" name="avatarList">
    <property name="geometry">
     <rect>
      <x>311</x>
      <y>40</y>
-     <width>451</width>
+     <width>301</width>
      <height>321</height>
     </rect>
    </property>
@@ -662,6 +662,9 @@ QListWidget::item:!selected:hover {
    <property name="viewMode">
     <enum>QListView::IconMode</enum>
    </property>
+   <property name="uniformItemSizes">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QLabel" name="title">
    <property name="geometry">
@@ -676,7 +679,7 @@ QListWidget::item:!selected:hover {
     <string>Connection setup</string>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>

@@ -18,38 +18,36 @@
     QSanguosha-Hegemony Team
     *********************************************************************/
 
-#ifndef _CONNECTION_DIALOG_H
-#define _CONNECTION_DIALOG_H
+#include "AvatarModel.h"
+#include "SkinBank.h"
 
-#include <QListWidget>
-#include <QComboBox>
-#include <QButtonGroup>
-
-#include "FlatDialog.h"
-
-namespace Ui {
-    class ConnectionDialog;
+AvatarModel::AvatarModel(const GeneralList &list)
+    : list(list)
+{
 }
 
-class ConnectionDialog : public FlatDialog {
-    Q_OBJECT
+int AvatarModel::rowCount(const QModelIndex &) const
+{
+    return list.size();
+}
 
-public:
-    ConnectionDialog(QWidget *parent);
-    ~ConnectionDialog();
-    void hideAvatarList();
-    void showAvatarList();
+QVariant AvatarModel::data(const QModelIndex &index, int role) const
+{
+    int row = index.row();
+    if (row < 0 || row >= list.length())
+        return QVariant();
 
-private:
-    Ui::ConnectionDialog *ui;
+    const General *general = list.at(row);
 
-private slots:
-    void on_detectLANButton_clicked();
-    void on_clearHistoryButton_clicked();
-    void on_avatarList_doubleClicked(const QModelIndex &index);
-    void on_changeAvatarButton_clicked();
-    void on_connectButton_clicked();
-};
+    switch(role) {
+    case Qt::UserRole: return general->objectName();
+    case Qt::DisplayRole: return Sanguosha->translate(general->objectName());
+    case Qt::DecorationRole: {
+        QIcon icon(G_ROOM_SKIN.getGeneralPixmap(general->objectName(),
+                                                QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE));
+        return icon;
+    }
+    }
 
-#endif
-
+    return QVariant();
+}

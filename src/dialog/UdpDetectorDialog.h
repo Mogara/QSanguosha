@@ -18,38 +18,35 @@
     QSanguosha-Hegemony Team
     *********************************************************************/
 
-#ifndef _CONNECTION_DIALOG_H
-#define _CONNECTION_DIALOG_H
-
-#include <QListWidget>
-#include <QComboBox>
-#include <QButtonGroup>
+#ifndef UDPDETECTORDIALOG_H
+#define UDPDETECTORDIALOG_H
 
 #include "FlatDialog.h"
 
-namespace Ui {
-    class ConnectionDialog;
-}
+class UdpDetector;
+class QListWidget;
+class QListWidgetItem;
 
-class ConnectionDialog : public FlatDialog {
+class UdpDetectorDialog : public FlatDialog {
     Q_OBJECT
 
 public:
-    ConnectionDialog(QWidget *parent);
-    ~ConnectionDialog();
-    void hideAvatarList();
-    void showAvatarList();
+    UdpDetectorDialog(QDialog *parent);
 
 private:
-    Ui::ConnectionDialog *ui;
+    QListWidget *list;
+    UdpDetector *detector;
+    QPushButton *detect_button;
+    QPushButton *cancel_button;
 
 private slots:
-    void on_detectLANButton_clicked();
-    void on_clearHistoryButton_clicked();
-    void on_avatarList_doubleClicked(const QModelIndex &index);
-    void on_changeAvatarButton_clicked();
-    void on_connectButton_clicked();
+    void startDetection();
+    void stopDetection();
+    void chooseAddress(QListWidgetItem *item);
+    void addServerAddress(const QString &server_name, const QString &address);
+
+signals:
+    void address_chosen(const QString &address);
 };
 
-#endif
-
+#endif // UDPDETECTORDIALOG_H

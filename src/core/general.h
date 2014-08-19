@@ -105,5 +105,7 @@ private:
     int deputy_max_hp_adjusted_value;
 };
 
+typedef QList<const General *> GeneralList;
+
 #endif
 

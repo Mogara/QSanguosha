@@ -49,6 +49,8 @@ SOURCES += \
     src/dialog/rule-summary.cpp \
     src/dialog/UpdateChecker.cpp \
     src/dialog/FlatDialog.cpp \
+    src/dialog/UdpDetectorDialog.cpp \
+    src/dialog/AvatarModel.cpp \
     src/package/exppattern.cpp \
     src/package/formation.cpp \
     src/package/jiange-defense.cpp \
@@ -150,6 +152,8 @@ HEADERS += \
     src/dialog/rule-summary.h \
     src/dialog/UpdateChecker.h \
     src/dialog/FlatDialog.h \
+    src/dialog/UdpDetectorDialog.h \
+    src/dialog/AvatarModel.h \
     src/package/exppattern.h \
     src/package/formation.h \
     src/package/jiange-defense.h \
