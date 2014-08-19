@@ -748,9 +748,8 @@ ServerPlayer *Room::doBroadcastRaceRequest(QList<ServerPlayer *> &players, QSanP
     countdown.max = timeOut;
     countdown.type = Countdown::S_COUNTDOWN_USE_SPECIFIED;
     if (command == S_COMMAND_NULLIFICATION)
-        notifyMoveFocus(getAllPlayers(), countdown);
-    else
-        notifyMoveFocus(players, countdown);
+        players.first()->setFlags("Global_askForSkillCost");
+    notifyMoveFocus(players, countdown);
     foreach(ServerPlayer *player, players)
         doRequest(player, command, player->m_commandArgs, timeOut, false);
 
