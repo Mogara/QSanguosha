@@ -569,6 +569,7 @@ void Client::fillRobots() {
 void Client::arrange(const QStringList &order) {
     Q_ASSERT(order.length() == 3);
 
+    //@to-do:unused command in hegemony mode. deprecated format
     request(QString("arrange %1").arg(order.join("+")));
 }
 
