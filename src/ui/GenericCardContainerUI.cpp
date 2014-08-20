@@ -665,7 +665,6 @@ void PlayerCardContainer::addEquips(QList<CardItem *> &equips) {
         _m_equipRegions[index]->setPos(_m_layout->m_equipAreas[index].topLeft()
             + QPoint(_m_layout->m_equipAreas[index].width() / 2, 0));
         _m_equipRegions[index]->setOpacity(0);
-        _m_equipRegions[index]->show();
         _m_equipAnim[index]->stop();
         _m_equipAnim[index]->clear();
         QPropertyAnimation *anim = new QPropertyAnimation(_m_equipRegions[index], "pos", this);
@@ -899,7 +898,7 @@ void PlayerCardContainer::_createControls() {
         _m_equipRegions[i]->setWidget(_m_equipLabel[i]);
         _m_equipRegions[i]->setPos(_m_layout->m_equipAreas[i].topLeft());
         _m_equipRegions[i]->setParentItem(_getEquipParent());
-        _m_equipRegions[i]->hide();
+        _m_equipRegions[i]->setOpacity(0.0);
         _m_equipAnim[i] = new QParallelAnimationGroup(this);
     }
 
