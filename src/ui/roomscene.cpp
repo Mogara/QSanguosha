@@ -2225,6 +2225,7 @@ void RoomScene::highlightSkillButton(const QString &skillName, const CardUseStru
                 const ViewAsSkill *vsSkill = button->getViewAsSkill();
                 if (vsSkill != NULL && vsSkill->objectName() == skillName
                     && vsSkill->isAvailable(Self, reason, pattern)) {
+                    button->setEnabled(true);
                     button->setState(QSanButton::S_STATE_DOWN);
                     break;
                 }
@@ -2384,8 +2385,9 @@ void RoomScene::updateStatus(Client::Status oldStatus, Client::Status newStatus)
                     reason = CardUseStruct::CARD_USE_REASON_RESPONSE_USE;
                 else if (newStatus == Client::Responding || rx.exactMatch(pattern))
                     reason = CardUseStruct::CARD_USE_REASON_RESPONSE;
-            } else if (newStatus == Client::Playing)
+            } else if (newStatus == Client::Playing) {
                 reason = CardUseStruct::CARD_USE_REASON_PLAY;
+            }
             button->setEnabled(vsSkill->isAvailable(Self, reason, pattern) && !pattern.endsWith("!"));
         } else {
             const Skill *skill = button->getSkill();

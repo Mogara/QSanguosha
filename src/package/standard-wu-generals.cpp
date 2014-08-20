@@ -1099,7 +1099,7 @@ public:
         return QStringList();
     }
 
-    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *lusu, QVariant &, ServerPlayer *) const{
+    virtual bool effect(TriggerEvent, Room *room, ServerPlayer *lusu, QVariant &, ServerPlayer *) const {
         QList<ServerPlayer *> other_players = room->getOtherPlayers(lusu);
         int least = 1000;
         foreach(ServerPlayer *player, other_players)
