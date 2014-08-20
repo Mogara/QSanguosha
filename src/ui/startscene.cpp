@@ -37,7 +37,16 @@ StartScene::StartScene(QObject *parent)
     :QGraphicsScene(parent)
 {
     // game logo
-    logo = new QSanSelectableItem("image/logo/logo.png", true);
+    QDate date = QDate::currentDate();
+    if (date.month() == 8 && date.day() >= 19 && date.day() <= 26) {
+        logo = new QSanSelectableItem("image/logo/logo-moxuan.png", true);
+        QString tip = "<img src='image/system/developers/moxuan.jpg' height = 125/><br/>";
+        tip.append(QString("<font color=%1><b>%2</b></font>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(tr("At 10:40 a.m., August 19, 2014, Moxuanyanyun, a developer of QSanguosha, passed away peacefully in Dalian Medical College. He was 18 and had struggled with leukemia for more than 4 years. May there is no pain in Heaven.")));
+        logo->setToolTip(tip);
+    } else {
+        logo = new QSanSelectableItem("image/logo/logo.png", true);
+    }
+
     logo->moveBy(-Config.Rect.width() / 4, 0);
     addItem(logo);
 
@@ -83,6 +92,7 @@ void StartScene::switchToServer(Server *server) {
     Audio::quit();
 #endif
     logo->load("image/logo/logo-server.png");
+    logo->setToolTip(QString());
     // performs leaving animation
     QPropertyAnimation *logoShift = new QPropertyAnimation(logo, "pos");
     logoShift->setEndValue(QPointF(Config.Rect.center().rx() - 330, Config.Rect.center().ry() - 215));
