@@ -31,6 +31,7 @@ public:
     static void quit();
 
     static void play(const QString &filename);
+    static void playAudioOfMoxuan();
     static void stop();
 
     static void playBGM(const QString &filename);

@@ -41,12 +41,12 @@ public:
         if (sound) FMOD_Sound_Release(sound);
     }
 
-    void play() {
+    void play(const bool doubleVolume = false) {
         if (sound) {
             FMOD_RESULT result = FMOD_System_PlaySound(System, FMOD_CHANNEL_FREE, sound, false, &channel);
 
             if (result == FMOD_OK) {
-                FMOD_Channel_SetVolume(channel, Config.EffectVolume);
+                FMOD_Channel_SetVolume(channel, (doubleVolume ? 2 : 1) * Config.EffectVolume);
                 FMOD_System_Update(System);
             }
         }
@@ -84,11 +84,17 @@ void Audio::play(const QString &filename) {
     if (sound == NULL) {
         sound = new Sound(filename);
         SoundCache.insert(filename, sound);
-    }
-    else if (sound->isPlaying())
+    } else if (sound->isPlaying()) {
         return;
+    }
 
     sound->play();
+}
+
+void Audio::playAudioOfMoxuan()
+{
+    Sound *sound = new Sound("audio/system/moxuan.ogg");
+    sound->play(true);
 }
 
 void Audio::stop() {

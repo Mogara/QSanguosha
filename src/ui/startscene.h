@@ -43,7 +43,6 @@ public:
 
 private:
     void printServerInfo();
-    void playAudioOfMoxuan();
 
     QSanSelectableItem *logo;
     QTextEdit *serverLog;
