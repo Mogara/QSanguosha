@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<TS version="2.0" language="zh_CN">
 <context>
     <name>AboutUsDialog</name>
     <message>
@@ -3723,7 +3723,7 @@ P = 你自己, R = 你所在的房间</translation>
     <message>
         <location filename="../src/server/server.cpp" line="242"/>
         <source>Enable Lord Convertion</source>
-        <translation>启用君主规则</translation>
+        <translation>启用君主替换</translation>
     </message>
     <message>
         <location filename="../src/server/server.cpp" line="276"/>
