@@ -34,7 +34,7 @@
 #include <QPainter>
 
 StartScene::StartScene(QObject *parent)
-    :QGraphicsScene(parent)
+    : QGraphicsScene(parent)
 {
     // game logo
     QDate date = QDate::currentDate();
@@ -43,8 +43,10 @@ StartScene::StartScene(QObject *parent)
         QString tip = "<img src='image/system/developers/moxuan.jpg' height = 125/><br/>";
         tip.append(QString("<font color=%1><b>%2</b></font>").arg(Config.SkillDescriptionInToolTipColor.name()).arg(tr("At 10:40 a.m., August 19, 2014, Moxuanyanyun, a developer of QSanguosha, passed away peacefully in Dalian Medical College. He was 18 and had struggled with leukemia for more than 4 years. May there is no pain in Heaven.")));
         logo->setToolTip(tip);
+        shouldMourn = true;
     } else {
         logo = new QSanSelectableItem("image/logo/logo.png", true);
+        shouldMourn = false;
     }
 
     logo->moveBy(-Config.Rect.width() / 4, 0);
@@ -143,6 +145,9 @@ void StartScene::switchToServer(Server *server) {
 
 void StartScene::showOrganization()
 {
+    if (shouldMourn)
+        playAudioOfMoxuan();
+
     QSanSelectableItem *title = new QSanSelectableItem("image/system/organization.png", true);
 
     title->setOpacity(0);
@@ -194,10 +199,15 @@ void StartScene::showOrganization()
     parallelGroup->addAnimation(yScale);
     parallelGroup->addAnimation(fadeIn);
     sequentialGroup->addAnimation(parallelGroup);
-    sequentialGroup->addPause(2400);
+    sequentialGroup->addPause(1000);
     sequentialGroup->addAnimation(fadeOut);
 
     sequentialGroup->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void StartScene::playAudioOfMoxuan()
+{
+    Sanguosha->playSystemAudioEffect("moxuan");
 }
 
 void StartScene::printServerInfo() {

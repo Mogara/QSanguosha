@@ -59,7 +59,7 @@ assistants = {
 
 audio_workers = {
 	'豚紙',
-	'墨宣砚韵',
+	'<font color=red><b>墨宣砚韵</b></font>',
 	'极光星逝',
 	'両仪弑',
 	'饮魂之殇',

@@ -198,16 +198,16 @@ void PlayerCardContainer::updateAvatar() {
     const General *general = NULL;
     if (m_player) {
         general = m_player->getAvatarGeneral();
-        _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
-            _m_layout->m_screenNameArea,
-            Qt::AlignCenter,
-            m_player->screenName());
+        IQSanComponentSkin::QSanShadowTextFont font = _m_layout->m_screenNameFont;
+        if (m_player->screenName() == tr("Moxuanyanyun"))
+            font.m_color = Qt::red;
+
+        font.paintText(_m_screenNameItem, _m_layout->m_screenNameArea,
+                       Qt::AlignCenter, m_player->screenName());
+    } else {
+        _m_layout->m_screenNameFont.paintText(_m_screenNameItem, _m_layout->m_screenNameArea,
+                                              Qt::AlignCenter, QString());
     }
-    else
-        _m_layout->m_screenNameFont.paintText(_m_screenNameItem,
-        _m_layout->m_screenNameArea,
-        Qt::AlignCenter,
-        QString());
 
     if (general != NULL) {
         _m_avatarArea->setToolTip(m_player->getHeadSkillDescription());

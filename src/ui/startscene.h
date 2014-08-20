@@ -43,10 +43,12 @@ public:
 
 private:
     void printServerInfo();
+    void playAudioOfMoxuan();
 
     QSanSelectableItem *logo;
     QTextEdit *serverLog;
     QList<Button *> buttons;
+    bool shouldMourn;
 };
 
 #endif

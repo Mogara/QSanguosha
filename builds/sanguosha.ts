@@ -2709,6 +2709,14 @@
     </message>
 </context>
 <context>
+    <name>PlayerCardContainer</name>
+    <message>
+        <location filename="../src/ui/GenericCardContainerUI.cpp" line="202"/>
+        <source>Moxuanyanyun</source>
+        <translation>墨宣砚韵</translation>
+    </message>
+</context>
+<context>
     <name>PlayerCardDialog</name>
     <message>
         <location filename="../src/dialog/playercarddialog.cpp" line="84"/>
@@ -3976,77 +3984,77 @@ P = 你自己, R = 你所在的房间</translation>
 <context>
     <name>StartScene</name>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="216"/>
+        <location filename="../src/ui/startscene.cpp" line="226"/>
         <source>Your LAN address: %1, this address is available only for hosts that in the same LAN</source>
         <translation>你的局域网地址: %1, 这个地址仅对处于同于同一局域网的用户可用</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="218"/>
+        <location filename="../src/ui/startscene.cpp" line="228"/>
         <source>Your loopback address %1, this address is available only for your host</source>
         <translation>你的回环地址是 %1，这个地址仅对你的本机有效</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="220"/>
+        <location filename="../src/ui/startscene.cpp" line="230"/>
         <source>Your Hamachi address: %1, the address is available for users that joined the same Hamachi network</source>
         <translation>你的 Hamachi 地址为 %1， 这个地址对加入了同一网络的 Hamachi 用户有效</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="222"/>
+        <location filename="../src/ui/startscene.cpp" line="232"/>
         <source>Your other address: %1, if this is a public IP, that will be available for all cases</source>
         <translation>你的其他地址：%1，如果这是一个公网 IP，那么对所有用户都有效</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="225"/>
+        <location filename="../src/ui/startscene.cpp" line="235"/>
         <source>Binding port number is %1</source>
         <translation>绑定的端口号: %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="226"/>
+        <location filename="../src/ui/startscene.cpp" line="236"/>
         <source>Game mode is %1</source>
         <translation>游戏模式为 %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="227"/>
+        <location filename="../src/ui/startscene.cpp" line="237"/>
         <source>Player count is %1</source>
         <translation>玩家人数为 %1</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="231"/>
+        <location filename="../src/ui/startscene.cpp" line="241"/>
         <source>Cheat is enabled</source>
         <translation>作弊功能已启用</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="231"/>
+        <location filename="../src/ui/startscene.cpp" line="241"/>
         <source>Cheat is disabled</source>
         <translation>作弊功能未启用</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="233"/>
+        <location filename="../src/ui/startscene.cpp" line="243"/>
         <source>Free choose is enabled</source>
         <translation>自由选将选牌 已启用</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="233"/>
+        <location filename="../src/ui/startscene.cpp" line="243"/>
         <source>Free choose is disabled</source>
         <translation>自由选将未启用</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="236"/>
+        <location filename="../src/ui/startscene.cpp" line="246"/>
         <source>The reward of showing general first is enabled</source>
         <translation>首亮奖励已开启</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="239"/>
+        <location filename="../src/ui/startscene.cpp" line="249"/>
         <source>This server is AI enabled, AI delay is %1 milliseconds</source>
         <translation>服务器启用了 AI，AI 的延迟是 %1 毫秒</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="242"/>
+        <location filename="../src/ui/startscene.cpp" line="252"/>
         <source>This server is AI disabled</source>
         <translation>此服务器尚未启用 AI</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="229"/>
+        <location filename="../src/ui/startscene.cpp" line="239"/>
         <source>There is no time limit</source>
         <translation>没有时间限制</translation>
     </message>
@@ -4056,7 +4064,7 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>公元2014年8月19日10时40分，神杀开发者墨宣砚韵于大连医学院平静离开人世，是时年仅18岁，与白血病斗争4年多。愿天堂没有病痛。</translation>
     </message>
     <message>
-        <location filename="../src/ui/startscene.cpp" line="230"/>
+        <location filename="../src/ui/startscene.cpp" line="240"/>
         <source>Operation timeout is %1 seconds</source>
         <translation>操作时间是 %1 秒</translation>
     </message>
