@@ -273,8 +273,6 @@ private:
 signals:
     void selected_changed();
     void enable_changed();
-    void add_equip_skill(const Skill *skill, bool from_left);
-    void remove_equip_skill(const QString &skill_name);
 };
 
 #endif

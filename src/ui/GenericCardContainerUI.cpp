@@ -677,10 +677,6 @@ void PlayerCardContainer::addEquips(QList<CardItem *> &equips) {
         _m_equipAnim[index]->addAnimation(anim);
         _m_equipAnim[index]->start();
         _mutexEquipAnim.unlock();
-
-        const Skill *skill = Sanguosha->getSkill(equip_card->objectName());
-        if (skill == NULL) continue;
-        emit add_equip_skill(skill, true);
     }
 }
 
@@ -709,9 +705,6 @@ QList<CardItem *> PlayerCardContainer::removeEquips(const QList<int> &cardIds) {
         _m_equipAnim[index]->addAnimation(anim);
         _m_equipAnim[index]->start();
         _mutexEquipAnim.unlock();
-
-        const Skill *skill = Sanguosha->getSkill(equip_card->objectName());
-        if (skill != NULL) emit remove_equip_skill(skill->objectName());
     }
     return result;
 }
