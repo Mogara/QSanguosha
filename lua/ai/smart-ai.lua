@@ -3930,7 +3930,7 @@ function SmartAI:exclude(players, card, from)
 
 	--if not self.room:isProhibited(from, player, card) then
 	for _, player in ipairs(players) do
-		if (not card:isKindOf("TrickCard") or self:hasTrickEffective(card, from))
+		if (not card:isKindOf("TrickCard") or self:hasTrickEffective(card, player, from))
 			and (not limit or from:distanceTo(player, range_fix) <= limit) then
 			table.insert(excluded, player)
 		end
