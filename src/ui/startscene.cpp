@@ -145,8 +145,10 @@ void StartScene::switchToServer(Server *server) {
 
 void StartScene::showOrganization()
 {
+#ifdef AUDIO_SUPPORT
     if (shouldMourn)
-        playAudioOfMoxuan();
+        Audio::playAudioOfMoxuan();
+#endif
 
     QSanSelectableItem *title = new QSanSelectableItem("image/system/organization.png", true);
 
@@ -205,11 +207,6 @@ void StartScene::showOrganization()
     sequentialGroup->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-void StartScene::playAudioOfMoxuan()
-{
-    Sanguosha->playSystemAudioEffect("moxuan");
-}
-
 void StartScene::printServerInfo() {
     QStringList items;
     QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
@@ -245,9 +242,9 @@ void StartScene::printServerInfo() {
     if (Config.RewardTheFirstShowingPlayer)
         serverLog->append(tr("The reward of showing general first is enabled"));
 
-    if (Config.EnableAI) {
+    if (!Config.ForbidAddingRobot) {
         serverLog->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
-    }
-    else
+    } else {
         serverLog->append(tr("This server is AI disabled"));
+    }
 }

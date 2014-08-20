@@ -1037,7 +1037,6 @@ void MainWindow::on_actionAcknowledgement_triggered() {
 
 void MainWindow::on_actionPC_Console_Start_triggered() {
     ServerDialog *dialog = new ServerDialog(this);
-    dialog->ensureEnableAI();
     if (!dialog->config())
         return;
 

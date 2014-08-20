@@ -164,9 +164,6 @@ AI *Room::cloneAI(ServerPlayer *player) {
     if (L == NULL)
         return new TrustAI(player);
 
-    if (!Config.EnableAI)
-        return new TrustAI(player);
-
     lua_getglobal(L, "CloneAI");
 
     SWIG_NewPointerObj(L, player, SWIGTYPE_p_ServerPlayer, 0);

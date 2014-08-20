@@ -380,7 +380,7 @@ void Room::killPlayer(ServerPlayer *victim, DamageStruct *reason) {
     victim->detachAllSkills();
     thread->trigger(BuryVictim, this, victim, data);
 
-    if (!victim->isAlive() && Config.EnableAI) {
+    if (!victim->isAlive()) {
         bool expose_roles = true;
         foreach(ServerPlayer *player, m_alivePlayers) {
             if (!player->isOffline()) {

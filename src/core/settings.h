@@ -73,7 +73,7 @@ public:
     bool ForbidSIMC;
     bool DisableChat;
     QString Address;
-    bool EnableAI;
+    bool ForbidAddingRobot;
     int AIDelay;
     int OriginAIDelay;
     bool AlterAIDelayAD;

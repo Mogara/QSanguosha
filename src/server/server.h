@@ -65,7 +65,6 @@ public:
     // March 17 2014
     //************************************
     ServerDialog(QWidget *parent);
-    void ensureEnableAI();
     //************************************
     // Method:    config
     // FullName:  ServerDialog::config
@@ -139,7 +138,7 @@ private:
     QSpinBox *nullification_spinbox;
     QCheckBox *minimize_dialog_checkbox;
     QCheckBox *reward_the_first_showing_player_checkbox;
-    QCheckBox *ai_enable_checkbox;
+    QCheckBox *forbid_adding_robot_checkbox;
     QSpinBox *ai_delay_spinbox;
     QCheckBox *ai_delay_altered_checkbox;
     QSpinBox *ai_delay_ad_spinbox;

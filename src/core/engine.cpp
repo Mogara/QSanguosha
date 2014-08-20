@@ -661,7 +661,7 @@ QString Engine::getSetupString() const{
         flags.append("C");
     if (Config.EnableCheat && Config.FreeChoose)
         flags.append("F");
-    if (Config.EnableAI)
+    if (Config.ForbidAddingRobot)
         flags.append("A");
     if (Config.DisableChat)
         flags.append("M");

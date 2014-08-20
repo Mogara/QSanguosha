@@ -42,7 +42,7 @@ struct ServerInfoStruct {
     bool RandomSeat;
     bool EnableCheat;
     bool FreeChoose;
-    bool EnableAI;
+    bool ForbidAddingRobot;
     bool DisableChat;
     bool FirstShowingReward;
 
@@ -72,7 +72,7 @@ private:
     QLabel *random_seat_label;
     QLabel *enable_cheat_label;
     QLabel *free_choose_label;
-    QLabel *enable_ai_label;
+    QLabel *forbid_adding_robot_label;
     QLabel *fisrt_showing_reward_label;
     QLabel *time_limit_label;
     QLabel *lack_label;

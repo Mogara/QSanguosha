@@ -87,7 +87,7 @@ bool ServerInfoStruct::parse(const QString &str) {
         RandomSeat = flags.contains("R");
         EnableCheat = flags.contains("C");
         FreeChoose = EnableCheat && flags.contains("F");
-        EnableAI = flags.contains("A");
+        ForbidAddingRobot = flags.contains("A");
         DisableChat = flags.contains("M");
         FirstShowingReward = flags.contains("S");
     }
@@ -104,7 +104,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack) {
     random_seat_label = new QLabel;
     enable_cheat_label = new QLabel;
     free_choose_label = new QLabel;
-    enable_ai_label = new QLabel;
+    forbid_adding_robot_label = new QLabel;
     fisrt_showing_reward_label = new QLabel;
     time_limit_label = new QLabel;
 
@@ -121,7 +121,7 @@ ServerInfoWidget::ServerInfoWidget(bool show_lack) {
     layout->addRow(tr("Random seat"), random_seat_label);
     layout->addRow(tr("Enable cheat"), enable_cheat_label);
     layout->addRow(tr("Free choose"), free_choose_label);
-    layout->addRow(tr("Enable AI"), enable_ai_label);
+    layout->addRow(tr("Forbid adding robot"), forbid_adding_robot_label);
     layout->addRow(tr("Enable First Showing Reward"), fisrt_showing_reward_label);
     layout->addRow(tr("Operation time"), time_limit_label);
     layout->addRow(tr("Extension packages"), list_widget);
@@ -147,7 +147,7 @@ void ServerInfoWidget::fill(const ServerInfoStruct &info, const QString &address
     random_seat_label->setText(info.RandomSeat ? tr("Enabled") : tr("Disabled"));
     enable_cheat_label->setText(info.EnableCheat ? tr("Enabled") : tr("Disabled"));
     free_choose_label->setText(info.FreeChoose ? tr("Enabled") : tr("Disabled"));
-    enable_ai_label->setText(info.EnableAI ? tr("Enabled") : tr("Disabled"));
+    forbid_adding_robot_label->setText(info.ForbidAddingRobot ? tr("Enabled") : tr("Disabled"));
     fisrt_showing_reward_label->setText(info.FirstShowingReward ? tr("Enabled") : tr("Disabled"));
 
     if (info.OperationTimeout == 0)
@@ -189,7 +189,7 @@ void ServerInfoWidget::clear() {
     random_seat_label->clear();
     enable_cheat_label->clear();
     free_choose_label->clear();
-    enable_ai_label->clear();
+    forbid_adding_robot_label->clear();
     fisrt_showing_reward_label->clear();
     time_limit_label->clear();
     list_widget->clear();

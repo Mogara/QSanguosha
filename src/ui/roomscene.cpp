@@ -325,7 +325,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
     m_rolesBoxBackground.load("image/system/state.png");
     m_rolesBox = new QGraphicsPixmapItem;
     addItem(m_rolesBox);
-    QString roles = Sanguosha->getRoles(ServerInfo.GameMode);
     m_pileCardNumInfoTextBox = addText("");
     m_pileCardNumInfoTextBox->setParentItem(m_rolesBox);
     m_pileCardNumInfoTextBox->setDocument(ClientInstance->getLinesDoc());
@@ -334,7 +333,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     add_robot = NULL;
     fill_robots = NULL;
     return_to_start_scene = NULL;
-    if (ServerInfo.EnableAI) {
+    if (!ServerInfo.ForbidAddingRobot) {
         control_panel = addRect(0, 0, 500, 150, Qt::NoPen);
         control_panel->hide();
 
@@ -938,7 +937,8 @@ void RoomScene::updateTable() {
     dashboard->setFloatingArea(tableBottomBar);
 
     m_tableCenterPos = tableRect.center();
-    control_panel->setPos(m_tableCenterPos);
+    if (control_panel)
+        control_panel->setPos(m_tableCenterPos);
     return_to_start_scene->setPos(m_tableCenterPos + QPointF(0, return_to_start_scene->boundingRect().height() + 10));
     m_tablePile->setPos(m_tableCenterPos);
     m_tablePile->setSize(qMax((int)tableRect.width() - _m_roomLayout->m_discardPilePadding * 2,
@@ -1335,9 +1335,9 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
         if (control_is_down) {
             if (add_robot && add_robot->isVisible())
                 ClientInstance->addRobot();
-        }
-        else if (fill_robots && fill_robots->isVisible())
+        } else if (fill_robots && fill_robots->isVisible()) {
             ClientInstance->fillRobots();
+        }
         break;
     }
     case Qt::Key_F8: {

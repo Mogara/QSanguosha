@@ -91,7 +91,7 @@ void Settings::init() {
     ForbidSIMC = value("ForbidSIMC", false).toBool();
     DisableChat = value("DisableChat", false).toBool();
     Address = value("Address", QString()).toString();
-    EnableAI = true;
+    ForbidAddingRobot = value("ForbidAddingRobot", false).toBool();
     OriginAIDelay = value("OriginAIDelay", 1000).toInt();
     AlterAIDelayAD = value("AlterAIDelayAD", false).toBool();
     AIDelayAD = value("AIDelayAD", 0).toInt();
