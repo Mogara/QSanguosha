@@ -588,7 +588,7 @@ QListView::item:!selected:hover {
      <string>Clear history</string>
     </property>
    </widget>
-   <widget class="QWidget" name="layoutWidget">
+   <widget class="QWidget" name="layoutWidget1">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -679,7 +679,7 @@ QListView::item:!selected:hover {
     <string>Connection setup</string>
    </property>
   </widget>
-  <widget class="QWidget" name="layoutWidget">
+  <widget class="QWidget" name="layoutWidget2">
    <property name="geometry">
     <rect>
      <x>10</x>

@@ -500,7 +500,7 @@ QListView::item:!selected:hover {
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="envTab">
     <attribute name="title">
@@ -828,7 +828,7 @@ QListView::item:!selected:hover {
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="layoutWidget">
+     <widget class="QWidget" name="layoutWidget5">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -930,7 +930,7 @@ QListView::item:!selected:hover {
        <string>Tool Tip Background Color</string>
       </property>
      </widget>
-     <widget class="QWidget" name="layoutWidget">
+     <widget class="QWidget" name="layoutWidget6">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -969,7 +969,7 @@ QListView::item:!selected:hover {
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="layoutWidget">
+     <widget class="QWidget" name="layoutWidget7">
       <property name="geometry">
        <rect>
         <x>10</x>
