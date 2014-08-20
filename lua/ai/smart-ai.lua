@@ -4042,7 +4042,10 @@ function SmartAI:getAoeValue(card)
 					elseif not wansha and peach_num > 0 then peach_num = peach_num - 1
 					elseif wansha and (getCardsNum("Peach", to, self.player) > 0 or self:isFriend(current) and getCardsNum("Peach", to, self.player) > 0) then
 					else
-						if not punish then value = value - self.player:getCardCount(true) * 10 end
+						if not punish then
+							punish = true
+							value = value - self.player:getCardCount(true) * 10
+						end
 						value = value - to:getCardCount(true) * 10
 					end
 				else
