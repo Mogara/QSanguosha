@@ -2396,8 +2396,8 @@ void Room::reportInvalidPacket(const QByteArray &message) {
 }
 
 void Room::addRobotCommand(ServerPlayer *player, const QVariant &) {
+    if (Config.ForbidAddingRobot || isFull()) return;
     if (player && !player->isOwner()) return;
-    if (isFull()) return;
 
     static QStringList names;
     if (names.isEmpty()) {
