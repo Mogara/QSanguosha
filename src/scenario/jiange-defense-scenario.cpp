@@ -36,7 +36,7 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
     roles.insert("shu", shu_roles);
     qShuffle(kingdoms);
     QStringList wei_generals, shu_generals;
-    foreach (QString general, Sanguosha->getGeneralNames()) {
+    foreach (QString general, Sanguosha->getLimitedGeneralNames()) {
         if (general.startsWith("lord_")) continue;
         QString kingdom = Sanguosha->getGeneral(general)->getKingdom();
         if (kingdom == "wei")
