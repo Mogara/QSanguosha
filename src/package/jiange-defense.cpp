@@ -60,8 +60,10 @@ public:
 
         QList<ServerPlayer *> draw_list;
         foreach(ServerPlayer *p, room->getAlivePlayers()) {
-            if (p->isFriendWith(target) && p->isWounded())
+            if (p->isFriendWith(target) && p->isWounded()) {
+                room->doAnimate(QSanProtocol::S_ALL_ALIVE_PLAYERS, target->objectName(), p->objectName());
                 draw_list << p;
+            }
         }
         room->sortByActionOrder(draw_list);
         room->drawCards(draw_list, 1);
@@ -174,14 +176,18 @@ public:
 
         if (judge.pattern == "r") {
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                if (!p->isFriendWith(player))
+                if (!p->isFriendWith(player)) {
+                    room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
                     p->gainMark("@gale", 1);
+                }
             }
         }
         else if (judge.pattern == "b") {
             foreach(ServerPlayer *p, room->getAlivePlayers()) {
-                if (p->isFriendWith(player))
+                if (p->isFriendWith(player)) {
+                    room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
                     p->gainMark("@fog", 1);
+                }
             }
         }
         else
@@ -411,6 +417,8 @@ public:
 
             room->clearAG(target);
 
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, target->objectName(), t->objectName());
+
             CardMoveReason reason(CardMoveReason::S_REASON_GIVE, target->objectName(), objectName(), QString());
             DummyCard dummy(selected_ids);
             room->obtainCard(t, &dummy, reason);
@@ -456,6 +464,9 @@ public:
         log.arg = objectName();
         room->sendLog(log);
         room->notifySkillInvoked(ask_who, objectName());
+
+        room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ask_who->objectName(), player->objectName());
+
         room->loseHp(player);
         return false;
     }
@@ -591,13 +602,23 @@ public:
         log.arg = objectName();
         room->sendLog(log);
         room->notifySkillInvoked(player, objectName());
-        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+
+        QList<ServerPlayer *> targets;
+
+        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
             if (!p->isFriendWith(player) && !p->isChained()) {
-                p->setChained(true);
-                room->setEmotion(p, "chain");
-                room->broadcastProperty(p, "chained");
-                room->getThread()->trigger(ChainStateChanged, room, p);
+                targets << p;
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
             }
+        }
+
+        room->sortByActionOrder(targets);
+
+        foreach (ServerPlayer *p, targets) {
+            p->setChained(true);
+            room->setEmotion(p, "chain");
+            room->broadcastProperty(p, "chained");
+            room->getThread()->trigger(ChainStateChanged, room, p);
         }
         return false;
     }
@@ -884,13 +905,23 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
+
+        QList<ServerPlayer *> targets;
+
+        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
             if (p->isFriendWith(player) && p->isWounded()) {
-                RecoverStruct rec;
-                rec.recover = 1;
-                rec.who = player;
-                room->recover(p, rec);
+                targets << p;
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
             }
+        }
+
+        room->sortByActionOrder(targets);
+
+        foreach (ServerPlayer *p, targets) {
+            RecoverStruct rec;
+            rec.recover = 1;
+            rec.who = player;
+            room->recover(p, rec);
         }
         return false;
     }
@@ -1349,8 +1380,7 @@ public:
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who /* = NULL */) const{
         room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ask_who->objectName(), player->objectName());
 
-        int n = data.toInt();
-        data = --n;
+        data = data.toInt() - 1;
 
         return false;
     }
@@ -1537,10 +1567,20 @@ public:
 
     virtual bool onPhaseChange(ServerPlayer *player) const{
         Room *room = player->getRoom();
-        foreach(ServerPlayer *p, room->getOtherPlayers(player)) {
-            if (!p->isFriendWith(player))
-                p->throwAllEquips();
+
+        QList<ServerPlayer *> targets;
+
+        foreach (ServerPlayer *p, room->getOtherPlayers(player)) {
+            if (!p->isFriendWith(player)) {
+                room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), p->objectName());
+                targets << p;
+            }
         }
+
+        room->sortByActionOrder(targets);
+
+        foreach (ServerPlayer *p, targets)
+            p->throwAllEquips();
         return false;
     }
 };

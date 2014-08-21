@@ -186,6 +186,7 @@ public:
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual const Card *validate(CardUseStruct &cardUse) const;
     virtual const Card *validateInResponse(ServerPlayer *user) const;
+    virtual void extraCost(Room *room, const CardUseStruct &card_use) const;
 
     // the lua callbacks
     LuaFunction filter;
@@ -195,6 +196,7 @@ public:
     LuaFunction on_effect;
     LuaFunction on_validate;
     LuaFunction on_validate_in_response;
+    LuaFunction extra_cost;
 };
 
 class LuaBasicCard : public BasicCard {

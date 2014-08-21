@@ -260,6 +260,7 @@ function sgs.CreateSkillCard(spec)
 	card.on_effect = spec.on_effect
 	card.on_validate = spec.on_validate
 	card.on_validate_in_response = spec.on_validate_in_response
+	card.extra_cost = spec.extra_cost
 
 	return card
 end
@@ -271,9 +272,14 @@ function sgs.CreateArraySummonCard(spec)
 
 	card:setTargetFixed(true)
 	card:setHandlingMethod(sgs.Card_MethodNone)
-	card.on_use = function(self, room, source)
+	card.on_validate = function(self, cardUse)
 		local skill = sgs.Sanguosha:getTriggerSkill(self:objectName()):toBattleArraySkill()
-		if skill then skill:summonFriends(source) end
+		if skill then
+			cardUse.from:showGeneral(cardUse.from:inHeadSkills(skill))
+			skill:summonFriends(cardUse.from)
+		end
+		
+		return nil
 	end
 
 	return card
@@ -320,19 +326,25 @@ end
 function onUse_AOE(self, room, card_use)
 	local source = card_use.from
 	local targets = sgs.SPlayerList()
-	local other_players = room:getOtherPlayers(source)
-	for _, player in sgs.qlist(other_players) do
-		local skill = room:isProhibited(source, player, self)
-		if skill ~= nil then
-			local log_message = sgs.LogMessage()
-			log_message.type = "#SkillAvoid"
-			log_message.from = player
-			log_message.arg = skill:objectName()
-			log_message.arg2 = self:objectName()
-			room:broadcastSkillInvoke(skill:objectName())
-		else
-			targets:append(player)
+	if card_use.to:isEmpty() then
+		local other_players = room:getOtherPlayers(source)
+		for _, player in sgs.qlist(other_players) do
+		--[[
+			local skill = room:isProhibited(source, player, self)
+			if skill ~= nil then
+				local log_message = sgs.LogMessage()
+				log_message.type = "#SkillAvoid"
+				log_message.from = player
+				log_message.arg = skill:objectName()
+				log_message.arg2 = self:objectName()
+				room:broadcastSkillInvoke(skill:objectName())
+			else
+			]]
+				targets:append(player)
+			--end
 		end
+	else
+		targets = card_use.to
 	end
 
 	local use = card_use
@@ -355,19 +367,25 @@ end
 function onUse_GlobalEffect(self, room, card_use)
 	local source = card_use.from
 	local targets = sgs.SPlayerList()
-	local all_players = room:getAllPlayers()
-	for _, player in sgs.qlist(all_players) do
-		local skill = room:isProhibited(source, player, self)
-		if skill ~= nil then
-			local log_message = sgs.LogMessage()
-			log_message.type = "#SkillAvoid"
-			log_message.from = player
-			log_message.arg = skill:objectName()
-			log_message.arg2 = self:objectName()
-			room:broadcastSkillInvoke(skill:objectName())
-		else
-			targets:append(player)
+	if card_use.to:isEmpty() then 
+		local all_players = room:getAllPlayers()
+		for _, player in sgs.qlist(all_players) do
+			--[[
+			local skill = room:isProhibited(source, player, self)
+			if skill ~= nil then
+				local log_message = sgs.LogMessage()
+				log_message.type = "#SkillAvoid"
+				log_message.from = player
+				log_message.arg = skill:objectName()
+				log_message.arg2 = self:objectName()
+				room:broadcastSkillInvoke(skill:objectName())
+			else
+			]]
+				targets:append(player)
+			--end
 		end
+	else
+		targets = card_use.to
 	end
 
 	local use = card_use
@@ -394,6 +412,11 @@ function onUse_DelayedTrick(self, room, card_use)
 
 	local reason = sgs.CardMoveReason(sgs.CardMoveReason_S_REASON_USE, use.from:objectName(), use.to:first():objectName(), self:getSkillName(), "")
 	room:moveCardTo(self, use.from, use.to:first(), sgs.Player_PlaceDelayedTrick, reason, true)
+	
+	local skill_name = wrapped:showSkill()
+	if skill_name ~= "" and use.from:ownSkill(skill_name) and (not use.from:hasShownSkill(skill_name)) then
+		use.from:showGeneral(use.from:inHeadSkills(skill_name))
+	end
 
 	thread:trigger(sgs.CardUsed, room, use.from, data)
 	thread:trigger(sgs.CardFinished, room, use.from, data)
