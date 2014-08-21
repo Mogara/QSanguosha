@@ -757,9 +757,9 @@ void TianyiCard::onEffect(const CardEffectStruct &effect) const{
         Q_ASSERT(false);
 }
 
-class TianyiViewAsSkill : public ZeroCardViewAsSkill {
+class Tianyi : public ZeroCardViewAsSkill {
 public:
-    TianyiViewAsSkill() : ZeroCardViewAsSkill("tianyi") {
+    Tianyi() : ZeroCardViewAsSkill("tianyi") {
     }
 
     virtual bool isEnabledAtPlay(const Player *player) const{
@@ -773,20 +773,6 @@ public:
     }
 };
 
-class Tianyi : public TriggerSkill {
-public:
-    Tianyi() : TriggerSkill("tianyi") {
-        events << EventLoseSkill;
-        view_as_skill = new TianyiViewAsSkill;
-    }
-
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *target, QVariant &data, ServerPlayer * &) const{
-        if (target && target->hasFlag("TianyiSuccess") && data.toString() == objectName())
-            room->setPlayerFlag(target, "-TianyiSuccess");
-
-        return QStringList();
-    }
-};
 
 class TianyiTargetMod : public TargetModSkill {
 public:
