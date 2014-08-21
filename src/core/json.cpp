@@ -32,7 +32,7 @@ JsonDocument JsonDocument::fromFilePath(const QString &path, bool allowComment)
     return fromJson(file.readAll(), allowComment);
 }
 
-bool JsonUtils::isStringArray(const QVariant &var, unsigned from, unsigned int to)
+bool JsonUtils::isStringArray(const QVariant &var, unsigned from, unsigned to)
 {
     if (!var.canConvert<JsonArray>())
         return false;
@@ -48,7 +48,7 @@ bool JsonUtils::isStringArray(const QVariant &var, unsigned from, unsigned int t
     return true;
 }
 
-bool JsonUtils::isNumberArray(const QVariant &var, unsigned from, unsigned int to)
+bool JsonUtils::isNumberArray(const QVariant &var, unsigned from, unsigned to)
 {
     if (!var.canConvert<JsonArray>())
         return false;

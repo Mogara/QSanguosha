@@ -372,6 +372,7 @@ public:
     void addRobotCommand(ServerPlayer *player, const QVariant &arg);
     void fillRobotsCommand(ServerPlayer *player, const QVariant &arg);
     void mirrorGuanxingStepCommand(ServerPlayer *player, const QVariant &arg);
+    void changeSkinCommand(ServerPlayer *player, const QVariant &arg);
 
     void processClientReply(ServerPlayer *player, const QSanProtocol::Packet &packet);
 

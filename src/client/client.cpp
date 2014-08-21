@@ -1075,6 +1075,13 @@ void Client::onPlayerChooseTriggerOrder(const QString &choice)
     setStatus(NotActive);
 }
 
+void Client::onPlayerChangeSkin(int skin_id, bool is_head)
+{
+    JsonArray args;
+    args << skin_id << is_head;
+    notifyServer(S_COMMAND_CHANGE_SKIN, args);
+}
+
 void Client::trust() {
     notifyServer(S_COMMAND_TRUST);
 

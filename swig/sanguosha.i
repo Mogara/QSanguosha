@@ -1494,8 +1494,9 @@ public:
 };
 
 %extend Room {
-    ServerPlayer *nextPlayer() const{
-        return qobject_cast<ServerPlayer *>($self->getCurrent()->getNextAlive());
+    ServerPlayer *nextPlayer(ServerPlayer *player) const{
+        Q_UNUSED($self);
+        return qobject_cast<ServerPlayer *>(player->getNextAlive());
     }
     void output(const char *msg) {
         if(Config.value("DebugOutput", false).toBool())
