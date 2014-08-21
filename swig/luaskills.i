@@ -1250,6 +1250,29 @@ const Card *LuaSkillCard::validateInResponse(ServerPlayer *user) const{
         return SkillCard::validateInResponse(user);
 }
 
+void LuaSkillCard::extraCost(Room *room, const CardUseStruct &card_use) const{
+    if (extra_cost == 0)
+        return SkillCard::extraCost(room, card_use);
+
+
+    lua_State *L = Sanguosha->getLuaState();
+
+    // the callback
+    lua_rawgeti(L, LUA_REGISTRYINDEX, extra_cost);
+
+    pushSelf(L);
+
+    SWIG_NewPointerObj(L, room, SWIGTYPE_p_Room, 0);
+    SWIG_NewPointerObj(L, &card_use, SWIGTYPE_p_CardUseStruct, 0);
+
+    int error = lua_pcall(L, 3, 0, 0);
+    if (error) {
+        const char *error_msg = lua_tostring(L, -1);
+        lua_pop(L, 1);
+        room->output(error_msg);
+    }
+}
+
 // ---------------------
 
 void LuaBasicCard::pushSelf(lua_State *L) const{

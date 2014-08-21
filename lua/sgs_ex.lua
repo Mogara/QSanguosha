@@ -260,6 +260,7 @@ function sgs.CreateSkillCard(spec)
 	card.on_effect = spec.on_effect
 	card.on_validate = spec.on_validate
 	card.on_validate_in_response = spec.on_validate_in_response
+	card.extra_cost = spec.extra_cost
 
 	return card
 end
@@ -271,9 +272,14 @@ function sgs.CreateArraySummonCard(spec)
 
 	card:setTargetFixed(true)
 	card:setHandlingMethod(sgs.Card_MethodNone)
-	card.on_use = function(self, room, source)
+	card.on_validate = function(self, cardUse)
 		local skill = sgs.Sanguosha:getTriggerSkill(self:objectName()):toBattleArraySkill()
-		if skill then skill:summonFriends(source) end
+		if skill then
+			cardUse.from:showGeneral(cardUse.from:inHeadSkills(skill))
+			skill:summonFriends(cardUse.from)
+		end
+		
+		return nil
 	end
 
 	return card
