@@ -36,26 +36,22 @@ protected:
 };
 
 namespace JsonUtils{
-    /* the return value of QVariant::type() is declared as QVariant::Type(obsolete) but actually statically casted from
-     * QMetaType::Type (See line 1685, corelib/kernel/qvariant.cpp). Compiler may output warnings about the comparison
-     * between different enumerations. So it's casted back to QMetaType::Type here.
-     */
+
     inline bool isNumber(const QVariant &var) {
         //three number types defined by JsonCPP
-        QMetaType::Type type = static_cast<QMetaType::Type>(var.type());
-        return type == QMetaType::Double || type == QMetaType::Int || type == QMetaType::UInt;
+        return var.userType() == QMetaType::Double || var.userType() == QMetaType::Int || var.userType() == QMetaType::UInt;
     }
 
     inline bool isString(const QVariant &var) {
-        return static_cast<QMetaType::Type>(var.type()) == QMetaType::QString;
+        return var.userType() == QMetaType::QString;
     }
 
     inline bool isBool(const QVariant &var) {
-        return static_cast<QMetaType::Type>(var.type()) == QMetaType::Bool;
+        return var.userType() == QMetaType::Bool;
     }
 
-    bool isStringArray(const QVariant &var, unsigned from, unsigned int to);
-    bool isNumberArray(const QVariant &var, unsigned from, unsigned int to);
+    bool isStringArray(const QVariant &var, unsigned from, unsigned to);
+    bool isNumberArray(const QVariant &var, unsigned from, unsigned to);
 
     QVariant toJsonArray(const QList<int> &intArray);
     QVariant toJsonArray(const QStringList &stringArray);
