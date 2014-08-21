@@ -771,6 +771,10 @@ public:
         card->setShowSkill(objectName());
         return card;
     }
+
+    virtual int getEffectIndex(const ServerPlayer *, const Card *) const {
+        return 2;
+    }
 };
 
 
