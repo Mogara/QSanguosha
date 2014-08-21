@@ -934,7 +934,7 @@ QString DummyCard::getSubtype() const{
 
 QString DummyCard::toString(bool hidden) const{
     Q_UNUSED(hidden)
-        return "$" + subcardString();
+    return "$" + subcardString();
 }
 
 ArraySummonCard::ArraySummonCard(const QString &name)
