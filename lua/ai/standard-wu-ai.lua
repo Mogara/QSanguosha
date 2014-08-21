@@ -1168,8 +1168,20 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 		end
 	end
 
-	if dmg.damage > 1 and not self.player:hasShownSkill("tianxiang") then
-		return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. dmg.from:objectName()
+	if dmg.damage > 1 or dmg.damage >= self.player:getHp() and self:getCardsNum({"Peach", "Analeptic"}) == 0 then
+		local targets = self.enemies
+		if #targets == 0 then
+			for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+				if not self:isFriend(p) then table.insert(targets, p) end
+			end
+		end
+		if #targets == 0 and dmg.from then table.insert(targets, dmg.from) end
+		if #targets == 0 then table.insert(targets, room:nextPlayer(self.player)) end
+		if #targets > 0 then
+			self:sort(targets, "hp")
+			sgs.reverse(targets)
+			return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. targets[1]:objectName()
+		end
 	end
 
 	return "."
@@ -1940,7 +1952,9 @@ sgs.ai_use_priority.FenxunCard = 8
 sgs.ai_card_intention.FenxunCard = 50
 
 sgs.ai_skill_invoke.keji = function(self, data)
-	if not self:willShowForDefence() and not self.player:hasSkill("tianxiang") then
+	if sgs.isAnjiang(self.player) and self:getOverflow() <= 0 then
+		return
+	elseif not self:willShowForDefence() and not self.player:hasSkill("tianxiang") then
 		return false
 	end
 	return true
