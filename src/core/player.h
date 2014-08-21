@@ -72,7 +72,8 @@ class Player : public QObject {
 
     Q_PROPERTY(bool scenario_role_shown READ getScenarioRoleShown WRITE setScenarioRoleShown)
 
-    Q_PROPERTY(int skin_id READ getSkinId WRITE setSkinId)
+    Q_PROPERTY(int head_skin_id READ getHeadSkinId WRITE setHeadSkinId)
+    Q_PROPERTY(int deputy_skin_id READ getDeputySkinId WRITE setDeputySkinId)
 
     Q_ENUMS(Phase)
     Q_ENUMS(Place)
@@ -329,8 +330,11 @@ public:
 
     QList<const Player *> getFormation() const;
 
-    void setSkinId(int id);
-    int getSkinId() const;
+    void setHeadSkinId(int id);
+    int getHeadSkinId() const;
+
+    void setDeputySkinId(int id);
+    int getDeputySkinId() const;
 
     virtual QHash<QString, QStringList> getBigAndSmallKingdoms(const QString &reason, MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const = 0;
 
@@ -358,7 +362,7 @@ private:
     QString state;
     int seat;
     bool alive;
-    int skinId;
+    int headSkinId, deputySkinId;
 
     const General *actual_general1, *actual_general2;
 
@@ -394,7 +398,8 @@ signals:
     void deputy_state_changed();
     void disable_show_changed();
     void removedChanged();
-    void skinIdChanged(int id);
+    void headSkinIdChanged(int id);
+    void deputySkinIdChanged(int id);
 };
 
 #endif

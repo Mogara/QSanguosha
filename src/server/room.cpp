@@ -2444,10 +2444,20 @@ void Room::mirrorGuanxingStepCommand(ServerPlayer *player, const QVariant &arg)
     doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, arg, player);
 }
 
-void Room::changeSkinCommand(ServerPlayer *player, const QVariant &id)
+void Room::changeSkinCommand(ServerPlayer *player, const QVariant &arg)
 {
-    player->setSkinId(id.toInt());
-    broadcastProperty(player, "skin_id");
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 2) return;
+    int skin_id = args.at(0).toInt();
+    bool is_head = args.at(1).toBool();
+
+    if (is_head) {
+        player->setHeadSkinId(skin_id);
+        broadcastProperty(player, "head_skin_id");
+    } else {
+        player->setDeputySkinId(skin_id);
+        broadcastProperty(player, "deputy_skin_id");
+    }
 }
 
 ServerPlayer *Room::getOwner() const{
