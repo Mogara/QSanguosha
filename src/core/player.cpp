@@ -34,7 +34,7 @@ Player::Player(QObject *parent)
     phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), treasure(NULL),
     face_up(true), chained(false), removed(false), scenario_role_shown(false),
-    skinId(-1)
+    skinId(0)
 {
 }
 
