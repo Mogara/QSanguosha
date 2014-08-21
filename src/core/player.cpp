@@ -33,7 +33,8 @@ Player::Player(QObject *parent)
     general1_showed(false), general2_showed(false),
     phase(NotActive),
     weapon(NULL), armor(NULL), defensive_horse(NULL), offensive_horse(NULL), treasure(NULL),
-    face_up(true), chained(false), removed(false), scenario_role_shown(false)
+    face_up(true), chained(false), removed(false), scenario_role_shown(false),
+    skinId(-1)
 {
 }
 
@@ -1531,4 +1532,17 @@ QList<const Player *> Player::getFormation() const
     }
 
     return teammates;
+}
+
+void Player::setSkinId(int id)
+{
+    if (skinId == id)
+        return;
+    skinId = id;
+    emit skinIdChanged(id);
+}
+
+int Player::getSkinId() const
+{
+    return skinId;
 }
