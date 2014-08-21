@@ -756,7 +756,12 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) co
                 clipped = clipped.scaled(scaleRegion, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
             pixmap = clipped;
         } else if (pixmap.isNull()) {
-            pixmap = QPixmap(scaleRegion.isValid() ? scaleRegion : clipRegion.size());
+            if (scaleRegion.isValid())
+                pixmap = QPixmap(scaleRegion);
+            else if (clipRegion.isValid())
+                pixmap = QPixmap(clipRegion.size());
+            else
+                pixmap = QPixmap(1, 1);
             pixmap.fill();
         }
         S_IMAGE_KEY2PIXMAP[totalKey] = pixmap;

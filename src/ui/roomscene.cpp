@@ -3784,11 +3784,20 @@ void RoomScene::doMovingAnimation(const QString &name, const QStringList &args) 
 }
 
 void RoomScene::doAppearingAnimation(const QString &name, const QStringList &args) {
+    QGraphicsObject *object = getAnimationObject(args.at(0));
+    if (object == NULL)
+        return;
+
     QSanSelectableItem *item = new QSanSelectableItem(QString("image/system/animation/%1.png").arg(name));
     addItem(item);
+    item->setZValue(20002.0);
 
-    QPointF from = getAnimationObject(args.at(0))->scenePos();
-    item->setPos(from);
+    if (object == dashboard) {
+        item->setX((dashboard->boundingRect().width() - item->boundingRect().width()) / 2);
+        item->setY(dashboard->scenePos().y() - item->boundingRect().height() / 1.5);
+    } else {
+        item->setPos(object->scenePos());
+    }
 
     QPropertyAnimation *disappear = new QPropertyAnimation(item, "opacity");
     disappear->setEndValue(0.0);
