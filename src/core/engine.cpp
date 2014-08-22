@@ -761,15 +761,11 @@ int Engine::getCardCount() const{
 }
 
 QStringList Engine::getGeneralNames() const{
-    QStringList general_names;
-    QHashIterator<QString, const General *> itor(generals);
+    return generals.keys();
+}
 
-    while (itor.hasNext()) {
-        itor.next();
-        general_names << itor.key();
-    }
-
-    return general_names;
+QList<const General *> Engine::getGenerals() const{
+    return generals.values();
 }
 
 QStringList Engine::getLimitedGeneralNames() const{

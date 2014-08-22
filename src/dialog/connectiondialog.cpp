@@ -75,7 +75,7 @@ void ConnectionDialog::showAvatarList() {
     if (ui->avatarList->isVisible()) return;
 
     if (ui->avatarList->model() == NULL) {
-        QList<const General *> generals = Sanguosha->findChildren<const General *>();
+        QList<const General *> generals = Sanguosha->getGenerals();
         QMutableListIterator<const General *> itor = generals;
         while (itor.hasNext()) {
             if (itor.next()->isTotallyHidden())

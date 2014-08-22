@@ -179,6 +179,7 @@ public:
     //************************************
     QStringList getLimitedGeneralNames() const;
     QStringList getGeneralNames() const;
+    QList<const General *> getGenerals() const;
 
     void playSystemAudioEffect(const QString &name) const;
     void playAudioEffect(const QString &filename) const;
