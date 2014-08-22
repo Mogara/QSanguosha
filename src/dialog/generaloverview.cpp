@@ -443,10 +443,35 @@ QString GeneralOverview::getIllustratorInfo(const QString &generalName) {
     }
 }
 
+QString GeneralOverview::getCvInfo(const QString &generalName)
+{
+    const int skinId = all_generals.value(Sanguosha->getGeneral(generalName));
+    QString suffix = (skinId > 0) ? QString("_%1").arg(skinId) : QString();
+    QString cvText = Sanguosha->translate(QString("cv:%1%2").arg(generalName).arg(suffix));
+    if (!cvText.startsWith("cv:")) {
+        return cvText;
+    } else {
+        cvText = Sanguosha->translate("cv:" + generalName);
+        if (!cvText.startsWith("cv:"))
+            return cvText;
+        else
+            return tr("Sanguosha OL");
+    }
+}
+
 void GeneralOverview::addLines(const General *general, const Skill *skill) {
     QString skill_name = Sanguosha->translate(skill->objectName());
+
+    const int skinId = all_generals.value(general);
     QStringList sources = skill->getSources(general->objectName(),
                                             all_generals.value(general));
+
+    bool usingDefault = false;
+
+    if (skinId != 0 && sources.isEmpty()) {
+        sources = skill->getSources();
+        usingDefault = true;
+    }
 
     if (sources.isEmpty()) {
         QCommandLinkButton *button = new QCommandLinkButton(skill_name);
@@ -471,7 +496,7 @@ void GeneralOverview::addLines(const General *general, const Skill *skill) {
             const int skinId = all_generals.value(general);
             QString filename = rx.capturedTexts().at(1);
             QString skill_line;
-            if (skinId == 0)
+            if (skinId == 0 || usingDefault)
                 skill_line = Sanguosha->translate("$" + filename);
             else
                 skill_line = Sanguosha->translate("$"+ QString::number(skinId) + filename);
@@ -482,6 +507,56 @@ void GeneralOverview::addLines(const General *general, const Skill *skill) {
             addCopyAction(button);
         }
     }
+}
+
+void GeneralOverview::addDeathLine(const General *general)
+{
+    QString last_word;
+    const int skinId = all_generals.value(general);
+    const QString id = QString::number(skinId);
+    if (skinId == 0)
+        last_word = Sanguosha->translate("~" + general->objectName());
+    else
+        last_word = Sanguosha->translate("~" + id + general->objectName());
+
+    if (last_word.startsWith("~")) {
+        if (general->objectName().contains("_")) {
+            const QString generalName = general->objectName().split("_").last();
+            if (skinId == 0) {
+                last_word = Sanguosha->translate(("~") + generalName);
+            } else {
+                last_word = Sanguosha->translate(("~") + id + generalName);
+                if (last_word.startsWith("~"))
+                    last_word = Sanguosha->translate(("~") + generalName);
+            }
+        } else if (skinId != 0) {
+            last_word = Sanguosha->translate("~" + general->objectName());
+        }
+    }
+
+    if (!last_word.startsWith("~")) {
+        QCommandLinkButton *death_button = new QCommandLinkButton(tr("Death"), last_word);
+        button_layout->addWidget(death_button);
+
+        connect(death_button, SIGNAL(clicked()), general, SLOT(lastWord()));
+
+        addCopyAction(death_button);
+    }
+}
+
+void GeneralOverview::addWinLineOfCaoCao()
+{
+    QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
+        tr("Six dragons lead my chariot, "
+        "I will ride the wind with the greatest speed."
+        "With all of the feudal lords under my command,"
+        "to rule the world with one name!"));
+
+    button_layout->addWidget(win_button);
+    addCopyAction(win_button);
+
+    win_button->setObjectName("audio/system/win-cc.ogg");
+    connect(win_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
 }
 
 void GeneralOverview::addCopyAction(QCommandLinkButton *button) {
@@ -523,48 +598,19 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
     foreach(const Skill *skill, skills)
         addLines(general, skill);
 
-    QString last_word = Sanguosha->translate("~" + general->objectName());
-    if (last_word.startsWith("~") && general->objectName().contains("_"))
-        last_word = Sanguosha->translate(("~") + general->objectName().split("_").last());
+    addDeathLine(general);
 
-    if (!last_word.startsWith("~")) {
-        QCommandLinkButton *death_button = new QCommandLinkButton(tr("Death"), last_word);
-        button_layout->addWidget(death_button);
+    if (general_name.contains("caocao"))
+        addWinLineOfCaoCao();
 
-        connect(death_button, SIGNAL(clicked()), general, SLOT(lastWord()));
-
-        addCopyAction(death_button);
-    }
-
-    if (general_name.contains("caocao")) {
-        QCommandLinkButton *win_button = new QCommandLinkButton(tr("Victory"),
-            tr("Six dragons lead my chariot, "
-            "I will ride the wind with the greatest speed."
-            "With all of the feudal lords under my command,"
-            "to rule the world with one name!"));
-
-        button_layout->addWidget(win_button);
-        addCopyAction(win_button);
-
-        win_button->setObjectName("audio/system/win-cc.ogg");
-        connect(win_button, SIGNAL(clicked()), this, SLOT(playAudioEffect()));
-    }
-
-    QString designer_text = Sanguosha->translate("designer:" + general->objectName());
+    QString designer_text = Sanguosha->translate("designer:" + general_name);
     if (!designer_text.startsWith("designer:"))
         ui->designerLineEdit->setText(designer_text);
     else
         ui->designerLineEdit->setText(tr("Official"));
 
-    QString cv_text = Sanguosha->translate("cv:" + general->objectName());
-    if (cv_text.startsWith("cv:"))
-        cv_text = Sanguosha->translate("cv:" + general->objectName().split("_").last());
-    if (!cv_text.startsWith("cv:"))
-        ui->cvLineEdit->setText(cv_text);
-    else
-        ui->cvLineEdit->setText(tr("Sanguosha OL"));
-
-    ui->illustratorLineEdit->setText(getIllustratorInfo(general->objectName()));
+    ui->cvLineEdit->setText(getCvInfo(general_name));
+    ui->illustratorLineEdit->setText(getIllustratorInfo(general_name));
 
     button_layout->addStretch();
     QString companions_text = general->getCompanions();
@@ -588,17 +634,30 @@ void GeneralOverview::showNextSkin() {
     int row = ui->tableWidget->currentRow();
     QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
 
-    const int skinId = ++ all_generals[Sanguosha->getGeneral(general_name)];
+    const General *general = Sanguosha->getGeneral(general_name);
+    int skinId = ++ all_generals[general];
 
-    QPixmap pixmap = G_ROOM_SKIN.getGeneralCardPixmap(general_name, skinId);
-    if (pixmap.width() <= 1 && pixmap.height() <= 1) {
-        if (skinId > 1)
-            pixmap = G_ROOM_SKIN.getGeneralCardPixmap(general_name);
-        else
-            return;
+    QPixmap pixmap;
+    if (G_ROOM_SKIN.doesGeneralHaveSkin(general_name, skinId)) {
+        pixmap = G_ROOM_SKIN.getGeneralCardPixmap(general_name, skinId);
+    } else {
+        pixmap = G_ROOM_SKIN.getGeneralCardPixmap(general_name);
+        all_generals[Sanguosha->getGeneral(general_name)] = 0;
     }
+
     ui->generalPhoto->setPixmap(pixmap);
+    ui->cvLineEdit->setText(getCvInfo(general_name));
     ui->illustratorLineEdit->setText(getIllustratorInfo(general_name));
+    resetButtons();
+    foreach(const Skill *skill, general->getVisibleSkillList())
+        addLines(general, skill);
+
+    addDeathLine(general);
+
+    if (general_name.contains("caocao"))
+        addWinLineOfCaoCao();
+
+    button_layout->addStretch();
 }
 
 void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,

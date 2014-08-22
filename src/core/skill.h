@@ -59,7 +59,8 @@ public:
     void playAudioEffect(int index = -1) const;
     Frequency getFrequency() const;
     QString getLimitMark() const;
-    QStringList getSources(const QString &general = QString(), const int skinId = 0) const;
+    QStringList getSources(const QString &general, const int skinId) const;
+    QStringList getSources() const;
 
     virtual bool canPreshow() const;
     virtual bool relateToPlace(bool head = true) const;
@@ -76,6 +77,7 @@ protected:
 private:
     bool lord_skill;
     QStringList sources;
+    mutable QHash<const QString, QStringList> skinSourceHash;
 };
 
 class ViewAsSkill : public Skill {

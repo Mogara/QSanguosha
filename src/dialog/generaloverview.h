@@ -97,8 +97,11 @@ private:
 
     void resetButtons();
     void addLines(const General *general, const Skill *skill);
+    void addDeathLine(const General *general);
+    void addWinLineOfCaoCao();
     void addCopyAction(QCommandLinkButton *button);
     bool hasSkin(const General *general) const;
+    QString getCvInfo(const QString &generalName);
     QString getIllustratorInfo(const QString &generalName);
 
 public slots:

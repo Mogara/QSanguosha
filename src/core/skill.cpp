@@ -161,37 +161,40 @@ QString Skill::getLimitMark() const{
     return limit_mark;
 }
 
-QStringList Skill::getSources(const QString &general, const int skinId) const {
-    if (skinId != 0 && !general.isEmpty()) {
-        static QHash<const QString, QStringList> skinSourceHash;
-        const QString key = QString("%1_%2")
-                .arg(QString::number(skinId))
-                .arg(general);
+QStringList Skill::getSources(const QString &general, const int skinId) const
+{
+    if (skinId == 0)
+        return sources;
 
-        if (skinSourceHash.contains(key))
-            return skinSourceHash[key];
+    const QString key = QString("%1_%2")
+            .arg(QString::number(skinId))
+            .arg(general);
 
-        for (int i = 1;; ++ i) {
-            QString effectFile = QString("hero-skin/%1/%2/%3%4.ogg")
-                    .arg(general).arg(QString::number(skinId))
-                    .arg(objectName()).arg(QString::number(i));
-            if (QFile::exists(effectFile))
-                skinSourceHash[key] << effectFile;
-            else
-                break;
-        }
+    if (skinSourceHash.contains(key))
+        return skinSourceHash[key];
 
-        if (skinSourceHash[key].isEmpty()) {
-            QString effectFile = QString("hero-skin/%1/%2/%3.ogg")
-                    .arg(general).arg(QString::number(skinId)).arg(objectName());
-            if (QFile::exists(effectFile))
-                skinSourceHash[key] << effectFile;
-        }
-
-        if (skinSourceHash.value(key).isEmpty())
-                return skinSourceHash[key];
+    for (int i = 1;; ++ i) {
+        QString effectFile = QString("hero-skin/%1/%2/%3%4.ogg")
+                .arg(general).arg(QString::number(skinId))
+                .arg(objectName()).arg(QString::number(i));
+        if (QFile::exists(effectFile))
+            skinSourceHash[key] << effectFile;
+        else
+            break;
     }
 
+    if (skinSourceHash[key].isEmpty()) {
+        QString effectFile = QString("hero-skin/%1/%2/%3.ogg")
+                .arg(general).arg(QString::number(skinId)).arg(objectName());
+        if (QFile::exists(effectFile))
+            skinSourceHash[key] << effectFile;
+    }
+
+    return skinSourceHash[key];
+}
+
+QStringList Skill::getSources() const
+{
     return sources;
 }
 
