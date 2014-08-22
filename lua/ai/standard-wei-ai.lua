@@ -364,7 +364,6 @@ sgs.ai_skill_invoke.luoyi = function(self,data)
 		end
 	end
 	if (slashtarget+dueltarget) > 0 then
-		self:speak("luoyi")
 		return true
 	end
 	return false
