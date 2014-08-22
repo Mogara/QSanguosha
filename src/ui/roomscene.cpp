@@ -438,7 +438,7 @@ void RoomScene::handleGameEvent(const QVariant &args) {
         }
         int type = arg[3].toInt();
         const ClientPlayer *player = NULL;
-        if (JsonUtils::isString(arg[4])) {
+        if (arg.size() >= 5 && JsonUtils::isString(arg[4])) {
             QString playerName = arg[4].toString();
             player = ClientInstance->getPlayer(playerName);
         }
