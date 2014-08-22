@@ -41,7 +41,7 @@ protected:
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    GeneralCardItem(const QString &generalName);
+    GeneralCardItem(const QString &generalName, const int skinId);
 
     bool hasCompanion;
 
@@ -61,7 +61,8 @@ public:
 
 public slots:
     void chooseGeneral(const QStringList &generals, bool view_only = false,
-                       bool single_result = false, const QString &reason = QString());
+                       bool single_result = false, const QString &reason = QString(),
+                       const Player *player = NULL);
     void reply();
     void adjustItems();
 

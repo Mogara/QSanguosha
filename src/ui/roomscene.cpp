@@ -424,11 +424,16 @@ void RoomScene::handleGameEvent(const QVariant &args) {
         if (JsonUtils::isBool(arg[2])) {
             bool isMale = arg[2].toBool();
             category = isMale ? "male" : "female";
-        }
-        else if (JsonUtils::isString(arg[2]))
+        } else if (JsonUtils::isString(arg[2])) {
             category = arg[2].toString();
+        }
         int type = arg[3].toInt();
-        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(skillName, category, type));
+        const ClientPlayer *player = NULL;
+        if (JsonUtils::isString(arg[4])) {
+            QString playerName = arg[4].toString();
+            player = ClientInstance->getPlayer(playerName);
+        }
+        Sanguosha->playAudioEffect(G_ROOM_SKIN.getPlayerAudioEffectPath(skillName, category, type, player));
         break;
     }
     case S_GAME_EVENT_JUDGE_RESULT: {
@@ -3175,7 +3180,9 @@ void RoomScene::FillPlayerNames(QComboBox *ComboBox, bool add_none) {
     foreach(const ClientPlayer *player, ClientInstance->getPlayers()) {
         QString general_name = Sanguosha->translate(player->getGeneralName());
         if (!player->getGeneral()) continue;
-        QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(player->getGeneralName(), QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
+        QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(player->getGeneralName(),
+                                                      QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY/*,
+                                                      player->getHeadSkinId()*/);
         ComboBox->addItem(QIcon(pixmap),
             QString("%1 [%2]").arg(general_name).arg(player->screenName()),
             player->objectName());

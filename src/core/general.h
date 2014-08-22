@@ -86,6 +86,8 @@ public:
     void setHeadMaxHpAdjustedValue(int adjusted_value = -1);
     void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);
 
+    int skinCount() const;
+
 public slots:
     void lastWord() const;
 

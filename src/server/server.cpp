@@ -760,8 +760,7 @@ void BanlistDialog::addGeneral(const QString &name) {
         QListWidgetItem *item = new QListWidgetItem(text);
         item->setData(Qt::UserRole, QVariant::fromValue(name));
         list->addItem(item);
-    }
-    else {
+    } else {
         foreach(QString general_name, name.split("+")) {
             if (banned_items[list->objectName()].contains(general_name)) continue;
             banned_items[list->objectName()].append(general_name);

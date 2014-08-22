@@ -59,7 +59,7 @@ public:
     void playAudioEffect(int index = -1) const;
     Frequency getFrequency() const;
     QString getLimitMark() const;
-    QStringList getSources() const;
+    QStringList getSources(const QString &general = QString(), const int skinId = 0) const;
 
     virtual bool canPreshow() const;
     virtual bool relateToPlace(bool head = true) const;

@@ -158,13 +158,15 @@ void GlobalEffect::onUse(Room *room, const CardUseStruct &card_use) const{
                     log.arg2 = objectName();
                     room->sendLog(log);
 
-                    room->broadcastSkillInvoke(skill->objectName());
+                    room->broadcastSkillInvoke(skill->objectName(), player);
                 }
-            } else
+            } else {
                 targets << player;
+            }
         }
-    } else
+    } else {
         targets = card_use.to;
+    }
 
     CardUseStruct use = card_use;
     use.to = targets;
@@ -222,13 +224,15 @@ void AOE::onUse(Room *room, const CardUseStruct &card_use) const{
                     log.arg2 = objectName();
                     room->sendLog(log);
 
-                    room->broadcastSkillInvoke(skill->objectName());
+                    room->broadcastSkillInvoke(skill->objectName(), player);
                 }
-            } else
+            } else {
                 targets << player;
+            }
         }
-    } else
+    } else {
         targets = card_use.to;
+    }
 
     CardUseStruct use = card_use;
     use.to = targets;
@@ -358,7 +362,7 @@ void DelayedTrick::onNullified(ServerPlayer *target) const{
                 log.arg2 = objectName();
                 room->sendLog(log);
 
-                room->broadcastSkillInvoke(skill->objectName());
+                room->broadcastSkillInvoke(skill->objectName(), player);
                 continue;
             }
 

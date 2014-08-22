@@ -82,9 +82,10 @@ const char *QSanRoomSkin::S_SKIN_KEY_HAND_CARD_FRAME = "handCardFrame-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_HAND_CARD_MAIN_PHOTO = "handCardMainPhoto-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_HAND_CARD_NUMBER_BLACK = "handCardNumber-black-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_HAND_CARD_NUMBER_RED = "handCardNumber-red-%1";
+const char *QSanRoomSkin::S_SKIN_KEY_GENERAL_CARD = "generalCard-%2-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_PLAYER_AUDIO_EFFECT = "playerAudioEffect-%1-%2";
 const char *QSanRoomSkin::S_SKIN_KEY_SYSTEM_AUDIO_EFFECT = "systemAudioEffect-%1";
-const char *QSanRoomSkin::S_SKIN_KEY_PLAYER_GENERAL_ICON = "playerGeneralIcon-%2-%1";
+const char *QSanRoomSkin::S_SKIN_KEY_PLAYER_GENERAL_ICON = "playerGeneralIcon-%3-%2-%1";
 const char *QSanRoomSkin::S_SKIN_KEY_MAGATAMAS_BG = "magatamasBg";
 const char *QSanRoomSkin::S_SKIN_KEY_MAGATAMAS = "magatamas%1";
 const char *QSanRoomSkin::S_SKIN_KEY_PROGRESS_BAR_IMAGE = "progressBar";
@@ -243,7 +244,8 @@ void IQSanComponentSkin::QSanShadowTextFont::paintText(QGraphicsPixmapItem *pixm
 
 QString QSanRoomSkin::getButtonPixmapPath(const QString &groupName,
     const QString &buttonName,
-    QSanButton::ButtonState state) const{
+    QSanButton::ButtonState state) const
+{
     const char *key;
     QString qkey = QString(QSanRoomSkin::S_SKIN_KEY_BUTTON).arg(groupName);
     QByteArray arr = qkey.toLatin1();
@@ -331,10 +333,24 @@ QPixmap QSanRoomSkin::getProgressBarPixmap(int percentile) const{
     return QPixmap();
 }
 
-QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName) const{
-    if (cardName == "unknown") return getPixmap("handCardBack");
+QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName) const
+{
+    if (cardName == "unknown")
+        return getPixmap("handCardBack");
     QString name = cardName;
     return getPixmap(S_SKIN_KEY_HAND_CARD_MAIN_PHOTO, name);
+}
+
+QPixmap QSanRoomSkin::getGeneralCardPixmap(const QString generalName, const int skinId) const
+{
+    QString key = S_SKIN_KEY_GENERAL_CARD;
+    if (isImageKeyDefined(key.arg(skinId).arg(generalName))
+            || isImageKeyDefined(key.arg(skinId).arg(S_SKIN_KEY_DEFAULT))) {
+        return getPixmap(key.arg(skinId), generalName);
+    } else {
+        return getPixmap(key.arg(S_SKIN_KEY_DEFAULT), generalName,
+                         QString::number(skinId));
+    }
 }
 
 QPixmap QSanRoomSkin::getCardSuitPixmap(Card::Suit suit) const{
@@ -354,33 +370,46 @@ QPixmap QSanRoomSkin::getCardAvatarPixmap(const QString &generalName) const{
     return getGeneralPixmap(generalName, S_GENERAL_ICON_SIZE_TINY);
 }
 
-QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSize size) const{
+QPixmap QSanRoomSkin::getGeneralPixmap(const QString &generalName, GeneralIconSize size, const int skinId) const
+{
     QString name = generalName;
-    if (size == S_GENERAL_ICON_SIZE_CARD) {
-        return getCardMainPixmap(name);
-    } else {
-        QString key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size).arg(name);
-        if (isImageKeyDefined(key)) {
-            return getPixmap(key);
-        } else {
-            key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON).arg(size);
-            return getPixmap(key, name);
-        }
-    }
+    if (size == S_GENERAL_ICON_SIZE_CARD)
+        return getGeneralCardPixmap(generalName, skinId);
+
+    QString id = QString::number(skinId);
+    QString key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON)
+            .arg(size).arg(id).arg(name);
+    if (isImageKeyDefined(key)) //exactly match
+        return getPixmap(key);
+
+    key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON)
+            .arg(size).replace("%3", name);
+    if (isImageKeyDefined(key.arg(S_SKIN_KEY_DEFAULT))) //try matching name and size
+        return getPixmap(key, id);
+
+    key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON)
+            .arg(size).arg(id);
+    if (isImageKeyDefined(key.arg(S_SKIN_KEY_DEFAULT))) //try matching size and id
+        return getPixmap(key, name);
+
+    key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON) //try the default match
+            .arg(size).arg(S_SKIN_KEY_DEFAULT);
+    return getPixmap(key, name, id);
 }
 
-QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index) const{
+QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index, const Player *player) const
+{
     QString fileName;
     QString key = QString(QSanRoomSkin::S_SKIN_KEY_PLAYER_AUDIO_EFFECT).arg(category).arg(eventName);
 
-    if (index < 0)
+    if (index < 0) {
         fileName = getRandomAudioFileName(key);
-    else {
+    } else {
         QStringList fileNames = getAudioFileNames(key);
         if (!fileNames.isEmpty()) {
-            if (fileNames.length() >= index)
+            if (fileNames.length() >= index) {
                 return fileNames[index - 1];
-            else {
+            } else {
                 while (index > fileNames.length())
                     index -= fileNames.length();
                 return fileNames[index - 1];
@@ -391,14 +420,25 @@ QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const Q
     if (fileName.isEmpty()) {
         const Skill *skill = Sanguosha->getSkill(eventName);
         QStringList fileNames;
-        if (skill) fileNames = skill->getSources();
+        QString general;
+        int skinId = 0;
+        if (player != NULL) {
+            if (player->inHeadSkills(skill)) {
+                general = player->getGeneralName();
+                //skinId = player->getHeadSkinId();
+            } else if (player->inDeputySkills(skill)) {
+                general = player->getGeneral2Name();
+                //skinId = player->getDeputySkinId();
+            }
+        }
+        if (skill) fileNames = skill->getSources(general, skinId);
         if (!fileNames.isEmpty()) {
-            if (index < 0)
+            if (index < 0) {
                 fileName = fileNames.at(qrand() % fileNames.length());
-            else {
-                if (fileNames.length() >= index)
+            } else {
+                if (fileNames.length() >= index) {
                     return fileNames[index - 1];
-                else {
+                } else {
                     while (index > fileNames.length())
                         index -= fileNames.length();
                     return fileNames[index - 1];
@@ -678,11 +718,12 @@ QHash<QString, QList<QString> > IQSanComponentSkin::S_IMAGE_GROUP_KEYS;
 QHash<QString, QPixmap> IQSanComponentSkin::S_IMAGE_KEY2PIXMAP;
 QHash<QString, int> IQSanComponentSkin::S_HERO_SKIN_INDEX;
 
-QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) const{
+QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, const QString &arg2) const
+{
     // the order of attempts are:
     // 1. if no arg, then just use key to find fileName.
     // 2. try key.arg(arg), if exists, then return the pixmap
-    // 3. try key.arg(default), get fileName, and try fileName.arg(arg)
+    // 3. try key.arg(default), get fileName, and try fileName.arg(arg).arg(arg2) or fileName.arg(arg) if no arg2
     QString totalKey;
     QString groupKey;
     QString fileName;
@@ -710,35 +751,20 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg) co
         QString fileNameToResolve = _readImageConfig(groupKey, clipRegion, clipping, scaleRegion, scaled);
         fileName = fileNameToResolve.arg(arg);
         if (!QFile::exists(fileName)) {
-            groupKey = key.arg(S_SKIN_KEY_DEFAULT_SECOND);
-            S_IMAGE_GROUP_KEYS[groupKey].append(totalKey);
-            QString fileNameToResolve = _readImageConfig(groupKey, clipRegion, clipping, scaleRegion, scaled);
-            fileName = fileNameToResolve.arg(arg);
+            if (!arg2.isNull() && fileName.contains("%2"))
+                fileName = fileName.arg(arg2);
+            if (!QFile::exists(fileName)) {
+                groupKey = key.arg(S_SKIN_KEY_DEFAULT_SECOND);
+                S_IMAGE_GROUP_KEYS[groupKey].append(totalKey);
+                QString fileNameToResolve = _readImageConfig(groupKey, clipRegion, clipping, scaleRegion, scaled);
+                fileName = fileNameToResolve.arg(arg);
+                if (!QFile::exists(fileName) && !arg2.isNull() && fileName.contains("%2"))
+                    fileName = fileName.arg(arg2);
+            }
         }
     }
 
-    // Hero skin?
-    bool update_cache = false;
-    QString general_name = fileName.split("/").last().split(".").first();
-    if (Sanguosha->getGeneral(general_name)) {
-        int skin_index = Config.value(QString("HeroSkin/%1").arg(general_name), 0).toInt();
-        int saved_index = 0;
-        QString name = QString("%1 %2").arg(general_name).arg(totalKey);
-        if (S_HERO_SKIN_INDEX.contains(name))
-            saved_index = S_HERO_SKIN_INDEX[name];
-        if (saved_index != skin_index) {
-            S_HERO_SKIN_INDEX[name] = skin_index;
-            update_cache = true;
-            if (from_cache)
-                _readImageConfig(totalKey, clipRegion, clipping, scaleRegion, scaled);
-        }
-        if (skin_index > 0) {
-            fileName.replace("image/", "image/heroskin/");
-            fileName.replace(general_name, QString("%1_%2").arg(general_name).arg(skin_index));
-        }
-    }
-
-    if (!S_IMAGE_KEY2PIXMAP.contains(totalKey) || update_cache) {
+    if (!S_IMAGE_KEY2PIXMAP.contains(totalKey)) {
         QPixmap pixmap = QSanPixmapCache::getPixmap(fileName);
         if (clipping) {
             QRect actualClip = clipRegion;

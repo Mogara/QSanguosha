@@ -98,7 +98,7 @@ public:
     static const char *S_SKIN_KEY_DEFAULT_SECOND;
     bool load(const QString &layoutConfigFileName, const QString &imageConfigFileName,
         const QString &audioConfigFileName, const QString &animationConfigFileName);
-    QPixmap getPixmap(const QString &key, const QString &arg = QString()) const;
+    QPixmap getPixmap(const QString &key, const QString &arg = QString(), const QString &arg2 = QString()) const;
     QPixmap getPixmapFileName(const QString &key) const;
     QPixmap getPixmapFromFileName(const QString &fileName) const;
     QStringList getAudioFileNames(const QString &key) const;
@@ -345,14 +345,15 @@ public:
         QSanInvokeSkillButton::SkillType type,
         QSanInvokeSkillButton::SkillButtonWidth width) const;
     QPixmap getCardMainPixmap(const QString &cardName) const;
+    QPixmap getGeneralCardPixmap(const QString generalName, const int skinId = 0) const;
     QPixmap getCardSuitPixmap(Card::Suit suit) const;
     QPixmap getCardNumberPixmap(int point, bool isBlack) const;
     QPixmap getCardJudgeIconPixmap(const QString &judgeName) const;
     QPixmap getCardFramePixmap(const QString &frameType) const;
     QPixmap getCardAvatarPixmap(const QString &generalName) const;
-    QPixmap getGeneralPixmap(const QString &generalName, GeneralIconSize size) const;
+    QPixmap getGeneralPixmap(const QString &generalName, GeneralIconSize size, const int skinId = 0) const;
     QString getPlayerAudioEffectPath(const QString &eventName, bool isMale, int index = -1) const;
-    QString getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index = -1) const;
+    QString getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index = -1, const Player *player = NULL) const;
     QPixmap getProgressBarPixmap(int percentile) const;
 
 
@@ -409,6 +410,7 @@ public:
     static const char *S_SKIN_KEY_HAND_CARD_NUMBER_BLACK;
     static const char *S_SKIN_KEY_HAND_CARD_NUMBER_RED;
     static const char *S_SKIN_KEY_HAND_CARD_FRAME;
+    static const char *S_SKIN_KEY_GENERAL_CARD;
     static const char *S_SKIN_KEY_PLAYER_GENERAL_ICON;
     static const char *S_SKIN_KEY_EXTRA_SKILL_BG;
     static const char *S_SKIN_KEY_MAGATAMAS_BG;

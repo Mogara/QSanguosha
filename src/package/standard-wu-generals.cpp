@@ -119,7 +119,7 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         if (player->askForSkillInvoke(objectName())){
             if (player->getHandcardNum() > player->getMaxCards()) {
-                room->broadcastSkillInvoke(objectName());
+                room->broadcastSkillInvoke(objectName(), player);
             }
             return true;
         }
@@ -164,7 +164,7 @@ Yingzi::Yingzi() : DrawCardsSkill("yingzi") {
 
 bool Yingzi::cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
     if (player->askForSkillInvoke(objectName())){
-        room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1);
+        room->broadcastSkillInvoke(objectName(), qrand() % 2 + 1, player);
         return true;
     }
     return false;
@@ -377,7 +377,7 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         bool invoke = player->hasShownSkill(this) ? true : room->askForSkillInvoke(player, objectName());
         if (invoke){
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), player);
             return true;
         }
 
@@ -492,7 +492,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *sunshangxiang, QVariant &, ServerPlayer *) const{
         if (room->askForSkillInvoke(sunshangxiang, objectName())){
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), sunshangxiang);
             return true;
         }
 
@@ -535,23 +535,21 @@ bool Yinghun::onPhaseChange(ServerPlayer *sunjian) const{
         int x = sunjian->getLostHp();
 
         if (x == 1) {
-            room->broadcastSkillInvoke(objectName(), 1);
+            room->broadcastSkillInvoke(objectName(), 1, sunjian);
 
             to->drawCards(1);
             room->askForDiscard(to, objectName(), 1, 1, false, true);
-        }
-        else {
+        } else {
             to->setFlags("YinghunTarget");
             QString choice = room->askForChoice(sunjian, objectName(), "d1tx+dxt1");
             to->setFlags("-YinghunTarget");
             if (choice == "d1tx") {
-                room->broadcastSkillInvoke(objectName(), 2);
+                room->broadcastSkillInvoke(objectName(), 2, sunjian);
 
                 to->drawCards(1);
                 room->askForDiscard(to, objectName(), x, x, false, true);
-            }
-            else {
-                room->broadcastSkillInvoke(objectName(), 1);
+            } else {
+                room->broadcastSkillInvoke(objectName(), 1, sunjian);
 
                 to->drawCards(x);
                 room->askForDiscard(to, objectName(), 1, 1, false, true);
@@ -910,7 +908,7 @@ public:
             }
 
             if (duplicate_numbers.isEmpty()) {
-                room->broadcastSkillInvoke("buqu");
+                room->broadcastSkillInvoke("buqu", zhoutai);
                 room->setPlayerFlag(zhoutai, "-Global_Dying");
                 return QStringList(objectName());
             } else {
@@ -956,7 +954,7 @@ public:
         if (triggerEvent == AskForPeachesDone)
             return true;
         if (room->askForSkillInvoke(zhoutai, objectName(), data)) {
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), zhoutai);
             const QList<int> &buqu = zhoutai->getPile("buqu");
             int need = 1 - zhoutai->getHp(); // the buqu cards that should be turned over
             int n = need - buqu.length();
@@ -1066,7 +1064,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         if (player->askForSkillInvoke("haoshi")){
-            room->broadcastSkillInvoke("haoshi");
+            room->broadcastSkillInvoke("haoshi", player);
             return true;
         }
         return false;
@@ -1365,7 +1363,7 @@ public:
         erzhang->tag.remove("GuzhengToGet");
         erzhang->tag.remove("GuzhengOther");
         if (erzhang->askForSkillInvoke(objectName(), cards.length())) {
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), erzhang);
             room->fillAG(cards, erzhang, cardsOther);
 
             int to_back = room->askForAG(erzhang, cardsToGet, false, objectName());

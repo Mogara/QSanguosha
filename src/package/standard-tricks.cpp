@@ -772,9 +772,10 @@ void AwaitExhausted::onUse(Room *room, const CardUseStruct &card_use) const{
                 log.arg2 = objectName();
                 room->sendLog(log);
 
-                room->broadcastSkillInvoke(skill->objectName());
-            } else
+                room->broadcastSkillInvoke(skill->objectName(), p);
+            } else {
                 new_use.to << p;
+            }
         }
     }
 
