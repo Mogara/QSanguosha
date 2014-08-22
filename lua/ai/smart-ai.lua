@@ -1592,7 +1592,7 @@ end
 function SmartAI:filterEvent(event, player, data)
 	if not sgs.recorder then
 		sgs.recorder = self
-		self.player:speak(version) --move this to writeToConsole ???????
+		self.player:speak(version)
 	end
 	if player:objectName() == self.player:objectName() then
 		if sgs.debugmode and type(sgs.ai_debug_func[event]) == "table" then

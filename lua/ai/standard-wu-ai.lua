@@ -360,6 +360,7 @@ kurou_skill.getTurnUseCard = function(self, inclusive)
 end
 
 sgs.ai_skill_use_func.KurouCard = function(card, use, self)
+	if not use.isDummy then self:speak("kurou") end
 	use.card = card
 end
 
