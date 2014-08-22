@@ -333,6 +333,25 @@ QPixmap QSanRoomSkin::getProgressBarPixmap(int percentile) const{
     return QPixmap();
 }
 
+bool QSanRoomSkin::doesGeneralHaveSkin(const QString &general) const
+{
+    const QString id = "1";
+    const QString key = S_SKIN_KEY_GENERAL_CARD;
+    QString totalKey = key.arg(id).arg(general);
+    if (isImageKeyDefined(totalKey))
+        return QFile::exists(_m_imageConfig.value(totalKey).toString());
+
+    totalKey = key.arg(id).arg(S_SKIN_KEY_DEFAULT);
+    if (isImageKeyDefined(totalKey))
+        return QFile::exists(QString(_m_imageConfig.value(totalKey).toString()).arg(general));
+
+    totalKey = key.arg(S_SKIN_KEY_DEFAULT).arg(S_SKIN_KEY_DEFAULT);
+    if (isImageKeyDefined(totalKey))
+        return QFile::exists(QString(_m_imageConfig.value(totalKey).toString()).arg(general).arg(id));
+
+    return false;
+}
+
 QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName) const
 {
     if (cardName == "unknown")
@@ -343,13 +362,13 @@ QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName) const
 
 QPixmap QSanRoomSkin::getGeneralCardPixmap(const QString generalName, const int skinId) const
 {
-    QString key = S_SKIN_KEY_GENERAL_CARD;
-    if (isImageKeyDefined(key.arg(skinId).arg(generalName))
-            || isImageKeyDefined(key.arg(skinId).arg(S_SKIN_KEY_DEFAULT))) {
-        return getPixmap(key.arg(skinId), generalName);
+    const QString id = QString::number(skinId);
+    const QString key = S_SKIN_KEY_GENERAL_CARD;
+    if (isImageKeyDefined(key.arg(id).arg(generalName))
+            || isImageKeyDefined(key.arg(id).arg(S_SKIN_KEY_DEFAULT))) {
+        return getPixmap(key.arg(id), generalName);
     } else {
-        return getPixmap(key.arg(S_SKIN_KEY_DEFAULT), generalName,
-                         QString::number(skinId));
+        return getPixmap(key.arg(S_SKIN_KEY_DEFAULT), generalName, id);
     }
 }
 

@@ -366,7 +366,7 @@ void CardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidge
 
     const Card *card = Sanguosha->getEngineCard(m_cardId);
     if (!_m_isUnknownGeneral) {
-        if (card) {
+        if (card || objectName() == "unknown") {
             painter->drawPixmap(G_COMMON_LAYOUT.m_cardMainArea,
                                 G_ROOM_SKIN.getCardMainPixmap(objectName()));
         } else {
