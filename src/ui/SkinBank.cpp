@@ -352,11 +352,6 @@ bool QSanRoomSkin::doesGeneralHaveSkin(const QString &general, const int skinId)
     return false;
 }
 
-bool QSanRoomSkin::doesGeneralHaveSkin(const QString &general) const
-{
-    return doesGeneralHaveSkin(general, 1);
-}
-
 QPixmap QSanRoomSkin::getCardMainPixmap(const QString &cardName) const
 {
     if (cardName == "unknown")
