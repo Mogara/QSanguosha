@@ -191,8 +191,7 @@ void PlayerCardContainer::showProgressBar(Countdown countdown) {
 
 QPixmap PlayerCardContainer::_getAvatarIcon(QString heroName) {
     const int avatarSize = m_player->getGeneral2() ? _m_layout->m_primaryAvatarSize : _m_layout->m_avatarSize;
-    //const int skinId = m_player->getGeneralName() == heroName ? m_player->getHeadSkinId() : m_player->getDeputySkinId();
-    const int skinId = 0;
+    const int skinId = m_player->getGeneralName() == heroName ? m_player->getHeadSkinId() : m_player->getDeputySkinId();
     return G_ROOM_SKIN.getGeneralPixmap(heroName, (QSanRoomSkin::GeneralIconSize)avatarSize, skinId);
 }
 

@@ -301,11 +301,9 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
         foreach(const General *general, copy_generals) {
             if (Self && Self->getGeneral()) {
                 if (general == Self->getGeneral())
-                    //all_generals[general] = Self ? Self->getHeadSkinId() : 0;
-                    all_generals[general] = 0;
+                    all_generals[general] = Self ? Self->getHeadSkinId() : 0;
                 else if (general == Self->getGeneral2())
-                    //all_generals[general] = Self ? Self->getDeputySkinId() : 0;
-                    all_generals[general] = 0;
+                    all_generals[general] = Self ? Self->getDeputySkinId() : 0;
             }
         }
     }

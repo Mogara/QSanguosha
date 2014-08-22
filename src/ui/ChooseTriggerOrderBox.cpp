@@ -36,11 +36,9 @@ static QSize generalButtonSize;
 
 static int getSkinId(const ClientPlayer *player, const QString &generalName) {
     if (player->getGeneralName() == generalName)
-        //return player->getHeadSkinId();
-        return 0;
+        return player->getHeadSkinId();
     else
-        //return player->getDeputySkinId();
-        return 0;
+        return player->getDeputySkinId();
 
     return 0;
 }

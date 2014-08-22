@@ -3190,8 +3190,8 @@ void RoomScene::FillPlayerNames(QComboBox *ComboBox, bool add_none) {
         QString general_name = Sanguosha->translate(player->getGeneralName());
         if (!player->getGeneral()) continue;
         QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(player->getGeneralName(),
-                                                      QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY/*,
-                                                      player->getHeadSkinId()*/);
+                                                      QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY,
+                                                      player->getHeadSkinId());
         ComboBox->addItem(QIcon(pixmap),
             QString("%1 [%2]").arg(general_name).arg(player->screenName()),
             player->objectName());

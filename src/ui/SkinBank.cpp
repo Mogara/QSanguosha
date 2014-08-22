@@ -425,10 +425,10 @@ QString QSanRoomSkin::getPlayerAudioEffectPath(const QString &eventName, const Q
         if (player != NULL) {
             if (player->inHeadSkills(skill)) {
                 general = player->getGeneralName();
-                //skinId = player->getHeadSkinId();
+                skinId = player->getHeadSkinId();
             } else if (player->inDeputySkills(skill)) {
                 general = player->getGeneral2Name();
-                //skinId = player->getDeputySkinId();
+                skinId = player->getDeputySkinId();
             }
         }
         if (skill) fileNames = skill->getSources(general, skinId);

@@ -220,7 +220,7 @@
 "judgeCardIcon-default": "image/icon/%1.png",
 
 "generalCard-default-0": "image/generals/card/%1.jpg",
-"generalCard-default-default": "hero-skin/%1/%2/card.jpg"
+"generalCard-default-default": "hero-skin/%1/%2/card.jpg",
 
 //role combo box
 "expandingRoleBox": "image/system/roles/expanding.png",
@@ -240,3 +240,4 @@
 "headIcon": "image/system/head.png",
 "deputyIcon": "image/system/deputy.png"
 }
+

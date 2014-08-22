@@ -266,12 +266,12 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
 
     foreach(QString general, generals) {
         int skinId = 0;
-        /*if (player) {
+        if (player) {
             if (player->getGeneralName() == general)
                 skinId = player->getHeadSkinId();
             else
                 skinId = player->getDeputySkinId();
-        }*/
+        }
 
         GeneralCardItem *general_item = new GeneralCardItem(general, skinId);
         general_item->setFlag(QGraphicsItem::ItemIsFocusable);
