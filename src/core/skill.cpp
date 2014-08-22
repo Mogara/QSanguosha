@@ -162,7 +162,7 @@ QString Skill::getLimitMark() const{
 }
 
 QStringList Skill::getSources(const QString &general, const int skinId) const {
-    if (!general.isEmpty()) {
+    if (skinId != 0 && !general.isEmpty()) {
         static QHash<const QString, QStringList> skinSourceHash;
         const QString key = QString("%1_%2")
                 .arg(QString::number(skinId))
