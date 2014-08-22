@@ -98,7 +98,7 @@ private:
     void resetButtons();
     void addLines(const General *general, const Skill *skill);
     void addCopyAction(QCommandLinkButton *button);
-    bool hasSkin(const General *general);
+    bool hasSkin(const General *general) const;
     QString getIllustratorInfo(const QString &generalName);
 
 public slots:

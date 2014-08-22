@@ -418,13 +418,13 @@ GeneralOverview::~GeneralOverview() {
     delete ui;
 }
 
-bool GeneralOverview::hasSkin(const General *general) {
+bool GeneralOverview::hasSkin(const General *general) const
+{
     const int skinId = all_generals.value(general);
-    if (skinId == 0) {
-        const QPixmap pixmap = G_ROOM_SKIN.getGeneralCardPixmap(general->objectName(), skinId);
-        if (pixmap.width() <= 1 && pixmap.height() <= 1)
-            return false;
-    }
+
+    if (skinId == 0)
+        return G_ROOM_SKIN.doesGeneralHaveSkin(general->objectName());
+
     return true;
 }
 

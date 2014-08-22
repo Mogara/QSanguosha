@@ -356,6 +356,7 @@ public:
     QString getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index = -1, const Player *player = NULL) const;
     QPixmap getProgressBarPixmap(int percentile) const;
 
+    bool doesGeneralHaveSkin(const QString &general) const;
 
     // static consts
     // main keys
