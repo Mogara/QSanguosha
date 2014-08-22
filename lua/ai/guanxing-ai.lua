@@ -76,7 +76,7 @@ local function GuanXing(self, cards)
 	local judge = sgs.QList2Table(self.player:getJudgingArea())
 	judge = sgs.reverse(judge)
 
-	if not self.player:containsTrick("YanxiaoCard") then
+	if #judge > 0 then
 		local lightning_index
 		for judge_count, need_judge in ipairs(judge) do
 			judged_list[judge_count] = 0
@@ -190,7 +190,7 @@ local function GuanXing(self, cards)
 		for index, for_judge in ipairs(bottom) do
 			if judge[pos]:isKindOf("Lightning") then lightning_index = pos break end
 			if self:isFriend(next_player) then
-				if next_player:hasSkill("luoshen") then
+				if next_player:hasShownSkill("luoshen") then
 					if for_judge:isBlack() then
 						table.insert(next_judge, for_judge)
 						table.remove(bottom, index)
@@ -201,7 +201,7 @@ local function GuanXing(self, cards)
 				else
 					local suit = for_judge:getSuitString()
 					local number = for_judge:getNumber()
-					if next_player:hasSkill("hongyan") and suit == "spade" then suit = "heart" end
+					if next_player:hasShownSkill("hongyan") and suit == "spade" then suit = "heart" end
 					if judge_str == suit then
 						table.insert(next_judge, for_judge)
 						table.remove(bottom, index)
@@ -211,7 +211,7 @@ local function GuanXing(self, cards)
 					end
 				end
 			else
-				if next_player:hasSkill("luoshen") and for_judge:isRed() and not luoshen_flag then
+				if next_player:hasShownSkill("luoshen") and for_judge:isRed() and not luoshen_flag then
 					table.insert(next_judge, for_judge)
 					table.remove(bottom, index)
 					nextplayer_has_judged = true
@@ -221,7 +221,7 @@ local function GuanXing(self, cards)
 				else
 					local suit = for_judge:getSuitString()
 					local number = for_judge:getNumber()
-					if next_player:hasSkill("hongyan") and suit== "spade" then suit = "heart" end
+					if next_player:hasShownSkill("hongyan") and suit== "spade" then suit = "heart" end
 					if judge_str ~= suit then
 						table.insert(next_judge, for_judge)
 						table.remove(bottom, index)
@@ -240,7 +240,7 @@ local function GuanXing(self, cards)
 		for index, for_judge in ipairs(bottom) do
 			local cardNumber = for_judge:getNumber()
 			local cardSuit = for_judge:getSuitString()
-			if next_player:hasSkill("hongyan") and cardSuit == "spade" then cardSuit = "heart" end
+			if next_player:hasShownSkill("hongyan") and cardSuit == "spade" then cardSuit = "heart" end
 			if self:isFriend(next_player) and not (for_judge:getNumber() >= 2 and cardNumber <= 9 and cardSuit == "spade")
 				or not self:isFriend(next_player) and for_judge:getNumber() >= 2 and cardNumber <= 9 and cardSuit == "spade" then
 				local i = lightning_index > #next_judge and 1 or lightning_index
@@ -272,12 +272,13 @@ local function GuanXing(self, cards)
 	end
 
 	self:sortByUseValue(bottom)
+	local up_cards = {}
 	if drawCards > 0 and #bottom > 0 then
 		local has_slash = self:getCardsNum("Slash") > 0
 		local shuangxiong, has_big
 		for index, gcard in ipairs(bottom) do
 			local insert = false
-			if self.player:hasSkill("shuangxiong") and self.player:getHandcardNum() >= 3 then
+			if not willSkipPlayPhase and self.player:hasSkill("shuangxiong") and self.player:getHandcardNum() >= 3 then
 				local rednum, blacknum = 0, 0
 				local cards = sgs.QList2Table(self.player:getHandcards())
 				for _, card in ipairs(cards) do
@@ -292,7 +293,8 @@ local function GuanXing(self, cards)
 					insert = true
 					shuangxiong = true
 				end
-			elseif self.player:hasSkills("tianyi|quhu") then
+			end
+			if not insert and not willSkipPlayPhase and self.player:hasSkills("tianyi|quhu") then
 				local maxcard = self:getMaxCard(self.player)
 				has_big = maxcard and maxcard:getNumber() > 10
 				if not has_big and gcard:getNumber() > 10 then
@@ -302,49 +304,71 @@ local function GuanXing(self, cards)
 				if isCard("Slash", gcard, self.player) then
 					insert = true
 				end
-			elseif self.player:hasSkills("jizhi") then
-				if isCard("TrickCard", gcard, self.player) then
+			end
+			if not insert and not willSkipPlayPhase and self.player:hasSkills("jizhi") and isCard("TrickCard", gcard, self.player) then
+				insert = true
+			end
+			if not insert and not willSkipPlayPhase and self.player:hasSkill("yizhi") and isCard("Lightning", gcard, self.player) then
+				insert = true
+			end
+			if not insert then
+				if isCard("Peach", gcard, self.player) and (self.player:isWounded()  or self:getCardsNum("Peach") == 0) then
 					insert = true
-				end
-			elseif isCard("Peach", gcard, self.player) and (self.player:isWounded()  or self:getCardsNum("Peach") == 0) then
-				insert = true
-			elseif not willSkipPlayPhase and isCard("ExNihilo", gcard, self.player) then
-				insert = true
-			else
-				for _, skill in sgs.qlist(self.player:getVisibleSkillList(true)) do
-					local callback = sgs.ai_cardneed[skill:objectName()]
-					if type(callback) == "function" and sgs.ai_cardneed[skill:objectName()](self.player, gcard, self) then
-						insert = true
-					end
-				end
-				if not insert then
-					if has_slash and not gcard:isKindOf("Slash") and not gcard:isKindOf("Jink") and self:getCardsNum("Jink") > 0 then
-						insert = true
-					elseif not has_slash and isCard("Slash", gcard, self.player) and not willSkipPlayPhase then
-						insert = true
-						has_slash = true
-					end
+				elseif not willSkipPlayPhase and isCard("ExNihilo", gcard, self.player) then
+					insert = true
+				elseif not willSkipPlayPhase and isCard("BefriendAttacking", gcard, self.player) then
+					insert = true
+				elseif not has_slash and isCard("Slash", gcard, self.player) and not willSkipPlayPhase then
+					insert = true
+					has_slash = true
 				end
 			end
 
 			if insert then
 				drawCards = drawCards - 1
-				table.insert(up, gcard)
+				table.insert(up_cards, gcard)
 				table.remove(bottom, index)
-				if isCard("ExNihilo", gcard, self.player) then drawCards = drawCards + 2 end
+				if isCard("ExNihilo", gcard, self.player) then
+					drawCards = drawCards + 2
+				elseif isCard("BefriendAttacking", gcard, self.player) then
+					drawCards = drawCards + 4
+				end
+				if drawCards == 0 then break end
+			end
+		end
+
+		if #bottom > 0 and drawCards > 0 then
+			for index, gcard in ipairs(bottom) do
+				for _, skill in sgs.qlist(self.player:getVisibleSkillList(true)) do
+					local callback = sgs.ai_cardneed[skill:objectName()]
+					if type(callback) == "function" and sgs.ai_cardneed[skill:objectName()](self.player, gcard, self) then
+						table.insert(up_cards, table.remove(bottom, index))
+						drawCards = drawCards - 1
+						if isCard("ExNihilo", gcard, self.player) then
+							drawCards = drawCards + 2
+						elseif isCard("BefriendAttacking", gcard, self.player) then
+							drawCards = drawCards + 4
+						end
+						break
+					end
+				end
 				if drawCards == 0 then break end
 			end
 		end
 		if #bottom > 0 and drawCards > 0 then
 			if willSkipPlayPhase then self.player:setFlags("willSkipPlayPhase") end
 			for i = 1, #bottom do
-				local c = self:getValuableCardForGuanxing(bottom)
+				local c = self:getValuableCardForGuanxing(bottom, up_cards)
 				if not c then break end
 				for index, card in ipairs(bottom) do
 					if card:getEffectiveId() == c:getEffectiveId() then
-						table.insert(up, table.remove(bottom, index))
+						table.insert(up_cards, table.remove(bottom, index))
 						drawCards = drawCards - 1
-						if isCard("ExNihilo", card, self.player) then drawCards = drawCards + 2 end
+						if isCard("ExNihilo", card, self.player) then
+							drawCards = drawCards + 2
+						elseif isCard("BefriendAttacking", card, self.player) then
+							drawCards = drawCards + 4
+						end
 						break
 					end
 				end
@@ -352,6 +376,10 @@ local function GuanXing(self, cards)
 			end
 			self.player:setFlags("-willSkipPlayPhase")
 		end
+	end
+
+	if #up_cards > 0 then
+		table.insertTable(up, up_cards)
 	end
 
 	if #bottom > drawCards and #bottom > 0 and not nextplayer_judge_failed then
@@ -386,7 +414,7 @@ local function GuanXing(self, cards)
 		else
 			local i = 0
 			for index = 1, #bottom do
-				if bottom[index - i]:isKindOf("Lightning") and not next_player:hasSkills("leiji|nosleiji") or bottom[index - i]:isKindOf("GlobalEffect") then
+				if bottom[index - i]:isKindOf("Lightning") and not next_player:hasShownSkill("leiji") or bottom[index - i]:isKindOf("GlobalEffect") then
 					table.insert(next_judge, table.remove(bottom, index - i))
 					i = i + 1
 					if maxCount == i then break end
@@ -414,7 +442,7 @@ local function GuanXing(self, cards)
 
 	if not self_has_judged and not nextplayer_has_judged and #next_judge == 0 and #up >= drawCards_copy and drawCards_copy > 1 then
 		for i = 1, drawCards_copy - 1 do
-			if isCard("ExNihilo", up[i], self.player) then
+			if isCard("ExNihilo", up[i], self.player) or isCard("BefriendAttacking", up[i], self.player) then
 				table.insert(up, drawCards_copy, table.remove(up, i))
 			end
 		end
@@ -429,7 +457,11 @@ local function WuXin(self, cards)
 	local up, bottom = {}, {}
 	local judged_list = {}
 	local hasJudge = false
-	local next_player = self.player:getNextAlive()
+	local next_player
+	for _, p in sgs.qlist(global_room:getOtherPlayers(self.player)) do
+		if p:faceUp() then next_player = p break end
+	end
+	next_player = next_player or self.player:faceUp() and self.player or self.player:getNextAlive()
 	local judge = next_player:getCards("j")
 	judge = sgs.QList2Table(judge)
 	judge = sgs.reverse(judge)
@@ -444,7 +476,6 @@ local function WuXin(self, cards)
 
 		for _, for_judge in ipairs(bottom) do
 			if judge_str == "spade" and not lightning_flag then
-				has_lightning = need_judge
 				if for_judge:getNumber() >= 2 and for_judge:getNumber() <= 9 then lightning_flag = true end
 			end
 			if self:isFriend(next_player) then
@@ -497,9 +528,17 @@ function SmartAI:askForGuanxing(cards, guanxing_type)
 	return cards, {}
 end
 
-function SmartAI:getValuableCardForGuanxing(cards)
-
-	local peach, exnihilo, jink, analeptic, nullification, snatch, dismantlement, indulgence
+function SmartAI:getValuableCardForGuanxing(cards, up_cards)
+	local ignore_weapon, ignore_armor, ignore_DH, ignore_OH, ignore_jink
+	for _, c in ipairs(up_cards) do
+		if c:isKindOf("Weapon") then ignore_weapon = true
+		elseif c:isKindOf("Armor") then ignore_armor = true
+		elseif c:isKindOf("DefensiveHorse") or self:getCardsNum("DefensiveHorse", "he") > 0 then ignore_DH = true
+		elseif c:isKindOf("OffensiveHorse") or self:getCardsNum("OffensiveHorse", "he") > 0 then ignore_OH = true
+		elseif c:isKindOf("Jink") then ignore_jink = true end
+	end
+	
+	local peach, exnihilo, jink, analeptic, nullification, snatch, dismantlement, indulgence, befriendattacking
 	for _, card in ipairs(cards) do
 		if isCard("Peach", card, self.player) then
 			peach = card
@@ -508,7 +547,7 @@ function SmartAI:getValuableCardForGuanxing(cards)
 			end
 		elseif isCard("ExNihilo", card, self.player) then
 			exnihilo = card
-		elseif isCard("Jink", card, self.player) then
+		elseif isCard("Jink", card, self.player) and not ignore_jink then
 			jink = card
 		elseif isCard("Analeptic", card, self.player) then
 			analeptic = card
@@ -520,6 +559,8 @@ function SmartAI:getValuableCardForGuanxing(cards)
 			dismantlement = card
 		elseif isCard("Indulgence", card, self.player) then
 			indulgence = card
+		elseif isCard("BefriendAttacking", card, self.player) then
+			befriendattacking = card
 		end
 	end
 
@@ -536,8 +577,16 @@ function SmartAI:getValuableCardForGuanxing(cards)
 		end
 	end
 
-	if self.player:hasFlag("willSkipPlayPhase") and peach then return peach end
-	if not self.player:hasFlag("willSkipPlayPhase") and (exnihilo or peach) then return exnihilo or peach end
+	if self.player:hasFlag("willSkipPlayPhase") then
+		return peach or jink or analeptic
+	end
+
+	if exnihilo or peach then return exnihilo or peach end
+	if befriendattacking then
+		for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if p:hasShownOneGeneral() and not self.player:isFriendWith(p) then return befriendattacking end
+		end
+	end
 	if (jink or analeptic) and (self:getCardsNum("Jink") == 0 or (self:isWeak() and self:getOverflow() <= 0)) then
 		return jink or analeptic
 	end
@@ -547,7 +596,14 @@ function SmartAI:getValuableCardForGuanxing(cards)
 
 	local eightdiagram, silverlion, vine, renwang, DefHorse, OffHorse
 	local weapon, crossbow, halberd, double, qinggang, axe, gudingdao
+
 	for _, card in ipairs(cards) do
+		if card:isKindOf("Weapon") and ignore_weapon then continue
+		elseif card:isKindOf("Armor") and ignore_armor then continue
+		elseif card:isKindOf("DefensiveHorse") and ignore_DH then continue
+		elseif card:isKindOf("OffensiveHorse") and ignore_OH then continue
+		end
+
 		if card:isKindOf("EightDiagram") then eightdiagram = card
 		elseif card:isKindOf("SilverLion") then silverlion = card
 		elseif card:isKindOf("Vine") then vine = card
@@ -563,7 +619,7 @@ function SmartAI:getValuableCardForGuanxing(cards)
 		elseif card:isKindOf("GudingBlade") then gudingdao = card
 		elseif card:isKindOf("Axe") then axe = card end
 
-		if card:isKindOf("Weapon") then weapon = card end
+		if not weapon and card:isKindOf("Weapon") then weapon = card end
 	end
 
 	if eightdiagram then
@@ -712,7 +768,8 @@ function SmartAI:getValuableCardForGuanxing(cards)
 
 	end
 
-	local snatch, dismantlement, indulgence, supplyshortage, collateral, duel, aoe, godsalvation, fireattack, lightning
+	local to_choose = {}
+	local classNames = { "Snatch", "Dismantlement", "Indulgence", "SupplyShortage", "Collateral", "Duel", "Drowning", "AOE", "FireAttack", "GodSalvation", "Lightning" }
 	local new_enemies = {}
 	if #self.enemies > 0 then new_enemies = self.enemies
 	else
@@ -722,64 +779,29 @@ function SmartAI:getValuableCardForGuanxing(cards)
 			end
 		end
 	end
-	local hasTrick = false
-	for _, card in ipairs(cards) do
-		for _, enemy in ipairs(new_enemies) do
-			if not enemy:isNude() and isCard("Snatch", card, self.player) and self:hasTrickEffective(sgs.cloneCard("snatch", card:getSuit(), card:getNumber()), enemy) and self.player:distanceTo(enemy) == 1 then
-				snatch = card
-				hasTrick = true
-			elseif not enemy:isNude() and (isCard("Dismantlement", card, self.player) and self:hasTrickEffective(sgs.cloneCard("dismantlement", card:getSuit(), card:getNumber()), enemy)) then
-				dismantlement = card
-				hasTrick = true
-			elseif isCard("Indulgence", card, self.player) and self:hasTrickEffective(sgs.cloneCard("indulgence", card:getSuit(), card:getNumber()), enemy)
-				and not enemy:containsTrick("indulgence") and not self:willSkipPlayPhase(enemy) then
-				indulgence = card
-				hasTrick = true
-			elseif isCard("SupplyShortage", card, self.player) and self:hasTrickEffective(sgs.cloneCard("supply_shortage", card:getSuit(), card:getNumber()), enemy)
-				and not enemy:containsTrick("supply_shortage") and not self:willSkipDrawPhase(enemy) then
-				supplyshortage = card
-				hasTrick = true
-			elseif isCard("Collateral", card, self.player) and self:hasTrickEffective(sgs.cloneCard("collateral", card:getSuit(), card:getNumber()), enemy) and enemy:getWeapon() then
-				collateral = card
-				hasTrick = true
-			elseif isCard("Duel", card, self.player) and (self:getCardsNum("Slash") >= getCardsNum("Slash", enemy, self.player) or self.player:getHandcardNum() > 4)
-				and self:hasTrickEffective(sgs.cloneCard("duel", card:getSuit(), card:getNumber()), enemy) then
-				duel = card
-				hasTrick = true
-			elseif card:isKindOf("AOE") then
-				local dummy_use = { isDummy = true }
-				self:useTrickCard(card, dummy_use)
-				if dummy_use.card then
-					aoe = card
-					hasTrick = true
-				end
-			elseif isCard("FireAttack", card, self.player) and self:hasTrickEffective(sgs.cloneCard("fire_attack", card:getSuit(), card:getNumber()), enemy)
-				and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player) then
-			elseif isCard("GodSalvation", card, self.player) and self:willUseGodSalvation(sgs.cloneCard("god_salvation", card:getSuit(), card:getNumber())) then
-				godsalvation = card
-				hasTrick = true
-			elseif card:isKindOf("Lightning") and self:willUseLightning(card) and self:getFinalRetrial() == 1 then
-				lightning = card
-				hasTrick = true
-			end
-		end
-	end
-	for _, card in ipairs(cards) do
-		for _, friend in ipairs(self.friends_noself) do
-			if self:willSkipPlayPhase(friend, true) or self:willSkipDrawPhase(friend, true) or self:needToThrowArmor(friend) then
-				if self:hasTrickEffective(sgs.cloneCard("snatch", card:getSuit(), card:getNumber()), enemy) and isCard("Snatch", card, self.player) and self.player:distanceTo(friend) == 1 then
-					snatch = card
-					hasTrick = true
-				elseif isCard("Dismantlement", card, self.player) and self:hasTrickEffective(sgs.cloneCard("dismantlement", card:getSuit(), card:getNumber()), enemy) then
-					dismantlement = card
-					hasTrick = true
-				end
-			end
-		end
-	end
 
-	if hasTrick and not self.player:hasFlag("willSkipPlayPhase") then
-		return snatch or dismantlement or indulgence or supplyshortage or collateral or duel or aoe or godsalvation or fireattack or lightning
+	for _, card in ipairs(cards) do
+		if card:getTypeId() == sgs.Card_TypeTrick then
+			local dummy_use = { isDummy = true }
+			for _, className in ipairs(classNames) do
+				if isCard(className, card, self.player) then
+					local card_x = className ~= card:getClassName() and sgs.cloneCard(className, card:getSuit(), card:getNumber()) or card
+					self.enemies = new_enemies
+					self:useTrickCard(card_x, dummy_use)
+					if dummy_use.card then
+						table.insert(to_choose, card)
+						break
+					end
+				end
+			end
+		end
+	end
+	if #to_choose > 0 then
+		for _, className in ipairs(classNames) do
+			for _, card in ipairs(to_choose) do
+				if isCard(className, card, self.player) then return card end
+			end
+		end
 	end
 
 	if weapon and not self.player:getWeapon() and self:getCardsNum("Slash") > 0 and self:slashIsAvailable() then

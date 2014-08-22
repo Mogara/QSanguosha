@@ -24,26 +24,24 @@ function SmartAI:useCardDrowning(card, use)
 	self:sort(self.enemies, "equip_defense")
 
 	local players = sgs.PlayerList()
-	local Splayers = sgs.SPlayerList()
 	for _, enemy in ipairs(self.enemies) do
 		if card:targetFilter(players, enemy, self.player) and not players:contains(enemy) and enemy:hasEquip()
 			and self:hasTrickEffective(card, enemy) and self:damageIsEffective(enemy) and self:canAttack(enemy)
 			and not self:getDamagedEffects(enemy, self.player) and not self:needToLoseHp(enemy, self.player) then
 			players:append(enemy)
-			Splayers:append(enemy)
+			if use.to then use.to:append(enemy) end
 		end
 	end
 
 	for _, friend in ipairs(self.friends_noself) do
 		if card:targetFilter(players, friend, self.player) and not players:contains(friend) and self:needToThrowArmor(friend) then
 			players:append(friend)
-			Splayers:append(friend)
+			if use.to then use.to:append(enemy) end
 		end
 	end
 
-	if not Splayers:isEmpty() then
+	if not players:isEmpty() then
 		use.card = card
-		if use.to then use.to = Splayers end
 		return
 	end
 end
@@ -172,3 +170,5 @@ sgs.ai_card_intention.TransferCard = -10
 function sgs.ai_armor_value.IronArmor(player, self)
 	return 2.5
 end
+
+sgs.ai_use_priority.IronArmor = 0.82
