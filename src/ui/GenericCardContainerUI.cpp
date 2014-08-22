@@ -809,6 +809,7 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_markItem);
     _layUnder(_m_progressBarItem);
     _layUnder(_m_roleComboBox);
+    _layUnder(_m_saveMeIcon);
     _layUnder(_m_secondaryAvatarNameItem);
     _layUnder(_m_avatarNameItem);
     _layUnder(_m_kingdomColorMaskIcon);
@@ -821,7 +822,6 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_handCardNumText);
     _layUnder(_m_handCardBg);
     _layUnder(_m_actionIcon);
-    _layUnder(_m_saveMeIcon);
     _layUnder(_m_phaseIcon);
     _layUnder(_m_kingdomIcon);
     _layUnder(_m_screenNameItem);

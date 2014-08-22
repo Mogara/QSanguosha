@@ -220,6 +220,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		if string.find(choices, "jieming") then return "jieming" end
 		if string.find(choices, "fankui") and string.find(choices, "ganglie") then return "fankui" end
 		if string.find(choices, "xunxun") and string.find(choices, "ganglie") then return "ganglie" end
+		if string.find(choices, "luoshen") and string.find(choices, "guanxing") then return "luoshen" end
 
 
 		for _, skillname in ipairs(skillnames) do

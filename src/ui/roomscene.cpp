@@ -408,6 +408,15 @@ void RoomScene::handleGameEvent(const QVariant &args) {
         container->setSaveMeIcon(true);
         Photo *photo = qobject_cast<Photo *>(container);
         if (photo) photo->setFrame(Photo::S_FRAME_SOS);
+
+        QString sos_effect = "male_sos";
+        if (!player->isMale()) {
+            int index = qrand() % 2 + 1;
+            sos_effect = "female_sos" + QString::number(index);
+        }
+
+        Sanguosha->playSystemAudioEffect(sos_effect);
+
         break;
     }
     case S_GAME_EVENT_PLAYER_QUITDYING: {

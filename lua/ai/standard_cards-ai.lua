@@ -1422,7 +1422,6 @@ function sgs.ai_armor_value.SilverLion(player, self)
 	return 1
 end
 
-sgs.ai_use_priority.OffensiveHorse = 2.69
 
 sgs.ai_use_priority.Axe = 2.688
 sgs.ai_use_priority.Halberd = 2.685
@@ -1438,9 +1437,12 @@ sgs.ai_use_priority.Crossbow = 2.63
 
 sgs.ai_use_priority.SilverLion = 1.0
 -- sgs.ai_use_priority.Vine = 0.95
-sgs.ai_use_priority.EightDiagram = 0.8
 sgs.ai_use_priority.RenwangShield = 0.85
+--sgs.ai_use_priority.IronArmor = 0.82
+sgs.ai_use_priority.EightDiagram = 0.8
+
 sgs.ai_use_priority.DefensiveHorse = 2.75
+sgs.ai_use_priority.OffensiveHorse = 2.69
 
 sgs.dynamic_value.damage_card.ArcheryAttack = true
 sgs.dynamic_value.damage_card.SavageAssault = true

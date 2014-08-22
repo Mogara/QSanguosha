@@ -165,7 +165,7 @@ function setInitialTables()
 
 	for _, p in sgs.qlist(global_room:getAlivePlayers()) do
 		local kingdom = p:getKingdom()
-		if not table.contains(sgs.KingdomsTable, kingdom) then
+		if not table.contains(sgs.KingdomsTable, kingdom) and kingdom ~= "default" then
 			table.insert(sgs.KingdomsTable, kingdom)
 		end
 		sgs.ai_loyalty[kingdom] = {}
@@ -360,20 +360,22 @@ function SmartAI:objectiveLevel(player)
 
 	local gameProcess = sgs.gameProcess()
 	if gameProcess == "===" then
+		if player:getMark("KnownBothEnemy" .. self.player:objectName()) > 0 then return 5 end
 		if not selfIsCareerist and sgs.shown_kingdom[self_kingdom] < upperlimit then
 			if sgs.isAnjiang(player) and player_kingdom == "unknown" then
 				if self:evaluateKingdom(player) == self_kingdom then return -1
 				elseif string.find(self:evaluateKingdom(player), self_kingdom) then return 0
-				elseif self:evaluateKingdom(player) == "unknown" then
+				else
 					if self:getOverflow() > 0 then
 						if sgs.turncount <= 2 then return 3
 						else return 5
 						end
-					else return self:getOverflow() > 0 and 3 or 0
+					else
+						return 0
+					end
 				end
-				else return self:getOverflow() > 0 and 5 or 0
-				end
-			else return 5
+			else
+				return 5
 			end
 		else return self:getOverflow() > 0 and 4 or 0
 		end
@@ -486,7 +488,9 @@ function SmartAI:evaluateKingdom(player, other)
 	end
 
 	local max_value, max_kingdom = 0, {}
+	local KnownBothEnemy = player:getMark("KnownBothEnemy" .. other:objectName()) > 0
 	for kingdom, v in pairs(sgs.ai_loyalty) do
+		if KnownBothEnemy and kingdom == other:getKingdom() then continue end
 		if sgs.ai_loyalty[kingdom][player:objectName()] > max_value then
 			max_value = sgs.ai_loyalty[kingdom][player:objectName()]
 		end
@@ -531,13 +535,26 @@ function sgs.updateIntention(from, to, intention)
 			sgs.ai_loyalty[to:getKingdom()][from:objectName()] = sgs.ai_loyalty[to:getKingdom()][from:objectName()] - intention
 		end
 		update = true
+	elseif to:getMark(string.format("KnownBoth_%s_%s", from:objectName(), to:objectName())) > 0 and sgs.isAnjiang(to) then
+		if sgs.isAnjiang(from) then
+			from:setMark("KnownBothEnemy" .. to:objectName(), 1)
+			to:setMark("KnownBothEnemy" .. from:objectName(), 1)
+		else
+			for _, kingdom in ipairs(kingdoms) do
+				if kingdom ~= from:getKingdom() then
+					sgs.ai_loyalty[kingdom][from:objectName()] = sgs.ai_loyalty[kingdom][from:objectName()] + intention
+				else
+					sgs.ai_loyalty[kingdom][from:objectName()] = sgs.ai_loyalty[kingdom][from:objectName()] - intention
+				end
+			end
+		end
 	end
 
 	for _, p in sgs.qlist(global_room:getAllPlayers()) do
 		sgs.ais[p:objectName()]:updatePlayers()
 	end
 
-	if update then sgs.outputKingdomValues(from, intention) end
+	sgs.outputKingdomValues(from, update and intention or 0)
 end
 
 function sgs.outputKingdomValues(player, level)
@@ -973,6 +990,7 @@ function SmartAI:adjustUsePriority(card, v)
 	local suits = {"club", "spade", "diamond", "heart"}
 
 	if card:getTypeId() == sgs.Card_TypeSkill then return v end
+	if card:getTypeId() == sgs.Card_TypeEquip then return v end
 
 	for _, askill in sgs.qlist(self.player:getVisibleSkillList(true)) do
 		local callback = sgs.ai_suit_priority[askill:objectName()]
@@ -1330,27 +1348,33 @@ end
 function SmartAI:isFriend(other, another)
 	if not other then self.room:writeToConsole(debug.traceback()) return end
 	if another then
+		if (sgs.isAnjiang(other) or sgs.isAnjiang(another)) and other:getMark("KnownBothEnemy" .. another:objectName()) > 0 then
+			return false
+		end
 		local of, af = self:isFriend(other), self:isFriend(another)
 		return of ~= nil and af ~= nil and of == af
 	end
 	if self.player:objectName() == other:objectName() then return true end
 	if self.player:isFriendWith(other) then return true end
-	local obj_level = self:objectiveLevel(other)
-	if obj_level < 0 then return true
-	elseif obj_level == 0 then return nil end
+	local level = self:objectiveLevel(other)
+	if level < 0 then return true
+	elseif level == 0 then return nil end
 	return false
 end
 
 function SmartAI:isEnemy(other, another)
 	if not other then self.room:writeToConsole(debug.traceback()) return end
 	if another then
+		if (sgs.isAnjiang(other) or sgs.isAnjiang(another)) and other:getMark("KnownBothEnemy" .. another:objectName()) > 0 then
+			return true
+		end
 		local of, af = self:isEnemy(other), self:isEnemy(another)
 		return of ~= nil and af ~= nil and of ~= af
 	end
 	if self.player:objectName() == other:objectName() then return false end
-	local obj_level = self:objectiveLevel(other)
-	if obj_level > 0 then return true
-	elseif obj_level == 0 then return nil end
+	local level = self:objectiveLevel(other)
+	if level > 0 then return true
+	elseif level == 0 then return nil end
 	return false
 end
 
@@ -3839,18 +3863,7 @@ function SmartAI:useSkillCard(card, use)
 		and not self.player:hasSkill(card:getSkillName()) and not self.player:hasLordSkill(card:getSkillName()) then return end
 	if sgs.ai_skill_use_func[name] then
 		sgs.ai_skill_use_func[name](card, use, self)
-		if use.to then
-			if not use.to:isEmpty() and sgs.dynamic_value.damage_card[name] then
-				for _, target in sgs.qlist(use.to) do
-					if self:damageIsEffective(target) then return end
-				end
-				use.card = nil
-			end
-		end
 		return
-	end
-	if self["useCard"..name] then
-		self["useCard"..name](self, card, use)
 	end
 end
 
@@ -4141,15 +4154,6 @@ function SmartAI:useTrickCard(card, use)
 		end
 	else
 		self:useCardByClassName(card, use)
-	end
-	if use.to then
-		if not use.to:isEmpty() and sgs.dynamic_value.damage_card[card:getClassName()] then
-			local nature = card:isKindOf("FireAttack") and sgs.DamageStruct_Fire or sgs.DamageStruct_Normal
-			for _, target in sgs.qlist(use.to) do
-				if self:damageIsEffective(target, nature) then return end
-			end
-			use.card = nil
-		end
 	end
 end
 
@@ -4787,6 +4791,7 @@ function SmartAI:willSkipPlayPhase(player, NotContains_Null)
 	local player = player or self.player
 
 	if player:isSkipped(sgs.Player_Play) then return true end
+	if player:hasFlag("willSkipPlayPhase") then return true end
 
 	local friend_null = 0
 	local friend_snatch_dismantlement = 0
@@ -4815,6 +4820,8 @@ end
 
 function SmartAI:willSkipDrawPhase(player, NotContains_Null)
 	local player = player or self.player
+	if player:isSkipped(sgs.Player_Draw) then return true end
+	
 	local friend_null = 0
 	local friend_snatch_dismantlement = 0
 	local cp = self.room:getCurrent()

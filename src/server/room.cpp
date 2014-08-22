@@ -111,6 +111,7 @@ void Room::initCallbacks() {
     callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
     callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
     callbacks[S_COMMAND_MIRROR_GUANXING_STEP] = &Room::mirrorGuanxingStepCommand;
+    callbacks[S_COMMAND_CHANGE_SKIN] = &Room::changeSkinCommand;
 
     // Cheat commands
     cheatCommands[".BroadcastRoles"] = &Room::broadcastRoles;
@@ -2441,6 +2442,22 @@ void Room::fillRobotsCommand(ServerPlayer *player, const QVariant &) {
 void Room::mirrorGuanxingStepCommand(ServerPlayer *player, const QVariant &arg)
 {
     doBroadcastNotify(S_COMMAND_MIRROR_GUANXING_STEP, arg, player);
+}
+
+void Room::changeSkinCommand(ServerPlayer *player, const QVariant &arg)
+{
+    JsonArray args = arg.value<JsonArray>();
+    if (args.size() != 2) return;
+    int skin_id = args.at(0).toInt();
+    bool is_head = args.at(1).toBool();
+
+    if (is_head) {
+        player->setHeadSkinId(skin_id);
+        broadcastProperty(player, "head_skin_id");
+    } else {
+        player->setDeputySkinId(skin_id);
+        broadcastProperty(player, "deputy_skin_id");
+    }
 }
 
 ServerPlayer *Room::getOwner() const{
