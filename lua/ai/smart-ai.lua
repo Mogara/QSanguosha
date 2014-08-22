@@ -366,13 +366,7 @@ function SmartAI:objectiveLevel(player)
 				if self:evaluateKingdom(player) == self_kingdom then return -1
 				elseif string.find(self:evaluateKingdom(player), self_kingdom) then return 0
 				else
-					if self:getOverflow() > 0 then
-						if sgs.turncount <= 2 then return 3
-						else return 5
-						end
-					else
-						return 0
-					end
+					return self:getOverflow() > 0 and 3.5 or 0
 				end
 			else
 				return 5
