@@ -531,8 +531,8 @@ end
 function SmartAI:getValuableCardForGuanxing(cards, up_cards)
 	local ignore_weapon, ignore_armor, ignore_DH, ignore_OH, ignore_jink
 	for _, c in ipairs(up_cards) do
-		if c:isKindOf("Weapon") then ignore_weapon = true
-		elseif c:isKindOf("Armor") then ignore_armor = true
+		if c:isKindOf("Weapon") or self:getCardsNum("Weapon", "he") > 0 then ignore_weapon = true
+		elseif c:isKindOf("Armor") or self:getCardsNum("Armor", "he") > 0 then ignore_armor = true
 		elseif c:isKindOf("DefensiveHorse") or self:getCardsNum("DefensiveHorse", "he") > 0 then ignore_DH = true
 		elseif c:isKindOf("OffensiveHorse") or self:getCardsNum("OffensiveHorse", "he") > 0 then ignore_OH = true
 		elseif c:isKindOf("Jink") then ignore_jink = true end
@@ -598,7 +598,7 @@ function SmartAI:getValuableCardForGuanxing(cards, up_cards)
 	local weapon, crossbow, halberd, double, qinggang, axe, gudingdao
 
 	for _, card in ipairs(cards) do
-		if card:isKindOf("Weapon") and ignore_weapon then continue
+		if card:isKindOf("Weapon") and ignore_weapon and not card:isKindOf("Crossbow") then continue
 		elseif card:isKindOf("Armor") and ignore_armor then continue
 		elseif card:isKindOf("DefensiveHorse") and ignore_DH then continue
 		elseif card:isKindOf("OffensiveHorse") and ignore_OH then continue
