@@ -289,15 +289,22 @@ QWidget *ServerDialog::createMiscTab() {
     forbid_adding_robot_checkbox = new QCheckBox(tr("Forbid adding robot"));
     forbid_adding_robot_checkbox->setChecked(Config.ForbidAddingRobot);
 
+    ai_chat_checkbox = new QCheckBox(tr("AI chat"));
+    ai_chat_checkbox->setChecked(Config.value("AIChat", true).toBool());
+    ai_chat_checkbox->setDisabled(Config.ForbidAddingRobot);
+    connect(forbid_adding_robot_checkbox, SIGNAL(toggled(bool)), ai_chat_checkbox, SLOT(setDisabled(bool)));
+
     ai_delay_spinbox = new QSpinBox;
     ai_delay_spinbox->setMinimum(0);
     ai_delay_spinbox->setMaximum(5000);
     ai_delay_spinbox->setValue(Config.OriginAIDelay);
     ai_delay_spinbox->setSuffix(tr(" millisecond"));
+    ai_delay_spinbox->setDisabled(Config.ForbidAddingRobot);
     connect(forbid_adding_robot_checkbox, SIGNAL(toggled(bool)), ai_delay_spinbox, SLOT(setDisabled(bool)));
 
     ai_delay_altered_checkbox = new QCheckBox(tr("Alter AI Delay After Death"));
     ai_delay_altered_checkbox->setChecked(Config.AlterAIDelayAD);
+    ai_delay_altered_checkbox->setDisabled(Config.ForbidAddingRobot);
     connect(forbid_adding_robot_checkbox, SIGNAL(toggled(bool)), ai_delay_altered_checkbox, SLOT(setDisabled(bool)));
 
     ai_delay_ad_spinbox = new QSpinBox;
@@ -306,10 +313,11 @@ QWidget *ServerDialog::createMiscTab() {
     ai_delay_ad_spinbox->setValue(Config.AIDelayAD);
     ai_delay_ad_spinbox->setSuffix(tr(" millisecond"));
     ai_delay_ad_spinbox->setEnabled(ai_delay_altered_checkbox->isChecked());
+    ai_delay_ad_spinbox->setDisabled(Config.ForbidAddingRobot);
     connect(ai_delay_altered_checkbox, SIGNAL(toggled(bool)), ai_delay_ad_spinbox, SLOT(setEnabled(bool)));
     connect(forbid_adding_robot_checkbox, SIGNAL(toggled(bool)), ai_delay_ad_spinbox, SLOT(setDisabled(bool)));
 
-    layout->addWidget(forbid_adding_robot_checkbox);
+    layout->addLayout(HLay(forbid_adding_robot_checkbox, ai_chat_checkbox));
     layout->addLayout(HLay(new QLabel(tr("AI delay")), ai_delay_spinbox));
     layout->addWidget(ai_delay_altered_checkbox);
     layout->addLayout(HLay(new QLabel(tr("AI delay After Death")), ai_delay_ad_spinbox));
@@ -516,6 +524,7 @@ bool ServerDialog::config() {
     Config.setValue("ServerPort", Config.ServerPort);
     Config.setValue("Address", Config.Address);
     Config.setValue("DisableLua", disable_lua_checkbox->isChecked());
+    Config.setValue("AIChat", ai_chat_checkbox->isChecked());
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
