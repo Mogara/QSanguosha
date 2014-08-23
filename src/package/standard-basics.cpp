@@ -204,7 +204,7 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
             if (!player->hasShownSkill("paoxiao"))
                 player->showGeneral(player->inHeadSkills("paoxiao"));
             player->setFlags("-Global_MoreSlashInOneTurn");
-            room->broadcastSkillInvoke("paoxiao");
+            room->broadcastSkillInvoke("paoxiao", player);
             room->notifySkillInvoked(player, "paoxiao");
         }
     }
@@ -213,12 +213,12 @@ void Slash::onUse(Room *room, const CardUseStruct &card_use) const{
         && player->hasFlag("TianyiSuccess") && player->getPhase() == Player::Play) {
         if (player->hasFlag("Global_MoreSlashInOneTurn")) // Tianyi just let player could use one more Slash
             room->setPlayerFlag(player, "-Global_MoreSlashInOneTurn");
-        room->broadcastSkillInvoke("tianyi", 1);
+        room->broadcastSkillInvoke("tianyi", 1, player);
     } else if (use.to.size() > 1 + Sanguosha->correctCardTarget(TargetModSkill::ExtraTarget, player, this)
                && player->hasSkill("duanbing")) {
         if (!player->hasShownSkill("duanbing"))
             player->showGeneral(player->inHeadSkills("duanbing"));
-        room->broadcastSkillInvoke("duanbing");
+        room->broadcastSkillInvoke("duanbing", player);
         room->notifySkillInvoked(player, "duanbing");
     }
 

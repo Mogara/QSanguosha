@@ -395,7 +395,8 @@ TRANSLATIONS += builds/sanguosha.ts
 OTHER_FILES += \
     sanguosha.qss \
     ui-script/animation.qml \
-    resource/android/AndroidManifest.xml
+    resource/android/AndroidManifest.xml \
+    builds/sanguosha.ts
 
 LIBS += -lfreetype
 

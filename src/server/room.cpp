@@ -4350,21 +4350,25 @@ void Room::broadcastSkillInvoke(const QString &skill_name, const QString &catego
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
-void Room::broadcastSkillInvoke(const QString &skill_name) {
+void Room::broadcastSkillInvoke(const QString &skill_name, const ServerPlayer *who) {
     JsonArray args;
     args << QSanProtocol::S_GAME_EVENT_PLAY_EFFECT;
     args << skill_name;
     args << true;
     args << -1;
+    if (who != NULL)
+        args << who->objectName();
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
-void Room::broadcastSkillInvoke(const QString &skill_name, int type) {
+void Room::broadcastSkillInvoke(const QString &skill_name, int type, const ServerPlayer *who) {
     JsonArray args;
     args << QSanProtocol::S_GAME_EVENT_PLAY_EFFECT;
     args << skill_name;
     args << true;
     args << type;
+    if (who != NULL)
+        args << who->objectName();
     doBroadcastNotify(QSanProtocol::S_COMMAND_LOG_EVENT, args);
 }
 
@@ -4528,9 +4532,9 @@ void Room::filterCards(ServerPlayer *player, QList<const Card *> cards, bool ref
         int cardId = cards[i]->getId();
         Player::Place place = getCardPlace(cardId);
         if (!cardChanged[i]) continue;
-        if (place == Player::PlaceHand)
+        if (place == Player::PlaceHand) {
             notifyUpdateCard(player, cardId, cards[i]);
-        else {
+        } else {
             broadcastUpdateCard(getPlayers(), cardId, cards[i]);
             if (place == Player::PlaceJudge) {
                 LogMessage log;
@@ -5905,7 +5909,7 @@ bool Room::askForYiji(ServerPlayer *guojia, QList<int> &cards, const QString &sk
 
         const Skill *skill = Sanguosha->getSkill(skill_name);
         if (skill)
-            broadcastSkillInvoke(skill_name, skill->getEffectIndex(target, &dummy_card));
+            broadcastSkillInvoke(skill_name, skill->getEffectIndex(target, &dummy_card), guojia);
         notifySkillInvoked(guojia, skill_name);
     }
 

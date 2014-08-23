@@ -118,6 +118,8 @@ public:
     void setTransferable(const bool transferable);
     TransferButton *getTransferButton() const;
 
+    void setSkinId(const int id);
+
 protected:
     void _initialize();
     QAbstractAnimation *m_currentAnimation;
@@ -128,6 +130,7 @@ protected:
     double m_opacityAtHome;
     bool m_isSelected;
     bool _m_isUnknownGeneral;
+    int _skinId;
     bool auto_back, frozen;
     QPointF _m_lastMousePressScenePos;
 

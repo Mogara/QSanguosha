@@ -115,7 +115,7 @@ int Skill::getEffectIndex(const ServerPlayer *, const Card *) const{
 
 void Skill::initMediaSource() {
     sources.clear();
-    for (int i = 1;; i++) {
+    for (int i = 1;; ++ i) {
         QString effect_file = QString("audio/skill/%1%2.ogg").arg(objectName()).arg(QString::number(i));
         if (QFile::exists(effect_file))
             sources << effect_file;
@@ -161,7 +161,40 @@ QString Skill::getLimitMark() const{
     return limit_mark;
 }
 
-QStringList Skill::getSources() const{
+QStringList Skill::getSources(const QString &general, const int skinId) const
+{
+    if (skinId == 0)
+        return sources;
+
+    const QString key = QString("%1_%2")
+            .arg(QString::number(skinId))
+            .arg(general);
+
+    if (skinSourceHash.contains(key))
+        return skinSourceHash[key];
+
+    for (int i = 1;; ++ i) {
+        QString effectFile = QString("hero-skin/%1/%2/%3%4.ogg")
+                .arg(general).arg(QString::number(skinId))
+                .arg(objectName()).arg(QString::number(i));
+        if (QFile::exists(effectFile))
+            skinSourceHash[key] << effectFile;
+        else
+            break;
+    }
+
+    if (skinSourceHash[key].isEmpty()) {
+        QString effectFile = QString("hero-skin/%1/%2/%3.ogg")
+                .arg(general).arg(QString::number(skinId)).arg(objectName());
+        if (QFile::exists(effectFile))
+            skinSourceHash[key] << effectFile;
+    }
+
+    return skinSourceHash[key];
+}
+
+QStringList Skill::getSources() const
+{
     return sources;
 }
 

@@ -24,6 +24,7 @@
 #include "package.h"
 #include "client.h"
 #include "settings.h"
+#include "SkinBank.h"
 
 #include <QSize>
 #include <QFile>
@@ -265,4 +266,17 @@ void General::setHeadMaxHpAdjustedValue(int adjusted_value /* = -1 */) {
 
 void General::setDeputyMaxHpAdjustedValue(int adjusted_value /* = -1 */) {
     deputy_max_hp_adjusted_value = adjusted_value;
+}
+
+int General::skinCount() const
+{
+    static int i = -1;
+    if (i != -1)
+        return i;
+
+    forever {
+        const QPixmap card = G_ROOM_SKIN.getGeneralCardPixmap(objectName(), (++ i) + 1);
+        if (card.height() <= 1 || card.width() <= 1)
+            return i;
+    }
 }

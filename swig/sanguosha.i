@@ -1373,9 +1373,10 @@ public:
 
     bool broadcastProperty(ServerPlayer *player, const char *property_name, const char *value = NULL);
     void notifySkillInvoked(ServerPlayer *player, const char *skill_name);
-    void broadcastSkillInvoke(const char *skillName);
+    void broadcastSkillInvoke(const char *skillName, const ServerPlayer *player = NULL);
     void broadcastSkillInvoke(const char *skillName, const char *category);
-    void broadcastSkillInvoke(const char *skillName, int type);
+    void broadcastSkillInvoke(const char *skillName, int type,
+                              const ServerPlayer *player = NULL);
     void broadcastSkillInvoke(const char *skillName, bool isMale, int type);
     void doLightbox(const char *lightboxName, int duration = 2000);
     void doSuperLightbox(const char *heroName, const char *skillName);

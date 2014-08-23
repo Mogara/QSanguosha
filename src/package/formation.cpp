@@ -52,7 +52,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *dengai) const{
         if (dengai->askForSkillInvoke("tuntian", data)){
-            room->broadcastSkillInvoke("tuntian");
+            room->broadcastSkillInvoke("tuntian", dengai);
             return true;
         }
 
@@ -563,7 +563,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         if (player->askForSkillInvoke(objectName())){
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), player);
             return true;
         }
 
@@ -598,7 +598,7 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
         if (player->askForSkillInvoke(objectName(), data)){
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), data.value<CardsMoveOneTimeStruct>().from->objectName());
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), player);
             return true;
         }
 
@@ -646,7 +646,7 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
     }
 
     if (choice == "handcards") {
-        room->broadcastSkillInvoke("shangyi", 1);
+        room->broadcastSkillInvoke("shangyi", 1, effect.from);
         QList<int> blacks;
         foreach(int card_id, effect.to->handCards()){
             if (Sanguosha->getCard(card_id)->isBlack())
@@ -658,7 +658,7 @@ void ShangyiCard::onEffect(const CardEffectStruct &effect) const{
         effect.from->tag.remove("shangyi");
         room->throwCard(to_discard, effect.to, effect.from);
     } else {
-        room->broadcastSkillInvoke("shangyi", 2);
+        room->broadcastSkillInvoke("shangyi", 2, effect.from);
         QStringList list;
         if (!effect.to->hasShownGeneral1())
             list << effect.to->getActualGeneral1Name();
@@ -717,7 +717,7 @@ public:
                 ServerPlayer *victim = use.to.at(i);
                 if (use.from->inSiegeRelation(player, victim)) {
                     room->notifySkillInvoked(player, objectName());
-                    room->broadcastSkillInvoke(objectName());
+                    room->broadcastSkillInvoke(objectName(), player);
                     QVariantList jink_list = use.from->tag["Jink_" + use.card->toString()].toList();
                     if (jink_list.at(i).toInt() == 1)
                         jink_list.replace(i, QVariant(2));
@@ -752,7 +752,7 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *ask_who) const{
         if (ask_who->askForSkillInvoke(objectName(), QVariant::fromValue(player))){
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, ask_who->objectName(), player->objectName());
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), ask_who);
             return true;
         }
         return false;
@@ -832,7 +832,7 @@ public:
         if (triggerEvent == Damaged){
             if (yuji->askForSkillInvoke(objectName(), "gethuan")){
                 invoke = true;
-                room->broadcastSkillInvoke(objectName());
+                room->broadcastSkillInvoke(objectName(), yuji);
             }
         } else {
             QString prompt;
@@ -927,7 +927,7 @@ public:
         if (hetaihou && room->askForDiscard(hetaihou, objectName(), 1, 1, true, false, "@zhendu-discard")){
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, hetaihou->objectName(), player->objectName());
             room->notifySkillInvoked(player, objectName());
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), hetaihou);
             return true;
         }
 
@@ -999,7 +999,7 @@ public:
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
         ServerPlayer *hetaihou = ask_who;
         if (hetaihou && hetaihou->askForSkillInvoke(objectName())){
-            room->broadcastSkillInvoke(objectName());
+            room->broadcastSkillInvoke(objectName(), hetaihou);
             return true;
         }
 
@@ -1063,7 +1063,7 @@ public:
                     room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), move.to->objectName());
             }
 
-            room->broadcastSkillInvoke(objectName(), (triggerEvent == BeforeCardsMove) ? 1 : 2);
+            room->broadcastSkillInvoke(objectName(), (triggerEvent == BeforeCardsMove) ? 1 : 2, player);
             return true;
         }
 

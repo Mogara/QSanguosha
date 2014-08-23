@@ -165,7 +165,7 @@ function setInitialTables()
 
 	for _, p in sgs.qlist(global_room:getAlivePlayers()) do
 		local kingdom = p:getKingdom()
-		if not table.contains(sgs.KingdomsTable, kingdom) then
+		if not table.contains(sgs.KingdomsTable, kingdom) and kingdom ~= "default" then
 			table.insert(sgs.KingdomsTable, kingdom)
 		end
 		sgs.ai_loyalty[kingdom] = {}
@@ -366,13 +366,7 @@ function SmartAI:objectiveLevel(player)
 				if self:evaluateKingdom(player) == self_kingdom then return -1
 				elseif string.find(self:evaluateKingdom(player), self_kingdom) then return 0
 				else
-					if self:getOverflow() > 0 then
-						if sgs.turncount <= 2 then return 3
-						else return 5
-						end
-					else
-						return 0
-					end
+					return self:getOverflow() > 0 and 3.5 or 0
 				end
 			else
 				return 5
@@ -990,6 +984,7 @@ function SmartAI:adjustUsePriority(card, v)
 	local suits = {"club", "spade", "diamond", "heart"}
 
 	if card:getTypeId() == sgs.Card_TypeSkill then return v end
+	if card:getTypeId() == sgs.Card_TypeEquip then return v end
 
 	for _, askill in sgs.qlist(self.player:getVisibleSkillList(true)) do
 		local callback = sgs.ai_suit_priority[askill:objectName()]
@@ -3862,18 +3857,7 @@ function SmartAI:useSkillCard(card, use)
 		and not self.player:hasSkill(card:getSkillName()) and not self.player:hasLordSkill(card:getSkillName()) then return end
 	if sgs.ai_skill_use_func[name] then
 		sgs.ai_skill_use_func[name](card, use, self)
-		if use.to then
-			if not use.to:isEmpty() and sgs.dynamic_value.damage_card[name] then
-				for _, target in sgs.qlist(use.to) do
-					if self:damageIsEffective(target) then return end
-				end
-				use.card = nil
-			end
-		end
 		return
-	end
-	if self["useCard"..name] then
-		self["useCard"..name](self, card, use)
 	end
 end
 
@@ -4164,15 +4148,6 @@ function SmartAI:useTrickCard(card, use)
 		end
 	else
 		self:useCardByClassName(card, use)
-	end
-	if use.to then
-		if not use.to:isEmpty() and sgs.dynamic_value.damage_card[card:getClassName()] then
-			local nature = card:isKindOf("FireAttack") and sgs.DamageStruct_Fire or sgs.DamageStruct_Normal
-			for _, target in sgs.qlist(use.to) do
-				if self:damageIsEffective(target, nature) then return end
-			end
-			use.card = nil
-		end
 	end
 end
 
@@ -4810,6 +4785,7 @@ function SmartAI:willSkipPlayPhase(player, NotContains_Null)
 	local player = player or self.player
 
 	if player:isSkipped(sgs.Player_Play) then return true end
+	if player:hasFlag("willSkipPlayPhase") then return true end
 
 	local friend_null = 0
 	local friend_snatch_dismantlement = 0
@@ -4838,6 +4814,8 @@ end
 
 function SmartAI:willSkipDrawPhase(player, NotContains_Null)
 	local player = player or self.player
+	if player:isSkipped(sgs.Player_Draw) then return true end
+	
 	local friend_null = 0
 	local friend_snatch_dismantlement = 0
 	local cp = self.room:getCurrent()

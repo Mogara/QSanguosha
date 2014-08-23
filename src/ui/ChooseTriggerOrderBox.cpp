@@ -34,6 +34,21 @@ static qreal initialOpacity = 0.8;
 static int optionButtonHeight = 40;
 static QSize generalButtonSize;
 
+static int getSkinId(const ClientPlayer *player, const QString &generalName) {
+    if (player->getGeneralName() == generalName)
+        return player->getHeadSkinId();
+    else
+        return player->getDeputySkinId();
+
+    return 0;
+}
+
+static int getSkinId(const QString &playerName, const QString &generalName)
+{
+    const ClientPlayer *player = ClientInstance->getPlayer(playerName);
+    return getSkinId(player, generalName);
+}
+
 TriggerOptionButton::TriggerOptionButton(QGraphicsObject *parent, const QString &player, const QString &skill, const int width)
     : QGraphicsObject(parent), skillName(skill), playerName(player), width(width)
 {
@@ -85,7 +100,7 @@ void TriggerOptionButton::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
     const QString generalName = getGeneralNameBySkill();
 
-    QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY);
+    QPixmap pixmap = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_TINY, getSkinId(playerName, generalName));
     pixmap = pixmap.scaledToHeight(optionButtonHeight, Qt::SmoothTransformation);
     QRect pixmapRect(QPoint(0, (rect.height() - pixmap.height()) / 2), pixmap.size());
     painter->setBrush(pixmap);
@@ -144,7 +159,7 @@ GeneralButton::GeneralButton(QGraphicsObject *parent, const QString &general, co
 void GeneralButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     painter->setRenderHint(QPainter::HighQualityAntialiasing);
-    QPixmap generalImage = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE);
+    QPixmap generalImage = G_ROOM_SKIN.getGeneralPixmap(generalName, QSanRoomSkin::S_GENERAL_ICON_SIZE_LARGE, getSkinId(Self, generalName));
     generalImage = generalImage.scaled(generalButtonSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     painter->setBrush(generalImage);
     painter->drawRoundedRect(boundingRect(), 5, 5, Qt::RelativeSize);

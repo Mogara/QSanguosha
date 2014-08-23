@@ -31,9 +31,10 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsProxyWidget>
 
-GeneralCardItem::GeneralCardItem(const QString &generalName)
+GeneralCardItem::GeneralCardItem(const QString &generalName, const int skinId)
     : CardItem(generalName), hasCompanion(false)
 {
+    _skinId = skinId;
     setAcceptHoverEvents(true);
 
     const General *general = Sanguosha->getGeneral(generalName);
@@ -62,7 +63,7 @@ void GeneralCardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     }
 
     if (!_m_isUnknownGeneral)
-        painter->drawPixmap(rect, G_ROOM_SKIN.getCardMainPixmap(objectName()));
+        painter->drawPixmap(rect, G_ROOM_SKIN.getGeneralCardPixmap(objectName(), _skinId));
     else
         painter->drawPixmap(rect, G_ROOM_SKIN.getPixmap("generalCardBack"));
 
@@ -238,7 +239,7 @@ static bool sortByKingdom(const QString &gen1, const QString &gen2){
     return kingdom_priority_map[g1->getKingdom()] < kingdom_priority_map[g2->getKingdom()];
 }
 
-void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_only, bool single_result, const QString &reason) {
+void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_only, bool single_result, const QString &reason, const Player *player) {
     //repaint background
     QStringList generals = _generals;
     this->single_result = single_result;
@@ -264,7 +265,15 @@ void ChooseGeneralBox::chooseGeneral(const QStringList &_generals, bool view_onl
     qStableSort(generals.begin(), generals.end(), sortByKingdom);
 
     foreach(QString general, generals) {
-        GeneralCardItem *general_item = new GeneralCardItem(general);
+        int skinId = 0;
+        if (player) {
+            if (player->getGeneralName() == general)
+                skinId = player->getHeadSkinId();
+            else
+                skinId = player->getDeputySkinId();
+        }
+
+        GeneralCardItem *general_item = new GeneralCardItem(general, skinId);
         general_item->setFlag(QGraphicsItem::ItemIsFocusable);
         general_item->setZValue(z--);
 

@@ -214,7 +214,9 @@ void Photo::updateSmallAvatar() {
     const General *general = NULL;
     if (m_player) general = m_player->getGeneral2();
     if (general != NULL) {
-        QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(general->objectName(), QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize));
+        QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(general->objectName(),
+                                                               QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize),
+                                                               m_player->getDeputySkinId());
         smallAvatarIcon = paintByMask(smallAvatarIcon);
         _paintPixmap(_m_smallAvatarIcon, _m_layout->m_secondaryAvatarArea,
             smallAvatarIcon, _getAvatarParent());

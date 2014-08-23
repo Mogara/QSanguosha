@@ -59,10 +59,7 @@ Room *ServerPlayer::getRoom() const{
 }
 
 void ServerPlayer::broadcastSkillInvoke(const QString &card_name) const{
-    QString name = card_name;
-    if (name.startsWith("heg_"))
-        name.remove("heg_");
-    room->broadcastSkillInvoke(name, isMale(), -1);
+    room->broadcastSkillInvoke(card_name, isMale(), -1);
 }
 
 void ServerPlayer::broadcastSkillInvoke(const Card *card) const{
@@ -77,8 +74,7 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const{
         else
             room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
         return;
-    }
-    else {
+    } else {
         int index = skill->getEffectIndex(this, card);
         if (index == 0) return;
 
@@ -87,9 +83,9 @@ void ServerPlayer::broadcastSkillInvoke(const Card *card) const{
                 broadcastSkillInvoke(card->objectName());
             else
                 room->broadcastSkillInvoke(card->getCommonEffectName(), "common");
+        } else {
+            room->broadcastSkillInvoke(skill_name, index, this);
         }
-        else
-            room->broadcastSkillInvoke(skill_name, index);
     }
 }
 

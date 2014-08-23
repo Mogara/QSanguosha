@@ -93,13 +93,16 @@ private:
     GeneralSearch *general_search;
 
     QString origin_window_title;
-    QList<const General *> all_generals;
+    QMap<const General *, int> all_generals;
 
     void resetButtons();
-    void addLines(const Skill *skill);
+    void addLines(const General *general, const Skill *skill);
+    void addDeathLine(const General *general);
+    void addWinLineOfCaoCao();
     void addCopyAction(QCommandLinkButton *button);
-    bool hasSkin(const QString &general_name);
-    QString getIllustratorInfo(const QString &general_name);
+    bool hasSkin(const General *general) const;
+    QString getCvInfo(const QString &generalName);
+    QString getIllustratorInfo(const QString &generalName);
 
 public slots:
     void startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
@@ -108,7 +111,7 @@ public slots:
 private slots:
     void playAudioEffect();
     void copyLines();
-    void askChangeSkin();
+    void showNextSkin();
     void fillAllGenerals();
     void on_tableWidget_itemSelectionChanged();
 };
