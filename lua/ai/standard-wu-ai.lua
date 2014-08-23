@@ -1914,7 +1914,7 @@ sgs.ai_skill_use_func.FenxunCard = function(card, use, self)
 			for _, c in ipairs(cards) do
 				if not isCard("Peach", c, self.player)
 					and (c:isKindOf("AmazingGrace") or c:isKindOf("GodSalvation") and not self:willUseGodSalvation(c)) then
-					card_id = c
+					card_id = c:getEffectiveId()
 					break
 				end
 			end
@@ -1931,7 +1931,7 @@ sgs.ai_skill_use_func.FenxunCard = function(card, use, self)
 					and (not isCard("Jink", c, self.player) or self:getCardsNum("Jink") > 1 or isWeak)
 					and not (self.player:getWeapon() and self.player:getWeapon():getEffectiveId() == c:getEffectiveId())
 					and not (self.player:getOffensiveHorse() and self.player:getOffensiveHorse():getEffectiveId() == c:getEffectiveId()) then
-					card_id = c
+					card_id = c:getEffectiveId()
 				end
 			end
 		end

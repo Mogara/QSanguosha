@@ -706,22 +706,6 @@ function sgs.getDefense(player)
 	return defense
 end
 
-function sgs.getCardNumAtCertainPlace(card, player, place)
-	if not card:isVirtualCard() and place == sgs.Player_PlaceHand then return 1
-	elseif card:subcardsLength() == 0 then return 0
-	else
-		local num = 0
-		for _, id in sgs.qlist(card:getSubcards()) do
-			if place == sgs.Player_PlaceHand then
-				if player:handCards():contains(id) then num = num + 1 end
-			elseif place == sgs.Player_PlaceEquip then
-				if player:hasEquip(sgs.Sanguosha:getCard(id)) then num = num + 1 end
-			end
-		end
-		return num
-	end
-end
-
 function sgs.getValue(player)
 	if not player then global_room:writeToConsole(debug.traceback()) end
 	return player:getHp() * 2 + player:getHandcardNum()
@@ -1616,7 +1600,7 @@ function SmartAI:filterEvent(event, player, data)
 
 	sgs.lastevent = event
 	sgs.lasteventdata = data
-	if event == sgs.ChoiceMade and self == sgs.recorder then
+	if event == sgs.ChoiceMade and (self == sgs.recorder or self.player:objectName() == sgs.recorder.player:objectName()) then
 		local carduse = data:toCardUse()
 		if carduse and carduse.card ~= nil then
 			for _, callback in ipairs(sgs.ai_choicemade_filter.cardUsed) do
@@ -1686,6 +1670,8 @@ function SmartAI:filterEvent(event, player, data)
 					sgs.updateIntentions(from, tos, callback, card)
 				end
 			end
+			-- AI Chat
+			speakTrigger(card, from, tos)
 			if card:getClassName() == "LuaSkillCard" and card:isKindOf("LuaSkillCard") then
 				local luacallback = sgs.ai_card_intention[card:objectName()]
 				if luacallback then
