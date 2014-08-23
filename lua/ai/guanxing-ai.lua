@@ -768,8 +768,11 @@ function SmartAI:getValuableCardForGuanxing(cards, up_cards)
 
 	end
 
-	local to_choose = {}
-	local classNames = { "Snatch", "Dismantlement", "Indulgence", "SupplyShortage", "Collateral", "Duel", "Drowning", "AOE", "FireAttack", "GodSalvation", "Lightning" }
+	local classNames = { "Snatch", "Dismantlement", "Indulgence", "SupplyShortage", "Collateral", "Duel", "Drowning", "Drowning", "ArcheryAttack", "SavageAssault", "FireAttack",
+							"GodSalvation", "Lightning" }
+	local className2objectName = { Snatch = "snatch", Dismantlement = "dismantlement", Indulgence = "indulgence", SupplyShortage = "supply_shortage", Collateral = "collateral",
+									Duel = "duel", Drowning = "drowning", ArcheryAttack = "archery_attack", SavageAssault = "savage_assault", FireAttack = "fire_attack",
+									GodSalvation = "god_salvation", Lightning = "lightning" }
 	local new_enemies = {}
 	if #self.enemies > 0 then new_enemies = self.enemies
 	else
@@ -780,26 +783,14 @@ function SmartAI:getValuableCardForGuanxing(cards, up_cards)
 		end
 	end
 
-	for _, card in ipairs(cards) do
-		if card:getTypeId() == sgs.Card_TypeTrick then
-			local dummy_use = { isDummy = true }
-			for _, className in ipairs(classNames) do
-				if isCard(className, card, self.player) then
-					local card_x = className ~= card:getClassName() and sgs.cloneCard(className, card:getSuit(), card:getNumber()) or card
-					self.enemies = new_enemies
-					self:useTrickCard(card_x, dummy_use)
-					if dummy_use.card then
-						table.insert(to_choose, card)
-						break
-					end
-				end
-			end
-		end
-	end
-	if #to_choose > 0 then
-		for _, className in ipairs(classNames) do
-			for _, card in ipairs(to_choose) do
-				if isCard(className, card, self.player) then return card end
+	for _, className in ipairs(classNames) do
+		for _, card in ipairs(cards) do
+			if isCard(className, card, self.player) then
+				local card_x = className ~= card:getClassName() and sgs.cloneCard(className2objectName[className], card:getSuit(), card:getNumber()) or card
+				self.enemies = new_enemies
+				local dummy_use = { isDummy = true }
+				self:useTrickCard(card_x, dummy_use)
+				if dummy_use.card then self:updatePlayers(false) return card end
 			end
 		end
 	end

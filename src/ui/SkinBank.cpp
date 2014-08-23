@@ -333,9 +333,9 @@ QPixmap QSanRoomSkin::getProgressBarPixmap(int percentile) const{
     return QPixmap();
 }
 
-bool QSanRoomSkin::doesGeneralHaveSkin(const QString &general) const
+bool QSanRoomSkin::doesGeneralHaveSkin(const QString &general, const int skinId) const
 {
-    const QString id = "1";
+    const QString id = QString::number(skinId);
     const QString key = S_SKIN_KEY_GENERAL_CARD;
     QString totalKey = key.arg(id).arg(general);
     if (isImageKeyDefined(totalKey))
