@@ -208,9 +208,10 @@ QList<const TriggerSkill *> Engine::getGlobalTriggerSkills() const{
 }
 
 void Engine::addPackage(Package *package) {
-    if (findChild<const Package *>(package->objectName()))
+    if (packages.contains(package))
         return;
 
+    packages << package;
     package->setParent(this);
     sp_convert_pairs.unite(package->getConvertPairs());
     patterns.unite(package->getPatterns());
@@ -280,6 +281,10 @@ void Engine::addPackage(Package *package) {
 
 void Engine::addBanPackage(const QString &package_name) {
     ban_package.insert(package_name);
+}
+
+QList<const Package *> Engine::getPackages() const{
+    return packages;
 }
 
 QStringList Engine::getBanPackages() const{
@@ -580,7 +585,6 @@ QString Engine::getMODName() const{
 
 QStringList Engine::getExtensions() const{
     QStringList extensions;
-    QList<const Package *> packages = findChildren<const Package *>();
     foreach(const Package *package, packages) {
         if (package->inherits("Scenario"))
             continue;

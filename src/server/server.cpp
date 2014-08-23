@@ -110,7 +110,6 @@ QWidget *ServerDialog::createPackageTab() {
     extension_group = new QButtonGroup(this);
     extension_group->setExclusive(false);
 
-    QStringList extensions = Sanguosha->getExtensions();
     QSet<QString> ban_packages = Config.BanPackages.toSet();
 
     QGroupBox *box1 = new QGroupBox(tr("General package"));
@@ -123,11 +122,9 @@ QWidget *ServerDialog::createPackageTab() {
 
     int i = 0, j = 0;
     int row = 0, column = 0;
-    foreach(QString extension, extensions) {
-        const Package *package = Sanguosha->findChild<const Package *>(extension);
-        if (package == NULL)
-            continue;
-
+    const QList<const Package *> &packages = Sanguosha->getPackages();
+    foreach(const Package *package, packages) {
+        const QString &extension = package->objectName();
         bool forbid_package = Config.value("ForbidPackages").toStringList().contains(extension);
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setObjectName(extension);
