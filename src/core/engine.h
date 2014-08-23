@@ -63,6 +63,8 @@ public:
 
     void addPackage(Package *package);
     void addBanPackage(const QString &package_name);
+    QList<const Package *> getPackages() const;
+
     QStringList getBanPackages() const;
     Card *cloneCard(const Card *card) const;
     Card *cloneCard(const QString &name, Card::Suit suit = Card::SuitToBeDecided, int number = -1, const QStringList &flags = QStringList()) const;
@@ -179,6 +181,7 @@ public:
     //************************************
     QStringList getLimitedGeneralNames() const;
     QStringList getGeneralNames() const;
+    QList<const General *> getGenerals() const;
 
     void playSystemAudioEffect(const QString &name) const;
     void playAudioEffect(const QString &filename) const;
@@ -226,6 +229,7 @@ private:
     QList<const AttackRangeSkill *> attackrange_skills;
     QList<const TriggerSkill *> global_trigger_skills;
 
+    QList<const Package *> packages;
     QList<Card *> cards;
     QStringList lord_list;
     QSet<QString> ban_package;
