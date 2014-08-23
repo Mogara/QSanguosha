@@ -124,6 +124,9 @@ QWidget *ServerDialog::createPackageTab() {
     int row = 0, column = 0;
     const QList<const Package *> &packages = Sanguosha->getPackages();
     foreach(const Package *package, packages) {
+        if (package->inherits("Scenario"))
+            continue;
+
         const QString &extension = package->objectName();
         bool forbid_package = Config.value("ForbidPackages").toStringList().contains(extension);
         QCheckBox *checkbox = new QCheckBox;
