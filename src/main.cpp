@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 
 #ifdef USE_BREAKPAD
     if (!noGui || !noSplash) {
-        splash.showMessage(QObject::tr("Loading BreakPad..."), alignment, Qt::cyan);
+        splash.showMessage(QSplashScreen::tr("Loading BreakPad..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
 
@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
 #ifdef Q_OS_MAC
 #ifdef QT_NO_DEBUG
     if (!noGui || !noSplash) {
-        splash.showMessage(QObject::tr("Setting game path..."), alignment, Qt::cyan);
+        splash.showMessage(QSplashScreen::tr("Setting game path..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
     QDir::setCurrent(qApp->applicationDirPath());
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
 
 #ifdef Q_OS_LINUX
     if (!noGui || !noSplash) {
-        splash.showMessage(QObject::tr("Checking game path..."), alignment, Qt::cyan);
+        splash.showMessage(QSplashScreen::tr("Checking game path..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
 
@@ -119,10 +119,9 @@ int main(int argc, char *argv[]) {
     QDir dir(QString("lua"));
     if (dir.exists() && (dir.exists(QString("config.lua")))) {
         // things look good and use current dir
-    }
-    else {
+    } else {
         if (!noGui || !noSplash) {
-            splash.showMessage(QObject::tr("Setting game path..."), alignment, Qt::cyan);
+            splash.showMessage(QSplashScreen::tr("Setting game path..."), alignment, Qt::cyan);
             qApp->processEvents();
         }
         QDir::setCurrent(qApp->applicationFilePath().replace("games", "share"));
@@ -149,7 +148,7 @@ int main(int argc, char *argv[]) {
     qApp->installTranslator(&translator);
 
     if (!noGui || !noSplash) {
-        splash.showMessage(QObject::tr("Loading translation..."), alignment, Qt::cyan);
+        splash.showMessage(QSplashScreen::tr("Loading translation..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
 
@@ -158,13 +157,13 @@ int main(int argc, char *argv[]) {
     qApp->installTranslator(&qt_translator);
 
     if (!noGui || !noSplash) {
-        splash.showMessage(QObject::tr("Initializing game engine..."), alignment, Qt::cyan);
+        splash.showMessage(QSplashScreen::tr("Initializing game engine..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
     Sanguosha = new Engine;
 
     if (!noGui || !noSplash) {
-        splash.showMessage(QObject::tr("Loading user's configurations..."), alignment, Qt::cyan);
+        splash.showMessage(QSplashScreen::tr("Loading user's configurations..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
     Config.init();
@@ -183,7 +182,7 @@ int main(int argc, char *argv[]) {
     }
 
     if (!noSplash) {
-        splash.showMessage(QObject::tr("Loading style sheet..."), alignment, Qt::cyan);
+        splash.showMessage(QSplashScreen::tr("Loading style sheet..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
 
@@ -197,17 +196,17 @@ int main(int argc, char *argv[]) {
 
 #ifdef AUDIO_SUPPORT
     if (!noSplash) {
-        splash.showMessage(QObject::tr("Initializing audio module..."), alignment, Qt::cyan);
+        splash.showMessage(QSplashScreen::tr("Initializing audio module..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
 
     Audio::init();
 #else
-    QMessageBox::warning(this, QObject::tr("Warning"), QObject::tr("Audio support is disabled when compiled"));
+    QMessageBox::warning(this, QMessageBox::tr("Warning"), QMessageBox::tr("Audio support is disabled when compiled"));
 #endif
 
     if (!noSplash) {
-        splash.showMessage(QObject::tr("Loading main window..."), alignment, Qt::cyan);
+        splash.showMessage(QSplashScreen::tr("Loading main window..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
 
