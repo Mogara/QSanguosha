@@ -157,6 +157,8 @@ private:
     //QCheckBox *add_peace_spell;
     QCheckBox *convert_zhangjiao_to_lord;
 
+    QCheckBox *ai_chat_checkbox;
+
 private slots:
     void onOkButtonClicked();
     void onDetectButtonClicked();
