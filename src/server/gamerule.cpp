@@ -128,7 +128,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
-        return ask_who->askForSkillInvoke(objectName(), "change_to_lord");
+        return ask_who->askForSkillInvoke("userdefine:changetolord");
     }
 
     virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
@@ -280,7 +280,7 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                         arg << skill->getLimitMark();
                         arg << 1;
                         room->doNotify(player, QSanProtocol::S_COMMAND_SET_MARK, arg);
-                        player->addMark(skill->getLimitMark());
+                        player->setMark(skill->getLimitMark(), 1);
                     }
                 }
             }

@@ -827,23 +827,58 @@ public:
             return QStringList();
 
         if (death.damage && death.damage->from){
-            room->broadcastSkillInvoke(objectName(), player);
-            return QStringList(objectName());
+            ServerPlayer *target = death.damage->from;
+            if (!(target->getGeneral()->objectName().contains("sujiang") && target->getGeneral2()->objectName().contains("sujiang")))
+                return QStringList(objectName());
         }
         return QStringList();
     }
 
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
+        room->broadcastSkillInvoke(objectName(), player);
+        return true;
+    }
+
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *) const{
+        room->notifySkillInvoked(player, objectName());
+
         DeathStruct death = data.value<DeathStruct>();
         ServerPlayer *target = death.damage->from;
-        QString choice = room->askForChoice(player, objectName(), "head_general+deputy_general", QVariant::fromValue((ServerPlayer *)target));
+        QString choice = "head_general";
+
+        if (player->getAI()) {
+            QStringList choices;
+            if (!target->getGeneral()->objectName().contains("sujiang"))
+                choices << "head_general";
+
+            if (!target->getGeneral2()->objectName().contains("sujiang"))
+                choices << "deputy_general";
+
+            choice = room->askForChoice(player, objectName(), choices.join("+"), QVariant::fromValue(target));
+        } else {
+            QStringList generals;
+            if (!target->getGeneral()->objectName().contains("sujiang"))
+                generals << target->getGeneral()->objectName();
+
+            if (!target->getGeneral2()->objectName().contains("sujiang"))
+                generals << target->getGeneral2()->objectName();
+
+            QString general = generals.first();
+            if (generals.length() == 2)
+                general = room->askForGeneral(player, generals.join("+"), generals.first(), true, objectName(), QVariant::fromValue(target));
+
+            if (general == target->getGeneral()->objectName())
+                choice = "head_general";
+            else
+                choice = "deputy_general";
+
+        }
         LogMessage log;
         log.type = choice == "head_general" ? "#DuanchangLoseHeadSkills" : "#DuanchangLoseDeputySkills";
         log.from = player;
         log.to << target;
         log.arg = objectName();
         room->sendLog(log);
-        room->notifySkillInvoked(player, objectName());
 
         if (choice == "head_general")
             room->setPlayerProperty(target, "Duanchang", "head");

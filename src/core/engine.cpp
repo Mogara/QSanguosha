@@ -208,9 +208,12 @@ QList<const TriggerSkill *> Engine::getGlobalTriggerSkills() const{
 }
 
 void Engine::addPackage(Package *package) {
-    if (findChild<const Package *>(package->objectName()))
-        return;
+    foreach (const Package *p, packages) {
+        if (p->objectName() == package->objectName())
+            return;
+    }
 
+    packages << package;
     package->setParent(this);
     sp_convert_pairs.unite(package->getConvertPairs());
     patterns.unite(package->getPatterns());
@@ -280,6 +283,10 @@ void Engine::addPackage(Package *package) {
 
 void Engine::addBanPackage(const QString &package_name) {
     ban_package.insert(package_name);
+}
+
+QList<const Package *> Engine::getPackages() const{
+    return packages;
 }
 
 QStringList Engine::getBanPackages() const{
@@ -585,7 +592,6 @@ QString Engine::getMODName() const{
 
 QStringList Engine::getExtensions() const{
     QStringList extensions;
-    QList<const Package *> packages = findChildren<const Package *>();
     foreach(const Package *package, packages) {
         if (package->inherits("Scenario"))
             continue;
@@ -766,15 +772,11 @@ int Engine::getCardCount() const{
 }
 
 QStringList Engine::getGeneralNames() const{
-    QStringList general_names;
-    QHashIterator<QString, const General *> itor(generals);
+    return generals.keys();
+}
 
-    while (itor.hasNext()) {
-        itor.next();
-        general_names << itor.key();
-    }
-
-    return general_names;
+QList<const General *> Engine::getGenerals() const{
+    return generals.values();
 }
 
 QStringList Engine::getLimitedGeneralNames() const{

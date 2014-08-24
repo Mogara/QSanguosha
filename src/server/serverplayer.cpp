@@ -263,10 +263,12 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString &reason, const QStri
             num += 1;
     }
 
-    QVariant data = QVariant::fromValue(PlayerNumStruct(num, to_calculate, type, reason));
-    room->getThread()->trigger(ConfirmPlayerNum, room, this_player, data);
-    PlayerNumStruct playerNumStruct = data.value<PlayerNumStruct>();
-    num = playerNumStruct.m_num;
+    if (reason != "AI") {
+        QVariant data = QVariant::fromValue(PlayerNumStruct(num, to_calculate, type, reason));
+        room->getThread()->trigger(ConfirmPlayerNum, room, this_player, data);
+        PlayerNumStruct playerNumStruct = data.value<PlayerNumStruct>();
+        num = playerNumStruct.m_num;
+    }
 
     return qMax(num, 0);
 }

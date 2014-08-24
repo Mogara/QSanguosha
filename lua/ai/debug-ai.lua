@@ -152,60 +152,8 @@ function endlessNiepan(who)
 
 end
 
-
-function SmartAI:printStand()
-	self.room:output(self.player:getRole())
-	self.room:output("enemies:")
-	for _, player in ipairs(self.enemies) do
-		self.room:output(player:getGeneralName())
-	end
-	self.room:output("end of enemies")
-	self.room:output("friends:")
-	for _, player in ipairs(self.friends) do
-		self.room:output(player:getGeneralName())
-	end
-	self.room:output("end of friends")
-end
-
 function SmartAI:log(outString)
 	self.room:output(outString)
-end
-
-function sgs.checkMisjudge(player)
-	local room = global_room
-	local mode = room:getMode()
-	if player then
-		if sgs.current_mode_players[player:getRole()] > sgs.mode_player[mode][player:getRole()] or sgs.current_mode_players[player:getRole()] < 0 then
-			player:getRoom():writeToConsole("Misjudge--------> Role:" .. player:getRole() .. " Current players:" .. sgs.current_mode_players[player:getRole()]
-											.. " Valid players:" .. sgs.mode_player[mode][player:getRole()])
-		end
-	else
-		local rebel_num, loyalist_num, renegade_num = 0, 0, 0
-		local evaluate_rebel, evaluate_loyalist, evaluate_renegade = 0, 0, 0
-
-		if evaluate_renegade < 1 then
-			if (evaluate_rebel >= rebel_num + renegade_num and evaluate_rebel > rebel_num)
-				or (evaluate_loyalist >= loyalist_num + renegade_num and evaluate_loyalist > loyalist_num)
-				or (evaluate_rebel == rebel_num + 1 and evaluate_loyalist == loyalist_num + 1) then
-				outputPlayersEvaluation()
-				if evaluate_rebel >= rebel_num + renegade_num and evaluate_rebel > rebel_num then
-					sgs.modifiedRoleTrends("rebel")
-				elseif evaluate_loyalist >= loyalist_num + renegade_num and evaluate_loyalist > loyalist_num and rebel_num > 0 then
-					sgs.modifiedRoleTrends("loyalist")
-				elseif  evaluate_rebel > rebel_num and evaluate_loyalist > loyalist_num then
-					sgs.modifiedRoleTrends("rebel")
-					sgs.modifiedRoleTrends("loyalist")
-				end
-			end
-		else
-			if evaluate_rebel > rebel_num or evaluate_loyalist > loyalist_num or evaluate_renegade > renegade_num then
-				outputPlayersEvaluation()
-				if evaluate_rebel > rebel_num then sgs.modifiedRoleTrends("rebel") end
-				if evaluate_loyalist > loyalist_num then sgs.modifiedRoleTrends("loyalist") end
-				if evaluate_renegade > renegade_num then sgs.modifiedRoleTrends("renegade") end
-			end
-		end
-	end
 end
 
 local cardparse = sgs.Card_Parse
@@ -262,4 +210,15 @@ function sgs.ShowPlayer(player)
 			p:showGeneral(false)
 		end
 	end
+end
+
+local qlist_iterator = function(list, n)
+	if n < list:length() - 1 then
+		return n + 1, list:at(n + 1) -- the next element of list
+	end
+end
+
+function sgs.qlist(list)
+	if not list then global_room:writeToConsole(debug.traceback()) return end
+	return qlist_iterator, list, -1
 end

@@ -110,7 +110,6 @@ QWidget *ServerDialog::createPackageTab() {
     extension_group = new QButtonGroup(this);
     extension_group->setExclusive(false);
 
-    QStringList extensions = Sanguosha->getExtensions();
     QSet<QString> ban_packages = Config.BanPackages.toSet();
 
     QGroupBox *box1 = new QGroupBox(tr("General package"));
@@ -123,11 +122,12 @@ QWidget *ServerDialog::createPackageTab() {
 
     int i = 0, j = 0;
     int row = 0, column = 0;
-    foreach(QString extension, extensions) {
-        const Package *package = Sanguosha->findChild<const Package *>(extension);
-        if (package == NULL)
+    const QList<const Package *> &packages = Sanguosha->getPackages();
+    foreach(const Package *package, packages) {
+        if (package->inherits("Scenario"))
             continue;
 
+        const QString &extension = package->objectName();
         bool forbid_package = Config.value("ForbidPackages").toStringList().contains(extension);
         QCheckBox *checkbox = new QCheckBox;
         checkbox->setObjectName(extension);
@@ -684,7 +684,28 @@ void BanIPDialog::save(){
     Config.setValue("BannedIP", ips);
 }
 
+void BanIPDialog::addPlayer(ServerPlayer *player)
+{
+    if (player->getState() != "offline" && player->getState() != "robot") {
+        sp_list << player;
+    }
 
+    QString parsed_string = QString("%1::%2").arg(player->screenName(), player->getIp());
+    left->addItem(parsed_string);
+    connect(player, SIGNAL(disconnected()), this, SLOT(removePlayer()));
+}
+
+void BanIPDialog::removePlayer()
+{
+    ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
+    if (player) {
+        int row = sp_list.indexOf(player);
+        if (row != -1) {
+            delete left->takeItem(row);
+            sp_list.removeAt(row);
+        }
+    }
+}
 
 void BanlistDialog::switchTo(int item) {
     this->item = item;
@@ -942,6 +963,8 @@ void Server::processRequest(const QByteArray &request) {
 
     ServerPlayer *player = current->addSocket(socket);
     current->signup(player, screen_name, avatar, false);
+    emit newPlayer(player);
+
     if (current->getPlayers().length() == 1 && current->getScenario() && current->getScenario()->objectName() == "jiange_defense") {
         for (int i = 0; i < 4; ++i)
             current->addRobotCommand(player, QVariant());

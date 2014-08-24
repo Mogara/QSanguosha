@@ -203,6 +203,7 @@ private slots:
 
 signals:
     void server_message(const QString &);
+    void newPlayer(ServerPlayer *player);
 };
 
 class BanIPDialog : public QDialog {
@@ -227,6 +228,9 @@ private slots:
     void kickClicked();
 
     void save();
+
+    void addPlayer(ServerPlayer *player);
+    void removePlayer();
 };
 
 class BanlistDialog : public QDialog {

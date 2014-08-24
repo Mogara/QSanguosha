@@ -1434,7 +1434,7 @@ public:
 
                 foreach(const Skill *skill, Sanguosha->getGeneral(to_change)->getSkillList(true, true)) {
                     if (skill->getFrequency() == Skill::Limited && !skill->getLimitMark().isEmpty())
-                        room->addPlayerMark(player, skill->getLimitMark());
+                        room->setPlayerMark(player, skill->getLimitMark(), 1);
                 }
 
                 player->drawCards(1);

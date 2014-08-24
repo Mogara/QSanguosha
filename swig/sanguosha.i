@@ -424,7 +424,7 @@ public:
     bool isOffline() const;
 
     virtual int aliveCount(bool includeRemoved = true) const;
-    int getPlayerNumWithSameKingdom(const QString &reason, const QString &_to_calculate = QString(),
+    int getPlayerNumWithSameKingdom(const char *reason, const char *_to_calculate = NULL,
                                     MaxCardsType::MaxCardsCount type = MaxCardsType::Max) const;
     virtual int getHandcardNum() const;
     virtual void removeCard(const Card *card, Place place);
@@ -761,9 +761,9 @@ struct CardResponseStruct {
 
 struct PlayerNumStruct {
 	PlayerNumStruct();
-    PlayerNumStruct(int num, const QString &toCalculate);
-    PlayerNumStruct(int num, const QString &toCalculate, MaxCardsType::MaxCardsCount type);
-    PlayerNumStruct(int num, const QString &toCalculate, MaxCardsType::MaxCardsCount type, const QString &reason);
+    PlayerNumStruct(int num, const char *toCalculate);
+    PlayerNumStruct(int num, const char *toCalculate, MaxCardsType::MaxCardsCount type);
+    PlayerNumStruct(int num, const char *toCalculate, MaxCardsType::MaxCardsCount type, const char *reason);
 
     MaxCardsType::MaxCardsCount m_type;
     int m_num;

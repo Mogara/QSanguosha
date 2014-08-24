@@ -712,7 +712,6 @@ end
 sgs.ai_card_intention.Slash = function(self, card, from, tos)
 	for _, to in ipairs(tos) do
 		local value = 80
-		speakTrigger(card, from, to)
 		sgs.updateIntention(from, to, value)
 	end
 end
@@ -720,7 +719,10 @@ end
 sgs.ai_skill_cardask["slash-jink"] = function(self, data, pattern, target)
 	local isdummy = type(data) == "number"
 	local function getJink()
-		return self:getCardId("Jink") or not isdummy and "."
+		for _, card in ipairs(self:getCards("Jink")) do
+			if self.room:isJinkEffected(self.player, card) then return card:toString() end
+		end
+		return not isdummy and "."
 	end
 
 	local slash
