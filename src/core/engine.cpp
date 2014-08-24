@@ -289,12 +289,17 @@ QStringList Engine::getBanPackages() const{
         return ban_package.toList();
 }
 
-QString Engine::translate(const QString &to_translate) const{
-    QStringList list = to_translate.split("\\");
+QString Engine::translate(const QString &toTranslate) const{
+    QStringList list = toTranslate.split("\\");
     QString res;
     foreach(QString str, list)
         res.append(translations.value(str, str));
     return res;
+}
+
+QString Engine::translate(const QString &toTranslate, const QString &defaultValue) const
+{
+    return translations.value(toTranslate, defaultValue);
 }
 
 const CardPattern *Engine::getPattern(const QString &name) const{
