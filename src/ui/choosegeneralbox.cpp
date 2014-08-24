@@ -377,8 +377,7 @@ void ChooseGeneralBox::_adjust() {
         item->setHomePos(item->data(S_DATA_INITIAL_HOME_POS).toPointF());
         item->goBack(true);
         //the item is on the way
-    }
-    else if (selected.length() == 2 
+    } else if (selected.length() == 2
             && ((!Sanguosha->getGeneral(selected.first()->objectName())->isLord()
                     && selected.first() == item && item->x() > boundingRect().center().x())
                 || (selected.last() == item && item->x() < boundingRect().center().x())))

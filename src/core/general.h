@@ -89,7 +89,7 @@ public:
     int skinCount() const;
 
 public slots:
-    void lastWord() const;
+    void lastWord(const int skinId) const;
 
 private:
     QString kingdom;
@@ -106,6 +106,8 @@ private:
     int head_max_hp_adjusted_value;
     int deputy_max_hp_adjusted_value;
 };
+
+Q_DECLARE_METATYPE(const General *)
 
 typedef QList<const General *> GeneralList;
 

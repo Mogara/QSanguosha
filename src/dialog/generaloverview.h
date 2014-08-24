@@ -115,6 +115,7 @@ private slots:
     void showNextSkin();
     void fillAllGenerals();
     void on_tableView_clicked(const QModelIndex &index);
+    void playDeathAudio();
 };
 
 #endif

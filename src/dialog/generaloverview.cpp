@@ -306,6 +306,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
             }
             if (skinId != 0)
                 tryLoadingSkinTranslation(general->objectName(), skinId);
+            tempGeneralMap[general] = skinId;
         }
     }
 
@@ -378,10 +379,11 @@ void GeneralOverview::tryLoadingSkinTranslation(const QString &general, const in
         return;
 
     QString file = QString("hero-skin/%1/%2/%3.lua")
-            .arg(general).arg(skinId).arg(Config.value("Language", "zh_CN"));
+            .arg(general).arg(skinId)
+            .arg(Config.value("Language", "zh_CN").toString());
 
     if (QFile::exists(file))
-        DoLuaScript(Sanguosha->getLuaState(), file);
+        DoLuaScript(Sanguosha->getLuaState(), file.toLatin1().constData());
 
     loaded.insert(general, skinId);
 }
@@ -481,7 +483,9 @@ void GeneralOverview::addDeathLine(const General *general)
         QCommandLinkButton *death_button = new QCommandLinkButton(tr("Death"), last_word);
         button_layout->addWidget(death_button);
 
-        connect(death_button, SIGNAL(clicked()), general, SLOT(lastWord()));
+        death_button->setProperty("general", QVariant::fromValue(general));
+        death_button->setProperty("skinId", skinId);
+        connect(death_button, SIGNAL(clicked()), SLOT(playDeathAudio()));
 
         addCopyAction(death_button);
     }
@@ -564,6 +568,13 @@ void GeneralOverview::on_tableView_clicked(const QModelIndex &index)
     ui->skillTextEdit->append(general->getSkillDescription(false, false));
 }
 
+void GeneralOverview::playDeathAudio()
+{
+    const General *general = sender()->property("general").value<const General *>();
+    const int skinId = sender()->property("skinId").toInt();
+    general->lastWord(skinId);
+}
+
 void GeneralOverview::playAudioEffect() {
     QObject *button = sender();
     if (button) {
@@ -575,6 +586,8 @@ void GeneralOverview::playAudioEffect() {
 
 void GeneralOverview::showNextSkin() {
     QModelIndex index = ui->tableView->currentIndex();
+    if (!index.isValid())
+        return;
     const QString generalName = ui->tableView->model()->data(index, Qt::UserRole).toString();
 
     const General *general = Sanguosha->getGeneral(generalName);
@@ -588,6 +601,8 @@ void GeneralOverview::showNextSkin() {
         pixmap = G_ROOM_SKIN.getGeneralCardPixmap(generalName);
         (*all_generals)[general] = 0;
     }
+
+    ui->tableView->update(index.sibling(index.row(), GeneralModel::TitleColumn));
 
     ui->generalPhoto->setPixmap(pixmap);
     ui->cvLineEdit->setText(getCvInfo(generalName));
@@ -606,6 +621,9 @@ void GeneralOverview::showNextSkin() {
 
 void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
     const QStringList &kingdoms, int lower, int upper, const QStringList &packages) {
+    if (all_generals == NULL)
+        return;
+
     QList<const General *> generals;
     foreach(const General *general, all_generals->keys()) {
         QString general_name = general->objectName();

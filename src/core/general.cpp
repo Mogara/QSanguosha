@@ -236,15 +236,41 @@ QString General::getSkillDescription(bool include_name, bool inToolTip) const{
     return description;
 }
 
-void General::lastWord() const{
-    QString filename = QString("audio/death/%1.ogg").arg(objectName());
-    bool fileExists = QFile::exists(filename);
-    if (!fileExists) {
-        QStringList origin_generals = objectName().split("_");
-        if (origin_generals.length() > 1)
-            filename = QString("audio/death/%1.ogg").arg(origin_generals.last());
+void General::lastWord(const int skinId) const
+{
+    QString fileName;
+    if (skinId == 0) {
+        fileName = QString("audio/death/%1.ogg").arg(objectName());
+        if (!QFile::exists(fileName)) {
+            QStringList origin_generals = objectName().split("_");
+            if (origin_generals.length() > 1) {
+                fileName = QString("audio/death/%1.ogg")
+                        .arg(origin_generals.last());
+            }
+        }
+    } else {
+        fileName = QString("hero-skin/%1/%2/death.ogg")
+                .arg(objectName()).arg(skinId);
+        if (!QFile::exists(fileName)) {
+            QStringList origin_generals = objectName().split("_");
+            if (origin_generals.length() > 1) {
+                fileName = QString("hero-skin/%1/%2/death.ogg")
+                        .arg(origin_generals.last()).arg(skinId);
+            }
+        }
+        if (!QFile::exists(fileName)) {
+            fileName = QString("audio/death/%1.ogg").arg(objectName());
+            if (!QFile::exists(fileName)) {
+                QStringList origin_generals = objectName().split("_");
+                if (origin_generals.length() > 1) {
+                    fileName = QString("audio/death/%1.ogg")
+                            .arg(origin_generals.last());
+                }
+            }
+        }
     }
-    Sanguosha->playAudioEffect(filename);
+
+    Sanguosha->playAudioEffect(fileName);
 }
 
 void General::addCompanion(const QString &name) {
