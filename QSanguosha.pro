@@ -51,6 +51,7 @@ SOURCES += \
     src/dialog/FlatDialog.cpp \
     src/dialog/UdpDetectorDialog.cpp \
     src/dialog/AvatarModel.cpp \
+    src/dialog/GeneralModel.cpp \
     src/package/exppattern.cpp \
     src/package/formation.cpp \
     src/package/jiange-defense.cpp \
@@ -154,6 +155,7 @@ HEADERS += \
     src/dialog/FlatDialog.h \
     src/dialog/UdpDetectorDialog.h \
     src/dialog/AvatarModel.h \
+    src/dialog/GeneralModel.h \
     src/package/exppattern.h \
     src/package/formation.h \
     src/package/jiange-defense.h \

@@ -25,12 +25,15 @@
 #include "SkinBank.h"
 #include "clientstruct.h"
 #include "client.h"
+#include "GeneralModel.h"
+#include "util.h"
 
 #include <QMessageBox>
 #include <QRadioButton>
 #include <QGroupBox>
 #include <QCommandLinkButton>
 #include <QClipboard>
+#include <QFile>
 
 static QLayout *HLay(QWidget *left, QWidget *right) {
     QHBoxLayout *layout = new QHBoxLayout;
@@ -269,7 +272,7 @@ GeneralOverview *GeneralOverview::getInstance(QWidget *main_window) {
 }
 
 GeneralOverview::GeneralOverview(QWidget *parent)
-    : QDialog(parent), ui(new Ui::GeneralOverview)
+    : QDialog(parent), ui(new Ui::GeneralOverview), all_generals(NULL)
 {
     ui->setupUi(this);
     origin_window_title = windowTitle();
@@ -290,119 +293,44 @@ GeneralOverview::GeneralOverview(QWidget *parent)
 }
 
 void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool init) {
-    QList<const General *> copy_generals;
-    foreach(const General *general, generals) {
-        if (!general->isTotallyHidden())
-            copy_generals.append(general);
+    QList<const General *> generalsCopy = generals;
+    QMap<const General *, int> tempGeneralMap;
+    foreach(const General *general, generalsCopy) {
+        if (!general->isTotallyHidden()) {
+            int skinId = 0;
+            if (Self && Self->getGeneral()) {
+                if (general == Self->getGeneral())
+                    skinId = Self->getHeadSkinId();
+                else if (general == Self->getGeneral2())
+                    skinId = Self->getDeputySkinId();
+            }
+            if (skinId != 0)
+                tryLoadingSkinTranslation(general->objectName(), skinId);
+        }
     }
+
+    if (tempGeneralMap.isEmpty())
+        return;
+
+    GeneralModel *model = new GeneralModel(tempGeneralMap, generalsCopy);
+
     if (init) {
         ui->returnButton->hide();
         setWindowTitle(origin_window_title);
-        foreach(const General *general, copy_generals) {
-            if (Self && Self->getGeneral()) {
-                if (general == Self->getGeneral())
-                    all_generals[general] = Self ? Self->getHeadSkinId() : 0;
-                else if (general == Self->getGeneral2())
-                    all_generals[general] = Self ? Self->getDeputySkinId() : 0;
-            }
-        }
+        all_generals = model->generalMap();
     }
 
-    ui->tableWidget->clearContents();
-    ui->tableWidget->setRowCount(copy_generals.length());
-    ui->tableWidget->setIconSize(QSize(20, 20));
-    QIcon lord_icon("image/system/roles/lord.png");
+    model->setParent(this);
+    ui->tableView->setModel(model);
 
-    for (int i = 0; i < copy_generals.length(); i++) {
-        const General *general = copy_generals[i];
-        QString general_name = general->objectName();
-        QString name, kingdom, gender, max_hp, package;
+    ui->tableView->setColumnWidth(0, 80);
+    ui->tableView->setColumnWidth(1, 95);
+    ui->tableView->setColumnWidth(2, 40);
+    ui->tableView->setColumnWidth(3, 50);
+    ui->tableView->setColumnWidth(4, 60);
+    ui->tableView->setColumnWidth(5, 85);
 
-        name = Sanguosha->translate(general_name);
-        kingdom = Sanguosha->translate(general->getKingdom());
-        gender = general->isMale() ? tr("Male") : (general->isFemale() ? tr("Female") : tr("NoGender"));
-        if (general->objectName().startsWith("jg_")) {
-            max_hp = QString::number(general->getMaxHpHead());
-        } else if (general->getMaxHpHead() == general->getMaxHpDeputy()) {
-            max_hp = QString::number((float)general->getMaxHpHead() / 2);
-        } else {
-            max_hp = QString::number((float)general->getMaxHpHead() / 2);
-            if (general->getMaxHpHead() != general->getDoubleMaxHp()) {
-                max_hp.prepend("(");
-                max_hp.append(")");
-            }
-            max_hp.append("/");
-            QString deputy_max_hp = QString::number((float)general->getMaxHpDeputy() / 2);
-            if (general->getMaxHpDeputy() != general->getDoubleMaxHp()) {
-                deputy_max_hp.prepend("(");
-                deputy_max_hp.append(")");
-            }
-            max_hp.append(deputy_max_hp);
-        }
-
-        package = Sanguosha->translate(general->getPackage());
-
-        QString nickname = Sanguosha->translate("#" + general_name);
-        if (nickname.startsWith("#") && general_name.contains("_"))
-            nickname = Sanguosha->translate("#" + general_name.split("_").last());
-        QTableWidgetItem *nickname_item;
-        if (!nickname.startsWith("#"))
-            nickname_item = new QTableWidgetItem(nickname);
-        else
-            nickname_item = new QTableWidgetItem(Sanguosha->translate("UnknowNick"));
-        nickname_item->setData(Qt::UserRole, general_name);
-        nickname_item->setTextAlignment(Qt::AlignCenter);
-
-        if (Sanguosha->isGeneralHidden(general_name)) {
-            nickname_item->setBackgroundColor(Qt::gray);
-            nickname_item->setToolTip(tr("<font color=%1>This general is hidden</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
-        }
-
-        QTableWidgetItem *name_item = new QTableWidgetItem(name);
-        name_item->setTextAlignment(Qt::AlignCenter);
-        name_item->setData(Qt::UserRole, general_name);
-        if (general->isLord()) {
-            name_item->setIcon(lord_icon);
-            name_item->setTextAlignment(Qt::AlignCenter);
-        }
-
-        if (Sanguosha->isGeneralHidden(general_name)) {
-            name_item->setBackgroundColor(Qt::gray);
-            name_item->setToolTip(tr("<font color=%1>This general is hidden</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
-        }
-
-        QTableWidgetItem *kingdom_item = new QTableWidgetItem(kingdom);
-        kingdom_item->setTextAlignment(Qt::AlignCenter);
-
-        QTableWidgetItem *gender_item = new QTableWidgetItem(gender);
-        gender_item->setTextAlignment(Qt::AlignCenter);
-
-        QTableWidgetItem *max_hp_item = new QTableWidgetItem(max_hp);
-        max_hp_item->setTextAlignment(Qt::AlignCenter);
-
-        QTableWidgetItem *package_item = new QTableWidgetItem(package);
-        package_item->setTextAlignment(Qt::AlignCenter);
-        if (Config.value("LuaPackages", QString()).toString().split("+").contains(general->getPackage())) {
-            package_item->setBackgroundColor(QColor(0x66, 0xCC, 0xFF));
-            package_item->setToolTip(tr("<font color=%1>This is an Lua extension</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
-        }
-
-        ui->tableWidget->setItem(i, 0, nickname_item);
-        ui->tableWidget->setItem(i, 1, name_item);
-        ui->tableWidget->setItem(i, 2, kingdom_item);
-        ui->tableWidget->setItem(i, 3, gender_item);
-        ui->tableWidget->setItem(i, 4, max_hp_item);
-        ui->tableWidget->setItem(i, 5, package_item);
-    }
-
-    ui->tableWidget->setColumnWidth(0, 80);
-    ui->tableWidget->setColumnWidth(1, 95);
-    ui->tableWidget->setColumnWidth(2, 40);
-    ui->tableWidget->setColumnWidth(3, 50);
-    ui->tableWidget->setColumnWidth(4, 60);
-    ui->tableWidget->setColumnWidth(5, 85);
-
-    ui->tableWidget->setCurrentItem(ui->tableWidget->item(0, 0));
+    on_tableView_clicked(model->firstIndex());
 }
 
 void GeneralOverview::resetButtons() {
@@ -420,7 +348,7 @@ GeneralOverview::~GeneralOverview() {
 
 bool GeneralOverview::hasSkin(const General *general) const
 {
-    const int skinId = all_generals.value(general);
+    const int skinId = all_generals->value(general);
 
     if (skinId == 0)
         return G_ROOM_SKIN.doesGeneralHaveSkin(general->objectName());
@@ -429,9 +357,9 @@ bool GeneralOverview::hasSkin(const General *general) const
 }
 
 QString GeneralOverview::getIllustratorInfo(const QString &generalName) {
-    const int skinId = all_generals.value(Sanguosha->getGeneral(generalName));
-    QString suffix = (skinId > 0) ? QString("_%1").arg(skinId) : QString();
-    QString illustratorText = Sanguosha->translate(QString("illustrator:%1%2").arg(generalName).arg(suffix));
+    const int skinId = all_generals->value(Sanguosha->getGeneral(generalName));
+    QString prefix = (skinId > 0) ? QString::number(skinId) : QString();
+    QString illustratorText = Sanguosha->translate(QString("illustrator:%1%2").arg(prefix).arg(generalName));
     if (!illustratorText.startsWith("illustrator:")) {
         return illustratorText;
     } else {
@@ -443,11 +371,26 @@ QString GeneralOverview::getIllustratorInfo(const QString &generalName) {
     }
 }
 
+void GeneralOverview::tryLoadingSkinTranslation(const QString &general, const int skinId)
+{
+    static QMultiMap<QString, int> loaded;
+    if (loaded.contains(general, skinId))
+        return;
+
+    QString file = QString("hero-skin/%1/%2/%3.lua")
+            .arg(general).arg(skinId).arg(Config.value("Language", "zh_CN"));
+
+    if (QFile::exists(file))
+        DoLuaScript(Sanguosha->getLuaState(), file);
+
+    loaded.insert(general, skinId);
+}
+
 QString GeneralOverview::getCvInfo(const QString &generalName)
 {
-    const int skinId = all_generals.value(Sanguosha->getGeneral(generalName));
-    QString suffix = (skinId > 0) ? QString("_%1").arg(skinId) : QString();
-    QString cvText = Sanguosha->translate(QString("cv:%1%2").arg(generalName).arg(suffix));
+    const int skinId = all_generals->value(Sanguosha->getGeneral(generalName));
+    QString prefix = (skinId > 0) ? QString::number(skinId) : QString();
+    QString cvText = Sanguosha->translate(QString("cv:%1%2").arg(prefix).arg(generalName));
     if (!cvText.startsWith("cv:")) {
         return cvText;
     } else {
@@ -462,9 +405,9 @@ QString GeneralOverview::getCvInfo(const QString &generalName)
 void GeneralOverview::addLines(const General *general, const Skill *skill) {
     QString skill_name = Sanguosha->translate(skill->objectName());
 
-    const int skinId = all_generals.value(general);
+    const int skinId = all_generals->value(general);
     QStringList sources = skill->getSources(general->objectName(),
-                                            all_generals.value(general));
+                                            all_generals->value(general));
 
     bool usingDefault = false;
 
@@ -493,7 +436,7 @@ void GeneralOverview::addLines(const General *general, const Skill *skill) {
             button->setObjectName(source);
             button_layout->addWidget(button);
 
-            const int skinId = all_generals.value(general);
+            const int skinId = all_generals->value(general);
             QString filename = rx.capturedTexts().at(1);
             QString skill_line;
             if (skinId == 0 || usingDefault)
@@ -512,7 +455,7 @@ void GeneralOverview::addLines(const General *general, const Skill *skill) {
 void GeneralOverview::addDeathLine(const General *general)
 {
     QString last_word;
-    const int skinId = all_generals.value(general);
+    const int skinId = all_generals->value(general);
     const QString id = QString::number(skinId);
     if (skinId == 0)
         last_word = Sanguosha->translate("~" + general->objectName());
@@ -577,12 +520,12 @@ void GeneralOverview::copyLines() {
     }
 }
 
-void GeneralOverview::on_tableWidget_itemSelectionChanged() {
-    int row = ui->tableWidget->currentRow();
-    QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
-    const General *general = Sanguosha->getGeneral(general_name);
-    const int skinId = all_generals.value(general);
-    ui->generalPhoto->setPixmap(G_ROOM_SKIN.getGeneralCardPixmap(general_name, skinId));
+void GeneralOverview::on_tableView_clicked(const QModelIndex &index)
+{
+    const QString generalName = ui->tableView->model()->data(index, Qt::UserRole).toString();
+    const General *general = Sanguosha->getGeneral(generalName);
+    const int skinId = all_generals->value(general);
+    ui->generalPhoto->setPixmap(G_ROOM_SKIN.getGeneralCardPixmap(generalName, skinId));
     ui->changeHeroSkinButton->setVisible(hasSkin(general));
 
     QList<const Skill *> skills = general->getVisibleSkillList();
@@ -600,17 +543,17 @@ void GeneralOverview::on_tableWidget_itemSelectionChanged() {
 
     addDeathLine(general);
 
-    if (general_name.contains("caocao"))
+    if (generalName.contains("caocao"))
         addWinLineOfCaoCao();
 
-    QString designer_text = Sanguosha->translate("designer:" + general_name);
+    QString designer_text = Sanguosha->translate("designer:" + generalName);
     if (!designer_text.startsWith("designer:"))
         ui->designerLineEdit->setText(designer_text);
     else
         ui->designerLineEdit->setText(tr("Official"));
 
-    ui->cvLineEdit->setText(getCvInfo(general_name));
-    ui->illustratorLineEdit->setText(getIllustratorInfo(general_name));
+    ui->cvLineEdit->setText(getCvInfo(generalName));
+    ui->illustratorLineEdit->setText(getIllustratorInfo(generalName));
 
     button_layout->addStretch();
     QString companions_text = general->getCompanions();
@@ -631,30 +574,31 @@ void GeneralOverview::playAudioEffect() {
 }
 
 void GeneralOverview::showNextSkin() {
-    int row = ui->tableWidget->currentRow();
-    QString general_name = ui->tableWidget->item(row, 0)->data(Qt::UserRole).toString();
+    QModelIndex index = ui->tableView->currentIndex();
+    const QString generalName = ui->tableView->model()->data(index, Qt::UserRole).toString();
 
-    const General *general = Sanguosha->getGeneral(general_name);
-    int skinId = ++ all_generals[general];
+    const General *general = Sanguosha->getGeneral(generalName);
+    int skinId = ++ (*all_generals)[general];
 
     QPixmap pixmap;
-    if (G_ROOM_SKIN.doesGeneralHaveSkin(general_name, skinId)) {
-        pixmap = G_ROOM_SKIN.getGeneralCardPixmap(general_name, skinId);
+    if (G_ROOM_SKIN.doesGeneralHaveSkin(generalName, skinId)) {
+        pixmap = G_ROOM_SKIN.getGeneralCardPixmap(generalName, skinId);
+        tryLoadingSkinTranslation(generalName, skinId);
     } else {
-        pixmap = G_ROOM_SKIN.getGeneralCardPixmap(general_name);
-        all_generals[Sanguosha->getGeneral(general_name)] = 0;
+        pixmap = G_ROOM_SKIN.getGeneralCardPixmap(generalName);
+        (*all_generals)[general] = 0;
     }
 
     ui->generalPhoto->setPixmap(pixmap);
-    ui->cvLineEdit->setText(getCvInfo(general_name));
-    ui->illustratorLineEdit->setText(getIllustratorInfo(general_name));
+    ui->cvLineEdit->setText(getCvInfo(generalName));
+    ui->illustratorLineEdit->setText(getIllustratorInfo(generalName));
     resetButtons();
     foreach(const Skill *skill, general->getVisibleSkillList())
         addLines(general, skill);
 
     addDeathLine(general);
 
-    if (general_name.contains("caocao"))
+    if (generalName.contains("caocao"))
         addWinLineOfCaoCao();
 
     button_layout->addStretch();
@@ -663,7 +607,7 @@ void GeneralOverview::showNextSkin() {
 void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
     const QStringList &kingdoms, int lower, int upper, const QStringList &packages) {
     QList<const General *> generals;
-    foreach(const General *general, all_generals.keys()) {
+    foreach(const General *general, all_generals->keys()) {
         QString general_name = general->objectName();
         if (!include_hidden && Sanguosha->isGeneralHidden(general_name))
             continue;
@@ -718,5 +662,5 @@ void GeneralOverview::startSearch(bool include_hidden, const QString &nickname, 
 void GeneralOverview::fillAllGenerals() {
     ui->returnButton->hide();
     setWindowTitle(origin_window_title);
-    fillGenerals(all_generals.keys(), false);
+    fillGenerals(all_generals->keys(), false);
 }

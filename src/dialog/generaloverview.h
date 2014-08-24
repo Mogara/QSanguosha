@@ -21,10 +21,6 @@
 #ifndef _GENERAL_OVERVIEW_H
 #define _GENERAL_OVERVIEW_H
 
-class General;
-class Skill;
-class QCommandLinkButton;
-
 #include <QDialog>
 #include <QTableWidgetItem>
 #include <QButtonGroup>
@@ -35,6 +31,9 @@ class QCommandLinkButton;
 #include <QGroupBox>
 
 class GeneralOverview;
+class General;
+class Skill;
+class QCommandLinkButton;
 
 class GeneralSearch : public QDialog {
     Q_OBJECT
@@ -93,7 +92,8 @@ private:
     GeneralSearch *general_search;
 
     QString origin_window_title;
-    QMap<const General *, int> all_generals;
+
+    QMap<const General *, int> *all_generals;
 
     void resetButtons();
     void addLines(const General *general, const Skill *skill);
@@ -103,6 +103,7 @@ private:
     bool hasSkin(const General *general) const;
     QString getCvInfo(const QString &generalName);
     QString getIllustratorInfo(const QString &generalName);
+    void tryLoadingSkinTranslation(const QString &general, const int skinId);
 
 public slots:
     void startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,
@@ -113,7 +114,7 @@ private slots:
     void copyLines();
     void showNextSkin();
     void fillAllGenerals();
-    void on_tableWidget_itemSelectionChanged();
+    void on_tableView_clicked(const QModelIndex &index);
 };
 
 #endif
