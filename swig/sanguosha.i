@@ -108,7 +108,7 @@ public:
     void setHeadMaxHpAdjustedValue(int adjusted_value = -1);
     void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);
 
-    void lastWord() const;
+    void lastWord(const int skinId) const;
 
 };
 
@@ -1111,7 +1111,8 @@ public:
     ~Engine();
 
     void addTranslationEntry(const char *key, const char *value);
-    QString translate(const char *to_translate) const;
+    QString translate(const char *toTranslate) const;
+    QString translate(const char *toTranslate, const char *defaultValue) const;
 
     void addPackage(Package *package);
     void addBanPackage(const char *package_name);
