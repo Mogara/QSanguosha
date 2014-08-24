@@ -21,7 +21,7 @@
 sgs.ai_skill_invoke["userdefine:halfmaxhp"] = true
 
 sgs.ai_skill_invoke["userdefine:changetolord"] = function(self)
-	return math.random() > 0.8
+	return math.random() < 0.8
 end
 
 sgs.ai_skill_choice.CompanionEffect = function(self, choice, data)
