@@ -289,7 +289,7 @@ QWidget *ServerDialog::createMiscTab() {
     forbid_adding_robot_checkbox = new QCheckBox(tr("Forbid adding robot"));
     forbid_adding_robot_checkbox->setChecked(Config.ForbidAddingRobot);
 
-    ai_chat_checkbox = new QCheckBox(tr("AI chat"));
+    ai_chat_checkbox = new QCheckBox(tr("Enable AI chat"));
     ai_chat_checkbox->setChecked(Config.value("AIChat", true).toBool());
     ai_chat_checkbox->setDisabled(Config.ForbidAddingRobot);
     connect(forbid_adding_robot_checkbox, SIGNAL(toggled(bool)), ai_chat_checkbox, SLOT(setDisabled(bool)));
