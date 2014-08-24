@@ -20,6 +20,10 @@
 
 sgs.ai_skill_invoke["userdefine:halfmaxhp"] = true
 
+sgs.ai_skill_invoke["userdefine:changetolord"] = function(self)
+	return math.random() > 0.8
+end
+
 sgs.ai_skill_choice.CompanionEffect = function(self, choice, data)
 	if ( self:isWeak() or self:needKongcheng(self.player, true) ) and string.find(choice, "recover") then return "recover"
 	else return "draw" end

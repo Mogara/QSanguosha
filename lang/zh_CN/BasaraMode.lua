@@ -59,6 +59,7 @@ return
 	["~anjiang"] = "死不瞑目啊……",
 	
 	["@define:FirstShowReward"] = "是否摸两张牌作为首亮奖励？",
+	["@define:changetolord"] = "你可以选择更换为君主。" ,
 	["#FirstShowReward"] = "%from 全场第一个亮将，可以摸两张牌" ,
 	
 	["GameRule_AskForGeneralShowHead"] = "明置主将" ,

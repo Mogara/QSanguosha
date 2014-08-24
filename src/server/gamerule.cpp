@@ -128,7 +128,7 @@ public:
     }
 
     virtual bool cost(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
-        return ask_who->askForSkillInvoke(objectName(), "change_to_lord");
+        return ask_who->askForSkillInvoke("userdefine:changetolord");
     }
 
     virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
