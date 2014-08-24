@@ -684,7 +684,28 @@ void BanIPDialog::save(){
     Config.setValue("BannedIP", ips);
 }
 
+void BanIPDialog::addPlayer(ServerPlayer *player)
+{
+    if (player->getState() != "offline" && player->getState() != "robot") {
+        sp_list << player;
+    }
 
+    QString parsed_string = QString("%1::%2").arg(player->screenName(), player->getIp());
+    left->addItem(parsed_string);
+    connect(player, SIGNAL(disconnected()), this, SLOT(removePlayer()));
+}
+
+void BanIPDialog::removePlayer()
+{
+    ServerPlayer *player = qobject_cast<ServerPlayer *>(sender());
+    if (player) {
+        int row = sp_list.indexOf(player);
+        if (row != -1) {
+            delete left->takeItem(row);
+            sp_list.removeAt(row);
+        }
+    }
+}
 
 void BanlistDialog::switchTo(int item) {
     this->item = item;
@@ -942,6 +963,8 @@ void Server::processRequest(const QByteArray &request) {
 
     ServerPlayer *player = current->addSocket(socket);
     current->signup(player, screen_name, avatar, false);
+    emit newPlayer(player);
+
     if (current->getPlayers().length() == 1 && current->getScenario() && current->getScenario()->objectName() == "jiange_defense") {
         for (int i = 0; i < 4; ++i)
             current->addRobotCommand(player, QVariant());

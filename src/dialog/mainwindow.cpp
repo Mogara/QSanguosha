@@ -1276,9 +1276,11 @@ void MainWindow::on_actionAbout_GPLv3_triggered() {
 }
 
 void MainWindow::on_actionManage_Ban_IP_triggered(){
-    Server *server = findChild<Server *>();
-
     BanIPDialog *dlg = new BanIPDialog(this, server);
+    if (server) {
+        connect(server, SIGNAL(newPlayer(ServerPlayer*)), dlg, SLOT(addPlayer(ServerPlayer*)));
+    }
+
     dlg->show();
 }
 
