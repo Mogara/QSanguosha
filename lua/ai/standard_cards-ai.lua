@@ -1263,7 +1263,7 @@ function sgs.ai_cardsview.Spear(self, class_name, player, cards)
 			if i + 1 > #newcards then break end
 			local id1 = newcards[i]:getEffectiveId()
 			local id2 = newcards[i + 1]:getEffectiveId()
-			local str = ("slash:%s[%s:%s]=%d+%d&%s"):format(skill_name, "to_be_decided", 0, id1, id2, skill_name)
+			local str = ("slash:%s[%s:%s]=%d+%d&"):format("Spear", "to_be_decided", 0, id1, id2)
 			table.insert(card_str , str)
 		end
 		return card_str

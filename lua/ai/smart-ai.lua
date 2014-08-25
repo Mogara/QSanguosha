@@ -339,6 +339,7 @@ function SmartAI:objectiveLevel(player)
 	if not player then self.room:writeToConsole(debug.traceback()) return 0 end
 	if self.player:objectName() == player:objectName() then return -2 end
 	if self.room:getMode() == "jiange_defense" and self.player:getKingdom() == player:getKingdom() then return -2 end
+	if self.player:isFriendWith(player) then return -2 end
 	if self.room:alivePlayerCount() == 2 then return 5 end
 
 	local self_kingdom = self.player:getKingdom()
@@ -355,7 +356,7 @@ function SmartAI:objectiveLevel(player)
 	if self:getKingdomCount() <= 2 then return 5 end
 
 	local selfIsCareerist = self.role == "careerist" or sgs.shown_kingdom[self_kingdom] >= upperlimit and sgs.isAnjiang(self.player)
-	local isweak = sgs.getReward(player) > 2 and player:getHp() == 1 and not player:hasShownSkills("kongcheng|buqu") and not sgs.isAnjiang(player)
+	local isWeakPlayer = (sgs.getReward(player) >= 2 or self.player:aliveCount() <= 4) and player:getHp() == 1 and not player:hasShownSkills("kongcheng|buqu") and not sgs.isAnjiang(player)
 					and (player:isKongcheng() or sgs.card_lack[player:objectName()] == 1 and player:getHandcardNum() <= 1)
 
 	local gameProcess = sgs.gameProcess()
@@ -365,6 +366,7 @@ function SmartAI:objectiveLevel(player)
 			if sgs.isAnjiang(player) and player_kingdom == "unknown" then
 				if self:evaluateKingdom(player) == self_kingdom then return -1
 				elseif string.find(self:evaluateKingdom(player), self_kingdom) then return 0
+				elseif self:evaluateKingdom(player) == "unknown" and player:getHp() == 1 then return 0
 				else
 					return self:getOverflow() > 0 and 3.5 or 0
 				end
@@ -377,11 +379,13 @@ function SmartAI:objectiveLevel(player)
 		local kingdom = gameProcess:split(">")[1]
 		if string.find(gameProcess, ">>>") then
 			if self_kingdom == kingdom and not selfIsCareerist then
-				if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) and self:evaluateKingdom(player) == self_kingdom then return 0
+				if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player)
+					and (self:evaluateKingdom(player) == self_kingdom or string.find(self:evaluateKingdom(player), self_kingdom)) then return 0
+				elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 2 then return 0
 				else return 5
 				end
 			else
-				if player_kingdom == kingdom or self:evaluateKingdom(player) == kingdom or isweak then return 5
+				if player_kingdom == kingdom or self:evaluateKingdom(player) == kingdom or isWeakPlayer then return 5
 				elseif not string.find(self:evaluateKingdom(player), kingdom) or player:getRole() == "careerist" then return -1
 				else return 3
 				end
@@ -390,13 +394,13 @@ function SmartAI:objectiveLevel(player)
 			if self_kingdom == kingdom and not selfIsCareerist then
 				if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) then
 					if self:evaluateKingdom(player) == self_kingdom then return -1
-					elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
-					elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 1 and self:getOverflow() <= 0 then return 0
+					elseif string.find(self:evaluateKingdom(player), self_kingdom) then return 0
+					elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 2 then return 0
 					end
 				end
 				return 5
 			else
-				if player_kingdom == kingdom or self:evaluateKingdom(player) == kingdom or isweak then return 5
+				if player_kingdom == kingdom or self:evaluateKingdom(player) == kingdom or isWeakPlayer then return 5
 				elseif not string.find(self:evaluateKingdom(player), kingdom) then return 0
 				else return 3
 				end
@@ -405,13 +409,13 @@ function SmartAI:objectiveLevel(player)
 			if self_kingdom == kingdom and not selfIsCareerist then
 				if sgs.shown_kingdom[self_kingdom] < upperlimit and sgs.isAnjiang(player) then
 					if self:evaluateKingdom(player) == self_kingdom then return -1
-						elseif string.find(self:evaluateKingdom(player), self.player:getKingdom()) then return 0
-					elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 1 then return 0
+					elseif string.find(self:evaluateKingdom(player), self_kingdom) then return 0
+					elseif self:evaluateKingdom(player) == "unknown" and sgs.turncount <= 2 then return 0
 					end
 				end
 				return 5
 			else
-				if player_kingdom == kingdom or isweak then return 5
+				if player_kingdom == kingdom or isWeakPlayer then return 5
 				elseif self:evaluateKingdom(player) == kingdom then return 3
 				elseif not string.find(self:evaluateKingdom(player), kingdom) then return 0
 				else return 1
@@ -1326,7 +1330,8 @@ end
 function SmartAI:isFriend(other, another)
 	if not other then self.room:writeToConsole(debug.traceback()) return end
 	if another then
-		if (sgs.isAnjiang(other) or sgs.isAnjiang(another)) and other:getMark("KnownBothEnemy" .. another:objectName()) > 0 then
+		if sgs.gameProcess() == "===" and (sgs.isAnjiang(other) or sgs.isAnjiang(another))
+			and other:getMark("KnownBothEnemy" .. another:objectName()) > 0 then
 			return false
 		end
 		local of, af = self:isFriend(other), self:isFriend(another)
@@ -1343,7 +1348,8 @@ end
 function SmartAI:isEnemy(other, another)
 	if not other then self.room:writeToConsole(debug.traceback()) return end
 	if another then
-		if (sgs.isAnjiang(other) or sgs.isAnjiang(another)) and other:getMark("KnownBothEnemy" .. another:objectName()) > 0 then
+		if sgs.gameProcess() == "===" and (sgs.isAnjiang(other) or sgs.isAnjiang(another))
+			and other:getMark("KnownBothEnemy" .. another:objectName()) > 0 then
 			return true
 		end
 		local of, af = self:isEnemy(other), self:isEnemy(another)
@@ -1724,7 +1730,6 @@ function SmartAI:filterEvent(event, player, data)
 	elseif event == sgs.PreDamageDone then
 		local damage = data:toDamage()
 		local clear = true
-		if damage.card and damage.card:hasFlag("nosjiefan-slash") then clear = false end
 		if clear and damage.to:isChained() then
 			for _, p in sgs.qlist(self.room:getOtherPlayers(damage.to)) do
 				if p:isChained() and damage.nature ~= sgs.DamageStruct_Normal then
