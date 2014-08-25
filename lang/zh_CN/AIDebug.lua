@@ -5,4 +5,5 @@ return {
 	["objectiveLevel"] ="查看身份关系",
 	[":objectiveLevel"] ="武将名[推测身份] 反估值:忠估值:内估值 关系",
 	["getDefenseSlash"] ="查看对杀的防御",
+	["#AI_evaluateKingdom"] =" %from 推测国家 %arg",
 }

@@ -515,34 +515,41 @@ end
 function sgs.updateIntention(from, to, intention)
 	if not from or not to then global_room:writeToConsole(debug.traceback()) end
 	if not intention or type(intention) ~= "number" then global_room:writeToConsole(debug.traceback()) end
-	local update
-	if sgs.isAnjiang(from) and not sgs.isAnjiang(to) then
-		if intention > 0 then intention = 10 end
-		if intention < 0 then intention = -10 end
-		sgs.outputKingdomValues(from, intention)
-		local kingdoms = sgs.KingdomsTable
-		if intention > 0 then
-			for _, kingdom in ipairs(kingdoms) do
-				if kingdom ~= to:getKingdom() then
-					sgs.ai_loyalty[kingdom][from:objectName()] = sgs.ai_loyalty[kingdom][from:objectName()] + intention
-				else
-					sgs.ai_loyalty[kingdom][from:objectName()] = sgs.ai_loyalty[kingdom][from:objectName()] - intention
+	if intention > 0 then intention = 10 end
+	if intention < 0 then intention = -10 end
+	sgs.outputKingdomValues(from, intention)
+	local sendLog
+	if sgs.recorder:evaluateKingdom(from) == "careerist" or sgs.recorder:evaluateKingdom(to, from) == "careerist" then
+	else
+		local to_kingdom = sgs.recorder:evaluateKingdom(to, from)
+		if sgs.isAnjiang(from) and to_kingdom ~= "unknown" then
+			to_kingdom = to_kingdom:split("?")
+			local kingdoms = sgs.KingdomsTable
+			if intention > 0 then
+				sendLog = true
+				for _, kingdom in ipairs(kingdoms) do
+					if table.contains(to_kingdom, kingdom) then
+						sgs.ai_loyalty[kingdom][from:objectName()] = sgs.ai_loyalty[kingdom][from:objectName()] - intention
+					else
+						sgs.ai_loyalty[kingdom][from:objectName()] = sgs.ai_loyalty[kingdom][from:objectName()] + intention
+					end
 				end
+			elseif intention < 0 then
+				sendLog = true
+				sgs.ai_loyalty[to:getKingdom()][from:objectName()] = sgs.ai_loyalty[to:getKingdom()][from:objectName()] - intention
 			end
-		elseif intention < 0 then
-			sgs.ai_loyalty[to:getKingdom()][from:objectName()] = sgs.ai_loyalty[to:getKingdom()][from:objectName()] - intention
-		end
-		update = true
-	elseif to:getMark(string.format("KnownBoth_%s_%s", from:objectName(), to:objectName())) > 0 and sgs.isAnjiang(to) then
-		if sgs.isAnjiang(from) then
-			from:setMark("KnownBothEnemy" .. to:objectName(), 1)
-			to:setMark("KnownBothEnemy" .. from:objectName(), 1)
-		else
-			for _, kingdom in ipairs(kingdoms) do
-				if kingdom ~= from:getKingdom() then
-					sgs.ai_loyalty[kingdom][from:objectName()] = sgs.ai_loyalty[kingdom][from:objectName()] + intention
-				else
-					sgs.ai_loyalty[kingdom][from:objectName()] = sgs.ai_loyalty[kingdom][from:objectName()] - intention
+		elseif to:getMark(string.format("KnownBoth_%s_%s", from:objectName(), to:objectName())) > 0 and sgs.isAnjiang(to) then
+			if sgs.isAnjiang(from) then
+				from:setMark("KnownBothEnemy" .. to:objectName(), 1)
+				to:setMark("KnownBothEnemy" .. from:objectName(), 1)
+			else
+				sendLog = true
+				for _, kingdom in ipairs(kingdoms) do
+					if kingdom ~= from:getKingdom() then
+						sgs.ai_loyalty[kingdom][to:objectName()] = sgs.ai_loyalty[kingdom][to:objectName()] + intention
+					else
+						sgs.ai_loyalty[kingdom][to:objectName()] = sgs.ai_loyalty[kingdom][to:objectName()] - intention
+					end
 				end
 			end
 		end
@@ -552,19 +559,28 @@ function sgs.updateIntention(from, to, intention)
 		sgs.ais[p:objectName()]:updatePlayers()
 	end
 
-	sgs.outputKingdomValues(from, update and intention or 0)
+	sgs.outputKingdomValues(from, intention, sendLog)
 end
 
-function sgs.outputKingdomValues(player, level)
-	local msg = player:getGeneralName() .. " " .. level .. " "
+function sgs.outputKingdomValues(player, level, sendLog)
+	local name = player:getGeneralName() .. "/" .. player:getGeneral2Name()
+	if name == "anjiang/anjiang" then name = "SEAT" .. player:getSeat() end
+	local msg = name .. " " .. level .. " "
 	for _, kingdom in ipairs(sgs.KingdomsTable) do
 		msg = msg .. " " .. kingdom .. math.ceil(sgs.ai_loyalty[kingdom][player:objectName()])
 	end
-	msg = msg .. " gP:" .. sgs.gameProcess() .. " "
+	msg = msg .. " gP " .. sgs.gameProcess() .. " "
 	for _, kingdom in ipairs(sgs.KingdomsTable) do
 		msg = msg .. sgs.current_mode_players[kingdom]
 	end
 	global_room:writeToConsole(msg)
+	if sendLog then
+		local log = sgs.LogMessage()
+		log.type = "#AI_evaluateKingdom"
+		log.arg = sgs.recorder:evaluateKingdom(player)
+		log.from = player
+		global_room:sendLog(log)
+	end
 end
 
 function SmartAI:updatePlayers(update)
@@ -1692,14 +1708,14 @@ function SmartAI:filterEvent(event, player, data)
 
 		if from and sgs.isAnjiang(from) and string.find("FireAttack|Dismantlement|Snatch|Slash|Duel", card:getClassName())
 			and from:objectName() == player:objectName() then
-			local anjiang = true
+			local unknown = true
 			for _, to in ipairs(tos) do
-				if not sgs.isAnjiang(to) then
-					anjiang = false
+				if self:evaluateKingdom(to, from) ~= "unknown" then
+					unknown = false
 					break
 				end
 			end
-			if anjiang then
+			if unknown then
 				local targets = self:exclude(self.room:getOtherPlayers(from), card, from)
 				for _, who in ipairs(targets) do
 					if not sgs.isAnjiang(who)

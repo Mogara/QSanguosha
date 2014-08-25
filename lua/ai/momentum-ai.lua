@@ -476,7 +476,7 @@ sgs.ai_skill_use["@@hongfa2"] = function(self)
 end
 
 sgs.ai_slash_prohibit.PeaceSpell = function(self, from, enemy, card)
-	if enemy:hasArmorEffect("PeaceSpell") and card:isKindOf("NatureSlash") then return true end
+	if enemy:hasArmorEffect("PeaceSpell") and card:isKindOf("NatureSlash") and not IgnoreArmor(from, enemy) then return true end
 	return
 end
 function sgs.ai_armor_value.PeaceSpell(player, self)
