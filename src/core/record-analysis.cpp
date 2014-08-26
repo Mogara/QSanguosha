@@ -170,7 +170,7 @@ void RecAnalysis::initialize(const QString &dir) {
 
         if (packet.getCommandType() == S_COMMAND_SPEAK) {
             JsonArray body = packet.getMessageBody().value<JsonArray>();
-            if (body.size() < 3) {
+            if (body.size() < 2) {
                 continue;
             }
 
