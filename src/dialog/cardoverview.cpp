@@ -49,10 +49,7 @@ CardOverview::CardOverview(QWidget *parent)
     ui->tableWidget->setColumnWidth(3, 60);
     ui->tableWidget->setColumnWidth(4, 70);
 
-    if (ServerInfo.EnableCheat)
-        connect(ui->getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
-    else
-        ui->getCardButton->hide();
+    connect(ui->getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
 
     ui->cardDescriptionBox->setProperty("description", true);
     ui->malePlayButton->hide();
@@ -160,7 +157,7 @@ void CardOverview::on_tableWidget_itemSelectionChanged() {
 }
 
 void CardOverview::askCard() {
-    if (!ServerInfo.EnableCheat)
+    if (!ServerInfo.EnableCheat || !ClientInstance)
         return;
 
     int row = ui->tableWidget->currentRow();
@@ -213,3 +210,11 @@ void CardOverview::on_playAudioEffectButton_clicked() {
     }
 }
 
+void CardOverview::showEvent(QShowEvent *)
+{
+    if (ServerInfo.EnableCheat && ClientInstance) {
+        ui->getCardButton->show();
+    } else {
+        ui->getCardButton->hide();
+    }
+}

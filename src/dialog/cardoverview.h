@@ -55,6 +55,9 @@ private slots:
     void on_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
     void on_tableWidget_itemSelectionChanged();
     void askCard();
+
+protected:
+    void showEvent(QShowEvent *);
 };
 
 #endif
