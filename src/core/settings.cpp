@@ -110,10 +110,10 @@ void Settings::init() {
 #ifdef Q_OS_WIN32
     UserName = value("UserName", qgetenv("USERNAME")).toString();
 #else
-    UserName = value("USERNAME", qgetenv("USER")).toString();
+    UserName = value("UserName", qgetenv("USER")).toString();
 #endif
 
-    if (UserName == "root" || UserName == "Administrator")
+    if (UserName == "root" || UserName == "Administrator" || UserName.isEmpty())
         UserName = tr("Sanguosha-fans");
     ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
 
