@@ -80,6 +80,17 @@ sgs.ai_skill_choice.drowning = function(self, choices, data)
 	if value < 8 then return "throw" else return "damage" end
 end
 
+sgs.ai_nullification.Drowning = function(self, card, from, to, positive)
+	if positive then
+		if self:isFriend(to) then
+			if self:needToThrowArmor(to) then return end
+			if to:getEquips():length() >= 2 then return true end
+		end
+	else
+		if self:isFriend(from) and (self:getOverflow() > 0 or self:getCardsNum("Nullification") > 1) then return true end
+	end
+	return
+end
 
 local transfer_skill = {}
 transfer_skill.name = "transfer"

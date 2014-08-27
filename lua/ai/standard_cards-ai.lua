@@ -1250,7 +1250,8 @@ function sgs.ai_cardsview.Spear(self, class_name, player, cards)
 
 		local newcards = {}
 		for _, card in ipairs(cards) do
-			if self.room:getCardOwner(card:getEffectiveId()):objectName() ~= player:objectName()
+			if not self.room:getCardOwner(card:getEffectiveId())
+				or self.room:getCardOwner(card:getEffectiveId()):objectName() ~= player:objectName()
 				or self.room:getCardPlace(card:getEffectiveId()) ~= sgs.Player_PlaceHand then continue end
 			if not isCard("Peach", card, player) and not (isCard("ExNihilo", card, player) and player:getPhase() == sgs.Player_Play) then
 				table.insert(newcards, card)
@@ -3016,6 +3017,12 @@ sgs.ai_nullification.AwaitExhausted = function(self, card, from, to, positive)
 	if positive then
 		if self:isEnemy(to) then
 			if self:getOverflow() > 0 or self:getCardsNum("Nullification") > 1 then return true end
+			for _, t in sgs.qlist(self.room:getAlivePlayers()) do
+				if to:isFriendWith(t) then
+					if t:hasShownSkills(sgs.lose_equip_skill) and t:getEquips():length() > 0 then return true end
+					if t:getArmor() and self:needToThrowArmor(t) then return true end
+				end
+			end
 		end
 	else
 		if self:isFriend(to) and (self:getOverflow() > 0 or self:getCardsNum("Nullification") > 1) then return true end
@@ -3098,6 +3105,8 @@ sgs.ai_use_priority.KnownBoth = 9.1
 sgs.ai_use_value.KnownBoth = 5.5
 sgs.ai_keep_value.KnownBoth = 3.33
 sgs.ai_nullification.KnownBoth = function(self, card, from, to, positive)
+	-- todo
+	return false
 end
 
 sgs.ai_choicemade_filter.skillChoice.known_both = function(self, from, promptlist)
