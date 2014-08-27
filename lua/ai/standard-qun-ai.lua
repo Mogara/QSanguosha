@@ -746,7 +746,7 @@ sgs.ai_skill_choice.duanchang = function(self, choices, data)
 					.. sgs.wizard_skill .. "|" .. sgs.cardneed_skill):split("|")
 	for _, skill in ipairs(skills) do
 		if who:hasShownSkill(skill) then
-			if self:isFriendWith(who) then
+			if self.player:isFriendWith(who) then
 				return who:inHeadSkills(skill) and "deputy_general" or "head_general"
 			else
 				return who:inHeadSkills(skill) and "head_general" or "deputy_general"
