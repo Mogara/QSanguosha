@@ -333,10 +333,15 @@ QPixmap QSanRoomSkin::getProgressBarPixmap(int percentile) const{
     return QPixmap();
 }
 
-bool QSanRoomSkin::doesGeneralHaveSkin(const QString &general, const int skinId) const
+bool QSanRoomSkin::doesGeneralHaveSkin(const QString &general, const int skinId, const bool isCard) const
 {
     const QString id = QString::number(skinId);
-    const QString key = S_SKIN_KEY_GENERAL_CARD;
+    QString key;
+    if (isCard)
+        key = S_SKIN_KEY_GENERAL_CARD;
+    else
+        key = QString(S_SKIN_KEY_PLAYER_GENERAL_ICON)
+                .arg(S_GENERAL_ICON_SIZE_HERO_SKIN);
     QString totalKey = key.arg(id).arg(general);
     if (isImageKeyDefined(totalKey))
         return QFile::exists(_m_imageConfig.value(totalKey).toString());
@@ -1057,6 +1062,10 @@ bool QSanRoomSkin::_loadLayoutConfig(const QVariant &layout) {
     tryParse(config["equipSelectedOffset"], _m_dashboardLayout.m_equipSelectedOffset);
     tryParse(config["disperseWidth"], _m_dashboardLayout.m_disperseWidth);
     tryParse(config["trustEffectColor"], _m_dashboardLayout.m_trustEffectColor);
+    tryParse(config["changeHeadHeroSkinBtnPos"],
+            _m_dashboardLayout.m_changeHeadHeroSkinButtonPos);
+    tryParse(config["changeDeputyHeroSkinBtnPos"],
+            _m_dashboardLayout.m_changeDeputyHeroSkinButtonPos);
     config = layoutConfig["skillButton"].value<JsonObject>();
     JsonArray configWidth = config["width"].value<JsonArray>();
     JsonArray configTextArea = config["textArea"].value<JsonArray>();

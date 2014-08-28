@@ -36,6 +36,8 @@
 #include <QGraphicsEffect>
 #include <QLabel>
 
+class GraphicsPixmapHoverItem;
+
 class GenericCardContainer : public QGraphicsObject {
     Q_OBJECT
 
@@ -104,6 +106,8 @@ public:
 
     bool canBeSelected();
 
+    void stopHeroSkinChangingAnimation();
+
 public slots:
     virtual void updateAvatar();
     virtual void updateSmallAvatar();
@@ -139,6 +143,14 @@ public slots:
     virtual void showPile();
     virtual void refresh();
 
+    QPixmap getHeadAvatarIcon(const QString &generalName);
+    QPixmap getDeputyAvatarIcon(const QString &generalName);
+
+    inline GraphicsPixmapHoverItem *getHeadAvartarItem() const { return _m_avatarIcon; }
+    inline GraphicsPixmapHoverItem *getDeputyAvartarItem() const { return _m_smallAvatarIcon; }
+
+    static void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap, QGraphicsItem *parent);
+
 protected:
     // overrider parent functions
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
@@ -169,7 +181,7 @@ protected:
     void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QString &key);
     void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QString &key, QGraphicsItem *parent);
     void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap);
-    void _paintPixmap(QGraphicsPixmapItem *&item, const QRect &rect, const QPixmap &pixmap, QGraphicsItem *parent);
+
     void _clearPixmap(QGraphicsPixmapItem *item);
     QPixmap _getPixmap(const QString &key);
     QPixmap _getPixmap(const QString &key, const QString &arg);
@@ -191,8 +203,6 @@ protected:
     void _layBetween(QGraphicsItem *middle, QGraphicsItem *item1, QGraphicsItem *item2);
     void _layUnder(QGraphicsItem *item);
 
-    QPixmap _getAvatarIcon(QString generalName);
-
     bool _isSelected(QGraphicsItem *item) const;
 
     // layout
@@ -203,7 +213,8 @@ protected:
     // painting large shadowtext every frame is very costly, so we use a
     // graphicsitem to cache the result
     QGraphicsPixmapItem *_m_avatarNameItem, *_m_secondaryAvatarNameItem;
-    QGraphicsPixmapItem *_m_avatarIcon, *_m_smallAvatarIcon, *_m_circleItem;
+    GraphicsPixmapHoverItem *_m_avatarIcon, *_m_smallAvatarIcon;
+    QGraphicsPixmapItem *_m_circleItem;
     QGraphicsPixmapItem *_m_screenNameItem;
     QGraphicsPixmapItem *_m_chainIcon, *_m_chainIcon2;
     QGraphicsPixmapItem *_m_duanchangMask, *_m_duanchangMask2;

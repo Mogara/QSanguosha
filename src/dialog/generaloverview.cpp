@@ -307,6 +307,8 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
             if (skinId != 0)
                 tryLoadingSkinTranslation(general->objectName(), skinId);
             tempGeneralMap[general] = skinId;
+        } else {
+            generalsCopy.removeOne(general);
         }
     }
 
@@ -352,7 +354,7 @@ bool GeneralOverview::hasSkin(const General *general) const
     const int skinId = all_generals->value(general);
 
     if (skinId == 0)
-        return G_ROOM_SKIN.doesGeneralHaveSkin(general->objectName());
+        return G_ROOM_SKIN.doesGeneralHaveSkin(general->objectName(), 1, true);
 
     return true;
 }
@@ -594,7 +596,7 @@ void GeneralOverview::showNextSkin() {
     int skinId = ++ (*all_generals)[general];
 
     QPixmap pixmap;
-    if (G_ROOM_SKIN.doesGeneralHaveSkin(generalName, skinId)) {
+    if (G_ROOM_SKIN.doesGeneralHaveSkin(generalName, skinId, true)) {
         pixmap = G_ROOM_SKIN.getGeneralCardPixmap(generalName, skinId);
         tryLoadingSkinTranslation(generalName, skinId);
     } else {

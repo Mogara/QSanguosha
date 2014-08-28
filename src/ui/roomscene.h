@@ -148,9 +148,14 @@ public:
 
     inline bool isCancelButtonEnabled() const{ return cancel_button != NULL && cancel_button->isEnabled(); }
 
+    void stopHeroSkinChangingAnimations();
+
     bool m_skillButtonSank;
 
     bool game_started;
+
+    void addHeroSkinContainer(HeroSkinContainer *heroSkinContainer);
+    HeroSkinContainer *findHeroSkinContainer(const QString &generalName) const;
 
 public slots:
     void addPlayer(ClientPlayer *player);
@@ -359,6 +364,8 @@ private:
     QDeclarativeContext *_m_animationContext;
     QDeclarativeComponent *_m_animationComponent;
 #endif
+
+    QSet<HeroSkinContainer *> m_heroSkinContainers;
 
 private slots:
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>());

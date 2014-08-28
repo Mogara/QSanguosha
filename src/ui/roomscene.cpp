@@ -44,6 +44,7 @@
 #include "BubbleChatBox.h"
 #include "PlayerCardBox.h"
 #include "StyleHelper.h"
+#include "HeroSkinContainer.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -2850,6 +2851,30 @@ void RoomScene::changeTableBg() {
     updateTable();
 }
 
+void RoomScene::stopHeroSkinChangingAnimations()
+{
+    foreach (Photo *const &photo, photos) {
+        photo->stopHeroSkinChangingAnimation();
+    }
+
+    dashboard->stopHeroSkinChangingAnimation();
+}
+
+void RoomScene::addHeroSkinContainer(HeroSkinContainer *heroSkinContainer)
+{
+    m_heroSkinContainers.insert(heroSkinContainer);
+}
+
+HeroSkinContainer *RoomScene::findHeroSkinContainer(const QString &generalName) const
+{
+    foreach (HeroSkinContainer *heroSkinContainer, m_heroSkinContainers) {
+        if (heroSkinContainer->getGeneralName() == generalName)
+            return heroSkinContainer;
+    }
+
+    return NULL;
+}
+
 void RoomScene::changeHp(const QString &who, int delta, DamageStruct::Nature nature, bool losthp) {
     // update
     Photo *photo = name2photo.value(who, NULL);
@@ -3667,6 +3692,8 @@ void RoomScene::onGameStart() {
 }
 
 void RoomScene::freeze() {
+    stopHeroSkinChangingAnimations();
+
     dashboard->setEnabled(false);
     foreach(Photo *photo, photos) {
         photo->hideProgressBar();

@@ -83,6 +83,7 @@ public:
     void setRect(QRect rect);
     virtual QRectF boundingRect() const;
     bool insideButton(QPointF pos) const;
+    bool isMouseInside() const;
     virtual void setEnabled(bool enabled);
     bool isDown();
 
@@ -113,6 +114,7 @@ protected:
 
 signals:
     void clicked();
+    void clicked_outside();
     void enable_changed();
 };
 

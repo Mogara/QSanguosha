@@ -25,6 +25,8 @@
 #include "standard.h"
 #include "playercarddialog.h"
 #include "roomscene.h"
+#include "HeroSkinContainer.h"
+#include "GraphicsPixmapHoverItem.h"
 
 #include <QPainter>
 #include <QGraphicsScene>
@@ -51,7 +53,9 @@ Dashboard::Dashboard(QGraphicsItem *widget)
       buttonWidget(widget), selected(NULL), layout(&G_DASHBOARD_LAYOUT),
       leftHiddenMark(NULL), rightHiddenMark(NULL),
       headIcon(NULL), deputyIcon(NULL),
-      pendingCard(NULL), viewAsSkill(NULL), filter(NULL)
+      pendingCard(NULL), viewAsSkill(NULL), filter(NULL),
+      m_changeHeadHeroSkinButton(NULL), m_changeDeputyHeroSkinButton(NULL),
+      m_headHeroSkinContainer(NULL), m_deputyHeroSkinContainer(NULL)
 
 {
     Q_ASSERT(buttonWidget);
@@ -73,6 +77,20 @@ Dashboard::Dashboard(QGraphicsItem *widget)
     _createControls();
     _createExtraButtons();
 
+    connect(_m_avatarIcon, SIGNAL(hover_enter()), this, SLOT(onAvatarHoverEnter()));
+    connect(_m_avatarIcon, SIGNAL(hover_leave()), this, SLOT(onAvatarHoverLeave()));
+    connect(_m_avatarIcon, SIGNAL(skin_changing_start()),
+        this, SLOT(onSkinChangingStart()));
+    connect(_m_avatarIcon, SIGNAL(skin_changing_finished()),
+        this, SLOT(onSkinChangingFinished()));
+
+    connect(_m_smallAvatarIcon, SIGNAL(hover_enter()), this, SLOT(onAvatarHoverEnter()));
+    connect(_m_smallAvatarIcon, SIGNAL(hover_leave()), this, SLOT(onAvatarHoverLeave()));
+    connect(_m_smallAvatarIcon, SIGNAL(skin_changing_start()),
+        this, SLOT(onSkinChangingStart()));
+    connect(_m_smallAvatarIcon, SIGNAL(skin_changing_finished()),
+        this, SLOT(onSkinChangingFinished()));
+
     _m_sort_menu = new QMenu(RoomSceneInstance->mainWindow());
 }
 
@@ -83,12 +101,21 @@ void Dashboard::refresh() {
         _m_shadow_layer2->setBrush(Qt::NoBrush);
         leftHiddenMark->setVisible(false);
         rightHiddenMark->setVisible(false);
-    }
-    else if (m_player) {
-        _m_shadow_layer1->setBrush(m_player->hasShownGeneral1() ? QColor(0, 0, 0, 0) : G_DASHBOARD_LAYOUT.m_generalShadowColor);
-        _m_shadow_layer2->setBrush(m_player->hasShownGeneral2() ? QColor(0, 0, 0, 0) : G_DASHBOARD_LAYOUT.m_generalShadowColor);
+    } else if (m_player) {
+        _m_shadow_layer1->setBrush(m_player->hasShownGeneral1() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
+        _m_shadow_layer2->setBrush(m_player->hasShownGeneral2() ? Qt::transparent : G_DASHBOARD_LAYOUT.m_generalShadowColor);
         leftHiddenMark->setVisible(m_player->isHidden(true));
         rightHiddenMark->setVisible(m_player->isHidden(false));
+    }
+}
+
+void Dashboard::repaintAll() {
+    PlayerCardContainer::repaintAll();
+    if (NULL != m_changeHeadHeroSkinButton) {
+        m_changeHeadHeroSkinButton->setPos(layout->m_changeHeadHeroSkinButtonPos);
+    }
+    if (NULL != m_changeDeputyHeroSkinButton) {
+        m_changeDeputyHeroSkinButton->setPos(layout->m_changeDeputyHeroSkinButtonPos);
     }
 }
 
@@ -246,6 +273,17 @@ void Dashboard::_createRight() {
     _paintPixmap(headIcon, G_DASHBOARD_LAYOUT.m_headIconRegion, _getPixmap(QSanRoomSkin::S_SKIN_KEY_HEAD_ICON), rightFrame);
     _paintPixmap(deputyIcon, G_DASHBOARD_LAYOUT.m_deputyIconRegion, _getPixmap(QSanRoomSkin::S_SKIN_KEY_DEPUTY_ICON), rightFrame);
 
+    m_changeHeadHeroSkinButton = new QSanButton("heroskin",
+        "change", rightFrame);
+    m_changeHeadHeroSkinButton->hide();
+    connect(m_changeHeadHeroSkinButton, SIGNAL(clicked()), this, SLOT(showHeroSkinList()));
+    connect(m_changeHeadHeroSkinButton, SIGNAL(clicked_outside()), this, SLOT(heroSkinButtonMouseOutsideClicked()));
+
+    m_changeDeputyHeroSkinButton = new QSanButton("heroskin",
+        "change", rightFrame);
+    m_changeDeputyHeroSkinButton->hide();
+    connect(m_changeDeputyHeroSkinButton, SIGNAL(clicked()), this, SLOT(showHeroSkinList()));
+    connect(m_changeDeputyHeroSkinButton, SIGNAL(clicked_outside()), this, SLOT(heroSkinButtonMouseOutsideClicked()));
 }
 
 void Dashboard::_updateFrames() {
@@ -829,6 +867,54 @@ void Dashboard::_initializeRemovedEffect()
     _removedEffect->setStartValue(1.0);
 }
 
+void Dashboard::showHeroSkinListHelper(const General *general,
+                                       GraphicsPixmapHoverItem *avatarIcon,
+                                       HeroSkinContainer * &heroSkinContainer)
+{
+    if (NULL == general) {
+        return;
+    }
+
+    QString generalName = general->objectName();
+    if (NULL == heroSkinContainer) {
+        heroSkinContainer = RoomSceneInstance->findHeroSkinContainer(generalName);
+
+        if (NULL == heroSkinContainer) {
+            heroSkinContainer = new HeroSkinContainer(generalName, general->getKingdom());
+
+            if (avatarIcon == _m_avatarIcon) {
+                connect(Self, SIGNAL(headSkinIdChanged(QString)),
+                        avatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
+            } else {
+                connect(Self, SIGNAL(deputySkinIdChanged(QString)),
+                        avatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
+            }
+
+            RoomSceneInstance->addHeroSkinContainer(heroSkinContainer);
+            RoomSceneInstance->addItem(heroSkinContainer);
+
+            heroSkinContainer->setPos(getHeroSkinContainerPosition());
+            RoomSceneInstance->bringToFront(heroSkinContainer);
+        }
+    }
+
+    if (!heroSkinContainer->isVisible()) {
+        heroSkinContainer->show();
+    }
+
+    heroSkinContainer->bringToTopMost();
+}
+
+QPointF Dashboard::getHeroSkinContainerPosition() const
+{
+    QRectF avatarParentRect = rightFrame->sceneBoundingRect();
+    QRectF heroSkinContainerRect = (m_headHeroSkinContainer != NULL)
+        ? m_headHeroSkinContainer->boundingRect()
+        : m_deputyHeroSkinContainer->boundingRect();;
+    return QPointF(avatarParentRect.left() - heroSkinContainerRect.width() - 120,
+        avatarParentRect.bottom() - heroSkinContainerRect.height() - 5);
+}
+
 void Dashboard::adjustCards(bool playAnimation) {
     _adjustCards();
     foreach(CardItem *card, m_handCards)
@@ -1360,6 +1446,127 @@ void Dashboard::resetSenderZValue()
     item->setZValue(z);
 }
 
+void Dashboard::showHeroSkinList()
+{
+    if (NULL != m_player) {
+        if (sender() == m_changeHeadHeroSkinButton) {
+            showHeroSkinListHelper(m_player->getGeneral(), _m_avatarIcon,
+                m_headHeroSkinContainer);
+        } else {
+            showHeroSkinListHelper(m_player->getGeneral2(), _m_smallAvatarIcon,
+                m_deputyHeroSkinContainer);
+        }
+    }
+}
+
+void Dashboard::heroSkinButtonMouseOutsideClicked()
+{
+    if (NULL != m_player) {
+        QSanButton *heroSKinBtn = NULL;
+        if (sender() == m_changeHeadHeroSkinButton) {
+            heroSKinBtn = m_changeHeadHeroSkinButton;
+        } else {
+            heroSKinBtn = m_changeDeputyHeroSkinButton;
+        }
+
+        QGraphicsItem *parent = heroSKinBtn->parentItem();
+        if (NULL != parent && !parent->isUnderMouse()) {
+            heroSKinBtn->hide();
+
+            /*if (Self == m_player && NULL != _m_screenNameItem && _m_screenNameItem->isVisible()) {
+                _m_screenNameItem->hide();
+            }*/
+        }
+    }
+}
+
+void Dashboard::onAvatarHoverEnter() {
+    if (NULL != m_player) {
+        QObject *senderObj = sender();
+
+        const General *general = NULL;
+        GraphicsPixmapHoverItem *avatarItem = NULL;
+        QSanButton *heroSKinBtn = NULL;
+
+        if ((senderObj == _m_avatarIcon)) {
+                general = m_player->getGeneral();
+                avatarItem = _m_avatarIcon;
+                heroSKinBtn = m_changeHeadHeroSkinButton;
+
+                m_changeDeputyHeroSkinButton->hide();
+        } else if ((senderObj == _m_smallAvatarIcon)) {
+                general = m_player->getGeneral2();
+                avatarItem = _m_smallAvatarIcon;
+                heroSKinBtn = m_changeDeputyHeroSkinButton;
+
+                m_changeHeadHeroSkinButton->hide();
+        }
+
+        if (NULL != general && HeroSkinContainer::hasSkin(general->objectName())
+            && avatarItem->isSkinChangingFinished()) {
+                heroSKinBtn->show();
+        }
+    }
+}
+
+void Dashboard::onAvatarHoverLeave()
+{
+    if (NULL != m_player) {
+        QObject *senderObj = sender();
+
+        QSanButton *heroSKinBtn = NULL;
+
+        if ((senderObj == _m_avatarIcon))
+                heroSKinBtn = m_changeHeadHeroSkinButton;
+        else if ((senderObj == _m_smallAvatarIcon))
+                heroSKinBtn = m_changeDeputyHeroSkinButton;
+
+        if ((NULL != heroSKinBtn) && (!heroSKinBtn->isMouseInside())) {
+            heroSKinBtn->hide();
+            //doAvatarHoverLeave();
+        }
+    }
+}
+
+void Dashboard::onSkinChangingStart()
+{
+    QSanButton *heroSKinBtn = NULL;
+    QString generalName;
+
+    if (sender() == _m_avatarIcon) {
+        heroSKinBtn = m_changeHeadHeroSkinButton;
+        generalName = m_player->getGeneralName();
+    } else {
+        heroSKinBtn = m_changeDeputyHeroSkinButton;
+        generalName = m_player->getGeneral2Name();
+    }
+
+    heroSKinBtn->hide();
+}
+
+void Dashboard::onSkinChangingFinished()
+{
+    GraphicsPixmapHoverItem *avatarItem = NULL;
+    QSanButton *heroSKinBtn = NULL;
+    QSanInvokeSkillDock *skillDock = NULL;
+    QString generalName;
+
+    if (sender() == _m_avatarIcon) {
+        avatarItem = _m_avatarIcon;
+        heroSKinBtn = m_changeHeadHeroSkinButton;
+        generalName = m_player->getGeneralName();
+        skillDock = leftSkillDock;
+    } else {
+        avatarItem = _m_smallAvatarIcon;
+        heroSKinBtn = m_changeDeputyHeroSkinButton;
+        generalName = m_player->getGeneral2Name();
+        skillDock = rightSkillDock;
+    }
+
+    if (avatarItem->isUnderMouse() && !skillDock->isUnderMouse())
+        heroSKinBtn->show();
+}
+
 const ViewAsSkill *Dashboard::currentSkill() const{
     return viewAsSkill;
 }
@@ -1370,6 +1577,11 @@ const Card *Dashboard::getPendingCard() const{
 
 void Dashboard::updateAvatar()
 {
+    if (_m_avatarIcon == NULL) {
+        _m_avatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
+        _m_avatarIcon->setTransformationMode(Qt::SmoothTransformation);
+    }
+
     const General *general = NULL;
     if (m_player) {
         general = m_player->getAvatarGeneral();
@@ -1387,13 +1599,14 @@ void Dashboard::updateAvatar()
         QString());
         */
 
+    QGraphicsPixmapItem *avatarIconTmp = _m_avatarIcon;
     if (general != NULL) {
         _m_avatarArea->setToolTip(m_player->getHeadSkillDescription());
         QString name = general->objectName();
-        QPixmap avatarIcon = _getAvatarIcon(name);
+        QPixmap avatarIcon = getHeadAvatarIcon(name);
         QRect area = _m_layout->m_avatarArea;
         area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 3);
-        _paintPixmap(_m_avatarIcon, area, avatarIcon, _getAvatarParent());
+        _paintPixmap(avatarIconTmp, area, avatarIcon, _getAvatarParent());
         // this is just avatar general, perhaps game has not started yet.
         if (m_player->getGeneral() != NULL) {
             QString kingdom = m_player->getKingdom();
@@ -1407,16 +1620,14 @@ void Dashboard::updateAvatar()
             _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem,
             _m_layout->m_avatarNameArea,
             Qt::AlignLeft | Qt::AlignJustify, name);
-        }
-        else {
+        } else {
             _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, QSanRoomSkin::S_SKIN_KEY_DEFAULT_SECOND),
                 _getAvatarParent());
         }
-    }
-    else {
-        _paintPixmap(_m_avatarIcon, _m_layout->m_avatarArea,
-            QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
+    } else {
+        _paintPixmap(avatarIconTmp, _m_layout->m_avatarArea,
+                     QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
         _clearPixmap(_m_kingdomColorMaskIcon);
         _clearPixmap(_m_kingdomIcon);
         _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
@@ -1430,16 +1641,23 @@ void Dashboard::updateAvatar()
 
 void Dashboard::updateSmallAvatar()
 {
+    if (_m_smallAvatarIcon == NULL) {
+        _m_smallAvatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
+        _m_smallAvatarIcon->setTransformationMode(Qt::SmoothTransformation);
+    }
+
     const General *general = NULL;
     if (m_player)
         general = m_player->getGeneral2();
+
+    QGraphicsPixmapItem *smallAvatarIconTmp = _m_smallAvatarIcon;
     if (general != NULL) {
         _m_secondaryAvatarArea->setToolTip(m_player->getDeputySkillDescription());
         QString name = general->objectName();
-        QPixmap avatarIcon = _getAvatarIcon(name);
+        QPixmap avatarIcon = getHeadAvatarIcon(name);
         QRect area = _m_layout->m_secondaryAvatarArea;
         area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 3);
-        _paintPixmap(_m_smallAvatarIcon, area, avatarIcon, _getAvatarParent());
+        _paintPixmap(smallAvatarIconTmp, area, avatarIcon, _getAvatarParent());
         QString kingdom = m_player->getKingdom();
         _paintPixmap(_m_kingdomColorMaskIcon2, _m_layout->m_kingdomMaskArea2,
             G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, kingdom), this->_getAvatarParent());
@@ -1451,13 +1669,12 @@ void Dashboard::updateSmallAvatar()
             Qt::AlignLeft | Qt::AlignJustify, show_name);
     }
     else if (m_player->getAvatarGeneral() && m_player->getAvatarGeneral()->getKingdom() != "god") {
-        QPixmap avatarIcon = _getAvatarIcon("deputy-" + m_player->getAvatarGeneral()->getKingdom());
+        QPixmap avatarIcon = getHeadAvatarIcon("deputy-" + m_player->getAvatarGeneral()->getKingdom());
         QRect area = _m_layout->m_secondaryAvatarArea;
         area = QRect(area.left() + 2, area.top() + 1, area.width() - 2, area.height() - 3);
-        _paintPixmap(_m_smallAvatarIcon, area, avatarIcon, _getAvatarParent());
-    }
-    else {
-        _paintPixmap(_m_smallAvatarIcon, _m_layout->m_secondaryAvatarArea,
+        _paintPixmap(smallAvatarIconTmp, area, avatarIcon, _getAvatarParent());
+    } else {
+        _paintPixmap(smallAvatarIconTmp, _m_layout->m_secondaryAvatarArea,
             QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
         _clearPixmap(_m_kingdomColorMaskIcon2);
         _clearPixmap(_m_kingdomIcon);

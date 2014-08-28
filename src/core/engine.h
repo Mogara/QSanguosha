@@ -213,7 +213,8 @@ private:
 
     QMutex m_mutex;
     QHash<QString, QString> translations;
-    QHash<QString, const General *> generals;
+    QStringList generalNames;
+    GeneralList generals;
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, QString> className2objectName;
     QHash<QString, const Skill *> skills;

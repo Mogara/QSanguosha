@@ -22,13 +22,14 @@
 #include "clientplayer.h"
 #include "SkinBank.h"
 #include "engine.h"
-
-#include <QPixmap>
-#include <qbitmap.h>
-#include <QPainter>
-#include <QGraphicsSceneHoverEvent>
 #include "client.h"
 #include "roomscene.h"
+
+#include <QPixmap>
+#include <QBitMap>
+#include <QPainter>
+#include <QGraphicsSceneHoverEvent>
+#include <QGraphicsView>
 
 QSanButton::QSanButton(QGraphicsItem *parent)
     : QGraphicsObject(parent), _m_state(S_STATE_UP), _m_style(S_STYLE_PUSH),
@@ -120,6 +121,24 @@ bool QSanButton::insideButton(QPointF pos) const{
     return _m_mask.contains(QPoint(pos.x(), pos.y()));
 }
 
+bool QSanButton::isMouseInside() const
+{
+    QGraphicsScene *scenePtr = scene();
+    if (NULL == scenePtr) {
+        return false;
+    }
+
+    QPoint cursorPos = QCursor::pos();
+    foreach (QGraphicsView *view, scenePtr->views()) {
+        QPointF pos = mapFromScene(view->mapToScene(view->mapFromGlobal(cursorPos)));
+        if (insideButton(pos)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void QSanButton::hoverEnterEvent(QGraphicsSceneHoverEvent *event) {
     if (_m_state == S_STATE_DISABLED || _m_state == S_STATE_CANPRESHOW) return;
     QPointF point = event->pos();
@@ -185,7 +204,12 @@ void QSanButton::_onMouseClick(bool inside) {
     }
     update();
 
-    if (inside) emit clicked();
+    if (inside) {
+        emit clicked();
+    } else {
+        _m_mouseEntered = false;
+        emit clicked_outside();
+    }
 }
 
 void QSanButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {

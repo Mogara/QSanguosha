@@ -1539,7 +1539,7 @@ void Player::setHeadSkinId(int id)
     if (headSkinId == id)
         return;
     headSkinId = id;
-    emit headSkinIdChanged(id);
+    emit headSkinIdChanged(general->objectName());
 }
 
 int Player::getHeadSkinId() const
@@ -1552,7 +1552,7 @@ void Player::setDeputySkinId(int id)
     if (deputySkinId == id)
         return;
     deputySkinId = id;
-    emit deputySkinIdChanged(id);
+    emit deputySkinIdChanged(general2->objectName());
 }
 
 int Player::getDeputySkinId() const

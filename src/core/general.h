@@ -88,6 +88,7 @@ public:
     void setDeputyMaxHpAdjustedValue(int adjusted_value = -1);
 
     int skinCount() const;
+    QString getSkinNameById(const int skinId);
 
 public slots:
     void lastWord(const int skinId) const;
@@ -106,6 +107,7 @@ private:
     QStringList companions;
     int head_max_hp_adjusted_value;
     int deputy_max_hp_adjusted_value;
+    mutable int skin_count;
 };
 
 Q_DECLARE_METATYPE(const General *)

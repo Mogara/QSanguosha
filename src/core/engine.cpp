@@ -273,7 +273,8 @@ void Engine::addPackage(Package *package) {
             foreach(const Skill *related, getRelatedSkills(skill_name))
                 general->addSkill(related->objectName());
         }
-        generals.insert(general->objectName(), general);
+        generalNames.append(general->objectName());
+        generals.append(general);
         if (isGeneralHidden(general->objectName())) continue;
         if (general->isLord()) lord_list << general->objectName();
     }
@@ -361,7 +362,10 @@ const Skill *Engine::getMainSkill(const QString &skill_name) const{
 }
 
 const General *Engine::getGeneral(const QString &name) const{
-    return generals.value(name, NULL);
+    if (generalNames.contains(name))
+        return generals.at(generalNames.indexOf(name));
+    else
+        return NULL;
 }
 
 int Engine::getGeneralCount(bool include_banned) const{
@@ -369,10 +373,9 @@ int Engine::getGeneralCount(bool include_banned) const{
         return generals.size();
 
     int total = generals.size();
-    QHashIterator<QString, const General *> itor(generals);
+    QListIterator<const General *> itor(generals);
     while (itor.hasNext()) {
-        itor.next();
-        const General *general = itor.value();
+        const General *general = itor.next();
         if (getBanPackages().contains(general->getPackage()))
             total--;
     }
@@ -774,11 +777,11 @@ int Engine::getCardCount() const{
 }
 
 QStringList Engine::getGeneralNames() const{
-    return generals.keys();
+    return generalNames;
 }
 
 QList<const General *> Engine::getGenerals() const{
-    return generals.values();
+    return generals;
 }
 
 QStringList Engine::getLimitedGeneralNames() const{
@@ -840,9 +843,9 @@ QList<int> Engine::getRandomCards() const{
 }
 
 QString Engine::getRandomGeneralName() const{
-    QString name = generals.keys().at(qrand() % generals.size());
-    while (generals.value(name)->getKingdom() == "programmer")
-        name = generals.keys().at(qrand() % generals.size());
+    QString name = generalNames.at(qrand() % generalNames.size());
+    while (generals.at(generalNames.indexOf(name))->getKingdom() == "programmer")
+        name = generalNames.at(qrand() % generalNames.size());
     return name;
 }
 

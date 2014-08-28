@@ -34,7 +34,8 @@ static qreal initialOpacity = 0.8;
 static int optionButtonHeight = 40;
 static QSize generalButtonSize;
 
-static int getSkinId(const ClientPlayer *player, const QString &generalName) {
+static int getSkinId(const ClientPlayer *player, const QString &generalName)
+{
     if (player->getGeneralName() == generalName)
         return player->getHeadSkinId();
     else

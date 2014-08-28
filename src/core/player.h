@@ -398,8 +398,8 @@ signals:
     void deputy_state_changed();
     void disable_show_changed();
     void removedChanged();
-    void headSkinIdChanged(int id);
-    void deputySkinIdChanged(int id);
+    void headSkinIdChanged(const QString &generalName);
+    void deputySkinIdChanged(const QString &generalName);
 };
 
 #endif
