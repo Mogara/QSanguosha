@@ -34,6 +34,9 @@ namespace QSanUiUtils {
     void makeGray(QPixmap &pixmap);
 
     namespace QSanFreeTypeFont {
+        bool init();
+        void quit();
+
         int *loadFont(const QString &fontPath);
         QString resolveFont(const QString &fontName);
         // @param painter
