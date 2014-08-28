@@ -31,13 +31,18 @@ end
 
 sgs.ai_skill_invoke["userdefine:FirstShowReward"] = true
 
---[[
+
 sgs.ai_skill_choice.heg_nullification = function(self, choice, data)
 	local effect = data:toCardEffect()
-	if effect.card:isKindOf("AOE") then return "all" end
-	return "single"
+	if effect.card:isKindOf("AOE") or effect.card:isKindOf("GlobalEffect") then
+		if self:isFriendWith(effect.to) then return "all"
+		elseif self:isFriend(effect.to) then return "single"
+		elseif self:isEnemy(effect.to) then return "all" 
+		end
+	end
+	return "all"
 end
-]]
+
 
 sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 

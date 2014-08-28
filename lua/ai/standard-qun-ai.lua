@@ -330,6 +330,7 @@ luanji_skill.getTurnUseCard = function(self)
 		local cards = self.player:getHandcards()
 		local same_suit = false
 		cards = sgs.QList2Table(cards)
+		self:sortByKeepValue(cards)
 		local useAll = false
 		for _, enemy in ipairs(self.enemies) do
 			if enemy:getHp() == 1 and not enemy:hasArmorEffect("Vine")  then
@@ -339,7 +340,7 @@ luanji_skill.getTurnUseCard = function(self)
 		for _, fcard in ipairs(cards) do
 			local fvalueCard = (isCard("Peach", fcard, self.player) or isCard("ExNihilo", fcard, self.player) or isCard("archery_attack", fcard, self.player))
 			if useAll then fvalueCard = (isCard("archery_attack", fcard, self.player)) end
-			if  not fvalueCard then
+			if not fvalueCard then
 				first_card = fcard
 				first_found = true
 				for _, scard in ipairs(cards) do

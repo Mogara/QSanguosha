@@ -178,3 +178,40 @@ function sgs.ai_armor_value.IronArmor(player, self)
 end
 
 sgs.ai_use_priority.IronArmor = 0.82
+
+--[[
+function SmartAI:useCardBurningCamps(card, use)
+	if not card:isAvailable(self.player) then return end
+	local player = self.room:nextPlayer(self.player)
+	if self:isFriendWith(player) then
+		return
+	else
+		local enemies = player:getFormation()
+		local shouldUse
+		for _, enemy in sgs.qlist(enemies) do
+			enemy = findPlayerByObjectName(enemy:objectName())
+			local damage = {}
+			damage.from = self.player
+			damage.to = enemy
+			damage.nature = sgs.DamageStruct_Fire
+			damage.damage = 1
+			if self:damageIsEffective_(damage) then
+				if not enemy:isChained() or self:isGoodChainTarget_(damage) then
+					shouldUse = true
+				else
+					shouldUse = false
+					return
+				end
+			end
+		end
+		if shouldUse then
+			use.card = card
+		end
+	end
+end
+
+
+sgs.ai_use_value.BurningCamps = 7
+sgs.ai_use_priority.BurningCamps = 4.7
+sgs.ai_card_intention.BurningCamps = 10
+]]
