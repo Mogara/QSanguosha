@@ -36,7 +36,7 @@ function SmartAI:useCardDrowning(card, use)
 	for _, friend in ipairs(self.friends_noself) do
 		if card:targetFilter(players, friend, self.player) and not players:contains(friend) and self:needToThrowArmor(friend) then
 			players:append(friend)
-			if use.to then use.to:append(enemy) end
+			if use.to then use.to:append(friend) end
 		end
 	end
 

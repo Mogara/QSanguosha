@@ -518,7 +518,6 @@ function sgs.updateIntention(from, to, intention)
 	if not intention or type(intention) ~= "number" then global_room:writeToConsole(debug.traceback()) end
 	if intention > 0 then intention = 10 end
 	if intention < 0 then intention = -10 end
-	sgs.outputKingdomValues(from, intention)
 	local sendLog
 	if sgs.recorder:evaluateKingdom(from) == "careerist" or sgs.recorder:evaluateKingdom(to, from) == "careerist" then
 	else
@@ -528,6 +527,7 @@ function sgs.updateIntention(from, to, intention)
 			local kingdoms = sgs.KingdomsTable
 			if intention > 0 then
 				sendLog = true
+				sgs.outputKingdomValues(from, intention)
 				for _, kingdom in ipairs(kingdoms) do
 					if table.contains(to_kingdom, kingdom) then
 						sgs.ai_loyalty[kingdom][from:objectName()] = sgs.ai_loyalty[kingdom][from:objectName()] - intention
@@ -537,6 +537,7 @@ function sgs.updateIntention(from, to, intention)
 				end
 			elseif intention < 0 then
 				sendLog = true
+				sgs.outputKingdomValues(from, intention)
 				sgs.ai_loyalty[to:getKingdom()][from:objectName()] = sgs.ai_loyalty[to:getKingdom()][from:objectName()] - intention
 			end
 		elseif to:getMark(string.format("KnownBoth_%s_%s", from:objectName(), to:objectName())) > 0 and sgs.isAnjiang(to) then
@@ -545,6 +546,7 @@ function sgs.updateIntention(from, to, intention)
 				to:setMark("KnownBothEnemy" .. from:objectName(), 1)
 			else
 				sendLog = true
+				sgs.outputKingdomValues(from, intention)
 				for _, kingdom in ipairs(kingdoms) do
 					if kingdom ~= from:getKingdom() then
 						sgs.ai_loyalty[kingdom][to:objectName()] = sgs.ai_loyalty[kingdom][to:objectName()] + intention
@@ -560,7 +562,7 @@ function sgs.updateIntention(from, to, intention)
 		sgs.ais[p:objectName()]:updatePlayers()
 	end
 
-	sgs.outputKingdomValues(from, intention, sendLog)
+	sgs.outputKingdomValues(from, sendLog and intention or 0, sendLog)
 end
 
 function sgs.outputKingdomValues(player, level, sendLog)
@@ -852,6 +854,15 @@ function SmartAI:getKeepValue(card, kept, writeMode)
 		return self.keepValue[card:getId()] or self.keepdata[card:getClassName()] or sgs.ai_keep_value[card:getClassName()] or 0
 	end
 
+	local maxvalue = self.keepdata[card:getClassName()] or sgs.ai_keep_value[card:getClassName()] or 0
+	local mostvaluable_class = card:getClassName()
+	for k, v in pairs(self.keepdata) do
+		if isCard(k, card, self.player) and v > maxvalue then
+			maxvalue = v
+			mostvaluable_class = k
+		end
+	end
+
 	local cardPlace = self.room:getCardPlace(card:getEffectiveId())
 	if writeMode then
 		if cardPlace == sgs.Player_PlaceEquip then
@@ -864,13 +875,19 @@ function SmartAI:getKeepValue(card, kept, writeMode)
 				end
 			elseif self.player:hasSkills("bazhen|jgyizhong") and card:isKindOf("Armor") then return -8
 			elseif self:needKongcheng() then return 5.0
-			elseif card:isKindOf("Armor") then return self:isWeak() and 5.2 or 3.2
-			elseif card:isKindOf("DefensiveHorse") then return self:isWeak() and 4.3 or 3.19
-			elseif card:isKindOf("Weapon") then return self.player:getPhase() == sgs.Player_Play and self:slashIsAvailable() and 3.39 or 3.2
-			else return 3.19
 			end
+			local value = 0
+			if card:isKindOf("Armor") then value = self:isWeak() and 5.2 or 3.2
+			elseif card:isKindOf("DefensiveHorse") then value = self:isWeak() and 4.3 or 3.19
+			elseif card:isKindOf("Weapon") then value = self.player:getPhase() == sgs.Player_Play and self:slashIsAvailable() and 3.39 or 3.2
+			else value = 3.19
+			end
+			if mostvaluable_class ~= card:getClassName() then
+				value = value + maxvalue
+			end
+			return value
 		elseif cardPlace == sgs.Player_PlaceHand then
-			local value_suit, value_number, newvalue, value_viewas = 0, 0, 0, 0
+			local value_suit, value_number, newvalue = 0, 0, 0
 			local suit_string = card:getSuitString()
 			local number = card:getNumber()
 			local i = 0
@@ -898,16 +915,8 @@ function SmartAI:getKeepValue(card, kept, writeMode)
 			end
 			if i > 0 then value_number = value_number / i end
 
-			local maxvalue, mostvaluable_class = -10, card:getClassName()
-			for k, v in pairs(self.keepdata) do
-				if isCard(k, card, self.player) and v > maxvalue then
-					maxvalue = v
-					mostvaluable_class = k
-					value_viewas = 0.1
-				end
-			end
-
-			newvalue = maxvalue + value_suit + value_number + value_viewas
+			newvalue = maxvalue + value_suit + value_number
+			if mostvaluable_class ~= card:getClassName() then newvalue = newvalue + 0.1 end
 			newvalue = self:adjustKeepValue(card, newvalue)
 
 			return newvalue
