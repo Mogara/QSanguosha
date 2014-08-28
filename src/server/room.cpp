@@ -2196,22 +2196,16 @@ void Room::reportDisconnection() {
     // send disconnection message to server log
     emit room_message(player->reportHeader() + tr("disconnected"));
 
-    // the 4 kinds of circumstances
-    // 1. Just connected, with no object name : just remove it from player list
-    // 2. Connected, with an object name : remove it, tell other clients and decrease signup_count
-    // 3. Game is not started, but role is assigned, give it the default general(general2) and others same with fourth case
-    // 4. Game is started, do not remove it just set its state as offline
-    // all above should set its socket to NULL
-
+    // all the circumstances below should set its socket to NULL
     player->setSocket(NULL);
 
+    // the 3 kinds of circumstances
     if (player->objectName().isEmpty()) {
-        // first case
+        //Just connected, with no object name : just remove it from player list
         player->setParent(NULL);
         m_players.removeOne(player);
-    }
-    else if (player->getRole().isEmpty()) {
-        // second case
+    } else if (player->getRole().isEmpty()) {
+        // Connected, with an object name : remove it, tell other clients and decrease signup_count
         if (m_players.length() < player_count) {
             player->setParent(NULL);
             m_players.removeOne(player);
@@ -2224,9 +2218,8 @@ void Room::reportDisconnection() {
 
             doBroadcastNotify(S_COMMAND_REMOVE_PLAYER, player->objectName());
         }
-    }
-    else {
-        // fourth case
+    } else {
+        // Game is started, do not remove it just set its state as offline
         if (player->m_isWaitingReply)
             player->releaseLock(ServerPlayer::SEMA_COMMAND_INTERACTIVE);
         setPlayerProperty(player, "state", "offline");
@@ -2249,7 +2242,7 @@ void Room::reportDisconnection() {
     if (player->isOwner()) {
         player->setOwner(false);
         broadcastProperty(player, "owner");
-        foreach(ServerPlayer *p, m_players) {
+        foreach (ServerPlayer *p, m_players) {
             if (p->getState() == "online") {
                 p->setOwner(true);
                 broadcastProperty(p, "owner");
@@ -2257,6 +2250,9 @@ void Room::reportDisconnection() {
             }
         }
     }
+
+    if (player->parent() == NULL)
+        player->deleteLater();
 }
 
 void Room::trustCommand(ServerPlayer *player, const QVariant &) {
