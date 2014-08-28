@@ -52,7 +52,8 @@ void RoomState::reset() {
     int n = Sanguosha->getCardCount();
     for (int i = 0; i < n; i++) {
         const Card *card = Sanguosha->getEngineCard(i);
-        m_cards[i] = new WrappedCard(Card::Clone(card));
+        Card *clonedCard = Card::Clone(card);
+        m_cards[i] = new WrappedCard(Card::Clone(clonedCard));
     }
 }
 
