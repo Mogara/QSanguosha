@@ -128,8 +128,8 @@ int main(int argc, char *argv[]) {
         QDir storageDir("/storage");
         QStringList sdcards = storageDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
         foreach (const QString &sdcard, sdcards) {
-            QDir root(QString("/storage/%1/QSanguosha").arg(sdcard));
-            if (root.exists()) {
+            QDir root(QString("/storage/%1/Android/data/org.qsgsrara.qsanguosha").arg(sdcard));
+            if (root.exists("lua/config.lua")) {
                 QDir::setCurrent(root.absolutePath());
                 break;
             }
