@@ -97,7 +97,8 @@ void QSanUiUtils::makeGray(QPixmap &pixmap) {
 static FT_Library  _ftlib;
 static bool _ftLibInitialized = false;
 
-static bool _initLibrary() {
+bool QSanUiUtils::QSanFreeTypeFont::init()
+{
     FT_Error error = FT_Init_FreeType(&_ftlib);
     if (error) {
         qWarning("error loading library");
@@ -106,6 +107,13 @@ static bool _initLibrary() {
     else {
         _ftLibInitialized = true;
         return true;
+    }
+}
+
+void QSanUiUtils::QSanFreeTypeFont::quit()
+{
+    if (_ftLibInitialized) {
+        FT_Done_FreeType(_ftlib);
     }
 }
 
@@ -141,7 +149,7 @@ QString QSanUiUtils::QSanFreeTypeFont::resolveFont(const QString &fontName) {
 }
 
 int *QSanUiUtils::QSanFreeTypeFont::loadFont(const QString &fontName) {
-    if (!_ftLibInitialized && !_initLibrary())
+    if (!_ftLibInitialized && !init())
         return NULL;
     FT_Face face = NULL;
     QString resolvedPath = resolveFont(fontName);
