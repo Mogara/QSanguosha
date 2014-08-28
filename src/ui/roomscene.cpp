@@ -554,18 +554,26 @@ void RoomScene::handleGameEvent(const QVariant &args) {
         bool isSecondaryHero = arg[3].toBool();
         bool sendLog = arg[4].toBool();
         ClientPlayer *player = ClientInstance->getPlayer(playerName);
-        if (Sanguosha->getGeneral(newHeroName) && sendLog) {
-            QString type = "#Transfigure";
-            QString arg2 = QString();
-            if (player->getGeneral2() && !isSecondaryHero) {
-                type = "#TransfigureDual";
-                arg2 = "GeneralA";
+        if (Sanguosha->getGeneral(newHeroName)) {
+            if (isSecondaryHero) {
+                player->setGeneral2Name(newHeroName);
+            } else {
+                player->setGeneralName(newHeroName);
             }
-            else if (isSecondaryHero) {
-                type = "#TransfigureDual";
-                arg2 = "GeneralB";
+
+            if (sendLog) {
+                QString type = "#Transfigure";
+                QString arg2 = QString();
+                if (player->getGeneral2() && !isSecondaryHero) {
+                    type = "#TransfigureDual";
+                    arg2 = "GeneralA";
+                }
+                else if (isSecondaryHero) {
+                    type = "#TransfigureDual";
+                    arg2 = "GeneralB";
+                }
+                log_box->appendLog(type, player->objectName(), QStringList(), QString(), newHeroName, arg2);
             }
-            log_box->appendLog(type, player->objectName(), QStringList(), QString(), newHeroName, arg2);
         }
         if (player != Self) break;
         const General* oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
