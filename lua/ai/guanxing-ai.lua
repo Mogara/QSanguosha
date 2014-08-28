@@ -537,7 +537,7 @@ function SmartAI:getValuableCardForGuanxing(cards, up_cards)
 		elseif c:isKindOf("OffensiveHorse") or self:getCardsNum("OffensiveHorse", "he") > 0 then ignore_OH = true
 		elseif c:isKindOf("Jink") then ignore_jink = true end
 	end
-	
+
 	local peach, exnihilo, jink, analeptic, nullification, snatch, dismantlement, indulgence, befriendattacking
 	for _, card in ipairs(cards) do
 		if isCard("Peach", card, self.player) then
@@ -594,7 +594,7 @@ function SmartAI:getValuableCardForGuanxing(cards, up_cards)
 
 	if nullification and self:getCardsNum("Nullification") < 2 then return nullification end
 
-	local eightdiagram, silverlion, vine, renwang, DefHorse, OffHorse
+	local eightdiagram, silverlion, vine, renwang, ironarmor, DefHorse, OffHorse
 	local weapon, crossbow, halberd, double, qinggang, axe, gudingdao
 
 	for _, card in ipairs(cards) do
@@ -608,6 +608,7 @@ function SmartAI:getValuableCardForGuanxing(cards, up_cards)
 		elseif card:isKindOf("SilverLion") then silverlion = card
 		elseif card:isKindOf("Vine") then vine = card
 		elseif card:isKindOf("RenwangShield") then renwang = card
+		elseif card:isKindOf("IronArmor") then ironarmor = card
 
 		elseif card:isKindOf("DefensiveHorse") and not self:getSameEquip(card) then DefHorse = card
 		elseif card:isKindOf("OffensiveHorse") and not self:getSameEquip(card) then OffHorse = card
@@ -661,6 +662,15 @@ function SmartAI:getValuableCardForGuanxing(cards, up_cards)
 
 	if renwang then
 		if sgs.ai_armor_value.RenwangShield(self.player, self) > 0 and self:getCardsNum("Jink") == 0 then return renwang end
+	end
+
+	if ironarmor then
+		for _, enemy in ipairs(self.enemies) do
+			if enemy:hasShownSkill("huoji") then return ironarmor end
+			if getCardsNum("FireAttack", enemy, self.player) > 0 then return ironarmor end
+			if getCardsNum("FireSlash", enemy, self.player) > 0 then return ironarmor end
+			if enemy:getFormation():contains(self.player) and getCardsNum("BurningCamps", enemy, self.player) > 0 then return ironarmor end
+		end
 	end
 
 	if DefHorse and (not self.player:hasSkill("leiji") or self:getCardsNum("Jink") == 0) then
@@ -768,7 +778,7 @@ function SmartAI:getValuableCardForGuanxing(cards, up_cards)
 
 	end
 
-	local classNames = { "Snatch", "Dismantlement", "Indulgence", "SupplyShortage", "Collateral", "Duel", "Drowning", "Drowning", "ArcheryAttack", "SavageAssault", "FireAttack",
+	local classNames = { "Snatch", "Dismantlement", "Indulgence", "SupplyShortage", "Collateral", "Duel", "Drowning", "ArcheryAttack", "SavageAssault", "FireAttack",
 							"GodSalvation", "Lightning" }
 	local className2objectName = { Snatch = "snatch", Dismantlement = "dismantlement", Indulgence = "indulgence", SupplyShortage = "supply_shortage", Collateral = "collateral",
 									Duel = "duel", Drowning = "drowning", ArcheryAttack = "archery_attack", SavageAssault = "savage_assault", FireAttack = "fire_attack",
@@ -804,6 +814,10 @@ function SmartAI:getValuableCardForGuanxing(cards, up_cards)
 			end
 		end
 		if not inAttackRange then return weapon end
+	end
+
+	if eightdiagram or silverlion or vine or renwang or ironarmor then
+		return renwang or eightdiagram or ironarmor or silverlion or vine
 	end
 
 	return

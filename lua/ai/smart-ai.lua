@@ -5103,21 +5103,10 @@ function sgs.hasNullSkill(skill_name, player)
 end
 
 function SmartAI:isFriendWith(player)
+	if self.role == "careerist" then return false end
 	if self.player:isFriendWith(player) then return true end
-	if self:getKingdom() == self:getKingdom(player) then return true end
+	if self.player:getKingdom() == self:evaluateKingdom(player) then return true end
 	return false
-end
-
-function SmartAI:getKingdom(player)
-	player = player or self.player
-	if player:objectName() == self.player:objectName() then
-		if self.role == "careerist" then
-			return "careerist"
-		else
-			return player:getKingdom()
-		end
-	end
-	return sgs.ai_explicit[player:objectName()]
 end
 
 dofile "lua/ai/debug-ai.lua"
