@@ -509,7 +509,7 @@ void MainWindow::region(const QPoint &cursorGlobalPoint)
 
 void MainWindow::fetchUpdateInformation()
 {
-    QNetworkAccessManager *mgr = new QNetworkAccessManager;
+    static QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
 #ifdef QT_DEBUG
     QString URL1 = "http://ver.qsanguosha.org/test/UpdateInfo";
     QString URL2 = "http://ver.qsanguosha.org/test/whatsnew.html";
@@ -577,6 +577,11 @@ void MainWindow::closeEvent(QCloseEvent *) {
     Config.setValue("WindowSize", size());
     Config.setValue("WindowPosition", pos());
     Config.setValue("WindowState", (int)windowState());
+
+    //It's weird that Config isn't automatically synchronized on Android...
+#ifdef Q_OS_ANDROID
+    Config.sync();
+#endif
 }
 
 MainWindow::~MainWindow() {

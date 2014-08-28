@@ -31,13 +31,18 @@ end
 
 sgs.ai_skill_invoke["userdefine:FirstShowReward"] = true
 
---[[
+
 sgs.ai_skill_choice.heg_nullification = function(self, choice, data)
 	local effect = data:toCardEffect()
-	if effect.card:isKindOf("AOE") then return "all" end
-	return "single"
+	if effect.card:isKindOf("AOE") or effect.card:isKindOf("GlobalEffect") then
+		if self:isFriendWith(effect.to) then return "all"
+		elseif self:isFriend(effect.to) then return "single"
+		elseif self:isEnemy(effect.to) then return "all" 
+		end
+	end
+	return "all"
 end
-]]
+
 
 sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 
@@ -200,7 +205,7 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		end
 	end
 
-	if notshown == 1  and not self.player:hasShownOneGeneral() then
+	if notshown == 1 and not self.player:hasShownOneGeneral() then
 		if canShowHead and canShowDeputy  then
 			local cho = { "GameRule_AskForGeneralShowHead", "GameRule_AskForGeneralShowDeputy"}
 			return cho[math.random(1, #cho)]
@@ -241,8 +246,26 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 	return "cancel"
 end
 
-sgs.ai_skill_choice["GameRule:TurnStart"] = sgs.ai_skill_choice["GameRule:TriggerOrder"]
+sgs.ai_skill_choice["GameRule:TurnStart"] = function(self, choices, data)
+	local choice = sgs.ai_skill_choice["GameRule:TriggerOrder"](self, choices, data)
+	if choice == "cancel" then
+		if canShowHead and self.player:isDuanchang() then return "GameRule_AskForGeneralShowHead" end
+		if canShowDeputy and self.player:isDuanchang() then return "GameRule_AskForGeneralShowDeputy" end
 
-sgs.ai_skill_invoke.GameRule_AskForArraySummon = true
+		if not self.player:hasShownOneGeneral() then
+			local gameProcess = sgs.gameProcess():split(">>")
+			if self.player:getKingdom() == gameProcess[1] then
+				if canShowHead then return "GameRule_AskForGeneralShowDeputy"
+				elseif canShowDeputy then return "GameRule_AskForGeneralShowDeputy" end
+			end
+		end
+
+	end
+	return choice
+end
+
+sgs.ai_skill_invoke.GameRule_AskForArraySummon = function(self, data)
+	return self:willShowForDefence() or self:willShowForAttack()
+end
 
 sgs.ai_skill_invoke.FormationSummon = true

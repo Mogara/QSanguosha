@@ -78,20 +78,10 @@
 
 
 static int os_execute (lua_State *L) {
-  const char *cmd = luaL_optstring(L, 1, NULL);
-  int stat =
-#ifndef WINRT
-    system(cmd)
-#else
-    NULL
-#endif
-    ;
-  if (cmd != NULL)
-    return luaL_execresult(L, stat);
-  else {
-    lua_pushboolean(L, stat);  /* true if there is a shell */
-    return 1;
-  }
+  //Fs: remove the realization of this function because of the unsafe environment
+  luaL_optstring(L, 1, NULL);
+  lua_pushboolean(L, 1);  /* true if there is a shell */
+  return 1;
 }
 
 

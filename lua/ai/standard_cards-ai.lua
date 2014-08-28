@@ -259,7 +259,7 @@ function SmartAI:slashProhibit(card, enemy, from)
 
 	local nature = card:isKindOf("FireSlash") and sgs.DamageStruct_Fire
 					or card:isKindOf("ThunderSlash") and sgs.DamageStruct_Thunder
-	for _, askill in sgs.qlist(enemy:getVisibleSkillList()) do
+	for _, askill in sgs.qlist(enemy:getVisibleSkillList(true)) do
 		local filter = sgs.ai_slash_prohibit[askill:objectName()]
 		if filter and type(filter) == "function" and filter(self, from, enemy, card) then return true end
 	end
@@ -1250,7 +1250,8 @@ function sgs.ai_cardsview.Spear(self, class_name, player, cards)
 
 		local newcards = {}
 		for _, card in ipairs(cards) do
-			if self.room:getCardOwner(card:getEffectiveId()):objectName() ~= player:objectName()
+			if not self.room:getCardOwner(card:getEffectiveId())
+				or self.room:getCardOwner(card:getEffectiveId()):objectName() ~= player:objectName()
 				or self.room:getCardPlace(card:getEffectiveId()) ~= sgs.Player_PlaceHand then continue end
 			if not isCard("Peach", card, player) and not (isCard("ExNihilo", card, player) and player:getPhase() == sgs.Player_Play) then
 				table.insert(newcards, card)
@@ -1263,7 +1264,7 @@ function sgs.ai_cardsview.Spear(self, class_name, player, cards)
 			if i + 1 > #newcards then break end
 			local id1 = newcards[i]:getEffectiveId()
 			local id2 = newcards[i + 1]:getEffectiveId()
-			local str = ("slash:%s[%s:%s]=%d+%d&%s"):format(skill_name, "to_be_decided", 0, id1, id2, skill_name)
+			local str = ("slash:%s[%s:%s]=%d+%d&"):format("Spear", "to_be_decided", 0, id1, id2)
 			table.insert(card_str , str)
 		end
 		return card_str
@@ -2643,7 +2644,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 	end
 	if (not friendneedpeach and peach) or peachnum > 1 then return peach end
 
-	local exnihilo, jink, analeptic, nullification, snatch, dismantlement
+	local exnihilo, jink, analeptic, nullification, snatch, dismantlement, befriendattacking
 	for _, card in ipairs(cards) do
 		if isCard("ExNihilo", card, self.player) then
 			if not NextPlayerCanUse or (not self:willSkipPlayPhase() and (self.player:hasSkills("jizhi|zhiheng|rende") or not NextPlayer:hasShownSkills("jizhi|zhiheng|rende"))) then
@@ -2659,6 +2660,8 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 			snatch = card
 		elseif isCard("Dismantlement", card, self.player) then
 			dismantlement = card
+		elseif isCard("BefriendAttacking", card, self.player) then
+			befriendattacking = card
 		end
 
 	end
@@ -2678,6 +2681,11 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 
 	if SelfisCurrent then
 		if exnihilo then return exnihilo end
+		if befriendattacking then
+			for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+				if p:hasShownOneGeneral() and not self.player:isFriendWith(p) then return befriendattacking end
+			end
+		end
 		if (jink or analeptic) and (self:getCardsNum("Jink") == 0 or (self:isWeak() and self:getOverflow() <= 0)) then
 			return jink or analeptic
 		end
@@ -2693,6 +2701,11 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 			if jink or analeptic or exnihilo then return jink or analeptic or exnihilo end
 		else
 			if exnihilo then return exnihilo end
+			if befriendattacking then
+				for _, p in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+					if p:hasShownOneGeneral() and not self.player:isFriendWith(p) then return befriendattacking end
+				end
+			end
 		end
 	end
 
@@ -2714,22 +2727,26 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		end
 	end
 
-	local eightdiagram, silverlion, vine, renwang, DefHorse, OffHorse
+	local eightdiagram, silverlion, vine, renwang, ironarmor, DefHorse, OffHorse
 	local weapon, crossbow, halberd, double, qinggang, axe, gudingdao
 	for _, card in ipairs(cards) do
 		if card:isKindOf("EightDiagram") then eightdiagram = card:getEffectiveId()
 		elseif card:isKindOf("SilverLion") then silverlion = card:getEffectiveId()
 		elseif card:isKindOf("Vine") then vine = card:getEffectiveId()
 		elseif card:isKindOf("RenwangShield") then renwang = card:getEffectiveId()
+		elseif card:isKindOf("IronArmor") then ironarmor = card:getEffectiveId()
+
 		elseif card:isKindOf("DefensiveHorse") and not self:getSameEquip(card) then DefHorse = card:getEffectiveId()
 		elseif card:isKindOf("OffensiveHorse") and not self:getSameEquip(card) then OffHorse = card:getEffectiveId()
+
 		elseif card:isKindOf("Crossbow") then crossbow = card
 		elseif card:isKindOf("DoubleSword") then double = card:getEffectiveId()
 		elseif card:isKindOf("QinggangSword") then qinggang = card:getEffectiveId()
 		elseif card:isKindOf("Axe") then axe = card:getEffectiveId()
 		elseif card:isKindOf("GudingBlade") then gudingdao = card:getEffectiveId()
-		elseif card:isKindOf("Halberd") then halberd = card:getEffectiveId()
-		elseif card:isKindOf("Weapon") then weapon = card:getEffectiveId() end
+		elseif card:isKindOf("Halberd") then halberd = card:getEffectiveId() end
+
+		if not weapon and card:isKindOf("Weapon") then weapon = card:getEffectiveId() end
 	end
 
 	if eightdiagram then
@@ -2773,6 +2790,15 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 
 	if renwang then
 		if sgs.ai_armor_value.RenwangShield(self.player, self) > 0 and self:getCardsNum("Jink") == 0 then return renwang end
+	end
+
+	if ironarmor then
+		for _, enemy in ipairs(self.enemies) do
+			if enemy:hasShownSkill("huoji") then return ironarmor end
+			if getCardsNum("FireAttack", enemy, self.player) > 0 then return ironarmor end
+			if getCardsNum("FireSlash", enemy, self.player) > 0 then return ironarmor end
+			if enemy:getFormation():contains(self.player) and getCardsNum("BurningCamps", enemy, self.player) > 0 then return ironarmor end
+		end
 	end
 
 	if DefHorse and (not self.player:hasSkill("leiji") or self:getCardsNum("Jink") == 0) then
@@ -2846,7 +2872,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 		end
 
 		if halberd then
-			if self.player:hasSkills("rende") and self:findFriendsByType(sgs.Friend_Draw) then return halberd end
+			if self.player:hasSkill("rende") and self:findFriendsByType(sgs.Friend_Draw) then return halberd end
 			if SelfisCurrent and self:getCardsNum("Slash") == 1 and self.player:getHandcardNum() == 1 then return halberd end
 		end
 
@@ -2894,86 +2920,44 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 
 	end
 
-	local snatch, dismantlement, indulgence, supplyshortage, collateral, duel, aoe, godsalvation, fireattack, lightning
+	local classNames = { "Snatch", "Dismantlement", "Indulgence", "SupplyShortage", "Collateral", "Duel", "Drowning", "ArcheryAttack", "SavageAssault", "FireAttack",
+							"GodSalvation", "Lightning" }
+	local className2objectName = { Snatch = "snatch", Dismantlement = "dismantlement", Indulgence = "indulgence", SupplyShortage = "supply_shortage", Collateral = "collateral",
+									Duel = "duel", Drowning = "drowning", ArcheryAttack = "archery_attack", SavageAssault = "savage_assault", FireAttack = "fire_attack",
+									GodSalvation = "god_salvation", Lightning = "lightning" }
 	local new_enemies = {}
 	if #self.enemies > 0 then new_enemies = self.enemies
 	else
 		for _, aplayer in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-			if aplayer:getGeneralName() == "neutral" then
+			if not string.find(self:evaluateKingdom(aplayer), self.player:getKingdom()) then
 				table.insert(new_enemies, aplayer)
 			end
 		end
 	end
-	for _, card in ipairs(cards) do
-		for _, enemy in ipairs(new_enemies) do
-			if card:isKindOf("Snatch") and self:hasTrickEffective(card, enemy, self.player) and self.player:distanceTo(enemy) == 1 and not enemy:isNude() then
-				snatch = card:getEffectiveId()
-			elseif not enemy:isNude() and card:isKindOf("Dismantlement") and self:hasTrickEffective(card, enemy, self.player) then
-				dismantlement = card:getEffectiveId()
-			elseif card:isKindOf("Indulgence") and self:hasTrickEffective(card, enemy, self.player) and not enemy:containsTrick("indulgence") then
-				indulgence = card:getEffectiveId()
-			elseif card:isKindOf("SupplyShortage")	and self:hasTrickEffective(card, enemy, self.player) and not enemy:containsTrick("supply_shortage") then
-				supplyshortage = card:getEffectiveId()
-			elseif card:isKindOf("Collateral") and self:hasTrickEffective(card, enemy, self.player) and enemy:getWeapon() then
-				collateral = card:getEffectiveId()
-			elseif card:isKindOf("Duel") and self:hasTrickEffective(card, enemy, self.player) and
-					(self:getCardsNum("Slash") >= getCardsNum("Slash", enemy, self.player) or self.player:getHandcardNum() > 4) then
-				duel = card:getEffectiveId()
-			elseif card:isKindOf("AOE") then
-				local dummy_use = {isDummy = true}
-				self:useTrickCard(card, dummy_use)
-				if dummy_use.card then
-					aoe = card:getEffectiveId()
-				end
-			elseif card:isKindOf("FireAttack") and self:hasTrickEffective(card, enemy, self.player) then
-				local FFF
-				if enemy:getHp() == 1 or enemy:hasArmorEffect("Vine") then FFF = true end
-				if FFF then
-					local suits= {}
-					local suitnum = 0
-					for _, hcard in sgs.qlist(self.player:getHandcards()) do
-						if hcard:getSuit() == sgs.Card_Spade then
-							suits.spade = true
-						elseif hcard:getSuit() == sgs.Card_Heart then
-							suits.heart = true
-						elseif hcard:getSuit() == sgs.Card_Club then
-							suits.club = true
-						elseif hcard:getSuit() == sgs.Card_Diamond then
-							suits.diamond = true
-						end
-					end
-					for k, hassuit in pairs(suits) do
-						if hassuit then suitnum = suitnum + 1 end
-					end
-					if suitnum >= 3 or (suitnum >= 2 and enemy:getHandcardNum() == 1 ) then
-						fireattack = card:getEffectiveId()
-					end
-				end
-			elseif card:isKindOf("GodSalvation") and self:willUseGodSalvation(card) then
-				godsalvation = card:getEffectiveId()
-			elseif card:isKindOf("Lightning") and self:getFinalRetrial() == 1 then
-				lightning = card:getEffectiveId()
-			end
-		end
-
-		for _, friend in ipairs(self.friends_noself) do
-			if (self:hasTrickEffective(card, friend) and (self:willSkipPlayPhase(friend, true) or self:willSkipDrawPhase(friend, true))) or
-				self:needToThrowArmor(friend) then
-				if isCard("Snatch", card, self.player) and self.player:distanceTo(friend) == 1 then
-					snatch = card:getEffectiveId()
-				elseif isCard("Dismantlement", card, self.player) then
-					dismantlement = card:getEffectiveId()
+	if not self:willSkipPlayPhase() or not NextPlayerCanUse then
+		for _, className in ipairs(classNames) do
+			for _, card in ipairs(cards) do
+				if isCard(className, card, self.player) then
+					local card_x = className ~= card:getClassName() and sgs.cloneCard(className2objectName[className], card:getSuit(), card:getNumber()) or card
+					self.enemies = new_enemies
+					local dummy_use = { isDummy = true }
+					self:useTrickCard(card_x, dummy_use)
+					if dummy_use.card then self:updatePlayers(false) return card end
 				end
 			end
 		end
-	end
-
-	if snatch or dismantlement or indulgence or supplyshortage or collateral or duel or aoe or godsalvation or fireattack or lightning then
-		if not self:willSkipPlayPhase() or not NextPlayerCanUse then
-			return snatch or dismantlement or indulgence or supplyshortage or collateral or duel or aoe or godsalvation or fireattack or lightning
-		end
-		if #trickcard > nextfriend_num + 1 and NextPlayerCanUse then
-			return lightning or fireattack or godsalvation or aoe or duel or collateral or supplyshortage or indulgence or dismantlement or snatch
+	elseif #trickcard > nextfriend_num + 1 and NextPlayerCanUse then
+		for i = #classNames, 1, -1 do
+			className = classNames[i]
+			for _, card in ipairs(cards) do
+				if isCard(className, card, self.player) then
+					local card_x = className ~= card:getClassName() and sgs.cloneCard(className2objectName[className], card:getSuit(), card:getNumber()) or card
+					self.enemies = new_enemies
+					local dummy_use = { isDummy = true }
+					self:useTrickCard(card_x, dummy_use)
+					if dummy_use.card then self:updatePlayers(false) return card end
+				end
+			end
 		end
 	end
 
@@ -2986,6 +2970,10 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 			end
 		end
 		if not inAttackRange then return weapon end
+	end
+
+	if eightdiagram or silverlion or vine or renwang or ironarmor then
+		return renwang or eightdiagram or ironarmor or silverlion or vine
 	end
 
 	self:sortByCardNeed(cards, true)
@@ -3016,6 +3004,12 @@ sgs.ai_nullification.AwaitExhausted = function(self, card, from, to, positive)
 	if positive then
 		if self:isEnemy(to) then
 			if self:getOverflow() > 0 or self:getCardsNum("Nullification") > 1 then return true end
+			for _, t in sgs.qlist(self.room:getAlivePlayers()) do
+				if to:isFriendWith(t) then
+					if t:hasShownSkills(sgs.lose_equip_skill) and t:getEquips():length() > 0 then return true end
+					if t:getArmor() and self:needToThrowArmor(t) then return true end
+				end
+			end
 		end
 	else
 		if self:isFriend(to) and (self:getOverflow() > 0 or self:getCardsNum("Nullification") > 1) then return true end
@@ -3098,6 +3092,8 @@ sgs.ai_use_priority.KnownBoth = 9.1
 sgs.ai_use_value.KnownBoth = 5.5
 sgs.ai_keep_value.KnownBoth = 3.33
 sgs.ai_nullification.KnownBoth = function(self, card, from, to, positive)
+	-- todo
+	return false
 end
 
 sgs.ai_choicemade_filter.skillChoice.known_both = function(self, from, promptlist)

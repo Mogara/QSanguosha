@@ -717,7 +717,7 @@ int LuaMaxCardsSkill::getFixed(const ServerPlayer *target, MaxCardsType::MaxCard
     int e = static_cast<int>(type);
     lua_pushinteger(L, e);
 
-    int error = lua_pcall(L, 2, 1, 0);
+    int error = lua_pcall(L, 3, 1, 0);
     if (error) {
         Error(L);
         return 0;

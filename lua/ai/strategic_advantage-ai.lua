@@ -36,7 +36,7 @@ function SmartAI:useCardDrowning(card, use)
 	for _, friend in ipairs(self.friends_noself) do
 		if card:targetFilter(players, friend, self.player) and not players:contains(friend) and self:needToThrowArmor(friend) then
 			players:append(friend)
-			if use.to then use.to:append(enemy) end
+			if use.to then use.to:append(friend) end
 		end
 	end
 
@@ -80,6 +80,17 @@ sgs.ai_skill_choice.drowning = function(self, choices, data)
 	if value < 8 then return "throw" else return "damage" end
 end
 
+sgs.ai_nullification.Drowning = function(self, card, from, to, positive)
+	if positive then
+		if self:isFriend(to) then
+			if self:needToThrowArmor(to) then return end
+			if to:getEquips():length() >= 2 then return true end
+		end
+	else
+		if self:isFriend(from) and (self:getOverflow() > 0 or self:getCardsNum("Nullification") > 1) then return true end
+	end
+	return
+end
 
 local transfer_skill = {}
 transfer_skill.name = "transfer"
@@ -123,46 +134,39 @@ sgs.ai_skill_use_func.TransferCard = function(card, use, self)
 	if #cards == 0 then return end
 
 	if #friends_other > 0 then
-		for i = 1, #cards do
-			local card, target = self:getCardNeedPlayer(cards, friends_other)
-			if card and target then
-				cards = self:resetCards(cards, card)
-			else
-				break
-			end
-
+		local card, target = self:getCardNeedPlayer(cards, friends_other)
+		if card and target then
 			use.card = sgs.Card_Parse("@TransferCard=" .. card:getEffectiveId())
 			if use.to then use.to:append(target) end
 			return
 		end
 	end
 
+	if #friends == 0 then return end
+
 	cards = {}
+	oneJink = self.player:hasSkill("kongcheng")
 	for _, c in sgs.qlist(self.player:getHandcards()) do
-		if c:isTransferable() then table.insert(cards, c) end
+		if c:isTransferable() then
+			if not oneJink and isCard("Jink", c, self.player) then
+				oneJink = true
+				continue
+			end
+			table.insert(cards, c)
+		end
 	end
 	if #cards == 0 then return end
 
-	if #friends > 0 then
-		for i = 1, #cards do
-			local card, target = self:getCardNeedPlayer(cards, friends)
-			if card and target then
-				cards = self:resetCards(cards, card)
-			elseif self:getOverflow() <= 0 then
-				return
-			end
-
-			use.card = sgs.Card_Parse("@TransferCard=" .. card:getEffectiveId())
-			if use.to then use.to:append(target) end
-			return
-		end
-
-		if #cards > 0 and self:getOverflow() > 0 then
-			self:sort(friends, "handcard")
-			use.card = sgs.Card_Parse("@TransferCard=" .. cards[1]:getEffectiveId())
-			if use.to then use.to:append(friends[1]) end
-			return
-		end
+	local card, target = self:getCardNeedPlayer(cards, friends)
+	if card and target then
+		use.card = sgs.Card_Parse("@TransferCard=" .. card:getEffectiveId())
+		if use.to then use.to:append(target) end
+		return
+	elseif self:getOverflow() > 0 then
+		self:sort(friends, "handcard")
+		use.card = sgs.Card_Parse("@TransferCard=" .. cards[1]:getEffectiveId())
+		if use.to then use.to:append(friends[1]) end
+		return
 	end
 end
 
@@ -174,3 +178,40 @@ function sgs.ai_armor_value.IronArmor(player, self)
 end
 
 sgs.ai_use_priority.IronArmor = 0.82
+
+--[[
+function SmartAI:useCardBurningCamps(card, use)
+	if not card:isAvailable(self.player) then return end
+	local player = self.room:nextPlayer(self.player)
+	if self:isFriendWith(player) then
+		return
+	else
+		local enemies = player:getFormation()
+		local shouldUse
+		for _, enemy in sgs.qlist(enemies) do
+			enemy = findPlayerByObjectName(enemy:objectName())
+			local damage = {}
+			damage.from = self.player
+			damage.to = enemy
+			damage.nature = sgs.DamageStruct_Fire
+			damage.damage = 1
+			if self:damageIsEffective_(damage) then
+				if not enemy:isChained() or self:isGoodChainTarget_(damage) then
+					shouldUse = true
+				else
+					shouldUse = false
+					return
+				end
+			end
+		end
+		if shouldUse then
+			use.card = card
+		end
+	end
+end
+
+
+sgs.ai_use_value.BurningCamps = 7
+sgs.ai_use_priority.BurningCamps = 4.7
+sgs.ai_card_intention.BurningCamps = 10
+]]

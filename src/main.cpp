@@ -87,7 +87,6 @@ int main(int argc, char *argv[]) {
         qApp->processEvents();
     }
 
-
 #ifdef USE_BREAKPAD
     if (!noGui || !noSplash) {
         splash.showMessage(QSplashScreen::tr("Loading BreakPad..."), alignment, Qt::cyan);
@@ -115,7 +114,6 @@ int main(int argc, char *argv[]) {
         qApp->processEvents();
     }
 
-#ifndef Q_OS_ANDROID
     QDir dir(QString("lua"));
     if (dir.exists() && (dir.exists(QString("config.lua")))) {
         // things look good and use current dir
@@ -124,19 +122,20 @@ int main(int argc, char *argv[]) {
             splash.showMessage(QSplashScreen::tr("Setting game path..."), alignment, Qt::cyan);
             qApp->processEvents();
         }
+#ifndef Q_OS_ANDROID
         QDir::setCurrent(qApp->applicationFilePath().replace("games", "share"));
-    }
 #else
-    QDir mntdir("/mnt");
-    foreach (const QString &sdcard_path, mntdir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-        QDir root(QString("/mnt/%1/QSanguosha").arg(sdcard_path));
-        qDebug() << root.absolutePath();
-        if (root.exists()) {
-            QDir::setCurrent(root.absolutePath());
-            break;
+        QDir storageDir("/storage");
+        QStringList sdcards = storageDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+        foreach (const QString &sdcard, sdcards) {
+            QDir root(QString("/storage/%1/QSanguosha").arg(sdcard));
+            if (root.exists()) {
+                QDir::setCurrent(root.absolutePath());
+                break;
+            }
         }
-    }
 #endif
+    }
 #endif
 
     // initialize random seed for later use

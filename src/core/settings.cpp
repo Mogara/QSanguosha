@@ -44,9 +44,15 @@ const int Settings::S_MOVE_CARD_ANIMATION_DURATION = 600;
 const int Settings::S_JUDGE_ANIMATION_DURATION = 1200;
 const int Settings::S_JUDGE_LONG_DELAY = 800;
 
+/*@to-do: QStandardPaths::writableLocation(StandardLocation location) doesn't work
+ * before QCoreApplication is initialized. Hard code the file path on Android temporarily.
+ * Consider constructing Config after the resource path is checked in main().
+*/
 Settings::Settings()
 #ifdef Q_OS_WIN32
     : QSettings("config.ini", QSettings::IniFormat),
+#elif defined Q_OS_ANDROID
+    : QSettings("/data/data/org.qsgsrara.qsanguosha/files/config.ini", QSettings::IniFormat),
 #else
     : QSettings("QSanguosha.org", "QSanguosha"),
 #endif
@@ -104,10 +110,10 @@ void Settings::init() {
 #ifdef Q_OS_WIN32
     UserName = value("UserName", qgetenv("USERNAME")).toString();
 #else
-    UserName = value("USERNAME", qgetenv("USER")).toString();
+    UserName = value("UserName", qgetenv("USER")).toString();
 #endif
 
-    if (UserName == "root" || UserName == "Administrator")
+    if (UserName == "root" || UserName == "Administrator" || UserName.isEmpty())
         UserName = tr("Sanguosha-fans");
     ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
 

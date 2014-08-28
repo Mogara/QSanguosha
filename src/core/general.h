@@ -30,6 +30,7 @@ class QSize;
 #include <QSet>
 #include <QMap>
 #include <QStringList>
+#include <QMetaType>
 
 class General : public QObject {
     Q_OBJECT
@@ -114,4 +115,3 @@ Q_DECLARE_METATYPE(const General *)
 typedef QList<const General *> GeneralList;
 
 #endif
-

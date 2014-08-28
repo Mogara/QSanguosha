@@ -894,8 +894,6 @@ end
 sgs.dynamic_value.benefit.JieyinCard = true
 
 sgs.xiaoji_keep_value = {
-	Peach = 6,
-	Jink = 5.1,
 	Weapon = 4.9,
 	Armor = 5,
 	OffensiveHorse = 4.8,
