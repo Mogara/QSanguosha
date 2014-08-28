@@ -307,6 +307,8 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
             if (skinId != 0)
                 tryLoadingSkinTranslation(general->objectName(), skinId);
             tempGeneralMap[general] = skinId;
+        } else {
+            generalsCopy.removeOne(general);
         }
     }
 
