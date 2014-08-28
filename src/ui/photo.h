@@ -35,6 +35,7 @@ class ClientPlayer;
 class RoleComboBox;
 class QPushButton;
 class QPropertyAnimation;
+class GraphicsPixmapHoverItem;
 
 class Photo : public PlayerCardContainer {
     Q_OBJECT
@@ -88,7 +89,7 @@ protected:
 
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
-    QPropertyAnimation *initializeBlurEffect(QGraphicsPixmapItem *icon);
+    QPropertyAnimation *initializeBlurEffect(GraphicsPixmapHoverItem *icon);
     virtual void _initializeRemovedEffect();
 
     FrameType _m_frameType;

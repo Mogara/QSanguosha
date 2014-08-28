@@ -83,6 +83,7 @@
 "playerGeneralIcon-default-0-6": ["image/fullskin/generals/full/%1.png", [65, 0, 250, 289], [155, 179]],  //primary avatar for photo
 "playerGeneralIcon-default-0-7": ["image/generals/avatar/%1.png", [71, 28, 134, 134]],  //primary avatar for dashboard
 "playerGeneralIcon-default-0-8": ["image/generals/avatar/%1.png", [16, 49, 244, 100], [122, 50]],  //avatar for KOF mode
+"playerGeneralIcon-default-0-9": "image/fullskin/generals/full/%1.png",
 
 "playerGeneralIcon-default-default-0": ["hero-skin/%1/%2/avatar.png", [71, 28, 134, 134], [40, 40]],
 "playerGeneralIcon-default-default-1": ["hero-skin/%1/%2/full.png", [0, 0, 250, 289], [155, 179]],
@@ -92,6 +93,7 @@
 "playerGeneralIcon-default-default-6": ["hero-skin/%1/%2/full.png", [65, 0, 250, 289], [155, 179]],  //primary avatar for photo
 "playerGeneralIcon-default-default-7": ["hero-skin/%1/%2/avatar.png", [71, 28, 134, 134]],  //primary avatar for dashboard
 "playerGeneralIcon-default-default-8": ["hero-skin/%1/%2/avatar.png", [16, 49, 244, 100], [122, 50]],  //avatar for KOF mode
+"playerGeneralIcon-default-default-9": "hero-skin/%1/%2/full.png",
 
 "generalCircleImage-0": "image/fullskin/generals/circle-photo.png",
 "generalCircleImage-1": "image/generals/double-general/circle-dashboard.png",
@@ -119,6 +121,7 @@
 "playerGeneralIcon-yanliangwenchou-0-6": ["image/fullskin/generals/fulldual/yanliangwenchou.png", [0, 0, 250, 289], [155, 179]],
 "playerGeneralIcon-yanliangwenchou-0-7": "image/generals/big/yanliangwenchou.png",
 "playerGeneralIcon-yanliangwenchou-0-8": "image/generals/kof/yanliangwenchou.png",
+"playerGeneralIcon-yanliangwenchou-0-9": "image/fullskin/generals/fulldual/yanliangwenchou.png",
 
 "playerGeneralIcon-yanliangwenchou-default-0": ["hero-skin/yanliangwenchou/%1/avatar.png", [0, 0, 213, 213], [40, 40]],
 "playerGeneralIcon-yanliangwenchou-default-2": ["hero-skin/yanliangwenchou/%1/avatar.png", [0, 0, 213, 255]],
@@ -127,6 +130,7 @@
 "playerGeneralIcon-yanliangwenchou-default-6": ["hero-skin/yanliangwenchou/%1/full.png", [0, 0, 250, 289], [155, 179]],
 "playerGeneralIcon-yanliangwenchou-default-7": "hero-skin/yanliangwenchou/%1/avatar.png",
 "playerGeneralIcon-yanliangwenchou-default-8": "hero-skin/yanliangwenchou/%1/kof.png",
+"playerGeneralIcon-yanliangwenchou-default-9": "hero-skin/yanliangwenchou/%1/full.png",
 
 "playerGeneralIcon-erzhang-0-0": ["image/generals/big/erzhang.png", [0, 0, 213, 213], [40, 40]],
 "playerGeneralIcon-erzhang-0-2": ["image/generals/big/erzhang.png", [0, 0, 213, 255]],
@@ -135,6 +139,7 @@
 "playerGeneralIcon-erzhang-0-6": ["image/fullskin/generals/fulldual/erzhang.png", [0, 0, 250, 289], [155, 179]],
 "playerGeneralIcon-erzhang-0-7": "image/generals/big/erzhang.png",
 "playerGeneralIcon-erzhang-0-8": "image/generals/kof/erzhang.png",
+"playerGeneralIcon-erzhang-0-9": "image/fullskin/generals/fulldual/erzhang.png",
 
 "playerGeneralIcon-erzhang-default-0": ["hero-skin/erzhang/%1/avatar.png", [0, 0, 213, 213], [40, 40]],
 "playerGeneralIcon-erzhang-default-2": ["hero-skin/erzhang/%1/avatar.png", [0, 0, 213, 255]],
@@ -143,6 +148,7 @@
 "playerGeneralIcon-erzhang-default-6": ["hero-skin/erzhang/%1/full.png", [0, 0, 250, 289], [155, 179]],
 "playerGeneralIcon-erzhang-default-7": "hero-skin/erzhang/%1/avatar.png",
 "playerGeneralIcon-erzhang-default-8": "hero-skin/erzhang/%1/kof.png",
+"playerGeneralIcon-erzhang-default-9": "hero-skin/erzhang/%1/full.png",
 
 "playerGeneralIcon-jiangwanfeiyi-0-0": ["image/generals/big/jiangwanfeiyi.png", [0, 0, 213, 213], [40, 40]],
 "playerGeneralIcon-jiangwanfeiyi-0-2": ["image/generals/big/jiangwanfeiyi.png", [0, 0, 213, 255]],
@@ -151,6 +157,7 @@
 "playerGeneralIcon-jiangwanfeiyi-0-6": ["image/fullskin/generals/fulldual/jiangwanfeiyi.png", [0, 0, 250, 289], [155, 179]],
 "playerGeneralIcon-jiangwanfeiyi-0-7": "image/generals/big/jiangwanfeiyi.png",
 "playerGeneralIcon-jiangwanfeiyi-0-8": "image/generals/kof/jiangwanfeiyi.png",
+"playerGeneralIcon-jiangwanfeiyi-0-9": "image/fullskin/generals/fulldual/jiangwanfeiyi.png",
 
 "playerGeneralIcon-jiangwanfeiyi-default-0": ["hero-skin/jiangwanfeiyi/%1/avatar.png", [0, 0, 213, 213], [40, 40]],
 "playerGeneralIcon-jiangwanfeiyi-default-2": ["hero-skin/jiangwanfeiyi/%1/avatar.png", [0, 0, 213, 255]],
@@ -159,6 +166,7 @@
 "playerGeneralIcon-jiangwanfeiyi-default-6": ["hero-skin/jiangwanfeiyi/%1/full.png", [0, 0, 250, 289], [155, 179]],
 "playerGeneralIcon-jiangwanfeiyi-default-7": "hero-skin/jiangwanfeiyi/%1/avatar.png",
 "playerGeneralIcon-jiangwanfeiyi-default-8": "hero-skin/jiangwanfeiyi/%1/kof.png",
+"playerGeneralIcon-jiangwanfeiyi-default-9": "hero-skin/jiangwanfeiyi/%1/full.png",
 
 "playerGeneralIcon-chenwudongxi-0-0": ["image/generals/big/chenwudongxi.png", [0, 0, 213, 213], [40, 40]],
 "playerGeneralIcon-chenwudongxi-0-2": ["image/generals/big/chenwudongxi.png", [0, 0, 213, 255]],
@@ -167,6 +175,7 @@
 "playerGeneralIcon-chenwudongxi-0-6": ["image/fullskin/generals/fulldual/chenwudongxi.png", [0, 0, 250, 289], [155, 179]],
 "playerGeneralIcon-chenwudongxi-0-7": "image/generals/big/chenwudongxi.png",
 "playerGeneralIcon-chenwudongxi-0-8": "image/generals/kof/chenwudongxi.png",
+"playerGeneralIcon-chenwudongxi-0-9": "image/fullskin/generals/fulldual/chenwudongxi.png",
 
 "playerGeneralIcon-chenwudongxi-default-0": ["hero-skin/chenwudongxi/%1/avatar.png", [0, 0, 213, 213], [40, 40]],
 "playerGeneralIcon-chenwudongxi-default-2": ["hero-skin/chenwudongxi/%1/avatar.png", [0, 0, 213, 255]],
@@ -175,6 +184,7 @@
 "playerGeneralIcon-chenwudongxi-default-6": ["hero-skin/chenwudongxi/%1/full.png", [0, 0, 250, 289], [155, 179]],
 "playerGeneralIcon-chenwudongxi-default-7": "hero-skin/chenwudongxi/%1/avatar.png",
 "playerGeneralIcon-chenwudongxi-default-8": "hero-skin/chenwudongxi/%1/kof.png",
+"playerGeneralIcon-chenwudongxi-default-9": "hero-skin/chenwudongxi/%1/full.png",
 
 // buttons
 "dashboardButtonSetBg": "image/system/button/platter/bg.png",
@@ -184,6 +194,7 @@
 "button-replay": "image/system/button/replay/%1/%2.png",
 "button-choose-general-box": "image/system/choose-general-box/%1/%2.png",
 "button-carditem": "image/system/button/carditem/%1/%2.png",
+"button-heroskin": "image/system/heroskin/%1/%2.png",
 
 // icons
 "saveMe": "image/system/death/save-me.png",

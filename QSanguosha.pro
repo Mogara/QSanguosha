@@ -109,6 +109,9 @@ SOURCES += \
     src/ui/BubbleChatBox.cpp \
     src/ui/StyleHelper.cpp \
     src/ui/PlayerCardBox.cpp \
+    src/ui/GraphicsPixmapHoverItem.cpp \
+    src/ui/HeroSkinContainer.cpp \
+    src/ui/SkinItem.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
@@ -213,6 +216,9 @@ HEADERS += \
     src/ui/BubbleChatBox.h \
     src/ui/StyleHelper.h \
     src/ui/PlayerCardBox.h \
+    src/ui/GraphicsPixmapHoverItem.h \
+    src/ui/HeroSkinContainer.h \
+    src/ui/SkinItem.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \

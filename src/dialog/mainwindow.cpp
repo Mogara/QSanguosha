@@ -708,6 +708,10 @@ void MainWindow::on_actionReplay_triggered() {
 void MainWindow::networkError(const QString &error_msg) {
     if (isVisible())
         QMessageBox::warning(this, tr("Network error"), error_msg);
+
+    if (NULL != RoomSceneInstance) {
+        RoomSceneInstance->stopHeroSkinChangingAnimations();
+    }
 }
 
 void BackLoader::preload() {

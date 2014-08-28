@@ -23,6 +23,7 @@
 #include "standard.h"
 #include "clientplayer.h"
 #include "roomscene.h"
+#include "GraphicsPixmapHoverItem.h"
 
 #include <QPropertyAnimation>
 #include <QGraphicsSceneMouseEvent>
@@ -189,13 +190,27 @@ void PlayerCardContainer::showProgressBar(Countdown countdown) {
     _m_progressBar->show();
 }
 
-QPixmap PlayerCardContainer::_getAvatarIcon(QString heroName) {
+QPixmap PlayerCardContainer::getHeadAvatarIcon(const QString &generalName) {
     const int avatarSize = m_player->getGeneral2() ? _m_layout->m_primaryAvatarSize : _m_layout->m_avatarSize;
-    const int skinId = m_player->getGeneralName() == heroName ? m_player->getHeadSkinId() : m_player->getDeputySkinId();
-    return G_ROOM_SKIN.getGeneralPixmap(heroName, (QSanRoomSkin::GeneralIconSize)avatarSize, skinId);
+    return G_ROOM_SKIN.getGeneralPixmap(generalName,
+                                        (QSanRoomSkin::GeneralIconSize)avatarSize,
+                                        m_player->getHeadSkinId());
+}
+
+QPixmap PlayerCardContainer::getDeputyAvatarIcon(const QString &generalName)
+{
+    const int avatarSize = _m_layout->m_smallAvatarSize;
+    return G_ROOM_SKIN.getGeneralPixmap(generalName,
+                                        (QSanRoomSkin::GeneralIconSize)avatarSize,
+                                        m_player->getDeputySkinId());
 }
 
 void PlayerCardContainer::updateAvatar() {
+    if (_m_avatarIcon == NULL) {
+        _m_avatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
+        _m_avatarIcon->setTransformationMode(Qt::SmoothTransformation);
+    }
+
     const General *general = NULL;
     if (m_player) {
         general = m_player->getAvatarGeneral();
@@ -210,12 +225,13 @@ void PlayerCardContainer::updateAvatar() {
                                               Qt::AlignCenter, QString());
     }
 
+    QGraphicsPixmapItem *avatarIconTmp = _m_avatarIcon;
     if (general != NULL) {
         _m_avatarArea->setToolTip(m_player->getHeadSkillDescription());
         QString name = general->objectName();
-        QPixmap avatarIcon = _getAvatarIcon(name);
+        QPixmap avatarIcon = getHeadAvatarIcon(name);
         QRect area = _m_layout->m_avatarArea;
-        _paintPixmap(_m_avatarIcon, area, avatarIcon, _getAvatarParent());
+        _paintPixmap(avatarIconTmp, area, avatarIcon, _getAvatarParent());
         // this is just avatar general, perhaps game has not started yet.
         if (m_player->getGeneral() != NULL) {
             QString kingdom = m_player->getKingdom();
@@ -229,15 +245,13 @@ void PlayerCardContainer::updateAvatar() {
             _m_layout->m_avatarNameFont.paintText(_m_avatarNameItem,
                 _m_layout->m_avatarNameArea,
                 Qt::AlignLeft | Qt::AlignJustify, name);
-        }
-        else {
+        } else {
             _paintPixmap(_m_handCardBg, _m_layout->m_handCardArea,
                 _getPixmap(QSanRoomSkin::S_SKIN_KEY_HANDCARDNUM, QSanRoomSkin::S_SKIN_KEY_DEFAULT_SECOND),
                 _getAvatarParent());
         }
-    }
-    else {
-        _paintPixmap(_m_avatarIcon, _m_layout->m_avatarArea,
+    } else {
+        _paintPixmap(avatarIconTmp, _m_layout->m_avatarArea,
             QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
         _clearPixmap(_m_kingdomColorMaskIcon);
         _clearPixmap(_m_kingdomIcon);
@@ -272,14 +286,21 @@ const ClientPlayer *PlayerCardContainer::getPlayer() const {
 }
 
 void PlayerCardContainer::updateSmallAvatar() {
+    if (_m_smallAvatarIcon == NULL) {
+        _m_smallAvatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
+        _m_smallAvatarIcon->setTransformationMode(Qt::SmoothTransformation);
+    }
+
     const General *general = NULL;
     if (m_player) general = m_player->getGeneral2();
+
+    QGraphicsPixmapItem *smallAvatarIconTmp = _m_smallAvatarIcon;
     if (general != NULL) {
         _m_secondaryAvatarArea->setToolTip(m_player->getDeputySkillDescription());
         QString name = general->objectName();
-        QPixmap avatarIcon = _getAvatarIcon(name);
+        QPixmap avatarIcon = getHeadAvatarIcon(name);
         QRect area = _m_layout->m_secondaryAvatarArea;
-        _paintPixmap(_m_smallAvatarIcon, area, avatarIcon, _getAvatarParent());
+        _paintPixmap(smallAvatarIconTmp, area, avatarIcon, _getAvatarParent());
         QString kingdom = m_player->getKingdom();
         _paintPixmap(_m_kingdomColorMaskIcon2, _m_layout->m_kingdomMaskArea2,
             G_ROOM_SKIN.getPixmap(QSanRoomSkin::S_SKIN_KEY_KINGDOM_COLOR_MASK, kingdom), this->_getAvatarParent());
@@ -289,10 +310,9 @@ void PlayerCardContainer::updateSmallAvatar() {
         _m_layout->m_smallAvatarNameFont.paintText(_m_secondaryAvatarNameItem,
             _m_layout->m_secondaryAvatarNameArea,
             Qt::AlignLeft | Qt::AlignJustify, show_name);
-    }
-    else {
-        _paintPixmap(_m_smallAvatarIcon, _m_layout->m_secondaryAvatarArea,
-            QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
+    } else {
+        _paintPixmap(smallAvatarIconTmp, _m_layout->m_secondaryAvatarArea,
+                     QSanRoomSkin::S_SKIN_KEY_BLANK_GENERAL, _getAvatarParent());
         _clearPixmap(_m_kingdomColorMaskIcon2);
         _clearPixmap(_m_kingdomIcon);
         _m_secondaryAvatarArea->setToolTip(QString());
@@ -484,6 +504,8 @@ void PlayerCardContainer::refresh() {
 void PlayerCardContainer::repaintAll() {
     _m_avatarArea->setRect(_m_layout->m_avatarArea);
     _m_secondaryAvatarArea->setRect(_m_layout->m_secondaryAvatarArea);
+
+    stopHeroSkinChangingAnimation();
 
     updateAvatar();
     updateSmallAvatar();
@@ -721,7 +743,8 @@ PlayerCardContainer::PlayerCardContainer() {
     _m_layout = NULL;
     _m_avatarArea = _m_secondaryAvatarArea = NULL;
     _m_avatarNameItem = _m_secondaryAvatarNameItem = NULL;
-    _m_avatarIcon = _m_smallAvatarIcon = _m_circleItem = NULL;
+    _m_avatarIcon = _m_smallAvatarIcon = NULL;
+    _m_circleItem = NULL;
     _m_screenNameItem = NULL;
     _m_chainIcon = NULL;
     _m_duanchangMask = _m_duanchangMask2 = NULL;
@@ -1060,5 +1083,15 @@ QVariant PlayerCardContainer::itemChange(GraphicsItemChange change, const QVaria
 }
 
 void PlayerCardContainer::_onEquipSelectChanged() {
+}
+
+void PlayerCardContainer::stopHeroSkinChangingAnimation()
+{
+    if ((NULL != _m_avatarIcon) && !_m_avatarIcon->isSkinChangingFinished()) {
+        _m_avatarIcon->stopChangeHeroSkinAnimation();
+    }
+    if ((NULL != _m_smallAvatarIcon) && !_m_smallAvatarIcon->isSkinChangingFinished()) {
+        _m_smallAvatarIcon->stopChangeHeroSkinAnimation();
+    }
 }
 

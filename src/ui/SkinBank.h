@@ -261,6 +261,9 @@ public:
         QColor m_skillTextColors[QSanButton::S_NUM_BUTTON_STATES * QSanInvokeSkillButton::S_NUM_SKILL_TYPES];
         QColor m_skillTextShadowColors[QSanButton::S_NUM_BUTTON_STATES * QSanInvokeSkillButton::S_NUM_SKILL_TYPES];
 
+        QPoint m_changeHeadHeroSkinButtonPos;
+        QPoint m_changeDeputyHeroSkinButtonPos;
+
         QSanShadowTextFont getSkillTextFont(QSanButton::ButtonState state,
             QSanInvokeSkillButton::SkillType type,
             QSanInvokeSkillButton::SkillButtonWidth width) const;
@@ -331,7 +334,8 @@ public:
         S_GENERAL_ICON_SIZE_DASHBOARD_SECONDARY,
         S_GENERAL_ICON_SIZE_PHOTO_PRIMARY,
         S_GENERAL_ICON_SIZE_DASHBOARD_PRIMARY,
-        S_GENERAL_ICON_SIZE_KOF
+        S_GENERAL_ICON_SIZE_KOF,
+        S_GENERAL_ICON_SIZE_HERO_SKIN
     };
 
     const RoomLayout &getRoomLayout() const;
@@ -356,7 +360,7 @@ public:
     QString getPlayerAudioEffectPath(const QString &eventName, const QString &category, int index = -1, const Player *player = NULL) const;
     QPixmap getProgressBarPixmap(int percentile) const;
 
-    bool doesGeneralHaveSkin(const QString &general, const int skinId = 1) const;
+    bool doesGeneralHaveSkin(const QString &general, const int skinId = 1, const bool isCard = false) const;
 
     // static consts
     // main keys

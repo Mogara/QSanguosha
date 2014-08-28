@@ -255,7 +255,9 @@
     "hiddenMarkRegion2": [132, -3, 124, 146],
     "seatIconRegion": [-32, 118, 30, 30],
     "leftDisableShowLockArea": [15, 9, 100, 122],
-    "rightDisableShowLockArea": [144, 9, 100, 122]
+    "rightDisableShowLockArea": [144, 9, 100, 122],
+	"changeHeadHeroSkinBtnPos": [20, 20],
+	"changeDeputyHeroSkinBtnPos": [174, 20]
 },
 "skillButton":
 {

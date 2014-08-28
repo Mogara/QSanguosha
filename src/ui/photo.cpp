@@ -28,6 +28,7 @@
 #include "playercarddialog.h"
 #include "rolecombobox.h"
 #include "SkinBank.h"
+#include "GraphicsPixmapHoverItem.h"
 
 #include <QPainter>
 #include <QDrag>
@@ -115,14 +116,6 @@ void Photo::repaintAll() {
     setFrame(_m_frameType);
     hideSkillName(); // @todo: currently we don't adjust skillName's position for simplicity,
     // consider repainting it instead of hiding it in the future.
-    if (!_m_avatarIcon) {
-        _m_avatarIcon = new QGraphicsPixmapItem(_getAvatarParent());
-        _m_avatarIcon->setTransformationMode(Qt::SmoothTransformation);
-    }
-    if (!_m_smallAvatarIcon) {
-        _m_smallAvatarIcon = new QGraphicsPixmapItem(_getAvatarParent());
-        _m_smallAvatarIcon->setTransformationMode(Qt::SmoothTransformation);
-    }
     PlayerCardContainer::repaintAll();
     refresh();
 }
@@ -211,15 +204,22 @@ void Photo::speak(const QString &) {
 
 void Photo::updateSmallAvatar() {
     updateAvatar();
+    if (_m_smallAvatarIcon == NULL) {
+        _m_smallAvatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
+        _m_smallAvatarIcon->setTransformationMode(Qt::SmoothTransformation);
+    }
+
     const General *general = NULL;
     if (m_player) general = m_player->getGeneral2();
+
     if (general != NULL) {
         QPixmap smallAvatarIcon = G_ROOM_SKIN.getGeneralPixmap(general->objectName(),
                                                                QSanRoomSkin::GeneralIconSize(_m_layout->m_smallAvatarSize),
                                                                m_player->getDeputySkinId());
         smallAvatarIcon = paintByMask(smallAvatarIcon);
-        _paintPixmap(_m_smallAvatarIcon, _m_layout->m_secondaryAvatarArea,
-            smallAvatarIcon, _getAvatarParent());
+        QGraphicsPixmapItem *smallAvatarTmp = _m_smallAvatarIcon;
+        _paintPixmap(smallAvatarTmp, _m_layout->m_secondaryAvatarArea,
+                     smallAvatarIcon, _getAvatarParent());
         _paintPixmap(_m_circleItem, _m_layout->m_circleArea,
             QString(QSanRoomSkin::S_SKIN_KEY_GENERAL_CIRCLE_IMAGE).arg(_m_layout->m_circleImageSize),
             _getAvatarParent());
@@ -231,8 +231,7 @@ void Photo::updateSmallAvatar() {
             _m_layout->m_secondaryAvatarNameArea,
             Qt::AlignLeft | Qt::AlignJustify, name);
         _m_smallAvatarIcon->show();
-    }
-    else {
+    } else {
         _clearPixmap(_m_smallAvatarIcon);
         _clearPixmap(_m_circleItem);
         _m_layout->m_smallAvatarNameFont.paintText(_m_secondaryAvatarNameItem,
@@ -322,7 +321,7 @@ void Photo::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 }
 
-QPropertyAnimation *Photo::initializeBlurEffect(QGraphicsPixmapItem *icon)
+QPropertyAnimation *Photo::initializeBlurEffect(GraphicsPixmapHoverItem *icon)
 {
     QGraphicsBlurEffect *effect = new QGraphicsBlurEffect;
     effect->setBlurHints(QGraphicsBlurEffect::AnimationHint);

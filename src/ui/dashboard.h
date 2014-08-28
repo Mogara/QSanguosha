@@ -37,6 +37,8 @@
 #include <QMutex>
 #include <QPropertyAnimation>
 
+class HeroSkinContainer;
+class GraphicsPixmapHoverItem;
 
 class Dashboard : public PlayerCardContainer {
     Q_OBJECT
@@ -49,6 +51,7 @@ public:
 
     virtual QRectF boundingRect() const;
     void refresh();
+    void repaintAll();
     void setWidth(int width);
     int getMiddleWidth();
     inline QRectF getRightAvatarArea() {
@@ -264,8 +267,17 @@ protected:
     virtual void _initializeRemovedEffect();
     QPropertyAnimation *_removedEffect;
 
+    QSanButton *m_changeHeadHeroSkinButton;
+    QSanButton *m_changeDeputyHeroSkinButton;
+    HeroSkinContainer *m_headHeroSkinContainer;
+    HeroSkinContainer *m_deputyHeroSkinContainer;
+
 private:
     static const int CARDITEM_Z_DATA_KEY = 0413;
+
+    void showHeroSkinListHelper(const General *general, GraphicsPixmapHoverItem *avatarIcon, HeroSkinContainer * &heroSkinContainer);
+
+    QPointF getHeroSkinContainerPosition() const;
 
 protected slots:
     virtual void _onEquipSelectChanged();
@@ -282,6 +294,14 @@ private slots:
     void updateTrustButton();
     void bringSenderToTop();
     void resetSenderZValue();
+
+    void showHeroSkinList();
+    void heroSkinButtonMouseOutsideClicked();
+
+    void onAvatarHoverEnter();
+    void onAvatarHoverLeave();
+    void onSkinChangingStart();
+    void onSkinChangingFinished();
 
 signals:
     void card_selected(const Card *card);
