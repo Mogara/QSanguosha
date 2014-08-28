@@ -31,7 +31,7 @@
 #include <QNetworkInterface>
 #include <QDateTime>
 
-Settings Config;
+Settings *SettingsInstance = NULL;
 
 static const qreal ViewWidth = 1280 * 0.8;
 static const qreal ViewHeight = 800 * 0.8;
@@ -44,20 +44,17 @@ const int Settings::S_MOVE_CARD_ANIMATION_DURATION = 600;
 const int Settings::S_JUDGE_ANIMATION_DURATION = 1200;
 const int Settings::S_JUDGE_LONG_DELAY = 800;
 
-/*@to-do: QStandardPaths::writableLocation(StandardLocation location) doesn't work
- * before QCoreApplication is initialized. Hard code the file path on Android temporarily.
- * Consider constructing Config after the resource path is checked in main().
-*/
 Settings::Settings()
 #ifdef Q_OS_WIN32
     : QSettings("config.ini", QSettings::IniFormat),
-#elif defined Q_OS_ANDROID
-    : QSettings("/data/data/org.qsgsrara.qsanguosha/files/config.ini", QSettings::IniFormat),
 #else
     : QSettings("QSanguosha.org", "QSanguosha"),
 #endif
     Rect(-ViewWidth / 2, -ViewHeight / 2, ViewWidth, ViewHeight)
 {
+    Q_ASSERT(SettingsInstance == NULL);
+    SettingsInstance = this;
+    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 }
 
 void Settings::init() {

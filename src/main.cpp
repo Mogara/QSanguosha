@@ -159,6 +159,7 @@ int main(int argc, char *argv[]) {
         splash.showMessage(QSplashScreen::tr("Initializing game engine..."), alignment, Qt::cyan);
         qApp->processEvents();
     }
+    new Settings;
     Sanguosha = new Engine;
 
     if (!noGui || !noSplash) {
