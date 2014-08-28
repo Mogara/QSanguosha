@@ -2235,7 +2235,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 				end
 			end
 		elseif trick:isKindOf("GodSalvation") then
-			if self:isEnemy(to) and to:isWeak() then return null_card end
+			if self:isEnemy(to) and self:isWeak(to) then return null_card end
 		end
 
 	else
@@ -2254,7 +2254,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 			end
 			return from and self:isFriend(from) and not self:isFriend(to) and null_card
 		elseif trick:isKindOf("GodSalvation") then
-			if self:isFriend(to) and to:isWeak() then return null_card end
+			if self:isFriend(to) and self:isWeak(to) then return null_card end
 		elseif trick:isKindOf("AmazingGrace") then
 			if self:isFriend(to) then return null_card end
 		elseif not (trick:isKindOf("GlobalEffect") or trick:isKindOf("AOE")) then
@@ -5103,21 +5103,10 @@ function sgs.hasNullSkill(skill_name, player)
 end
 
 function SmartAI:isFriendWith(player)
+	if self.role == "careerist" then return false end
 	if self.player:isFriendWith(player) then return true end
-	if self:getKingdom() == self:getKingdom(player) then return true end
+	if self.player:getKingdom() == self:evaluateKingdom(player) then return true end
 	return false
-end
-
-function SmartAI:getKingdom(player)
-	player = player or self.player
-	if player:objectName() == self.player:objectName() then
-		if self.role == "careerist" then
-			return "careerist"
-		else
-			return player:getKingdom()
-		end
-	end
-	return sgs.ai_explicit[player:objectName()]
 end
 
 dofile "lua/ai/debug-ai.lua"
