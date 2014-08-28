@@ -2235,7 +2235,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 				end
 			end
 		elseif trick:isKindOf("GodSalvation") then
-			if self:isEnemy(to) and to:isWeak() then return null_card end
+			if self:isEnemy(to) and self:isWeak(to) then return null_card end
 		end
 
 	else
@@ -2254,7 +2254,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 			end
 			return from and self:isFriend(from) and not self:isFriend(to) and null_card
 		elseif trick:isKindOf("GodSalvation") then
-			if self:isFriend(to) and to:isWeak() then return null_card end
+			if self:isFriend(to) and self:isWeak(to) then return null_card end
 		elseif trick:isKindOf("AmazingGrace") then
 			if self:isFriend(to) then return null_card end
 		elseif not (trick:isKindOf("GlobalEffect") or trick:isKindOf("AOE")) then
