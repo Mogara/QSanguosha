@@ -509,7 +509,7 @@ void MainWindow::region(const QPoint &cursorGlobalPoint)
 
 void MainWindow::fetchUpdateInformation()
 {
-    QNetworkAccessManager *mgr = new QNetworkAccessManager;
+    static QNetworkAccessManager *mgr = new QNetworkAccessManager(this);
 #ifdef QT_DEBUG
     QString URL1 = "http://ver.qsanguosha.org/test/UpdateInfo";
     QString URL2 = "http://ver.qsanguosha.org/test/whatsnew.html";
