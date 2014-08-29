@@ -19,7 +19,7 @@
 *********************************************************************]]
 
 function speak(to, type)
-	-- if not sgs.GetConfig("AIChat", false) then return end
+	if not sgs.GetConfig("AIChat", false) then return end
 	if to:getState() ~= "robot" then return end
 
 	local i =math.random(1, #sgs.ai_chat[type])

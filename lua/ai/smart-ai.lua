@@ -1729,6 +1729,7 @@ function SmartAI:filterEvent(event, player, data)
 			end
 		end
 
+--[[
 		if from and sgs.isAnjiang(from) and string.find("FireAttack|Dismantlement|Snatch|Slash|Duel", card:getClassName())
 			and from:objectName() == player:objectName() then
 			local unknown = true
@@ -1758,6 +1759,7 @@ function SmartAI:filterEvent(event, player, data)
 				end
 			end
 		end
+]]
 
 		if card:isKindOf("AOE") and self.player:objectName() == player:objectName() then
 			for _, t in sgs.qlist(struct.to) do
@@ -2153,7 +2155,8 @@ function SmartAI:askForNullification(trick, from, to, positive)
 			end
 		elseif trick:isKindOf("Indulgence") then
 			if self:isFriend(to) and not to:isSkipped(sgs.Player_Play) then
-				if to:hasShownSkill("guanxing") and (global_room:alivePlayerCount() > 4 or to:hasShownSkill("yizhi")) then return end
+				if (to:hasShownSkill("guanxing") or to:hasShownSkill("yizhi") and to:inDeputySkills("yizhi"))
+					and (global_room:alivePlayerCount() > 4 or to:hasShownSkill("yizhi")) then return end
 				if to:getHp() - to:getHandcardNum() >= 2 then return nil end
 				if to:hasShownSkill("tuxi") and to:getHp() > 2 then return nil end
 				if to:hasShownSkill("qiaobian") and not to:isKongcheng() then return nil end
@@ -2161,45 +2164,36 @@ function SmartAI:askForNullification(trick, from, to, positive)
 			end
 		elseif trick:isKindOf("SupplyShortage") then
 			if self:isFriend(to) and not to:isSkipped(sgs.Player_Draw) then
-				if to:hasShownSkill("guanxing") and (global_room:alivePlayerCount() > 4 or to:hasShownSkill("yizhi")) then return end
+				if (to:hasShownSkill("guanxing") or to:hasShownSkill("yizhi") and to:inDeputySkills("yizhi"))
+					and (global_room:alivePlayerCount() > 4 or to:hasShownSkill("yizhi")) then return end
 				if to:hasShownSkills("guidao|tiandu") then return nil end
 				if to:hasShownSkill("qiaobian") and not to:isKongcheng() then return nil end
 				return null_card
 			end
 
 		elseif trick:isKindOf("ArcheryAttack") then
-			if self.player:objectName() == to:objectName() then
-				if self.player:hasSkills("jieming|yiji") and
-					(self.player:getHp() > 1 or self:getCardsNum("Peach") > 0 or self:getCardsNum("Analeptic") > 0) then
-					return nil
-				elseif not self:canAvoidAOE(trick) then
-					return null_card
-				end
-			end
-			local currentplayer = self.room:getCurrent()
-			if self:isWeak(to) and self:aoeIsEffective(trick, to) then
-				if ((to:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount())) >
-				((self.player:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount())) or null_num > 1 then
-					return null_card
-				elseif self:canAvoidAOE(trick) or self.player:getHp() > 1 then
+			if self:isFriend(to) then
+				if not self:aoeIsEffective(trick, to, from) then return
+				elseif self:getDamagedEffects(to, from) then return
+				elseif to:objectName() == self.player:objectName() and self:canAvoidAOE(trick) then return
+				elseif getKnownCard(to, self.player, "Jink", true, "he") >= 1 and to:getHp() > 1 then return
+				elseif not self:isFriendWith(to) and self:playerGetRound(to) < self:playerGetRound(self.player) and self:isWeak() then return
+				else
 					return null_card
 				end
 			end
 		elseif trick:isKindOf("SavageAssault") then
-			if self.player:objectName() == to:objectName() then
-				if self.player:hasSkills("jieming|yiji") and
-					(self.player:getHp() > 1 or self:getCardsNum("Peach") > 0 or self:getCardsNum("Analeptic") > 0) then
-					return nil
-				elseif not self:canAvoidAOE(trick) then
-					return null_card
+			if self:isFriend(to) then
+				local menghuo
+				for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+					if p:hasShownSkill("huoshou") then menghuo = p break end
 				end
-			end
-			local currentplayer = self.room:getCurrent()
-			if self:isWeak(to) and self:aoeIsEffective(trick, to) then
-				if ((to:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount())) >
-				((self.player:getSeat() - currentplayer:getSeat()) % (self.room:alivePlayerCount())) or null_num > 1 then
-					return null_card
-				elseif self:canAvoidAOE(trick) or self.player:getHp() > 1 then
+				if not self:aoeIsEffective(trick, to, menghuo or from) then return
+				elseif self:getDamagedEffects(to, menghuo or from) then return
+				elseif to:objectName() == self.player:objectName() and self:canAvoidAOE(trick) then return
+				elseif getKnownCard(to, self.player, "Slash", true, "he") >= 1 and to:getHp() > 1 then return
+				elseif not self:isFriendWith(to) and self:playerGetRound(to) < self:playerGetRound(self.player) and self:isWeak() then return
+				else
 					return null_card
 				end
 			end
@@ -3300,7 +3294,7 @@ function SmartAI:damageIsEffective(to, nature, from)
 end
 
 function SmartAI:damageIsEffective_(damageStruct)
-	if type(damageStruct) ~= "table" then self.room:writeToConsole(debug.traceback()) return end
+	if type(damageStruct) ~= "table" and type(damageStruct) ~= "userdata" then self.room:writeToConsole(debug.traceback()) return end
 	if not damageStruct.to then self.room:writeToConsole(debug.traceback()) return end
 	local to = damageStruct.to
 	local nature = damageStruct.nature or sgs.DamageStruct_Normal
