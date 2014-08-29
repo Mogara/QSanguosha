@@ -3004,12 +3004,8 @@ sgs.ai_nullification.AwaitExhausted = function(self, card, from, to, positive)
 	if positive then
 		if self:isEnemy(to) then
 			if self:getOverflow() > 0 or self:getCardsNum("Nullification") > 1 then return true end
-			for _, t in sgs.qlist(self.room:getAlivePlayers()) do
-				if to:isFriendWith(t) then
-					if t:hasShownSkills(sgs.lose_equip_skill) and t:getEquips():length() > 0 then return true end
-					if t:getArmor() and self:needToThrowArmor(t) then return true end
-				end
-			end
+			if to:hasShownSkills(sgs.lose_equip_skill) and to:getEquips():length() > 0 then return true end
+			if to:getArmor() and self:needToThrowArmor(to) then return true end
 		end
 	else
 		if self:isFriend(to) and (self:getOverflow() > 0 or self:getCardsNum("Nullification") > 1) then return true end
