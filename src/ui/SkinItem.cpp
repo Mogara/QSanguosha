@@ -20,6 +20,7 @@
 
 #include "SkinItem.h"
 #include "SkinBank.h"
+#include "engine.h"
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>
@@ -37,6 +38,14 @@ SkinItem::SkinItem(const QString &generalName, int skinId, bool used,
 {
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::LeftButton);
+
+    const General *general = Sanguosha->getGeneral(generalName);
+    if (skinId != 0)
+        general->tryLoadingSkinTranslation(skinId);
+    QGraphicsPixmapItem *titleItem = new QGraphicsPixmapItem(this);
+    G_COMMON_LAYOUT.skinItemTitleText.paintText(titleItem, SKIN_ITEM_AREA,
+                                                Qt::AlignRight | Qt::AlignBottom,
+                                                general->getTitle(skinId));
 }
 
 QRectF SkinItem::boundingRect() const
