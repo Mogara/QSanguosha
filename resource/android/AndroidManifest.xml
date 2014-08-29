@@ -33,11 +33,8 @@
             <meta-data android:value="@string/fatal_error_msg" android:name="android.app.fatal_error_msg"/>
             <!--  Messages maps -->
 
-            <!-- Splash screen -->
-            <!--
+
             <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/logo"/>
-            -->
-            <!-- Splash screen -->
         </activity>
     </application>
     <uses-sdk android:minSdkVersion="9" android:targetSdkVersion="14"/>
