@@ -190,7 +190,7 @@ QStringList Skill::getSources(const QString &general, const int skinId) const
             skinSourceHash[key] << effectFile;
     }
 
-    return skinSourceHash[key];
+    return skinSourceHash[key].isEmpty() ? sources : skinSourceHash[key];
 }
 
 QStringList Skill::getSources() const
