@@ -207,8 +207,6 @@ void Photo::updateSmallAvatar() {
     if (_m_smallAvatarIcon == NULL) {
         _m_smallAvatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
         _m_smallAvatarIcon->setTransformationMode(Qt::SmoothTransformation);
-        connect(m_player, SIGNAL(deputySkinIdChanged(QString)),
-                _m_smallAvatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
     }
 
     const General *general = NULL;
