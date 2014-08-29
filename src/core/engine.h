@@ -182,7 +182,7 @@ public:
     //************************************
     QStringList getLimitedGeneralNames() const;
     QStringList getGeneralNames() const;
-    QList<const General *> getGenerals() const;
+    GeneralList getGeneralList() const;
 
     void playSystemAudioEffect(const QString &name) const;
     void playAudioEffect(const QString &filename) const;
@@ -213,8 +213,8 @@ private:
 
     QMutex m_mutex;
     QHash<QString, QString> translations;
-    QStringList generalNames;
-    GeneralList generals;
+    GeneralList generalList;
+    QHash<QString, const General *> generalHash;
     QHash<QString, const QMetaObject *> metaobjects;
     QHash<QString, QString> className2objectName;
     QHash<QString, const Skill *> skills;

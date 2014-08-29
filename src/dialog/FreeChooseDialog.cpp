@@ -40,7 +40,7 @@ FreeChooseDialog::FreeChooseDialog(QWidget *parent, ButtonGroupType type)
     group = new QButtonGroup(this);
     group->setExclusive(type == Exclusive);
 
-    QList<const General *> all_generals = Sanguosha->getGenerals();
+    QList<const General *> all_generals = Sanguosha->getGeneralList();
     QMap<QString, QList<const General *> > map;
     foreach(const General *general, all_generals) {
         if (general->isTotallyHidden())

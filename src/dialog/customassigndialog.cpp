@@ -1516,7 +1516,7 @@ GeneralAssignDialog::GeneralAssignDialog(QWidget *parent, bool can_ban) : QDialo
     group = new QButtonGroup(this);
     group->setExclusive(true);
 
-    QList<const General *> all_generals = Sanguosha->getGenerals();
+    QList<const General *> all_generals = Sanguosha->getGeneralList();
     QMap<QString, QList<const General *> > map;
     foreach(const General *general, all_generals)
         map[general->getKingdom()] << general;

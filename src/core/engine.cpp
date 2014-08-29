@@ -273,8 +273,8 @@ void Engine::addPackage(Package *package) {
             foreach(const Skill *related, getRelatedSkills(skill_name))
                 general->addSkill(related->objectName());
         }
-        generalNames.append(general->objectName());
-        generals.append(general);
+        generalList << general;
+        generalHash.insert(general->objectName(), general);
         if (isGeneralHidden(general->objectName())) continue;
         if (general->isLord()) lord_list << general->objectName();
     }
@@ -362,20 +362,18 @@ const Skill *Engine::getMainSkill(const QString &skill_name) const{
 }
 
 const General *Engine::getGeneral(const QString &name) const{
-    if (generalNames.contains(name))
-        return generals.at(generalNames.indexOf(name));
+    if (generalHash.contains(name))
+        return generalHash.value(name);
     else
         return NULL;
 }
 
 int Engine::getGeneralCount(bool include_banned) const{
     if (include_banned)
-        return generals.size();
+        return generalList.size();
 
-    int total = generals.size();
-    QListIterator<const General *> itor(generals);
-    while (itor.hasNext()) {
-        const General *general = itor.next();
+    int total = generalList.size();
+    foreach (const General *general, generalList) {
         if (getBanPackages().contains(general->getPackage()))
             total--;
     }
@@ -777,11 +775,15 @@ int Engine::getCardCount() const{
 }
 
 QStringList Engine::getGeneralNames() const{
+    QStringList generalNames;
+    foreach (const General *general, generalList) {
+        generalNames << general->objectName();
+    }
     return generalNames;
 }
 
-QList<const General *> Engine::getGenerals() const{
-    return generals;
+GeneralList Engine::getGeneralList() const{
+     return generalList;
 }
 
 QStringList Engine::getLimitedGeneralNames() const{
@@ -843,10 +845,10 @@ QList<int> Engine::getRandomCards() const{
 }
 
 QString Engine::getRandomGeneralName() const{
-    QString name = generalNames.at(qrand() % generalNames.size());
-    while (generals.at(generalNames.indexOf(name))->getKingdom() == "programmer")
-        name = generalNames.at(qrand() % generalNames.size());
-    return name;
+    const General *general = generalList.at(qrand() % generalList.size());
+    while (general->getKingdom() == "programmer")
+        general = generalList.at(qrand() % generalList.size());
+    return general->objectName();
 }
 
 void Engine::playSystemAudioEffect(const QString &name) const{
