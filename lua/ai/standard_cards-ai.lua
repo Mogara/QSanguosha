@@ -2989,6 +2989,7 @@ end
 
 
 function SmartAI:useCardAwaitExhausted(AwaitExhausted, use)
+	if not AwaitExhausted:isAvailable(self.player) then return end
 	use.card = AwaitExhausted
 	return
 end
