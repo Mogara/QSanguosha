@@ -1098,9 +1098,9 @@ QListView::item:!selected:hover {
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>160</y>
+       <y>190</y>
        <width>451</width>
-       <height>121</height>
+       <height>151</height>
       </rect>
      </property>
      <property name="title">
@@ -1232,9 +1232,9 @@ QListView::item:!selected:hover {
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>130</y>
+       <y>150</y>
        <width>271</width>
-       <height>21</height>
+       <height>41</height>
       </rect>
      </property>
      <widget class="QWidget" name="horizontalLayoutWidget">
@@ -1290,6 +1290,25 @@ QListView::item:!selected:hover {
      </property>
      <property name="text">
       <string>Enable super drag</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ignoreChangingSkinCheckBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>130</y>
+       <width>231</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Ignore other's switches of skin</string>
      </property>
     </widget>
    </widget>

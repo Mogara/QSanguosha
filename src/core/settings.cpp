@@ -148,6 +148,8 @@ void Settings::init() {
 
     BubbleChatBoxKeepSeconds = value("BubbleChatBoxKeepSeconds", 2).toInt();
 
+    IgnoreOthersSwitchesOfSkin = value("IgnoreOthersSwitchesOfSkin", false).toBool();
+
     lua_State *lua = Sanguosha->getLuaState();
     Config.ExtraHiddenGenerals = GetConfigFromLuaState(lua, "extra_hidden_generals").toStringList();
     Config.RemovedHiddenGenerals = GetConfigFromLuaState(lua, "removed_hidden_generals").toStringList();

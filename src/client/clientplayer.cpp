@@ -23,6 +23,7 @@
 #include "client.h"
 #include "engine.h"
 #include "standard.h"
+#include "settings.h"
 
 #include <QTextDocument>
 #include <QTextOption>
@@ -314,4 +315,32 @@ QHash<QString, QStringList> ClientPlayer::getBigAndSmallKingdoms(const QString &
         }
     }
     return big_n_small;
+}
+
+void ClientPlayer::setHeadSkinId(int id)
+{
+    if (headSkinId == id || (this != Self && Config.IgnoreOthersSwitchesOfSkin))
+        return;
+
+    if (id <= general->skinCount()) {
+        headSkinId = id;
+        emit headSkinIdChanged(general->objectName());
+    }
+
+    if (this == Self)
+        ClientInstance->onPlayerChangeSkin(id);
+}
+
+void ClientPlayer::setDeputySkinId(int id)
+{
+    if (deputySkinId == id || (this != Self && Config.IgnoreOthersSwitchesOfSkin))
+        return;
+
+    if (id <= general2->skinCount()) {
+        deputySkinId = id;
+        emit deputySkinIdChanged(general2->objectName());
+    }
+
+    if (this == Self)
+        ClientInstance->onPlayerChangeSkin(id, false);
 }

@@ -118,6 +118,7 @@ public:
     QString RecordSavePaths;
 
     int BubbleChatBoxKeepSeconds;
+    bool IgnoreOthersSwitchesOfSkin;
 
     // consts
     static const int S_SURRENDER_REQUEST_MIN_INTERVAL;

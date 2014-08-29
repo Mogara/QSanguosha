@@ -2447,12 +2447,18 @@ void Room::changeSkinCommand(ServerPlayer *player, const QVariant &arg)
     int skin_id = args.at(0).toInt();
     bool is_head = args.at(1).toBool();
 
+    QString propertyName;
     if (is_head) {
         player->setHeadSkinId(skin_id);
-        broadcastProperty(player, "head_skin_id");
+        propertyName = "head_skin_id";
     } else {
         player->setDeputySkinId(skin_id);
-        broadcastProperty(player, "deputy_skin_id");
+        propertyName = "deputy_skin_id";
+    }
+
+    foreach(ServerPlayer *target, m_players) {
+        if (player == target) continue;
+        notifyProperty(target, player, propertyName.toLatin1().constData());
     }
 }
 
