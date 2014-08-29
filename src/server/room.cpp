@@ -2450,9 +2450,17 @@ void Room::changeSkinCommand(ServerPlayer *player, const QVariant &arg)
     QString propertyName;
     if (is_head) {
         player->setHeadSkinId(skin_id);
+
+        if (!player->hasShownGeneral1())
+            return;
+
         propertyName = "head_skin_id";
     } else {
         player->setDeputySkinId(skin_id);
+
+        if (!player->hasShownGeneral2())
+            return;
+
         propertyName = "deputy_skin_id";
     }
 
