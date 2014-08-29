@@ -34,7 +34,7 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
     int height = GetValueFromLuaState(L, "about_us", "height").toInt();
     resize(width, height);
 
-    setStyleSheet("QToolTip{ border: 0px solid; background: white; }");
+    setStyleSheet("QToolTip{ border: none; background: white; }");
 
     list = new QListWidget;
     list->setMaximumWidth(150);

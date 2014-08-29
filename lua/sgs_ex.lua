@@ -698,3 +698,18 @@ function sgs.LoadTranslationTable(t)
 		sgs.AddTranslationEntry(key, value)
 	end
 end
+
+function sgs.LoadSkinTransltionTable(t)
+	local id = sgs.Sanguosha:property("CurrentSkinId"):toInt()
+	local prefixes = {"#", "$", "~", "cv:", "illustrator:"}
+	local function f(s)
+		for _, v in ipairs(prefixes) do
+			if s:startsWith(v) then
+				return v .. id .. string.sub(s, string.len(v) + 1)
+			end
+		end
+	end
+	for key, value in pairs(t) do
+		sgs.AddTranslationEntry(f(key), value)
+	end
+end

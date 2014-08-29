@@ -1,10 +1,10 @@
-sgs.LoadTranslationTable {
-	["#1xiaoqiao"] = "fsu了不起",
-	["cv:1xiaoqiao"] = "fsu",
-	["illustrator:1xiaoqiao"] = "fsu",
+sgs.LoadSkinTransltionTable {
+	["#xiaoqiao"] = "fsu了不起",
+	["cv:xiaoqiao"] = "fsu",
+	["illustrator:xiaoqiao"] = "fsu",
 	
-	["$1tianxiang"] = "fsu了不起",
-	["$1hongyan"] = "fsu了不起",
+	["$tianxiang"] = "fsu了不起",
+	["$hongyan"] = "fsu了不起",
 	
-	["~1xiaoqiao"] = "fsu~"
+	["~xiaoqiao"] = "fsu~"
 }

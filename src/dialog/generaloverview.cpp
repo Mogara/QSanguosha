@@ -305,7 +305,7 @@ void GeneralOverview::fillGenerals(const QList<const General *> &generals, bool 
                     skinId = Self->getDeputySkinId();
             }
             if (skinId != 0)
-                tryLoadingSkinTranslation(general->objectName(), skinId);
+                general->tryLoadingSkinTranslation(skinId);
             tempGeneralMap[general] = skinId;
         } else {
             generalsCopy.removeOne(general);
@@ -372,22 +372,6 @@ QString GeneralOverview::getIllustratorInfo(const QString &generalName) {
         else
             return Sanguosha->translate("DefaultIllustrator");
     }
-}
-
-void GeneralOverview::tryLoadingSkinTranslation(const QString &general, const int skinId)
-{
-    static QMultiMap<QString, int> loaded;
-    if (loaded.contains(general, skinId))
-        return;
-
-    QString file = QString("hero-skin/%1/%2/%3.lua")
-            .arg(general).arg(skinId)
-            .arg(Config.value("Language", "zh_CN").toString());
-
-    if (QFile::exists(file))
-        DoLuaScript(Sanguosha->getLuaState(), file.toLatin1().constData());
-
-    loaded.insert(general, skinId);
 }
 
 QString GeneralOverview::getCvInfo(const QString &generalName)
@@ -598,7 +582,7 @@ void GeneralOverview::showNextSkin() {
     QPixmap pixmap;
     if (G_ROOM_SKIN.doesGeneralHaveSkin(generalName, skinId, true)) {
         pixmap = G_ROOM_SKIN.getGeneralCardPixmap(generalName, skinId);
-        tryLoadingSkinTranslation(generalName, skinId);
+        general->tryLoadingSkinTranslation(skinId);
     } else {
         pixmap = G_ROOM_SKIN.getGeneralCardPixmap(generalName);
         (*all_generals)[general] = 0;
