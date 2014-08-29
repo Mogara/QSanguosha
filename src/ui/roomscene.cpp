@@ -555,6 +555,7 @@ void RoomScene::handleGameEvent(const QVariant &args) {
         bool isSecondaryHero = arg[3].toBool();
         bool sendLog = arg[4].toBool();
         ClientPlayer *player = ClientInstance->getPlayer(playerName);
+        const General* oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
         if (Sanguosha->getGeneral(newHeroName)) {
             if (isSecondaryHero) {
                 player->setGeneral2Name(newHeroName);
@@ -577,7 +578,6 @@ void RoomScene::handleGameEvent(const QVariant &args) {
             }
         }
         if (player != Self) break;
-        const General* oldHero = isSecondaryHero ? player->getGeneral2() : player->getGeneral();
         const General* newHero = Sanguosha->getGeneral(newHeroName);
         if (oldHero) {
             foreach(const Skill *skill, oldHero->getVisibleSkills(true, !isSecondaryHero))
