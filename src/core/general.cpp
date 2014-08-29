@@ -174,11 +174,12 @@ QString General::getCompanions() const{
     QStringList name;
     foreach(QString general, companions)
         name << QString("%1").arg(Sanguosha->translate(general));
-    foreach(QString gnr, Sanguosha->getGeneralNames()) {
-        if (!Sanguosha->getGeneral(gnr))
+    GeneralList generals(Sanguosha->getGeneralList());
+    foreach(const General *gnr, generals) {
+        if (!gnr)
             continue;
-        if (Sanguosha->getGeneral(gnr)->companions.contains(objectName()))
-            name << QString("%1").arg(Sanguosha->translate(gnr));
+        if (gnr->companions.contains(objectName()))
+            name << QString("%1").arg(Sanguosha->translate(gnr->objectName()));
     }
     return name.join(" ");
 }

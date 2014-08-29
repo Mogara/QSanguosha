@@ -113,12 +113,10 @@ public:
         if (player == NULL) {
             foreach(ServerPlayer *p, room->getAllPlayers()) {
                 if (p->getActualGeneral1() != NULL) {
-                    QStringList generals = Sanguosha->getGeneralNames();
                     QString lord = "lord_" + p->getActualGeneral1()->objectName();
-                    if (generals.contains(lord)) {
-                        const General *lord_general = Sanguosha->getGeneral(lord);
-                        if (!Sanguosha->getBanPackages().contains(lord_general->getPackage()))
-                            trigger_map.insert(p, QStringList(objectName()));
+                    const General *lord_general = Sanguosha->getGeneral(lord);
+                    if (lord_general && !Sanguosha->getBanPackages().contains(lord_general->getPackage())) {
+                        trigger_map.insert(p, QStringList(objectName()));
                     }
                 }
             }

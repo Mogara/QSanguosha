@@ -789,7 +789,7 @@ GeneralList Engine::getGeneralList() const{
 QStringList Engine::getLimitedGeneralNames() const{
     //for later use
     QStringList general_names = getGeneralNames();
-    QStringList general_names_copy = getGeneralNames();
+    QStringList general_names_copy = general_names;
 
     foreach(QString name, general_names_copy) {
         if (isGeneralHidden(name) || getBanPackages().contains(getGeneral(name)->getPackage()))
