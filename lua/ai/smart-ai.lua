@@ -2169,7 +2169,6 @@ function SmartAI:askForNullification(trick, from, to, positive)
 
 		elseif trick:isKindOf("ArcheryAttack") then
 			if self:isFriend(to) then
-				if not self:isFriend(to) then return end
 				if not self:aoeIsEffective(trick, to, from) then return
 				elseif self:getDamagedEffects(to, from) then return
 				elseif to:objectName() == self.player:objectName() and self:canAvoidAOE(trick) then return
@@ -2183,7 +2182,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 			if self:isFriend(to) then
 				local menghuo
 				for _, p in sgs.qlist(self.room:getAlivePlayers()) do
-					if p:hasShownSkill("houshou") then menghuo = p break end
+					if p:hasShownSkill("huoshou") then menghuo = p break end
 				end
 				if not self:aoeIsEffective(trick, to, menghuo or from) then return
 				elseif self:getDamagedEffects(to, menghuo or from) then return
