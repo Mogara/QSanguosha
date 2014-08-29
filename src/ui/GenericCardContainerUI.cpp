@@ -209,6 +209,8 @@ void PlayerCardContainer::updateAvatar() {
     if (_m_avatarIcon == NULL) {
         _m_avatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
         _m_avatarIcon->setTransformationMode(Qt::SmoothTransformation);
+        connect(m_player, SIGNAL(headSkinIdChanged(QString)),
+                _m_avatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
     }
 
     const General *general = NULL;
@@ -289,6 +291,8 @@ void PlayerCardContainer::updateSmallAvatar() {
     if (_m_smallAvatarIcon == NULL) {
         _m_smallAvatarIcon = new GraphicsPixmapHoverItem(this, _getAvatarParent());
         _m_smallAvatarIcon->setTransformationMode(Qt::SmoothTransformation);
+        connect(m_player, SIGNAL(deputySkinIdChanged(QString)),
+                _m_smallAvatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
     }
 
     const General *general = NULL;
