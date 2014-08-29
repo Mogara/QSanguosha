@@ -89,6 +89,8 @@ public:
 
     int skinCount() const;
     QString getSkinNameById(const int skinId);
+    void tryLoadingSkinTranslation(const int skinId) const;
+    QString getTitle(const int skinId = 0) const;
 
 public slots:
     void lastWord(const int skinId) const;
@@ -108,6 +110,7 @@ private:
     int head_max_hp_adjusted_value;
     int deputy_max_hp_adjusted_value;
     mutable int skin_count;
+    mutable QList<int> translated_skins;
 };
 
 Q_DECLARE_METATYPE(const General *)

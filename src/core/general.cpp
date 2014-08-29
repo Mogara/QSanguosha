@@ -277,6 +277,23 @@ void General::lastWord(const int skinId) const
     Sanguosha->playAudioEffect(fileName);
 }
 
+void General::tryLoadingSkinTranslation(const int skinId) const
+{
+    if (translated_skins.contains(skinId))
+        return;
+
+    const QString file = QString("hero-skin/%1/%2/%3.lua")
+            .arg(objectName()).arg(skinId)
+            .arg(Config.value("Language", "zh_CN").toString());
+
+    if (QFile::exists(file)) {
+        Sanguosha->setProperty("CurrentSkinId", skinId);
+        DoLuaScript(Sanguosha->getLuaState(), file.toLatin1().constData());
+    }
+
+    translated_skins << skinId;
+}
+
 void General::addCompanion(const QString &name) {
     this->companions << name;
 }
@@ -307,4 +324,30 @@ int General::skinCount() const
         if (!G_ROOM_SKIN.doesGeneralHaveSkin(objectName(), (++skin_count) + 1))
             return skin_count;
     }
+}
+
+QString General::getTitle(const int skinId) const
+{
+    QString title;
+    const QString id = QString::number(skinId);
+    if (skinId == 0)
+        title = Sanguosha->translate("#" + objectName());
+    else
+        title = Sanguosha->translate("#" + id + objectName());
+
+    if (title.startsWith("#")) {
+        if (objectName().contains("_")) {
+            const QString generalName = objectName().split("_").last();
+            if (skinId == 0) {
+                title = Sanguosha->translate(("#") + generalName);
+            } else {
+                title = Sanguosha->translate(("#") + id + generalName);
+                if (title.startsWith("#"))
+                    title = Sanguosha->translate(("#") + generalName);
+            }
+        } else if (skinId != 0) {
+            title = Sanguosha->translate("#" + objectName());
+        }
+    }
+    return title;
 }

@@ -103,7 +103,6 @@ private:
     bool hasSkin(const General *general) const;
     QString getCvInfo(const QString &generalName);
     QString getIllustratorInfo(const QString &generalName);
-    void tryLoadingSkinTranslation(const QString &general, const int skinId);
 
 public slots:
     void startSearch(bool include_hidden, const QString &nickname, const QString &name, const QStringList &genders,

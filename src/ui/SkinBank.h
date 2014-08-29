@@ -323,6 +323,9 @@ public:
 
         //Player Card Box
         QSanSimpleTextFont playerCardBoxPlaceNameText;
+
+        //Skin Item
+        QSanShadowTextFont skinItemTitleText;
     };
 
     enum GeneralIconSize {

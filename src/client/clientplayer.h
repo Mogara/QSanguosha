@@ -52,6 +52,9 @@ public:
 
     virtual QHash<QString, QStringList> getBigAndSmallKingdoms(const QString &reason, MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const;
 
+    virtual void setHeadSkinId(int id);
+    virtual void setDeputySkinId(int id);
+
 private:
     int handcard_num;
     QList<const Card *> known_cards;
@@ -63,6 +66,8 @@ signals:
     void action_taken();
     //void skill_state_changed(const QString &skill_name);
     void duanchang_invoked();
+    void headSkinIdChanged(const QString &generalName);
+    void deputySkinIdChanged(const QString &generalName);
 };
 
 extern ClientPlayer *Self;

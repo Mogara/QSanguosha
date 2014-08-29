@@ -66,6 +66,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->doubleClickCheckBox->setChecked(Config.EnableDoubleClick);
     ui->autoPreshowCheckBox->setChecked(Config.EnableAutoPreshowInConsoleMode);
     ui->bubbleChatBoxKeepSpinBox->setValue(Config.BubbleChatBoxKeepSeconds);
+    ui->ignoreChangingSkinCheckBox->setChecked(Config.IgnoreOthersSwitchesOfSkin);
 
     ui->enableAutoSaveCheckBox->setChecked(Config.EnableAutoSaveRecord);
     ui->networkOnlyCheckBox->setChecked(Config.NetworkOnly);
@@ -224,10 +225,15 @@ void ConfigDialog::saveConfig() {
     Config.setValue("EnableDoubleClick", Config.EnableDoubleClick);
 
     Config.EnableAutoPreshowInConsoleMode = ui->autoPreshowCheckBox->isChecked();
-    Config.setValue("EnableAutoPreshowInConsoleMode", Config.EnableAutoPreshowInConsoleMode);
+    Config.setValue("EnableAutoPreshowInConsoleMode",
+                    Config.EnableAutoPreshowInConsoleMode);
 
     Config.BubbleChatBoxKeepSeconds = ui->bubbleChatBoxKeepSpinBox->value();
     Config.setValue("BubbleChatBoxKeepSeconds", Config.BubbleChatBoxKeepSeconds);
+
+    Config.IgnoreOthersSwitchesOfSkin = ui->ignoreChangingSkinCheckBox->isChecked();
+    Config.setValue("IgnoreOthersSwitchesOfSkin",
+                    Config.IgnoreOthersSwitchesOfSkin);
 
     Config.EnableAutoSaveRecord = ui->enableAutoSaveCheckBox->isChecked();
     Config.setValue("EnableAutoSaveRecord", Config.EnableAutoSaveRecord);

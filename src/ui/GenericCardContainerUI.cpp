@@ -580,6 +580,10 @@ void PlayerCardContainer::setPlayer(ClientPlayer *player) {
         Q_ASSERT(_m_markItem);
         _m_markItem->setDocument(textDoc);
         connect(textDoc, SIGNAL(contentsChanged()), this, SLOT(updateMarks()));
+        connect(player, SIGNAL(headSkinIdChanged(QString)),
+                _m_avatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
+        connect(player, SIGNAL(deputySkinIdChanged(QString)),
+                _m_smallAvatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
     }
     updateAvatar();
     refresh();

@@ -330,10 +330,10 @@ public:
 
     QList<const Player *> getFormation() const;
 
-    void setHeadSkinId(int id);
+    virtual void setHeadSkinId(int id);
     int getHeadSkinId() const;
 
-    void setDeputySkinId(int id);
+    virtual void setDeputySkinId(int id);
     int getDeputySkinId() const;
 
     virtual QHash<QString, QStringList> getBigAndSmallKingdoms(const QString &reason, MaxCardsType::MaxCardsCount type = MaxCardsType::Min) const = 0;
@@ -350,10 +350,12 @@ protected:
     QSet<QString> flags;
     QHash<QString, int> history;
 
+    const General *general, *general2;
+    int headSkinId, deputySkinId;
+
 private:
     QString screen_name;
     bool owner;
-    const General *general, *general2;
     General::Gender m_gender;
     int hp, max_hp;
     QString kingdom;
@@ -362,7 +364,6 @@ private:
     QString state;
     int seat;
     bool alive;
-    int headSkinId, deputySkinId;
 
     const General *actual_general1, *actual_general2;
 
@@ -398,8 +399,6 @@ signals:
     void deputy_state_changed();
     void disable_show_changed();
     void removedChanged();
-    void headSkinIdChanged(const QString &generalName);
-    void deputySkinIdChanged(const QString &generalName);
 };
 
 #endif

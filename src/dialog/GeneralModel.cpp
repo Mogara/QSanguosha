@@ -56,31 +56,7 @@ QVariant GeneralModel::data(const QModelIndex &index, int role) const
     case Qt::UserRole: return general->objectName();
     case Qt::DisplayRole: {
         switch(index.column()) {
-        case TitleColumn: {
-            QString title;
-            const int skinId = all_generals.value(general);
-            const QString id = QString::number(skinId);
-            if (skinId == 0)
-                title = Sanguosha->translate("#" + general->objectName());
-            else
-                title = Sanguosha->translate("#" + id + general->objectName());
-
-            if (title.startsWith("#")) {
-                if (general->objectName().contains("_")) {
-                    const QString generalName = general->objectName().split("_").last();
-                    if (skinId == 0) {
-                        title = Sanguosha->translate(("#") + generalName);
-                    } else {
-                        title = Sanguosha->translate(("#") + id + generalName);
-                        if (title.startsWith("#"))
-                            title = Sanguosha->translate(("#") + generalName);
-                    }
-                } else if (skinId != 0) {
-                    title = Sanguosha->translate("#" + general->objectName());
-                }
-            }
-            return title;
-        }
+        case TitleColumn: return general->getTitle(all_generals.value(general));
         case NameColumn: return Sanguosha->translate(general->objectName());
         case KingdomColumn: return Sanguosha->translate(general->getKingdom());
         case GenderColumn: return general->isMale() ? tr("Male") : (general->isFemale() ? tr("Female") : tr("NoGender"));

@@ -230,9 +230,9 @@ int HeroSkinContainer::getCurrentSkinId() const
 void HeroSkinContainer::setCurrentSkinId(const int skinId)
 {
     if (Self->getActualGeneral1Name() == m_generalName)
-        return Self->setHeadSkinId(skinId);
+        Self->setHeadSkinId(skinId);
     else
-        return Self->setDeputySkinId(skinId);
+        Self->setDeputySkinId(skinId);
 }
 
 void HeroSkinContainer::mousePressEvent(QGraphicsSceneMouseEvent *)

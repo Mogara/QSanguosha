@@ -868,7 +868,6 @@ void Dashboard::_initializeRemovedEffect()
 }
 
 void Dashboard::showHeroSkinListHelper(const General *general,
-                                       GraphicsPixmapHoverItem *avatarIcon,
                                        HeroSkinContainer * &heroSkinContainer)
 {
     if (NULL == general) {
@@ -881,14 +880,6 @@ void Dashboard::showHeroSkinListHelper(const General *general,
 
         if (NULL == heroSkinContainer) {
             heroSkinContainer = new HeroSkinContainer(generalName, general->getKingdom());
-
-            if (avatarIcon == _m_avatarIcon) {
-                connect(Self, SIGNAL(headSkinIdChanged(QString)),
-                        avatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
-            } else {
-                connect(Self, SIGNAL(deputySkinIdChanged(QString)),
-                        avatarIcon, SLOT(startChangeHeroSkinAnimation(const QString &)));
-            }
 
             RoomSceneInstance->addHeroSkinContainer(heroSkinContainer);
             RoomSceneInstance->addItem(heroSkinContainer);
@@ -1450,10 +1441,10 @@ void Dashboard::showHeroSkinList()
 {
     if (NULL != m_player) {
         if (sender() == m_changeHeadHeroSkinButton) {
-            showHeroSkinListHelper(m_player->getGeneral(), _m_avatarIcon,
-                m_headHeroSkinContainer);
+            showHeroSkinListHelper(m_player->getGeneral(),
+                                   m_headHeroSkinContainer);
         } else {
-            showHeroSkinListHelper(m_player->getGeneral2(), _m_smallAvatarIcon,
+            showHeroSkinListHelper(m_player->getGeneral2(),
                 m_deputyHeroSkinContainer);
         }
     }

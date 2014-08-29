@@ -1328,6 +1328,9 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
             }
         }
 
+        foreach (ServerPlayer *p, room->getOtherPlayers(this, true))
+            room->notifyProperty(p, this, "head_skin_id");
+
         if (!hasShownGeneral2()) {
             QString kingdom = room->getMode() == "custom_scenario" ? getKingdom() : getGeneral()->getKingdom();
             room->setPlayerProperty(this, "kingdom", kingdom);
@@ -1363,8 +1366,7 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
                 }
             }
         }
-    }
-    else {
+    } else {
         if (getGeneral2Name() != "anjiang") return;
 
         setSkillsPreshowed("d");
@@ -1396,6 +1398,9 @@ void ServerPlayer::showGeneral(bool head_general, bool trigger_event, bool sendL
                 }
             }
         }
+
+        foreach (ServerPlayer *p, room->getOtherPlayers(this, true))
+            room->notifyProperty(p, this, "deputy_skin_id");
 
         if (!hasShownGeneral1()) {
             QString kingdom = getGeneral2()->getKingdom();

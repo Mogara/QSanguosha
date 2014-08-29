@@ -275,7 +275,7 @@ protected:
 private:
     static const int CARDITEM_Z_DATA_KEY = 0413;
 
-    void showHeroSkinListHelper(const General *general, GraphicsPixmapHoverItem *avatarIcon, HeroSkinContainer * &heroSkinContainer);
+    void showHeroSkinListHelper(const General *general, HeroSkinContainer * &heroSkinContainer);
 
     QPointF getHeroSkinContainerPosition() const;
 
