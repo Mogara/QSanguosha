@@ -623,11 +623,14 @@ void PlayerCardContainer::addDelayedTricks(QList<CardItem *> &tricks) {
         _paintPixmap(item, start, G_ROOM_SKIN.getCardJudgeIconPixmap(trick->getCard()->objectName()));
         trick->setHomeOpacity(0.0);
         trick->setHomePos(start.center());
-        const Card *card = Sanguosha->getEngineCard(trick->getCard()->getEffectiveId());
-        QString toolTip = QString("<font color=%1><b>%2 [</b><img src='image/system/log/%3.png' height = 12/><b>%4]</b></font>").arg(Config.SkillDescriptionInToolTipColor.name())
-            .arg(Sanguosha->translate(card->objectName()))
-            .arg(card->getSuitString())
-            .arg(card->getNumberString());
+        const Card *card = trick->getCard();
+        const Card *realCard = Sanguosha->getEngineCard(card->getEffectiveId());
+        QString toolTip = QString("<font color=%1><b>%2 [</b><img src='image/system/log/%3.png' height=12/><b>%4]</b></font><br />%5")
+            .arg(Config.SkillDescriptionInToolTipColor.name())
+            .arg(Sanguosha->translate(realCard->objectName()))
+            .arg(realCard->getSuitString())
+            .arg(realCard->getNumberString())
+            .arg(card->getDescription());
         item->setToolTip(toolTip);
         _m_judgeCards.append(trick);
         _m_judgeIcons.append(item);
