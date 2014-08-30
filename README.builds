@@ -212,7 +212,7 @@ Notice: Android version is still not fully supported.
 (8) Apache Ant 1.9, usually packed in ADT
 
 2. Unzip swigwin and run
-   swig -c++ -lua swig/sanguosha.i
+   swig -c++ -lua ~/swig/sanguosha.i
 
 3. Unzip Android SDK, Android NDK. Install JDK and your USB driver(optional).
 
@@ -222,15 +222,15 @@ Notice: Android version is still not fully supported.
 
 6. To deploy APK via USB, connect your Android device to your PC via USB. Enable debug mode. Click Run (Ctrl + R) and select your device in the popup window.
    OR add two custom process steps to create an APK but do not deploy it to any device.
-   (1) Command: < YOUR minGW PATH >\mingw32-make.exe
+   (1) Command: < YOUR MinGW PATH >\mingw32-make.exe
        Arguments: install INSTALL_ROOT=android-build
        Working Directory: %{buildDir}
    (2) Command: < YOUR Qt library PATH >\bin\androiddeployqt.exe
        Arguments: --input android-libQSanguosha.so-deployment-settings.json --output android-build --deployment bundled --ant <YOUR Apache Ant PATH>/bin/ant.bat --android-platform android-19
        Working Directory: %{buildDir}
-   Click build (Ctrl + B) and you'll get an APK in <YOUR build directory>/android-build/bin, and install the APK manually.
+   Click build (Ctrl + B) and you'll get an APK in <Y OUR build directory >/android-build/bin, and install the APK manually.
 
-7. Copy the following files and folders from the source code directory into < one of YOUR SD card >/Android/data/org.qsgsrara.qsanguosha
+7. Copy the following files and folders from ~ into <one of YOUR SD card>/Android/data/org.qsgsrara.qsanguosha
    ai-selector
    audio
    diy
@@ -246,4 +246,4 @@ Notice: Android version is still not fully supported.
 
 8. (optional) Add the Chinese language pack.
    run lrelease QSanguosha.pro
-   copy builds/sanguosha.qm and ./qt_zh_CN.qm into Android/data/org.qsgsrara.qsanguosha mentioned in step 7.
+   copy ~/builds/sanguosha.qm and ~/qt_zh_CN.qm into Android/data/org.qsgsrara.qsanguosha mentioned in step 7.
