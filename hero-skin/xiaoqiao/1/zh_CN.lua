@@ -4,7 +4,7 @@ sgs.LoadSkinTransltionTable {
 	["illustrator:xiaoqiao"] = "牧童的短笛",
 	
 	["$tianxiang1"] = "惜玉怜香，倾心至上",
-	["$tianxiang2"] = "天香本是绝艳，奈何缘深情浅",
+	["$tianxiang2"] = "天香本是绝艳，奈何情深缘浅",
 	["$tianxiang3"] = "周郎，你必不负我", --弹周瑜
 
 	["$hongyan1"] = "红颜索清香，托付英雄将", --周瑜已亮
