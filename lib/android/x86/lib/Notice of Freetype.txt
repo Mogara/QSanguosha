@@ -1,1 +1,0 @@
-The Android X86 version of Freetype build is missing now
