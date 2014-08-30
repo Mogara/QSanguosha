@@ -79,6 +79,7 @@ public:
 #endif
     }
 
+#ifndef Q_OS_ANDROID
     virtual void mousePressEvent(QMouseEvent *event) {
         MainWindow *parent = qobject_cast<MainWindow *>(parentWidget());
         if (parent)
@@ -107,6 +108,7 @@ public:
             parent->mouseDoubleClickEvent(event);
         QGraphicsView::mouseDoubleClickEvent(event);
     }
+#endif
 #endif
 
     virtual void resizeEvent(QResizeEvent *event) {
@@ -291,6 +293,7 @@ MainWindow::MainWindow(QWidget *parent)
     systray = NULL;
 }
 
+#ifndef Q_OS_ANDROID
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if (windowState() & (Qt::WindowMaximized | Qt::WindowFullScreen))
@@ -429,6 +432,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
             showMaximized();
     }
 }
+#endif
 
 void MainWindow::changeEvent(QEvent *event)
 {

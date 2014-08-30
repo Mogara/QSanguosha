@@ -83,10 +83,14 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void setBackgroundBrush(bool center_as_origin);
+
+#ifndef Q_OS_ANDROID
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent *event);
     virtual void mouseDoubleClickEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
+#endif
+
     virtual void changeEvent(QEvent *event);
     virtual void resizeEvent(QResizeEvent *event);
     void repaintButtons();
