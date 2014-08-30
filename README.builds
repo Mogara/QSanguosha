@@ -228,7 +228,7 @@ Notice: Android version is still not fully supported.
    (2) Command: < YOUR Qt library PATH >\bin\androiddeployqt.exe
        Arguments: --input android-libQSanguosha.so-deployment-settings.json --output android-build --deployment bundled --ant <YOUR Apache Ant PATH>/bin/ant.bat --android-platform android-19
        Working Directory: %{buildDir}
-   Click build (Ctrl + B) and you'll get an APK in <Y OUR build directory >/android-build/bin, and install the APK manually.
+   Click build (Ctrl + B) and you'll get an APK in < YOUR build directory >/android-build/bin, and install the APK manually.
 
 7. Copy the following files and folders from ~ into <one of YOUR SD card>/Android/data/org.qsgsrara.qsanguosha
    ai-selector
