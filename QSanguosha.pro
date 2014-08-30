@@ -331,7 +331,8 @@ ios{
 linux{
     android{
         DEFINES += ANDROID
-        LIBS += -L"$$_PRO_FILE_PWD_/lib/android/arm/lib"
+        ANDROID_LIBPATH = $$_PRO_FILE_PWD_/lib/android/$$ANDROID_ARCHITECTURE/lib
+        LIBS += -L"$$ANDROID_LIBPATH"
     }
     else {
         DEFINES += LINUX
@@ -351,9 +352,9 @@ CONFIG(audio){
     else:LIBS += -lfmodex
     SOURCES += src/core/audio.cpp
 
-    android-g++{
-        CONFIG(debug, debug|release):ANDROID_EXTRA_LIBS += $$_PRO_FILE_PWD_/lib/android/arm/lib/libfmodexL.so
-        else:ANDROID_EXTRA_LIBS += $$_PRO_FILE_PWD_/lib/android/arm/lib/libfmodex.so
+    android{
+        CONFIG(debug, debug|release):ANDROID_EXTRA_LIBS += $$ANDROID_LIBPATH/libfmodexL.so
+        else:ANDROID_EXTRA_LIBS += $$ANDROID_LIBPATH/libfmodex.so
     }
 }
 
