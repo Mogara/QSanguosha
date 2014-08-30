@@ -319,6 +319,15 @@ macx{
     DEFINES += MAC
     LIBS += -L"$$_PRO_FILE_PWD_/lib/mac/lib"
 }
+ios{
+    DEFINES += IOS
+    CONFIG(iphonesimulator){
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/ios/simulator/lib"
+    }
+    else {
+        LIBS += -L"$$_PRO_FILE_PWD_/lib/ios/device/lib"
+    }
+}
 linux{
     android{
         DEFINES += ANDROID
