@@ -556,6 +556,7 @@ sgs.ai_get_cardType = function(card)
 	if card:isKindOf("Armor") then return 2 end
 	if card:isKindOf("DefensiveHorse") then return 3 end
 	if card:isKindOf("OffensiveHorse") then return 4 end
+	if card:isKindOf("Treasure") then return 5 end
 end
 
 sgs.ai_skill_use["@@shensu2"] = function(self, prompt, method)
@@ -572,7 +573,7 @@ sgs.ai_skill_use["@@shensu2"] = function(self, prompt, method)
 	cards = sgs.QList2Table(cards)
 
 	local eCard
-	local hasCard = { 0, 0, 0, 0 }
+	local hasCard = { 0, 0, 0, 0, 0 }
 
 	if self:needToThrowArmor() and not self.player:isCardLimited(self.player:getArmor(), method) then
 		eCard = self.player:getArmor()
