@@ -47,16 +47,16 @@ To build QSanguosha in Mac OS X
    ./configure --without-pcre
    make
    sudo make install
-   
+
 4. Open a terminal here, type:
    cd swig
    swig -c++ -lua sanguosha.i
-   
+
 5. Open QSanguosha.pro with Qt Creator, configure the project and make sure the project is compiled with clang. Change the configuration to Release.
 
 6. You are now able to build the solution. When compilation succeeded, the QSanguosha.app folder is in ~/../Build-QSanguosha-**/ folder.
    I highly recommend you move this folder to ~.
-   
+
 7. This step is the most important and difficult one. Please pay a lot of attention to read this step.
    Open a terminal here, type:
    otool -L QSanguosha.app/Contents/MacOS/QSanguosha
@@ -80,12 +80,12 @@ You'll see something like this:
 
 Pay attention to the 2 lines contains libfmodex.dylib or libfreetype.1.dylib.
 using install_name_tool to change the path of the 2 library files to their absolute paths, like this:
-   install_name_tool -change ./libfmodex.dylib ~/lib/mac/lib/libfmodex.dylib QSanguosha.app/Contents/MacOS/QSanguosha 
-   install_name_tool -change libfreetype.1.dylib ~/lib/mac/lib/libfreetype.dylib  QSanguosha.app/Contents/MacOS/QSanguosha 
+   install_name_tool -change ./libfmodex.dylib ~/lib/mac/lib/libfmodex.dylib QSanguosha.app/Contents/MacOS/QSanguosha
+   install_name_tool -change libfreetype.1.dylib ~/lib/mac/lib/libfreetype.dylib  QSanguosha.app/Contents/MacOS/QSanguosha
 
 Type:
    otool -L QSanguosha.app/Contents/MacOS/QSanguosha
-   
+
 if you see all the directories is absolute path, it should succeed. (~ stands for the project dir)
    QSanguosha.app/Contents/MacOS/QSanguosha:
    ~/lib/mac/lib/libfmodex.dylib (compatibility version 1.0.0, current version 1.0.0)
@@ -102,15 +102,15 @@ if you see all the directories is absolute path, it should succeed. (~ stands fo
    /System/Library/Frameworks/AGL.framework/Versions/A/AGL (compatibility version 1.0.0, current version 1.0.0)
    /usr/lib/libstdc++.6.dylib (compatibility version 7.0.0, current version 56.0.0)
    /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 169.3.0)
-   
+
 Type:
    macdeployqt QSanguosha.app/
-   
+
 Some times the macdeployqt is not in the system directories, in this case you should go to the Qt Install Dir and find this file.
 
 Type:
    otool -L QSanguosha.app/Contents/MacOS/QSanguosha
-   
+
 if you see all the non-system libraries is in @executable_path, it should succeed.
    QSanguosha.app/Contents/MacOS/QSanguosha:
    @executable_path/../Frameworks/libfmodex.dylib (compatibility version 1.0.0, current version 1.0.0)
@@ -127,7 +127,7 @@ if you see all the non-system libraries is in @executable_path, it should succee
    /System/Library/Frameworks/AGL.framework/Versions/A/AGL (compatibility version 1.0.0, current version 1.0.0)
    /usr/lib/libstdc++.6.dylib (compatibility version 7.0.0, current version 56.0.0)
    /usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 169.3.0)
-   
+
 8.copy the following folders and files to QSanguosha.app/Contents/MacOS/, they are listed below:
    ai-selector/
    audio/
@@ -142,7 +142,7 @@ if you see all the non-system libraries is in @executable_path, it should succee
    ui-script/
    qt_zh_CN.qm
    sanguosha.qss
-   
+
 8.1 [optional] select Tools/External/QtLinguist/lrelease, copy ~/Builds/sanguosha.qm to QSanguosha.app/Contents/MacOS.
 
 9. Double-click QSanguosha.app folder and have fun!
@@ -197,3 +197,53 @@ To build QSanguosha in Linux or using MinGW
    libwinpthread-1.dll
 
 7. Double-click (MinGW)QSanguosha.exe or (Linux)QSanguosha and have fun!
+
+To build QSanguosha targeting Android on Windows
+
+Notice: Android version is still not fully supported.
+
+1. You'll need the following packages.
+(1) Qt 5.3.1 for Android, including Qt Creator & MinGW 4.8.
+(3) swig 3.0.2 for Windows.
+(4) Android SDK. (Android Development Tools is recommended, via which you can download and manage Android SDKs)
+(5) Android NDK
+(6) JDK 1.7
+(7) USB driver specified to your Android device. (optional, to deploy APK directly onto your device and debug)
+(8) Apache Ant 1.9, usually packed in ADT
+
+2. Unzip swigwin and run
+   swig -c++ -lua swig/sanguosha.i
+
+3. Unzip Android SDK, Android NDK. Install JDK and your USB driver(optional).
+
+4. Start Qt Creator and click Options -> Android. Fill and confirm JDK location, Android SDK location, Android NDK location and Ant executable.
+
+5. Open QSanguosha.pro with Qt Creator. Confirm the archtecture of your Android device (usually ARMv7 or ARMv5) and select the corresponding kit.
+
+6. To deploy APK via USB, connect your Android device to your PC via USB. Enable debug mode. Click Run (Ctrl + R) and select your device in the popup window.
+   OR add two custom process steps to create an APK but do not deploy it to any device.
+   (1) Command: < YOUR minGW PATH >\mingw32-make.exe
+       Arguments: install INSTALL_ROOT=android-build
+       Working Directory: %{buildDir}
+   (2) Command: < YOUR Qt library PATH >\bin\androiddeployqt.exe
+       Arguments: --input android-libQSanguosha.so-deployment-settings.json --output android-build --deployment bundled --ant <YOUR Apache Ant PATH>/bin/ant.bat --android-platform android-19
+       Working Directory: %{buildDir}
+   Click build (Ctrl + B) and you'll get an APK in <YOUR build directory>/android-build/bin, and install the APK manually.
+
+7. Copy the following files and folders from the source code directory into < one of YOUR SD card >/Android/data/org.qsgsrara.qsanguosha
+   ai-selector
+   audio
+   diy
+   font
+   hero-skin
+   image
+   lang
+   lua
+   rule
+   skins
+   style-sheet
+   ui-script
+
+8. (optional) Add the Chinese language pack.
+   run lrelease QSanguosha.pro
+   copy builds/sanguosha.qm and ./qt_zh_CN.qm into Android/data/org.qsgsrara.qsanguosha mentioned in step 7.
