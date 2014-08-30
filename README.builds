@@ -218,7 +218,7 @@ Notice: Android version is still not fully supported.
 
 4. Start Qt Creator and click Options -> Android. Fill and confirm JDK location, Android SDK location, Android NDK location and Ant executable.
 
-5. Open QSanguosha.pro with Qt Creator. Confirm the archtecture of your Android device (usually ARMv7 or ARMv5) and select the corresponding kit.
+5. Open QSanguosha.pro with Qt Creator. Confirm the archtecture of your Android device (ARMv7 or x86) and select the corresponding kit.
 
 6. To deploy APK via USB, connect your Android device to your PC via USB. Enable debug mode. Click Run (Ctrl + R) and select your device in the popup window.
    OR add two custom process steps to create an APK but do not deploy it to any device.
