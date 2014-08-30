@@ -883,6 +883,42 @@
     <ClCompile Include="Release\moc_UdpDetectorDialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ui\GraphicsPixmapHoverItem.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_GraphicsPixmapHoverItem.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_GraphicsPixmapHoverItem.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\HeroSkinContainer.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_HeroSkinContainer.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_HeroSkinContainer.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\GeneralModel.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_GeneralModel.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_GeneralModel.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ui\SkinItem.cpp">
+      <Filter>ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_SkinItem.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_SkinItem.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1145,6 +1181,18 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\dialog\UdpDetectorDialog.h">
       <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\GraphicsPixmapHoverItem.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\HeroSkinContainer.h">
+      <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\GeneralModel.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\ui\SkinItem.h">
+      <Filter>ui</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
