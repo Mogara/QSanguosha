@@ -34,6 +34,7 @@
 #include "recorder.h"
 #include "audio.h"
 #include "StyleHelper.h"
+#include "uiUtils.h"
 
 #include <lua.hpp>
 #include <QGraphicsView>
@@ -595,6 +596,7 @@ MainWindow::~MainWindow() {
     delete ui;
     view->deleteLater();
     QSanSkinFactory::destroyInstance();
+    QSanUiUtils::QSanFreeTypeFont::quit();
 }
 
 void MainWindow::gotoScene(QGraphicsScene *scene) {

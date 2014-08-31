@@ -31,7 +31,6 @@
 #include "banpair.h"
 #include "miniscenarios.h"
 #include "jiange-defense-scenario.h"
-#include "uiUtils.h"
 
 #include <lua.hpp>
 #include <QFile>
@@ -141,7 +140,6 @@ Engine::~Engine() {
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif
-    QSanUiUtils::QSanFreeTypeFont::quit();
 }
 
 QStringList Engine::getModScenarioNames() const{
