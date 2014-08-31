@@ -282,7 +282,7 @@ JsonDocument JsonDocument::fromJson(const QByteArray &json, bool allowComment)
 
 Json::Value VariantToJsonValue(const QVariant &var)
 {
-    switch (static_cast<QMetaType::Type>(var.type())) {
+    switch (var.userType()) {
     //bool
     case QMetaType::Bool:
         return var.toBool();
