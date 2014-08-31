@@ -589,11 +589,6 @@ void MainWindow::closeEvent(QCloseEvent *) {
     Config.setValue("WindowSize", size());
     Config.setValue("WindowPosition", pos());
     Config.setValue("WindowState", (int)windowState());
-
-    //It's weird that Config isn't automatically synchronized on Android...
-#ifdef Q_OS_ANDROID
-    Config.sync();
-#endif
 }
 
 MainWindow::~MainWindow() {
