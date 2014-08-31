@@ -327,7 +327,7 @@ void ClientPlayer::setHeadSkinId(int id)
         emit headSkinIdChanged(general->objectName());
     }
 
-    if (this == Self)
+    if (this == Self && !Self->hasFlag("marshalling"))
         ClientInstance->onPlayerChangeSkin(id);
 }
 
@@ -341,6 +341,6 @@ void ClientPlayer::setDeputySkinId(int id)
         emit deputySkinIdChanged(general2->objectName());
     }
 
-    if (this == Self)
+    if (this == Self && !Self->hasFlag("marshalling"))
         ClientInstance->onPlayerChangeSkin(id, false);
 }

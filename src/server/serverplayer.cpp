@@ -26,6 +26,7 @@
 #include "recorder.h"
 #include "lua-wrapper.h"
 #include "json.h"
+#include "gamerule.h"
 
 using namespace QSanProtocol;
 
@@ -33,9 +34,9 @@ const int ServerPlayer::S_NUM_SEMAPHORES = 6;
 
 ServerPlayer::ServerPlayer(Room *room)
     : Player(room), m_isClientResponseReady(false), m_isWaitingReply(false),
-    event_received(false), socket(NULL), room(room),
-    ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL),
-    _m_phases_index(0)
+      event_received(false), socket(NULL), room(room),
+      ai(NULL), trust_ai(new TrustAI(this)), recorder(NULL),
+      _m_phases_index(0)
 {
     semas = new QSemaphore *[S_NUM_SEMAPHORES];
     for (int i = 0; i < S_NUM_SEMAPHORES; i++)
@@ -994,8 +995,7 @@ void ServerPlayer::introduceTo(ServerPlayer *player) {
     if (player) {
         player->notify(S_COMMAND_ADD_PLAYER, introduce_str);
         room->notifyProperty(player, this, "state");
-    }
-    else {
+    } else {
         room->doBroadcastNotify(S_COMMAND_ADD_PLAYER, introduce_str, this);
         room->broadcastProperty(this, "state");
     }
@@ -1049,20 +1049,23 @@ void ServerPlayer::introduceTo(ServerPlayer *player) {
     }
 }
 
-#include "gamerule.h"
-
-void ServerPlayer::marshal(ServerPlayer *player) const{
+void ServerPlayer::marshal(ServerPlayer *player) const
+{
     room->notifyProperty(player, this, "maxhp");
     room->notifyProperty(player, this, "hp");
     room->notifyProperty(player, this, "general1_showed");
     room->notifyProperty(player, this, "general2_showed");
 
+    if (this == player || hasShownGeneral1())
+        room->notifyProperty(player, this, "head_skin_id");
+    if (this == player || hasShownGeneral2())
+        room->notifyProperty(player, this, "deputy_skin_id");
+
     if (isAlive()) {
         room->notifyProperty(player, this, "seat");
         if (getPhase() != Player::NotActive)
             room->notifyProperty(player, this, "phase");
-    }
-    else {
+    } else {
         room->notifyProperty(player, this, "alive");
         room->notifyProperty(player, this, "role");
         room->doNotify(player, S_COMMAND_KILL_PLAYER, objectName());
