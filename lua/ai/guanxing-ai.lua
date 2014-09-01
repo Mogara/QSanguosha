@@ -276,8 +276,10 @@ local function GuanXing(self, cards)
 	if drawCards > 0 and #bottom > 0 then
 		local has_slash = self:getCardsNum("Slash") > 0
 		local shuangxiong, has_big
-		for index, gcard in ipairs(bottom) do
+		local i = 0
+		for index = 1, #bottom do
 			local insert = false
+			local gcard = bottom[index - i]
 			if not willSkipPlayPhase and self.player:hasSkill("shuangxiong") and self.player:getHandcardNum() >= 3 then
 				local rednum, blacknum = 0, 0
 				local cards = sgs.QList2Table(self.player:getHandcards())
@@ -326,8 +328,8 @@ local function GuanXing(self, cards)
 
 			if insert then
 				drawCards = drawCards - 1
-				table.insert(up_cards, gcard)
-				table.remove(bottom, index)
+				table.insert(up_cards, table.remove(bottom, index - i))
+				i = i + 1
 				if isCard("ExNihilo", gcard, self.player) then
 					drawCards = drawCards + 2
 				elseif isCard("BefriendAttacking", gcard, self.player) then
@@ -338,12 +340,15 @@ local function GuanXing(self, cards)
 		end
 
 		if #bottom > 0 and drawCards > 0 then
-			for index, gcard in ipairs(bottom) do
+			i = 0
+			for index = 1, #bottom do
+				local gcard = bottom[index - i]
 				for _, skill in sgs.qlist(self.player:getVisibleSkillList(true)) do
 					local callback = sgs.ai_cardneed[skill:objectName()]
 					if type(callback) == "function" and sgs.ai_cardneed[skill:objectName()](self.player, gcard, self) then
-						table.insert(up_cards, table.remove(bottom, index))
+						table.insert(up_cards, table.remove(bottom, index - i))
 						drawCards = drawCards - 1
+						i = i + 1
 						if isCard("ExNihilo", gcard, self.player) then
 							drawCards = drawCards + 2
 						elseif isCard("BefriendAttacking", gcard, self.player) then
@@ -383,7 +388,7 @@ local function GuanXing(self, cards)
 	end
 
 	if #bottom > drawCards and #bottom > 0 and not nextplayer_judge_failed then
-		local maxCount = #bottom - drawCards
+		local maxCount = math.min(#bottom - drawCards, self:ImitateResult_DrawNCards(next_player, next_player:getVisibleSkillList(true)))
 		if self:isFriend(next_player) then
 			local i = 0
 			for index = 1, #bottom do
@@ -397,18 +402,16 @@ local function GuanXing(self, cards)
 			maxCount = maxCount - i
 			if maxCount > 0 then
 				i = 0
-				for _, skill in sgs.qlist(next_player:getVisibleSkillList(true)) do
-					local callback = sgs.ai_cardneed[skill:objectName()]
-					if type(callback) == "function" then
-						for index = 1, #bottom do
-							if sgs.ai_cardneed[skill:objectName()](next_player, bottom[index - i], self) then
-								table.insert(next_judge, table.remove(bottom, index - i))
-								i = i + 1
-								if maxCount == i then break end
-							end
+				for index = 1, #bottom do
+					for _, skill in sgs.qlist(next_player:getVisibleSkillList(true)) do
+						local callback = sgs.ai_cardneed[skill:objectName()]
+						if type(callback) == "function" and sgs.ai_cardneed[skill:objectName()](next_player, bottom[index - i], self) then
+							table.insert(next_judge, table.remove(bottom, index - i))
+							i = i + 1
+							if maxCount == i then break end
 						end
-						if maxCount == i then break end
 					end
+					if maxCount == i then break end
 				end
 			end
 		else
