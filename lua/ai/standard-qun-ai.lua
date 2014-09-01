@@ -308,7 +308,6 @@ sgs.ai_skill_invoke.biyue = function(self, data)
 end
 
 
-
 local luanji_skill = {}
 luanji_skill.name = "luanji"
 table.insert(sgs.ai_skills, luanji_skill)
@@ -338,14 +337,14 @@ luanji_skill.getTurnUseCard = function(self)
 			end
 		end
 		for _, fcard in ipairs(cards) do
-			local fvalueCard = (isCard("Peach", fcard, self.player) or isCard("ExNihilo", fcard, self.player) or isCard("archery_attack", fcard, self.player))
-			if useAll then fvalueCard = (isCard("archery_attack", fcard, self.player)) end
+			local fvalueCard = (isCard("Peach", fcard, self.player) or isCard("ExNihilo", fcard, self.player) or isCard("AOE", fcard, self.player))
+			if useAll then fvalueCard = isCard("AOE", fcard, self.player) end
 			if not fvalueCard then
 				first_card = fcard
 				first_found = true
 				for _, scard in ipairs(cards) do
-					local svalueCard = (isCard("Peach", scard, self.player) or isCard("ExNihilo", scard, self.player) or isCard("archery_attack", scard, self.player))
-					if useAll then svalueCard = (isCard("archery_attack", scard, self.player)) end
+					local svalueCard = (isCard("Peach", scard, self.player) or isCard("ExNihilo", scard, self.player) or isCard("AOE", scard, self.player))
+					if useAll then svalueCard = (isCard("AOE", scard, self.player)) end
 					if first_card ~= scard and scard:getSuit() == first_card:getSuit()
 						and not svalueCard then
 
@@ -369,7 +368,6 @@ luanji_skill.getTurnUseCard = function(self)
 	end
 
 	if first_found and second_found then
-		local luanji_card = {}
 		local first_id = first_card:getId()
 		local second_id = second_card:getId()
 		local card_str = ("archery_attack:luanji[%s:%s]=%d+%d&luanji"):format("to_be_decided", 0, first_id, second_id)
