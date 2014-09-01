@@ -83,6 +83,7 @@ void RoomScene::resetPiles() {
 RoomScene::RoomScene(QMainWindow *main_window)
     : game_started(false), main_window(main_window)
 {
+    setItemIndexMethod(NoIndex);
     setParent(main_window);
 
     m_choiceDialog = NULL;
