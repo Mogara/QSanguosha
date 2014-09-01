@@ -45,15 +45,17 @@ void RoomState::resetCard(int cardId) {
 
 // Reset all cards, generals' states of the room instance
 void RoomState::reset() {
-    foreach(WrappedCard *card, m_cards.values())
-        delete card;
+    QHashIterator<int, WrappedCard *> iter(m_cards);
+    while (iter.hasNext()) {
+        iter.next();
+        delete iter.value();
+    }
     m_cards.clear();
 
     int n = Sanguosha->getCardCount();
     for (int i = 0; i < n; i++) {
-        const Card *card = Sanguosha->getEngineCard(i);
-        Card *clonedCard = Card::Clone(card);
-        m_cards[i] = new WrappedCard(Card::Clone(clonedCard));
+        Card *newCard = Card::Clone(Sanguosha->getEngineCard(i));
+        m_cards[i] = new WrappedCard(newCard);
     }
 }
 
