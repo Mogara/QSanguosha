@@ -34,7 +34,7 @@ function SmartAI:useCardDrowning(card, use)
 	end
 
 	for _, friend in ipairs(self.friends_noself) do
-		if card:targetFilter(players, friend, self.player) and not players:contains(friend) and self:needToThrowArmor(friend) then
+		if card:targetFilter(players, friend, self.player) and not players:contains(friend) and self:needToThrowArmor(friend) and friend:getEquips():length() == 1 then
 			players:append(friend)
 			if use.to then use.to:append(friend) end
 		end
@@ -174,6 +174,13 @@ sgs.ai_use_priority.TransferCard = 0
 sgs.ai_card_intention.TransferCard = -10
 
 function sgs.ai_armor_value.IronArmor(player, self)
+	if self:isWeak(player) then
+		for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
+			if p:hasShownSkill("huoji") and self:isEnemy(player, p) then
+				return 5
+			end
+		end
+	end
 	return 2.5
 end
 
