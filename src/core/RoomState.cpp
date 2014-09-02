@@ -23,8 +23,11 @@
 #include "WrappedCard.h"
 
 RoomState::~RoomState() {
-    foreach(Card *card, m_cards.values())
-        delete card;
+    QHashIterator<int, WrappedCard *> iter(m_cards);
+    while (iter.hasNext()) {
+        iter.next();
+        delete iter.value();
+    }
     m_cards.clear();
 }
 
@@ -58,4 +61,3 @@ void RoomState::reset() {
         m_cards[i] = new WrappedCard(newCard);
     }
 }
-
