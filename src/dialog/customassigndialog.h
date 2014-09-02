@@ -72,6 +72,7 @@ private:
     QSpinBox *max_hp_spin, *hp_spin;
     QSpinBox *player_draw, *marks_count;
     QCheckBox *self_select_general, *self_select_general2;
+    QCheckBox *set_head_shown, *set_deputy_shown;
     QPushButton *removeEquipButton, *removeHandButton, *removeJudgeButton, *removePileButton;
     QCheckBox *set_turned, *set_chained;
     QComboBox *ended_by_pile_box, *single_turn_box, *before_next_box;
@@ -94,6 +95,7 @@ private:
     QMap<QString, QList<int> > player_equips, player_handcards, player_judges;
     QMap<QString, int> player_maxhp, player_hp;
     QMap<QString, bool> player_turned, player_chained;
+    QMap<QString, bool> player_shown_head, player_shown_deputy;
     QList<int> set_pile;
     QMap<QString, int> player_start_draw;
     QMap<QString, QMap<QString, int> > player_marks;
@@ -162,6 +164,9 @@ private slots:
 
     void load();
     bool save(QString path = QString());
+
+    void doPlayerShows(bool toggled);
+    void doPlayerShows2(bool toggled);
 
 public slots:
     void getChosenGeneral(QString general_name);

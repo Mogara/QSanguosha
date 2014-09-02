@@ -34,6 +34,7 @@ public:
 
     MiniSceneRule(Scenario *scenario);
     void assign(QStringList &generals, QStringList &generals2, QStringList &kingdoms, Room *room) const;
+    virtual int getPlayerCount() const;
     QStringList existedGenerals() const;
 
     virtual bool effect(TriggerEvent event, Room *room, ServerPlayer *player, QVariant &data, ServerPlayer *ask_who = NULL) const;
@@ -65,10 +66,8 @@ public:
         rule->assign(generals, generals2, roles, room);
     }
     virtual int getPlayerCount() const{
-        QStringList generals, generals2, roles;
-        Room *room = NULL;
-        assign(generals, generals2, roles, room);
-        return roles.length();
+        MiniSceneRule *rule = qobject_cast<MiniSceneRule *>(getRule());
+        return rule->getPlayerCount();
     }
 };
 

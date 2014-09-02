@@ -187,6 +187,9 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     self_select_general = new QCheckBox(tr("General Self Select"));
     self_select_general2 = new QCheckBox(tr("General2 Self Select"));
 
+    set_head_shown = new QCheckBox(tr("Show Head General"));
+    set_deputy_shown = new QCheckBox(tr("Show Deputy General"));
+
     set_turned = new QCheckBox(tr("Player Turned"));
     set_chained = new QCheckBox(tr("Player Chained"));
 
@@ -240,6 +243,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     label_lay->addWidget(general_box2);
     vlayout->addLayout(label_lay);
     vlayout->addLayout(HLay(self_select_general, self_select_general2));
+    vlayout->addLayout(HLay(set_head_shown, set_deputy_shown));
     vlayout->addLayout(HLay(max_hp_prompt, max_hp_spin));
     vlayout->addLayout(HLay(hp_prompt, hp_spin));
     vlayout->addLayout(HLay(set_turned, set_chained));
@@ -353,6 +357,8 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     connect(self_select_general2, SIGNAL(toggled(bool)), this, SLOT(freeChoose2(bool)));
     connect(self_select_general, SIGNAL(toggled(bool)), general_label, SLOT(setDisabled(bool)));
     connect(self_select_general2, SIGNAL(toggled(bool)), general_label2, SLOT(setDisabled(bool)));
+    connect(set_head_shown, SIGNAL(toggled(bool)), this, SLOT(doPlayerShows(bool)));
+    connect(set_deputy_shown, SIGNAL(toggled(bool)), this, SLOT(doPlayerShows2(bool)));
     connect(set_turned, SIGNAL(toggled(bool)), this, SLOT(doPlayerTurns(bool)));
     connect(set_chained, SIGNAL(toggled(bool)), this, SLOT(doPlayerChains(bool)));
     connect(choose_nationality, SIGNAL(toggled(bool)), nationalities, SLOT(setEnabled(bool)));
@@ -394,6 +400,7 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
     int hp = player_hp[first_name], maxhp = player_maxhp[first_name], start_draw = player_start_draw[first_name];
     bool turned = player_turned[first_name], chained = player_chained[first_name],
         free_general = free_choose_general[first_name], free_general2 = free_choose_general2[first_name];
+    bool shown_head = player_shown_head[first_name], shown_deputy = player_shown_deputy[first_name];
     QStringList ex_skills(player_exskills[first_name]);
     QMap<QString, int> marks(player_marks[first_name]);
     bool setting_nationality = set_nationality.value(first_name, false);
@@ -420,6 +427,8 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
     player_marks[first_name] = player_marks[second_name];
     set_nationality[first_name] = set_nationality[second_name];
     assign_nationality[first_name] = set_nationality[second_name];
+    player_shown_head[first_name] = player_shown_head[second_name];
+    player_shown_deputy[first_name] = player_shown_deputy[second_name];
 
     general_mapping[second_name] = general;
     general2_mapping[second_name] = general2;
@@ -442,6 +451,8 @@ void CustomAssignDialog::exchangePlayersInfo(QListWidgetItem *first, QListWidget
     player_marks[second_name] = marks;
     set_nationality[second_name] = setting_nationality;
     assign_nationality[second_name] = assigned_nationality;
+    player_shown_head[second_name] = shown_head;
+    player_shown_deputy[second_name] = shown_deputy;
 }
 
 QString CustomAssignDialog::setListText(QString name, QString kingdom, int index) {
@@ -1057,6 +1068,9 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current) 
     self_select_general->setChecked(free_choose_general[player_name]);
     self_select_general2->setChecked(free_choose_general2[player_name]);
 
+    set_head_shown->setChecked(player_shown_head.value(player_name, false));
+    set_deputy_shown->setChecked(player_shown_deputy.value(player_name, false));
+
     set_turned->setChecked(player_turned.value(player_name, false));
     set_chained->setChecked(player_chained.value(player_name, false));
 
@@ -1174,6 +1188,8 @@ void CustomAssignDialog::load() {
     player_judges.clear();
     set_nationality.clear();
     assign_nationality.clear();
+    player_shown_head.clear();
+    player_shown_deputy.clear();
 
     free_choose_general.clear();
     free_choose_general2.clear();
@@ -1261,6 +1277,8 @@ void CustomAssignDialog::load() {
         if (player["starter"] != QString()) starter = name;
         if (player["chained"] != QString()) player_chained[name] = true;
         if (player["turned"] != QString()) player_turned[name] = true;
+        if (player["shown_head"] != QString()) player_shown_head[name] = true;
+        if (player["shown_deputy"] != QString()) player_shown_deputy[name] = true;
         if (player["nationality"] != QString()) {
             assign_nationality[name] = player["nationality"];
             set_nationality[name] = true;
@@ -1438,6 +1456,8 @@ bool CustomAssignDialog::save(QString path) {
         if (player_hp[name] > 0) line.append(QString("hp:%1 ").arg(player_hp[name]));
         if (player_turned[name]) line.append("turned:true ");
         if (player_chained[name]) line.append("chained:true ");
+        if (player_shown_head[name]) line.append("shown_head:true ");
+        if (player_shown_deputy[name]) line.append("shown_deputy:true ");
         if (set_nationality[name]) line.append(QString("nationality:%1 ").arg(assign_nationality[name]));
         if (player_exskills[name].length() > 0) {
             line.append("acquireSkills:");
@@ -1851,3 +1871,12 @@ void SkillAssignDialog::accept() {
     QDialog::accept();
 }
 
+void CustomAssignDialog::doPlayerShows(bool toggled) {
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    player_shown_head[name] = toggled;
+}
+
+void CustomAssignDialog::doPlayerShows2(bool toggled) {
+    QString name = list->currentItem()->data(Qt::UserRole).toString();
+    player_shown_deputy[name] = toggled;
+}

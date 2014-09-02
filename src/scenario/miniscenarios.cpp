@@ -19,6 +19,7 @@
     *********************************************************************/
 
 #include "miniscenarios.h"
+#include "qmath.h"
 
 #include <QMessageBox>
 #include <QFile>
@@ -34,16 +35,40 @@ MiniSceneRule::MiniSceneRule(Scenario *scenario)
     events << GameStart << EventPhaseStart << FetchDrawPileCard;
 }
 
-void MiniSceneRule::assign(QStringList &generals, QStringList &generals2, QStringList &kingdoms, Room *) const{
+void MiniSceneRule::assign(QStringList &generals, QStringList &generals2, QStringList &kingdoms, Room *room) const{
+    QStringList generalnames = Sanguosha->getRandomGenerals(999);
     for (int i = 0; i < players.length(); i++) {
         QMap<QString, QString> sp = players.at(i);
         QString name = sp["general"];
         QString name2 = sp["general2"];
-        if (name == "select") name = _S_DEFAULT_HERO;
-        if (name2 == "select") name2 = _S_DEFAULT_HERO;
+        generalnames.removeOne(name);
+        generalnames.removeOne(name2);
+    }
+    QList<ServerPlayer *> splayers = room->getAllPlayers();
+    int count = qFloor(generalnames.length() / players.length());
+    count = qMin(count, 9);
+    for (int i = 0; i < players.length(); i++) {
+        QMap<QString, QString> sp = players.at(i);
+        QString name = sp["general"];
+        QString name2 = sp["general2"];
+        if (name == "select" || name2 == "select") {
+            QStringList choices;
+            for (int index = 0; index < generalnames.length(); index++) {
+                if (index >= i * count && index < (i + 1) * count)
+                    choices << generalnames.at(index);
+            }
+            if (name == "select") {
+                QStringList names = room->askForGeneral(splayers.at(i), choices, QString(), name2 != "select").split("+");
+                name = names.first();
+                if (name2 == "select")
+                    name2 = names.last();
+            }
+            if (name2 == "select")
+                name2 = room->askForGeneral(splayers.at(i), choices);
+        }
         generals << name;
         generals2 << name2;
-        QString k = sp["nationality"].isEmpty() ? "default" : sp["nationality"];
+        QString k = sp["nationality"].isEmpty() ? Sanguosha->getGeneral(name)->getKingdom() : sp["nationality"];
         kingdoms << k;
     }
 }
@@ -150,58 +175,6 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
             int i = int_list[j];
             ServerPlayer *sp = players.at(j);
 
-            QString general = this->players[i]["general"];
-            if (general == "select") {
-                QStringList available;
-                for (int k = 0; k < 5; k++) {
-                    if (sp->getGeneral()) {
-                        foreach(const Skill *skill, sp->getGeneral()->getSkillList(true, true))
-                            sp->loseSkill(skill->objectName());
-                    }
-                    QString choice = sp->findReasonable(all);
-                    available << choice;
-                    all.removeOne(choice);
-                }
-                general = room->askForGeneral(sp, available);
-                all.append(available);
-                all.removeOne(general);
-                qShuffle(all);
-                sp->setActualGeneral1Name(general);
-                foreach(const Skill *skill, sp->getActualGeneral1()->getSkillList())
-                    sp->addSkill(skill->objectName());
-                room->notifyProperty(sp, sp, "actual_general1");;
-                room->notifyProperty(sp, sp, "general", general);
-
-            }
-
-            general = this->players[i]["general2"];
-            if (!general.isEmpty()) {
-                if (general == "select") {
-                    QStringList available;
-                    for (int k = 0; k < 5; k++) {
-                        if (sp->getGeneral2()) {
-                            foreach(const Skill *skill, sp->getGeneral2()->getSkillList(true, false))
-                                sp->loseSkill(skill->objectName());
-                        }
-                        room->setPlayerProperty(sp, "general2", QVariant());
-                        QString choice = sp->findReasonable(all);
-                        available << choice;
-                        all.removeOne(choice);
-                    }
-                    general = room->askForGeneral(sp, available);
-                    all.append(available);
-                    all.removeOne(general);
-                    qShuffle(all);
-                    sp->setActualGeneral2Name(general);
-                    foreach(const Skill *skill, sp->getActualGeneral2()->getSkillList())
-                        sp->addSkill(skill->objectName(), false);
-                    room->notifyProperty(sp, sp, "actual_general2");
-                    room->notifyProperty(sp, sp, "general2", general);
-                }
-            }
-
-            room->setPlayerProperty(sp, "kingdom", sp->getActualGeneral1()->getKingdom());
-
             QString str = this->players.at(i)["maxhp"];
             if (str == QString()) str = QString::number(sp->getGeneralMaxHp());
             sp->setMaxHp(str.toInt());
@@ -295,12 +268,12 @@ bool MiniSceneRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *
             names.append(sp->getActualGeneral1Name());
             names.append(sp->getActualGeneral2Name());
             room->setTag(sp->objectName(), QVariant::fromValue(names));
-        }
 
+            if (this->players.at(i)["shown_head"] != QString())
+                sp->showGeneral(true);
 
-        foreach(ServerPlayer *p, room->getAllPlayers()) {
-            p->showGeneral(true);
-            p->showGeneral(false);
+            if (this->players.at(i)["shown_deputy"] != QString())
+                sp->showGeneral(false);
         }
 
         room->setTag("WaitForPlayer", QVariant(true));
@@ -394,3 +367,6 @@ void MiniScene::setupCustom(QString name) const{
 void MiniScene::onTagSet(Room *, const QString &) const{
 }
 
+int MiniSceneRule::getPlayerCount() const{
+    return players.length();
+}

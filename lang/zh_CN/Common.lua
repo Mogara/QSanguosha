@@ -112,6 +112,7 @@ CommonTranslationTable = {
 	["qun"] = "群",
 	["careerist"] = "野心家",
 	["god"] = "神",
+	["default"] = "默认",
 
 	["#Murder"] = "%to【%arg】 阵亡，伤害来源为 %from",
 	["#Suicide"] = "%to【%arg】 自杀",
