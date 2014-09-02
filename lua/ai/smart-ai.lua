@@ -261,7 +261,7 @@ function sgs.cloneCard(name, suit, number)
 	return card
 end
 
-function SmartAI:getTurnUse()
+function SmartAI:getTurnUse(priority)
 	local cards = self.player:getHandcards()
 	cards = sgs.QList2Table(cards)
 
@@ -273,7 +273,7 @@ function SmartAI:getTurnUse()
 	self.slash_distance_limit = (1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, slash) > 50)
 
 	self.weaponUsed = false
-	self:fillSkillCards(cards)
+	self:fillSkillCards(cards, priority)
 	self:sortByUseValue(cards)
 
 	if self.player:hasWeapon("Crossbow") or #self.player:property("extra_slash_specific_assignee"):toString():split("+") > 1 then
@@ -282,6 +282,8 @@ function SmartAI:getTurnUse()
 	end
 
 	for _, card in ipairs(cards) do
+		if priority and self:getDynamicUsePriority(card) < 6 then continue end
+
 		local dummy_use = { isDummy = true }
 
 		local type = card:getTypeId()
@@ -317,6 +319,24 @@ end
 function SmartAI:activate(use)
 	self:updatePlayers()
 	self:assignKeep(true)
+	local i = math.min(3, math.floor(self.player:getHandcardNum() / 10))
+	if self.player:getHandcardNum() > 30 then
+		self.toUse = self:getTurnUse(true)
+		self:sortByDynamicUsePriority(self.toUse)
+		for _, card in ipairs(self.toUse) do
+			if not self.player:isCardLimited(card, card:getHandlingMethod())
+				or (card:canRecast() and not self.player:isCardLimited(card, sgs.Card_MethodRecast)) then
+				local type = card:getTypeId()
+
+				self["use" .. sgs.ai_type_name[type + 1] .. "Card"](self, card, use)
+
+				if use:isValid(nil) then
+					self.toUse = nil
+					return
+				end
+			end
+		end
+	end
 	self.toUse = self:getTurnUse()
 	self:sortByDynamicUsePriority(self.toUse)
 	for _, card in ipairs(self.toUse) do
@@ -3863,10 +3883,12 @@ function SmartAI:hasSkills(skill_names, player)
 	return false
 end
 
-function SmartAI:fillSkillCards(cards)
+function SmartAI:fillSkillCards(cards, priority)
 	local i = 1
 	while i <= #cards do
 		if prohibitUseDirectly(cards[i], self.player) then
+			table.remove(cards, i)
+		elseif priority and self:getDynamicUsePriority(cards[i]) < 6 then
 			table.remove(cards, i)
 		else
 			i = i + 1
