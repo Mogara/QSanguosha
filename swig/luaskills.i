@@ -224,6 +224,7 @@ public:
     LuaFunction on_effect;
     LuaFunction on_validate;
     LuaFunction on_validate_in_response;
+	LuaFunction extra_cost;
 };
 
 class LuaBasicCard: public BasicCard {

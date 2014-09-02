@@ -260,7 +260,9 @@ function sgs.CreateSkillCard(spec)
 	card.on_effect = spec.on_effect
 	card.on_validate = spec.on_validate
 	card.on_validate_in_response = spec.on_validate_in_response
-	card.extra_cost = spec.extra_cost
+	
+	if spec.extra_cost then assert(type(spec.extra_cost) == "function") end
+	card.extra_cost = spec.extra_cost or 0
 
 	return card
 end
