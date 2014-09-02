@@ -129,6 +129,11 @@ sgs.current_mode_players = {
 	qun = 0
 }
 sgs.general_shown = {}
+sgs.Slash_Natures = {
+	Slash = sgs.DamageStruct_Normal,
+	FireSlash = sgs.DamageStruct_Fire,
+	ThunderSlash = sgs.DamageStruct_Thunder,
+}
 
 for i = sgs.NonTrigger, sgs.NumOfEvents, 1 do
 	sgs.ai_debug_func[i] = {}
@@ -319,7 +324,6 @@ end
 function SmartAI:activate(use)
 	self:updatePlayers()
 	self:assignKeep(true)
-	local i = math.min(3, math.floor(self.player:getHandcardNum() / 10))
 	if self.player:getHandcardNum() > 30 then
 		self.toUse = self:getTurnUse(true)
 		self:sortByDynamicUsePriority(self.toUse)
@@ -546,7 +550,7 @@ function sgs.updateIntention(from, to, intention)
 	if intention < 0 then intention = -10 end
 	local sendLog
 	if sgs.recorder:evaluateKingdom(from) == "careerist" or sgs.recorder:evaluateKingdom(to, from) == "careerist" then
-	if from:objectName() == to:objectName() then
+	elseif from:objectName() == to:objectName() then
 	else
 		local to_kingdom = sgs.recorder:evaluateKingdom(to, from)
 		local kingdoms = sgs.KingdomsTable
@@ -4484,10 +4488,9 @@ function SmartAI:needToLoseHp(to, from, isSlash, passive, recover)
 	end
 
 	local friends = self:getFriendsNoself(to)
-	local need_jieyin
 	local xiangxiang = self.room:findPlayerBySkillName("jieyin")
 	if xiangxiang and xiangxiang:isWounded() and self:isFriend(xiangxiang, to) and not to:isWounded() and to:isMale() then
-		need_jieyin = true
+		local need_jieyin = true
 		self:sort(friends, "hp")
 		for _, friend in ipairs(friends) do
 			if friend:isMale() and friend:isWounded() then need_jieyin = false end

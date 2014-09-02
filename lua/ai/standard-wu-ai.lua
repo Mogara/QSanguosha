@@ -637,7 +637,6 @@ sgs.ai_suit_priority.guose= "club|spade|heart|diamond"
 
 sgs.ai_skill_use["@@liuli"] = function(self, prompt, method)
 	local others = self.room:getOtherPlayers(self.player)
-	local slash = self.player:getTag("liuli-card"):toCard()
 	others = sgs.QList2Table(others)
 	local source
 	for _, player in ipairs(others) do
@@ -646,6 +645,12 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt, method)
 			break
 		end
 	end
+	local slash = self.player:getTag("liuli-card"):toCard()
+	local nature = sgs.Slash_Natures[slash:getClassName()]
+	if not self:damageIsEffective(self.player, nature, source) then return "." end
+	if self:needToLoseHp(self.player, source, true) then return "." end
+	if self:getDamagedEffects(self.player, source, true) then return "." end
+
 	self:sort(self.enemies, "defense")
 
 	local doLiuli = function(who)

@@ -74,8 +74,6 @@ function sgs.isGoodTarget(player, targets, self, isSlash)
 		end
 	end
 
-
-
 	if isSlash and self and (self:hasCrossbowEffect() or self:getCardsNum("Crossbow") > 0) and self:getCardsNum("Slash") > player:getHp() then
 		return true
 	end
@@ -302,13 +300,7 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	from = from or self.player
 	if to:hasShownSkill("kongcheng") and to:isKongcheng() then return false end
 
-	local natures = {
-		Slash = sgs.DamageStruct_Normal,
-		FireSlash = sgs.DamageStruct_Fire,
-		ThunderSlash = sgs.DamageStruct_Thunder,
-	}
-
-	local nature = natures[slash:getClassName()]
+	local nature = sgs.Slash_Natures[slash:getClassName()]
 	local damage = {}
 	damage.from = from
 	damage.to = to
@@ -456,19 +448,15 @@ function SmartAI:useCardSlash(card, use)
 
 	if not use.isDummy and self.player:hasSkill("qingnang") and self:isWeak() and self:getOverflow() == 0 then return end
 	for _, friend in ipairs(self.friends_noself) do
-		local slash_prohibit = false
-		slash_prohibit = self:slashProhibit(card, friend)
-		if self:isPriorFriendOfSlash(friend, card) then
-			if not slash_prohibit then
-				if (self.player:canSlash(friend, card, not no_distance, rangefix)
-						or (use.isDummy and (self.player:distanceTo(friend, rangefix) <= self.predictedRange)))
-					and self:slashIsEffective(card, friend) then
-					use.card = card
-					if use.to and canAppendTarget(friend) then
-						use.to:append(friend)
-					end
-					if not use.to or self.slash_targets <= use.to:length() then return end
+		if self:isPriorFriendOfSlash(friend, card) and not self:slashProhibit(card, friend) then
+			if (self.player:canSlash(friend, card, not no_distance, rangefix)
+					or (use.isDummy and (self.player:distanceTo(friend, rangefix) <= self.predictedRange)))
+				and self:slashIsEffective(card, friend) then
+				use.card = card
+				if use.to and canAppendTarget(friend) then
+					use.to:append(friend)
 				end
+				if not use.to or self.slash_targets <= use.to:length() then return end
 			end
 		end
 	end
@@ -558,11 +546,10 @@ function SmartAI:useCardSlash(card, use)
 	end
 
 	for _, friend in ipairs(self.friends_noself) do
-		local slash_prohibit = self:slashProhibit(card, friend)
 		if not self:hasHeavySlashDamage(self.player, card, friend) and (not use.to or not use.to:contains(friend))
 			and (self:getDamagedEffects(friend, self.player) and not (friend:isLord() and #self.enemies < 1) or self:needToLoseHp(friend, self.player, true, true)) then
 
-			if not slash_prohibit then
+			if not self:slashProhibit(card, friend) then
 				if ((self.player:canSlash(friend, card, not no_distance, rangefix))
 					or (use.isDummy and self.predictedRange and self.player:distanceTo(friend, rangefix) <= self.predictedRange))
 					and self:slashIsEffective(card, friend) then
