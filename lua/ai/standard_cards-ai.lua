@@ -2176,8 +2176,8 @@ function SmartAI:useCardCollateral(card, use)
 
 		if alevel ~= blevel then return alevel > blevel end
 
-		local anum = getCardsNum("Slash", a)
-		local bnum = getCardsNum("Slash", b)
+		local anum = getCardsNum("Slash", a, self.player)
+		local bnum = getCardsNum("Slash", b, self.player)
 
 		if anum ~= bnum then return anum < bnum end
 		return a:getHandcardNum() < b:getHandcardNum()

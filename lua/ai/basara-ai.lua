@@ -37,7 +37,7 @@ sgs.ai_skill_choice.heg_nullification = function(self, choice, data)
 	if effect.card:isKindOf("AOE") or effect.card:isKindOf("GlobalEffect") then
 		if self:isFriendWith(effect.to) then return "all"
 		elseif self:isFriend(effect.to) then return "single"
-		elseif self:isEnemy(effect.to) then return "all" 
+		elseif self:isEnemy(effect.to) then return "all"
 		end
 	end
 	return "all"
@@ -249,8 +249,17 @@ end
 sgs.ai_skill_choice["GameRule:TurnStart"] = function(self, choices, data)
 	local choice = sgs.ai_skill_choice["GameRule:TriggerOrder"](self, choices, data)
 	if choice == "cancel" then
-		if canShowHead and self.player:isDuanchang() then return "GameRule_AskForGeneralShowHead" end
-		if canShowDeputy and self.player:isDuanchang() then return "GameRule_AskForGeneralShowDeputy" end
+		if canShowHead then
+			if self.player:isDuanchang() then return "GameRule_AskForGeneralShowHead" end
+			for _, p in ipairs(self.enemies) do
+				if p:hasShownSkill("mingshi") then return "GameRule_AskForGeneralShowHead" end
+			end
+		elseif canShowDeputy then
+			if self.player:isDuanchang() then return "GameRule_AskForGeneralShowDeputy" end
+			for _, p in ipairs(self.enemies) do
+				if p:hasShownSkill("mingshi") then return "GameRule_AskForGeneralShowDeputy" end
+			end
+		end
 
 		if not self.player:hasShownOneGeneral() then
 			local gameProcess = sgs.gameProcess():split(">>")

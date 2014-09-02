@@ -239,10 +239,12 @@ CommonTranslationTable = {
 	["SEAT(8)"] = "八号位",
 	["SEAT(9)"] = "九号位",
 	["SEAT(10)"] = "十号位",
-	
+
 	["HorseCorrect"] = "坐骑",
 
 	["#DanlaoAvoid"] = "“%arg2”效果被触发，【%arg】 对 %from 无效",
+
+	["custom_scenario"] = "自定义场景",
 }
 
 return CommonTranslationTable
