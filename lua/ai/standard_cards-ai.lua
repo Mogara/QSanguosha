@@ -3003,7 +3003,7 @@ sgs.ai_card_intention.AwaitExhausted = function(self, card, from, tos)
 end
 sgs.ai_nullification.AwaitExhausted = function(self, card, from, to, positive)
 	if positive then
-		if self:isEnemy(to) then
+		if self:isEnemy(to) and self:evaluateKingdom(to) ~= "unknown" then
 			if self:getOverflow() > 0 or self:getCardsNum("Nullification") > 1 then return true end
 			if to:hasShownSkills(sgs.lose_equip_skill) and to:getEquips():length() > 0 then return true end
 			if to:getArmor() and self:needToThrowArmor(to) then return true end

@@ -655,7 +655,7 @@ end
 function sgs.getDefense(player)
 	if not player then return 0 end
 	local attacker = global_room:getCurrent()
-	if not attacker then return 0 end
+	if not attacker then return sgs.getValue(player) end
 	local hp = player:getHp()
 	if player:hasShownSkill("benghuai") and player:getHp() > 4 then hp = 4 end
 	local defense = math.min(hp * 2 + player:getHandcardNum(), hp * 3)
@@ -1088,8 +1088,8 @@ function SmartAI:getDynamicUsePriority(card)
 
 	local value = self:getUsePriority(card) or 0
 	if card:getTypeId() == sgs.Card_TypeEquip then
-		if self.player:hasSkills(sgs.lose_equip_skill) then value = value + 12 end
 		if self.player:hasSkills("xiaoji+qixi") and self:getSameEquip(card) then return 3 end
+		if self.player:hasSkills(sgs.lose_equip_skill) then value = value + 12 end
 		if card:isKindOf("Weapon") and self.player:getPhase() == sgs.Player_Play and #self.enemies > 0 then
 			self:sort(self.enemies)
 			local enemy = self.enemies[1]
@@ -1806,9 +1806,6 @@ function SmartAI:filterEvent(event, player, data)
 		local who
 		if not struct.to:isEmpty() then who = struct.to:first() end
 
-
-		if sgs.chongzhen_target then sgs.chongzhen_target = nil end
-
 		if card:isKindOf("Snatch") or card:isKindOf("Dismantlement") then
 			for _, p in sgs.qlist(struct.to) do
 				for _, c in sgs.qlist(p:getCards("hej")) do
@@ -2101,7 +2098,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 		if isEnemyFrom and self.player:hasSkill("kongcheng") and self.player:getHandcardNum() == 1 and self.player:isLastHandCard(null_card) and trick:isKindOf("SingleTargetTrick") then
 			return null_card
 		elseif trick:isKindOf("ExNihilo") then
-			if isEnemyFrom and (self:isWeak(from) or from:hasShownSkills(sgs.cardneed_skill)) then
+			if isEnemyFrom and self:evaluateKingdom(from) ~= "unknown" and (self:isWeak(from) or from:hasShownSkills(sgs.cardneed_skill)) then
 				return null_card
 			end
 		elseif trick:isKindOf("Snatch") then
@@ -2235,7 +2232,7 @@ function SmartAI:askForNullification(trick, from, to, positive)
 				end
 			end
 		elseif trick:isKindOf("GodSalvation") then
-			if self:isEnemy(to) and self:isWeak(to) then return null_card end
+			if self:isEnemy(to) and self:evaluateKingdom(to) ~= "unknown" and self:isWeak(to) then return null_card end
 		end
 
 	else
