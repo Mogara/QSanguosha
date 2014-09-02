@@ -222,6 +222,7 @@ private:
     QMap<QString, QString> modes;
     QMultiMap<QString, QString> related_skills;
     mutable QMap<QString, const CardPattern *> patterns;
+    mutable QList<ExpPattern *> enginePatterns;
 
     // special skills
     QList<const ProhibitSkill *> prohibit_skills;

@@ -140,6 +140,10 @@ Engine::~Engine() {
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif
+
+    foreach (ExpPattern *pattern, enginePatterns) {
+        delete pattern;
+    }
 }
 
 QStringList Engine::getModScenarioNames() const{
@@ -315,7 +319,9 @@ const CardPattern *Engine::getPattern(const QString &name) const{
     if (ptn) return ptn;
 
     ExpPattern *expptn = new ExpPattern(name);
+    enginePatterns << expptn;
     patterns.insert(name, expptn);
+
     return expptn;
 }
 
