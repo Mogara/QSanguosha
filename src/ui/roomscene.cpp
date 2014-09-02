@@ -4266,7 +4266,7 @@ void RoomScene::appendChatEdit(QString txt) {
 
 void RoomScene::showBubbleChatBox(const QString &who, const QString &line)
 {
-    if (!bubbleChatBoxes.keys().contains(who)) {
+    if (!bubbleChatBoxes.contains(who)) {
         BubbleChatBox *bubbleChatBox = new BubbleChatBox(getBubbleChatBoxShowArea(who));
         addItem(bubbleChatBox);
         bubbleChatBox->setZValue(INT_MAX);

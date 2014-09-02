@@ -232,31 +232,31 @@ void Engine::addPackage(Package *package) {
             const LuaBasicCard *lcard = qobject_cast<const LuaBasicCard *>(card);
             Q_ASSERT(lcard != NULL);
             luaBasicCard_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaBasicCards.keys().contains(lcard->getClassName()))
+            if (!luaBasicCards.contains(lcard->getClassName()))
                 luaBasicCards.insert(lcard->getClassName(), lcard->clone());
         } else if (card->isKindOf("LuaTrickCard")) {
             const LuaTrickCard *lcard = qobject_cast<const LuaTrickCard *>(card);
             Q_ASSERT(lcard != NULL);
             luaTrickCard_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaTrickCards.keys().contains(lcard->getClassName()))
+            if (!luaTrickCards.contains(lcard->getClassName()))
                 luaTrickCards.insert(lcard->getClassName(), lcard->clone());
         } else if (card->isKindOf("LuaWeapon")) {
             const LuaWeapon *lcard = qobject_cast<const LuaWeapon *>(card);
             Q_ASSERT(lcard != NULL);
             luaWeapon_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaWeapons.keys().contains(lcard->getClassName()))
+            if (!luaWeapons.contains(lcard->getClassName()))
                 luaWeapons.insert(lcard->getClassName(), lcard->clone());
         } else if (card->isKindOf("LuaArmor")) {
             const LuaArmor *lcard = qobject_cast<const LuaArmor *>(card);
             Q_ASSERT(lcard != NULL);
             luaArmor_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaArmors.keys().contains(lcard->getClassName()))
+            if (!luaArmors.contains(lcard->getClassName()))
                 luaArmors.insert(lcard->getClassName(), lcard->clone());
         } else if (card->isKindOf("LuaTreasure")) {
             const LuaTreasure *lcard = qobject_cast<const LuaTreasure *>(card);
             Q_ASSERT(lcard != NULL);
             luaTreasure_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaTreasures.keys().contains(lcard->getClassName()))
+            if (!luaTreasures.contains(lcard->getClassName()))
                 luaTreasures.insert(lcard->getClassName(), lcard->clone());
         } else {
             QString class_name = card->metaObject()->className();
@@ -357,7 +357,7 @@ QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const{
 
 const Skill *Engine::getMainSkill(const QString &skill_name) const{
     const Skill *skill = getSkill(skill_name);
-    if (!skill || skill->isVisible() || related_skills.keys().contains(skill_name)) return skill;
+    if (!skill || skill->isVisible() || related_skills.contains(skill_name)) return skill;
     foreach(QString key, related_skills.keys()) {
         foreach(QString name, related_skills.values(key))
             if (name == skill_name) return getSkill(key);

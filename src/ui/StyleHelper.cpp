@@ -52,7 +52,7 @@ StyleHelper *StyleHelper::getInstance()
 QFont StyleHelper::getFontByFileName(const QString &fileName)
 {
     static QMap<QString, QFont> loadedFonts;
-    if (loadedFonts.keys().contains(fileName)) {
+    if (loadedFonts.contains(fileName)) {
         return loadedFonts.value(fileName);
     } else {
         int fontId = QFontDatabase::addApplicationFont("font/" + fileName);

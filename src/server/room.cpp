@@ -3775,7 +3775,7 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
         CardsMoveStruct card_move;
         ServerPlayer *from = (ServerPlayer *)cls.m_from;
         card_move.from = cls.m_from;
-        if (from && !from_handcards.keys().contains(from))
+        if (from && !from_handcards.contains(from))
             from_handcards[from] = from->handCards();
         card_move.to = cls.m_to;
         if (card_move.from)
@@ -3797,7 +3797,7 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
         card_move.origin_from_pile_name = cls.m_from_pile_name;
         card_move.origin_to_pile_name = cls.m_to_pile_name;
 
-        if (from && from_handcards.keys().contains(from)) {
+        if (from && from_handcards.contains(from)) {
             QList<int> &move_ids = from_handcards[from];
             if (!move_ids.isEmpty()) {
                 foreach(int id, card_move.card_ids)
