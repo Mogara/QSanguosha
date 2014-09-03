@@ -633,7 +633,7 @@ function SmartAI:updatePlayers(update)
 		sgs.gameProcess(true)
 	end
 
-	if not sgs.isAnjiang(self.player) and self.player:getKingdom() ~= "default" then
+	if not sgs.isAnjiang(self.player) then
 		local updateNewKingdom = self.player:getRole() == "careerist" and sgs.ai_explicit[self.player:objectName()] ~= "careerist"
 									or self.player:getRole() ~= "careerist" and sgs.ai_explicit[self.player:objectName()] ~= self.player:getKingdom()
 		if updateNewKingdom then self:updatePlayerKingdom(self.player) end
@@ -1560,6 +1560,8 @@ function getTrickIntention(trick_class, target)
 		end
 	end
 	if trick_class == "Collateral" then return 0 end
+	if trick_class == "AwaitExhausted" then return -10 end
+	if trick_class == "BefriendAttacking" then return -10 end
 	if sgs.dynamic_value.damage_card[trick_class] then
 		return 70
 	end
@@ -1675,7 +1677,7 @@ function SmartAI:filterEvent(event, player, data)
 		end
 	end
 
-	if sgs.DebugMode_Niepan and event == sgs.AskForPeaches then endlessNiepan(data:toDying().who) end
+	if sgs.DebugMode_Niepan and event == sgs.AskForPeaches and self.room:getCurrentDyingPlayer():objectName() == self.player:objectName() then endlessNiepan(self, data:toDying().who) end
 
 	sgs.lastevent = event
 	sgs.lasteventdata = data

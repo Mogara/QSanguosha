@@ -1636,7 +1636,7 @@ function SmartAI:useCardDuel(duel, use)
 
 	for _, enemy in ipairs(enemies) do
 		local useduel
-		local n2 = getCardsNum("Slash", enemy)
+		local n2 = getCardsNum("Slash", enemy, self.player)
 		if enemy:hasSkill("wushuang") then n2 = n2 * 2 end
 		if sgs.card_lack[enemy:objectName()]["Slash"] == 1 then n2 = 0 end
 		useduel = n1 >= n2 or self:needToLoseHp(self.player, nil, nil, true)
@@ -1672,7 +1672,7 @@ function SmartAI:useCardDuel(duel, use)
 		use.card = duel
 
 		for i = 1, #targets, 1 do
-			local n2 = getCardsNum("Slash", targets[i])
+			local n2 = getCardsNum("Slash", targets[i], self.player)
 			if sgs.card_lack[targets[i]:objectName()]["Slash"] == 1 then n2 = 0 end
 			if self:isEnemy(targets[i]) then enemySlash = enemySlash + n2 end
 
@@ -2518,7 +2518,7 @@ function SmartAI:willUseLightning(card)
 			if self:evaluateKingdom(p) == "unknown" then shouldUse = false break end
 			if self:evaluateKingdom(p) == self.player:getKingdom() then shouldUse = false break end
 		end
-		if shouldUse then use.card = card return end
+		if shouldUse then return true end
 	end
 	--if self.room:isProhibited(self.player, self.player, card) then return end
 
@@ -2818,7 +2818,7 @@ sgs.ai_skill_askforag.amazing_grace = function(self, card_ids)
 					end
 				end
 			end
-			if (self.player:hasWeapon("Blade") or self:getCardsNum("Blade") > 0) and getCardsNum("Jink", enemy) <= hit_num then return analeptic end
+			if (self.player:hasWeapon("Blade") or self:getCardsNum("Blade") > 0) and getCardsNum("Jink", enemy, self.player) <= hit_num then return analeptic end
 			if self:hasCrossbowEffect(self.player) and hit_num >= 2 then return analeptic end
 		end
 	end

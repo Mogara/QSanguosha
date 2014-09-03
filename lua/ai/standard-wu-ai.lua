@@ -31,10 +31,9 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 	local cards = sgs.QList2Table(self.player:getHandcards())
 
 	if self:getCardsNum("Crossbow", 'he') > 0 and #self.enemies > 0 and self.player:getCardCount(true) >= 4 then
-		local zcards = self.player:getCards("he")
-		zcards = sgs.QList2Table(zcards)
+		local zcards = sgs.QList2Table(self.player:getCards("he"))
 		self:sortByUseValue(zcards, true)
-		for _, zcard in sgs.qlist(zcards) do
+		for _, zcard in ipairs(zcards) do
 			if not isCard("Peach", zcard, self.player) and (self.player:getOffensiveHorse() or card:isKindOf("OffensiveHorse")) and not self.player:isJilei(zcard) then
 				table.insert(unpreferedCards, zcard:getEffectiveId())
 				if #unpreferedCards >= self.player:getMaxHp() then break end
@@ -49,7 +48,9 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 	if self.player:getHp() < 3 then
 		local zcards = self.player:getCards("he")
 		local use_slash, keep_jink, keep_analeptic, keep_weapon = false, false, false
-		for _, zcard in sgs.qlist(zcards) do
+		local zcards = sgs.QList2Table(self.player:getCards("he"))
+		self:sortByUseValue(zcards, true)
+		for _, zcard in ipairs(zcards) do
 			if not isCard("Peach", zcard, self.player) and not isCard("ExNihilo", zcard, self.player) then
 				local shouldUse = true
 				if isCard("Slash", zcard, self.player) and not use_slash then

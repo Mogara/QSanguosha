@@ -459,13 +459,9 @@ sgs.ai_skill_askforyiji.yiji = function(self, card_ids)
 	end
 
 	if #new_friends > 0 then
-		local card, target = self:getCardNeedPlayer(cards)
+		local card, target = self:getCardNeedPlayer(cards, new_friends)
 		if card and target then
-			for _, friend in ipairs(new_friends) do
-				if target:objectName() == friend:objectName() then
-					return friend, card:getEffectiveId()
-				end
-			end
+			return friend, card:getEffectiveId()
 		end
 		self:sort(new_friends, "defense")
 		self:sortByKeepValue(cards, true)

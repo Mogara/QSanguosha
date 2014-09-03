@@ -188,7 +188,6 @@ function SmartAI:findLijianTarget(card_name, use)
 				if (first:getHp() <= 1 and first:getHandcardNum() == 0) then safe = true end
 			elseif (getCardsNum("Slash", friend_maxSlash) >= getCardsNum("Slash", first)) then safe = true end
 			if safe then return friend_maxSlash end
-		else self:log("unfound")
 		end
 		return nil
 	end
