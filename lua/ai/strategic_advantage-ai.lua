@@ -173,7 +173,7 @@ sgs.ai_skill_use_func.TransferCard = function(card, use, self)
 	end
 end
 
-sgs.ai_use_priority.TransferCard = 0
+sgs.ai_use_priority.TransferCard = 0.01
 sgs.ai_card_intention.TransferCard = -10
 
 function sgs.ai_armor_value.IronArmor(player, self)
