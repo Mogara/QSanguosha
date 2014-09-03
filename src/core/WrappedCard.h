@@ -28,7 +28,7 @@
 // but inside the room they are shared and synced between server/client.
 //
 // WrappedCard's internal card is only intended to provide CardEffect (the card face). The suit,
-// number should not be modified to refelct the updated suit/number of WrappedCard. The modified
+// number should not be modified to reflect the updated suit/number of WrappedCard. The modified
 // suit/number/flags/... are maintained in WrappedCard's own member variables.
 //
 // All WrappedCard's member function that takes a Card as parameter will take over the Card passed

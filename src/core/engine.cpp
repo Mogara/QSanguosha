@@ -140,6 +140,10 @@ Engine::~Engine() {
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif
+
+    foreach (ExpPattern *pattern, enginePatterns) {
+        delete pattern;
+    }
 }
 
 QStringList Engine::getModScenarioNames() const{
@@ -228,31 +232,31 @@ void Engine::addPackage(Package *package) {
             const LuaBasicCard *lcard = qobject_cast<const LuaBasicCard *>(card);
             Q_ASSERT(lcard != NULL);
             luaBasicCard_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaBasicCards.keys().contains(lcard->getClassName()))
+            if (!luaBasicCards.contains(lcard->getClassName()))
                 luaBasicCards.insert(lcard->getClassName(), lcard->clone());
         } else if (card->isKindOf("LuaTrickCard")) {
             const LuaTrickCard *lcard = qobject_cast<const LuaTrickCard *>(card);
             Q_ASSERT(lcard != NULL);
             luaTrickCard_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaTrickCards.keys().contains(lcard->getClassName()))
+            if (!luaTrickCards.contains(lcard->getClassName()))
                 luaTrickCards.insert(lcard->getClassName(), lcard->clone());
         } else if (card->isKindOf("LuaWeapon")) {
             const LuaWeapon *lcard = qobject_cast<const LuaWeapon *>(card);
             Q_ASSERT(lcard != NULL);
             luaWeapon_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaWeapons.keys().contains(lcard->getClassName()))
+            if (!luaWeapons.contains(lcard->getClassName()))
                 luaWeapons.insert(lcard->getClassName(), lcard->clone());
         } else if (card->isKindOf("LuaArmor")) {
             const LuaArmor *lcard = qobject_cast<const LuaArmor *>(card);
             Q_ASSERT(lcard != NULL);
             luaArmor_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaArmors.keys().contains(lcard->getClassName()))
+            if (!luaArmors.contains(lcard->getClassName()))
                 luaArmors.insert(lcard->getClassName(), lcard->clone());
         } else if (card->isKindOf("LuaTreasure")) {
             const LuaTreasure *lcard = qobject_cast<const LuaTreasure *>(card);
             Q_ASSERT(lcard != NULL);
             luaTreasure_className2objectName.insert(lcard->getClassName(), lcard->objectName());
-            if (!luaTreasures.keys().contains(lcard->getClassName()))
+            if (!luaTreasures.contains(lcard->getClassName()))
                 luaTreasures.insert(lcard->getClassName(), lcard->clone());
         } else {
             QString class_name = card->metaObject()->className();
@@ -315,7 +319,9 @@ const CardPattern *Engine::getPattern(const QString &name) const{
     if (ptn) return ptn;
 
     ExpPattern *expptn = new ExpPattern(name);
+    enginePatterns << expptn;
     patterns.insert(name, expptn);
+
     return expptn;
 }
 
@@ -351,7 +357,7 @@ QList<const Skill *> Engine::getRelatedSkills(const QString &skill_name) const{
 
 const Skill *Engine::getMainSkill(const QString &skill_name) const{
     const Skill *skill = getSkill(skill_name);
-    if (!skill || skill->isVisible() || related_skills.keys().contains(skill_name)) return skill;
+    if (!skill || skill->isVisible() || related_skills.contains(skill_name)) return skill;
     foreach(QString key, related_skills.keys()) {
         foreach(QString name, related_skills.values(key))
             if (name == skill_name) return getSkill(key);
@@ -495,7 +501,7 @@ Card *Engine::cloneCard(const Card *card) const{
 
 Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const QStringList &flags) const{
     Card *card = NULL;
-    if (luaBasicCard_className2objectName.keys().contains(name)) {
+    if (luaBasicCard_className2objectName.contains(name)) {
         const LuaBasicCard *lcard = luaBasicCards.value(name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
@@ -504,7 +510,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
         const LuaBasicCard *lcard = luaBasicCards.value(class_name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    } else if (luaTrickCard_className2objectName.keys().contains(name)) {
+    } else if (luaTrickCard_className2objectName.contains(name)) {
         const LuaTrickCard *lcard = luaTrickCards.value(name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
@@ -513,7 +519,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
         const LuaTrickCard *lcard = luaTrickCards.value(class_name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    } else if (luaWeapon_className2objectName.keys().contains(name)) {
+    } else if (luaWeapon_className2objectName.contains(name)) {
         const LuaWeapon *lcard = luaWeapons.value(name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
@@ -522,7 +528,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
         const LuaWeapon *lcard = luaWeapons.value(class_name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    } else if (luaArmor_className2objectName.keys().contains(name)) {
+    } else if (luaArmor_className2objectName.contains(name)) {
         const LuaArmor *lcard = luaArmors.value(name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
@@ -531,7 +537,7 @@ Card *Engine::cloneCard(const QString &name, Card::Suit suit, int number, const 
         const LuaArmor *lcard = luaArmors.value(class_name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);
-    } else if (luaTreasure_className2objectName.keys().contains(name)) {
+    } else if (luaTreasure_className2objectName.contains(name)) {
         const LuaTreasure *lcard = luaTreasures.value(name, NULL);
         if (!lcard) return NULL;
         card = lcard->clone(suit, number);

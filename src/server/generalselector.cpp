@@ -199,7 +199,7 @@ void GeneralSelector::calculateDeputyValue(const ServerPlayer *player, const QSt
     foreach(QString second, candidates) {
         if (first == second) continue;
         QString key = QString("%1+%2").arg(first, second);
-        if (pair_table.keys().contains(key))
+        if (pair_table.contains(key))
             private_pair_value_table[player][key] = pair_table.value(key);
         else {
             const General *general1 = Sanguosha->getGeneral(first);

@@ -1223,9 +1223,9 @@ bool Player::hasShownSkill(const Skill *skill) const{
             return false;
     }
 
-    if (general1_showed && head_skills.keys().contains(skill->objectName()))
+    if (general1_showed && head_skills.contains(skill->objectName()))
         return true;
-    else if (general2_showed && deputy_skills.keys().contains(skill->objectName()))
+    else if (general2_showed && deputy_skills.contains(skill->objectName()))
         return true;
     return false;
 }
@@ -1359,9 +1359,9 @@ void Player::setGeneral2Showed(bool showed) {
 }
 
 void Player::setSkillPreshowed(const QString &skill, bool preshowed) {
-    if (head_skills.keys().contains(skill))
+    if (head_skills.contains(skill))
         head_skills[skill] = preshowed;
-    else if (deputy_skills.keys().contains(skill))
+    else if (deputy_skills.contains(skill))
         deputy_skills[skill] = preshowed;
 }
 

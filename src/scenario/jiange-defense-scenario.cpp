@@ -78,7 +78,7 @@ void JiangeDefenseScenario::assign(QStringList &generals, QStringList &generals2
     }
                     
     for (int i = 0; i < 8; i++) {
-        if (human_map.keys().contains(players[i])) {
+        if (human_map.contains(players[i])) {
             QStringList answer = human_map[players[i]];
             kingdoms << answer.takeFirst();
             generals << answer.takeFirst();

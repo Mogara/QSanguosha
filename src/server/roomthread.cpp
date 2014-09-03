@@ -305,7 +305,7 @@ QString HegemonyMode::GetMappedKingdom(const QString &role) {
 RoomThread::RoomThread(Room *room)
     : room(room)
 {
-    //Create GameRule inside the thread where RoomThread exits
+    //Create GameRule inside the thread where RoomThread exists
     game_rule = new GameRule(this);
 }
 

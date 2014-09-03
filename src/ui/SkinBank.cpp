@@ -559,15 +559,14 @@ bool IQSanComponentSkin::AnchoredRect::tryParse(const QVariant &var) {
 // Load pixmap from a file and map it to the given key.
 QPixmap QSanPixmapCache::getPixmap(const QString &key, const QString &fileName) {
     static QPixmap empty;
-    QPixmap cached;
-    if (QPixmapCache::find(key, &cached)) {
-        return cached;
+    QPixmap pixmap;
+    if (QPixmapCache::find(key, &pixmap)) {
+        return pixmap;
     }
 
     if (fileName == "deprecated") {
         QPixmapCache::insert(key, empty);
     } else {
-        QPixmap pixmap;
         bool success = !fileName.isEmpty() && pixmap.load(fileName);
         if (!success) {
             /*qWarning("Unable to open resource file \"%s\" for key \"%s\"\n",

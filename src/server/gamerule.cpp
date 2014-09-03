@@ -160,13 +160,11 @@ GameRule::GameRule(QObject *parent)
     list << new GameRule_LordConvertion;
 
     QList<const Skill *> list_copy;
-    foreach(Skill *s, list)
-        list_copy << s;
-
-    foreach(Skill *s, list){
+    foreach (Skill *s, list) {
         if (Sanguosha->getSkill(s->objectName())){
-            list_copy.removeOne(s);
             delete s;
+        } else {
+            list_copy << s;
         }
     }
     Sanguosha->addSkills(list_copy);

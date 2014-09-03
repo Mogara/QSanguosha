@@ -1084,7 +1084,7 @@ void CustomAssignDialog::on_list_itemSelectionChanged(QListWidgetItem *current) 
     }
 
     int val = 4;
-    if (player_start_draw.keys().contains(player_name)) val = player_start_draw[player_name];
+    if (player_start_draw.contains(player_name)) val = player_start_draw[player_name];
     player_draw->setValue(val);
 
     starter_box->setEnabled(starter.isEmpty() || starter == player_name);

@@ -263,7 +263,7 @@ RecAnalysis::~RecAnalysis(){
 }
 
 PlayerRecordStruct *RecAnalysis::getPlayerRecord(const Player *player) const{
-    if (m_recordMap.keys().contains(player->objectName()))
+    if (m_recordMap.contains(player->objectName()))
         return m_recordMap[player->objectName()];
     else
         return NULL;
@@ -294,16 +294,16 @@ QString RecAnalysis::getRecordChat() const{
 }
 
 PlayerRecordStruct *RecAnalysis::getPlayer(QString object_name, const QString &addition_name) {
-    if (m_recordMap.keys().contains(addition_name)) {
+    if (m_recordMap.contains(addition_name)) {
         m_recordMap[object_name] = m_recordMap[addition_name];
         m_recordMap[object_name]->m_additionName = addition_name;
         m_recordMap.remove(addition_name);
     }
-    else if (!m_recordMap.keys().contains(addition_name) && !addition_name.isEmpty()) {
+    else if (!m_recordMap.contains(addition_name) && !addition_name.isEmpty()) {
         m_recordMap[object_name] = new PlayerRecordStruct;
         m_recordMap[object_name]->m_additionName = addition_name;
     }
-    else if (!m_recordMap.keys().contains(object_name)) {
+    else if (!m_recordMap.contains(object_name)) {
         bool inQueue = false;
         foreach(QString name, m_recordMap.keys()) {
             if (m_recordMap[name]->m_additionName == object_name) {
