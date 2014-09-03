@@ -1609,8 +1609,8 @@ function SmartAI:useCardDuel(duel, use)
 	end
 
 	local cmp = function(a, b)
-		local v1 = getCardsNum("Slash", a) + a:getHp()
-		local v2 = getCardsNum("Slash", b) + b:getHp()
+		local v1 = getCardsNum("Slash", a, self.player) + a:getHp()
+		local v2 = getCardsNum("Slash", b, self.player) + b:getHp()
 
 		if self:getDamagedEffects(a, self.player) then v1 = v1 + 20 end
 		if self:getDamagedEffects(b, self.player) then v2 = v2 + 20 end

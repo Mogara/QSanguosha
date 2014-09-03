@@ -262,6 +262,7 @@ function sgs.cloneCard(name, suit, number)
 	suit = suit or sgs.Card_SuitToBeDecided
 	number = number or -1
 	local card = sgs.Sanguosha:cloneCard(name, suit, number)
+	if not card then global_room:writeToConsole(debug.traceback()) return end
 	card:deleteLater()
 	return card
 end
@@ -377,7 +378,7 @@ function SmartAI:objectiveLevel(player)
 	end
 
 	local upperlimit = player:getLord() and 99 or self.room:getPlayers():length() / 2
-	if (not sgs.isAnjiang(self.player) or sgs.shown_kingdom[self_kingdom] < upperlimit) and self.role ~= "careerist" and self_kingdom == player_kingdom then return -2 end
+	if (not sgs.isAnjiang(self.player) or sgs.shown_kingdom[self_kingdom] < upperlimit) and self.role ~= "careerist" and self_kingdom == player_kingdom_explicit then return -2 end
 	if self:getKingdomCount() <= 2 then return 5 end
 
 	local selfIsCareerist = self.role == "careerist" or sgs.shown_kingdom[self_kingdom] >= upperlimit and sgs.isAnjiang(self.player)
@@ -548,7 +549,7 @@ function sgs.updateIntention(from, to, intention)
 	if not intention or type(intention) ~= "number" then global_room:writeToConsole(debug.traceback()) end
 	if intention > 0 then intention = 10 end
 	if intention < 0 then intention = -10 end
-	local sendLog
+	local sendLog, output_to
 	if sgs.recorder:evaluateKingdom(from) == "careerist" or sgs.recorder:evaluateKingdom(to, from) == "careerist" then
 	elseif from:objectName() == to:objectName() then
 	else
@@ -577,7 +578,8 @@ function sgs.updateIntention(from, to, intention)
 				to:setMark("KnownBothEnemy" .. from:objectName(), 1)
 			else
 				sendLog = true
-				sgs.outputKingdomValues(from, intention)
+				output_to = true
+				sgs.outputKingdomValues(to, intention)
 				for _, kingdom in ipairs(kingdoms) do
 					if kingdom ~= from:getKingdom() then
 						sgs.ai_loyalty[kingdom][to:objectName()] = sgs.ai_loyalty[kingdom][to:objectName()] + intention
@@ -593,7 +595,7 @@ function sgs.updateIntention(from, to, intention)
 		sgs.ais[p:objectName()]:updatePlayers()
 	end
 
-	sgs.outputKingdomValues(from, sendLog and intention or 0, sendLog)
+	sgs.outputKingdomValues(output_to and to or from, sendLog and intention or 0, sendLog)
 end
 
 function sgs.outputKingdomValues(player, level, sendLog)
@@ -2065,15 +2067,11 @@ function SmartAI:askForDiscard(reason, discard_num, min_num, optional, include_e
 	return to_discard
 end
 
-sgs.ai_skill_discard.gamerule = function(self, discard_num, min_num)
+sgs.ai_skill_discard.gamerule = function(self, discard_num)
 
 	local cards = sgs.QList2Table(self.player:getHandcards())
 	self:sortByKeepValue(cards)
 	local to_discard = {}
-
-	local least = min_num
-	if discard_num - min_num > 1 then least = discard_num - 1 end
-
 	for _, card in ipairs(cards) do
 		if not self.player:isCardLimited(card, sgs.Card_MethodDiscard, true) then
 			table.insert(to_discard, card:getId())
