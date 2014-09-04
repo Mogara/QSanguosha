@@ -929,13 +929,30 @@ void Server::processNewConnection(ClientSocket *socket) {
     connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processRequest(QByteArray)));
 }
 
-void Server::processRequest(const QByteArray &request) {
+void Server::processRequest(const QByteArray &request)
+{
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
+
+    Packet packet;
+    if (!packet.parse(request)) {
+        emit server_message(tr("Invalid message %1 from %2").arg(QString::fromUtf8(request)).arg(socket->peerAddress()));
+        return;
+    }
+
+    switch (packet.getPacketSource()) {
+    case S_SRC_CLIENT:
+        processClientRequest(socket, packet);
+    default:
+        emit server_message(tr("Packet %1 from an unknown source %2").arg(QString::fromUtf8(request)).arg(socket->peerAddress()));
+    }
+}
+
+void Server::processClientRequest(ClientSocket *socket, const Packet &signup)
+{
     socket->disconnect(this, SLOT(processRequest(QByteArray)));
 
-    Packet signup;
-    if (!signup.parse(request) || signup.getCommandType() != S_COMMAND_SIGNUP) {
-        emit server_message(tr("Invalid signup string: %1").arg(QString::fromUtf8(request)));
+    if (signup.getCommandType() != S_COMMAND_SIGNUP) {
+        emit server_message(tr("Invalid signup string: %1").arg(signup.toString()));
         Packet error(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
         error.setMessageBody("INVALID_FORMAT");
         socket->send(error.toJson());

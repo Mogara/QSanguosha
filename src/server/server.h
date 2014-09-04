@@ -188,6 +188,8 @@ public:
     friend class BanIPDialog;
 
 private:
+    void processClientRequest(ClientSocket *socket, const QSanProtocol::Packet &signup);
+
     ServerSocket *server;
     Room *current;
     QSet<Room *> rooms;
