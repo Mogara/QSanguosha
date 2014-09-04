@@ -1027,7 +1027,7 @@ BroadcastBox::BroadcastBox(Server *server, QWidget *parent)
 
 void BroadcastBox::accept() {
     QDialog::accept();
-    server->broadcast(text_edit->toPlainText());
+    server->broadcastSystemMessage(text_edit->toPlainText());
 }
 
 void MainWindow::on_actionBroadcast_triggered() {

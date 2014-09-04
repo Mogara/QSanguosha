@@ -864,7 +864,7 @@ Server::Server(QObject *parent)
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 }
 
-void Server::broadcast(const QString &msg) {
+void Server::broadcastSystemMessage(const QString &msg) {
     JsonArray arg;
     arg << ".";
     arg << msg;
