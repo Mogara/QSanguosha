@@ -43,6 +43,7 @@ class ClientSocket : public QObject {
 
 public:
     virtual void connectToHost() = 0;
+    virtual void connectToHost(const QHostAddress &address, ushort port) = 0;
     virtual void disconnectFromHost() = 0;
     virtual void send(const QByteArray &message) = 0;
     virtual bool isConnected() const = 0;

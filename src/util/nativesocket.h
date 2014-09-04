@@ -52,6 +52,7 @@ public:
     NativeClientSocket(QTcpSocket *socket);
 
     virtual void connectToHost();
+    virtual void connectToHost(const QHostAddress &address, ushort port);
     virtual void disconnectFromHost();
     virtual void send(const QByteArray &message);
     virtual bool isConnected() const;

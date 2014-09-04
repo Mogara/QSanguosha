@@ -102,6 +102,11 @@ void NativeClientSocket::connectToHost() {
     socket->connectToHost(address, port);
 }
 
+void NativeClientSocket::connectToHost(const QHostAddress &address, ushort port)
+{
+    socket->connectToHost(address, port);
+}
+
 void NativeClientSocket::getMessage() {
     while (socket->canReadLine()) {
         QByteArray msg = socket->readLine();
