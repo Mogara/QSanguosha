@@ -873,7 +873,7 @@ void Server::broadcast(const QString &msg) {
     packet.setMessageBody(arg);
 
     foreach(Room *room, rooms)
-        room->broadcastInvoke(&packet);
+        room->broadcast(&packet);
 }
 
 bool Server::listen() {

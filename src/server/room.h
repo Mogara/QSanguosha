@@ -386,7 +386,7 @@ public:
     void pause(ServerPlayer *player, const QVariant &);
     void resume(ServerPlayer *player, const QVariant &);
 
-    void broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except = NULL);
+    void broadcast(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except = NULL);
     void networkDelayTestCommand(ServerPlayer *player, const QVariant &);
     inline RoomState *getRoomState() { return &_m_roomState; }
     inline Card *getCard(int cardId) const{ return _m_roomState.getCard(cardId); }

@@ -59,7 +59,7 @@ public:
     ~ServerPlayer();
 
     void setSocket(ClientSocket *socket);
-    void invoke(const QSanProtocol::AbstractPacket *packet);
+    void unicast(const QSanProtocol::AbstractPacket *packet);
     void notify(QSanProtocol::CommandType type, const QVariant &arg = QVariant());
     void kick();
     QString reportHeader() const;

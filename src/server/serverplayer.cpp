@@ -335,7 +335,7 @@ void ServerPlayer::unicast(const QByteArray &message) {
 void ServerPlayer::startNetworkDelayTest() {
     test_time = QDateTime::currentDateTime();
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_NETWORK_DELAY_TEST);
-    invoke(&packet);
+    unicast(&packet);
 }
 
 qint64 ServerPlayer::endNetworkDelayTest() {
@@ -385,7 +385,7 @@ void ServerPlayer::sendMessage(const QByteArray &message) {
     }
 }
 
-void ServerPlayer::invoke(const AbstractPacket *packet) {
+void ServerPlayer::unicast(const AbstractPacket *packet) {
     unicast(packet->toJson());
 }
 

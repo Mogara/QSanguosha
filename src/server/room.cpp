@@ -712,7 +712,7 @@ bool Room::doRequest(ServerPlayer *player, QSanProtocol::CommandType command, co
     else
         player->m_expectedReplyCommand = command;
 
-    player->invoke(&packet);
+    player->unicast(&packet);
     player->releaseLock(ServerPlayer::SEMA_MUTEX);
     if (wait) return getResult(player, timeOut);
     else return true;
@@ -812,7 +812,7 @@ ServerPlayer *Room::getRaceResult(QList<ServerPlayer *> &players, QSanProtocol::
 bool Room::doNotify(ServerPlayer *player, QSanProtocol::CommandType command, const QVariant &arg) {
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
     packet.setMessageBody(arg);
-    player->invoke(&packet);
+    player->unicast(&packet);
     return true;
 }
 
@@ -826,9 +826,9 @@ bool Room::doBroadcastNotify(QSanProtocol::CommandType command, const QVariant &
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
     packet.setMessageBody(arg);
 
-    foreach(ServerPlayer *player, m_players) {
+    foreach (ServerPlayer *player, m_players) {
         if (player != except) {
-            player->invoke(&packet);
+            player->unicast(&packet);
         }
     }
     return true;
@@ -840,7 +840,7 @@ bool Room::doNotify(ServerPlayer *player, int command, const char *arg) {
     JsonDocument doc = JsonDocument::fromJson(arg);
     if (doc.isValid()) {
         packet.setMessageBody(doc.toVariant());
-        player->invoke(&packet);
+        player->unicast(&packet);
     } else {
         output(QString("Fail to parse the Json Value %1").arg(arg));
     }
@@ -857,7 +857,7 @@ bool Room::doBroadcastNotify(int command, const char *arg) {
     return doBroadcastNotify(m_players, command, arg);
 }
 
-void Room::broadcastInvoke(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except) {
+void Room::broadcast(const QSanProtocol::AbstractPacket *packet, ServerPlayer *except) {
     broadcast(packet->toJson(), except);
 }
 
@@ -2789,7 +2789,7 @@ void Room::speakCommand(ServerPlayer *player, const QVariant &message) {
 
     Packet packet(S_SRC_CLIENT | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
     packet.setMessageBody(body);
-    broadcastInvoke(&packet);
+    broadcast(&packet);
 }
 
 void Room::broadcastRoles(ServerPlayer *, const QVariant &target)
