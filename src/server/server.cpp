@@ -916,13 +916,8 @@ void Server::processNewConnection(ClientSocket *socket) {
 
     connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
 
-    Packet version_packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_CHECK_VERSION);
-    version_packet.setMessageBody(Sanguosha->getVersion());
-    socket->send(version_packet.toJson());
-
-    Packet setup_packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SETUP);
-    setup_packet.setMessageBody(Sanguosha->getSetupString());
-    socket->send(setup_packet.toJson());
+    notifyClient(socket, S_COMMAND_CHECK_VERSION, Sanguosha->getVersion());
+    notifyClient(socket, S_COMMAND_SETUP, Sanguosha->getSetupString());
 
     emit server_message(tr("%1 connected").arg(socket->peerName()));
 
@@ -947,15 +942,20 @@ void Server::processRequest(const QByteArray &request)
     }
 }
 
+void Server::notifyClient(ClientSocket *socket, CommandType command, const QVariant &arg)
+{
+    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
+    packet.setMessageBody(arg);
+    socket->send(packet.toJson());
+}
+
 void Server::processClientRequest(ClientSocket *socket, const Packet &signup)
 {
     socket->disconnect(this, SLOT(processRequest(QByteArray)));
 
     if (signup.getCommandType() != S_COMMAND_SIGNUP) {
         emit server_message(tr("Invalid signup string: %1").arg(signup.toString()));
-        Packet error(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_WARN);
-        error.setMessageBody("INVALID_FORMAT");
-        socket->send(error.toJson());
+        notifyClient(socket, S_COMMAND_WARN, "INVALID_FORMAT");
         socket->disconnectFromHost();
         return;
     }
@@ -966,7 +966,7 @@ void Server::processClientRequest(ClientSocket *socket, const Packet &signup)
     QString avatar = body[2].toString();
 
     if (is_reconnection) {
-        foreach(QString objname, name2objname.values(screen_name)) {
+        foreach (QString objname, name2objname.values(screen_name)) {
             ServerPlayer *player = players.value(objname);
             if (player && player->getState() == "offline" && !player->getRoom()->isFinished()) {
                 player->getRoom()->reconnect(player, socket);

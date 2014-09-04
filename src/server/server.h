@@ -182,12 +182,17 @@ public:
     explicit Server(QObject *parent);
 
     void broadcastSystemMessage(const QString &msg);
+
     bool listen();
     void daemonize();
+
+
     Room *createNewRoom();
     void signupPlayer(ServerPlayer *player);
 
 private:
+    void notifyClient(ClientSocket *socket, QSanProtocol::CommandType command, const QVariant &arg = QVariant());
+
     void processClientRequest(ClientSocket *socket, const QSanProtocol::Packet &signup);
 
     ServerSocket *server;
