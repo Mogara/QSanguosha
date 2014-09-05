@@ -52,12 +52,14 @@ public:
     NativeClientSocket(QTcpSocket *socket);
 
     virtual void connectToHost();
+    virtual void connectToHost(const QHostAddress &address);
     virtual void connectToHost(const QHostAddress &address, ushort port);
     virtual void disconnectFromHost();
     virtual void send(const QByteArray &message);
     virtual bool isConnected() const;
     virtual QString peerName() const;
     virtual QString peerAddress() const;
+    virtual ushort peerPort() const;
 
 private slots:
     void getMessage();

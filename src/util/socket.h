@@ -43,12 +43,14 @@ class ClientSocket : public QObject {
 
 public:
     virtual void connectToHost() = 0;
+    virtual void connectToHost(const QHostAddress &address) = 0;
     virtual void connectToHost(const QHostAddress &address, ushort port) = 0;
     virtual void disconnectFromHost() = 0;
     virtual void send(const QByteArray &message) = 0;
     virtual bool isConnected() const = 0;
     virtual QString peerName() const = 0;
     virtual QString peerAddress() const = 0;
+    virtual ushort peerPort() const = 0;
 
 signals:
     void message_got(const QByteArray &msg);
