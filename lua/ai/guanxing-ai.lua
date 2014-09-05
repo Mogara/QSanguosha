@@ -408,7 +408,7 @@ local function GuanXing(self, cards)
 						if type(callback) == "function" and sgs.ai_cardneed[skill:objectName()](next_player, bottom[index - i], self) then
 							table.insert(next_judge, table.remove(bottom, index - i))
 							i = i + 1
-							if maxCount == i then break end
+							break
 						end
 					end
 					if maxCount == i then break end

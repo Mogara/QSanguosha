@@ -130,25 +130,93 @@ function logmsg(fname, fmt, ...)
 	fp:close()
 end
 
-function endlessNiepan(who)
-	local room = who:getRoom()
-	if who:getGeneral2() or who:getHp() > 0 then return end
+function changeHero(player, new_general, isSecondaryHero)
+	local room = player:getRoom()
+	local flag = isSecondaryHero and "general2_showed" or "general1_showed"
+	room:setPlayerProperty(player, flag, sgs.QVariant(true))
 
+	for _, skill in sgs.qlist(sgs.Sanguosha:getGeneral(new_general):getSkillList(true, not isSecondaryHero)) do
+		player:addSkill(skill:objectName(), not isSecondaryHero)
+		local args = {
+			sgs.CommandType.S_GAME_EVENT_ADD_SKILL,
+			player:objectName(),
+			skill:objectName(),
+			not isSecondaryHero,
+		}
+		room:doBroadcastNotify(sgs.CommandType.S_COMMAND_LOG_EVENT, json.encode(args))
+	end
 
-	for _,skill in sgs.qlist(who:getVisibleSkillList()) do
-		if skill:getLocation()==sgs.Skill_Right then
-			room:detachSkillFromPlayer(who, skill:objectName())
+	local args = {
+		11,
+		player:objectName(),
+		new_general,
+		isSecondaryHero,
+		true,
+	}
+	room:doBroadcastNotify(sgs.CommandType.S_COMMAND_LOG_EVENT, json.encode(args))
+
+	if isSecondaryHero then
+		room:changePlayerGeneral2(player, new_general)
+	else
+		room:changePlayerGeneral(player, new_general)
+	end
+
+	player:setHp(5)
+	player:setMaxHp(5)
+	room:broadcastProperty(player, "hp")
+	room:broadcastProperty(player, "maxhp")
+
+	local void_data = sgs.QVariant()
+	local gen = isSecondaryHero and player:getGeneral2() or player:getGeneral()
+	local thread = room:getThread()
+	if gen then
+		for _, skill in sgs.qlist(gen:getSkillList(true, not isSecondaryHero)) do
+			if skill:getFrequency() == sgs.Skill_Limited and skill:getLimitMark() and skill:getLimitMark() ~= "" then
+				room:setPlayerMark(player, skill:getLimitMark(), 1)
+			end
 		end
 	end
-	local names = sgs.Sanguosha:getRandomGenerals(1)
-	room:changeHero(who, names[1] , true, true, false, true)
-	room:setPlayerProperty(who, "maxhp", sgs.QVariant(5))
-	room:setPlayerProperty(who, "kingdom", sgs.QVariant(who:getGeneral():getKingdom()))
-	who:setGender(who:getGeneral():getGender())
-	room:setTag("SwapPile",sgs.QVariant(0))
 
-	who:bury()
-	who:drawCards(5)
+	room:resetAI(player)
+end
+
+function endlessNiepan(self, player)
+
+	local room = player:getRoom()
+	room:setPlayerProperty(player, "Duanchang", sgs.QVariant(""))
+	local getG2 = player:getGeneral2()
+
+	local names = sgs.Sanguosha:getRandomGenerals(2)
+
+	for _, skill in sgs.qlist(player:getSkillList()) do
+		player:loseSkill(skill:objectName())
+	end
+	player:detachAllSkills()
+
+	changeHero(player, names[1], false)
+	if getG2 then
+		changeHero(player, names[2], true)
+	end
+	player:bury()
+	local flag = getG2 and "hd" or "h"
+	player:setSkillsPreshowed(flag)
+	room:setPlayerProperty(player, "actual_general1", sgs.QVariant(names[1]))
+	room:setPlayerProperty(player, "actual_general2", sgs.QVariant(names[2]))
+	room:setPlayerFlag(player, "Global_DFDebut")
+	player:setChained(false)
+	room:broadcastProperty(player, "chained")
+	player:setFaceUp(true)
+	room:broadcastProperty(player, "faceup")
+	for _, p in sgs.qlist(room:getAlivePlayers()) do
+		room:setPlayerProperty(p, "kingdom", sgs.QVariant(sgs.KingdomsTable[math.random(1, #sgs.KingdomsTable)]))
+	end
+	sgs.updateAlivePlayerRoles()
+	for _, p in sgs.qlist(room:getAlivePlayers()) do
+		self:updatePlayerKingdom(p)
+	end
+
+	room:setTag("SwapPile", sgs.QVariant(0))
+	player:drawCards(5)
 
 end
 
@@ -210,15 +278,4 @@ function sgs.ShowPlayer(player)
 			p:showGeneral(false)
 		end
 	end
-end
-
-local qlist_iterator = function(list, n)
-	if n < list:length() - 1 then
-		return n + 1, list:at(n + 1) -- the next element of list
-	end
-end
-
-function sgs.qlist(list)
-	if not list then global_room:writeToConsole(debug.traceback()) return end
-	return qlist_iterator, list, -1
 end
