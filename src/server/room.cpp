@@ -2428,7 +2428,7 @@ void Room::addRobotCommand(ServerPlayer *player, const QVariant &) {
 void Room::fillRobotsCommand(ServerPlayer *player, const QVariant &) {
     int left = player_count - m_players.length();
     for (int i = 0; i < left; i++) {
-        addRobotCommand(player, QVariant());
+        addRobotCommand(player);
     }
 }
 
