@@ -416,7 +416,7 @@ void RoomThread::run() {
     }
 }
 
-static bool CompareByPriority(const TriggerSkill *a, const TriggerSkill *b) {
+static bool compareByPriority(const TriggerSkill *a, const TriggerSkill *b) {
     return a->getPriority() > b->getPriority();
 }
 
@@ -433,7 +433,7 @@ bool RoomThread::trigger(TriggerEvent triggerEvent, Room *room, ServerPlayer *ta
     try {
         QList<const TriggerSkill *> triggered;
         QList<const TriggerSkill *> &skills = skill_table[triggerEvent];
-        qStableSort(skills.begin(), skills.end(), CompareByPriority);
+        qStableSort(skills.begin(), skills.end(), compareByPriority);
 
         do {
             trigger_who.clear();
@@ -674,7 +674,7 @@ void RoomThread::addTriggerSkill(const TriggerSkill *skill) {
     foreach(TriggerEvent triggerEvent, events) {
         QList<const TriggerSkill *> &table = skill_table[triggerEvent];
         table << skill;
-        qStableSort(table.begin(), table.end(), CompareByPriority);
+        qStableSort(table.begin(), table.end(), compareByPriority);
     }
 
     if (skill->isVisible()) {
