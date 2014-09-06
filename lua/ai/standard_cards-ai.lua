@@ -424,6 +424,7 @@ function SmartAI:useCardSlash(card, use)
 	if use.isDummy and use.extra_target then self.slash_targets = self.slash_targets + use.extra_target end
 	if self.player:hasSkill("duanbing") then self.slash_targets = self.slash_targets + 1 end
 	local rangefix = 0
+	if use.isDummy and use.distance then rangefix = rangefix + use.distance end
 	if card:isVirtualCard() then
 		if self.player:getWeapon() and card:getSubcards():contains(self.player:getWeapon():getEffectiveId()) then
 			if self.player:getWeapon():getClassName() ~= "Weapon" then
@@ -1427,6 +1428,7 @@ sgs.ai_use_priority.Crossbow = 2.63
 
 sgs.ai_use_priority.SilverLion = 1.0
 -- sgs.ai_use_priority.Vine = 0.95
+-- sgs.ai_use_priority.Breastplate = 0.95
 sgs.ai_use_priority.RenwangShield = 0.85
 --sgs.ai_use_priority.IronArmor = 0.82
 sgs.ai_use_priority.EightDiagram = 0.8
@@ -1434,15 +1436,27 @@ sgs.ai_use_priority.EightDiagram = 0.8
 sgs.ai_use_priority.DefensiveHorse = 2.75
 sgs.ai_use_priority.OffensiveHorse = 2.69
 
+function SmartAI:useCardArcheryAttack(card, use)
+	if self:getAoeValue(card) > 0 then
+		use.card = card
+	end
+end
+
+function SmartAI:useCardSavageAssault(card, use)
+	if self:getAoeValue(card) > 0 then
+		use.card = card
+	end
+end
+
 sgs.dynamic_value.damage_card.ArcheryAttack = true
 sgs.dynamic_value.damage_card.SavageAssault = true
 
 sgs.ai_use_value.ArcheryAttack = 3.8
 sgs.ai_use_priority.ArcheryAttack = 3.5
-sgs.ai_keep_value.ArcheryAttack = 3.38
+sgs.ai_keep_value.ArcheryAttack = 3.35
 sgs.ai_use_value.SavageAssault = 3.9
 sgs.ai_use_priority.SavageAssault = 3.5
-sgs.ai_keep_value.SavageAssault = 3.36
+sgs.ai_keep_value.SavageAssault = 3.34
 
 sgs.ai_skill_cardask.aoe = function(self, data, pattern, target, name)
 	if sgs.ai_skill_cardask.nullfilter(self, data, pattern, target) then return "." end
@@ -1563,7 +1577,7 @@ function SmartAI:useCardGodSalvation(card, use)
 end
 
 sgs.ai_use_priority.GodSalvation = 1.1
-sgs.ai_keep_value.GodSalvation = 3.32
+sgs.ai_keep_value.GodSalvation = 3.30
 sgs.dynamic_value.benefit.GodSalvation = true
 sgs.ai_card_intention.GodSalvation = function(self, card, from, tos)
 	local can, first
@@ -1593,7 +1607,7 @@ function SmartAI:useCardDuel(duel, use)
 	local targets = {}
 
 	local canUseDuelTo=function(target)
-		return self:hasTrickEffective(duel, target) and self:damageIsEffective(target,sgs.DamageStruct_Normal) --and not self.room:isProhibited(self.player, target, duel)
+		return self:hasTrickEffective(duel, target) and self:damageIsEffective(target,sgs.DamageStruct_Normal)
 	end
 
 	for _, friend in ipairs(friends) do
@@ -2264,8 +2278,7 @@ function SmartAI:useCardCollateral(card, use)
 	for _, friend in ipairs(fromList) do
 		if friend:getWeapon() and (getKnownCard(friend, self.player, "Slash", true, "he") > 0 or getCardsNum("Slash", friend) > 1 and friend:getHandcardNum() >= 4)
 			and self:hasTrickEffective(card, friend)
-			and self:objectiveLevel(friend) < 0
-			--[[and not self.room:isProhibited(self.player, friend, card)]] then
+			and self:objectiveLevel(friend) < 0 then
 
 			for _, enemy in ipairs(toList) do
 				if friend:canSlash(enemy, nil) and self:objectiveLevel(enemy) > 3 and friend:objectName() ~= enemy:objectName()
@@ -2301,7 +2314,7 @@ end
 
 sgs.ai_use_value.Collateral = 5.8
 sgs.ai_use_priority.Collateral = 2.75
-sgs.ai_keep_value.Collateral = 3.40
+sgs.ai_keep_value.Collateral = 3.36
 
 sgs.ai_card_intention.Collateral = function(self,card, from, tos)
 	assert(#tos == 1)
@@ -2520,7 +2533,7 @@ function SmartAI:willUseLightning(card)
 		end
 		if shouldUse then return true end
 	end
-	--if self.room:isProhibited(self.player, self.player, card) then return end
+	if sgs.Sanguosha:isProhibited(self.player, self.player, card) then return end
 
 	local function hasDangerousFriend()
 		local hashy = false
@@ -2534,17 +2547,18 @@ function SmartAI:willUseLightning(card)
 	end
 
 	if self:getFinalRetrial(self.player) == 2 then
-	return
+		return
 	elseif self:getFinalRetrial(self.player) == 1 then
 		return true
 	elseif not hasDangerousFriend() then
+		if self.player:hasSkills("guanxing|kongcheng") and self.player:isLastHandCard(card) == 1 then return true end
 		local players = self.room:getAllPlayers()
 		players = sgs.QList2Table(players)
 
 		local friends = 0
 		local enemies = 0
 
-		for _,player in ipairs(players) do
+		for _, player in ipairs(players) do
 			if self:objectiveLevel(player) >= 4 and not player:hasSkill("hongyan") and not (player:hasSkill("weimu") and card:isBlack()) then
 				enemies = enemies + 1
 			elseif self:isFriend(player) and not player:hasSkill("hongyan") and not (player:hasSkill("weimu") and card:isBlack()) then

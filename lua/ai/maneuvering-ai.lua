@@ -434,7 +434,7 @@ function SmartAI:useCardIronChain(card, use)
 	table.insertTable(friendtargets, friendtargets2)
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
-		if not enemy:isChained() --[[and not self.room:isProhibited(self.player, enemy, card)]]
+		if not enemy:isChained() and not sgs.Sanguosha:isProhibited(self.player, enemy, card)
 			and self:hasTrickEffective(card, enemy) and not (self:objectiveLevel(enemy) <= 3)
 			and not self:getDamagedEffects(enemy) and not self:needToLoseHp(enemy) and sgs.isGoodTarget(enemy, self.enemies, self) then
 			table.insert(enemytargets, enemy)
@@ -495,7 +495,7 @@ sgs.ai_card_intention.IronChain = function(self, card, from, tos)
 end
 
 sgs.ai_use_value.IronChain = 5.4
-sgs.ai_keep_value.IronChain = 3.34
+sgs.ai_keep_value.IronChain = 3.32
 sgs.ai_use_priority.IronChain = 9.1
 
 sgs.ai_skill_cardask["@fire-attack"] = function(self, data, pattern, target)
@@ -567,7 +567,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 		if enemy:hasShownSkill("mingshi") and not self.player:hasShownAllGenerals() then
 			damage = damage - 1
 		end
-		return self:objectiveLevel(enemy) > 3 and damage > 0 and not enemy:isKongcheng() --[[and not self.room:isProhibited(self.player, enemy, fire_attack)]]
+		return self:objectiveLevel(enemy) > 3 and damage > 0 and not enemy:isKongcheng()
 				and self:damageIsEffective(enemy, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(enemy, self.player, damage)
 				and self:hasTrickEffective(fire_attack, enemy)
 				and sgs.isGoodTarget(enemy, self.enemies, self)
@@ -591,7 +591,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 	end
 
 	if can_FireAttack_self and self.player:isChained() and self:isGoodChainTarget(self.player)
-		and self.player:getHandcardNum() > 1 --[[and not self.room:isProhibited(self.player, self.player, fire_attack)]]
+		and self.player:getHandcardNum() > 1
 		and self:damageIsEffective(self.player, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(self.player)
 		and self:hasTrickEffective(fire_attack, self.player) then
 
@@ -689,7 +689,7 @@ sgs.ai_cardshow.fire_attack = function(self, requestor)
 end
 
 sgs.ai_use_value.FireAttack = 4.8
-sgs.ai_keep_value.FireAttack = 3.3
+sgs.ai_keep_value.FireAttack = 3.28
 sgs.ai_use_priority.FireAttack = sgs.ai_use_priority.Dismantlement + 0.1
 
 sgs.dynamic_value.damage_card.FireAttack = true

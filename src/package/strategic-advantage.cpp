@@ -638,6 +638,7 @@ void FightTogether::onEffect(const CardEffectStruct &effect) const{
         effect.to->setChained(true);
         room->setEmotion(effect.to, "chain");
         room->broadcastProperty(effect.to, "chained");
+        room->getThread()->trigger(ChainStateChanged, room, effect.to);
     } else
         effect.to->drawCards(1);
 }

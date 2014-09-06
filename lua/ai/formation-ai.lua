@@ -39,7 +39,7 @@ jixi_skill.getTurnUseCard = function(self)
 
 		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
 			if (self.player:distanceTo(player, 1) <= 1 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_DistanceLimit, self.player, jixisnatch))
-				--[[and not self.room:isProhibited(self.player, player, jixisnatch)]] and self:hasTrickEffective(jixisnatch, player) then
+				and self:hasTrickEffective(jixisnatch, player) then
 
 				local suit = snatch:getSuitString()
 				local number = snatch:getNumberString()

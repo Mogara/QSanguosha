@@ -288,6 +288,8 @@ function SmartAI:getTurnUse(priority)
 	end
 
 	for _, card in ipairs(cards) do
+		if not card:isAvailable(self.player) then continue end
+
 		if priority and self:getDynamicUsePriority(card) < 6 then continue end
 
 		local dummy_use = { isDummy = true }
@@ -778,13 +780,15 @@ function SmartAI:assignKeep(start)
 			"peach-1" = 7,
 			"peach-2" = 5.8, "jink-1" = 5.2,
 			"peach-3" = 4.5, "analeptic-1" = 4.1,
-			"jink-2" = 4.0, "ExNihilo-1" = 3.9, "nullification-1" = 3.8, "thunderslash-1" = 3.66 "fireslash-1" = 3.63
-			"slash-1" = 3.6 indulgence-1 = 3.5 SupplyShortage-1 = 3.48 snatch-1 = 3.46 Dismantlement-1 = 3.44 Duel-1 = 3.42
-			Collateral-1 = 3.40 ArcheryAttack-1 = 3.38 SavageAssault-1 = 3.36 IronChain = 3.34 GodSalvation-1 = 3.32, Fireattack-1 = 3.3 "peach-4" = 3.1
+			"jink-2" = 4.0, "ExNihilo-1" = 3.9, BefriendAttacking-1", "nullification-1" = 3.8, "thunderslash-1" = 3.66 "fireslash-1" = 3.63
+			"slash-1" = 3.6 indulgence-1 = 3.5 SupplyShortage-1 = 3.48 snatch-1 = 3.46 Dismantlement-1 = 3.44 Duel-1 = 3.42 Drownning -3.40
+				BurningCamps = 3.38, Collateral-1 = 3.36 ArcheryAttack-1 = 3.35 SavageAssault-1 = 3.34 KnownBoth = 3.33 IronChain = 3.32 GodSalvation-1 = 3.30,
+				Fireattack-1 = 3.28 AllianceFeast = 3.26 FightTogether =3.24 LureTiger = 3.22 "peach-4" = 3.1
 			"analeptic-2" = 2.9, "jink-3" = 2.7 ExNihilo-2 = 2.7 nullification-2 = 2.6 thunderslash-2 = 2.46 fireslash-2 = 2.43 slash-2 = 2.4
 			...
 			Weapon-1 = 2.08 Armor-1 = 2.06 DefensiveHorse-1 = 2.04 OffensiveHorse-1 = 2
 			...
+			AwaitExhausted = 1
 			AmazingGrace-1 = -9 Lightning-1 = -10
 		]]
 
@@ -1269,6 +1273,7 @@ function SmartAI:adjustKeepValue(card, v)
 		if card:isRed() then v = v + 0.02 end
 		if card:isKindOf("NatureSlash") then v = v + 0.03 end
 		if self.player:hasSkill("jiang") and card:isRed() then v = v + 0.04 end
+	elseif card:isKindOf("HegNullification") then v = v + 0.02
 	end
 
 	local suits_value = {}
@@ -1710,7 +1715,7 @@ function SmartAI:filterEvent(event, player, data)
 			end
 
 		end
-	elseif event == sgs.CardFinished or event == sgs.GameStart or event == sgs.EventPhaseStart then
+	elseif event == sgs.CardFinished or event == sgs.GameStart or event == sgs.EventPhaseStart or event == sgs.RemoveStateChanged then
 		self:updatePlayers(self == sgs.recorder)
 	elseif event == sgs.BuryVictim or event == sgs.HpChanged or event == sgs.MaxHpChanged then
 		self:updatePlayers(self == sgs.recorder)
@@ -2199,10 +2204,13 @@ function SmartAI:askForNullification(trick, from, to, positive)
 
 		elseif trick:isKindOf("ArcheryAttack") then
 			if self:isFriend(to) then
-				for _, friend in ipairs(self.friends) do
-					if self:playerGetRound(to) < self:playerGetRound(friend) and (self:aoeIsEffective(trick, to, from) or self:getDamagedEffects(to, from)) then
-					else
-						return null_card
+				local heg_null_card = self:getCardId("HegNullification")
+				if heg_null_card then
+					for _, friend in ipairs(self.friends) do
+						if self:playerGetRound(to) < self:playerGetRound(friend) and (self:aoeIsEffective(trick, to, from) or self:getDamagedEffects(to, from)) then
+						else
+							return heg_null_card
+						end
 					end
 				end
 				if not self:aoeIsEffective(trick, to, from) then return
@@ -2220,11 +2228,14 @@ function SmartAI:askForNullification(trick, from, to, positive)
 				for _, p in sgs.qlist(self.room:getAlivePlayers()) do
 					if p:hasShownSkill("huoshou") then menghuo = p break end
 				end
-				for _, friend in ipairs(self.friends) do
-					if self:playerGetRound(to) < self:playerGetRound(friend)
-						and (self:aoeIsEffective(trick, to, menghuo or from) or self:getDamagedEffects(to, menghuo or from)) then
-					else
-						return null_card
+				local heg_null_card = self:getCardId("HegNullification")
+				if heg_null_card then
+					for _, friend in ipairs(self.friends) do
+						if self:playerGetRound(to) < self:playerGetRound(friend)
+							and (self:aoeIsEffective(trick, to, menghuo or from) or self:getDamagedEffects(to, menghuo or from)) then
+						else
+							return heg_null_card
+						end
 					end
 				end
 				if not self:aoeIsEffective(trick, to, menghuo or from) then return
@@ -4018,9 +4029,8 @@ function SmartAI:exclude(players, card, from)
 		end
 	end
 
-	--if not self.room:isProhibited(from, player, card) then
 	for _, player in ipairs(players) do
-		if (not card:isKindOf("TrickCard") or self:hasTrickEffective(card, player, from))
+		if not sgs.Sanguosha:isProhibited(from, player, card) and (not card:isKindOf("TrickCard") or self:hasTrickEffective(card, player, from))
 			and (not limit or from:distanceTo(player, range_fix) <= limit) then
 			table.insert(excluded, player)
 		end
@@ -4191,7 +4201,7 @@ end
 function SmartAI:hasTrickEffective(card, to, from)
 	from = from or self.room:getCurrent()
 	to = to or self.player
-	--if self.room:isProhibited(from, to, card) then return false end
+	if sgs.Sanguosha:isProhibited(from, to, card) then return false end
 
 	if not card:isKindOf("TrickCard") then return true end
 	if to:hasShownSkill("hongyan") and card:isKindOf("Lightning") then return false end
@@ -4201,7 +4211,12 @@ function SmartAI:hasTrickEffective(card, to, from)
 		if to:hasSkills("jgjiguan_qinglong|jgjiguan_baihu|jgjiguan_zhuque|jgjiguan_xuanwu") then return false end
 		if to:hasSkills("jgjiguan_bian|jgjiguan_suanni|jgjiguan_chiwen|jgjiguan_yazi") then return false end
 	end
-	if to:hasShownSkill("weimu") and card:isBlack() then return false end
+	if to:hasShownSkill("weimu") and card:isBlack() then
+		if from:objectName() == to:objectName() and card:isKindOf("DelayedTrick") then
+		else
+			return false
+		end
+	end
 	if to:hasShownSkill("kongcheng") and to:isKongcheng() and card:isKindOf("Duel") then return false end
 
 	local nature = sgs.DamageStruct_Normal
@@ -4214,8 +4229,7 @@ function SmartAI:hasTrickEffective(card, to, from)
 
 	for _, callback in pairs(sgs.ai_trick_prohibit) do
 		if type(callback) == "function" then
-			local isEffective = callback(self, card, to, from)
-			if not isEffective then return false end
+			if callback(self, card, to, from) then return false end
 		end
 	end
 
@@ -4225,13 +4239,7 @@ end
 function SmartAI:useTrickCard(card, use)
 	if not card then global_room:writeToConsole(debug.traceback()) return end
 	if self:needRende() and not card:isKindOf("ExNihilo") then return end
-	if card:isKindOf("AOE") then
-		if self:getAoeValue(card) > 0 then
-			use.card = card
-		end
-	else
-		self:useCardByClassName(card, use)
-	end
+	self:useCardByClassName(card, use)
 end
 
 sgs.weapon_range = {}
@@ -5150,6 +5158,69 @@ function SmartAI:isFriendWith(player)
 	if self.player:isFriendWith(player) then return true end
 	if self.player:getKingdom() == self:evaluateKingdom(player) then return true end
 	return false
+end
+
+function SmartAI:getBigAndSmallKingdoms()
+	local jade_seal_owner
+	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+		if p:hasTreasure("JadeSeal") then
+			jade_seal_owner = p
+			break
+		end
+	end
+
+	local kingdom_map = {}
+	local kingdoms = sgs.Sanguosha:getKingdoms()
+	table.insert(kingdoms, "careerist")
+	for _, k in ipairs(kingdoms) do
+		if k == "god" then continue end
+		kingdom_map[k] = self.player:getPlayerNumWithSameKingdom("AI", k)
+	end
+	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+		if not p:hasShownOneGeneral() then
+			kingdom_map.anjiang = 1
+			break
+		end
+	end
+	local big, small = {}, {}
+
+	local num = 0
+	for kingdom, v in pairs(kingdom_map) do
+		if v == 0 then continue end
+		if #big == 0 then table.insert(big, kingdom) continue end
+
+		if v > num then
+			num = v
+			table.insertTable(small, big)
+			big = {}
+			table.insert(big, kingdom)
+		elseif v == num_max then
+			table.insert(big, kingdom)
+		else
+			table.insert(small, kingdom)
+		end
+	end
+
+	if jade_seal_owner then
+		if not jade_seal_owner:hasShownOneGeneral() or jade_seal_owner:getRole() == "careerist" then
+			table.insertTable(small, big)
+			big = {}
+			table.insert(big, jade_seal_owner:objectName())
+		else
+			local kingdom = jade_seal_owner:getKingdom()
+			table.insertTable(small, big)
+			big = {}
+			table.removeOne(small, kingdom)
+			table.insert(big, kingdom)
+		end
+	end
+	return big, small
+end
+
+function SmartAI:canLureTiger(players)
+	local cards = self:getCards("LureTiger")
+	if #cards == 0 then return end
+
 end
 
 dofile "lua/ai/debug-ai.lua"

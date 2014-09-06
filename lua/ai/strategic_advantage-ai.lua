@@ -18,80 +18,7 @@
   QSanguosha-Hegemony Team
 *********************************************************************]]
 
-function SmartAI:useCardDrowning(card, use)
-	if not card:isAvailable(self.player) then return end
-
-	self:sort(self.enemies, "equip_defense")
-
-	local players = sgs.PlayerList()
-	for _, enemy in ipairs(self.enemies) do
-		if card:targetFilter(players, enemy, self.player) and not players:contains(enemy) and enemy:hasEquip()
-			and self:hasTrickEffective(card, enemy) and self:damageIsEffective(enemy) and self:canAttack(enemy)
-			and not self:getDamagedEffects(enemy, self.player) and not self:needToLoseHp(enemy, self.player) then
-			players:append(enemy)
-			if use.to then use.to:append(enemy) end
-		end
-	end
-
-	for _, friend in ipairs(self.friends_noself) do
-		if card:targetFilter(players, friend, self.player) and not players:contains(friend) and self:needToThrowArmor(friend) and friend:getEquips():length() == 1 then
-			players:append(friend)
-			if use.to then use.to:append(friend) end
-		end
-	end
-
-	if not players:isEmpty() then
-		use.card = card
-		return
-	end
-end
-
-sgs.ai_card_intention.Drowning = function(self, card, from, tos)
-	for _, to in ipairs(tos) do
-		if not self:hasTrickEffective(card, to, from) or not self:damageIsEffective(to, sgs.DamageStruct_Normal, from)
-			or self:needToThrowArmor(to) then
-		else
-			sgs.updateIntention(from, to, 80)
-		end
-	end
-end
-
-sgs.ai_use_value.Drowning = 5
-sgs.ai_use_priority.Drowning = 7
-
-sgs.ai_skill_choice.drowning = function(self, choices, data)
-	local effect = data:toCardEffect()
-	if not self:damageIsEffective(self.player, sgs.DamageStruct_Normal, effect.from)
-		or self:needToLoseHp(self.player, effect.from)
-		or self:getDamagedEffects(self.player, effect.from) then return "damage" end
-
-	if self.player:getHp() == 1 then return "throw" end
-
-	local value = 0
-	for _, equip in sgs.qlist(self.player:getEquips()) do
-		if equip:isKindOf("Weapon") then value = value + self:evaluateWeapon(equip)
-		elseif equip:isKindOf("Armor") then
-			value = value + self:evaluateArmor(equip)
-			if self:needToThrowArmor() then value = value - 5 end
-		elseif equip:isKindOf("OffensiveHorse") then value = value + 2.5
-		elseif equip:isKindOf("DefensiveHorse") then value = value + 5
-		end
-	end
-	if value < 8 then return "throw" else return "damage" end
-end
-
-sgs.ai_nullification.Drowning = function(self, card, from, to, positive)
-	if positive then
-		if self:isFriend(to) then
-			if self:needToThrowArmor(to) then return end
-			if to:getEquips():length() >= 2 then return true end
-		end
-	else
-		if self:isFriend(from) and (self:getOverflow() > 0 or self:getCardsNum("Nullification") > 1) then return true end
-	end
-	return
-end
-
+--transfer
 local transfer_skill = {}
 transfer_skill.name = "transfer"
 table.insert(sgs.ai_skills, transfer_skill)
@@ -176,6 +103,83 @@ end
 sgs.ai_use_priority.TransferCard = 0.01
 sgs.ai_card_intention.TransferCard = -10
 
+--Drowning
+function SmartAI:useCardDrowning(card, use)
+	if not card:isAvailable(self.player) then return end
+
+	self:sort(self.enemies, "equip_defense")
+
+	local players = sgs.PlayerList()
+	for _, enemy in ipairs(self.enemies) do
+		if card:targetFilter(players, enemy, self.player) and not players:contains(enemy) and enemy:hasEquip()
+			and self:hasTrickEffective(card, enemy) and self:damageIsEffective(enemy) and self:canAttack(enemy)
+			and not self:getDamagedEffects(enemy, self.player) and not self:needToLoseHp(enemy, self.player) then
+			players:append(enemy)
+			if use.to then use.to:append(enemy) end
+		end
+	end
+
+	for _, friend in ipairs(self.friends_noself) do
+		if card:targetFilter(players, friend, self.player) and not players:contains(friend) and self:needToThrowArmor(friend) and friend:getEquips():length() == 1 then
+			players:append(friend)
+			if use.to then use.to:append(friend) end
+		end
+	end
+
+	if not players:isEmpty() then
+		use.card = card
+		return
+	end
+end
+
+sgs.ai_card_intention.Drowning = function(self, card, from, tos)
+	for _, to in ipairs(tos) do
+		if not self:hasTrickEffective(card, to, from) or not self:damageIsEffective(to, sgs.DamageStruct_Normal, from)
+			or self:needToThrowArmor(to) then
+		else
+			sgs.updateIntention(from, to, 80)
+		end
+	end
+end
+
+sgs.ai_skill_choice.drowning = function(self, choices, data)
+	local effect = data:toCardEffect()
+	if not self:damageIsEffective(self.player, sgs.DamageStruct_Normal, effect.from)
+		or self:needToLoseHp(self.player, effect.from)
+		or self:getDamagedEffects(self.player, effect.from) then return "damage" end
+
+	if self.player:getHp() == 1 then return "throw" end
+
+	local value = 0
+	for _, equip in sgs.qlist(self.player:getEquips()) do
+		if equip:isKindOf("Weapon") then value = value + self:evaluateWeapon(equip)
+		elseif equip:isKindOf("Armor") then
+			value = value + self:evaluateArmor(equip)
+			if self:needToThrowArmor() then value = value - 5 end
+		elseif equip:isKindOf("OffensiveHorse") then value = value + 2.5
+		elseif equip:isKindOf("DefensiveHorse") then value = value + 5
+		end
+	end
+	if value < 8 then return "throw" else return "damage" end
+end
+
+sgs.ai_nullification.Drowning = function(self, card, from, to, positive)
+	if positive then
+		if self:isFriend(to) then
+			if self:needToThrowArmor(to) then return end
+			if to:getEquips():length() >= 2 then return true end
+		end
+	else
+		if self:isFriend(from) and (self:getOverflow() > 0 or self:getCardsNum("Nullification") > 1) then return true end
+	end
+	return
+end
+
+sgs.ai_use_value.Drowning = 5.1
+sgs.ai_use_priority.Drowning = 7
+sgs.ai_keep_value.Drowning = 3.4
+
+--IronArmor
 function sgs.ai_armor_value.IronArmor(player, self)
 	if self:isWeak(player) then
 		for _, p in sgs.qlist(self.room:getOtherPlayers(player)) do
@@ -189,9 +193,10 @@ end
 
 sgs.ai_use_priority.IronArmor = 0.82
 
---[[
+--BurningCamps
 function SmartAI:useCardBurningCamps(card, use)
 	if not card:isAvailable(self.player) then return end
+
 	local player = self.room:nextPlayer(self.player)
 	if self:isFriendWith(player) then
 		return
@@ -199,6 +204,7 @@ function SmartAI:useCardBurningCamps(card, use)
 		local enemies = player:getFormation()
 		local shouldUse
 		for _, enemy in sgs.qlist(enemies) do
+			if not self:hasTrickEffective(card, enemy, self.player) then continue end
 			enemy = findPlayerByObjectName(enemy:objectName())
 			local damage = {}
 			damage.from = self.player
@@ -220,8 +226,386 @@ function SmartAI:useCardBurningCamps(card, use)
 	end
 end
 
+sgs.ai_nullification.BurningCamps = function(self, card, from, to, positive)
+	if positive then
+		if self:isFriendWith(to) and self:isEnemy(from) then return true end
+	else
+		if self:isFriend(from) and self:isEnemy(to) then return true end
+	end
+	return
+end
 
-sgs.ai_use_value.BurningCamps = 7
+sgs.ai_use_value.BurningCamps = 7.1
 sgs.ai_use_priority.BurningCamps = 4.7
+sgs.ai_keep_value.BurningCamps = 3.38
 sgs.ai_card_intention.BurningCamps = 10
-]]
+
+--Breastplate
+sgs.ai_skill_invoke.Breastplate = true
+
+function sgs.ai_armor_value.Breastplate(player, self)
+	if player:getHp() >= 3 then
+		return 2
+	else
+		return 5.5
+	end
+end
+
+sgs.ai_use_priority.Breastplate = 0.9
+
+--LureTiger
+function SmartAI:useCardLureTiger(card, use)
+	if not card:isAvailable(self.player) then return end
+
+	local players = sgs.PlayerList()
+	local BurningCamps = self:getCard("BurningCamps")
+	if BurningCamps and BurningCamps:isAvailable(self.player) then
+		local nextp = self.room:nextPlayer(self.player)
+		local first
+		while true do
+			if card:targetFilter(players, nextp, self.player) and self:hasTrickEffective(card, nextp, self.player) then
+				if not first then
+					if self:isEnemy(nextp) then
+						first = nextp
+					else
+						players:append(nextp)
+						if use.to then use.to:append(nextp) end
+					end
+				else
+					if not first:isFriendWith(nextp) then
+						players:append(nextp)
+						if use.to then use.to:append(nextp) end
+					end
+				end
+				nextp = self.room:nextPlayer(nextp)
+			else
+				break
+			end
+		end
+		if first then
+			use.card = card
+			return
+		end
+	end
+
+	players = sgs.PlayerList()
+	if use.to then use.to = sgs.SPlayerList() end
+
+	local ArcheryAttack = self:getCard("ArcheryAttack")
+	if ArcheryAttack and ArcheryAttack:isAvailable(self.player) and self:getAoeValue(ArcheryAttack) > 0 then
+		self:sort(self.friends_noself, "hp")
+		for _, friend in ipairs(self.friends_noself) do
+			if self:isFriendWith(friend) and card:targetFilter(players, friend, self.player) and self:hasTrickEffective(card, friend, self.player) then
+				players:append(friend)
+				if use.to then use.to:append(friend) end
+			end
+		end
+		for _, friend in ipairs(self.friends_noself) do
+			if card:targetFilter(players, friend, self.player) and not players:contains(friend) and self:hasTrickEffective(card, friend, self.player) then
+				players:append(friend)
+				if use.to then use.to:append(friend) end
+			end
+		end
+		if players:length() > 0 then
+			use.card = card
+			return
+		end
+	end
+
+	players = sgs.PlayerList()
+	if use.to then use.to = sgs.SPlayerList() end
+
+	local SavageAssault = self:getCard("SavageAssault")
+	if SavageAssault and SavageAssault:isAvailable(self.player) and self:getAoeValue(SavageAssault) > 0 then
+		self:sort(self.friends_noself, "hp")
+		for _, friend in ipairs(self.friends_noself) do
+			if self:isFriendWith(friend) and card:targetFilter(players, friend, self.player) and self:aoeIsEffective(card, friend, self.player) then
+				players:append(friend)
+				if use.to then use.to:append(friend) end
+			end
+		end
+		for _, friend in ipairs(self.friends_noself) do
+			if card:targetFilter(players, friend, self.player) and not players:contains(friend) and self:aoeIsEffective(card, friend, self.player) then
+				players:append(friend)
+				if use.to then use.to:append(friend) end
+			end
+		end
+		if players:length() > 0 then
+			use.card = card
+			return
+		end
+	end
+
+	players = sgs.PlayerList()
+	if use.to then use.to = sgs.SPlayerList() end
+
+	local Slash = self:getCard("Slash")
+	if Slash and self:slashIsAvailable(self.player, Slash) then
+		local total_num = 2 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
+		local dummyuse = { isDummy = true, to = sgs.SPlayerList(), distance = -total_num }
+		self:useCardSlash(Slash, dummyuse)
+		if dummyuse.card then
+
+			local function getPlayersFromTo(one)
+				local targets1 = sgs.SPlayerList()
+				local targets2 = sgs.SPlayerList()
+				local nextp = self.room:nextPlayer(self.player)
+				while true do
+					if card:targetFilter(players, nextp, self.player) and self:hasTrickEffective(card, nextp, self.player) then
+						if one:objectName() ~= nextp:objectName() then
+							players:append(nextp)
+							targets1:append(nextp)
+						else
+							break
+						end
+						nextp = self.room:nextPlayer(nextp)
+					else
+						targets1 = sgs.SPlayerList()
+						break
+					end
+				end
+				nextp = self.room:nextPlayer(one)
+				players = sgs.PlayerList()
+				while true do
+					if card:targetFilter(players, nextp, self.player) and self:hasTrickEffective(card, nextp, self.player) then
+						if self.plaeyr:objectName() ~= nextp:objectName() then
+							players:append(nextp)
+							targets2:append(nextp)
+						else
+							break
+						end
+						nextp = self.room:nextPlayer(nextp)
+					else
+						targets2 = sgs.SPlayerList()
+						break
+					end
+				end
+				if targets1:length() > 0 and targets2:length() >= targets1:length() and targets1:length() <= total_num then
+					return targets1
+				elseif targets2:length() > 0 and targets1:length() >= targets2:length() and targets2:length() <= total_num then
+					return targets2
+				end
+				return
+			end
+
+			for _, to in sgs.qlist(dummyuse.to) do
+				if self.player:distanceTo(to) > self.player:getAttackRange() and self.player:distanceTo(to, -total_num) <= self.player:getAttackRange() then
+					local sps = getPlayersFromTo(one)
+					if sps then
+						use.card = card
+						if use.to then use.to = sps end
+						return
+					end
+				end
+			end
+		end
+
+	end
+
+	players = sgs.PlayerList()
+	if use.to then use.to = sgs.SPlayerList() end
+
+	local GodSalvation = self:getCard("GodSalvation")
+	if GodSalvation and GodSalvation:isAvailable(self.player) then
+		self:sort(self.enemies, "hp")
+		for _, enemy in ipairs(self.enemies) do
+			if card:targetFilter(players, enemy, self.player) and self:hasTrickEffective(card, nextp, self.player) then
+				players:append(enemy)
+				if use.to then use.to:append(enemy) end
+			end
+		end
+		if players:length() > 0 then
+			use.card = card
+			return
+		end
+	end
+
+	players = sgs.PlayerList()
+	if use.to then use.to = sgs.SPlayerList() end
+
+	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+		if card:targetFilter(players, player, self.player) and self:hasTrickEffective(card, nextp, self.player) then
+			use.card = card
+			if use.to then use.to:append(player) end
+			return
+		end
+	end
+end
+
+sgs.ai_nullification.LureTiger = function(self, card, from, to, positive)
+	if positive then
+		if self:isFriendWith(to) and self:isEnemy(from) then return true end
+	else
+		if self:isFriend(from) and self:isEnemy(to) then return true end
+	end
+	return
+end
+
+sgs.ai_use_value.LureTiger = 7.3
+sgs.ai_use_priority.LureTiger = 0
+sgs.ai_keep_value.LureTiger = 3.22
+
+--FightTogether
+function SmartAI:useCardFightTogether(card, use)
+	if not card:isAvailable(self.player) then return end
+
+	--@todo: consider hongfa
+	local big_k, small_k = self:getBigAndSmallKingdoms()
+	local big_p, small_p = {}, {}
+	local isBig, isSmall
+    for _,p in sgs.qlist(self.room:getAllPlayers()) do
+		if self:hasTrickEffective(card, p, self.player) then
+			local kingdom = p:objectName()
+			if #big_k == 1 and big_k[1]:startsWith("sgs") then
+				if table.contains(big_k, kingdom) then
+					if self:isFriend(p) then isBig = true end
+					table.insert(big_p, p)
+				else
+					if self:isFriend(p) then isSmall = true end
+					table.insert(small_p, p)
+				end
+			else
+				if not p:hasShownOneGeneral() then
+					kingdom = "anjiang";
+				elseif p:getRole() == "careerist" then
+					kingdom = "careerist"
+				else
+					kingdom = p:getKingdom()
+				end
+
+				if table.contains(big_k, kingdom) then
+					if self:isFriend(p) then isBig = true end
+					table.insert(big_p, p)
+				elseif table.contains(small_k, kingdom) then
+					if self:isFriend(p) then isSmall = true end
+					table.insert(small_p, p)
+				end
+			end
+		end
+	end
+
+	local choices = {}
+	if #big_p > 0 then table.insert(choices, "big") end
+	if #small_p > 0 then table.insert(choices, "small") end
+	if #choices == 0 then return end
+
+	local v_big, v_small = 0, 0
+	for _, p in ipairs(big_p) do
+		v_big = v_big + (p:isChained() and -1 or 1)
+	end
+	if isBig then v_big = -v_big end
+	for _, p in ipairs(small_p) do
+		v_small = v_small + (p:isChained() and -1 or 1)
+	end
+	if isSmall then v_small = -v_small end
+
+	local choice
+	if #choices == 1 then
+		if table.contains(choices, "big") then
+			if v_big > 0 then self.FightTogether_choice = "big" end
+		else
+			if v_small > 0 then self.FightTogether_choice = "small" end
+		end
+	else
+		if isBig then
+			if v_big > 0 and v_big == #big_p then self.FightTogether_choice = "big"
+			elseif v_small >= 0 then self.FightTogether_choice = "small"
+			elseif v_big > 0 then self.FightTogether_choice = "big"
+			end
+		elseif isSmall then
+			if v_small > 0 and v_small == #small_p then self.FightTogether_choice = "small"
+			elseif v_big >= 0 then self.FightTogether_choice = "big"
+			elseif v_small > 0 then self.FightTogether_choice = "small"
+			end
+		else
+			if v_big > 0 and v_big > v_small then self.FightTogether_choice = "big"
+			elseif v_small > 0 and v_small > v_big then self.FightTogether_choice = "small"
+			end
+		end
+	end
+
+	if self.FightTogether_choice then
+		use.card = card
+	end
+
+end
+
+sgs.ai_skill_choice["fight_together"] = function(self, choices)
+	choices = choices:split("+")
+	if self.FightTogether_choice and table.contains(choices, self.FightTogether_choice) then
+		return self.FightTogether_choice
+	end
+	return choices[1]
+end
+
+sgs.ai_nullification.FightTogether = function(self, card, from, to, positive)
+	if positive then
+		if to:isChained() then
+			if self:isEnemy(to) and to:hasShownSkills(sgs.cardneed_skill .. "|" .. sgs.priority_skill .. "|" .. sgs.wizard_harm_skill) then return true end
+		else
+			if self:isFriendWith(to) and to:hasArmorEffect("Vine") then return true end
+		end
+	else
+		if self:isFriendWith(to) and to:isChained() then return true end
+	end
+	return
+end
+
+sgs.ai_use_value.FightTogether = 5.2
+sgs.ai_use_priority.FightTogether = 0.2
+sgs.ai_keep_value.FightTogether = 3.24
+
+--AllianceFeast
+function SmartAI:useCardAllianceFeast(card, use)
+	if not card:isAvailable(self.player) then return end
+	local targets = {}
+	local isEnemy
+	for _, friend in ipairs(self.friends_noself) do
+		if not self.player:isFriendWith(friend) and friend:hasShownOneGeneral() and self:hasTrickEffective(card, friend, self.player) then
+			table.insert(targets, friend)
+		end
+	end
+	if #targets == 0 then
+		for _, target in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if not self.player:isFriendWith(target) and target:hasShownOneGeneral() and not self:isEnemy(target) and self:hasTrickEffective(card, friend, self.player) then
+				table.insert(targets, target)
+			end
+		end
+	end
+	if #targets == 0 then
+		isEnemy = true
+		for _, enemy in ipairs(self.enemies) do
+			if not self.player:isFriendWith(enemy) and enemy:hasShownOneGeneral() and self:hasTrickEffective(card, friend, self.player) then
+				table.insert(targets, enemy)
+			end
+		end
+	end
+
+	if #targets > 0 then
+		local function cmp_k(a, b)
+			local v1 = a:getPlayerNumWithSameKingdom("AI")
+			local v2 = b:getPlayerNumWithSameKingdom("AI")
+			return v1 > v2
+		end
+		table.sort(targets, cmp_k)
+		if isEnemy then sgs.reverse(targets) end
+		use.card = card
+		if use.to then use.to:append(targets[1]) end
+		return
+	end
+end
+
+sgs.ai_skill_choice["alliance_feast"] = function(self, choices)
+	if self.player:isWounded() then
+		return "recover"
+	else
+		return "draw"
+	end
+end
+sgs.ai_use_value.AllianceFeast = 7.5
+sgs.ai_use_priority.AllianceFeast = 9.2
+sgs.ai_keep_value.AllianceFeast = 3.26
+
+sgs.ai_nullification.AllianceFeast = function(self, card, from, to, positive)
+	return
+end
