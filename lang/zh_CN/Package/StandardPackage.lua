@@ -82,11 +82,11 @@ local t = {
 	["#VineDamage"] = "%from 的防具【<font color=\"yellow\"><b>藤甲</b></font>】效果被触发，火焰伤害由 %arg 点增加至 %arg2 点",
 
 	["Horse"] = "坐骑",
-	[":+1 horse"] = "装备牌·坐骑\n\n技能：你与其他角色的距离-1。",
+	[":+1 horse"] = "装备牌·坐骑\n\n技能：你与其他角色的距离+1。",
 	["JueYing"] = "绝影",
 	["DiLu"] = "的卢",
 	["ZhuaHuangFeiDian"] = "爪黄飞电",
-	[":-1 horse"] = "装备牌·坐骑\n\n技能：其他角色与你的距离+1。",
+	[":-1 horse"] = "装备牌·坐骑\n\n技能：其他角色与你的距离-1。",
 	["ChiTu"] = "赤兔",
 	["DaYuan"] = "大宛",
 	["ZiXing"] = "紫骍",

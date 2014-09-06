@@ -11,10 +11,11 @@ return {
 	["#HalberdUse"] = "%from 发动了【<font color=\"yellow\"><b>方天画戟</b></font>】效果",
 
 	["Breastplate"] = "护心镜",
-	[":Breastplate"] = "装备牌·防具\n\n技能：每当你受到XXXXXXXXX的伤害时，你可以XXXXXXXXXX，防止此伤害。",
+	[":Breastplate"] = "装备牌·防具\n\n技能：每当你受到不小于你的体力值的伤害时，你可以弃置装备区中的此牌，防止此伤害。",
+	["#Breastplate"] = "%from 防止了 %to 对其造成的 %arg 点伤害[%arg2]",
 
 	["IronArmor"] = "明光铠",
-	[":IronArmor"] = "装备牌·防具\n\n技能：每当你成为【火攻】、火【杀】或【火XXXX】的目标时，你取消自己。",
+	[":IronArmor"] = "装备牌·防具\n\n技能：每当你成为【火攻】、火【杀】或【火烧连营】的目标时，你取消自己。",
 	["#IronArmor"] = "%from 的装备技能【%arg】被触发",
 
 	["WoodenOx"] = "木牛流马",
@@ -33,6 +34,18 @@ return {
 	[":drowning"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：装备区有牌的一名其他角色。\n作用效果：目标角色选择一项：1.弃置装备区里的所有牌；2.受到你造成的1点伤害。",
 	["drowning:throw"] = "弃置装备区里的所有牌",
 	["drowning:damage"] = "受到其造成的1点伤害",
+
+	["burning_camps"] = "火烧连营",
+	[":burning_camps"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：你的下家和与其处于同一队列的角色。\n作用效果：你对每名目标角色各造成1点火焰伤害。",
+
+	["lure_tiger"] = "调虎离山",
+	[":lure_tiger"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：一至两名其他角色。\n作用效果：每名目标角色不计入距离和座次计算，不能使用牌且不能成为任何牌的目标直到回合结束。然后你摸一张牌。",
+	["#lure_tiger"] = "调虎离山",
+
+	["fight_together"] = "勠力同心",
+	[":fight_together"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：大势力或非大势力的所有角色。\n作用效果：每名目标角色若未横置副将的武将牌，横置之，否则摸一张牌。",
+	["fight_together:big"] = "大势力",
+	["fight_together:small"] = "非大势力",
 
 	["alliance_feast"] = "联军盛宴",
 	[":alliance_feast"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：XXXXXXXXXX。\n作用效果：你XXXXXXXXX。然后XXXXXXXXX各选择一项：XXXXXXX；或XXXXXXXX，XXXXXXX。",

@@ -255,13 +255,13 @@ int ServerPlayer::getPlayerNumWithSameKingdom(const QString &reason, const QStri
             continue;
         if (to_calculate == "careerist") {
             if (p->getRole() == "careerist") {
-                num ++;
+                ++num;
                 break;    // careerist always alone.
             }
             continue;
         }
         if (p->getKingdom() == to_calculate)
-            num += 1;
+            ++num;
     }
 
     if (reason != "AI") {
@@ -1889,8 +1889,17 @@ void ServerPlayer::summonFriends(const ArrayType type) {
     }
 }
 
-QHash<QString, QStringList> ServerPlayer::getBigAndSmallKingdoms(const QString &reason, MaxCardsType::MaxCardsCount type) const
+QHash<QString, QStringList> ServerPlayer::getBigAndSmallKingdoms(const QString &reason, MaxCardsType::MaxCardsCount _type) const
 {
+    ServerPlayer *jade_seal_owner = NULL;
+    foreach (ServerPlayer *p, room->getAlivePlayers()) {
+        if (p->hasTreasure("JadeSeal")) {
+            jade_seal_owner = p;
+            break;
+        }
+    }
+    MaxCardsType::MaxCardsCount type = jade_seal_owner ? MaxCardsType::Max : _type;
+    // if there is someone has JadeSeal, needn't trigger event because of the fucking effect of JadeSeal
     QMap<QString, int> kingdom_map;
     QStringList kingdoms = Sanguosha->getKingdoms();
     kingdoms << "careerist";
@@ -1922,6 +1931,19 @@ QHash<QString, QStringList> ServerPlayer::getBigAndSmallKingdoms(const QString &
             big_n_small["big"] << key;
         } else if (kingdom_map[key] < kingdom_map[big_n_small["big"].first()]) {
             big_n_small["small"] << key;
+        }
+    }
+    if (jade_seal_owner != NULL) {
+        if (!jade_seal_owner->hasShownOneGeneral() || jade_seal_owner->getRole() == "careerist") {
+            big_n_small["small"] << big_n_small["big"];
+            big_n_small["big"].clear();
+            big_n_small["big"] << jade_seal_owner->objectName(); // record player's objectName who has JadeSeal.
+        } else { // has shown one general but isn't careerist
+            QString kingdom = jade_seal_owner->getKingdom();
+            big_n_small["small"] << big_n_small["big"];
+            big_n_small["big"].clear();
+            big_n_small["small"].removeOne(kingdom);
+            big_n_small["big"] << kingdom;
         }
     }
     return big_n_small;

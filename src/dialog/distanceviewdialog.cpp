@@ -73,7 +73,6 @@ public:
     }
 
     QComboBox *from, *to;
-    QLineEdit *from_seat, *to_seat;
     QLineEdit *left, *right;
     QLineEdit *min;
     QList<QLineEdit *> distance_edits;

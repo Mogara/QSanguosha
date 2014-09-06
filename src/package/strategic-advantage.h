@@ -91,17 +91,55 @@ public:
     virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
 };
 
+class BurningCamps : public AOE{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE BurningCamps(Card::Suit suit, int number);
+
+    virtual bool isAvailable(const Player *player) const;
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
+class LureTiger : public TrickCard {
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE LureTiger(Card::Suit suit, int number);
+
+    virtual QString getSubtype() const;
+
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+
+    virtual QStringList checkTargetModSkillShow(const CardUseStruct &use) const;
+};
+
+class FightTogether : public GlobalEffect{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE FightTogether(Card::Suit suit, int number);
+
+    virtual bool isAvailable(const Player *player) const;
+
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
+};
+
 class AllianceFeast : public AOE {
     Q_OBJECT
 
 public:
     Q_INVOKABLE AllianceFeast(Card::Suit suit = Heart, int number = 9);
 
-    /*virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
-    virtual bool isAvailable(const Player *player) const;*/
+    virtual bool isAvailable(const Player *player) const;
 };
 
 class StrategicAdvantagePackage : public Package{

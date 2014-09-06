@@ -314,6 +314,26 @@ QHash<QString, QStringList> ClientPlayer::getBigAndSmallKingdoms(const QString &
             big_n_small["small"] << key;
         }
     }
+    const Player *jade_seal_owner = NULL;
+    foreach (const Player *p, players) {
+        if (p->hasTreasure("JadeSeal")) {
+            jade_seal_owner = p;
+            break;
+        }
+    }
+    if (jade_seal_owner != NULL) {
+        if (!jade_seal_owner->hasShownOneGeneral() || jade_seal_owner->getRole() == "careerist") {
+            big_n_small["small"] << big_n_small["big"];
+            big_n_small["big"].clear();
+            big_n_small["big"] << jade_seal_owner->objectName(); // record player's objectName who has JadeSeal.
+        } else { // has shown one general but isn't careerist
+            QString kingdom = jade_seal_owner->getKingdom();
+            big_n_small["small"] << big_n_small["big"];
+            big_n_small["big"].clear();
+            big_n_small["small"].removeOne(kingdom);
+            big_n_small["big"] << kingdom;
+        }
+    }
     return big_n_small;
 }
 
