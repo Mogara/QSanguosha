@@ -254,6 +254,7 @@ end
 function SmartAI:slashProhibit(card, enemy, from)
 	card = card or sgs.cloneCard("slash", sgs.Card_NoSuit, 0)
 	from = from or self.player
+	if enemy:isRemoved() then return true end
 
 	local nature = card:isKindOf("FireSlash") and sgs.DamageStruct_Fire
 					or card:isKindOf("ThunderSlash") and sgs.DamageStruct_Thunder
@@ -299,6 +300,7 @@ function SmartAI:slashIsEffective(slash, to, from, ignore_armor)
 	if not slash or not to then self.room:writeToConsole(debug.traceback()) return end
 	from = from or self.player
 	if to:hasShownSkill("kongcheng") and to:isKongcheng() then return false end
+	if to:isRemoved() then return false end
 
 	local nature = sgs.Slash_Natures[slash:getClassName()]
 	local damage = {}
