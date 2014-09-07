@@ -789,7 +789,7 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
            << new IronArmorSkill
            << new WoodenOxSkill << new WoodenOxTriggerSkill
            << new LureTigerSkill << new LureTigerProhibit;
-    related_skills.insertMulti("lure_tiger", "#lure_tiger");
+    insertRelatedSkills("lure_tiger", "#lure_tiger");
 
     foreach (Card *card, cards)
         card->setParent(this);

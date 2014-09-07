@@ -1429,7 +1429,7 @@ void StandardPackage::addShuGenerals()
     General *zhangfei = new General(this, "zhangfei", "shu"); // SHU 003
     zhangfei->addSkill(new Paoxiao);
     zhangfei->addSkill(new PaoxiaoArmorNullificaion);
-    related_skills.insertMulti("paoxiao", "#paoxiao-null");
+    insertRelatedSkills("paoxiao", "#paoxiao-null");
 
     General *zhugeliang = new General(this, "zhugeliang", "shu", 3); // SHU 004
     zhugeliang->addCompanion("huangyueying");
@@ -1452,12 +1452,12 @@ void StandardPackage::addShuGenerals()
     huangzhong->addCompanion("weiyan");
     huangzhong->addSkill(new Liegong);
     huangzhong->addSkill(new LiegongRange);
-    related_skills.insertMulti("liegong", "#liegong-for-lord");
+    insertRelatedSkills("liegong", "#liegong-for-lord");
 
     General *weiyan = new General(this, "weiyan", "shu"); // SHU 009
     weiyan->addSkill(new Kuanggu);
     weiyan->addSkill(new KuangguRecord);
-    related_skills.insertMulti("kuanggu", "#kuanggu-record");
+    insertRelatedSkills("kuanggu", "#kuanggu-record");
 
     General *pangtong = new General(this, "pangtong", "shu", 3); // SHU 010
     pangtong->addSkill(new Lianhuan);
@@ -1474,20 +1474,20 @@ void StandardPackage::addShuGenerals()
     liushan->addSkill(new Xiangle);
     liushan->addSkill(new Fangquan);
     liushan->addSkill(new FangquanGive);
-    related_skills.insertMulti("fangquan", "#fangquan-give");
+    insertRelatedSkills("fangquan", "#fangquan-give");
 
     General *menghuo = new General(this, "menghuo", "shu"); // SHU 014
     menghuo->addCompanion("zhurong");
     menghuo->addSkill(new SavageAssaultAvoid("huoshou"));
     menghuo->addSkill(new Huoshou);
     menghuo->addSkill(new Zaiqi);
-    related_skills.insertMulti("huoshou", "#sa_avoid_huoshou");
+    insertRelatedSkills("huoshou", "#sa_avoid_huoshou");
 
     General *zhurong = new General(this, "zhurong", "shu", 4, false); // SHU 015
     zhurong->addSkill(new SavageAssaultAvoid("juxiang"));
     zhurong->addSkill(new Juxiang);
     zhurong->addSkill(new Lieren);
-    related_skills.insertMulti("juxiang", "#sa_avoid_juxiang");
+    insertRelatedSkills("juxiang", "#sa_avoid_juxiang");
 
     General *ganfuren = new General(this, "ganfuren", "shu", 3, false); // SHU 016
     ganfuren->addSkill(new Shushen);

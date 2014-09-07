@@ -1510,7 +1510,7 @@ void StandardPackage::addQunGenerals()
     General *yanliangwenchou = new General(this, "yanliangwenchou", "qun"); // QUN 005
     yanliangwenchou->addSkill(new Shuangxiong);
     yanliangwenchou->addSkill(new ShuangxiongGet);
-    related_skills.insertMulti("shuangxiong", "#shuangxiong");
+    insertRelatedSkills("shuangxiong", "#shuangxiong");
 
     General *jiaxu = new General(this, "jiaxu", "qun", 3); // QUN 007
     jiaxu->addSkill(new Wansha);
@@ -1540,7 +1540,7 @@ void StandardPackage::addQunGenerals()
     General *jiling = new General(this, "jiling", "qun"); // QUN 015
     jiling->addSkill(new Shuangren);
     jiling->addSkill(new SlashNoDistanceLimitSkill("shuangren"));
-    related_skills.insertMulti("shuangren", "#shuangren-slash-ndl");
+    insertRelatedSkills("shuangren", "#shuangren-slash-ndl");
 
     General *tianfeng = new General(this, "tianfeng", "qun", 3); // QUN 016
     tianfeng->addSkill(new Sijian);

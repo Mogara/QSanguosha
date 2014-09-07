@@ -1243,12 +1243,12 @@ void StandardPackage::addWeiGenerals()
     zhenji->addSkill(new Qingguo);
     zhenji->addSkill(new Luoshen);
     zhenji->addSkill(new LuoshenMove);
-    related_skills.insertMulti("luoshen", "#luoshen-move");
+    insertRelatedSkills("luoshen", "#luoshen-move");
 
     General *xiahouyuan = new General(this, "xiahouyuan", "wei"); // WEI 008
     xiahouyuan->addSkill(new Shensu);
     xiahouyuan->addSkill(new SlashNoDistanceLimitSkill("shensu"));
-    related_skills.insertMulti("shensu", "#shensu-slash-ndl");
+    insertRelatedSkills("shensu", "#shensu-slash-ndl");
 
     General *zhanghe = new General(this, "zhanghe", "wei"); // WEI 009
     zhanghe->addSkill(new Qiaobian);
@@ -1256,7 +1256,7 @@ void StandardPackage::addWeiGenerals()
     General *xuhuang = new General(this, "xuhuang", "wei"); // WEI 010
     xuhuang->addSkill(new Duanliang);
     xuhuang->addSkill(new DuanliangTargetMod);
-    related_skills.insertMulti("duanliang", "#duanliang-target");
+    insertRelatedSkills("duanliang", "#duanliang-target");
 
     General *caoren = new General(this, "caoren", "wei"); // WEI 011
     caoren->addSkill(new Jushou);

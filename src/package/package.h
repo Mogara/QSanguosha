@@ -85,6 +85,8 @@ public:
         related_skills.insertMulti(main_skill, related_skill);
     }
 
+    void insertRelatedSkills(const QString &main_skill, int n, ...);
+
     inline void insertConvertPairs(const QString &from, const QString &to) {
         convert_pairs.insertMulti(from, to);
     }

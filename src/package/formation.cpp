@@ -1222,16 +1222,14 @@ FormationPackage::FormationPackage()
     dengai->addSkill(new Jixi);
     dengai->setHeadMaxHpAdjustedValue(-1);
     dengai->addSkill(new Ziliang);
-    related_skills.insertMulti("tuntian", "#tuntian-dist");
-    related_skills.insertMulti("tuntian", "#tuntian-postpone");
-    related_skills.insertMulti("tuntian", "#tuntian-gotofield");
+    insertRelatedSkills("tuntian", 3, "#tuntian-dist", "#tuntian-postpone", "#tuntian-gotofield");
 
     General *caohong = new General(this, "caohong", "wei"); // WEI 018
     caohong->addCompanion("caoren");
     caohong->addSkill(new Huyuan);
     caohong->addSkill(new Heyi);
     caohong->addSkill(new HeyiFeiying);
-    related_skills.insertMulti("heyi", "#heyi_feiying");
+    insertRelatedSkills("heyi", "#heyi_feiying");
 
     General *jiangwei = new General(this, "jiangwei", "shu"); // SHU 012 G
     jiangwei->addSkill(new Tiaoxin);
@@ -1262,7 +1260,7 @@ FormationPackage::FormationPackage()
     General *liubei = new General(this, "lord_liubei$", "shu", 4, true, true);
     liubei->addSkill(new Zhangwu);
     liubei->addSkill(new Zhangwu_Draw);
-    related_skills.insertMulti("zhangwu", "#zhangwu-draw");
+    insertRelatedSkills("zhangwu", "#zhangwu-draw");
     liubei->addSkill(new Shouyue);
     liubei->addSkill(new Jizhao);
 
@@ -1450,7 +1448,7 @@ FormationEquipPackage::FormationEquipPackage() : Package("formation_equip", Card
     dp->setParent(this);
 
     skills << new DragonPhoenixSkill << new DragonPhoenixSkill2;
-    related_skills.insertMulti("DragonPhoenix", "#DragonPhoenix");
+    insertRelatedSkills("DragonPhoenix", "#DragonPhoenix");
 }
 
 ADD_PACKAGE(FormationEquip)

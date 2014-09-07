@@ -1596,8 +1596,7 @@ JiangeDefensePackage::JiangeDefensePackage()
     zhuge->addSkill(new JGBiantian);
     zhuge->addSkill(new JGBiantianDW);
     zhuge->addSkill(new JGBiantianKF);
-    related_skills.insertMulti("jgbiantian", "#jgbiantian-dw");
-    related_skills.insertMulti("jgbiantian", "#jgbiantian-kf");
+    insertRelatedSkills("jgbiantian", 2, "#jgbiantian-dw", "#jgbiantian-kf");
     zhuge->addSkill("bazhen");
 
     General *yueying = new General(this, "jg_yueying", "shu", 4, false, true);
@@ -1643,7 +1642,7 @@ JiangeDefensePackage::JiangeDefensePackage()
     General *sima = new General(this, "jg_sima", "wei", 5, true, true);
     sima->addSkill(new JGKonghun);
     sima->addSkill(new JGKonghunRecord);
-    related_skills.insertMulti("jgkonghun", "#jgkonghun-record");
+    insertRelatedSkills("jgkonghun", "#jgkonghun-record");
     sima->addSkill(new JGFanshi);
     sima->addSkill(new JGXuanlei);
 

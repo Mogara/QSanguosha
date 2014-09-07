@@ -1404,15 +1404,14 @@ MomentumPackage::MomentumPackage()
     zangba->addSkill(new Hengjiang);
     zangba->addSkill(new HengjiangDraw);
     zangba->addSkill(new HengjiangMaxCards);
-    related_skills.insertMulti("hengjiang", "#hengjiang-draw");
-    related_skills.insertMulti("hengjiang", "#hengjiang-maxcard");
+    insertRelatedSkills("hengjiang", 2, "#hengjiang-draw", "#hengjiang-maxcard");
 
     General *madai = new General(this, "madai", "shu", 4); // SHU 019
     madai->addCompanion("machao");
     madai->addSkill(new Mashu("madai"));
     madai->addSkill(new Qianxi);
     madai->addSkill(new QianxiClear);
-    related_skills.insertMulti("qianxi", "#qianxi-clear");
+    insertRelatedSkills("qianxi", "#qianxi-clear");
 
     General *mifuren = new General(this, "mifuren", "shu", 3, false); // SHU 021
     mifuren->addSkill(new Guixiu);
@@ -1427,7 +1426,7 @@ MomentumPackage::MomentumPackage()
     sunce->addSkill(new Yingyang);
     sunce->addSkill(new Hunshang);
     sunce->addSkill(new HunshangRemove);
-    related_skills.insertMulti("hunshang", "#hunshang");
+    insertRelatedSkills("hunshang", "#hunshang");
     sunce->setDeputyMaxHpAdjustedValue(-1);
     sunce->addRelateSkill("yinghun_sunce");
     sunce->addRelateSkill("yingzi_sunce");
@@ -1451,7 +1450,7 @@ MomentumPackage::MomentumPackage()
     lord_zhangjiao->addSkill(new Wendao);
 
     skills << new Yongjue << new YongjueClear << new Benghuai << new HongfaSlash << new Yinghun_Sunce << new Yingzi_Sunce;
-    related_skills.insertMulti("yongjue", "#yongjue-clear");
+    insertRelatedSkills("yongjue", "#yongjue-clear");
 
     addMetaObject<CunsiCard>();
     addMetaObject<DuanxieCard>();
@@ -1573,7 +1572,7 @@ MomentumEquipPackage::MomentumEquipPackage() : Package("momentum_equip", CardPac
     dp->setParent(this);
 
     skills << new PeaceSpellSkill << new PeaceSpellSkillMaxCards;
-    related_skills.insertMulti("PeaceSpell", "#PeaceSpell-max");
+    insertRelatedSkills("PeaceSpell", "#PeaceSpell-max");
 }
 
 ADD_PACKAGE(MomentumEquip)

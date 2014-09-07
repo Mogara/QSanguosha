@@ -1469,7 +1469,7 @@ void StandardPackage::addWuGenerals()
     General *lvmeng = new General(this, "lvmeng", "wu"); // WU 003
     lvmeng->addSkill(new Keji);
     lvmeng->addSkill(new KejiRecord);
-    related_skills.insertMulti("keji", "#keji-record");
+    insertRelatedSkills("keji", "#keji-record");
 
     General *huanggai = new General(this, "huanggai", "wu"); // WU 004
     huanggai->addSkill(new Kurou);
@@ -1500,31 +1500,29 @@ void StandardPackage::addWuGenerals()
     xiaoqiao->addSkill(new Tianxiang);
     xiaoqiao->addSkill(new TianxiangDraw);
     xiaoqiao->addSkill(new Hongyan);
-    related_skills.insertMulti("tianxiang", "#tianxiang");
+    insertRelatedSkills("tianxiang", "#tianxiang");
 
     General *taishici = new General(this, "taishici", "wu"); // WU 012
     taishici->addSkill(new Tianyi);
     taishici->addSkill(new TianyiTargetMod);
-    related_skills.insertMulti("tianyi", "#tianyi-target");
+    insertRelatedSkills("tianyi", "#tianyi-target");
 
     General *zhoutai = new General(this, "zhoutai", "wu");
     zhoutai->addSkill(new Buqu);
     zhoutai->addSkill(new BuquRemove);
     zhoutai->addSkill(new BuquClear);
-    related_skills.insertMulti("buqu", "#buqu-remove");
-    related_skills.insertMulti("buqu", "#buqu-clear");
+    insertRelatedSkills("buqu", 2, "#buqu-remove", "#buqu-clear");
 
     General *lusu = new General(this, "lusu", "wu", 3); // WU 014
     lusu->addSkill(new Haoshi);
     lusu->addSkill(new HaoshiGive);
     lusu->addSkill(new Dimeng);
-    related_skills.insertMulti("haoshi", "#haoshi-give");
+    insertRelatedSkills("haoshi", "#haoshi-give");
 
     General *erzhang = new General(this, "erzhang", "wu", 3); // WU 015
     erzhang->addSkill(new Zhijian);
     erzhang->addSkill(new GuzhengRecord);
-    erzhang->addSkill(new Guzheng);
-    related_skills.insertMulti("guzheng", "#guzheng-record");
+    insertRelatedSkills("guzheng", "#guzheng-record");
 
     General *dingfeng = new General(this, "dingfeng", "wu"); // WU 016
     dingfeng->addSkill(new Duanbing);
