@@ -115,6 +115,7 @@ SOURCES += \
     src/ui/GraphicsPixmapHoverItem.cpp \
     src/ui/HeroSkinContainer.cpp \
     src/ui/SkinItem.cpp \
+    src/ui/LobbyScene.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
@@ -225,6 +226,7 @@ HEADERS += \
     src/ui/GraphicsPixmapHoverItem.h \
     src/ui/HeroSkinContainer.h \
     src/ui/SkinItem.h \
+    src/ui/LobbyScene.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \
