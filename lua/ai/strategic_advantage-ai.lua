@@ -409,7 +409,7 @@ function SmartAI:useCardLureTiger(card, use)
 	if GodSalvation and GodSalvation:isAvailable(self.player) then
 		self:sort(self.enemies, "hp")
 		for _, enemy in ipairs(self.enemies) do
-			if card:targetFilter(players, enemy, self.player) and self:hasTrickEffective(card, nextp, self.player) then
+			if card:targetFilter(players, enemy, self.player) and self:hasTrickEffective(card, enemy, self.player) then
 				players:append(enemy)
 				if use.to then use.to:append(enemy) end
 			end
@@ -424,7 +424,7 @@ function SmartAI:useCardLureTiger(card, use)
 	if use.to then use.to = sgs.SPlayerList() end
 
 	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if card:targetFilter(players, player, self.player) and self:hasTrickEffective(card, nextp, self.player) then
+		if card:targetFilter(players, player, self.player) and self:hasTrickEffective(card, player, self.player) then
 			use.card = card
 			if use.to then use.to:append(player) end
 			return
@@ -567,7 +567,7 @@ function SmartAI:useCardAllianceFeast(card, use)
 	end
 	if #targets == 0 then
 		for _, target in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-			if not self.player:isFriendWith(target) and target:hasShownOneGeneral() and not self:isEnemy(target) and self:hasTrickEffective(card, friend, self.player) then
+			if not self.player:isFriendWith(target) and target:hasShownOneGeneral() and not self:isEnemy(target) and self:hasTrickEffective(card, target, self.player) then
 				table.insert(targets, target)
 			end
 		end
@@ -575,7 +575,7 @@ function SmartAI:useCardAllianceFeast(card, use)
 	if #targets == 0 then
 		isEnemy = true
 		for _, enemy in ipairs(self.enemies) do
-			if not self.player:isFriendWith(enemy) and enemy:hasShownOneGeneral() and self:hasTrickEffective(card, friend, self.player) then
+			if not self.player:isFriendWith(enemy) and enemy:hasShownOneGeneral() and self:hasTrickEffective(card, enemy, self.player) then
 				table.insert(targets, enemy)
 			end
 		end
