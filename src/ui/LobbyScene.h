@@ -22,6 +22,9 @@
 #define LOBBYSCENE_H
 
 #include <QGraphicsScene>
+#include <QLineEdit>
+#include <QPlainTextEdit>
+#include <QPushButton>
 
 class QMainWindow;
 
@@ -30,11 +33,31 @@ class LobbyScene : public QGraphicsScene
     Q_OBJECT
 public:
     explicit LobbyScene(QMainWindow *parent = 0);
+    void adjustItems();
 
 signals:
 
+protected:
+
 public slots:
 
+private slots:
+    void speakToServer();
+
+private:
+    QWidget *chatWidget;
+    QLineEdit *chatLineEdit;
+    QPlainTextEdit *chatBox;
+
+    QGraphicsPixmapItem *userAvatarItem;
+    QGraphicsTextItem *userNameItem;
+
+    QWidget *buttonBox;
+    QPushButton *refreshButton;
+    QPushButton *createRoomButton;
+    QPushButton *exitButton;
+
+    QWidget *roomGrid;
 };
 
 #endif // LOBBYSCENE_H
