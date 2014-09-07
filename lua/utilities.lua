@@ -18,6 +18,14 @@
   QSanguosha-Hegemony Team
 *********************************************************************]]
 
+function sgs.insertRelatedSkills(Package, main_skill, ...)
+	local t = {...}
+	local skill_name = (type(main_skill) == "string") and main_skill or main_skill:objectName()
+	for _, s in ipairs(t) do
+		Package:insertRelatedSkills(skill_name, (type(s) == "string") and s or s:objectName())
+	end
+end
+
 -- utilities, i.e: convert QList<const Card> to Lua's native table
 function sgs.QList2Table(qlist)
 	local t = {}

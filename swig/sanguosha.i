@@ -1103,7 +1103,6 @@ public:
 
     Package(const char *name, Type pack_type = GeneralPack);
     void insertRelatedSkills(const char *main_skill, const char *related_skill);
-    void insertRelatedSkills(const char *main_skill, int n, ...);
 };
 
 class Engine: public QObject {
