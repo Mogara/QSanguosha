@@ -156,7 +156,7 @@ sgs.ai_skill_use_func.ZhihengCard = function(card, use, self)
 		end
 
 		if self.player:getDefensiveHorse() and self.player:hasSkill("xiaoji") and insertEquipNum < maxEquipNum then
-			table.insert(unpreferedCards, getDefensiveHorse():getId())
+			table.insert(unpreferedCards, self.player:getDefensiveHorse():getId())
 			insertEquipNum = insertEquipNum + 1
 		end
 

@@ -447,6 +447,7 @@ sgs.ai_keep_value.LureTiger = 3.22
 
 --FightTogether
 function SmartAI:useCardFightTogether(card, use)
+	self.FightTogether_choice = nil
 	if not card:isAvailable(self.player) then return end
 
 	--@todo: consider hongfa
