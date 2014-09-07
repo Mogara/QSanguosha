@@ -434,7 +434,7 @@ function SmartAI:useCardIronChain(card, use)
 	table.insertTable(friendtargets, friendtargets2)
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
-		if not enemy:isChained() and not sgs.Sanguosha:isProhibited(self.player, enemy, card)
+		if not enemy:isChained() --[[and not sgs.Sanguosha:isProhibited(self.player, enemy, card)]]
 			and self:hasTrickEffective(card, enemy) and not (self:objectiveLevel(enemy) <= 3)
 			and not self:getDamagedEffects(enemy) and not self:needToLoseHp(enemy) and sgs.isGoodTarget(enemy, self.enemies, self) then
 			table.insert(enemytargets, enemy)

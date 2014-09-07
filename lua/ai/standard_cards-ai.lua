@@ -2533,7 +2533,7 @@ function SmartAI:willUseLightning(card)
 		end
 		if shouldUse then return true end
 	end
-	if sgs.Sanguosha:isProhibited(self.player, self.player, card) then return end
+	--if sgs.Sanguosha:isProhibited(self.player, self.player, card) then return end
 
 	local function hasDangerousFriend()
 		local hashy = false

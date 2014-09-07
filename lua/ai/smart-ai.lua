@@ -4030,7 +4030,7 @@ function SmartAI:exclude(players, card, from)
 	end
 
 	for _, player in ipairs(players) do
-		if not sgs.Sanguosha:isProhibited(from, player, card) and (not card:isKindOf("TrickCard") or self:hasTrickEffective(card, player, from))
+		if --[[not sgs.Sanguosha:isProhibited(from, player, card) and]] (not card:isKindOf("TrickCard") or self:hasTrickEffective(card, player, from))
 			and (not limit or from:distanceTo(player, range_fix) <= limit) then
 			table.insert(excluded, player)
 		end
@@ -4201,7 +4201,7 @@ end
 function SmartAI:hasTrickEffective(card, to, from)
 	from = from or self.room:getCurrent()
 	to = to or self.player
-	if sgs.Sanguosha:isProhibited(from, to, card) then return false end
+	--if sgs.Sanguosha:isProhibited(from, to, card) then return false end
 
 	if not card:isKindOf("TrickCard") then return true end
 	if to:hasShownSkill("hongyan") and card:isKindOf("Lightning") then return false end
