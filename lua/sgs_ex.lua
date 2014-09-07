@@ -318,7 +318,7 @@ function isAvailable_AOE(self, player)
 	local canUse = false;
 	local players = player:getSiblings()
 	for _, p in sgs.qlist(players) do
-		if p:isDead() or player:isProhibited(p, self) then continue end
+		if p:isDead() --[[or player:isProhibited(p, self)]] then continue end
 		canUse = true
 		break
 	end
@@ -359,7 +359,7 @@ function isAvailable_GlobalEffect(self, player)
 	local players = player:getSiblings()
 	players:append(player)
 	for _, p in sgs.qlist(players) do
-		if p:isDead() or player:isProhibited(p, self) then continue end
+		if p:isDead() --[[or player:isProhibited(p, self)]] then continue end
 		canUse = true
 		break
 	end
