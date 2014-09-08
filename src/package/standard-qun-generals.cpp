@@ -904,20 +904,21 @@ XiongyiCard::XiongyiCard() {
 }
 
 void XiongyiCard::onUse(Room *room, const CardUseStruct &card_use) const{
-    CardUseStruct use = card_use;
-    QList<ServerPlayer *> targets;
-    targets << use.from;
-    foreach(ServerPlayer *p, room->getOtherPlayers(use.from))
-        if (!targets.contains(p) && p->isFriendWith(use.from))
-            targets << p;
-    use.to = targets;
-    room->removePlayerMark(use.from, "@arise");
-    room->broadcastSkillInvoke("xiongyi", use.from);
+    room->removePlayerMark(card_use.from, "@arise");
+    room->broadcastSkillInvoke("xiongyi", card_use.from);
     room->doSuperLightbox("mateng", "xiongyi");
-    SkillCard::onUse(room, use);
+    SkillCard::onUse(room, card_use);
 }
 
-void XiongyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+void XiongyiCard::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &) const{
+    QList<ServerPlayer *> targets;
+    foreach(ServerPlayer *p, room->getAllPlayers()) {
+        if (p->isFriendWith(source)) {
+            room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, source->objectName(), p->objectName());
+            targets << p;
+        }
+    }
+    room->sortByActionOrder(targets);
     Card::use(room, source, targets);
 
     QStringList kingdom_list = Sanguosha->getKingdoms();
