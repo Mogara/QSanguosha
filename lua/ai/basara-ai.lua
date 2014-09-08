@@ -277,4 +277,6 @@ sgs.ai_skill_invoke.GameRule_AskForArraySummon = function(self, data)
 	return self:willShowForDefence() or self:willShowForAttack()
 end
 
+sgs.ai_skill_invoke.SiegeSummon = true
+
 sgs.ai_skill_invoke.FormationSummon = true

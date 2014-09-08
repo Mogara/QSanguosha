@@ -5157,7 +5157,15 @@ end
 function SmartAI:isFriendWith(player)
 	if self.role == "careerist" then return false end
 	if self.player:isFriendWith(player) then return true end
-	if self.player:getKingdom() == self:evaluateKingdom(player) then return true end
+	local kingdom = self.player:getKingdom()
+	local p_kingdom = self:evaluateKingdom(player)
+	if kingdom == p_kingdom then
+		local kingdom_num = self.player:getPlayerNumWithSameKingdom("AI")
+		if not self.player:hasShownOneGeneral() then kingdom_num = kingdom_num + 1 end
+		if not player:hasShownOneGeneral() then kingdom_num = kingdom_num + 1 end
+		if self.player:aliveCount() / 2 > kingdom_num or player:getLord() then return true end
+	end
+
 	return false
 end
 
@@ -5188,14 +5196,18 @@ function SmartAI:getBigAndSmallKingdoms()
 	local num = 0
 	for kingdom, v in pairs(kingdom_map) do
 		if v == 0 then continue end
-		if #big == 0 then table.insert(big, kingdom) continue end
+		if #big == 0 then
+			num = v
+			table.insert(big, kingdom)
+			continue
+		end
 
 		if v > num then
 			num = v
 			table.insertTable(small, big)
 			big = {}
 			table.insert(big, kingdom)
-		elseif v == num_max then
+		elseif v == num then
 			table.insert(big, kingdom)
 		else
 			table.insert(small, kingdom)
