@@ -255,9 +255,11 @@ sgs.ai_use_priority.Breastplate = 0.9
 
 --LureTiger
 function SmartAI:useCardLureTiger(card, use)
+	sgs.ai_use_priority.LureTiger = 8.7
 	if not card:isAvailable(self.player) then return end
 
 	local players = sgs.PlayerList()
+
 	local BurningCamps = self:getCard("BurningCamps")
 	if BurningCamps and BurningCamps:isAvailable(self.player) then
 		local nextp = self.room:nextPlayer(self.player)
@@ -269,12 +271,10 @@ function SmartAI:useCardLureTiger(card, use)
 						first = nextp
 					else
 						players:append(nextp)
-						if use.to then use.to:append(nextp) end
 					end
 				else
 					if not first:isFriendWith(nextp) then
 						players:append(nextp)
-						if use.to then use.to:append(nextp) end
 					end
 				end
 				nextp = self.room:nextPlayer(nextp)
@@ -284,12 +284,12 @@ function SmartAI:useCardLureTiger(card, use)
 		end
 		if first then
 			use.card = card
+			if use.to then use.to = sgs.PlayerList2SPlayerList(players) end
 			return
 		end
 	end
 
 	players = sgs.PlayerList()
-	if use.to then use.to = sgs.SPlayerList() end
 
 	local ArcheryAttack = self:getCard("ArcheryAttack")
 	if ArcheryAttack and ArcheryAttack:isAvailable(self.player) and self:getAoeValue(ArcheryAttack) > 0 then
@@ -297,23 +297,21 @@ function SmartAI:useCardLureTiger(card, use)
 		for _, friend in ipairs(self.friends_noself) do
 			if self:isFriendWith(friend) and card:targetFilter(players, friend, self.player) and self:hasTrickEffective(card, friend, self.player) then
 				players:append(friend)
-				if use.to then use.to:append(friend) end
 			end
 		end
 		for _, friend in ipairs(self.friends_noself) do
 			if card:targetFilter(players, friend, self.player) and not players:contains(friend) and self:hasTrickEffective(card, friend, self.player) then
 				players:append(friend)
-				if use.to then use.to:append(friend) end
 			end
 		end
 		if players:length() > 0 then
 			use.card = card
+			if use.to then use.to = sgs.PlayerList2SPlayerList(players) end
 			return
 		end
 	end
 
 	players = sgs.PlayerList()
-	if use.to then use.to = sgs.SPlayerList() end
 
 	local SavageAssault = self:getCard("SavageAssault")
 	if SavageAssault and SavageAssault:isAvailable(self.player) and self:getAoeValue(SavageAssault) > 0 then
@@ -321,23 +319,21 @@ function SmartAI:useCardLureTiger(card, use)
 		for _, friend in ipairs(self.friends_noself) do
 			if self:isFriendWith(friend) and card:targetFilter(players, friend, self.player) and self:aoeIsEffective(card, friend, self.player) then
 				players:append(friend)
-				if use.to then use.to:append(friend) end
 			end
 		end
 		for _, friend in ipairs(self.friends_noself) do
 			if card:targetFilter(players, friend, self.player) and not players:contains(friend) and self:aoeIsEffective(card, friend, self.player) then
 				players:append(friend)
-				if use.to then use.to:append(friend) end
 			end
 		end
 		if players:length() > 0 then
 			use.card = card
+			if use.to then use.to = sgs.PlayerList2SPlayerList(players) end
 			return
 		end
 	end
 
 	players = sgs.PlayerList()
-	if use.to then use.to = sgs.SPlayerList() end
 
 	local Slash = self:getCard("Slash")
 	if Slash and self:slashIsAvailable(self.player, Slash) then
@@ -347,36 +343,33 @@ function SmartAI:useCardLureTiger(card, use)
 		if dummyuse.card then
 
 			local function getPlayersFromTo(one)
-				local targets1 = sgs.SPlayerList()
-				local targets2 = sgs.SPlayerList()
+				local targets1 = sgs.PlayerList()
+				local targets2 = sgs.PlayerList()
 				local nextp = self.room:nextPlayer(self.player)
 				while true do
-					if card:targetFilter(players, nextp, self.player) and self:hasTrickEffective(card, nextp, self.player) then
+					if card:targetFilter(targets1, nextp, self.player) and self:hasTrickEffective(card, nextp, self.player) then
 						if one:objectName() ~= nextp:objectName() then
-							players:append(nextp)
 							targets1:append(nextp)
 						else
 							break
 						end
 						nextp = self.room:nextPlayer(nextp)
 					else
-						targets1 = sgs.SPlayerList()
+						targets1 = sgs.PlayerList()
 						break
 					end
 				end
 				nextp = self.room:nextPlayer(one)
-				players = sgs.PlayerList()
 				while true do
-					if card:targetFilter(players, nextp, self.player) and self:hasTrickEffective(card, nextp, self.player) then
+					if card:targetFilter(targets2, nextp, self.player) and self:hasTrickEffective(card, nextp, self.player) then
 						if self.plaeyr:objectName() ~= nextp:objectName() then
-							players:append(nextp)
 							targets2:append(nextp)
 						else
 							break
 						end
 						nextp = self.room:nextPlayer(nextp)
 					else
-						targets2 = sgs.SPlayerList()
+						targets2 = sgs.PlayerList()
 						break
 					end
 				end
@@ -393,7 +386,7 @@ function SmartAI:useCardLureTiger(card, use)
 					local sps = getPlayersFromTo(one)
 					if sps then
 						use.card = card
-						if use.to then use.to = sps end
+						if use.to then use.to = sgs.PlayerList2SPlayerList(sps) end
 						return
 					end
 				end
@@ -403,7 +396,6 @@ function SmartAI:useCardLureTiger(card, use)
 	end
 
 	players = sgs.PlayerList()
-	if use.to then use.to = sgs.SPlayerList() end
 
 	local GodSalvation = self:getCard("GodSalvation")
 	if GodSalvation and GodSalvation:isAvailable(self.player) then
@@ -411,23 +403,25 @@ function SmartAI:useCardLureTiger(card, use)
 		for _, enemy in ipairs(self.enemies) do
 			if card:targetFilter(players, enemy, self.player) and self:hasTrickEffective(card, enemy, self.player) then
 				players:append(enemy)
-				if use.to then use.to:append(enemy) end
 			end
 		end
 		if players:length() > 0 then
 			use.card = card
+			if use.to then use.to = sgs.PlayerList2SPlayerList(players) end
 			return
 		end
 	end
 
 	players = sgs.PlayerList()
-	if use.to then use.to = sgs.SPlayerList() end
 
-	for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
-		if card:targetFilter(players, player, self.player) and self:hasTrickEffective(card, player, self.player) then
-			use.card = card
-			if use.to then use.to:append(player) end
-			return
+	if self.player:objectName() == self.room:getCurrent():objectName() then
+		for _, player in sgs.qlist(self.room:getOtherPlayers(self.player)) do
+			if card:targetFilter(players, player, self.player) and self:hasTrickEffective(card, player, self.player) then
+				sgs.ai_use_priority.LureTiger = 0.3
+				use.card = card
+				if use.to then use.to:append(player) end
+				return
+			end
 		end
 	end
 end
@@ -442,7 +436,7 @@ sgs.ai_nullification.LureTiger = function(self, card, from, to, positive)
 end
 
 sgs.ai_use_value.LureTiger = 7.3
-sgs.ai_use_priority.LureTiger = 0
+sgs.ai_use_priority.LureTiger = 8.9
 sgs.ai_keep_value.LureTiger = 3.22
 
 --FightTogether
@@ -454,7 +448,7 @@ function SmartAI:useCardFightTogether(card, use)
 	local big_k, small_k = self:getBigAndSmallKingdoms()
 	local big_p, small_p = {}, {}
 	local isBig, isSmall
-    for _,p in sgs.qlist(self.room:getAllPlayers()) do
+	for _,p in sgs.qlist(self.room:getAllPlayers()) do
 		if self:hasTrickEffective(card, p, self.player) then
 			local kingdom = p:objectName()
 			if #big_k == 1 and big_k[1]:startsWith("sgs") then
@@ -467,7 +461,7 @@ function SmartAI:useCardFightTogether(card, use)
 				end
 			else
 				if not p:hasShownOneGeneral() then
-					kingdom = "anjiang";
+					kingdom = "anjiang"
 				elseif p:getRole() == "careerist" then
 					kingdom = "careerist"
 				else
@@ -500,27 +494,33 @@ function SmartAI:useCardFightTogether(card, use)
 	end
 	if isSmall then v_small = -v_small end
 
-	local choice
+	local x = self:getOverflow() > 0 and -1 or 0
 	if #choices == 1 then
 		if table.contains(choices, "big") then
-			if v_big > 0 then self.FightTogether_choice = "big" end
+			if v_big > x then self.FightTogether_choice = "big" end
 		else
-			if v_small > 0 then self.FightTogether_choice = "small" end
+			if v_small > x then self.FightTogether_choice = "small" end
 		end
 	else
 		if isBig then
-			if v_big > 0 and v_big == #big_p then self.FightTogether_choice = "big"
-			elseif v_small >= 0 then self.FightTogether_choice = "small"
-			elseif v_big > 0 then self.FightTogether_choice = "big"
+			if v_big > x and v_big == #big_p then self.FightTogether_choice = "big"
+			elseif v_small > x then self.FightTogether_choice = "small"
+			elseif v_big > x then self.FightTogether_choice = "big"
 			end
 		elseif isSmall then
-			if v_small > 0 and v_small == #small_p then self.FightTogether_choice = "small"
-			elseif v_big >= 0 then self.FightTogether_choice = "big"
-			elseif v_small > 0 then self.FightTogether_choice = "small"
+			if v_small > x and v_small == #small_p then self.FightTogether_choice = "small"
+			elseif v_big >= x then self.FightTogether_choice = "big"
+			elseif v_small > x then self.FightTogether_choice = "small"
 			end
 		else
-			if v_big > 0 and v_big > v_small then self.FightTogether_choice = "big"
-			elseif v_small > 0 and v_small > v_big then self.FightTogether_choice = "small"
+			if v_big > x and v_big > v_small then self.FightTogether_choice = "big"
+			elseif v_small > x and v_small > v_big then self.FightTogether_choice = "small"
+			elseif  v_big == v_small and v_big >= x then
+				if #big_p > #small_p then return "big"
+				elseif #big_p < #small_p then return "small"
+				else
+					return math.random(1, 2) == 1 and "big" or "small"
+				end
 			end
 		end
 	end
@@ -553,7 +553,7 @@ sgs.ai_nullification.FightTogether = function(self, card, from, to, positive)
 end
 
 sgs.ai_use_value.FightTogether = 5.2
-sgs.ai_use_priority.FightTogether = 0.2
+sgs.ai_use_priority.FightTogether = 8.8
 sgs.ai_keep_value.FightTogether = 3.24
 
 --AllianceFeast
@@ -604,7 +604,7 @@ sgs.ai_skill_choice["alliance_feast"] = function(self, choices)
 	end
 end
 sgs.ai_use_value.AllianceFeast = 7.5
-sgs.ai_use_priority.AllianceFeast = 9.2
+sgs.ai_use_priority.AllianceFeast = 8.7
 sgs.ai_keep_value.AllianceFeast = 3.26
 
 sgs.ai_nullification.AllianceFeast = function(self, card, from, to, positive)

@@ -143,7 +143,7 @@ sgs.ai_skill_use_func.RendeCard = function(card, use, self)
 end
 
 sgs.ai_use_value.RendeCard = 8.5
-sgs.ai_use_priority.RendeCard = 8.8
+sgs.ai_use_priority.RendeCard = 8.2
 
 sgs.ai_card_intention.RendeCard = function(self, card, from, tos)
 	local to = tos[1]

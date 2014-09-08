@@ -5230,10 +5230,12 @@ function SmartAI:getBigAndSmallKingdoms()
 	return big, small
 end
 
-function SmartAI:canLureTiger(players)
-	local cards = self:getCards("LureTiger")
-	if #cards == 0 then return end
-
+function sgs.PlayerList2SPlayerList(playerList)
+	local splist = sgs.SPlayerList()
+	for _, p in sgs.qlist(global_room:getAlivePlayers()) do
+		if playerList:contains(p) then splist:append(p) end
+	end
+	return splist
 end
 
 dofile "lua/ai/debug-ai.lua"

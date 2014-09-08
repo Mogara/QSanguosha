@@ -648,11 +648,6 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt, method)
 	end
 	local slash = self.player:getTag("liuli-card"):toCard()
 	local nature = sgs.Slash_Natures[slash:getClassName()]
-	if not self:damageIsEffective(self.player, nature, source) then return "." end
-	if self:needToLoseHp(self.player, source, true) then return "." end
-	if self:getDamagedEffects(self.player, source, true) then return "." end
-
-	self:sort(self.enemies, "defense")
 
 	local doLiuli = function(who)
 		if not self:isFriend(who) and who:hasShownSkill("leiji")
@@ -675,7 +670,7 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt, method)
 		end
 
 		local cards = self.player:getCards("e")
-		cards=sgs.QList2Table(cards)
+		cards = sgs.QList2Table(cards)
 		self:sortByKeepValue(cards)
 		for _, card in ipairs(cards) do
 			local range_fix = 0
@@ -688,66 +683,87 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt, method)
 		return "."
 	end
 
-	for _, enemy in ipairs(self.enemies) do
-		if not (source and source:objectName() == enemy:objectName()) then
-			local ret = doLiuli(enemy)
-			if ret ~= "." then return ret end
-		end
+	local isJinkEffected
+	for _, jink in ipairs(self:getCards("Jink")) do
+		if self.room:isJinkEffected(user, jink) then isJinkEffected = true break end
 	end
 
+	local liuli = {}
+
+	if not self:damageIsEffective(self.player, nature, source) then liuli[2] = "." end
+	if self:needToLoseHp(self.player, source, true) then liuli[2] = "." end
+	if self:getDamagedEffects(self.player, source, true) then liuli[2] = "." end
+
+	self:sort(others, "defense")
 	for _, player in ipairs(others) do
-		if self:objectiveLevel(player) == 0 and not (source and source:objectName() == player:objectName()) then
-			local ret = doLiuli(player)
-			if ret ~= "." then return ret end
-		end
-	end
-
-
-	self:sort(self.friends_noself, "defense")
-	self.friends_noself = sgs.reverse(self.friends_noself)
-
-
-	for _, friend in ipairs(self.friends_noself) do
-		if not self:slashIsEffective(slash, friend) or self:findLeijiTarget(friend, 50, source) then
-			if not (source and source:objectName() == friend:objectName()) then
-				local ret = doLiuli(friend)
-				if ret ~= "." then return ret end
-			end
-		end
-	end
-
-	for _, friend in ipairs(self.friends_noself) do
-		if self:needToLoseHp(friend, source, true) or self:getDamagedEffects(friend, source, true) then
-			if not (source and source:objectName() == friend:objectName()) then
-				local ret = doLiuli(friend)
-				if ret ~= "." then return ret end
-			end
-		end
-	end
-
-	if (self:isWeak() or self:hasHeavySlashDamage(source, slash)) and source:hasWeapon("Axe") and source:getCards("he"):length() > 2
-	  and not self:getCardId("Peach") and not self:getCardId("Analeptic") then
-		for _, friend in ipairs(self.friends_noself) do
-			if not self:isWeak(friend) then
-				if not (source and source:objectName() == friend:objectName()) then
-					local ret = doLiuli(friend)
-					if ret ~= "." then return ret end
+		if not (source and source:objectName() == player:objectName()) then
+			if self:isEnemy(player) then
+				if not (source and source:objectName() == player:objectName()) then
+					if self:slashIsEffective(slash, player, false, source) then
+						if not self:getDamagedEffects(player, source, true) then
+							if self:hasHeavySlashDamage(source, slash, player) then
+								if not source or self:isFriend(source, player) then
+									local ret = doLiuli(player)
+									if ret ~= "." then return ret end
+								elseif not liuli[1] then
+									local ret = doLiuli(player)
+									if ret ~= "." then liuli[1] = ret end
+								end
+							elseif not liuli[5] then
+								local ret = doLiuli(player)
+								if ret ~= "." then liuli[5] = ret end
+							end
+						elseif not liuli[8] then
+							local ret = doLiuli(player)
+							if ret ~= "." then liuli[8] = ret end
+						end
+					elseif not liuli[6] then
+						local ret = doLiuli(player)
+						if ret ~= "." then liuli[6] = ret end
+					end
 				end
+			elseif self:isFriend(player) then
+				if not (source and source:objectName() == player:objectName()) then
+					if self:slashIsEffective(slash, player, source) then
+						if self:findLeijiTarget(player, 50, source) then
+							local ret = doLiuli(player)
+							if ret ~= "." then liuli[3] = ret end
+						elseif not self:hasHeavySlashDamage(source, slash, player) then
+							if self:getDamagedEffects(player, source, true) or self:needToLoseHp(player, source, true) then
+								local ret = doLiuli(player)
+								if ret ~= "." then liuli[4] = ret end
+							end
+						elseif self:isWeak() and (not isJinkEffected or self:canHit(self.player, source)) then
+							if getCardsNum("Jink", player, self.player) >= 1 then
+								local ret = doLiuli(player)
+								if ret ~= "." then liuli[10] = ret end
+							elseif not self:isWeak(player) then
+								local ret = doLiuli(player)
+								if ret ~= "." then liuli[11] = ret end
+							end
+						end
+					else
+						local ret = doLiuli(player)
+						if ret ~= "." then liuli[7] = ret end
+					end
+				end
+			else
+				local ret = doLiuli(player)
+				if ret ~= "." then liuli[9] = ret end
 			end
 		end
 	end
 
-	if (self:isWeak() or self:hasHeavySlashDamage(source, slash)) and not self:getCardId("Jink") then
-		for _, friend in ipairs(self.friends_noself) do
-			if not self:isWeak(friend) or (self:hasEightDiagramEffect(friend) and getCardsNum("Jink", friend) >= 1) then
-				if not (source and source:objectName() == friend:objectName()) then
-					local ret = doLiuli(friend)
-					if ret ~= "." then return ret end
-				end
-			end
+	local ret = "."
+	local i = 99
+	for k, str in pairs(liuli) do
+		if k < i then
+			i = k
+			ret = str
 		end
 	end
-	return "."
+
+	return ret
 end
 
 
