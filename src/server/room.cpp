@@ -2150,9 +2150,6 @@ void Room::prepareForStart() {
         QStringList generals, generals2, kingdoms;
         scenario->assign(generals, generals2, kingdoms, this);
 
-        if (mode == "custom_scenario")
-            this->setTag("prepareForCustomScenario", true);
-
         for (int i = 0; i < m_players.length(); i++) {
             ServerPlayer *player = m_players[i];
             if (generals.size() > i && !generals[i].isNull() && !generals2[i].isNull()) {

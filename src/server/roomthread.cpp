@@ -381,22 +381,18 @@ void RoomThread::run() {
         if (rule) addTriggerSkill(rule);
     }
 
-    if (room->getTag("prepareForCustomScenario").toBool())
-        room->removeTag("prepareForCustomScenario");
-    else {
-        QString winner = game_rule->getWinner(room->getPlayers().first());
-        if (!winner.isNull()) {
-            try {
-                room->gameOver(winner);
-            }
-            catch (TriggerEvent triggerEvent) {
-                if (triggerEvent == GameFinished) {
-                    terminate();
-                    Sanguosha->unregisterRoom();
-                    return;
-                } else
-                    Q_ASSERT(false);
-            }
+    QString winner = game_rule->getWinner(room->getPlayers().first());
+    if (!winner.isNull()) {
+        try {
+            room->gameOver(winner);
+        }
+        catch (TriggerEvent triggerEvent) {
+            if (triggerEvent == GameFinished) {
+                terminate();
+                Sanguosha->unregisterRoom();
+                return;
+            } else
+                Q_ASSERT(false);
         }
     }
 
