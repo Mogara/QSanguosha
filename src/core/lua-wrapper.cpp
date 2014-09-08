@@ -117,7 +117,7 @@ LuaSkillCard *LuaSkillCard::clone() const{
     new_card->on_effect = on_effect;
     new_card->on_validate = on_validate;
     new_card->on_validate_in_response = on_validate_in_response;
-    new_card->extraCost = extra_cost;
+    new_card->extra_cost = extra_cost;
 
     return new_card;
 }
