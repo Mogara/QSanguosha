@@ -1521,6 +1521,7 @@ void StandardPackage::addWuGenerals()
 
     General *erzhang = new General(this, "erzhang", "wu", 3); // WU 015
     erzhang->addSkill(new Zhijian);
+    erzhang->addSkill(new Guzheng);
     erzhang->addSkill(new GuzhengRecord);
     insertRelatedSkills("guzheng", "#guzheng-record");
 
