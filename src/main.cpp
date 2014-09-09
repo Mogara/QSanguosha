@@ -69,59 +69,51 @@ static bool callback(const wchar_t *, const wchar_t *id, void *, EXCEPTION_POINT
 
 int main(int argc, char *argv[]) {
     bool noGui = argc > 1 && strcmp(argv[1], "-server") == 0;
-    bool noSplash = false;
-#ifdef Q_OS_MAC
-    noSplash = true;
-#endif
+
+
 
     if (noGui)
         new QCoreApplication(argc, argv);
     else
         new QApplication(argc, argv);
 
+#if defined(Q_OS_MAC) || defined(Q_OS_ANDROID)
+#define showSplashMessage(message)
+#define SPLASH_DISABLED
+#else
     QPixmap raraLogo("image/system/developers/logo.png");
     QSplashScreen splash(raraLogo);
     const int alignment = Qt::AlignBottom | Qt::AlignHCenter;
-    if (!noGui || !noSplash) {
+    if (!noGui) {
         splash.show();
         qApp->processEvents();
     }
+#define showSplashMessage(message) \
+    if (!noGui) {\
+        splash.showMessage(message, alignment, Qt::cyan);\
+        qApp->processEvents();\
+    }
+#endif
 
 #ifdef USE_BREAKPAD
-    if (!noGui || !noSplash) {
-        splash.showMessage(QSplashScreen::tr("Loading BreakPad..."), alignment, Qt::cyan);
-        qApp->processEvents();
-    }
-
+    showSplashMessage(QSplashScreen::tr("Loading BreakPad..."));
     ExceptionHandler eh(L"./dmp", NULL, callback, NULL, ExceptionHandler::HANDLER_ALL);
 #endif
 
 
 
-#ifdef Q_OS_MAC
-#ifdef QT_NO_DEBUG
-    if (!noGui || !noSplash) {
-        splash.showMessage(QSplashScreen::tr("Setting game path..."), alignment, Qt::cyan);
-        qApp->processEvents();
-    }
+#if defined(Q_OS_MAC) && defined(QT_NO_DEBUG)
+    showSplashMessage(QSplashScreen::tr("Setting game path..."));
     QDir::setCurrent(qApp->applicationDirPath());
-#endif
 #endif
 
 #ifdef Q_OS_LINUX
-    if (!noGui || !noSplash) {
-        splash.showMessage(QSplashScreen::tr("Checking game path..."), alignment, Qt::cyan);
-        qApp->processEvents();
-    }
-
+    showSplashMessage(QSplashScreen::tr("Checking game path..."));
     QDir dir(QString("lua"));
     if (dir.exists() && (dir.exists(QString("config.lua")))) {
         // things look good and use current dir
     } else {
-        if (!noGui || !noSplash) {
-            splash.showMessage(QSplashScreen::tr("Setting game path..."), alignment, Qt::cyan);
-            qApp->processEvents();
-        }
+        showSplashMessage(QSplashScreen::tr("Setting game path..."));
 #ifndef Q_OS_ANDROID
         QDir::setCurrent(qApp->applicationFilePath().replace("games", "share"));
 #else
@@ -146,26 +138,16 @@ int main(int argc, char *argv[]) {
     translator.load("sanguosha.qm");
     qApp->installTranslator(&translator);
 
-    if (!noGui || !noSplash) {
-        splash.showMessage(QSplashScreen::tr("Loading translation..."), alignment, Qt::cyan);
-        qApp->processEvents();
-    }
-
+    showSplashMessage(QSplashScreen::tr("Loading translation..."));
     QTranslator qt_translator;
     qt_translator.load("qt_zh_CN.qm");
     qApp->installTranslator(&qt_translator);
 
-    if (!noGui || !noSplash) {
-        splash.showMessage(QSplashScreen::tr("Initializing game engine..."), alignment, Qt::cyan);
-        qApp->processEvents();
-    }
+    showSplashMessage(QSplashScreen::tr("Initializing game engine..."));
     new Settings;
     Sanguosha = new Engine;
 
-    if (!noGui || !noSplash) {
-        splash.showMessage(QSplashScreen::tr("Loading user's configurations..."), alignment, Qt::cyan);
-        qApp->processEvents();
-    }
+    showSplashMessage(QSplashScreen::tr("Loading user's configurations..."));
     Config.init();
     qApp->setFont(Config.AppFont);
 
@@ -181,11 +163,7 @@ int main(int argc, char *argv[]) {
         return qApp->exec();
     }
 
-    if (!noSplash) {
-        splash.showMessage(QSplashScreen::tr("Loading style sheet..."), alignment, Qt::cyan);
-        qApp->processEvents();
-    }
-
+    showSplashMessage(QSplashScreen::tr("Loading style sheet..."));
     QFile file("style-sheet/sanguosha.qss");
     QString styleSheet;
     if (file.open(QIODevice::ReadOnly)) {
@@ -195,27 +173,20 @@ int main(int argc, char *argv[]) {
     qApp->setStyleSheet(styleSheet + StyleHelper::styleSheetOfTooltip());
 
 #ifdef AUDIO_SUPPORT
-    if (!noSplash) {
-        splash.showMessage(QSplashScreen::tr("Initializing audio module..."), alignment, Qt::cyan);
-        qApp->processEvents();
-    }
-
+    showSplashMessage(QSplashScreen::tr("Initializing audio module..."));
     Audio::init();
 #else
     QMessageBox::warning(this, QMessageBox::tr("Warning"), QMessageBox::tr("Audio support is disabled when compiled"));
 #endif
 
-    if (!noSplash) {
-        splash.showMessage(QSplashScreen::tr("Loading main window..."), alignment, Qt::cyan);
-        qApp->processEvents();
-    }
-
+    showSplashMessage(QSplashScreen::tr("Loading main window..."));
     MainWindow main_window;
 
     Sanguosha->setParent(&main_window);
     main_window.show();
-    if (!noSplash)
-        splash.finish(&main_window);
+#ifndef SPLASH_DISABLED
+    splash.finish(&main_window);
+#endif
 
     foreach(QString arg, qApp->arguments()) {
         if (arg.startsWith("-connect:")) {
@@ -230,4 +201,3 @@ int main(int argc, char *argv[]) {
 
     return qApp->exec();
 }
-
