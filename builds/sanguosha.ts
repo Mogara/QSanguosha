@@ -1543,65 +1543,65 @@
 <context>
     <name>DistanceViewDialog</name>
     <message>
-        <location filename="../src/dialog/distanceviewdialog.cpp" line="87"/>
+        <location filename="../src/dialog/distanceviewdialog.cpp" line="86"/>
         <source>Distance view</source>
         <translation>查看距离</translation>
     </message>
     <message>
-        <location filename="../src/dialog/distanceviewdialog.cpp" line="99"/>
+        <location filename="../src/dialog/distanceviewdialog.cpp" line="98"/>
         <source>From</source>
         <translation>从</translation>
     </message>
     <message>
-        <location filename="../src/dialog/distanceviewdialog.cpp" line="100"/>
+        <location filename="../src/dialog/distanceviewdialog.cpp" line="99"/>
         <source>To</source>
         <translation>至</translation>
     </message>
     <message>
-        <location filename="../src/dialog/distanceviewdialog.cpp" line="101"/>
+        <location filename="../src/dialog/distanceviewdialog.cpp" line="100"/>
         <source>Left</source>
         <translation>左距离</translation>
     </message>
     <message>
-        <location filename="../src/dialog/distanceviewdialog.cpp" line="102"/>
+        <location filename="../src/dialog/distanceviewdialog.cpp" line="101"/>
         <source>Right</source>
         <translation>右距离</translation>
     </message>
     <message>
-        <location filename="../src/dialog/distanceviewdialog.cpp" line="103"/>
+        <location filename="../src/dialog/distanceviewdialog.cpp" line="102"/>
         <source>Minimum</source>
         <translation>较小值</translation>
     </message>
     <message>
-        <location filename="../src/dialog/distanceviewdialog.cpp" line="106"/>
+        <location filename="../src/dialog/distanceviewdialog.cpp" line="105"/>
         <source>Distance correct</source>
         <translation>距离修正</translation>
     </message>
     <message>
-        <location filename="../src/dialog/distanceviewdialog.cpp" line="114"/>
+        <location filename="../src/dialog/distanceviewdialog.cpp" line="113"/>
         <source>In attack range</source>
         <translation>在攻击范围内</translation>
     </message>
     <message>
-        <location filename="../src/dialog/distanceviewdialog.cpp" line="115"/>
+        <location filename="../src/dialog/distanceviewdialog.cpp" line="114"/>
         <source>Final</source>
         <translation>最终结果</translation>
     </message>
     <message>
+        <location filename="../src/dialog/distanceviewdialog.cpp" line="132"/>
         <location filename="../src/dialog/distanceviewdialog.cpp" line="133"/>
         <location filename="../src/dialog/distanceviewdialog.cpp" line="134"/>
-        <location filename="../src/dialog/distanceviewdialog.cpp" line="135"/>
-        <location filename="../src/dialog/distanceviewdialog.cpp" line="169"/>
+        <location filename="../src/dialog/distanceviewdialog.cpp" line="168"/>
         <source>Not exist</source>
         <translation>不存在</translation>
     </message>
     <message>
-        <location filename="../src/dialog/distanceviewdialog.cpp" line="166"/>
+        <location filename="../src/dialog/distanceviewdialog.cpp" line="165"/>
         <source>Yes</source>
         <translation>是</translation>
     </message>
     <message>
-        <location filename="../src/dialog/distanceviewdialog.cpp" line="166"/>
+        <location filename="../src/dialog/distanceviewdialog.cpp" line="165"/>
         <source>No</source>
         <translation>否</translation>
     </message>
@@ -1654,12 +1654,12 @@
         <translation>10 人局</translation>
     </message>
     <message>
-        <location filename="../src/core/engine.cpp" line="168"/>
+        <location filename="../src/core/engine.cpp" line="172"/>
         <source>Duplicated skill : %1</source>
         <translation>重复技能: %1</translation>
     </message>
     <message>
-        <location filename="../src/core/engine.cpp" line="703"/>
+        <location filename="../src/core/engine.cpp" line="709"/>
         <source>%1 [Scenario mode]</source>
         <translation>%1 【剧情模式】</translation>
     </message>
@@ -2655,37 +2655,37 @@
 <context>
     <name>NativeClientSocket</name>
     <message>
-        <location filename="../src/util/nativesocket.cpp" line="155"/>
+        <location filename="../src/util/nativesocket.cpp" line="170"/>
         <source>Connection was refused or timeout</source>
         <translation>连接被拒绝或超时</translation>
     </message>
     <message>
-        <location filename="../src/util/nativesocket.cpp" line="158"/>
+        <location filename="../src/util/nativesocket.cpp" line="173"/>
         <source>You are kicked from server</source>
         <translation>你已经被踢出服务器</translation>
     </message>
     <message>
-        <location filename="../src/util/nativesocket.cpp" line="160"/>
+        <location filename="../src/util/nativesocket.cpp" line="175"/>
         <source>Remote host close this connection</source>
         <translation>远程主机已关闭此次连接</translation>
     </message>
     <message>
-        <location filename="../src/util/nativesocket.cpp" line="165"/>
+        <location filename="../src/util/nativesocket.cpp" line="180"/>
         <source>Host not found</source>
         <translation>未找到主机</translation>
     </message>
     <message>
-        <location filename="../src/util/nativesocket.cpp" line="167"/>
+        <location filename="../src/util/nativesocket.cpp" line="182"/>
         <source>Socket access error</source>
         <translation>套接字访问错误</translation>
     </message>
     <message>
-        <location filename="../src/util/nativesocket.cpp" line="170"/>
+        <location filename="../src/util/nativesocket.cpp" line="185"/>
         <source>Unknown error</source>
         <translation>未知错误</translation>
     </message>
     <message>
-        <location filename="../src/util/nativesocket.cpp" line="173"/>
+        <location filename="../src/util/nativesocket.cpp" line="188"/>
         <source>Connection failed, error code = %1
  reason:
  %2</source>
@@ -2779,12 +2779,12 @@
 <context>
     <name>QMessageBox</name>
     <message>
-        <location filename="../src/main.cpp" line="205"/>
+        <location filename="../src/main.cpp" line="179"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="205"/>
+        <location filename="../src/main.cpp" line="179"/>
         <source>Audio support is disabled when compiled</source>
         <translation>声音支持已在编译时禁用</translation>
     </message>
@@ -2813,48 +2813,48 @@
 <context>
     <name>QSplashScreen</name>
     <message>
-        <location filename="../src/main.cpp" line="92"/>
+        <location filename="../src/main.cpp" line="99"/>
         <source>Loading BreakPad...</source>
         <translation>正在加载BreakPad...</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="104"/>
-        <location filename="../src/main.cpp" line="122"/>
+        <location filename="../src/main.cpp" line="106"/>
+        <location filename="../src/main.cpp" line="116"/>
         <source>Setting game path...</source>
         <translation>正在配置游戏路径...</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="113"/>
+        <location filename="../src/main.cpp" line="111"/>
         <source>Checking game path...</source>
         <translation>正在检查游戏路径...</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="150"/>
+        <location filename="../src/main.cpp" line="141"/>
         <source>Loading translation...</source>
         <translation>正在加载翻译...</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="159"/>
+        <location filename="../src/main.cpp" line="146"/>
         <source>Initializing game engine...</source>
         <translation>正在初始化游戏引擎...</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="166"/>
+        <location filename="../src/main.cpp" line="150"/>
         <source>Loading user&apos;s configurations...</source>
         <translation>正在加载用户配置...</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="185"/>
+        <location filename="../src/main.cpp" line="166"/>
         <source>Loading style sheet...</source>
         <translation>正在加载样式表...</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="199"/>
+        <location filename="../src/main.cpp" line="176"/>
         <source>Initializing audio module...</source>
         <translation>正在初始化音频模块...</translation>
     </message>
     <message>
-        <location filename="../src/main.cpp" line="209"/>
+        <location filename="../src/main.cpp" line="182"/>
         <source>Loading main window...</source>
         <translation>正在加载主界面...</translation>
     </message>
@@ -3075,64 +3075,64 @@
 <context>
     <name>Room</name>
     <message>
-        <location filename="../src/server/room.cpp" line="2197"/>
+        <location filename="../src/server/room.cpp" line="2194"/>
         <source>disconnected</source>
         <translation>断开</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2421"/>
+        <location filename="../src/server/room.cpp" line="2418"/>
         <source>Computer %1</source>
         <translation>电脑 %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2215"/>
+        <location filename="../src/server/room.cpp" line="2212"/>
         <source>&lt;font color=#000000&gt;Player &lt;b&gt;%1&lt;/b&gt; left the game&lt;/font&gt;</source>
         <translation>&lt;font color=#000000&gt;玩家 %1 离开了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2392"/>
+        <location filename="../src/server/room.cpp" line="2389"/>
         <source>%1: %2 is not invokable</source>
         <translation>%1: 不可调用的方法名 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2425"/>
+        <location filename="../src/server/room.cpp" line="2422"/>
         <source>Hello, I&apos;m a robot</source>
         <translation>大家好，我是一个机器人</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2506"/>
+        <location filename="../src/server/room.cpp" line="2503"/>
         <source>&lt;font color=#EEB422&gt;Player &lt;b&gt;%1&lt;/b&gt; joined the game&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 加入了游戏&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2916"/>
+        <location filename="../src/server/room.cpp" line="2913"/>
         <source>Unable to parse player</source>
         <translation>不可分析的玩家</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2918"/>
+        <location filename="../src/server/room.cpp" line="2915"/>
         <source>Server is not waiting for reply from %1</source>
         <translation>服务器无法获取 %1 的响应</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2920"/>
+        <location filename="../src/server/room.cpp" line="2917"/>
         <source>Reply command should be %1 instead of %2</source>
         <translation>应答指令应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="2923"/>
+        <location filename="../src/server/room.cpp" line="2920"/>
         <source>Reply serial should be %1 instead of %2</source>
         <translation>玩家序号应为 %1 而不是 %2</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="4669"/>
+        <location filename="../src/server/room.cpp" line="4666"/>
         <source>Card cannot be parsed:
  %1</source>
         <translation>卡牌字符串无法解析:
  %1</translation>
     </message>
     <message>
-        <location filename="../src/server/room.cpp" line="5956"/>
+        <location filename="../src/server/room.cpp" line="5953"/>
         <source>&lt;font color=#EEB422&gt;The network delay of player &lt;b&gt;%1&lt;/b&gt; is %2 milliseconds.&lt;/font&gt;</source>
         <translation>&lt;font color=#EEB422&gt;玩家 &lt;b&gt;%1&lt;/b&gt; 的网络延迟为 %2 毫秒&lt;/font&gt;</translation>
     </message>
@@ -3541,12 +3541,22 @@ P = 你自己, R = 你所在的房间</translation>
         <translation>禁止了地址 %1 的连接</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="927"/>
+        <location filename="../src/server/server.cpp" line="922"/>
         <source>%1 connected</source>
         <translation>%1 已连接</translation>
     </message>
     <message>
-        <location filename="../src/server/server.cpp" line="938"/>
+        <location filename="../src/server/server.cpp" line="933"/>
+        <source>Invalid message %1 from %2</source>
+        <translation>来自%2的无效消息%1</translation>
+    </message>
+    <message>
+        <location filename="../src/server/server.cpp" line="941"/>
+        <source>Packet %1 from an unknown source %2</source>
+        <translation>来自未知来源%2的数据包%1</translation>
+    </message>
+    <message>
+        <location filename="../src/server/server.cpp" line="957"/>
         <source>Invalid signup string: %1</source>
         <translation>无效的登录字符串: %1</translation>
     </message>
