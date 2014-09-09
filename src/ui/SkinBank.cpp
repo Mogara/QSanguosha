@@ -760,10 +760,10 @@ QPixmap IQSanComponentSkin::getPixmap(const QString &key, const QString &arg, co
         totalKey = key;
     else
         totalKey = key.arg(arg);
-    bool from_cache = false;
+    //bool from_cache = false;
     if (S_IMAGE_KEY2FILE.contains(totalKey)) { // first, search cache
         fileName = S_IMAGE_KEY2FILE[totalKey];
-        from_cache = true;
+        //from_cache = true;
     } else if (isImageKeyDefined(totalKey)) { // then, read from config file
         fileName = _readImageConfig(totalKey, clipRegion, clipping, scaleRegion, scaled);
         S_IMAGE_KEY2FILE[totalKey].append(fileName);
