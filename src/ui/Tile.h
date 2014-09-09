@@ -22,6 +22,7 @@
 #define METROBUTTON_H
 
 #include "button.h"
+#include "Title.h"
 
 class Tile : public Button
 {
@@ -30,6 +31,9 @@ class Tile : public Button
 public:
     explicit Tile(const QString &label, qreal scale = 1.0);
     explicit Tile(const QString &label, const QSizeF &size);
+
+    void setAutoHideTitle(bool hide) { auto_hide_title = hide; title->setVisible(!hide); }
+    bool autoHideTitle() const { return auto_hide_title; }
 
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
@@ -55,6 +59,7 @@ protected:
     };
 
     bool down;
+    bool auto_hide_title;
 
     MouseArea mouse_area;
 

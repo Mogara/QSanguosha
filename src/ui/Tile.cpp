@@ -19,7 +19,6 @@
     *********************************************************************/
 
 #include "Tile.h"
-#include "Title.h"
 
 #include <QPainter>
 #include <QFile>
@@ -31,7 +30,7 @@ static QRectF ButtonRect(0, 0, 154, 154);
 
 Tile::Tile(const QString &label, const QSizeF &size)
     : Button(label, size),
-      down(false), mouse_area(Outside),
+      down(false), auto_hide_title(true), mouse_area(Outside),
       rotation(NULL), scale(NULL), title(NULL), frame(NULL)
 {
     init();
@@ -39,9 +38,8 @@ Tile::Tile(const QString &label, const QSizeF &size)
 
 Tile::Tile(const QString &label, qreal scale)
     : Button(label, scale),
-      down(false), mouse_area(Outside),
+      down(false), auto_hide_title(true), mouse_area(Outside),
       rotation(NULL), scale(NULL), title(NULL), frame(NULL)
-
 {
     size = ButtonRect.size() * scale;
     init();
@@ -225,13 +223,15 @@ void Tile::reset()
 
 void Tile::hoverEnterEvent(QGraphicsSceneHoverEvent *)
 {
-    title->show();
+    if (auto_hide_title)
+        title->show();
     frame->setEnabled(true);
 }
 
 void Tile::hoverLeaveEvent(QGraphicsSceneHoverEvent *)
 {
-    title->hide();
+    if (auto_hide_title)
+        title->hide();
     frame->setEnabled(false);
 }
 
