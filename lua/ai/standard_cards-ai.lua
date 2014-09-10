@@ -120,7 +120,7 @@ function sgs.getDefenseSlash(player, self)
 	end
 
 	local niaoxiang_BA = false
-	local jiangqin = global_room:findPlayerBySkillName("niaoxiang")
+	local jiangqin = sgs.findPlayerByShownSkillName("niaoxiang")
 	if jiangqin then
 		if jiangqin:inSiegeRelation(jiangqin, player) then
 			niaoxiang_BA = true
@@ -402,7 +402,7 @@ end
 
 function SmartAI:isPriorFriendOfSlash(friend, card, source)
 	source = source or self.player
-	local huatuo = self.room:findPlayerBySkillName("jijiu")
+	local huatuo = sgs.findPlayerByShownSkillName("jijiu")
 	if not self:hasHeavySlashDamage(source, card, friend)
 		and (self:findLeijiTarget(friend, 50, source) or (friend:hasShownSkill("jieming") and source:hasShownSkill("rende") and huatuo and self:isFriend(huatuo, source))) then
 		return true
@@ -1064,7 +1064,7 @@ end
 function SmartAI:needToThrowAll(player)
 	player = player or self.player
 	if player:getPhase() == sgs.Player_NotActive or player:getPhase() == sgs.Player_Finish then return false end
-	local erzhang = self.room:findPlayerBySkillName("guzheng")
+	local erzhang = sgs.findPlayerByShownSkillName("guzheng")
 	if erzhang and not zhanglu and self:isFriend(erzhang, player) then return false end
 
 	self.yongsi_discard = nil
@@ -1375,7 +1375,7 @@ sgs.ai_skill_invoke.EightDiagram = function(self, data)
 
 	if self:getDamagedEffects(self.player, nil, true) or self:needToLoseHp(self.player, nil, true, true) then return false end
 	if self:getCardsNum("Jink") == 0 then return true end
-	local zhangjiao = self.room:findPlayerBySkillName("guidao")
+	local zhangjiao = sgs.findPlayerByShownSkillName("guidao")
 	if zhangjiao and self:isEnemy(zhangjiao) then
 		if getKnownCard(zhangjiao, self.player, "black", false, "he") > 1 then return false end
 		if self:getCardsNum("Jink") > 1 and getKnownCard(zhangjiao, self.player, "black", false, "he") > 0 then return false end
@@ -1466,7 +1466,7 @@ sgs.ai_skill_cardask.aoe = function(self, data, pattern, target, name)
 	local aoe
 	if type(data) == "userdata" then aoe = data:toCardEffect().card else aoe = sgs.cloneCard(name) end
 	assert(aoe ~= nil)
-	local menghuo = self.room:findPlayerBySkillName("huoshou")
+	local menghuo = sgs.findPlayerByShownSkillName("huoshou")
 	local attacker = target
 	if menghuo and aoe:isKindOf("SavageAssault") then attacker = menghuo end
 
@@ -1605,7 +1605,7 @@ function SmartAI:useCardDuel(duel, use)
 	local n1 = self:getCardsNum("Slash")
 	duel:setFlags("-AI_Using")
 	if self.player:hasSkill("wushuang") then n1 = n1 * 2 end
-	local huatuo = self.room:findPlayerBySkillName("jijiu")
+	local huatuo = sgs.findPlayerByShownSkillName("jijiu")
 	local targets = {}
 
 	local canUseDuelTo=function(target)
@@ -2171,7 +2171,7 @@ sgs.ai_choicemade_filter.cardChosen.dismantlement = sgs.ai_choicemade_filter.car
 
 function SmartAI:useCardCollateral(card, use)
 	local fromList = sgs.QList2Table(self.room:getOtherPlayers(self.player))
-	local toList   = sgs.QList2Table(self.room:getAlivePlayers())
+	local toList = sgs.QList2Table(self.room:getAlivePlayers())
 
 	local cmp = function(a, b)
 		local alevel = self:objectiveLevel(a)
@@ -2399,7 +2399,7 @@ function SmartAI:enemiesContainsTrick(EnemyCount)
 	local ss_num = self:getCardsNum("SupplyShortage")
 	local enemy_num, temp_enemy = 0
 
-	local zhanghe = self.room:findPlayerBySkillName("qiaobian")
+	local zhanghe = sgs.findPlayerByShownSkillName("qiaobian")
 	if zhanghe and (not self:isEnemy(zhanghe) or zhanghe:isKongcheng() or not zhanghe:faceUp()) then zhanghe = nil end
 
 	if self.player:hasSkill("guose") then
@@ -2436,7 +2436,7 @@ function SmartAI:enemiesContainsTrick(EnemyCount)
 					end
 				end
 			else
-				possible_ss_enemy  = possible_ss_enemy + 1
+				possible_ss_enemy = possible_ss_enemy + 1
 			end
 		end
 	end
@@ -2469,7 +2469,7 @@ function SmartAI:useCardIndulgence(card, use)
 		enemies = self:exclude(self.enemies, card)
 	end
 
-	local zhanghe = self.room:findPlayerBySkillName("qiaobian")
+	local zhanghe = sgs.findPlayerByShownSkillName("qiaobian")
 	local zhanghe_seat = zhanghe and zhanghe:faceUp() and not zhanghe:isKongcheng() and not self:isFriend(zhanghe) and zhanghe:getSeat() or 0
 
 	if #enemies == 0 then return end

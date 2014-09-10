@@ -346,7 +346,7 @@ kurou_skill.getTurnUseCard = function(self, inclusive)
 			to_death = true
 		end
 		if to_death then
-			local caopi = self.room:findPlayerBySkillName("xingshang")
+			local caopi = sgs.findPlayerByShownSkillName("xingshang")
 			if caopi and self:isEnemy(caopi) and self.player:getHandcardNum() > 3 then
 				to_death = false
 			end
@@ -1284,7 +1284,7 @@ sgs.ai_skill_use_func.TianyiCard = function(TYCard, use, self)
 		end
 	end
 
-	local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
+	local zhugeliang = sgs.findPlayerByShownSkillName("kongcheng")
 
 	local slash = self:getCard("Slash")
 	local dummy_use = { isDummy = true, extra_target = 1, to = sgs.SPlayerList() }
@@ -1746,7 +1746,7 @@ end
 sgs.ai_skill_askforag.guzheng = function(self, card_ids)
 	local who = self.room:getCurrent()
 
-	local wulaotai = self.room:findPlayerBySkillName("buyi")
+	local wulaotai = sgs.findPlayerByShownSkillName("buyi")
 	local Need_buyi = wulaotai and who:getHp() == 1 and self:isFriend(who, wulaotai)
 
 	local cards, except_Equip, except_Key = {}, {}, {}

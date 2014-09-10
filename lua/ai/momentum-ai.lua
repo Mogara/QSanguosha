@@ -297,7 +297,7 @@ sgs.ai_skill_choice.benghuai = function(self, choices, data)
 			for _, p in ipairs(self.enemies) do
 				if p:inMyAttackRange(self.player) and not self:willSkipPlayPhase(p) then enemy_num = enemy_num + 1 end
 			end
-			local ls = sgs.fangquan_effect and self.room:findPlayerBySkillName("fangquan")
+			local ls = sgs.fangquan_effect and sgs.findPlayerByShownSkillName("fangquan")
 			if ls then
 				sgs.fangquan_effect = false
 				enemy_num = self:getEnemyNumBySeat(ls, self.player, self.player)

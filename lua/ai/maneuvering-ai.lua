@@ -212,7 +212,7 @@ end
 function SmartAI:useCardSupplyShortage(card, use)
 	local enemies = self:exclude(self.enemies, card)
 
-	local zhanghe = self.room:findPlayerBySkillName("qiaobian")
+	local zhanghe = sgs.findPlayerByShownSkillName("qiaobian")
 	local zhanghe_seat = zhanghe and zhanghe:faceUp() and not zhanghe:isKongcheng() and not self:isFriend(zhanghe) and zhanghe:getSeat() or 0
 
 	if #enemies == 0 then return end
@@ -330,7 +330,7 @@ function SmartAI:isGoodChainTarget_(damageStruct)
 	if not self:damageIsEffective_(damageStruct) then return end
 	if card and card:isKindOf("FireAttack") and not self:hasTrickEffective(card, to, self.player) then return end
 
-	local jiaren_zidan = self.room:findPlayerBySkillName("jgchiying")
+	local jiaren_zidan = sgs.findPlayerByShownSkillName("jgchiying")
 	if jiaren_zidan and jiaren_zidan:isFriendWith(to) then
 		damage = 1
 	end

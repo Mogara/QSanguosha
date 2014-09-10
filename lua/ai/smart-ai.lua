@@ -1105,7 +1105,7 @@ function SmartAI:getDynamicUsePriority(card)
 			if p:hasShownSkill("yongjue") and self.player:isFriendWith(p) then return 12 end
 		end
 	elseif card:isKindOf("AmazingGrace") then
-		local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
+		local zhugeliang = sgs.findPlayerByShownSkillName("kongcheng")
 		if zhugeliang and self:isEnemy(zhugeliang) and zhugeliang:isKongcheng() then
 			return math.max(sgs.ai_use_priority.Slash, sgs.ai_use_priority.Duel) + 0.1
 		end
@@ -1744,7 +1744,7 @@ function SmartAI:filterEvent(event, player, data)
 		self:updatePlayerKingdom(player, data)
 	elseif event == sgs.TargetConfirmed then
 		local struct = data:toCardUse()
-		local from  = struct.from
+		local from = struct.from
 		local card = struct.card
 		local tos = sgs.QList2Table(struct.to)
 		if from and from:objectName() == player:objectName() then
@@ -1864,9 +1864,9 @@ function SmartAI:filterEvent(event, player, data)
 	elseif event == sgs.CardsMoveOneTime then
 		local move = data:toMoveOneTime()
 		local from = nil   -- convert move.from from const Player * to ServerPlayer *
-		local to   = nil   -- convert move.to to const Player * to ServerPlayer *
+		local to = nil   -- convert move.to to const Player * to ServerPlayer *
 		if move.from then from = findPlayerByObjectName(move.from:objectName(), true) end
-		if move.to   then to   = findPlayerByObjectName(move.to:objectName(), true) end
+		if move.to then to = findPlayerByObjectName(move.to:objectName(), true) end
 		local reason = move.reason
 		local from_places = sgs.QList2Table(move.from_places)
 
@@ -1932,7 +1932,7 @@ function SmartAI:filterEvent(event, player, data)
 							sgs.updateIntention(player, target, -35)
 						end
 					elseif isCard("Indulgence", card, player) then
-						local zhanghe = self.room:findPlayerBySkillName("qiaobian")
+						local zhanghe = sgs.findPlayerByShownSkillName("qiaobian")
 						if not (zhanghe and sgs.ai_explicit[target:objectName()] == "wei" and self:playerGetRound(zhanghe) <= self:playerGetRound(target)) then
 							for _, target in sgs.qlist(self.room:getOtherPlayers(player)) do
 								if not target:containsTrick("indulgence") and not target:hasShownSkill("qiaobian") and not sgs.isAnjiang(target) then
@@ -1944,7 +1944,7 @@ function SmartAI:filterEvent(event, player, data)
 							end
 						end
 					elseif isCard("SupplyShortage", card, player) then
-						local zhanghe = self.room:findPlayerBySkillName("qiaobian")
+						local zhanghe = sgs.findPlayerByShownSkillName("qiaobian")
 						if not (zhanghe and sgs.ai_explicit[target:objectName()] == "wei" and self:playerGetRound(zhanghe) <= self:playerGetRound(target)) then
 							for _, target in sgs.qlist(self.room:getOtherPlayers(player)) do
 								if not target:containsTrick("supply_shortage") and not target:hasShownSkill("qiaobian") and not sgs.isAnjiang(target) then
@@ -1992,11 +1992,18 @@ function SmartAI:askForSkillInvoke(skill_name, data)
 	if type(invoke) == "boolean" then
 		return invoke
 	elseif type(invoke) == "function" then
-		return invoke(self, data)
+		if invoke(self, data) == true then
+			return true
+		else
+			return false
+		end
 	else
 		local skill = sgs.Sanguosha:getSkill(skill_name)
-		return skill and skill:getFrequency() == sgs.Skill_Frequent
+		if skill and skill:getFrequency() == sgs.Skill_Frequent then
+			return true
+		end
 	end
+	return nil
 end
 
 function SmartAI:askForChoice(skill_name, choices, data)
@@ -2642,7 +2649,7 @@ function SmartAI:hasHeavySlashDamage(from, slash, to, getValue)
 	if from:hasFlag("luoyi") then dmg = dmg + 1 end
 	if from:hasWeapon("GudingBlade") and slash and to:isKongcheng() then dmg = dmg + 1 end
 	if to:getMark("@gale") > 0 and fireSlash then dmg = dmg + 1 end
-	local jiaren_zidan = self.room:findPlayerBySkillName("jgchiying")
+	local jiaren_zidan = sgs.findPlayerByShownSkillName("jgchiying")
 	if jiaren_zidan and jiaren_zidan:isFriendWith(to) then
 		dmg = 1
 	end
@@ -2664,7 +2671,7 @@ end
 function SmartAI:getLeastHandcardNum(player)
 	player = player or self.player
 	local least = 0
-	local jwfy = self.room:findPlayerBySkillName("shoucheng")
+	local jwfy = sgs.findPlayerByShownSkillName("shoucheng")
 	if least < 1 and jwfy and self:isFriend(jwfy, player) then least = 1 end
 	return least
 end
@@ -2717,8 +2724,8 @@ function SmartAI:getCardNeedPlayer(cards, friends_table, skillname)
 		end
 	end
 	if specialnum > 1 and #cardtogivespecial == 0 and self.player:hasSkill("rende") and self.player:getPhase() == sgs.Player_Play then
-		local xunyu = self.room:findPlayerBySkillName("jieming")
-		local huatuo = self.room:findPlayerBySkillName("jijiu")
+		local xunyu = sgs.findPlayerByShownSkillName("jieming")
+		local huatuo = sgs.findPlayerByShownSkillName("jijiu")
 		local no_distance = self.slash_distance_limit
 		local redcardnum = 0
 		for _, acard in ipairs(cards) do
@@ -4171,7 +4178,7 @@ function SmartAI:getAoeValue(card)
 	end
 
 	if card:isKindOf("SavageAssault") then
-		local menghuo = self.room:findPlayerBySkillName("huoshou")
+		local menghuo = sgs.findPlayerByShownSkillName("huoshou")
 		attacker = menghuo or attacker
 	end
 
@@ -4376,23 +4383,23 @@ function SmartAI:useEquipCard(card, use)
 		return
 	end
 	if card:isKindOf("Armor") and card:objectName() == "PeaceSpell" then
-		local lord_zhangjiao = self.room:findPlayerBySkillName("wendao") --有君张角在其他人（受伤/有防具）则不装备太平要术
-		if lord_zhangjiao and lord_zhangjiao:isAlive() and lord_zhangjiao:hasShownSkill("wendao") and not self:isWeak(lord_zhangjiao) then
+		local lord_zhangjiao = sgs.findPlayerByShownSkillName("wendao") --有君张角在其他人（受伤/有防具）则不装备太平要术
+		if lord_zhangjiao and lord_zhangjiao:isAlive() and not self:isWeak(lord_zhangjiao) then
 			if self.player:objectName() ~= lord_zhangjiao:objectName() and (self.player:isWounded() or self.player:getArmor()) then
 				return
 			end
 		end
 	end
 	if card:isKindOf("Weapon") and card:objectName() == "DragonPhoenix" then
-		local lord_liubei = self.room:findPlayerBySkillName("zhangwu") --有君刘备在（其他势力/除他以外有武器）的人不装备龙凤剑
-		if lord_liubei and lord_liubei:isAlive() and lord_liubei:hasShownSkill("zhangwu") then
+		local lord_liubei = sgs.findPlayerByShownSkillName("zhangwu") --有君刘备在（其他势力/除他以外有武器）的人不装备龙凤剑
+		if lord_liubei and lord_liubei:isAlive() then
 			if not self.player:isFriendWith(lord_liubei) or (self.player:objectName() ~= lord_liubei:objectName() and self.player:getWeapon()) then
 				return
 			end
 		end
 	end
 	local same = self:getSameEquip(card)
-	local zzzh, isfriend_zzzh, isenemy_zzzh = self.room:findPlayerBySkillName("guzheng")
+	local zzzh, isfriend_zzzh, isenemy_zzzh = sgs.findPlayerByShownSkillName("guzheng")
 	if zzzh then
 		if self:isFriend(zzzh) then isfriend_zzzh = true
 		else isenemy_zzzh = true
@@ -4497,7 +4504,7 @@ function SmartAI:needToLoseHp(to, from, isSlash, passive, recover)
 	end
 
 	local friends = self:getFriendsNoself(to)
-	local xiangxiang = self.room:findPlayerBySkillName("jieyin")
+	local xiangxiang = sgs.findPlayerByShownSkillName("jieyin")
 	if xiangxiang and xiangxiang:isWounded() and self:isFriend(xiangxiang, to) and not to:isWounded() and to:isMale() then
 		local need_jieyin = true
 		self:sort(friends, "hp")
@@ -4698,7 +4705,7 @@ function SmartAI:findPlayerToDiscard(flags, include_self, isDiscard, players, re
 	end
 
 	if flags:match("h") then
-		local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
+		local zhugeliang = sgs.findPlayerByShownSkillName("kongcheng")
 		if zhugeliang and self:isFriend(zhugeliang) and zhugeliang:getHandcardNum() == 1 and self:getEnemyNumBySeat(self.player, zhugeliang) > 0
 			and zhugeliang:getHp() <= 2 and (not isDiscard or self.player:canDiscard(zhugeliang, "h")) then
 			table.insert(player_table, zhugeliang)
@@ -5237,6 +5244,13 @@ function sgs.PlayerList2SPlayerList(playerList)
 	end
 	return splist
 end
+
+function sgs.findPlayerByShownSkillName(skill_name)
+	for _, p in sgs.qlist(global_room:getAllPlayers()) do
+		if p:hasShownSkill(skill_name) then return p end
+	end
+end
+
 
 dofile "lua/ai/debug-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"

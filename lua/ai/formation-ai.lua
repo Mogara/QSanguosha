@@ -648,7 +648,7 @@ sgs.ai_skill_invoke.shengxi = function(self, data)
 		return false
 	end
 	if self:getOverflow() >= 0 then
-		local erzhang = self.room:findPlayerBySkillName("guzheng")
+		local erzhang = sgs.findPlayerByShownSkillName("guzheng")
 		if erzhang and self:isEnemy(erzhang) then return false end
 	end
 	return true

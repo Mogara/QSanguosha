@@ -193,7 +193,7 @@ sgs.ai_skill_invoke.ganglie = function(self, data)
 	local mode = self.room:getMode()
 	local damage = data:toDamage()
 	if not damage.from then
-		local zhangjiao = self.room:findPlayerBySkillName("guidao")
+		local zhangjiao = sgs.findPlayerByShownSkillName("guidao")
 		return zhangjiao and self:isFriend(zhangjiao) and not zhangjiao:isNude()
 	end
 	if self:getDamagedEffects(damage.from, self.player) then
@@ -215,7 +215,7 @@ sgs.ai_need_damaged.ganglie = function(self, attacker, player)
 end
 
 function ganglie_discard(self, discard_num, min_num, optional, include_equip, skillName)
-	local xiahou = self.room:findPlayerBySkillName(skillName)
+	local xiahou = sgs.findPlayerByShownSkillName(skillName)
 
 	for _, card in sgs.qlist(self.player:getHandcards()) do
 		if isCard("Peach", card, self.player) then
@@ -254,8 +254,8 @@ function SmartAI:findTuxiTarget()
 	self:sort(self.enemies, "handcard_defense")
 	local targets = {}
 
-	local zhugeliang = self.room:findPlayerBySkillName("kongcheng")
-	local dengai = self.room:findPlayerBySkillName("tuntian")
+	local zhugeliang = sgs.findPlayerByShownSkillName("kongcheng")
+	local dengai = sgs.findPlayerByShownSkillName("tuntian")
 
 	local add_player = function (player, isfriend)
 		if player:getHandcardNum() == 0 or player:objectName() == self.player:objectName() then return #targets end
@@ -508,7 +508,7 @@ sgs.ai_skill_invoke.luoshen = function(self, data)
 	end
 
 	if self:willSkipPlayPhase() then
-		local erzhang = self.room:findPlayerBySkillName("guzheng")
+		local erzhang = sgs.findPlayerByShownSkillName("guzheng")
 		if erzhang and self:isEnemy(erzhang) then return false end
 	end
 	return true
@@ -1316,7 +1316,7 @@ sgs.ai_choicemade_filter.cardResponded["@xiaoguo"] = function(self, player, prom
 end
 
 sgs.ai_skill_cardask["@xiaoguo-discard"] = function(self, data)
-	local yuejin = self.room:findPlayerBySkillName("xiaoguo")
+	local yuejin = sgs.findPlayerByShownSkillName("xiaoguo")
 	local player = self.player
 
 	if self:needToThrowArmor() then

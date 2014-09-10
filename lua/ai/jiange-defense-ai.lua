@@ -106,7 +106,7 @@ sgs.ai_playerchosen_intention.jgzhinang = function(self, from, to)
 	if not self:needKongcheng(to, true) and self.player:isFriendWith(to) then sgs.updateIntention(from, to, -50) end
 end
 
-sgs.ai_skill_invoke.jgjingmiao  = true
+sgs.ai_skill_invoke.jgjingmiao = true
 
 sgs.ai_skill_invoke.jgyuhuo_pangtong = true
 sgs.ai_skill_invoke.jgyuhuo_zhuque = true
@@ -121,7 +121,7 @@ sgs.ai_slash_prohibit.jgyuhuo_zhuque = function(self, from, enemy, card)
 	return true
 end
 
-sgs.ai_skill_invoke.jgqiwu  = true
+sgs.ai_skill_invoke.jgqiwu = true
 
 sgs.ai_skill_playerchosen.jgqiwu = function(self, targets)
 	local target = nil
@@ -135,21 +135,21 @@ sgs.ai_skill_playerchosen.jgqiwu = function(self, targets)
 	return target
 end
 
-sgs.ai_skill_invoke.jgtianyu  = true
+sgs.ai_skill_invoke.jgtianyu = true
 
-sgs.ai_skill_invoke.jgjiguan_qinglong  = true
-sgs.ai_skill_invoke.jgjiguan_baihu  = true
-sgs.ai_skill_invoke.jgjiguan_zhuque  = true
-sgs.ai_skill_invoke.jgjiguan_xuanwu  = true
+sgs.ai_skill_invoke.jgjiguan_qinglong = true
+sgs.ai_skill_invoke.jgjiguan_baihu = true
+sgs.ai_skill_invoke.jgjiguan_zhuque = true
+sgs.ai_skill_invoke.jgjiguan_xuanwu = true
 
-sgs.ai_skill_invoke.jgjiguan_bian  = true
-sgs.ai_skill_invoke.jgjiguan_suanni  = true
-sgs.ai_skill_invoke.jgjiguan_chiwen  = true
-sgs.ai_skill_invoke.jgjiguan_yazi  = true
+sgs.ai_skill_invoke.jgjiguan_bian = true
+sgs.ai_skill_invoke.jgjiguan_suanni = true
+sgs.ai_skill_invoke.jgjiguan_chiwen = true
+sgs.ai_skill_invoke.jgjiguan_yazi = true
 
-sgs.ai_skill_invoke.jgmojian  = true
+sgs.ai_skill_invoke.jgmojian = true
 
-sgs.ai_skill_invoke.jgbenlei  = true
+sgs.ai_skill_invoke.jgbenlei = true
 
 sgs.ai_skill_playerchosen.jgtianyun = function(self, targets)
 	local target = nil
@@ -211,7 +211,7 @@ end
 
 sgs.ai_playerchosen_intention.jgtianyun = 80
 
-sgs.ai_skill_invoke.jgyizhong  = true
+sgs.ai_skill_invoke.jgyizhong = true
 
 function sgs.ai_armor_value.jgyizhong(card)
 	if not card then return 5 end
@@ -239,7 +239,7 @@ function sgs.ai_skill_invoke.jglingyu(self, data)
 	return weak >= 2
 end
 
-sgs.ai_skill_invoke.jgchiying  = true
+sgs.ai_skill_invoke.jgchiying = true
 
 sgs.ai_skill_playerchosen.jgleili = function(self, targets)
 	local target = nil
@@ -293,14 +293,14 @@ sgs.ai_skill_playerchosen.jgfengxing =  sgs.ai_skill_playerchosen.zero_card_as_s
 
 sgs.ai_playerchosen_intention.jgfengxing = 80
 
-sgs.ai_skill_invoke.jgkonghun  = true
+sgs.ai_skill_invoke.jgkonghun = true
 
 function sgs.ai_skill_invoke.jgfanshi(self, data)
 	if not self.hasShownSkill("jgfanshi") then return false end
 	return true
 end
 
-sgs.ai_skill_invoke.jgxuanlei  = true
+sgs.ai_skill_invoke.jgxuanlei = true
 
 sgs.ai_skill_playerchosen.jghuodi = function(self, targets)
 	self:updatePlayers()
@@ -316,18 +316,18 @@ end
 
 sgs.ai_playerchosen_intention.jghuodi = 80
 
-sgs.ai_skill_invoke.jgjueji  = true
+sgs.ai_skill_invoke.jgjueji = true
 
 sgs.ai_skill_playerchosen.jgdidong = sgs.ai_skill_playerchosen.jghuodi
 
-sgs.ai_skill_invoke.jglianyu  = true
+sgs.ai_skill_invoke.jglianyu = true
 
 function sgs.ai_skill_invoke.jgtanshi(self, data)
 	if not self.hasShownSkill("jgtanshi") then return false end
 	return true
 end
 
-sgs.ai_skill_invoke.jgtunshi  = true
+sgs.ai_skill_invoke.jgtunshi = true
 
 function sgs.ai_skill_invoke.jgdixian(self, data)
 	local throw, e= 0, 0

@@ -296,7 +296,7 @@ sgs.ai_skill_invoke.tieqi = function(self, data)
 	local target = data:toPlayer()
 	if self:isFriend(target) then return false end
 
-	local zj = self.room:findPlayerBySkillName("guidao")
+	local zj = sgs.findPlayerByShownSkillName("guidao")
 	if zj and self:isEnemy(zj) and self:canRetrial(zj) then return false end
 	return true
 end

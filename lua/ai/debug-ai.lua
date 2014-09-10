@@ -47,7 +47,6 @@ function sgs.debugFunc(player, debugType)
 	local players = sgs.QList2Table(global_room:getAlivePlayers())
 
 	local function showVisiblecards()
-		global_room:writeToConsole(" ")
 		global_room:writeToConsole(string.format("-=showVisiblecards; AI: %s/%s[%s]", player:getActualGeneral1Name(), player:getActualGeneral2Name(), player:getKingdom()))
 		for i = 1, #players, 1 do
 			local msg = string.format("%s/%s[Visiblecards]:", players[i]:getActualGeneral1Name(), players[i]:getActualGeneral2Name())
@@ -63,7 +62,6 @@ function sgs.debugFunc(player, debugType)
 	end
 
 	local function showHandcards()
-		global_room:writeToConsole(" ")
 		global_room:writeToConsole(string.format("-=showHandcards; AI: %s/%s[%s]", player:getActualGeneral1Name(), player:getActualGeneral2Name(), player:getKingdom()))
 		for i = 1, #players, 1 do
 			local msg = string.format("%s/%s[Handcards]:", players[i]:getActualGeneral1Name(), players[i]:getActualGeneral2Name())
@@ -76,7 +74,6 @@ function sgs.debugFunc(player, debugType)
 	end
 
 	local function objectiveLevel()
-		global_room:writeToConsole(" ")
 		global_room:writeToConsole("gameProcess :: " .. sgs.gameProcess())
 		global_room:writeToConsole(string.format("-=objectiveLevel; AI: %s/%s[%s]", player:getActualGeneral1Name(), player:getActualGeneral2Name(), player:getKingdom()))
 		local pSelf = sgs.ais[player:objectName()]
@@ -90,7 +87,6 @@ function sgs.debugFunc(player, debugType)
 	end
 
 	local function getDefenseSlash()
-		global_room:writeToConsole(" ")
 		global_room:writeToConsole(string.format("-=getDefenseSlash; AI: %s/%s[%s]", player:getActualGeneral1Name(), player:getActualGeneral2Name(), player:getKingdom()))
 		for i = 1, #players, 1 do
 			global_room:writeToConsole(string.format("%s/%s:%.2f", players[i]:getActualGeneral1Name(), players[i]:getActualGeneral2Name(), sgs.getDefenseSlash(players[i])))

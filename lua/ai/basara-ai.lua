@@ -231,16 +231,21 @@ sgs.ai_skill_choice["GameRule:TriggerOrder"] = function(self, choices, data)
 		if string.find(choices, "xunxun") and string.find(choices, "ganglie") then return "ganglie" end
 		if string.find(choices, "luoshen") and string.find(choices, "guanxing") then return "luoshen" end
 
-
+		local except = {}
 		for _, skillname in ipairs(skillnames) do
-			if self:askForSkillInvoke(skillname, data) then
+			local invoke = self:askForSkillInvoke(skillname, data)
+			if invoke == true then
 				return skillname
+			elseif invoke == false then
+				table.insert(except, skillname)
 			end
 		end
 		if string.find(choices, "cancel") and not canShowHead and not canShowDeputy and sgs.isAnjiang(self.player) then
 			return "cancel"
 		end
-		return skillnames[math.random(1, #skillnames)]
+		table.removeTable(skillnames, except)
+		
+		if #skillnames > 0 then return skillnames[math.random(1, #skillnames)] end
 	end
 
 	return "cancel"
