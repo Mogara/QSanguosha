@@ -592,7 +592,7 @@ function SmartAI:useCardFireAttack(fire_attack, use)
 		end
 	end
 
-	if can_FireAttack_self and self.player:isChained() and self:isGoodChainTarget(self.player, nil, nil, nil, card)
+	if can_FireAttack_self and self.player:isChained() and self:isGoodChainTarget(self.player, nil, nil, nil, fire_attack)
 		and self.player:getHandcardNum() > 1
 		and self:damageIsEffective(self.player, sgs.DamageStruct_Fire, self.player) and not self:cantbeHurt(self.player)
 		and self:hasTrickEffective(fire_attack, self.player) then
