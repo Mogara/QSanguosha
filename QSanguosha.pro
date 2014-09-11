@@ -76,7 +76,7 @@ SOURCES += \
     src/server/generalselector.cpp \
     src/server/room.cpp \
     src/server/roomthread.cpp \
-    src/server/server.cpp \
+    src/server/RoomServer.cpp \
     src/server/serverplayer.cpp \
     src/ui/button.cpp \
     src/ui/cardcontainer.cpp \
@@ -183,7 +183,7 @@ HEADERS += \
     src/server/generalselector.h \
     src/server/room.h \
     src/server/roomthread.h \
-    src/server/server.h \
+    src/server/RoomServer.h \
     src/server/serverplayer.h \
     src/ui/button.h \
     src/ui/cardcontainer.h \

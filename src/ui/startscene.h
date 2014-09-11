@@ -23,7 +23,7 @@
 
 #include "button.h"
 #include "QSanSelectableItem.h"
-#include "server.h"
+#include "RoomServer.h"
 
 #include <QGraphicsScene>
 #include <QAction>
@@ -37,7 +37,7 @@ public:
 
     void addButton(QAction *action);
     void setServerLogBackground();
-    void switchToServer(Server *server);
+    void switchToServer(RoomServer *server);
 
     void showOrganization();
 

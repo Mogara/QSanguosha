@@ -89,7 +89,7 @@ void StartScene::setServerLogBackground() {
     }
 }
 
-void StartScene::switchToServer(Server *server) {
+void StartScene::switchToServer(RoomServer *server) {
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif

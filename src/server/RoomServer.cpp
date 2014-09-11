@@ -18,7 +18,7 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#include "server.h"
+#include "RoomServer.h"
 #include "settings.h"
 #include "room.h"
 #include "engine.h"
@@ -52,10 +52,10 @@ static QLayout *HLay(QWidget *left, QWidget *right) {
     return layout;
 }
 
-ServerDialog::ServerDialog(QWidget *parent)
+RoomServerDialog::RoomServerDialog(QWidget *parent)
     : FlatDialog(parent)
 {
-    setWindowTitle(tr("Start server"));
+    setWindowTitle(tr("Start room server"));
 
     QTabWidget *tab_widget = new QTabWidget;
     tab_widget->addTab(createBasicTab(), tr("Basic"));
@@ -70,7 +70,7 @@ ServerDialog::ServerDialog(QWidget *parent)
     setMinimumSize(574, 380);
 }
 
-QWidget *ServerDialog::createBasicTab() {
+QWidget *RoomServerDialog::createBasicTab() {
     server_name_edit = new QLineEdit;
     server_name_edit->setText(Config.ServerName);
 
@@ -102,7 +102,7 @@ QWidget *ServerDialog::createBasicTab() {
     return widget;
 }
 
-QWidget *ServerDialog::createPackageTab() {
+QWidget *RoomServerDialog::createPackageTab() {
     disable_lua_checkbox = new QCheckBox(tr("Disable Lua"));
     disable_lua_checkbox->setChecked(Config.DisableLua);
     disable_lua_checkbox->setToolTip(tr("<font color=%1>The setting takes effect after reboot</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
@@ -169,7 +169,7 @@ QWidget *ServerDialog::createPackageTab() {
     return widget;
 }
 
-QWidget *ServerDialog::createAdvancedTab() {
+QWidget *RoomServerDialog::createAdvancedTab() {
     QVBoxLayout *layout = new QVBoxLayout;
 
     forbid_same_ip_checkbox = new QCheckBox(tr("Forbid same IP with multiple connection"));
@@ -235,7 +235,7 @@ QWidget *ServerDialog::createAdvancedTab() {
     return widget;
 }
 
-QWidget *ServerDialog::createConversionTab() {
+QWidget *RoomServerDialog::createConversionTab() {
     QVBoxLayout *layout = new QVBoxLayout;
 
     bool enable_lord = Config.value("EnableLordConvertion", true).toBool();
@@ -256,7 +256,7 @@ QWidget *ServerDialog::createConversionTab() {
     return widget;
 }
 
-QWidget *ServerDialog::createMiscTab() {
+QWidget *RoomServerDialog::createMiscTab() {
     game_start_spinbox = new QSpinBox;
     game_start_spinbox->setRange(0, 10);
     game_start_spinbox->setValue(Config.CountDownSeconds);
@@ -338,7 +338,7 @@ QWidget *ServerDialog::createMiscTab() {
     return widget;
 }
 
-void ServerDialog::updateButtonEnablility(QAbstractButton *button) {
+void RoomServerDialog::updateButtonEnablility(QAbstractButton *button) {
     if (!button) return;
 
     if (button->objectName().contains("scenario")) {
@@ -348,7 +348,7 @@ void ServerDialog::updateButtonEnablility(QAbstractButton *button) {
     }
 }
 
-QGroupBox *ServerDialog::createGameModeBox() {
+QGroupBox *RoomServerDialog::createGameModeBox() {
     QGroupBox *mode_box = new QGroupBox(tr("Game mode"));
     mode_box->setParent(this);
     mode_group = new QButtonGroup(this);
@@ -430,7 +430,7 @@ QGroupBox *ServerDialog::createGameModeBox() {
     return mode_box;
 }
 
-QLayout *ServerDialog::createButtonLayout() {
+QLayout *RoomServerDialog::createButtonLayout() {
     QHBoxLayout *button_layout = new QHBoxLayout;
     button_layout->addStretch();
 
@@ -446,7 +446,7 @@ QLayout *ServerDialog::createButtonLayout() {
     return button_layout;
 }
 
-void ServerDialog::onDetectButtonClicked() {
+void RoomServerDialog::onDetectButtonClicked() {
     QHostInfo vHostInfo = QHostInfo::fromName(QHostInfo::localHostName());
     QList<QHostAddress> vAddressList = vHostInfo.addresses();
     foreach(QHostAddress address, vAddressList) {
@@ -458,16 +458,16 @@ void ServerDialog::onDetectButtonClicked() {
     }
 }
 
-void ServerDialog::onOkButtonClicked() {
+void RoomServerDialog::onOkButtonClicked() {
     accept();
 }
 
-void ServerDialog::doCustomAssign() {
+void RoomServerDialog::doCustomAssign() {
     CustomAssignDialog *dialog = new CustomAssignDialog(this);
     dialog->exec();
 }
 
-bool ServerDialog::config() {
+bool RoomServerDialog::config() {
     exec();
 
     if (result() != Accepted)
@@ -550,12 +550,12 @@ bool ServerDialog::config() {
     return true;
 }
 
-void ServerDialog::editBanlist() {
+void RoomServerDialog::editBanlist() {
     BanlistDialog *dialog = new BanlistDialog(this);
     dialog->exec();
 }
 
-BanIPDialog::BanIPDialog(QWidget *parent, Server *theserver)
+BanIPDialog::BanIPDialog(QWidget *parent, RoomServer *theserver)
     : QDialog(parent), server(theserver){
     /*
         if (Sanguosha->currentRoom() == NULL){
@@ -849,7 +849,7 @@ void BanlistDialog::saveAll() {
 }
 
 
-Server::Server(QObject *parent)
+RoomServer::RoomServer(QObject *parent)
     : QObject(parent)
 {
     server = new NativeServerSocket;
@@ -864,7 +864,7 @@ Server::Server(QObject *parent)
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 }
 
-void Server::broadcastSystemMessage(const QString &msg) {
+void RoomServer::broadcastSystemMessage(const QString &msg) {
     JsonArray arg;
     arg << ".";
     arg << msg;
@@ -876,15 +876,15 @@ void Server::broadcastSystemMessage(const QString &msg) {
         room->broadcast(&packet);
 }
 
-bool Server::listen() {
+bool RoomServer::listen() {
     return server->listen();
 }
 
-void Server::daemonize() {
+void RoomServer::daemonize() {
     server->daemonize();
 }
 
-Room *Server::createNewRoom() {
+Room *RoomServer::createNewRoom() {
     Room *new_room = new Room(this, Config.GameMode);
     current = new_room;
     rooms.insert(current);
@@ -895,7 +895,7 @@ Room *Server::createNewRoom() {
     return current;
 }
 
-void Server::processNewConnection(ClientSocket *socket) {
+void RoomServer::processNewConnection(ClientSocket *socket) {
     QString address = socket->peerAddress();
     if (Config.ForbidSIMC) {
         if (addresses.contains(address)) {
@@ -924,7 +924,7 @@ void Server::processNewConnection(ClientSocket *socket) {
     connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processRequest(QByteArray)));
 }
 
-void Server::processRequest(const QByteArray &request)
+void RoomServer::processRequest(const QByteArray &request)
 {
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
 
@@ -943,14 +943,14 @@ void Server::processRequest(const QByteArray &request)
     }
 }
 
-void Server::notifyClient(ClientSocket *socket, CommandType command, const QVariant &arg)
+void RoomServer::notifyClient(ClientSocket *socket, CommandType command, const QVariant &arg)
 {
     Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
     packet.setMessageBody(arg);
     socket->send(packet.toJson());
 }
 
-void Server::processClientRequest(ClientSocket *socket, const Packet &signup)
+void RoomServer::processClientRequest(ClientSocket *socket, const Packet &signup)
 {
     socket->disconnect(this, SLOT(processRequest(QByteArray)));
 
@@ -989,7 +989,7 @@ void Server::processClientRequest(ClientSocket *socket, const Packet &signup)
     }
 }
 
-void Server::cleanup() {
+void RoomServer::cleanup() {
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
     if (Config.ForbidSIMC)
         addresses.removeOne(socket->peerAddress());
@@ -997,12 +997,12 @@ void Server::cleanup() {
     socket->deleteLater();
 }
 
-void Server::signupPlayer(ServerPlayer *player) {
+void RoomServer::signupPlayer(ServerPlayer *player) {
     name2objname.insert(player->screenName(), player->objectName());
     players.insert(player->objectName(), player);
 }
 
-void Server::gameOver() {
+void RoomServer::gameOver() {
     Room *room = qobject_cast<Room *>(sender());
     rooms.remove(room);
 

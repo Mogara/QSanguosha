@@ -45,7 +45,7 @@ class QRadioButton;
 
 class Package;
 
-class ServerDialog : public FlatDialog {
+class RoomServerDialog : public FlatDialog {
     Q_OBJECT
 
 public:
@@ -64,7 +64,7 @@ public:
     // QSanguosha-Rara
     // March 17 2014
     //************************************
-    ServerDialog(QWidget *parent);
+    RoomServerDialog(QWidget *parent);
     //************************************
     // Method:    config
     // FullName:  ServerDialog::config
@@ -173,13 +173,13 @@ class Scenario;
 class ServerPlayer;
 class BanIPDialog;
 
-class Server : public QObject {
+class RoomServer : public QObject {
     Q_OBJECT
 
 public:
     friend class BanIPDialog;
 
-    explicit Server(QObject *parent);
+    explicit RoomServer(QObject *parent);
 
     void broadcastSystemMessage(const QString &msg);
 
@@ -217,13 +217,13 @@ class BanIPDialog : public QDialog {
     Q_OBJECT
 
 public:
-    BanIPDialog(QWidget *parent, Server *theserver);
+    BanIPDialog(QWidget *parent, RoomServer *theserver);
 
 private:
     QListWidget *left;
     QListWidget *right;
 
-    Server *server;
+    RoomServer *server;
     QList<ServerPlayer *> sp_list;
 
     void loadIPList();
