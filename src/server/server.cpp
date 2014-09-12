@@ -937,6 +937,7 @@ void Server::processRequest(const QByteArray &request)
     switch (packet.getPacketSource()) {
     case S_SRC_CLIENT:
         processClientRequest(socket, packet);
+        break;
     default:
         emit server_message(tr("Packet %1 from an unknown source %2").arg(QString::fromUtf8(request)).arg(socket->peerAddress()));
     }
