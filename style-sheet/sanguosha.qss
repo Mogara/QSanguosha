@@ -502,16 +502,3 @@ QListView::item:!selected:hover {
 #lobby_button_box QPushButton:pressed {
 	background-color: rgb(22, 160, 133);
 }
-
-#lobby_rooms {
-	background: transparent;
-}
-
-#lobby_rooms QPushButton {
-	margin: 10px;
-	height: 90%;
-	width: 90%;
-	border: 2px solid rgb(185, 195, 199);
-	color: white;
-	font-size: 20pt;
-}
