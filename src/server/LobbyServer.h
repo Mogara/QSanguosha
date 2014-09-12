@@ -23,10 +23,30 @@
 
 #include "Server.h"
 
+class LobbyPlayer;
+
 class LobbyServer : public Server
 {
 public:
     LobbyServer(QObject *parent);
+
+    void broadcastSystemMessage(const QString &message);
+    void broadcast(const QByteArray &message, bool include_rooms = false);
+
+protected:
+    void _processNewConnection(ClientSocket *socket);
+
+    struct RoomInfoStruct{
+        QString SetupString;
+        QString Address;
+        ushort Port;
+        int PlayerNum;
+        int RoomNum;
+        int MaxRoomNum;
+    };
+
+    QList<LobbyPlayer *> players;
+    QMap<ClientSocket *, RoomInfoStruct *> rooms;
 };
 
 #endif // LOBBYSERVER_H
