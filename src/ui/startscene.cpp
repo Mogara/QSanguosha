@@ -65,6 +65,9 @@ StartScene::StartScene(QObject *parent)
 
 void StartScene::addButton(QAction *action) {
     Tile *button = new Tile(action->text());
+    QString icon = action->objectName();
+    icon.remove(0, 6);
+    button->setIcon(icon.toLower());
 
     connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
     addItem(button);
