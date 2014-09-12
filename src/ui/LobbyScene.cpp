@@ -160,8 +160,26 @@ void LobbyScene::setRoomList(const QVariant &data)
         HostInfoStruct *info = new HostInfoStruct;
         if (info->parse(array.at(i))) {
             rooms << info;
+
             Tile *tile = new Tile(info->Name, QSizeF(200.0, 100.0));
             tile->setAutoHideTitle(false);
+            QStringList scrollTexts;
+            scrollTexts << tr("Player Number: %1 / %2").arg(info->PlayerNum).arg(info->GameMode);
+            scrollTexts << (Config.OperationNoLimit ?
+                tr("There is no time limit") :
+                tr("Operation timeout is %1 seconds").arg(info->OperationTimeout));
+            scrollTexts << (Config.EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
+            if (Config.EnableCheat)
+                scrollTexts << (Config.FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
+            if (Config.RewardTheFirstShowingPlayer)
+                scrollTexts << tr("The reward of showing general first is enabled");
+            if (!Config.ForbidAddingRobot) {
+                scrollTexts << tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay);
+            } else {
+                scrollTexts << tr("This server is AI disabled");
+            }
+            tile->addScrollText(scrollTexts);
+
             roomTiles << tile;
             addItem(tile);
             connect(tile, SIGNAL(clicked()), SLOT(onRoomTileClicked()));
