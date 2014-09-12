@@ -25,13 +25,15 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPropertyAnimation>
 #include <QGraphicsDropShadowEffect>
+#include <QParallelAnimationGroup>
+#include <QTimer>
 
 static QRectF ButtonRect(0, 0, 154, 154);
 
 Tile::Tile(const QString &label, const QSizeF &size)
     : Button(label, size),
       down(false), auto_hide_title(true), mouse_area(Outside),
-      rotation(NULL), scale(NULL), title(NULL), frame(NULL)
+      rotation(NULL), scale(NULL), title(NULL), scroll_timer(NULL), frame(NULL)
 {
     init();
 }
@@ -39,7 +41,7 @@ Tile::Tile(const QString &label, const QSizeF &size)
 Tile::Tile(const QString &label, qreal scale)
     : Button(label, scale),
       down(false), auto_hide_title(true), mouse_area(Outside),
-      rotation(NULL), scale(NULL), title(NULL), frame(NULL)
+      rotation(NULL), scale(NULL), title(NULL), scroll_timer(NULL), frame(NULL)
 {
     size = ButtonRect.size() * scale;
     init();
@@ -73,6 +75,66 @@ void Tile::setIcon(QString path)
     if (QFile::exists(path)) {
         icon.load(path);
     }
+}
+
+void Tile::addScrollText(const QStringList &texts)
+{
+    if (scroll_timer == NULL) {
+        scroll_timer = new QTimer(this);
+        scroll_timer->setSingleShot(true);
+    } else {
+        scroll_timer->stop();
+        scroll_timer->disconnect(this, SLOT(scrollToNextContent()));
+    }
+
+    if (!texts.isEmpty()) {
+        foreach (const QString &text, texts) {
+            Title *title = new Title(this, text, font_name, font_size);
+            title->setOpacity(0.0);
+            title->setX(boundingRect().width() / 10);
+            scroll_contents << title;
+        }
+
+        current_text_id = 0;
+        QGraphicsObject *first_content = scroll_contents.first();
+        first_content->setOpacity(1.0);
+        first_content->setY((boundingRect().height() - first_content->boundingRect().height()) / 2);
+
+        connect(scroll_timer, SIGNAL(timeout()), SLOT(scrollToNextContent()));
+        scroll_timer->start(((qrand() % 3) + 3) * 1000);
+    }
+}
+
+void Tile::scrollToNextContent()
+{
+    QGraphicsObject *current = scroll_contents.at(current_text_id);
+    current_text_id = (current_text_id + 1) % scroll_contents.size();
+    QGraphicsObject *next = scroll_contents.at(current_text_id);
+
+    QPropertyAnimation *opacity1 = new QPropertyAnimation(current, "opacity");
+    opacity1->setStartValue(1.0);
+    opacity1->setEndValue(0.0);
+
+    QPropertyAnimation *y1 = new QPropertyAnimation(current, "y");
+    y1->setStartValue((boundingRect().height() - current->boundingRect().height()) / 2);
+    y1->setEndValue(0.0);
+
+    QPropertyAnimation *opacity2 = new QPropertyAnimation(next, "opacity");
+    opacity2->setStartValue(0.0);
+    opacity2->setEndValue(1.0);
+
+    QPropertyAnimation *y2 = new QPropertyAnimation(next, "y");
+    y2->setStartValue(boundingRect().height() - next->boundingRect().height());
+    y2->setEndValue((boundingRect().height() - next->boundingRect().height()) / 2);
+
+    QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
+    group->addAnimation(opacity1);
+    group->addAnimation(y1);
+    group->addAnimation(opacity2);
+    group->addAnimation(y2);
+    group->start(QAbstractAnimation::DeleteWhenStopped);
+
+    scroll_timer->start(((qrand() % 3) + 3) * 1000);
 }
 
 void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)

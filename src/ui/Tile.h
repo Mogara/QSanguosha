@@ -36,9 +36,24 @@ public:
     bool autoHideTitle() const { return auto_hide_title; }
 
     void setIcon(QString path);
+    void addScrollText(const QStringList &texts);
+
+protected slots:
+    void scrollToNextContent();
 
 protected:
+    enum MouseArea {
+        Right,
+        Left,
+        Top,
+        Bottom,
+        Center,
+
+        Outside
+    };
+
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
+    MouseArea getMouseArea(const QPointF &pos) const;
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -50,16 +65,6 @@ protected:
     void doTransform(const QPointF &pos);
     void reset();
 
-    enum MouseArea {
-        Right,
-        Left,
-        Top,
-        Bottom,
-        Center,
-
-        Outside
-    };
-
     bool down;
     bool auto_hide_title;
 
@@ -68,12 +73,12 @@ protected:
     QGraphicsRotation *rotation;
     QGraphicsScale *scale;
     Title *title;
+    QPixmap icon;
+    QList<QGraphicsObject *> scroll_contents;
+    int current_text_id;
+    QTimer *scroll_timer;
 
     QGraphicsDropShadowEffect *frame;
-
-    QPixmap icon;
-
-    MouseArea getMouseArea(const QPointF &pos) const;
 };
 
 #endif // TILE_H
