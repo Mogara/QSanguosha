@@ -89,6 +89,7 @@ public:
     bool RewardTheFirstShowingPlayer;
 
     // client side
+    QString LobbyAddress;
     QString HostAddress;
     QString UserName;
     QString UserAvatar;

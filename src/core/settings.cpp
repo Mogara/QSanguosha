@@ -114,6 +114,7 @@ void Settings::init() {
         UserName = tr("Sanguosha-fans");
     ServerName = value("ServerName", tr("%1's server").arg(UserName)).toString();
 
+    LobbyAddress = value("LobbyAddress", "heg.qsanguosha.org").toString();
     HostAddress = value("HostAddress", "127.0.0.1").toString();
     //Set Cao Cao as default avatar to pay tribute to Moligaloo, the founder of QSanguosha.
     UserAvatar = value("UserAvatar", "caocao").toString();
