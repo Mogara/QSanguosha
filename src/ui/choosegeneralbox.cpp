@@ -102,7 +102,7 @@ void GeneralCardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 
 ChooseGeneralBox::ChooseGeneralBox()
     : general_number(0), single_result(false), view_only(false),
-      confirm(new Button(tr("fight"), 0.6, true)),
+      confirm(new Button(tr("fight"), 0.6)),
       progress_bar(NULL)
 {
     confirm->setEnabled(ClientInstance->getReplayer());

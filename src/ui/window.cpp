@@ -100,7 +100,7 @@ void Window::addContent(const QString &content) {
 }
 
 Button *Window::addCloseButton(const QString &label) {
-    Button *ok_button = new Button(label, 0.6, true);
+    Button *ok_button = new Button(label, 0.6);
     QFont font = Config.TinyFont;
     font.setBold(true);
     ok_button->setFontSize(font.pixelSize());

@@ -339,12 +339,12 @@ RoomScene::RoomScene(QMainWindow *main_window)
         control_panel = addRect(0, 0, 500, 150, Qt::NoPen);
         control_panel->hide();
 
-        add_robot = new Button(tr("Add a robot"), 1.0, true);
+        add_robot = new Button(tr("Add a robot"), 1.0);
         add_robot->setParentItem(control_panel);
         add_robot->setTransform(QTransform::fromTranslate(-add_robot->boundingRect().width() / 2, -add_robot->boundingRect().height() / 2), true);
         add_robot->setPos(0, -add_robot->boundingRect().height() - 10);
 
-        fill_robots = new Button(tr("Fill robots"), 1.0, true);
+        fill_robots = new Button(tr("Fill robots"), 1.0);
         fill_robots->setParentItem(control_panel);
         fill_robots->setTransform(QTransform::fromTranslate(-fill_robots->boundingRect().width() / 2, -fill_robots->boundingRect().height() / 2), true);
 
@@ -354,7 +354,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     } else {
         control_panel = NULL;
     }
-    return_to_start_scene = new Button(tr("Return to main menu"), 1.0, true);
+    return_to_start_scene = new Button(tr("Return to main menu"), 1.0);
     addItem(return_to_start_scene);
     return_to_start_scene->setZValue(10000);
     return_to_start_scene->setTransform(QTransform::fromTranslate(-return_to_start_scene->boundingRect().width() / 2, -return_to_start_scene->boundingRect().height() / 2), true);
@@ -4124,7 +4124,7 @@ void RoomScene::startArrange(const QString &) {
         arrange_rects << rect_item;
     }
 
-    arrange_button = new Button(tr("Complete"), 0.8, true);
+    arrange_button = new Button(tr("Complete"), 0.8);
     arrange_button->setParentItem(selector_box);
     arrange_button->setPos(600, 330);
     connect(arrange_button, SIGNAL(clicked()), this, SLOT(finishArrange()));

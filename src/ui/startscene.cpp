@@ -23,6 +23,7 @@
 #include "audio.h"
 #include "QSanSelectableItem.h"
 #include "StyleHelper.h"
+#include "Tile.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -63,7 +64,7 @@ StartScene::StartScene(QObject *parent)
 }
 
 void StartScene::addButton(QAction *action) {
-    Button *button = new Button(action->text());
+    Tile *button = new Tile(action->text());
 
     connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
     addItem(button);

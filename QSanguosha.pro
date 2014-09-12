@@ -116,6 +116,7 @@ SOURCES += \
     src/ui/HeroSkinContainer.cpp \
     src/ui/SkinItem.cpp \
     src/ui/LobbyScene.cpp \
+    src/ui/Tile.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
@@ -227,6 +228,7 @@ HEADERS += \
     src/ui/HeroSkinContainer.h \
     src/ui/SkinItem.h \
     src/ui/LobbyScene.h \
+    src/ui/Tile.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \
