@@ -22,6 +22,8 @@ public:
     void setSocket(ClientSocket *new_socket);
     QString getIP() const { return socket->peerAddress(); }
     QString getSocketName() const { return socket->peerName(); }
+    void unicast(const QByteArray &message) { socket->send(message); }
+    void unicast(const QSanProtocol::Packet *packet) { socket->send(packet->toJson()); }
 
     QString getScreenName() const { return screenName; }
     void setScreenName(const QString &name) { screenName = name; }
