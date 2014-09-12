@@ -36,7 +36,7 @@ int LobbyScene::SCENE_MARGIN_TOP = 30;
 
 
 LobbyScene::LobbyScene(QMainWindow *parent) :
-    QGraphicsScene(parent)
+    QGraphicsScene(parent), currentPage(0)
 {
     //chat
     chatBox = new QTextEdit;
@@ -71,7 +71,7 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     buttonBox->setLayout(buttonLayout);
     addWidget(buttonBox);
 
-    //connect(refreshButton, SIGNAL(clicked()), ClientInstance, SLOT(requestServerList()));
+    connect(refreshButton, SIGNAL(clicked()), SLOT(refreshRoomList()));
 
     //room tiles
     roomTitle = new Title(NULL, tr("Rooms"), "wqy-microhei", 30);
@@ -83,7 +83,7 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     connect(createRoomTile, SIGNAL(clicked()), SLOT(onCreateRoomClicked()));
     addItem(createRoomTile);
 
-    //connect(ClientInstance, SIGNAL(serverListChanged(QVariant)), SLOT(setRoomList(QVariant)));
+    connect(ClientInstance, SIGNAL(roomListChanged(QVariant)), SLOT(setRoomList(QVariant)));
 }
 
 void LobbyScene::adjustItems()
@@ -144,7 +144,7 @@ void LobbyScene::adjustRoomTiles()
 
 void LobbyScene::setRoomList(const QVariant &data)
 {
-    /*foreach (HostInfoStruct *info, rooms) {
+    foreach (HostInfoStruct *info, rooms) {
         delete info;
     }
     rooms.clear();
@@ -170,7 +170,7 @@ void LobbyScene::setRoomList(const QVariant &data)
         }
     }
 
-    adjustRoomTiles();*/
+    adjustRoomTiles();
 }
 
 void LobbyScene::speakToServer()
@@ -182,13 +182,31 @@ void LobbyScene::speakToServer()
     }
 }
 
+void LobbyScene::refreshRoomList()
+{
+    currentPage = 0;
+    ClientInstance->fetchRoomList(currentPage);
+}
+
+void LobbyScene::prevPage()
+{
+    if (currentPage > 0)
+        ClientInstance->fetchRoomList(--currentPage);
+}
+
+void LobbyScene::nextPage()
+{
+    if (!rooms.isEmpty())
+        ClientInstance->fetchRoomList(++currentPage);
+}
+
 void LobbyScene::onRoomTileClicked()
 {
     Tile *tile = qobject_cast<Tile *>(sender());
     if (tile == NULL) return;
 
     int index = roomTiles.indexOf(tile);
-    /*if (index == -1 || index >= rooms.size()) return;
+    if (index == -1 || index >= rooms.size()) return;
 
     HostInfoStruct *info = rooms.at(index);
 
@@ -196,11 +214,11 @@ void LobbyScene::onRoomTileClicked()
 
     Config.HostAddress = info->HostAddress;
     Config.ServerPort = info->HostPort;
-    emit roomSelected();*/
+    emit roomSelected();
 }
 
 void LobbyScene::onCreateRoomClicked()
 {
-    //Config.LobbyAddress = Config.HostAddress;
+    Config.LobbyAddress = Config.HostAddress;
     emit createRoomClicked();
- }
+}

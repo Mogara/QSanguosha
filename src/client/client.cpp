@@ -99,6 +99,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_UPDATE_HANDCARD_NUM] = &Client::setHandcardNum;
     callbacks[S_COMMAND_MIRROR_GUANXING_STEP] = &Client::mirrorGuanxingStep;
     callbacks[S_COMMAND_ENTER_LOBBY] = &Client::enterLobby;
+    callbacks[S_COMMAND_ROOM_LIST] = &Client::updateRoomList;
 
     // interactive methods
     interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
@@ -331,6 +332,11 @@ void Client::setup(const QVariant &setup_json) {
 void Client::enterLobby(const QVariant &)
 {
     emit lobbyServerConnected();
+}
+
+void Client::updateRoomList(const QVariant &list)
+{
+    emit roomListChanged(list);
 }
 
 void Client::disconnectFromHost() {
@@ -576,6 +582,11 @@ void Client::arrange(const QStringList &order) {
 
     //@to-do:unused command in hegemony mode. deprecated format
     request(QString("arrange %1").arg(order.join("+")));
+}
+
+void Client::fetchRoomList(int page)
+{
+    notifyServer(S_COMMAND_ROOM_LIST, page);
 }
 
 void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> &targets) {

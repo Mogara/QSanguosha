@@ -50,6 +50,10 @@ public slots:
 private slots:
     void speakToServer();
 
+    void refreshRoomList();
+    void prevPage();
+    void nextPage();
+
     void onRoomTileClicked();
     void onCreateRoomClicked();
 
@@ -67,9 +71,10 @@ private:
 
     Title *roomTitle;
 
-    //QList<HostInfoStruct *> rooms;
+    QList<HostInfoStruct *> rooms;
     QList<Tile *> roomTiles;
     Tile *createRoomTile;
+    int currentPage;
 
     static int SCENE_PADDING;
     static int SCENE_MARGIN_TOP;

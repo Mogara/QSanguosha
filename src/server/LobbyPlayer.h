@@ -22,6 +22,8 @@ public:
     void setSocket(ClientSocket *new_socket);
     QString getIP() const { return socket->peerAddress(); }
     QString getSocketName() const { return socket->peerName(); }
+
+    void notify(QSanProtocol::CommandType command, const QVariant &data = QVariant());
     void unicast(const QByteArray &message) { socket->send(message); }
     void unicast(const QSanProtocol::Packet *packet) { socket->send(packet->toJson()); }
 
@@ -40,6 +42,7 @@ signals:
 
 protected:
     void speakCommand(const QVariant &message);
+    void roomListCommand(const QVariant &data);
 
     LobbyServer *server;
     QString screenName;

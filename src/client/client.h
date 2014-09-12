@@ -158,6 +158,7 @@ public:
     void updateCard(const QVariant &val);
     void mirrorGuanxingStep(const QVariant &args);
     void enterLobby(const QVariant &);
+    void updateRoomList(const QVariant &data);
 
     void fillAG(const QVariant &cards_str);
     void takeAG(const QVariant &take_var);
@@ -247,6 +248,7 @@ public slots:
     void addRobot();
     void fillRobots();
     void arrange(const QStringList &order);
+    void fetchRoomList(int page = 0);
 
     void onPlayerReplyGongxin(int card_id = -1);
 
@@ -376,6 +378,8 @@ signals:
     void deputy_preshowed();
 
     void update_handcard_num();
+
+    void roomListChanged(const QVariant &list);
 };
 
 extern Client *ClientInstance;

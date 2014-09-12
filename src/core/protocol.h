@@ -156,7 +156,8 @@ namespace QSanProtocol {
         S_COMMAND_TRIGGER_ORDER,
         S_COMMAND_MIRROR_GUANXING_STEP,
         S_COMMAND_CHANGE_SKIN,
-        S_COMMAND_ENTER_LOBBY
+        S_COMMAND_ENTER_LOBBY,
+        S_COMMAND_ROOM_LIST
     };
 
     enum GameEventType {

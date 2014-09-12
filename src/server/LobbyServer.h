@@ -37,6 +37,8 @@ public:
     void broadcast(const QSanProtocol::Packet *packet);
     void broadcast(const QByteArray &message, int destination = QSanProtocol::S_DEST_CLIENT);
 
+    void sendRoomListTo(LobbyPlayer *player, int page = 0);
+
 protected:
     void _processNewConnection(ClientSocket *socket);
     void processClientSignup(ClientSocket *socket, const QSanProtocol::Packet &signup);

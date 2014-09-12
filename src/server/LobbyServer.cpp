@@ -195,3 +195,35 @@ void LobbyServer::cleanupRoom()
     socket->disconnect(this);
     this->disconnect(socket);
 }
+
+void LobbyServer::sendRoomListTo(LobbyPlayer *player, int page)
+{
+    if (rooms.isEmpty()) {
+        player->notify(S_COMMAND_ROOM_LIST);
+        return;
+    }
+
+    static const int pageLimit = 10;
+    int offset = page * pageLimit;
+    if (offset >= rooms.size())
+        return;
+
+    QMapIterator<ClientSocket *, RoomInfoStruct *> iter(rooms);
+    for (int i = 0; i < offset; i++)
+        iter.next();
+
+    JsonArray data;
+    for (int i = 0; i < pageLimit && iter.hasNext(); i++) {
+        iter.next();
+        RoomInfoStruct *info = iter.value();
+        JsonArray item;
+        item << info->SetupString;
+        item << info->Address;
+        item << info->Port;
+        item << info->PlayerNum;
+        item << info->RoomNum;
+        item << info->MaxRoomNum;
+        data << QVariant(item);
+    }
+    player->notify(S_COMMAND_ROOM_LIST, data);
+}

@@ -9,6 +9,7 @@ LobbyPlayer::LobbyPlayer(LobbyServer *parent) :
     QObject(parent), server(parent), socket(NULL)
 {
     callbacks[S_COMMAND_SPEAK] = &LobbyPlayer::speakCommand;
+    callbacks[S_COMMAND_ROOM_LIST] = &LobbyPlayer::roomListCommand;
 }
 
 void LobbyPlayer::setSocket(ClientSocket *new_socket)
@@ -24,6 +25,13 @@ void LobbyPlayer::setSocket(ClientSocket *new_socket)
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
         connect(socket, SIGNAL(message_got(QByteArray)), SLOT(processMessage(QByteArray)));
     }
+}
+
+void LobbyPlayer::notify(CommandType command, const QVariant &data)
+{
+    Packet packet(S_SRC_LOBBY | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
+    packet.setMessageBody(data);
+    unicast(packet.toJson());
 }
 
 void LobbyPlayer::processMessage(const QByteArray &message)
@@ -53,4 +61,10 @@ void LobbyPlayer::speakCommand(const QVariant &message)
     body << screenName;
     body << message;
     server->broadcastNotification(S_COMMAND_SPEAK, body);
+}
+
+void LobbyPlayer::roomListCommand(const QVariant &data)
+{
+    int page = data.toInt();
+    server->sendRoomListTo(this, page);
 }
