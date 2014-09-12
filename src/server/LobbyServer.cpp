@@ -36,18 +36,32 @@ void LobbyServer::broadcastSystemMessage(const QString &message)
     body << ".";
     body << message;
 
-    Packet packet(S_SRC_LOBBY | S_TYPE_NOTIFICATION | S_DEST_CLIENT, S_COMMAND_SPEAK);
+    Packet packet(S_SRC_LOBBY | S_TYPE_NOTIFICATION | S_DEST_CLIENT | S_DEST_ROOM, S_COMMAND_SPEAK);
     packet.setMessageBody(body);
-    broadcast(packet.toJson(), true);
+    broadcast(&packet);
 }
 
-void LobbyServer::broadcast(const QByteArray &message, bool include_rooms)
+void LobbyServer::broadcastNotification(CommandType command, const QVariant &data, int destination)
 {
-    foreach (LobbyPlayer *player, players) {
-        player->unicast(message);
+    Packet packet(S_SRC_LOBBY | S_TYPE_NOTIFICATION | destination, command);
+    packet.setMessageBody(data);
+    broadcast(&packet);
+}
+
+void LobbyServer::broadcast(const Packet *packet)
+{
+    broadcast(packet->toJson(), packet->getPacketDestination());
+}
+
+void LobbyServer::broadcast(const QByteArray &message, int destination)
+{
+    if (destination & S_DEST_CLIENT) {
+        foreach (LobbyPlayer *player, players) {
+            player->unicast(message);
+        }
     }
 
-    if (include_rooms) {
+    if (destination & S_DEST_ROOM) {
         QMapIterator<ClientSocket *, RoomInfoStruct *> iter(rooms);
         while (iter.hasNext()) {
             ClientSocket *socket = iter.key();

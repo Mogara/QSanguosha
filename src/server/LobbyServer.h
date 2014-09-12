@@ -33,7 +33,9 @@ public:
     LobbyServer(QObject *parent);
 
     void broadcastSystemMessage(const QString &message);
-    void broadcast(const QByteArray &message, bool include_rooms = false);
+    void broadcastNotification(QSanProtocol::CommandType command, const QVariant &data = QVariant(), int destination = QSanProtocol::S_DEST_CLIENT);
+    void broadcast(const QSanProtocol::Packet *packet);
+    void broadcast(const QByteArray &message, int destination = QSanProtocol::S_DEST_CLIENT);
 
 protected:
     void _processNewConnection(ClientSocket *socket);
