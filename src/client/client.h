@@ -157,6 +157,7 @@ public:
     void setCardFlag(const QVariant &pattern_str);
     void updateCard(const QVariant &val);
     void mirrorGuanxingStep(const QVariant &args);
+    void enterLobby(const QVariant &);
 
     void fillAG(const QVariant &cards_str);
     void takeAG(const QVariant &take_var);
@@ -295,7 +296,8 @@ private slots:
 
 signals:
     void version_checked(const QString &version_number, const QString &mod_name);
-    void server_connected();
+    void roomServerConnected();
+    void lobbyServerConnected();
     void error_message(const QString &msg);
     void player_added(ClientPlayer *new_player);
     void player_removed(const QString &player_name);

@@ -98,6 +98,7 @@ Client::Client(QObject *parent, const QString &filename)
     callbacks[S_COMMAND_CARD_FLAG] = &Client::setCardFlag;
     callbacks[S_COMMAND_UPDATE_HANDCARD_NUM] = &Client::setHandcardNum;
     callbacks[S_COMMAND_MIRROR_GUANXING_STEP] = &Client::mirrorGuanxingStep;
+    callbacks[S_COMMAND_ENTER_LOBBY] = &Client::enterLobby;
 
     // interactive methods
     interactions[S_COMMAND_CHOOSE_GENERAL] = &Client::askForGeneral;
@@ -320,12 +321,16 @@ void Client::setup(const QVariant &setup_json) {
 
     QString setup_str = setup_json.toString();
     if (ServerInfo.parse(setup_str)) {
-        emit server_connected();
+        emit roomServerConnected();
         notifyServer(S_COMMAND_TOGGLE_READY);
-    }
-    else {
+    } else {
         QMessageBox::warning(NULL, tr("Warning"), tr("Setup string can not be parsed: %1").arg(setup_str));
     }
+}
+
+void Client::enterLobby(const QVariant &)
+{
+    emit lobbyServerConnected();
 }
 
 void Client::disconnectFromHost() {

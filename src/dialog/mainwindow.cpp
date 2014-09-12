@@ -669,7 +669,7 @@ void MainWindow::checkVersion(const QString &server_version_str, const QString &
 
     if (server_version == client_version) {
         client->signup();
-        connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
+        connect(client, SIGNAL(roomServerConnected()), SLOT(enterRoom()));
         return;
     }
 
@@ -716,7 +716,7 @@ void MainWindow::on_actionReplay_triggered() {
     Config.setValue("LastReplayDir", last_dir);
 
     Client *client = new Client(this, filename);
-    connect(client, SIGNAL(server_connected()), SLOT(enterRoom()));
+    connect(client, SIGNAL(roomServerConnected()), SLOT(enterRoom()));
     client->signup();
 }
 
