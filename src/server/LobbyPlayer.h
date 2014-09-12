@@ -39,6 +39,8 @@ signals:
     void errorMessage(const QString &message);
 
 protected:
+    void speakCommand(const QVariant &message);
+
     LobbyServer *server;
     QString screenName;
     QString avatar;

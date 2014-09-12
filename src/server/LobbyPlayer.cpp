@@ -1,12 +1,14 @@
 #include "LobbyPlayer.h"
 #include "room.h"
 #include "LobbyServer.h"
+#include "json.h"
 
 using namespace QSanProtocol;
 
 LobbyPlayer::LobbyPlayer(LobbyServer *parent) :
     QObject(parent), server(parent), socket(NULL)
 {
+    callbacks[S_COMMAND_SPEAK] = &LobbyPlayer::speakCommand;
 }
 
 void LobbyPlayer::setSocket(ClientSocket *new_socket)
@@ -20,6 +22,7 @@ void LobbyPlayer::setSocket(ClientSocket *new_socket)
     if (new_socket) {
         socket = new_socket;
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
+        connect(socket, SIGNAL(message_got(QByteArray)), SLOT(processMessage(QByteArray)));
     }
 }
 
@@ -42,4 +45,12 @@ void LobbyPlayer::processMessage(const QByteArray &message)
                           .arg(screenName)
                           .arg(socket->peerName()));
     }
+}
+
+void LobbyPlayer::speakCommand(const QVariant &message)
+{
+    JsonArray body;
+    body << screenName;
+    body << message;
+    server->broadcastNotification(S_COMMAND_SPEAK, body);
 }

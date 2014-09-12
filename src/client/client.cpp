@@ -1888,6 +1888,8 @@ void Client::speak(const QVariant &speak) {
         title = from->getGeneralName();
         title = Sanguosha->translate(title);
         title.append(QString("(%1)").arg(from->screenName()));
+    } else {
+        title = who;
     }
 
     title = QString("<b>%1</b>").arg(title);
