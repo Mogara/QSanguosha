@@ -204,14 +204,22 @@ QWidget *RoomServerDialog::createAdvancedTab() {
     hegemony_maxchoice_spinbox->setRange(5, 7); //wait for a new extension
     hegemony_maxchoice_spinbox->setValue(Config.value("HegemonyMaxChoice", 7).toInt());
 
+    lobby_address_edit = new QLineEdit;
+    lobby_address_edit->setText(Config.LobbyAddress);
+
     address_edit = new QLineEdit;
     address_edit->setText(Config.Address);
 #if QT_VERSION >= 0x040700
     address_edit->setPlaceholderText(tr("Public IP or domain"));
 #endif
 
-    QPushButton *detect_button = new QPushButton(tr("Detect my WAN IP"));
+    QPushButton *detect_button = new QPushButton(tr("Detect"));
     connect(detect_button, SIGNAL(clicked()), this, SLOT(onDetectButtonClicked()));
+
+    QLayout *address_layout = new QHBoxLayout;
+    address_layout->addWidget(new QLabel(tr("Address")));
+    address_layout->addWidget(address_edit);
+    address_layout->addWidget(detect_button);
 
     port_edit = new QLineEdit;
     port_edit->setText(QString::number(Config.ServerPort));
@@ -223,8 +231,8 @@ QWidget *RoomServerDialog::createAdvancedTab() {
     layout->addWidget(free_choose_checkbox);
     layout->addLayout(HLay(pile_swapping_label, pile_swapping_spinbox));
     layout->addLayout(HLay(hegemony_maxchoice_label, hegemony_maxchoice_spinbox));
-    layout->addLayout(HLay(new QLabel(tr("Address")), address_edit));
-    layout->addWidget(detect_button);
+    layout->addLayout(HLay(new QLabel(tr("Lobby Address")), lobby_address_edit));
+    layout->addLayout(address_layout);
     layout->addLayout(HLay(new QLabel(tr("Port")), port_edit));
     layout->addStretch();
 
@@ -494,6 +502,7 @@ bool RoomServerDialog::config() {
     Config.DisableLua = disable_lua_checkbox->isChecked();
     Config.SurrenderAtDeath = surrender_at_death_checkbox->isChecked();
     Config.LuckCardLimitation = luck_card_spinbox->value();
+    Config.LobbyAddress = lobby_address_edit->text();
 
     // game mode
     QString objname = mode_group->checkedButton()->objectName();
@@ -524,6 +533,7 @@ bool RoomServerDialog::config() {
     Config.setValue("Address", Config.Address);
     Config.setValue("DisableLua", disable_lua_checkbox->isChecked());
     Config.setValue("AIChat", ai_chat_checkbox->isChecked());
+    Config.setValue("LobbyAddress", Config.LobbyAddress);
 
     QSet<QString> ban_packages;
     QList<QAbstractButton *> checkboxes = extension_group->buttons();
@@ -538,7 +548,7 @@ bool RoomServerDialog::config() {
     Config.BanPackages = ban_packages.toList();
     Config.setValue("BanPackages", Config.BanPackages);
 
-    QStringList general_conversions;
+    //QStringList general_conversions;
     Config.setValue("EnableLordConvertion", convert_lord->isChecked());
 
     QStringList card_conversions;
