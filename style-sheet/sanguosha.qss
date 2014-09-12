@@ -465,11 +465,11 @@ QListView::item:!selected:hover {
 	color: rgb(26, 188, 156);
 }
 
-#chat_box {
+#lobby_chat_box {
 	background: transparent;
 }
 
-#chat_box #chat_log {
+#lobby_chat_box #chat_log {
 	border: 2px solid rgb(185, 195, 199);
 	min-height: 32px;
 	border-radius: 6px;

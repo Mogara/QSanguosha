@@ -21,12 +21,16 @@
 #ifndef LOBBYSCENE_H
 #define LOBBYSCENE_H
 
+#include "clientstruct.h"
+
 #include <QGraphicsScene>
 #include <QLineEdit>
 #include <QPlainTextEdit>
 #include <QPushButton>
 
 class QMainWindow;
+class Tile;
+class Title;
 
 class LobbyScene : public QGraphicsScene
 {
@@ -34,30 +38,41 @@ class LobbyScene : public QGraphicsScene
 public:
     explicit LobbyScene(QMainWindow *parent = 0);
     void adjustItems();
+    void adjustRoomTiles();
 
 signals:
-
-protected:
+    void roomSelected();
+    void createRoomClicked();
 
 public slots:
+    void setRoomList(const QVariant &data);
 
 private slots:
     void speakToServer();
 
+    void onRoomTileClicked();
+    void onCreateRoomClicked();
+
 private:
     QWidget *chatWidget;
     QLineEdit *chatLineEdit;
-    QPlainTextEdit *chatBox;
+    QTextEdit *chatBox;
 
     QGraphicsPixmapItem *userAvatarItem;
-    QGraphicsTextItem *userNameItem;
+    Title *userNameItem;
 
     QWidget *buttonBox;
     QPushButton *refreshButton;
-    QPushButton *createRoomButton;
     QPushButton *exitButton;
 
-    QWidget *roomGrid;
+    Title *roomTitle;
+
+    //QList<HostInfoStruct *> rooms;
+    QList<Tile *> roomTiles;
+    Tile *createRoomTile;
+
+    static int SCENE_PADDING;
+    static int SCENE_MARGIN_TOP;
 };
 
 #endif // LOBBYSCENE_H
