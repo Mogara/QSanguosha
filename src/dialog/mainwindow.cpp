@@ -817,8 +817,8 @@ void MainWindow::enterLobby() {
     }
 
     LobbyScene *scene = new LobbyScene(this);
-
-    //@todo: connect signals & slots here
+    connect(scene, SIGNAL(createRoomClicked()), SLOT(on_actionPC_Console_Start_triggered()));
+    connect(scene, SIGNAL(roomSelected()), SLOT(startConnection()));
 
     gotoScene(scene);
 }
