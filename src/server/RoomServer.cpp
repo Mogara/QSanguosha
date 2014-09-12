@@ -882,13 +882,14 @@ void RoomServer::_processNewConnection(ClientSocket *socket) {
     connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processMessage(QByteArray)));
 }
 
-void RoomServer::processMessage(const QByteArray &request)
+void RoomServer::processMessage(const QByteArray &message)
 {
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
+    if (socket == NULL) return;
 
     Packet packet;
-    if (!packet.parse(request)) {
-        emit serverMessage(tr("Invalid message %1 from %2").arg(QString::fromUtf8(request)).arg(socket->peerAddress()));
+    if (!packet.parse(message)) {
+        emit serverMessage(tr("Invalid message %1 from %2").arg(QString::fromUtf8(message)).arg(socket->peerName()));
         return;
     }
 
@@ -897,7 +898,7 @@ void RoomServer::processMessage(const QByteArray &request)
         processClientRequest(socket, packet);
         break;
     default:
-        emit serverMessage(tr("Packet %1 from an unknown source %2").arg(QString::fromUtf8(request)).arg(socket->peerAddress()));
+        emit serverMessage(tr("Packet %1 from an unknown source %2").arg(QString::fromUtf8(message)).arg(socket->peerName()));
     }
 }
 

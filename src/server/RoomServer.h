@@ -198,7 +198,7 @@ protected:
     QMultiHash<QString, QString> name2objname;
 
 protected slots:
-    void processMessage(const QByteArray &request);
+    void processMessage(const QByteArray &message);
     void gameOver();
 
 signals:
