@@ -279,8 +279,7 @@ void ServerPlayer::setSocket(ClientSocket *socket) {
         connect(socket, SIGNAL(disconnected()), this, SIGNAL(disconnected()));
         connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(getMessage(QByteArray)));
         connect(this, SIGNAL(message_ready(QByteArray)), this, SLOT(sendMessage(QByteArray)));
-    }
-    else {
+    } else {
         if (this->socket) {
             this->disconnect(this->socket);
             this->socket->disconnect(this);
