@@ -40,6 +40,7 @@ public:
 protected:
     void _processNewConnection(ClientSocket *socket);
     void processClientSignup(ClientSocket *socket, const QSanProtocol::Packet &signup);
+    void processRoomPacket(ClientSocket *socket, const QSanProtocol::Packet &packet);
 
     struct RoomInfoStruct{
         QString SetupString;
@@ -52,6 +53,9 @@ protected:
 
     QList<LobbyPlayer *> players;
     QMap<ClientSocket *, RoomInfoStruct *> rooms;
+
+    typedef void (LobbyServer::*Callback)(ClientSocket *socket, const QVariant &);
+    QHash<QSanProtocol::CommandType, Callback> callbacks;
 
 protected slots:
     void processMessage(const QByteArray &message);

@@ -28,6 +28,8 @@ LobbyServer::LobbyServer(QObject *parent)
     :Server(parent)
 {
     packetSource = S_SRC_LOBBY;
+
+    //callbacks[S_COMMAND_SETUP] = &LobbyServer::setupNewRoom;
 }
 
 void LobbyServer::broadcastSystemMessage(const QString &message)
@@ -93,6 +95,7 @@ void LobbyServer::processMessage(const QByteArray &message)
         processClientSignup(socket, packet);
         break;
     case S_SRC_ROOM:
+        processRoomPacket(socket, packet);
         break;
     default:
         emit serverMessage(tr("Packet %1 from %2 with an unknown source is discarded").arg(QString::fromUtf8(message)).arg(socket->peerName()));
@@ -125,6 +128,16 @@ void LobbyServer::processClientSignup(ClientSocket *socket, const Packet &signup
     connect(player, SIGNAL(disconnected()), SLOT(cleanupPlayer()));
 
     emit serverMessage(tr("%1 logged in as Player %2").arg(socket->peerName()).arg(screen_name));
+}
+
+void LobbyServer::processRoomPacket(ClientSocket *socket, const Packet &packet)
+{
+    Callback func = callbacks.value(packet.getCommandType());
+    if (func) {
+        (this->*func)(socket, packet.getMessageBody());
+    } else {
+        emit serverMessage(tr("Packet %1 with an invalid command is discarded").arg(packet.toString()));
+    }
 }
 
 void LobbyServer::cleanupPlayer()
