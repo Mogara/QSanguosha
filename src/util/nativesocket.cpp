@@ -102,9 +102,16 @@ void NativeClientSocket::connectToHost() {
     socket->connectToHost(address, port);
 }
 
-void NativeClientSocket::connectToHost(const QHostAddress &address)
+void NativeClientSocket::connectToHost(QString address)
 {
-    ushort port = Config.value("ServerPort", 9527u).toUInt();
+    ushort port;
+    if (address.indexOf(':') == -1) {
+        port = Config.value("ServerPort", 9527u).toUInt();
+    } else {
+        QStringList texts = address.split(':');
+        address = texts.first();
+        port = texts.at(1).toUInt();
+    }
     socket->connectToHost(address, port);
 }
 
