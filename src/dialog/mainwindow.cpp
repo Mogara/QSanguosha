@@ -22,6 +22,7 @@
 #include "startscene.h"
 #include "roomscene.h"
 #include "RoomServer.h"
+#include "LobbyScene.h"
 #include "LobbyServer.h"
 #include "client.h"
 #include "generaloverview.h"
@@ -670,6 +671,7 @@ void MainWindow::checkVersion(const QString &server_version_str, const QString &
     if (server_version == client_version) {
         client->signup();
         connect(client, SIGNAL(roomServerConnected()), SLOT(enterRoom()));
+        connect(client, SIGNAL(lobbyServerConnected()), SLOT(enterLobby()));
         return;
     }
 
@@ -789,6 +791,21 @@ void MainWindow::enterRoom() {
     connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
 
     gotoScene(room_scene);
+}
+
+void MainWindow::enterLobby() {
+    // add current ip to history
+    if (!Config.HistoryIPs.contains(Config.HostAddress)) {
+        Config.HistoryIPs << Config.HostAddress;
+        Config.HistoryIPs.sort();
+        Config.setValue("HistoryIPs", Config.HistoryIPs);
+    }
+
+    LobbyScene *scene = new LobbyScene(this);
+
+    //@todo: connect signals & slots here
+
+    gotoScene(scene);
 }
 
 void MainWindow::gotoStartScene() {

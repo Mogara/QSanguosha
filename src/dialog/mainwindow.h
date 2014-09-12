@@ -163,6 +163,7 @@ private slots:
     void checkVersion(const QString &server_version, const QString &server_mod);
     void networkError(const QString &error_msg);
     void enterRoom();
+    void enterLobby();
     void gotoScene(QGraphicsScene *scene);
     void gotoStartScene();
     void startGameInAnotherInstance();
