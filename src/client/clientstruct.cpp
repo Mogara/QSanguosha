@@ -22,6 +22,7 @@
 #include "engine.h"
 #include "client.h"
 #include "settings.h"
+#include "json.h"
 
 ServerInfoStruct ServerInfo;
 
@@ -92,6 +93,20 @@ bool ServerInfoStruct::parse(const QString &str) {
         FirstShowingReward = flags.contains("S");
     }
 
+    return true;
+}
+
+bool HostInfoStruct::parse(const QVariant &data)
+{
+    JsonArray args = data.value<JsonArray>();
+    if (args.size() != 6 || !ServerInfoStruct::parse(args.at(0).toString())) {
+        return false;
+    }
+    HostAddress = args.at(1).toString();
+    HostPort = args.at(2).toUInt();
+    PlayerNum = args.at(3).toInt();
+    RoomNum = args.at(4).toInt();
+    MaxRoomNum = args.at(5).toInt();
     return true;
 }
 

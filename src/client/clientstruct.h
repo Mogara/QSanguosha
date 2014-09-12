@@ -51,6 +51,16 @@ struct ServerInfoStruct {
 
 extern ServerInfoStruct ServerInfo;
 
+struct HostInfoStruct : public ServerInfoStruct {
+    QString HostAddress;
+    ushort HostPort;
+    int PlayerNum;
+    int RoomNum;
+    int MaxRoomNum;
+
+    bool parse(const QVariant &data);
+};
+
 class QLabel;
 class QListWidget;
 
