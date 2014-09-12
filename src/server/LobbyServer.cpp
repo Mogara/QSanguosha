@@ -29,7 +29,7 @@ LobbyServer::LobbyServer(QObject *parent)
 {
     packetSource = S_SRC_LOBBY;
 
-    //callbacks[S_COMMAND_SETUP] = &LobbyServer::setupNewRoom;
+    callbacks[S_COMMAND_SETUP] = &LobbyServer::setupNewRoom;
 }
 
 void LobbyServer::broadcastSystemMessage(const QString &message)
@@ -74,7 +74,6 @@ void LobbyServer::broadcast(const QByteArray &message, int destination)
 
 void LobbyServer::_processNewConnection(ClientSocket *socket)
 {
-    notifyClient(socket, S_COMMAND_ENTER_LOBBY);
     emit serverMessage(tr("%1 connected").arg(socket->peerName()));
     connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processMessage(QByteArray)));
 }
@@ -112,6 +111,8 @@ void LobbyServer::processClientSignup(ClientSocket *socket, const Packet &signup
         socket->disconnectFromHost();
         return;
     }
+
+    notifyClient(socket, S_COMMAND_ENTER_LOBBY);
 
     JsonArray body = signup.getMessageBody().value<JsonArray>();
     //bool is_reconnection = body[0].toBool();
@@ -151,4 +152,46 @@ void LobbyServer::cleanupPlayer()
     player->disconnect(this);
     this->disconnect(player);
     players.removeOne(player);
+}
+
+void LobbyServer::setupNewRoom(ClientSocket *from, const QVariant &data)
+{
+    JsonArray args = data.value<JsonArray>();
+    if (args.size() < 4) return;
+
+    RoomInfoStruct *info = new RoomInfoStruct;
+    info->SetupString = args.at(0).toString();
+    info->Address = from->peerAddress();
+    info->Port = args.at(1).toUInt();
+    info->PlayerNum = args.at(2).toInt();
+    info->RoomNum = args.at(3).toInt();
+    info->MaxRoomNum = args.at(4).toInt();
+
+    //check if the room server can be connected
+    QTcpSocket socket;
+    socket.connectToHost(info->Address, info->Port);
+
+    if (socket.waitForConnected(2000)) {
+        emit serverMessage(tr("%1:%2 signed up as a Room Server").arg(info->Address).arg(info->Port));
+        rooms.insert(from, info);
+        connect(from, SIGNAL(disconnected()), this, SLOT(cleanupRoom()));
+    } else {
+        delete info;
+    }
+}
+
+void LobbyServer::cleanupRoom()
+{
+    //no need to delete the socket for it's deleted in cleanup()
+    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
+    if (socket == NULL) return;
+
+    emit serverMessage(tr("Room Server %1 disconnected").arg(socket->peerName()));
+
+    RoomInfoStruct *info = rooms.value(socket);
+    if (info)
+        delete info;
+    rooms.remove(socket);
+    socket->disconnect(this);
+    this->disconnect(socket);
 }

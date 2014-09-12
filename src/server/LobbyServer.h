@@ -42,6 +42,9 @@ protected:
     void processClientSignup(ClientSocket *socket, const QSanProtocol::Packet &signup);
     void processRoomPacket(ClientSocket *socket, const QSanProtocol::Packet &packet);
 
+    //callbacks for room servers
+    void setupNewRoom(ClientSocket *socket, const QVariant &data);
+
     struct RoomInfoStruct{
         QString SetupString;
         QString Address;
@@ -60,6 +63,7 @@ protected:
 protected slots:
     void processMessage(const QByteArray &message);
     void cleanupPlayer();
+    void cleanupRoom();
 };
 
 #endif // LOBBYSERVER_H

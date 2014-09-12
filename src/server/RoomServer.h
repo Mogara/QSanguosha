@@ -183,6 +183,7 @@ public:
 
     explicit RoomServer(QObject *parent);
 
+    void connectToLobby();
     void broadcastSystemMessage(const QString &msg);
 
     Room *createNewRoom();
@@ -193,14 +194,24 @@ protected slots:
     void gameOver();
 
 protected:
-    void processClientSignup(ClientSocket *socket, const QSanProtocol::Packet &signup);
     void _processNewConnection(ClientSocket *socket);
+    void processClientSignup(ClientSocket *socket, const QSanProtocol::Packet &signup);
+    void processLobbyPacket(const QSanProtocol::Packet &packet);
+    void notifyLobby(QSanProtocol::CommandType command, const QVariant &data = QVariant());
+    void setup();
+
+    //callbacks for lobby server
+    void checkVersion(const QVariant &server_version);
 
     ServerSocket *server;
     Room *current;
     QSet<Room *> rooms;
     QHash<QString, ServerPlayer *> players;
     QMultiHash<QString, QString> name2objname;
+
+    ClientSocket *lobby;
+    typedef void (RoomServer::*Callback)(const QVariant &);
+    QHash<QSanProtocol::CommandType, Callback> callbacks;
 
 signals:
     void newPlayer(ServerPlayer *player);

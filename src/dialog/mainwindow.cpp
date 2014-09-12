@@ -656,6 +656,7 @@ void MainWindow::on_actionStart_Server_triggered() {
     }
 
     server->daemonize();
+    server->connectToLobby();
 
     ui->actionStart_Game->disconnect();
 #ifdef QT_NO_PROCESS
@@ -1099,6 +1100,7 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
 
     server->daemonize();
     server->createNewRoom();
+    server->connectToLobby();
 
     Config.HostAddress = "127.0.0.1";
     startConnection();
