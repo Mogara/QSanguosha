@@ -31,12 +31,12 @@ public:
     QString getAvatar() const{ return avatar; }
     void setAvatar(const QString &new_avatar) { avatar = new_avatar; }
 
+public slots:
+    void processMessage(const QByteArray &message);
+
 signals:
     void disconnected();
     void errorMessage(const QString &message);
-
-protected slots:
-    void processMessage(const QByteArray &message);
 
 protected:
     LobbyServer *server;

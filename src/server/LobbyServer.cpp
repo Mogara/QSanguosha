@@ -76,10 +76,52 @@ void LobbyServer::processMessage(const QByteArray &message)
 
     switch (packet.getPacketSource()) {
     case S_SRC_CLIENT:
+        processClientSignup(socket, packet);
         break;
     case S_SRC_ROOM:
         break;
     default:
         emit serverMessage(tr("Packet %1 from %2 with an unknown source is discarded").arg(QString::fromUtf8(message)).arg(socket->peerName()));
     }
+}
+
+void LobbyServer::processClientSignup(ClientSocket *socket, const Packet &signup)
+{
+    socket->disconnect(this, SLOT(processMessage(QByteArray)));
+
+    if (signup.getCommandType() != S_COMMAND_SIGNUP) {
+        emit serverMessage(tr("Invalid signup string: %1").arg(signup.toString()));
+        notifyClient(socket, S_COMMAND_WARN, "INVALID_FORMAT");
+        socket->disconnectFromHost();
+        return;
+    }
+
+    JsonArray body = signup.getMessageBody().value<JsonArray>();
+    //bool is_reconnection = body[0].toBool();
+    QString screen_name = body[1].toString();
+    QString avatar = body[2].toString();
+
+    LobbyPlayer *player = new LobbyPlayer(this);
+    player->setSocket(socket);
+    player->setScreenName(screen_name);
+    player->setAvatar(avatar);
+    players << player;
+
+    connect(player, SIGNAL(errorMessage(QString)), SIGNAL(serverMessage(QString)));
+    connect(player, SIGNAL(disconnected()), SLOT(cleanupPlayer()));
+
+    emit serverMessage(tr("%1 logged in as Player %2").arg(socket->peerName()).arg(screen_name));
+}
+
+void LobbyServer::cleanupPlayer()
+{
+    LobbyPlayer *player = qobject_cast<LobbyPlayer *>(sender());
+    if (player == NULL) return;
+
+    emit serverMessage(tr("Player %1(%2) logged out").arg(player->getScreenName()).arg(player->getSocketName()));
+
+    player->setSocket(NULL);
+    player->disconnect(this);
+    this->disconnect(player);
+    players.removeOne(player);
 }

@@ -27,6 +27,8 @@ class LobbyPlayer;
 
 class LobbyServer : public Server
 {
+    Q_OBJECT
+
 public:
     LobbyServer(QObject *parent);
 
@@ -35,6 +37,7 @@ public:
 
 protected:
     void _processNewConnection(ClientSocket *socket);
+    void processClientSignup(ClientSocket *socket, const QSanProtocol::Packet &signup);
 
     struct RoomInfoStruct{
         QString SetupString;
@@ -50,6 +53,7 @@ protected:
 
 protected slots:
     void processMessage(const QByteArray &message);
+    void cleanupPlayer();
 };
 
 #endif // LOBBYSERVER_H

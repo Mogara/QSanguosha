@@ -5,7 +5,7 @@
 using namespace QSanProtocol;
 
 LobbyPlayer::LobbyPlayer(LobbyServer *parent) :
-    QObject(parent), server(parent)
+    QObject(parent), server(parent), socket(NULL)
 {
 }
 

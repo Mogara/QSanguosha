@@ -187,8 +187,12 @@ public:
     Room *createNewRoom();
     void signupPlayer(ServerPlayer *player);
 
+protected slots:
+    void processMessage(const QByteArray &message);
+    void gameOver();
+
 protected:
-    void processClientRequest(ClientSocket *socket, const QSanProtocol::Packet &signup);
+    void processClientSignup(ClientSocket *socket, const QSanProtocol::Packet &signup);
     void _processNewConnection(ClientSocket *socket);
 
     ServerSocket *server;
@@ -196,10 +200,6 @@ protected:
     QSet<Room *> rooms;
     QHash<QString, ServerPlayer *> players;
     QMultiHash<QString, QString> name2objname;
-
-protected slots:
-    void processMessage(const QByteArray &message);
-    void gameOver();
 
 signals:
     void newPlayer(ServerPlayer *player);

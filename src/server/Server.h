@@ -38,6 +38,10 @@ public:
     bool listen() { return server->listen(); }
     void daemonize() { server->daemonize(); }
 
+protected slots:
+    virtual void processNewConnection(ClientSocket *socket);
+    void cleanup();
+
 protected:
     void notifyClient(ClientSocket *socket, QSanProtocol::CommandType command, const QVariant &arg = QVariant());
     virtual void _processNewConnection(ClientSocket *socket) = 0;
@@ -45,10 +49,6 @@ protected:
     ServerSocket *server;
     QStringList addresses;
     QSanProtocol::PacketDescription packetSource;
-
-protected slots:
-    virtual void processNewConnection(ClientSocket *socket);
-    void cleanup();
 
 signals:
     void serverMessage(const QString &);

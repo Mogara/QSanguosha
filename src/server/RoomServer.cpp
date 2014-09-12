@@ -895,14 +895,14 @@ void RoomServer::processMessage(const QByteArray &message)
 
     switch (packet.getPacketSource()) {
     case S_SRC_CLIENT:
-        processClientRequest(socket, packet);
+        processClientSignup(socket, packet);
         break;
     default:
         emit serverMessage(tr("Packet %1 from an unknown source %2").arg(QString::fromUtf8(message)).arg(socket->peerName()));
     }
 }
 
-void RoomServer::processClientRequest(ClientSocket *socket, const Packet &signup)
+void RoomServer::processClientSignup(ClientSocket *socket, const Packet &signup)
 {
     socket->disconnect(this, SLOT(processMessage(QByteArray)));
 
