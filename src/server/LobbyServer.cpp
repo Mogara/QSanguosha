@@ -70,7 +70,7 @@ void LobbyServer::processMessage(const QByteArray &message)
 
     Packet packet;
     if (!packet.parse(message)) {
-        emit serverMessage(tr("Invalid message %1 from %2").arg(QString::fromUtf8(request)).arg(socket->peerName()));
+        emit serverMessage(tr("Invalid message %1 from %2").arg(QString::fromUtf8(message)).arg(socket->peerName()));
         return;
     }
 
@@ -80,6 +80,6 @@ void LobbyServer::processMessage(const QByteArray &message)
     case S_SRC_ROOM:
         break;
     default:
-        emit serverMessage(tr("Packet %1 from %2 with an unknown source is discarded").arg(QString::fromUtf8(request)).arg(socket->peerName()));
+        emit serverMessage(tr("Packet %1 from %2 with an unknown source is discarded").arg(QString::fromUtf8(message)).arg(socket->peerName()));
     }
 }
