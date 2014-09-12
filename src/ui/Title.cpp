@@ -28,6 +28,7 @@ Title::Title(QGraphicsObject *parent, const QString &text, const QString &font_n
 
 QRectF Title::boundingRect() const
 {
+    //@todo: width is wrong if Title contains non-Chinese characters
     return QRectF(0, 0, font_size * text.length(), font_size + 1);
 }
 
@@ -47,5 +48,5 @@ void Title::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *
     val << QVariant(val3);
 
     ft.tryParse(val);
-    ft.paintText(painter, boundingRect().toRect(), Qt::AlignCenter, text);
+    ft.paintText(painter, boundingRect().toRect(), Qt::AlignLeft, text);
 }
