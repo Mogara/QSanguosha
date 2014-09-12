@@ -29,6 +29,7 @@
 #include <QTextEdit>
 
 class Tile;
+class Server;
 
 class StartScene : public QGraphicsScene {
     Q_OBJECT
@@ -38,7 +39,7 @@ public:
 
     void addButton(QAction *action);
     void setServerLogBackground();
-    void switchToServer(RoomServer *server);
+    void switchToServer(Server *server);
 
     void showOrganization();
 
@@ -49,6 +50,7 @@ private:
     QTextEdit *serverLog;
     QList<Tile *> buttons;
     bool shouldMourn;
+    Server *server;
 };
 
 #endif

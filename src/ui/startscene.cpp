@@ -35,7 +35,7 @@
 #include <QPainter>
 
 StartScene::StartScene(QObject *parent)
-    : QGraphicsScene(parent)
+    : QGraphicsScene(parent), server(NULL)
 {
     // game logo
     QDate date = QDate::currentDate();
@@ -93,7 +93,7 @@ void StartScene::setServerLogBackground() {
     }
 }
 
-void StartScene::switchToServer(RoomServer *server) {
+void StartScene::switchToServer(Server *server) {
 #ifdef AUDIO_SUPPORT
     Audio::quit();
 #endif
@@ -142,6 +142,7 @@ void StartScene::switchToServer(RoomServer *server) {
     QScrollBar *bar = serverLog->verticalScrollBar();
     bar->setStyleSheet(StyleHelper::styleSheetOfScrollBar());
 
+    this->server = server;
     printServerInfo();
     connect(server, SIGNAL(serverMessage(QString)), serverLog, SLOT(append(QString)));
     update();
@@ -234,21 +235,25 @@ void StartScene::printServerInfo() {
     }
 
     serverLog->append(tr("Binding port number is %1").arg(Config.ServerPort));
-    serverLog->append(tr("Game mode is %1").arg(Sanguosha->getModeName(Config.GameMode)));
-    serverLog->append(tr("Player count is %1").arg(Sanguosha->getPlayerCount(Config.GameMode)));
-    serverLog->append(Config.OperationNoLimit ?
-        tr("There is no time limit") :
-        tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
-    serverLog->append(Config.EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
-    if (Config.EnableCheat)
-        serverLog->append(Config.FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
 
-    if (Config.RewardTheFirstShowingPlayer)
-        serverLog->append(tr("The reward of showing general first is enabled"));
+    //Room Server only
+    if (server && server->inherits("RoomServer")) {
+        serverLog->append(tr("Game mode is %1").arg(Sanguosha->getModeName(Config.GameMode)));
+        serverLog->append(tr("Player count is %1").arg(Sanguosha->getPlayerCount(Config.GameMode)));
+        serverLog->append(Config.OperationNoLimit ?
+            tr("There is no time limit") :
+            tr("Operation timeout is %1 seconds").arg(Config.OperationTimeout));
+        serverLog->append(Config.EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
+        if (Config.EnableCheat)
+            serverLog->append(Config.FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
 
-    if (!Config.ForbidAddingRobot) {
-        serverLog->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
-    } else {
-        serverLog->append(tr("This server is AI disabled"));
+        if (Config.RewardTheFirstShowingPlayer)
+            serverLog->append(tr("The reward of showing general first is enabled"));
+
+        if (!Config.ForbidAddingRobot) {
+            serverLog->append(tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay));
+        } else {
+            serverLog->append(tr("This server is AI disabled"));
+        }
     }
 }

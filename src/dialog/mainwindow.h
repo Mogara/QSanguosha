@@ -173,6 +173,8 @@ private slots:
     void onVersionInfomationGotten();
     void onChangeLogGotten();
 
+    void on_actionStart_Lobby_triggered();
+
 signals:
     void about_to_close();
 };

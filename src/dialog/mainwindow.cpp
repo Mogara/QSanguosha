@@ -22,6 +22,7 @@
 #include "startscene.h"
 #include "roomscene.h"
 #include "RoomServer.h"
+#include "LobbyServer.h"
 #include "client.h"
 #include "generaloverview.h"
 #include "cardoverview.h"
@@ -1377,4 +1378,29 @@ void MainWindow::on_actionSound_Test_triggered(){
 #else
     QMessageBox::warning(this, tr("Warning"), tr("Audio support is disabled when compiled"));
 #endif
+}
+
+void MainWindow::on_actionStart_Lobby_triggered()
+{
+    LobbyServer *server = new LobbyServer(this);
+    if (!server->listen()) {
+        QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+        server->deleteLater();
+        return;
+    }
+
+    server->daemonize();
+
+    ui->actionStart_Game->disconnect();
+#ifdef QT_NO_PROCESS
+    ui->actionStart_Game->setEnabled(false);
+#else
+    connect(ui->actionStart_Game, SIGNAL(triggered()), this, SLOT(startGameInAnotherInstance()));
+#endif
+    StartScene *start_scene = qobject_cast<StartScene *>(scene);
+    if (start_scene) {
+        start_scene->switchToServer(server);
+        if (Config.value("EnableMinimizeDialog", false).toBool())
+            this->on_actionMinimize_to_system_tray_triggered();
+    }
 }
