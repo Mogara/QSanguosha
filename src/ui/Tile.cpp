@@ -49,10 +49,6 @@ void Tile::init()
 {
     Button::init();
 
-    const QString path = QString("image/system/button/icon/%1.png").arg(label);
-    if (QFile::exists(path)) {
-        icon.load(path);
-    }
     title = new Title(this, label, font_name, font_size);
     title->setPos(8, boundingRect().height() - title->boundingRect().height() - 8);
     title->hide();
@@ -65,6 +61,18 @@ void Tile::init()
     setGraphicsEffect(frame);
 
     setFlag(ItemIsFocusable, false);
+}
+
+void Tile::setIcon(QString path)
+{
+    QRegExp fileName("[\\w-.]+");
+    if (fileName.exactMatch(path)) {
+        path = QString("image/system/button/icon/%1.png").arg(path);
+    }
+
+    if (QFile::exists(path)) {
+        icon.load(path);
+    }
 }
 
 void Tile::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)

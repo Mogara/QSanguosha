@@ -18,8 +18,8 @@
     QSanguosha-Hegemony Team
     *********************************************************************/
 
-#ifndef METROBUTTON_H
-#define METROBUTTON_H
+#ifndef TILE_H
+#define TILE_H
 
 #include "button.h"
 #include "Title.h"
@@ -34,6 +34,8 @@ public:
 
     void setAutoHideTitle(bool hide) { auto_hide_title = hide; title->setVisible(!hide); }
     bool autoHideTitle() const { return auto_hide_title; }
+
+    void setIcon(QString path);
 
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *);
@@ -74,4 +76,4 @@ protected:
     MouseArea getMouseArea(const QPointF &pos) const;
 };
 
-#endif // METROBUTTON_H
+#endif // TILE_H
