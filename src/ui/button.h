@@ -26,7 +26,6 @@
 #include <QGraphicsObject>
 #include <QGraphicsRotation>
 
-class Title;
 class QGraphicsDropShadowEffect;
 
 class Button : public QGraphicsObject{
