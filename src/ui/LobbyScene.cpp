@@ -174,7 +174,7 @@ void LobbyScene::setRoomList(const QVariant &data)
             if (Config.RewardTheFirstShowingPlayer)
                 scrollTexts << tr("The reward of showing general first is enabled");
             if (!Config.ForbidAddingRobot) {
-                scrollTexts << tr("This server is AI enabled, AI delay is %1 milliseconds").arg(Config.AIDelay);
+                scrollTexts << tr("This server is AI enabled (%1 msec)").arg(Config.AIDelay);
             } else {
                 scrollTexts << tr("This server is AI disabled");
             }
