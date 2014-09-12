@@ -22,7 +22,6 @@
 #include "settings.h"
 #include "room.h"
 #include "engine.h"
-#include "nativesocket.h"
 #include "scenario.h"
 #include "FreeChooseDialog.h"
 #include "customassigndialog.h"
@@ -662,7 +661,7 @@ void BanIPDialog::removeClicked(){
 
 void BanIPDialog::kickClicked(){
     int row = left->currentRow();
-    if (row != -1){
+    if (row != -1) {
         ServerPlayer *p = sp_list[row];
         QStringList split_data = left->currentItem()->text().split("::");
         QString ip = split_data.takeLast();
@@ -850,18 +849,8 @@ void BanlistDialog::saveAll() {
 
 
 RoomServer::RoomServer(QObject *parent)
-    : QObject(parent)
+    : Server(parent), current(NULL)
 {
-    server = new NativeServerSocket;
-    server->setParent(this);
-
-    //synchronize ServerInfo on the server side to avoid ambiguous usage of Config and ServerInfo
-    ServerInfo.parse(Sanguosha->getSetupString());
-
-    current = NULL;
-
-    connect(server, SIGNAL(new_connection(ClientSocket *)), this, SLOT(processNewConnection(ClientSocket *)));
-    connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 }
 
 void RoomServer::broadcastSystemMessage(const QString &msg) {
@@ -876,61 +865,30 @@ void RoomServer::broadcastSystemMessage(const QString &msg) {
         room->broadcast(&packet);
 }
 
-bool RoomServer::listen() {
-    return server->listen();
-}
-
-void RoomServer::daemonize() {
-    server->daemonize();
-}
-
 Room *RoomServer::createNewRoom() {
     Room *new_room = new Room(this, Config.GameMode);
     current = new_room;
     rooms.insert(current);
 
-    connect(current, SIGNAL(room_message(QString)), this, SIGNAL(server_message(QString)));
+    connect(current, SIGNAL(room_message(QString)), this, SIGNAL(serverMessage(QString)));
     connect(current, SIGNAL(game_over(QString)), this, SLOT(gameOver()));
 
     return current;
 }
 
-void RoomServer::processNewConnection(ClientSocket *socket) {
-    QString address = socket->peerAddress();
-    if (Config.ForbidSIMC) {
-        if (addresses.contains(address)) {
-            addresses.append(address);
-            socket->disconnectFromHost();
-            emit server_message(tr("Forbid the connection of address %1").arg(address));
-            return;
-        } else {
-            addresses.append(address);
-        }
-    }
-
-    if (Config.value("BannedIP").toStringList().contains(address)){
-        socket->disconnectFromHost();
-        emit server_message(tr("Forbid the connection of address %1").arg(address));
-        return;
-    }
-
-    connect(socket, SIGNAL(disconnected()), this, SLOT(cleanup()));
-
-    notifyClient(socket, S_COMMAND_CHECK_VERSION, Sanguosha->getVersion());
+void RoomServer::_processNewConnection(ClientSocket *socket) {
     notifyClient(socket, S_COMMAND_SETUP, Sanguosha->getSetupString());
-
-    emit server_message(tr("%1 connected").arg(socket->peerName()));
-
-    connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processRequest(QByteArray)));
+    emit serverMessage(tr("%1 connected").arg(socket->peerName()));
+    connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processMessage(QByteArray)));
 }
 
-void RoomServer::processRequest(const QByteArray &request)
+void RoomServer::processMessage(const QByteArray &request)
 {
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
 
     Packet packet;
     if (!packet.parse(request)) {
-        emit server_message(tr("Invalid message %1 from %2").arg(QString::fromUtf8(request)).arg(socket->peerAddress()));
+        emit serverMessage(tr("Invalid message %1 from %2").arg(QString::fromUtf8(request)).arg(socket->peerAddress()));
         return;
     }
 
@@ -939,23 +897,16 @@ void RoomServer::processRequest(const QByteArray &request)
         processClientRequest(socket, packet);
         break;
     default:
-        emit server_message(tr("Packet %1 from an unknown source %2").arg(QString::fromUtf8(request)).arg(socket->peerAddress()));
+        emit serverMessage(tr("Packet %1 from an unknown source %2").arg(QString::fromUtf8(request)).arg(socket->peerAddress()));
     }
-}
-
-void RoomServer::notifyClient(ClientSocket *socket, CommandType command, const QVariant &arg)
-{
-    Packet packet(S_SRC_ROOM | S_TYPE_NOTIFICATION | S_DEST_CLIENT, command);
-    packet.setMessageBody(arg);
-    socket->send(packet.toJson());
 }
 
 void RoomServer::processClientRequest(ClientSocket *socket, const Packet &signup)
 {
-    socket->disconnect(this, SLOT(processRequest(QByteArray)));
+    socket->disconnect(this, SLOT(processMessage(QByteArray)));
 
     if (signup.getCommandType() != S_COMMAND_SIGNUP) {
-        emit server_message(tr("Invalid signup string: %1").arg(signup.toString()));
+        emit serverMessage(tr("Invalid signup string: %1").arg(signup.toString()));
         notifyClient(socket, S_COMMAND_WARN, "INVALID_FORMAT");
         socket->disconnectFromHost();
         return;
@@ -987,14 +938,6 @@ void RoomServer::processClientRequest(ClientSocket *socket, const Packet &signup
         for (int i = 0; i < 4; ++i)
             current->addRobotCommand(player, QVariant());
     }
-}
-
-void RoomServer::cleanup() {
-    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
-    if (Config.ForbidSIMC)
-        addresses.removeOne(socket->peerAddress());
-
-    socket->deleteLater();
 }
 
 void RoomServer::signupPlayer(ServerPlayer *player) {

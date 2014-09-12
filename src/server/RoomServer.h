@@ -30,6 +30,7 @@ class QRadioButton;
 #include "detector.h"
 #include "clientstruct.h"
 #include "FlatDialog.h"
+#include "Server.h"
 
 #include <QLineEdit>
 #include <QSpinBox>
@@ -173,7 +174,7 @@ class Scenario;
 class ServerPlayer;
 class BanIPDialog;
 
-class RoomServer : public QObject {
+class RoomServer : public Server {
     Q_OBJECT
 
 public:
@@ -183,33 +184,24 @@ public:
 
     void broadcastSystemMessage(const QString &msg);
 
-    bool listen();
-    void daemonize();
-
-
     Room *createNewRoom();
     void signupPlayer(ServerPlayer *player);
 
-private:
-    void notifyClient(ClientSocket *socket, QSanProtocol::CommandType command, const QVariant &arg = QVariant());
-
+protected:
     void processClientRequest(ClientSocket *socket, const QSanProtocol::Packet &signup);
+    void _processNewConnection(ClientSocket *socket);
 
     ServerSocket *server;
     Room *current;
     QSet<Room *> rooms;
     QHash<QString, ServerPlayer *> players;
-    QStringList addresses;
     QMultiHash<QString, QString> name2objname;
 
-private slots:
-    void processNewConnection(ClientSocket *socket);
-    void processRequest(const QByteArray &request);
-    void cleanup();
+protected slots:
+    void processMessage(const QByteArray &request);
     void gameOver();
 
 signals:
-    void server_message(const QString &);
     void newPlayer(ServerPlayer *player);
 };
 

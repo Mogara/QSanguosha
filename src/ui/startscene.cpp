@@ -139,7 +139,7 @@ void StartScene::switchToServer(RoomServer *server) {
     bar->setStyleSheet(StyleHelper::styleSheetOfScrollBar());
 
     printServerInfo();
-    connect(server, SIGNAL(server_message(QString)), serverLog, SLOT(append(QString)));
+    connect(server, SIGNAL(serverMessage(QString)), serverLog, SLOT(append(QString)));
     update();
 }
 

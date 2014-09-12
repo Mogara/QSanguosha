@@ -78,6 +78,7 @@ SOURCES += \
     src/server/roomthread.cpp \
     src/server/RoomServer.cpp \
     src/server/serverplayer.cpp \
+    src/server/Server.cpp \
     src/ui/button.cpp \
     src/ui/cardcontainer.cpp \
     src/ui/carditem.cpp \
@@ -185,6 +186,7 @@ HEADERS += \
     src/server/roomthread.h \
     src/server/RoomServer.h \
     src/server/serverplayer.h \
+    src/server/Server.h \
     src/ui/button.h \
     src/ui/cardcontainer.h \
     src/ui/carditem.h \
