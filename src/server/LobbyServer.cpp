@@ -62,3 +62,24 @@ void LobbyServer::_processNewConnection(ClientSocket *socket)
     emit serverMessage(tr("%1 connected").arg(socket->peerName()));
     connect(socket, SIGNAL(message_got(QByteArray)), this, SLOT(processMessage(QByteArray)));
 }
+
+void LobbyServer::processMessage(const QByteArray &message)
+{
+    ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
+    if (socket == NULL) return;
+
+    Packet packet;
+    if (!packet.parse(message)) {
+        emit serverMessage(tr("Invalid message %1 from %2").arg(QString::fromUtf8(request)).arg(socket->peerName()));
+        return;
+    }
+
+    switch (packet.getPacketSource()) {
+    case S_SRC_CLIENT:
+        break;
+    case S_SRC_ROOM:
+        break;
+    default:
+        emit serverMessage(tr("Packet %1 from %2 with an unknown source is discarded").arg(QString::fromUtf8(request)).arg(socket->peerName()));
+    }
+}

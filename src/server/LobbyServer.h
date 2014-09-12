@@ -35,6 +35,7 @@ public:
 
 protected:
     void _processNewConnection(ClientSocket *socket);
+    void processMessage(const QByteArray &message);
 
     struct RoomInfoStruct{
         QString SetupString;
