@@ -129,8 +129,8 @@ public:
             room_scene->adjustItems();
             main_window->setBackgroundBrush(false);
             return;
-        }
-        else if (scene()->inherits("StartScene")) {
+
+        } else if (scene()->inherits("StartScene")) {
             StartScene *start_scene = qobject_cast<StartScene *>(scene());
             QRectF newSceneRect(-event->size().width() / 2, -event->size().height() / 2,
                 event->size().width(), event->size().height());
@@ -138,7 +138,21 @@ public:
             setSceneRect(start_scene->sceneRect());
             if (newSceneRect != start_scene->sceneRect())
                 fitInView(start_scene->sceneRect(), Qt::KeepAspectRatio);
+
+        } else if (scene()->inherits("LobbyScene")) {
+            LobbyScene *lobby_scene = qobject_cast<LobbyScene *>(scene());
+            QRectF newSceneRect(0, 0, event->size().width(), event->size().height());
+            lobby_scene->setSceneRect(newSceneRect);
+            setSceneRect(lobby_scene->sceneRect());
+            if (newSceneRect != lobby_scene->sceneRect())
+                fitInView(lobby_scene->sceneRect(), Qt::KeepAspectRatio);
+            else
+                this->resetTransform();
+            lobby_scene->adjustItems();
+            main_window->setBackgroundBrush(false);
+            return;
         }
+
         if (main_window)
             main_window->setBackgroundBrush(true);
     }
@@ -964,7 +978,7 @@ void MainWindow::setBackgroundBrush(bool centerAsOrigin) {
 }
 
 void MainWindow::changeBackground() {
-    bool centerAsOrigin = scene != NULL && !scene->inherits("RoomScene");
+    bool centerAsOrigin = scene != NULL && scene->inherits("StartScene");
     setBackgroundBrush(centerAsOrigin);
 
     if (scene->inherits("StartScene")) {

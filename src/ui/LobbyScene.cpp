@@ -71,7 +71,7 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     buttonBox->setLayout(buttonLayout);
     addWidget(buttonBox);
 
-    connect(refreshButton, SIGNAL(clicked()), ClientInstance, SLOT(requestServerList()));
+    //connect(refreshButton, SIGNAL(clicked()), ClientInstance, SLOT(requestServerList()));
 
     //room tiles
     roomTitle = new Title(NULL, tr("Rooms"), "wqy-microhei", 30);
@@ -83,7 +83,7 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     connect(createRoomTile, SIGNAL(clicked()), SLOT(onCreateRoomClicked()));
     addItem(createRoomTile);
 
-    connect(ClientInstance, SIGNAL(serverListChanged(QVariant)), SLOT(setRoomList(QVariant)));
+    //connect(ClientInstance, SIGNAL(serverListChanged(QVariant)), SLOT(setRoomList(QVariant)));
 }
 
 void LobbyScene::adjustItems()
