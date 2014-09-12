@@ -35,7 +35,6 @@ public:
 
 protected:
     void _processNewConnection(ClientSocket *socket);
-    void processMessage(const QByteArray &message);
 
     struct RoomInfoStruct{
         QString SetupString;
@@ -48,6 +47,9 @@ protected:
 
     QList<LobbyPlayer *> players;
     QMap<ClientSocket *, RoomInfoStruct *> rooms;
+
+protected slots:
+    void processMessage(const QByteArray &message);
 };
 
 #endif // LOBBYSERVER_H
