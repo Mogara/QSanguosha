@@ -949,8 +949,8 @@ void MainWindow::on_actionAbout_triggered() {
 
         about_window->addContent(content);
         about_window->addCloseButton(tr("OK"));
-        about_window->shift(scene->inherits("RoomScene") ? scene->width() : 0,
-                            scene->inherits("RoomScene") ? scene->height() : 0);
+        about_window->shift(!scene->inherits("StartScene") ? scene->width() : 0,
+                            !scene->inherits("StartScene") ? scene->height() : 0);
         about_window->keepWhenDisappear();
     }
 
@@ -1081,8 +1081,8 @@ void MainWindow::on_actionAcknowledgement_triggered() {
     Button *button = window->addCloseButton(tr("OK"));
     button->moveBy(-85, -35);
     window->setZValue(32766);
-    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
-        scene && scene->inherits("RoomScene") ? scene->height() : 0);
+    window->shift(scene && !scene->inherits("StartScene") ? scene->width() : 0,
+        scene && !scene->inherits("StartScene") ? scene->height() : 0);
 
     window->appear();
 }
@@ -1281,8 +1281,8 @@ void MainWindow::on_actionAbout_fmod_triggered() {
     window->addContent(content);
     window->addCloseButton(tr("OK"));
     window->setZValue(32766);
-    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
-        scene && scene->inherits("RoomScene") ? scene->height() : 0);
+    window->shift(scene && !scene->inherits("StartScene") ? scene->width() : 0,
+        scene && !scene->inherits("StartScene") ? scene->height() : 0);
 
     window->appear();
 }
@@ -1303,8 +1303,8 @@ void MainWindow::on_actionAbout_Lua_triggered() {
     window->addContent(content);
     window->addCloseButton(tr("OK"));
     window->setZValue(32766);
-    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
-        scene && scene->inherits("RoomScene") ? scene->height() : 0);
+    window->shift(scene && !scene->inherits("StartScene") ? scene->width() : 0,
+        scene && !scene->inherits("StartScene") ? scene->height() : 0);
 
     window->appear();
 }
@@ -1322,8 +1322,8 @@ void MainWindow::on_actionAbout_GPLv3_triggered() {
     window->addContent(content);
     window->addCloseButton(tr("OK"));
     window->setZValue(32766);
-    window->shift(scene && scene->inherits("RoomScene") ? scene->width() : 0,
-        scene && scene->inherits("RoomScene") ? scene->height() : 0);
+    window->shift(scene && !scene->inherits("StartScene") ? scene->width() : 0,
+        scene && !scene->inherits("StartScene") ? scene->height() : 0);
 
     window->appear();
 }
