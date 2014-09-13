@@ -95,6 +95,7 @@ void RecAnalysis::initialize(const QString &dir) {
         }
 
         if (packet.getCommandType() == S_COMMAND_ARRANGE_SEATS) {
+            role_list.clear();
             JsonUtils::tryParse(packet.getMessageBody(), role_list);
             continue;
         }
