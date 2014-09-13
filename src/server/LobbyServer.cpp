@@ -85,7 +85,7 @@ void LobbyServer::processMessage(const QByteArray &message)
 
     Packet packet;
     if (!packet.parse(message)) {
-        emit serverMessage(tr("Invalid message %1 from %2").arg(QString::fromUtf8(message)).arg(socket->peerName()));
+        emit serverMessage(tr("%1 Invalid message %2").arg(socket->peerName()).arg(QString::fromUtf8(message)));
         return;
     }
 
@@ -97,7 +97,7 @@ void LobbyServer::processMessage(const QByteArray &message)
         processRoomPacket(socket, packet);
         break;
     default:
-        emit serverMessage(tr("Packet %1 from %2 with an unknown source is discarded").arg(QString::fromUtf8(message)).arg(socket->peerName()));
+        emit serverMessage(tr("%1 Packet %2 with an unknown source is discarded").arg(socket->peerName()).arg(QString::fromUtf8(message)));
     }
 }
 
@@ -106,7 +106,7 @@ void LobbyServer::processClientSignup(ClientSocket *socket, const Packet &signup
     socket->disconnect(this, SLOT(processMessage(QByteArray)));
 
     if (signup.getCommandType() != S_COMMAND_SIGNUP) {
-        emit serverMessage(tr("Invalid signup string: %1").arg(signup.toString()));
+        emit serverMessage(tr("%1 Invalid signup string: %2").arg(socket->peerName()).arg(signup.toString()));
         notifyClient(socket, S_COMMAND_WARN, "INVALID_FORMAT");
         socket->disconnectFromHost();
         return;
@@ -137,7 +137,7 @@ void LobbyServer::processRoomPacket(ClientSocket *socket, const Packet &packet)
     if (func) {
         (this->*func)(socket, packet.getMessageBody());
     } else {
-        emit serverMessage(tr("Packet %1 with an invalid command is discarded").arg(packet.toString()));
+        emit serverMessage(tr("%1 Packet %2 with an invalid command is discarded").arg(socket->peerName()).arg(packet.toString()));
     }
 }
 
@@ -146,7 +146,7 @@ void LobbyServer::cleanupPlayer()
     LobbyPlayer *player = qobject_cast<LobbyPlayer *>(sender());
     if (player == NULL) return;
 
-    emit serverMessage(tr("Player %1(%2) logged out").arg(player->getScreenName()).arg(player->getSocketName()));
+    emit serverMessage(tr("%1 Player %2 logged out").arg(player->getSocketName()).arg(player->getScreenName()));
 
     player->setSocket(NULL);
     player->disconnect(this);
@@ -172,7 +172,7 @@ void LobbyServer::setupNewRoom(ClientSocket *from, const QVariant &data)
     socket.connectToHost(info->Address, info->Port);
 
     if (socket.waitForConnected(2000)) {
-        emit serverMessage(tr("%1:%2 signed up as a Room Server").arg(info->Address).arg(info->Port));
+        emit serverMessage(tr("%1 signed up as a Room Server on port %2").arg(from->peerName()).arg(info->Port));
         rooms.insert(from, info);
         connect(from, SIGNAL(disconnected()), this, SLOT(cleanupRoom()));
     } else {
@@ -186,7 +186,7 @@ void LobbyServer::cleanupRoom()
     ClientSocket *socket = qobject_cast<ClientSocket *>(sender());
     if (socket == NULL) return;
 
-    emit serverMessage(tr("Room Server %1 disconnected").arg(socket->peerName()));
+    emit serverMessage(tr("%1 Room Server disconnected").arg(socket->peerName()));
 
     RoomInfoStruct *info = rooms.value(socket);
     if (info)
