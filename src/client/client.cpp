@@ -142,14 +142,6 @@ Client::Client(QObject *parent, const QString &filename)
     m_noNullificationThisTime = false;
     m_noNullificationTrickName = ".";
 
-    Self = new ClientPlayer(this);
-    Self->setScreenName(Config.UserName);
-    Self->setProperty("avatar", Config.UserAvatar);
-    connect(Self, SIGNAL(phase_changed()), this, SLOT(alertFocus()));
-    connect(Self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
-
-    players << Self;
-
     if (!filename.isEmpty()) {
         socket = NULL;
         recorder = NULL;
@@ -322,6 +314,14 @@ void Client::setup(const QVariant &setup_json) {
 
     QString setup_str = setup_json.toString();
     if (ServerInfo.parse(setup_str)) {
+        Self = new ClientPlayer(this);
+        Self->setScreenName(Config.UserName);
+        Self->setProperty("avatar", Config.UserAvatar);
+        connect(Self, SIGNAL(phase_changed()), this, SLOT(alertFocus()));
+        connect(Self, SIGNAL(role_changed(QString)), this, SLOT(notifyRoleChange(QString)));
+
+        players << Self;
+
         emit roomServerConnected();
         notifyServer(S_COMMAND_TOGGLE_READY);
     } else {
