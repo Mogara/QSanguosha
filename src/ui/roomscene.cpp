@@ -354,7 +354,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     } else {
         control_panel = NULL;
     }
-    return_to_start_scene = new Button(tr("Return to main menu"), 1.0);
+    return_to_start_scene = new Button(tr("Return"), 1.0);
     addItem(return_to_start_scene);
     return_to_start_scene->setZValue(10000);
     return_to_start_scene->setTransform(QTransform::fromTranslate(-return_to_start_scene->boundingRect().width() / 2, -return_to_start_scene->boundingRect().height() / 2), true);
@@ -3031,7 +3031,7 @@ void RoomScene::addRestartButton(QDialog *dialog) {
 
     QPushButton *restart_button;
     restart_button = new QPushButton(tr("Restart Game"));
-    QPushButton *return_button = new QPushButton(tr("Return to main menu"));
+    QPushButton *return_button = new QPushButton(tr("Return"));
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
     hlayout->addWidget(restart_button);

@@ -622,6 +622,7 @@ void MainWindow::gotoScene(QGraphicsScene *scene) {
             about_window->deleteLater();
             about_window = NULL;
         }
+        previousScene = this->scene->metaObject()->className();
     }
 
     this->scene = scene;
@@ -708,8 +709,8 @@ void MainWindow::checkVersion(const QString &server_version_str, const QString &
 void MainWindow::startConnection() {
     Client *client = new Client(this);
 
-    connect(client, SIGNAL(version_checked(QString, QString)), SLOT(checkVersion(QString, QString)));
-    connect(client, SIGNAL(error_message(QString)), SLOT(networkError(QString)));
+    connect(client, SIGNAL(version_checked(QString, QString)), this, SLOT(checkVersion(QString, QString)));
+    connect(client, SIGNAL(error_message(QString)), this, SLOT(networkError(QString)));
 }
 
 void MainWindow::on_actionReplay_triggered() {
@@ -805,7 +806,7 @@ void MainWindow::enterRoom() {
     }
 
     connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
-    connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoStartScene()));
+    connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoPreviousScene()));
 
     gotoScene(room_scene);
 }
@@ -825,7 +826,7 @@ void MainWindow::enterLobby() {
     gotoScene(scene);
 }
 
-void MainWindow::gotoStartScene() {
+void MainWindow::gotoPreviousScene() {
     if (server != NULL){
         server->deleteLater();
         server = NULL;
@@ -836,38 +837,50 @@ void MainWindow::gotoStartScene() {
         Self = NULL;
     }
 
-    StartScene *start_scene = new StartScene(this);
+    if (previousScene.isEmpty() || previousScene == "StartScene") {
+        StartScene *start_scene = new StartScene(this);
 
-    QList<QAction *> actions;
-    actions << ui->actionStart_Game
-        << ui->actionStart_Server
-        << ui->actionPC_Console_Start
-        << ui->actionReplay
-        << ui->actionConfigure
-        << ui->actionGeneral_Overview
-        << ui->actionCard_Overview
-        << ui->actionAbout;
+        QList<QAction *> actions;
+        actions << ui->actionStart_Game
+            << ui->actionStart_Server
+            << ui->actionPC_Console_Start
+            << ui->actionReplay
+            << ui->actionConfigure
+            << ui->actionGeneral_Overview
+            << ui->actionCard_Overview
+            << ui->actionAbout;
 
-    foreach(QAction *action, actions)
-        start_scene->addButton(action);
+        foreach(QAction *action, actions)
+            start_scene->addButton(action);
 
-    setCentralWidget(view);
+        setCentralWidget(view);
 
-    ui->menuCheat->setEnabled(false);
-    ui->actionDeath_note->disconnect();
-    ui->actionDamage_maker->disconnect();
-    ui->actionRevive_wand->disconnect();
-    ui->actionSend_lowlevel_command->disconnect();
-    ui->actionExecute_script_at_server_side->disconnect();
-    gotoScene(start_scene);
+        ui->menuCheat->setEnabled(false);
+        ui->actionDeath_note->disconnect();
+        ui->actionDamage_maker->disconnect();
+        ui->actionRevive_wand->disconnect();
+        ui->actionSend_lowlevel_command->disconnect();
+        ui->actionExecute_script_at_server_side->disconnect();
+        gotoScene(start_scene);
 
-    addAction(ui->actionShow_Hide_Menu);
-    addAction(ui->actionFullscreen);
+        addAction(ui->actionShow_Hide_Menu);
+        addAction(ui->actionFullscreen);
+
+        if (ClientInstance)
+            delete ClientInstance;
+
+    } else {
+        if (ClientInstance)
+            delete ClientInstance;
+
+        Config.HostAddress = Config.value("HostAddress").toString();
+        if (!Config.HostAddress.isEmpty()) {
+            startConnection();
+        }
+    }
 
     delete systray;
     systray = NULL;
-    if (ClientInstance)
-        delete ClientInstance;
 }
 
 void MainWindow::startGameInAnotherInstance() {
@@ -1094,14 +1107,13 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
     if (!dialog->config())
         return;
 
-    bool in_lobby = scene->inherits("LobbyScene");
     server = new RoomServer(this);
-    ushort port = in_lobby ? 0 : Config.ServerPort;
+    ushort port = scene->inherits("LobbyScene") ? 0 : Config.ServerPort;
     if (!server->listen(QHostAddress::Any, port)) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
         return;
     }
-    if (Config.ConnectToLobby || in_lobby) {
+    if (Config.ConnectToLobby || scene->inherits("LobbyScene")) {
         server->connectToLobby();
     }
 

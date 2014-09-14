@@ -127,6 +127,8 @@ private:
     QNetworkReply *versionInfomationReply;
     QNetworkReply *changeLogReply;
 
+    QString previousScene;
+
     void restoreFromConfig();
     void region(const QPoint &cursorGlobalPoint);
     void fetchUpdateInformation();
@@ -165,7 +167,7 @@ private slots:
     void enterRoom();
     void enterLobby();
     void gotoScene(QGraphicsScene *scene);
-    void gotoStartScene();
+    void gotoPreviousScene();
     void startGameInAnotherInstance();
     void changeBackground();
     void changeTableBg();
