@@ -90,6 +90,7 @@ public:
 
     // client side
     QString LobbyAddress;
+    bool ConnectToLobby;
     QString HostAddress;
     QString UserName;
     QString UserAvatar;

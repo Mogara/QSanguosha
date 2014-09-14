@@ -105,12 +105,12 @@ void NativeClientSocket::connectToHost() {
 void NativeClientSocket::connectToHost(QString address)
 {
     ushort port;
-    if (address.indexOf(':') == -1) {
-        port = Config.value("ServerPort", 9527u).toUInt();
-    } else {
+    if (address.contains(':')) {
         QStringList texts = address.split(':');
         address = texts.first();
         port = texts.at(1).toUInt();
+    } else {
+        port = Config.value("ServerPort", 9527u).toUInt();
     }
     socket->connectToHost(address, port);
 }

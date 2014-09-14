@@ -655,8 +655,10 @@ void MainWindow::on_actionStart_Server_triggered() {
         return;
     }
 
+    if (Config.ConnectToLobby)
+        server->connectToLobby();
+
     server->daemonize();
-    server->connectToLobby();
 
     ui->actionStart_Game->disconnect();
 #ifdef QT_NO_PROCESS
@@ -1097,10 +1099,11 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
         return;
     }
+    if (Config.ConnectToLobby)
+        server->connectToLobby();
 
     server->daemonize();
     server->createNewRoom();
-    server->connectToLobby();
 
     Config.HostAddress = "127.0.0.1";
     startConnection();
