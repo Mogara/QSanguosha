@@ -129,6 +129,8 @@ void LobbyServer::processClientSignup(ClientSocket *socket, const Packet &signup
     connect(player, SIGNAL(disconnected()), SLOT(cleanupPlayer()));
 
     emit serverMessage(tr("%1 logged in as Player %2").arg(socket->peerName()).arg(screen_name));
+
+    sendRoomListTo(player);
 }
 
 void LobbyServer::processRoomPacket(ClientSocket *socket, const Packet &packet)
