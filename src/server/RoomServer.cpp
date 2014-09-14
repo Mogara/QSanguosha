@@ -1049,7 +1049,7 @@ void RoomServer::setup()
 {
     JsonArray data;
     data << Sanguosha->getSetupString();
-    data << Config.ServerPort;
+    data << serverPort();
     data << players.size();
     data << rooms.size();
     data << -1;//unlimited room number

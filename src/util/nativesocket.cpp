@@ -37,6 +37,16 @@ bool NativeServerSocket::listen() {
     return server->listen(QHostAddress::Any, Config.ServerPort);
 }
 
+bool NativeServerSocket::listen(const QHostAddress &address, ushort port)
+{
+    return server->listen(address, port);
+}
+
+ushort NativeServerSocket::serverPort() const
+{
+    return server->serverPort();
+}
+
 void NativeServerSocket::daemonize() {
     daemon = new QUdpSocket(this);
     daemon->bind(Config.ServerPort, QUdpSocket::ShareAddress);

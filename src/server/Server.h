@@ -36,6 +36,8 @@ public:
     virtual void broadcastSystemMessage(const QString &msg) = 0;
 
     bool listen() { return server->listen(); }
+    bool listen(const QHostAddress &address, ushort port) { return server->listen(address, port); }
+    ushort serverPort() const {return server->serverPort(); }
     void daemonize() { server->daemonize(); }
 
 protected slots:

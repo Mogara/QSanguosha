@@ -32,6 +32,8 @@ class ServerSocket : public QObject {
 
 public:
     virtual bool listen() = 0;
+    virtual bool listen(const QHostAddress &address, ushort port = 0) = 0;
+    virtual ushort serverPort() const = 0;
     virtual void daemonize() = 0;
 
 signals:

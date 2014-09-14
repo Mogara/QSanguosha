@@ -1094,18 +1094,21 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
     if (!dialog->config())
         return;
 
+    bool in_lobby = scene->inherits("LobbyScene");
     server = new RoomServer(this);
-    if (!server->listen()) {
+    ushort port = in_lobby ? 0 : Config.ServerPort;
+    if (!server->listen(QHostAddress::Any, port)) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
         return;
     }
-    if (Config.ConnectToLobby)
+    if (Config.ConnectToLobby || in_lobby) {
         server->connectToLobby();
+    }
 
     server->daemonize();
     server->createNewRoom();
 
-    Config.HostAddress = "127.0.0.1";
+    Config.HostAddress = QString("127.0.0.1:%1").arg(server->serverPort());
     startConnection();
 }
 

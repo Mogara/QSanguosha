@@ -32,6 +32,8 @@ public:
     NativeServerSocket();
 
     virtual bool listen();
+    virtual bool listen(const QHostAddress &address, ushort port = 0);
+    virtual ushort serverPort() const;
     virtual void daemonize();
 
 private slots:
