@@ -84,6 +84,7 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     addItem(createRoomTile);
 
     connect(ClientInstance, SIGNAL(roomListChanged(QVariant)), SLOT(setRoomList(QVariant)));
+    connect(this, SIGNAL(destroyed()), ClientInstance, SLOT(deleteLater()));
 }
 
 void LobbyScene::adjustItems()
@@ -227,8 +228,6 @@ void LobbyScene::onRoomTileClicked()
     if (index == -1 || index >= rooms.size()) return;
 
     HostInfoStruct *info = rooms.at(index);
-
-    ClientInstance->disconnectFromHost();
 
     Config.HostAddress = QString("%1:%2").arg(info->HostAddress).arg(info->HostPort);
     emit roomSelected();
