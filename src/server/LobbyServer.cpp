@@ -50,7 +50,7 @@ void LobbyServer::broadcastNotification(CommandType command, const QVariant &dat
     broadcast(&packet);
 }
 
-void LobbyServer::broadcast(const Packet *packet)
+void LobbyServer::broadcast(const AbstractPacket *packet)
 {
     broadcast(packet->toJson(), packet->getPacketDestination());
 }
