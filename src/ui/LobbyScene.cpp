@@ -230,8 +230,7 @@ void LobbyScene::onRoomTileClicked()
 
     ClientInstance->disconnectFromHost();
 
-    Config.HostAddress = info->HostAddress;
-    Config.ServerPort = info->HostPort;
+    Config.HostAddress = QString("%1:%2").arg(info->HostAddress).arg(info->HostPort);
     emit roomSelected();
 }
 
