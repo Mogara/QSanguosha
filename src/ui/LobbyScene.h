@@ -31,6 +31,7 @@
 class QMainWindow;
 class Tile;
 class Title;
+class Client;
 
 class LobbyScene : public QGraphicsScene
 {
@@ -43,6 +44,7 @@ public:
 signals:
     void roomSelected();
     void createRoomClicked();
+    void roomListRequested(int page);
 
 public slots:
     void setRoomList(const QVariant &data);
@@ -56,6 +58,7 @@ private slots:
 
     void onRoomTileClicked();
     void onCreateRoomClicked();
+    void onClientDestroyed();
 
 private:
     QWidget *chatWidget;
@@ -75,6 +78,8 @@ private:
     QList<Tile *> roomTiles;
     Tile *createRoomTile;
     int currentPage;
+
+    Client *client;
 
     static int SCENE_PADDING;
     static int SCENE_MARGIN_TOP;

@@ -36,7 +36,7 @@ int LobbyScene::SCENE_MARGIN_TOP = 30;
 
 
 LobbyScene::LobbyScene(QMainWindow *parent) :
-    QGraphicsScene(parent), currentPage(0)
+    QGraphicsScene(parent), currentPage(0), client(ClientInstance)
 {
     //chat
     chatBox = new QTextEdit;
@@ -84,6 +84,8 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     addItem(createRoomTile);
 
     connect(ClientInstance, SIGNAL(roomListChanged(QVariant)), SLOT(setRoomList(QVariant)));
+    connect(ClientInstance, SIGNAL(destroyed()), SLOT(onClientDestroyed()));
+    connect(this, SIGNAL(roomListRequested(int)), ClientInstance, SLOT(fetchRoomList(int)));
     connect(this, SIGNAL(destroyed()), ClientInstance, SLOT(deleteLater()));
 }
 
@@ -194,9 +196,12 @@ void LobbyScene::setRoomList(const QVariant &data)
 
 void LobbyScene::speakToServer()
 {
+    if (client == NULL)
+        return;
+
     QString message = chatLineEdit->text();
     if (!message.isEmpty()) {
-        ClientInstance->speakToServer(message);
+        client->speakToServer(message);
         chatLineEdit->clear();
     }
 }
@@ -204,19 +209,19 @@ void LobbyScene::speakToServer()
 void LobbyScene::refreshRoomList()
 {
     currentPage = 0;
-    ClientInstance->fetchRoomList(currentPage);
+    emit roomListRequested(currentPage);
 }
 
 void LobbyScene::prevPage()
 {
     if (currentPage > 0)
-        ClientInstance->fetchRoomList(--currentPage);
+        emit roomListRequested(--currentPage);
 }
 
 void LobbyScene::nextPage()
 {
     if (!rooms.isEmpty())
-        ClientInstance->fetchRoomList(++currentPage);
+        emit roomListRequested(++currentPage);
 }
 
 void LobbyScene::onRoomTileClicked()
@@ -237,4 +242,10 @@ void LobbyScene::onCreateRoomClicked()
 {
     Config.LobbyAddress = Config.HostAddress;
     emit createRoomClicked();
+}
+
+void LobbyScene::onClientDestroyed()
+{
+    client = NULL;
+    chatLineEdit->disconnect(this, SLOT(speakToServer()));
 }
