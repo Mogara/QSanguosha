@@ -255,7 +255,7 @@ sgs.ai_use_priority.Breastplate = 0.9
 
 --LureTiger
 function SmartAI:useCardLureTiger(card, use)
-	sgs.ai_use_priority.LureTiger = 8.7
+	sgs.ai_use_priority.LureTiger = 4.9
 	if not card:isAvailable(self.player) then return end
 
 	local players = sgs.PlayerList()
@@ -305,6 +305,7 @@ function SmartAI:useCardLureTiger(card, use)
 			end
 		end
 		if players:length() > 0 then
+			sgs.ai_use_priority.LureTiger = sgs.ai_use_priority.ArcheryAttack + 0.2
 			use.card = card
 			if use.to then use.to = sgs.PlayerList2SPlayerList(players) end
 			return
@@ -327,6 +328,7 @@ function SmartAI:useCardLureTiger(card, use)
 			end
 		end
 		if players:length() > 0 then
+			sgs.ai_use_priority.LureTiger = sgs.ai_use_priority.SavageAssault + 0.2
 			use.card = card
 			if use.to then use.to = sgs.PlayerList2SPlayerList(players) end
 			return
@@ -385,6 +387,7 @@ function SmartAI:useCardLureTiger(card, use)
 				if self.player:distanceTo(to) > self.player:getAttackRange() and self.player:distanceTo(to, -total_num) <= self.player:getAttackRange() then
 					local sps = getPlayersFromTo(one)
 					if sps then
+						sgs.ai_use_priority.LureTiger = 3
 						use.card = card
 						if use.to then use.to = sgs.PlayerList2SPlayerList(sps) end
 						return
@@ -406,6 +409,7 @@ function SmartAI:useCardLureTiger(card, use)
 			end
 		end
 		if players:length() > 0 then
+			sgs.ai_use_priority.LureTiger = sgs.ai_use_priority.GodSalvation + 0.1
 			use.card = card
 			if use.to then use.to = sgs.PlayerList2SPlayerList(players) end
 			return
@@ -435,8 +439,8 @@ sgs.ai_nullification.LureTiger = function(self, card, from, to, positive)
 	return
 end
 
-sgs.ai_use_value.LureTiger = 7.3
-sgs.ai_use_priority.LureTiger = 8.9
+sgs.ai_use_value.LureTiger = 5
+sgs.ai_use_priority.LureTiger = 4.9
 sgs.ai_keep_value.LureTiger = 3.22
 
 --FightTogether
@@ -553,7 +557,7 @@ sgs.ai_nullification.FightTogether = function(self, card, from, to, positive)
 end
 
 sgs.ai_use_value.FightTogether = 5.2
-sgs.ai_use_priority.FightTogether = 8.8
+sgs.ai_use_priority.FightTogether = 8.9
 sgs.ai_keep_value.FightTogether = 3.24
 
 --AllianceFeast
@@ -604,7 +608,7 @@ sgs.ai_skill_choice["alliance_feast"] = function(self, choices)
 	end
 end
 sgs.ai_use_value.AllianceFeast = 7.5
-sgs.ai_use_priority.AllianceFeast = 8.7
+sgs.ai_use_priority.AllianceFeast = 8.8
 sgs.ai_keep_value.AllianceFeast = 3.26
 
 sgs.ai_nullification.AllianceFeast = function(self, card, from, to, positive)

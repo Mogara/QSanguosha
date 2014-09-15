@@ -30,7 +30,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = (require "middleclass").class("SmartAI")
 
-version = "QSanguosha AI 20140730 (V0.25 Alpha)"
+version = "QSanguosha AI 20140915 (V0.26 Alpha)"
 
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
@@ -1770,38 +1770,6 @@ function SmartAI:filterEvent(event, player, data)
 			end
 		end
 
---[[
-		if from and sgs.isAnjiang(from) and string.find("FireAttack|Dismantlement|Snatch|Slash|Duel", card:getClassName())
-			and from:objectName() == player:objectName() then
-			local unknown = true
-			for _, to in ipairs(tos) do
-				if self:evaluateKingdom(to, from) ~= "unknown" then
-					unknown = false
-					break
-				end
-			end
-			if unknown then
-				local targets = self:exclude(self.room:getOtherPlayers(from), card, from)
-				for _, who in ipairs(targets) do
-					if not sgs.isAnjiang(who)
-						and (card:isKindOf("FireAttack")
-							or ((card:isKindOf("Dismantlement") or card:isKindOf("Snatch"))
-								and not self:needToThrowArmor(who) and not who:hasShownSkill("tuntian")
-								and who:getCards("j"):isEmpty()
-								and not (who:getCards("e"):length() > 0 and self:hasSkills(sgs.lose_equip_skill, who))
-								and not (self:needKongcheng(who) and who:getHandcardNum() == 1))
-							or (card:isKindOf("Slash") and not (self:getDamagedEffects(who, player, true) or self:needToLoseHp(who, player, true, true))
-								and not ((who:hasShownSkill("leiji")) and getCardsNum("Jink", who, from) > 0))
-							or (card:isKindOf("Duel") and card:getSkillName() ~= "lijian" and card:getSkillName() ~= "noslijian"
-								and not (self:getDamagedEffects(who, player) or self:needToLoseHp(who, player, nil, true, true))))
-						then
-						sgs.updateIntention(from, who, -10)
-					end
-				end
-			end
-		end
-]]
-
 		if card:isKindOf("AOE") and self.player:objectName() == player:objectName() then
 			for _, t in sgs.qlist(struct.to) do
 				if t:hasShownSkill("fangzhu") then sgs.ai_AOE_data = data break end
@@ -2798,7 +2766,6 @@ function SmartAI:getCardNeedPlayer(cards, friends_table, skillname)
 		end
 	end
 
-	self:sortByUseValue(cards, true)
 	for _, friend in ipairs(friends) do
 		if friend:hasShownSkills("jizhi")  then
 			for _, hcard in ipairs(cards) do
@@ -2809,7 +2776,6 @@ function SmartAI:getCardNeedPlayer(cards, friends_table, skillname)
 		end
 	end
 
-	self:sortByUseValue(cards, true)
 	for _, friend in ipairs(friends) do
 		if friend:hasShownSkills("paoxiao")  then
 			for _, hcard in ipairs(cards) do
@@ -4220,7 +4186,7 @@ function SmartAI:hasTrickEffective(card, to, from)
 		if to:hasSkills("jgjiguan_bian|jgjiguan_suanni|jgjiguan_chiwen|jgjiguan_yazi") then return false end
 	end
 	if to:hasShownSkill("weimu") and card:isBlack() then
-		if from:objectName() == to:objectName() and card:isKindOf("DelayedTrick") then
+		if from:objectName() == to:objectName() and card:isKindOf("Disaster") then
 		else
 			return false
 		end
@@ -5251,6 +5217,14 @@ function sgs.findPlayerByShownSkillName(skill_name)
 	end
 end
 
+function SmartAI:willBeCareerist(player)
+	player = player or self.player
+	if player:hasShownOneGeneral() then return false end
+	if player:getLord() then return false end
+	local kingdom = self.player:getKingdom()
+	local kingdom_num = self.player:getPlayerNumWithSameKingdom("AI")
+	return kingdom_num >= self.player:aliveCount() / 2
+end
 
 dofile "lua/ai/debug-ai.lua"
 dofile "lua/ai/standard_cards-ai.lua"

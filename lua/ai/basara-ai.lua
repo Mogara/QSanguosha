@@ -254,6 +254,8 @@ end
 sgs.ai_skill_choice["GameRule:TurnStart"] = function(self, choices, data)
 	local choice = sgs.ai_skill_choice["GameRule:TriggerOrder"](self, choices, data)
 	if choice == "cancel" then
+		local canShowHead = string.find(choices, "GameRule_AskForGeneralShowHead")
+		local canShowDeputy = string.find(choices, "GameRule_AskForGeneralShowDeputy")
 		if canShowHead then
 			if self.player:isDuanchang() then return "GameRule_AskForGeneralShowHead" end
 			for _, p in ipairs(self.enemies) do
@@ -268,7 +270,7 @@ sgs.ai_skill_choice["GameRule:TurnStart"] = function(self, choices, data)
 
 		if not self.player:hasShownOneGeneral() then
 			local gameProcess = sgs.gameProcess():split(">>")
-			if self.player:getKingdom() == gameProcess[1] then
+			if self.player:getKingdom() == gameProcess[1] and not self:willBeCareerist() then
 				if canShowHead then return "GameRule_AskForGeneralShowDeputy"
 				elseif canShowDeputy then return "GameRule_AskForGeneralShowDeputy" end
 			end

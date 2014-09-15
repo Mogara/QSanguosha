@@ -124,7 +124,7 @@ end
 function SmartAI:shouldUseAnaleptic(target, card_use)
 
 	if target:hasArmorEffect("SilverLion") and not self.player:hasWeapon("QinggangSword") then return false end
-	if sgs.isAnjiang(target) and self:objectiveLevel(target) == 3.5 then return end
+	if sgs.isAnjiang(target) and self:objectiveLevel(target) <= 3.5 then return end
 
 	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
 		if p:hasShownSkill("qianhuan") and not p:getPile("sorcery"):isEmpty() and p:getKingdom() == target:getKingdom() and card_use.to:length() <= 1 then
@@ -419,34 +419,32 @@ function SmartAI:useCardIronChain(card, use)
 	use.card = card
 	if #self.enemies == 1 and #self:getChainedFriends() <= 1 then return end
 	local friendtargets, friendtargets2 = {}, {}
-	local otherfriends = {}
 	local enemytargets = {}
 	self:sort(self.friends, "defense")
 	for _, friend in ipairs(self.friends) do
-		if friend:isChained() and not self:isGoodChainPartner(friend) and self:hasTrickEffective(card, friend) then
+		if friend:isChained() and not self:isGoodChainPartner(friend) and self:hasTrickEffective(card, friend, self.player) then
 			if friend:containsTrick("lightning") then
 				table.insert(friendtargets, friend)
 			else
 				table.insert(friendtargets2, friend)
 			end
-		else
-			table.insert(otherfriends, friend)
 		end
 	end
 	table.insertTable(friendtargets, friendtargets2)
 	self:sort(self.enemies, "defense")
 	for _, enemy in ipairs(self.enemies) do
 		if not enemy:isChained() --[[and not sgs.Sanguosha:isProhibited(self.player, enemy, card)]]
-			and self:hasTrickEffective(card, enemy) and not (self:objectiveLevel(enemy) <= 3)
+			and self:hasTrickEffective(card, enemy, self.player) and self:objectiveLevel(enemy) > 3
 			and not self:getDamagedEffects(enemy) and not self:needToLoseHp(enemy) and sgs.isGoodTarget(enemy, self.enemies, self) then
 			table.insert(enemytargets, enemy)
 		end
 	end
 
-	local chainSelf = (self:needToLoseHp(self.player) or self:getDamagedEffects(self.player)) and not self.player:isChained()
-						and (self:getCardId("FireSlash") or self:getCardId("ThunderSlash") or
-							(self:getCardId("Slash") and (self.player:hasWeapon("Fan")))
-						or (self:getCardId("FireAttack") and self.player:getHandcardNum() > 2))
+	local chainSelf = self:hasTrickEffective(card, self.player, self.player) and not self.player:isChained()
+						and (self:needToLoseHp(self.player) or self:getDamagedEffects(self.player))
+						and (self:getCardId("FireSlash") or self:getCardId("ThunderSlash")
+							or (self:getCardId("Slash") and self.player:hasWeapon("Fan"))
+							or (self:getCardId("FireAttack") and self.player:getHandcardNum() > 2))
 
 	local targets_num = 2 + sgs.Sanguosha:correctCardTarget(sgs.TargetModSkill_ExtraTarget, self.player, card)
 

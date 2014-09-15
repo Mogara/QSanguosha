@@ -690,9 +690,9 @@ sgs.ai_skill_use["@@liuli"] = function(self, prompt, method)
 
 	local liuli = {}
 
-	if not self:damageIsEffective(self.player, nature, source) then liuli[2] = "." end
-	if self:needToLoseHp(self.player, source, true) then liuli[2] = "." end
-	if self:getDamagedEffects(self.player, source, true) then liuli[2] = "." end
+	if not self:damageIsEffective(self.player, nature, source) then liuli[2] = "."
+	elseif self:needToLoseHp(self.player, source, true) then liuli[2] = "."
+	elseif self:getDamagedEffects(self.player, source, true) then liuli[2] = "." end
 
 	self:sort(others, "defense")
 	for _, player in ipairs(others) do
@@ -1746,9 +1746,6 @@ end
 sgs.ai_skill_askforag.guzheng = function(self, card_ids)
 	local who = self.room:getCurrent()
 
-	local wulaotai = sgs.findPlayerByShownSkillName("buyi")
-	local Need_buyi = wulaotai and who:getHp() == 1 and self:isFriend(who, wulaotai)
-
 	local cards, except_Equip, except_Key = {}, {}, {}
 	for _, card_id in ipairs(card_ids) do
 		local card = sgs.Sanguosha:getCard(card_id)
@@ -1763,23 +1760,6 @@ sgs.ai_skill_askforag.guzheng = function(self, card_ids)
 	end
 
 	if self:isFriend(who) then
-		if Need_buyi then
-			local buyicard1, buyicard2
-			self:sortByKeepValue(cards)
-			for _, card in ipairs(cards) do
-				if card:isKindOf("TrickCard") and not buyicard1 then
-					buyicard1 = card:getEffectiveId()
-				end
-				if not card:isKindOf("BasicCard") and not buyicard2 then
-					buyicard2 = card:getEffectiveId()
-				end
-				if buyicard1 then break end
-			end
-			if buyicard1 or buyicard2 then
-				return buyicard1 or buyicard2
-			end
-		end
-
 		local peach_num, peach, jink, analeptic, slash = 0
 		for _, card in ipairs(cards) do
 			if card:isKindOf("Peach") then peach = card:getEffectiveId() peach_num = peach_num + 1 end
@@ -1819,13 +1799,6 @@ sgs.ai_skill_askforag.guzheng = function(self, card_ids)
 			end
 		end
 	else
-		if Need_buyi then
-			for _, card in ipairs(cards) do
-				if card:isKindOf("Slash") then
-					return card:getEffectiveId()
-				end
-			end
-		end
 		for _, card in ipairs(cards) do
 			if card:isKindOf("EquipCard") and self.player:hasSkill("zhijian") then
 				local Cant_Zhijian = true
