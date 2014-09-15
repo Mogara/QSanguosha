@@ -1,21 +1,21 @@
 /********************************************************************
-    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Rara
 
     This file is part of QSanguosha-Hegemony.
 
     This game is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 3.0 of the License, or (at your option) any later version.
+    modify it under the terms of the GNU General Public License as
+    published by the Free Software Foundation; either version 3.0
+    of the License, or (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
+    General Public License for more details.
 
     See the LICENSE file for more details.
 
-    QSanguosha-Hegemony Team
+    QSanguosha-Rara
     *********************************************************************/
 
 #include "strategic-advantage.h"
@@ -74,7 +74,7 @@ public:
 
         if (!player->hasShownAllGenerals())
             room->setEmotion(use.from, "weapon/blade");
-            
+
         room->setPlayerDisableShow(player, "hd", "Blade"); // this effect should always make sense.
 
         return false;
@@ -420,7 +420,7 @@ void BurningCamps::onUse(Room *room, const CardUseStruct &card_use) const{
 }
 
 void BurningCamps::onEffect(const CardEffectStruct &effect) const {
-    effect.to->getRoom()->damage(DamageStruct(this, effect.from, effect.to, 1, DamageStruct::Fire)); 
+    effect.to->getRoom()->damage(DamageStruct(this, effect.from, effect.to, 1, DamageStruct::Fire));
 }
 
 LureTiger::LureTiger(Card::Suit suit, int number)
@@ -539,7 +539,7 @@ public:
                 room->setPlayerProperty(p, "removed", false);
                 room->removePlayerCardLimitation(p, "use", ".$0");
             }
-   
+
         return QStringList();
     }
 };

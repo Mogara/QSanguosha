@@ -1,25 +1,25 @@
 --[[********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+	Copyright (c) 2013-2014 - QSanguosha-Rara
 
   This file is part of QSanguosha-Hegemony.
 
   This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+  modify it under the terms of the GNU General Public License as
+  published by the Free Software Foundation; either version 3.0
+  of the License, or (at your option) any later version.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+  General Public License for more details.
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team	
+  QSanguosha-Rara
 **********************************************************************]]
 -- translations for Basara mode
 
-return 
+return
 {
 	["Basara"] = "暗将",
 	["#BasaraReveal"] = "%from 明置了武将，主将为 %arg，副将为 %arg2",
@@ -57,11 +57,11 @@ return
 	["Hegemony"] = "国战",
 	["Roles"] = "身份",
 	["~anjiang"] = "死不瞑目啊……",
-	
+
 	["@define:FirstShowReward"] = "是否摸两张牌作为首亮奖励？",
 	["@define:changetolord"] = "你可以选择更换为君主。" ,
 	["#FirstShowReward"] = "%from 全场第一个亮将，可以摸两张牌" ,
-	
+
 	["GameRule_AskForGeneralShowHead"] = "明置主将" ,
 	["GameRule_AskForGeneralShowDeputy"] = "明置副将" ,
 }

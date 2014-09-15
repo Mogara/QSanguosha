@@ -1,21 +1,21 @@
 --[[********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+	Copyright (c) 2013-2014 - QSanguosha-Rara
 
   This file is part of QSanguosha-Hegemony.
 
   This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+  modify it under the terms of the GNU General Public License as
+  published by the Free Software Foundation; either version 3.0
+  of the License, or (at your option) any later version.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+  General Public License for more details.
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
+  QSanguosha-Rara
 *********************************************************************]]
 
 
@@ -57,7 +57,7 @@ sgs.ai_skill_playerchosen.jggongshen = function(self, targets)
 			if enemy:hasArmorEffect("Vine") or enemy:getMark("@gale") > 0 or enemy:getHp() == 1 then
 				target = enemy
 				break
-			end			
+			end
 		end
 	end
 	if not target then
@@ -67,7 +67,7 @@ sgs.ai_skill_playerchosen.jggongshen = function(self, targets)
 				target = friend
 				break
 			end
-		end	
+		end
 	end
 	end
 	if not target then
@@ -88,14 +88,14 @@ sgs.ai_skill_invoke.jgzhinang = true
 --[[
 sgs.ai_skill_choice.jgzhinang = function(self, choice, data)
 	if self.player:getMark("zhinangEquip") > self.player:getMark("zhinangTrick") and string.find(choice, "EquipCard") then return "EquipCard" end
-return "TrickCard" 
+return "TrickCard"
 end]]
 
 sgs.ai_skill_playerchosen.jgzhinang = function(self, targets)
 	for _, friend in ipairs(self.friends_noself) do
-		if friend:faceUp() and not self:isWeak(friend) then 
+		if friend:faceUp() and not self:isWeak(friend) then
 			if not friend:getWeapon() or friend:hasSkills("rende|jizhi") then
-				return friend 
+				return friend
 			end
 		end
 	end

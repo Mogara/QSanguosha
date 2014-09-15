@@ -1,21 +1,21 @@
 /********************************************************************
-    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Rara
 
   This file is part of QSanguosha-Hegemony.
 
   This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+  modify it under the terms of the GNU General Public License as
+  published by the Free Software Foundation; either version 3.0
+  of the License, or (at your option) any later version.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+  General Public License for more details.
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
+  QSanguosha-Rara
 *********************************************************************/
 {
 "common":
@@ -73,15 +73,15 @@
     "graphicsBoxBgColor": [0, 0, 0, 220],
     "graphicsBoxBorderColor": [166, 150, 122],
     "graphicsBoxTitleFont": ["wqy-microhei", 16, 2, [228, 213, 160]],
-    
+
     "generalBoxDestSeatFont": ["DroidSansFallback", 12, 2, [105, 103, 91]],
 
     "generalCardItemCompanionPromptRegion": [-1, 102, 95, 15],
-    
+
     "optionButtonText": ["wqy-microhei", [18, 18, 0], 0, [255, 255, 255, 255], 1, 10, [0, 0], [50, 50, 50, 200]],
     "generalButtonPositionIconRegion": [-1, 2, 29, 24],
     "generalButtonNameRegion": [26, 0, 60, 23],
-    
+
     "playerCardBoxPlaceNameText": ["@wqy-microhei", 16, 2, [228, 213, 160]]
 },
 "room":

@@ -1,21 +1,21 @@
 --[[********************************************************************
-	Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+	Copyright (c) 2013-2014 - QSanguosha-Rara
 
   This file is part of QSanguosha-Hegemony.
 
   This game is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 3.0 of the License, or (at your option) any later version.
+  modify it under the terms of the GNU General Public License as
+  published by the Free Software Foundation; either version 3.0
+  of the License, or (at your option) any later version.
 
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+  General Public License for more details.
 
   See the LICENSE file for more details.
 
-  QSanguosha-Hegemony Team
+  QSanguosha-Rara
 *********************************************************************]]
 
 -- this script file defines all functions written by Lua
@@ -260,7 +260,7 @@ function sgs.CreateSkillCard(spec)
 	card.on_effect = spec.on_effect
 	card.on_validate = spec.on_validate
 	card.on_validate_in_response = spec.on_validate_in_response
-	
+
 	if spec.extra_cost then assert(type(spec.extra_cost) == "function") end
 	card.extra_cost = spec.extra_cost or 0
 
@@ -280,7 +280,7 @@ function sgs.CreateArraySummonCard(spec)
 			cardUse.from:showGeneral(cardUse.from:inHeadSkills(skill))
 			skill:summonFriends(cardUse.from)
 		end
-		
+
 		return nil
 	end
 
@@ -369,7 +369,7 @@ end
 function onUse_GlobalEffect(self, room, card_use)
 	local source = card_use.from
 	local targets = sgs.SPlayerList()
-	if card_use.to:isEmpty() then 
+	if card_use.to:isEmpty() then
 		local all_players = room:getAllPlayers()
 		for _, player in sgs.qlist(all_players) do
 			--[[
@@ -414,7 +414,7 @@ function onUse_DelayedTrick(self, room, card_use)
 
 	local reason = sgs.CardMoveReason(sgs.CardMoveReason_S_REASON_USE, use.from:objectName(), use.to:first():objectName(), self:getSkillName(), "")
 	room:moveCardTo(self, use.from, use.to:first(), sgs.Player_PlaceDelayedTrick, reason, true)
-	
+
 	local skill_name = wrapped:showSkill()
 	if skill_name ~= "" and use.from:ownSkill(skill_name) and (not use.from:hasShownSkill(skill_name)) then
 		use.from:showGeneral(use.from:inHeadSkills(skill_name))
@@ -663,7 +663,7 @@ function sgs.CreateEquipCard(spec)
 	if spec.suit then assert(type(spec.suit) == "number") end
 	if spec.number then assert(type(spec.number) == "number") end
 	if spec.location == sgs.EquipCard_WeaponLocation then assert(type(spec.range) == "number") end
-	
+
 	local card = nil
 	if spec.location == sgs.EquipCard_WeaponLocation then
 		card = sgs.LuaWeapon(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.range, spec.name, spec.class_name)
@@ -673,7 +673,7 @@ function sgs.CreateEquipCard(spec)
 		card = sgs.LuaTreasure(spec.suit or sgs.Card_NoSuit, spec.number or 0, spec.name, spec.class_name)
 	end
 	assert(card ~= nil)
-	
+
 	card.on_install = spec.on_install
 	card.on_uninstall = spec.on_uninstall
 
