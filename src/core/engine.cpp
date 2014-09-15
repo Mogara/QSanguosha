@@ -119,7 +119,7 @@ Engine::Engine()
 
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 
-    foreach(const Skill *skill, skills.values()) {
+    foreach (const Skill *skill, skills) {
         Skill *mutable_skill = const_cast<Skill *>(skill);
         mutable_skill->initMediaSource();
     }

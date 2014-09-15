@@ -831,7 +831,7 @@ void PlayerCardContainer::_adjustComponentZValues() {
     _layUnder(_m_floatingArea);
     _layUnder(_m_distanceItem);
     _layUnder(_m_votesItem);
-    foreach(QGraphicsItem *pile, _m_privatePiles.values())
+    foreach (QGraphicsItem *pile, _m_privatePiles)
         _layUnder(pile);
     foreach(QGraphicsItem *judge, _m_judgeIcons)
         _layUnder(judge);

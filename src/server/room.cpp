@@ -1699,7 +1699,7 @@ QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, SP
         if (ai) {
             //Temporary method to keep compatible with existing AI system
             QStringList all_skills;
-            foreach(const QStringList &list, skills.values())
+            foreach (const QStringList &list, skills)
                 all_skills << list;
 
             if (optional)
@@ -1710,7 +1710,7 @@ QString Room::askForTriggerOrder(ServerPlayer *player, const QString &reason, SP
                 answer = reply;
             } else {
                 QString owner;
-                foreach(const QStringList &list, skills.values()) {
+                foreach (const QStringList &list, skills) {
                     if (list.contains(reply))
                         owner = skills.key(list)->objectName();
                 }

@@ -222,7 +222,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     foreach(QAction *action, actions)
         start_scene->addButton(action);
-    
+
     ui->menuSumMenu->setAttribute(Qt::WA_TranslucentBackground);
     ui->menuGame->setAttribute(Qt::WA_TranslucentBackground);
     ui->menuView->setAttribute(Qt::WA_TranslucentBackground);
@@ -562,7 +562,7 @@ void MainWindow::repaintButtons()
     maxButton->setGeometry(width - 90, 0, 40, 33);
     normalButton->setGeometry(width - 90, 0, 40, 33);
     closeButton->setGeometry(width - 50, 0, 40, 33);
-    
+
     Qt::WindowStates state = windowState();
     if (state & Qt::WindowMaximized) {
         maxButton->setVisible(false);
@@ -1143,7 +1143,7 @@ void MainWindow::on_actionRecord_analysis_triggered() {
     table->setSelectionBehavior(QTableWidget::SelectRows);
 
     int i = 0;
-    foreach(PlayerRecordStruct *rec, record_map.values()) {
+    foreach (PlayerRecordStruct *rec, record_map) {
         QTableWidgetItem *item = new QTableWidgetItem;
         QString screen_name = Sanguosha->translate(rec->m_screenName);
         if (rec->m_statue == "robot")

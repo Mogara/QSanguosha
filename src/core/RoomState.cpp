@@ -23,10 +23,8 @@
 #include "WrappedCard.h"
 
 RoomState::~RoomState() {
-    QHashIterator<int, WrappedCard *> iter(m_cards);
-    while (iter.hasNext()) {
-        iter.next();
-        delete iter.value();
+    foreach (WrappedCard *card, m_cards) {
+        delete card;
     }
     m_cards.clear();
 }
@@ -48,10 +46,8 @@ void RoomState::resetCard(int cardId) {
 
 // Reset all cards, generals' states of the room instance
 void RoomState::reset() {
-    QHashIterator<int, WrappedCard *> iter(m_cards);
-    while (iter.hasNext()) {
-        iter.next();
-        delete iter.value();
+    foreach (WrappedCard *card, m_cards) {
+        delete card;
     }
     m_cards.clear();
 
