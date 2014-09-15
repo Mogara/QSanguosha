@@ -175,7 +175,8 @@ Client::Client(QObject *parent, const QString &filename)
 }
 
 Client::~Client() {
-    ClientInstance = NULL;
+    if (ClientInstance == this)
+        ClientInstance = NULL;
 }
 
 void Client::updateCard(const QVariant &val) {
@@ -1157,7 +1158,7 @@ int Client::alivePlayerCount() const{
 }
 
 ClientPlayer *Client::getPlayer(const QString &name) {
-    if (name == Self->objectName() ||
+    if ((Self != NULL && name == Self->objectName()) ||
         name == QSanProtocol::S_PLAYER_SELF_REFERENCE_ID)
         return Self;
     else
