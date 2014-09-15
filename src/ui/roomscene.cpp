@@ -397,6 +397,14 @@ RoomScene::RoomScene(QMainWindow *main_window)
 #endif
 }
 
+RoomScene::~RoomScene()
+{
+    //in case it's destroyed via QObject::deleteLater()
+    if (RoomSceneInstance == this) {
+        RoomSceneInstance = NULL;
+    }
+}
+
 void RoomScene::handleGameEvent(const QVariant &args) {
     JsonArray arg = args.value<JsonArray>();
     if (arg.isEmpty())
