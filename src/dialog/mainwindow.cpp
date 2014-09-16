@@ -827,8 +827,8 @@ void MainWindow::enterLobby() {
 }
 
 void MainWindow::gotoPreviousScene() {
-    if (server != NULL){
-        server->deleteLater();
+    if (server != NULL) {
+        delete server;
         server = NULL;
     }
 
