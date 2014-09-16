@@ -874,6 +874,7 @@ void BanlistDialog::saveAll() {
 RoomServer::RoomServer(QObject *parent)
     : Server(parent), current(NULL), lobby(NULL)
 {
+    packetSource = S_SRC_ROOM;
     callbacks[S_COMMAND_CHECK_VERSION] = &RoomServer::checkVersion;
 }
 
