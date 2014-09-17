@@ -113,7 +113,7 @@ void SavageAssault::onEffect(const CardEffectStruct &effect) const{
         Card::MethodResponse,
         effect.from->isAlive() ? effect.from : NULL);
     if (slash) {
-        if (slash->getSkillName() == "spear") room->setEmotion(effect.to, "weapon/spear");
+        if (slash->getSkillName() == "Spear") room->setEmotion(effect.to, "weapon/spear");
         room->setEmotion(effect.to, "killer");
     }
     else{
