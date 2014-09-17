@@ -402,7 +402,7 @@ function SmartAI:objectiveLevel(player)
 		else return self:getOverflow() > 0 and 4 or 0
 		end
 	elseif string.find(gameProcess, ">") then
-		local isWeakPlayer = player:getHp() == 1
+		local isWeakPlayer = player:getHp() == 1 and not player:hasShownSkill("duanchang")
 						and (player:isKongcheng() or sgs.card_lack[player:objectName()] == 1 and player:getHandcardNum() <= 1)
 						and (sgs.getReward(player) >= 2 or self.player:aliveCount() <= 4) and self:isWeak(player)
 		local kingdom = gameProcess:split(">")[1]
@@ -492,12 +492,12 @@ function sgs.gameProcess(update)
 
 	local process = "==="
 	if value[kingdoms[1]] >= sum_value1 and value[kingdoms[1]] > 0 then
-		if anjiang <= 1 and players:length() > 4 then process = kingdoms[1] .. ">>>"
-		elseif anjiang <= 3 then process = kingdoms[1] .. ">>"
-		elseif anjiang <= 5 then process = kingdoms[1] .. ">" end
+		if anjiang <= players:length() / 2 and players:length() > 4 then process = kingdoms[1] .. ">>>"
+		elseif anjiang <= players:length() / 2 + 1 then process = kingdoms[1] .. ">>"
+		elseif anjiang <= players:length() / 2 + 2 then process = kingdoms[1] .. ">" end
 	elseif value[kingdoms[1]] >= sum_value2 and value[kingdoms[1]] > 0 then
 		if anjiang == 0 then process = kingdoms[1] .. ">>"
-		elseif anjiang <= 3 then process = kingdoms[1] .. ">" end
+		elseif anjiang <= players:length() / 2 then process = kingdoms[1] .. ">" end
 	elseif value[kingdoms[1]] >= sum_value3 and value[kingdoms[1]] > 0 then
 		process = kingdoms[1] .. ">"
 	end
@@ -2682,7 +2682,7 @@ function SmartAI:getCardNeedPlayer(cards, friends_table, skillname)
 	end
 
 	local AssistTarget = self:AssistTarget()
-	if AssistTarget and (self:needKongcheng(AssistTarget, true) or self:willSkipPlayPhase(AssistTarget)) then
+	if AssistTarget and (self:needKongcheng(AssistTarget, true) or self:willSkipPlayPhase(AssistTarget) or AssistTarget:getHandcardNum() > 10) then
 		AssistTarget = nil
 	end
 

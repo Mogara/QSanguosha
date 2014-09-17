@@ -152,7 +152,7 @@ function sgs.getDefenseSlash(player, self)
 	end
 
 	defense = defense + math.min(player:getHp() * 0.45, 10)
-	if sgs.isAnjiang(player) then defense = defense + 2 end
+	if sgs.isAnjiang(player) then defense = defense + 1 end
 
 	if attacker then
 		local m = sgs.masochism_skill:split("|")
