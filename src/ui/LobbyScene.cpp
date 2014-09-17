@@ -118,7 +118,7 @@ void LobbyScene::adjustRoomTiles()
     int roomNum = roomTiles.size();
     int i;
     for (i = 0; i < roomNum; i++) {
-        Tile *tile = roomTiles[i];
+        Tile *tile = roomTiles.at(i);
 
         tile->setPos(x, y);
         tile->show();
@@ -134,13 +134,13 @@ void LobbyScene::adjustRoomTiles()
     }
     int final = i;
     for(; i < roomNum; i++) {
-        roomTiles[i]->hide();
+        roomTiles.at(i)->hide();
     }
 
     if (y + createRoomTile->boundingRect().height() > displayRegion.bottom()) {
-        roomTiles[final]->hide();
-        x = roomTiles[final]->x();
-        y = roomTiles[final]->y();
+        roomTiles.at(final)->hide();
+        x = roomTiles.at(final)->x();
+        y = roomTiles.at(final)->y();
     }
     createRoomTile->setPos(x, y);
 }
