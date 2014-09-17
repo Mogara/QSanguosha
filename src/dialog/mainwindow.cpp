@@ -832,11 +832,6 @@ void MainWindow::gotoPreviousScene() {
         server = NULL;
     }
 
-    if (Self) {
-        delete Self;
-        Self = NULL;
-    }
-
     if (previousScene.isEmpty() || previousScene == "StartScene") {
         StartScene *start_scene = new StartScene(this);
 
@@ -866,12 +861,21 @@ void MainWindow::gotoPreviousScene() {
         addAction(ui->actionShow_Hide_Menu);
         addAction(ui->actionFullscreen);
 
-        if (ClientInstance)
+        if (ClientInstance) {
             delete ClientInstance;
+            Self = NULL;
+        }
 
     } else {
-        if (ClientInstance)
+        //@todo: add a loading animation here
+        scene->deleteLater();
+        view->setScene(NULL);
+        scene = NULL;
+
+        if (ClientInstance) {
             delete ClientInstance;
+            Self = NULL;
+        }
 
         Config.HostAddress = Config.value("HostAddress").toString();
         if (!Config.HostAddress.isEmpty()) {
