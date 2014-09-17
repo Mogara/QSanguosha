@@ -31,6 +31,7 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QSpinBox>
+#include <QStack>
 
 namespace Ui {
     class MainWindow;
@@ -127,7 +128,7 @@ private:
     QNetworkReply *versionInfomationReply;
     QNetworkReply *changeLogReply;
 
-    QString previousScene;
+    QStack<QString> sceneHistory;
 
     void restoreFromConfig();
     void region(const QPoint &cursorGlobalPoint);
@@ -167,7 +168,7 @@ private slots:
     void enterRoom();
     void enterLobby();
     void gotoScene(QGraphicsScene *scene);
-    void gotoPreviousScene();
+    void exitScene();
     void startGameInAnotherInstance();
     void changeBackground();
     void changeTableBg();

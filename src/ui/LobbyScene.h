@@ -45,6 +45,7 @@ signals:
     void roomSelected();
     void createRoomClicked();
     void roomListRequested(int page);
+    void exit();
 
 public slots:
     void setRoomList(const QVariant &data);

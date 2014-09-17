@@ -72,6 +72,7 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     addWidget(buttonBox);
 
     connect(refreshButton, SIGNAL(clicked()), SLOT(refreshRoomList()));
+    connect(exitButton, SIGNAL(clicked()), this, SIGNAL(exit()));
 
     //room tiles
     roomTitle = new Title(NULL, tr("Rooms"), "wqy-microhei", 30);

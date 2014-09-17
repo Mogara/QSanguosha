@@ -622,7 +622,7 @@ void MainWindow::gotoScene(QGraphicsScene *scene) {
             about_window->deleteLater();
             about_window = NULL;
         }
-        previousScene = this->scene->metaObject()->className();
+        sceneHistory.push(this->scene->metaObject()->className());
     }
 
     this->scene = scene;
@@ -806,7 +806,7 @@ void MainWindow::enterRoom() {
     }
 
     connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
-    connect(room_scene, SIGNAL(return_to_start()), this, SLOT(gotoPreviousScene()));
+    connect(room_scene, SIGNAL(return_to_start()), this, SLOT(exitScene()));
 
     gotoScene(room_scene);
 }
@@ -822,17 +822,35 @@ void MainWindow::enterLobby() {
     LobbyScene *scene = new LobbyScene(this);
     connect(scene, SIGNAL(createRoomClicked()), SLOT(on_actionPC_Console_Start_triggered()));
     connect(scene, SIGNAL(roomSelected()), SLOT(startConnection()));
+    connect(scene, SIGNAL(exit()), SLOT(exitScene()));
 
     gotoScene(scene);
 }
 
-void MainWindow::gotoPreviousScene() {
+void MainWindow::exitScene() {
     if (server != NULL) {
         delete server;
         server = NULL;
     }
 
-    if (previousScene.isEmpty() || previousScene == "StartScene") {
+    QString previousScene = sceneHistory.pop();
+    if (previousScene == "LobbyScene") {
+        //@todo: add a loading animation here
+        scene->deleteLater();
+        view->setScene(NULL);
+        scene = NULL;
+
+        if (ClientInstance) {
+            delete ClientInstance;
+            Self = NULL;
+        }
+
+        Config.HostAddress = Config.value("HostAddress").toString();
+        if (!Config.HostAddress.isEmpty()) {
+            startConnection();
+        }
+
+    } else {
         StartScene *start_scene = new StartScene(this);
 
         QList<QAction *> actions;
@@ -864,22 +882,6 @@ void MainWindow::gotoPreviousScene() {
         if (ClientInstance) {
             delete ClientInstance;
             Self = NULL;
-        }
-
-    } else {
-        //@todo: add a loading animation here
-        scene->deleteLater();
-        view->setScene(NULL);
-        scene = NULL;
-
-        if (ClientInstance) {
-            delete ClientInstance;
-            Self = NULL;
-        }
-
-        Config.HostAddress = Config.value("HostAddress").toString();
-        if (!Config.HostAddress.isEmpty()) {
-            startConnection();
         }
     }
 
