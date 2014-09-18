@@ -47,17 +47,8 @@ protected:
     //callbacks for room servers
     void setupNewRoom(ClientSocket *socket, const QVariant &data);
 
-    struct RoomInfoStruct{
-        QString SetupString;
-        QString Address;
-        ushort Port;
-        int PlayerNum;
-        int RoomNum;
-        int MaxRoomNum;
-    };
-
     QList<LobbyPlayer *> players;
-    QMap<ClientSocket *, RoomInfoStruct *> rooms;
+    QMap<ClientSocket *, QVariant> rooms;
 
     typedef void (LobbyServer::*Callback)(ClientSocket *socket, const QVariant &);
     QHash<QSanProtocol::CommandType, Callback> callbacks;

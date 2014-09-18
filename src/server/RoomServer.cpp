@@ -1054,5 +1054,7 @@ void RoomServer::setup()
     data << players.size();
     data << rooms.size();
     data << -1;//unlimited room number
+    data << Config.AIDelay;
+    data << Config.RewardTheFirstShowingPlayer;
     notifyLobby(S_COMMAND_SETUP, data);
 }

@@ -21,6 +21,7 @@
 #include "LobbyServer.h"
 #include "LobbyPlayer.h"
 #include "json.h"
+#include "clientstruct.h"
 
 using namespace QSanProtocol;
 
@@ -64,7 +65,7 @@ void LobbyServer::broadcast(const QByteArray &message, int destination)
     }
 
     if (destination & S_DEST_ROOM) {
-        QMapIterator<ClientSocket *, RoomInfoStruct *> iter(rooms);
+        QMapIterator<ClientSocket *, QVariant> iter(rooms);
         while (iter.hasNext()) {
             ClientSocket *socket = iter.key();
             socket->send(message);
@@ -159,26 +160,39 @@ void LobbyServer::cleanupPlayer()
 void LobbyServer::setupNewRoom(ClientSocket *from, const QVariant &data)
 {
     JsonArray args = data.value<JsonArray>();
-    if (args.size() < 4) return;
-
-    RoomInfoStruct *info = new RoomInfoStruct;
-    info->SetupString = args.at(0).toString();
-    info->Address = from->peerAddress();
-    info->Port = args.at(1).toUInt();
-    info->PlayerNum = args.at(2).toInt();
-    info->RoomNum = args.at(3).toInt();
-    info->MaxRoomNum = args.at(4).toInt();
+    if (args.size() != 7) return;
 
     //check if the room server can be connected
+    ushort port = args.at(1).toUInt();
     QTcpSocket socket;
-    socket.connectToHost(info->Address, info->Port);
-
+    socket.connectToHost(from->peerAddress(), port);
     if (socket.waitForConnected(2000)) {
-        emit serverMessage(tr("%1 signed up as a Room Server on port %2").arg(from->peerName()).arg(info->Port));
-        rooms.insert(from, info);
+        emit serverMessage(tr("%1 signed up as a Room Server on port %2").arg(from->peerName()).arg(port));
+
+        /*args.at(0).toString();  //SetupString
+        args.at(1).toUInt();    //HostPort
+        args.at(2).toInt();     //PlayerNum
+        args.at(3).toInt();     //RoomNum
+        args.at(4).toInt();     //MaxRoomNum
+        args.at(5).toInt();     //AIDelay
+        args.at(6).toBool();    //RewardTheFirstShowingPlayer*/
+        ServerInfoStruct info;
+        if (!info.parse(args.at(0).toString())) {
+            emit serverMessage(tr("%1 Invalid setup string").arg(from->peerName()));
+            return;
+        }
+
+        int maxRoomNum = args.at(4).toInt();
+        if (maxRoomNum < -1 || args.at(3).toInt() > maxRoomNum) {
+            emit serverMessage(tr("%1 Invalid room number or max room number").arg(from->peerName()));
+            return;
+        }
+
+        JsonArray data(args);
+        data[1] = QString("%1:%2").arg(from->peerAddress()).arg(port);
+        rooms.insert(from, data);
+
         connect(from, SIGNAL(disconnected()), this, SLOT(cleanupRoom()));
-    } else {
-        delete info;
     }
 }
 
@@ -189,10 +203,6 @@ void LobbyServer::cleanupRoom()
     if (socket == NULL) return;
 
     emit serverMessage(tr("%1 Room Server disconnected").arg(socket->peerName()));
-
-    RoomInfoStruct *info = rooms.value(socket);
-    if (info)
-        delete info;
     rooms.remove(socket);
     socket->disconnect(this);
     this->disconnect(socket);
@@ -210,22 +220,14 @@ void LobbyServer::sendRoomListTo(LobbyPlayer *player, int page)
     if (offset >= rooms.size())
         return;
 
-    QMapIterator<ClientSocket *, RoomInfoStruct *> iter(rooms);
+    QMapIterator<ClientSocket *, QVariant> iter(rooms);
     for (int i = 0; i < offset; i++)
         iter.next();
 
     JsonArray data;
     for (int i = 0; i < pageLimit && iter.hasNext(); i++) {
         iter.next();
-        RoomInfoStruct *info = iter.value();
-        JsonArray item;
-        item << info->SetupString;
-        item << info->Address;
-        item << info->Port;
-        item << info->PlayerNum;
-        item << info->RoomNum;
-        item << info->MaxRoomNum;
-        data << QVariant(item);
+        data << iter.value();
     }
     player->notify(S_COMMAND_ROOM_LIST, data);
 }

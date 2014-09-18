@@ -98,7 +98,7 @@ void Tile::addScrollText(const QStringList &texts)
         current_text_id = 0;
         QGraphicsObject *first_content = scroll_contents.first();
         first_content->setOpacity(1.0);
-        first_content->setY((boundingRect().height() - first_content->boundingRect().height()) / 2);
+        first_content->setY(first_content->x());
 
         connect(scroll_timer, SIGNAL(timeout()), SLOT(scrollToNextContent()));
         scroll_timer->start(((qrand() % 3) + 3) * 1000);
@@ -110,13 +110,13 @@ void Tile::scrollToNextContent()
     QGraphicsObject *current = scroll_contents.at(current_text_id);
     current_text_id = (current_text_id + 1) % scroll_contents.size();
     QGraphicsObject *next = scroll_contents.at(current_text_id);
-
+    int y = next->x();
     QPropertyAnimation *opacity1 = new QPropertyAnimation(current, "opacity");
     opacity1->setStartValue(1.0);
     opacity1->setEndValue(0.0);
 
     QPropertyAnimation *y1 = new QPropertyAnimation(current, "y");
-    y1->setStartValue((boundingRect().height() - current->boundingRect().height()) / 2);
+    y1->setStartValue(y);
     y1->setEndValue(0.0);
 
     QPropertyAnimation *opacity2 = new QPropertyAnimation(next, "opacity");
@@ -125,7 +125,7 @@ void Tile::scrollToNextContent()
 
     QPropertyAnimation *y2 = new QPropertyAnimation(next, "y");
     y2->setStartValue(boundingRect().height() - next->boundingRect().height());
-    y2->setEndValue((boundingRect().height() - next->boundingRect().height()) / 2);
+    y2->setEndValue(y);
 
     QParallelAnimationGroup *group = new QParallelAnimationGroup(this);
     group->addAnimation(opacity1);

@@ -53,10 +53,11 @@ extern ServerInfoStruct ServerInfo;
 
 struct HostInfoStruct : public ServerInfoStruct {
     QString HostAddress;
-    ushort HostPort;
     int PlayerNum;
     int RoomNum;
     int MaxRoomNum;
+    int AIDelay;
+    bool RewardTheFirstShowingPlayer;
 
     bool parse(const QVariant &data);
 };

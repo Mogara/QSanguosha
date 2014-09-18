@@ -99,14 +99,15 @@ bool ServerInfoStruct::parse(const QString &str) {
 bool HostInfoStruct::parse(const QVariant &data)
 {
     JsonArray args = data.value<JsonArray>();
-    if (args.size() != 6 || !ServerInfoStruct::parse(args.at(0).toString())) {
+    if (args.size() != 8 || !ServerInfoStruct::parse(args.at(0).toString())) {
         return false;
     }
     HostAddress = args.at(1).toString();
-    HostPort = args.at(2).toUInt();
-    PlayerNum = args.at(3).toInt();
-    RoomNum = args.at(4).toInt();
-    MaxRoomNum = args.at(5).toInt();
+    PlayerNum = args.at(2).toInt();
+    RoomNum = args.at(3).toInt();
+    MaxRoomNum = args.at(4).toInt();
+    AIDelay = args.at(5).toInt();
+    RewardTheFirstShowingPlayer = args.at(6).toBool();
     return true;
 }
 

@@ -169,19 +169,19 @@ void LobbyScene::setRoomList(const QVariant &data)
             tile->setAutoHideTitle(false);
             QStringList scrollTexts;
             scrollTexts << tr("Player Number: %1 / %2").arg(info->PlayerNum).arg(info->GameMode);
-            scrollTexts << (Config.OperationNoLimit ?
+            scrollTexts << (info->OperationTimeout == 0 ?
                 tr("There is no time limit") :
                 tr("Operation timeout is %1 seconds").arg(info->OperationTimeout));
-            scrollTexts << (Config.EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
-            if (Config.EnableCheat)
-                scrollTexts << (Config.FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
-            if (Config.RewardTheFirstShowingPlayer)
+            scrollTexts << (info->EnableCheat ? tr("Cheat is enabled") : tr("Cheat is disabled"));
+            if (info->EnableCheat)
+                scrollTexts << (info->FreeChoose ? tr("Free choose is enabled") : tr("Free choose is disabled"));
+            if (info->RewardTheFirstShowingPlayer)
                 scrollTexts << tr("The reward of showing general first is enabled");
-            if (!Config.ForbidAddingRobot) {
-                scrollTexts << tr("This server is AI enabled (%1 msec)").arg(Config.AIDelay);
-            } else {
-                scrollTexts << tr("This server is AI disabled");
-            }
+            if (!info->ForbidAddingRobot)
+                scrollTexts << tr("AI is enabled\n(%1 msec delay)").arg(info->AIDelay);
+            else
+                scrollTexts << tr("AI is disabled");
+
             tile->addScrollText(scrollTexts);
 
             roomTiles << tile;
@@ -235,7 +235,7 @@ void LobbyScene::onRoomTileClicked()
 
     HostInfoStruct *info = rooms.at(index);
 
-    Config.HostAddress = QString("%1:%2").arg(info->HostAddress).arg(info->HostPort);
+    Config.HostAddress = info->HostAddress;
     emit roomSelected();
 }
 
