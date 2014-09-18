@@ -377,7 +377,7 @@ public:
     void processClientReply(ServerPlayer *player, const QSanProtocol::Packet &packet);
 
     //cheat commands executed via speakCommand
-    QHash<QString, Callback> cheatCommands;
+    static QHash<QString, Callback> cheatCommands;
     void broadcastRoles(ServerPlayer *, const QVariant &target);
     void showHandCards(ServerPlayer *player, const QVariant &target);
     void showPrivatePile(ServerPlayer *player, const QVariant &args);
@@ -511,9 +511,9 @@ private:
     QSemaphore _m_semRoomMutex; // Provide per-room  (rather than per-player) level protection of any shared variables
 
 
-    QHash<QSanProtocol::CommandType, Callback> interactions;
-    QHash<QSanProtocol::CommandType, Callback> callbacks;
-    QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
+    static QHash<QSanProtocol::CommandType, Callback> interactions;
+    static QHash<QSanProtocol::CommandType, Callback> callbacks;
+    static QHash<QSanProtocol::CommandType, QSanProtocol::CommandType> m_requestResponsePair;
     // Stores the expected client response for each server request, any unmatched client response will be discarded.
 
     QTime _m_timeSinceLastSurrenderRequest; // Timer used to ensure that surrender polls are not initiated too frequently
@@ -544,7 +544,6 @@ private:
     void chooseGenerals();
     AI *cloneAI(ServerPlayer *player);
     void broadcast(const QByteArray &message, ServerPlayer *except = NULL);
-    void initCallbacks();
     QString askForOrder(ServerPlayer *player);
 
     //process client requests

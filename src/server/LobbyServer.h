@@ -51,7 +51,7 @@ protected:
     QMap<ClientSocket *, QVariant> rooms;
 
     typedef void (LobbyServer::*Callback)(ClientSocket *socket, const QVariant &);
-    QHash<QSanProtocol::CommandType, Callback> callbacks;
+    static QHash<QSanProtocol::CommandType, Callback> callbacks;
 
 protected slots:
     void processMessage(const QByteArray &message);

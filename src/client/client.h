@@ -265,8 +265,8 @@ protected:
 private:
     ClientSocket *socket;
     bool m_isGameOver;
-    QHash<QSanProtocol::CommandType, Callback> interactions;
-    QHash<QSanProtocol::CommandType, Callback> callbacks;
+    static QHash<QSanProtocol::CommandType, Callback> interactions;
+    static QHash<QSanProtocol::CommandType, Callback> callbacks;
     QList<const ClientPlayer *> players;
     QStringList ban_packages;
     Recorder *recorder;

@@ -50,7 +50,7 @@ protected:
     ClientSocket *socket;
 
     typedef void (LobbyPlayer::*Callback)(const QVariant &data);
-    QHash<QSanProtocol::CommandType, Callback> callbacks;
+    static QHash<QSanProtocol::CommandType, Callback> callbacks;
 };
 
 #endif // LOBBYPLAYER_H

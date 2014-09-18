@@ -25,12 +25,16 @@
 
 using namespace QSanProtocol;
 
+QHash<CommandType, LobbyServer::Callback> LobbyServer::callbacks;
+
 LobbyServer::LobbyServer(QObject *parent)
     :Server(parent)
 {
     packetSource = S_SRC_LOBBY;
 
-    callbacks[S_COMMAND_SETUP] = &LobbyServer::setupNewRoom;
+    if (callbacks.isEmpty()) {
+        callbacks[S_COMMAND_SETUP] = &LobbyServer::setupNewRoom;
+    }
 }
 
 void LobbyServer::broadcastSystemMessage(const QString &message)

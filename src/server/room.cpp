@@ -54,6 +54,11 @@
 
 using namespace QSanProtocol;
 
+QHash<CommandType, CommandType> Room::m_requestResponsePair;
+QHash<CommandType, Room::Callback> Room::callbacks;
+QHash<CommandType, Room::Callback> Room::interactions;
+QHash<QString, Room::Callback> Room::cheatCommands;
+
 Room::Room(QObject *parent, const QString &mode)
     : QThread(parent), mode(mode), current(NULL), pile1(Sanguosha->getRandomCards()),
     m_drawPile(&pile1), m_discardPile(&pile2),
@@ -69,7 +74,48 @@ Room::Room(QObject *parent, const QString &mode)
     player_count = Sanguosha->getPlayerCount(mode);
     scenario = Sanguosha->getScenario(mode);
 
-    initCallbacks();
+    if (m_requestResponsePair.isEmpty()) {
+        // init request response pair
+        m_requestResponsePair[S_COMMAND_PLAY_CARD] = S_COMMAND_RESPONSE_CARD;
+        m_requestResponsePair[S_COMMAND_NULLIFICATION] = S_COMMAND_RESPONSE_CARD;
+        m_requestResponsePair[S_COMMAND_SHOW_CARD] = S_COMMAND_RESPONSE_CARD;
+        m_requestResponsePair[S_COMMAND_ASK_PEACH] = S_COMMAND_RESPONSE_CARD;
+        m_requestResponsePair[S_COMMAND_PINDIAN] = S_COMMAND_RESPONSE_CARD;
+        m_requestResponsePair[S_COMMAND_EXCHANGE_CARD] = S_COMMAND_DISCARD_CARD;
+        m_requestResponsePair[S_COMMAND_CHOOSE_DIRECTION] = S_COMMAND_MULTIPLE_CHOICE;
+        m_requestResponsePair[S_COMMAND_LUCK_CARD] = S_COMMAND_INVOKE_SKILL;
+    }
+
+    if (interactions.isEmpty()) {
+        // client request handlers
+        interactions[S_COMMAND_SURRENDER] = &Room::processRequestSurrender;
+        interactions[S_COMMAND_CHEAT] = &Room::processRequestCheat;
+        interactions[S_COMMAND_PRESHOW] = &Room::processRequestPreshow;
+    }
+
+    if (callbacks.isEmpty()) {
+        // Client notifications
+        callbacks[S_COMMAND_TOGGLE_READY] = &Room::toggleReadyCommand;
+        callbacks[S_COMMAND_ADD_ROBOT] = &Room::addRobotCommand;
+        callbacks[S_COMMAND_FILL_ROBOTS] = &Room::fillRobotsCommand;
+        callbacks[S_COMMAND_SPEAK] = &Room::speakCommand;
+        callbacks[S_COMMAND_TRUST] = &Room::trustCommand;
+        callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
+        callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
+        callbacks[S_COMMAND_MIRROR_GUANXING_STEP] = &Room::mirrorGuanxingStepCommand;
+        callbacks[S_COMMAND_CHANGE_SKIN] = &Room::changeSkinCommand;
+    }
+
+    if (cheatCommands.isEmpty()) {
+        // Cheat commands
+        cheatCommands[".BroadcastRoles"] = &Room::broadcastRoles;
+        cheatCommands[".ShowHandCards"] = &Room::showHandCards;
+        cheatCommands[".ShowPrivatePile"] = &Room::showPrivatePile;
+        cheatCommands[".SetAIDelay"] = &Room::setAIDelay;
+        cheatCommands[".SetGameMode"] = &Room::setGameMode;
+        cheatCommands[".Pause"] = &Room::pause;
+        cheatCommands[".Resume"] = &Room::resume;
+    }
 
     L = CreateLuaState();
 
@@ -84,43 +130,6 @@ Room::~Room(){
     lua_close(L);
     if (thread != NULL)
         delete thread;
-}
-
-void Room::initCallbacks() {
-    // init request response pair
-    m_requestResponsePair[S_COMMAND_PLAY_CARD] = S_COMMAND_RESPONSE_CARD;
-    m_requestResponsePair[S_COMMAND_NULLIFICATION] = S_COMMAND_RESPONSE_CARD;
-    m_requestResponsePair[S_COMMAND_SHOW_CARD] = S_COMMAND_RESPONSE_CARD;
-    m_requestResponsePair[S_COMMAND_ASK_PEACH] = S_COMMAND_RESPONSE_CARD;
-    m_requestResponsePair[S_COMMAND_PINDIAN] = S_COMMAND_RESPONSE_CARD;
-    m_requestResponsePair[S_COMMAND_EXCHANGE_CARD] = S_COMMAND_DISCARD_CARD;
-    m_requestResponsePair[S_COMMAND_CHOOSE_DIRECTION] = S_COMMAND_MULTIPLE_CHOICE;
-    m_requestResponsePair[S_COMMAND_LUCK_CARD] = S_COMMAND_INVOKE_SKILL;
-
-    // client request handlers
-    interactions[S_COMMAND_SURRENDER] = &Room::processRequestSurrender;
-    interactions[S_COMMAND_CHEAT] = &Room::processRequestCheat;
-    interactions[S_COMMAND_PRESHOW] = &Room::processRequestPreshow;
-
-    // Client notifications
-    callbacks[S_COMMAND_TOGGLE_READY] = &Room::toggleReadyCommand;
-    callbacks[S_COMMAND_ADD_ROBOT] = &Room::addRobotCommand;
-    callbacks[S_COMMAND_FILL_ROBOTS] = &Room::fillRobotsCommand;
-    callbacks[S_COMMAND_SPEAK] = &Room::speakCommand;
-    callbacks[S_COMMAND_TRUST] = &Room::trustCommand;
-    callbacks[S_COMMAND_PAUSE] = &Room::pauseCommand;
-    callbacks[S_COMMAND_NETWORK_DELAY_TEST] = &Room::networkDelayTestCommand;
-    callbacks[S_COMMAND_MIRROR_GUANXING_STEP] = &Room::mirrorGuanxingStepCommand;
-    callbacks[S_COMMAND_CHANGE_SKIN] = &Room::changeSkinCommand;
-
-    // Cheat commands
-    cheatCommands[".BroadcastRoles"] = &Room::broadcastRoles;
-    cheatCommands[".ShowHandCards"] = &Room::showHandCards;
-    cheatCommands[".ShowPrivatePile"] = &Room::showPrivatePile;
-    cheatCommands[".SetAIDelay"] = &Room::setAIDelay;
-    cheatCommands[".SetGameMode"] = &Room::setGameMode;
-    cheatCommands[".Pause"] = &Room::pause;
-    cheatCommands[".Resume"] = &Room::resume;
 }
 
 ServerPlayer *Room::getCurrent() const{

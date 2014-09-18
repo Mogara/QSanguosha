@@ -212,7 +212,7 @@ protected:
 
     ClientSocket *lobby;
     typedef void (RoomServer::*Callback)(const QVariant &);
-    QHash<QSanProtocol::CommandType, Callback> callbacks;
+    static QHash<QSanProtocol::CommandType, Callback> callbacks;
 
 signals:
     void newPlayer(ServerPlayer *player);

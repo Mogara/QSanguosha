@@ -5,11 +5,15 @@
 
 using namespace QSanProtocol;
 
+QHash<CommandType, LobbyPlayer::Callback> LobbyPlayer::callbacks;
+
 LobbyPlayer::LobbyPlayer(LobbyServer *parent) :
     QObject(parent), server(parent), socket(NULL)
 {
-    callbacks[S_COMMAND_SPEAK] = &LobbyPlayer::speakCommand;
-    callbacks[S_COMMAND_ROOM_LIST] = &LobbyPlayer::roomListCommand;
+    if (callbacks.isEmpty()) {
+        callbacks[S_COMMAND_SPEAK] = &LobbyPlayer::speakCommand;
+        callbacks[S_COMMAND_ROOM_LIST] = &LobbyPlayer::roomListCommand;
+    }
 }
 
 void LobbyPlayer::setSocket(ClientSocket *new_socket)
