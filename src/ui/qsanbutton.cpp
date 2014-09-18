@@ -26,7 +26,7 @@
 #include "roomscene.h"
 
 #include <QPixmap>
-#include <QBitMap>
+#include <QBitmap>
 #include <QPainter>
 #include <QGraphicsSceneHoverEvent>
 #include <QGraphicsView>
