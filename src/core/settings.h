@@ -83,9 +83,6 @@ public:
     ushort ServerPort;
     bool DisableLua;
 
-    QStringList ExtraHiddenGenerals;
-    QStringList RemovedHiddenGenerals;
-
     bool RewardTheFirstShowingPlayer;
 
     // client side

@@ -256,6 +256,9 @@ private:
     QMultiMap<QString, QString> sp_convert_pairs;
 
     TransferSkill *transfer;
+
+    QStringList extraHiddenGenerals;
+    QStringList removedHiddenGenerals;
 };
 
 static inline QVariant GetConfigFromLuaState(lua_State *L, const char *key) {

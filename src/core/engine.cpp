@@ -94,6 +94,9 @@ Engine::Engine()
     foreach(QString name, package_names)
         addPackage(name);
 
+    extraHiddenGenerals = GetConfigFromLuaState(lua, "extra_hidden_generals").toStringList();
+    removedHiddenGenerals = GetConfigFromLuaState(lua, "removed_hidden_generals").toStringList();
+
     metaobjects.insert("TransferCard", &TransferCard::staticMetaObject);
 
     transfer = new TransferSkill;
@@ -438,9 +441,9 @@ bool Engine::isGeneralHidden(const QString &general_name) const{
     const General *general = getGeneral(general_name);
     if (!general) return false;
     if (!general->isHidden())
-        return Config.ExtraHiddenGenerals.contains(general_name);
+        return extraHiddenGenerals.contains(general_name);
     else
-        return !Config.RemovedHiddenGenerals.contains(general_name);
+        return !removedHiddenGenerals.contains(general_name);
 }
 
 TransferSkill *Engine::getTransfer() const

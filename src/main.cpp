@@ -143,13 +143,13 @@ int main(int argc, char *argv[]) {
     qt_translator.load("qt_zh_CN.qm");
     qApp->installTranslator(&qt_translator);
 
-    showSplashMessage(QSplashScreen::tr("Initializing game engine..."));
-    new Settings;
-    Sanguosha = new Engine;
-
     showSplashMessage(QSplashScreen::tr("Loading user's configurations..."));
+    new Settings;
     Config.init();
     qApp->setFont(Config.AppFont);
+
+    showSplashMessage(QSplashScreen::tr("Initializing game engine..."));
+    new Engine;
 
     if (qApp->arguments().contains("-server")) {
         RoomServer *server = new RoomServer(qApp);
