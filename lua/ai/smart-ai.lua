@@ -383,7 +383,7 @@ function SmartAI:objectiveLevel(player)
 	if (not sgs.isAnjiang(self.player) or sgs.shown_kingdom[self_kingdom] < upperlimit) and self.role ~= "careerist" and self_kingdom == player_kingdom_explicit then return -2 end
 	if self:getKingdomCount() <= 2 then return 5 end
 
-	local selfIsCareerist = self.role == "careerist" or sgs.shown_kingdom[self_kingdom] >= upperlimit and sgs.isAnjiang(self.player)
+	local selfIsCareerist = self.role == "careerist" or sgs.shown_kingdom[self_kingdom] >= upperlimit and not self.player:hasShownOneGeneral()
 
 	local gameProcess = sgs.gameProcess()
 	if gameProcess == "===" then
@@ -414,10 +414,11 @@ function SmartAI:objectiveLevel(player)
 				else return 5
 				end
 			else
-				if player_kingdom_explicit == kingdom or player_kingdom_evaluate == kingdom or isWeakPlayer then return 5
-				elseif not string.find(player_kingdom_evaluate, kingdom) then return -1
-				elseif player_kingdom_explicit == "careerist" then return -1
+				if player_kingdom_explicit == kingdom then return 5
+				elseif player_kingdom_evaluate == kingdom then return 5
+				elseif isWeakPlayer then return 5
 				elseif player_kingdom_evaluate == "unknown" then return 0
+				elseif not string.find(player_kingdom_evaluate, kingdom) then return -1
 				else return 3
 				end
 			end
@@ -433,8 +434,6 @@ function SmartAI:objectiveLevel(player)
 			else
 				if player_kingdom_explicit == kingdom or player_kingdom_evaluate == kingdom or isWeakPlayer then return 5
 				elseif not string.find(player_kingdom_evaluate, kingdom) then return 0
-				elseif player_kingdom_explicit == "careerist" then return 0
-				elseif player_kingdom_evaluate == "unknown" then return 0
 				else return 3
 				end
 			end
@@ -486,18 +485,20 @@ function sgs.gameProcess(update)
 	for i = 2, #kingdoms do
 		sum_value1 = sum_value1 + value[kingdoms[i]]
 		if i < #kingdoms then sum_value2 = sum_value2 + value[kingdoms[i]] end
-		if i > 2 then sum_value3 = sum_value3 + value[kingdoms[i]] end
+		if i < #kingdoms - 1 then sum_value3 = sum_value3 + value[kingdoms[i]] end
 
 	end
 
 	local process = "==="
 	if value[kingdoms[1]] >= sum_value1 and value[kingdoms[1]] > 0 then
-		if anjiang <= players:length() / 2 and players:length() > 4 then process = kingdoms[1] .. ">>>"
-		elseif anjiang <= players:length() / 2 + 1 then process = kingdoms[1] .. ">>"
-		elseif anjiang <= players:length() / 2 + 2 then process = kingdoms[1] .. ">" end
+		local playerNum_1 = players:first():getPlayerNumWithSameKingdom("AI", kingdoms[1])
+		local playerNum_2 = players:first():getPlayerNumWithSameKingdom("AI", kingdoms[2])
+		if players:length() > 4 and (players:length() / 2 <= playerNum_1 or playerNum_2 + anjiang <= playerNum_1 or anjiang <= 1) then process = kingdoms[1] .. ">>>"
+		elseif anjiang <= players:length() / 2  - 1 then process = kingdoms[1] .. ">>"
+		elseif anjiang <= players:length() / 2 + 1 then process = kingdoms[1] .. ">" end
 	elseif value[kingdoms[1]] >= sum_value2 and value[kingdoms[1]] > 0 then
 		if anjiang == 0 then process = kingdoms[1] .. ">>"
-		elseif anjiang <= players:length() / 2 then process = kingdoms[1] .. ">" end
+		elseif anjiang <= players:length() / 2 - 1 then process = kingdoms[1] .. ">" end
 	elseif value[kingdoms[1]] >= sum_value3 and value[kingdoms[1]] > 0 then
 		process = kingdoms[1] .. ">"
 	end
@@ -622,6 +623,7 @@ function sgs.outputKingdomValues(player, level, sendLog)
 end
 
 function SmartAI:updatePlayers(update)
+	if self.player:isDead() then return end
 	if update ~= false then update = true end
 
 	self.friends = {}
@@ -5215,15 +5217,6 @@ function sgs.findPlayerByShownSkillName(skill_name)
 	for _, p in sgs.qlist(global_room:getAllPlayers()) do
 		if p:hasShownSkill(skill_name) then return p end
 	end
-end
-
-function SmartAI:willBeCareerist(player)
-	player = player or self.player
-	if player:hasShownOneGeneral() then return false end
-	if player:getLord() then return false end
-	local kingdom = self.player:getKingdom()
-	local kingdom_num = self.player:getPlayerNumWithSameKingdom("AI")
-	return kingdom_num >= self.player:aliveCount() / 2
 end
 
 dofile "lua/ai/debug-ai.lua"
