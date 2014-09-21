@@ -11,6 +11,7 @@ CONFIG += audio
 android:DEFINES += "\"getlocaledecpoint()='.'\""
 
 CONFIG += lua
+#CONFIG += lua53alpha
 
 SOURCES += \
     src/main.cpp \
@@ -419,6 +420,70 @@ CONFIG(lua){
         src/lua/lauxlib.h \
         src/lua/lapi.h
     INCLUDEPATH += src/lua
+}
+
+CONFIG(lua53alpha){
+    SOURCES += \
+        src/lua53alpha/lzio.c \
+        src/lua53alpha/lvm.c \
+        src/lua53alpha/lundump.c \
+        src/lua53alpha/ltm.c \
+        src/lua53alpha/ltablib.c \
+        src/lua53alpha/ltable.c \
+        src/lua53alpha/lstrlib.c \
+        src/lua53alpha/lstring.c \
+        src/lua53alpha/lstate.c \
+        src/lua53alpha/lparser.c \
+        src/lua53alpha/loslib.c \
+        src/lua53alpha/lopcodes.c \
+        src/lua53alpha/lobject.c \
+        src/lua53alpha/loadlib.c \
+        src/lua53alpha/lmem.c \
+        src/lua53alpha/lmathlib.c \
+        src/lua53alpha/llex.c \
+        src/lua53alpha/liolib.c \
+        src/lua53alpha/linit.c \
+        src/lua53alpha/lgc.c \
+        src/lua53alpha/lfunc.c \
+        src/lua53alpha/ldump.c \
+        src/lua53alpha/ldo.c \
+        src/lua53alpha/ldebug.c \
+        src/lua53alpha/ldblib.c \
+        src/lua53alpha/lctype.c \
+        src/lua53alpha/lcorolib.c \
+        src/lua53alpha/lcode.c \
+        src/lua53alpha/lbitlib.c \
+        src/lua53alpha/lbaselib.c \
+        src/lua53alpha/lauxlib.c \
+        src/lua53alpha/lapi.c \
+        src/lua53alpha/lutf8lib.c
+    HEADERS += \
+        src/lua53alpha/lzio.h \
+        src/lua53alpha/lvm.h \
+        src/lua53alpha/lundump.h \
+        src/lua53alpha/lualib.h \
+        src/lua53alpha/luaconf.h \
+        src/lua53alpha/lua.hpp \
+        src/lua53alpha/lua.h \
+        src/lua53alpha/ltm.h \
+        src/lua53alpha/ltable.h \
+        src/lua53alpha/lstring.h \
+        src/lua53alpha/lstate.h \
+        src/lua53alpha/lparser.h \
+        src/lua53alpha/lopcodes.h \
+        src/lua53alpha/lobject.h \
+        src/lua53alpha/lmem.h \
+        src/lua53alpha/llimits.h \
+        src/lua53alpha/llex.h \
+        src/lua53alpha/lgc.h \
+        src/lua53alpha/lfunc.h \
+        src/lua53alpha/ldo.h \
+        src/lua53alpha/ldebug.h \
+        src/lua53alpha/lctype.h \
+        src/lua53alpha/lcode.h \
+        src/lua53alpha/lauxlib.h \
+        src/lua53alpha/lapi.h
+    INCLUDEPATH += src/lua53alpha
 }
 
 CONFIG(opengl){
