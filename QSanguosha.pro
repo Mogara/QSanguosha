@@ -314,7 +314,7 @@ win32-g++{
 }
 winrt{
     DEFINES += WINRT
-    LIBS += -L"$$_PRO_FILE_PWD_/lib/winrt"
+    LIBS += -L"$$_PRO_FILE_PWD_/lib/winrt/x64"
 }
 macx{
     DEFINES += MAC
