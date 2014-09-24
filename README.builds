@@ -20,15 +20,13 @@ To build QSanguosha with VS2013
 
 5. You are now able to build the solution. When compilation succeeded, the QSanguosha.exe is in ~/Bin folder. You should move this file to ~ folder.
 
-6. Copy 8 files from Qt libraries to ~, they are listed below:
+6. Copy 6 files from Qt libraries to ~, they are listed below:
    Qt5Core.dll
-   Qt5Declarative.dll
    Qt5Gui.dll
    Qt5Network.dll
-   Qt5Script.dll
-   Qt5Sql.dll
+   Qt5Qml.dll
+   Qt5Quick.dll
    Qt5Widgets.dll
-   Qt5XmlPatterns.dll
 
    Copy 2 files from VS redist to ~, they are listed below:
    msvcp120.dll
@@ -181,15 +179,13 @@ To build QSanguosha in Linux or using MinGW
 
 5. You are now able to build the solution. When compilation succeeded, the (MinGW)QSanguosha.exe or (Linux)QSanguosha is in ~/../Build-QSanguosha-**/ folder. You should move this file to ~ folder.
 
-6. (MinGW only)Copy 8 files from Qt libraries to ~, they are listed below:
+6. (MinGW only)Copy 6 files from Qt libraries to ~, they are listed below:
    Qt5Core.dll
-   Qt5Declarative.dll
    Qt5Gui.dll
    Qt5Network.dll
-   Qt5Script.dll
-   Qt5Sql.dll
+   Qt5Qml.dll
+   Qt5Quick.dll
    Qt5Widgets.dll
-   Qt5XmlPatterns.dll
 
    (MinGW only)Copy 3 files from MinGW bin folder to ~, they are listed below:
    libgcc_s_dw2-1.dll

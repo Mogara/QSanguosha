@@ -96,15 +96,13 @@ VS2013(Windows)
 
 5. You are now able to build the solution. When compilation succeeded, the QSanguosha.exe is in ~/Bin folder. You should move this file to ~ folder.
 
-6. Copy 8 files from Qt libraries to ~, they are listed below:
+6. Copy 6 files from Qt libraries to ~, they are listed below:
    Qt5Core.dll
-   Qt5Declarative.dll
    Qt5Gui.dll
    Qt5Network.dll
-   Qt5Script.dll
-   Qt5Sql.dll
+   Qt5Qml.dll
+   Qt5Quick.dll
    Qt5Widgets.dll
-   Qt5XmlPatterns.dll
 
    Copy 2 files from VS redist to ~, they are listed below:
    msvcp120.dll
