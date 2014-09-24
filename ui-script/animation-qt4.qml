@@ -18,7 +18,7 @@
     QSanguosha-Rara
     *********************************************************************/
 
-import QtQuick 2.3
+import QtQuick 1.0
 
 Rectangle {
     id: container
@@ -84,7 +84,7 @@ Rectangle {
             to: 0.7
             duration: 880
         }
-        onStopped: {
+        onCompleted: {
             heroPic.visible = false
             flicker_mask.visible = true
             pause1.start()
@@ -93,7 +93,7 @@ Rectangle {
     PauseAnimation {
         id: pause1
         duration: 20
-        onStopped: {
+        onCompleted: {
             flicker_mask.visible = false
             pause2.start()
         }
@@ -101,7 +101,7 @@ Rectangle {
     PauseAnimation {
         id: pause2
         duration: 80
-        onStopped: {
+        onCompleted: {
             flicker_mask.visible = true
             pause3.start()
         }
@@ -109,7 +109,7 @@ Rectangle {
     PauseAnimation {
         id: pause3
         duration: 20
-        onStopped: {
+        onCompleted: {
             flicker_mask.visible = false
             heroPic.visible = true
             step2.start()
@@ -117,7 +117,7 @@ Rectangle {
     }
     SequentialAnimation {
         id: step2
-        onStopped: {
+        onCompleted: {
             container.visible = false
             container.animationCompleted()
         }

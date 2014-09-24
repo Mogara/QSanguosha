@@ -3,7 +3,10 @@
 # -------------------------------------------------
 TARGET = QSanguosha
 QT += network
-!winrt:QT += declarative
+!winrt{
+    greaterThan(QT_MAJOR_VERSION, 4):QT += qml quick
+    else:QT += declarative
+}
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TEMPLATE = app
 CONFIG += audio

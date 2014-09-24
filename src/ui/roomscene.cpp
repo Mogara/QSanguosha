@@ -71,6 +71,10 @@
 #include <QCoreApplication>
 #include <QInputDialog>
 #include <QScrollBar>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QtQuick/QQuickItem>
+#include <QtQuick/QQuickWindow>
+#endif
 
 using namespace QSanProtocol;
 
@@ -391,9 +395,15 @@ RoomScene::RoomScene(QMainWindow *main_window)
     pindian_from_card = NULL;
     pindian_to_card = NULL;
 #ifndef Q_OS_WINRT
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     _m_animationEngine = new QDeclarativeEngine(this);
     _m_animationContext = new QDeclarativeContext(_m_animationEngine->rootContext(), this);
-    _m_animationComponent = new QDeclarativeComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation.qml"), this);
+    _m_animationComponent = new QDeclarativeComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation-qt4.qml"), this);
+#else
+    _m_animationEngine = new QQmlEngine(this);
+    _m_animationContext = new QQmlContext(_m_animationEngine->rootContext(), this);
+    _m_animationComponent = new QQmlComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation.qml"), this);
+#endif
 #endif
 }
 
@@ -3918,10 +3928,23 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
         _m_animationContext->setContextProperty("tableWidth", m_tableCenterPos.x() * 2);
         _m_animationContext->setContextProperty("hero", hero);
         _m_animationContext->setContextProperty("skill", Sanguosha->translate(skill));
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         QGraphicsObject *object = qobject_cast<QGraphicsObject *>(_m_animationComponent->create(_m_animationContext));
         connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
         addItem(object);
         bringToFront(object);
+#else
+        QQuickItem *object = qobject_cast<QQuickItem *>(_m_animationComponent->create(_m_animationContext));
+        connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
+        QQuickWindow *animationWindow = new QQuickWindow;
+        animationWindow->setFlags(Qt::FramelessWindowHint);
+        animationWindow->setGeometry(0, 0, width(), height());
+        animationWindow->setColor(Qt::transparent);
+        object->setParentItem(animationWindow->contentItem());
+        animationWindow->show();
+        connect(object, SIGNAL(animationCompleted()), animationWindow, SLOT(hide()));
+        connect(object, SIGNAL(animationCompleted()), animationWindow, SLOT(deleteLater()));
+#endif
     }
 #endif
     else {
