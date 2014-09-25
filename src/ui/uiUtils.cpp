@@ -148,7 +148,15 @@ QString QSanUiUtils::QSanFreeTypeFont::resolveFont(const QString &fontName) {
     return result;
 }
 
-int *QSanUiUtils::QSanFreeTypeFont::loadFont(const QString &fontName) {
+static QSanUiUtils::QSanFreeTypeFont::QSanFont qsanfont(FT_Face face) {
+    return reinterpret_cast<QSanUiUtils::QSanFreeTypeFont::QSanFont>(face);
+}
+
+static FT_Face qsanfont(QSanUiUtils::QSanFreeTypeFont::QSanFont font) {
+    return reinterpret_cast<FT_Face>(font);
+}
+
+QSanUiUtils::QSanFreeTypeFont::QSanFont QSanUiUtils::QSanFreeTypeFont::loadFont(const QString &fontName) {
     if (!_ftLibInitialized && !init())
         return NULL;
     FT_Face face = NULL;
@@ -161,13 +169,13 @@ int *QSanUiUtils::QSanFreeTypeFont::loadFont(const QString &fontName) {
     else if (error)
         qWarning("Cannot open font file: %s.", fontPath);
     else
-        return reinterpret_cast<int *>(face); // Is it good here to use forced type conversion???
+        return qsanfont(face);
     return 0;
 }
 
 static QMutex _paintTextMutex;
 
-bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text, int *font, QColor color,
+bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text, QSanUiUtils::QSanFreeTypeFont::QSanFont font, QColor color,
     QSize &fontSize, int spacing, int weight, QRect boundingBox,
     Qt::Orientation orient, Qt::Alignment align) {
     if (!_ftLibInitialized || font == NULL || painter == NULL || text.isNull())
@@ -235,7 +243,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
     bool useKerning = ((orient == Qt::Horizontal) && !(align & Qt::AlignJustify));
 
     _paintTextMutex.lock();
-    FT_Face face = reinterpret_cast<FT_Face>(font);
+    FT_Face face = qsanfont(font);
     FT_GlyphSlot slot = face->glyph;
     FT_Error error;
     error = FT_Set_Pixel_Sizes(face, fontSize.width(), fontSize.height());
@@ -379,7 +387,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
 }
 
 bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QString text,
-    int *font, QColor color,
+    QSanUiUtils::QSanFreeTypeFont::QSanFont font, QColor color,
     QSize &fontSize, int spacing, QRect boundingBox,
     Qt::Alignment align) {
     if (!_ftLibInitialized || font == NULL || painter == NULL)
@@ -425,7 +433,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QSt
     int currentY = 0;
     int maxX = 0;
     int maxY = 0;
-    FT_Face face = reinterpret_cast<FT_Face>(font);
+    FT_Face face = qsanfont(font);
 
     _paintTextMutex.lock();
     FT_GlyphSlot slot = face->glyph;

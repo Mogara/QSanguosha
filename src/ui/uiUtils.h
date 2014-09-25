@@ -37,7 +37,10 @@ namespace QSanUiUtils {
         bool init();
         void quit();
 
-        int *loadFont(const QString &fontPath);
+        typedef int *QSanFont;
+
+
+        QSanFont loadFont(const QString &fontPath);
         QString resolveFont(const QString &fontName);
         // @param painter
         //        Device to be painted on
@@ -56,13 +59,13 @@ namespace QSanUiUtils {
         //        Suggest whether the text is laid out horizontally or vertically.
         // @return True if succeed.
         bool paintQString(QPainter *painter, QString text,
-            int *font, QColor color,
+            QSanFont font, QColor color,
             QSize &fontSize, int spacing, int weight, QRect boundingBox,
             Qt::Orientation orient, Qt::Alignment align);
 
         // Currently, we online support horizotal layout for multiline text
         bool paintQStringMultiLine(QPainter *painter, QString text,
-            int *font, QColor color,
+            QSanFont font, QColor color,
             QSize &fontSize, int spacing, QRect boundingBox,
             Qt::Alignment align);
     }

@@ -27,6 +27,7 @@
 #include "qsanbutton.h"
 #include "util.h"
 #include "json.h"
+#include "uiUtils.h"
 
 #include <QString>
 #include <QPixmap>
@@ -50,7 +51,7 @@ class IQSanComponentSkin { // interface class
 public:
     class QSanSimpleTextFont {
     public:
-        int *m_fontFace;
+        QSanUiUtils::QSanFreeTypeFont::QSanFont m_fontFace;
         QSize m_fontSize;
         int m_spacing;
         int m_weight;
