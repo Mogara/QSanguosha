@@ -317,6 +317,7 @@ win32-g++{
     DEFINES += GPP
 }
 winrt{
+    DEFINES += _CRT_SECURE_NO_WARNINGS
     DEFINES += WINRT
     LIBS += -L"$$_PRO_FILE_PWD_/lib/winrt/x64"
 }
