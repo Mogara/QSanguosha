@@ -3679,10 +3679,10 @@ void Room::_fillMoveInfo(CardsMoveStruct &moves, int card_index) const{
 }
 
 static bool CompareByActionOrder_OneTime(CardsMoveOneTimeStruct move1, CardsMoveOneTimeStruct move2) {
-    ServerPlayer *a = (ServerPlayer *)move1.from;
-    if (a == NULL) a = (ServerPlayer *)move1.to;
-    ServerPlayer *b = (ServerPlayer *)move2.from;
-    if (b == NULL) b = (ServerPlayer *)move2.to;
+    ServerPlayer *a = qobject_cast<ServerPlayer *>(move1.from);
+    if (a == NULL) a = qobject_cast<ServerPlayer *>(move1.to);
+    ServerPlayer *b = qobject_cast<ServerPlayer *>(move2.from);
+    if (b == NULL) b = qobject_cast<ServerPlayer *>(move2.to);
 
     if (a == NULL || b == NULL)
         return a != NULL;
@@ -3692,10 +3692,10 @@ static bool CompareByActionOrder_OneTime(CardsMoveOneTimeStruct move1, CardsMove
 }
 
 static bool CompareByActionOrder(CardsMoveStruct move1, CardsMoveStruct move2) {
-    ServerPlayer *a = (ServerPlayer *)move1.from;
-    if (a == NULL) a = (ServerPlayer *)move1.to;
-    ServerPlayer *b = (ServerPlayer *)move2.from;
-    if (b == NULL) b = (ServerPlayer *)move2.to;
+    ServerPlayer *a = qobject_cast<ServerPlayer *>(move1.from);
+    if (a == NULL) a = qobject_cast<ServerPlayer *>(move1.to);
+    ServerPlayer *b = qobject_cast<ServerPlayer *>(move2.from);
+    if (b == NULL) b = qobject_cast<ServerPlayer *>(move2.to);
 
     if (a == NULL || b == NULL)
         return a != NULL;
@@ -3770,7 +3770,7 @@ QList<CardsMoveStruct> Room::_separateMoves(QList<CardsMoveOneTimeStruct> moveOn
     QMap<ServerPlayer *, QList<int> > from_handcards;
     foreach(_MoveSeparateClassifier cls, classifiers) {
         CardsMoveStruct card_move;
-        ServerPlayer *from = (ServerPlayer *)cls.m_from;
+        ServerPlayer *from = qobject_cast<ServerPlayer *>(cls.m_from);
         card_move.from = cls.m_from;
         if (from && !from_handcards.contains(from))
             from_handcards[from] = from->handCards();
@@ -3868,18 +3868,16 @@ void Room::moveCardsAtomic(QList<CardsMoveStruct> cards_moves, bool forceMoveVis
             drawpile_changed = true;
     }
 
-    if (drawpile_changed) {
+    if (drawpile_changed)
         doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
-    }
 
     foreach(CardsMoveStruct move, cards_moves)
         updateCardsOnLose(move);
 
     for (int i = 0; i < cards_moves.size(); i++) {
         CardsMoveStruct &cards_move = cards_moves[i];
-        for (int j = 0; j < cards_move.card_ids.size(); j++) {
-            setCardMapping(cards_move.card_ids[j], (ServerPlayer *)cards_move.to, cards_move.to_place);
-        }
+        for (int j = 0; j < cards_move.card_ids.size(); j++)
+            setCardMapping(cards_move.card_ids[j], qobject_cast<ServerPlayer *>(cards_move.to), cards_move.to_place);
     }
     foreach(CardsMoveStruct move, cards_moves)
         updateCardsOnGet(move);
@@ -3983,18 +3981,16 @@ void Room::moveCardsToEndOfDrawpile(QList<int> card_ids) {
             drawpile_changed = true;
     }
 
-    if (drawpile_changed) {
+    if (drawpile_changed)
         doBroadcastNotify(S_COMMAND_UPDATE_PILE, QVariant(m_drawPile->length()));
-    }
 
     foreach(CardsMoveStruct move, cards_moves)
         updateCardsOnLose(move);
 
     for (int i = 0; i < cards_moves.size(); i++) {
         CardsMoveStruct &cards_move = cards_moves[i];
-        for (int j = 0; j < cards_move.card_ids.size(); j++) {
-            setCardMapping(cards_move.card_ids[j], (ServerPlayer *)cards_move.to, cards_move.to_place);
-        }
+        for (int j = 0; j < cards_move.card_ids.size(); j++)
+            setCardMapping(cards_move.card_ids[j], qobject_cast<ServerPlayer *>(cards_move.to), cards_move.to_place);
     }
     foreach(CardsMoveStruct move, cards_moves)
         updateCardsOnGet(move);
@@ -4189,9 +4185,8 @@ void Room::_moveCards(QList<CardsMoveStruct> cards_moves, bool forceMoveVisible,
     // Now, process add cards
     for (int i = 0; i < cards_moves.size(); i++) {
         CardsMoveStruct &cards_move = cards_moves[i];
-        for (int j = 0; j < cards_move.card_ids.size(); j++) {
-            setCardMapping(cards_move.card_ids[j], (ServerPlayer *)cards_move.to, cards_move.to_place);
-        }
+        for (int j = 0; j < cards_move.card_ids.size(); j++)
+            setCardMapping(cards_move.card_ids[j], qobject_cast<ServerPlayer *>(cards_move.to), cards_move.to_place);
     }
     foreach(CardsMoveStruct move, cards_moves)
         updateCardsOnGet(move);
@@ -4275,7 +4270,7 @@ void Room::updateCardsOnLose(const CardsMoveStruct &move) {
 
 void Room::updateCardsOnGet(const CardsMoveStruct &move) {
     if (move.card_ids.isEmpty()) return;
-    ServerPlayer *player = (ServerPlayer *)move.from;
+    ServerPlayer *player = qobject_cast<ServerPlayer *>(move.from);
     if (player != NULL && move.to_place == Player::PlaceDelayedTrick) {
         for (int i = 0; i < move.card_ids.size(); i++) {
             WrappedCard *card = qobject_cast<WrappedCard *>(getCard(move.card_ids[i]));
@@ -4291,7 +4286,7 @@ void Room::updateCardsOnGet(const CardsMoveStruct &move) {
         return;
     }
 
-    player = (ServerPlayer *)move.to;
+    player = qobject_cast<ServerPlayer *>(move.to);
     if (player != NULL && (move.to_place == Player::PlaceHand
         || move.to_place == Player::PlaceEquip
         || move.to_place == Player::PlaceJudge
@@ -5217,7 +5212,7 @@ int Room::doGongxin(ServerPlayer *shenlvmeng, ServerPlayer *target, QList<int> e
     QVariant decisionData = QVariant::fromValue("viewCards:" + shenlvmeng->objectName() + ":" + target->objectName());
     thread->trigger(ChoiceMade, this, shenlvmeng, decisionData);
 
-    shenlvmeng->tag[skill_name] = QVariant::fromValue((ServerPlayer *)target);
+    shenlvmeng->tag[skill_name] = QVariant::fromValue(target);
     int card_id;
     AI *ai = shenlvmeng->getAI();
     if (ai) {

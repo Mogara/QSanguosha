@@ -607,8 +607,9 @@ public:
 
     virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &data, ServerPlayer *) const{
         CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
-        ServerPlayer *from = (ServerPlayer *)move.from;
-        from->drawCards(1);
+        ServerPlayer *from = qobject_cast<ServerPlayer *>(move.from);
+        if (from != NULL)
+            from->drawCards(1);
         return false;
     }
 };

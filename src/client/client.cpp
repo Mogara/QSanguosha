@@ -474,8 +474,11 @@ void Client::getCards(const QVariant &arg) {
         move.to = getPlayer(move.to_player_name);
         Player::Place dstPlace = move.to_place;
 
-        if (dstPlace == Player::PlaceSpecial)
-            ((ClientPlayer *)move.to)->changePile(move.to_pile_name, true, move.card_ids);
+        if (dstPlace == Player::PlaceSpecial) {
+            ClientPlayer *to = qobject_cast<ClientPlayer *>(move.to);
+            if (to != NULL)
+                to->changePile(move.to_pile_name, true, move.card_ids);
+        }
         else {
             foreach(int card_id, move.card_ids)
                 _getSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ
@@ -498,8 +501,11 @@ void Client::loseCards(const QVariant &arg) {
         move.to = getPlayer(move.to_player_name);
         Player::Place srcPlace = move.from_place;
 
-        if (srcPlace == Player::PlaceSpecial)
-            ((ClientPlayer *)move.from)->changePile(move.from_pile_name, false, move.card_ids);
+        if (srcPlace == Player::PlaceSpecial) {
+            ClientPlayer *from = qobject_cast<ClientPlayer *>(move.from);
+            if (from != NULL)
+                from->changePile(move.from_pile_name, false, move.card_ids);
+        }
         else {
             foreach(int card_id, move.card_ids)
                 _loseSingleCard(card_id, move); // DDHEJ->DDHEJ, DDH/EJ->EJ

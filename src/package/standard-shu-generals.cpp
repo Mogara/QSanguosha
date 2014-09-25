@@ -932,7 +932,7 @@ public:
 
     virtual bool effect(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const{
         room->notifySkillInvoked(player, objectName());
-        room->setTag("HuoshouSource", QVariant::fromValue((ServerPlayer *)player));
+        room->setTag("HuoshouSource", QVariant::fromValue(player));
 
         return false;
     }
@@ -1204,7 +1204,7 @@ void FangquanCard::onEffect(const CardEffectStruct &effect) const{
     log.to << player;
     room->sendLog(log);
 
-    room->setTag("FangquanTarget", QVariant::fromValue((ServerPlayer *)player));
+    room->setTag("FangquanTarget", QVariant::fromValue(player));
 }
 
 class FangquanViewAsSkill : public OneCardViewAsSkill {

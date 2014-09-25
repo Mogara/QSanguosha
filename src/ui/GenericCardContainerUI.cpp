@@ -57,9 +57,11 @@ CardItem *GenericCardContainer::_createCard(int card_id) {
 }
 
 void GenericCardContainer::_destroyCard() {
-    CardItem *card = (CardItem *)sender();
-    card->setVisible(false);
-    card->deleteLater();
+    CardItem *card = qobject_cast<CardItem *>(sender());
+    if (card != NULL) {
+        card->setVisible(false);
+        card->deleteLater();
+    }
 }
 
 bool GenericCardContainer::_horizontalPosLessThan(const CardItem *card1, const CardItem *card2) {
@@ -350,7 +352,7 @@ void PlayerCardContainer::updateHp() {
 }
 
 void PlayerCardContainer::updatePile(const QString &pile_name) {
-    ClientPlayer *player = (ClientPlayer *)sender();
+    ClientPlayer *player = qobject_cast<ClientPlayer *>(sender());
     if (!player)
         player = m_player;
     if (!player) return;
@@ -379,7 +381,9 @@ void PlayerCardContainer::updatePile(const QString &pile_name) {
             button_widget->setWidget(button);
             _m_privatePiles[pile_name] = button_widget;
         } else {
-            button = (QPushButton *)(_m_privatePiles[pile_name]->widget());
+            button = qobject_cast<QPushButton *>((_m_privatePiles[pile_name]->widget()));
+            if (button == NULL)
+                qWarning("PlayerCardContainer::updatePile: button == NULL");
         }
         QString text = Sanguosha->translate(pile_name);
         if (pile.length() > 0)

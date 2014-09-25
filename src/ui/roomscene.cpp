@@ -414,8 +414,9 @@ void RoomScene::handleGameEvent(const QVariant &args) {
     switch (eventType) {
     case S_GAME_EVENT_PLAYER_DYING: {
         ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
-        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->setSaveMeIcon(true);
+        PlayerCardContainer *container = qobject_cast<PlayerCardContainer *>(_getGenericCardContainer(Player::PlaceHand, player));
+        if (container != NULL)
+            container->setSaveMeIcon(true);
         Photo *photo = qobject_cast<Photo *>(container);
         if (photo) photo->setFrame(Photo::S_FRAME_SOS);
 
@@ -431,8 +432,9 @@ void RoomScene::handleGameEvent(const QVariant &args) {
     }
     case S_GAME_EVENT_PLAYER_QUITDYING: {
         ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
-        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->setSaveMeIcon(false);
+        PlayerCardContainer *container = qobject_cast<PlayerCardContainer *>(_getGenericCardContainer(Player::PlaceHand, player));
+        if (container != NULL)
+            container->setSaveMeIcon(false);
         Photo *photo = qobject_cast<Photo *>(container);
         if (photo) photo->setFrame(Photo::S_FRAME_NO_FRAME);
         break;
@@ -480,8 +482,9 @@ void RoomScene::handleGameEvent(const QVariant &args) {
         player->acquireSkill(skill_name, head_skill);
         acquireSkill(player, skill_name, head_skill);
 
-        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateAvatarTooltip();
+        PlayerCardContainer *container = qobject_cast<PlayerCardContainer *>(_getGenericCardContainer(Player::PlaceHand, player));
+        if (container != NULL)
+            container->updateAvatarTooltip();
         break;
     }
     case S_GAME_EVENT_ADD_SKILL: {
@@ -492,8 +495,9 @@ void RoomScene::handleGameEvent(const QVariant &args) {
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
         player->addSkill(skill_name, head_skill);
 
-        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateAvatarTooltip();
+        PlayerCardContainer *container = qobject_cast<PlayerCardContainer *>(_getGenericCardContainer(Player::PlaceHand, player));
+        if (container != NULL)
+            container->updateAvatarTooltip();
         break;
     }
     case S_GAME_EVENT_LOSE_SKILL: {
@@ -503,8 +507,9 @@ void RoomScene::handleGameEvent(const QVariant &args) {
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
         player->loseSkill(skill_name);
 
-        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateAvatarTooltip();
+        PlayerCardContainer *container = qobject_cast<PlayerCardContainer *>(_getGenericCardContainer(Player::PlaceHand, player));
+        if (container != NULL)
+            container->updateAvatarTooltip();
         break;
     }
     case S_GAME_EVENT_UPDATE_SKILL: {
@@ -601,8 +606,9 @@ void RoomScene::handleGameEvent(const QVariant &args) {
     }
     case S_GAME_EVENT_PLAYER_REFORM: {
         ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
-        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateReformState();
+        PlayerCardContainer *container = qobject_cast<PlayerCardContainer *>(_getGenericCardContainer(Player::PlaceHand, player));
+        if (container != NULL)
+            container->updateReformState();
         break;
     }
     case S_GAME_EVENT_SKILL_INVOKED: {
@@ -614,9 +620,11 @@ void RoomScene::handleGameEvent(const QVariant &args) {
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
         if (!player || !player->hasSkill(skill_name)) return;
         if (player != Self) {
-            PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            Photo *photo = qobject_cast<Photo *>(container);
-            if (photo) photo->showSkillName(skill_name);
+            PlayerCardContainer *container = qobject_cast<PlayerCardContainer *>(_getGenericCardContainer(Player::PlaceHand, player));
+            if (container != NULL) {
+                Photo *photo = qobject_cast<Photo *>(container);
+                if (photo) photo->showSkillName(skill_name);
+            }
         }
         break;
     }
@@ -1815,7 +1823,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves) {
         bool skipMove = _processCardsMove(movement, false);
         if (skipMove) continue;
         if (_shouldIgnoreDisplayMove(movement)) continue;
-        card_container->m_currentPlayer = (ClientPlayer *)movement.to;
+        card_container->m_currentPlayer = qobject_cast<ClientPlayer *>(movement.to);
         GenericCardContainer *to_container = _getGenericCardContainer(movement.to_place, movement.to);
         QList<CardItem *> cards = _m_cardsMoveStash[moveId][count];
         count++;
@@ -1847,7 +1855,7 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves) {
         bool skipMove = _processCardsMove(movement, true);
         if (skipMove) continue;
         if (_shouldIgnoreDisplayMove(movement)) continue;
-        card_container->m_currentPlayer = (ClientPlayer *)movement.to;
+        card_container->m_currentPlayer = qobject_cast<ClientPlayer *>(movement.to);
         GenericCardContainer *from_container = _getGenericCardContainer(movement.from_place, movement.from);
         QList<CardItem *> cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
         foreach(CardItem *card, cards)
@@ -3485,9 +3493,9 @@ void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id, bool move_car
 void RoomScene::showCard(const QString &player_name, int card_id) {
     QList<int> card_ids;
     card_ids << card_id;
-    const ClientPlayer *player = ClientInstance->getPlayer(player_name);
+    ClientPlayer *player = ClientInstance->getPlayer(player_name);
 
-    GenericCardContainer *container = _getGenericCardContainer(Player::PlaceHand, (Player *)player);
+    GenericCardContainer *container = _getGenericCardContainer(Player::PlaceHand, player);
     QList<CardItem *> card_items = container->cloneCardItems(card_ids);
     CardMoveReason reason(CardMoveReason::S_REASON_DEMONSTRATE, player->objectName());
     bringToFront(m_tablePile);

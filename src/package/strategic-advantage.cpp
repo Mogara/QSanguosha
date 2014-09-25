@@ -261,7 +261,7 @@ public:
             if (move.from_places[i] != Player::PlaceEquip && move.from_places[i] != Player::PlaceTable) continue;
             const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
             if (card->objectName() == "WoodenOx") {
-                ServerPlayer *to = (ServerPlayer *)move.to;
+                ServerPlayer *to = qobject_cast<ServerPlayer *>(move.to);
                 if (to && to->getTreasure() && to->getTreasure()->objectName() == "WoodenOx"
                     && move.to_place == Player::PlaceEquip) {
                     QList<ServerPlayer *> p_list;

@@ -147,7 +147,7 @@ public:
 
     virtual bool cost(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer *) const {
         ServerPlayer *current = room->getCurrent();
-        if (current && player->askForSkillInvoke(objectName(), QVariant::fromValue((ServerPlayer *)current))){
+        if (current && player->askForSkillInvoke(objectName(), QVariant::fromValue(current))){
             room->doAnimate(QSanProtocol::S_ANIMATE_INDICATE, player->objectName(), current->objectName());
             room->broadcastSkillInvoke(objectName(), player);
             return true;

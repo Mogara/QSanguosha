@@ -161,7 +161,7 @@ int *QSanUiUtils::QSanFreeTypeFont::loadFont(const QString &fontName) {
     else if (error)
         qWarning("Cannot open font file: %s.", fontPath);
     else
-        return (int *)face;
+        return reinterpret_cast<int *>(face); // Is it good here to use forced type conversion???
     return 0;
 }
 

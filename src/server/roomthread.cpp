@@ -398,7 +398,7 @@ void RoomThread::run() {
 
     // start game
     try {
-        trigger(GameStart, (Room *)room, NULL);
+        trigger(GameStart, room, NULL);
         constructTriggerTable();
         actionNormal(game_rule);
     }

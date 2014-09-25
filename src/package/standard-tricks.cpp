@@ -194,7 +194,7 @@ void Collateral::onUse(Room *room, const CardUseStruct &card_use) const{
 
     CardUseStruct new_use = card_use;
     new_use.to.removeAt(1);
-    killer->tag["collateralVictim"] = QVariant::fromValue((ServerPlayer *)victim);
+    killer->tag["collateralVictim"] = QVariant::fromValue(victim);
 
     SingleTargetTrick::onUse(room, new_use);
 }
