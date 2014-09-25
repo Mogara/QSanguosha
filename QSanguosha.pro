@@ -288,7 +288,7 @@ win32-msvc*{
         LIBS += -L"$$_PRO_FILE_PWD_/lib/win/x64"
     }
     CONFIG(debug, debug|release) {
-        INCLUDEPATH += include/vld
+        !winrt:INCLUDEPATH += include/vld
     } else {
         QMAKE_LFLAGS_RELEASE = $$QMAKE_LFLAGS_RELEASE_WITH_DEBUGINFO
         DEFINES += USE_BREAKPAD
