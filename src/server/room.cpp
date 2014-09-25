@@ -4399,11 +4399,8 @@ void Room::doLightbox(const QString &lightboxName, int duration) {
 void Room::doSuperLightbox(const QString &heroName, const QString &skillName) {
     if (Config.AIDelay == 0)
         return;
-#ifndef Q_OS_WINRT
+
     doAnimate(S_ANIMATE_LIGHTBOX, "skill=" + heroName, skillName);
-#else
-    doAnimate(S_ANIMATE_LIGHTBOX, "image=image/animate/" + heroName + skillName + "Animate.png");
-#endif
     thread->delay(4500);
 }
 

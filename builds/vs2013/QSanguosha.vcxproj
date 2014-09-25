@@ -125,7 +125,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmaind.lib;..\..\lib\win\x86\fmodexL.lib;..\..\lib\win\x86\freetype_D.lib;Qt5Cored.lib;Qt5Declaratived.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5Widgetsd.lib;Qt5OpenGLd.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;..\..\lib\win\x86\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;..\..\lib\win\x86\fmodexL.lib;..\..\lib\win\x86\freetype_D.lib;Qt5Cored.lib;Qt5Qmld.lib;Qt5Quickd.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5Widgetsd.lib;Qt5OpenGLd.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;..\..\lib\win\x86\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -178,7 +178,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmaind.lib;..\..\lib\win\x64\fmodexL.lib;..\..\lib\win\x64\freetype_D.lib;Qt5Cored.lib;Qt5Declaratived.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5Widgetsd.lib;Qt5OpenGLd.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;..\..\lib\win\x64\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmaind.lib;..\..\lib\win\x64\fmodexL.lib;..\..\lib\win\x64\freetype_D.lib;Qt5Cored.lib;Qt5Qmld.lib;Qt5Quickd.lib;Qt5Guid.lib;Qt5Networkd.lib;Qt5Widgetsd.lib;Qt5OpenGLd.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;..\..\lib\win\x64\vld.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -228,7 +228,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmain.lib;..\..\lib\win\x86\fmodex.lib;..\..\lib\win\x86\freetype.lib;Qt5Core.lib;Qt5Declarative.lib;Qt5Gui.lib;Qt5Network.lib;Qt5Widgets.lib;Qt5OpenGL.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmain.lib;..\..\lib\win\x86\fmodex.lib;..\..\lib\win\x86\freetype.lib;Qt5Core.lib;Qt5Qml.lib;Qt5Quick.lib;Qt5Gui.lib;Qt5Network.lib;Qt5Widgets.lib;Qt5OpenGL.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -278,7 +278,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>qtmain.lib;..\..\lib\win\x64\fmodex.lib;..\..\lib\win\x64\freetype.lib;Qt5Core.lib;Qt5Declarative.lib;Qt5Gui.lib;Qt5Network.lib;Qt5Widgets.lib;Qt5OpenGL.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>qtmain.lib;..\..\lib\win\x64\fmodex.lib;..\..\lib\win\x64\freetype.lib;Qt5Core.lib;Qt5Qml.lib;Qt5Quick.lib;Qt5Gui.lib;Qt5Network.lib;Qt5Widgets.lib;Qt5OpenGL.lib;ole32.lib;oleaut32.lib;user32.lib;gdi32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -1118,7 +1118,12 @@
     <ClCompile Include="..\..\src\server\room.cpp" />
     <ClCompile Include="..\..\src\ui\roomscene.cpp" />
     <ClCompile Include="..\..\src\server\roomthread.cpp" />
-    <ClCompile Include="..\..\swig\sanguosha_wrap.cxx" />
+    <ClCompile Include="..\..\swig\sanguosha_wrap.cxx">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
     <ClCompile Include="..\..\src\dialog\rule-summary.cpp" />
     <ClCompile Include="..\..\src\scenario\scenario.cpp" />
     <ClCompile Include="..\..\src\scenario\scenerule.cpp" />
