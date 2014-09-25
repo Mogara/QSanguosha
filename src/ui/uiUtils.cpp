@@ -235,7 +235,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQString(QPainter *painter, QString text
     bool useKerning = ((orient == Qt::Horizontal) && !(align & Qt::AlignJustify));
 
     _paintTextMutex.lock();
-    FT_Face face = (FT_Face)font;
+    FT_Face face = reinterpret_cast<FT_Face>(font);
     FT_GlyphSlot slot = face->glyph;
     FT_Error error;
     error = FT_Set_Pixel_Sizes(face, fontSize.width(), fontSize.height());
@@ -425,7 +425,7 @@ bool QSanUiUtils::QSanFreeTypeFont::paintQStringMultiLine(QPainter *painter, QSt
     int currentY = 0;
     int maxX = 0;
     int maxY = 0;
-    FT_Face face = (FT_Face)font;
+    FT_Face face = reinterpret_cast<FT_Face>(font);
 
     _paintTextMutex.lock();
     FT_GlyphSlot slot = face->glyph;
