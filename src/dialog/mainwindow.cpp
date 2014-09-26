@@ -587,8 +587,10 @@ void MainWindow::repaintButtons()
 }
 
 void MainWindow::closeEvent(QCloseEvent *) {
-    Config.setValue("WindowSize", size());
-    Config.setValue("WindowPosition", pos());
+    if (!isFullScreen() && !isMaximized()) {
+        Config.setValue("WindowSize", size());
+        Config.setValue("WindowPosition", pos());
+    }
     Config.setValue("WindowState", (int)windowState());
 }
 
