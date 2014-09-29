@@ -148,8 +148,7 @@ void CardOverview::on_tableWidget_itemSelectionChanged() {
         ui->playAudioEffectButton->show();
         ui->malePlayButton->hide();
         ui->femalePlayButton->hide();
-    }
-    else {
+    } else {
         ui->playAudioEffectButton->hide();
         ui->malePlayButton->show();
         ui->femalePlayButton->show();

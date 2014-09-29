@@ -369,6 +369,10 @@ QString Card::getDescription(bool yellow) const{
     }
 
     desc.replace("\n", "<br/>");
+    if (isTransferable()) {
+        desc += "<br/><br/>";
+        desc += tr("This card is transferable.");
+    }
     return tr("<font color=%1><b>[%2]</b> %3</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(getName()).arg(desc);
 }
 
@@ -961,7 +965,18 @@ TransferCard::TransferCard(){
     mute = true;
 }
 
+bool TransferCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if (!targets.isEmpty())
+        return false;
+    if (!Self->hasShownOneGeneral())
+        return !to_select->hasShownOneGeneral();
+    return !to_select->hasShownOneGeneral() || !to_select->isFriendWith(Self);
+}
+
 void TransferCard::onEffect(const CardEffectStruct &effect) const{
+    bool draw = !effect.to->hasShownOneGeneral();
     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, effect.from->objectName(), effect.to->objectName(), "transfer", QString());
     effect.to->getRoom()->obtainCard(effect.to, this, reason);
+    if (draw)
+        effect.from->drawCards(1, "transfer");
 }

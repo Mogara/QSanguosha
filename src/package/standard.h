@@ -183,7 +183,7 @@ class OffensiveHorse : public Horse {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE OffensiveHorse(Card::Suit suit, int number, int correct = -1);
+    Q_INVOKABLE OffensiveHorse(Card::Suit suit, int number, int correct = -1, bool is_transferable = false);
     virtual QString getSubtype() const;
 };
 

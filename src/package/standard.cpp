@@ -447,9 +447,10 @@ QString Horse::getCommonEffectName() const{
     return "horse";
 }
 
-OffensiveHorse::OffensiveHorse(Card::Suit suit, int number, int correct)
+OffensiveHorse::OffensiveHorse(Card::Suit suit, int number, int correct, bool is_transferable)
     : Horse(suit, number, correct)
 {
+    transferable = is_transferable;
 }
 
 QString OffensiveHorse::getSubtype() const{
