@@ -68,7 +68,7 @@ class FitView : public QGraphicsView {
 public:
     FitView(QGraphicsScene *scene) : QGraphicsView(scene) {
         setSceneRect(Config.Rect);
-        setRenderHints(QPainter::TextAntialiasing | QPainter::Antialiasing);
+        setRenderHints(QPainter::TextAntialiasing | QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
 #if !defined(QT_NO_OPENGL) && defined(USING_OPENGL)
         if (QGLFormat::hasOpenGL()) {
@@ -126,7 +126,10 @@ public:
                 newSceneRect.setHeight(newSceneRect.height() * scale);
             }
             room_scene->setSceneRect(newSceneRect);
-            fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
+            if (newSceneRect.size() != event->size())
+                fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
+            else
+                resetTransform();
             setSceneRect(room_scene->sceneRect());
             room_scene->adjustItems();
             main_window->setBackgroundBrush(Config.TableBgImage);
@@ -143,7 +146,10 @@ public:
             }
             newSceneRect.moveTopLeft(newSceneRect.bottomRight() * -0.5);
             start_scene->setSceneRect(newSceneRect);
-            fitInView(start_scene->sceneRect(), Qt::KeepAspectRatio);
+            if (newSceneRect.size() != event->size())
+                fitInView(start_scene->sceneRect(), Qt::KeepAspectRatio);
+            else
+                resetTransform();
             setSceneRect(start_scene->sceneRect());
         }
 
