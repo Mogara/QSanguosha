@@ -1713,17 +1713,18 @@ bool ServerPlayer::askForGeneralShow(bool one, bool refusable) {
 
     QStringList choices;
 
-    if (!hasShownGeneral1())
+    if (!hasShownGeneral1() && disableShow(true).isEmpty())
         choices << "show_head_general";
-    if (!hasShownGeneral2())
+    if (!hasShownGeneral2() && disableShow(false).isEmpty())
         choices << "show_deputy_general";
-
+    if (choices.isEmpty())
+        return false;
     if (!one && choices.length() == 2)
         choices << "show_both_generals";
     if (refusable)
-        choices.prepend("cancel"); // default choice should do nothing
+        choices.append("cancel");
 
-    QString choice = room->askForChoice(this, "TurnStartShowGeneral", choices.join("+"));
+    QString choice = room->askForChoice(this, "GameRule_AskForGeneralShow", choices.join("+"));
 
     if (choice == "show_head_general" || choice == "show_both_generals")
         showGeneral();
