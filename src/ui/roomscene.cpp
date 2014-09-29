@@ -807,6 +807,7 @@ void RoomScene::adjustItems() {
     dashboard->setX(displayRegion.x());
     dashboard->setWidth(displayRegion.width());
     dashboard->setY(displayRegion.height() - dashboard->boundingRect().height());
+    dashboard->adjustCards(false);
 
     // set infoplane
     _m_infoPlane.setWidth(displayRegion.width() * _m_roomLayout->m_infoPlaneWidthPercentage);
@@ -828,8 +829,6 @@ void RoomScene::adjustItems() {
 
     m_tablew = displayRegion.width();// - infoPlane.width();
     m_tableh = displayRegion.height();// - dashboard->boundingRect().height();
-    QPixmap tableBg = QPixmap(Config.TableBgImage)
-        .scaled(m_tablew, m_tableh, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     m_tableh -= _m_roomLayout->m_photoDashboardPadding;
     updateTable();
     updateRolesBox();

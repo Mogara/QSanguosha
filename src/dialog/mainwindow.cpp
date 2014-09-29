@@ -115,28 +115,38 @@ public:
     virtual void resizeEvent(QResizeEvent *event) {
         QGraphicsView::resizeEvent(event);
         MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
+        QRectF newSceneRect(0, 0, event->size().width(), event->size().height());
         if (scene()->inherits("RoomScene")) {
             RoomScene *room_scene = qobject_cast<RoomScene *>(scene());
-            QRectF newSceneRect(0, 0, event->size().width(), event->size().height());
+            if (newSceneRect.width() < 1020 || newSceneRect.height() < 680) {
+                qreal sx = 1020 / newSceneRect.width();
+                qreal sy = 680 / newSceneRect.height();
+                qreal scale = sx > sy ? sx : sy;
+                newSceneRect.setWidth(newSceneRect.width() * scale);
+                newSceneRect.setHeight(newSceneRect.height() * scale);
+            }
             room_scene->setSceneRect(newSceneRect);
+            fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
             setSceneRect(room_scene->sceneRect());
-            if (newSceneRect != room_scene->sceneRect())
-                fitInView(room_scene->sceneRect(), Qt::KeepAspectRatio);
-            else
-                this->resetTransform();
             room_scene->adjustItems();
             main_window->setBackgroundBrush(Config.TableBgImage);
             return;
-        }
-        else if (scene()->inherits("StartScene")) {
+
+        } else if (scene()->inherits("StartScene")) {
             StartScene *start_scene = qobject_cast<StartScene *>(scene());
-            QRectF newSceneRect(-event->size().width() / 2, -event->size().height() / 2,
-                event->size().width(), event->size().height());
+            if (newSceneRect.width() < 1024 || newSceneRect.height() < 706) {
+                qreal sx = 1024 / newSceneRect.width();
+                qreal sy = 706 / newSceneRect.height();
+                qreal scale = sx > sy ? sx : sy;
+                newSceneRect.setWidth(newSceneRect.width() * scale);
+                newSceneRect.setHeight(newSceneRect.height() * scale);
+            }
+            newSceneRect.moveTopLeft(newSceneRect.bottomRight() * -0.5);
             start_scene->setSceneRect(newSceneRect);
+            fitInView(start_scene->sceneRect(), Qt::KeepAspectRatio);
             setSceneRect(start_scene->sceneRect());
-            if (newSceneRect != start_scene->sceneRect())
-                fitInView(start_scene->sceneRect(), Qt::KeepAspectRatio);
         }
+
         if (main_window)
             main_window->setBackgroundBrush(Config.BackgroundImage);
     }
@@ -919,12 +929,12 @@ void MainWindow::setBackgroundBrush(const QString &pixmapPath) {
     if (scene) {
         QPixmap pixmap(pixmapPath);
         QBrush brush(pixmap);
-        qreal sx = (qreal)width() / qreal(pixmap.width());
-        qreal sy = (qreal)height() / qreal(pixmap.height());
+        qreal sx = qreal(width()) / qreal(pixmap.width());
+        qreal sy = qreal(height()) / qreal(pixmap.height());
 
-        QTransform transform;
-        if (pixmapPath == Config.BackgroundImage)
-            transform.translate(-(qreal)width() / 2, -(qreal)height() / 2);
+        QTransform transform(view->transform().adjoint());
+        if (!scene->inherits("RoomScene"))
+            transform.translate(-qreal(width()) / 2, -qreal(height()) / 2);
         transform.scale(sx, sy);
         brush.setTransform(transform);
         scene->setBackgroundBrush(brush);
