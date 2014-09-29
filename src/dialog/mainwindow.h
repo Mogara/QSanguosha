@@ -82,7 +82,7 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void setBackgroundBrush(bool center_as_origin);
+    void setBackgroundBrush(const QString &pixmapPath);
 
 #ifndef Q_OS_ANDROID
     virtual void mousePressEvent(QMouseEvent *event);
@@ -167,7 +167,6 @@ private slots:
     void gotoStartScene();
     void startGameInAnotherInstance();
     void changeBackground();
-    void changeTableBg();
     void on_actionManage_Ban_IP_triggered();
 
     void onVersionInfomationGotten();

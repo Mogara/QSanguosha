@@ -320,14 +320,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     addItem(prompt_box);
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    m_tableBg = new QGraphicsPixmapItem(NULL, this);
-#else
-    m_tableBg = new QGraphicsPixmapItem();
-    addItem(m_tableBg);
-#endif
-    m_tableBg->setZValue(-100000);
-
     m_rolesBoxBackground.load("image/system/state.png");
     m_rolesBox = new QGraphicsPixmapItem;
     addItem(m_rolesBox);
@@ -839,9 +831,6 @@ void RoomScene::adjustItems() {
     QPixmap tableBg = QPixmap(Config.TableBgImage)
         .scaled(m_tablew, m_tableh, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     m_tableh -= _m_roomLayout->m_photoDashboardPadding;
-    //m_tableBg->setPos(padding, padding);
-    m_tableBg->setPos(0, 0);
-    m_tableBg->setPixmap(tableBg);
     updateTable();
     updateRolesBox();
     setChatBoxVisible(chat_box_widget->isVisible());
@@ -2854,18 +2843,6 @@ void RoomScene::startInXs() {
     if (add_robot) add_robot->hide();
     if (fill_robots) fill_robots->hide();
     if (return_to_start_scene) return_to_start_scene->hide();
-}
-
-void RoomScene::changeTableBg() {
-    QRectF displayRegion = sceneRect();
-
-    QPixmap tableBg = QPixmap(Config.TableBgImage)
-        .scaled(displayRegion.width(), displayRegion.height(),
-        Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    m_tableh -= _m_roomLayout->m_photoDashboardPadding;
-    m_tableBg->setPos(0, 0);
-    m_tableBg->setPixmap(tableBg);
-    updateTable();
 }
 
 void RoomScene::stopHeroSkinChangingAnimations()

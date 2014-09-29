@@ -148,8 +148,6 @@ public:
     void updateTable();
     inline QMainWindow *mainWindow() { return main_window; }
 
-    void changeTableBg();
-
     inline bool isCancelButtonEnabled() const{ return cancel_button != NULL && cancel_button->isEnabled(); }
 
     void stopHeroSkinChangingAnimations();
@@ -289,7 +287,6 @@ private:
     QPixmap m_rolesBoxBackground;
     QGraphicsPixmapItem *m_rolesBox;
     QGraphicsTextItem *m_pileCardNumInfoTextBox;
-    QGraphicsPixmapItem *m_tableBg;
     int m_tablew;
     int m_tableh;
 

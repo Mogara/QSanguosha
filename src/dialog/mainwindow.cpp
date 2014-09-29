@@ -125,7 +125,7 @@ public:
             else
                 this->resetTransform();
             room_scene->adjustItems();
-            main_window->setBackgroundBrush(false);
+            main_window->setBackgroundBrush(Config.TableBgImage);
             return;
         }
         else if (scene()->inherits("StartScene")) {
@@ -138,7 +138,7 @@ public:
                 fitInView(start_scene->sceneRect(), Qt::KeepAspectRatio);
         }
         if (main_window)
-            main_window->setBackgroundBrush(true);
+            main_window->setBackgroundBrush(Config.BackgroundImage);
     }
 };
 
@@ -203,7 +203,7 @@ MainWindow::MainWindow(QWidget *parent)
     config_dialog = new ConfigDialog(this);
     connect(ui->actionConfigure, SIGNAL(triggered()), config_dialog, SLOT(show()));
     connect(config_dialog, SIGNAL(bg_changed()), this, SLOT(changeBackground()));
-    connect(config_dialog, SIGNAL(tableBg_changed()), this, SLOT(changeTableBg()));
+    connect(config_dialog, SIGNAL(tableBg_changed()), this, SLOT(changeBackground()));
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->actionAcknowledgement_2, SIGNAL(triggered()), this, SLOT(on_actionAcknowledgement_triggered()));
@@ -312,17 +312,9 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
         } else {
             bool can_move = true;
             if (view && view->scene()) {
-                if (view->scene()->inherits("StartScene")) {
-                    StartScene *scene = qobject_cast<StartScene *>(view->scene());
-                    QPointF pos = view->mapToScene(event->pos());
-                    if (scene->itemAt(pos, QTransform()))
-                        can_move = false;
-                } else if (view->scene()->inherits("RoomScene")) {
-                    RoomScene *scene = qobject_cast<RoomScene *>(view->scene());
-                    QPointF pos = view->mapToScene(event->pos());
-                    if (scene->itemAt(pos, QTransform()) && scene->itemAt(pos, QTransform())->zValue() > -100000)
-                        can_move = false;
-                }
+                QPointF pos = view->mapToScene(event->pos());
+                if (scene->itemAt(pos, QTransform()))
+                    can_move = false;
             }
             if (can_move) {
                 isLeftPressDown = true;
@@ -417,17 +409,9 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent *event)
 {
     bool can_change = true;
     if (view && view->scene()) {
-        if (view->scene()->inherits("StartScene")) {
-            StartScene *scene = qobject_cast<StartScene *>(view->scene());
-            QPointF pos = view->mapToScene(event->pos());
-            if (scene->itemAt(pos, QTransform()))
-                can_change = false;
-        } else if (view->scene()->inherits("RoomScene")) {
-            RoomScene *scene = qobject_cast<RoomScene *>(view->scene());
-            QPointF pos = view->mapToScene(event->pos());
-            if (scene->itemAt(pos, QTransform()) && scene->itemAt(pos, QTransform())->zValue() > -100000)
-                can_change = false;
-        }
+        QPointF pos = view->mapToScene(event->pos());
+        if (scene->itemAt(pos, QTransform()))
+            can_change = false;
     }
     if (can_change) {
         if (windowState() & Qt::WindowMaximized)
@@ -931,15 +915,15 @@ void MainWindow::on_actionAbout_Us_triggered() {
     dialog->show();
 }
 
-void MainWindow::setBackgroundBrush(bool centerAsOrigin) {
+void MainWindow::setBackgroundBrush(const QString &pixmapPath) {
     if (scene) {
-        QPixmap pixmap(Config.BackgroundImage);
+        QPixmap pixmap(pixmapPath);
         QBrush brush(pixmap);
         qreal sx = (qreal)width() / qreal(pixmap.width());
         qreal sy = (qreal)height() / qreal(pixmap.height());
 
         QTransform transform;
-        if (centerAsOrigin)
+        if (pixmapPath == Config.BackgroundImage)
             transform.translate(-(qreal)width() / 2, -(qreal)height() / 2);
         transform.scale(sx, sy);
         brush.setTransform(transform);
@@ -948,20 +932,12 @@ void MainWindow::setBackgroundBrush(bool centerAsOrigin) {
 }
 
 void MainWindow::changeBackground() {
-    bool centerAsOrigin = scene != NULL && !scene->inherits("RoomScene");
-    setBackgroundBrush(centerAsOrigin);
+    setBackgroundBrush(scene->inherits("RoomScene") ? Config.TableBgImage : Config.BackgroundImage);
 
     if (scene->inherits("StartScene")) {
         StartScene *start_scene = qobject_cast<StartScene *>(scene);
         start_scene->setServerLogBackground();
     }
-}
-
-void MainWindow::changeTableBg() {
-    if (!scene->inherits("RoomScene"))
-        return;
-
-    RoomSceneInstance->changeTableBg();
 }
 
 void MainWindow::on_actionFullscreen_triggered()
