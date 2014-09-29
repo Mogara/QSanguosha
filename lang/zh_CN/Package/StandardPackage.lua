@@ -82,14 +82,15 @@ local t = {
 	["#VineDamage"] = "%from 的防具【<font color=\"yellow\"><b>藤甲</b></font>】效果被触发，火焰伤害由 %arg 点增加至 %arg2 点",
 
 	["Horse"] = "坐骑",
-	[":+1 horse"] = "装备牌·坐骑\n\n技能：你与其他角色的距离+1。",
+	[":+1 horse"] = "装备牌·坐骑\n\n技能：其他角色与你的距离+1。",
 	["JueYing"] = "绝影",
 	["DiLu"] = "的卢",
 	["ZhuaHuangFeiDian"] = "爪黄飞电",
-	[":-1 horse"] = "装备牌·坐骑\n\n技能：其他角色与你的距离-1。",
+	[":-1 horse"] = "装备牌·坐骑\n\n技能：你与其他角色的距离-1。",
 	["ChiTu"] = "赤兔",
 	["DaYuan"] = "大宛",
 	["ZiXing"] = "紫骍",
+	["JingFan"] = "惊帆",
 
 	["amazing_grace"] = "五谷丰登",
 	[":amazing_grace"] = "锦囊牌\n\n使用时机：出牌阶段。\n使用目标：所有角色。\n执行动作：当你使用此牌时，你从亮出牌堆顶的X张牌（X为全场角色数）。\n作用效果：每名目标角色获得这些牌中（剩余）的一张牌。",
@@ -164,8 +165,8 @@ local t = {
 
 }
 
-local ohorses = { "ChiTu", "DaYuan", "ZiXing" }
-local dhorses = { "ZhuaHuangFeiDian", "DiLu", "JueYing", "HuaLiu" }
+local ohorses = { "ChiTu", "DaYuan", "ZiXing", "JingFan"}
+local dhorses = { "ZhuaHuangFeiDian", "DiLu", "JueYing"}
 
 for _, horse in ipairs(ohorses) do
 	t[":" .. horse] = t[":-1 horse"]

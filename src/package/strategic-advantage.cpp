@@ -314,7 +314,7 @@ void Drowning::onEffect(const CardEffectStruct &effect) const{
         && room->askForChoice(effect.to, objectName(), "throw+damage", QVariant::fromValue(effect)) == "throw")
         effect.to->throwAllEquips();
     else
-        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to));
+        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1, DamageStruct::Thunder));
 }
 
 bool Drowning::isAvailable(const Player *player) const{
@@ -700,12 +700,13 @@ void AllianceFeast::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
         effect.from = source;
         effect.to = target;
 
-        if (target == source && target == targets.first()) {
+        if (target == source) {
             int n = 0;
             ServerPlayer *enemy = targets.last();
-            foreach (ServerPlayer *p, room->getOtherPlayers(source))
+            foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
                 if (enemy->isFriendWith(p))
-                    n++;
+                    ++n;
+            }
             target->setMark(objectName(), n);
         }
         room->cardEffect(effect);
@@ -750,6 +751,76 @@ bool AllianceFeast::isAvailable(const Player *player) const{
     return player->hasShownOneGeneral() && !player->isProhibited(player, this);
 }
 
+ThreatenEmperor::ThreatenEmperor(Suit suit, int number)
+    : SingleTargetTrick(suit, number)
+{
+    setObjectName("threaten_emperor");
+    target_fixed = true;
+    transferable = true;
+}
+
+void ThreatenEmperor::onUse(Room *room, const CardUseStruct &card_use) const{
+    CardUseStruct use = card_use;
+    if (use.to.isEmpty())
+        use.to << use.from;
+    SingleTargetTrick::onUse(room, use);
+}
+
+bool ThreatenEmperor::isAvailable(const Player *player) const{
+    if (!player->hasShownOneGeneral())
+        return false;
+    QHash<QString, QStringList> kingdoms = player->getBigAndSmallKingdoms(objectName(), MaxCardsType::Max);
+    bool invoke = !kingdoms["big"].isEmpty() && !kingdoms["small"].isEmpty();
+    if (invoke) {
+        if (kingdoms["big"].length() == 1 && kingdoms["big"].first().startsWith("sgs")) // for JadeSeal
+            invoke = kingdoms["big"].contains(player->objectName());
+        else {
+            QString kingdom = player->getRole() == "careerist" ? "careerist" : player->getKingdom();
+            invoke = kingdoms["big"].contains(kingdom);
+        }
+    }
+    return invoke && !player->isProhibited(player, this) && TrickCard::isAvailable(player);
+}
+
+void ThreatenEmperor::onEffect(const CardEffectStruct &effect) const{
+    if (effect.from->getPhase() == Player::Play)
+        effect.from->setFlags("Global_PlayPhaseTerminated");
+    effect.to->setMark("ThreatenEmperorExtraTurn", 1);
+}
+
+class ThreatenEmperorSkill : public TriggerSkill {
+public:
+    ThreatenEmperorSkill() : TriggerSkill("threaten_emperor") {
+        events << EventPhaseStart;
+        global = true;
+    }
+
+    virtual int getPriority() const{
+        return 1;
+    }
+
+    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+        QMap<ServerPlayer *, QStringList> list;
+        if (player->getPhase() != Player::NotActive)
+            return list;
+        foreach (ServerPlayer *p, room->getAllPlayers())
+            if (p->getMark("ThreatenEmperorExtraTurn") > 0)
+                list.insert(p, QStringList(objectName()));
+   
+        return list;
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const{
+        ask_who->removeMark("ThreatenEmperorExtraTurn");
+        return room->askForCard(ask_who, ".", "@threaten_emperor", data, objectName());
+    }
+
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
+        ask_who->gainAnExtraTurn();
+        return false;
+    }
+};
+
 StrategicAdvantagePackage::StrategicAdvantagePackage()
     : Package("strategic_advantage", Package::CardPack){
     QList<Card *> cards;
@@ -758,12 +829,12 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         // basics
         // -- spade
         << new Slash(Card::Spade, 4)
-        << new Analeptic(Card::Spade, 6) // transfer
+        << new Analeptic(Card::Spade, 6, true) // transfer
         << new Slash(Card::Spade, 7)
         << new Slash(Card::Spade, 8)
         << new ThunderSlash(Card::Spade, 9)
         << new ThunderSlash(Card::Spade, 10)
-        << new ThunderSlash(Card::Spade, 11) // transfer
+        << new ThunderSlash(Card::Spade, 11, true) // transfer
         // -- heart
         << new Jink(Card::Heart, 4)
         << new Jink(Card::Heart, 5)
@@ -775,14 +846,14 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         << new Slash(Card::Heart, 11)
         // -- club
         << new Slash(Card::Club, 4)
-        << new ThunderSlash(Card::Club, 5) // transfer
+        << new ThunderSlash(Card::Club, 5, true) // transfer
         << new Slash(Card::Club, 6)
         << new Slash(Card::Club, 7)
         << new Slash(Card::Club, 8)
         << new Analeptic(Card::Club, 9)
         // -- diamond
         << new Peach(Card::Diamond, 2)
-        << new Peach(Card::Diamond, 3) // transfer
+        << new Peach(Card::Diamond, 3, true) // transfer
         << new Jink(Card::Diamond, 6)
         << new Jink(Card::Diamond, 7)
         << new FireSlash(Card::Diamond, 8)
@@ -791,7 +862,7 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
 
         // tricks
         // -- spade
-        //<< new ThreatenEmperor(Card::Spade, 1) // transfer
+        << new ThreatenEmperor(Card::Spade, 1) // transfer
         << new BurningCamps(Card::Spade, 3) // transfer
         << new FightTogether(Card::Spade, 12)
         << new Nullification(Card::Spade, 13)
@@ -807,15 +878,18 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         << new Drowning(Card::Club, 12)
         << new HegNullification(Card::Club, 13)
         // -- diamond
-        //<< new ThreatenEmperor(Card::Diamond, 1) // transfer
-        //<< new ThreatenEmperor(Card::Diamond, 4) // transfer
+        << new ThreatenEmperor(Card::Diamond, 1) // transfer
+        << new ThreatenEmperor(Card::Diamond, 4) // transfer
         << new LureTiger(Card::Diamond, 10)
         << new HegNullification(Card::Diamond, 11)
 
         // equips
         << new IronArmor()
-        << new Blade(Card::Spade, 5)
-        << new OffensiveHorse(Card::Heart, 3) // transfer
+        << new Blade(Card::Spade, 5);
+    Horse *horse = new OffensiveHorse(Card::Heart, 3); // transfer
+    horse->setObjectName("JingFan");
+    cards
+        << horse
         << new JadeSeal(Card::Club, 1)
         << new Breastplate() // transfer
         << new WoodenOx(Card::Diamond, 5)
@@ -825,7 +899,8 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
            << new BreastplateSkill
            << new IronArmorSkill
            << new WoodenOxSkill << new WoodenOxTriggerSkill
-           << new LureTigerSkill << new LureTigerProhibit;
+           << new LureTigerSkill << new LureTigerProhibit
+           << new ThreatenEmperorSkill;
     insertRelatedSkills("lure_tiger", "#lure_tiger");
 
     foreach (Card *card, cards)
