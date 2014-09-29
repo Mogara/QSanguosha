@@ -39,7 +39,7 @@ const Card::Suit Card::AllSuits[4] = {
 
 Card::Card(Suit suit, int number, bool target_fixed)
     :target_fixed(target_fixed), mute(false),
-    will_throw(true), has_preact(false), can_recast(false), transferable(false),
+    will_throw(true), has_preact(false), can_recast(false), transferable(true),
     m_suit(suit), m_number(number), m_id(-1)
 {
     handling_method = will_throw ? Card::MethodDiscard : Card::MethodUse;
@@ -369,6 +369,10 @@ QString Card::getDescription(bool yellow) const{
     }
 
     desc.replace("\n", "<br/>");
+    if (isTransferable()) {
+        desc += "<br/><br/>";
+        desc += tr("This card is transferable.");
+    }
     return tr("<font color=%1><b>[%2]</b> %3</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(getName()).arg(desc);
 }
 

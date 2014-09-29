@@ -95,7 +95,7 @@ class BurningCamps : public AOE{
     Q_OBJECT
 
 public:
-    Q_INVOKABLE BurningCamps(Card::Suit suit, int number);
+    Q_INVOKABLE BurningCamps(Card::Suit suit, int number, bool is_transferable = false);
 
     virtual bool isAvailable(const Player *player) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;

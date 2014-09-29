@@ -89,8 +89,10 @@ Halberd::Halberd(Card::Suit suit, int number)
 }
 
 Breastplate::Breastplate(Card::Suit suit, int number)
-    : Armor(suit, number){
+    : Armor(suit, number)
+{
     setObjectName("Breastplate");
+    transferable = true;
 }
 
 class BreastplateSkill : public ArmorSkill {
@@ -374,10 +376,11 @@ QStringList Drowning::checkTargetModSkillShow(const CardUseStruct &use) const{
     return QStringList();
 }
 
-BurningCamps::BurningCamps(Card::Suit suit, int number)
+BurningCamps::BurningCamps(Card::Suit suit, int number, bool is_transferable)
     : AOE(suit, number)
 {
     setObjectName("burning_camps");
+    transferable = is_transferable;
 }
 
 bool BurningCamps::isAvailable(const Player *player) const{
@@ -863,7 +866,7 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         // tricks
         // -- spade
         << new ThreatenEmperor(Card::Spade, 1) // transfer
-        << new BurningCamps(Card::Spade, 3) // transfer
+        << new BurningCamps(Card::Spade, 3, true) // transfer
         << new FightTogether(Card::Spade, 12)
         << new Nullification(Card::Spade, 13)
         // -- heart
@@ -886,7 +889,7 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         // equips
         << new IronArmor()
         << new Blade(Card::Spade, 5);
-    Horse *horse = new OffensiveHorse(Card::Heart, 3); // transfer
+    Horse *horse = new OffensiveHorse(Card::Heart, 3, -1, true); // transfer
     horse->setObjectName("JingFan");
     cards
         << horse
