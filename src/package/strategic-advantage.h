@@ -50,7 +50,7 @@ class IronArmor : public Armor{
     Q_OBJECT
 
 public:
-    Q_INVOKABLE IronArmor(Card::Suit suit = Card::Diamond, int number = 9);
+    Q_INVOKABLE IronArmor(Card::Suit suit = Card::Spade, int number = 2);
 };
 
 class WoodenOxCard: public SkillCard {
@@ -133,7 +133,7 @@ class AllianceFeast : public AOE {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE AllianceFeast(Card::Suit suit = Heart, int number = 9);
+    Q_INVOKABLE AllianceFeast(Card::Suit suit = Heart, int number = 1);
 
     virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;

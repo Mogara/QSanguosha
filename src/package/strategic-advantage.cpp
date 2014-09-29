@@ -19,6 +19,7 @@
     *********************************************************************/
 
 #include "strategic-advantage.h"
+#include "standard-basics.h"
 #include "standard-tricks.h"
 #include "engine.h"
 
@@ -755,34 +756,70 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
 
     cards
         // basics
-
-        // equips
-        << new Blade(Card::Spade, 5)
-        << new Halberd(Card::Spade, 6)
-        << new Breastplate()
-        << new IronArmor()
-        //<< new OffensiveHorse(Card::Heart, 3, true)
-        << new WoodenOx(Card::Diamond, 5)
-        << new JadeSeal(Card::Spade, 2)
+        // -- spade
+        << new Slash(Card::Spade, 4)
+        << new Analeptic(Card::Spade, 6) // transfer
+        << new Slash(Card::Spade, 7)
+        << new Slash(Card::Spade, 8)
+        << new ThunderSlash(Card::Spade, 9)
+        << new ThunderSlash(Card::Spade, 10)
+        << new ThunderSlash(Card::Spade, 11) // transfer
+        // -- heart
+        << new Jink(Card::Heart, 4)
+        << new Jink(Card::Heart, 5)
+        << new Jink(Card::Heart, 6)
+        << new Jink(Card::Heart, 7)
+        << new Peach(Card::Heart, 8)
+        << new Peach(Card::Heart, 9)
+        << new Slash(Card::Heart, 10)
+        << new Slash(Card::Heart, 11)
+        // -- club
+        << new Slash(Card::Club, 4)
+        << new ThunderSlash(Card::Club, 5) // transfer
+        << new Slash(Card::Club, 6)
+        << new Slash(Card::Club, 7)
+        << new Slash(Card::Club, 8)
+        << new Analeptic(Card::Club, 9)
+        // -- diamond
+        << new Peach(Card::Diamond, 2)
+        << new Peach(Card::Diamond, 3) // transfer
+        << new Jink(Card::Diamond, 6)
+        << new Jink(Card::Diamond, 7)
+        << new FireSlash(Card::Diamond, 8)
+        << new FireSlash(Card::Diamond, 9)
+        << new Jink(Card::Diamond, 13)
 
         // tricks
-        << new Drowning(Card::Club, 2)
-        << new Drowning(Card::Club, 3)
-        << new Drowning(Card::Club, 4)
-        << new BurningCamps(Card::Heart, 5)
-        << new BurningCamps(Card::Spade, 6)
-        << new BurningCamps(Card::Spade, 7)
-        //<< new ThreatenEmperor()
-        //<< new ThreatenEmperor()
-        //<< new ThreatenEmperor()
-        //<< new ImperialOrder()
-        << new LureTiger(Card::Spade, 2)
-        << new LureTiger(Card::Spade, 3)
-        << new FightTogether(Card::Spade, 8)
-        << new FightTogether(Card::Spade, 4)
-        << new HegNullification(Card::Spade, 1)
-        << new HegNullification(Card::Spade, 13)
-        << new AllianceFeast();
+        // -- spade
+        //<< new ThreatenEmperor(Card::Spade, 1) // transfer
+        << new BurningCamps(Card::Spade, 3) // transfer
+        << new FightTogether(Card::Spade, 12)
+        << new Nullification(Card::Spade, 13)
+        // -- heart
+        << new AllianceFeast()
+        << new LureTiger(Card::Heart, 2)
+        << new BurningCamps(Card::Heart, 12)
+        << new Drowning(Card::Heart, 13)
+        // -- club
+        //<< new ImperialOrder(Card::Club, 3)
+        << new FightTogether(Card::Club, 10)
+        << new BurningCamps(Card::Club, 11)
+        << new Drowning(Card::Club, 12)
+        << new HegNullification(Card::Club, 13)
+        // -- diamond
+        //<< new ThreatenEmperor(Card::Diamond, 1) // transfer
+        //<< new ThreatenEmperor(Card::Diamond, 4) // transfer
+        << new LureTiger(Card::Diamond, 10)
+        << new HegNullification(Card::Diamond, 11)
+
+        // equips
+        << new IronArmor()
+        << new Blade(Card::Spade, 5)
+        << new OffensiveHorse(Card::Heart, 3) // transfer
+        << new JadeSeal(Card::Club, 1)
+        << new Breastplate() // transfer
+        << new WoodenOx(Card::Diamond, 5)
+        << new Halberd(Card::Diamond, 12);
 
     skills << new BladeSkill
            << new BreastplateSkill
