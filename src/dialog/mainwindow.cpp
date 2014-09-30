@@ -1301,11 +1301,12 @@ void MainWindow::onVersionInfomationGotten()
 {
     while (!versionInfomationReply->atEnd()) {
         QString line = versionInfomationReply->readLine();
-        line.replace('\n', "");
+        line.remove('\n');
 
-        QStringList texts = line.split("|", QString::SkipEmptyParts);
+        QStringList texts = line.split('|', QString::SkipEmptyParts);
 
-        Q_ASSERT(texts.size() == 2);
+        if(texts.size() != 2)
+            return;
 
         QString key = texts.at(0);
         QString value = texts.at(1);
