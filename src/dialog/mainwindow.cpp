@@ -137,13 +137,13 @@ public:
         }
         if (scene()->inherits("StartScene")) {
             StartScene *start_scene = qobject_cast<StartScene *>(scene());
-            /*if (newSceneRect.width() < 1024 || newSceneRect.height() < 706) {
+            if (newSceneRect.width() < 1024 || newSceneRect.height() < 706) {
                 qreal sx = 1024 / newSceneRect.width();
                 qreal sy = 706 / newSceneRect.height();
                 qreal scale = sx > sy ? sx : sy;
                 newSceneRect.setWidth(newSceneRect.width() * scale);
                 newSceneRect.setHeight(newSceneRect.height() * scale);
-            }*/
+            }
             newSceneRect.moveTopLeft(newSceneRect.bottomRight() * -0.5);
             start_scene->setSceneRect(newSceneRect);
             if (newSceneRect.size() != event->size())
