@@ -1236,42 +1236,11 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids,
 }
 
 void ServerPlayer::gainAnExtraTurn() {
-    ServerPlayer *current = room->getCurrent();
-    Player::Phase orig_phase = Player::NotActive;
-    if (current != NULL && current->isAlive())
-        orig_phase = current->getPhase();
-
-    try {
-        current->setPhase(Player::NotActive);
-        room->broadcastProperty(current, "phase");
-
-        room->setCurrent(this);
-        room->getThread()->trigger(TurnStart, room, this);
-
-        current->setPhase(orig_phase);
-        room->broadcastProperty(current, "phase");
-        room->setCurrent(current);
-    }
-    catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken) {
-            if (getPhase() != Player::NotActive) {
-                const GameRule *game_rule = NULL;
-                if (room->getMode() == "04_1v3")
-                    game_rule = qobject_cast<const GameRule *>(Sanguosha->getTriggerSkill("hulaopass_mode"));
-                else
-                    game_rule = qobject_cast<const GameRule *>(Sanguosha->getTriggerSkill("game_rule"));
-                if (game_rule){
-                    QVariant _variant;
-                    game_rule->effect(EventPhaseEnd, room, this, _variant, this);
-                }
-                changePhase(getPhase(), Player::NotActive);
-            }
-            current->setPhase(orig_phase);
-            room->broadcastProperty(current, "phase");
-            room->setCurrent(current);
-        }
-        throw triggerEvent;
-    }
+    QStringList extraTurnList;
+    if (!room->getTag("ExtraTurnList").isNull())
+        extraTurnList = room->getTag("ExtraTurnList").toStringList();
+    extraTurnList.prepend(objectName());
+    room->setTag("ExtraTurnList", QVariant::fromValue(extraTurnList));
 }
 
 void ServerPlayer::copyFrom(ServerPlayer *sp) {

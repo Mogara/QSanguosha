@@ -335,7 +335,21 @@ void RoomThread::actionNormal(GameRule *game_rule) {
         forever{
             trigger(TurnStart, room, room->getCurrent());
             if (room->isFinished()) break;
-            room->setCurrent(qobject_cast<ServerPlayer *>(room->getCurrent()->getNextAlive(1, false)));
+            ServerPlayer *regular_next = qobject_cast<ServerPlayer *>(room->getCurrent()->getNextAlive(1, false));
+            while (!room->getTag("ExtraTurnList").isNull()) {
+                QStringList extraTurnList = room->getTag("ExtraTurnList").toStringList();
+                if (!extraTurnList.isEmpty()) {
+                    QString extraTurnPlayer = extraTurnList.takeFirst();
+                    room->setTag("ExtraTurnList", QVariant::fromValue(extraTurnList));
+                    ServerPlayer *next = room->findPlayer(extraTurnPlayer);
+                    room->setCurrent(next);
+                    trigger(TurnStart, room, next);
+                    if (room->isFinished()) break;
+                } else
+                    room->removeTag("ExtraTurnList");
+            }
+            if (room->isFinished()) break;
+            room->setCurrent(regular_next);
         }
     }
     catch (TriggerEvent triggerEvent) {
