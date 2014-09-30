@@ -404,7 +404,7 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
     if (Self->getHandcards().contains(card_item->getCard())
             && card_item->getCard()->isTransferable()) {
         card_item->setTransferable(true);
-        if (!_transferButtons.contains(card_item->getTransferButton()))
+        if (card_item->getTransferButton() && !_transferButtons.contains(card_item->getTransferButton()))
             _transferButtons << card_item->getTransferButton();
     }
 }

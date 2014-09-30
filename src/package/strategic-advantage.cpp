@@ -875,6 +875,11 @@ void ImperialOrder::onUse(Room *room, const CardUseStruct &card_use) const{
     TrickCard::onUse(room, use);
 }
 
+void ImperialOrder::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    room->setCardFlag(this, "imperial_order_normal_use");
+    GlobalEffect::use(room, source, targets);
+}
+
 void ImperialOrder::onEffect(const CardEffectStruct &effect) const{
     Room *room = effect.to->getRoom();
     if (room->askForCard(effect.to, "EquipCard", "@imperial_order-equip"))
