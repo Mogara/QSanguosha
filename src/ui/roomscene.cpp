@@ -3901,6 +3901,7 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
         }
     }
     else if (word.startsWith("skill=")) {
+        removeItem(lightbox);
         const QString hero = word.mid(6);
         const QString skill = args.value(1, QString());
 
@@ -3924,7 +3925,7 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
         animationWindow->setColor(Qt::transparent);
         object->setParentItem(animationWindow->contentItem());
         animationWindow->show();
-        connect(object, SIGNAL(animationCompleted()), animationWindow, SLOT(hide()));
+        connect(object, SIGNAL(animationCompleted()), animationWindow, SLOT(close()));
         connect(object, SIGNAL(animationCompleted()), animationWindow, SLOT(deleteLater()));
 #endif
     }
