@@ -1204,7 +1204,7 @@ void FangquanCard::onEffect(const CardEffectStruct &effect) const{
     log.to << player;
     room->sendLog(log);
 
-    room->setTag("FangquanTarget", QVariant::fromValue(player));
+    player->gainAnExtraTurn();
 }
 
 class FangquanViewAsSkill : public OneCardViewAsSkill {
@@ -1270,32 +1270,6 @@ public:
 
     virtual int getEffectIndex(const ServerPlayer *, const Card *) const{
         return 2;
-    }
-};
-
-class FangquanGive : public PhaseChangeSkill {
-public:
-    FangquanGive() : PhaseChangeSkill("#fangquan-give") {
-        frequency = Compulsory;
-    }
-
-    virtual QStringList triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &, ServerPlayer * &ask_who) const{
-        if (player != NULL && player->isAlive()) {
-            if (!room->getTag("FangquanTarget").isNull()){
-                ServerPlayer *target = room->getTag("FangquanTarget").value<ServerPlayer *>();
-                ask_who = target;
-                return (target->isAlive()) ? QStringList(objectName()) : QStringList();
-            }
-        }
-        return QStringList();
-    }
-
-    virtual bool onPhaseChange(ServerPlayer *liushan) const{
-        Room *room = liushan->getRoom();
-        ServerPlayer *target = room->getTag("FangquanTarget").value<ServerPlayer *>();
-        room->removeTag("FangquanTarget");
-        target->gainAnExtraTurn();
-        return false;
     }
 };
 
@@ -1473,8 +1447,6 @@ void StandardPackage::addShuGenerals()
     General *liushan = new General(this, "liushan", "shu", 3); // SHU 013
     liushan->addSkill(new Xiangle);
     liushan->addSkill(new Fangquan);
-    liushan->addSkill(new FangquanGive);
-    insertRelatedSkills("fangquan", "#fangquan-give");
 
     General *menghuo = new General(this, "menghuo", "shu"); // SHU 014
     menghuo->addCompanion("zhurong");
