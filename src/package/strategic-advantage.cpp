@@ -521,7 +521,7 @@ QStringList LureTiger::checkTargetModSkillShow(const CardUseStruct &use) const{
 
 class LureTigerSkill : public TriggerSkill {
 public:
-    LureTigerSkill() : TriggerSkill("lure_tiger") {
+    LureTigerSkill() : TriggerSkill("lure_tiger_effect") {
         events << Death << EventPhaseChanging;
         global = true;
     }
@@ -551,7 +551,7 @@ public:
 
 class LureTigerProhibit : public ProhibitSkill {
 public:
-    LureTigerProhibit() : ProhibitSkill("#lure_tiger") {
+    LureTigerProhibit() : ProhibitSkill("#lure_tiger-prohibit") {
     }
 
     virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const{
@@ -825,6 +825,80 @@ public:
     }
 };
 
+ImperialOrder::ImperialOrder(Suit suit, int number)
+    : GlobalEffect(suit, number)
+{
+    setObjectName("imperial_order");
+}
+
+bool ImperialOrder::isAvailable(const Player *player) const{
+    bool invoke = !player->hasShownOneGeneral();
+    if (!invoke) {
+        foreach (const Player *p, player->getAliveSiblings()) {
+            if (!p->hasShownOneGeneral() && !player->isProhibited(p, this)) {
+                invoke = true;
+                break;
+            }
+        }
+    }
+    return invoke && TrickCard::isAvailable(player);
+}
+
+void ImperialOrder::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *source = card_use.from;
+    QList<ServerPlayer *> targets;
+    foreach (ServerPlayer *p, room->getAllPlayers()) {
+        if (p->hasShownOneGeneral())
+            continue;
+        const Skill *skill = room->isProhibited(source, p, this);
+        if (skill) {
+            if (!skill->isVisible())
+                skill = Sanguosha->getMainSkill(skill->objectName());
+            if (skill && skill->isVisible()) {
+                LogMessage log;
+                log.type = "#SkillAvoid";
+                log.from = p;
+                log.arg = skill->objectName();
+                log.arg2 = objectName();
+                room->sendLog(log);
+
+                room->broadcastSkillInvoke(skill->objectName());
+            }
+            continue;
+        }
+        targets << p;
+    }
+
+    CardUseStruct use = card_use;
+    use.to = targets;
+    Q_ASSERT(!use.to.isEmpty());
+    TrickCard::onUse(room, use);
+}
+
+void ImperialOrder::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    room->setCardFlag(this, "imperial_order_normal_use");
+    GlobalEffect::use(room, source, targets);
+}
+
+void ImperialOrder::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    if (room->askForCard(effect.to, "EquipCard", "@imperial_order-equip"))
+        return;
+    QStringList choices;
+    if (!effect.to->hasShownAllGenerals()
+        && ((!effect.to->hasShownGeneral1() && effect.to->disableShow(true).isEmpty())
+            || (effect.to->getGeneral2() && !effect.to->hasShownGeneral2() && effect.to->disableShow(false).isEmpty())))
+        choices << "show";
+    choices << "losehp";
+    QString choice = room->askForChoice(effect.to, objectName(), choices.join("+"));
+    if (choice == "show") {
+        effect.to->askForGeneralShow();
+        effect.to->drawCards(1, objectName());
+    } else {
+        room->loseHp(effect.to);
+    }
+}
+
 StrategicAdvantagePackage::StrategicAdvantagePackage()
     : Package("strategic_advantage", Package::CardPack){
     QList<Card *> cards;
@@ -876,7 +950,7 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         << new BurningCamps(Card::Heart, 12)
         << new Drowning(Card::Heart, 13)
         // -- club
-        //<< new ImperialOrder(Card::Club, 3)
+        << new ImperialOrder(Card::Club, 3)
         << new FightTogether(Card::Club, 10)
         << new BurningCamps(Card::Club, 11)
         << new Drowning(Card::Club, 12)
@@ -905,7 +979,7 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
            << new WoodenOxSkill << new WoodenOxTriggerSkill
            << new LureTigerSkill << new LureTigerProhibit
            << new ThreatenEmperorSkill;
-    insertRelatedSkills("lure_tiger", "#lure_tiger");
+    insertRelatedSkills("lure_tiger_effect", "#lure_tiger-prohibit");
 
     foreach (Card *card, cards)
         card->setParent(this);

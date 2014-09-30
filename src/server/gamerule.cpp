@@ -141,17 +141,17 @@ GameRule::GameRule(QObject *parent)
     setParent(parent);
 
     events << GameStart << TurnStart
-        << EventPhaseStart << EventPhaseProceeding << EventPhaseEnd << EventPhaseChanging
-        << PreCardUsed << CardUsed << CardFinished << CardEffected
-        << PostHpReduced
-        << EventLoseSkill << EventAcquireSkill
-        << AskForPeaches << AskForPeachesDone << BuryVictim
-        << BeforeGameOverJudge << GameOverJudge
-        << SlashHit << SlashEffected << SlashProceed
-        << ConfirmDamage << DamageDone << DamageComplete
-        << FinishRetrial << FinishJudge
-        << ChoiceMade << GeneralShown
-        << CardsMoveOneTime;
+           << EventPhaseStart << EventPhaseProceeding << EventPhaseEnd << EventPhaseChanging
+           << PreCardUsed << CardUsed << CardFinished << CardEffected
+           << PostHpReduced
+           << EventLoseSkill << EventAcquireSkill
+           << AskForPeaches << AskForPeachesDone << BuryVictim
+           << BeforeGameOverJudge << GameOverJudge
+           << SlashHit << SlashEffected << SlashProceed
+           << ConfirmDamage << DamageDone << DamageComplete
+           << FinishRetrial << FinishJudge
+           << ChoiceMade << GeneralShown
+           << BeforeCardsMove << CardsMoveOneTime;
 
     QList<Skill *> list;
     list << new GameRule_AskForGeneralShowHead;
@@ -322,6 +322,24 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
         else if (player->isAlive())
             player->play();
 
+        break;
+    }
+    case EventPhaseStart: {
+        if (player->getPhase() == Player::NotActive && room->getTag("ImperialOrderInvoke").toBool()) {
+            room->setTag("ImperialOrderInvoke", false);
+            LogMessage log;
+            log.type = "#ImperialOrderEffect";
+            log.from = player;
+            log.arg = "imperial_order";
+            room->sendLog(log);
+            const Card *io = room->getTag("ImperialOrderCard").value<const Card *>();
+            if (io) {
+                foreach (ServerPlayer *p, room->getAllPlayers()) {
+                    if (!p->hasShownOneGeneral() && !Sanguosha->isProhibited(NULL, p, io)) // from is NULL!
+                        room->cardEffect(io, NULL, p);
+                }
+            }
+        }
         break;
     }
     case EventPhaseProceeding: {
@@ -807,6 +825,46 @@ bool GameRule::effect(TriggerEvent triggerEvent, Room *room, ServerPlayer *playe
                 room->removePlayerMark(player, "HalfMaxHpLeft");
             }
         }
+    }
+    case BeforeCardsMove: {
+        if (data.canConvert<CardsMoveOneTimeStruct>()) {
+            CardsMoveOneTimeStruct move = data.value<CardsMoveOneTimeStruct>();
+            bool should_find_io = false;
+            if (move.to_place == Player::DiscardPile) {
+                if (move.reason.m_reason != CardMoveReason::S_REASON_USE) {
+                    should_find_io = true; // not use
+                } else if (move.card_ids.length() > 1) {
+                    should_find_io = true; // use card isn't IO
+                } else {
+                    const Card *card = Sanguosha->getCard(move.card_ids.first());
+                    if (card->isKindOf("ImperialOrder") && !card->hasFlag("imperial_order_normal_use"))
+                        should_find_io = true; // use card isn't IO
+                }
+            }
+            if (should_find_io) {
+                foreach (int id, move.card_ids) {
+                    const Card *card = Sanguosha->getCard(id);
+                    if (card->isKindOf("ImperialOrder")) {
+                        room->moveCardTo(card, NULL, Player::PlaceTable, true);
+                        room->getPlayers().first()->addToPile("#imperial_order", card, false);
+                        LogMessage log;
+                        log.type = "#RemoveImperialOrder";
+                        log.arg = "imperial_order";
+                        room->sendLog(log);
+                        room->setTag("ImperialOrderInvoke", true);
+                        room->setTag("ImperialOrderCard", QVariant::fromValue(card));
+                        int i = move.card_ids.indexOf(id);
+                        move.from_places.removeAt(i);
+                        move.open.removeAt(i);
+                        move.from_pile_names.removeAt(i);
+                        move.card_ids.removeOne(id);
+                        data = QVariant::fromValue(move);
+                        break;
+                    }
+                }
+            }
+        }
+        break;
     }
     case CardsMoveOneTime: {
         if (data.canConvert<CardsMoveOneTimeStruct>()) {
