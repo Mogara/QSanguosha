@@ -544,7 +544,7 @@ void MainWindow::roundCorners()
         QPainterPath path;
         QRect windowRect = mask.rect();
         QRect maskRect(windowRect.x(), windowRect.y(), windowRect.width(), windowRect.height());
-        path.addRoundedRect(maskRect, 5, 5);
+        path.addRoundedRect(maskRect, S_CORNER_SIZE, S_CORNER_SIZE);
         painter.setRenderHint(QPainter::Antialiasing);
 
         painter.fillPath(path, Qt::black);
@@ -935,13 +935,12 @@ void MainWindow::setBackgroundBrush(const QString &pixmapPath) {
     if (scene) {
         QPixmap pixmap(pixmapPath);
         QBrush brush(pixmap);
-        qreal sx = qreal(width()) / qreal(pixmap.width());
-        qreal sy = qreal(height()) / qreal(pixmap.height());
 
-        QTransform transform(view->transform().adjoint());
+        QTransform transform;
+        transform.translate(-S_CORNER_SIZE, -S_CORNER_SIZE);
         if (!scene->inherits("RoomScene"))
-            transform.translate(-qreal(width()) / 2, -qreal(height()) / 2);
-        transform.scale(sx, sy);
+            transform.translate(-scene->width() / 2, -scene->height() / 2);
+        transform.scale((scene->width() + 2 * S_CORNER_SIZE) / pixmap.width(), (scene->height() + 2 * S_CORNER_SIZE) / pixmap.height());
         brush.setTransform(transform);
         scene->setBackgroundBrush(brush);
     }

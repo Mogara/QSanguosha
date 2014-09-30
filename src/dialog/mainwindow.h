@@ -99,6 +99,7 @@ public:
     QPoint movePosition;
 
     static const int S_PADDING = 4;
+    static const int S_CORNER_SIZE = 5;
     enum Direction { Up, Down, Left, Right, LeftTop, LeftBottom, RightTop, RightBottom, None = -1 };
 
     bool isZoomReady;
