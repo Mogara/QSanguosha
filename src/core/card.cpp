@@ -640,6 +640,7 @@ Card *Card::Clone(const Card *card) {
         new_card->setId(card->getId());
         new_card->setObjectName(card->objectName());
         new_card->addSubcard(card->getId());
+		new_card->setTransferable(card->isTransferable());
         return new_card;
     }
     else
