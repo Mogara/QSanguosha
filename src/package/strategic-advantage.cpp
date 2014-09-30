@@ -427,10 +427,11 @@ void BurningCamps::onEffect(const CardEffectStruct &effect) const {
     effect.to->getRoom()->damage(DamageStruct(this, effect.from, effect.to, 1, DamageStruct::Fire));
 }
 
-LureTiger::LureTiger(Card::Suit suit, int number)
+LureTiger::LureTiger(Card::Suit suit, int number, bool is_transferable)
     : TrickCard(suit, number)
 {
     setObjectName("lure_tiger");
+    transferable = is_transferable;
 }
 
 QString LureTiger::getSubtype() const{
@@ -883,7 +884,7 @@ StrategicAdvantagePackage::StrategicAdvantagePackage()
         // -- diamond
         << new ThreatenEmperor(Card::Diamond, 1) // transfer
         << new ThreatenEmperor(Card::Diamond, 4) // transfer
-        << new LureTiger(Card::Diamond, 10)
+        << new LureTiger(Card::Diamond, 10, true) // transfer
         << new HegNullification(Card::Diamond, 11)
 
         // equips

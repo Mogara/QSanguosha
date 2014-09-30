@@ -106,7 +106,7 @@ class LureTiger : public TrickCard {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE LureTiger(Card::Suit suit, int number);
+    Q_INVOKABLE LureTiger(Card::Suit suit, int number, bool is_transferable = false);
 
     virtual QString getSubtype() const;
 
