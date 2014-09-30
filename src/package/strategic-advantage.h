@@ -142,7 +142,7 @@ public:
     virtual bool isAvailable(const Player *player) const;
 };
 
-class ThreatenEmperor: public SingleTargetTrick {
+class ThreatenEmperor: public SingleTargetTrick{
     Q_OBJECT
 
 public:
@@ -150,6 +150,18 @@ public:
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
     virtual bool isAvailable(const Player *player) const;
+};
+
+class ImperialOrder: public GlobalEffect{
+    Q_OBJECT
+
+public:
+    Q_INVOKABLE ImperialOrder(Card::Suit suit, int number);
+
+    virtual bool isAvailable(const Player *player) const;
+
+    virtual void onUse(Room *room, const CardUseStruct &card_use) const;
+    virtual void onEffect(const CardEffectStruct &effect) const;
 };
 
 class StrategicAdvantagePackage : public Package{
