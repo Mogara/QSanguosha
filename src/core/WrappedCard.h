@@ -214,6 +214,16 @@ public:
         return m_card->isKindOf(cardType);
     }
 
+    inline virtual bool isTransferable() const{
+        Q_ASSERT(m_card != NULL);
+        return m_card->isTransferable();
+    }
+
+    inline virtual void setTransferable(const bool transferbale) const{
+        Q_ASSERT(m_card != NULL);
+        return m_card->setTransferable(transferbale);
+    }
+
 protected:
     Card *m_card;
     mutable bool m_isModified;

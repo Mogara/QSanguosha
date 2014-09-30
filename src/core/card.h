@@ -167,8 +167,8 @@ public:
 
     virtual QString getEffectName() const;
 
-    bool isTransferable() const;
-    void setTransferable(const bool transferbale);
+    virtual bool isTransferable() const;
+    virtual void setTransferable(const bool transferbale);
 
 protected:
     QList<int> subcards;

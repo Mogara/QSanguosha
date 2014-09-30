@@ -39,7 +39,7 @@ const Card::Suit Card::AllSuits[4] = {
 
 Card::Card(Suit suit, int number, bool target_fixed)
     :target_fixed(target_fixed), mute(false),
-    will_throw(true), has_preact(false), can_recast(false), transferable(true),
+    will_throw(true), has_preact(false), can_recast(false), transferable(false),
     m_suit(suit), m_number(number), m_id(-1)
 {
     handling_method = will_throw ? Card::MethodDiscard : Card::MethodUse;
@@ -974,7 +974,7 @@ bool TransferCard::targetFilter(const QList<const Player *> &targets, const Play
 }
 
 void TransferCard::onEffect(const CardEffectStruct &effect) const{
-    bool draw = !effect.to->hasShownOneGeneral();
+    bool draw = effect.to->hasShownOneGeneral();
     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, effect.from->objectName(), effect.to->objectName(), "transfer", QString());
     effect.to->getRoom()->obtainCard(effect.to, this, reason);
     if (draw)
