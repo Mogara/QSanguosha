@@ -219,9 +219,9 @@ public:
         return m_card->isTransferable();
     }
 
-    inline virtual void setTransferable(const bool transferbale) const{
+    inline virtual void setTransferable(const bool transferbale){
         Q_ASSERT(m_card != NULL);
-        return m_card->setTransferable(transferbale);
+        m_card->setTransferable(transferbale);
     }
 
 protected:
