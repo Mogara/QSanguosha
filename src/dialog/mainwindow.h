@@ -84,7 +84,7 @@ public:
     ~MainWindow();
     void setBackgroundBrush(const QString &pixmapPath);
 
-#ifndef Q_OS_ANDROID
+#ifdef Q_OS_WIN
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent *event);
     virtual void mouseDoubleClickEvent(QMouseEvent *event);

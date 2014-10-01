@@ -25,7 +25,11 @@
 #include "client.h"
 #include "generaloverview.h"
 #include "cardoverview.h"
+#if defined(Q_OS_WIN) || defined(Q_OS_ANDROID)
 #include "ui_mainwindow.h"
+#else
+#include "ui_mainwindow_nonwin.h"
+#endif
 #include "rule-summary.h"
 #include "pixmapanimation.h"
 #include "record-analysis.h"
@@ -80,7 +84,7 @@ public:
 #endif
     }
 
-#ifndef Q_OS_ANDROID
+#ifdef Q_OS_WIN
     virtual void mousePressEvent(QMouseEvent *event) {
         MainWindow *parent = qobject_cast<MainWindow *>(parentWidget());
         if (parent)
@@ -203,7 +207,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     setWindowTitle(tr("QSanguosha-Hegemony") + " " + Sanguosha->getVersion());
+#ifdef Q_OS_WIN
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint);
+#endif
     setAttribute(Qt::WA_TranslucentBackground);
 
     setMouseTracking(true);
@@ -239,6 +245,7 @@ MainWindow::MainWindow(QWidget *parent)
     foreach(QAction *action, actions)
         start_scene->addButton(action);
 
+#if defined(Q_OS_WIN) || defined(Q_OS_ANDROID)
     ui->menuSumMenu->setAttribute(Qt::WA_TranslucentBackground);
     ui->menuGame->setAttribute(Qt::WA_TranslucentBackground);
     ui->menuView->setAttribute(Qt::WA_TranslucentBackground);
@@ -246,6 +253,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->menuDIY->setAttribute(Qt::WA_TranslucentBackground);
     ui->menuCheat->setAttribute(Qt::WA_TranslucentBackground);
     ui->menuHelp->setAttribute(Qt::WA_TranslucentBackground);
+#endif
 
     view = new FitView(scene);
 
@@ -259,13 +267,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     addAction(ui->actionFullscreen);
 
+#if defined(Q_OS_WIN) || defined(Q_OS_ANDROID)
     menu = new QPushButton(this);
     menu->setMenu(ui->menuSumMenu);
     menu->setProperty("control", true);
     StyleHelper::getInstance()->setIcon(menu, QChar(0xf0c9), 15);
     menu->setToolTip(tr("<font color=%1>Config</font>").arg(Config.SkillDescriptionInToolTipColor.name()));
+#endif
 
-#ifndef Q_OS_ANDROID
+#if defined(Q_OS_WIN)
     minButton = new QPushButton(this);
     minButton->setProperty("control", true);
 
@@ -296,7 +306,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
 
     menuBar()->hide();
-#else
+#elif defined(Q_OS_ANDROID)
     ui->menuSumMenu->removeAction(ui->menuView->menuAction());
 #endif
     repaintButtons();
@@ -313,7 +323,7 @@ MainWindow::MainWindow(QWidget *parent)
     systray = NULL;
 }
 
-#ifndef Q_OS_ANDROID
+#ifdef Q_OS_WIN
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
     if (windowState() & (Qt::WindowMaximized | Qt::WindowFullScreen))
@@ -554,7 +564,7 @@ void MainWindow::roundCorners()
 
 void MainWindow::repaintButtons()
 {
-#ifndef Q_OS_ANDROID
+#if defined(Q_OS_WIN)
     if (!minButton || !maxButton || !normalButton || !closeButton || !menu)
         return;
     int width = this->width();
@@ -580,7 +590,7 @@ void MainWindow::repaintButtons()
         minButton->setVisible(true);
         menu->setGeometry(width - 170, 0, 40, 33);
     }
-#else
+#elif defined(Q_OS_ANDROID)
     if (menu)
         menu->setGeometry(width() - 50, 0, 40, 33);
 #endif

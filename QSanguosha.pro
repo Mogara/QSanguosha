@@ -233,8 +233,17 @@ FORMS += \
     src/dialog/cardoverview.ui \
     src/dialog/configdialog.ui \
     src/dialog/connectiondialog.ui \
-    src/dialog/generaloverview.ui \
-    src/dialog/mainwindow.ui
+    src/dialog/generaloverview.ui
+
+win32 {
+    FORMS += src/dialog/mainwindow.ui
+}
+else: android {
+    FORMS += src/dialog/mainwindow.ui
+}
+else {
+    FORMS += src/dialog/mainwindow_nonwin.ui
+}
 
 INCLUDEPATH += include
 INCLUDEPATH += src/client
@@ -498,9 +507,9 @@ CONFIG(opengl){
 
 TRANSLATIONS += builds/sanguosha.ts
 
-!exists($$PWD/sanguosha.qm) {
+#!exists($$PWD/sanguosha.qm) {
     system("lrelease builds/sanguosha.ts -qm $$PWD/sanguosha.qm")
-}
+#}
 
 OTHER_FILES += \
     sanguosha.qss \
