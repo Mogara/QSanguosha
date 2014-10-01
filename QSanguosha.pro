@@ -507,9 +507,12 @@ CONFIG(opengl){
 
 TRANSLATIONS += builds/sanguosha.ts
 
-#!exists($$PWD/sanguosha.qm) {
-    system("lrelease builds/sanguosha.ts -qm $$PWD/sanguosha.qm")
-#}
+system("lrelease builds/sanguosha.ts -qm $$PWD/sanguosha.qm")
+
+SWIG_bin = "swig"
+win32: SWIG_bin = "$$PWD/tools/swig/swig.exe"
+
+system("$$SWIG_bin -c++ -lua $$PWD/swig/sanguosha.i")
 
 OTHER_FILES += \
     sanguosha.qss \
