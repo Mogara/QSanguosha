@@ -141,13 +141,13 @@ public:
         }
         if (scene()->inherits("StartScene")) {
             StartScene *start_scene = qobject_cast<StartScene *>(scene());
-            /*if (newSceneRect.width() < 1024 || newSceneRect.height() < 706) {
+            if (newSceneRect.width() < 1024 || newSceneRect.height() < 706) {
                 qreal sx = 1024 / newSceneRect.width();
                 qreal sy = 706 / newSceneRect.height();
                 qreal scale = sx > sy ? sx : sy;
                 newSceneRect.setWidth(newSceneRect.width() * scale);
                 newSceneRect.setHeight(newSceneRect.height() * scale);
-            }*/
+            }
             newSceneRect.moveTopLeft(newSceneRect.bottomRight() * -0.5);
             start_scene->setSceneRect(newSceneRect);
             if (newSceneRect.size() != event->size())
@@ -554,7 +554,7 @@ void MainWindow::roundCorners()
         QPainterPath path;
         QRect windowRect = mask.rect();
         QRect maskRect(windowRect.x(), windowRect.y(), windowRect.width(), windowRect.height());
-        path.addRoundedRect(maskRect, 5, 5);
+        path.addRoundedRect(maskRect, S_CORNER_SIZE, S_CORNER_SIZE);
         painter.setRenderHint(QPainter::Antialiasing);
 
         painter.fillPath(path, Qt::black);
@@ -945,13 +945,12 @@ void MainWindow::setBackgroundBrush(const QString &pixmapPath) {
     if (scene) {
         QPixmap pixmap(pixmapPath);
         QBrush brush(pixmap);
-        qreal sx = qreal(width()) / qreal(pixmap.width());
-        qreal sy = qreal(height()) / qreal(pixmap.height());
 
-        QTransform transform(view->transform().adjoint());
+        QTransform transform;
+        transform.translate(-S_CORNER_SIZE, -S_CORNER_SIZE);
         if (!scene->inherits("RoomScene"))
-            transform.translate(-qreal(width()) / 2, -qreal(height()) / 2);
-        transform.scale(sx, sy);
+            transform.translate(-scene->width() / 2, -scene->height() / 2);
+        transform.scale((scene->width() + 2 * S_CORNER_SIZE) / pixmap.width(), (scene->height() + 2 * S_CORNER_SIZE) / pixmap.height());
         brush.setTransform(transform);
         scene->setBackgroundBrush(brush);
     }
@@ -1311,11 +1310,12 @@ void MainWindow::onVersionInfomationGotten()
 {
     while (!versionInfomationReply->atEnd()) {
         QString line = versionInfomationReply->readLine();
-        line.replace('\n', "");
+        line.remove('\n');
 
-        QStringList texts = line.split("|", QString::SkipEmptyParts);
+        QStringList texts = line.split('|', QString::SkipEmptyParts);
 
-        Q_ASSERT(texts.size() == 2);
+        if(texts.size() != 2)
+            return;
 
         QString key = texts.at(0);
         QString value = texts.at(1);
