@@ -39,6 +39,8 @@
 #include "audio.h"
 #include "StyleHelper.h"
 #include "uiUtils.h"
+#include "serverdialog.h"
+#include "banipdialog.h"
 
 #include <lua.hpp>
 #include <QGraphicsView>

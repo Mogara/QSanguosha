@@ -31,6 +31,7 @@
 #include "miniscenarios.h"
 #include "generalselector.h"
 #include "json.h"
+#include "clientstruct.h"
 
 #include <lua.hpp>
 #include <QStringList>
