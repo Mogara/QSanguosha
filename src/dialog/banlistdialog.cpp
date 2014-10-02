@@ -29,20 +29,14 @@
 #include <QTabWidget>
 #include <QPushButton>
 
-void BanlistDialog::switchTo(int item) {
-    this->item = item;
-    list = lists.at(item);
-}
-
 BanlistDialog::BanlistDialog(QWidget *parent, bool view)
-    : QDialog(parent)
+    : FlatDialog(parent)
 {
     setWindowTitle(tr("Select generals that are excluded"));
     setMinimumWidth(455);
 
     if (ban_list.isEmpty())
         ban_list << "Generals" << "Pairs";
-    QVBoxLayout *layout = new QVBoxLayout;
 
     QTabWidget *tab = new QTabWidget;
     layout->addWidget(tab);
@@ -75,11 +69,13 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     QPushButton *add = new QPushButton(tr("Add ..."));
     QPushButton *remove = new QPushButton(tr("Remove"));
     QPushButton *ok = new QPushButton(tr("OK"));
+    QPushButton *cancel = new QPushButton(tr("Cancel"));
 
     connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
     connect(this, SIGNAL(accepted()), this, SLOT(saveAll()));
     connect(remove, SIGNAL(clicked()), this, SLOT(doRemoveButton()));
     connect(add, SIGNAL(clicked()), this, SLOT(doAddButton()));
+    connect(cancel, SIGNAL(clicked()), this, SLOT(reject()));
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addStretch();
@@ -90,9 +86,10 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     }
 
     hlayout->addWidget(ok);
-    layout->addLayout(hlayout);
+    if (!view)
+        hlayout->addWidget(cancel);
 
-    setLayout(layout);
+    layout->addLayout(hlayout);
 
     foreach(QListWidget *alist, lists) {
         if (alist->objectName() == "Pairs")
@@ -167,4 +164,9 @@ void BanlistDialog::saveAll() {
         save();
     }
     BanPair::loadBanPairs();
+}
+
+void BanlistDialog::switchTo(int item) {
+    this->item = item;
+    list = lists.at(item);
 }

@@ -544,6 +544,6 @@ bool ServerDialog::config() {
 }
 
 void ServerDialog::editBanlist() {
-    BanlistDialog *dialog = new BanlistDialog(this);
+    BanListDialog *dialog = new BanListDialog(this);
     dialog->exec();
 }

@@ -10,7 +10,7 @@
     </message>
 </context>
 <context>
-    <name>BanIPDialog</name>
+    <name>BanIpDialog</name>
     <message>
         <location filename="../src/dialog/banipdialog.cpp" line="47"/>
         <source>Insert to banned IP list</source>
@@ -61,27 +61,32 @@
 <context>
     <name>BanlistDialog</name>
     <message>
-        <location filename="../src/dialog/banlistdialog.cpp" line="40"/>
+        <location filename="../src/dialog/banlistdialog.cpp" line="35"/>
         <source>Select generals that are excluded</source>
         <translation>选择被排除的武将</translation>
     </message>
     <message>
-        <location filename="../src/dialog/banlistdialog.cpp" line="75"/>
+        <location filename="../src/dialog/banlistdialog.cpp" line="69"/>
         <source>Add ...</source>
         <translation>添加 ...</translation>
     </message>
     <message>
-        <location filename="../src/dialog/banlistdialog.cpp" line="76"/>
+        <location filename="../src/dialog/banlistdialog.cpp" line="70"/>
         <source>Remove</source>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="../src/dialog/banlistdialog.cpp" line="77"/>
+        <location filename="../src/dialog/banlistdialog.cpp" line="71"/>
         <source>OK</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../src/dialog/banlistdialog.cpp" line="110"/>
+        <location filename="../src/dialog/banlistdialog.cpp" line="72"/>
+        <source>Cancel</source>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/banlistdialog.cpp" line="104"/>
         <source>Banned for all: %1</source>
         <translation>完全禁止：%1</translation>
     </message>

@@ -21,12 +21,13 @@
 #ifndef BANLISTDIALOG_H
 #define BANLISTDIALOG_H
 
-#include <QDialog>
+#include "flatdialog.h"
+
 #include <QMap>
 
 class QListWidget;
 
-class BanlistDialog : public QDialog {
+class BanlistDialog : public FlatDialog {
     Q_OBJECT
 
 public:
