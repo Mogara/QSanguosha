@@ -914,6 +914,33 @@
     <ClCompile Include="Release\moc_SkinItem.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\dialog\banipdialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\banlistdialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\dialog\serverdialog.cpp">
+      <Filter>dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_banipdialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_banlistdialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_serverdialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_banipdialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_banlistdialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_serverdialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\server\ai.h">
@@ -1200,6 +1227,15 @@
     </CustomBuild>
     <CustomBuild Include="..\..\src\ui\SkinItem.h">
       <Filter>ui</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\banipdialog.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\banlistdialog.h">
+      <Filter>dialog</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\src\dialog\serverdialog.h">
+      <Filter>dialog</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
