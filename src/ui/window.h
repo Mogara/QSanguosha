@@ -34,7 +34,8 @@ public:
 
     void addContent(const QString &content);
     Button *addCloseButton(const QString &label);
-    void shift(int pos_x = 0, int pos_y = 0);
+    void shift(qreal pos_x = 0, qreal pos_y = 0);
+    void shift(const QPointF &pos);
     void keepWhenDisappear();
     void setTitle(const QString &title);
 
