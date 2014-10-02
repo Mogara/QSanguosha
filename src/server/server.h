@@ -35,7 +35,7 @@ class Server : public QObject {
     Q_OBJECT
 
 public:
-    friend class BanIPDialog;
+    friend class BanIpDialog;
 
     explicit Server(QObject *parent);
 
