@@ -29,6 +29,8 @@
 
 #include <QApplication>
 
+using namespace QSanProtocol;
+
 Server::Server(QObject *parent)
     : QObject(parent)
 {
@@ -43,8 +45,6 @@ Server::Server(QObject *parent)
     connect(server, SIGNAL(new_connection(ClientSocket *)), this, SLOT(processNewConnection(ClientSocket *)));
     connect(qApp, SIGNAL(aboutToQuit()), this, SLOT(deleteLater()));
 }
-
-using namespace QSanProtocol;
 
 void Server::broadcastSystemMessage(const QString &msg) {
     JsonArray arg;
