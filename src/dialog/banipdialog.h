@@ -21,17 +21,17 @@
 #ifndef BANIPDIALOG_H
 #define BANIPDIALOG_H
 
-#include <QDialog>
+#include "flatdialog.h"
 
 class Server;
 class QListWidget;
 class ServerPlayer;
 
-class BanIPDialog : public QDialog {
+class BanIpDialog : public FlatDialog {
     Q_OBJECT
 
 public:
-    BanIPDialog(QWidget *parent, Server *server);
+    BanIpDialog(QWidget *parent, Server *server);
 
 private:
     QListWidget *left;
