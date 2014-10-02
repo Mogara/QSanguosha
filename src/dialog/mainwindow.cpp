@@ -1300,7 +1300,7 @@ void MainWindow::on_actionAbout_GPLv3_triggered() {
 }
 
 void MainWindow::on_actionManage_Ban_IP_triggered(){
-    BanIPDialog *dlg = new BanIPDialog(this, server);
+    BanIpDialog *dlg = new BanIpDialog(this, server);
     if (server) {
         connect(server, SIGNAL(newPlayer(ServerPlayer*)), dlg, SLOT(addPlayer(ServerPlayer*)));
     }
