@@ -29,7 +29,7 @@
 #include <QTabWidget>
 #include <QPushButton>
 
-BanlistDialog::BanlistDialog(QWidget *parent, bool view)
+BanListDialog::BanListDialog(QWidget *parent, bool view)
     : FlatDialog(parent)
 {
     setWindowTitle(tr("Select generals that are excluded"));
@@ -100,7 +100,7 @@ BanlistDialog::BanlistDialog(QWidget *parent, bool view)
     }
 }
 
-void BanlistDialog::addGeneral(const QString &name) {
+void BanListDialog::addGeneral(const QString &name) {
     if (list->objectName() == "Pairs") {
         if (banned_items["Pairs"].contains(name)) return;
         banned_items["Pairs"].append(name);
@@ -121,7 +121,7 @@ void BanlistDialog::addGeneral(const QString &name) {
     }
 }
 
-void BanlistDialog::addPair(const QString &first, const QString &second) {
+void BanListDialog::addPair(const QString &first, const QString &second) {
     if (banned_items["Pairs"].contains(QString("%1+%2").arg(first, second))
         || banned_items["Pairs"].contains(QString("%1+%2").arg(second, first))) return;
     banned_items["Pairs"].append(QString("%1+%2").arg(first, second));
@@ -132,7 +132,7 @@ void BanlistDialog::addPair(const QString &first, const QString &second) {
     list->addItem(item);
 }
 
-void BanlistDialog::doAddButton() {
+void BanListDialog::doAddButton() {
     FreeChooseDialog *chooser = new FreeChooseDialog(this,
         (list->objectName() == "Pairs") ? FreeChooseDialog::Pair : FreeChooseDialog::Multi);
     connect(chooser, SIGNAL(general_chosen(QString)), this, SLOT(addGeneral(QString)));
@@ -140,7 +140,7 @@ void BanlistDialog::doAddButton() {
     chooser->exec();
 }
 
-void BanlistDialog::doRemoveButton() {
+void BanListDialog::doRemoveButton() {
     int row = list->currentRow();
     if (row != -1) {
         banned_items[list->objectName()].removeOne(list->item(row)->data(Qt::UserRole).toString());
@@ -148,7 +148,7 @@ void BanlistDialog::doRemoveButton() {
     }
 }
 
-void BanlistDialog::save() {
+void BanListDialog::save() {
     QSet<QString> banset;
 
     for (int i = 0; i < list->count(); i++)
@@ -158,7 +158,7 @@ void BanlistDialog::save() {
     Config.setValue(QString("Banlist/%1").arg(ban_list.at(item)), QVariant::fromValue(banlist));
 }
 
-void BanlistDialog::saveAll() {
+void BanListDialog::saveAll() {
     for (int i = 0; i < lists.length(); i++) {
         switchTo(i);
         save();
@@ -166,7 +166,7 @@ void BanlistDialog::saveAll() {
     BanPair::loadBanPairs();
 }
 
-void BanlistDialog::switchTo(int item) {
+void BanListDialog::switchTo(int item) {
     this->item = item;
     list = lists.at(item);
 }

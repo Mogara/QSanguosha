@@ -27,11 +27,11 @@
 
 class QListWidget;
 
-class BanlistDialog : public FlatDialog {
+class BanListDialog : public FlatDialog {
     Q_OBJECT
 
 public:
-    BanlistDialog(QWidget *parent, bool view = false);
+    BanListDialog(QWidget *parent, bool view = false);
 
 private:
     QList<QListWidget *>lists;
