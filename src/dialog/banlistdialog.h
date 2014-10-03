@@ -21,7 +21,7 @@
 #ifndef BANLISTDIALOG_H
 #define BANLISTDIALOG_H
 
-#include "flatdialog.h"
+#include "FlatDialog.h"
 
 #include <QMap>
 
