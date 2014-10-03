@@ -23,6 +23,7 @@
 
 #include <QObject>
 #include <QSet>
+#include <QStringList>
 
 #include "protocol.h"
 
