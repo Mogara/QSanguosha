@@ -19,9 +19,9 @@
     *********************************************************************/
 
 #include "button.h"
-#include "Title.h"
-#include "SkinBank.h"
-#include "StyleHelper.h"
+#include "title.h"
+#include "skinbank.h"
+#include "stylehelper.h"
 
 #include <QPainter>
 #include <QGraphicsSceneMouseEvent>

@@ -22,10 +22,10 @@
 #include "ui_generaloverview.h"
 #include "engine.h"
 #include "settings.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 #include "clientstruct.h"
 #include "client.h"
-#include "GeneralModel.h"
+#include "generalmodel.h"
 #include "util.h"
 
 #include <QMessageBox>

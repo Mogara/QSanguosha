@@ -20,8 +20,8 @@
 
 #include "choosegeneralbox.h"
 #include "engine.h"
-#include "SkinBank.h"
-#include "FreeChooseDialog.h"
+#include "skinbank.h"
+#include "freechoosedialog.h"
 #include "banpair.h"
 #include "button.h"
 #include "client.h"

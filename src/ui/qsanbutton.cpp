@@ -20,7 +20,7 @@
 
 #include "qsanbutton.h"
 #include "clientplayer.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 #include "engine.h"
 #include "client.h"
 #include "roomscene.h"

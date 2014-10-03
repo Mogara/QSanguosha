@@ -19,7 +19,7 @@
     *********************************************************************/
 
 #include "rolecombobox.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 #include "roomscene.h"
 #include "engine.h"
 

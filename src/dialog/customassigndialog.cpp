@@ -20,7 +20,7 @@
 
 #include "customassigndialog.h"
 #include "miniscenarios.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 #include "settings.h"
 
 #include <QPushButton>

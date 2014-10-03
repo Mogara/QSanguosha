@@ -19,7 +19,7 @@
     *********************************************************************/
 
 #include "pixmapanimation.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 
 #include <QPainter>
 #include <QPixmapCache>

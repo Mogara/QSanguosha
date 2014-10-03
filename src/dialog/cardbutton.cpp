@@ -20,7 +20,7 @@
 
 #include "cardbutton.h"
 #include "card.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 
 CardButton::CardButton(const Card *card)
     :card(card), scale(1.0)

@@ -24,7 +24,7 @@
 #include "standard.h"
 #include "nativesocket.h"
 #include "recorder.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 #include "roomscene.h"
 
 #include <QApplication>

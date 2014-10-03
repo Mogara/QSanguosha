@@ -20,10 +20,10 @@
 
 #include "banlistdialog.h"
 #include "banpair.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 #include "settings.h"
 #include "engine.h"
-#include "FreeChooseDialog.h"
+#include "freechoosedialog.h"
 
 #include <QVBoxLayout>
 #include <QTabWidget>

@@ -22,7 +22,7 @@
 #include "mainwindow.h"
 #include "engine.h"
 #include "settings.h"
-#include "QSanSelectableItem.h"
+#include "qsanselectableitem.h"
 
 #include <QFormLayout>
 #include <QPushButton>
