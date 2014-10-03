@@ -531,8 +531,6 @@ bool ServerDialog::config() {
 
     Config.BanPackages = ban_packages.toList();
     Config.setValue("BanPackages", Config.BanPackages);
-
-    QStringList general_conversions;
     Config.setValue("EnableLordConvertion", convert_lord->isChecked());
 
     QStringList card_conversions;
