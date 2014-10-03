@@ -22,10 +22,10 @@
 #include "ui_connectiondialog.h"
 #include "settings.h"
 #include "engine.h"
-#include "StyleHelper.h"
-#include "UdpDetectorDialog.h"
-#include "AvatarModel.h"
-#include "SkinBank.h"
+#include "stylehelper.h"
+#include "udpdetectordialog.h"
+#include "avatarmodel.h"
+#include "skinbank.h"
 
 #include <QMessageBox>
 #include <QRadioButton>

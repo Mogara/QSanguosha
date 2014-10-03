@@ -24,7 +24,7 @@
 #include "settings.h"
 #include "clientstruct.h"
 #include "client.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 
 #include <QMessageBox>
 #include <QFile>

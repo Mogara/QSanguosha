@@ -22,8 +22,8 @@
 #define _CHOOSE_GENERAL_BOX_H
 
 #include "carditem.h"
-#include "TimedProgressBar.h"
-#include "GraphicsBox.h"
+#include "timedprogressbar.h"
+#include "graphicsbox.h"
 
 class Button;
 class QGraphicsDropShadowEffect;

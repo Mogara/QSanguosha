@@ -27,7 +27,7 @@
 #include "audio.h"
 #include "structs.h"
 #include "lua-wrapper.h"
-#include "RoomState.h"
+#include "roomstate.h"
 #include "banpair.h"
 #include "miniscenarios.h"
 #include "jiange-defense-scenario.h"

@@ -21,30 +21,27 @@
 #include "customassigndialog.h"
 #include "engine.h"
 #include "settings.h"
-#include "SkinBank.h"
 #include "scenario.h"
 #include "miniscenarios.h"
-#include "StyleHelper.h"
+#include "stylehelper.h"
+#include "skinbank.h"
 
-#include <QBoxLayout>
-#include <QGroupBox>
 #include <QListWidget>
-#include <QListView>
+#include <QBoxLayout>
 #include <QComboBox>
-#include <QListWidgetItem>
 #include <QSpinBox>
-#include <QDir>
-#include <QFileInfo>
+#include <QGroupBox>
 #include <QCheckBox>
+#include <QDir>
 #include <QPushButton>
 #include <QFileDialog>
-#include <QButtonGroup>
-#include <QCompleter>
-#include <QLineEdit>
-#include <QTextEdit>
 #include <QMessageBox>
-#include <QCommandLinkButton>
+#include <QButtonGroup>
 #include <QRadioButton>
+#include <QLineEdit>
+#include <QCompleter>
+#include <QTextEdit>
+#include <QCommandLinkButton>
 #include <QScrollBar>
 
 static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL,

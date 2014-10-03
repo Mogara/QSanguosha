@@ -23,13 +23,13 @@
 
 #include "photo.h"
 #include "dashboard.h"
-#include "TablePile.h"
+#include "tablepile.h"
 #include "card.h"
 #include "client.h"
 #include "aux-skills.h"
 #include "clientlogbox.h"
 #include "chatwidget.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 #include "sprite.h"
 #include "qsanbutton.h"
 

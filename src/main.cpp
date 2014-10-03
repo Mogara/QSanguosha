@@ -34,7 +34,7 @@
 #include "engine.h"
 #include "mainwindow.h"
 #include "audio.h"
-#include "StyleHelper.h"
+#include "stylehelper.h"
 
 #ifndef WINDOWS
 #include <QDir>

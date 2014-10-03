@@ -27,7 +27,7 @@
 #include "socket.h"
 #include "clientstruct.h"
 #include "protocol.h"
-#include "RoomState.h"
+#include "roomstate.h"
 
 class Recorder;
 class Replayer;
