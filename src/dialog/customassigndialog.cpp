@@ -1550,7 +1550,8 @@ bool CustomAssignDialog::save(QString path) {
 
 //---------------------------------------
 
-GeneralAssignDialog::GeneralAssignDialog(QWidget *parent, bool canBan) : QDialog(parent) {
+GeneralAssignDialog::GeneralAssignDialog(QWidget *parent, bool canBan)
+    : FlatDialog(parent) {
     setWindowTitle(tr("Mini choose generals"));
 
     QTabWidget *tab_widget = new QTabWidget;
@@ -1594,11 +1595,8 @@ GeneralAssignDialog::GeneralAssignDialog(QWidget *parent, bool canBan) : QDialog
     button_layout->addWidget(ok_button);
     button_layout->addWidget(cancel_button);
 
-    QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(tab_widget);
     layout->addLayout(button_layout);
-
-    setLayout(layout);
 
     group->buttons().first()->click();
 }

@@ -217,7 +217,7 @@ signals:
     void scenario_changed();
 };
 
-class GeneralAssignDialog : public QDialog {
+class GeneralAssignDialog : public FlatDialog {
     Q_OBJECT
 
 public:
