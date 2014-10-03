@@ -236,7 +236,7 @@ signals:
     void generalCleared();
 };
 
-class CardAssignDialog : public QDialog {
+class CardAssignDialog : public FlatDialog {
     Q_OBJECT
 
 public:

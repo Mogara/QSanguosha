@@ -360,9 +360,7 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     hLayout->addLayout(infoLayout);
     hLayout->addLayout(vLayout);
     hLayout->addLayout(vLayout2);
-    QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addLayout(hLayout);
-    layout->addLayout(mainLayout);
+    layout->addLayout(hLayout);
 
     connect(nationalitiesComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(updateKingdom(int)));
     connect(m_list, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
@@ -1657,27 +1655,26 @@ void GeneralAssignDialog::clearGeneral() {
 //------------------------------
 
 CardAssignDialog::CardAssignDialog(QWidget *parent, QString cardType, QString className, QList<int> excluded)
-    : QDialog(parent), m_cardType(cardType), m_className(className),
+    : FlatDialog(parent), m_cardType(cardType), m_className(className),
     m_excludedCards(excluded)
 {
     setWindowTitle(tr("Custom Card Chosen"));
-    QVBoxLayout *vlayout = new QVBoxLayout;
+    QVBoxLayout *vLayout = new QVBoxLayout;
     m_cardList = new QListWidget;
+    stylizeScrollBars(m_cardList);
 
     updateCardList();
 
     QPushButton *getCardButton = new QPushButton(tr("Get card"));
     QPushButton *back = new QPushButton(tr("Back"));
 
-    vlayout->addWidget(getCardButton);
-    vlayout->addWidget(back);
+    vLayout->addWidget(getCardButton);
+    vLayout->addWidget(back);
 
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->addWidget(m_cardList);
-    layout->addLayout(vlayout);
-    QVBoxLayout *mainlayout = new QVBoxLayout;
-    mainlayout->addLayout(layout);
-    setLayout(mainlayout);
+    QHBoxLayout *hLayout = new QHBoxLayout;
+    hLayout->addWidget(m_cardList);
+    hLayout->addLayout(vLayout);
+    layout->addLayout(hLayout);
 
     connect(back, SIGNAL(clicked()), this, SLOT(reject()));
     connect(getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
