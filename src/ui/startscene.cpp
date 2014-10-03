@@ -60,6 +60,8 @@ StartScene::StartScene(QObject *parent)
     website_text->setPos(Config.Rect.width() / 2 - website_text->boundingRect().width(),
         Config.Rect.height() / 2 - website_text->boundingRect().height());*/
     serverLog = NULL;
+
+    connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
 }
 
 void StartScene::addButton(QAction *action) {
@@ -205,6 +207,22 @@ void StartScene::showOrganization()
     sequentialGroup->addAnimation(fadeOut);
 
     sequentialGroup->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void StartScene::onSceneRectChanged(const QRectF &rect)
+{
+    QRectF newRect(rect);
+    if (rect.width() < 1024 || rect.height() < 706) {
+        qreal sx = 1024 / rect.width();
+        qreal sy = 706 / rect.height();
+        qreal scale = sx > sy ? sx : sy;
+        newRect.setWidth(rect.width() * scale);
+        newRect.setHeight(rect.height() * scale);
+    }
+    newRect.moveTopLeft(newRect.bottomRight() * -0.5);
+    blockSignals(true);
+    setSceneRect(newRect);
+    blockSignals(false);
 }
 
 void StartScene::printServerInfo() {

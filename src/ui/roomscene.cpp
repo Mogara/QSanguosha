@@ -106,6 +106,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     m_skillButtonSank = false;
 
+    connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
+
     // create photos
     for (int i = 0; i < player_count - 1; i++) {
         Photo *photo = new Photo;
@@ -3594,6 +3596,22 @@ void RoomScene::speak() {
         chatBox->append(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
     }
     chatEdit->clear();
+}
+
+void RoomScene::onSceneRectChanged(const QRectF &rect)
+{
+    if (rect.width() < 1020 || rect.height() < 680) {
+        qreal sx = 1020 / rect.width();
+        qreal sy = 680 / rect.height();
+        qreal scale = sx > sy ? sx : sy;
+        QRectF newRect(rect);
+        newRect.setWidth(rect.width() * scale);
+        newRect.setHeight(rect.height() * scale);
+        blockSignals(true);
+        setSceneRect(newRect);
+        blockSignals(false);
+    }
+    adjustItems();
 }
 
 void RoomScene::fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids) {

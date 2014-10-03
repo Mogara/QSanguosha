@@ -41,6 +41,9 @@ public:
 
     void showOrganization();
 
+private slots:
+    void onSceneRectChanged(const QRectF &rect);
+
 private:
     void printServerInfo();
 
