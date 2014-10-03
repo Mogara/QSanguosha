@@ -82,7 +82,7 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void setBackgroundBrush(const QString &pixmapPath);
+    void fitBackgroundBrush();
 
 #ifdef Q_OS_WIN
     virtual void mousePressEvent(QMouseEvent *event);
