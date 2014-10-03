@@ -24,6 +24,7 @@
 #include "SkinBank.h"
 #include "scenario.h"
 #include "miniscenarios.h"
+#include "StyleHelper.h"
 
 #include <QBoxLayout>
 #include <QGroupBox>
@@ -44,6 +45,7 @@
 #include <QMessageBox>
 #include <QCommandLinkButton>
 #include <QRadioButton>
+#include <QScrollBar>
 
 static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL,
     QWidget *rear = NULL, bool is_vertically = false) {
@@ -62,6 +64,12 @@ static QLayout *HLay(QWidget *left, QWidget *right, QWidget *mid = NULL,
     return layout;
 }
 
+static void stylizeScrollBars(QListWidget *widget) {
+    static QString styleSheet = StyleHelper::styleSheetOfScrollBar();
+    widget->horizontalScrollBar()->setStyleSheet(styleSheet);
+    widget->verticalScrollBar()->setStyleSheet(styleSheet);
+}
+
 CustomAssignDialog *CustomInstance = NULL;
 
 CustomAssignDialog::CustomAssignDialog(QWidget *parent)
@@ -76,6 +84,9 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     m_list = new QListWidget;
     m_list->setFlow(QListView::TopToBottom);
     m_list->setMovement(QListView::Static);
+
+    QScrollBar *bar = m_list->verticalScrollBar();
+    bar->setStyleSheet(StyleHelper::styleSheetOfScrollBar());
 
     QVBoxLayout *vLayout = new QVBoxLayout;
     QVBoxLayout *vLayout2 = new QVBoxLayout;
@@ -288,9 +299,13 @@ CustomAssignDialog::CustomAssignDialog(QWidget *parent)
     m_beforeNextBox->hide();
 
     m_equipList = new QListWidget;
+    stylizeScrollBars(m_equipList);
     m_handList = new QListWidget;
+    stylizeScrollBars(m_handList);
     m_judgeList = new QListWidget;
+    stylizeScrollBars(m_judgeList);
     m_pileList = new QListWidget;
+    stylizeScrollBars(m_pileList);
     QVBoxLayout *infoLayout = new QVBoxLayout(), *equipLayout = new QVBoxLayout(), *handLayout = new QVBoxLayout(),
         *judgeLayout = new QVBoxLayout(), *pileLayout = new QVBoxLayout();
 
@@ -504,7 +519,7 @@ void CustomAssignDialog::doEquipCardAssign() {
     CardAssignDialog *dialog = new CardAssignDialog(this, "equip", "", excluded);
 
     connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(dialog, SIGNAL(card_chosen(int)), this, SLOT(getEquipCard(int)));
+    connect(dialog, SIGNAL(cardChosen(int)), this, SLOT(getEquipCard(int)));
     dialog->exec();
 }
 
@@ -537,7 +552,7 @@ void CustomAssignDialog::doHandCardAssign() {
     CardAssignDialog *dialog = new CardAssignDialog(this, "", "", excluded);
 
     connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(dialog, SIGNAL(card_chosen(int)), this, SLOT(getHandCard(int)));
+    connect(dialog, SIGNAL(cardChosen(int)), this, SLOT(getHandCard(int)));
     dialog->exec();
 }
 
@@ -563,7 +578,7 @@ void CustomAssignDialog::doJudgeCardAssign() {
     CardAssignDialog *dialog = new CardAssignDialog(this, "", "DelayedTrick", excluded);
 
     connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(dialog, SIGNAL(card_chosen(int)), this, SLOT(getJudgeCard(int)));
+    connect(dialog, SIGNAL(cardChosen(int)), this, SLOT(getJudgeCard(int)));
     dialog->exec();
 }
 
@@ -596,7 +611,7 @@ void CustomAssignDialog::doPileCardAssign() {
     CardAssignDialog *dialog = new CardAssignDialog(this, "", "", excluded);
 
     connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(dialog, SIGNAL(card_chosen(int)), this, SLOT(getPileCard(int)));
+    connect(dialog, SIGNAL(cardChosen(int)), this, SLOT(getPileCard(int)));
     dialog->exec();
 }
 
@@ -901,7 +916,7 @@ void CustomAssignDialog::doGeneralAssign() {
     GeneralAssignDialog *dialog = new GeneralAssignDialog(this);
 
     connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(dialog, SIGNAL(general_chosen(QString)), this, SLOT(getChosenGeneral(QString)));
+    connect(dialog, SIGNAL(generalChosen(QString)), this, SLOT(getChosenGeneral(QString)));
     dialog->exec();
 }
 
@@ -910,8 +925,8 @@ void CustomAssignDialog::doGeneralAssign2() {
     GeneralAssignDialog *dialog = new GeneralAssignDialog(this, true);
 
     connect(dialog, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(dialog, SIGNAL(general_chosen(QString)), this, SLOT(getChosenGeneral(QString)));
-    connect(dialog, SIGNAL(general_cleared()), this, SLOT(clearGeneral2()));
+    connect(dialog, SIGNAL(generalChosen(QString)), this, SLOT(getChosenGeneral(QString)));
+    connect(dialog, SIGNAL(generalCleared()), this, SLOT(clearGeneral2()));
     dialog->exec();
 }
 
@@ -1002,7 +1017,7 @@ void CustomAssignDialog::doSkillSelect() {
     QString name = m_list->currentItem()->data(Qt::UserRole).toString();
     SkillAssignDialog *dialog = new SkillAssignDialog(this, name, m_playersExtraSkills[name]);
 
-    connect(dialog, SIGNAL(skill_update(QStringList)), this, SLOT(updatePlayerExSkills(QStringList)));
+    connect(dialog, SIGNAL(skillUpdated(QStringList)), this, SLOT(updatePlayerExSkills(QStringList)));
     dialog->exec();
 }
 
@@ -1802,7 +1817,7 @@ void SkillAssignDialog::changeSkillInfo() {
 void SkillAssignDialog::selectSkill() {
     GeneralAssignDialog *dialog = new GeneralAssignDialog(this);
 
-    connect(dialog, SIGNAL(general_chosen(QString)), this, SLOT(getSkillFromGeneral(QString)));
+    connect(dialog, SIGNAL(generalChosen(QString)), this, SLOT(getSkillFromGeneral(QString)));
     dialog->exec();
 }
 
