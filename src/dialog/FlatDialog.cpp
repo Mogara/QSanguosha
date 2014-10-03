@@ -18,7 +18,7 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#include "flatdialog.h"
+#include "FlatDialog.h"
 #include "StyleHelper.h"
 
 #include <QLabel>

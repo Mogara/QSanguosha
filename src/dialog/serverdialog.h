@@ -21,7 +21,7 @@
 #ifndef SERVERDIALOG_H
 #define SERVERDIALOG_H
 
-#include "flatdialog.h"
+#include "FlatDialog.h"
 
 class QGroupBox;
 class QLineEdit;
