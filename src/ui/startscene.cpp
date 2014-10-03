@@ -61,6 +61,8 @@ StartScene::StartScene(QObject *parent)
         Config.Rect.height() / 2 - website_text->boundingRect().height());*/
     serverLog = NULL;
 
+    setBackgroundBrush(QBrush(QPixmap(Config.BackgroundImage)));
+
     connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
 }
 
@@ -220,9 +222,9 @@ void StartScene::onSceneRectChanged(const QRectF &rect)
         newRect.setHeight(rect.height() * scale);
     }
     newRect.moveTopLeft(newRect.bottomRight() * -0.5);
-    blockSignals(true);
+    disconnect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
     setSceneRect(newRect);
-    blockSignals(false);
+    connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
 }
 
 void StartScene::printServerInfo() {

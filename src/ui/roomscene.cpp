@@ -106,6 +106,8 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     m_skillButtonSank = false;
 
+    setBackgroundBrush(QBrush(QPixmap(Config.TableBgImage)));
+
     connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
 
     // create photos
@@ -3607,9 +3609,9 @@ void RoomScene::onSceneRectChanged(const QRectF &rect)
         QRectF newRect(rect);
         newRect.setWidth(rect.width() * scale);
         newRect.setHeight(rect.height() * scale);
-        blockSignals(true);
+        disconnect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
         setSceneRect(newRect);
-        blockSignals(false);
+        connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
     }
     adjustItems();
 }

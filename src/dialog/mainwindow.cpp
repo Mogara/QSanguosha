@@ -133,7 +133,7 @@ public:
 
         MainWindow *main_window = qobject_cast<MainWindow *>(parentWidget());
         if (main_window)
-            main_window->setBackgroundBrush(scene && scene->inherits("RoomScene") ? Config.TableBgImage : Config.BackgroundImage);
+            main_window->fitBackgroundBrush();
     }
 };
 
@@ -917,10 +917,10 @@ void MainWindow::on_actionAbout_Us_triggered() {
     dialog->show();
 }
 
-void MainWindow::setBackgroundBrush(const QString &pixmapPath) {
+void MainWindow::fitBackgroundBrush() {
     if (scene) {
-        QPixmap pixmap(pixmapPath);
-        QBrush brush(pixmap);
+        QBrush brush(scene->backgroundBrush());
+        QPixmap pixmap(brush.texture());
 
         qreal width = scene->width() + 2 * S_CORNER_SIZE;
         qreal height = scene->height() + 2 * S_CORNER_SIZE;
@@ -934,7 +934,8 @@ void MainWindow::setBackgroundBrush(const QString &pixmapPath) {
 }
 
 void MainWindow::changeBackground() {
-    setBackgroundBrush(scene->inherits("RoomScene") ? Config.TableBgImage : Config.BackgroundImage);
+    scene->setBackgroundBrush(QBrush(QPixmap(scene->inherits("RoomScene") ? Config.TableBgImage : Config.BackgroundImage)));
+    fitBackgroundBrush();
 
     if (scene->inherits("StartScene")) {
         StartScene *start_scene = qobject_cast<StartScene *>(scene);
