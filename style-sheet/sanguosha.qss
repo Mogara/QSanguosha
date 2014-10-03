@@ -483,3 +483,31 @@ QListView::item:selected {
 QListView::item:!selected:hover {
 	color: rgb(26, 188, 156);
 }
+
+QSlider:horizontal {
+	min-width: 50px;
+	height: 18px;
+}
+
+QSlider::groove:horizontal {
+	background-color: rgb(235, 237, 239);
+	border-radius: 9px;
+	height: 18px;
+}
+
+QSlider::handle:horizontal {
+	background-color: rgb(22, 160, 133);
+	border-radius: 9;
+	height: 18px;
+	position: absolute;
+	width: 18px;
+}
+
+QSlider::handle:horizontal:hover,
+QSlider::handle:horizontal:focus {
+	background-color: rgb(72, 201, 176);
+}
+
+QSlider::sub-page:horizontal {
+	background-color: rgb(168, 220, 188);
+}

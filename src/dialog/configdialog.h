@@ -21,14 +21,15 @@
 #ifndef _CONFIG_DIALOG_H
 #define _CONFIG_DIALOG_H
 
-#include <QDialog>
-#include <QLineEdit>
+#include "flatdialog.h"
+
+class QLineEdit;
 
 namespace Ui {
     class ConfigDialog;
 }
 
-class ConfigDialog : public QDialog {
+class ConfigDialog : public FlatDialog {
     Q_OBJECT
 public:
     ConfigDialog(QWidget *parent = 0);
