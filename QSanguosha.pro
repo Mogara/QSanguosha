@@ -31,15 +31,15 @@ SOURCES += \
     src/core/player.cpp \
     src/core/protocol.cpp \
     src/core/record-analysis.cpp \
-    src/core/RoomState.cpp \
+    src/core/roomstate.cpp \
     src/core/settings.cpp \
     src/core/skill.cpp \
     src/core/structs.cpp \
     src/core/util.cpp \
-    src/core/WrappedCard.cpp \
+    src/core/wrappedcard.cpp \
     src/core/version.cpp \
     src/core/json.cpp \
-    src/dialog/AboutUs.cpp \
+    src/dialog/aboutus.cpp \
     src/dialog/cardbutton.cpp \
     src/dialog/cardeditor.cpp \
     src/dialog/cardoverview.cpp \
@@ -47,17 +47,17 @@ SOURCES += \
     src/dialog/connectiondialog.cpp \
     src/dialog/customassigndialog.cpp \
     src/dialog/distanceviewdialog.cpp \
-    src/dialog/FreeChooseDialog.cpp \
+    src/dialog/freechoosedialog.cpp \
     src/dialog/generaloverview.cpp \
     src/dialog/mainwindow.cpp \
     src/dialog/playercarddialog.cpp \
     src/dialog/rule-summary.cpp \
-    src/dialog/UpdateChecker.cpp \
-    src/dialog/UdpDetectorDialog.cpp \
-    src/dialog/AvatarModel.cpp \
-    src/dialog/GeneralModel.cpp \
+    src/dialog/updatechecker.cpp \
+    src/dialog/udpdetectordialog.cpp \
+    src/dialog/avatarmodel.cpp \
+    src/dialog/generalmodel.cpp \
     src/dialog/serverdialog.cpp \
-    src/dialog/FlatDialog.cpp \
+    src/dialog/flatdialog.cpp \
     src/dialog/banipdialog.cpp \
     src/dialog/banlistdialog.cpp \
     src/package/exppattern.cpp \
@@ -93,33 +93,33 @@ SOURCES += \
     src/ui/choosegeneralbox.cpp \
     src/ui/clientlogbox.cpp \
     src/ui/dashboard.cpp \
-    src/ui/GenericCardContainerUI.cpp \
+    src/ui/genericcardcontainerui.cpp \
     src/ui/indicatoritem.cpp \
-    src/ui/magatamasItem.cpp \
+    src/ui/magatamasitem.cpp \
     src/ui/photo.cpp \
     src/ui/pixmapanimation.cpp \
     src/ui/qsanbutton.cpp \
-    src/ui/QSanSelectableItem.cpp \
+    src/ui/qsanselectableitem.cpp \
     src/ui/rolecombobox.cpp \
     src/ui/roomscene.cpp \
-    src/ui/SkinBank.cpp \
+    src/ui/skinbank.cpp \
     src/ui/sprite.cpp \
     src/ui/startscene.cpp \
-    src/ui/TablePile.cpp \
-    src/ui/TimedProgressBar.cpp \
-    src/ui/uiUtils.cpp \
+    src/ui/tablepile.cpp \
+    src/ui/timedprogressbar.cpp \
+    src/ui/uiutils.cpp \
     src/ui/window.cpp \
-    src/ui/ChooseOptionsBox.cpp \
-    src/ui/ChooseTriggerOrderBox.cpp \
-    src/ui/GraphicsBox.cpp \
-    src/ui/GuanxingBox.cpp \
-    src/ui/Title.cpp \
-    src/ui/BubbleChatBox.cpp \
-    src/ui/StyleHelper.cpp \
-    src/ui/PlayerCardBox.cpp \
-    src/ui/GraphicsPixmapHoverItem.cpp \
-    src/ui/HeroSkinContainer.cpp \
-    src/ui/SkinItem.cpp \
+    src/ui/chooseoptionsbox.cpp \
+    src/ui/choosetriggerorderbox.cpp \
+    src/ui/graphicsbox.cpp \
+    src/ui/guanxingbox.cpp \
+    src/ui/title.cpp \
+    src/ui/bubblechatbox.cpp \
+    src/ui/stylehelper.cpp \
+    src/ui/playercardbox.cpp \
+    src/ui/graphicspixmaphoveritem.cpp \
+    src/ui/heroskincontainer.cpp \
+    src/ui/skinitem.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
@@ -141,15 +141,15 @@ HEADERS += \
     src/core/player.h \
     src/core/protocol.h \
     src/core/record-analysis.h \
-    src/core/RoomState.h \
+    src/core/roomstate.h \
     src/core/settings.h \
     src/core/skill.h \
     src/core/structs.h \
     src/core/util.h \
-    src/core/WrappedCard.h \
+    src/core/wrappedcard.h \
     src/core/version.h \
     src/core/json.h \
-    src/dialog/AboutUs.h \
+    src/dialog/aboutus.h \
     src/dialog/cardbutton.h \
     src/dialog/cardeditor.h \
     src/dialog/cardoverview.h \
@@ -157,17 +157,17 @@ HEADERS += \
     src/dialog/connectiondialog.h \
     src/dialog/customassigndialog.h \
     src/dialog/distanceviewdialog.h \
-    src/dialog/FreeChooseDialog.h \
+    src/dialog/freechoosedialog.h \
     src/dialog/generaloverview.h \
     src/dialog/mainwindow.h \
     src/dialog/playercarddialog.h \
     src/dialog/rule-summary.h \
-    src/dialog/UpdateChecker.h \
-    src/dialog/UdpDetectorDialog.h \
-    src/dialog/AvatarModel.h \
-    src/dialog/GeneralModel.h \
+    src/dialog/updatechecker.h \
+    src/dialog/udpdetectordialog.h \
+    src/dialog/avatarmodel.h \
+    src/dialog/generalmodel.h \
     src/dialog/serverdialog.h \
-    src/dialog/FlatDialog.h \
+    src/dialog/flatdialog.h \
     src/dialog/banipdialog.h \
     src/dialog/banlistdialog.h \
     src/package/exppattern.h \
@@ -203,33 +203,33 @@ HEADERS += \
     src/ui/choosegeneralbox.h \
     src/ui/clientlogbox.h \
     src/ui/dashboard.h \
-    src/ui/GenericCardContainerUI.h \
+    src/ui/genericcardcontainerui.h \
     src/ui/indicatoritem.h \
-    src/ui/magatamasItem.h \
+    src/ui/magatamasitem.h \
     src/ui/photo.h \
     src/ui/pixmapanimation.h \
     src/ui/qsanbutton.h \
-    src/ui/QSanSelectableItem.h \
+    src/ui/qsanselectableitem.h \
     src/ui/rolecombobox.h \
     src/ui/roomscene.h \
-    src/ui/SkinBank.h \
+    src/ui/skinbank.h \
     src/ui/sprite.h \
     src/ui/startscene.h \
-    src/ui/TablePile.h \
-    src/ui/TimedProgressBar.h \
-    src/ui/uiUtils.h \
+    src/ui/tablepile.h \
+    src/ui/timedprogressbar.h \
+    src/ui/uiutils.h \
     src/ui/window.h \
-    src/ui/ChooseOptionsBox.h \
-    src/ui/ChooseTriggerOrderBox.h \
-    src/ui/GraphicsBox.h \
-    src/ui/GuanxingBox.h \
-    src/ui/Title.h \
-    src/ui/BubbleChatBox.h \
-    src/ui/StyleHelper.h \
-    src/ui/PlayerCardBox.h \
-    src/ui/GraphicsPixmapHoverItem.h \
-    src/ui/HeroSkinContainer.h \
-    src/ui/SkinItem.h \
+    src/ui/chooseoptionsbox.h \
+    src/ui/choosetriggerorderbox.h \
+    src/ui/graphicsbox.h \
+    src/ui/guanxingbox.h \
+    src/ui/title.h \
+    src/ui/bubblechatbox.h \
+    src/ui/stylehelper.h \
+    src/ui/playercardbox.h \
+    src/ui/graphicspixmaphoveritem.h \
+    src/ui/heroskincontainer.h \
+    src/ui/skinitem.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \

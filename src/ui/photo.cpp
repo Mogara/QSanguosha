@@ -27,8 +27,8 @@
 #include "client.h"
 #include "playercarddialog.h"
 #include "rolecombobox.h"
-#include "SkinBank.h"
-#include "GraphicsPixmapHoverItem.h"
+#include "skinbank.h"
+#include "graphicspixmaphoveritem.h"
 
 #include <QPainter>
 #include <QDrag>

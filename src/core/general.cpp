@@ -24,7 +24,7 @@
 #include "package.h"
 #include "client.h"
 #include "settings.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 
 #include <QSize>
 #include <QFile>

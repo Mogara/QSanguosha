@@ -22,7 +22,7 @@
 #define _CLIENT_STRUCT_H
 
 #include "player.h"
-#include "QSanSelectableItem.h"
+#include "qsanselectableitem.h"
 #include "protocol.h"
 #include <QMap>
 #include <QWidget>

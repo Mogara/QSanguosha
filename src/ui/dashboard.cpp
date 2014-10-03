@@ -25,8 +25,8 @@
 #include "standard.h"
 #include "playercarddialog.h"
 #include "roomscene.h"
-#include "HeroSkinContainer.h"
-#include "GraphicsPixmapHoverItem.h"
+#include "heroskincontainer.h"
+#include "graphicspixmaphoveritem.h"
 
 #include <QPainter>
 #include <QGraphicsScene>

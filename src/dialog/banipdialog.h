@@ -21,7 +21,7 @@
 #ifndef BANIPDIALOG_H
 #define BANIPDIALOG_H
 
-#include "FlatDialog.h"
+#include "flatdialog.h"
 
 class Server;
 class QListWidget;

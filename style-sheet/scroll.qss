@@ -37,3 +37,43 @@ QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
 QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
     background: none;
 }
+
+QScrollBar:horizontal {
+    border: transparent;
+	border-radius: 4px;
+    background-color: rgba(43, 45, 31, 50);
+    height: 8px;
+    margin-left: 1px;
+	margin-right: 1px;
+}
+
+QScrollBar:horizontal:hover {
+	background-color: rgba(168, 164, 167, 120);
+}
+
+QScrollBar::handle:horizontal {
+	border: transparent;
+	border-radius: 4px;
+    background-color: rgba(26, 188, 156, 50);
+    min-height: 20px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background-color: rgba(72, 201, 176, 200)
+}
+
+QScrollBar::add-line:horizontal {
+    background: none;
+}
+
+QScrollBar::sub-line:horizontal {
+    background: none;
+}
+
+QScrollBar::up-arrow:horizontal, QScrollBar::down-arrow:horizontal {
+	background: none;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: none;
+}

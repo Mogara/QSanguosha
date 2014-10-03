@@ -245,6 +245,9 @@ CommonTranslationTable = {
 	["#DanlaoAvoid"] = "“%arg2”效果被触发，【%arg】 对 %from 无效",
 
 	["custom_scenario"] = "自定义场景",
+	
+	["Player"] = "玩家",
+	["AI"] = "机器人"
 }
 
 return CommonTranslationTable

@@ -21,8 +21,8 @@
 #include "startscene.h"
 #include "engine.h"
 #include "audio.h"
-#include "QSanSelectableItem.h"
-#include "StyleHelper.h"
+#include "qsanselectableitem.h"
+#include "stylehelper.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>

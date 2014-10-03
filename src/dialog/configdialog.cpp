@@ -21,7 +21,7 @@
 #include "configdialog.h"
 #include "ui_configdialog.h"
 #include "settings.h"
-#include "StyleHelper.h"
+#include "stylehelper.h"
 
 #include <QFileDialog>
 #include <QDesktopServices>
