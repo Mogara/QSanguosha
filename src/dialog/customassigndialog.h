@@ -259,7 +259,7 @@ signals:
     void cardChosen(int cardId);
 };
 
-class SkillAssignDialog : public QDialog {
+class SkillAssignDialog : public FlatDialog {
     Q_OBJECT
 
 public:
@@ -279,7 +279,7 @@ private slots:
     void deleteSkill();
     void addSkill();
 
-    void changeSkillInfo();
+    void updateSkillInfo();
     void updateSkillList();
 
     void getSkillFromGeneral(QString general);

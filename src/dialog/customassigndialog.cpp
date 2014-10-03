@@ -1745,11 +1745,13 @@ void CardAssignDialog::updateCardList() {
 //-----------------------------------
 
 SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString playerName, QStringList &playerSkills)
-    : QDialog(parent), m_updatedSkills(playerSkills)
+    : FlatDialog(parent), m_updatedSkills(playerSkills)
 {
     setWindowTitle(tr("Skill Chosen"));
-    QHBoxLayout *layout = new QHBoxLayout;
+    QHBoxLayout *hLayout = new QHBoxLayout;
     m_skillList = new QListWidget;
+    static const QString styleSheet = StyleHelper::styleSheetOfScrollBar();
+    m_skillList->verticalScrollBar()->setStyleSheet(styleSheet);
 
     m_skillInput = new QLineEdit;
 #if QT_VERSION >= 0x040700
@@ -1762,48 +1764,49 @@ SkillAssignDialog::SkillAssignDialog(QDialog *parent, QString playerName, QStrin
     QCompleter *completer = new QCompleter(Sanguosha->getSkillNames(), m_skillInput);
     m_skillInput->setCompleter(completer);
 
-    QPushButton *add_skill = new QPushButton(tr("Add Skill"));
-    add_skill->setObjectName("inline_add");
+    QPushButton *addSkill = new QPushButton(tr("Add Skill"));
+    addSkill->setObjectName("inline_add");
 
     m_selectSkillButton = new QPushButton(tr("Select Skill from Generals"));
     m_deleteSkillButton = new QPushButton(tr("Delete Current Skill"));
 
-    QPushButton *ok_button = new QPushButton(tr("OK"));
-    QPushButton *cancel_button = new QPushButton(tr("Cancel"));
+    QPushButton *okButton = new QPushButton(tr("OK"));
+    QPushButton *cancelButton = new QPushButton(tr("Cancel"));
 
     m_skillInfo = new QTextEdit;
+    m_skillInfo->verticalScrollBar()->setStyleSheet(styleSheet);
+    m_skillInfo->setObjectName("skill_info");
     m_skillInfo->setReadOnly(true);
 
     updateSkillList();
 
-    QVBoxLayout *vlayout = new QVBoxLayout;
-    vlayout->addWidget(new QLabel(Sanguosha->translate(playerName)));
-    vlayout->addWidget(m_skillList);
-    layout->addLayout(vlayout);
-    QVBoxLayout *sided_lay = new QVBoxLayout;
-    sided_lay->addWidget(m_skillInfo);
-    sided_lay->addStretch();
-    sided_lay->addLayout(HLay(m_skillInput, add_skill));
-    sided_lay->addLayout(HLay(m_selectSkillButton, m_deleteSkillButton));
-    sided_lay->addLayout(HLay(ok_button, cancel_button));
-    layout->addLayout(sided_lay);
-    QVBoxLayout *mainlayout = new QVBoxLayout;
-    mainlayout->addLayout(layout);
-    setLayout(mainlayout);
+    QVBoxLayout *vLayout = new QVBoxLayout;
+    vLayout->addWidget(new QLabel(Sanguosha->translate(playerName)));
+    vLayout->addWidget(m_skillList);
+    hLayout->addLayout(vLayout);
+    QVBoxLayout *sidedLayout = new QVBoxLayout;
+    sidedLayout->addWidget(m_skillInfo);
+    sidedLayout->addStretch();
+    sidedLayout->addLayout(HLay(m_skillInput, addSkill));
+    sidedLayout->addLayout(HLay(m_selectSkillButton, m_deleteSkillButton));
+    sidedLayout->addLayout(HLay(okButton, cancelButton));
+    hLayout->addLayout(sidedLayout);
 
-    connect(add_skill, SIGNAL(clicked()), this, SLOT(addSkill()));
+    layout->addLayout(hLayout);
+
+    connect(addSkill, SIGNAL(clicked()), this, SLOT(addSkill()));
     connect(m_selectSkillButton, SIGNAL(clicked()), this, SLOT(selectSkill()));
     connect(m_deleteSkillButton, SIGNAL(clicked()), this, SLOT(deleteSkill()));
-    connect(m_skillList, SIGNAL(itemSelectionChanged()), this, SLOT(changeSkillInfo()));
-    connect(ok_button, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(cancel_button, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(m_skillList, SIGNAL(itemSelectionChanged()), this, SLOT(updateSkillInfo()));
+    connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 }
 
-void SkillAssignDialog::changeSkillInfo() {
-    QString skill_name = m_skillList->currentItem()->data(Qt::UserRole).toString();
+void SkillAssignDialog::updateSkillInfo() {
+    QString skillName = m_skillList->currentItem()->data(Qt::UserRole).toString();
     m_skillInfo->clear();
 
-    m_skillInfo->setText(Sanguosha->translate(":" + skill_name));
+    m_skillInfo->setText(Sanguosha->getSkill(skillName)->getDescription(false));
 }
 
 void SkillAssignDialog::selectSkill() {
@@ -1878,7 +1881,7 @@ void SkillAssignDialog::updateSkillList() {
     m_skillList->setCurrentRow(index >= m_skillList->count() ? m_skillList->count() - 1 : index);
 
     if (m_skillList->count() > 0) {
-        changeSkillInfo();
+        updateSkillInfo();
         m_deleteSkillButton->setEnabled(true);
     }
     else
