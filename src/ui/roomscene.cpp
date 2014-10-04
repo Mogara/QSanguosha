@@ -798,7 +798,9 @@ void RoomScene::adjustItems() {
         double scale = qMax(sx, sy);
         displayRegion.setBottom(scale * displayRegion.height());
         displayRegion.setRight(scale * displayRegion.width());
+        disconnect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
         setSceneRect(displayRegion);
+        connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
     }
 
     int padding = _m_roomLayout->m_scenePadding;
@@ -3600,19 +3602,8 @@ void RoomScene::speak() {
     chatEdit->clear();
 }
 
-void RoomScene::onSceneRectChanged(const QRectF &rect)
+void RoomScene::onSceneRectChanged(const QRectF &)
 {
-    if (rect.width() < 1020 || rect.height() < 680) {
-        qreal sx = 1020 / rect.width();
-        qreal sy = 680 / rect.height();
-        qreal scale = sx > sy ? sx : sy;
-        QRectF newRect(rect);
-        newRect.setWidth(rect.width() * scale);
-        newRect.setHeight(rect.height() * scale);
-        disconnect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
-        setSceneRect(newRect);
-        connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
-    }
     adjustItems();
 }
 

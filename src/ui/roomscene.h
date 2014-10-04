@@ -373,7 +373,7 @@ private:
     QSet<HeroSkinContainer *> m_heroSkinContainers;
 
 private slots:
-    void onSceneRectChanged(const QRectF &rect);
+    void onSceneRectChanged(const QRectF &);
 
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>());
     void updateSkillButtons();
