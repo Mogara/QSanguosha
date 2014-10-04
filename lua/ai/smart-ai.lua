@@ -30,7 +30,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = (require "middleclass").class("SmartAI")
 
-version = "QSanguosha AI 20140915 (V0.26 Alpha)"
+version = "QSanguosha AI 20141004 (V0.261 Alpha)"
 
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
@@ -785,12 +785,13 @@ function SmartAI:assignKeep(start)
 			"jink-2" = 4.0, "ExNihilo-1" = 3.9, BefriendAttacking-1", "nullification-1" = 3.8, "thunderslash-1" = 3.66 "fireslash-1" = 3.63
 			"slash-1" = 3.6 indulgence-1 = 3.5 SupplyShortage-1 = 3.48 snatch-1 = 3.46 Dismantlement-1 = 3.44 Duel-1 = 3.42 Drownning -3.40
 				BurningCamps = 3.38, Collateral-1 = 3.36 ArcheryAttack-1 = 3.35 SavageAssault-1 = 3.34 KnownBoth = 3.33 IronChain = 3.32 GodSalvation-1 = 3.30,
-				Fireattack-1 = 3.28 AllianceFeast = 3.26 FightTogether =3.24 LureTiger = 3.22 "peach-4" = 3.1
+				Fireattack-1 = 3.28 AllianceFeast = 3.26 FightTogether =3.24 LureTiger = 3.22 threaten_emperor = 3.2 "peach-4" = 3.1
 			"analeptic-2" = 2.9, "jink-3" = 2.7 ExNihilo-2 = 2.7 nullification-2 = 2.6 thunderslash-2 = 2.46 fireslash-2 = 2.43 slash-2 = 2.4
 			...
 			Weapon-1 = 2.08 Armor-1 = 2.06 DefensiveHorse-1 = 2.04 OffensiveHorse-1 = 2
 			...
 			AwaitExhausted = 1
+			imperial_order = 0
 			AmazingGrace-1 = -9 Lightning-1 = -10
 		]]
 
@@ -4813,7 +4814,7 @@ function SmartAI:getKingdomCount()
 	local count = 0
 	local k = {}
 	for _, ap in sgs.qlist(self.room:getAlivePlayers()) do
-		if not k[ap:getKingdom()] then
+		if sgs.isAnjiang(ap) or not k[ap:getKingdom()] then
 			k[ap:getKingdom()] = true
 			count = count + 1
 		end

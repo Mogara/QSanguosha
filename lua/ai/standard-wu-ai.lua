@@ -1199,7 +1199,7 @@ sgs.ai_skill_use["@@tianxiang"] = function(self, data, method)
 		if #targets == 0 then table.insert(targets, room:nextPlayer(self.player)) end
 		if #targets > 0 then
 			self:sort(targets, "hp")
-			sgs.reverse(targets)
+			targets = sgs.reverse(targets)
 			return "@TianxiangCard=" .. card_id .. "&tianxiang->" .. targets[1]:objectName()
 		end
 	end
