@@ -140,14 +140,12 @@ You'll see something like this:
    QSanguosha.app/Contents/MacOS/QSanguosha:
    ./libfmodex.dylib (compatibility version 1.0.0, current version 1.0.0)
    libfreetype.1.dylib (compatibility version 1.0.0, current version 1.0.0)
-   (QtDir)/5.3/clang_64/lib/QtDeclarative.framework/Versions/5/QtDeclarative (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtXmlPatterns.framework/Versions/5/QtXmlPatterns (compatibility version 5.3.0, current version 5.3.0)
    (QtDir)/5.3/clang_64/lib/QtNetwork.framework/Versions/5/QtNetwork (compatibility version 5.3.0, current version 5.3.0)
    (QtDir)/5.3/clang_64/lib/QtCore.framework/Versions/5/QtCore (compatibility version 5.3.0, current version 5.3.0)
    (QtDir)/5.3/clang_64/lib/QtWidgets.framework/Versions/5/QtWidgets (compatibility version 5.3.0, current version 5.3.0)
    (QtDir)/5.3/clang_64/lib/QtGui.framework/Versions/5/QtGui (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtSql.framework/Versions/5/QtSql (compatibility version 5.3.0, current version 5.3.0)
-   (QtDir)/5.3/clang_64/lib/QtScript.framework/Versions/5/QtScript (compatibility version 5.3.0, current version 5.3.0)
+   (QtDir)/5.3/clang_64/lib/QtQml.framework/Versions/5/QtQml (compatibility version 5.3.0, current version 5.3.0)
+   (QtDir)/5.3/clang_64/lib/QtQuick.framework/Versions/5/QtQuick (compatibility version 5.3.0, current version 5.3.0)
    /System/Library/Frameworks/OpenGL.framework/Versions/A/OpenGL (compatibility version 1.0.0, current version 1.0.0)
    /System/Library/Frameworks/AGL.framework/Versions/A/AGL (compatibility version 1.0.0, current version 1.0.0)
    /usr/lib/libstdc++.6.dylib (compatibility version 7.0.0, current version 56.0.0)
@@ -190,14 +188,12 @@ if you see all the non-system libraries is in @executable_path, it should succee
    QSanguosha.app/Contents/MacOS/QSanguosha:
    @executable_path/../Frameworks/libfmodex.dylib (compatibility version 1.0.0, current version 1.0.0)
    @executable_path/../Frameworks/libfreetype.dylib (compatibility version 1.0.0, current version 1.0.0)
-   @executable_path/../Frameworks/QtDeclarative.framework/Versions/5/QtDeclarative (compatibility version 5.3.0, current version 5.3.0)
-   @executable_path/../Frameworks/QtXmlPatterns.framework/Versions/5/QtXmlPatterns (compatibility version 5.3.0, current version 5.3.0)
    @executable_path/../Frameworks/QtNetwork.framework/Versions/5/QtNetwork (compatibility version 5.3.0, current version 5.3.0)
    @executable_path/../Frameworks/QtCore.framework/Versions/5/QtCore (compatibility version 5.3.0, current version 5.3.0)
    @executable_path/../Frameworks/QtWidgets.framework/Versions/5/QtWidgets (compatibility version 5.3.0, current version 5.3.0)
    @executable_path/../Frameworks/QtGui.framework/Versions/5/QtGui (compatibility version 5.3.0, current version 5.3.0)
-   @executable_path/../Frameworks/QtSql.framework/Versions/5/QtSql (compatibility version 5.3.0, current version 5.3.0)
-   @executable_path/../Frameworks/QtScript.framework/Versions/5/QtScript (compatibility version 5.3.0, current version 5.3.0)
+   @executable_path/../Frameworks/QtQml.framework/Versions/5/QtQml (compatibility version 5.3.0, current version 5.3.0)
+   @executable_path/../Frameworks/QtQuick.framework/Versions/5/QtQuick (compatibility version 5.3.0, current version 5.3.0)
    /System/Library/Frameworks/OpenGL.framework/Versions/A/OpenGL (compatibility version 1.0.0, current version 1.0.0)
    /System/Library/Frameworks/AGL.framework/Versions/A/AGL (compatibility version 1.0.0, current version 1.0.0)
    /usr/lib/libstdc++.6.dylib (compatibility version 7.0.0, current version 56.0.0)
@@ -256,13 +252,11 @@ Linux or MinGW(Windows)
 
 6. (MinGW only)Copy 8 files from Qt libraries to ~, they are listed below:
    Qt5Core.dll
-   Qt5Declarative.dll
    Qt5Gui.dll
    Qt5Network.dll
-   Qt5Script.dll
-   Qt5Sql.dll
+   Qt5Qml.dll
+   Qt5Quick.dll
    Qt5Widgets.dll
-   Qt5XmlPatterns.dll
 
    (MinGW only)Copy 3 files from MinGW bin folder to ~, they are listed below:
    libgcc_s_dw2-1.dll
