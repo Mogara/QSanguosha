@@ -4814,7 +4814,7 @@ function SmartAI:getKingdomCount()
 	local count = 0
 	local k = {}
 	for _, ap in sgs.qlist(self.room:getAlivePlayers()) do
-		if sgs.isAnjiang(ap) or not k[ap:getKingdom()] then
+		if sgs.isAnjiang(ap) or not k[ap:getKingdom()] or ap:getRole() == "careerist" then
 			k[ap:getKingdom()] = true
 			count = count + 1
 		end
