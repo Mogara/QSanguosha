@@ -21,18 +21,20 @@
 #include "configdialog.h"
 #include "ui_configdialog.h"
 #include "settings.h"
-#include "StyleHelper.h"
+#include "stylehelper.h"
 
 #include <QFileDialog>
 #include <QDesktopServices>
 #include <QFontDialog>
 #include <QColorDialog>
 #include <QTextStream>
+#include <QLineEdit>
 
 ConfigDialog::ConfigDialog(QWidget *parent)
-    : QDialog(parent), ui(new Ui::ConfigDialog)
+    : FlatDialog(parent, false), ui(new Ui::ConfigDialog)
 {
     ui->setupUi(this);
+    connect(this, SIGNAL(windowTitleChanged(QString)), ui->windowTitle, SLOT(setText(QString)));
 
     // tab 1
     QString bg_path = Config.value("BackgroundImage").toString();
@@ -43,6 +45,20 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     if (!tableBg_path.startsWith(":"))
         ui->tableBgPathLineEdit->setText(tableBg_path);
 
+    QFont font = Config.AppFont;
+    showFont(ui->appFontLineEdit, font);
+
+    font = Config.UIFont;
+    showFont(ui->textEditFontLineEdit, font);
+
+    QPalette palette;
+    palette.setColor(QPalette::Text, Config.TextEditColor);
+    QColor color = Config.TextEditColor;
+    int aver = (color.red() + color.green() + color.blue()) / 3;
+    palette.setColor(QPalette::Base, aver >= 208 ? Qt::black : Qt::white);
+    ui->textEditFontLineEdit->setPalette(palette);
+
+    // tab 2
     ui->bgMusicPathLineEdit->setText(Config.value("BackgroundMusic", "audio/system/background.ogg").toString());
 
     ui->enableEffectCheckBox->setChecked(Config.EnableEffects);
@@ -58,7 +74,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     ui->bgmVolumeSlider->setValue(100 * Config.BGMVolume);
     ui->effectVolumeSlider->setValue(100 * Config.EffectVolume);
 
-    // tab 2
+    // tab 3
     ui->neverNullifyMyTrickCheckBox->setChecked(Config.NeverNullifyMyTrick);
     ui->autoTargetCheckBox->setChecked(Config.EnableAutoTarget);
     ui->intellectualSelectionCheckBox->setChecked(Config.EnableIntellectualSelection);
@@ -86,19 +102,6 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     QString record_path = Config.value("RecordSavePaths", "records/").toString();
     if (!record_path.startsWith(":"))
         ui->recordPathsSetupLineEdit->setText(record_path);
-
-    QFont font = Config.AppFont;
-    showFont(ui->appFontLineEdit, font);
-
-    font = Config.UIFont;
-    showFont(ui->textEditFontLineEdit, font);
-
-    QPalette palette;
-    palette.setColor(QPalette::Text, Config.TextEditColor);
-    QColor color = Config.TextEditColor;
-    int aver = (color.red() + color.green() + color.blue()) / 3;
-    palette.setColor(QPalette::Base, aver >= 208 ? Qt::black : Qt::white);
-    ui->textEditFontLineEdit->setPalette(palette);
 
     connect(this, SIGNAL(accepted()), this, SLOT(saveConfig()));
 }

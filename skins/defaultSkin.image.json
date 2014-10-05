@@ -223,6 +223,7 @@
 
 // cards
 "handCardMainPhoto-default": "image/card/%1.png",
+"handCardMainPhoto-default2": "image/card/%1.png",
 "handCardMainPhoto-unknown": "image/system/card-back.png",
 
 "handCardNumber-black-default": "image/system/black/%1.png",

@@ -21,7 +21,7 @@
 #ifndef _ENGINE_H
 #define _ENGINE_H
 
-#include "RoomState.h"
+#include "roomstate.h"
 #include "card.h"
 #include "general.h"
 #include "skill.h"

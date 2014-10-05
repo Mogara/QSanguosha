@@ -21,8 +21,8 @@
 #include "startscene.h"
 #include "engine.h"
 #include "audio.h"
-#include "QSanSelectableItem.h"
-#include "StyleHelper.h"
+#include "qsanselectableitem.h"
+#include "stylehelper.h"
 #include "tile.h"
 
 #include <QPropertyAnimation>
@@ -61,6 +61,10 @@ StartScene::StartScene(QObject *parent)
     website_text->setPos(Config.Rect.width() / 2 - website_text->boundingRect().width(),
         Config.Rect.height() / 2 - website_text->boundingRect().height());*/
     serverLog = NULL;
+
+    setBackgroundBrush(QBrush(QPixmap(Config.BackgroundImage)));
+
+    connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
 }
 
 void StartScene::addButton(QAction *action) {
@@ -210,6 +214,22 @@ void StartScene::showOrganization()
     sequentialGroup->addAnimation(fadeOut);
 
     sequentialGroup->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void StartScene::onSceneRectChanged(const QRectF &rect)
+{
+    QRectF newRect(rect);
+    if (rect.width() < 1024 || rect.height() < 706) {
+        qreal sx = 1024 / rect.width();
+        qreal sy = 706 / rect.height();
+        qreal scale = sx > sy ? sx : sy;
+        newRect.setWidth(rect.width() * scale);
+        newRect.setHeight(rect.height() * scale);
+    }
+    newRect.moveTopLeft(newRect.bottomRight() * -0.5);
+    disconnect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
+    setSceneRect(newRect);
+    connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
 }
 
 void StartScene::printServerInfo() {

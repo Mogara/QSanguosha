@@ -167,8 +167,8 @@ public:
 
     virtual QString getEffectName() const;
 
-    bool isTransferable() const;
-    void setTransferable(const bool transferbale);
+    virtual bool isTransferable() const;
+    virtual void setTransferable(const bool transferbale);
 
 protected:
     QList<int> subcards;
@@ -225,6 +225,7 @@ class TransferCard : public SkillCard {
 public:
     Q_INVOKABLE TransferCard();
 
+    virtual bool targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
 };
 

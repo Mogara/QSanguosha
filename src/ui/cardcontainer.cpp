@@ -25,7 +25,7 @@
 #include "client.h"
 #include "roomscene.h"
 #include "button.h"
-#include "GraphicsBox.h"
+#include "graphicsbox.h"
 
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>

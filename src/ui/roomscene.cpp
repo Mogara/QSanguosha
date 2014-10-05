@@ -25,7 +25,7 @@
 #include "cardoverview.h"
 #include "distanceviewdialog.h"
 #include "playercarddialog.h"
-#include "FreeChooseDialog.h"
+#include "freechoosedialog.h"
 #include "window.h"
 #include "button.h"
 #include "cardcontainer.h"
@@ -33,18 +33,18 @@
 #include "indicatoritem.h"
 #include "pixmapanimation.h"
 #include "audio.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 #include "record-analysis.h"
 #include "choosegeneralbox.h"
-#include "ChooseOptionsBox.h"
-#include "ChooseTriggerOrderBox.h"
-#include "uiUtils.h"
+#include "chooseoptionsbox.h"
+#include "choosetriggerorderbox.h"
+#include "uiutils.h"
 #include "qsanbutton.h"
-#include "GuanxingBox.h"
-#include "BubbleChatBox.h"
-#include "PlayerCardBox.h"
-#include "StyleHelper.h"
-#include "HeroSkinContainer.h"
+#include "guanxingbox.h"
+#include "bubblechatbox.h"
+#include "playercardbox.h"
+#include "stylehelper.h"
+#include "heroskincontainer.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
@@ -71,6 +71,10 @@
 #include <QCoreApplication>
 #include <QInputDialog>
 #include <QScrollBar>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QtQuick/QQuickItem>
+#include <QtQuick/QQuickWindow>
+#endif
 
 using namespace QSanProtocol;
 
@@ -101,6 +105,10 @@ RoomScene::RoomScene(QMainWindow *main_window)
     _m_commonLayout = &(G_ROOM_SKIN.getCommonLayout());
 
     m_skillButtonSank = false;
+
+    setBackgroundBrush(QBrush(QPixmap(Config.TableBgImage)));
+
+    connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
 
     // create photos
     for (int i = 0; i < player_count - 1; i++) {
@@ -316,14 +324,6 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     addItem(prompt_box);
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    m_tableBg = new QGraphicsPixmapItem(NULL, this);
-#else
-    m_tableBg = new QGraphicsPixmapItem();
-    addItem(m_tableBg);
-#endif
-    m_tableBg->setZValue(-100000);
-
     m_rolesBoxBackground.load("image/system/state.png");
     m_rolesBox = new QGraphicsPixmapItem;
     addItem(m_rolesBox);
@@ -390,10 +390,14 @@ RoomScene::RoomScene(QMainWindow *main_window)
 
     pindian_from_card = NULL;
     pindian_to_card = NULL;
-#ifndef Q_OS_WINRT
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     _m_animationEngine = new QDeclarativeEngine(this);
     _m_animationContext = new QDeclarativeContext(_m_animationEngine->rootContext(), this);
-    _m_animationComponent = new QDeclarativeComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation.qml"), this);
+    _m_animationComponent = new QDeclarativeComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation-qt4.qml"), this);
+#else
+    _m_animationEngine = new QQmlEngine(this);
+    _m_animationContext = new QQmlContext(_m_animationEngine->rootContext(), this);
+    _m_animationComponent = new QQmlComponent(_m_animationEngine, QUrl::fromLocalFile("ui-script/animation.qml"), this);
 #endif
 }
 
@@ -414,8 +418,9 @@ void RoomScene::handleGameEvent(const QVariant &args) {
     switch (eventType) {
     case S_GAME_EVENT_PLAYER_DYING: {
         ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
-        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->setSaveMeIcon(true);
+        PlayerCardContainer *container = qobject_cast<PlayerCardContainer *>(_getGenericCardContainer(Player::PlaceHand, player));
+        if (container != NULL)
+            container->setSaveMeIcon(true);
         Photo *photo = qobject_cast<Photo *>(container);
         if (photo) photo->setFrame(Photo::S_FRAME_SOS);
 
@@ -431,8 +436,9 @@ void RoomScene::handleGameEvent(const QVariant &args) {
     }
     case S_GAME_EVENT_PLAYER_QUITDYING: {
         ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
-        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->setSaveMeIcon(false);
+        PlayerCardContainer *container = qobject_cast<PlayerCardContainer *>(_getGenericCardContainer(Player::PlaceHand, player));
+        if (container != NULL)
+            container->setSaveMeIcon(false);
         Photo *photo = qobject_cast<Photo *>(container);
         if (photo) photo->setFrame(Photo::S_FRAME_NO_FRAME);
         break;
@@ -480,8 +486,9 @@ void RoomScene::handleGameEvent(const QVariant &args) {
         player->acquireSkill(skill_name, head_skill);
         acquireSkill(player, skill_name, head_skill);
 
-        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateAvatarTooltip();
+        PlayerCardContainer *container = qobject_cast<PlayerCardContainer *>(_getGenericCardContainer(Player::PlaceHand, player));
+        if (container != NULL)
+            container->updateAvatarTooltip();
         break;
     }
     case S_GAME_EVENT_ADD_SKILL: {
@@ -492,8 +499,9 @@ void RoomScene::handleGameEvent(const QVariant &args) {
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
         player->addSkill(skill_name, head_skill);
 
-        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateAvatarTooltip();
+        PlayerCardContainer *container = qobject_cast<PlayerCardContainer *>(_getGenericCardContainer(Player::PlaceHand, player));
+        if (container != NULL)
+            container->updateAvatarTooltip();
         break;
     }
     case S_GAME_EVENT_LOSE_SKILL: {
@@ -503,8 +511,9 @@ void RoomScene::handleGameEvent(const QVariant &args) {
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
         player->loseSkill(skill_name);
 
-        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateAvatarTooltip();
+        PlayerCardContainer *container = qobject_cast<PlayerCardContainer *>(_getGenericCardContainer(Player::PlaceHand, player));
+        if (container != NULL)
+            container->updateAvatarTooltip();
         break;
     }
     case S_GAME_EVENT_UPDATE_SKILL: {
@@ -601,8 +610,9 @@ void RoomScene::handleGameEvent(const QVariant &args) {
     }
     case S_GAME_EVENT_PLAYER_REFORM: {
         ClientPlayer *player = ClientInstance->getPlayer(arg[1].toString());
-        PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-        container->updateReformState();
+        PlayerCardContainer *container = qobject_cast<PlayerCardContainer *>(_getGenericCardContainer(Player::PlaceHand, player));
+        if (container != NULL)
+            container->updateReformState();
         break;
     }
     case S_GAME_EVENT_SKILL_INVOKED: {
@@ -614,9 +624,11 @@ void RoomScene::handleGameEvent(const QVariant &args) {
         ClientPlayer *player = ClientInstance->getPlayer(player_name);
         if (!player || !player->hasSkill(skill_name)) return;
         if (player != Self) {
-            PlayerCardContainer *container = (PlayerCardContainer *)_getGenericCardContainer(Player::PlaceHand, player);
-            Photo *photo = qobject_cast<Photo *>(container);
-            if (photo) photo->showSkillName(skill_name);
+            PlayerCardContainer *container = qobject_cast<PlayerCardContainer *>(_getGenericCardContainer(Player::PlaceHand, player));
+            if (container != NULL) {
+                Photo *photo = qobject_cast<Photo *>(container);
+                if (photo) photo->showSkillName(skill_name);
+            }
         }
         break;
     }
@@ -794,7 +806,9 @@ void RoomScene::adjustItems() {
         double scale = qMax(sx, sy);
         displayRegion.setBottom(scale * displayRegion.height());
         displayRegion.setRight(scale * displayRegion.width());
+        disconnect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
         setSceneRect(displayRegion);
+        connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
     }
 
     int padding = _m_roomLayout->m_scenePadding;
@@ -807,6 +821,7 @@ void RoomScene::adjustItems() {
     dashboard->setX(displayRegion.x());
     dashboard->setWidth(displayRegion.width());
     dashboard->setY(displayRegion.height() - dashboard->boundingRect().height());
+    dashboard->adjustCards(false);
 
     // set infoplane
     _m_infoPlane.setWidth(displayRegion.width() * _m_roomLayout->m_infoPlaneWidthPercentage);
@@ -828,12 +843,7 @@ void RoomScene::adjustItems() {
 
     m_tablew = displayRegion.width();// - infoPlane.width();
     m_tableh = displayRegion.height();// - dashboard->boundingRect().height();
-    QPixmap tableBg = QPixmap(Config.TableBgImage)
-        .scaled(m_tablew, m_tableh, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     m_tableh -= _m_roomLayout->m_photoDashboardPadding;
-    //m_tableBg->setPos(padding, padding);
-    m_tableBg->setPos(0, 0);
-    m_tableBg->setPixmap(tableBg);
     updateTable();
     updateRolesBox();
     setChatBoxVisible(chat_box_widget->isVisible());
@@ -1815,7 +1825,7 @@ void RoomScene::getCards(int moveId, QList<CardsMoveStruct> card_moves) {
         bool skipMove = _processCardsMove(movement, false);
         if (skipMove) continue;
         if (_shouldIgnoreDisplayMove(movement)) continue;
-        card_container->m_currentPlayer = (ClientPlayer *)movement.to;
+        card_container->m_currentPlayer = qobject_cast<ClientPlayer *>(movement.to);
         GenericCardContainer *to_container = _getGenericCardContainer(movement.to_place, movement.to);
         QList<CardItem *> cards = _m_cardsMoveStash[moveId][count];
         count++;
@@ -1847,7 +1857,7 @@ void RoomScene::loseCards(int moveId, QList<CardsMoveStruct> card_moves) {
         bool skipMove = _processCardsMove(movement, true);
         if (skipMove) continue;
         if (_shouldIgnoreDisplayMove(movement)) continue;
-        card_container->m_currentPlayer = (ClientPlayer *)movement.to;
+        card_container->m_currentPlayer = qobject_cast<ClientPlayer *>(movement.to);
         GenericCardContainer *from_container = _getGenericCardContainer(movement.from_place, movement.from);
         QList<CardItem *> cards = from_container->removeCardItems(movement.card_ids, movement.from_place);
         foreach(CardItem *card, cards)
@@ -2848,18 +2858,6 @@ void RoomScene::startInXs() {
     if (return_to_start_scene) return_to_start_scene->hide();
 }
 
-void RoomScene::changeTableBg() {
-    QRectF displayRegion = sceneRect();
-
-    QPixmap tableBg = QPixmap(Config.TableBgImage)
-        .scaled(displayRegion.width(), displayRegion.height(),
-        Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    m_tableh -= _m_roomLayout->m_photoDashboardPadding;
-    m_tableBg->setPos(0, 0);
-    m_tableBg->setPixmap(tableBg);
-    updateTable();
-}
-
 void RoomScene::stopHeroSkinChangingAnimations()
 {
     foreach (Photo *const &photo, photos) {
@@ -3485,9 +3483,9 @@ void RoomScene::takeAmazingGrace(ClientPlayer *taker, int card_id, bool move_car
 void RoomScene::showCard(const QString &player_name, int card_id) {
     QList<int> card_ids;
     card_ids << card_id;
-    const ClientPlayer *player = ClientInstance->getPlayer(player_name);
+    ClientPlayer *player = ClientInstance->getPlayer(player_name);
 
-    GenericCardContainer *container = _getGenericCardContainer(Player::PlaceHand, (Player *)player);
+    GenericCardContainer *container = _getGenericCardContainer(Player::PlaceHand, player);
     QList<CardItem *> card_items = container->cloneCardItems(card_ids);
     CardMoveReason reason(CardMoveReason::S_REASON_DEMONSTRATE, player->objectName());
     bringToFront(m_tablePile);
@@ -3610,6 +3608,11 @@ void RoomScene::speak() {
         chatBox->append(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
     }
     chatEdit->clear();
+}
+
+void RoomScene::onSceneRectChanged(const QRectF &)
+{
+    adjustItems();
 }
 
 void RoomScene::fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids) {
@@ -3916,8 +3919,8 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
             connect(pma, SIGNAL(finished()), this, SLOT(removeLightBox()));
         }
     }
-#ifndef Q_OS_WINRT
     else if (word.startsWith("skill=")) {
+        removeItem(lightbox);
         const QString hero = word.mid(6);
         const QString skill = args.value(1, QString());
 
@@ -3926,12 +3929,25 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
         _m_animationContext->setContextProperty("tableWidth", m_tableCenterPos.x() * 2);
         _m_animationContext->setContextProperty("hero", hero);
         _m_animationContext->setContextProperty("skill", Sanguosha->translate(skill));
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         QGraphicsObject *object = qobject_cast<QGraphicsObject *>(_m_animationComponent->create(_m_animationContext));
         connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
         addItem(object);
         bringToFront(object);
-    }
+#else
+        QQuickItem *object = qobject_cast<QQuickItem *>(_m_animationComponent->create(_m_animationContext));
+        connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
+        QQuickWindow *animationWindow = new QQuickWindow;
+        animationWindow->setFlags(Qt::FramelessWindowHint);
+        QMainWindow *mainWindow = qobject_cast<QMainWindow *>(parent());
+        animationWindow->setGeometry(mainWindow->geometry());
+        animationWindow->setColor(Qt::transparent);
+        object->setParentItem(animationWindow->contentItem());
+        animationWindow->show();
+        connect(object, SIGNAL(animationCompleted()), animationWindow, SLOT(close()));
+        connect(object, SIGNAL(animationCompleted()), animationWindow, SLOT(deleteLater()));
 #endif
+    }
     else {
         QFont font = Config.BigFont;
         if (reset_size) font.setPixelSize(100);

@@ -1345,7 +1345,7 @@ public:
                 equiplist << QString::number(i);
         }
 
-        int equip_index = room->askForChoice(panfeng, "kuangfu_equip", equiplist.join("+"), QVariant::fromValue((ServerPlayer *)target)).toInt();
+        int equip_index = room->askForChoice(panfeng, "kuangfu_equip", equiplist.join("+"), QVariant::fromValue(target)).toInt();
         const Card *card = target->getEquip(equip_index);
         int card_id = card->getEffectiveId();
 

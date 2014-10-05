@@ -114,9 +114,12 @@ Button *Window::addCloseButton(const QString &label) {
     return ok_button;
 }
 
-void Window::shift(int pos_x, int pos_y) {
-    resetTransform();
-    setTransform(QTransform::fromTranslate((pos_x - size.width()) / 2, (pos_y - size.height()) / 2), true);
+void Window::shift(qreal pos_x, qreal pos_y) {
+    setTransform(QTransform::fromTranslate(pos_x - size.width() / 2, pos_y - size.height() / 2));
+}
+
+void Window::shift(const QPointF &pos) {
+    setTransform(QTransform::fromTranslate(pos.x() - size.width() / 2, pos.y() - size.height() / 2));
 }
 
 void Window::keepWhenDisappear() {

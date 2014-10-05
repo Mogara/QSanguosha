@@ -24,7 +24,7 @@
 class Button;
 
 #include "carditem.h"
-#include "GenericCardContainerUI.h"
+#include "genericcardcontainerui.h"
 
 #include <QStack>
 

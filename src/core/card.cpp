@@ -39,7 +39,7 @@ const Card::Suit Card::AllSuits[4] = {
 
 Card::Card(Suit suit, int number, bool target_fixed)
     :target_fixed(target_fixed), mute(false),
-    will_throw(true), has_preact(false), can_recast(false), transferable(true),
+    will_throw(true), has_preact(false), can_recast(false), transferable(false),
     m_suit(suit), m_number(number), m_id(-1)
 {
     handling_method = will_throw ? Card::MethodDiscard : Card::MethodUse;
@@ -369,6 +369,10 @@ QString Card::getDescription(bool yellow) const{
     }
 
     desc.replace("\n", "<br/>");
+    if (isTransferable()) {
+        desc += "<br/><br/>";
+        desc += tr("This card is transferable.");
+    }
     return tr("<font color=%1><b>[%2]</b> %3</font>").arg(yellow ? "#FFFF33" : "#FF0080").arg(getName()).arg(desc);
 }
 
@@ -636,6 +640,7 @@ Card *Card::Clone(const Card *card) {
         new_card->setId(card->getId());
         new_card->setObjectName(card->objectName());
         new_card->addSubcard(card->getId());
+        new_card->setTransferable(card->isTransferable());
         return new_card;
     }
     else
@@ -961,7 +966,18 @@ TransferCard::TransferCard(){
     mute = true;
 }
 
+bool TransferCard::targetFilter(const QList<const Player *> &targets, const Player *to_select, const Player *Self) const{
+    if (!targets.isEmpty())
+        return false;
+    if (!Self->hasShownOneGeneral())
+        return !to_select->hasShownOneGeneral();
+    return !to_select->hasShownOneGeneral() || !to_select->isFriendWith(Self);
+}
+
 void TransferCard::onEffect(const CardEffectStruct &effect) const{
+    bool draw = effect.to->hasShownOneGeneral();
     CardMoveReason reason(CardMoveReason::S_REASON_GIVE, effect.from->objectName(), effect.to->objectName(), "transfer", QString());
     effect.to->getRoom()->obtainCard(effect.to, this, reason);
+    if (draw)
+        effect.from->drawCards(1, "transfer");
 }

@@ -30,7 +30,7 @@ math.randomseed(os.time())
 -- SmartAI is the base class for all other specialized AI classes
 SmartAI = (require "middleclass").class("SmartAI")
 
-version = "QSanguosha AI 20140915 (V0.26 Alpha)"
+version = "QSanguosha AI 20141004 (V0.261 Alpha)"
 
 --- this function is only function that exposed to the host program
 --- and it clones an AI instance by general name
@@ -383,7 +383,7 @@ function SmartAI:objectiveLevel(player)
 	if (not sgs.isAnjiang(self.player) or sgs.shown_kingdom[self_kingdom] < upperlimit) and self.role ~= "careerist" and self_kingdom == player_kingdom_explicit then return -2 end
 	if self:getKingdomCount() <= 2 then return 5 end
 
-	local selfIsCareerist = self.role == "careerist" or sgs.shown_kingdom[self_kingdom] >= upperlimit and sgs.isAnjiang(self.player)
+	local selfIsCareerist = self.role == "careerist" or sgs.shown_kingdom[self_kingdom] >= upperlimit and not self.player:hasShownOneGeneral()
 
 	local gameProcess = sgs.gameProcess()
 	if gameProcess == "===" then
@@ -402,7 +402,7 @@ function SmartAI:objectiveLevel(player)
 		else return self:getOverflow() > 0 and 4 or 0
 		end
 	elseif string.find(gameProcess, ">") then
-		local isWeakPlayer = player:getHp() == 1
+		local isWeakPlayer = player:getHp() == 1 and not player:hasShownSkill("duanchang")
 						and (player:isKongcheng() or sgs.card_lack[player:objectName()] == 1 and player:getHandcardNum() <= 1)
 						and (sgs.getReward(player) >= 2 or self.player:aliveCount() <= 4) and self:isWeak(player)
 		local kingdom = gameProcess:split(">")[1]
@@ -414,10 +414,11 @@ function SmartAI:objectiveLevel(player)
 				else return 5
 				end
 			else
-				if player_kingdom_explicit == kingdom or player_kingdom_evaluate == kingdom or isWeakPlayer then return 5
-				elseif not string.find(player_kingdom_evaluate, kingdom) then return -1
-				elseif player_kingdom_explicit == "careerist" then return -1
+				if player_kingdom_explicit == kingdom then return 5
+				elseif player_kingdom_evaluate == kingdom then return 5
+				elseif isWeakPlayer then return 5
 				elseif player_kingdom_evaluate == "unknown" then return 0
+				elseif not string.find(player_kingdom_evaluate, kingdom) then return -1
 				else return 3
 				end
 			end
@@ -433,8 +434,6 @@ function SmartAI:objectiveLevel(player)
 			else
 				if player_kingdom_explicit == kingdom or player_kingdom_evaluate == kingdom or isWeakPlayer then return 5
 				elseif not string.find(player_kingdom_evaluate, kingdom) then return 0
-				elseif player_kingdom_explicit == "careerist" then return 0
-				elseif player_kingdom_evaluate == "unknown" then return 0
 				else return 3
 				end
 			end
@@ -486,18 +485,20 @@ function sgs.gameProcess(update)
 	for i = 2, #kingdoms do
 		sum_value1 = sum_value1 + value[kingdoms[i]]
 		if i < #kingdoms then sum_value2 = sum_value2 + value[kingdoms[i]] end
-		if i > 2 then sum_value3 = sum_value3 + value[kingdoms[i]] end
+		if i < #kingdoms - 1 then sum_value3 = sum_value3 + value[kingdoms[i]] end
 
 	end
 
 	local process = "==="
 	if value[kingdoms[1]] >= sum_value1 and value[kingdoms[1]] > 0 then
-		if anjiang <= 1 and players:length() > 4 then process = kingdoms[1] .. ">>>"
-		elseif anjiang <= 3 then process = kingdoms[1] .. ">>"
-		elseif anjiang <= 5 then process = kingdoms[1] .. ">" end
+		local playerNum_1 = players:first():getPlayerNumWithSameKingdom("AI", kingdoms[1])
+		local playerNum_2 = players:first():getPlayerNumWithSameKingdom("AI", kingdoms[2])
+		if players:length() > 4 and (players:length() / 2 <= playerNum_1 or playerNum_2 + anjiang <= playerNum_1 or anjiang <= 1) then process = kingdoms[1] .. ">>>"
+		elseif anjiang <= players:length() / 2  - 1 then process = kingdoms[1] .. ">>"
+		elseif anjiang <= players:length() / 2 + 1 then process = kingdoms[1] .. ">" end
 	elseif value[kingdoms[1]] >= sum_value2 and value[kingdoms[1]] > 0 then
 		if anjiang == 0 then process = kingdoms[1] .. ">>"
-		elseif anjiang <= 3 then process = kingdoms[1] .. ">" end
+		elseif anjiang <= players:length() / 2 - 1 then process = kingdoms[1] .. ">" end
 	elseif value[kingdoms[1]] >= sum_value3 and value[kingdoms[1]] > 0 then
 		process = kingdoms[1] .. ">"
 	end
@@ -622,6 +623,7 @@ function sgs.outputKingdomValues(player, level, sendLog)
 end
 
 function SmartAI:updatePlayers(update)
+	if self.player:isDead() then return end
 	if update ~= false then update = true end
 
 	self.friends = {}
@@ -783,12 +785,13 @@ function SmartAI:assignKeep(start)
 			"jink-2" = 4.0, "ExNihilo-1" = 3.9, BefriendAttacking-1", "nullification-1" = 3.8, "thunderslash-1" = 3.66 "fireslash-1" = 3.63
 			"slash-1" = 3.6 indulgence-1 = 3.5 SupplyShortage-1 = 3.48 snatch-1 = 3.46 Dismantlement-1 = 3.44 Duel-1 = 3.42 Drownning -3.40
 				BurningCamps = 3.38, Collateral-1 = 3.36 ArcheryAttack-1 = 3.35 SavageAssault-1 = 3.34 KnownBoth = 3.33 IronChain = 3.32 GodSalvation-1 = 3.30,
-				Fireattack-1 = 3.28 AllianceFeast = 3.26 FightTogether =3.24 LureTiger = 3.22 "peach-4" = 3.1
+				Fireattack-1 = 3.28 AllianceFeast = 3.26 FightTogether =3.24 LureTiger = 3.22 threaten_emperor = 3.2 "peach-4" = 3.1
 			"analeptic-2" = 2.9, "jink-3" = 2.7 ExNihilo-2 = 2.7 nullification-2 = 2.6 thunderslash-2 = 2.46 fireslash-2 = 2.43 slash-2 = 2.4
 			...
 			Weapon-1 = 2.08 Armor-1 = 2.06 DefensiveHorse-1 = 2.04 OffensiveHorse-1 = 2
 			...
 			AwaitExhausted = 1
+			imperial_order = 0
 			AmazingGrace-1 = -9 Lightning-1 = -10
 		]]
 
@@ -2682,7 +2685,7 @@ function SmartAI:getCardNeedPlayer(cards, friends_table, skillname)
 	end
 
 	local AssistTarget = self:AssistTarget()
-	if AssistTarget and (self:needKongcheng(AssistTarget, true) or self:willSkipPlayPhase(AssistTarget)) then
+	if AssistTarget and (self:needKongcheng(AssistTarget, true) or self:willSkipPlayPhase(AssistTarget) or AssistTarget:getHandcardNum() > 10) then
 		AssistTarget = nil
 	end
 
@@ -4811,7 +4814,7 @@ function SmartAI:getKingdomCount()
 	local count = 0
 	local k = {}
 	for _, ap in sgs.qlist(self.room:getAlivePlayers()) do
-		if not k[ap:getKingdom()] then
+		if sgs.isAnjiang(ap) or not k[ap:getKingdom()] then
 			k[ap:getKingdom()] = true
 			count = count + 1
 		end
@@ -5215,15 +5218,6 @@ function sgs.findPlayerByShownSkillName(skill_name)
 	for _, p in sgs.qlist(global_room:getAllPlayers()) do
 		if p:hasShownSkill(skill_name) then return p end
 	end
-end
-
-function SmartAI:willBeCareerist(player)
-	player = player or self.player
-	if player:hasShownOneGeneral() then return false end
-	if player:getLord() then return false end
-	local kingdom = self.player:getKingdom()
-	local kingdom_num = self.player:getPlayerNumWithSameKingdom("AI")
-	return kingdom_num >= self.player:aliveCount() / 2
 end
 
 dofile "lua/ai/debug-ai.lua"

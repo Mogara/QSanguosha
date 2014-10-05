@@ -24,7 +24,7 @@
 #include "clientplayer.h"
 #include "client.h"
 #include "roomscene.h"
-#include "StyleHelper.h"
+#include "stylehelper.h"
 
 #include <QPalette>
 #include <QScrollBar>

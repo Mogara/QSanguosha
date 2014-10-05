@@ -21,7 +21,7 @@
 #ifndef _START_SCENE_H
 #define _START_SCENE_H
 
-#include "QSanSelectableItem.h"
+#include "qsanselectableitem.h"
 #include "roomserver.h"
 
 #include <QGraphicsScene>
@@ -42,6 +42,9 @@ public:
     void switchToServer(Server *server);
 
     void showOrganization();
+
+private slots:
+    void onSceneRectChanged(const QRectF &rect);
 
 private:
     void printServerInfo();

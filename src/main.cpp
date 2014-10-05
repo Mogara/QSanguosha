@@ -18,7 +18,7 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#if defined(WIN32) && !defined(GPP) && !defined(QT_NO_DEBUG)
+#if defined(WIN32) && !defined(GPP) && !defined(QT_NO_DEBUG) && !defined(WINRT)
 #include <vld/vld.h>
 #endif
 
@@ -34,7 +34,7 @@
 #include "engine.h"
 #include "mainwindow.h"
 #include "audio.h"
-#include "StyleHelper.h"
+#include "stylehelper.h"
 
 #ifndef WINDOWS
 #include <QDir>

@@ -83,9 +83,9 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void setBackgroundBrush(bool center_as_origin);
+    void fitBackgroundBrush();
 
-#ifndef Q_OS_ANDROID
+#ifdef Q_OS_WIN
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseReleaseEvent(QMouseEvent *event);
     virtual void mouseDoubleClickEvent(QMouseEvent *event);
@@ -100,6 +100,7 @@ public:
     QPoint movePosition;
 
     static const int S_PADDING = 4;
+    static const int S_CORNER_SIZE = 5;
     enum Direction { Up, Down, Left, Right, LeftTop, LeftBottom, RightTop, RightBottom, None = -1 };
 
     bool isZoomReady;
@@ -171,7 +172,6 @@ private slots:
     void exitScene();
     void startGameInAnotherInstance();
     void changeBackground();
-    void changeTableBg();
     void on_actionManage_Ban_IP_triggered();
 
     void onVersionInfomationGotten();

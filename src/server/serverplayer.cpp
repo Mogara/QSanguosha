@@ -1235,42 +1235,11 @@ void ServerPlayer::addToPile(const QString &pile_name, QList<int> card_ids,
 }
 
 void ServerPlayer::gainAnExtraTurn() {
-    ServerPlayer *current = room->getCurrent();
-    Player::Phase orig_phase = Player::NotActive;
-    if (current != NULL && current->isAlive())
-        orig_phase = current->getPhase();
-
-    try {
-        current->setPhase(Player::NotActive);
-        room->broadcastProperty(current, "phase");
-
-        room->setCurrent(this);
-        room->getThread()->trigger(TurnStart, room, this);
-
-        current->setPhase(orig_phase);
-        room->broadcastProperty(current, "phase");
-        room->setCurrent(current);
-    }
-    catch (TriggerEvent triggerEvent) {
-        if (triggerEvent == TurnBroken) {
-            if (getPhase() != Player::NotActive) {
-                const GameRule *game_rule = NULL;
-                if (room->getMode() == "04_1v3")
-                    game_rule = qobject_cast<const GameRule *>(Sanguosha->getTriggerSkill("hulaopass_mode"));
-                else
-                    game_rule = qobject_cast<const GameRule *>(Sanguosha->getTriggerSkill("game_rule"));
-                if (game_rule){
-                    QVariant _variant;
-                    game_rule->effect(EventPhaseEnd, room, this, _variant, this);
-                }
-                changePhase(getPhase(), Player::NotActive);
-            }
-            current->setPhase(orig_phase);
-            room->broadcastProperty(current, "phase");
-            room->setCurrent(current);
-        }
-        throw triggerEvent;
-    }
+    QStringList extraTurnList;
+    if (!room->getTag("ExtraTurnList").isNull())
+        extraTurnList = room->getTag("ExtraTurnList").toStringList();
+    extraTurnList.prepend(objectName());
+    room->setTag("ExtraTurnList", QVariant::fromValue(extraTurnList));
 }
 
 void ServerPlayer::copyFrom(ServerPlayer *sp) {
@@ -1712,17 +1681,18 @@ bool ServerPlayer::askForGeneralShow(bool one, bool refusable) {
 
     QStringList choices;
 
-    if (!hasShownGeneral1())
+    if (!hasShownGeneral1() && disableShow(true).isEmpty())
         choices << "show_head_general";
-    if (!hasShownGeneral2())
+    if (!hasShownGeneral2() && disableShow(false).isEmpty())
         choices << "show_deputy_general";
-
+    if (choices.isEmpty())
+        return false;
     if (!one && choices.length() == 2)
         choices << "show_both_generals";
     if (refusable)
-        choices.prepend("cancel"); // default choice should do nothing
+        choices.append("cancel");
 
-    QString choice = room->askForChoice(this, "TurnStartShowGeneral", choices.join("+"));
+    QString choice = room->askForChoice(this, "GameRule_AskForGeneralShow", choices.join("+"));
 
     if (choice == "show_head_general" || choice == "show_both_generals")
         showGeneral();

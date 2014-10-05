@@ -21,11 +21,11 @@
 #ifndef _PHOTO_H
 #define _PHOTO_H
 
-#include "QSanSelectableItem.h"
+#include "qsanselectableitem.h"
 #include "player.h"
 #include "carditem.h"
 
-#include "GenericCardContainerUI.h"
+#include "genericcardcontainerui.h"
 #include "sprite.h"
 #include <QGraphicsObject>
 #include <QPixmap>

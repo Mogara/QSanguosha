@@ -24,7 +24,7 @@
 #include "settings.h"
 #include "clientstruct.h"
 #include "client.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 
 #include <QMessageBox>
 #include <QFile>
@@ -148,8 +148,7 @@ void CardOverview::on_tableWidget_itemSelectionChanged() {
         ui->playAudioEffectButton->show();
         ui->malePlayButton->hide();
         ui->femalePlayButton->hide();
-    }
-    else {
+    } else {
         ui->playAudioEffectButton->hide();
         ui->malePlayButton->show();
         ui->femalePlayButton->show();

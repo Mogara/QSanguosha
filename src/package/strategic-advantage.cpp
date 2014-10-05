@@ -19,6 +19,7 @@
     *********************************************************************/
 
 #include "strategic-advantage.h"
+#include "standard-basics.h"
 #include "standard-tricks.h"
 #include "engine.h"
 
@@ -88,8 +89,10 @@ Halberd::Halberd(Card::Suit suit, int number)
 }
 
 Breastplate::Breastplate(Card::Suit suit, int number)
-    : Armor(suit, number){
+    : Armor(suit, number)
+{
     setObjectName("Breastplate");
+    transferable = true;
 }
 
 class BreastplateSkill : public ArmorSkill {
@@ -261,7 +264,7 @@ public:
             if (move.from_places[i] != Player::PlaceEquip && move.from_places[i] != Player::PlaceTable) continue;
             const Card *card = Sanguosha->getEngineCard(move.card_ids[i]);
             if (card->objectName() == "WoodenOx") {
-                ServerPlayer *to = (ServerPlayer *)move.to;
+                ServerPlayer *to = qobject_cast<ServerPlayer *>(move.to);
                 if (to && to->getTreasure() && to->getTreasure()->objectName() == "WoodenOx"
                     && move.to_place == Player::PlaceEquip) {
                     QList<ServerPlayer *> p_list;
@@ -313,7 +316,7 @@ void Drowning::onEffect(const CardEffectStruct &effect) const{
         && room->askForChoice(effect.to, objectName(), "throw+damage", QVariant::fromValue(effect)) == "throw")
         effect.to->throwAllEquips();
     else
-        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to));
+        room->damage(DamageStruct(this, effect.from->isAlive() ? effect.from : NULL, effect.to, 1, DamageStruct::Thunder));
 }
 
 bool Drowning::isAvailable(const Player *player) const{
@@ -373,10 +376,11 @@ QStringList Drowning::checkTargetModSkillShow(const CardUseStruct &use) const{
     return QStringList();
 }
 
-BurningCamps::BurningCamps(Card::Suit suit, int number)
+BurningCamps::BurningCamps(Card::Suit suit, int number, bool is_transferable)
     : AOE(suit, number)
 {
     setObjectName("burning_camps");
+    transferable = is_transferable;
 }
 
 bool BurningCamps::isAvailable(const Player *player) const{
@@ -423,10 +427,11 @@ void BurningCamps::onEffect(const CardEffectStruct &effect) const {
     effect.to->getRoom()->damage(DamageStruct(this, effect.from, effect.to, 1, DamageStruct::Fire));
 }
 
-LureTiger::LureTiger(Card::Suit suit, int number)
+LureTiger::LureTiger(Card::Suit suit, int number, bool is_transferable)
     : TrickCard(suit, number)
 {
     setObjectName("lure_tiger");
+    transferable = is_transferable;
 }
 
 QString LureTiger::getSubtype() const{
@@ -516,7 +521,7 @@ QStringList LureTiger::checkTargetModSkillShow(const CardUseStruct &use) const{
 
 class LureTigerSkill : public TriggerSkill {
 public:
-    LureTigerSkill() : TriggerSkill("lure_tiger") {
+    LureTigerSkill() : TriggerSkill("lure_tiger_effect") {
         events << Death << EventPhaseChanging;
         global = true;
     }
@@ -546,7 +551,7 @@ public:
 
 class LureTigerProhibit : public ProhibitSkill {
 public:
-    LureTigerProhibit() : ProhibitSkill("#lure_tiger") {
+    LureTigerProhibit() : ProhibitSkill("#lure_tiger-prohibit") {
     }
 
     virtual bool isProhibited(const Player *, const Player *to, const Card *card, const QList<const Player *> &) const{
@@ -699,12 +704,13 @@ void AllianceFeast::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> 
         effect.from = source;
         effect.to = target;
 
-        if (target == source && target == targets.first()) {
+        if (target == source) {
             int n = 0;
             ServerPlayer *enemy = targets.last();
-            foreach (ServerPlayer *p, room->getOtherPlayers(source))
+            foreach (ServerPlayer *p, room->getOtherPlayers(source)) {
                 if (enemy->isFriendWith(p))
-                    n++;
+                    ++n;
+            }
             target->setMark(objectName(), n);
         }
         room->cardEffect(effect);
@@ -749,47 +755,231 @@ bool AllianceFeast::isAvailable(const Player *player) const{
     return player->hasShownOneGeneral() && !player->isProhibited(player, this);
 }
 
+ThreatenEmperor::ThreatenEmperor(Suit suit, int number)
+    : SingleTargetTrick(suit, number)
+{
+    setObjectName("threaten_emperor");
+    target_fixed = true;
+    transferable = true;
+}
+
+void ThreatenEmperor::onUse(Room *room, const CardUseStruct &card_use) const{
+    CardUseStruct use = card_use;
+    if (use.to.isEmpty())
+        use.to << use.from;
+    SingleTargetTrick::onUse(room, use);
+}
+
+bool ThreatenEmperor::isAvailable(const Player *player) const{
+    if (!player->hasShownOneGeneral())
+        return false;
+    QHash<QString, QStringList> kingdoms = player->getBigAndSmallKingdoms(objectName(), MaxCardsType::Max);
+    bool invoke = !kingdoms["big"].isEmpty() && !kingdoms["small"].isEmpty();
+    if (invoke) {
+        if (kingdoms["big"].length() == 1 && kingdoms["big"].first().startsWith("sgs")) // for JadeSeal
+            invoke = kingdoms["big"].contains(player->objectName());
+        else {
+            QString kingdom = player->getRole() == "careerist" ? "careerist" : player->getKingdom();
+            invoke = kingdoms["big"].contains(kingdom);
+        }
+    }
+    return invoke && !player->isProhibited(player, this) && TrickCard::isAvailable(player);
+}
+
+void ThreatenEmperor::onEffect(const CardEffectStruct &effect) const{
+    if (effect.from->getPhase() == Player::Play)
+        effect.from->setFlags("Global_PlayPhaseTerminated");
+    effect.to->setMark("ThreatenEmperorExtraTurn", 1);
+}
+
+class ThreatenEmperorSkill : public TriggerSkill {
+public:
+    ThreatenEmperorSkill() : TriggerSkill("threaten_emperor") {
+        events << EventPhaseStart;
+        global = true;
+    }
+
+    virtual int getPriority() const{
+        return 1;
+    }
+
+    virtual QMap<ServerPlayer *, QStringList> triggerable(TriggerEvent, Room *room, ServerPlayer *player, QVariant &) const{
+        QMap<ServerPlayer *, QStringList> list;
+        if (player->getPhase() != Player::NotActive)
+            return list;
+        foreach (ServerPlayer *p, room->getAllPlayers())
+            if (p->getMark("ThreatenEmperorExtraTurn") > 0)
+                list.insert(p, QStringList(objectName()));
+   
+        return list;
+    }
+
+    virtual bool cost(TriggerEvent, Room *room, ServerPlayer *, QVariant &data, ServerPlayer *ask_who) const{
+        ask_who->removeMark("ThreatenEmperorExtraTurn");
+        return room->askForCard(ask_who, ".", "@threaten_emperor", data, objectName());
+    }
+
+    virtual bool effect(TriggerEvent, Room *, ServerPlayer *, QVariant &, ServerPlayer *ask_who) const{
+        ask_who->gainAnExtraTurn();
+        return false;
+    }
+};
+
+ImperialOrder::ImperialOrder(Suit suit, int number)
+    : GlobalEffect(suit, number)
+{
+    setObjectName("imperial_order");
+}
+
+bool ImperialOrder::isAvailable(const Player *player) const{
+    bool invoke = !player->hasShownOneGeneral();
+    if (!invoke) {
+        foreach (const Player *p, player->getAliveSiblings()) {
+            if (!p->hasShownOneGeneral() && !player->isProhibited(p, this)) {
+                invoke = true;
+                break;
+            }
+        }
+    }
+    return invoke && TrickCard::isAvailable(player);
+}
+
+void ImperialOrder::onUse(Room *room, const CardUseStruct &card_use) const{
+    ServerPlayer *source = card_use.from;
+    QList<ServerPlayer *> targets;
+    foreach (ServerPlayer *p, room->getAllPlayers()) {
+        if (p->hasShownOneGeneral())
+            continue;
+        const Skill *skill = room->isProhibited(source, p, this);
+        if (skill) {
+            if (!skill->isVisible())
+                skill = Sanguosha->getMainSkill(skill->objectName());
+            if (skill && skill->isVisible()) {
+                LogMessage log;
+                log.type = "#SkillAvoid";
+                log.from = p;
+                log.arg = skill->objectName();
+                log.arg2 = objectName();
+                room->sendLog(log);
+
+                room->broadcastSkillInvoke(skill->objectName());
+            }
+            continue;
+        }
+        targets << p;
+    }
+
+    CardUseStruct use = card_use;
+    use.to = targets;
+    Q_ASSERT(!use.to.isEmpty());
+    TrickCard::onUse(room, use);
+}
+
+void ImperialOrder::use(Room *room, ServerPlayer *source, QList<ServerPlayer *> &targets) const{
+    room->setCardFlag(this, "imperial_order_normal_use");
+    GlobalEffect::use(room, source, targets);
+}
+
+void ImperialOrder::onEffect(const CardEffectStruct &effect) const{
+    Room *room = effect.to->getRoom();
+    if (room->askForCard(effect.to, "EquipCard", "@imperial_order-equip"))
+        return;
+    QStringList choices;
+    if (!effect.to->hasShownAllGenerals()
+        && ((!effect.to->hasShownGeneral1() && effect.to->disableShow(true).isEmpty())
+            || (effect.to->getGeneral2() && !effect.to->hasShownGeneral2() && effect.to->disableShow(false).isEmpty())))
+        choices << "show";
+    choices << "losehp";
+    QString choice = room->askForChoice(effect.to, objectName(), choices.join("+"));
+    if (choice == "show") {
+        effect.to->askForGeneralShow();
+        effect.to->drawCards(1, objectName());
+    } else {
+        room->loseHp(effect.to);
+    }
+}
+
 StrategicAdvantagePackage::StrategicAdvantagePackage()
     : Package("strategic_advantage", Package::CardPack){
     QList<Card *> cards;
 
     cards
         // basics
-
-        // equips
-        << new Blade(Card::Spade, 5)
-        << new Halberd(Card::Spade, 6)
-        << new Breastplate()
-        << new IronArmor()
-        //<< new OffensiveHorse(Card::Heart, 3, true)
-        << new WoodenOx(Card::Diamond, 5)
-        << new JadeSeal(Card::Spade, 2)
+        // -- spade
+        << new Slash(Card::Spade, 4)
+        << new Analeptic(Card::Spade, 6, true) // transfer
+        << new Slash(Card::Spade, 7)
+        << new Slash(Card::Spade, 8)
+        << new ThunderSlash(Card::Spade, 9)
+        << new ThunderSlash(Card::Spade, 10)
+        << new ThunderSlash(Card::Spade, 11, true) // transfer
+        // -- heart
+        << new Jink(Card::Heart, 4)
+        << new Jink(Card::Heart, 5)
+        << new Jink(Card::Heart, 6)
+        << new Jink(Card::Heart, 7)
+        << new Peach(Card::Heart, 8)
+        << new Peach(Card::Heart, 9)
+        << new Slash(Card::Heart, 10)
+        << new Slash(Card::Heart, 11)
+        // -- club
+        << new Slash(Card::Club, 4)
+        << new ThunderSlash(Card::Club, 5, true) // transfer
+        << new Slash(Card::Club, 6)
+        << new Slash(Card::Club, 7)
+        << new Slash(Card::Club, 8)
+        << new Analeptic(Card::Club, 9)
+        // -- diamond
+        << new Peach(Card::Diamond, 2)
+        << new Peach(Card::Diamond, 3, true) // transfer
+        << new Jink(Card::Diamond, 6)
+        << new Jink(Card::Diamond, 7)
+        << new FireSlash(Card::Diamond, 8)
+        << new FireSlash(Card::Diamond, 9)
+        << new Jink(Card::Diamond, 13)
 
         // tricks
-        << new Drowning(Card::Club, 2)
-        << new Drowning(Card::Club, 3)
-        << new Drowning(Card::Club, 4)
-        << new BurningCamps(Card::Heart, 5)
-        << new BurningCamps(Card::Spade, 6)
-        << new BurningCamps(Card::Spade, 7)
-        //<< new ThreatenEmperor()
-        //<< new ThreatenEmperor()
-        //<< new ThreatenEmperor()
-        //<< new ImperialOrder()
-        << new LureTiger(Card::Spade, 2)
-        << new LureTiger(Card::Spade, 3)
-        << new FightTogether(Card::Spade, 8)
-        << new FightTogether(Card::Spade, 4)
-        << new HegNullification(Card::Spade, 1)
-        << new HegNullification(Card::Spade, 13)
-        << new AllianceFeast();
+        // -- spade
+        << new ThreatenEmperor(Card::Spade, 1) // transfer
+        << new BurningCamps(Card::Spade, 3, true) // transfer
+        << new FightTogether(Card::Spade, 12)
+        << new Nullification(Card::Spade, 13)
+        // -- heart
+        << new AllianceFeast()
+        << new LureTiger(Card::Heart, 2)
+        << new BurningCamps(Card::Heart, 12)
+        << new Drowning(Card::Heart, 13)
+        // -- club
+        << new ImperialOrder(Card::Club, 3)
+        << new FightTogether(Card::Club, 10)
+        << new BurningCamps(Card::Club, 11)
+        << new Drowning(Card::Club, 12)
+        << new HegNullification(Card::Club, 13)
+        // -- diamond
+        << new ThreatenEmperor(Card::Diamond, 1) // transfer
+        << new ThreatenEmperor(Card::Diamond, 4) // transfer
+        << new LureTiger(Card::Diamond, 10, true) // transfer
+        << new HegNullification(Card::Diamond, 11)
+
+        // equips
+        << new IronArmor()
+        << new Blade(Card::Spade, 5);
+    Horse *horse = new OffensiveHorse(Card::Heart, 3, -1, true); // transfer
+    horse->setObjectName("JingFan");
+    cards
+        << horse
+        << new JadeSeal(Card::Club, 1)
+        << new Breastplate() // transfer
+        << new WoodenOx(Card::Diamond, 5)
+        << new Halberd(Card::Diamond, 12);
 
     skills << new BladeSkill
            << new BreastplateSkill
            << new IronArmorSkill
            << new WoodenOxSkill << new WoodenOxTriggerSkill
-           << new LureTigerSkill << new LureTigerProhibit;
-    insertRelatedSkills("lure_tiger", "#lure_tiger");
+           << new LureTigerSkill << new LureTigerProhibit
+           << new ThreatenEmperorSkill;
+    insertRelatedSkills("lure_tiger_effect", "#lure_tiger-prohibit");
 
     foreach (Card *card, cards)
         card->setParent(this);

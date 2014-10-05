@@ -22,12 +22,12 @@
 #define _CARD_ITEM_H
 
 #include "card.h"
-#include "QSanSelectableItem.h"
+#include "qsanselectableitem.h"
 #include "settings.h"
 #include <QAbstractAnimation>
 #include <QMutex>
 #include <QSize>
-#include "SkinBank.h"
+#include "skinbank.h"
 #include "qsanbutton.h"
 
 class FilterSkill;

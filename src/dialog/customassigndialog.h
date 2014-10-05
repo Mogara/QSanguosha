@@ -18,22 +18,24 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#ifndef _CUSTOM_ASSIGN_DIALOG_H
-#define _CUSTOM_ASSIGN_DIALOG_H
+#ifndef CUSTOMASSIGNDIALOG_H
+#define CUSTOMASSIGNDIALOG_H
 
-#include "engine.h"
+#include "flatdialog.h"
 
-#include <QHBoxLayout>
-#include <QSpinBox>
-#include <QDialog>
-#include <QListWidget>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QMap>
-#include <QButtonGroup>
 #include <QLabel>
-#include <QTextEdit>
-#include <QLineEdit>
+#include <QMap>
+
+class QListWidgetItem;
+class QListWidget;
+class QComboBox;
+class QCheckBox;
+class QSpinBox;
+class QButtonGroup;
+class General;
+class Card;
+class QLineEdit;
+class QTextEdit;
 
 class LabelButton : public QLabel {
     Q_OBJECT
@@ -49,7 +51,7 @@ signals:
     void clicked();
 };
 
-class CustomAssignDialog : public QDialog {
+class CustomAssignDialog : public FlatDialog {
     Q_OBJECT
 
 public:
@@ -64,55 +66,90 @@ protected:
     virtual void reject();
 
 private:
-    QListWidget *list, *equip_list, *hand_list, *judge_list, *pile_list;
-    QComboBox *num_ComboBox, *marks_ComboBox;
-    QCheckBox  *starter_box;
-    LabelButton *general_label, *general_label2;
-    QCheckBox *max_hp_prompt, *hp_prompt;
-    QSpinBox *max_hp_spin, *hp_spin;
-    QSpinBox *player_draw, *marks_count;
-    QCheckBox *self_select_general, *self_select_general2;
-    QCheckBox *set_head_shown, *set_deputy_shown;
-    QPushButton *removeEquipButton, *removeHandButton, *removeJudgeButton, *removePileButton;
-    QCheckBox *set_turned, *set_chained;
-    QComboBox *ended_by_pile_box, *single_turn_box, *before_next_box;
-    QCheckBox *random_roles_box;
-    QCheckBox *rest_in_DP_box;
-    QCheckBox *ended_by_pile, *single_turn, *before_next;
-    QLabel *ended_by_pile_text, *ended_by_pile_text2,
-        *single_turn_text, *single_turn_text2,
-        *before_next_text, *before_next_text2;
-    QPushButton *extra_skill_set;
-    QPushButton *move_list_up_button, *move_list_down_button;
-    QCheckBox *move_list_check, *move_pile_check;
-    QCheckBox *choose_nationality;
-    QComboBox *nationalities;
+    QListWidget *m_list;
+    QListWidget *m_equipList;
+    QListWidget *m_handList;
+    QListWidget *m_judgeList;
+    QListWidget *m_pileList;
+    QComboBox *m_numComboBox;
+    QComboBox *m_marksComboBox;
+    QCheckBox *m_starterCheckBox;
+    LabelButton *m_generalLabel;
+    LabelButton *m_generalLabel2;
+    QCheckBox *m_maxHpPrompt;
+    QCheckBox *m_hpPrompt;
+    QSpinBox *m_maxHpSpin;
+    QSpinBox *m_hpSpin;
+    QSpinBox *m_playerDraw;
+    QSpinBox *m_marksCount;
+    QCheckBox *m_selfSelectGeneral;
+    QCheckBox *m_selfSelectGeneral2;
+    QCheckBox *m_headShownSetter;
+    QCheckBox *m_deputyShownSetter;
+    QPushButton *m_removeEquipButton;
+    QPushButton *m_removeHandButton;
+    QPushButton *m_removeJudgeButton;
+    QPushButton *m_removePileButton;
+    QCheckBox *m_turnedSetter;
+    QCheckBox *m_chainedSetter;
+    QComboBox *m_endedByPileBox;
+    QComboBox *m_singleTurnBox;
+    QComboBox *m_beforeNextBox;
+    QCheckBox *m_randomRolesBox;
+    QCheckBox *m_restInDpBox;
+    QCheckBox *m_endedByPileCheckBox;
+    QCheckBox *m_singleTurnCheckBox;
+    QCheckBox *m_beforeNextCheckBox;
+    QLabel *m_endedByPileText;
+    QLabel *m_endedByPileText2;
+    QLabel *m_singleTurnText;
+    QLabel *m_singleTurnText2;
+    QLabel *m_beforeNextText;
+    QLabel *m_beforeNextText2;
+    QPushButton *m_extraSkillSetter;
+    QPushButton *m_moveListUpButton;
+    QPushButton *m_moveListDownButton;
+    QCheckBox *m_moveListCheck;
+    QCheckBox *m_movePileCheck;
+    QCheckBox *m_nationalityIsSelectableCheckBox;
+    QComboBox *nationalitiesComboBox;
 
-    QMap<QString, QString> general_mapping, general2_mapping;
-    QMap<int, QString> player_mapping;
-    QMap<int, QListWidgetItem *> item_map;
+    QMap<QString, QString> m_generalMap;
+    QMap<QString, QString> m_generalMap2;
+    QMap<int, QString> m_playerMap;
+    QMap<int, QListWidgetItem *> m_itemMap;
 
-    QMap<QString, QList<int> > player_equips, player_handcards, player_judges;
-    QMap<QString, int> player_maxhp, player_hp;
-    QMap<QString, bool> player_turned, player_chained;
-    QMap<QString, bool> player_shown_head, player_shown_deputy;
-    QList<int> set_pile;
-    QMap<QString, int> player_start_draw;
-    QMap<QString, QMap<QString, int> > player_marks;
-    QList<QLabel *> mark_icons;
-    QMap<QString, bool> free_choose_general, free_choose_general2;
-    QMap<QString, QStringList> player_exskills;
-    QMap<QString, bool> set_nationality;
-    QMap<QString, QString> assign_nationality;
+    QMap<QString, QList<int> > m_playersEquips;
+    QMap<QString, QList<int> > m_playersHandcards;
+    QMap<QString, QList<int> > m_playersJudges;
+    QMap<QString, int> m_playersMaxHp;
+    QMap<QString, int> m_playersHp;
+    QMap<QString, bool> m_playerIsTurned;
+    QMap<QString, bool> m_playerIsChained;
+    QMap<QString, bool> m_playerHasShownHead;
+    QMap<QString, bool> m_playerHasShownDeputy;
+    QList<int> m_settedPile;
+    QMap<QString, int> m_playerDrawNumWhenStarts;
+    QMap<QString, QMap<QString, int> > m_playersMarks;
+    QList<QLabel *> m_markIcons;
+    QMap<QString, bool> m_canChooseGeneralFreely;
+    QMap<QString, bool> m_canChooseGeneral2Freely;
+    QMap<QString, QStringList> m_playersExtraSkills;
+    QMap<QString, bool> m_settedNationality;
+    QMap<QString, QString> m_assignedNationality;
 
-    QString general_name, general_name2;
-    bool choose_general2;
-    QString starter;
-    bool is_ended_by_pile, is_single_turn, is_before_next;
+    QString m_generalName;
+    QString m_generalName2;
+    bool m_enableGeneral2;
+    QString m_starter;
+    bool m_isEndedByPile;
+    bool m_isSingleTurn;
+    bool m_isBeforeNext;
 
-    QList<bool> set_options;
+    QList<bool> m_settedOptions;
 
-    QMap<QString, int> kingdom_index;
+    QMap<QString, int> m_kingdomIndex;
+
 private slots:
     void updateKingdom(int index);
     void updateNumber(int num);
@@ -121,7 +158,7 @@ private slots:
     void updatePlayerInfo(QString name);
     void updatePlayerHpInfo(QString name);
     void updateAllKingdoms(bool toggled = false);
-    void updatePlayerExSkills(QStringList update_skills);
+    void updatePlayerExSkills(QStringList updatedSkills);
 
     void freeChoose(bool toggled);
     void freeChoose2(bool toggled);
@@ -169,7 +206,7 @@ private slots:
     void doPlayerShows2(bool toggled);
 
 public slots:
-    void getChosenGeneral(QString general_name);
+    void getChosenGeneral(QString generalName);
     void getEquipCard(int card_id);
     void getHandCard(int card_id);
     void getJudgeCard(int card_id);
@@ -180,12 +217,11 @@ signals:
     void scenario_changed();
 };
 
-
-class GeneralAssignDialog : public QDialog {
+class GeneralAssignDialog : public FlatDialog {
     Q_OBJECT
 
 public:
-    explicit GeneralAssignDialog(QWidget *parent, bool can_ban = false);
+    explicit GeneralAssignDialog(QWidget *parent, bool canBan = false);
 
 private:
     QButtonGroup *group;
@@ -196,52 +232,54 @@ private slots:
     void clearGeneral();
 
 signals:
-    void general_chosen(const QString &name);
-    void general_cleared();
+    void generalChosen(const QString &name);
+    void generalCleared();
 };
 
-class CardAssignDialog : public QDialog {
+class CardAssignDialog : public FlatDialog {
     Q_OBJECT
 
 public:
-    CardAssignDialog(QWidget *parent = 0, QString card_type = QString(), QString class_name = QString(), QList<int> excluded = QList<int>());
+    CardAssignDialog(QWidget *parent = 0, QString cardType = QString(), QString className = QString(), QList<int> excluded = QList<int>());
 
 private:
     void addCard(const Card *card);
 
-    QListWidget *card_list;
-    QString card_type, class_name;
-    QList<int> excluded_card;
+    QListWidget *m_cardList;
+    QString m_cardType;
+    QString m_className;
+    QList<int> m_excludedCards;
 
 private slots:
     void askCard();
     void updateCardList();
-    void updateExcluded(int card_id);
+    void updateExcluded(int cardId);
 
 signals:
-    void card_chosen(int card_id);
+    void cardChosen(int cardId);
 };
 
-class SkillAssignDialog : public QDialog {
+class SkillAssignDialog : public FlatDialog {
     Q_OBJECT
 
 public:
-    SkillAssignDialog(QDialog *parent, QString player_name, QStringList &player_skills);
+    SkillAssignDialog(QDialog *parent, QString playerName, QStringList &playerSkills);
 
 private:
-    QListWidget *skill_list;
-    QLineEdit *input_skill;
-    QPushButton *select_skill, *delete_skill;
-    QTextEdit *skill_info;
+    QListWidget *m_skillList;
+    QLineEdit *m_skillInput;
+    QPushButton *m_selectSkillButton;
+    QPushButton *m_deleteSkillButton;
+    QTextEdit *m_skillInfo;
 
-    QStringList update_skills;
+    QStringList m_updatedSkills;
 
 private slots:
     void selectSkill();
     void deleteSkill();
     void addSkill();
 
-    void changeSkillInfo();
+    void updateSkillInfo();
     void updateSkillList();
 
     void getSkillFromGeneral(QString general);
@@ -249,8 +287,7 @@ private slots:
     virtual void accept();
 
 signals:
-    void skill_update(QStringList);
+    void skillUpdated(QStringList);
 };
 
-#endif
-
+#endif // CUSTOMASSIGNDIALOG_H

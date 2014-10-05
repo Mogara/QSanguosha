@@ -25,8 +25,8 @@
 #include "standard.h"
 #include "playercarddialog.h"
 #include "roomscene.h"
-#include "HeroSkinContainer.h"
-#include "GraphicsPixmapHoverItem.h"
+#include "heroskincontainer.h"
+#include "graphicspixmaphoveritem.h"
 
 #include <QPainter>
 #include <QGraphicsScene>
@@ -404,7 +404,7 @@ void Dashboard::_addHandCard(CardItem *card_item, bool prepend, const QString &f
     if (Self->getHandcards().contains(card_item->getCard())
             && card_item->getCard()->isTransferable()) {
         card_item->setTransferable(true);
-        if (!_transferButtons.contains(card_item->getTransferButton()))
+        if (card_item->getTransferButton() && !_transferButtons.contains(card_item->getTransferButton()))
             _transferButtons << card_item->getTransferButton();
     }
 }
@@ -1479,18 +1479,18 @@ void Dashboard::onAvatarHoverEnter() {
         GraphicsPixmapHoverItem *avatarItem = NULL;
         QSanButton *heroSKinBtn = NULL;
 
-        if ((senderObj == _m_avatarIcon)) {
-                general = m_player->getGeneral();
-                avatarItem = _m_avatarIcon;
-                heroSKinBtn = m_changeHeadHeroSkinButton;
+        if (senderObj == _m_avatarIcon) {
+            general = m_player->getGeneral();
+            avatarItem = _m_avatarIcon;
+            heroSKinBtn = m_changeHeadHeroSkinButton;
 
-                m_changeDeputyHeroSkinButton->hide();
-        } else if ((senderObj == _m_smallAvatarIcon)) {
-                general = m_player->getGeneral2();
-                avatarItem = _m_smallAvatarIcon;
-                heroSKinBtn = m_changeDeputyHeroSkinButton;
+            m_changeDeputyHeroSkinButton->hide();
+        } else if (senderObj == _m_smallAvatarIcon) {
+            general = m_player->getGeneral2();
+            avatarItem = _m_smallAvatarIcon;
+            heroSKinBtn = m_changeDeputyHeroSkinButton;
 
-                m_changeHeadHeroSkinButton->hide();
+            m_changeHeadHeroSkinButton->hide();
         }
 
         if (NULL != general && HeroSkinContainer::hasSkin(general->objectName())
@@ -1507,10 +1507,10 @@ void Dashboard::onAvatarHoverLeave()
 
         QSanButton *heroSKinBtn = NULL;
 
-        if ((senderObj == _m_avatarIcon))
-                heroSKinBtn = m_changeHeadHeroSkinButton;
-        else if ((senderObj == _m_smallAvatarIcon))
-                heroSKinBtn = m_changeDeputyHeroSkinButton;
+        if (senderObj == _m_avatarIcon)
+            heroSKinBtn = m_changeHeadHeroSkinButton;
+        else if (senderObj == _m_smallAvatarIcon)
+            heroSKinBtn = m_changeDeputyHeroSkinButton;
 
         if ((NULL != heroSKinBtn) && (!heroSKinBtn->isMouseInside())) {
             heroSKinBtn->hide();

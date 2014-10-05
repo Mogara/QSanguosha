@@ -33,7 +33,7 @@ struct LogMessage;
 #include "serverplayer.h"
 #include "roomthread.h"
 #include "protocol.h"
-#include "RoomState.h"
+#include "roomstate.h"
 
 #include <QMutex>
 #include <QStack>

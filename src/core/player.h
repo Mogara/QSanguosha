@@ -22,7 +22,7 @@
 #define _PLAYER_H
 
 #include "general.h"
-#include "WrappedCard.h"
+#include "wrappedcard.h"
 #include "namespace.h"
 
 #include <QObject>

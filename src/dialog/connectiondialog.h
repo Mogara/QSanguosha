@@ -25,7 +25,7 @@
 #include <QComboBox>
 #include <QButtonGroup>
 
-#include "FlatDialog.h"
+#include "flatdialog.h"
 
 namespace Ui {
     class ConnectionDialog;

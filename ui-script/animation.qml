@@ -1,24 +1,24 @@
 /********************************************************************
-    Copyright (c) 2013-2014 - QSanguosha-Hegemony Team
+    Copyright (c) 2013-2014 - QSanguosha-Rara
 
     This file is part of QSanguosha-Hegemony.
 
     This game is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 3.0 of the License, or (at your option) any later version.
+    modify it under the terms of the GNU General Public License as
+    published by the Free Software Foundation; either version 3.0
+    of the License, or (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
+    General Public License for more details.
 
     See the LICENSE file for more details.
 
-    QSanguosha-Hegemony Team
+    QSanguosha-Rara
     *********************************************************************/
 
-import QtQuick 1.0
+import QtQuick 2.3
 
 Rectangle {
     id: container
@@ -84,7 +84,7 @@ Rectangle {
             to: 0.7
             duration: 880
         }
-        onCompleted: {
+        onStopped: {
             heroPic.visible = false
             flicker_mask.visible = true
             pause1.start()
@@ -93,7 +93,7 @@ Rectangle {
     PauseAnimation {
         id: pause1
         duration: 20
-        onCompleted: {
+        onStopped: {
             flicker_mask.visible = false
             pause2.start()
         }
@@ -101,7 +101,7 @@ Rectangle {
     PauseAnimation {
         id: pause2
         duration: 80
-        onCompleted: {
+        onStopped: {
             flicker_mask.visible = true
             pause3.start()
         }
@@ -109,7 +109,7 @@ Rectangle {
     PauseAnimation {
         id: pause3
         duration: 20
-        onCompleted: {
+        onStopped: {
             flicker_mask.visible = false
             heroPic.visible = true
             step2.start()
@@ -117,7 +117,7 @@ Rectangle {
     }
     SequentialAnimation {
         id: step2
-        onCompleted: {
+        onStopped: {
             container.visible = false
             container.animationCompleted()
         }

@@ -20,7 +20,7 @@
 
 #include "json.h"
 
-#include <QStringlist>
+#include <QStringList>
 #include <QFile>
 #include <QRect>
 #include <QColor>

@@ -23,13 +23,13 @@
 
 #include "photo.h"
 #include "dashboard.h"
-#include "TablePile.h"
+#include "tablepile.h"
 #include "card.h"
 #include "client.h"
 #include "aux-skills.h"
 #include "clientlogbox.h"
 #include "chatwidget.h"
-#include "SkinBank.h"
+#include "skinbank.h"
 #include "sprite.h"
 #include "qsanbutton.h"
 
@@ -58,10 +58,14 @@ struct RoomLayout;
 #include <QHBoxLayout>
 #include <QMutex>
 #include <QStack>
-#ifndef Q_OS_WINRT
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtDeclarative/QDeclarativeEngine>
 #include <QtDeclarative/QDeclarativeContext>
 #include <QtDeclarative/QDeclarativeComponent>
+#else
+#include <QtQml/QQmlEngine>
+#include <QtQml/QQmlContext>
+#include <QtQml/QQmlComponent>
 #endif
 class ScriptExecutor : public QDialog {
     Q_OBJECT
@@ -144,8 +148,6 @@ public:
     static void FillPlayerNames(QComboBox *ComboBox, bool add_none);
     void updateTable();
     inline QMainWindow *mainWindow() { return main_window; }
-
-    void changeTableBg();
 
     inline bool isCancelButtonEnabled() const{ return cancel_button != NULL && cancel_button->isEnabled(); }
 
@@ -286,7 +288,6 @@ private:
     QPixmap m_rolesBoxBackground;
     QGraphicsPixmapItem *m_rolesBox;
     QGraphicsTextItem *m_pileCardNumInfoTextBox;
-    QGraphicsPixmapItem *m_tableBg;
     int m_tablew;
     int m_tableh;
 
@@ -359,16 +360,22 @@ private:
 
     QRectF _m_infoPlane;
 
-#ifndef Q_OS_WINRT
     // for animation effects
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QDeclarativeEngine *_m_animationEngine;
     QDeclarativeContext *_m_animationContext;
     QDeclarativeComponent *_m_animationComponent;
+#else
+    QQmlEngine *_m_animationEngine;
+    QQmlContext *_m_animationContext;
+    QQmlComponent *_m_animationComponent;
 #endif
 
     QSet<HeroSkinContainer *> m_heroSkinContainers;
 
 private slots:
+    void onSceneRectChanged(const QRectF &);
+
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>());
     void updateSkillButtons();
     void acquireSkill(const ClientPlayer *player, const QString &skill_name, const bool &head = true);

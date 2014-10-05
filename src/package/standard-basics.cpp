@@ -375,10 +375,11 @@ bool NatureSlash::match(const QString &pattern) const{
         return Slash::match(pattern);
 }
 
-ThunderSlash::ThunderSlash(Suit suit, int number)
+ThunderSlash::ThunderSlash(Suit suit, int number, bool is_transferable)
     : NatureSlash(suit, number, DamageStruct::Thunder)
 {
     setObjectName("thunder_slash");
+    transferable = is_transferable;
 }
 
 FireSlash::FireSlash(Suit suit, int number)
@@ -401,9 +402,10 @@ bool Jink::isAvailable(const Player *) const{
     return false;
 }
 
-Peach::Peach(Suit suit, int number) : BasicCard(suit, number) {
+Peach::Peach(Suit suit, int number, bool is_transferable) : BasicCard(suit, number) {
     setObjectName("peach");
     target_fixed = true;
+    transferable = is_transferable;
 }
 
 QString Peach::getSubtype() const{
@@ -432,11 +434,12 @@ bool Peach::isAvailable(const Player *player) const{
     return player->isWounded() && !player->isProhibited(player, this) && BasicCard::isAvailable(player);
 }
 
-Analeptic::Analeptic(Card::Suit suit, int number)
+Analeptic::Analeptic(Card::Suit suit, int number, bool is_transferable)
     : BasicCard(suit, number)
 {
     setObjectName("analeptic");
     target_fixed = true;
+    transferable = is_transferable;
 }
 
 QString Analeptic::getSubtype() const{

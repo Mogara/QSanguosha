@@ -32,20 +32,19 @@ transfer_skill.getTurnUseCard = function(self, inclusive)
 	return sgs.Card_Parse("@TransferCard=.")
 end
 
-sgs.ai_skill_use_func.TransferCard = function(card, use, self)
+sgs.ai_skill_use_func.TransferCard = function(transferCard, use, self)
 
-	local friends, friends_other, isWeakFriend = {}, {}
+	local friends, friends_other = {}, {}
+	local targets = sgs.PlayerList()
 	for _, friend in ipairs(self.friends_noself) do
-		if not self:needKongcheng(friend, true) and friend:hasShownOneGeneral() then
-			if self.player:isFriendWith(friend) then
-				if self:isWeak(friend) then isWeakFriend = true end
+		if transferCard:targetFilter(targets, friend, self.player) and not self:needKongcheng(friend, true) and friend:hasShownOneGeneral() then
+			if friend:hasShownOneGeneral() then
 				table.insert(friends, friend)
 			else
 				table.insert(friends_other, friend)
 			end
 		end
 	end
-	if isWeakFriend then friends_other = {} end
 	if #friends == 0 and #friends_other == 0 then return end
 
 	local cards = {}
@@ -62,8 +61,8 @@ sgs.ai_skill_use_func.TransferCard = function(card, use, self)
 	if #cards == 0 then return end
 
 	self:sortByUseValue(cards)
-	if #friends_other > 0 then
-		local card, target = self:getCardNeedPlayer(cards, friends_other)
+	if #friends > 0 then
+		local card, target = self:getCardNeedPlayer(cards, friends)
 		if card and target then
 			use.card = sgs.Card_Parse("@TransferCard=" .. card:getEffectiveId())
 			if use.to then use.to:append(target) end
@@ -71,31 +70,12 @@ sgs.ai_skill_use_func.TransferCard = function(card, use, self)
 		end
 	end
 
-	if #friends == 0 then return end
+	if #friends_other == 0 then return end
 
-	cards = {}
-	oneJink = self.player:hasSkill("kongcheng")
-	for _, c in sgs.qlist(self.player:getHandcards()) do
-		if c:isTransferable() then
-			if not oneJink and isCard("Jink", c, self.player) then
-				oneJink = true
-				continue
-			end
-			table.insert(cards, c)
-		end
-	end
-	if #cards == 0 then return end
-
-	self:sortByUseValue(cards)
-	local card, target = self:getCardNeedPlayer(cards, friends)
+	local card, target = self:getCardNeedPlayer(cards, friends_other)
 	if card and target then
 		use.card = sgs.Card_Parse("@TransferCard=" .. card:getEffectiveId())
 		if use.to then use.to:append(target) end
-		return
-	elseif self:getOverflow() > 0 then
-		self:sort(friends, "handcard")
-		use.card = sgs.Card_Parse("@TransferCard=" .. cards[1]:getEffectiveId())
-		if use.to then use.to:append(friends[1]) end
 		return
 	end
 end
@@ -593,7 +573,7 @@ function SmartAI:useCardAllianceFeast(card, use)
 			return v1 > v2
 		end
 		table.sort(targets, cmp_k)
-		if isEnemy then sgs.reverse(targets) end
+		if isEnemy then targets = sgs.reverse(targets) end
 		use.card = card
 		if use.to then use.to:append(targets[1]) end
 		return
@@ -612,5 +592,43 @@ sgs.ai_use_priority.AllianceFeast = 8.8
 sgs.ai_keep_value.AllianceFeast = 3.26
 
 sgs.ai_nullification.AllianceFeast = function(self, card, from, to, positive)
+	return
+end
+
+
+--ThreatenEmperor
+function SmartAI:useCardThreatenEmperor(card, use)
+	if not card:isAvailable(self.player) then return end
+	use.card = card
+end
+sgs.ai_use_value.ThreatenEmperor = 6.6
+sgs.ai_use_priority.ThreatenEmperor = 0
+sgs.ai_keep_value.ThreatenEmperor = 3.2
+
+sgs.ai_nullification.ThreatenEmperor = function(self, card, from, to, positive)
+	if positive then
+		if self:isEnemy(from) then return true end
+	else
+		if self:isFriend(from) then return true end
+	end
+	return
+end
+
+sgs.ai_skill_cardask["@threaten_emperor"] = function(self)
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(cards)
+	return cards[1]:getEffectiveId()
+end
+
+--ImperialOrder
+function SmartAI:useCardImperialOrder(card, use)
+	if not card:isAvailable(self.player) then return end
+	use.card = card
+end
+sgs.ai_use_value.ImperialOrder = 8.2
+sgs.ai_use_priority.ImperialOrder = 8.9
+sgs.ai_keep_value.ImperialOrder = 0
+
+sgs.ai_nullification.ImperialOrder = function(self, card, from, to, positive)
 	return
 end

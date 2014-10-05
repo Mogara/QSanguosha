@@ -58,7 +58,7 @@ class ThunderSlash : public NatureSlash {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE ThunderSlash(Card::Suit suit, int number);
+    Q_INVOKABLE ThunderSlash(Card::Suit suit, int number, bool is_transferable = false);
 };
 
 class FireSlash : public NatureSlash {
@@ -81,7 +81,7 @@ class Peach : public BasicCard {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE Peach(Card::Suit suit, int number);
+    Q_INVOKABLE Peach(Card::Suit suit, int number, bool is_transferable = false);
     virtual QString getSubtype() const;
     virtual void onUse(Room *room, const CardUseStruct &card_use) const;
     virtual void onEffect(const CardEffectStruct &effect) const;
@@ -92,7 +92,7 @@ class Analeptic : public BasicCard {
     Q_OBJECT
 
 public:
-    Q_INVOKABLE Analeptic(Card::Suit suit, int number);
+    Q_INVOKABLE Analeptic(Card::Suit suit, int number, bool is_transfer = false);
     virtual QString getSubtype() const;
 
     static bool IsAvailable(const Player *player, const Card *analeptic = NULL);

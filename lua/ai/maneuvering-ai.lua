@@ -124,7 +124,7 @@ end
 function SmartAI:shouldUseAnaleptic(target, card_use)
 
 	if target:hasArmorEffect("SilverLion") and not self.player:hasWeapon("QinggangSword") then return false end
-	if sgs.isAnjiang(target) and self:objectiveLevel(target) <= 3.5 then return end
+	if self:evaluateKingdom(target) == "unknown" then return end
 
 	for _, p in sgs.qlist(self.room:getAlivePlayers()) do
 		if p:hasShownSkill("qianhuan") and not p:getPile("sorcery"):isEmpty() and p:getKingdom() == target:getKingdom() and card_use.to:length() <= 1 then
