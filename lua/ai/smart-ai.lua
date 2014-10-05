@@ -4180,7 +4180,7 @@ function SmartAI:hasTrickEffective(card, to, from)
 	--if sgs.Sanguosha:isProhibited(from, to, card) then return false end
 	if to:isRemoved() then return false end
 
-	if not card:isKindOf("TrickCard") then return true end
+	if not card:isKindOf("TrickCard") then self.room:writeToConsole(debug.traceback()) return end
 	if to:hasShownSkill("hongyan") and card:isKindOf("Lightning") then return false end
 	if to:hasShownSkill("qianxun") and card:isKindOf("Snatch") then return false end
 	if to:hasShownSkill("qianxun") and card:isKindOf("Indulgence") then return false end
@@ -4814,7 +4814,7 @@ function SmartAI:getKingdomCount()
 	local count = 0
 	local k = {}
 	for _, ap in sgs.qlist(self.room:getAlivePlayers()) do
-		if sgs.isAnjiang(ap) or not k[ap:getKingdom()] then
+		if sgs.isAnjiang(ap) or not k[ap:getKingdom()] or ap:getRole() == "careerist" then
 			k[ap:getKingdom()] = true
 			count = count + 1
 		end

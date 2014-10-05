@@ -271,11 +271,26 @@ sgs.ai_skill_choice["GameRule:TurnStart"] = function(self, choices, data)
 		if not self.player:hasShownOneGeneral() then
 			local gameProcess = sgs.gameProcess():split(">>")
 			if self.player:getKingdom() == gameProcess[1] and (self.player:getLord() or sgs.shown_kingdom[self.player:getKingdom()] < self.player:aliveCount() / 2) then
-				if canShowHead then return "GameRule_AskForGeneralShowDeputy"
+				if canShowHead then return "GameRule_AskForGeneralShowHead"
 				elseif canShowDeputy then return "GameRule_AskForGeneralShowDeputy" end
 			end
 		end
-
+		if sgs.GetConfig("RewardTheFirstShowingPlayer", false) then
+			local reward = true
+			for _, p in sgs.qlist(self.room:getAlivePlayers()) do
+				if p:hasShownOneGeneral() then
+					reward = false
+					break
+				end
+			end
+			if reward then
+				if math.random(1, 2) == 1 and canShowHead then
+					return "GameRule_AskForGeneralShowDeputy"
+				elseif canShowDeputy then
+					return "GameRule_AskForGeneralShowHead"
+				end
+			end
+		end
 	end
 	return choice
 end

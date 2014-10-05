@@ -632,3 +632,15 @@ sgs.ai_keep_value.ImperialOrder = 0
 sgs.ai_nullification.ImperialOrder = function(self, card, from, to, positive)
 	return
 end
+
+sgs.ai_skill_cardask["@imperial_order-equip"] = function(self)
+	if self:needToThrowArmor() then
+		return self.player:getArmor():getEffectiveId()
+	end
+	return "."
+end
+
+sgs.ai_skill_choice.imperial_order = function(self)
+	if self:needToLoseHp() then return "losehp" end
+	return "show"
+end
