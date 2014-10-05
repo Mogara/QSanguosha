@@ -29,7 +29,7 @@
 #include <QDateTime>
 #include <QSplashScreen>
 
-#include "RoomServer.h"
+#include "roomserver.h"
 #include "settings.h"
 #include "engine.h"
 #include "mainwindow.h"

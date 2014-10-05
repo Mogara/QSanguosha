@@ -23,7 +23,7 @@
 #include "audio.h"
 #include "QSanSelectableItem.h"
 #include "StyleHelper.h"
-#include "Tile.h"
+#include "tile.h"
 
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>

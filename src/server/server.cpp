@@ -18,7 +18,7 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#include "Server.h"
+#include "server.h"
 #include "nativesocket.h"
 #include "clientstruct.h"
 #include "engine.h"

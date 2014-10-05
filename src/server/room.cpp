@@ -26,7 +26,7 @@
 #include "scenario.h"
 #include "gamerule.h"
 #include "scenerule.h"
-#include "RoomServer.h"
+#include "roomserver.h"
 #include "structs.h"
 #include "miniscenarios.h"
 #include "generalselector.h"

@@ -18,7 +18,7 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#include "Tile.h"
+#include "tile.h"
 
 #include <QPainter>
 #include <QFile>

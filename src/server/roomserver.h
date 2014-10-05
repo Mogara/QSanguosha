@@ -30,7 +30,7 @@ class QRadioButton;
 #include "detector.h"
 #include "clientstruct.h"
 #include "FlatDialog.h"
-#include "Server.h"
+#include "server.h"
 
 #include <QLineEdit>
 #include <QSpinBox>

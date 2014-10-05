@@ -1,6 +1,6 @@
-#include "LobbyPlayer.h"
+#include "lobbyplayer.h"
 #include "room.h"
-#include "LobbyServer.h"
+#include "lobbyserver.h"
 #include "json.h"
 
 using namespace QSanProtocol;

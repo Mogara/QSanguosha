@@ -18,12 +18,12 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#include "LobbyScene.h"
+#include "lobbyscene.h"
 #include "client.h"
 #include "settings.h"
 #include "SkinBank.h"
 #include "clientstruct.h"
-#include "Tile.h"
+#include "tile.h"
 
 #include <QMainWindow>
 #include <QVBoxLayout>

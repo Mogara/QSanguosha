@@ -18,7 +18,7 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#include "RoomServer.h"
+#include "roomserver.h"
 #include "settings.h"
 #include "room.h"
 #include "engine.h"

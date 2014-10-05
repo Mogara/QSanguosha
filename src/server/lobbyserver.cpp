@@ -18,8 +18,8 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#include "LobbyServer.h"
-#include "LobbyPlayer.h"
+#include "lobbyserver.h"
+#include "lobbyplayer.h"
 #include "json.h"
 #include "clientstruct.h"
 

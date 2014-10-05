@@ -21,7 +21,7 @@
 #ifndef LOBBYSERVER_H
 #define LOBBYSERVER_H
 
-#include "Server.h"
+#include "server.h"
 
 class LobbyPlayer;
 

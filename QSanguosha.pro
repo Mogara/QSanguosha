@@ -76,11 +76,11 @@ SOURCES += \
     src/server/generalselector.cpp \
     src/server/room.cpp \
     src/server/roomthread.cpp \
-    src/server/RoomServer.cpp \
+    src/server/roomserver.cpp \
     src/server/serverplayer.cpp \
-    src/server/Server.cpp \
-    src/server/LobbyServer.cpp \
-    src/server/LobbyPlayer.cpp \
+    src/server/server.cpp \
+    src/server/lobbyserver.cpp \
+    src/server/lobbyplayer.cpp \
     src/ui/button.cpp \
     src/ui/cardcontainer.cpp \
     src/ui/carditem.cpp \
@@ -115,8 +115,8 @@ SOURCES += \
     src/ui/GraphicsPixmapHoverItem.cpp \
     src/ui/HeroSkinContainer.cpp \
     src/ui/SkinItem.cpp \
-    src/ui/LobbyScene.cpp \
-    src/ui/Tile.cpp \
+    src/ui/lobbyscene.cpp \
+    src/ui/tile.cpp \
     src/util/detector.cpp \
     src/util/nativesocket.cpp \
     src/util/recorder.cpp \
@@ -188,11 +188,11 @@ HEADERS += \
     src/server/generalselector.h \
     src/server/room.h \
     src/server/roomthread.h \
-    src/server/RoomServer.h \
+    src/server/roomserver.h \
     src/server/serverplayer.h \
-    src/server/Server.h \
-    src/server/LobbyServer.h \
-    src/server/LobbyPlayer.h \
+    src/server/server.h \
+    src/server/lobbyserver.h \
+    src/server/lobbyplayer.h \
     src/ui/button.h \
     src/ui/cardcontainer.h \
     src/ui/carditem.h \
@@ -227,8 +227,8 @@ HEADERS += \
     src/ui/GraphicsPixmapHoverItem.h \
     src/ui/HeroSkinContainer.h \
     src/ui/SkinItem.h \
-    src/ui/LobbyScene.h \
-    src/ui/Tile.h \
+    src/ui/lobbyscene.h \
+    src/ui/tile.h \
     src/util/detector.h \
     src/util/nativesocket.h \
     src/util/recorder.h \
