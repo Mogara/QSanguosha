@@ -187,7 +187,7 @@ void LobbyServer::setupNewRoom(ClientSocket *from, const QVariant &data)
         }
 
         int maxRoomNum = args.at(4).toInt();
-        if (maxRoomNum < -1 || args.at(3).toInt() > maxRoomNum) {
+        if (maxRoomNum < -1 || (maxRoomNum != -1 && args.at(3).toInt() > maxRoomNum)) {
             emit serverMessage(tr("%1 Invalid room number or max room number").arg(from->peerName()));
             return;
         }
