@@ -38,7 +38,6 @@ class LobbyScene : public QGraphicsScene
     Q_OBJECT
 public:
     explicit LobbyScene(QMainWindow *parent = 0);
-    void adjustItems();
     void adjustRoomTiles();
 
 signals:
@@ -60,6 +59,7 @@ private slots:
     void onRoomTileClicked();
     void onCreateRoomClicked();
     void onClientDestroyed();
+    void onSceneRectChanged(const QRectF &rect);
 
 private:
     QWidget *chatWidget;

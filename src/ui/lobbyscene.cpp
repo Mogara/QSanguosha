@@ -84,24 +84,25 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     connect(createRoomTile, SIGNAL(clicked()), SLOT(onCreateRoomClicked()));
     addItem(createRoomTile);
 
+    setBackgroundBrush(QPixmap(Config.BackgroundImage));
+
     connect(ClientInstance, SIGNAL(roomListChanged(QVariant)), SLOT(setRoomList(QVariant)));
     connect(ClientInstance, SIGNAL(destroyed()), SLOT(onClientDestroyed()));
+    connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
     connect(this, SIGNAL(roomListRequested(int)), ClientInstance, SLOT(fetchRoomList(int)));
     connect(this, SIGNAL(destroyed()), ClientInstance, SLOT(deleteLater()));
 }
 
-void LobbyScene::adjustItems()
+void LobbyScene::onSceneRectChanged(const QRectF &rect)
 {
-    QRectF displayRegion = sceneRect();
+    chatWidget->resize(rect.width() - 250, rect.height() * 0.3);
+    chatWidget->move(SCENE_PADDING, rect.height() - chatWidget->height() - SCENE_PADDING);
 
-    chatWidget->resize(displayRegion.width() - 250, displayRegion.height() * 0.3);
-    chatWidget->move(SCENE_PADDING, displayRegion.height() - chatWidget->height() - SCENE_PADDING);
-
-    userAvatarItem->setPos(displayRegion.right() - userAvatarItem->boundingRect().width() - SCENE_PADDING, SCENE_MARGIN_TOP + SCENE_PADDING);
+    userAvatarItem->setPos(rect.right() - userAvatarItem->boundingRect().width() - SCENE_PADDING, SCENE_MARGIN_TOP + SCENE_PADDING);
     userNameItem->setPos(userAvatarItem->x(), userAvatarItem->y() + userAvatarItem->boundingRect().height());
 
-    buttonBox->resize(200.0, displayRegion.height() * 0.3);
-    buttonBox->move(displayRegion.width() - buttonBox->width() - SCENE_PADDING, displayRegion.height() - buttonBox->height() - SCENE_PADDING);
+    buttonBox->resize(200.0, rect.height() * 0.3);
+    buttonBox->move(rect.width() - buttonBox->width() - SCENE_PADDING, rect.height() - buttonBox->height() - SCENE_PADDING);
 
     adjustRoomTiles();
 }
