@@ -64,7 +64,6 @@ protected:
     //callbacks for lobby server
     void checkVersion(const QVariant &server_version);
 
-    ServerSocket *server;
     Room *current;
     QSet<Room *> rooms;
     QHash<QString, ServerPlayer *> players;

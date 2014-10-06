@@ -23,24 +23,7 @@
 #include "room.h"
 #include "engine.h"
 #include "scenario.h"
-#include "FreeChooseDialog.h"
-#include "customassigndialog.h"
-#include "miniscenarios.h"
-#include "SkinBank.h"
-#include "banpair.h"
-
-#include <QMessageBox>
-#include <QFormLayout>
-#include <QComboBox>
-#include <QPushButton>
-#include <QGroupBox>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QRadioButton>
-#include <QApplication>
-#include <QHostInfo>
-#include <QAction>
+#include "json.h"
 
 using namespace QSanProtocol;
 
