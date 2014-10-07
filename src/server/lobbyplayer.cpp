@@ -1,5 +1,4 @@
 #include "lobbyplayer.h"
-#include "room.h"
 #include "server.h"
 #include "json.h"
 
@@ -69,6 +68,5 @@ void LobbyPlayer::speakCommand(const QVariant &message)
 
 void LobbyPlayer::roomListCommand(const QVariant &data)
 {
-    int page = data.toInt();
-    server->sendRoomListTo(this, page);
+    notify(S_COMMAND_ROOM_LIST, server->getRoomList(data.toInt()));
 }

@@ -22,8 +22,14 @@
 #include "lobbyplayer.h"
 #include "json.h"
 #include "clientstruct.h"
+#include "room.h"
 
 using namespace QSanProtocol;
+
+void Server::initRoomFunctions()
+{
+    roomFunctions[S_COMMAND_SETUP] = &Server::setupNewRemoteRoom;
+}
 
 void Server::processRoomPacket(ClientSocket *socket, const Packet &packet)
 {
@@ -58,8 +64,6 @@ void Server::setupNewRemoteRoom(ClientSocket *from, const QVariant &data)
     QTcpSocket socket;
     socket.connectToHost(from->peerAddress(), port);
     if (socket.waitForConnected(2000)) {
-        emit serverMessage(tr("%1 signed up as a Room Server on port %2").arg(from->peerName()).arg(port));
-
         /*args.at(0).toString();  //SetupString
         args.at(1).toUInt();    //HostPort
         args.at(2).toInt();     //PlayerNum
@@ -79,9 +83,10 @@ void Server::setupNewRemoteRoom(ClientSocket *from, const QVariant &data)
             return;
         }
 
-        JsonArray data(args);
-        data[1] = QString("%1:%2").arg(from->peerAddress()).arg(port);
-        remoteRooms.insert(from, data);
+        emit serverMessage(tr("%1 signed up as a Room Server on port %2").arg(from->peerName()).arg(port));
+
+        args[1] = QString("%1:%2").arg(from->peerAddress()).arg(port);
+        remoteRooms.insert(from, args);
 
         connect(from, SIGNAL(disconnected()), this, SLOT(cleanupRemoteRoom()));
     }
@@ -99,26 +104,39 @@ void Server::cleanupRemoteRoom()
     this->disconnect(socket);
 }
 
-void Server::sendRoomListTo(LobbyPlayer *player, int page)
+QVariant Server::getRoomList(int page)
 {
-    if (rooms.isEmpty()) {
-        player->notify(S_COMMAND_ROOM_LIST);
-        return;
+    if (rooms.isEmpty() && remoteRooms.isEmpty()) {
+        return QVariant();
     }
 
     static const int pageLimit = 10;
     int offset = page * pageLimit;
-    if (offset >= remoteRooms.size())
-        return;
+    if (offset >= rooms.size() + remoteRooms.size())
+        return QVariant();
 
-    QMapIterator<ClientSocket *, QVariant> iter(remoteRooms);
-    for (int i = 0; i < offset; i++)
-        iter.next();
-
+    int end = offset + pageLimit;
     JsonArray data;
-    for (int i = 0; i < pageLimit && iter.hasNext(); i++) {
-        iter.next();
-        data << iter.value();
+    int i = 0;
+
+    QSetIterator<Room *> iter1(rooms);
+    while (iter1.hasNext()) {
+        Room *room = iter1.next();
+        if (i >= offset)
+            data << room->getId();
+        i++;
+        if (i >= end)
+            return data;
     }
-    player->notify(S_COMMAND_ROOM_LIST, data);
+
+    QMapIterator<ClientSocket *, QVariant> iter2(remoteRooms);
+    while (iter2.hasNext()) {
+        iter2.next();
+        if (i >= offset)
+            data << iter2.value();
+        i++;
+        if (i >= end)
+            return data;
+    }
+    return data;
 }

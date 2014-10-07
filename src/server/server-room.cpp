@@ -27,6 +27,11 @@
 
 using namespace QSanProtocol;
 
+void Server::initLobbyFunctions()
+{
+    lobbyFunctions[S_COMMAND_CHECK_VERSION] = &Server::checkVersion;
+}
+
 void Server::connectToLobby()
 {
     if (Config.LobbyAddress.isEmpty())

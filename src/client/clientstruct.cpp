@@ -99,7 +99,7 @@ bool ServerInfoStruct::parse(const QString &str) {
 bool HostInfoStruct::parse(const QVariant &data)
 {
     JsonArray args = data.value<JsonArray>();
-    if (args.size() != 8 || !ServerInfoStruct::parse(args.at(0).toString())) {
+    if (args.size() != 7 || !ServerInfoStruct::parse(args.at(0).toString())) {
         return false;
     }
     HostAddress = args.at(1).toString();

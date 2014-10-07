@@ -58,7 +58,7 @@ public:
     void broadcastNotification(QSanProtocol::CommandType command, const QVariant &data = QVariant(), int destination = QSanProtocol::S_DEST_CLIENT);
     void broadcast(const QSanProtocol::AbstractPacket *packet);
 
-    void sendRoomListTo(LobbyPlayer *player, int page = 0);
+    QVariant getRoomList(int page = 0);
 
 protected slots:
     void processNewConnection(ClientSocket *socket);
@@ -101,6 +101,10 @@ protected:
 
     QList<LobbyPlayer *> lobbyPlayers;
     QMap<ClientSocket *, QVariant> remoteRooms;
+
+private:
+    void initLobbyFunctions();
+    void initRoomFunctions();
 
 signals:
     void serverMessage(const QString &);

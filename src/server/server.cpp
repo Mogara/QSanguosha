@@ -39,13 +39,11 @@ Server::Server(QObject *parent, Role role)
 {
     server->setParent(this);
 
-    if (lobbyFunctions.isEmpty()) {
-        lobbyFunctions[S_COMMAND_CHECK_VERSION] = &Server::checkVersion;
-    }
+    if (lobbyFunctions.isEmpty())
+        initLobbyFunctions();
 
-    if (roomFunctions.isEmpty()) {
-        roomFunctions[S_COMMAND_SETUP] = &Server::setupNewRemoteRoom;
-    }
+    if (roomFunctions.isEmpty())
+        initRoomFunctions();
 
     ServerInfo.parse(Sanguosha->getSetupString());
 
@@ -217,6 +215,6 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
 
         emit serverMessage(tr("%1 logged in as Player %2").arg(socket->peerName()).arg(screen_name));
 
-        sendRoomListTo(player);
+        player->notify(S_COMMAND_ROOM_LIST, getRoomList());
     }
 }
