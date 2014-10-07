@@ -1,13 +1,13 @@
 #include "lobbyplayer.h"
 #include "room.h"
-#include "lobbyserver.h"
+#include "server.h"
 #include "json.h"
 
 using namespace QSanProtocol;
 
 QHash<CommandType, LobbyPlayer::Callback> LobbyPlayer::callbacks;
 
-LobbyPlayer::LobbyPlayer(LobbyServer *parent) :
+LobbyPlayer::LobbyPlayer(Server *parent) :
     QObject(parent), server(parent), socket(NULL)
 {
     if (callbacks.isEmpty()) {

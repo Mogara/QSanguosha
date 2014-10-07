@@ -257,7 +257,7 @@ void StartScene::printServerInfo() {
     serverLog->append(tr("Binding port number is %1").arg(Config.ServerPort));
 
     //Room Server only
-    if (server && server->inherits("RoomServer")) {
+    if (server && server->getRole() == Server::RoomRole) {
         serverLog->append(tr("Game mode is %1").arg(Sanguosha->getModeName(Config.GameMode)));
         serverLog->append(tr("Player count is %1").arg(Sanguosha->getPlayerCount(Config.GameMode)));
         serverLog->append(Config.OperationNoLimit ?

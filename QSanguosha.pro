@@ -84,10 +84,10 @@ SOURCES += \
     src/server/generalselector.cpp \
     src/server/room.cpp \
     src/server/roomthread.cpp \
-    src/server/roomserver.cpp \
     src/server/serverplayer.cpp \
     src/server/server.cpp \
-    src/server/lobbyserver.cpp \
+    src/server/server-lobby.cpp \
+    src/server/server-room.cpp \
     src/server/lobbyplayer.cpp \
     src/ui/button.cpp \
     src/ui/cardcontainer.cpp \
@@ -199,10 +199,8 @@ HEADERS += \
     src/server/generalselector.h \
     src/server/room.h \
     src/server/roomthread.h \
-    src/server/roomserver.h \
     src/server/serverplayer.h \
     src/server/server.h \
-    src/server/lobbyserver.h \
     src/server/lobbyplayer.h \
     src/ui/button.h \
     src/ui/cardcontainer.h \

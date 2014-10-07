@@ -23,7 +23,7 @@
 
 #include "flatdialog.h"
 
-class RoomServer;
+class Server;
 class QListWidget;
 class ServerPlayer;
 
@@ -31,13 +31,13 @@ class BanIpDialog : public FlatDialog {
     Q_OBJECT
 
 public:
-    BanIpDialog(QWidget *parent, RoomServer *server);
+    BanIpDialog(QWidget *parent, Server *server);
 
 private:
     QListWidget *left;
     QListWidget *right;
 
-    RoomServer *server;
+    Server *server;
     QList<ServerPlayer *> sp_list;
 
     void loadIPList();

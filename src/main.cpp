@@ -29,7 +29,7 @@
 #include <QDateTime>
 #include <QSplashScreen>
 
-#include "roomserver.h"
+#include "server.h"
 #include "settings.h"
 #include "engine.h"
 #include "mainwindow.h"
@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
     new Engine;
 
     if (qApp->arguments().contains("-server")) {
-        RoomServer *server = new RoomServer(qApp);
+        Server *server = new Server(qApp);
         printf("Server is starting on port %u\n", Config.ServerPort);
 
         if (server->listen())

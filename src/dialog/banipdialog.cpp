@@ -19,7 +19,7 @@
     *********************************************************************/
 
 #include "banipdialog.h"
-#include "roomserver.h"
+#include "server.h"
 #include "room.h"
 #include "serverplayer.h"
 #include "settings.h"
@@ -29,7 +29,7 @@
 #include <QPushButton>
 #include <QMessageBox>
 
-BanIpDialog::BanIpDialog(QWidget *parent, RoomServer *server)
+BanIpDialog::BanIpDialog(QWidget *parent, Server *server)
     : FlatDialog(parent), server(server) {
     /*
         if (Sanguosha->currentRoom() == NULL){

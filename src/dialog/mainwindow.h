@@ -40,7 +40,7 @@ namespace Ui {
 class FitView;
 class QGraphicsScene;
 class QSystemTrayIcon;
-class RoomServer;
+class Server;
 class QTextEdit;
 class QGroupBox;
 class RoomItem;
@@ -50,13 +50,13 @@ class BroadcastBox : public QDialog {
     Q_OBJECT
 
 public:
-    BroadcastBox(RoomServer *server, QWidget *parent = 0);
+    BroadcastBox(Server *server, QWidget *parent = 0);
 
 protected:
     virtual void accept();
 
 private:
-    RoomServer *server;
+    Server *server;
     QTextEdit *text_edit;
 };
 
@@ -116,7 +116,7 @@ private:
     ConnectionDialog *connection_dialog;
     ConfigDialog *config_dialog;
     QSystemTrayIcon *systray;
-    RoomServer *server;
+    Server *server;
     Window *about_window;
     UpdateInfoStruct updateInfomation;
 

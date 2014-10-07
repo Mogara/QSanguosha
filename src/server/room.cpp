@@ -26,7 +26,7 @@
 #include "scenario.h"
 #include "gamerule.h"
 #include "scenerule.h"
-#include "roomserver.h"
+#include "server.h"
 #include "structs.h"
 #include "miniscenarios.h"
 #include "generalselector.h"
@@ -3477,7 +3477,7 @@ void Room::startGame() {
     doBroadcastNotify(S_COMMAND_GAME_START, QVariant());
     game_started = true;
 
-    RoomServer *server = qobject_cast<RoomServer *>(parent());
+    Server *server = qobject_cast<Server *>(parent());
     foreach(ServerPlayer *player, m_players) {
         if (player->getState() == "online")
             server->signupPlayer(player);

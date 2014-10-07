@@ -21,9 +21,8 @@
 #include "mainwindow.h"
 #include "startscene.h"
 #include "roomscene.h"
-#include "roomserver.h"
+#include "server.h"
 #include "lobbyscene.h"
-#include "lobbyserver.h"
 #include "client.h"
 #include "generaloverview.h"
 #include "cardoverview.h"
@@ -622,7 +621,7 @@ void MainWindow::on_actionStart_Server_triggered() {
     if (!dialog->config())
         return;
 
-    server = new RoomServer(this);
+    server = new Server(this);
     if (!server->listen()) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
         return;
@@ -1023,7 +1022,7 @@ void MainWindow::on_actionRule_Summary_triggered()
     dialog->show();
 }
 
-BroadcastBox::BroadcastBox(RoomServer *server, QWidget *parent)
+BroadcastBox::BroadcastBox(Server *server, QWidget *parent)
     : QDialog(parent), server(server)
 {
     setWindowTitle(tr("Broadcast"));
@@ -1052,7 +1051,7 @@ void BroadcastBox::accept() {
 }
 
 void MainWindow::on_actionBroadcast_triggered() {
-    RoomServer *server = findChild<RoomServer *>();
+    Server *server = findChild<Server *>();
     if (server == NULL) {
         QMessageBox::warning(this, tr("Warning"), tr("Server is not started yet!"));
         return;
@@ -1082,7 +1081,7 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
     if (!dialog->config())
         return;
 
-    server = new RoomServer(this);
+    server = new Server(this);
     ushort port = scene->inherits("LobbyScene") ? 0 : Config.ServerPort;
     if (!server->listen(QHostAddress::Any, port)) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
@@ -1415,7 +1414,7 @@ void MainWindow::on_actionSound_Test_triggered(){
 
 void MainWindow::on_actionStart_Lobby_triggered()
 {
-    LobbyServer *server = new LobbyServer(this);
+    Server *server = new Server(this, Server::LobbyRole);
     if (!server->listen()) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
         server->deleteLater();

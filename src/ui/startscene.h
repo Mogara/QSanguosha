@@ -22,7 +22,7 @@
 #define _START_SCENE_H
 
 #include "qsanselectableitem.h"
-#include "roomserver.h"
+#include "server.h"
 
 #include <QGraphicsScene>
 #include <QAction>

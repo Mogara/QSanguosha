@@ -5,7 +5,7 @@
 #include "nativesocket.h"
 
 class ClientSocket;
-class LobbyServer;
+class Server;
 
 #include <QObject>
 
@@ -17,7 +17,7 @@ public:
     Q_PROPERTY(QString screenName READ getScreenName WRITE setScreenName)
     Q_PROPERTY(QString avatar READ getAvatar WRITE setAvatar)
 
-    explicit LobbyPlayer(LobbyServer *parent = 0);
+    explicit LobbyPlayer(Server *parent = 0);
 
     void setSocket(ClientSocket *new_socket);
     QString getIP() const { return socket->peerAddress(); }
@@ -44,7 +44,7 @@ protected:
     void speakCommand(const QVariant &message);
     void roomListCommand(const QVariant &data);
 
-    LobbyServer *server;
+    Server *server;
     QString screenName;
     QString avatar;
     ClientSocket *socket;
