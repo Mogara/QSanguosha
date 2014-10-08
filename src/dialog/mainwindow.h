@@ -163,6 +163,8 @@ private slots:
     void on_actionExit_triggered();
     void on_actionCheckUpdate_triggered();
     void on_actionSound_Test_triggered();
+    void on_actionManage_Ban_IP_triggered();
+    void on_actionStart_Lobby_triggered();
 
     void checkVersion(const QString &server_version, const QString &server_mod);
     void networkError(const QString &error_msg);
@@ -172,12 +174,10 @@ private slots:
     void exitScene();
     void startGameInAnotherInstance();
     void changeBackground();
-    void on_actionManage_Ban_IP_triggered();
 
     void onVersionInfomationGotten();
     void onChangeLogGotten();
-
-    void on_actionStart_Lobby_triggered();
+    void onCreateRoomClicked();
 
 signals:
     void about_to_close();

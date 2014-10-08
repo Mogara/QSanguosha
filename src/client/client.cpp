@@ -601,6 +601,12 @@ void Client::fetchRoomList(int page)
     notifyServer(S_COMMAND_ROOM_LIST, page);
 }
 
+void Client::requestNewRoom()
+{
+    //@todo: transfer configurations
+    notifyServer(S_COMMAND_CREATE_ROOM);
+}
+
 void Client::onPlayerResponseCard(const Card *card, const QList<const Player *> &targets) {
     if ((status & ClientStatusBasicMask) == Responding)
         _m_roomState.setCurrentCardUsePattern(QString());

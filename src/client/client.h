@@ -249,6 +249,7 @@ public slots:
     void fillRobots();
     void arrange(const QStringList &order);
     void fetchRoomList(int page = 0);
+    void requestNewRoom();
 
     void onPlayerReplyGongxin(int card_id = -1);
 

@@ -21,6 +21,8 @@
 #include "lobbyplayer.h"
 #include "server.h"
 #include "json.h"
+#include "room.h"
+#include "miniscenarios.h"
 
 using namespace QSanProtocol;
 
@@ -32,6 +34,7 @@ LobbyPlayer::LobbyPlayer(Server *parent) :
     if (callbacks.isEmpty()) {
         callbacks[S_COMMAND_SPEAK] = &LobbyPlayer::speakCommand;
         callbacks[S_COMMAND_ROOM_LIST] = &LobbyPlayer::roomListCommand;
+        callbacks[S_COMMAND_CREATE_ROOM] = &LobbyPlayer::createRoomCommand;
     }
 }
 
@@ -65,16 +68,16 @@ void LobbyPlayer::processMessage(const QByteArray &message)
         if (func) {
             (this->*func)(packet.getMessageBody());
         } else {
-            emit errorMessage(tr("Packet with an invalid command: %1, from %2(%3)")
-                              .arg(QString::fromUtf8(message))
+            emit errorMessage(tr("%1 %2 send a packet with an invalid command: %3")
+                              .arg(socket->peerName())
                               .arg(screenName)
-                              .arg(socket->peerName()));
+                              .arg(QString::fromUtf8(message)));
         }
     } else {
-        emit errorMessage(tr("Invalid packet %1, from %2(%3)")
-                          .arg(QString::fromUtf8(message))
+        emit errorMessage(tr("%1 %2 send an invalid packet %3")
+                          .arg(socket->peerName())
                           .arg(screenName)
-                          .arg(socket->peerName()));
+                          .arg(QString::fromUtf8(message)));
     }
 }
 
@@ -89,4 +92,22 @@ void LobbyPlayer::speakCommand(const QVariant &message)
 void LobbyPlayer::roomListCommand(const QVariant &data)
 {
     notify(S_COMMAND_ROOM_LIST, server->getRoomList(data.toInt()));
+}
+
+void LobbyPlayer::createRoomCommand(const QVariant &)
+{
+    socket->disconnect(this);
+    this->disconnect(socket);
+
+    notify(S_COMMAND_SETUP, Sanguosha->getSetupString());
+    Room *room = server->createNewRoom();
+    ServerPlayer *player = room->addSocket(socket);
+    socket = NULL;
+    room->signup(player, screenName, avatar, false);
+
+    //@todo: find a better solution
+    if (room->getPlayers().length() == 1 && room->getScenario() && room->getScenario()->objectName() == "jiange_defense") {
+        for (int i = 0; i < 4; ++i)
+            room->addRobotCommand(player);
+    }
 }

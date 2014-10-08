@@ -52,7 +52,7 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
     chatWidget->setLayout(chatLayout);
     addWidget(chatWidget);
 
-    connect(ClientInstance, SIGNAL(lineSpoken(const QString &)), chatBox, SLOT(append(QString)));
+    connect(client, SIGNAL(lineSpoken(const QString &)), chatBox, SLOT(append(QString)));
     connect(chatLineEdit, SIGNAL(editingFinished()), SLOT(speakToServer()));
 
     //user profile
@@ -86,11 +86,16 @@ LobbyScene::LobbyScene(QMainWindow *parent) :
 
     setBackgroundBrush(QPixmap(Config.BackgroundImage));
 
-    connect(ClientInstance, SIGNAL(roomListChanged(QVariant)), SLOT(setRoomList(QVariant)));
-    connect(ClientInstance, SIGNAL(destroyed()), SLOT(onClientDestroyed()));
+    connect(client, SIGNAL(roomListChanged(QVariant)), SLOT(setRoomList(QVariant)));
+    connect(client, SIGNAL(destroyed()), SLOT(onClientDestroyed()));
     connect(this, SIGNAL(sceneRectChanged(QRectF)), this, SLOT(onSceneRectChanged(QRectF)));
-    connect(this, SIGNAL(roomListRequested(int)), ClientInstance, SLOT(fetchRoomList(int)));
-    connect(this, SIGNAL(destroyed()), ClientInstance, SLOT(deleteLater()));
+    connect(this, SIGNAL(roomListRequested(int)), client, SLOT(fetchRoomList(int)));
+}
+
+LobbyScene::~LobbyScene()
+{
+    if (client && ClientInstance != client)
+        client->deleteLater();
 }
 
 void LobbyScene::onSceneRectChanged(const QRectF &rect)

@@ -65,6 +65,7 @@
 #include <QFormLayout>
 #include <QNetworkReply>
 #include <QBitmap>
+#include <QNetworkInterface>
 
 #if !defined(QT_NO_OPENGL) && defined(USING_OPENGL)
 #include <QtOpenGL/QGLWidget>
@@ -791,7 +792,7 @@ void MainWindow::enterLobby() {
     }
 
     LobbyScene *scene = new LobbyScene(this);
-    connect(scene, SIGNAL(createRoomClicked()), SLOT(on_actionPC_Console_Start_triggered()));
+    connect(scene, SIGNAL(createRoomClicked()), SLOT(onCreateRoomClicked()));
     connect(scene, SIGNAL(roomSelected()), SLOT(startConnection()));
     connect(scene, SIGNAL(exit()), SLOT(exitScene()));
 
@@ -1082,17 +1083,15 @@ void MainWindow::on_actionPC_Console_Start_triggered() {
         return;
 
     server = new Server(this);
-    ushort port = scene->inherits("LobbyScene") ? 0 : Config.ServerPort;
+    ushort port = Config.ServerPort;
     if (!server->listen(QHostAddress::Any, port)) {
         QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
         return;
     }
-    if (Config.ConnectToLobby || scene->inherits("LobbyScene")) {
+    if (Config.ConnectToLobby)
         server->connectToLobby();
-    }
 
     server->daemonize();
-    server->createNewRoom();
 
     Config.HostAddress = QString("127.0.0.1:%1").arg(server->serverPort());
     startConnection();
@@ -1434,5 +1433,41 @@ void MainWindow::on_actionStart_Lobby_triggered()
         start_scene->switchToServer(server);
         if (Config.value("EnableMinimizeDialog", false).toBool())
             this->on_actionMinimize_to_system_tray_triggered();
+    }
+}
+
+void MainWindow::onCreateRoomClicked()
+{
+    //@todo: Server address may be in the same local network
+    bool hasGlobalIp = false;
+    QList<QHostAddress> addresses(QNetworkInterface::allAddresses());
+    foreach (const QHostAddress &address, addresses) {
+        quint32 ip = address.toIPv4Address();
+        if (ip && !address.isLoopback() && (ip & 0xFFFF0000) != 0xA9FE0000) {
+            if ((ip & 0xFF000000) != 0x0A000000 && (ip & 0xFFF00000) != 0xAC100000 && (ip & 0xFFFF0000) != 0xC0A80000) {
+                hasGlobalIp = true;
+                break;
+            }
+        }
+    }
+
+    if (hasGlobalIp) {
+        ServerDialog *dialog = new ServerDialog(this);
+        if (!dialog->config())
+            return;
+
+        server = new Server(this);
+        if (!server->listen(QHostAddress::Any, 0)) {
+            QMessageBox::warning(this, tr("Warning"), tr("Can not start server!"));
+            return;
+        }
+        server->connectToLobby();
+        server->daemonize();
+
+        Config.HostAddress = QString("127.0.0.1:%1").arg(server->serverPort());
+        startConnection();
+    } else {
+        if (ClientInstance)
+            ClientInstance->requestNewRoom();
     }
 }

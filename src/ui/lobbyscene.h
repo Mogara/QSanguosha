@@ -38,6 +38,7 @@ class LobbyScene : public QGraphicsScene
     Q_OBJECT
 public:
     explicit LobbyScene(QMainWindow *parent = 0);
+    ~LobbyScene();
     void adjustRoomTiles();
 
 signals:

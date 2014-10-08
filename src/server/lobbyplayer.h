@@ -63,6 +63,7 @@ signals:
 protected:
     void speakCommand(const QVariant &message);
     void roomListCommand(const QVariant &data);
+    void createRoomCommand(const QVariant &data);
 
     Server *server;
     QString screenName;
