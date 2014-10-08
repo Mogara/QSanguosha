@@ -233,25 +233,20 @@ void StartScene::onSceneRectChanged(const QRectF &rect)
 }
 
 void StartScene::printServerInfo() {
-    QStringList items;
     QList<QHostAddress> addresses = QNetworkInterface::allAddresses();
-    foreach(QHostAddress address, addresses) {
+    foreach(const QHostAddress &address, addresses) {
         quint32 ipv4 = address.toIPv4Address();
-        if (ipv4)
-            items << address.toString();
-    }
+        if (!ipv4)
+            continue;
 
-    items.sort();
-
-    foreach(QString item, items) {
-        if (item.startsWith("192.168.") || item.startsWith("10."))
-            serverLog->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(item));
-        else if (item == "127.0.0.1")
-            serverLog->append(tr("Your loopback address %1, this address is available only for your host").arg(item));
-        else if (item.startsWith("5.") || item.startsWith("25."))
-            serverLog->append(tr("Your Hamachi address: %1, the address is available for users that joined the same Hamachi network").arg(item));
-        else if (!item.startsWith("169.254."))
-            serverLog->append(tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(item));
+        if ((ipv4 & 0xFF000000) == 0x0A000000 || (ipv4 & 0xFFF00000) == 0xAC100000 || (ipv4 & 0xFFFF0000) == 0xC0A80000)
+            serverLog->append(tr("Your LAN address: %1, this address is available only for hosts that in the same LAN").arg(address.toString()));
+        else if (address.isLoopback())
+            serverLog->append(tr("Your loopback address %1, this address is available only for your host").arg(address.toString()));
+        else if ((ipv4 & 0xFF000000) == 0x05000000 || (ipv4 & 0xFF000000) == 0x19000000)
+            serverLog->append(tr("Your Hamachi address: %1, the address is available for users that joined the same Hamachi network").arg(address.toString()));
+        else if ((ipv4 & 0xFFFF0000) != 0xA9FE0000)
+            serverLog->append(tr("Your other address: %1, if this is a public IP, that will be available for all cases").arg(address.toString()));
     }
 
     serverLog->append(tr("Binding port number is %1").arg(Config.ServerPort));
