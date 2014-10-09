@@ -22,7 +22,6 @@
 #include "settings.h"
 #include "room.h"
 #include "engine.h"
-#include "scenario.h"
 #include "json.h"
 
 using namespace QSanProtocol;

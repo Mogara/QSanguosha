@@ -22,7 +22,7 @@
 #include "server.h"
 #include "json.h"
 #include "room.h"
-#include "miniscenarios.h"
+#include "engine.h"
 
 using namespace QSanProtocol;
 
@@ -104,10 +104,4 @@ void LobbyPlayer::createRoomCommand(const QVariant &)
     ServerPlayer *player = room->addSocket(socket);
     socket = NULL;
     room->signup(player, screenName, avatar, false);
-
-    //@todo: find a better solution
-    if (room->getPlayers().length() == 1 && room->getScenario() && room->getScenario()->objectName() == "jiange_defense") {
-        for (int i = 0; i < 4; ++i)
-            room->addRobotCommand(player);
-    }
 }

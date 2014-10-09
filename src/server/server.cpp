@@ -25,7 +25,6 @@
 #include "settings.h"
 #include "lobbyplayer.h"
 #include "json.h"
-#include "miniscenarios.h"
 
 #include <QApplication>
 
@@ -195,11 +194,6 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
         ServerPlayer *player = current->addSocket(socket);
         current->signup(player, screen_name, avatar, false);
         emit newPlayer(player);
-
-        if (current->getPlayers().length() == 1 && current->getScenario() && current->getScenario()->objectName() == "jiange_defense") {
-            for (int i = 0; i < 4; ++i)
-                current->addRobotCommand(player, QVariant());
-        }
 
     } else {
         notifyClient(socket, S_COMMAND_ENTER_LOBBY);

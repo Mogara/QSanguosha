@@ -125,6 +125,11 @@ Room::Room(QObject *parent, const QString &mode)
         "lua/ai/private-smart-ai.lua" : "lua/ai/smart-ai.lua");
 
     m_generalSelector = GeneralSelector::getInstance();
+
+    if (scenario && scenario->objectName() == "jiange_defense") {
+        for (int i = 0; i < 4; ++i)
+            addRobotCommand(NULL);
+    }
 }
 
 Room::~Room(){
