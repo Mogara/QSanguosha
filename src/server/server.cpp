@@ -170,9 +170,13 @@ void Server::processClientSignup(ClientSocket *socket, const Packet &signup)
     }
 
     JsonArray body = signup.getMessageBody().value<JsonArray>();
-    bool is_reconnection = body[0].toBool();
-    QString screen_name = body[1].toString();
-    QString avatar = body[2].toString();
+    if (body.size() != 3)
+        return;
+    bool is_reconnection = body.at(0).toBool();
+    QString screen_name = body.at(1).toString();
+    QString avatar = body.at(2).toString();
+    if (screen_name.isEmpty() || avatar.isEmpty())
+        return;
 
     if (is_reconnection) {
         foreach (QString objname, name2objname.values(screen_name)) {
