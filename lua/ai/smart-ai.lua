@@ -772,7 +772,6 @@ function sgs.getValue(player)
 end
 
 function SmartAI:assignKeep(start)
-	local num = self.player:getHandcardNum()
 	self.keepValue = {}
 	self.kept = {}
 
@@ -814,7 +813,7 @@ function SmartAI:assignKeep(start)
 		self.keepdata.Jink = 4.2
 	end
 
-	if not self:isWeak() or num >= 4 then
+	if not self:isWeak() or self.player:getHandcardNum() >= 4 then
 		for _, friend in ipairs(self.friends_noself) do
 			if self:willSkipDrawPhase(friend) or self:willSkipPlayPhase(friend) then
 				self.keepdata.Nullification = 5.5
@@ -848,10 +847,12 @@ function SmartAI:assignKeep(start)
 		end
 	end
 
-	if num == 0 then return end
-	local cards = self.player:getHandcards()
-	cards = sgs.QList2Table(cards)
-	self:sortByKeepValue(cards, true, self.kept, true)
+	for _, card in sgs.qlist(self.player:getCards("he")) do
+		self.keepValue[card:getId()] = self:getKeepValue(card, self.kept, true)
+	end
+
+	local cards = sgs.QList2Table(self.player:getHandcards())
+	self:sortByKeepValue(cards, true, self.kept)
 
 	local resetCards = function(allcards)
 		local result = {}
@@ -868,7 +869,7 @@ function SmartAI:assignKeep(start)
 		return result
 	end
 
-	for i = 1, num do
+	for i = 1, self.player:getHandcardNum() do
 		for _, card in ipairs(cards) do
 			self.keepValue[card:getId()] = self:getKeepValue(card, self.kept)
 			table.insert(self.kept, card)
@@ -877,11 +878,6 @@ function SmartAI:assignKeep(start)
 		cards = resetCards(cards)
 	end
 
-	if not self.player:getEquips():isEmpty() then
-		for _, card in sgs.qlist(self.player:getEquips()) do
-			self.keepValue[card:getId()] = self:getKeepValue(card, self.kept, true)
-		end
-	end
 end
 
 function SmartAI:getKeepValue(card, kept, writeMode)
@@ -1211,6 +1207,9 @@ function SmartAI:cardNeed(card)
 		end
 		return 6
 	end
+	if card:getTypeId() == sgs.Card_TypeTrick then
+		return card:isAvailable() and self:getUseValue(card) or 0
+	end
 	return self:getUseValue(card)
 end
 
@@ -1288,14 +1287,7 @@ function SmartAI:adjustKeepValue(card, v)
 	return v
 end
 
-function SmartAI:sortByKeepValue(cards, inverse, kept, writeMode)
-	if writeMode then
-		for _, card in ipairs(cards) do
-			local value1 = self:getKeepValue(card, kept, true)
-			self.keepValue[card:getId()] = value1
-		end
-	end
-
+function SmartAI:sortByKeepValue(cards, inverse, kept)
 	local compare_func = function(a, b)
 		local v1 = self:getKeepValue(a)
 		local v2 = self:getKeepValue(b)
