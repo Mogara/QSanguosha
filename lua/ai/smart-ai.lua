@@ -1208,7 +1208,7 @@ function SmartAI:cardNeed(card)
 		return 6
 	end
 	if card:getTypeId() == sgs.Card_TypeTrick then
-		return card:isAvailable() and self:getUseValue(card) or 0
+		return card:isAvailable(self.player) and self:getUseValue(card) or 0
 	end
 	return self:getUseValue(card)
 end
