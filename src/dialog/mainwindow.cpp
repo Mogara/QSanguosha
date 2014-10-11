@@ -124,10 +124,15 @@ public:
         if (scene) {
             QRectF newSceneRect(0, 0, event->size().width(), event->size().height());
             scene->setSceneRect(newSceneRect);
-            if (scene->sceneRect().size() != event->size())
-                fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
-            else
+            if (scene->sceneRect().size() != event->size()) {
+                QSizeF from(scene->sceneRect().size());
+                QSizeF to(event->size());
+                QTransform transform;
+                transform.scale(to.width() / from.width(), to.height() / from.height());
+                setTransform(transform);
+            } else {
                 resetTransform();
+            }
             setSceneRect(scene->sceneRect());
         }
 
@@ -922,12 +927,10 @@ void MainWindow::fitBackgroundBrush() {
         QBrush brush(scene->backgroundBrush());
         QPixmap pixmap(brush.texture());
 
-        qreal width = scene->width() + 2 * S_CORNER_SIZE;
-        qreal height = scene->height() + 2 * S_CORNER_SIZE;
-        QPointF center = scene->sceneRect().center();
+        QRectF rect(scene->sceneRect());
         QTransform transform;
-        transform.translate(-center.x() - width / 2.0, -center.y() - height / 2.0);
-        transform.scale(width / pixmap.width(), height / pixmap.height());
+        transform.translate(-rect.left(), -rect.top());
+        transform.scale(rect.width() / pixmap.width(), rect.height() / pixmap.height());
         brush.setTransform(transform);
         scene->setBackgroundBrush(brush);
     }
