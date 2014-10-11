@@ -65,7 +65,7 @@ protected slots:
     void cleanup();
 
     void processMessage(const QByteArray &message);
-    void gameOver();
+    void cleanupRoom();
     void cleanupLobbyPlayer();
     void cleanupRemoteRoom();
 

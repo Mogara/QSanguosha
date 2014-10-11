@@ -34,7 +34,8 @@ QHash<CommandType, Server::LobbyFunction> Server::lobbyFunctions;
 QHash<CommandType, Server::RoomFunction> Server::roomFunctions;
 
 Server::Server(QObject *parent, Role role)
-    : QObject(parent),  role(role), server(new NativeServerSocket), lobby(NULL)
+    : QObject(parent),  role(role), server(new NativeServerSocket),
+      current(NULL), lobby(NULL)
 {
     server->setParent(this);
 

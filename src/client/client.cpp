@@ -260,6 +260,22 @@ void Client::signup() {
     }
 }
 
+void Client::restart()
+{
+    m_isGameOver = false;
+    foreach (const ClientPlayer *player, players) {
+        delete player;
+    }
+    players.clear();
+
+    notifyServer(S_COMMAND_SIGNUP);
+}
+
+void Client::toggleReady()
+{
+    notifyServer(S_COMMAND_TOGGLE_READY);
+}
+
 void Client::networkDelayTest(const QVariant &) {
     notifyServer(S_COMMAND_NETWORK_DELAY_TEST);
 }
@@ -1327,7 +1343,6 @@ void Client::askForExchange(const QVariant &exchange) {
 }
 
 void Client::gameOver(const QVariant &arg) {
-    disconnectFromHost();
     m_isGameOver = true;
     setStatus(Client::NotActive);
 

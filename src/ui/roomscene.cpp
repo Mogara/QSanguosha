@@ -337,7 +337,7 @@ RoomScene::RoomScene(QMainWindow *main_window)
     return_to_start_scene = NULL;
     if (!ServerInfo.ForbidAddingRobot) {
         control_panel = addRect(0, 0, 500, 150, Qt::NoPen);
-        control_panel->hide();
+        control_panel->setVisible(Self->isOwner());
 
         add_robot = new Button(tr("Add a robot"), 1.0);
         add_robot->setParentItem(control_panel);
@@ -3052,7 +3052,7 @@ void RoomScene::addRestartButton(QDialog *dialog) {
     connect(restart_button, SIGNAL(clicked()), dialog, SLOT(accept()));
     connect(return_button, SIGNAL(clicked()), dialog, SLOT(accept()));
     connect(save_button, SIGNAL(clicked()), this, SLOT(saveReplayRecord()));
-    connect(dialog, SIGNAL(accepted()), this, SIGNAL(restart()));
+    connect(restart_button, SIGNAL(clicked()), this, SIGNAL(restart()));
     connect(return_button, SIGNAL(clicked()), this, SIGNAL(return_to_start()));
 }
 

@@ -293,6 +293,19 @@ void ServerPlayer::setSocket(ClientSocket *socket) {
     this->socket = socket;
 }
 
+ClientSocket *ServerPlayer::takeSocket()
+{
+    if (socket == NULL)
+        return NULL;
+
+    socket->disconnect(this);
+    this->disconnect(socket);
+
+    ClientSocket *result = socket;
+    socket = NULL;
+    return result;
+}
+
 void ServerPlayer::kick(){
     room->notifyProperty(this, this, "flags", "is_kicked");
     if (socket != NULL)

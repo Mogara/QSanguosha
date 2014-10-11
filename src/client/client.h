@@ -236,6 +236,8 @@ public:
 
 public slots:
     void signup();
+    void restart();
+    void toggleReady();
     void onPlayerChooseGeneral(const QString &_name);
     void onPlayerMakeChoice(const QString &choice);
     void onPlayerChooseCard(int card_id = -2);

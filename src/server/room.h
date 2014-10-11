@@ -365,6 +365,7 @@ public:
     void addPlayerHistory(ServerPlayer *player, const QString &key, int times = 1);
 
     //notification callbacks
+    void restartCommand(ServerPlayer *player, const QVariant &);
     void toggleReadyCommand(ServerPlayer *player, const QVariant &);
     void speakCommand(ServerPlayer *player, const QVariant &message);
     void trustCommand(ServerPlayer *player, const QVariant &arg = QVariant());
@@ -578,6 +579,7 @@ signals:
     void room_message(const QString &msg);
     void game_start();
     void game_over(const QString &winner);
+    void game_over();
 };
 
 typedef Room *RoomStar;

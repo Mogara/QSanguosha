@@ -96,6 +96,7 @@ Room::Room(QObject *parent, const QString &mode)
 
     if (callbacks.isEmpty()) {
         // Client notifications
+        callbacks[S_COMMAND_SIGNUP] = &Room::restartCommand;
         callbacks[S_COMMAND_TOGGLE_READY] = &Room::toggleReadyCommand;
         callbacks[S_COMMAND_ADD_ROBOT] = &Room::addRobotCommand;
         callbacks[S_COMMAND_FILL_ROBOTS] = &Room::fillRobotsCommand;
@@ -2494,6 +2495,18 @@ ServerPlayer *Room::getOwner() const{
     return NULL;
 }
 
+void Room::restartCommand(ServerPlayer *player, const QVariant &)
+{
+    player->notify(S_COMMAND_SETUP, Sanguosha->getSetupString());
+    notifyProperty(player, player, "objectName");
+    notifyProperty(player, player, "owner");
+
+    foreach (ServerPlayer *p, m_players) {
+        if (p != player)
+            p->introduceTo(player);
+    }
+}
+
 void Room::toggleReadyCommand(ServerPlayer *, const QVariant &) {
     if (!game_started && isFull())
         start();
@@ -2523,7 +2536,7 @@ void Room::signup(ServerPlayer *player, const QString &screen_name, const QStrin
         player->startNetworkDelayTest();
 
         // introduce all existing player to the new joined
-        foreach(ServerPlayer *p, m_players) {
+        foreach (ServerPlayer *p, m_players) {
             if (p != player)
                 p->introduceTo(player);
         }
@@ -2636,12 +2649,12 @@ void Room::run() {
 
     prepareForStart();
 
+#ifdef QT_NO_DEBUG
     bool using_countdown = true;
     if (_virtual || !property("to_test").toString().isEmpty())
         using_countdown = false;
-
-#ifndef QT_NO_DEBUG
-    using_countdown = false;
+#else
+    bool using_countdown = false;
 #endif
 
     if (using_countdown) {
@@ -2649,17 +2662,13 @@ void Room::run() {
             doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, QVariant(i));
             sleep(1);
         }
-    }
-    else
+    } else
         doBroadcastNotify(S_COMMAND_START_IN_X_SECONDS, QVariant(0));
 
 
-    if (scenario && !scenario->generalSelection())
-        startGame();
-    else {
+    if (scenario == NULL || scenario->generalSelection())
         chooseGenerals();
-        startGame();
-    }
+    startGame();
 }
 
 void Room::assignRoles() {
@@ -3449,7 +3458,7 @@ void Room::startGame() {
         m_players.at(i)->setNext(m_players.at(i + 1));
     m_players.last()->setNext(m_players.first());
 
-    foreach(ServerPlayer *player, m_players) {
+    foreach (ServerPlayer *player, m_players) {
         QStringList generals = getTag(player->objectName()).toStringList();
         const General *general1 = Sanguosha->getGeneral(generals.first());
         const General *general2 = Sanguosha->getGeneral(generals.last());
@@ -3499,6 +3508,7 @@ void Room::startGame() {
 
     thread = new RoomThread(this);
     connect(thread, SIGNAL(started()), this, SIGNAL(game_start()));
+    connect(thread, SIGNAL(finished()), this, SIGNAL(game_over()));
 
     if (!_virtual) thread->start();
 }

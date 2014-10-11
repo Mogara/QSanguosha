@@ -50,7 +50,7 @@ Room *Server::createNewRoom() {
     rooms.insert(current);
 
     connect(current, SIGNAL(room_message(QString)), this, SIGNAL(serverMessage(QString)));
-    connect(current, SIGNAL(game_over(QString)), this, SLOT(gameOver()));
+    connect(current, SIGNAL(game_over()), this, SLOT(cleanupRoom()));
 
     return current;
 }
@@ -70,14 +70,27 @@ void Server::signupPlayer(ServerPlayer *player) {
     players.insert(player->objectName(), player);
 }
 
-void Server::gameOver() {
+void Server::cleanupRoom() {
     Room *room = qobject_cast<Room *>(sender());
     rooms.remove(room);
 
-    foreach(ServerPlayer *player, room->findChildren<ServerPlayer *>()) {
-        name2objname.remove(player->screenName(), player->objectName());
-        players.remove(player->objectName());
+    Room *new_room = createNewRoom();
+    foreach (ServerPlayer *player, room->findChildren<ServerPlayer *>()) {
+        //@todo: move these two statements
+        //name2objname.remove(player->screenName(), player->objectName());
+        //players.remove(player->objectName());
+
+        ClientSocket *socket = player->takeSocket();
+        if (socket) {
+            ServerPlayer *new_player = new_room->addSocket(socket);
+            new_player->setObjectName(player->objectName());
+            new_player->setScreenName(player->screenName());
+            new_player->setProperty("avatar", player->property("avatar"));
+            new_player->setOwner(player->isOwner());
+        }
     }
+
+    room->deleteLater();
 }
 
 void Server::checkVersion(const QVariant &server_version)

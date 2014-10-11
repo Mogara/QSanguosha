@@ -777,7 +777,7 @@ void MainWindow::enterRoom() {
         ui->actionExecute_script_at_server_side->disconnect();
     }
 
-    connect(room_scene, SIGNAL(restart()), this, SLOT(startConnection()));
+    connect(room_scene, SIGNAL(restart()), ClientInstance, SLOT(restart()));
     connect(room_scene, SIGNAL(return_to_start()), this, SLOT(exitScene()));
 
     gotoScene(room_scene);
@@ -813,7 +813,8 @@ void MainWindow::exitScene() {
         scene = NULL;
 
         if (ClientInstance) {
-            delete ClientInstance;
+            ClientInstance->disconnectFromHost();
+            ClientInstance->deleteLater();
             Self = NULL;
         }
 
@@ -852,7 +853,8 @@ void MainWindow::exitScene() {
         addAction(ui->actionFullscreen);
 
         if (ClientInstance) {
-            delete ClientInstance;
+            ClientInstance->disconnectFromHost();
+            ClientInstance->deleteLater();
             Self = NULL;
         }
     }
