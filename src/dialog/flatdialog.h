@@ -31,7 +31,7 @@ class FlatDialog : public QDialog {
     Q_OBJECT
 
 protected:
-    FlatDialog(QWidget *parent, bool needTitle = true);
+    FlatDialog(QWidget *parent, bool initialLayoutWithTitle = true);
 
     virtual void paintEvent(QPaintEvent *);
     virtual void mousePressEvent(QMouseEvent *event);
