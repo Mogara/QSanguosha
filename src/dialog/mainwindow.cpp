@@ -291,12 +291,14 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
     repaintButtons();
 
+#ifndef Q_OS_ANDROID
     QPropertyAnimation *animation = new QPropertyAnimation(this, "windowOpacity");
     animation->setDuration(1000);
     animation->setStartValue(0);
     animation->setEndValue(1);
     animation->setEasingCurve(QEasingCurve::OutCurve);
     animation->start(QAbstractAnimation::DeleteWhenStopped);
+#endif
 
     start_scene->showOrganization();
 
