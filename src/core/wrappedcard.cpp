@@ -63,7 +63,6 @@ void WrappedCard::copyEverythingFrom(Card *card) {
     Card::setNumber(card->getNumber());
     flags = card->getFlags();
     m_skillName = card->getSkillName(false);
-    setTransferable(card->isTransferable());
 }
 
 void WrappedCard::setFlags(const QString &flag) const{
