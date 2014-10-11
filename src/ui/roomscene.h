@@ -46,6 +46,16 @@ class BubbleChatBox;
 class PlayerCardBox;
 struct RoomLayout;
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+class QQmlEngine;
+class QQmlContext;
+class QQmlComponent;
+#else
+class QDeclarativeEngine;
+class QDeclarativeContext;
+class QDeclarativeComponent;
+#endif
+
 #include <QGraphicsScene>
 #include <QTableWidget>
 #include <QMainWindow>
@@ -58,15 +68,7 @@ struct RoomLayout;
 #include <QHBoxLayout>
 #include <QMutex>
 #include <QStack>
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtDeclarative/QDeclarativeEngine>
-#include <QtDeclarative/QDeclarativeContext>
-#include <QtDeclarative/QDeclarativeComponent>
-#else
-#include <QtQml/QQmlEngine>
-#include <QtQml/QQmlContext>
-#include <QtQml/QQmlComponent>
-#endif
+
 class ScriptExecutor : public QDialog {
     Q_OBJECT
 
@@ -140,8 +142,6 @@ class RoomScene : public QGraphicsScene {
 
 public:
     RoomScene(QMainWindow *main_window);
-    void changeTextEditBackground();
-    void adjustItems();
     void showIndicator(const QString &from, const QString &to);
     void showPromptBox();
     static void FillPlayerNames(QComboBox *ComboBox, bool add_none);
@@ -373,7 +373,7 @@ private:
     QSet<HeroSkinContainer *> m_heroSkinContainers;
 
 private slots:
-    void onSceneRectChanged(const QRectF &);
+    void onSceneRectChanged(QRectF displayRegion);
 
     void fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids = QList<int>());
     void updateSkillButtons();

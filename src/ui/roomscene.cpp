@@ -72,8 +72,15 @@
 #include <QInputDialog>
 #include <QScrollBar>
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-#include <QtQuick/QQuickItem>
-#include <QtQuick/QQuickWindow>
+#include <QQmlEngine>
+#include <QQmlContext>
+#include <QQmlComponent>
+#include <QQuickItem>
+#include <QQuickWindow>
+#else
+#include <QtDeclarative/QDeclarativeEngine>
+#include <QtDeclarative/QDeclarativeContext>
+#include <QtDeclarative/QDeclarativeComponent>
 #endif
 
 using namespace QSanProtocol;
@@ -754,9 +761,8 @@ void RoomScene::_getSceneSizes(QSize &minSize, QSize &maxSize) {
     }
 }
 
-void RoomScene::adjustItems() {
-    QRectF displayRegion = sceneRect();
-
+void RoomScene::onSceneRectChanged(QRectF displayRegion)
+{
     // switch between default & compact skin depending on scene size
     QSanSkinFactory &factory = QSanSkinFactory::getInstance();
     QString skinName = factory.getCurrentSkinName();
@@ -1358,7 +1364,7 @@ void RoomScene::keyReleaseEvent(QKeyEvent *event) {
     case Qt::Key_F3: dashboard->beginSorting(); break;
     case Qt::Key_F4: dashboard->reverseSelection(); break;
     case Qt::Key_F5: {
-        adjustItems();
+        onSceneRectChanged(sceneRect());
         break;
     }
     case Qt::Key_F6: {
@@ -3600,11 +3606,6 @@ void RoomScene::speak() {
         chatBox->append(QString("<p style=\"margin:3px 2px;\">%1</p>").arg(line));
     }
     chatEdit->clear();
-}
-
-void RoomScene::onSceneRectChanged(const QRectF &)
-{
-    adjustItems();
 }
 
 void RoomScene::fillCards(const QList<int> &card_ids, const QList<int> &disabled_ids) {
