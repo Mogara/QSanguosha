@@ -3930,9 +3930,8 @@ void RoomScene::doLightboxAnimation(const QString &, const QStringList &args) {
         QQuickItem *object = qobject_cast<QQuickItem *>(_m_animationComponent->create(_m_animationContext));
         connect(object, SIGNAL(animationCompleted()), object, SLOT(deleteLater()));
         QQuickWindow *animationWindow = new QQuickWindow;
-        animationWindow->setFlags(Qt::FramelessWindowHint);
-        QMainWindow *mainWindow = qobject_cast<QMainWindow *>(parent());
-        animationWindow->setGeometry(mainWindow->geometry());
+        animationWindow->setFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+        animationWindow->setGeometry(main_window->geometry());
         animationWindow->setColor(Qt::transparent);
         object->setParentItem(animationWindow->contentItem());
         animationWindow->show();
