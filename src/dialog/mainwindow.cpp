@@ -525,6 +525,7 @@ void MainWindow::fetchUpdateInformation()
 
 void MainWindow::roundCorners()
 {
+#ifndef Q_OS_ANDROID
     QBitmap mask(size());
     if (windowState() & (Qt::WindowMaximized | Qt::WindowFullScreen)) {
         mask.fill(Qt::black);
@@ -540,6 +541,7 @@ void MainWindow::roundCorners()
         painter.fillPath(path, Qt::black);
     }
     setMask(mask);
+#endif
 }
 
 void MainWindow::repaintButtons()
