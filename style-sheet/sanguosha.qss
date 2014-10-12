@@ -20,22 +20,16 @@ QTextEdit {
 }
 
 QTextEdit[description="true"] {
-    border: 10px;
-    border-image: none;
-    background-color: rgba(255,255,255,255);
-}
-
-QTextEdit#whatsnew {
-	background-image: url(image/system/simpleBg/whatsnew.png);
-}
-
-QTextEdit#skill_info, QTextEdit#skillTextEdit {
-	border: 2px solid rgb(185, 195, 199);
+    border: 2px solid rgb(185, 195, 199);
 	padding-left: 8px;
 	min-height: 32px;
 	border-radius: 6px;
 	alignment: left;
 	background-color: white;
+}
+
+QTextEdit#whatsnew {
+	background-image: url(image/system/simpleBg/whatsnew.png);
 }
 
 QTextEdit#skill_info:focus {

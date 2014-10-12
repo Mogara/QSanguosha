@@ -21,11 +21,14 @@
 #include "cardoverview.h"
 #include "ui_cardoverview.h"
 #include "engine.h"
-#include "settings.h"
+#include "stylehelper.h"
 #include "clientstruct.h"
+#include "settings.h"
 #include "client.h"
-#include "skinbank.h"
+#include "clientplayer.h"
+#include "SkinBank.h"
 
+#include <QScrollBar>
 #include <QMessageBox>
 #include <QFile>
 
@@ -39,9 +42,11 @@ CardOverview *CardOverview::getInstance(QWidget *main_window) {
 }
 
 CardOverview::CardOverview(QWidget *parent)
-    : QDialog(parent), ui(new Ui::CardOverview)
+    : FlatDialog(parent, false), ui(new Ui::CardOverview)
 {
     ui->setupUi(this);
+
+    connect(this, SIGNAL(windowTitleChanged(QString)), ui->titleLabel, SLOT(setText(QString)));
 
     ui->tableWidget->setColumnWidth(0, 80);
     ui->tableWidget->setColumnWidth(1, 60);
@@ -50,11 +55,16 @@ CardOverview::CardOverview(QWidget *parent)
     ui->tableWidget->setColumnWidth(4, 70);
 
     connect(ui->getCardButton, SIGNAL(clicked()), this, SLOT(askCard()));
+    connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(reject()));
 
     ui->cardDescriptionBox->setProperty("description", true);
     ui->malePlayButton->hide();
     ui->femalePlayButton->hide();
     ui->playAudioEffectButton->hide();
+
+    const QString style = StyleHelper::styleSheetOfScrollBar();
+    ui->tableWidget->verticalScrollBar()->setStyleSheet(style);
+    ui->cardDescriptionBox->verticalScrollBar()->setStyleSheet(style);
 }
 
 void CardOverview::loadFromAll() {

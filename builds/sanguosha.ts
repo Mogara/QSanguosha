@@ -415,67 +415,77 @@
         <translation>卡牌一览</translation>
     </message>
     <message>
-        <location filename="../src/dialog/cardoverview.ui" line="39"/>
+        <location filename="../src/dialog/cardoverview.ui" line="567"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="../src/dialog/cardoverview.ui" line="44"/>
+        <location filename="../src/dialog/cardoverview.ui" line="572"/>
         <source>Suit</source>
         <translation>花色</translation>
     </message>
     <message>
-        <location filename="../src/dialog/cardoverview.ui" line="49"/>
+        <location filename="../src/dialog/cardoverview.ui" line="577"/>
         <source>Point</source>
         <translation>点数</translation>
     </message>
     <message>
-        <location filename="../src/dialog/cardoverview.ui" line="54"/>
+        <location filename="../src/dialog/cardoverview.ui" line="582"/>
         <source>Type</source>
         <translation>类型</translation>
     </message>
     <message>
-        <location filename="../src/dialog/cardoverview.ui" line="59"/>
+        <location filename="../src/dialog/cardoverview.ui" line="587"/>
         <source>Subtype</source>
         <translation>子类型</translation>
     </message>
     <message>
-        <location filename="../src/dialog/cardoverview.ui" line="64"/>
+        <location filename="../src/dialog/cardoverview.ui" line="592"/>
         <source>Package</source>
         <translation>包</translation>
     </message>
     <message>
-        <location filename="../src/dialog/cardoverview.ui" line="149"/>
+        <location filename="../src/dialog/cardoverview.ui" line="677"/>
         <source>Play audio effect</source>
         <translation>音效</translation>
     </message>
     <message>
-        <location filename="../src/dialog/cardoverview.ui" line="162"/>
+        <location filename="../src/dialog/cardoverview.ui" line="690"/>
         <source>Get this card</source>
         <translation>获得卡牌</translation>
     </message>
     <message>
-        <location filename="../src/dialog/cardoverview.ui" line="121"/>
+        <location filename="../src/dialog/cardoverview.ui" line="697"/>
+        <source>Close</source>
+        <translation>关闭</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/cardoverview.ui" line="709"/>
+        <source>Card Overview</source>
+        <translation>卡牌一览</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/cardoverview.ui" line="649"/>
         <source>Play (male)</source>
         <translation>男性配音</translation>
     </message>
     <message>
-        <location filename="../src/dialog/cardoverview.ui" line="140"/>
+        <location filename="../src/dialog/cardoverview.ui" line="668"/>
         <source>Play (female)</source>
         <translation>女性配音</translation>
     </message>
     <message>
-        <location filename="../src/dialog/cardoverview.cpp" line="129"/>
+        <location filename="../src/dialog/cardoverview.cpp" line="139"/>
         <source>&lt;font color=%1&gt;This is an Lua extension&lt;/font&gt;</source>
         <translation>&lt;font color=%1&gt;该包为Lua扩展包&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../src/dialog/cardoverview.cpp" line="166"/>
+        <location filename="../src/dialog/cardoverview.cpp" line="176"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../src/dialog/cardoverview.cpp" line="166"/>
+        <location filename="../src/dialog/cardoverview.cpp" line="176"/>
         <source>These packages don&apos;t contain this card</source>
         <translation>此牌所在卡牌包已禁用</translation>
     </message>

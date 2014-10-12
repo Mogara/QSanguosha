@@ -21,17 +21,16 @@
 #ifndef _CARD_OVERVIEW_H
 #define _CARD_OVERVIEW_H
 
-#include "card.h"
+#include "flatdialog.h"
 
-#include <QDialog>
-#include <QTableWidgetItem>
+class Card;
+class QTableWidgetItem;
 
-class MainWindow;
 namespace Ui {
     class CardOverview;
 }
 
-class CardOverview : public QDialog {
+class CardOverview : public FlatDialog {
     Q_OBJECT
 
 public:
