@@ -19,21 +19,23 @@
     *********************************************************************/
 
 #include "generaloverview.h"
-#include "ui_generaloverview.h"
 #include "engine.h"
+#include "ui_generaloverview.h"
 #include "settings.h"
-#include "skinbank.h"
-#include "clientstruct.h"
-#include "client.h"
+#include "clientplayer.h"
 #include "generalmodel.h"
-#include "util.h"
+#include "SkinBank.h"
+#include "stylehelper.h"
 
-#include <QMessageBox>
-#include <QRadioButton>
+#include <QHBoxLayout>
 #include <QGroupBox>
+#include <QAbstractButton>
+#include <QCheckBox>
+#include <QSpinBox>
 #include <QCommandLinkButton>
 #include <QClipboard>
-#include <QFile>
+#include <QMessageBox>
+#include <QScrollBar>
 
 static QLayout *HLay(QWidget *left, QWidget *right) {
     QHBoxLayout *layout = new QHBoxLayout;
@@ -272,10 +274,17 @@ GeneralOverview *GeneralOverview::getInstance(QWidget *main_window) {
 }
 
 GeneralOverview::GeneralOverview(QWidget *parent)
-    : QDialog(parent), ui(new Ui::GeneralOverview), all_generals(NULL)
+    : FlatDialog(parent, false), ui(new Ui::GeneralOverview), all_generals(NULL)
 {
     ui->setupUi(this);
     origin_window_title = windowTitle();
+    connect(this, SIGNAL(windowTitleChanged(QString)), ui->titleLabel, SLOT(setText(QString)));
+    connect(ui->closeButton, SIGNAL(clicked()), this, SLOT(reject()));
+
+    const QString style = StyleHelper::styleSheetOfScrollBar();
+    ui->tableView->verticalScrollBar()->setStyleSheet(style);
+    ui->skillTextEdit->verticalScrollBar()->setStyleSheet(style);
+    ui->scrollArea->verticalScrollBar()->setStyleSheet(style);
 
     button_layout = new QVBoxLayout;
 

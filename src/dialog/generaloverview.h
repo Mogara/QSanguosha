@@ -18,22 +18,19 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#ifndef _GENERAL_OVERVIEW_H
-#define _GENERAL_OVERVIEW_H
+#ifndef GENERALOVERVIEW_H
+#define GENERALOVERVIEW_H
 
-#include <QDialog>
-#include <QTableWidgetItem>
-#include <QButtonGroup>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QCheckBox>
-#include <QSpinBox>
-#include <QGroupBox>
+#include "flatdialog.h"
 
-class GeneralOverview;
+class QCheckBox;
+class QLineEdit;
+class QButtonGroup;
+class QSpinBox;
 class General;
-class Skill;
 class QCommandLinkButton;
+class Skill;
+class GeneralOverview;
 
 class GeneralSearch : public QDialog {
     Q_OBJECT
@@ -76,7 +73,7 @@ namespace Ui {
     class GeneralOverview;
 }
 
-class GeneralOverview : public QDialog {
+class GeneralOverview : public FlatDialog {
     Q_OBJECT
 
 public:
@@ -117,5 +114,5 @@ private slots:
     void playDeathAudio();
 };
 
-#endif
+#endif // GENERALOVERVIEW_H
 

@@ -29,7 +29,7 @@ QTextEdit#whatsnew {
 	background-image: url(image/system/simpleBg/whatsnew.png);
 }
 
-QTextEdit#skill_info {
+QTextEdit#skill_info, QTextEdit#skillTextEdit {
 	border: 2px solid rgb(185, 195, 199);
 	padding-left: 8px;
 	min-height: 32px;
@@ -510,4 +510,23 @@ QSlider::handle:horizontal:focus {
 
 QSlider::sub-page:horizontal {
 	background-color: rgb(168, 220, 188);
+}
+
+QTableView {
+	border-radius: 5px;
+	background-color: rgb(236, 240, 241);
+	color: rgb(52, 73, 94);
+}
+
+QTableView::item:selected {
+	background-color: rgb(26, 188, 156);
+	border: transparent;
+}
+
+QTableView::item:!selected:hover {
+	color: rgb(26, 188, 156);
+}
+
+QScrollArea {
+	border-radius: 6px;
 }
