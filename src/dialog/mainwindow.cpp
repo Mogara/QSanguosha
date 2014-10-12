@@ -604,7 +604,10 @@ void MainWindow::gotoScene(QGraphicsScene *scene) {
             about_window->deleteLater();
             about_window = NULL;
         }
-        sceneHistory.push(this->scene->metaObject()->className());
+
+        QString parentScene = this->scene->metaObject()->className();
+        if (parentScene != scene->metaObject()->className())
+            sceneHistory.push(parentScene);
     }
 
     this->scene = scene;
