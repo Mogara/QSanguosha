@@ -45,7 +45,6 @@
     <addaction name="actionBroadcast"/>
     <addaction name="actionReplay_file_convert"/>
     <addaction name="actionRecord_analysis"/>
-    <addaction name="actionSound_Test"/>
     <addaction name="separator"/>
     <addaction name="actionEnable_Hotkey"/>
     <addaction name="actionNever_nullify_my_trick"/>

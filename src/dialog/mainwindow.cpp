@@ -142,43 +142,6 @@ public:
     }
 };
 
-#ifdef AUDIO_SUPPORT
-
-SoundTestBox::SoundTestBox(QWidget *parent /* = NULL */)
-    :QDialog(parent){
-    QDir dir("audio/test/");
-    QStringList entry_list = dir.entryList();
-    entry_list.removeOne(".");
-    entry_list.removeOne("..");
-
-    QHBoxLayout *total_layout = new QHBoxLayout;
-    QList<QPushButton *> btns;
-
-    foreach(QString name, entry_list){
-        if (name.contains(".")){
-            QPushButton *btn = new QPushButton(name);
-            btn->setObjectName(name);
-            btns << btn;
-        }
-    }
-
-    foreach(QPushButton *btn, btns){
-        total_layout->addWidget(btn);
-        connect(btn, SIGNAL(clicked()), this, SLOT(btn_clicked()));
-    }
-    setLayout(total_layout);
-}
-
-void SoundTestBox::btn_clicked(){
-    QObject *btn = sender();
-    QString name = "audio/test/" + btn->objectName();
-    if (QFile::exists(name)){
-        Audio::play(name);
-    }
-}
-
-#endif
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), isLeftPressDown(false),
       scene(NULL), ui(new Ui::MainWindow), server(NULL), about_window(NULL),
@@ -1365,13 +1328,4 @@ void MainWindow::on_actionCheckUpdate_triggered()
     dialog->setLayout(layout);
 
     dialog->show();
-}
-
-void MainWindow::on_actionSound_Test_triggered(){
-#ifdef AUDIO_SUPPORT
-    SoundTestBox *soundtestbox = new SoundTestBox(this);
-    soundtestbox->show();
-#else
-    QMessageBox::warning(this, tr("Warning"), tr("Audio support is disabled when compiled"));
-#endif
 }
