@@ -18,15 +18,15 @@
     QSanguosha-Rara
     *********************************************************************/
 
-#ifndef _ABOUT_US_H
-#define _ABOUT_US_H
+#ifndef ABOUTUS_H
+#define ABOUTUS_H
 
-#include <QDialog>
+#include "flatdialog.h"
 
 class QListWidget;
 class QTextBrowser;
 
-class AboutUsDialog : public QDialog {
+class AboutUsDialog : public FlatDialog {
     Q_OBJECT
 
 public:
@@ -57,4 +57,4 @@ private slots:
     void loadContent(int row);
 };
 
-#endif
+#endif // ABOUTUS_H

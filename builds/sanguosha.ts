@@ -4,9 +4,14 @@
 <context>
     <name>AboutUsDialog</name>
     <message>
-        <location filename="../src/dialog/aboutus.cpp" line="31"/>
+        <location filename="../src/dialog/aboutus.cpp" line="34"/>
         <source>About Us</source>
         <translation>关于我们</translation>
+    </message>
+    <message>
+        <location filename="../src/dialog/aboutus.cpp" line="45"/>
+        <source>Close</source>
+        <translation>关闭</translation>
     </message>
 </context>
 <context>

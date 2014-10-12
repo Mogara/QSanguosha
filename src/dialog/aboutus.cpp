@@ -20,13 +20,16 @@
 
 #include "aboutus.h"
 #include "engine.h"
+#include "stylehelper.h"
 
 #include <QListWidget>
 #include <QTextBrowser>
 #include <QHBoxLayout>
+#include <QScrollBar>
+#include <QPushButton>
 
 AboutUsDialog::AboutUsDialog(QWidget *parent)
-    : QDialog(parent)
+    : FlatDialog(parent)
 {
     setWindowTitle(tr("About Us"));
     lua_State *L = Sanguosha->getLuaState();
@@ -39,16 +42,23 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
     list = new QListWidget;
     list->setMaximumWidth(150);
 
+    QPushButton *closeButton = new QPushButton(tr("Close"));
+    connect(closeButton, SIGNAL(clicked()), this, SLOT(reject()));
+
+    QVBoxLayout *vLayout = new QVBoxLayout;
+    vLayout->addWidget(list);
+    vLayout->addWidget(closeButton);
+
     content_box = new QTextBrowser;
     content_box->setOpenExternalLinks(true);
     content_box->setProperty("description", true);
 
-    QHBoxLayout *layout = new QHBoxLayout;
+    QHBoxLayout *hLayout = new QHBoxLayout;
 
-    layout->addWidget(content_box);
-    layout->addWidget(list);
+    hLayout->addWidget(content_box);
+    hLayout->addLayout(vLayout);
 
-    setLayout(layout);
+    layout->addLayout(hLayout);
 
     QStringList developers = GetValueFromLuaState(L, "about_us", "developers").toStringList();
 
@@ -61,6 +71,10 @@ AboutUsDialog::AboutUsDialog(QWidget *parent)
 
     if (!developers.isEmpty())
         loadContent(0);
+
+    const QString style = StyleHelper::styleSheetOfScrollBar();
+    list->verticalScrollBar()->setStyleSheet(style);
+    content_box->verticalScrollBar()->setStyleSheet(style);
 }
 
 void AboutUsDialog::loadContent(int row) {
