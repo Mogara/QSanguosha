@@ -31,6 +31,7 @@ SOURCES += \
     src/core/player.cpp \
     src/core/protocol.cpp \
     src/core/record-analysis.cpp \
+    src/core/roomconfig.cpp \
     src/core/roomstate.cpp \
     src/core/settings.cpp \
     src/core/skill.cpp \
@@ -146,6 +147,7 @@ HEADERS += \
     src/core/player.h \
     src/core/protocol.h \
     src/core/record-analysis.h \
+    src/core/roomconfig.h \
     src/core/roomstate.h \
     src/core/settings.h \
     src/core/skill.h \
